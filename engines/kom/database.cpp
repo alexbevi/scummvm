@@ -44,6 +44,9 @@ Database::Database(KomEngine *vm, OSystem *system)
 }
 
 Database::~Database() {
+	for (int i = 0; i < _locationsNum; ++i)
+		delete _locations[i].events;
+
 	free(_locations);
 	free(_characters);
 	free(_objects);
@@ -79,6 +82,7 @@ void Database::initLocations() {
 	// Get number of entries in file
 	sscanf(line, "%d", &entries);
 	printf("%d loc entries\n", entries);
+	_locationsNum = entries;
 
 	// Skip empty line
 	f.readLine(line, LINE_BUFFER_SIZE);
@@ -99,7 +103,9 @@ void Database::initLocations() {
 
 		f.readLine(_locations[index].desc, 50);
 		stripUndies(_locations[index].desc);
-		
+
+		_locations[index].events = new Common::List<EventLink>; 		
+
 		// Skip seperator lines
 		f.readLine(line, LINE_BUFFER_SIZE);
 		f.readLine(line, LINE_BUFFER_SIZE);
@@ -127,6 +133,7 @@ void Database::initCharacters() {
 	// Get number of entries in file
 	sscanf(line, "%d", &entries);
 	printf("%d chr entries\n", entries);
+	_charactersNum = entries;
 
 	// Skip empty line
 	f.readLine(line, LINE_BUFFER_SIZE);
@@ -222,6 +229,7 @@ void Database::initObjects() {
 	// Get number of entries in file
 	sscanf(line, "%d", &entries);
 	printf("%d obs entries\n", entries);
+	_objectsNum = entries;
 
 	// Skip empty line
 	f.readLine(line, LINE_BUFFER_SIZE);
@@ -314,10 +322,49 @@ void Database::initObjects() {
 }
 
 void Database::initEvents() {
-	File *f = new File();
-	f->open(_databasePrefix + ".box");
-	printf("events filesize is %d\n", f->size());
-	f->close();
+	int entries;
+	File f;
+
+	f.open(_databasePrefix + ".box");
+
+	assert(f.readLine(line, LINE_BUFFER_SIZE));
+
+	// Get number of entries in file
+	sscanf(line, "%d", &entries);
+	printf("%d event entries\n", entries);
+
+	// Skip empty line
+	f.readLine(line, LINE_BUFFER_SIZE);
+
+	_locations = (Location *) malloc(sizeof(Location) * entries);
+	memset(_locations, 0, sizeof(Location) * entries);
+
+	for (int i = 0; i < entries; ++i) {
+		int loc;
+		EventLink ev;
+
+		f.readLine(line, LINE_BUFFER_SIZE);
+		sscanf(line, "%d", &loc);
+
+		sscanf(line, "%*d %d %d", &(ev.data1), &(ev.data2)); 
+
+		printf("loc is %d\n", loc);
+		(_locations[loc].events)->push_back(ev);
+		printf("2\n");
+
+		// Skip unused data line
+		f.readLine(line, LINE_BUFFER_SIZE);
+	}
+
+	f.close();
+/*	for (int i = 0; i < entries; ++i) {
+		printf("%d %s %d %d %s\n", 
+			i,
+			_locations[i].name,
+			_locations[i].data1,
+			_locations[i].data2,
+			_locations[i].desc);
+	}*/
 }
 
 void Database::initObjectsLocs() {

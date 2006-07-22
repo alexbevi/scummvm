@@ -26,6 +26,7 @@
 #include "base/engine.h"
 #include "common/str.h"
 #include "common/fs.h"
+#include "common/list.h"
 
 //class OSystem;
 
@@ -33,12 +34,17 @@ namespace Kom {
 
 class KomEngine;
 
+struct EventLink {
+	int data1;
+	int data2;
+};
+
 struct Location {
 	char name[7];
 	int data1;
 	int data2;
 	char desc[50];
-	// TODO: linked list of events
+	Common::List<EventLink> *events;
 };
 
 struct Character {
@@ -119,8 +125,13 @@ private:
 	Common::String _databasePrefix;
 
 	Location *_locations;
+	int _locationsNum;
+
 	Character *_characters;
+	int _charactersNum;
+
 	Object *_objects;
+	int _objectsNum;
 };
 } // End of namespace Kom
 
