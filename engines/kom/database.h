@@ -38,6 +38,7 @@ struct Location {
 	int data1;
 	int data2;
 	char desc[50];
+	// TODO: linked list of events
 };
 
 struct Character {
