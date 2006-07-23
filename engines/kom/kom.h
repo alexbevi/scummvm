@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __KOM_H__
-#define __KOM_H__
+#ifndef KOM_H
+#define KOM_H
 
 #include "base/engine.h"
 #include "common/fs.h"

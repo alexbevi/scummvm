@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __KOMDATABASE_H__
-#define __KOMDATABASE_H__
+#ifndef KOM_DATABASE_H
+#define KOM_DATABASE_H
 
 #include "base/engine.h"
 #include "common/str.h"

@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __KOMSCREEN_H_
-#define __KOMSCREEN_H_
+#ifndef KOM_SCREEN_H
+#define KOM_SCREEN_H
 
 class OSystem;
 
