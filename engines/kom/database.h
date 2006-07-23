@@ -44,7 +44,7 @@ struct Location {
 	int data1;
 	int data2;
 	char desc[50];
-	Common::List<EventLink> *events;
+	Common::List<EventLink> events;
 };
 
 struct Character {
