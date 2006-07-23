@@ -68,22 +68,13 @@ struct Object {
 	// events list
 };
 
-struct Location {
-	char name[7];
-	int data1;
-	int data2;
-	char desc[50];
-	Common::List<EventLink> events;
-	Common::List<Object> objects;
-};
-
 struct Character {
 	char name[7];
 	int data1;
 	int data2;
 	char desc[50];
 	int data3;
-	int loc;
+	int locationId;
 	int data4;
 	int data5;
 	int data6;
@@ -100,6 +91,16 @@ struct Character {
 	int data16;
 	int spellpoints;
 	Common::List<Object> inventory;
+};
+
+struct Location {
+	char name[7];
+	int data1;
+	int data2;
+	char desc[50];
+	Common::List<EventLink> events;
+	Common::List<Object> objects;
+	Common::List<Character> characters;
 };
 
 class Database {

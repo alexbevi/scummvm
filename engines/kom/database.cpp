@@ -152,7 +152,7 @@ void Database::initCharacters() {
 
 		f.readLine(line, LINE_BUFFER_SIZE);
 		sscanf(line, "%d %d %d %d %d", 
-			&(_characters[index].loc),
+			&(_characters[index].locationId),
 			&(_characters[index].data4),
 			&(_characters[index].data5),
 			&(_characters[index].data6),
@@ -191,7 +191,7 @@ void Database::initCharacters() {
 			_characters[i].data1,
 			_characters[i].data2,
 			_characters[i].desc,
-			_characters[i].loc,
+			_characters[i].locationId,
 			_characters[i].data4,
 			_characters[i].data5,
 			_characters[i].data6,
@@ -365,6 +365,9 @@ void Database::initObjectLocs() {
 }
 
 void Database::initCharacterLocs() {
+	for (int i = 0; i < _charactersNum; ++i)
+		_locations[_characters[i].locationId].characters.push_back(_characters[i]);
+	
 }
 
 void Database::initProcs() {
