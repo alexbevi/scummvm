@@ -39,12 +39,42 @@ struct EventLink {
 	int data2;
 };
 
+struct Object {
+	char name[7];
+	int data1;
+	char desc[50];
+	int type;
+	int data2;
+	int data3;
+	int data4;
+	int data5;
+	int data6;
+	int data7;
+	int isVisible;
+	int data8;
+	int data9;
+	int data10;
+	int price;
+	int data11;
+	int spellCost;
+	int data12;
+	int data13;
+	int locationType;
+	int locationId;
+	int data15;
+	int data16;
+	int data17;
+	int data18;
+	// events list
+};
+
 struct Location {
 	char name[7];
 	int data1;
 	int data2;
 	char desc[50];
 	Common::List<EventLink> events;
+	Common::List<Object> objects;
 };
 
 struct Character {
@@ -69,35 +99,7 @@ struct Character {
 	int data15; // spell time - unused
 	int data16;
 	int spellpoints;
-};
-
-struct Object {
-	char name[7];
-	int data1;
-	char desc[50];
-	int type;
-	int data2;
-	int data3;
-	int data4;
-	int data5;
-	int data6;
-	int data7;
-	int isVisible;
-	int data8;
-	int data9;
-	int data10;
-	int price;
-	int data11;
-	int spellCost;
-	int data12;
-	int data13;
-	int data14;
-	int loc;
-	int data15;
-	int data16;
-	int data17;
-	int data18;
-	// events list
+	Common::List<Object> inventory;
 };
 
 class Database {
@@ -115,7 +117,7 @@ private:
 	void initCharacters();
 	void initObjects();
 	void initEvents();
-	void initObjectsLocs();
+	void initObjectLocs();
 	void initCharacterLocs();
 	void initProcs();
 

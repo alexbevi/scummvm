@@ -58,7 +58,7 @@ void Database::init(Common::String databasePrefix) {
 	initCharacters();
 	initObjects();
 	initEvents();
-	initObjectsLocs();
+	initObjectLocs();
 	initCharacterLocs();
 	initProcs();
 }
@@ -268,13 +268,16 @@ void Database::initObjects() {
 			&(_objects[index].data13));
 
 		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d %d %d %d %d %d", 
-			&(_objects[index].data14),
-			&(_objects[index].loc),
-			&(_objects[index].data15),
-			&(_objects[index].data16),
-			&(_objects[index].data17),
-			&(_objects[index].data18));
+		sscanf(line, "%d %d", 
+			&(_objects[index].locationType),
+			&(_objects[index].locationId));
+
+		if (_objects[index].locationType == 1)
+			sscanf(line, "%*d %*d %d %d %d %d", 
+				&(_objects[index].data15),
+				&(_objects[index].data16),
+				&(_objects[index].data17),
+				&(_objects[index].data18));
 
 		// Skip seperator line
 		f.readLine(line, LINE_BUFFER_SIZE);
@@ -304,8 +307,8 @@ void Database::initObjects() {
 			_objects[i].data12,
 			_objects[i].data13,
 			_objects[i].data14,
-			_objects[i].loc,
-			_objects[i].data15,
+			_objects[i].locationType,
+			_objects[i].locationId,
 			_objects[i].data16,
 			_objects[i].data17,
 			_objects[i].data18);
@@ -350,7 +353,15 @@ void Database::initEvents() {
 	}*/
 }
 
-void Database::initObjectsLocs() {
+void Database::initObjectLocs() {
+	for (int i = 0; i < _objectsNum; ++i) {
+		if (_objects[i].type != 0) {
+			if (_objects[i].locationType == 1)
+				_locations[_objects[i].locationId].objects.push_back(_objects[i]);
+			else
+				_characters[_objects[i].locationId].inventory.push_back(_objects[i]);
+		}
+	}
 }
 
 void Database::initCharacterLocs() {
@@ -361,11 +372,8 @@ void Database::initProcs() {
 }
 
 void Database::stripUndies(char *s) {
-	int i = 0;
-	while (s[i] != '\0') {
+	for (int i = 0; s[i] != '\0'; ++i)
 		if (s[i] == '_')
 			s[i] = ' ';
-		++i;
-	}
 }
 } // End of namespace Kom
