@@ -47,8 +47,9 @@ Database::~Database() {
 	delete[] _locations;
 	delete[] _characters;
 	delete[] _objects;
+	delete[] _dataSegment;
+	delete[] _processes;
 }
-
 
 void Database::init(Common::String databasePrefix) {
 	_databasePrefix = databasePrefix;
@@ -63,12 +64,10 @@ void Database::init(Common::String databasePrefix) {
 	initProcs();
 }
 
-
 void Database::loadConvIndex() {
 }
 
 void Database::initLocations() {
-	int entries;
 	File f;
 
 	f.open(_databasePrefix + ".loc");
@@ -76,16 +75,15 @@ void Database::initLocations() {
 	assert(f.readLine(line, LINE_BUFFER_SIZE));
 
 	// Get number of entries in file
-	sscanf(line, "%d", &entries);
-	printf("%d loc entries\n", entries);
-	_locationsNum = entries;
+	sscanf(line, "%d", &_locationsNum);
+	printf("%d loc entries\n", _locationsNum);
 
 	// Skip empty line
 	f.readLine(line, LINE_BUFFER_SIZE);
 
-	_locations = new Location[entries];
+	_locations = new Location[_locationsNum];
 
-	for (int i = 0; i < entries; ++i) {
+	for (int i = 0; i < _locationsNum; ++i) {
 		int index;
 
 		f.readLine(line, LINE_BUFFER_SIZE);
@@ -105,7 +103,7 @@ void Database::initLocations() {
 	}
 
 	f.close();
-/*	for (int i = 0; i < entries; ++i) {
+/*	for (int i = 0; i < _locationsNum; ++i) {
 		printf("%d %s %d %d %s\n", 
 			i,
 			_locations[i].name,
@@ -116,7 +114,6 @@ void Database::initLocations() {
 }
 
 void Database::initCharacters() {
-	int entries;
 	File f;
 
 	f.open(_databasePrefix + ".chr");
@@ -124,16 +121,15 @@ void Database::initCharacters() {
 	assert(f.readLine(line, LINE_BUFFER_SIZE));
 
 	// Get number of entries in file
-	sscanf(line, "%d", &entries);
-	printf("%d chr entries\n", entries);
-	_charactersNum = entries;
+	sscanf(line, "%d", &_charactersNum);
+	printf("%d chr entries\n", _charactersNum);
 
 	// Skip empty line
 	f.readLine(line, LINE_BUFFER_SIZE);
 
-	_characters = new Character[entries];
+	_characters = new Character[_charactersNum];
 
-	for (int i = 0; i < entries; ++i) {
+	for (int i = 0; i < _charactersNum; ++i) {
 		int index;
 
 		f.readLine(line, LINE_BUFFER_SIZE);
@@ -184,7 +180,7 @@ void Database::initCharacters() {
 	}
 
 	f.close();
-/*	for (int i = 0; i < entries; ++i) {
+/*	for (int i = 0; i < _charactersNum; ++i) {
 		printf("%d %s %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", 
 			i,
 			_characters[i].name,
@@ -211,7 +207,6 @@ void Database::initCharacters() {
 }
 
 void Database::initObjects() {
-	int entries;
 	File f;
 
 	f.open(_databasePrefix + ".obs");
@@ -219,17 +214,15 @@ void Database::initObjects() {
 	assert(f.readLine(line, LINE_BUFFER_SIZE));
 
 	// Get number of entries in file
-	sscanf(line, "%d", &entries);
-	printf("%d obs entries\n", entries);
-	_objectsNum = entries;
+	sscanf(line, "%d", &_objectsNum);
+	printf("%d obs entries\n", _objectsNum);
 
 	// Skip empty line
 	f.readLine(line, LINE_BUFFER_SIZE);
 
-	_objects = new Object[entries];
+	_objects = new Object[_objectsNum];
 
-
-	for (int i = 0; i < entries; ++i) {
+	for (int i = 0; i < _objectsNum; ++i) {
 		int index;
 
 		f.readLine(line, LINE_BUFFER_SIZE);
@@ -284,7 +277,7 @@ void Database::initObjects() {
 	}
 
 	f.close();
-/*	for (int i = 0; i < entries; ++i) {
+/*	for (int i = 0; i < _objectsNum; ++i) {
 		printf("%d %s %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", 
 			i,
 			_objects[i].name,
@@ -357,21 +350,38 @@ void Database::initObjectLocs() {
 	for (int i = 0; i < _objectsNum; ++i) {
 		if (_objects[i].type != 0) {
 			if (_objects[i].locationType == 1)
-				_locations[_objects[i].locationId].objects.push_back(_objects[i]);
+				_locations[_objects[i].locationId].objects.push_back(i);
 			else
-				_characters[_objects[i].locationId].inventory.push_back(_objects[i]);
+				_characters[_objects[i].locationId].inventory.push_back(i);
 		}
 	}
 }
 
 void Database::initCharacterLocs() {
 	for (int i = 0; i < _charactersNum; ++i)
-		_locations[_characters[i].locationId].characters.push_back(_characters[i]);
+		_locations[_characters[i].locationId].characters.push_back(i);
 	
 }
 
 void Database::initProcs() {
-	//f->open(_databasePrefix + ".pro");
+	File f;
+
+	f.open(_databasePrefix + ".pro");
+
+	assert(f.readLine(line, LINE_BUFFER_SIZE));
+
+	// Get number of entries in file
+	sscanf(line, "%d", &_varSize);
+	printf("var size: %d\n", _varSize);
+	_dataSegment = new uint16[_varSize];
+
+	f.readLine(line, LINE_BUFFER_SIZE);
+
+	sscanf(line, "%d", &_procsNum);
+	printf("proc entries: %d\n", _procsNum);
+	_processes = new Process[_procsNum];
+
+	f.close();
 }
 
 void Database::stripUndies(char *s) {

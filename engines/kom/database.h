@@ -23,10 +23,11 @@
 #ifndef KOM_DATABASE_H
 #define KOM_DATABASE_H
 
-#include "base/engine.h"
+#include "common/scummsys.h"
 #include "common/str.h"
 #include "common/fs.h"
 #include "common/list.h"
+#include "base/engine.h"
 
 //class OSystem;
 
@@ -40,6 +41,7 @@ struct EventLink {
 };
 
 struct Object {
+	Object() : type(0) {}
 	char name[7];
 	int data1;
 	char desc[50];
@@ -65,7 +67,6 @@ struct Object {
 	int data16;
 	int data17;
 	int data18;
-	// events list
 };
 
 struct Character {
@@ -90,7 +91,7 @@ struct Character {
 	int data15; // spell time - unused
 	int data16;
 	int spellpoints;
-	Common::List<Object> inventory;
+	Common::List<int> inventory;
 };
 
 struct Location {
@@ -99,8 +100,12 @@ struct Location {
 	int data2;
 	char desc[50];
 	Common::List<EventLink> events;
-	Common::List<Object> objects;
-	Common::List<Character> characters;
+	Common::List<int> objects;
+	Common::List<int> characters;
+};
+
+struct Process {
+	int data1;
 };
 
 class Database {
@@ -135,6 +140,12 @@ private:
 
 	Object *_objects;
 	int _objectsNum;
+
+	Process *_processes;
+	int _procsNum;
+
+	int _varSize;
+	uint16 *_dataSegment;
 };
 } // End of namespace Kom
 
