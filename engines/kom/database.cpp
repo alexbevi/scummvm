@@ -365,11 +365,11 @@ void Database::initCharacterLocs() {
 
 void Database::initProcs() {
 	File f;
-	char *fileBuffer;
+	char *fileBuffer, *originalFileBuffer;
 	int bytesRead;
 
 	f.open(_databasePrefix + ".pro");
-	fileBuffer = new char[f.size()];
+	fileBuffer = originalFileBuffer = new char[f.size()];
 	f.read(fileBuffer, f.size());
 	f.close();
 
@@ -385,6 +385,8 @@ void Database::initProcs() {
 
 	printf("proc entries: %d\n", _procsNum);
 	_processes = new Process[_procsNum];
+
+	delete[] originalFileBuffer;
 }
 
 void Database::stripUndies(char *s) {
