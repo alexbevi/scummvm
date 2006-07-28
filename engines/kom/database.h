@@ -47,7 +47,7 @@ struct Object {
 	char desc[50];
 	int type;
 	int data2;
-	int data3;
+	int proc;
 	int data4;
 	int data5;
 	int data6;
@@ -104,8 +104,14 @@ struct Location {
 	Common::List<int> characters;
 };
 
-struct Process {
+struct Command {
+	int opcode;
 	int data1;
+};
+
+struct Process {
+	char name[30];
+	Common::List<Command> commands;
 };
 
 class Database {

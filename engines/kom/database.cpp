@@ -239,7 +239,7 @@ void Database::initObjects() {
 		sscanf(line, "%d %d %d", 
 			&(_objects[index].type),
 			&(_objects[index].data2),
-			&(_objects[index].data3));
+			&(_objects[index].proc));
 
 		f.readLine(line, LINE_BUFFER_SIZE);
 		sscanf(line, "%d %d %d %d %d %d %d %d", 
@@ -285,7 +285,7 @@ void Database::initObjects() {
 			_objects[i].desc,
 			_objects[i].type,
 			_objects[i].data2,
-			_objects[i].data3,
+			_objects[i].proc,
 			_objects[i].data4,
 			_objects[i].data5,
 			_objects[i].data6,
@@ -365,23 +365,26 @@ void Database::initCharacterLocs() {
 
 void Database::initProcs() {
 	File f;
+	char *fileBuffer;
+	int bytesRead;
 
 	f.open(_databasePrefix + ".pro");
-
-	assert(f.readLine(line, LINE_BUFFER_SIZE));
+	fileBuffer = new char[f.size()];
+	f.read(fileBuffer, f.size());
+	f.close();
 
 	// Get number of entries in file
-	sscanf(line, "%d", &_varSize);
+	sscanf(fileBuffer, "%d%n", &_varSize, &bytesRead);
+	fileBuffer += bytesRead;
+
 	printf("var size: %d\n", _varSize);
 	_dataSegment = new uint16[_varSize];
 
-	f.readLine(line, LINE_BUFFER_SIZE);
+	sscanf(fileBuffer, "%d%n", &_procsNum, &bytesRead);
+	fileBuffer += bytesRead;
 
-	sscanf(line, "%d", &_procsNum);
 	printf("proc entries: %d\n", _procsNum);
 	_processes = new Process[_procsNum];
-
-	f.close();
 }
 
 void Database::stripUndies(char *s) {
