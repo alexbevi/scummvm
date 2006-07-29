@@ -371,8 +371,9 @@ void Database::initProcs() {
 	int bytesRead;
 
 	f.open(_databasePrefix + ".pro");
-	fileBuffer = originalFileBuffer = new char[f.size()];
+	fileBuffer = originalFileBuffer = new char[f.size() + 1];
 	f.read(fileBuffer, f.size());
+	fileBuffer[f.size()] = '\0';
 	f.close();
 
 	// Get number of entries in file
@@ -441,7 +442,7 @@ void Database::initProcs() {
 						fileBuffer += bytesRead;
 						break;
 
-					// short + string
+					// short + string - never reached
 					case 99999:
 						sscanf(fileBuffer, "%d %s%n", &(opObject.arg2), opObject.arg1, &bytesRead); 
 						fileBuffer += bytesRead;
@@ -588,8 +589,6 @@ void Database::initProcs() {
 			fileBuffer += bytesRead;
 		}
 	}
-
-
 
 	delete[] originalFileBuffer;
 }
