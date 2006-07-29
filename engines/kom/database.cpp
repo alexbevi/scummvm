@@ -50,6 +50,7 @@ Database::~Database() {
 	delete[] _objects;
 	delete[] _dataSegment;
 	delete[] _processes;
+	delete[] _convIndex;
 }
 
 void Database::init(Common::String databasePrefix) {
@@ -66,6 +67,13 @@ void Database::init(Common::String databasePrefix) {
 }
 
 void Database::loadConvIndex() {
+	File f;
+
+	f.open("conv.idx");
+	_convIndexSize = f.size();
+	_convIndex = new byte[_convIndexSize];
+	f.read(_convIndex, _convIndexSize);
+	f.close();
 }
 
 void Database::initLocations() {

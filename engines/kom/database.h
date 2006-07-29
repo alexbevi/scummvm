@@ -163,6 +163,9 @@ private:
 
 	int _varSize;
 	uint16 *_dataSegment;
+
+	int _convIndexSize;
+	byte *_convIndex;
 };
 } // End of namespace Kom
 
