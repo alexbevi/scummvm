@@ -144,7 +144,7 @@ void Database::initCharacters() {
 		stripUndies(_characters[index].desc);
 		
 		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d", &(_characters[index].data3));
+		sscanf(line, "%d", &(_characters[index].proc));
 
 		f.readLine(line, LINE_BUFFER_SIZE);
 		sscanf(line, "%d %d %d %d %d", 
@@ -181,12 +181,13 @@ void Database::initCharacters() {
 
 	f.close();
 /*	for (int i = 0; i < _charactersNum; ++i) {
-		printf("%d %s %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", 
+		printf("%d %s %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", 
 			i,
 			_characters[i].name,
 			_characters[i].data1,
 			_characters[i].data2,
 			_characters[i].desc,
+			_characters[i].proc,
 			_characters[i].locationId,
 			_characters[i].data4,
 			_characters[i].data5,
@@ -385,6 +386,26 @@ void Database::initProcs() {
 
 	printf("proc entries: %d\n", _procsNum);
 	_processes = new Process[_procsNum];
+
+	for (int i = 0; i < 1 /* XXX: _procsNum*/; ++i) {
+		int index;
+		Command com;
+
+		sscanf(fileBuffer, "%d%n", &index, &bytesRead);
+		fileBuffer += bytesRead;
+
+		sscanf(fileBuffer, "\n%[^\n]\n%n", _processes[index].name, &bytesRead); 
+		fileBuffer += bytesRead;
+
+		sscanf(fileBuffer, "%d%n", &(com.opcode), &bytesRead); 
+		fileBuffer += bytesRead;
+
+		while (com.opcode != -1) {
+			break;
+		}
+	}
+
+
 
 	delete[] originalFileBuffer;
 }
