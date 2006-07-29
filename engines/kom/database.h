@@ -104,9 +104,20 @@ struct Location {
 	Common::List<int> characters;
 };
 
-struct Command {
+struct OpCode {
 	int opcode;
-	int data1;
+	char arg1[30];
+	int arg2;
+	int arg3;
+	int arg4;
+	int arg5;
+	int arg6;
+};
+
+struct Command {
+	int cmd;
+	uint16 value;
+	Common::List<OpCode> opcodes;
 };
 
 struct Process {

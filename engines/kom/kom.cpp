@@ -37,7 +37,7 @@ KomEngine::KomEngine(OSystem *system)
 
 	_fsNode = new FilesystemNode(_gameDataPath);
 
-	// Temporary
+	// FIXME: Temporary
 	_selectedChar = _selectedQuest = 0;
 }
 
