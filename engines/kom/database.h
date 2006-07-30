@@ -51,7 +51,7 @@ struct Object {
 	int data4;
 	int data5;
 	int data6;
-	int data7;
+	int isUseImmediate;
 	int isVisible;
 	int data8;
 	int data9;
