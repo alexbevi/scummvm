@@ -23,6 +23,7 @@
 #include "common/stdafx.h"
 #include "base/plugins.h"
 
+#include "common/config-manager.h"
 #include "common/fs.h"
 #include "common/system.h"
 #include "common/md5.h"
@@ -75,7 +76,18 @@ DetectedGameList Engine_KOM_detectGames(const FSList &fslist) {
 }
 
 PluginError Engine_KOM_create(OSystem *syst, Engine **engine) {
-	assert(engine);
+	FilesystemNode dir(ConfMan.get("path"));
+
+	// Unable to locate game data
+	if (!(dir.getChild("thidney.dsk").isValid() || dir.getChild("shahron.dsk").isValid())) {
+		warning("KOM: unable to locate game data at path '%s'", dir.path().c_str());
+		return kNoGameDataFoundError;
+	}
+
+	if (engine == NULL) {
+		return kUnknownError;
+	}
+
 	*engine = new KomEngine(syst);
 	return kNoError;
 }
@@ -84,4 +96,4 @@ PluginError Engine_KOM_create(OSystem *syst, Engine **engine) {
 
 using namespace Kom;
 
-REGISTER_PLUGIN(KOM, "Kingdom O\' Magic Engine");
+REGISTER_PLUGIN(KOM, "Kingdom O\' Magic", "Kingdom O' Magic © 1996 SCi (Sales Curve Interactive) Ltd.");
