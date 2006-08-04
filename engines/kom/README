@@ -1,0 +1,11 @@
+This is an implementation of the Kingdom O' Magic engine using the ScummVM
+infrastructure.
+
+To use:
+* Apply scummvm-kom.patch to the scummvm root
+* Copy the files in this repository to scummvm/engines/kom/
+
+Please contact me if you want to help:
+oavtal@bezeqint.net
+or
+salty-horse @ irc://freenode.net/scummvm
