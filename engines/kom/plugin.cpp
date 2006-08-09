@@ -96,4 +96,4 @@ PluginError Engine_KOM_create(OSystem *syst, Engine **engine) {
 
 using namespace Kom;
 
-REGISTER_PLUGIN(KOM, "Kingdom O\' Magic", "Kingdom O' Magic © 1996 SCi (Sales Curve Interactive) Ltd.");
+REGISTER_PLUGIN(KOM, "Kingdom O\' Magic", "Kingdom O' Magic (C) 1996 SCi (Sales Curve Interactive) Ltd.");
