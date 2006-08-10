@@ -76,6 +76,7 @@ void Database::loadConvIndex() {
 	f.close();
 }
 
+/* TODO: Convert readlines to initProcs' style */
 void Database::initLocations() {
 	File f;
 
@@ -122,6 +123,7 @@ void Database::initLocations() {
 	}*/
 }
 
+/* TODO: Convert readlines to initProcs' style */
 void Database::initCharacters() {
 	File f;
 
@@ -216,6 +218,7 @@ void Database::initCharacters() {
 	}*/
 }
 
+/* TODO: Convert readlines to initProcs' style */
 void Database::initObjects() {
 	File f;
 
@@ -318,6 +321,7 @@ void Database::initObjects() {
 	}*/
 }
 
+/* TODO: Convert readlines to initProcs' style */
 void Database::initEvents() {
 	int entries;
 	File f;
