@@ -23,7 +23,6 @@
 #include <stdio.h>
 
 #include "common/file.h"
-#include "common/fs.h"
 #include "common/util.h"
 
 #include "kom/kom.h"

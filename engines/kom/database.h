@@ -25,7 +25,6 @@
 
 #include "common/scummsys.h"
 #include "common/str.h"
-#include "common/fs.h"
 #include "common/list.h"
 #include "base/engine.h"
 
