@@ -56,6 +56,8 @@ int Actor::load(FilesystemNode fsNode) {
 
 	f.read(act->_framesData, framesDataSize);
 
+	f.close();
+
 	return _actors.size() - 1;
 }
 
