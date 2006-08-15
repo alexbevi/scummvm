@@ -4,6 +4,7 @@ MODULE_OBJS := \
 	kom.o \
 	screen.o \
 	database.o \
+	actor.o \
 	plugin.o
 
 # This module can be built as a plugin

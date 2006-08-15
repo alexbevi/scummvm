@@ -25,6 +25,7 @@
 #include "common/file.h"
 
 #include "kom/kom.h"
+#include "kom/actor.h"
 
 using Common::File;
 
@@ -45,6 +46,8 @@ KomEngine::~KomEngine() {
 	delete _fsNode;
 	delete _screen;
 	delete _database;
+
+	Actor::unloadAll();
 }
 
 int KomEngine::init() {
@@ -91,6 +94,8 @@ int KomEngine::go() {
 		File::addDefaultDirectory(installDir.getChild("db1"));
 		_database->init("shar");
 	}
+
+	Actor::load(_fsNode->getChild("kom").getChild("oneoffs").getChild("m_icons.act"));
 
 	return 0;
 }
