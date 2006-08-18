@@ -1,5 +1,5 @@
 /* ScummVM - Scumm Interpreter
- * Copyright (C) 2004-2006 The ScummVM project
+ * Copyright (C) 2005-2006 The ScummVM project
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,36 +20,29 @@
  *
  */
 
-#include "common/stdafx.h"
-#include "common/system.h"
-#include "kom/screen.h"
-#include "kom/kom.h"
+#ifndef KOM_INPUT_H
+#define KOM_INPUT_H
 
 namespace Kom {
 
-Screen::Screen(KomEngine *vm, OSystem *system)
-	: _system(system), _vm(vm) {
+class Input {
+public:
 
-	_screenBuf = new uint8[SCREEN_W * SCREEN_H];
-	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
-}
+	Input(OSystem *system);
+	~Input();
 
-Screen::~Screen() {
-	delete[] _screenBuf;
-}
+	void checkKeys();
+	bool debugMode() const { return _debugMode; }
+	void resetDebugMode() { _debugMode = false; }
 
-bool Screen::init() {
-	_system->beginGFXTransaction();
-		_vm->initCommonGFX(false);
-		_system->initSize(320, 200);
-	_system->endGFXTransaction();
+private:
 
-	return true;
-}
+	OSystem *_system;
 
-void Screen::update() {
-	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H);
-	_system->updateScreen();
-}
+	int _inKey;
+	bool _debugMode;
+};
 
 } // End of namespace Kom
+
+#endif

@@ -24,21 +24,25 @@
 #include "common/file.h"
 #include "common/fs.h"
 #include "common/array.h"
+#include "common/stream.h"
+#include "common/util.h"
 
 #include "kom/kom.h"
 #include "kom/actor.h"
 
 using Common::File;
+using Common::MemoryReadStream;
+using Common::String;
 
 namespace Kom {
 
 Common::Array<Actor *> Actor::_actors;
 
-int Actor::load(FilesystemNode fsNode) {
+int Actor::load(FilesystemNode dirNode, String name) {
 	File f;
 	char magicName[8];
 
-	f.open(fsNode);
+	f.open(dirNode.getChild(name + ".act"));
 
 	f.read(magicName, 7);
 	magicName[7] = '\0';
@@ -47,14 +51,17 @@ int Actor::load(FilesystemNode fsNode) {
 	Actor *act = new Actor();
 	_actors.push_back(act);
 
-	act->_isPlayerControlled = f.readByte();
+	act->_name = name;
+
+	act->_isPlayerControlled = !f.readByte();
 	act->_framesNum = f.readByte();
 
-	int framesDataSize = f.size() - f.pos();
+	f.seek(10);
+	act->_framesDataSize = f.size() - f.pos();
 
-	act->_framesData = new byte[framesDataSize];
+	act->_framesData = new byte[act->_framesDataSize];
 
-	f.read(act->_framesData, framesDataSize);
+	f.read(act->_framesData, act->_framesDataSize);
 
 	f.close();
 
@@ -62,11 +69,110 @@ int Actor::load(FilesystemNode fsNode) {
 }
 
 Actor::Actor() {
-
+	_scope = _frame = 255;
+	_isAnimating = false;
+	_xRatio = _yRatio = 1024;
+	_frame = 0;
 }
 
 Actor::~Actor() {
 	delete[] _framesData;
+}
+
+void Actor::defineScope(uint8 scopeId, uint8 firstFrame, uint8 lastFrame, uint8 ringFrame) {
+	assert(scopeId <= 7);
+
+	_scopes[scopeId].firstFrame = firstFrame;
+	_scopes[scopeId].lastFrame = lastFrame;
+	_scopes[scopeId].ringFrame = ringFrame;
+}
+
+void Actor::setScope(uint8 scopeId, int animSpeed) {
+	assert(scopeId <= 7);
+
+	_scope = scopeId;
+
+	// TODO: figure out why firstFrame is abs()-ed in the original
+	setAnim(_scopes[_scope].firstFrame, _scopes[_scope].lastFrame, animSpeed);
+	_frame = _scopes[_scope].ringFrame;
+}
+
+void Actor::setAnim(uint8 firstFrame, uint8 lastFrame, int animSpeed) {
+	if (firstFrame <= lastFrame) {
+		_animFirstFrame = firstFrame;
+		_animLastFrame = lastFrame;
+		_reverseAnim = false;
+	} else {
+		_animFirstFrame = lastFrame;
+		_animLastFrame = firstFrame;
+		_reverseAnim = true;
+	}
+
+	if (_frame < 255) {
+		_animDurationTimer = _animDuration = animSpeed;
+	}
+
+	_isAnimating = true;
+}
+
+void Actor::doAnim() {
+	if (_animDuration == 0 || !_isAnimating)
+		return;
+
+	_animDurationTimer--;
+	if (_animDurationTimer != 0)
+		return ;
+
+	_animDurationTimer = _animDuration;
+
+	if (_reverseAnim) {
+		_frame--;
+		if (_frame <= _animFirstFrame)
+			_frame = _animLastFrame;
+	} else {
+		_frame++;
+		if (_frame > _animLastFrame)
+			_frame = _animFirstFrame;
+	}
+}
+
+void Actor::display() {
+	uint8 frame;
+	uint32 offset;
+	int width, height;
+
+	doAnim();
+
+	frame = _frame;
+
+	// Handle scope alias
+	if (_scope != 255 && _scopes[_scope].aliasData != NULL)
+		frame = _scopes[_scope].aliasData[_frame];
+
+	MemoryReadStream frameStream(_framesData, _framesDataSize);
+
+	frameStream.seek(frame * 4);
+	offset = frameStream.readUint32LE() - 10;
+
+	frameStream.seek(offset);
+	width = frameStream.readUint16LE();
+	height = frameStream.readUint16LE();
+
+	printf("width: %d. height: %d\n", width, height);
+
+	if (width == 0 || height == 0)
+		return;
+
+	// TODO - handle scaling
+	frameStream.skip(4);
+
+	if (_isPlayerControlled) {
+		error("TODO: display player-controlled actors");
+	} else {
+
+	}
+
+
 }
 
 } // End of namespace Kom

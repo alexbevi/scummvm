@@ -28,6 +28,8 @@
 
 #include "kom/screen.h"
 #include "kom/database.h"
+#include "kom/input.h"
+#include "kom/debugger.h"
 
 class FilesystemNode;
 
@@ -35,6 +37,7 @@ namespace Kom {
 
 class Screen;
 class Database;
+class Debugger;
 
 class KomEngine : public Engine {
 public:
@@ -50,12 +53,17 @@ public:
 	int getSelectedQuest() { return _selectedQuest; }
 
 private:
+	void gameLoop();
+
 	Screen *_screen;
 	Database *_database;
+	Input *_input;
+	Debugger *_debugger;
 
 	FilesystemNode *_fsNode;
 	int _selectedChar; // 0 - thidney. 1 - shahron
 	int _selectedQuest;
+	bool _quit;
 };
 
 } // End of namespace Kom

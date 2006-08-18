@@ -1,5 +1,5 @@
 /* ScummVM - Scumm Interpreter
- * Copyright (C) 2004-2006 The ScummVM project
+ * Copyright (C) 2003-2006 The ScummVM project
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -8,7 +8,7 @@
 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
 
  * You should have received a copy of the GNU General Public License
@@ -20,36 +20,34 @@
  *
  */
 
-#include "common/stdafx.h"
-#include "common/system.h"
-#include "kom/screen.h"
-#include "kom/kom.h"
+#ifndef KOM_DEBUGGER_H
+#define KOM_DEBUGGER_H
+
+#include "common/debugger.h"
 
 namespace Kom {
 
-Screen::Screen(KomEngine *vm, OSystem *system)
-	: _system(system), _vm(vm) {
+class KomEngine;
 
-	_screenBuf = new uint8[SCREEN_W * SCREEN_H];
-	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
-}
+class Debugger : public Common::Debugger<Debugger> {
+public:
 
-Screen::~Screen() {
-	delete[] _screenBuf;
-}
+	Debugger(KomEngine *vm);
+	virtual ~Debugger(); // we need this here for __SYMBIAN32__ archaic gcc/UIQ
 
-bool Screen::init() {
-	_system->beginGFXTransaction();
-		_vm->initCommonGFX(false);
-		_system->initSize(320, 200);
-	_system->endGFXTransaction();
+protected:
 
-	return true;
-}
+	virtual void preEnter();
+	virtual void postEnter();
 
-void Screen::update() {
-	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H);
-	_system->updateScreen();
-}
+	bool Cmd_Exit(int argc, const char **argv);
+	bool Cmd_Help(int argc, const char **argv);
+
+private:
+
+	KomEngine *_vm;
+};
 
 } // End of namespace Kom
+
+#endif

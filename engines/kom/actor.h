@@ -30,9 +30,9 @@
 namespace Kom {
 
 struct Scope {
-	Scope() : aliasData(NULL) {}
+	Scope() : aliasData(NULL), firstFrame(0) {}
 	~Scope() { delete[] aliasData; }
-	int initialFrame;
+	int firstFrame;
 	int lastFrame;
 	int ringFrame;
 	byte* aliasData;
@@ -40,38 +40,51 @@ struct Scope {
 
 class Actor {
 public:
-	static int load(FilesystemNode fsNode);
-	static Actor *getActor(int idx) { return _actors[idx]; }
+	static int load(FilesystemNode dirNode, Common::String name);
+	static Actor *get(int idx) { return _actors[idx]; }
 	static void unload(int idx) {  }
 	static void unloadAll() { _actors.clear(); }
 	~Actor();
 
+	void defineScope(uint8 scopeId, uint8 firstFrame, uint8 lastFrame, uint8 ringFrame);
+	void setScope(uint8 scopeId, int animSpeed);
+	void setAnim(uint8 firstFrame, uint8 lastFrame, int animSpeed);
+	void doAnim();
+	void display();
+
+	void setXPos(int xPos) { _xPos = xPos; }
+	void setYPos(int yPos) { _yPos = yPos; }
 
 private:
 	Actor();
 
 	static Common::Array<Actor *> _actors;
 
-	byte _framesNum;
+	Common::String _name;
+	uint8 _framesNum;
 	byte _isPlayerControlled;
-	byte _frame;
-	byte _animFrame;
-	byte _animLastFrame;
-	int _animSpeed1;
-	int _animSpeed2;
+	uint8 _frame;
+	uint8 _animFirstFrame;
+	uint8 _animLastFrame;
+	int _animDurationTimer;
+	int _animDuration;
+	bool _reverseAnim;
 	int _xPos;
 	int _yPos;
+	uint16 _xRatio;
+	uint16 _yRatio;
 	int _maskDepth;
 	int _depth;
 	bool _isAnimating;
 	int _pausedAnimFrame;
 	int _data1;
-	int _scope;
+	uint8 _scope;
 	int _effect;
 	int _isUsed;
 	Scope _scopes[8];
 
 	byte *_framesData;
+	int _framesDataSize;
 };
 
 } // End of namespace Kom

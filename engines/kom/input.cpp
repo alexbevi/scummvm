@@ -1,5 +1,5 @@
 /* ScummVM - Scumm Interpreter
- * Copyright (C) 2004-2006 The ScummVM project
+ * Copyright (C) 2005-2006 The ScummVM project
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,36 +20,55 @@
  *
  */
 
+#include <stdio.h>
+
 #include "common/stdafx.h"
 #include "common/system.h"
-#include "kom/screen.h"
-#include "kom/kom.h"
+
+#include "kom/input.h"
 
 namespace Kom {
 
-Screen::Screen(KomEngine *vm, OSystem *system)
-	: _system(system), _vm(vm) {
+Input::Input(OSystem *system) : _system(system), _debugMode(false) {
 
-	_screenBuf = new uint8[SCREEN_W * SCREEN_H];
-	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 }
 
-Screen::~Screen() {
-	delete[] _screenBuf;
+Input::~Input() {
+
 }
 
-bool Screen::init() {
-	_system->beginGFXTransaction();
-		_vm->initCommonGFX(false);
-		_system->initSize(320, 200);
-	_system->endGFXTransaction();
+// TODO: hack
+void Input::checkKeys() {
+	uint32 end = _system->getMillis() + 10;
+	do {
+		OSystem::Event event;
+		while (_system->pollEvent(event)) {
+			printf("got event\n");
+			switch (event.type) {
+			case OSystem::EVENT_KEYDOWN:
+				if (event.kbd.flags == OSystem::KBD_CTRL) {
+					if (event.kbd.keycode == 'd')
+						printf("go go debugger mode!\n");
+						_debugMode = true;
+				} else {
+					_inKey = event.kbd.keycode;
+					if (_inKey == 27) // escape
+						_system->quit();
+				}
+				break;
 
-	return true;
-}
+			case OSystem::EVENT_QUIT:
+				_system->quit();
+				break;
 
-void Screen::update() {
-	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H);
-	_system->updateScreen();
+			default:
+				break;
+			}
+		}
+
+		_system->delayMillis(10);
+	} while (_system->getMillis() < end);
+
 }
 
 } // End of namespace Kom

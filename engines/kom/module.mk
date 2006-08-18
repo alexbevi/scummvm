@@ -5,6 +5,8 @@ MODULE_OBJS := \
 	screen.o \
 	database.o \
 	actor.o \
+	input.o \
+	debugger.o \
 	plugin.o
 
 # This module can be built as a plugin

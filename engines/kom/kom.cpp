@@ -26,8 +26,11 @@
 
 #include "kom/kom.h"
 #include "kom/actor.h"
+#include "kom/database.h"
+#include "kom/input.h"
 
 using Common::File;
+using Common::String;
 
 namespace Kom {
 
@@ -35,6 +38,8 @@ KomEngine::KomEngine(OSystem *system)
 	: Engine(system) {
 	_screen = 0;
 	_database = 0;
+	_input = 0;
+	_quit = false;
 
 	_fsNode = new FilesystemNode(_gameDataPath);
 
@@ -46,6 +51,8 @@ KomEngine::~KomEngine() {
 	delete _fsNode;
 	delete _screen;
 	delete _database;
+	delete _input;
+	delete _debugger;
 
 	Actor::unloadAll();
 }
@@ -56,12 +63,14 @@ int KomEngine::init() {
 	if (!_screen->init())
 		error("_screen->init() failed");
 
+	_input = new Input(_system);
+	_debugger = new Debugger(this);
+
 	// Init the following:
 	/*
 	 * sprites
 	 * audio
 	 * video
-	 * input
 	 * actor
 	 * flic
 	 * panel
@@ -95,13 +104,37 @@ int KomEngine::go() {
 		_database->init("shar");
 	}
 
-	Actor::load(_fsNode->getChild("kom").getChild("oneoffs").getChild("m_icons.act"));
+	int mouseActor = Actor::load(_fsNode->getChild("kom").getChild("oneoffs"), String("m_icons"));
+	Actor::get(mouseActor)->defineScope(0, 0, 3, 0);
+	Actor::get(mouseActor)->defineScope(1, 4, 4, 4);
+	Actor::get(mouseActor)->defineScope(3, 15, 20, 15);
+	Actor::get(mouseActor)->defineScope(4, 14, 14, 14);
+	Actor::get(mouseActor)->defineScope(6, 31, 31, 31);
+	Actor::get(mouseActor)->setScope(0, 2);
+	Actor::get(mouseActor)->display();
+
+	while (!_quit) {
+		gameLoop();
+	}
 
 	return 0;
 }
 
 void KomEngine::errorString(const char *buf1, char *buf2) {
 	strcpy(buf2, buf1);
+}
+
+void KomEngine::gameLoop() {
+	if (_debugger->isAttached()) {
+		_debugger->onFrame();
+	}
+
+	_screen->update();
+	_input->checkKeys();
+	if (_input->debugMode()) {
+		_input->resetDebugMode();
+		_debugger->attach();
+	}
 }
 
 } // End of namespace Kom

@@ -40,12 +40,16 @@ public:
 	Screen(KomEngine *vm, OSystem *system);
 	~Screen();
 
+	void update();
+
 	bool init();
 
 private:
 
 	OSystem *_system;
 	KomEngine *_vm;
+
+	uint8 *_screenBuf;
 };
 
 } // End of namespace Kom
