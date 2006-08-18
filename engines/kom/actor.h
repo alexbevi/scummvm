@@ -39,11 +39,10 @@ struct Scope {
 };
 
 class Actor {
+
+friend class ActorManager;
+
 public:
-	static int load(FilesystemNode dirNode, Common::String name);
-	static Actor *get(int idx) { return _actors[idx]; }
-	static void unload(int idx) {  }
-	static void unloadAll() { _actors.clear(); }
 	~Actor();
 
 	void defineScope(uint8 scopeId, uint8 firstFrame, uint8 lastFrame, uint8 ringFrame);
@@ -55,10 +54,8 @@ public:
 	void setXPos(int xPos) { _xPos = xPos; }
 	void setYPos(int yPos) { _yPos = yPos; }
 
-private:
+protected:
 	Actor();
-
-	static Common::Array<Actor *> _actors;
 
 	Common::String _name;
 	uint8 _framesNum;
@@ -85,6 +82,23 @@ private:
 
 	byte *_framesData;
 	int _framesDataSize;
+};
+
+class ActorManager {
+public:
+
+	ActorManager(KomEngine *vm);
+	~ActorManager();
+	int load(FilesystemNode dirNode, Common::String name);
+	Actor *get(int idx) { return _actors[idx]; }
+	void unload(int idx) {  }
+	void unloadAll() { _actors.clear(); }
+	void displayAll();
+
+private:
+
+	KomEngine *_vm;
+	Common::Array<Actor *> _actors;
 };
 
 } // End of namespace Kom

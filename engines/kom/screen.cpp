@@ -22,8 +22,10 @@
 
 #include "common/stdafx.h"
 #include "common/system.h"
+
 #include "kom/screen.h"
 #include "kom/kom.h"
+#include "kom/actor.h"
 
 namespace Kom {
 
@@ -48,6 +50,7 @@ bool Screen::init() {
 }
 
 void Screen::update() {
+	_vm->actorMan()->displayAll();
 	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H);
 	_system->updateScreen();
 }

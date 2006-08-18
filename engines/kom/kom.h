@@ -28,6 +28,7 @@
 
 #include "kom/screen.h"
 #include "kom/database.h"
+#include "kom/actor.h"
 #include "kom/input.h"
 #include "kom/debugger.h"
 
@@ -37,6 +38,7 @@ namespace Kom {
 
 class Screen;
 class Database;
+class ActorManager;
 class Debugger;
 
 class KomEngine : public Engine {
@@ -52,11 +54,15 @@ public:
 	int getSelectedChar() { return _selectedChar; }
 	int getSelectedQuest() { return _selectedQuest; }
 
+	ActorManager *actorMan() const { return _actorMan; }
+	Screen *screen() const { return _screen; }
+
 private:
 	void gameLoop();
 
 	Screen *_screen;
 	Database *_database;
+	ActorManager *_actorMan;
 	Input *_input;
 	Debugger *_debugger;
 

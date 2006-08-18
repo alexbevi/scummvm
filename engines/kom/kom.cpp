@@ -38,6 +38,7 @@ KomEngine::KomEngine(OSystem *system)
 	: Engine(system) {
 	_screen = 0;
 	_database = 0;
+	_actorMan = 0;
 	_input = 0;
 	_quit = false;
 
@@ -51,10 +52,9 @@ KomEngine::~KomEngine() {
 	delete _fsNode;
 	delete _screen;
 	delete _database;
+	delete _actorMan;
 	delete _input;
 	delete _debugger;
-
-	Actor::unloadAll();
 }
 
 int KomEngine::init() {
@@ -62,6 +62,8 @@ int KomEngine::init() {
 	assert(_screen);
 	if (!_screen->init())
 		error("_screen->init() failed");
+
+	_actorMan = new ActorManager(this);
 
 	_input = new Input(_system);
 	_debugger = new Debugger(this);
@@ -104,14 +106,14 @@ int KomEngine::go() {
 		_database->init("shar");
 	}
 
-	int mouseActor = Actor::load(_fsNode->getChild("kom").getChild("oneoffs"), String("m_icons"));
-	Actor::get(mouseActor)->defineScope(0, 0, 3, 0);
-	Actor::get(mouseActor)->defineScope(1, 4, 4, 4);
-	Actor::get(mouseActor)->defineScope(3, 15, 20, 15);
-	Actor::get(mouseActor)->defineScope(4, 14, 14, 14);
-	Actor::get(mouseActor)->defineScope(6, 31, 31, 31);
-	Actor::get(mouseActor)->setScope(0, 2);
-	Actor::get(mouseActor)->display();
+	int mouseActor = _actorMan->load(_fsNode->getChild("kom").getChild("oneoffs"), String("m_icons"));
+	_actorMan->get(mouseActor)->defineScope(0, 0, 3, 0);
+	_actorMan->get(mouseActor)->defineScope(1, 4, 4, 4);
+	_actorMan->get(mouseActor)->defineScope(3, 15, 20, 15);
+	_actorMan->get(mouseActor)->defineScope(4, 14, 14, 14);
+	_actorMan->get(mouseActor)->defineScope(6, 31, 31, 31);
+	_actorMan->get(mouseActor)->setScope(0, 2);
+	_actorMan->get(mouseActor)->display();
 
 	while (!_quit) {
 		gameLoop();

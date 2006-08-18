@@ -36,9 +36,15 @@ using Common::String;
 
 namespace Kom {
 
-Common::Array<Actor *> Actor::_actors;
+ActorManager::ActorManager(KomEngine *vm) : _vm(vm) {
 
-int Actor::load(FilesystemNode dirNode, String name) {
+}
+
+ActorManager::~ActorManager() {
+	unloadAll();
+}
+
+int ActorManager::load(FilesystemNode dirNode, String name) {
 	File f;
 	char magicName[8];
 
@@ -66,6 +72,16 @@ int Actor::load(FilesystemNode dirNode, String name) {
 	f.close();
 
 	return _actors.size() - 1;
+}
+
+void ActorManager::displayAll() {
+	Common::Array<Actor *>::iterator act;
+
+	for (act = _actors.begin(); act != _actors.end(); act++) {
+		if (*act != NULL) {
+			(*act)->display();
+		}
+	}
 }
 
 Actor::Actor() {
@@ -169,6 +185,9 @@ void Actor::display() {
 	if (_isPlayerControlled) {
 		error("TODO: display player-controlled actors");
 	} else {
+		// TODO:
+		// * more drawing functions for effects
+		// * more arguments for scaling
 
 	}
 
