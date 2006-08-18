@@ -9,3 +9,18 @@ Please contact me if you want to help:
 oavtal@bezeqint.net
 or
 salty-horse @ irc://freenode.net/scummvm
+
+
+------------------------------------------------------------
+
+This is a darcs repository.
+It allows you to easily fetch the latest changes, make changes of your own, and
+send them as patches via email.
+
+To check-out the repository, run:
+$ darcs get http://ori.codemongers.com/repos/kom
+
+To get the latest changes, run:
+$ darcs pull
+
+For more information, visit http://darcs.net
