@@ -99,4 +99,9 @@ int KomEngine::go() {
 
 	return 0;
 }
+
+void KomEngine::errorString(const char *buf1, char *buf2) {
+	strcpy(buf2, buf1);
+}
+
 } // End of namespace Kom

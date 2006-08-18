@@ -44,6 +44,8 @@ public:
 	int init();
 	int go();
 
+	void errorString(const char *buf1, char *buf2);
+
 	int getSelectedChar() { return _selectedChar; }
 	int getSelectedQuest() { return _selectedQuest; }
 
