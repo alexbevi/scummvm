@@ -62,7 +62,7 @@ void Database::init(Common::String databasePrefix) {
 	initEvents();
 	initObjectLocs();
 	initCharacterLocs();
-	initProcs();
+	//initProcs();
 }
 
 void Database::loadConvIndex() {

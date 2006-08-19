@@ -55,7 +55,7 @@ public:
 	void setYPos(int yPos) { _yPos = yPos; }
 
 protected:
-	Actor();
+	Actor(KomEngine *vm);
 
 	Common::String _name;
 	uint8 _framesNum;
@@ -82,6 +82,8 @@ protected:
 
 	byte *_framesData;
 	int _framesDataSize;
+
+	KomEngine *_vm;
 };
 
 class ActorManager {

@@ -57,6 +57,8 @@ public:
 	ActorManager *actorMan() const { return _actorMan; }
 	Screen *screen() const { return _screen; }
 
+	FilesystemNode *dataDir() const { return _fsNode; }
+
 private:
 	void gameLoop();
 

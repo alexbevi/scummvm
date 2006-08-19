@@ -29,6 +29,7 @@
 
 #include "kom/kom.h"
 #include "kom/actor.h"
+#include "kom/screen.h"
 
 using Common::File;
 using Common::MemoryReadStream;
@@ -54,7 +55,7 @@ int ActorManager::load(FilesystemNode dirNode, String name) {
 	magicName[7] = '\0';
 	assert(strcmp(magicName, "DCB_ACT") == 0);
 
-	Actor *act = new Actor();
+	Actor *act = new Actor(_vm);
 	_actors.push_back(act);
 
 	act->_name = name;
@@ -84,7 +85,7 @@ void ActorManager::displayAll() {
 	}
 }
 
-Actor::Actor() {
+Actor::Actor(KomEngine *vm) : _vm(vm) {
 	_scope = _frame = 255;
 	_isAnimating = false;
 	_xRatio = _yRatio = 1024;
@@ -155,7 +156,9 @@ void Actor::doAnim() {
 void Actor::display() {
 	uint8 frame;
 	uint32 offset;
-	int width, height;
+	uint16 width, height;
+	uint16 xPos = 0; // FIXME
+	uint16 yPos = 0;
 
 	doAnim();
 
@@ -174,13 +177,12 @@ void Actor::display() {
 	width = frameStream.readUint16LE();
 	height = frameStream.readUint16LE();
 
-	printf("width: %d. height: %d\n", width, height);
-
 	if (width == 0 || height == 0)
 		return;
 
-	// TODO - handle scaling
+	// TODO - handle scaling and modify x/y pos, width/height accordingly
 	frameStream.skip(4);
+	frameStream.skip(height * 2);
 
 	if (_isPlayerControlled) {
 		error("TODO: display player-controlled actors");
@@ -188,7 +190,9 @@ void Actor::display() {
 		// TODO:
 		// * more drawing functions for effects
 		// * more arguments for scaling
+		// * displayMask
 
+		_vm->screen()->drawActorFrame((int8 *)(_framesData + frameStream.pos()), width, height, xPos, yPos);
 	}
 
 

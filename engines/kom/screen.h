@@ -23,7 +23,11 @@
 #ifndef KOM_SCREEN_H
 #define KOM_SCREEN_H
 
+#include "common/system.h"
+#include "common/fs.h"
+
 class OSystem;
+class FilesystemNode;
 
 namespace Kom {
 
@@ -40,16 +44,21 @@ public:
 	Screen(KomEngine *vm, OSystem *system);
 	~Screen();
 
-	void update();
-
 	bool init();
 
+	void update();
+	void drawActorFrame(int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos);
+
 private:
+
+	byte *loadColorSet(FilesystemNode fsNode);
 
 	OSystem *_system;
 	KomEngine *_vm;
 
 	uint8 *_screenBuf;
+
+	byte *_c0ColorSet;
 };
 
 } // End of namespace Kom
