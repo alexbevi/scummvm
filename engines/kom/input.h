@@ -23,12 +23,16 @@
 #ifndef KOM_INPUT_H
 #define KOM_INPUT_H
 
+#include "common/system.h"
+
+#include "kom/kom.h"
+
 namespace Kom {
 
 class Input {
 public:
 
-	Input(OSystem *system);
+	Input(KomEngine *vm, OSystem *system);
 	~Input();
 
 	void checkKeys();
@@ -38,9 +42,11 @@ public:
 private:
 
 	OSystem *_system;
+	KomEngine *_vm;
 
 	int _inKey;
 	bool _debugMode;
+	int _mouseActor;
 };
 
 } // End of namespace Kom

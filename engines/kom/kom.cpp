@@ -65,7 +65,7 @@ int KomEngine::init() {
 
 	_actorMan = new ActorManager(this);
 
-	_input = new Input(_system);
+	_input = new Input(this, _system);
 	_debugger = new Debugger(this);
 
 	// Init the following:
@@ -105,15 +105,6 @@ int KomEngine::go() {
 		File::addDefaultDirectory(installDir.getChild("db1"));
 		_database->init("shar");
 	}
-
-	int mouseActor = _actorMan->load(_fsNode->getChild("kom").getChild("oneoffs"), String("m_icons"));
-	_actorMan->get(mouseActor)->defineScope(0, 0, 3, 0);
-	_actorMan->get(mouseActor)->defineScope(1, 4, 4, 4);
-	_actorMan->get(mouseActor)->defineScope(3, 15, 20, 15);
-	_actorMan->get(mouseActor)->defineScope(4, 14, 14, 14);
-	_actorMan->get(mouseActor)->defineScope(6, 31, 31, 31);
-	_actorMan->get(mouseActor)->setScope(0, 2);
-	_actorMan->get(mouseActor)->display();
 
 	while (!_quit) {
 		gameLoop();

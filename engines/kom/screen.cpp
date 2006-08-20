@@ -24,6 +24,7 @@
 #include "common/stdafx.h"
 #include "common/system.h"
 #include "common/file.h"
+#include "common/endian.h"
 
 #include "kom/screen.h"
 #include "kom/kom.h"
@@ -65,43 +66,93 @@ void Screen::update() {
 	_system->updateScreen();
 }
 
-void Screen::drawActorFrame(int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos) {
-	uint16 pixelsDrawn = 0;
+void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos,
+                            int16 xOffset, int16 yOffset) {
+
+	// Check which lines and colums to draw
+	int16 realX = xPos + xOffset;
+	int16 realY = yPos + yOffset;
+
+	uint16 startCol = (realX < 0 ? -realX : 0);
+	uint16 startLine = (realY < 0 ? -realY : 0);
+	uint16 endCol = (realX + width > SCREEN_W ? SCREEN_W - realX : width);
+	uint16 endLine = (realY + height - 1 > SCREEN_H ? SCREEN_H - realY : height - 1);
+
+	for (int line = startLine; line <= endLine; ++line) {
+		uint16 lineOffset = READ_LE_UINT16(data + line * 2);
+
+		drawActorFrameLine(data + lineOffset, (realX < 0 ? 0 : realX), (realY < 0 ? 0 : realY) + line - startLine, startCol, endCol);
+	}
+}
+
+
+void Screen::drawActorFrameLine(const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel) {
 	uint16 dataIndex = 0;
-	uint16 lineIndex = 0;
-	uint16 screenIndex = xPos + yPos * SCREEN_W;
-	int8 prefixSkip, suffixSkip, imageData;
+	uint16 pixelsDrawn = 0;
+	uint16 pixelsParsed = 0;
+	int8 imageData;
+	bool shouldDraw = false;
 
-	while (pixelsDrawn < width * height) {
+	if (startPixel == 0)
+		shouldDraw = true;
+
+	while (pixelsDrawn < endPixel - startPixel) {
+
 		imageData = data[dataIndex];
+		dataIndex++;
 
-		while (imageData > 0) {
+		// Handle transparent pixels
+		if (imageData > 0) {
 
-			dataIndex++;
-			screenIndex += imageData;
-			lineIndex += imageData;
-			pixelsDrawn += imageData;
+			// Skip pixels
+			if (!shouldDraw && pixelsParsed < startPixel && pixelsParsed + imageData >= startPixel) {
+				uint8 pixelsToSkip = startPixel - pixelsParsed;
 
-			if (lineIndex >= width) {
-				screenIndex += (SCREEN_W - width);
-				lineIndex = 0;
+				pixelsParsed += imageData;
+				imageData -= pixelsToSkip;
+				shouldDraw = true;
+
+			// Not at start pos yet
+			} else {
+				pixelsParsed += imageData;
 			}
 
-			imageData = data[dataIndex];
-		}
+			if (shouldDraw) {
+				pixelsDrawn += imageData;
+			}
 
-		dataIndex++;
-		imageData &= 0x3F;
+		// Handle visible pixels
+		} else {
 
-		memcpy(_screenBuf + screenIndex, data + dataIndex, imageData);
-		dataIndex += imageData;
-		screenIndex += imageData;
-		lineIndex += imageData;
-		pixelsDrawn += imageData;
+			imageData &= 0x3F;
 
-		if (lineIndex >= width) {
-			screenIndex += (SCREEN_W - width);
-			lineIndex = 0;
+			// Skip pixels
+			if (!shouldDraw && pixelsParsed < startPixel && pixelsParsed + imageData >= startPixel) {
+				uint8 pixelsToSkip = startPixel - pixelsParsed;
+
+				pixelsParsed += imageData;
+				imageData -= pixelsToSkip;
+				dataIndex += pixelsToSkip;
+
+				shouldDraw = true;
+
+			// Not at start pos yet
+			} else {
+				pixelsParsed += imageData;
+			}
+
+			if (shouldDraw) {
+				// Don't draw over the edge!
+				if (pixelsDrawn + imageData > endPixel)
+					imageData = endPixel - pixelsDrawn;
+
+				memcpy(_screenBuf + (yPos * SCREEN_W) + xPos + pixelsDrawn, data + dataIndex,
+					   imageData);
+				dataIndex += imageData;
+				pixelsDrawn += imageData;
+			} else {
+				dataIndex += imageData;
+			}
 		}
 	}
 }

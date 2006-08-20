@@ -78,6 +78,10 @@ protected:
 	uint8 _scope;
 	int _effect;
 	int _isUsed;
+	uint32 _displayLeft;
+	uint32 _displayRight;
+	uint32 _displayTop;
+	uint32 _displayBottom;
 	Scope _scopes[8];
 
 	byte *_framesData;

@@ -47,10 +47,11 @@ public:
 	bool init();
 
 	void update();
-	void drawActorFrame(int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos);
+	void drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos, int16 xOffset, int16 yOffset);
 
 private:
 
+	void drawActorFrameLine(const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel);
 	byte *loadColorSet(FilesystemNode fsNode);
 
 	OSystem *_system;

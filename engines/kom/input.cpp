@@ -24,13 +24,27 @@
 
 #include "common/stdafx.h"
 #include "common/system.h"
+#include "common/str.h"
 
+#include "kom/kom.h"
+#include "kom/actor.h"
 #include "kom/input.h"
+
+using Common::String;
 
 namespace Kom {
 
-Input::Input(OSystem *system) : _system(system), _debugMode(false) {
+Input::Input(KomEngine *vm, OSystem *system) : _system(system), _vm(vm), _debugMode(false) {
 
+	_mouseActor = _vm->actorMan()->load(_vm->dataDir()->getChild("kom").getChild("oneoffs"), String("m_icons"));
+	_vm->actorMan()->get(_mouseActor)->defineScope(0, 0, 3, 0);
+	_vm->actorMan()->get(_mouseActor)->defineScope(1, 4, 4, 4);
+	_vm->actorMan()->get(_mouseActor)->defineScope(3, 15, 20, 15);
+	_vm->actorMan()->get(_mouseActor)->defineScope(4, 14, 14, 14);
+	_vm->actorMan()->get(_mouseActor)->defineScope(6, 31, 31, 31);
+	_vm->actorMan()->get(_mouseActor)->setScope(0, 2);
+	_vm->actorMan()->get(_mouseActor)->setXPos(100);
+	_vm->actorMan()->get(_mouseActor)->setYPos(100);
 }
 
 Input::~Input() {
@@ -39,22 +53,27 @@ Input::~Input() {
 
 // TODO: hack
 void Input::checkKeys() {
-	uint32 end = _system->getMillis() + 10;
+	uint32 end = _system->getMillis() + 100;
 	do {
 		OSystem::Event event;
 		while (_system->pollEvent(event)) {
-			printf("got event\n");
 			switch (event.type) {
 			case OSystem::EVENT_KEYDOWN:
 				if (event.kbd.flags == OSystem::KBD_CTRL) {
-					if (event.kbd.keycode == 'd')
+					if (event.kbd.keycode == 'd') {
 						printf("go go debugger mode!\n");
 						_debugMode = true;
+					}
 				} else {
 					_inKey = event.kbd.keycode;
 					if (_inKey == 27) // escape
 						_system->quit();
 				}
+				break;
+
+			case OSystem::EVENT_MOUSEMOVE:
+				_vm->actorMan()->get(_mouseActor)->setXPos(event.mouse.x);
+				_vm->actorMan()->get(_mouseActor)->setYPos(event.mouse.y);
 				break;
 
 			case OSystem::EVENT_QUIT:
@@ -66,7 +85,7 @@ void Input::checkKeys() {
 			}
 		}
 
-		_system->delayMillis(10);
+		_system->delayMillis(100);
 	} while (_system->getMillis() < end);
 
 }

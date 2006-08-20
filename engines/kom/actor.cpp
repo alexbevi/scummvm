@@ -90,6 +90,7 @@ Actor::Actor(KomEngine *vm) : _vm(vm) {
 	_isAnimating = false;
 	_xRatio = _yRatio = 1024;
 	_frame = 0;
+	_displayLeft = _displayRight = _displayTop = _displayBottom = 1000;
 }
 
 Actor::~Actor() {
@@ -157,8 +158,7 @@ void Actor::display() {
 	uint8 frame;
 	uint32 offset;
 	uint16 width, height;
-	uint16 xPos = 0; // FIXME
-	uint16 yPos = 0;
+	uint16 xOffset, yOffset;
 
 	doAnim();
 
@@ -181,8 +181,8 @@ void Actor::display() {
 		return;
 
 	// TODO - handle scaling and modify x/y pos, width/height accordingly
-	frameStream.skip(4);
-	frameStream.skip(height * 2);
+	xOffset = frameStream.readSint16LE();
+	yOffset = frameStream.readSint16LE();
 
 	if (_isPlayerControlled) {
 		error("TODO: display player-controlled actors");
@@ -192,7 +192,8 @@ void Actor::display() {
 		// * more arguments for scaling
 		// * displayMask
 
-		_vm->screen()->drawActorFrame((int8 *)(_framesData + frameStream.pos()), width, height, xPos, yPos);
+		_vm->screen()->drawActorFrame((int8 *)(_framesData + frameStream.pos()),
+		                                      width, height, _xPos, _yPos, xOffset, yOffset);
 	}
 
 
