@@ -42,6 +42,10 @@ Input::Input(KomEngine *vm, OSystem *system) : _system(system), _vm(vm), _debugM
 	_vm->actorMan()->get(_mouseActor)->defineScope(3, 15, 20, 15);
 	_vm->actorMan()->get(_mouseActor)->defineScope(4, 14, 14, 14);
 	_vm->actorMan()->get(_mouseActor)->defineScope(6, 31, 31, 31);
+	// These should be aliases
+	_vm->actorMan()->get(_mouseActor)->defineScope(2, 5, 13, 5);
+	_vm->actorMan()->get(_mouseActor)->defineScope(5, 21, 30, 21);
+
 	_vm->actorMan()->get(_mouseActor)->setScope(0, 2);
 	_vm->actorMan()->get(_mouseActor)->setXPos(100);
 	_vm->actorMan()->get(_mouseActor)->setYPos(100);
@@ -66,8 +70,34 @@ void Input::checkKeys() {
 					}
 				} else {
 					_inKey = event.kbd.keycode;
-					if (_inKey == 27) // escape
-						_system->quit();
+					switch (_inKey) {
+						case 27:
+							_system->quit();
+							break;
+						case '1':
+							_vm->actorMan()->get(_mouseActor)->setScope(0, 2);
+							break;
+						case '2':
+							_vm->actorMan()->get(_mouseActor)->setScope(1, 2);
+							break;
+						case '3':
+							_vm->actorMan()->get(_mouseActor)->setScope(2, 2);
+							break;
+						case '4':
+							_vm->actorMan()->get(_mouseActor)->setScope(3, 2);
+							break;
+						case '5':
+							_vm->actorMan()->get(_mouseActor)->setScope(4, 2);
+							break;
+						case '6':
+							_vm->actorMan()->get(_mouseActor)->setScope(5, 2);
+							break;
+						case '7':
+							_vm->actorMan()->get(_mouseActor)->setScope(6, 0);
+							break;
+						default:
+							break;
+					}
 				}
 				break;
 
