@@ -170,10 +170,8 @@ void Actor::display() {
 	frame = _currentFrame;
 
 	// Handle scope alias
-	if (_scope != 255 && _scopes[_scope].aliasData != NULL) {
+	if (_scope != 255 && _scopes[_scope].aliasData != NULL)
 		frame = _scopes[_scope].aliasData[_currentFrame];
-		printf("drawing alias frame %d\n", frame);
-	}
 
 	MemoryReadStream frameStream(_framesData, _framesDataSize);
 
