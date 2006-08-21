@@ -105,6 +105,12 @@ void Actor::defineScope(uint8 scopeId, uint8 minFrame, uint8 maxFrame, uint8 sta
 	_scopes[scopeId].startFrame = startFrame;
 }
 
+void Actor::defineScopeAlias(uint8 scopeId, const uint8 *aliasData, uint8 length) {
+	_scopes[scopeId].minFrame = 0;
+	_scopes[scopeId].maxFrame = length - 1;
+	_scopes[scopeId].aliasData = aliasData;
+}
+
 void Actor::setScope(uint8 scopeId, int animSpeed) {
 	assert(scopeId <= 7);
 
@@ -161,12 +167,13 @@ void Actor::display() {
 	uint16 xOffset, yOffset;
 
 	doAnim();
-
 	frame = _currentFrame;
 
 	// Handle scope alias
-	if (_scope != 255 && _scopes[_scope].aliasData != NULL)
+	if (_scope != 255 && _scopes[_scope].aliasData != NULL) {
 		frame = _scopes[_scope].aliasData[_currentFrame];
+		printf("drawing alias frame %d\n", frame);
+	}
 
 	MemoryReadStream frameStream(_framesData, _framesDataSize);
 
@@ -195,8 +202,14 @@ void Actor::display() {
 		_vm->screen()->drawActorFrame((int8 *)(_framesData + frameStream.pos()),
 		                                      width, height, _xPos, _yPos, xOffset, yOffset);
 	}
-
-
 }
+
+const uint8 Actor::_exitCursorAnimation[] = {
+	5, 6, 7, 8, 9, 10, 11, 12, 13, 12, 11, 10, 9, 8, 7, 6
+};
+
+const uint8 Actor::_inventoryCursorAnimation[] = {
+	21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 21, 21, 21
+};
 
 } // End of namespace Kom

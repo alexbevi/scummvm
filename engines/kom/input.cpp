@@ -39,12 +39,11 @@ Input::Input(KomEngine *vm, OSystem *system) : _system(system), _vm(vm), _debugM
 	_mouseActor = _vm->actorMan()->load(_vm->dataDir()->getChild("kom").getChild("oneoffs"), String("m_icons"));
 	_vm->actorMan()->get(_mouseActor)->defineScope(0, 0, 3, 0);
 	_vm->actorMan()->get(_mouseActor)->defineScope(1, 4, 4, 4);
+	_vm->actorMan()->get(_mouseActor)->defineScopeAlias(2, Actor::_exitCursorAnimation, 16);
 	_vm->actorMan()->get(_mouseActor)->defineScope(3, 15, 20, 15);
 	_vm->actorMan()->get(_mouseActor)->defineScope(4, 14, 14, 14);
+	_vm->actorMan()->get(_mouseActor)->defineScopeAlias(5, Actor::_inventoryCursorAnimation, 23);
 	_vm->actorMan()->get(_mouseActor)->defineScope(6, 31, 31, 31);
-	// These should be aliases
-	_vm->actorMan()->get(_mouseActor)->defineScope(2, 5, 13, 5);
-	_vm->actorMan()->get(_mouseActor)->defineScope(5, 21, 30, 21);
 
 	_vm->actorMan()->get(_mouseActor)->setScope(0, 2);
 	_vm->actorMan()->get(_mouseActor)->setXPos(100);

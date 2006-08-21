@@ -35,7 +35,7 @@ struct Scope {
 	int minFrame;
 	int maxFrame;
 	int startFrame;
-	byte* aliasData;
+	const uint8* aliasData;
 };
 
 class Actor {
@@ -46,6 +46,14 @@ public:
 	~Actor();
 
 	void defineScope(uint8 scopeId, uint8 minFrame, uint8 maxFrame, uint8 startFrame);
+
+	/**
+	 * Allows a hard-coded frame sequence. It is only used for the exit/inventory cursor
+	 * animations which repeat the edge frames frames several times and play the frames
+	 * forward and then in reverse
+	 */
+	void defineScopeAlias(uint8 scopeId, const uint8 *aliasData, uint8 length);
+
 	void setScope(uint8 scopeId, int animSpeed);
 	void setAnim(uint8 minFrame, uint8 maxFrame, int animSpeed);
 	void doAnim();
@@ -89,6 +97,10 @@ protected:
 	int _framesDataSize;
 
 	KomEngine *_vm;
+
+public:
+	static const uint8 _exitCursorAnimation[];
+	static const uint8 _inventoryCursorAnimation[];
 };
 
 class ActorManager {
