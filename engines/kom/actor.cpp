@@ -86,10 +86,10 @@ void ActorManager::displayAll() {
 }
 
 Actor::Actor(KomEngine *vm) : _vm(vm) {
-	_scope = _frame = 255;
+	_scope = _currentFrame = 255;
 	_isAnimating = false;
 	_xRatio = _yRatio = 1024;
-	_frame = 0;
+	_currentFrame = 0;
 	_displayLeft = _displayRight = _displayTop = _displayBottom = 1000;
 }
 
@@ -97,12 +97,12 @@ Actor::~Actor() {
 	delete[] _framesData;
 }
 
-void Actor::defineScope(uint8 scopeId, uint8 firstFrame, uint8 lastFrame, uint8 ringFrame) {
+void Actor::defineScope(uint8 scopeId, uint8 minFrame, uint8 maxFrame, uint8 startFrame) {
 	assert(scopeId <= 7);
 
-	_scopes[scopeId].firstFrame = firstFrame;
-	_scopes[scopeId].lastFrame = lastFrame;
-	_scopes[scopeId].ringFrame = ringFrame;
+	_scopes[scopeId].minFrame = minFrame;
+	_scopes[scopeId].maxFrame = maxFrame;
+	_scopes[scopeId].startFrame = startFrame;
 }
 
 void Actor::setScope(uint8 scopeId, int animSpeed) {
@@ -110,23 +110,23 @@ void Actor::setScope(uint8 scopeId, int animSpeed) {
 
 	_scope = scopeId;
 
-	// TODO: figure out why firstFrame is abs()-ed in the original
-	setAnim(_scopes[_scope].firstFrame, _scopes[_scope].lastFrame, animSpeed);
-	_frame = _scopes[_scope].ringFrame;
+	// TODO: figure out why minFrame is abs()-ed in the original
+	setAnim(_scopes[_scope].minFrame, _scopes[_scope].maxFrame, animSpeed);
+	_currentFrame = _scopes[_scope].startFrame;
 }
 
-void Actor::setAnim(uint8 firstFrame, uint8 lastFrame, int animSpeed) {
-	if (firstFrame <= lastFrame) {
-		_animFirstFrame = firstFrame;
-		_animLastFrame = lastFrame;
+void Actor::setAnim(uint8 minFrame, uint8 maxFrame, int animSpeed) {
+	if (minFrame <= maxFrame) {
+		_minFrame = minFrame;
+		_maxFrame = maxFrame;
 		_reverseAnim = false;
 	} else {
-		_animFirstFrame = lastFrame;
-		_animLastFrame = firstFrame;
+		_minFrame = maxFrame;
+		_maxFrame = minFrame;
 		_reverseAnim = true;
 	}
 
-	if (_frame < 255) {
+	if (_currentFrame < 255) {
 		_animDurationTimer = _animDuration = animSpeed;
 	}
 
@@ -144,13 +144,13 @@ void Actor::doAnim() {
 	_animDurationTimer = _animDuration;
 
 	if (_reverseAnim) {
-		_frame--;
-		if (_frame <= _animFirstFrame)
-			_frame = _animLastFrame;
+		_currentFrame--;
+		if (_currentFrame <= _minFrame)
+			_currentFrame = _maxFrame;
 	} else {
-		_frame++;
-		if (_frame > _animLastFrame)
-			_frame = _animFirstFrame;
+		_currentFrame++;
+		if (_currentFrame > _maxFrame)
+			_currentFrame = _minFrame;
 	}
 }
 
@@ -162,11 +162,11 @@ void Actor::display() {
 
 	doAnim();
 
-	frame = _frame;
+	frame = _currentFrame;
 
 	// Handle scope alias
 	if (_scope != 255 && _scopes[_scope].aliasData != NULL)
-		frame = _scopes[_scope].aliasData[_frame];
+		frame = _scopes[_scope].aliasData[_currentFrame];
 
 	MemoryReadStream frameStream(_framesData, _framesDataSize);
 

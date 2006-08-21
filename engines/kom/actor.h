@@ -30,11 +30,11 @@
 namespace Kom {
 
 struct Scope {
-	Scope() : aliasData(NULL), firstFrame(0) {}
+	Scope() : aliasData(NULL), minFrame(0) {}
 	~Scope() { delete[] aliasData; }
-	int firstFrame;
-	int lastFrame;
-	int ringFrame;
+	int minFrame;
+	int maxFrame;
+	int startFrame;
 	byte* aliasData;
 };
 
@@ -45,9 +45,9 @@ friend class ActorManager;
 public:
 	~Actor();
 
-	void defineScope(uint8 scopeId, uint8 firstFrame, uint8 lastFrame, uint8 ringFrame);
+	void defineScope(uint8 scopeId, uint8 minFrame, uint8 maxFrame, uint8 startFrame);
 	void setScope(uint8 scopeId, int animSpeed);
-	void setAnim(uint8 firstFrame, uint8 lastFrame, int animSpeed);
+	void setAnim(uint8 minFrame, uint8 maxFrame, int animSpeed);
 	void doAnim();
 	void display();
 
@@ -60,9 +60,9 @@ protected:
 	Common::String _name;
 	uint8 _framesNum;
 	byte _isPlayerControlled;
-	uint8 _frame;
-	uint8 _animFirstFrame;
-	uint8 _animLastFrame;
+	uint8 _currentFrame;
+	uint8 _minFrame;
+	uint8 _maxFrame;
 	int _animDurationTimer;
 	int _animDuration;
 	bool _reverseAnim;
@@ -74,10 +74,11 @@ protected:
 	int _depth;
 	bool _isAnimating;
 	int _pausedAnimFrame;
-	int _data1;
+	int _targetX;
+	int _targetY;
 	uint8 _scope;
 	int _effect;
-	int _isUsed;
+	int _isActive;
 	uint32 _displayLeft;
 	uint32 _displayRight;
 	uint32 _displayTop;
