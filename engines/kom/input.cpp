@@ -46,8 +46,7 @@ Input::Input(KomEngine *vm, OSystem *system) : _system(system), _vm(vm), _debugM
 	_vm->actorMan()->get(_mouseActor)->defineScope(6, 31, 31, 31);
 
 	_vm->actorMan()->get(_mouseActor)->setScope(0, 2);
-	_vm->actorMan()->get(_mouseActor)->setXPos(100);
-	_vm->actorMan()->get(_mouseActor)->setYPos(100);
+	_vm->actorMan()->get(_mouseActor)->setPos(100, 100);
 }
 
 Input::~Input() {
@@ -101,8 +100,7 @@ void Input::checkKeys() {
 				break;
 
 			case OSystem::EVENT_MOUSEMOVE:
-				_vm->actorMan()->get(_mouseActor)->setXPos(event.mouse.x);
-				_vm->actorMan()->get(_mouseActor)->setYPos(event.mouse.y);
+				_vm->actorMan()->get(_mouseActor)->setPos(event.mouse.x, event.mouse.y);
 				break;
 
 			case OSystem::EVENT_QUIT:

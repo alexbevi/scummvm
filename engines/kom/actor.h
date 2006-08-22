@@ -59,8 +59,7 @@ public:
 	void doAnim();
 	void display();
 
-	void setXPos(int xPos) { _xPos = xPos; }
-	void setYPos(int yPos) { _yPos = yPos; }
+	void setPos(int xPos, int yPos) { _xPos = xPos; _yPos = yPos; }
 
 protected:
 	Actor(KomEngine *vm);
