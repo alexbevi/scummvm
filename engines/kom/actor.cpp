@@ -117,11 +117,11 @@ void Actor::setScope(uint8 scopeId, int animSpeed) {
 	_scope = scopeId;
 
 	// TODO: figure out why minFrame is abs()-ed in the original
-	setAnim(_scopes[_scope].minFrame, _scopes[_scope].maxFrame, animSpeed);
+	setAnim(_scopes[_scope].minFrame, _scopes[_scope].maxFrame, animDuration);
 	_currentFrame = _scopes[_scope].startFrame;
 }
 
-void Actor::setAnim(uint8 minFrame, uint8 maxFrame, int animSpeed) {
+void Actor::setAnim(uint8 minFrame, uint8 maxFrame, int animDuration) {
 	if (minFrame <= maxFrame) {
 		_minFrame = minFrame;
 		_maxFrame = maxFrame;
@@ -133,7 +133,7 @@ void Actor::setAnim(uint8 minFrame, uint8 maxFrame, int animSpeed) {
 	}
 
 	if (_currentFrame < 255) {
-		_animDurationTimer = _animDuration = animSpeed;
+		_animDurationTimer = _animDuration = animDuration;
 	}
 
 	_isAnimating = true;

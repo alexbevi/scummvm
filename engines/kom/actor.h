@@ -54,8 +54,8 @@ public:
 	 */
 	void defineScopeAlias(uint8 scopeId, const uint8 *aliasData, uint8 length);
 
-	void setScope(uint8 scopeId, int animSpeed);
-	void setAnim(uint8 minFrame, uint8 maxFrame, int animSpeed);
+	void setScope(uint8 scopeId, int animDuration);
+	void setAnim(uint8 minFrame, uint8 maxFrame, int animDuration);
 	void doAnim();
 	void display();
 
