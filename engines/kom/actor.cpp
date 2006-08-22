@@ -121,7 +121,7 @@ void Actor::setScope(uint8 scopeId, int animSpeed) {
 	_currentFrame = _scopes[_scope].startFrame;
 }
 
-void Actor::setAnim(uint8 minFrame, uint8 maxFrame, int animDuration) {
+void Actor::setAnim(uint8 minFrame, uint8 maxFrame, uint16 animDuration) {
 	if (minFrame <= maxFrame) {
 		_minFrame = minFrame;
 		_maxFrame = maxFrame;

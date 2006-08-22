@@ -54,8 +54,8 @@ public:
 	 */
 	void defineScopeAlias(uint8 scopeId, const uint8 *aliasData, uint8 length);
 
-	void setScope(uint8 scopeId, int animDuration);
-	void setAnim(uint8 minFrame, uint8 maxFrame, int animDuration);
+	void setScope(uint8 scopeId, uint16 animDuration);
+	void setAnim(uint8 minFrame, uint8 maxFrame, uint16 animDuration);
 	void doAnim();
 	void display();
 
@@ -71,8 +71,8 @@ protected:
 	uint8 _currentFrame;
 	uint8 _minFrame;
 	uint8 _maxFrame;
-	int _animDurationTimer;
-	int _animDuration;
+	uint16 _animDurationTimer;
+	uint16 _animDuration;
 	bool _reverseAnim;
 	int _xPos;
 	int _yPos;
