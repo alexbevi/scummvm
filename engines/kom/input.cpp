@@ -56,7 +56,7 @@ Input::~Input() {
 
 // TODO: hack
 void Input::checkKeys() {
-	uint32 end = _system->getMillis() + 100;
+	uint32 end = _system->getMillis() + 50;
 	do {
 		OSystem::Event event;
 		while (_system->pollEvent(event)) {
@@ -114,7 +114,7 @@ void Input::checkKeys() {
 			}
 		}
 
-		_system->delayMillis(100);
+		_system->delayMillis(50);
 	} while (_system->getMillis() < end);
 
 }
