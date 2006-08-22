@@ -25,16 +25,17 @@
 
 #include "common/scummsys.h"
 #include "common/fs.h"
+#include "common/str.h"
 #include "common/array.h"
 
 namespace Kom {
 
 struct Scope {
-	Scope() : aliasData(NULL), minFrame(0) {}
+	Scope() : aliasData(NULL), minFrame(0), maxFrame(0) {}
 	~Scope() { delete[] aliasData; }
-	int minFrame;
-	int maxFrame;
-	int startFrame;
+	uint8 minFrame;
+	uint8 maxFrame;
+	uint8 startFrame;
 	const uint8* aliasData;
 };
 
@@ -62,7 +63,7 @@ public:
 	void setPos(int xPos, int yPos) { _xPos = xPos; _yPos = yPos; }
 
 protected:
-	Actor(KomEngine *vm);
+	Actor(KomEngine *vm, FilesystemNode dirNode, Common::String name);
 
 	Common::String _name;
 	uint8 _framesNum;

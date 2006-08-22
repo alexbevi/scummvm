@@ -46,31 +46,9 @@ ActorManager::~ActorManager() {
 }
 
 int ActorManager::load(FilesystemNode dirNode, String name) {
-	File f;
-	char magicName[8];
 
-	f.open(dirNode.getChild(name + ".act"));
-
-	f.read(magicName, 7);
-	magicName[7] = '\0';
-	assert(strcmp(magicName, "DCB_ACT") == 0);
-
-	Actor *act = new Actor(_vm);
+	Actor *act = new Actor(_vm, dirNode, name);
 	_actors.push_back(act);
-
-	act->_name = name;
-
-	act->_isPlayerControlled = !f.readByte();
-	act->_framesNum = f.readByte();
-
-	f.seek(10);
-	act->_framesDataSize = f.size() - f.pos();
-
-	act->_framesData = new byte[act->_framesDataSize];
-
-	f.read(act->_framesData, act->_framesDataSize);
-
-	f.close();
 
 	return _actors.size() - 1;
 }
@@ -79,18 +57,39 @@ void ActorManager::displayAll() {
 	Common::Array<Actor *>::iterator act;
 
 	for (act = _actors.begin(); act != _actors.end(); act++) {
-		if (*act != NULL) {
+		if (*act != NULL && (*act)->_isActive) {
 			(*act)->display();
 		}
 	}
 }
 
-Actor::Actor(KomEngine *vm) : _vm(vm) {
-	_scope = _currentFrame = 255;
+Actor::Actor(KomEngine *vm, FilesystemNode dirNode, String name) : _vm(vm) {
+	File f;
+	char magicName[8];
+
+	_scope = 255;
 	_isAnimating = false;
+	_isActive = true;
+	_currentFrame = _minFrame = _maxFrame = 0;
 	_xRatio = _yRatio = 1024;
-	_currentFrame = 0;
 	_displayLeft = _displayRight = _displayTop = _displayBottom = 1000;
+
+	f.open(dirNode.getChild(name + ".act"));
+
+	f.read(magicName, 7);
+	magicName[7] = '\0';
+	assert(strcmp(magicName, "DCB_ACT") == 0);
+
+	_name = name;
+	_isPlayerControlled = !f.readByte();
+	_framesNum = f.readByte();
+
+	f.seek(10);
+	_framesDataSize = f.size() - f.pos();
+	_framesData = new byte[_framesDataSize];
+	f.read(_framesData, _framesDataSize);
+
+	f.close();
 }
 
 Actor::~Actor() {
@@ -98,7 +97,7 @@ Actor::~Actor() {
 }
 
 void Actor::defineScope(uint8 scopeId, uint8 minFrame, uint8 maxFrame, uint8 startFrame) {
-	assert(scopeId <= 7);
+	assert(scopeId < 8);
 
 	_scopes[scopeId].minFrame = minFrame;
 	_scopes[scopeId].maxFrame = maxFrame;
@@ -106,13 +105,16 @@ void Actor::defineScope(uint8 scopeId, uint8 minFrame, uint8 maxFrame, uint8 sta
 }
 
 void Actor::defineScopeAlias(uint8 scopeId, const uint8 *aliasData, uint8 length) {
+	assert(scopeId < 8);
+
 	_scopes[scopeId].minFrame = 0;
 	_scopes[scopeId].maxFrame = length - 1;
 	_scopes[scopeId].aliasData = aliasData;
+	_scopes[scopeId].startFrame = 0;
 }
 
-void Actor::setScope(uint8 scopeId, int animSpeed) {
-	assert(scopeId <= 7);
+void Actor::setScope(uint8 scopeId, uint16 animDuration) {
+	assert(scopeId < 8);
 
 	_scope = scopeId;
 
@@ -167,11 +169,12 @@ void Actor::display() {
 	uint16 xOffset, yOffset;
 
 	doAnim();
-	frame = _currentFrame;
 
 	// Handle scope alias
 	if (_scope != 255 && _scopes[_scope].aliasData != NULL)
 		frame = _scopes[_scope].aliasData[_currentFrame];
+	else
+		frame = _currentFrame;
 
 	MemoryReadStream frameStream(_framesData, _framesDataSize);
 

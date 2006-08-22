@@ -63,8 +63,8 @@ int KomEngine::init() {
 	if (!_screen->init())
 		error("_screen->init() failed");
 
+	_database = new Database(this, _system);
 	_actorMan = new ActorManager(this);
-
 	_input = new Input(this, _system);
 	_debugger = new Debugger(this);
 
@@ -80,7 +80,6 @@ int KomEngine::init() {
 	 * menu
 	 */
 
-	_database = new Database(this, _system);
 
 	return 0;
 }
