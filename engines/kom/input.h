@@ -46,7 +46,6 @@ private:
 
 	int _inKey;
 	bool _debugMode;
-	int _mouseActor;
 };
 
 } // End of namespace Kom

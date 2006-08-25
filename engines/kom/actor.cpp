@@ -47,10 +47,24 @@ ActorManager::~ActorManager() {
 
 int ActorManager::load(FilesystemNode dirNode, String name) {
 
-	Actor *act = new Actor(_vm, dirNode, name);
+	Actor *act = new Actor(_vm, dirNode, name, false);
 	_actors.push_back(act);
 
 	return _actors.size() - 1;
+}
+
+void ActorManager::loadMouse(FilesystemNode dirNode, String name) {
+
+	_mouseActor = new Actor(_vm, dirNode, name, true);
+	_mouseActor->defineScope(0, 0, 3, 0);
+	_mouseActor->defineScope(1, 4, 4, 4);
+	_mouseActor->defineScopeAlias(2, Actor::_exitCursorAnimation, 16);
+	_mouseActor->defineScope(3, 15, 20, 15);
+	_mouseActor->defineScope(4, 14, 14, 14);
+	_mouseActor->defineScopeAlias(5, Actor::_inventoryCursorAnimation, 23);
+	_mouseActor->defineScope(6, 31, 31, 31);
+
+	_mouseActor->setScope(0, 2);
 }
 
 void ActorManager::displayAll() {
@@ -63,12 +77,13 @@ void ActorManager::displayAll() {
 	}
 }
 
-Actor::Actor(KomEngine *vm, FilesystemNode dirNode, String name) : _vm(vm) {
+Actor::Actor(KomEngine *vm, FilesystemNode dirNode, String name, bool isMouse) : _vm(vm) {
 	File f;
 	char magicName[8];
 
 	_scope = 255;
 	_isAnimating = false;
+	_animDuration = 0;
 	_isActive = true;
 	_currentFrame = _minFrame = _maxFrame = 0;
 	_xRatio = _yRatio = 1024;
@@ -81,6 +96,7 @@ Actor::Actor(KomEngine *vm, FilesystemNode dirNode, String name) : _vm(vm) {
 	assert(strcmp(magicName, "DCB_ACT") == 0);
 
 	_name = name;
+	_isMouse = isMouse;
 	_isPlayerControlled = !f.readByte();
 	_framesNum = f.readByte();
 
@@ -141,7 +157,7 @@ void Actor::setAnim(uint8 minFrame, uint8 maxFrame, uint16 animDuration) {
 	_isAnimating = true;
 }
 
-void Actor::doAnim() {
+void Actor::animate() {
 	if (_animDuration == 0 || !_isAnimating)
 		return;
 
@@ -168,7 +184,7 @@ void Actor::display() {
 	uint16 width, height;
 	uint16 xOffset, yOffset;
 
-	doAnim();
+	animate();
 
 	// Handle scope alias
 	if (_scope != 255 && _scopes[_scope].aliasData != NULL)
@@ -200,8 +216,13 @@ void Actor::display() {
 		// * more arguments for scaling
 		// * displayMask
 
-		_vm->screen()->drawActorFrame((int8 *)(_framesData + frameStream.pos()),
-		                                      width, height, _xPos, _yPos, xOffset, yOffset);
+		if (_isMouse) {
+			_vm->screen()->drawMouseFrame((int8 *)(_framesData + frameStream.pos()),
+												  width, height, xOffset, yOffset);
+		} else {
+			_vm->screen()->drawActorFrame((int8 *)(_framesData + frameStream.pos()),
+												  width, height, _xPos, _yPos, xOffset, yOffset);
+		}
 	}
 }
 

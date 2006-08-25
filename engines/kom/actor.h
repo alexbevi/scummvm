@@ -57,13 +57,13 @@ public:
 
 	void setScope(uint8 scopeId, uint16 animDuration);
 	void setAnim(uint8 minFrame, uint8 maxFrame, uint16 animDuration);
-	void doAnim();
+	void animate();
 	void display();
 
 	void setPos(int xPos, int yPos) { _xPos = xPos; _yPos = yPos; }
 
 protected:
-	Actor(KomEngine *vm, FilesystemNode dirNode, Common::String name);
+	Actor(KomEngine *vm, FilesystemNode dirNode, Common::String name, bool isMouse);
 
 	Common::String _name;
 	uint8 _framesNum;
@@ -93,12 +93,15 @@ protected:
 	uint32 _displayBottom;
 	Scope _scopes[8];
 
+private:
+
 	byte *_framesData;
 	int _framesDataSize;
 
 	KomEngine *_vm;
 
-public:
+	bool _isMouse;
+
 	static const uint8 _exitCursorAnimation[];
 	static const uint8 _inventoryCursorAnimation[];
 };
@@ -109,7 +112,9 @@ public:
 	ActorManager(KomEngine *vm);
 	~ActorManager();
 	int load(FilesystemNode dirNode, Common::String name);
+	void loadMouse(FilesystemNode dirNode, Common::String name);
 	Actor *get(int idx) { return _actors[idx]; }
+	Actor *getMouse() { return _mouseActor; }
 	void unload(int idx) {  }
 	void unloadAll() { _actors.clear(); }
 	void displayAll();
@@ -118,6 +123,7 @@ private:
 
 	KomEngine *_vm;
 	Common::Array<Actor *> _actors;
+	Actor *_mouseActor;
 };
 
 } // End of namespace Kom

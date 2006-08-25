@@ -38,7 +38,9 @@ public:
 
 	enum {
 		SCREEN_W = 320,
-		SCREEN_H = 200
+		SCREEN_H = 200,
+		MOUSE_W = 40,
+		MOUSE_H = 40
 	};
 	
 	Screen(KomEngine *vm, OSystem *system);
@@ -48,16 +50,22 @@ public:
 
 	void update();
 	void drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos, int16 xOffset, int16 yOffset);
+	void drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16 xOffset, int16 yOffset);
+
+	void setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int hotspotY);
+	void showMouseCursor(bool show);
+	void displayMouse();
 
 private:
 
-	void drawActorFrameLine(const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel);
+	void drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel);
 	byte *loadColorSet(FilesystemNode fsNode);
 
 	OSystem *_system;
 	KomEngine *_vm;
 
 	uint8 *_screenBuf;
+	uint8 *_mouseBuf;
 
 	byte *_c0ColorSet;
 };

@@ -35,18 +35,6 @@ using Common::String;
 namespace Kom {
 
 Input::Input(KomEngine *vm, OSystem *system) : _system(system), _vm(vm), _debugMode(false) {
-
-	_mouseActor = _vm->actorMan()->load(_vm->dataDir()->getChild("kom").getChild("oneoffs"), String("m_icons"));
-	_vm->actorMan()->get(_mouseActor)->defineScope(0, 0, 3, 0);
-	_vm->actorMan()->get(_mouseActor)->defineScope(1, 4, 4, 4);
-	_vm->actorMan()->get(_mouseActor)->defineScopeAlias(2, Actor::_exitCursorAnimation, 16);
-	_vm->actorMan()->get(_mouseActor)->defineScope(3, 15, 20, 15);
-	_vm->actorMan()->get(_mouseActor)->defineScope(4, 14, 14, 14);
-	_vm->actorMan()->get(_mouseActor)->defineScopeAlias(5, Actor::_inventoryCursorAnimation, 23);
-	_vm->actorMan()->get(_mouseActor)->defineScope(6, 31, 31, 31);
-
-	_vm->actorMan()->get(_mouseActor)->setScope(0, 2);
-	_vm->actorMan()->get(_mouseActor)->setPos(100, 100);
 }
 
 Input::~Input() {
@@ -55,7 +43,7 @@ Input::~Input() {
 
 // TODO: hack
 void Input::checkKeys() {
-	uint32 end = _system->getMillis() + 50;
+	uint32 end = _system->getMillis() + 41;
 	do {
 		OSystem::Event event;
 		while (_system->pollEvent(event)) {
@@ -73,25 +61,25 @@ void Input::checkKeys() {
 							_system->quit();
 							break;
 						case '1':
-							_vm->actorMan()->get(_mouseActor)->setScope(0, 2);
+							_vm->actorMan()->getMouse()->setScope(0, 2);
 							break;
 						case '2':
-							_vm->actorMan()->get(_mouseActor)->setScope(1, 2);
+							_vm->actorMan()->getMouse()->setScope(1, 2);
 							break;
 						case '3':
-							_vm->actorMan()->get(_mouseActor)->setScope(2, 2);
+							_vm->actorMan()->getMouse()->setScope(2, 2);
 							break;
 						case '4':
-							_vm->actorMan()->get(_mouseActor)->setScope(3, 2);
+							_vm->actorMan()->getMouse()->setScope(3, 2);
 							break;
 						case '5':
-							_vm->actorMan()->get(_mouseActor)->setScope(4, 2);
+							_vm->actorMan()->getMouse()->setScope(4, 2);
 							break;
 						case '6':
-							_vm->actorMan()->get(_mouseActor)->setScope(5, 2);
+							_vm->actorMan()->getMouse()->setScope(5, 2);
 							break;
 						case '7':
-							_vm->actorMan()->get(_mouseActor)->setScope(6, 0);
+							_vm->actorMan()->getMouse()->setScope(6, 0);
 							break;
 						default:
 							break;
@@ -100,7 +88,7 @@ void Input::checkKeys() {
 				break;
 
 			case OSystem::EVENT_MOUSEMOVE:
-				_vm->actorMan()->get(_mouseActor)->setPos(event.mouse.x, event.mouse.y);
+				//_vm->actorMan()->getMouse()->setPos(event.mouse.x, event.mouse.y);
 				break;
 
 			case OSystem::EVENT_QUIT:
@@ -112,7 +100,9 @@ void Input::checkKeys() {
 			}
 		}
 
-		_system->delayMillis(50);
+		_system->updateScreen();
+
+		_system->delayMillis(41);
 	} while (_system->getMillis() < end);
 
 }

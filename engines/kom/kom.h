@@ -41,6 +41,13 @@ class Database;
 class ActorManager;
 class Debugger;
 
+enum {
+	GAMELOOP_RUNNING = 0,
+	GAMELOOP_DEATH,
+	GAMELOOP_SELECTION,
+	GAMELOOP_QUIT = 4
+};
+
 class KomEngine : public Engine {
 public:
 	KomEngine(OSystem *system);
@@ -71,7 +78,7 @@ private:
 	FilesystemNode *_fsNode;
 	int _selectedChar; // 0 - thidney. 1 - shahron
 	int _selectedQuest;
-	bool _quit;
+	int _gameLoopState;
 };
 
 } // End of namespace Kom

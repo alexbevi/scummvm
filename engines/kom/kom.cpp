@@ -40,7 +40,7 @@ KomEngine::KomEngine(OSystem *system)
 	_database = 0;
 	_actorMan = 0;
 	_input = 0;
-	_quit = false;
+	_gameLoopState = GAMELOOP_RUNNING;
 
 	_fsNode = new FilesystemNode(_gameDataPath);
 
@@ -58,13 +58,14 @@ KomEngine::~KomEngine() {
 }
 
 int KomEngine::init() {
+	_actorMan = new ActorManager(this);
+
 	_screen = new Screen(this, _system);
 	assert(_screen);
 	if (!_screen->init())
 		error("_screen->init() failed");
 
 	_database = new Database(this, _system);
-	_actorMan = new ActorManager(this);
 	_input = new Input(this, _system);
 	_debugger = new Debugger(this);
 
@@ -94,6 +95,7 @@ int KomEngine::go() {
 	 * play intro movie
 	 * choose character
 	 * choose quest
+	 * check cd
 	 */
 
 	FilesystemNode installDir(_fsNode->getChild("install"));
@@ -105,7 +107,9 @@ int KomEngine::go() {
 		_database->init("shar");
 	}
 
-	while (!_quit) {
+	_actorMan->loadMouse(_fsNode->getChild("kom").getChild("oneoffs"), String("m_icons"));
+
+	while (_gameLoopState != GAMELOOP_QUIT) {
 		gameLoop();
 	}
 
@@ -120,6 +124,20 @@ void KomEngine::gameLoop() {
 	if (_debugger->isAttached()) {
 		_debugger->onFrame();
 	}
+
+	// setFrameRate(24)
+	// setBrightness(256)
+	// clearWorkScreen
+	// init some global vars
+	// fadeTo(target = 256, speed 16)
+	// init something in the procs struct
+	// init some more vars
+	// some tricks with the loop input based on day/night
+	// processChars
+	// conditioned: ambientStart
+	// loopMove
+	// loopCollide
+	// TODO more
 
 	_screen->update();
 	_input->checkKeys();

@@ -25,6 +25,7 @@
 #include "common/system.h"
 #include "common/file.h"
 #include "common/endian.h"
+#include "graphics/cursorman.h"
 
 #include "kom/screen.h"
 #include "kom/kom.h"
@@ -40,11 +41,15 @@ Screen::Screen(KomEngine *vm, OSystem *system)
 	_screenBuf = new uint8[SCREEN_W * SCREEN_H];
 	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 
+	_mouseBuf = new uint8[MOUSE_W * MOUSE_H];
+	memset(_mouseBuf, 0, MOUSE_W * MOUSE_H);
+
 	_c0ColorSet = loadColorSet(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("c0_127.cl"));
 }
 
 Screen::~Screen() {
 	delete[] _screenBuf;
+	delete[] _mouseBuf;
 	delete[] _c0ColorSet;
 }
 
@@ -61,6 +66,9 @@ bool Screen::init() {
 
 void Screen::update() {
 	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
+
+	displayMouse();
+	showMouseCursor(true);
 	_vm->actorMan()->displayAll();
 	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H);
 	_system->updateScreen();
@@ -81,12 +89,32 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, uint1
 	for (int line = startLine; line <= endLine; ++line) {
 		uint16 lineOffset = READ_LE_UINT16(data + line * 2);
 
-		drawActorFrameLine(data + lineOffset, (realX < 0 ? 0 : realX), (realY < 0 ? 0 : realY) + line - startLine, startCol, endCol);
+		drawActorFrameLine(_screenBuf, SCREEN_W, data + lineOffset, (realX < 0 ? 0 : realX),
+		                   (realY < 0 ? 0 : realY) + line - startLine, startCol, endCol);
 	}
 }
 
+void Screen::drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16 xOffset, int16 yOffset) {
 
-void Screen::drawActorFrameLine(const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel) {
+	memset(_mouseBuf, 0, MOUSE_W * MOUSE_H);
+
+	for (int line = 0; line <= height - 1; ++line) {
+		uint16 lineOffset = READ_LE_UINT16(data + line * 2);
+
+		drawActorFrameLine(_mouseBuf, MOUSE_W, data + lineOffset, 0, line, 0, width);
+	}
+	/*for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+			printf("%hhd ", _mouseBuf[i + j * MOUSE_W]);
+		}
+		putchar('\n');
+	}*/
+
+	setMouseCursor(_mouseBuf, MOUSE_W, MOUSE_H, -xOffset, -yOffset);
+}
+
+void Screen::drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data,
+                                uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel) {
 	uint16 dataIndex = 0;
 	uint16 pixelsDrawn = 0;
 	uint16 pixelsParsed = 0;
@@ -146,7 +174,7 @@ void Screen::drawActorFrameLine(const int8 *data, uint16 xPos, uint16 yPos, uint
 				if (pixelsDrawn + imageData > endPixel)
 					imageData = endPixel - pixelsDrawn;
 
-				memcpy(_screenBuf + (yPos * SCREEN_W) + xPos + pixelsDrawn, data + dataIndex,
+				memcpy(buf + (yPos * bufWidth) + xPos + pixelsDrawn, data + dataIndex,
 					   imageData);
 				dataIndex += imageData;
 				pixelsDrawn += imageData;
@@ -173,6 +201,18 @@ byte *Screen::loadColorSet(FilesystemNode fsNode) {
 
 	f.close();
 	return pal;
+}
+
+void Screen::setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int hotspotY) {
+	CursorMan.replaceCursor(buf, w, h, hotspotX, hotspotY, 0);
+}
+
+void Screen::showMouseCursor(bool show) {
+	CursorMan.showMouse(show);
+}
+
+void Screen::displayMouse() {
+	_vm->actorMan()->getMouse()->display();
 }
 
 } // End of namespace Kom
