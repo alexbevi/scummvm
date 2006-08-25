@@ -88,7 +88,7 @@ void Input::checkKeys() {
 				break;
 
 			case OSystem::EVENT_MOUSEMOVE:
-				//_vm->actorMan()->getMouse()->setPos(event.mouse.x, event.mouse.y);
+				_vm->actorMan()->getMouse()->setPos(event.mouse.x, event.mouse.y);
 				break;
 
 			case OSystem::EVENT_QUIT:

@@ -31,17 +31,19 @@ class FilesystemNode;
 
 namespace Kom {
 
+enum {
+	SCREEN_W = 320,
+	SCREEN_H = 200,
+	MOUSE_W = 40,
+	MOUSE_H = 40,
+	PANEL_H = 32
+};
+
 class KomEngine;
 
 class Screen {
 public:
 
-	enum {
-		SCREEN_W = 320,
-		SCREEN_H = 200,
-		MOUSE_W = 40,
-		MOUSE_H = 40
-	};
 	
 	Screen(KomEngine *vm, OSystem *system);
 	~Screen();
@@ -55,6 +57,10 @@ public:
 	void setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int hotspotY);
 	void showMouseCursor(bool show);
 	void displayMouse();
+
+	void updateCursor();
+
+	void drawPanel(const byte *panelData);
 
 private:
 

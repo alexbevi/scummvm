@@ -29,6 +29,7 @@
 #include "kom/screen.h"
 #include "kom/database.h"
 #include "kom/actor.h"
+#include "kom/panel.h"
 #include "kom/input.h"
 #include "kom/debugger.h"
 
@@ -63,6 +64,7 @@ public:
 
 	ActorManager *actorMan() const { return _actorMan; }
 	Screen *screen() const { return _screen; }
+	Panel *panel() const { return _panel; }
 
 	FilesystemNode *dataDir() const { return _fsNode; }
 
@@ -73,6 +75,7 @@ private:
 	Database *_database;
 	ActorManager *_actorMan;
 	Input *_input;
+	Panel *_panel;
 	Debugger *_debugger;
 
 	FilesystemNode *_fsNode;

@@ -6,6 +6,7 @@ MODULE_OBJS := \
 	database.o \
 	actor.o \
 	input.o \
+	panel.o \
 	debugger.o \
 	plugin.o
 

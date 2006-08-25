@@ -55,6 +55,7 @@ KomEngine::~KomEngine() {
 	delete _actorMan;
 	delete _input;
 	delete _debugger;
+	delete _panel;
 }
 
 int KomEngine::init() {
@@ -68,6 +69,7 @@ int KomEngine::init() {
 	_database = new Database(this, _system);
 	_input = new Input(this, _system);
 	_debugger = new Debugger(this);
+	_panel = new Panel(this, _fsNode->getChild("kom").getChild("oneoffs").getChild("pan1.img"));
 
 	// Init the following:
 	/*
@@ -108,6 +110,8 @@ int KomEngine::go() {
 	}
 
 	_actorMan->loadMouse(_fsNode->getChild("kom").getChild("oneoffs"), String("m_icons"));
+
+	_screen->showMouseCursor(true);
 
 	while (_gameLoopState != GAMELOOP_QUIT) {
 		gameLoop();

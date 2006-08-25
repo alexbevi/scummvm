@@ -56,11 +56,14 @@ public:
 	void defineScopeAlias(uint8 scopeId, const uint8 *aliasData, uint8 length);
 
 	void setScope(uint8 scopeId, uint16 animDuration);
+	void switchScope(uint8 scopeId, uint16 animDuration);
 	void setAnim(uint8 minFrame, uint8 maxFrame, uint16 animDuration);
 	void animate();
 	void display();
 
 	void setPos(int xPos, int yPos) { _xPos = xPos; _yPos = yPos; }
+	int getXPos() { return _xPos; }
+	int getYPos() { return _yPos; }
 
 protected:
 	Actor(KomEngine *vm, FilesystemNode dirNode, Common::String name, bool isMouse);

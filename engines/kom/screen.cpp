@@ -67,8 +67,9 @@ bool Screen::init() {
 void Screen::update() {
 	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 
+	_vm->panel()->display();
+	updateCursor();
 	displayMouse();
-	showMouseCursor(true);
 	_vm->actorMan()->displayAll();
 	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H);
 	_system->updateScreen();
@@ -213,6 +214,18 @@ void Screen::showMouseCursor(bool show) {
 
 void Screen::displayMouse() {
 	_vm->actorMan()->getMouse()->display();
+}
+
+void Screen::updateCursor() {
+	Actor *mouse = _vm->actorMan()->getMouse();
+
+	if (mouse->getYPos() >= SCREEN_H - PANEL_H) {
+		mouse->switchScope(5, 2);
+	}
+}
+
+void Screen::drawPanel(const byte *panelData) {
+	memcpy(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H), panelData, SCREEN_W * PANEL_H);
 }
 
 } // End of namespace Kom

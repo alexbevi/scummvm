@@ -65,6 +65,9 @@ void ActorManager::loadMouse(FilesystemNode dirNode, String name) {
 	_mouseActor->defineScope(6, 31, 31, 31);
 
 	_mouseActor->setScope(0, 2);
+
+	// Init CursorMan
+	_vm->screen()->displayMouse();
 }
 
 void ActorManager::displayAll() {
@@ -137,6 +140,11 @@ void Actor::setScope(uint8 scopeId, uint16 animDuration) {
 	// TODO: figure out why minFrame is abs()-ed in the original
 	setAnim(_scopes[_scope].minFrame, _scopes[_scope].maxFrame, animDuration);
 	_currentFrame = _scopes[_scope].startFrame;
+}
+
+void Actor::switchScope(uint8 scopeId, uint16 animDuration) {
+	if (_scope != scopeId)
+		setScope(scopeId, animDuration);
 }
 
 void Actor::setAnim(uint8 minFrame, uint8 maxFrame, uint16 animDuration) {
