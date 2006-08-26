@@ -28,13 +28,9 @@
 #include "kom/kom.h"
 #include "kom/database.h"
 
-#define LINE_BUFFER_SIZE 50
-
 using Common::File;
 
 namespace Kom {
-
-char line[LINE_BUFFER_SIZE];
 
 Database::Database(KomEngine *vm, OSystem *system)
 	: _system(system), _vm(vm) {
@@ -75,45 +71,48 @@ void Database::loadConvIndex() {
 	f.close();
 }
 
-/* TODO: Convert readlines to initProcs' style */
 void Database::initLocations() {
 	File f;
+	char *fileBuffer, *originalFileBuffer;
+	int bytesRead;
 
 	f.open(_databasePrefix + ".loc");
-
-	assert(f.readLine(line, LINE_BUFFER_SIZE));
+	fileBuffer = originalFileBuffer = new char[f.size() + 1];
+	f.read(fileBuffer, f.size());
+	fileBuffer[f.size()] = '\0';
+	f.close();
 
 	// Get number of entries in file
-	sscanf(line, "%d", &_locationsNum);
+	sscanf(fileBuffer, "%d\n\n%n", &_locationsNum, &bytesRead);
+	fileBuffer += bytesRead;
 	printf("%d loc entries\n", _locationsNum);
-
-	// Skip empty line
-	f.readLine(line, LINE_BUFFER_SIZE);
 
 	_locations = new Location[_locationsNum];
 
-	for (int i = 0; i < _locationsNum; ++i) {
+	for (int i = 0; i < _locationsNum && bytesRead > 3; ++i) {
 		int index;
 
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d", &index);
+		sscanf(fileBuffer, "%d%n", &index, &bytesRead);
+		fileBuffer += bytesRead;
 
-		sscanf(line, "%*d %s %d %d", 
+		sscanf(fileBuffer,
+			"%s %d %d\n"
+			"%[^\r]\n"
+			"-1\n%n",
 			_locations[index].name,
 			&(_locations[index].data1),
-			&(_locations[index].data2));
+			&(_locations[index].data2),
+			_locations[index].desc,
+			&bytesRead);
+		fileBuffer += bytesRead;
 
-		f.readLine(_locations[index].desc, 50);
 		stripUndies(_locations[index].desc);
-
-		// Skip seperator lines
-		f.readLine(line, LINE_BUFFER_SIZE);
-		f.readLine(line, LINE_BUFFER_SIZE);
 	}
 
-	f.close();
+	delete[] originalFileBuffer;
+
 /*	for (int i = 0; i < _locationsNum; ++i) {
-		printf("%d %s %d %d %s\n", 
+		printf("%d %s %d %d %s\n",
 			i,
 			_locations[i].name,
 			_locations[i].data1,
@@ -122,76 +121,69 @@ void Database::initLocations() {
 	}*/
 }
 
-/* TODO: Convert readlines to initProcs' style */
 void Database::initCharacters() {
 	File f;
+	char *fileBuffer, *originalFileBuffer;
+	int bytesRead;
 
 	f.open(_databasePrefix + ".chr");
-
-	assert(f.readLine(line, LINE_BUFFER_SIZE));
+	fileBuffer = originalFileBuffer = new char[f.size() + 1];
+	f.read(fileBuffer, f.size());
+	fileBuffer[f.size()] = '\0';
+	f.close();
 
 	// Get number of entries in file
-	sscanf(line, "%d", &_charactersNum);
+	sscanf(fileBuffer, "%d\n\n%n", &_charactersNum, &bytesRead);
+	fileBuffer += bytesRead;
 	printf("%d chr entries\n", _charactersNum);
-
-	// Skip empty line
-	f.readLine(line, LINE_BUFFER_SIZE);
 
 	_characters = new Character[_charactersNum];
 
 	for (int i = 0; i < _charactersNum; ++i) {
 		int index;
 
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d", &index);
+		sscanf(fileBuffer, "%d%n", &index, &bytesRead);
+		fileBuffer += bytesRead;
 
-		sscanf(line, "%*d %s %d %d", 
+		sscanf(fileBuffer,
+			"%s %d %d\n"
+			"%[^\r]\n"
+			"%d\n"
+			"%d %d %d %d %d\n"
+			"%d %d %d\n"
+			"%d %d %d %d\n"
+			"%d %d %d %d\n\n%n",
 			_characters[index].name,
 			&(_characters[index].data1),
-			&(_characters[index].data2));
-
-		f.readLine(_characters[index].desc, 50);
-		stripUndies(_characters[index].desc);
-		
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d", &(_characters[index].proc));
-
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d %d %d %d %d", 
+			&(_characters[index].data2),
+			_characters[index].desc,
+			&(_characters[index].proc),
 			&(_characters[index].locationId),
 			&(_characters[index].data4),
 			&(_characters[index].data5),
 			&(_characters[index].data6),
-			&(_characters[index].data7));
-
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d %d %d", 
+			&(_characters[index].data7),
 			&(_characters[index].data8),
 			&(_characters[index].data9),
-			&(_characters[index].hitpoints));
-
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d %d %d %d", 
+			&(_characters[index].hitpoints),
 			&(_characters[index].data10),
 			&(_characters[index].data11),
 			&(_characters[index].data12),
-			&(_characters[index].data13));
-
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d %d %d %d", 
+			&(_characters[index].data13),
 			&(_characters[index].data14),
 			&(_characters[index].data15),
 			&(_characters[index].data16),
-			&(_characters[index].spellpoints));
+			&(_characters[index].spellpoints),
+			&bytesRead);
+		fileBuffer += bytesRead;
 
-		// Skip seperator lines
-		f.readLine(line, LINE_BUFFER_SIZE);
-		f.readLine(line, LINE_BUFFER_SIZE);
+		stripUndies(_characters[index].desc);
 	}
 
-	f.close();
+	delete[] originalFileBuffer;
+
 /*	for (int i = 0; i < _charactersNum; ++i) {
-		printf("%d %s %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", 
+		printf("%d %s %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
 			i,
 			_characters[i].name,
 			_characters[i].data1,
@@ -217,44 +209,44 @@ void Database::initCharacters() {
 	}*/
 }
 
-/* TODO: Convert readlines to initProcs' style */
 void Database::initObjects() {
 	File f;
+	char *fileBuffer, *originalFileBuffer;
+	int bytesRead;
 
 	f.open(_databasePrefix + ".obs");
-
-	assert(f.readLine(line, LINE_BUFFER_SIZE));
+	fileBuffer = originalFileBuffer = new char[f.size() + 1];
+	f.read(fileBuffer, f.size());
+	fileBuffer[f.size()] = '\0';
+	f.close();
 
 	// Get number of entries in file
-	sscanf(line, "%d", &_objectsNum);
+	sscanf(fileBuffer, "%d\n\n%n", &_objectsNum, &bytesRead);
+	fileBuffer += bytesRead;
 	printf("%d obs entries\n", _objectsNum);
-
-	// Skip empty line
-	f.readLine(line, LINE_BUFFER_SIZE);
 
 	_objects = new Object[_objectsNum];
 
-	for (int i = 0; i < _objectsNum; ++i) {
+	// There are less objects than reported
+	for (int i = 0; i < _objectsNum && bytesRead > 3; ++i) {
 		int index;
 
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d", &index);
+		sscanf(fileBuffer, "%d%n", &index, &bytesRead);
+		fileBuffer += bytesRead;
 
-		sscanf(line, "%*d %s %d", 
+		sscanf(fileBuffer,
+			"%s %d\n"
+			"%[^\r]\n"
+			"%d %d %d\n"
+			"%d %d %d %d %d %d %d %d\n"
+			"%d %d %d %d %d\n"
+			"%d %d%n",
 			_objects[index].name,
-			&(_objects[index].data1));
-
-		f.readLine(_objects[index].desc, 50);
-		stripUndies(_objects[index].desc);
-		
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d %d %d", 
+			&(_objects[index].data1),
+			_objects[index].desc,
 			&(_objects[index].type),
 			&(_objects[index].data2),
-			&(_objects[index].proc));
-
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d %d %d %d %d %d %d %d", 
+			&(_objects[index].proc),
 			&(_objects[index].data4),
 			&(_objects[index].data5),
 			&(_objects[index].data6),
@@ -262,35 +254,37 @@ void Database::initObjects() {
 			&(_objects[index].isVisible),
 			&(_objects[index].data8),
 			&(_objects[index].data9),
-			&(_objects[index].data10));
-
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d %d %d %d %d", 
+			&(_objects[index].data10),
 			&(_objects[index].price),
 			&(_objects[index].data11),
 			&(_objects[index].spellCost),
 			&(_objects[index].data12),
-			&(_objects[index].data13));
-
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d %d", 
+			&(_objects[index].data13),
 			&(_objects[index].locationType),
-			&(_objects[index].locationId));
+			&(_objects[index].locationId),
+			&bytesRead);
+		fileBuffer += bytesRead;
 
-		if (_objects[index].locationType == 1)
-			sscanf(line, "%*d %*d %d %d %d %d", 
+		stripUndies(_objects[index].desc);
+
+		if (_objects[index].locationType == 1) {
+			sscanf(fileBuffer, "%d %d %d %d%n",
 				&(_objects[index].data15),
 				&(_objects[index].data16),
 				&(_objects[index].data17),
-				&(_objects[index].data18));
+				&(_objects[index].data18),
+				&bytesRead);
+			fileBuffer += bytesRead;
+		}
 
-		// Skip seperator line
-		f.readLine(line, LINE_BUFFER_SIZE);
+		sscanf(fileBuffer, "\n\n%n", &bytesRead);
+		fileBuffer += bytesRead;
 	}
 
-	f.close();
+	delete[] originalFileBuffer;
+
 /*	for (int i = 0; i < _objectsNum; ++i) {
-		printf("%d %s %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", 
+		printf("%d %s %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
 			i,
 			_objects[i].name,
 			_objects[i].data1,
@@ -311,51 +305,49 @@ void Database::initObjects() {
 			_objects[i].spellCost,
 			_objects[i].data12,
 			_objects[i].data13,
-			_objects[i].data14,
 			_objects[i].locationType,
 			_objects[i].locationId,
+			_objects[i].data15,
 			_objects[i].data16,
 			_objects[i].data17,
 			_objects[i].data18);
 	}*/
 }
 
-/* TODO: Convert readlines to initProcs' style */
 void Database::initEvents() {
 	int entries;
 	File f;
+	char *fileBuffer, *originalFileBuffer;
+	int bytesRead;
 
 	f.open(_databasePrefix + ".box");
-
-	assert(f.readLine(line, LINE_BUFFER_SIZE));
+	fileBuffer = originalFileBuffer = new char[f.size() + 1];
+	f.read(fileBuffer, f.size());
+	fileBuffer[f.size()] = '\0';
+	f.close();
 
 	// Get number of entries in file
-	sscanf(line, "%d", &entries);
-	printf("%d event entries\n", entries);
+	sscanf(fileBuffer, "%d%n", &entries, &bytesRead);
+	fileBuffer += bytesRead;
 
 	for (int i = 0; i < entries; ++i) {
 		int loc;
 		EventLink ev;
 
-		f.readLine(line, LINE_BUFFER_SIZE);
-		sscanf(line, "%d", &loc);
-
-		sscanf(line, "%*d %d %d", &(ev.data1), &(ev.data2)); 
+		sscanf(fileBuffer, "%d %d %d\n_\n%n", &loc, &(ev.data1), &(ev.data2), &bytesRead);
+		fileBuffer += bytesRead;
 
 		_locations[loc].events.push_back(ev);
-
-		// Skip unused data line
-		f.readLine(line, LINE_BUFFER_SIZE);
 	}
 
-	f.close();
-/*	for (int i = 0; i < entries; ++i) {
-		printf("%d %s %d %d %s\n", 
-			i,
-			_locations[i].name,
-			_locations[i].data1,
-			_locations[i].data2,
-			_locations[i].desc);
+	delete[] originalFileBuffer;
+
+/*	for (int i = 0; i < _locationsNum; ++i) {
+		printf("location %d\n", i);
+		for (Common::List<EventLink>::iterator j = _locations[i].events.begin(); j != _locations[i].events.end(); ++j) {
+		printf("%d %d\n",
+			j->data1, j->data2);
+		}
 	}*/
 }
 
@@ -373,7 +365,6 @@ void Database::initObjectLocs() {
 void Database::initCharacterLocs() {
 	for (int i = 0; i < _charactersNum; ++i)
 		_locations[_characters[i].locationId].characters.push_back(i);
-	
 }
 
 void Database::initProcs() {
@@ -407,10 +398,10 @@ void Database::initProcs() {
 		sscanf(fileBuffer, "%d%n", &index, &bytesRead);
 		fileBuffer += bytesRead;
 
-		sscanf(fileBuffer, "\n%[^\n]\n%n", _processes[index].name, &bytesRead); 
+		sscanf(fileBuffer, "\n%[^\r]\n%n", _processes[index].name, &bytesRead);
 		fileBuffer += bytesRead;
 
-		sscanf(fileBuffer, "%d%n", &cmd, &bytesRead); 
+		sscanf(fileBuffer, "%d%n", &cmd, &bytesRead);
 		fileBuffer += bytesRead;
 
 		// Read commands
@@ -420,12 +411,12 @@ void Database::initProcs() {
 
 			// Read special cmd with value
 			if (cmd == 319 || cmd == 320 || cmd == 321) {
-				sscanf(fileBuffer, "%hu%n", &(cmdObject.value), &bytesRead); 
+				sscanf(fileBuffer, "%hu%n", &(cmdObject.value), &bytesRead);
 				fileBuffer += bytesRead;
 			}
 
 			// Read opcodes
-			sscanf(fileBuffer, "%d%n", &opcode, &bytesRead); 
+			sscanf(fileBuffer, "%d%n", &opcode, &bytesRead);
 			fileBuffer += bytesRead;
 
 			while (opcode != -1) {
@@ -435,27 +426,27 @@ void Database::initProcs() {
 				switch (opcode) {
 					// string + int/short
 					case 474:
-						sscanf(fileBuffer, "%s %d%n", opObject.arg1, &(opObject.arg2), &bytesRead); 
+						sscanf(fileBuffer, "%s %d%n", opObject.arg1, &(opObject.arg2), &bytesRead);
 						fileBuffer += bytesRead;
 						break;
 
 					// string
 					case 467:
 					case 469:
-						sscanf(fileBuffer, "%s%n", opObject.arg1, &bytesRead); 
+						sscanf(fileBuffer, "%s%n", opObject.arg1, &bytesRead);
 						fileBuffer += bytesRead;
 						break;
 
 					// string + int + int + int
 					case 468:
 						sscanf(fileBuffer, "%s %d %d %d%n", opObject.arg1, &(opObject.arg2),
-						       &(opObject.arg3), &(opObject.arg4), &bytesRead); 
+						       &(opObject.arg3), &(opObject.arg4), &bytesRead);
 						fileBuffer += bytesRead;
 						break;
 
 					// short + string - never reached
 					case 99999:
-						sscanf(fileBuffer, "%d %s%n", &(opObject.arg2), opObject.arg1, &bytesRead); 
+						sscanf(fileBuffer, "%d %s%n", &(opObject.arg2), opObject.arg1, &bytesRead);
 						fileBuffer += bytesRead;
 						break;
 
@@ -488,7 +479,7 @@ void Database::initProcs() {
 					case 446:
 					case 448:
 					case 491:
-						sscanf(fileBuffer, "%d%n", &(opObject.arg2), &bytesRead); 
+						sscanf(fileBuffer, "%d%n", &(opObject.arg2), &bytesRead);
 						fileBuffer += bytesRead;
 						break;
 
@@ -543,7 +534,7 @@ void Database::initProcs() {
 					case 489:
 					case 490:
 					case 492:
-						sscanf(fileBuffer, "%d %d%n", &(opObject.arg2), &(opObject.arg3), &bytesRead); 
+						sscanf(fileBuffer, "%d %d%n", &(opObject.arg2), &(opObject.arg3), &bytesRead);
 						fileBuffer += bytesRead;
 						break;
 
@@ -556,14 +547,14 @@ void Database::initProcs() {
 					case 478:
 					case 479:
 					case 488:
-						sscanf(fileBuffer, "%d %d %d%n", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4), &bytesRead); 
+						sscanf(fileBuffer, "%d %d %d%n", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4), &bytesRead);
 						fileBuffer += bytesRead;
 						break;
 
 					// int + int + int + int + int
 					case 438:
 						sscanf(fileBuffer, "%d %d %d %d %d%n", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4),
-							   &(opObject.arg5), &(opObject.arg6), &bytesRead); 
+							   &(opObject.arg5), &(opObject.arg6), &bytesRead);
 						fileBuffer += bytesRead;
 						break;
 
@@ -590,13 +581,13 @@ void Database::initProcs() {
 
 				cmdObject.opcodes.push_back(opObject);
 
-				sscanf(fileBuffer, "%d%n", &opcode, &bytesRead); 
+				sscanf(fileBuffer, "%d%n", &opcode, &bytesRead);
 				fileBuffer += bytesRead;
 			}
 
 			_processes[index].commands.push_back(cmdObject);
 
-			sscanf(fileBuffer, "%d%n", &cmd, &bytesRead); 
+			sscanf(fileBuffer, "%d%n", &cmd, &bytesRead);
 			fileBuffer += bytesRead;
 		}
 	}

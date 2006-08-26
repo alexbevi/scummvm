@@ -40,7 +40,12 @@ struct EventLink {
 };
 
 struct Object {
-	Object() : type(0) {}
+	Object() : data1(0), type(0), data2(0), proc(0),
+	           data4(0), data5(0), data6(0), isUseImmediate(0), isVisible(0), data8(0),
+	           data9(0), data10(0), price(0), data11(0), spellCost(0), data12(0),
+	           data13(0), locationType(0), locationId(0), data15(0), data16(0), data17(0),
+	           data18(0) {}
+
 	char name[7];
 	int data1;
 	char desc[50];
