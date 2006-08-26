@@ -75,7 +75,7 @@ struct Object {
 
 struct Character {
 	char name[7];
-	int data1;
+	int xtend;
 	int data2;
 	char desc[50];
 	int proc;
@@ -100,7 +100,7 @@ struct Character {
 
 struct Location {
 	char name[7];
-	int data1;
+	int xtend;
 	int data2;
 	char desc[50];
 	Common::List<EventLink> events;

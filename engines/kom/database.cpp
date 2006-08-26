@@ -100,7 +100,7 @@ void Database::initLocations() {
 			"%[^\r]\n"
 			"-1\n%n",
 			_locations[index].name,
-			&(_locations[index].data1),
+			&(_locations[index].xtend),
 			&(_locations[index].data2),
 			_locations[index].desc,
 			&bytesRead);
@@ -115,7 +115,7 @@ void Database::initLocations() {
 		printf("%d %s %d %d %s\n",
 			i,
 			_locations[i].name,
-			_locations[i].data1,
+			_locations[i].xtend,
 			_locations[i].data2,
 			_locations[i].desc);
 	}*/
@@ -154,7 +154,7 @@ void Database::initCharacters() {
 			"%d %d %d %d\n"
 			"%d %d %d %d\n\n%n",
 			_characters[index].name,
-			&(_characters[index].data1),
+			&(_characters[index].xtend),
 			&(_characters[index].data2),
 			_characters[index].desc,
 			&(_characters[index].proc),
@@ -186,7 +186,7 @@ void Database::initCharacters() {
 		printf("%d %s %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
 			i,
 			_characters[i].name,
-			_characters[i].data1,
+			_characters[i].xtend,
 			_characters[i].data2,
 			_characters[i].desc,
 			_characters[i].proc,
