@@ -269,7 +269,7 @@ void Database::initObjects() {
 
 		if (_objects[index].locationType == 1) {
 			sscanf(fileBuffer, "%d %d %d %d%n",
-				&(_objects[index].data15),
+				&(_objects[index].box),
 				&(_objects[index].data16),
 				&(_objects[index].data17),
 				&(_objects[index].data18),
@@ -307,7 +307,7 @@ void Database::initObjects() {
 			_objects[i].data13,
 			_objects[i].locationType,
 			_objects[i].locationId,
-			_objects[i].data15,
+			_objects[i].box,
 			_objects[i].data16,
 			_objects[i].data17,
 			_objects[i].data18);
