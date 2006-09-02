@@ -156,6 +156,8 @@ public:
 
 	static void stripUndies(char *s);
 
+	int8 loc2loc(int from, int to) { return ((int8)(_routes[(int8)(_routes[0]) * to + from + 1])); }
+
 private:
 	void loadConvIndex();
 	void initLocations();
