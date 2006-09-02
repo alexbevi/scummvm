@@ -65,6 +65,7 @@ void ActorManager::loadMouse(FilesystemNode dirNode, String name) {
 	_mouseActor->defineScope(6, 31, 31, 31);
 
 	_mouseActor->setScope(0, 2);
+	_mouseActor->setPos(0, 0);
 
 	// Init CursorMan
 	_vm->screen()->displayMouse();
