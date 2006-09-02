@@ -129,6 +129,24 @@ struct Process {
 	Common::List<Command> commands;
 };
 
+struct Exit {
+	int16 exit;
+	int16 exitLoc;
+	int16 exitBox;
+};
+
+struct Box {
+	int16 x1, y1, x2, y2, priority;
+	int32 z1, z2;
+	int16 attrib;
+	int8 joins[6];
+};
+
+struct LocRoute {
+	Exit exits[6];
+	Box boxes[32];
+};
+
 class Database {
 public:
 	Database(KomEngine *vm, OSystem *system);
@@ -147,6 +165,7 @@ private:
 	void initObjectLocs();
 	void initCharacterLocs();
 	void initProcs();
+	void initRoutes();
 
 	OSystem *_system;
 	KomEngine *_vm;
@@ -170,6 +189,15 @@ private:
 
 	int _convIndexSize;
 	byte *_convIndex;
+
+	int _mapSize;
+	byte *_map;
+
+	int _routesSize;
+	byte *_routes;
+
+	static const int _locRoutesSize;
+	LocRoute *_locRoutes;
 };
 } // End of namespace Kom
 

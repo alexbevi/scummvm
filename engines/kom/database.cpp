@@ -32,11 +32,17 @@ using Common::File;
 
 namespace Kom {
 
+const int Database::_locRoutesSize = 111;
+
 Database::Database(KomEngine *vm, OSystem *system)
 	: _system(system), _vm(vm) {
 	_locations = 0;
 	_characters = 0;
 	_objects = 0;
+
+	_routes = 0;
+	_map = 0;
+	_locRoutes = 0;
 }
 
 Database::~Database() {
@@ -46,6 +52,9 @@ Database::~Database() {
 	delete[] _dataSegment;
 	delete[] _processes;
 	delete[] _convIndex;
+	delete[] _routes;
+	delete[] _map;
+	delete[] _locRoutes;
 }
 
 void Database::init(Common::String databasePrefix) {
@@ -59,6 +68,7 @@ void Database::init(Common::String databasePrefix) {
 	initObjectLocs();
 	initCharacterLocs();
 	//initProcs();
+	initRoutes();
 }
 
 void Database::loadConvIndex() {
@@ -588,6 +598,129 @@ void Database::initProcs() {
 			_processes[index].commands.push_back(cmdObject);
 
 			sscanf(fileBuffer, "%d%n", &cmd, &bytesRead);
+			fileBuffer += bytesRead;
+		}
+	}
+
+	delete[] originalFileBuffer;
+}
+
+void Database::initRoutes() {
+	File f;
+	char *fileBuffer, *originalFileBuffer;
+	int bytesRead;
+	char keyword[30];
+	int16 locIndex = 0;
+	int16 boxIndex = 0;
+	int32 parmIndex, parmData;
+
+	f.open("test0r.rou");
+	_routesSize = f.size();
+	_routes = new byte[_routesSize];
+	f.read(_routes, _routesSize);
+	f.close();
+
+	f.open("test0r.map");
+	_mapSize = f.size();
+	_map = new byte[_mapSize];
+	f.read(_map, _mapSize);
+	f.close();
+
+	_locRoutes = new LocRoute[_locRoutesSize];
+	f.open("test0r.ked");
+
+	fileBuffer = originalFileBuffer = new char[f.size() + 1];
+	f.read(fileBuffer, f.size());
+	fileBuffer[f.size()] = '\0';
+	f.close();
+
+	while (sscanf(fileBuffer, "%s%n", keyword, &bytesRead) != EOF) {
+		fileBuffer += bytesRead;
+
+		if (strcmp(keyword, "LOC") == 0) {
+			sscanf(fileBuffer, "%hd%n", &locIndex, &bytesRead);
+			fileBuffer += bytesRead;
+
+		} else if (strcmp(keyword, "exits") == 0) {
+			sscanf(fileBuffer, "%d %d%n", &parmIndex, &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].exits[parmIndex].exit = parmData;
+
+		} else if (strcmp(keyword, "exit_locs") == 0) {
+			sscanf(fileBuffer, "%d %d%n", &parmIndex, &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].exits[parmIndex].exitLoc = parmData;
+
+		} else if (strcmp(keyword, "exit_boxs") == 0) {
+			sscanf(fileBuffer, "%d %d%n", &parmIndex, &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].exits[parmIndex].exitBox = parmData;
+
+		} else if (strcmp(keyword, "BOX") == 0) {
+			sscanf(fileBuffer, "%hd%n", &boxIndex, &bytesRead);
+			fileBuffer += bytesRead;
+
+
+		} else if (strcmp(keyword, "x1") == 0) {
+			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].boxes[boxIndex].x1 = parmData;
+
+		} else if (strcmp(keyword, "y1") == 0) {
+			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].boxes[boxIndex].y1 = parmData;
+
+		} else if (strcmp(keyword, "x2") == 0) {
+			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].boxes[boxIndex].x2 = parmData;
+
+		} else if (strcmp(keyword, "y2") == 0) {
+			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].boxes[boxIndex].y2 = parmData;
+
+		} else if (strcmp(keyword, "priority") == 0) {
+			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].boxes[boxIndex].priority = parmData;
+
+		} else if (strcmp(keyword, "z1") == 0) {
+			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].boxes[boxIndex].z1 = parmData;
+
+		} else if (strcmp(keyword, "z2") == 0) {
+			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].boxes[boxIndex].z2 = parmData;
+
+		} else if (strcmp(keyword, "attrib") == 0) {
+			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].boxes[boxIndex].attrib = parmData;
+
+		} else if (strcmp(keyword, "joins") == 0) {
+			sscanf(fileBuffer, "%d %d%n", &parmIndex, &parmData, &bytesRead);
+			fileBuffer += bytesRead;
+
+			_locRoutes[locIndex].boxes[boxIndex].joins[parmIndex] = parmData;
+
+		// Skip the entire line
+		} else {
+			sscanf(fileBuffer, "%*[^\n]%n", &bytesRead);
 			fileBuffer += bytesRead;
 		}
 	}
