@@ -67,7 +67,7 @@ void Database::init(Common::String databasePrefix) {
 	initEvents();
 	initObjectLocs();
 	initCharacterLocs();
-	//initProcs();
+	initProcs();
 	initRoutes();
 }
 
@@ -83,43 +83,33 @@ void Database::loadConvIndex() {
 
 void Database::initLocations() {
 	File f;
-	char *fileBuffer, *originalFileBuffer;
-	int bytesRead;
 
 	f.open(_databasePrefix + ".loc");
-	fileBuffer = originalFileBuffer = new char[f.size() + 1];
-	f.read(fileBuffer, f.size());
-	fileBuffer[f.size()] = '\0';
-	f.close();
 
 	// Get number of entries in file
-	sscanf(fileBuffer, "%d\n\n%n", &_locationsNum, &bytesRead);
-	fileBuffer += bytesRead;
+	f.scanf("%d\n\n", &_locationsNum);
 	printf("%d loc entries\n", _locationsNum);
 
 	_locations = new Location[_locationsNum];
 
-	for (int i = 0; i < _locationsNum && bytesRead > 3; ++i) {
+	for (int i = 0; i < _locationsNum; ++i) {
 		int index;
 
-		sscanf(fileBuffer, "%d%n", &index, &bytesRead);
-		fileBuffer += bytesRead;
+		f.scanf("%d", &index);
 
-		sscanf(fileBuffer,
+		f.scanf(
 			"%s %d %d\n"
 			"%[^\r]\n"
-			"-1\n%n",
+			"-1\n",
 			_locations[index].name,
 			&(_locations[index].xtend),
 			&(_locations[index].data2),
-			_locations[index].desc,
-			&bytesRead);
-		fileBuffer += bytesRead;
+			_locations[index].desc);
 
 		stripUndies(_locations[index].desc);
 	}
 
-	delete[] originalFileBuffer;
+	f.close();
 
 /*	for (int i = 0; i < _locationsNum; ++i) {
 		printf("%d %s %d %d %s\n",
@@ -133,18 +123,11 @@ void Database::initLocations() {
 
 void Database::initCharacters() {
 	File f;
-	char *fileBuffer, *originalFileBuffer;
-	int bytesRead;
 
 	f.open(_databasePrefix + ".chr");
-	fileBuffer = originalFileBuffer = new char[f.size() + 1];
-	f.read(fileBuffer, f.size());
-	fileBuffer[f.size()] = '\0';
-	f.close();
 
 	// Get number of entries in file
-	sscanf(fileBuffer, "%d\n\n%n", &_charactersNum, &bytesRead);
-	fileBuffer += bytesRead;
+	f.scanf("%d\n\n", &_charactersNum);
 	printf("%d chr entries\n", _charactersNum);
 
 	_characters = new Character[_charactersNum];
@@ -152,17 +135,16 @@ void Database::initCharacters() {
 	for (int i = 0; i < _charactersNum; ++i) {
 		int index;
 
-		sscanf(fileBuffer, "%d%n", &index, &bytesRead);
-		fileBuffer += bytesRead;
+		f.scanf("%d", &index);
 
-		sscanf(fileBuffer,
+		f.scanf(
 			"%s %d %d\n"
 			"%[^\r]\n"
 			"%d\n"
 			"%d %d %d %d %d\n"
 			"%d %d %d\n"
 			"%d %d %d %d\n"
-			"%d %d %d %d\n\n%n",
+			"%d %d %d %d\n\n",
 			_characters[index].name,
 			&(_characters[index].xtend),
 			&(_characters[index].data2),
@@ -183,14 +165,12 @@ void Database::initCharacters() {
 			&(_characters[index].data14),
 			&(_characters[index].data15),
 			&(_characters[index].data16),
-			&(_characters[index].spellpoints),
-			&bytesRead);
-		fileBuffer += bytesRead;
+			&(_characters[index].spellpoints));
 
 		stripUndies(_characters[index].desc);
 	}
 
-	delete[] originalFileBuffer;
+	f.close();
 
 /*	for (int i = 0; i < _charactersNum; ++i) {
 		printf("%d %s %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
@@ -221,36 +201,28 @@ void Database::initCharacters() {
 
 void Database::initObjects() {
 	File f;
-	char *fileBuffer, *originalFileBuffer;
-	int bytesRead;
 
 	f.open(_databasePrefix + ".obs");
-	fileBuffer = originalFileBuffer = new char[f.size() + 1];
-	f.read(fileBuffer, f.size());
-	fileBuffer[f.size()] = '\0';
-	f.close();
 
 	// Get number of entries in file
-	sscanf(fileBuffer, "%d\n\n%n", &_objectsNum, &bytesRead);
-	fileBuffer += bytesRead;
+	f.scanf("%d", &_objectsNum);
 	printf("%d obs entries\n", _objectsNum);
 
 	_objects = new Object[_objectsNum];
 
 	// There are less objects than reported
-	for (int i = 0; i < _objectsNum && bytesRead > 3; ++i) {
+	for (int i = 0; i < _objectsNum; ++i) {
 		int index;
 
-		sscanf(fileBuffer, "%d%n", &index, &bytesRead);
-		fileBuffer += bytesRead;
+		f.scanf("%d", &index);
 
-		sscanf(fileBuffer,
+		f.scanf(
 			"%s %d\n"
 			"%[^\r]\n"
 			"%d %d %d\n"
 			"%d %d %d %d %d %d %d %d\n"
 			"%d %d %d %d %d\n"
-			"%d %d%n",
+			"%d %d",
 			_objects[index].name,
 			&(_objects[index].data1),
 			_objects[index].desc,
@@ -271,27 +243,20 @@ void Database::initObjects() {
 			&(_objects[index].data12),
 			&(_objects[index].data13),
 			&(_objects[index].locationType),
-			&(_objects[index].locationId),
-			&bytesRead);
-		fileBuffer += bytesRead;
+			&(_objects[index].locationId));
 
 		stripUndies(_objects[index].desc);
 
 		if (_objects[index].locationType == 1) {
-			sscanf(fileBuffer, "%d %d %d %d%n",
+			f.scanf("%d %d %d %d",
 				&(_objects[index].box),
 				&(_objects[index].data16),
 				&(_objects[index].data17),
-				&(_objects[index].data18),
-				&bytesRead);
-			fileBuffer += bytesRead;
+				&(_objects[index].data18));
 		}
-
-		sscanf(fileBuffer, "\n\n%n", &bytesRead);
-		fileBuffer += bytesRead;
 	}
 
-	delete[] originalFileBuffer;
+	f.close();
 
 /*	for (int i = 0; i < _objectsNum; ++i) {
 		printf("%d %s %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
@@ -327,30 +292,22 @@ void Database::initObjects() {
 void Database::initEvents() {
 	int entries;
 	File f;
-	char *fileBuffer, *originalFileBuffer;
-	int bytesRead;
 
 	f.open(_databasePrefix + ".box");
-	fileBuffer = originalFileBuffer = new char[f.size() + 1];
-	f.read(fileBuffer, f.size());
-	fileBuffer[f.size()] = '\0';
-	f.close();
 
 	// Get number of entries in file
-	sscanf(fileBuffer, "%d%n", &entries, &bytesRead);
-	fileBuffer += bytesRead;
+	f.scanf("%d", &entries);
 
 	for (int i = 0; i < entries; ++i) {
 		int loc;
 		EventLink ev;
 
-		sscanf(fileBuffer, "%d %d %d\n_\n%n", &loc, &(ev.data1), &(ev.data2), &bytesRead);
-		fileBuffer += bytesRead;
+		f.scanf("%d %d %d\n_\n", &loc, &(ev.data1), &(ev.data2));
 
 		_locations[loc].events.push_back(ev);
 	}
 
-	delete[] originalFileBuffer;
+	f.close();
 
 /*	for (int i = 0; i < _locationsNum; ++i) {
 		printf("location %d\n", i);
@@ -379,24 +336,16 @@ void Database::initCharacterLocs() {
 
 void Database::initProcs() {
 	File f;
-	char *fileBuffer, *originalFileBuffer;
-	int bytesRead;
 
 	f.open(_databasePrefix + ".pro");
-	fileBuffer = originalFileBuffer = new char[f.size() + 1];
-	f.read(fileBuffer, f.size());
-	fileBuffer[f.size()] = '\0';
-	f.close();
 
 	// Get number of entries in file
-	sscanf(fileBuffer, "%d%n", &_varSize, &bytesRead);
-	fileBuffer += bytesRead;
+	f.scanf("%d", &_varSize);
 
 	printf("var size: %d\n", _varSize);
 	_dataSegment = new uint16[_varSize];
 
-	sscanf(fileBuffer, "%d%n", &_procsNum, &bytesRead);
-	fileBuffer += bytesRead;
+	f.scanf("%d", &_procsNum);
 
 	printf("proc entries: %d\n", _procsNum);
 	_processes = new Process[_procsNum];
@@ -405,14 +354,11 @@ void Database::initProcs() {
 		int index;
 		int cmd, opcode;
 
-		sscanf(fileBuffer, "%d%n", &index, &bytesRead);
-		fileBuffer += bytesRead;
+		f.scanf("%d", &index);
 
-		sscanf(fileBuffer, "\n%[^\r]\n%n", _processes[index].name, &bytesRead);
-		fileBuffer += bytesRead;
+		f.scanf("\n%[^\r]\n", _processes[index].name);
 
-		sscanf(fileBuffer, "%d%n", &cmd, &bytesRead);
-		fileBuffer += bytesRead;
+		f.scanf("%d", &cmd);
 
 		// Read commands
 		while (cmd != -1) {
@@ -421,13 +367,11 @@ void Database::initProcs() {
 
 			// Read special cmd with value
 			if (cmd == 319 || cmd == 320 || cmd == 321) {
-				sscanf(fileBuffer, "%hu%n", &(cmdObject.value), &bytesRead);
-				fileBuffer += bytesRead;
+				f.scanf("%hu", &(cmdObject.value));
 			}
 
 			// Read opcodes
-			sscanf(fileBuffer, "%d%n", &opcode, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d", &opcode);
 
 			while (opcode != -1) {
 				OpCode opObject;
@@ -436,28 +380,24 @@ void Database::initProcs() {
 				switch (opcode) {
 					// string + int/short
 					case 474:
-						sscanf(fileBuffer, "%s %d%n", opObject.arg1, &(opObject.arg2), &bytesRead);
-						fileBuffer += bytesRead;
+						f.scanf("%s %d", opObject.arg1, &(opObject.arg2));
 						break;
 
 					// string
 					case 467:
 					case 469:
-						sscanf(fileBuffer, "%s%n", opObject.arg1, &bytesRead);
-						fileBuffer += bytesRead;
+						f.scanf("%s", opObject.arg1);
 						break;
 
 					// string + int + int + int
 					case 468:
-						sscanf(fileBuffer, "%s %d %d %d%n", opObject.arg1, &(opObject.arg2),
-						       &(opObject.arg3), &(opObject.arg4), &bytesRead);
-						fileBuffer += bytesRead;
+						f.scanf("%s %d %d %d", opObject.arg1, &(opObject.arg2),
+						       &(opObject.arg3), &(opObject.arg4));
 						break;
 
 					// short + string - never reached
 					case 99999:
-						sscanf(fileBuffer, "%d %s%n", &(opObject.arg2), opObject.arg1, &bytesRead);
-						fileBuffer += bytesRead;
+						f.scanf("%d %s", &(opObject.arg2), opObject.arg1);
 						break;
 
 					// int
@@ -489,8 +429,7 @@ void Database::initProcs() {
 					case 446:
 					case 448:
 					case 491:
-						sscanf(fileBuffer, "%d%n", &(opObject.arg2), &bytesRead);
-						fileBuffer += bytesRead;
+						f.scanf("%d", &(opObject.arg2));
 						break;
 
 					// int + int
@@ -544,8 +483,7 @@ void Database::initProcs() {
 					case 489:
 					case 490:
 					case 492:
-						sscanf(fileBuffer, "%d %d%n", &(opObject.arg2), &(opObject.arg3), &bytesRead);
-						fileBuffer += bytesRead;
+						f.scanf("%d %d", &(opObject.arg2), &(opObject.arg3));
 						break;
 
 					// int + int + int
@@ -557,15 +495,13 @@ void Database::initProcs() {
 					case 478:
 					case 479:
 					case 488:
-						sscanf(fileBuffer, "%d %d %d%n", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4), &bytesRead);
-						fileBuffer += bytesRead;
+						f.scanf("%d %d %d", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4));
 						break;
 
 					// int + int + int + int + int
 					case 438:
-						sscanf(fileBuffer, "%d %d %d %d %d%n", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4),
-							   &(opObject.arg5), &(opObject.arg6), &bytesRead);
-						fileBuffer += bytesRead;
+						f.scanf("%d %d %d %d %d", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4),
+							   &(opObject.arg5), &(opObject.arg6));
 						break;
 
 					// No arguments
@@ -591,24 +527,20 @@ void Database::initProcs() {
 
 				cmdObject.opcodes.push_back(opObject);
 
-				sscanf(fileBuffer, "%d%n", &opcode, &bytesRead);
-				fileBuffer += bytesRead;
+				f.scanf("%d", &opcode);
 			}
 
 			_processes[index].commands.push_back(cmdObject);
 
-			sscanf(fileBuffer, "%d%n", &cmd, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d", &cmd);
 		}
 	}
 
-	delete[] originalFileBuffer;
+	f.close();
 }
 
 void Database::initRoutes() {
 	File f;
-	char *fileBuffer, *originalFileBuffer;
-	int bytesRead;
 	char keyword[30];
 	int16 locIndex = 0;
 	int16 boxIndex = 0;
@@ -629,103 +561,82 @@ void Database::initRoutes() {
 	_locRoutes = new LocRoute[_locRoutesSize];
 	f.open("test0r.ked");
 
-	fileBuffer = originalFileBuffer = new char[f.size() + 1];
-	f.read(fileBuffer, f.size());
-	fileBuffer[f.size()] = '\0';
-	f.close();
-
-	while (sscanf(fileBuffer, "%s%n", keyword, &bytesRead) != EOF) {
-		fileBuffer += bytesRead;
+	while (f.scanf("%s", keyword) != EOF) {
 
 		if (strcmp(keyword, "LOC") == 0) {
-			sscanf(fileBuffer, "%hd%n", &locIndex, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%hd", &locIndex);
 
 		} else if (strcmp(keyword, "exits") == 0) {
-			sscanf(fileBuffer, "%d %d%n", &parmIndex, &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d %d", &parmIndex, &parmData);
 
 			_locRoutes[locIndex].exits[parmIndex].exit = parmData;
 
 		} else if (strcmp(keyword, "exit_locs") == 0) {
-			sscanf(fileBuffer, "%d %d%n", &parmIndex, &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d %d", &parmIndex, &parmData);
 
 			_locRoutes[locIndex].exits[parmIndex].exitLoc = parmData;
 
 		} else if (strcmp(keyword, "exit_boxs") == 0) {
-			sscanf(fileBuffer, "%d %d%n", &parmIndex, &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d %d", &parmIndex, &parmData);
 
 			_locRoutes[locIndex].exits[parmIndex].exitBox = parmData;
 
 		} else if (strcmp(keyword, "BOX") == 0) {
-			sscanf(fileBuffer, "%hd%n", &boxIndex, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%hd", &boxIndex);
 
 
 		} else if (strcmp(keyword, "x1") == 0) {
-			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].x1 = parmData;
 
 		} else if (strcmp(keyword, "y1") == 0) {
-			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].y1 = parmData;
 
 		} else if (strcmp(keyword, "x2") == 0) {
-			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].x2 = parmData;
 
 		} else if (strcmp(keyword, "y2") == 0) {
-			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].y2 = parmData;
 
 		} else if (strcmp(keyword, "priority") == 0) {
-			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].priority = parmData;
 
 		} else if (strcmp(keyword, "z1") == 0) {
-			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].z1 = parmData;
 
 		} else if (strcmp(keyword, "z2") == 0) {
-			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].z2 = parmData;
 
 		} else if (strcmp(keyword, "attrib") == 0) {
-			sscanf(fileBuffer, "%d%n", &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].attrib = parmData;
 
 		} else if (strcmp(keyword, "joins") == 0) {
-			sscanf(fileBuffer, "%d %d%n", &parmIndex, &parmData, &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%d %d", &parmIndex, &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].joins[parmIndex] = parmData;
 
 		// Skip the entire line
 		} else {
-			sscanf(fileBuffer, "%*[^\n]%n", &bytesRead);
-			fileBuffer += bytesRead;
+			f.scanf("%*[^\n]");
 		}
 	}
 
-	delete[] originalFileBuffer;
+	f.close();
 }
 
 void Database::stripUndies(char *s) {

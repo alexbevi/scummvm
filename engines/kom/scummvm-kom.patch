@@ -1,6 +1,6 @@
 Index: configure
 ===================================================================
---- configure	(revision 23678)
+--- configure	(revision 23829)
 +++ configure	(working copy)
 @@ -60,6 +60,7 @@
  _build_lure=no
@@ -10,7 +10,7 @@ Index: configure
  _need_memalign=no
  _build_plugins=no
  _nasm=auto
-@@ -331,6 +332,7 @@
+@@ -332,6 +333,7 @@
    --enable-lure            build the Lure of the Temptress engine
    --enable-cine            build the Cinematique engine evo 1
    --enable-agi             build the AGI engine
@@ -18,7 +18,7 @@ Index: configure
    --enable-plugins         build engines as loadable modules instead of
                             static linking them
    --disable-mt32emu        don't enable the integrated MT-32 emulator
-@@ -399,6 +401,7 @@
+@@ -400,6 +402,7 @@
        --enable-lure)            _build_lure=yes ;;
        --enable-cine)            _build_cine=yes ;;
        --enable-agi)             _build_agi=yes ;;
@@ -26,7 +26,7 @@ Index: configure
        --disable-hq-scalers)     _build_hq_scalers=no ;;
        --disable-scalers)        _build_scalers=no ;;
        --enable-alsa)            _alsa=yes       ;;
-@@ -1240,10 +1243,12 @@
+@@ -1251,10 +1254,12 @@
  if test "$_build_cine" = yes ; then
  	echo "    Cinematique evo 1"
  fi
@@ -40,22 +40,43 @@ Index: configure
  
  echo
  
-Index: engines/module.mk
+Index: common/file.cpp
 ===================================================================
---- engines/module.mk	(revision 23678)
-+++ engines/module.mk	(working copy)
-@@ -79,3 +79,8 @@
- MODULES += engines/agi
- endif
+--- common/file.cpp	(revision 23829)
++++ common/file.cpp	(working copy)
+@@ -20,6 +20,8 @@
+  *
+  */
  
-+ifdef DISABLE_KOM
-+DEFINES += -DDISABLE_KOM
-+else 
-+MODULES += engines/kom
-+endif
++#include <stdarg.h>
++
+ #include "common/file.h"
+ #include "common/fs.h"
+ #include "common/hashmap.h"
+@@ -446,4 +448,20 @@
+ 	return len;
+ }
+ 
++int File::scanf(const char *format, ...) {
++	va_list arg;
++	int done;
++
++	if (_handle == NULL) {
++		error("File::scanf: File is not open!");
++		return 0;
++	}
++
++	va_start(arg, format);
++	done = vfscanf(_handle, format, arg);
++	va_end(arg);
++
++	return done;
++}
++
+ }	// End of namespace Common
 Index: common/fs.h
 ===================================================================
---- common/fs.h	(revision 23678)
+--- common/fs.h	(revision 23829)
 +++ common/fs.h	(working copy)
 @@ -82,7 +82,7 @@
  
@@ -66,9 +87,35 @@ Index: common/fs.h
  	 * triggered.
  	 */
  	FilesystemNode();
+Index: common/file.h
+===================================================================
+--- common/file.h	(revision 23829)
++++ common/file.h	(working copy)
+@@ -140,6 +140,8 @@
+ 	void seek(int32 offs, int whence = SEEK_SET);
+ 	uint32 read(void *dataPtr, uint32 dataSize);
+ 	uint32 write(const void *dataPtr, uint32 dataSize);
++
++	int scanf(const char *format, ...);
+ };
+ 
+ } // End of namespace Common
+Index: engines/module.mk
+===================================================================
+--- engines/module.mk	(revision 23829)
++++ engines/module.mk	(working copy)
+@@ -79,3 +79,8 @@
+ MODULES += engines/agi
+ endif
+ 
++ifdef DISABLE_KOM
++DEFINES += -DDISABLE_KOM
++else 
++MODULES += engines/kom
++endif
 Index: base/plugins.cpp
 ===================================================================
---- base/plugins.cpp	(revision 23678)
+--- base/plugins.cpp	(revision 23829)
 +++ base/plugins.cpp	(working copy)
 @@ -382,6 +382,9 @@
  	#ifndef DISABLE_AGI
