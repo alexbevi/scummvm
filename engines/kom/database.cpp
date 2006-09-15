@@ -197,6 +197,8 @@ void Database::initCharacters() {
 			_characters[i].data16,
 			_characters[i].spellpoints);
 	}*/
+
+	// TODO: load scp file
 }
 
 void Database::initObjects() {
