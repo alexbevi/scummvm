@@ -23,13 +23,13 @@
 #ifndef KOM_DEBUGGER_H
 #define KOM_DEBUGGER_H
 
-#include "common/debugger.h"
+#include "gui/debugger.h"
 
 namespace Kom {
 
 class KomEngine;
 
-class Debugger : public Common::Debugger<Debugger> {
+class Debugger : public GUI::Debugger {
 public:
 
 	Debugger(KomEngine *vm);
@@ -39,9 +39,6 @@ protected:
 
 	virtual void preEnter();
 	virtual void postEnter();
-
-	bool Cmd_Exit(int argc, const char **argv);
-	bool Cmd_Help(int argc, const char **argv);
 
 private:
 

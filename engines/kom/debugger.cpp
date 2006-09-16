@@ -20,16 +20,14 @@
  *
  */
 
-#include "common/debugger.cpp"
+#include "gui/debugger.cpp"
 
 #include "kom/debugger.h"
 
 namespace Kom {
 
-Debugger::Debugger(KomEngine *vm) : _vm(vm) {
+Debugger::Debugger(KomEngine *vm) : GUI::Debugger(), _vm(vm) {
 
-	DCmd_Register("exit", &Debugger::Cmd_Exit);
-	DCmd_Register("help", &Debugger::Cmd_Help);
 }
 
 Debugger::~Debugger() {} // we need this here for __SYMBIAN32__
@@ -38,31 +36,4 @@ void Debugger::preEnter() {
 
 void Debugger::postEnter() {
 }
-
-bool Debugger::Cmd_Exit(int argc, const char **argv) {
-	_detach_now = true;
-	return false;
-}
-
-bool Debugger::Cmd_Help(int argc, const char **argv) {
-	// console normally has 39 line width
-	// wrap around nicely
-	int width = 0, size, i;
-
-	DebugPrintf("Commands are:\n");
-	for (i = 0 ; i < _dcmd_count ; i++) {
-		size = strlen(_dcmds[i].name) + 1;
-
-		if ((width + size) >= 39) {
-			DebugPrintf("\n");
-			width = size;
-		} else
-			width += size;
-
-		DebugPrintf("%s ", _dcmds[i].name);
-	}
-	DebugPrintf("\n");
-	return true;
-}
-
 } // End of namespace Kom
