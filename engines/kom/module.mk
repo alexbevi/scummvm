@@ -7,6 +7,7 @@ MODULE_OBJS := \
 	actor.o \
 	input.o \
 	panel.o \
+	flicplayer.o \
 	debugger.o \
 	plugin.o
 
