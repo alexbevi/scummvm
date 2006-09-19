@@ -102,7 +102,7 @@ void Input::checkKeys() {
 
 		_system->updateScreen();
 
-		_system->delayMillis(41);
+		_system->delayMillis(10);
 	} while (_system->getMillis() < end);
 
 }
