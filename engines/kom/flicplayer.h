@@ -70,7 +70,6 @@ public:
 	const uint8 *getOffscreen()	const { return _offscreen; }
 
 protected:
-	bool isValidChunk(uint16 type);
 	ChunkHeader readChunkHeader();
 	FrameTypeChunkHeader readFrameTypeChunkHeader(ChunkHeader chunkHead);
 	void decodeByteRun(uint8 *data);
@@ -81,8 +80,9 @@ protected:
 	Common::MemoryReadStream *_flicStream;
 	uint8 * _flicData;
 	uint8 *_offscreen;
-	uint8 _palette[256 * 3];
+	uint8 _palette[256 * 4];
 	FlicHeader _flicInfo;
+	uint16 _currFrame;
 };
 
 } // End of namespace Kom

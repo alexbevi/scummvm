@@ -24,6 +24,7 @@
 #include "common/stdafx.h"
 #include "common/system.h"
 #include "common/file.h"
+#include "common/fs.h"
 #include "common/endian.h"
 #include "graphics/cursorman.h"
 
@@ -36,7 +37,7 @@ using Common::File;
 namespace Kom {
 
 Screen::Screen(KomEngine *vm, OSystem *system)
-	: _system(system), _vm(vm), _c0ColorSet(0) {
+	: _system(system), _vm(vm), _c0ColorSet(0), _roomBackground(0) {
 
 	_screenBuf = new uint8[SCREEN_W * SCREEN_H];
 	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
@@ -51,6 +52,7 @@ Screen::~Screen() {
 	delete[] _screenBuf;
 	delete[] _mouseBuf;
 	delete[] _c0ColorSet;
+	delete _roomBackground;
 }
 
 bool Screen::init() {
@@ -59,7 +61,7 @@ bool Screen::init() {
 		_system->initSize(SCREEN_W, SCREEN_H);
 	_system->endGFXTransaction();
 
-	_system->setPalette(_c0ColorSet, 0, 128);
+	_system->setPalette(_c0ColorSet, 0, 127);
 
 	return true;
 }
@@ -70,6 +72,8 @@ void Screen::update() {
 	_vm->panel()->display();
 	updateCursor();
 	displayMouse();
+	updateBackground();
+	drawBackground();
 	_vm->actorMan()->displayAll();
 	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H);
 	_system->updateScreen();
@@ -226,6 +230,26 @@ void Screen::updateCursor() {
 
 void Screen::drawPanel(const byte *panelData) {
 	memcpy(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H), panelData, SCREEN_W * PANEL_H);
+}
+
+void Screen::loadBackground(FilesystemNode node) {
+	_roomBackground = new FlicPlayer(node);
+}
+
+void Screen::updateBackground() {
+	if (_roomBackground != 0) {
+		_roomBackground->decodeFrame();
+
+		if (_roomBackground->paletteDirty()) {
+			_system->setPalette(_roomBackground->getPalette() + 4 * 128, 128, 255);
+		}
+	}
+}
+
+void Screen::drawBackground() {
+	if (_roomBackground != 0) {
+		memcpy(_screenBuf, _roomBackground->getOffscreen(), SCREEN_W * (SCREEN_H - PANEL_H));
+	}
 }
 
 } // End of namespace Kom

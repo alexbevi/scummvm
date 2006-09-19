@@ -113,6 +113,9 @@ int KomEngine::go() {
 
 	_screen->showMouseCursor(true);
 
+	// temporary test
+	_screen->loadBackground(_fsNode->getChild("kom").getChild("locs").getChild("ft").getChild("ftroad").getChild("ftroad0b.flc"));
+
 	while (_gameLoopState != GAMELOOP_QUIT) {
 		gameLoop();
 	}

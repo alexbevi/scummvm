@@ -26,8 +26,11 @@
 #include "common/system.h"
 #include "common/fs.h"
 
+#include "kom/flicplayer.h"
+
 class OSystem;
 class FilesystemNode;
+class FlicPlayer;
 
 namespace Kom {
 
@@ -62,6 +65,10 @@ public:
 
 	void drawPanel(const byte *panelData);
 
+	void loadBackground(FilesystemNode node);
+	void updateBackground();
+	void drawBackground();
+
 private:
 
 	void drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel);
@@ -72,6 +79,7 @@ private:
 
 	uint8 *_screenBuf;
 	uint8 *_mouseBuf;
+	FlicPlayer *_roomBackground;
 
 	byte *_c0ColorSet;
 };
