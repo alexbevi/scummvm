@@ -61,7 +61,7 @@ bool Screen::init() {
 		_system->initSize(SCREEN_W, SCREEN_H);
 	_system->endGFXTransaction();
 
-	_system->setPalette(_c0ColorSet, 0, 127);
+	_system->setPalette(_c0ColorSet, 0, 128);
 
 	return true;
 }
@@ -241,7 +241,7 @@ void Screen::updateBackground() {
 		_roomBackground->decodeFrame();
 
 		if (_roomBackground->paletteDirty()) {
-			_system->setPalette(_roomBackground->getPalette() + 4 * 128, 128, 255);
+			_system->setPalette(_roomBackground->getPalette() + 4 * 128, 128, 128);
 		}
 	}
 }
