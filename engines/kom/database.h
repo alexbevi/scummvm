@@ -23,12 +23,9 @@
 #ifndef KOM_DATABASE_H
 #define KOM_DATABASE_H
 
-#include "common/scummsys.h"
 #include "common/str.h"
 #include "common/list.h"
 #include "base/engine.h"
-
-//class OSystem;
 
 namespace Kom {
 
@@ -155,6 +152,8 @@ public:
 	void init(Common::String databasePrefix);
 
 	static void stripUndies(char *s);
+
+	Location *location(uint16 locId) const { return &(_locations[locId]); }
 
 	int8 loc2loc(int from, int to) { return ((int8)(_routes[(int8)(_routes[0]) * to + from + 1])); }
 

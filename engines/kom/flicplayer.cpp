@@ -51,8 +51,6 @@ FlicPlayer::FlicPlayer(FilesystemNode flicNode) : _paletteDirty(false), _offscre
 	if (_flicInfo.type != 0xAF12) {
 		error("FlicPlayer::FlicPlayer(): attempted to load non-FLC data (type = 0x%04X)", _flicInfo.type);
 	}
-		
-	printf("%dx%d (%d frames)\n", _flicInfo.width, _flicInfo.height, _flicInfo.numFrames);
 
 	_offscreen = new uint8[_flicInfo.width * _flicInfo.height];
 	memset(_palette, 0, sizeof(_palette));

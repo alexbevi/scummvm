@@ -37,7 +37,7 @@ using Common::File;
 namespace Kom {
 
 Screen::Screen(KomEngine *vm, OSystem *system)
-	: _system(system), _vm(vm), _c0ColorSet(0), _roomBackground(0) {
+	: _system(system), _vm(vm) {
 
 	_screenBuf = new uint8[SCREEN_W * SCREEN_H];
 	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
@@ -46,12 +46,16 @@ Screen::Screen(KomEngine *vm, OSystem *system)
 	memset(_mouseBuf, 0, MOUSE_W * MOUSE_H);
 
 	_c0ColorSet = loadColorSet(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("c0_127.cl"));
+
+	_mask = new uint8[SCREEN_W * (SCREEN_H - PANEL_H)];
+	memset(_mask, 0, SCREEN_W * (SCREEN_H - PANEL_H));
 }
 
 Screen::~Screen() {
 	delete[] _screenBuf;
 	delete[] _mouseBuf;
 	delete[] _c0ColorSet;
+	delete[] _mask;
 	delete _roomBackground;
 }
 
@@ -250,6 +254,10 @@ void Screen::drawBackground() {
 	if (_roomBackground != 0) {
 		memcpy(_screenBuf, _roomBackground->getOffscreen(), SCREEN_W * (SCREEN_H - PANEL_H));
 	}
+}
+
+void Screen::setMask(const uint8 *data) {
+	memcpy(_mask, data, SCREEN_W * (SCREEN_H - PANEL_H));
 }
 
 } // End of namespace Kom

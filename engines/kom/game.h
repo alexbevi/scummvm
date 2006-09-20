@@ -20,32 +20,27 @@
  *
  */
 
-#ifndef KOM_PANEL_H
-#define KOM_PANEL_H
+#ifndef KOM_GAME_H
+#define KOM_GAME_H
 
-#include "common/system.h"
-#include "common/fs.h"
-
-#include "kom/kom.h"
+#include "common/scummsys.h"
+#include "base/engine.h"
 
 namespace Kom {
 
-class Panel {
+class Game {
 public:
-	Panel(KomEngine *vm, FilesystemNode fileNode);
-	~Panel();
+	Game(KomEngine *vm, OSystem *system);
+	~Game();
 
-	void display();
-	void showLoading(bool isLoading);
-	void setLocationDesc(char *desc);
+	void openLocation(uint16 locId);
 
 private:
 
+	OSystem *_system;
 	KomEngine *_vm;
-
-	byte* _panelData;
-
 };
+
 } // End of namespace Kom
 
 #endif

@@ -32,6 +32,7 @@
 #include "kom/panel.h"
 #include "kom/input.h"
 #include "kom/debugger.h"
+#include "kom/game.h"
 
 class FilesystemNode;
 
@@ -41,6 +42,7 @@ class Screen;
 class Database;
 class ActorManager;
 class Debugger;
+class Game;
 
 enum {
 	GAMELOOP_RUNNING = 0,
@@ -64,6 +66,7 @@ public:
 
 	ActorManager *actorMan() const { return _actorMan; }
 	Screen *screen() const { return _screen; }
+	Database *database() const { return _database; }
 	Panel *panel() const { return _panel; }
 
 	FilesystemNode *dataDir() const { return _fsNode; }
@@ -77,6 +80,7 @@ private:
 	Input *_input;
 	Panel *_panel;
 	Debugger *_debugger;
+	Game *_game;
 
 	FilesystemNode *_fsNode;
 	int _selectedChar; // 0 - thidney. 1 - shahron

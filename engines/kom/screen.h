@@ -68,6 +68,7 @@ public:
 	void loadBackground(FilesystemNode node);
 	void updateBackground();
 	void drawBackground();
+	void setMask(const uint8 *data);
 
 private:
 
@@ -79,6 +80,7 @@ private:
 
 	uint8 *_screenBuf;
 	uint8 *_mouseBuf;
+	uint8 *_mask;
 	FlicPlayer *_roomBackground;
 
 	byte *_c0ColorSet;

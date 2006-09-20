@@ -8,6 +8,7 @@ MODULE_OBJS := \
 	input.o \
 	panel.o \
 	flicplayer.o \
+	game.o \
 	debugger.o \
 	plugin.o
 

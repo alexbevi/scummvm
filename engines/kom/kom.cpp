@@ -28,6 +28,7 @@
 #include "kom/actor.h"
 #include "kom/database.h"
 #include "kom/input.h"
+#include "kom/game.h"
 
 using Common::File;
 using Common::String;
@@ -40,6 +41,7 @@ KomEngine::KomEngine(OSystem *system)
 	_database = 0;
 	_actorMan = 0;
 	_input = 0;
+	_game = 0;
 	_gameLoopState = GAMELOOP_RUNNING;
 
 	_fsNode = new FilesystemNode(_gameDataPath);
@@ -56,6 +58,7 @@ KomEngine::~KomEngine() {
 	delete _input;
 	delete _debugger;
 	delete _panel;
+	delete _game;
 }
 
 int KomEngine::init() {
@@ -70,6 +73,7 @@ int KomEngine::init() {
 	_input = new Input(this, _system);
 	_debugger = new Debugger(this);
 	_panel = new Panel(this, _fsNode->getChild("kom").getChild("oneoffs").getChild("pan1.img"));
+	_game = new Game(this, _system);
 
 	// Init the following:
 	/*
@@ -114,7 +118,7 @@ int KomEngine::go() {
 	_screen->showMouseCursor(true);
 
 	// temporary test
-	_screen->loadBackground(_fsNode->getChild("kom").getChild("locs").getChild("ft").getChild("ftroad").getChild("ftroad0b.flc"));
+	_game->openLocation(3);
 
 	while (_gameLoopState != GAMELOOP_QUIT) {
 		gameLoop();

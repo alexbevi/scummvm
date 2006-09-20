@@ -50,4 +50,12 @@ void Panel::display() {
 	_vm->screen()->drawPanel(_panelData);
 }
 
+void Panel::showLoading(bool isLoading) {
+
+}
+
+void Panel::setLocationDesc(char *desc) {
+
+}
+
 } // End of namespace Kom
