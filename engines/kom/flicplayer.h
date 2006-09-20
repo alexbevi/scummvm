@@ -25,7 +25,6 @@
 
 #include "common/stdafx.h"
 #include "common/endian.h"
-#include "common/stream.h"
 #include "common/fs.h"
 
 #include "kom/kom.h"
@@ -33,8 +32,8 @@
 namespace Kom {
 
 typedef struct FlicHeader {
-	uint32 size;	
-	uint16 type;		// 0xAF12 for FLC files
+	uint32 size;
+	uint16 type;
 	uint16 numFrames;
 	uint16 width;
 	uint16 height;
@@ -43,15 +42,15 @@ typedef struct FlicHeader {
 };
 
 typedef struct ChunkHeader {
-	uint32	size;
-	uint16	type;
+	uint32 size;
+	uint16 type;
 };
 
 typedef struct FrameTypeChunkHeader {
 	ChunkHeader header;
-	uint16 numChunks;	
-	uint16 delay;	
-	uint16 reserved;	// always zero
+	uint16 numChunks;
+	uint16 delay;
+	uint16 reserved; // always zero
 	uint16 widthOverride;
 	uint16 heightOverride;
 };
@@ -62,12 +61,12 @@ public:
 	~FlicPlayer();
 
 	bool decodeFrame();
-	int width()			const { return (_flicData ? _flicInfo.width : 0); }
-	int height() 			const { return (_flicData ? _flicInfo.height : 0); }
-	bool hasFrames() 		const { return (_flicData ? _flicInfo.numFrames > 0 : false); }
-	bool paletteDirty()	 	const { return _paletteDirty; }
-	const uint8 *getPalette()	{ _paletteDirty = false; return _palette; }
-	const uint8 *getOffscreen()	const { return _offscreen; }
+	int width() const { return (_flicData ? _flicInfo.width : 0); }
+	int height() const { return (_flicData ? _flicInfo.height : 0); }
+	bool hasFrames() const { return (_flicData ? _flicInfo.numFrames > 0 : false); }
+	bool paletteDirty() const { return _paletteDirty; }
+	const uint8 *getPalette() { _paletteDirty = false; return _palette; }
+	const uint8 *getOffscreen() const { return _offscreen; }
 
 protected:
 	ChunkHeader readChunkHeader();
@@ -77,8 +76,8 @@ protected:
 	void setPalette(uint8 *mem);
 
 	bool _paletteDirty;
-	Common::MemoryReadStream *_flicStream;
 	uint8 * _flicData;
+	uint8 * _flicDataStart;
 	uint8 *_offscreen;
 	uint8 _palette[256 * 4];
 	FlicHeader _flicInfo;
