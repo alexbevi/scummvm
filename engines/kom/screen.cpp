@@ -238,14 +238,19 @@ void Screen::drawPanel(const byte *panelData) {
 
 void Screen::loadBackground(FilesystemNode node) {
 	_roomBackground = new FlicPlayer(node);
+	_roomBackgroundTime = _system->getMillis() + _roomBackground->speed();
 }
 
 void Screen::updateBackground() {
 	if (_roomBackground != 0) {
-		_roomBackground->decodeFrame();
+		if (_system->getMillis() >= _roomBackgroundTime) {
+			_roomBackgroundTime = _system->getMillis() + _roomBackground->speed();
 
-		if (_roomBackground->paletteDirty()) {
-			_system->setPalette(_roomBackground->getPalette() + 4 * 128, 128, 128);
+			_roomBackground->decodeFrame();
+
+			if (_roomBackground->paletteDirty()) {
+				_system->setPalette(_roomBackground->getPalette() + 4 * 128, 128, 128);
+			}
 		}
 	}
 }

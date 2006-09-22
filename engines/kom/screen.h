@@ -82,6 +82,7 @@ private:
 	uint8 *_mouseBuf;
 	uint8 *_mask;
 	FlicPlayer *_roomBackground;
+	uint32 _roomBackgroundTime;
 
 	byte *_c0ColorSet;
 };

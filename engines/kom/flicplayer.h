@@ -37,6 +37,7 @@ typedef struct FlicHeader {
 	uint16 numFrames;
 	uint16 width;
 	uint16 height;
+	uint32 speed;
 	uint16 offsetFrame1;
 	uint16 offsetFrame2;
 };
@@ -64,6 +65,7 @@ public:
 	int width() const { return (_flicData ? _flicInfo.width : 0); }
 	int height() const { return (_flicData ? _flicInfo.height : 0); }
 	bool hasFrames() const { return (_flicData ? _flicInfo.numFrames > 0 : false); }
+	uint32 speed() const { return _flicInfo.speed; }
 	bool paletteDirty() const { return _paletteDirty; }
 	const uint8 *getPalette() { _paletteDirty = false; return _palette; }
 	const uint8 *getOffscreen() const { return _offscreen; }

@@ -42,6 +42,8 @@ FlicPlayer::FlicPlayer(FilesystemNode flicNode) : _paletteDirty(false), _offscre
 	_flicInfo.numFrames = READ_LE_UINT16(_flicData); _flicData += 2;;
 	_flicInfo.width = READ_LE_UINT16(_flicData);     _flicData += 2;;
 	_flicInfo.height = READ_LE_UINT16(_flicData);    _flicData += 2;;
+	_flicData += 4;
+	_flicInfo.speed = READ_LE_UINT32(_flicData);    _flicData += 2;;
 
 	_flicData = _flicDataStart + 80;
 	_flicInfo.offsetFrame1 = READ_LE_UINT32(_flicData); _flicData += 4;;
