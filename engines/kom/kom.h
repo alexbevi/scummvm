@@ -23,7 +23,7 @@
 #ifndef KOM_H
 #define KOM_H
 
-#include "base/engine.h"
+#include "engines/engine.h"
 #include "common/fs.h"
 
 #include "kom/screen.h"

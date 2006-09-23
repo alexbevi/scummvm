@@ -1,6 +1,6 @@
 Index: configure
 ===================================================================
---- configure	(revision 23829)
+--- configure	(revision 23982)
 +++ configure	(working copy)
 @@ -60,6 +60,7 @@
  _build_lure=no
@@ -40,9 +40,22 @@ Index: configure
  
  echo
  
+Index: engines/engines.mk
+===================================================================
+--- engines/engines.mk	(revision 23982)
++++ engines/engines.mk	(working copy)
+@@ -79,3 +79,8 @@
+ MODULES += engines/agi
+ endif
+ 
++ifdef DISABLE_KOM
++DEFINES += -DDISABLE_KOM
++else 
++MODULES += engines/kom
++endif
 Index: common/file.cpp
 ===================================================================
---- common/file.cpp	(revision 23829)
+--- common/file.cpp	(revision 23982)
 +++ common/file.cpp	(working copy)
 @@ -20,6 +20,8 @@
   *
@@ -57,7 +70,7 @@ Index: common/file.cpp
  	return len;
  }
  
-+int File::scanf(const char *format, ...) {
++int CDECL File::scanf(const char *format, ...) {
 +	va_list arg;
 +	int done;
 +
@@ -74,9 +87,24 @@ Index: common/file.cpp
 +}
 +
  }	// End of namespace Common
+Index: common/scummsys.h
+===================================================================
+--- common/scummsys.h	(revision 23982)
++++ common/scummsys.h	(working copy)
+@@ -342,8 +342,10 @@
+ #if defined(__GNUC__)
+ 	#define NORETURN __attribute__((__noreturn__)) 
+ 	#define GCC_PRINTF(x,y) __attribute__((format(printf, x, y)))
++	#define GCC_SCANF(x,y) __attribute__((format(scanf, x, y)))
+ #else
+ 	#define GCC_PRINTF(x,y)
++	#define GCC_SCANF(x,y)
+ #endif
+ 
+ 
 Index: common/fs.h
 ===================================================================
---- common/fs.h	(revision 23829)
+--- common/fs.h	(revision 23982)
 +++ common/fs.h	(working copy)
 @@ -82,7 +82,7 @@
  
@@ -89,35 +117,22 @@ Index: common/fs.h
  	FilesystemNode();
 Index: common/file.h
 ===================================================================
---- common/file.h	(revision 23829)
+--- common/file.h	(revision 23982)
 +++ common/file.h	(working copy)
 @@ -140,6 +140,8 @@
  	void seek(int32 offs, int whence = SEEK_SET);
  	uint32 read(void *dataPtr, uint32 dataSize);
  	uint32 write(const void *dataPtr, uint32 dataSize);
 +
-+	int scanf(const char *format, ...);
++	int CDECL scanf(const char *format, ...) GCC_SCANF(2, 3);
  };
  
  } // End of namespace Common
-Index: engines/module.mk
-===================================================================
---- engines/module.mk	(revision 23829)
-+++ engines/module.mk	(working copy)
-@@ -79,3 +79,8 @@
- MODULES += engines/agi
- endif
- 
-+ifdef DISABLE_KOM
-+DEFINES += -DDISABLE_KOM
-+else 
-+MODULES += engines/kom
-+endif
 Index: base/plugins.cpp
 ===================================================================
---- base/plugins.cpp	(revision 23829)
+--- base/plugins.cpp	(revision 23982)
 +++ base/plugins.cpp	(working copy)
-@@ -382,6 +382,9 @@
+@@ -392,6 +392,9 @@
  	#ifndef DISABLE_AGI
  	LINK_PLUGIN(AGI)
  	#endif

@@ -24,7 +24,6 @@
 #define KOM_GAME_H
 
 #include "common/scummsys.h"
-#include "base/engine.h"
 
 namespace Kom {
 

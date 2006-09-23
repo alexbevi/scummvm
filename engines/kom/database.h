@@ -25,7 +25,7 @@
 
 #include "common/str.h"
 #include "common/list.h"
-#include "base/engine.h"
+#include "engines/engine.h"
 
 namespace Kom {
 
