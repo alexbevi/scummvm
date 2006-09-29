@@ -233,7 +233,7 @@ void Actor::display() {
 												  width, height, xOffset, yOffset);
 		} else {
 			_vm->screen()->drawActorFrame((int8 *)(_framesData + frameStream.pos()),
-												  width, height, _xPos, _yPos, xOffset, yOffset);
+												  width, height, _xPos, _yPos, xOffset, yOffset, _maskDepth);
 		}
 	}
 }

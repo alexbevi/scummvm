@@ -84,7 +84,7 @@ void Screen::update() {
 }
 
 void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos,
-                            int16 xOffset, int16 yOffset) {
+                            int16 xOffset, int16 yOffset, int maskDepth) {
 
 	// Check which lines and colums to draw
 	int16 realX = xPos + xOffset;
@@ -99,7 +99,7 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, uint1
 		uint16 lineOffset = READ_LE_UINT16(data + line * 2);
 
 		drawActorFrameLine(_screenBuf, SCREEN_W, data + lineOffset, (realX < 0 ? 0 : realX),
-		                   (realY < 0 ? 0 : realY) + line - startLine, startCol, endCol);
+		                   (realY < 0 ? 0 : realY) + line - startLine, startCol, endCol, maskDepth);
 	}
 }
 
@@ -110,14 +110,15 @@ void Screen::drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16
 	for (int line = 0; line <= height - 1; ++line) {
 		uint16 lineOffset = READ_LE_UINT16(data + line * 2);
 
-		drawActorFrameLine(_mouseBuf, MOUSE_W, data + lineOffset, 0, line, 0, width);
+		drawActorFrameLine(_mouseBuf, MOUSE_W, data + lineOffset, 0, line, 0, width, 0);
 	}
 
 	setMouseCursor(_mouseBuf, MOUSE_W, MOUSE_H, -xOffset, -yOffset);
 }
 
 void Screen::drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data,
-                                uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel) {
+                                uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel,
+                                int maskDepth) {
 	uint16 dataIndex = 0;
 	uint16 pixelsDrawn = 0;
 	uint16 pixelsParsed = 0;
@@ -177,8 +178,13 @@ void Screen::drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data,
 				if (pixelsDrawn + imageData > endPixel)
 					imageData = endPixel - pixelsDrawn;
 
-				memcpy(buf + (yPos * bufWidth) + xPos + pixelsDrawn, data + dataIndex,
-					   imageData);
+				for (int i = 0; i < imageData; ++i) {
+					// Check with background mask
+					if (_mask[(yPos * bufWidth) + xPos + pixelsDrawn + i] >= maskDepth)
+						buf[(yPos * bufWidth) + xPos + pixelsDrawn + i] =
+							data[dataIndex + i];
+				}
+
 				dataIndex += imageData;
 				pixelsDrawn += imageData;
 			} else {

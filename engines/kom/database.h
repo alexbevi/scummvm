@@ -159,6 +159,8 @@ public:
 
 	Object *object(int obj) const { return &(_objects[obj]); }
 
+	Box *getBox(int locId, int boxId) const { return &(_locRoutes[locId].boxes[boxId]); }
+
 private:
 	void loadConvIndex();
 	void initLocations();

@@ -74,6 +74,9 @@ void Game::enterLocation(uint16 locId) {
 			act->setScope(0, 3);
 			act->setPos(0, SCREEN_H - 1);
 
+			Box *box = db->getBox(locId, obj->box);
+			act->setMaskDepth(box->priority);
+
 			// TODO:
 			// * store actor in screenObjects
 			// * load doors

@@ -54,7 +54,8 @@ public:
 	bool init();
 
 	void update();
-	void drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos, int16 xOffset, int16 yOffset);
+	void drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos, int16 xOffset, int16 yOffset,
+	                    int maskDepth);
 	void drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16 xOffset, int16 yOffset);
 
 	void setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int hotspotY);
@@ -73,7 +74,8 @@ public:
 
 private:
 
-	void drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel);
+	void drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel,
+	                        int maskDepth);
 	byte *loadColorSet(FilesystemNode fsNode);
 
 	OSystem *_system;
