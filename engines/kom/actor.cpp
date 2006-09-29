@@ -62,7 +62,7 @@ void ActorManager::loadMouse(FilesystemNode dirNode, String name) {
 	_mouseActor->defineScope(3, 15, 20, 15);
 	_mouseActor->defineScope(4, 14, 14, 14);
 	_mouseActor->defineScopeAlias(5, Actor::_inventoryCursorAnimation, 23);
-	_mouseActor->defineScope(6, 31, 31, 31);
+	_mouseActor->defineScope(6, 31, 31, 31);  // Loading... icon
 
 	_mouseActor->setScope(0, 2);
 	_mouseActor->setPos(0, 0);
@@ -90,9 +90,11 @@ Actor::Actor(KomEngine *vm, FilesystemNode dirNode, String name, bool isMouse) :
 	_animDuration = 0;
 	_isActive = true;
 	_currentFrame = _minFrame = _maxFrame = 0;
+	_xPos = _yPos = 0;
 	_xRatio = _yRatio = 1024;
 	_displayLeft = _displayRight = _displayTop = _displayBottom = 1000;
 
+	name.toLowercase();
 	f.open(dirNode.getChild(name + ".act"));
 
 	f.read(magicName, 7);
@@ -167,7 +169,7 @@ void Actor::setAnim(uint8 minFrame, uint8 maxFrame, uint16 animDuration) {
 }
 
 void Actor::animate() {
-	if (_animDuration == 0 || !_isAnimating)
+	if (_animDuration == 0 || !_isAnimating || _minFrame == _maxFrame)
 		return;
 
 	_animDurationTimer--;
@@ -225,7 +227,8 @@ void Actor::display() {
 		// * more arguments for scaling
 		// * displayMask
 
-		if (_isMouse) {
+		// The loading icon is NOT a mouse cursor, but is stored in the mouse actor
+		if (_isMouse && _scope != 6) {
 			_vm->screen()->drawMouseFrame((int8 *)(_framesData + frameStream.pos()),
 												  width, height, xOffset, yOffset);
 		} else {

@@ -64,6 +64,7 @@ public:
 	int getSelectedChar() { return _selectedChar; }
 	int getSelectedQuest() { return _selectedQuest; }
 
+	Input *input() const { return _input; }
 	ActorManager *actorMan() const { return _actorMan; }
 	Screen *screen() const { return _screen; }
 	Database *database() const { return _database; }

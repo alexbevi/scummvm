@@ -64,6 +64,7 @@ public:
 	void updateCursor();
 
 	void drawPanel(const byte *panelData);
+	void updatePanelArea();
 
 	void loadBackground(FilesystemNode node);
 	void updateBackground();

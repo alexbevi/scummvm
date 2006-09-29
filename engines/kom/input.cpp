@@ -34,7 +34,8 @@ using Common::String;
 
 namespace Kom {
 
-Input::Input(KomEngine *vm, OSystem *system) : _system(system), _vm(vm), _debugMode(false) {
+Input::Input(KomEngine *vm, OSystem *system) : _system(system), _vm(vm), _debugMode(false),
+	_mouseX(0), _mouseY(0) {
 }
 
 Input::~Input() {
@@ -88,7 +89,10 @@ void Input::checkKeys() {
 				break;
 
 			case OSystem::EVENT_MOUSEMOVE:
-				_vm->actorMan()->getMouse()->setPos(event.mouse.x, event.mouse.y);
+				_mouseX = event.mouse.x;
+				_mouseY = event.mouse.y;
+				// Temporary
+				_vm->actorMan()->getMouse()->setPos(_mouseX, _mouseY);
 				break;
 
 			case OSystem::EVENT_QUIT:

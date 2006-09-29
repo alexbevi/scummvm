@@ -32,7 +32,7 @@ public:
 	Game(KomEngine *vm, OSystem *system);
 	~Game();
 
-	void openLocation(uint16 locId);
+	void enterLocation(uint16 locId);
 
 private:
 

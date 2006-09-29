@@ -35,15 +35,22 @@ public:
 	Panel(KomEngine *vm, FilesystemNode fileNode);
 	~Panel();
 
-	void display();
+	void update();
 	void showLoading(bool isLoading);
 	void setLocationDesc(char *desc);
+	bool isEnabled() const { return _isEnabled; }
+	void enable(bool state) { _isEnabled = state; }
+	void clear();
 
 private:
 
 	KomEngine *_vm;
 
+	byte* _panelDataRaw;
 	byte* _panelData;
+
+	bool _isEnabled;
+	bool _isLoading;
 
 };
 } // End of namespace Kom

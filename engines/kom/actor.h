@@ -61,9 +61,11 @@ public:
 	void animate();
 	void display();
 
+	void enable(bool state) { _isActive = state; }
 	void setPos(int xPos, int yPos) { _xPos = xPos; _yPos = yPos; }
 	int getXPos() { return _xPos; }
 	int getYPos() { return _yPos; }
+	uint8 getFramesNum() { return _framesNum; }
 
 protected:
 	Actor(KomEngine *vm, FilesystemNode dirNode, Common::String name, bool isMouse);

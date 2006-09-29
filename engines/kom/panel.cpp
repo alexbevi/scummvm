@@ -30,32 +30,58 @@ using Common::File;
 
 namespace Kom {
 
-Panel::Panel(KomEngine *vm, FilesystemNode fileNode) : _vm(vm) {
+Panel::Panel(KomEngine *vm, FilesystemNode fileNode) : _vm(vm), _isEnabled(true), _isLoading(false) {
 	File f;
 	f.open(fileNode);
 
 	f.seek(4);
 
-	_panelData = new byte[SCREEN_W * PANEL_H];
-	f.read(_panelData, SCREEN_W * PANEL_H);
+	_panelDataRaw = new byte[SCREEN_W * PANEL_H];
+	f.read(_panelDataRaw, SCREEN_W * PANEL_H);
 
 	f.close();
+
+	_panelData = new byte[SCREEN_W * PANEL_H];
+	memcpy(_panelData, _panelDataRaw, SCREEN_W * PANEL_H);
 }
 
 Panel::~Panel() {
-	delete[] _panelData;
+	delete[] _panelDataRaw;
 }
 
-void Panel::display() {
+void Panel::clear() {
+	memcpy(_panelData, _panelDataRaw, SCREEN_W * PANEL_H);
+}
+
+void Panel::update() {
+	enable(true);
+	clear();
+
+	// TODO: Draw texts
+
 	_vm->screen()->drawPanel(_panelData);
+
+	if (_isLoading) {
+		Actor *mouse = _vm->actorMan()->getMouse();
+		mouse->enable(true);
+		mouse->setScope(6, 0);
+		mouse->setPos(303, 185);
+		mouse->display();
+		mouse->enable(false);
+	}
+
+	// TODO: lose/get items
 }
 
 void Panel::showLoading(bool isLoading) {
-
+	if (isLoading != _isLoading) {
+		_isLoading = isLoading;
+		update();
+		_vm->screen()->updatePanelArea();
+	}
 }
 
 void Panel::setLocationDesc(char *desc) {
-
 }
 
 } // End of namespace Kom

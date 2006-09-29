@@ -39,6 +39,8 @@ public:
 	bool debugMode() const { return _debugMode; }
 	void resetDebugMode() { _debugMode = false; }
 
+	uint16 getMouseX() const { return _mouseX; }
+	uint16 getMouseY() const { return _mouseY; }
 private:
 
 	OSystem *_system;
@@ -46,6 +48,7 @@ private:
 
 	int _inKey;
 	bool _debugMode;
+	uint16 _mouseX, _mouseY;
 };
 
 } // End of namespace Kom

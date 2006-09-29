@@ -73,9 +73,9 @@ bool Screen::init() {
 void Screen::update() {
 	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 
-	_vm->panel()->display();
 	updateCursor();
 	displayMouse();
+	_vm->panel()->update();
 	updateBackground();
 	drawBackground();
 	_vm->actorMan()->displayAll();
@@ -112,12 +112,6 @@ void Screen::drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16
 
 		drawActorFrameLine(_mouseBuf, MOUSE_W, data + lineOffset, 0, line, 0, width);
 	}
-	/*for (int i = 0; i < height; ++i) {
-		for (int j = 0; j < width; ++j) {
-			printf("%hhd ", _mouseBuf[i + j * MOUSE_W]);
-		}
-		putchar('\n');
-	}*/
 
 	setMouseCursor(_mouseBuf, MOUSE_W, MOUSE_H, -xOffset, -yOffset);
 }
@@ -227,13 +221,20 @@ void Screen::displayMouse() {
 void Screen::updateCursor() {
 	Actor *mouse = _vm->actorMan()->getMouse();
 
-	if (mouse->getYPos() >= SCREEN_H - PANEL_H) {
+	if (_vm->input()->getMouseY() >= SCREEN_H - PANEL_H) {
 		mouse->switchScope(5, 2);
+	} else {
+		mouse->switchScope(0, 2);
 	}
 }
 
 void Screen::drawPanel(const byte *panelData) {
 	memcpy(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H), panelData, SCREEN_W * PANEL_H);
+}
+
+void Screen::updatePanelArea() {
+	_system->copyRectToScreen(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H), SCREEN_W, 0, SCREEN_H - PANEL_H, SCREEN_W, PANEL_H);
+	_system->updateScreen();
 }
 
 void Screen::loadBackground(FilesystemNode node) {

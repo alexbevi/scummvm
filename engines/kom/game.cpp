@@ -40,7 +40,9 @@ Game::Game(KomEngine *vm, OSystem *system) : _system(system), _vm(vm) {
 Game::~Game() {
 }
 
-void Game::openLocation(uint16 locId) {
+void Game::enterLocation(uint16 locId) {
+	char filename[50];
+
 	_vm->panel()->showLoading(true);
 
 	Location *loc = _vm->database()->location(locId);
@@ -49,7 +51,6 @@ void Game::openLocation(uint16 locId) {
 	FilesystemNode locNode(_vm->dataDir()->getChild("kom").getChild("locs").getChild(String(locName.c_str(), 2)).getChild(locName));
 
 	// Load room background and mask
-	char filename[50];
 
 	// TODO: add day/night modifier to xtend
 	sprintf(filename, "%s%db.flc", locName.c_str(), loc->xtend);
@@ -60,7 +61,24 @@ void Game::openLocation(uint16 locId) {
 	mask.decodeFrame();
 	_vm->screen()->setMask(mask.getOffscreen());
 
+	// Load room objects
+	Common::List<int> objList = loc->objects;
+	Database *db = _vm->database();
+	for (Common::List<int>::iterator objId = objList.begin(); objId != objList.end(); ++objId) {
+		Object *obj = db->object(*objId);
+		if (obj->isSprite) {
+			sprintf(filename, "%s%d", obj->name, loc->xtend);
+			int actId = _vm->actorMan()->load(locNode, String(filename));
+			Actor *act = _vm->actorMan()->get(actId);
+			act->defineScope(0, 0, act->getFramesNum() - 1, 0);
+			act->setScope(0, 3);
+			act->setPos(0, SCREEN_H - 1);
 
+			// TODO:
+			// * store actor in screenObjects
+			// * load doors
+		}
+	}
 
 	_vm->panel()->setLocationDesc(loc->desc);
 	_vm->panel()->showLoading(false);

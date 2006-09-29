@@ -117,8 +117,10 @@ int KomEngine::go() {
 
 	_screen->showMouseCursor(true);
 
+	_panel->enable(true);
+
 	// temporary test
-	_game->openLocation(3);
+	_game->enterLocation(3);
 
 	while (_gameLoopState != GAMELOOP_QUIT) {
 		gameLoop();
