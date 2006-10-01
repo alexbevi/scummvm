@@ -61,27 +61,6 @@ void Input::checkKeys() {
 						case 27:
 							_system->quit();
 							break;
-						case '1':
-							_vm->actorMan()->getMouse()->setScope(0, 2);
-							break;
-						case '2':
-							_vm->actorMan()->getMouse()->setScope(1, 2);
-							break;
-						case '3':
-							_vm->actorMan()->getMouse()->setScope(2, 2);
-							break;
-						case '4':
-							_vm->actorMan()->getMouse()->setScope(3, 2);
-							break;
-						case '5':
-							_vm->actorMan()->getMouse()->setScope(4, 2);
-							break;
-						case '6':
-							_vm->actorMan()->getMouse()->setScope(5, 2);
-							break;
-						case '7':
-							_vm->actorMan()->getMouse()->setScope(6, 0);
-							break;
 						default:
 							break;
 					}

@@ -232,6 +232,15 @@ void Screen::updateCursor() {
 	} else {
 		mouse->switchScope(0, 2);
 	}
+
+	// The scopes:
+	// setScope(0, 2);
+	// setScope(1, 2);
+	// setScope(2, 2);
+	// setScope(3, 2);
+	// setScope(4, 2);
+	// setScope(5, 2);
+	// setScope(6, 0);
 }
 
 void Screen::drawPanel(const byte *panelData) {
