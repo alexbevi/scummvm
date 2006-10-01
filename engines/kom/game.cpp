@@ -118,6 +118,7 @@ void Game::enterLocation(uint16 locId) {
 				act->defineScope(0, 0, act->getFramesNum() - 1, 0);
 				act->setScope(0, 1);
 				act->setPos(0, SCREEN_H - 1);
+				act->setMaskDepth(0);
 				act->setEffect(4);
 
 				_roomDoors.push_back(roomDoor);
