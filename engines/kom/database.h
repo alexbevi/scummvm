@@ -160,6 +160,7 @@ public:
 	Object *object(int obj) const { return &(_objects[obj]); }
 
 	Box *getBox(int locId, int boxId) const { return &(_locRoutes[locId].boxes[boxId]); }
+	Exit *getExits(int locId) const { return _locRoutes[locId].exits; }
 
 private:
 	void loadConvIndex();

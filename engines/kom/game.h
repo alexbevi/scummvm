@@ -24,8 +24,17 @@
 #define KOM_GAME_H
 
 #include "common/scummsys.h"
+#include "common/array.h"
 
 namespace Kom {
+
+struct RoomObject {
+	int actorId;
+};
+
+struct RoomDoor {
+	int actorId;
+};
 
 class Game {
 public:
@@ -38,6 +47,9 @@ private:
 
 	OSystem *_system;
 	KomEngine *_vm;
+
+	Common::Array<RoomObject> _roomObjects;
+	Common::Array<RoomDoor> _roomDoors;
 };
 
 } // End of namespace Kom

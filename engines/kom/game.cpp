@@ -45,6 +45,17 @@ void Game::enterLocation(uint16 locId) {
 
 	_vm->panel()->showLoading(true);
 
+	// Unload current room elements
+	for (uint i = 0; i < _roomObjects.size(); i++) {
+		_vm->actorMan()->unload(_roomObjects[i].actorId);
+	}
+	_roomObjects.clear();
+
+	for (uint i = 0; i < _roomDoors.size(); i++) {
+		_vm->actorMan()->unload(_roomDoors[i].actorId);
+	}
+	_roomDoors.clear();
+
 	Location *loc = _vm->database()->location(locId);
 	String locName(loc->name);
 	locName.toLowercase();
@@ -61,18 +72,22 @@ void Game::enterLocation(uint16 locId) {
 	mask.decodeFrame();
 	_vm->screen()->setMask(mask.getOffscreen());
 
+	Database *db = _vm->database();
+
 	// Load room objects
 	Common::List<int> objList = loc->objects;
-	Database *db = _vm->database();
 	for (Common::List<int>::iterator objId = objList.begin(); objId != objList.end(); ++objId) {
 		Object *obj = db->object(*objId);
 		if (obj->isSprite) {
 			sprintf(filename, "%s%d", obj->name, loc->xtend);
-			int actId = _vm->actorMan()->load(locNode, String(filename));
-			Actor *act = _vm->actorMan()->get(actId);
+			RoomObject roomObj;
+			roomObj.actorId = _vm->actorMan()->load(locNode, String(filename));
+			Actor *act = _vm->actorMan()->get(roomObj.actorId);
 			act->defineScope(0, 0, act->getFramesNum() - 1, 0);
 			act->setScope(0, 3);
 			act->setPos(0, SCREEN_H - 1);
+
+			_roomObjects.push_back(roomObj);
 
 			Box *box = db->getBox(locId, obj->box);
 			act->setMaskDepth(box->priority);
@@ -80,6 +95,33 @@ void Game::enterLocation(uint16 locId) {
 			// TODO:
 			// * store actor in screenObjects
 			// * load doors
+		}
+	}
+
+	// Load room doors
+	const Exit *exits = db->getExits(locId);
+	for (int i = 0; i < 6; ++i) {
+		if (exits[i].exit > -1) {
+			String exitName(_vm->database()->location(exits[i].exitLoc)->name);
+			exitName.toLowercase();
+
+			// TODO: add day/night modifier to xtend
+			sprintf(filename, "%s%dd", exitName.c_str(), loc->xtend);
+
+			// The exit can have no door
+			if (locNode.getChild(filename + String(".act")).isValid()) {
+				RoomDoor roomDoor;
+				roomDoor.actorId = _vm->actorMan()->load(locNode, String(filename));
+				Actor *act = _vm->actorMan()->get(roomDoor.actorId);
+
+				// Temporary: have fun with the door
+				act->defineScope(0, 0, act->getFramesNum() - 1, 0);
+				act->setScope(0, 1);
+				act->setPos(0, SCREEN_H - 1);
+				act->setEffect(4);
+
+				_roomDoors.push_back(roomDoor);
+			}
 		}
 	}
 

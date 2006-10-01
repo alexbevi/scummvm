@@ -64,6 +64,7 @@ public:
 	void enable(bool state) { _isActive = state; }
 	void setPos(int xPos, int yPos) { _xPos = xPos; _yPos = yPos; }
 	void setMaskDepth(int depth) { _maskDepth = depth; }
+	void setEffect(uint8 effect) { _effect = effect; }
 	int getXPos() { return _xPos; }
 	int getYPos() { return _yPos; }
 	uint8 getFramesNum() { return _framesNum; }
@@ -91,7 +92,7 @@ protected:
 	int _targetX;
 	int _targetY;
 	uint8 _scope;
-	int _effect;
+	uint8 _effect;
 	int _isActive;
 	uint32 _displayLeft;
 	uint32 _displayRight;
