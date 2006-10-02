@@ -93,6 +93,8 @@ Actor::Actor(KomEngine *vm, FilesystemNode dirNode, String name, bool isMouse) :
 	_xPos = _yPos = 0;
 	_xRatio = _yRatio = 1024;
 	_displayLeft = _displayRight = _displayTop = _displayBottom = 1000;
+	_maskDepth = 0;
+	_effect = 0;
 
 	name.toLowercase();
 	f.open(dirNode.getChild(name + ".act"));
