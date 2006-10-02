@@ -268,6 +268,7 @@ void Screen::updateBackground() {
 			_roomBackground->decodeFrame();
 
 			if (_roomBackground->paletteDirty()) {
+				_system->setPalette(_roomBackground->getPalette(), 0, 1);
 				_system->setPalette(_roomBackground->getPalette() + 4 * 128, 128, 128);
 			}
 		}
