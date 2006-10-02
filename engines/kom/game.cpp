@@ -45,7 +45,7 @@ void Game::enterLocation(uint16 locId) {
 
 	_vm->panel()->showLoading(true);
 
-	// Unload current room elements
+	// Unload last room elements
 	for (uint i = 0; i < _roomObjects.size(); i++) {
 		_vm->actorMan()->unload(_roomObjects[i].actorId);
 	}
@@ -101,7 +101,8 @@ void Game::enterLocation(uint16 locId) {
 	// Load room doors
 	const Exit *exits = db->getExits(locId);
 	for (int i = 0; i < 6; ++i) {
-		if (exits[i].exit > -1) {
+		// FIXME: room 45 has one NULL exit. what's it for?
+		if (exits[i].exit > 0) {
 			String exitName(_vm->database()->location(exits[i].exitLoc)->name);
 			exitName.toLowercase();
 

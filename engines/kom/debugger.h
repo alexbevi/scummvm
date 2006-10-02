@@ -40,6 +40,8 @@ protected:
 	virtual void preEnter();
 	virtual void postEnter();
 
+	bool Cmd_Room(int argc, const char **argv);
+
 private:
 
 	KomEngine *_vm;

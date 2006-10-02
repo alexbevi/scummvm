@@ -22,18 +22,30 @@
 
 #include "gui/debugger.cpp"
 
+#include "kom/kom.h"
 #include "kom/debugger.h"
 
 namespace Kom {
 
 Debugger::Debugger(KomEngine *vm) : GUI::Debugger(), _vm(vm) {
 
+	DCmd_Register("room", WRAP_METHOD(Debugger, Cmd_Room));
 }
 
 Debugger::~Debugger() {} // we need this here for __SYMBIAN32__
+
 void Debugger::preEnter() {
 }
 
 void Debugger::postEnter() {
+}
+
+bool Debugger::Cmd_Room(int argc, const char **argv) {
+	if (argc == 2) {
+		uint16 roomNum = atoi(argv[1]);
+		_vm->game()->enterLocation(roomNum);
+		return false;
+	}
+	return true;
 }
 } // End of namespace Kom

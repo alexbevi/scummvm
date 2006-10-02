@@ -69,6 +69,7 @@ public:
 	Screen *screen() const { return _screen; }
 	Database *database() const { return _database; }
 	Panel *panel() const { return _panel; }
+	Game *game() const { return _game; }
 
 	FilesystemNode *dataDir() const { return _fsNode; }
 

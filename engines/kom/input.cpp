@@ -52,7 +52,6 @@ void Input::checkKeys() {
 			case OSystem::EVENT_KEYDOWN:
 				if (event.kbd.flags == OSystem::KBD_CTRL) {
 					if (event.kbd.keycode == 'd') {
-						printf("go go debugger mode!\n");
 						_debugMode = true;
 					}
 				} else {

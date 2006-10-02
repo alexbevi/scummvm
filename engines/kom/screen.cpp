@@ -37,7 +37,7 @@ using Common::File;
 namespace Kom {
 
 Screen::Screen(KomEngine *vm, OSystem *system)
-	: _system(system), _vm(vm) {
+	: _system(system), _vm(vm), _roomBackground(0) {
 
 	_screenBuf = new uint8[SCREEN_W * SCREEN_H];
 	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
@@ -156,7 +156,7 @@ void Screen::drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data,
 		// Handle visible pixels
 		} else {
 
-			imageData &= 0x3F;
+			imageData &= 0x7F;
 
 			// Skip pixels
 			if (!shouldDraw && pixelsParsed < startPixel && pixelsParsed + imageData >= startPixel) {
@@ -180,7 +180,9 @@ void Screen::drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data,
 
 				for (int i = 0; i < imageData; ++i) {
 					// Check with background mask
-					if (_mask[(yPos * bufWidth) + xPos + pixelsDrawn + i] >= maskDepth)
+					if (yPos > SCREEN_H - PANEL_H ||
+					    _mask[(yPos * bufWidth) + xPos + pixelsDrawn + i] >= maskDepth)
+
 						buf[(yPos * bufWidth) + xPos + pixelsDrawn + i] =
 							data[dataIndex + i];
 				}
@@ -253,6 +255,7 @@ void Screen::updatePanelArea() {
 }
 
 void Screen::loadBackground(FilesystemNode node) {
+	delete _roomBackground;
 	_roomBackground = new FlicPlayer(node);
 	_roomBackgroundTime = _system->getMillis() + _roomBackground->speed();
 }
