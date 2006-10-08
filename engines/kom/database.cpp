@@ -399,155 +399,156 @@ void Database::initProcs() {
 				opObject.opcode = opcode;
 
 				switch (opcode) {
-					// string + int/short
-					case 474:
-						f.readLine(opObject.arg1, 30);
-						readLineScanf(f, "%d", &(opObject.arg2));
-						break;
 
-					// string
-					case 467:
-					case 469:
-						f.readLine(opObject.arg1, 30);
+				// string + int/short
+				case 474:
+					f.readLine(opObject.arg1, 30);
+					readLineScanf(f, "%d", &(opObject.arg2));
+					break;
 
-						// Skip empty line
-						f.readLine(line, 100);
-						break;
+				// string
+				case 467:
+				case 469:
+					f.readLine(opObject.arg1, 30);
 
-					// string + int + int + int
-					case 468:
-						f.readLine(opObject.arg1, 30);
-						readLineScanf(f, "%d %d %d", &(opObject.arg2),
-						       &(opObject.arg3), &(opObject.arg4));
-						break;
+					// Skip empty line
+					f.readLine(line, 100);
+					break;
 
-					// short + string - never reached
-					case 99999:
-						break;
+				// string + int + int + int
+				case 468:
+					f.readLine(opObject.arg1, 30);
+					readLineScanf(f, "%d %d %d", &(opObject.arg2),
+						   &(opObject.arg3), &(opObject.arg4));
+					break;
 
-					// int
-					case 331:
-					case 337:
-					case 338:
-					case 373:
-					case 374:
-					case 381:
-					case 382:
-					case 383:
-					case 384:
-					case 387:
-					case 405:
-					case 406:
-					case 407:
-					case 408:
-					case 409:
-					case 410:
-					case 411:
-					case 412:
-					case 413:
-					case 414:
-					case 419:
-					case 433:
-					case 432:
-					case 444:
-					case 445:
-					case 446:
-					case 448:
-					case 491:
-						sscanf(line, "%*d %d", &(opObject.arg2));
-						break;
+				// short + string - never reached
+				case 99999:
+					break;
 
-					// int + int
-					case 327:
-					case 328:
-					case 334:
-					case 340:
-					case 345:
-					case 346:
-					case 350:
-					case 353:
-					case 356:
-					case 359:
-					case 376:
-					case 377:
-					case 379:
-					case 380:
-					case 393:
-					case 398:
-					case 399:
-					case 404:
-					case 416:
-					case 417:
-					case 418:
-					case 420:
-					case 422:
-					case 423:
-					case 424:
-					case 425:
-					case 426:
-					case 427:
-					case 428:
-					case 430:
-					case 431:
-					case 434:
-					case 436:
-					case 437:
-					case 439:
-					case 458:
-					case 459:
-					case 462:
-					case 465:
-					case 466:
-					case 476:
-					case 477:
-					case 481:
-					case 482:
-					case 483:
-					case 484:
-					case 487:
-					case 489:
-					case 490:
-					case 492:
-						sscanf(line, "%*d %d %d", &(opObject.arg2), &(opObject.arg3));
-						break;
+				// int
+				case 331:
+				case 337:
+				case 338:
+				case 373:
+				case 374:
+				case 381:
+				case 382:
+				case 383:
+				case 384:
+				case 387:
+				case 405:
+				case 406:
+				case 407:
+				case 408:
+				case 409:
+				case 410:
+				case 411:
+				case 412:
+				case 413:
+				case 414:
+				case 419:
+				case 433:
+				case 432:
+				case 444:
+				case 445:
+				case 446:
+				case 448:
+				case 491:
+					sscanf(line, "%*d %d", &(opObject.arg2));
+					break;
 
-					// int + int + int
-					case 394:
-					case 395:
-					case 402:
-					case 403:
-					case 441:
-					case 478:
-					case 479:
-					case 488:
-						sscanf(line, "%*d %d %d %d", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4));
-						break;
+				// int + int
+				case 327:
+				case 328:
+				case 334:
+				case 340:
+				case 345:
+				case 346:
+				case 350:
+				case 353:
+				case 356:
+				case 359:
+				case 376:
+				case 377:
+				case 379:
+				case 380:
+				case 393:
+				case 398:
+				case 399:
+				case 404:
+				case 416:
+				case 417:
+				case 418:
+				case 420:
+				case 422:
+				case 423:
+				case 424:
+				case 425:
+				case 426:
+				case 427:
+				case 428:
+				case 430:
+				case 431:
+				case 434:
+				case 436:
+				case 437:
+				case 439:
+				case 458:
+				case 459:
+				case 462:
+				case 465:
+				case 466:
+				case 476:
+				case 477:
+				case 481:
+				case 482:
+				case 483:
+				case 484:
+				case 487:
+				case 489:
+				case 490:
+				case 492:
+					sscanf(line, "%*d %d %d", &(opObject.arg2), &(opObject.arg3));
+					break;
 
-					// int + int + int + int + int
-					case 438:
-						sscanf(line, "%*d %d %d %d %d %d", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4),
-							   &(opObject.arg5), &(opObject.arg6));
-						break;
+				// int + int + int
+				case 394:
+				case 395:
+				case 402:
+				case 403:
+				case 441:
+				case 478:
+				case 479:
+				case 488:
+					sscanf(line, "%*d %d %d %d", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4));
+					break;
 
-					// No arguments
-					case 391:
-					case 392:
-					case 449:
-					case 450:
-					case 451:
-					case 452:
-					case 453:
-					case 454:
-					case 473:
-					case 475:
-					case 485:
-					case 486:
-					case 494:
-						break;
+				// int + int + int + int + int
+				case 438:
+					sscanf(line, "%*d %d %d %d %d %d", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4),
+						   &(opObject.arg5), &(opObject.arg6));
+					break;
 
-					default:
-						error("Unknown opcode %d in command %d in index %d", opcode, cmd, index);
-						break;
+				// No arguments
+				case 391:
+				case 392:
+				case 449:
+				case 450:
+				case 451:
+				case 452:
+				case 453:
+				case 454:
+				case 473:
+				case 475:
+				case 485:
+				case 486:
+				case 494:
+					break;
+
+				default:
+					error("Unknown opcode %d in command %d in index %d", opcode, cmd, index);
+					break;
 				}
 
 				cmdObject.opcodes.push_back(opObject);

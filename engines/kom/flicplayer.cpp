@@ -128,17 +128,17 @@ void FlicPlayer::decodeDeltaFLC(uint8 *data) {
 			opcode = READ_LE_UINT16(data); data += 2;
 			
 			switch ((opcode >> 14) & 3) {
-				case OP_PACKETCOUNT:
-					packetCount = opcode;
-					break;
-				case OP_UNDEFINED:
-					break;
-				case OP_LASTPIXEL:
-					*(uint8 *)(_offscreen + (currentLine * _flicInfo.width) + (_flicInfo.height - 1)) = (opcode & 0xFF);
-					break;
-				case OP_LINESKIPCOUNT:
-					currentLine += -(int16)opcode;
-					break;
+			case OP_PACKETCOUNT:
+				packetCount = opcode;
+				break;
+			case OP_UNDEFINED:
+				break;
+			case OP_LASTPIXEL:
+				*(uint8 *)(_offscreen + (currentLine * _flicInfo.width) + (_flicInfo.height - 1)) = (opcode & 0xFF);
+				break;
+			case OP_LINESKIPCOUNT:
+				currentLine += -(int16)opcode;
+				break;
 			}
 		} while (((opcode >> 14) & 3) != OP_PACKETCOUNT);
 
@@ -180,14 +180,14 @@ bool FlicPlayer::decodeFrame() {
 
 	// Read chunk
 	ChunkHeader cHeader = readChunkHeader();
-	switch(cHeader.type) {
-		case FRAME_TYPE:
-			frameHeader = readFrameTypeChunkHeader(cHeader);
-			_currFrame++;
-			break;
-		default:
-			error("FlicPlayer::decodeFrame(): unknown main chunk type (type = 0x%02X)", cHeader.type);
-			break;
+	switch (cHeader.type) {
+	case FRAME_TYPE:
+		frameHeader = readFrameTypeChunkHeader(cHeader);
+		_currFrame++;
+		break;
+	default:
+		error("FlicPlayer::decodeFrame(): unknown main chunk type (type = 0x%02X)", cHeader.type);
+		break;
 	 }
 
 	// Read subchunks
@@ -195,23 +195,23 @@ bool FlicPlayer::decodeFrame() {
 		for (int i = 0; i < frameHeader.numChunks; ++i) {
 
 			cHeader = readChunkHeader();
-			switch(cHeader.type) {
-				case COLOR_256:
-					setPalette(_flicData);
-					_paletteDirty = true;
-					break;
-				case FLI_SS2:
-					decodeDeltaFLC(_flicData);
-					break;
-				case FLI_BRUN:
-					decodeByteRun(_flicData);
-					break;
-				case PSTAMP:
-					/* PSTAMP - skip for now */
-					break;
-				default:
-					error("FlicPlayer::decodeFrame(): unknown subchunk type (type = 0x%02X)", cHeader.type);
-					break;
+			switch (cHeader.type) {
+			case COLOR_256:
+				setPalette(_flicData);
+				_paletteDirty = true;
+				break;
+			case FLI_SS2:
+				decodeDeltaFLC(_flicData);
+				break;
+			case FLI_BRUN:
+				decodeByteRun(_flicData);
+				break;
+			case PSTAMP:
+				/* PSTAMP - skip for now */
+				break;
+			default:
+				error("FlicPlayer::decodeFrame(): unknown subchunk type (type = 0x%02X)", cHeader.type);
+				break;
 			 }
 
 			_flicData += cHeader.size - 6;
