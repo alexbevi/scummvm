@@ -25,7 +25,14 @@
 
 #include "common/str.h"
 #include "common/list.h"
+#include "common/file.h"
 #include "engines/engine.h"
+
+#if defined(__GNUC__)
+	#define KOM_GCC_SCANF(x,y) __attribute__((format(scanf, x, y)))
+#else
+	#define KOM_GCC_SCANF(x,y)
+#endif
 
 namespace Kom {
 
@@ -152,6 +159,7 @@ public:
 	void init(Common::String databasePrefix);
 
 	static void stripUndies(char *s);
+	int CDECL readLineScanf(Common::File &f, const char *format, ...) KOM_GCC_SCANF(3, 4);
 
 	Location *location(uint16 locId) const { return &(_locations[locId]); }
 

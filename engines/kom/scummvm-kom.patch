@@ -1,6 +1,6 @@
 Index: configure
 ===================================================================
---- configure	(revision 23982)
+--- configure	(revision 24204)
 +++ configure	(working copy)
 @@ -60,6 +60,7 @@
  _build_lure=no
@@ -26,7 +26,7 @@ Index: configure
        --disable-hq-scalers)     _build_hq_scalers=no ;;
        --disable-scalers)        _build_scalers=no ;;
        --enable-alsa)            _alsa=yes       ;;
-@@ -1251,10 +1254,12 @@
+@@ -1270,10 +1273,12 @@
  if test "$_build_cine" = yes ; then
  	echo "    Cinematique evo 1"
  fi
@@ -42,7 +42,7 @@ Index: configure
  
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 23982)
+--- engines/engines.mk	(revision 24204)
 +++ engines/engines.mk	(working copy)
 @@ -79,3 +79,8 @@
  MODULES += engines/agi
@@ -53,92 +53,17 @@ Index: engines/engines.mk
 +else 
 +MODULES += engines/kom
 +endif
-Index: common/file.cpp
-===================================================================
---- common/file.cpp	(revision 23982)
-+++ common/file.cpp	(working copy)
-@@ -20,6 +20,8 @@
-  *
-  */
- 
-+#include <stdarg.h>
-+
- #include "common/file.h"
- #include "common/fs.h"
- #include "common/hashmap.h"
-@@ -446,4 +448,20 @@
- 	return len;
- }
- 
-+int CDECL File::scanf(const char *format, ...) {
-+	va_list arg;
-+	int done;
-+
-+	if (_handle == NULL) {
-+		error("File::scanf: File is not open!");
-+		return 0;
-+	}
-+
-+	va_start(arg, format);
-+	done = vfscanf(_handle, format, arg);
-+	va_end(arg);
-+
-+	return done;
-+}
-+
- }	// End of namespace Common
-Index: common/scummsys.h
-===================================================================
---- common/scummsys.h	(revision 23982)
-+++ common/scummsys.h	(working copy)
-@@ -342,8 +342,10 @@
- #if defined(__GNUC__)
- 	#define NORETURN __attribute__((__noreturn__)) 
- 	#define GCC_PRINTF(x,y) __attribute__((format(printf, x, y)))
-+	#define GCC_SCANF(x,y) __attribute__((format(scanf, x, y)))
- #else
- 	#define GCC_PRINTF(x,y)
-+	#define GCC_SCANF(x,y)
- #endif
- 
- 
-Index: common/fs.h
-===================================================================
---- common/fs.h	(revision 23982)
-+++ common/fs.h	(working copy)
-@@ -82,7 +82,7 @@
- 
- 	/**
- 	 * Create a new invalid FilesystemNode. In other words, isValid() for that
--	 * node returns false, and if you try to get it's path, an assert is
-+	 * node returns false, and if you try to get its path, an assert is
- 	 * triggered.
- 	 */
- 	FilesystemNode();
-Index: common/file.h
-===================================================================
---- common/file.h	(revision 23982)
-+++ common/file.h	(working copy)
-@@ -140,6 +140,8 @@
- 	void seek(int32 offs, int whence = SEEK_SET);
- 	uint32 read(void *dataPtr, uint32 dataSize);
- 	uint32 write(const void *dataPtr, uint32 dataSize);
-+
-+	int CDECL scanf(const char *format, ...) GCC_SCANF(2, 3);
- };
- 
- } // End of namespace Common
 Index: base/plugins.cpp
 ===================================================================
---- base/plugins.cpp	(revision 23982)
+--- base/plugins.cpp	(revision 24204)
 +++ base/plugins.cpp	(working copy)
-@@ -392,6 +392,9 @@
- 	#ifndef DISABLE_AGI
- 	LINK_PLUGIN(AGI)
- 	#endif
-+	#ifndef DISABLE_KOM
-+	LINK_PLUGIN(KOM)
-+	#endif
+@@ -150,6 +150,9 @@
+ 		#ifndef DISABLE_AGI
+ 		LINK_PLUGIN(AGI)
+ 		#endif
++		#ifndef DISABLE_KOM
++		LINK_PLUGIN(KOM)
++		#endif
  
- #endif
- }
+ 		return pl;
+ 	}
