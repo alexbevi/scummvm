@@ -1,46 +1,42 @@
 Index: configure
 ===================================================================
---- configure	(revision 24570)
+--- configure	(revision 24601)
 +++ configure	(working copy)
-@@ -60,6 +60,7 @@
- _build_lure=no
+@@ -61,6 +61,7 @@
  _build_cine=yes
  _build_agi=no
+ _build_touche=no
 +_build_kom=no
  _need_memalign=no
  _build_plugins=no
  _nasm=auto
-@@ -332,6 +333,7 @@
-   --enable-lure            build the Lure of the Temptress engine
+@@ -334,6 +335,7 @@
    --disable-cine           don't build the Cinematique engine evo 1
    --enable-agi             build the AGI engine
+   --enable-touche          build the Touche: The Adventures of the Fifth Musketeer engine
 +  --enable-kom             build the Kingdom O' Magic engine
    --enable-plugins         build engines as loadable modules instead of
                             static linking them
    --disable-mt32emu        don't enable the integrated MT-32 emulator
-@@ -400,6 +402,7 @@
-       --enable-lure)            _build_lure=yes ;;
+@@ -403,6 +405,7 @@
        --disable-cine)           _build_cine=no ;;
        --enable-agi)             _build_agi=yes ;;
+       --enable-touche)          _build_touche=yes ;;
 +      --enable-kom)             _build_kom=yes ;;
        --disable-hq-scalers)     _build_hq_scalers=no ;;
        --disable-scalers)        _build_scalers=no ;;
        --enable-alsa)            _alsa=yes       ;;
-@@ -685,6 +688,7 @@
- add_flag_to_config_mk $_build_lure        'DISABLE_LURE'
+@@ -689,6 +692,7 @@
  add_flag_to_config_mk $_build_cine        'DISABLE_CINE'
  add_flag_to_config_mk $_build_agi         'DISABLE_AGI'
+ add_flag_to_config_mk $_build_touche      'DISABLE_TOUCHE'
 +add_flag_to_config_mk $_build_kom         'DISABLE_KOM'
  add_flag_to_config_mk $_build_hq_scalers  'DISABLE_HQ_SCALERS'
  add_flag_to_config_mk $_build_scalers     'DISABLE_SCALERS'
  
-@@ -1270,10 +1274,12 @@
- if test "$_build_cine" = yes ; then
- 	echo "    Cinematique evo 1"
- fi
--
- if test "$_build_agi" = yes ; then
- 	echo "    AGI"
+@@ -1280,6 +1284,9 @@
+ if test "$_build_touche" = yes ; then
+ 	echo "    Touche: The Adventures of the Fifth Musketeer"
  fi
 +if test "$_build_kom" = yes ; then
 +	echo "    Kingdom O' Magic"
@@ -50,12 +46,13 @@ Index: configure
  
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 24570)
+--- engines/engines.mk	(revision 24601)
 +++ engines/engines.mk	(working copy)
-@@ -79,3 +79,8 @@
- MODULES += engines/agi
+@@ -84,3 +84,9 @@
+ else
+ MODULES += engines/touche
  endif
- 
++
 +ifdef DISABLE_KOM
 +DEFINES += -DDISABLE_KOM
 +else 
@@ -63,11 +60,11 @@ Index: engines/engines.mk
 +endif
 Index: base/plugins.cpp
 ===================================================================
---- base/plugins.cpp	(revision 24570)
+--- base/plugins.cpp	(revision 24601)
 +++ base/plugins.cpp	(working copy)
-@@ -150,6 +150,9 @@
- 		#ifndef DISABLE_AGI
- 		LINK_PLUGIN(AGI)
+@@ -153,6 +153,9 @@
+ 		#ifndef DISABLE_TOUCHE
+ 		LINK_PLUGIN(TOUCHE)
  		#endif
 +		#ifndef DISABLE_KOM
 +		LINK_PLUGIN(KOM)
