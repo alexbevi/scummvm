@@ -1,5 +1,5 @@
 /* ScummVM - Scumm Interpreter
- * Copyright (C) 2005-2006 The ScummVM project
+ * Copyright (C) 2003-2006 The ScummVM project
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -8,7 +8,7 @@
 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
 
  * You should have received a copy of the GNU General Public License
@@ -20,41 +20,26 @@
  *
  */
 
-#ifndef KOM_PANEL_H
-#define KOM_PANEL_H
+#ifndef KOM_FONT_H
+#define KOM_FONT_H
 
-#include "common/system.h"
-#include "common/fs.h"
-
-#include "kom/kom.h"
+#include "kom/font.h"
 
 namespace Kom {
 
-class Panel {
+class Font {
 public:
-	Panel(KomEngine *vm, FilesystemNode fileNode);
-	~Panel();
 
-	void update();
-	void showLoading(bool isLoading);
-	void setLocationDesc(char *desc);
-	bool isEnabled() const { return _isEnabled; }
-	void enable(bool state) { _isEnabled = state; }
-	void clear();
+	Font(FilesystemNode fileNode);
+	~Font();
+
+	const byte *getCharData(char c);
 
 private:
 
-	KomEngine *_vm;
-
-	byte* _panelDataRaw;
-	byte* _panelData;
-
-	bool _isEnabled;
-	bool _isLoading;
-
-	char* _locationDesc;
-
+	byte *_data;
 };
+
 } // End of namespace Kom
 
 #endif

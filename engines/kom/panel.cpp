@@ -30,7 +30,8 @@ using Common::File;
 
 namespace Kom {
 
-Panel::Panel(KomEngine *vm, FilesystemNode fileNode) : _vm(vm), _isEnabled(true), _isLoading(false) {
+Panel::Panel(KomEngine *vm, FilesystemNode fileNode) : _vm(vm), _isEnabled(true),
+	_isLoading(false), _locationDesc(0) {
 	File f;
 	f.open(fileNode);
 
@@ -47,6 +48,7 @@ Panel::Panel(KomEngine *vm, FilesystemNode fileNode) : _vm(vm), _isEnabled(true)
 
 Panel::~Panel() {
 	delete[] _panelDataRaw;
+	delete[] _locationDesc;
 }
 
 void Panel::clear() {
@@ -56,8 +58,6 @@ void Panel::clear() {
 void Panel::update() {
 	enable(true);
 	clear();
-
-	// TODO: Draw texts
 
 	_vm->screen()->drawPanel(_panelData);
 
@@ -69,6 +69,11 @@ void Panel::update() {
 		mouse->display();
 		mouse->enable(false);
 	}
+
+	// Draw texts
+	if (_locationDesc)
+		_vm->screen()->writeTextCentered(_locationDesc, SCREEN_H - PANEL_H + 3, 31, true);
+
 
 	// TODO: lose/get items
 }
@@ -82,6 +87,9 @@ void Panel::showLoading(bool isLoading) {
 }
 
 void Panel::setLocationDesc(char *desc) {
+	delete[] _locationDesc;
+	_locationDesc = new char[strlen(desc) + 1];
+	strcpy(_locationDesc, desc);
 }
 
 } // End of namespace Kom

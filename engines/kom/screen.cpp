@@ -49,6 +49,8 @@ Screen::Screen(KomEngine *vm, OSystem *system)
 
 	_mask = new uint8[SCREEN_W * (SCREEN_H - PANEL_H)];
 	memset(_mask, 0, SCREEN_W * (SCREEN_H - PANEL_H));
+
+	_font = new Font(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("packfont.fnt"));
 }
 
 Screen::~Screen() {
@@ -57,6 +59,7 @@ Screen::~Screen() {
 	delete[] _c0ColorSet;
 	delete[] _mask;
 	delete _roomBackground;
+	delete _font;
 }
 
 bool Screen::init() {
@@ -283,6 +286,63 @@ void Screen::drawBackground() {
 
 void Screen::setMask(const uint8 *data) {
 	memcpy(_mask, data, SCREEN_W * (SCREEN_H - PANEL_H));
+}
+
+uint16 Screen::getTextWidth(const char *text) {
+	uint16 w = 0;
+	for (int i = 0; text[i] != '\0'; ++i) {
+		switch (text[i]) {
+		case ' ':
+			w += 4;
+			break;
+		case '\t':
+			w += 12;
+			break;
+		default:
+			w += *((const uint8 *)(_font->getCharData(text[i])));
+		}
+		++w;
+	}
+	if (w > 0) --w;
+
+	return w;
+}
+
+void Screen::writeTextCentered(const char *text, uint8 row, uint8 color, bool isEmbossed) {
+	uint8 col = (SCREEN_W - getTextWidth(text)) / 2;
+	writeText(text, row, col, color, isEmbossed);
+}
+void Screen::writeText(const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isEmbossed) {
+
+	uint16 col = startCol;
+	uint8 charWidth;
+	const byte *data;
+
+	for (int i = 0; text[i] != '\0'; ++i) {
+		switch (text[i]) {
+		case ' ':
+			col += 4;
+			break;
+		case '\t':
+			col += 12;
+			break;
+		default:
+			data = _font->getCharData(text[i]);
+			charWidth = (uint8)*data;
+			++data;
+
+			for (uint w = 0; w < charWidth; ++w) {
+				for (uint8 h = 0; h < 8; ++h) {
+					if (*data != 0)
+						_screenBuf[SCREEN_W * (startRow + h) + col + w] = color;
+					++data;
+				}
+			}
+			col += charWidth;
+		}
+
+		col += 1;
+	}
 }
 
 } // End of namespace Kom

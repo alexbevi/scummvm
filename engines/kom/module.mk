@@ -9,6 +9,7 @@ MODULE_OBJS := \
 	panel.o \
 	flicplayer.o \
 	game.o \
+	font.o \
 	debugger.o \
 	plugin.o
 

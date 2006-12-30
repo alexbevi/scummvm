@@ -27,6 +27,7 @@
 #include "common/fs.h"
 
 #include "kom/flicplayer.h"
+#include "kom/font.h"
 
 class OSystem;
 class FilesystemNode;
@@ -72,11 +73,16 @@ public:
 	void drawBackground();
 	void setMask(const uint8 *data);
 
+	void writeTextCentered(const char *text, uint8 row, uint8 color, bool isEmbossed);
+	void writeText(const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isEmbossed);
+
 private:
 
 	void drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel,
 	                        int maskDepth);
 	byte *loadColorSet(FilesystemNode fsNode);
+
+	uint16 getTextWidth(const char *text);
 
 	OSystem *_system;
 	KomEngine *_vm;
@@ -85,6 +91,7 @@ private:
 	uint8 *_mouseBuf;
 	uint8 *_mask;
 	FlicPlayer *_roomBackground;
+	Font *_font;
 	uint32 _roomBackgroundTime;
 
 	byte *_c0ColorSet;

@@ -83,7 +83,6 @@ int KomEngine::init() {
 	 * actor
 	 * flic
 	 * panel
-	 * text
 	 * menu
 	 */
 
@@ -96,7 +95,6 @@ int KomEngine::go() {
 	/*
 	 * Play sci logo movie
 	 * load inventory icons
-	 * load fonts
 	 * load sounds
 	 * play intro movie
 	 * choose character

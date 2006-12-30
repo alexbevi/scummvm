@@ -33,6 +33,7 @@
 #include "kom/input.h"
 #include "kom/debugger.h"
 #include "kom/game.h"
+#include "kom/font.h"
 
 class FilesystemNode;
 
@@ -43,6 +44,7 @@ class Database;
 class ActorManager;
 class Debugger;
 class Game;
+class Font;
 
 enum {
 	GAMELOOP_RUNNING = 0,
@@ -83,6 +85,7 @@ private:
 	Panel *_panel;
 	Debugger *_debugger;
 	Game *_game;
+	Font *_font;
 
 	FilesystemNode *_fsNode;
 	int _selectedChar; // 0 - thidney. 1 - shahron
