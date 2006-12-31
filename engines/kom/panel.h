@@ -39,6 +39,7 @@ public:
 	void showLoading(bool isLoading);
 	void setLocationDesc(char *desc);
 	bool isEnabled() const { return _isEnabled; }
+	bool isDirty() const { return _isDirty; }
 	void enable(bool state) { _isEnabled = state; }
 	void clear();
 
@@ -46,13 +47,14 @@ private:
 
 	KomEngine *_vm;
 
-	byte* _panelDataRaw;
-	byte* _panelData;
+	byte *_panelData;
+	byte *_panelBuf;
 
 	bool _isEnabled;
 	bool _isLoading;
+	bool _isDirty;
 
-	char* _locationDesc;
+	char *_locationDesc;
 
 };
 } // End of namespace Kom

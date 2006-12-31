@@ -66,15 +66,16 @@ public:
 	void updateCursor();
 
 	void drawPanel(const byte *panelData);
-	void updatePanelArea();
+	void refreshPanelArea();
+	void copyPanelToScreen(const byte *data);
 
 	void loadBackground(FilesystemNode node);
 	void updateBackground();
 	void drawBackground();
 	void setMask(const uint8 *data);
 
-	void writeTextCentered(const char *text, uint8 row, uint8 color, bool isEmbossed);
-	void writeText(const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed);
+	void writeTextCentered(byte *buf, const char *text, uint8 row, uint8 color, bool isEmbossed);
+	void writeText(byte *buf, const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed);
 
 private:
 
@@ -83,12 +84,13 @@ private:
 	byte *loadColorSet(FilesystemNode fsNode);
 
 	uint16 getTextWidth(const char *text);
-	void writeTextStyle(const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isBackground);
+	void writeTextStyle(byte *buf, const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isBackground);
 
 	OSystem *_system;
 	KomEngine *_vm;
 
 	uint8 *_screenBuf;
+	uint8 *_panelBuf;
 	uint8 *_mouseBuf;
 	uint8 *_mask;
 	FlicPlayer *_roomBackground;

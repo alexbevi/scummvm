@@ -37,29 +37,39 @@ Panel::Panel(KomEngine *vm, FilesystemNode fileNode) : _vm(vm), _isEnabled(true)
 
 	f.seek(4);
 
-	_panelDataRaw = new byte[SCREEN_W * PANEL_H];
-	f.read(_panelDataRaw, SCREEN_W * PANEL_H);
+	_panelData = new byte[SCREEN_W * PANEL_H];
+	f.read(_panelData, SCREEN_W * PANEL_H);
 
 	f.close();
 
-	_panelData = new byte[SCREEN_W * PANEL_H];
-	memcpy(_panelData, _panelDataRaw, SCREEN_W * PANEL_H);
+	_panelBuf = new byte[SCREEN_W * PANEL_H];
+	memcpy(_panelBuf, _panelData, SCREEN_W * PANEL_H);
+
+	_isDirty = true;
 }
 
 Panel::~Panel() {
-	delete[] _panelDataRaw;
+	delete[] _panelData;
+	delete[] _panelBuf;
 	delete[] _locationDesc;
 }
 
 void Panel::clear() {
-	memcpy(_panelData, _panelDataRaw, SCREEN_W * PANEL_H);
+	memcpy(_panelBuf, _panelData, SCREEN_W * PANEL_H);
 }
 
 void Panel::update() {
+	_isDirty = false;
 	enable(true);
 	clear();
 
-	_vm->screen()->drawPanel(_panelData);
+	// Draw texts
+	// FIXME - the location desc is fully centered, while the original prints it
+	//         4 pixels to the right
+	if (_locationDesc)
+		_vm->screen()->writeTextCentered(_panelBuf, _locationDesc, 3, 31, true);
+
+	_vm->screen()->copyPanelToScreen(_panelBuf);
 
 	if (_isLoading) {
 		Actor *mouse = _vm->actorMan()->getMouse();
@@ -70,19 +80,16 @@ void Panel::update() {
 		mouse->enable(false);
 	}
 
-	// Draw texts
-	if (_locationDesc)
-		_vm->screen()->writeTextCentered(_locationDesc, SCREEN_H - PANEL_H + 3, 31, true);
-
-
 	// TODO: lose/get items
+	//
+
+	_vm->screen()->refreshPanelArea();
 }
 
 void Panel::showLoading(bool isLoading) {
 	if (isLoading != _isLoading) {
 		_isLoading = isLoading;
 		update();
-		_vm->screen()->updatePanelArea();
 	}
 }
 
@@ -90,6 +97,7 @@ void Panel::setLocationDesc(char *desc) {
 	delete[] _locationDesc;
 	_locationDesc = new char[strlen(desc) + 1];
 	strcpy(_locationDesc, desc);
+	_isDirty = true;
 }
 
 } // End of namespace Kom

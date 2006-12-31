@@ -30,6 +30,7 @@
 
 #include "kom/screen.h"
 #include "kom/kom.h"
+#include "kom/panel.h"
 #include "kom/actor.h"
 
 using Common::File;
@@ -78,11 +79,13 @@ void Screen::update() {
 
 	updateCursor();
 	displayMouse();
-	_vm->panel()->update();
+	//_vm->panel()->update();
 	updateBackground();
 	drawBackground();
 	_vm->actorMan()->displayAll();
-	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H);
+	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H - PANEL_H);
+	if (_vm->panel()->isDirty())
+		_vm->panel()->update();
 	_system->updateScreen();
 }
 
@@ -186,6 +189,7 @@ void Screen::drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data,
 					if (yPos > SCREEN_H - PANEL_H ||
 					    _mask[(yPos * bufWidth) + xPos + pixelsDrawn + i] >= maskDepth)
 
+						// FIXME: valgrind sometimes reports invalid write of 1 byte
 						buf[(yPos * bufWidth) + xPos + pixelsDrawn + i] =
 							data[dataIndex + i];
 				}
@@ -252,9 +256,16 @@ void Screen::drawPanel(const byte *panelData) {
 	memcpy(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H), panelData, SCREEN_W * PANEL_H);
 }
 
-void Screen::updatePanelArea() {
-	_system->copyRectToScreen(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H), SCREEN_W, 0, SCREEN_H - PANEL_H, SCREEN_W, PANEL_H);
+void Screen::refreshPanelArea() {
+	printf("updating panel area\n");
+	_system->copyRectToScreen(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H),
+		SCREEN_W, 0, SCREEN_H - PANEL_H, SCREEN_W, PANEL_H);
 	_system->updateScreen();
+}
+
+void Screen::copyPanelToScreen(const byte *data) {
+	printf("copying panel to screen\n");
+	memcpy(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H), data, SCREEN_W * PANEL_H);
 }
 
 void Screen::loadBackground(FilesystemNode node) {
@@ -309,18 +320,18 @@ uint16 Screen::getTextWidth(const char *text) {
 	return w;
 }
 
-void Screen::writeTextCentered(const char *text, uint8 row, uint8 color, bool isEmbossed) {
+void Screen::writeTextCentered(byte *buf, const char *text, uint8 row, uint8 color, bool isEmbossed) {
 	uint8 col = (SCREEN_W - getTextWidth(text)) / 2;
-	writeText(text, row, col, color, isEmbossed);
+	writeText(buf, text, row, col, color, isEmbossed);
 }
 
-void Screen::writeText(const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed) {
+void Screen::writeText(byte *buf, const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed) {
 	if (isEmbossed)
-		writeTextStyle(text, row, col, 0, true);
+		writeTextStyle(buf, text, row, col, 0, true);
 
-	writeTextStyle(text, row, col, color, false);
+	writeTextStyle(buf, text, row, col, color, false);
 }
-void Screen::writeTextStyle(const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isBackground) {
+void Screen::writeTextStyle(byte *buf, const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isBackground) {
 	uint16 col = startCol;
 	uint8 charWidth;
 	const byte *data;
@@ -342,14 +353,14 @@ void Screen::writeTextStyle(const char *text, uint8 startRow, uint16 startCol, u
 				for (uint8 h = 0; h < 8; ++h) {
 					if (*data != 0)
 						if (isBackground) {
-							_screenBuf[SCREEN_W * (startRow + h) + col + w - 1] = 3;
-							_screenBuf[SCREEN_W * (startRow + h - 1) + col + w] = 3;
-							_screenBuf[SCREEN_W * (startRow + h - 1) + col + w - 1] = 3;
-							_screenBuf[SCREEN_W * (startRow + h) + col + w + 1] = 53;
-							_screenBuf[SCREEN_W * (startRow + h + 1) + col + w] = 53;
-							_screenBuf[SCREEN_W * (startRow + h + 1) + col + w + 1] = 53;
+							buf[SCREEN_W * (startRow + h) + col + w - 1] = 3;
+							buf[SCREEN_W * (startRow + h - 1) + col + w] = 3;
+							buf[SCREEN_W * (startRow + h - 1) + col + w - 1] = 3;
+							buf[SCREEN_W * (startRow + h) + col + w + 1] = 53;
+							buf[SCREEN_W * (startRow + h + 1) + col + w] = 53;
+							buf[SCREEN_W * (startRow + h + 1) + col + w + 1] = 53;
 						} else {
-							_screenBuf[SCREEN_W * (startRow + h) + col + w] = color;
+							buf[SCREEN_W * (startRow + h) + col + w] = color;
 						}
 					++data;
 				}
