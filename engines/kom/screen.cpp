@@ -295,9 +295,10 @@ uint16 Screen::getTextWidth(const char *text) {
 		case ' ':
 			w += 4;
 			break;
-		case '\t':
+		// This check isn't in the original engine
+		/*case '\t':
 			w += 12;
-			break;
+			break;*/
 		default:
 			w += *((const uint8 *)(_font->getCharData(text[i])));
 		}
@@ -312,8 +313,14 @@ void Screen::writeTextCentered(const char *text, uint8 row, uint8 color, bool is
 	uint8 col = (SCREEN_W - getTextWidth(text)) / 2;
 	writeText(text, row, col, color, isEmbossed);
 }
-void Screen::writeText(const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isEmbossed) {
 
+void Screen::writeText(const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed) {
+	if (isEmbossed)
+		writeTextStyle(text, row, col, 0, true);
+
+	writeTextStyle(text, row, col, color, false);
+}
+void Screen::writeTextStyle(const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isBackground) {
 	uint16 col = startCol;
 	uint8 charWidth;
 	const byte *data;
@@ -334,7 +341,16 @@ void Screen::writeText(const char *text, uint8 startRow, uint16 startCol, uint8 
 			for (uint w = 0; w < charWidth; ++w) {
 				for (uint8 h = 0; h < 8; ++h) {
 					if (*data != 0)
-						_screenBuf[SCREEN_W * (startRow + h) + col + w] = color;
+						if (isBackground) {
+							_screenBuf[SCREEN_W * (startRow + h) + col + w - 1] = 3;
+							_screenBuf[SCREEN_W * (startRow + h - 1) + col + w] = 3;
+							_screenBuf[SCREEN_W * (startRow + h - 1) + col + w - 1] = 3;
+							_screenBuf[SCREEN_W * (startRow + h) + col + w + 1] = 53;
+							_screenBuf[SCREEN_W * (startRow + h + 1) + col + w] = 53;
+							_screenBuf[SCREEN_W * (startRow + h + 1) + col + w + 1] = 53;
+						} else {
+							_screenBuf[SCREEN_W * (startRow + h) + col + w] = color;
+						}
 					++data;
 				}
 			}

@@ -74,7 +74,7 @@ public:
 	void setMask(const uint8 *data);
 
 	void writeTextCentered(const char *text, uint8 row, uint8 color, bool isEmbossed);
-	void writeText(const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isEmbossed);
+	void writeText(const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed);
 
 private:
 
@@ -83,6 +83,7 @@ private:
 	byte *loadColorSet(FilesystemNode fsNode);
 
 	uint16 getTextWidth(const char *text);
+	void writeTextStyle(const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isBackground);
 
 	OSystem *_system;
 	KomEngine *_vm;
