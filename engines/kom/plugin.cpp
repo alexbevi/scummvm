@@ -58,8 +58,8 @@ GameDescriptor Engine_KOM_findGameID(const char *gameid) {
 	return *g;
 }
 
-DetectedGameList Engine_KOM_detectGames(const FSList &fslist) {
-	DetectedGameList detectedGames;
+GameList Engine_KOM_detectGames(const FSList &fslist) {
+	GameList detectedGames;
 	for (FSList::const_iterator file = fslist.begin(); file != fslist.end(); ++file) {
 		if (!file->isDirectory()) {
 			const char *filename = file->displayName().c_str();
@@ -67,7 +67,7 @@ DetectedGameList Engine_KOM_detectGames(const FSList &fslist) {
 			if (0 == scumm_stricmp("thidney.dsk", filename) ||
 			    0 == scumm_stricmp("shahron.dsk", filename)) {
 				// Only 1 target ATM
-				detectedGames.push_back(DetectedGame(kom_list[0].gameid, kom_list[0].description, Common::EN_ANY, Common::kPlatformPC));
+				detectedGames.push_back(GameDescriptor(kom_list[0].gameid, kom_list[0].description, Common::EN_ANY, Common::kPlatformPC));
 				break;
 			}
 		}
