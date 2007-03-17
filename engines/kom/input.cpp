@@ -24,6 +24,7 @@
 
 #include "common/stdafx.h"
 #include "common/system.h"
+#include "common/events.h"
 #include "common/str.h"
 
 #include "kom/kom.h"
@@ -47,7 +48,9 @@ void Input::checkKeys() {
 	uint32 end = _system->getMillis() + 41;
 	do {
 		OSystem::Event event;
-		while (_system->pollEvent(event)) {
+
+		Common::EventManager *eventMan = _system->getEventManager();
+		while (eventMan->pollEvent(event)) {
 			switch (event.type) {
 			case OSystem::EVENT_KEYDOWN:
 				if (event.kbd.flags == OSystem::KBD_CTRL) {
