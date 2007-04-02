@@ -144,7 +144,7 @@ void FlicPlayer::decodeDeltaFLC(uint8 *data) {
 
 		uint16 column = 0;
 		
-		//Now interpret the RLE data
+		// Now interpret the RLE data
 		while (packetCount--) {
 			column += *data++;
 			int8 rleCount = (int8)*data++;

@@ -150,8 +150,7 @@ void KomEngine::gameLoop() {
 	// loopCollide
 	// TODO more
 
-	_screen->update();
-	_input->checkKeys();
+	_screen->processGraphics();
 	if (_input->debugMode()) {
 		_input->resetDebugMode();
 		_debugger->attach();

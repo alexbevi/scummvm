@@ -40,6 +40,8 @@ namespace Kom {
 Screen::Screen(KomEngine *vm, OSystem *system)
 	: _system(system), _vm(vm), _roomBackground(0) {
 
+	_lastFrameTime = _system->getMillis();
+
 	_screenBuf = new uint8[SCREEN_W * SCREEN_H];
 	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 
@@ -70,23 +72,32 @@ bool Screen::init() {
 	_system->endGFXTransaction();
 
 	_system->setPalette(_c0ColorSet, 0, 128);
+	//_system->setFeatureState(OSystem::kFeatureAutoComputeDirtyRects, true);
 
 	return true;
 }
 
-void Screen::update() {
-	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
+void Screen::processGraphics() {
+	//memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 
 	updateCursor();
 	displayMouse();
-	//_vm->panel()->update();
 	updateBackground();
 	drawBackground();
 	_vm->actorMan()->displayAll();
 	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H - PANEL_H);
 	if (_vm->panel()->isDirty())
 		_vm->panel()->update();
+	gfxUpdate();
+}
+
+void Screen::gfxUpdate() {
+	while (_system->getMillis() < _lastFrameTime + 41 /* 24 fps */) {
+		_vm->input()->checkKeys();
+		_system->delayMillis(10);
+	}
 	_system->updateScreen();
+	_lastFrameTime = _system->getMillis();
 }
 
 void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos,
@@ -257,14 +268,12 @@ void Screen::drawPanel(const byte *panelData) {
 }
 
 void Screen::refreshPanelArea() {
-	printf("updating panel area\n");
 	_system->copyRectToScreen(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H),
 		SCREEN_W, 0, SCREEN_H - PANEL_H, SCREEN_W, PANEL_H);
 	_system->updateScreen();
 }
 
 void Screen::copyPanelToScreen(const byte *data) {
-	printf("copying panel to screen\n");
 	memcpy(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H), data, SCREEN_W * PANEL_H);
 }
 

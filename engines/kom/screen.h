@@ -54,7 +54,8 @@ public:
 
 	bool init();
 
-	void update();
+	void processGraphics();
+	void gfxUpdate();
 	void drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos, int16 xOffset, int16 yOffset,
 	                    int maskDepth);
 	void drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16 xOffset, int16 yOffset);
@@ -98,6 +99,8 @@ private:
 	uint32 _roomBackgroundTime;
 
 	byte *_c0ColorSet;
+
+	uint32 _lastFrameTime;
 };
 
 } // End of namespace Kom

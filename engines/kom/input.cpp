@@ -45,15 +45,13 @@ Input::~Input() {
 
 // TODO: hack
 void Input::checkKeys() {
-	uint32 end = _system->getMillis() + 41;
-	do {
-		OSystem::Event event;
+		Common::Event event;
 
 		Common::EventManager *eventMan = _system->getEventManager();
 		while (eventMan->pollEvent(event)) {
 			switch (event.type) {
-			case OSystem::EVENT_KEYDOWN:
-				if (event.kbd.flags == OSystem::KBD_CTRL) {
+			case Common::EVENT_KEYDOWN:
+				if (event.kbd.flags == Common::KBD_CTRL) {
 					if (event.kbd.keycode == 'd') {
 						_debugMode = true;
 					}
@@ -69,14 +67,14 @@ void Input::checkKeys() {
 				}
 				break;
 
-			case OSystem::EVENT_MOUSEMOVE:
+			case Common::EVENT_MOUSEMOVE:
 				_mouseX = event.mouse.x;
 				_mouseY = event.mouse.y;
 				// Temporary
 				_vm->actorMan()->getMouse()->setPos(_mouseX, _mouseY);
 				break;
 
-			case OSystem::EVENT_QUIT:
+			case Common::EVENT_QUIT:
 				_system->quit();
 				break;
 
@@ -84,12 +82,6 @@ void Input::checkKeys() {
 				break;
 			}
 		}
-
-		_system->updateScreen();
-
-		_system->delayMillis(10);
-	} while (_system->getMillis() < end);
-
 }
 
 } // End of namespace Kom
