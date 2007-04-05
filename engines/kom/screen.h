@@ -82,7 +82,7 @@ public:
 
 private:
 
-	void copyRectListToScreen(Common::List<Common::Rect> *);
+	void copyRectListToScreen(const Common::List<Common::Rect> *);
 
 	void drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel,
 	                        int maskDepth);
@@ -108,7 +108,7 @@ private:
 
 	Common::List<Common::Rect> *_dirtyRects;
 	Common::List<Common::Rect> *_prevDirtyRects;
-	Common::List<Common::Rect> *_bgDirtyRects;
+	const Common::List<Common::Rect> *_bgDirtyRects;
 };
 
 } // End of namespace Kom
