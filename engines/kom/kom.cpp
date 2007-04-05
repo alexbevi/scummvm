@@ -151,6 +151,7 @@ void KomEngine::gameLoop() {
 	// TODO more
 
 	_screen->processGraphics();
+
 	if (_input->debugMode()) {
 		_input->resetDebugMode();
 		_debugger->attach();

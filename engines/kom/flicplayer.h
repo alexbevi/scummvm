@@ -26,6 +26,8 @@
 #include "common/stdafx.h"
 #include "common/endian.h"
 #include "common/fs.h"
+#include "common/list.h"
+#include "common/rect.h"
 
 #include "kom/kom.h"
 
@@ -69,6 +71,7 @@ public:
 	bool paletteDirty() const { return _paletteDirty; }
 	const uint8 *getPalette() { _paletteDirty = false; return _palette; }
 	const uint8 *getOffscreen() const { return _offscreen; }
+	Common::List<Common::Rect> *getDirtyRects() { return _dirtyRects; }
 
 protected:
 	ChunkHeader readChunkHeader();
@@ -85,6 +88,7 @@ protected:
 	FlicHeader _flicInfo;
 	uint16 _currFrame;
 	uint32 _lastFrameTime;
+	Common::List<Common::Rect> *_dirtyRects;
 };
 
 } // End of namespace Kom

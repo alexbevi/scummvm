@@ -26,6 +26,8 @@
 #include "common/file.h"
 #include "common/fs.h"
 #include "common/endian.h"
+#include "common/list.h"
+#include "common/rect.h"
 #include "graphics/cursorman.h"
 
 #include "kom/screen.h"
@@ -34,13 +36,15 @@
 #include "kom/actor.h"
 
 using Common::File;
+using Common::List;
+using Common::Rect;
 
 namespace Kom {
 
 Screen::Screen(KomEngine *vm, OSystem *system)
 	: _system(system), _vm(vm), _roomBackground(0) {
 
-	_lastFrameTime = _system->getMillis();
+	_lastFrameTime = 0;
 
 	_screenBuf = new uint8[SCREEN_W * SCREEN_H];
 	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
@@ -54,6 +58,9 @@ Screen::Screen(KomEngine *vm, OSystem *system)
 	memset(_mask, 0, SCREEN_W * (SCREEN_H - PANEL_H));
 
 	_font = new Font(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("packfont.fnt"));
+
+	_dirtyRects = new List<Rect>();
+	_prevDirtyRects = new List<Rect>();
 }
 
 Screen::~Screen() {
@@ -63,6 +70,8 @@ Screen::~Screen() {
 	delete[] _mask;
 	delete _roomBackground;
 	delete _font;
+	delete _dirtyRects;
+	delete _prevDirtyRects;
 }
 
 bool Screen::init() {
@@ -72,7 +81,6 @@ bool Screen::init() {
 	_system->endGFXTransaction();
 
 	_system->setPalette(_c0ColorSet, 0, 128);
-	//_system->setFeatureState(OSystem::kFeatureAutoComputeDirtyRects, true);
 
 	return true;
 }
@@ -85,10 +93,33 @@ void Screen::processGraphics() {
 	updateBackground();
 	drawBackground();
 	_vm->actorMan()->displayAll();
-	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H - PANEL_H);
+
+	// Copy dirty rects to screen
+	copyRectListToScreen(_prevDirtyRects);
+	copyRectListToScreen(_dirtyRects);
+	delete _prevDirtyRects;
+	_prevDirtyRects = _dirtyRects;
+	_dirtyRects = new List<Rect>();
+
+	// No need to save a prev, since the background reports
+	// all changes
+	if (_roomBackground)
+		copyRectListToScreen(_bgDirtyRects);
+
 	if (_vm->panel()->isDirty())
 		_vm->panel()->update();
+
 	gfxUpdate();
+}
+
+void Screen::copyRectListToScreen(Common::List<Common::Rect> *list) {
+
+	for (Common::List<Rect>::iterator rect = list->begin(); rect != list->end(); ++rect) {
+		debug(1, "copyRectToScreen(%hu, %hu, %hu, %hu)", rect->left, rect->top,
+				rect->width(), rect->height());
+		_system->copyRectToScreen(_screenBuf + SCREEN_W * rect->top + rect->left,
+				SCREEN_W, rect->left, rect->top, rect->width(), rect->height());
+	}
 }
 
 void Screen::gfxUpdate() {
@@ -103,21 +134,22 @@ void Screen::gfxUpdate() {
 void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos,
                             int16 xOffset, int16 yOffset, int maskDepth) {
 
-	// Check which lines and colums to draw
+	// Check which lines and columns to draw
 	int16 realX = xPos + xOffset;
 	int16 realY = yPos + yOffset;
 
 	uint16 startCol = (realX < 0 ? -realX : 0);
 	uint16 startLine = (realY < 0 ? -realY : 0);
 	uint16 endCol = (realX + width > SCREEN_W ? SCREEN_W - realX : width);
-	uint16 endLine = (realY + height - 1 > SCREEN_H ? SCREEN_H - realY : height - 1);
+	uint16 endLine = (realY + height - 1 > SCREEN_H ? SCREEN_H - realY - 1: height - 2);
 
-	for (int line = startLine; line <= endLine; ++line) {
+	for (int line = startLine; line < endLine; ++line) {
 		uint16 lineOffset = READ_LE_UINT16(data + line * 2);
 
 		drawActorFrameLine(_screenBuf, SCREEN_W, data + lineOffset, (realX < 0 ? 0 : realX),
 		                   (realY < 0 ? 0 : realY) + line - startLine, startCol, endCol, maskDepth);
 	}
+	_dirtyRects->push_back(Rect(realX, realY, realX + endCol, realY + endLine));
 }
 
 void Screen::drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16 xOffset, int16 yOffset) {
@@ -280,7 +312,12 @@ void Screen::copyPanelToScreen(const byte *data) {
 void Screen::loadBackground(FilesystemNode node) {
 	delete _roomBackground;
 	_roomBackground = new FlicPlayer(node);
-	_roomBackgroundTime = _system->getMillis() + _roomBackground->speed();
+	_roomBackgroundTime = 0;
+
+	// Redraw everything
+	_dirtyRects->clear();
+	_prevDirtyRects->clear();
+	// No need to report the rect, since the flic player will report it
 }
 
 void Screen::updateBackground() {
@@ -300,6 +337,7 @@ void Screen::updateBackground() {
 
 void Screen::drawBackground() {
 	if (_roomBackground != 0) {
+		_bgDirtyRects = _roomBackground->getDirtyRects();
 		memcpy(_screenBuf, _roomBackground->getOffscreen(), SCREEN_W * (SCREEN_H - PANEL_H));
 	}
 }

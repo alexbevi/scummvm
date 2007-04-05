@@ -23,12 +23,15 @@
 #include "common/stdafx.h"
 #include "common/fs.h"
 #include "common/file.h"
+#include "common/list.h"
+#include "common/rect.h"
 
 #include "kom/flicplayer.h"
 
 namespace Kom {
 
 using Common::File;
+using Common::Rect;
 
 FlicPlayer::FlicPlayer(FilesystemNode flicNode) : _paletteDirty(false), _offscreen(0), _currFrame(0) {
 	File f;
@@ -59,11 +62,14 @@ FlicPlayer::FlicPlayer(FilesystemNode flicNode) : _paletteDirty(false), _offscre
 
 	// Seek to the first frame
 	_flicData = _flicDataStart + _flicInfo.offsetFrame1;
+
+	_dirtyRects = new Common::List<Rect>;
 }
 
 FlicPlayer::~FlicPlayer() { 
 	delete[] _flicDataStart;
 	delete[] _offscreen;
+	delete _dirtyRects;
 }
 
 ChunkHeader FlicPlayer::readChunkHeader() {
@@ -108,6 +114,8 @@ void FlicPlayer::decodeByteRun(uint8 *data) {
 			}
 		}
 	}
+	_dirtyRects->clear();
+	_dirtyRects->push_back(Rect(0, 0, _flicInfo.width, _flicInfo.height));
 }
 
 #define OP_PACKETCOUNT   0
@@ -134,7 +142,8 @@ void FlicPlayer::decodeDeltaFLC(uint8 *data) {
 			case OP_UNDEFINED:
 				break;
 			case OP_LASTPIXEL:
-				*(uint8 *)(_offscreen + (currentLine * _flicInfo.width) + (_flicInfo.height - 1)) = (opcode & 0xFF);
+				*(uint8 *)(_offscreen + (currentLine * _flicInfo.width) + (_flicInfo.width - 1)) = (opcode & 0xFF);
+				_dirtyRects->push_back(Rect(_flicInfo.width - 1, currentLine, _flicInfo.width, currentLine + 1));
 				break;
 			case OP_LINESKIPCOUNT:
 				currentLine += -(int16)opcode;
@@ -151,6 +160,7 @@ void FlicPlayer::decodeDeltaFLC(uint8 *data) {
 			
 			if (rleCount > 0) {
 				memcpy((void *)(_offscreen + (currentLine * _flicInfo.width) + column), data, rleCount * 2);
+				_dirtyRects->push_back(Rect(column, currentLine, column + (rleCount * 2), currentLine + 1));
 				data += rleCount * 2;
 				column += rleCount * 2;
 			} else if (rleCount < 0) {
@@ -158,6 +168,7 @@ void FlicPlayer::decodeDeltaFLC(uint8 *data) {
 				for (int i = 0; i < -(int16)rleCount; ++i) { 
 					*(uint16 *)(_offscreen + (currentLine * _flicInfo.width) + column + (i * 2)) = dataWord;
 				}
+				_dirtyRects->push_back(Rect(column, currentLine, column + (-(int16)rleCount * 2), currentLine + 1));
 
 				column += (-(int16)rleCount) * 2;
 			} else { // End of cutscene ?
@@ -177,6 +188,8 @@ void FlicPlayer::decodeDeltaFLC(uint8 *data) {
 
 bool FlicPlayer::decodeFrame() {
 	FrameTypeChunkHeader frameHeader;
+
+	_dirtyRects->clear();
 
 	// Read chunk
 	ChunkHeader cHeader = readChunkHeader();

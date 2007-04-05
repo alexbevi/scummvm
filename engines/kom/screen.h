@@ -25,6 +25,8 @@
 
 #include "common/system.h"
 #include "common/fs.h"
+#include "common/list.h"
+#include "common/rect.h"
 
 #include "kom/flicplayer.h"
 #include "kom/font.h"
@@ -80,6 +82,8 @@ public:
 
 private:
 
+	void copyRectListToScreen(Common::List<Common::Rect> *);
+
 	void drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel,
 	                        int maskDepth);
 	byte *loadColorSet(FilesystemNode fsNode);
@@ -101,6 +105,10 @@ private:
 	byte *_c0ColorSet;
 
 	uint32 _lastFrameTime;
+
+	Common::List<Common::Rect> *_dirtyRects;
+	Common::List<Common::Rect> *_prevDirtyRects;
+	Common::List<Common::Rect> *_bgDirtyRects;
 };
 
 } // End of namespace Kom
