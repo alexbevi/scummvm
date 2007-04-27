@@ -1,42 +1,56 @@
+Index: base/plugins.cpp
+===================================================================
+--- base/plugins.cpp	(revision 26629)
++++ base/plugins.cpp	(working copy)
+@@ -129,6 +129,9 @@
+ 		#ifndef DISABLE_CRUISE
+ 		LINK_PLUGIN(CRUISE)
+ 		#endif
++		#ifndef DISABLE_KOM
++		LINK_PLUGIN(KOM)
++		#endif
+ 
+ 		return pl;
+ 	}
 Index: configure
 ===================================================================
---- configure	(revision 24601)
+--- configure	(revision 26629)
 +++ configure	(working copy)
-@@ -61,6 +61,7 @@
- _build_cine=yes
- _build_agi=no
- _build_touche=no
+@@ -63,6 +63,7 @@
+ _build_touche=yes
+ _build_parallaction=no
+ _build_cruise=no
 +_build_kom=no
  _need_memalign=no
  _build_plugins=no
  _nasm=auto
-@@ -334,6 +335,7 @@
-   --disable-cine           don't build the Cinematique engine evo 1
-   --enable-agi             build the AGI engine
-   --enable-touche          build the Touche: The Adventures of the Fifth Musketeer engine
+@@ -339,6 +340,7 @@
+   --disable-touche         don't build the Touche: The Adventures of the Fifth Musketeer engine
+   --enable-parallaction    build the Parallaction engine
+   --enable-cruise          build the Cruise for a Corpse engine
 +  --enable-kom             build the Kingdom O' Magic engine
    --enable-plugins         build engines as loadable modules instead of
                             static linking them
    --disable-mt32emu        don't enable the integrated MT-32 emulator
-@@ -403,6 +405,7 @@
-       --disable-cine)           _build_cine=no ;;
-       --enable-agi)             _build_agi=yes ;;
-       --enable-touche)          _build_touche=yes ;;
+@@ -410,6 +412,7 @@
+       --disable-touche)         _build_touche=no ;;
+       --enable-parallaction)    _build_parallaction=yes ;;
+       --enable-cruise)          _build_cruise=yes ;;
 +      --enable-kom)             _build_kom=yes ;;
        --disable-hq-scalers)     _build_hq_scalers=no ;;
        --disable-scalers)        _build_scalers=no ;;
        --enable-alsa)            _alsa=yes       ;;
-@@ -689,6 +692,7 @@
- add_flag_to_config_mk $_build_cine        'DISABLE_CINE'
- add_flag_to_config_mk $_build_agi         'DISABLE_AGI'
- add_flag_to_config_mk $_build_touche      'DISABLE_TOUCHE'
-+add_flag_to_config_mk $_build_kom         'DISABLE_KOM'
- add_flag_to_config_mk $_build_hq_scalers  'DISABLE_HQ_SCALERS'
- add_flag_to_config_mk $_build_scalers     'DISABLE_SCALERS'
+@@ -702,6 +705,7 @@
+ add_flag_to_config_mk $_build_touche       'DISABLE_TOUCHE'
+ add_flag_to_config_mk $_build_parallaction 'DISABLE_PARALLACTION'
+ add_flag_to_config_mk $_build_cruise       'DISABLE_CRUISE'
++add_flag_to_config_mk $_build_kom          'DISABLE_KOM'
+ add_flag_to_config_mk $_build_hq_scalers   'DISABLE_HQ_SCALERS'
+ add_flag_to_config_mk $_build_scalers      'DISABLE_SCALERS'
  
-@@ -1280,6 +1284,9 @@
- if test "$_build_touche" = yes ; then
- 	echo "    Touche: The Adventures of the Fifth Musketeer"
+@@ -1338,6 +1342,9 @@
+ if test "$_build_cruise" = yes ; then
+ 	echo "    Cinematique evo 2"
  fi
 +if test "$_build_kom" = yes ; then
 +	echo "    Kingdom O' Magic"
@@ -46,11 +60,11 @@ Index: configure
  
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 24601)
+--- engines/engines.mk	(revision 26629)
 +++ engines/engines.mk	(working copy)
-@@ -84,3 +84,9 @@
+@@ -96,3 +96,9 @@
  else
- MODULES += engines/touche
+ MODULES += engines/cruise
  endif
 +
 +ifdef DISABLE_KOM
@@ -58,17 +72,3 @@ Index: engines/engines.mk
 +else 
 +MODULES += engines/kom
 +endif
-Index: base/plugins.cpp
-===================================================================
---- base/plugins.cpp	(revision 24601)
-+++ base/plugins.cpp	(working copy)
-@@ -153,6 +153,9 @@
- 		#ifndef DISABLE_TOUCHE
- 		LINK_PLUGIN(TOUCHE)
- 		#endif
-+		#ifndef DISABLE_KOM
-+		LINK_PLUGIN(KOM)
-+		#endif
- 
- 		return pl;
- 	}

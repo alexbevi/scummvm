@@ -11,7 +11,7 @@ MODULE_OBJS := \
 	game.o \
 	font.o \
 	debugger.o \
-	plugin.o
+	detection.o
 
 # This module can be built as a plugin
 ifdef BUILD_PLUGINS
