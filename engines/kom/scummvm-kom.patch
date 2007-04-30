@@ -1,20 +1,6 @@
-Index: base/plugins.cpp
-===================================================================
---- base/plugins.cpp	(revision 26629)
-+++ base/plugins.cpp	(working copy)
-@@ -129,6 +129,9 @@
- 		#ifndef DISABLE_CRUISE
- 		LINK_PLUGIN(CRUISE)
- 		#endif
-+		#ifndef DISABLE_KOM
-+		LINK_PLUGIN(KOM)
-+		#endif
- 
- 		return pl;
- 	}
 Index: configure
 ===================================================================
---- configure	(revision 26629)
+--- configure	(revision 26681)
 +++ configure	(working copy)
 @@ -63,6 +63,7 @@
  _build_touche=yes
@@ -41,14 +27,14 @@ Index: configure
        --disable-scalers)        _build_scalers=no ;;
        --enable-alsa)            _alsa=yes       ;;
 @@ -702,6 +705,7 @@
- add_flag_to_config_mk $_build_touche       'DISABLE_TOUCHE'
- add_flag_to_config_mk $_build_parallaction 'DISABLE_PARALLACTION'
- add_flag_to_config_mk $_build_cruise       'DISABLE_CRUISE'
-+add_flag_to_config_mk $_build_kom          'DISABLE_KOM'
- add_flag_to_config_mk $_build_hq_scalers   'DISABLE_HQ_SCALERS'
- add_flag_to_config_mk $_build_scalers      'DISABLE_SCALERS'
+ add_flag_to_config_mk_if_no $_build_touche       'DISABLE_TOUCHE'
+ add_flag_to_config_mk_if_no $_build_parallaction 'DISABLE_PARALLACTION'
+ add_flag_to_config_mk_if_no $_build_cruise       'DISABLE_CRUISE'
++add_flag_to_config_mk_if_no $_build_kom          'DISABLE_KOM'
+ add_flag_to_config_mk_if_no $_build_hq_scalers   'DISABLE_HQ_SCALERS'
+ add_flag_to_config_mk_if_no $_build_scalers      'DISABLE_SCALERS'
  
-@@ -1338,6 +1342,9 @@
+@@ -1348,6 +1352,9 @@
  if test "$_build_cruise" = yes ; then
  	echo "    Cinematique evo 2"
  fi
@@ -60,7 +46,7 @@ Index: configure
  
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 26629)
+--- engines/engines.mk	(revision 26681)
 +++ engines/engines.mk	(working copy)
 @@ -96,3 +96,9 @@
  else
@@ -72,3 +58,17 @@ Index: engines/engines.mk
 +else 
 +MODULES += engines/kom
 +endif
+Index: base/plugins.cpp
+===================================================================
+--- base/plugins.cpp	(revision 26681)
++++ base/plugins.cpp	(working copy)
+@@ -129,6 +129,9 @@
+ 		#ifndef DISABLE_CRUISE
+ 		LINK_PLUGIN(CRUISE)
+ 		#endif
++		#ifndef DISABLE_KOM
++		LINK_PLUGIN(KOM)
++		#endif
+ 
+ 		return pl;
+ 	}
