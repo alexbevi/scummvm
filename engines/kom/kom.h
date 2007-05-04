@@ -88,8 +88,6 @@ private:
 	Font *_font;
 
 	FilesystemNode *_fsNode;
-	int _selectedChar; // 0 - thidney. 1 - shahron
-	int _selectedQuest;
 	int _gameLoopState;
 };
 

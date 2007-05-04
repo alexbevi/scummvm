@@ -45,9 +45,6 @@ KomEngine::KomEngine(OSystem *system)
 	_gameLoopState = GAMELOOP_RUNNING;
 
 	_fsNode = new FilesystemNode(_gameDataPath);
-
-	// FIXME: Temporary
-	_selectedChar = _selectedQuest = 0;
 }
 
 KomEngine::~KomEngine() {
@@ -103,7 +100,7 @@ int KomEngine::go() {
 	 */
 
 	FilesystemNode installDir(_fsNode->getChild("install"));
-	if (_selectedChar == 0) {
+	if (_game->settings->selectedChar == 0) {
 		File::addDefaultDirectory(installDir.getChild("db0"));
 		_database->init("thid");
 	} else {

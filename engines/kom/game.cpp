@@ -35,6 +35,9 @@ namespace Kom {
 using Common::String;
 
 Game::Game(KomEngine *vm, OSystem *system) : _system(system), _vm(vm) {
+
+	// FIXME: Temporary
+    _settings.selectedChar = _settings.selectedQuest = 0;
 }
 
 Game::~Game() {

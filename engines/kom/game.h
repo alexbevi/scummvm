@@ -36,12 +36,19 @@ struct RoomDoor {
 	int actorId;
 };
 
+struct Settings {
+	uint8 selectedChar; // 0 - thidney. 1 - shahron
+	uint8 selectedQuest;
+}
+
 class Game {
 public:
 	Game(KomEngine *vm, OSystem *system);
 	~Game();
 
 	void enterLocation(uint16 locId);
+
+	Settings* settings() const { return &_settings; }
 
 private:
 
@@ -50,6 +57,9 @@ private:
 
 	Common::Array<RoomObject> _roomObjects;
 	Common::Array<RoomDoor> _roomDoors;
+
+    // Settings
+    Settings _settings;
 };
 
 } // End of namespace Kom
