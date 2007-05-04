@@ -33,14 +33,10 @@ class Debugger : public GUI::Debugger {
 public:
 
 	Debugger(KomEngine *vm);
-	virtual ~Debugger(); // we need this here for __SYMBIAN32__ archaic gcc/UIQ
 
 protected:
-
-	virtual void preEnter();
-	virtual void postEnter();
-
 	bool Cmd_Room(int argc, const char **argv);
+	bool Cmd_Proc(int argc, const char **argv);
 
 private:
 

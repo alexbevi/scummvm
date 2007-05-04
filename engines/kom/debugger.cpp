@@ -24,20 +24,14 @@
 
 #include "kom/kom.h"
 #include "kom/debugger.h"
+#include "kom/database.h"
 
 namespace Kom {
 
 Debugger::Debugger(KomEngine *vm) : GUI::Debugger(), _vm(vm) {
 
 	DCmd_Register("room", WRAP_METHOD(Debugger, Cmd_Room));
-}
-
-Debugger::~Debugger() {} // we need this here for __SYMBIAN32__
-
-void Debugger::preEnter() {
-}
-
-void Debugger::postEnter() {
+	DCmd_Register("proc", WRAP_METHOD(Debugger, Cmd_Proc));
 }
 
 bool Debugger::Cmd_Room(int argc, const char **argv) {
@@ -45,6 +39,29 @@ bool Debugger::Cmd_Room(int argc, const char **argv) {
 		uint16 roomNum = atoi(argv[1]);
 		_vm->game()->enterLocation(roomNum);
 		return false;
+	}
+	return true;
+}
+
+bool Debugger::Cmd_Proc(int argc, const char **argv) {
+	if (argc == 2) {
+		uint16 procNum = atoi(argv[1]);
+		Process *proc = _vm->database()->getProc(procNum);
+		if (proc == NULL) {
+			DebugPrintf("No such process: %hd\n", procNum);
+			return true;
+		}
+
+		DebugPrintf("Process name is %s\n", proc->name);
+
+		for (Common::List<Command>::iterator i = proc->commands.begin(); i != proc->commands.end(); ++i) {
+			DebugPrintf("- Command %d - value %hd\n", i->cmd, i->value);
+
+			for (Common::List<OpCode>::iterator j = i->opcodes.begin(); j != i->opcodes.end(); ++j) {
+				DebugPrintf("|- Opcode %d - (%s, %d, %d, %d, %d, %d)\n", j->opcode,
+						j->arg1, j->arg2, j->arg3, j->arg4, j->arg5, j->arg6);
+			}
+		}
 	}
 	return true;
 }

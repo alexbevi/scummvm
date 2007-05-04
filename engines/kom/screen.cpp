@@ -115,7 +115,7 @@ void Screen::processGraphics() {
 void Screen::copyRectListToScreen(const Common::List<Common::Rect> *list) {
 
 	for (Common::List<Rect>::const_iterator rect = list->begin(); rect != list->end(); ++rect) {
-		debug(1, "copyRectToScreen(%hu, %hu, %hu, %hu)", rect->left, rect->top,
+		debug(9, "copyRectToScreen(%hu, %hu, %hu, %hu)", rect->left, rect->top,
 				rect->width(), rect->height());
 		_system->copyRectToScreen(_screenBuf + SCREEN_W * rect->top + rect->left,
 				SCREEN_W, rect->left, rect->top, rect->width(), rect->height());

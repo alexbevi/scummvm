@@ -120,6 +120,7 @@ struct OpCode {
 	int arg4;
 	int arg5;
 	int arg6;
+	OpCode() : arg2(0), arg3(0), arg4(0), arg5(0), arg6(0) { arg1[0] = '\0'; }; 
 };
 
 struct Command {
@@ -170,6 +171,11 @@ public:
 	Box *getBox(int locId, int boxId) const { return &(_locRoutes[locId].boxes[boxId]); }
 	Exit *getExits(int locId) const { return _locRoutes[locId].exits; }
 
+	Process *getProc(uint16 procIndex) const { return procIndex < _procsNum ? &(_processes[procIndex]) : NULL; }
+
+	int16 getVar(uint16 index) { assert(index < _varSize); return _variables[index]; }
+	void setVar(uint16 index, int16 value) { assert(index < _varSize); _variables[index] = value; }
+
 private:
 	void loadConvIndex();
 	void initLocations();
@@ -199,7 +205,7 @@ private:
 	int _procsNum;
 
 	int _varSize;
-	uint16 *_dataSegment;
+	int16 *_variables;
 
 	int _convIndexSize;
 	byte *_convIndex;

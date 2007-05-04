@@ -234,7 +234,7 @@ void Actor::display() {
 			_vm->screen()->drawMouseFrame((int8 *)(_framesData + frameStream.pos()),
 												  width, height, xOffset, yOffset);
 		} else {
-			debug(1, "drawing actor: %s", _name.c_str());
+			debug(3, "drawing actor: %s", _name.c_str());
 			_vm->screen()->drawActorFrame((int8 *)(_framesData + frameStream.pos()),
 												  width, height, _xPos, _yPos, xOffset, yOffset, _maskDepth);
 		}

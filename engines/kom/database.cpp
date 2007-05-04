@@ -51,7 +51,7 @@ Database::~Database() {
 	delete[] _locations;
 	delete[] _characters;
 	delete[] _objects;
-	delete[] _dataSegment;
+	free(_variables);
 	delete[] _processes;
 	delete[] _convIndex;
 	delete[] _routes;
@@ -71,6 +71,17 @@ void Database::init(Common::String databasePrefix) {
 	initCharacterLocs();
 	initProcs();
 	initRoutes();
+
+
+	for (int i = 0; i < _procsNum; ++i) {
+		for (Common::List<Command>::iterator j = _processes[i].commands.begin();
+				j != _processes[i].commands.end(); ++j) {
+			if (j->cmd == 312) { // Init
+				debug(1, "Calling init for %s", _processes[i].name);
+				_vm->game()->doStat(&(*j));
+			}
+		}
+	}
 }
 
 void Database::loadConvIndex() {
@@ -358,7 +369,7 @@ void Database::initProcs() {
 	readLineScanf(f, "%d", &_varSize);
 
 	printf("var size: %d\n", _varSize);
-	_dataSegment = new uint16[_varSize];
+	_variables = (int16 *)calloc(_varSize, sizeof(_variables[0]));
 
 	readLineScanf(f, "%d", &_procsNum);
 

@@ -26,6 +26,8 @@
 #include "common/scummsys.h"
 #include "common/array.h"
 
+#include "kom/database.h"
+
 namespace Kom {
 
 struct RoomObject {
@@ -39,6 +41,8 @@ struct RoomDoor {
 struct Settings {
 	uint8 selectedChar; // 0 - thidney. 1 - shahron
 	uint8 selectedQuest;
+	uint8 dayMode; // 0 - day. 1 - night
+	bool fightEnabled;
 };
 
 class Game {
@@ -47,6 +51,7 @@ public:
 	~Game();
 
 	void enterLocation(uint16 locId);
+	void doStat(const Command *cmd);
 
 	Settings* settings() { return &_settings; }
 
@@ -60,6 +65,8 @@ private:
 
     // Settings
     Settings _settings;
+
+	int16 doExternalAction(const char *action);
 };
 
 } // End of namespace Kom

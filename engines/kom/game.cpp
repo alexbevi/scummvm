@@ -66,8 +66,7 @@ void Game::enterLocation(uint16 locId) {
 
 	// Load room background and mask
 
-	// TODO: add day/night modifier to xtend
-	sprintf(filename, "%s%db.flc", locName.c_str(), loc->xtend);
+	sprintf(filename, "%s%db.flc", locName.c_str(), loc->xtend + _settings.dayMode);
 	_vm->screen()->loadBackground(locNode.getChild(filename));
 
 	filename[strlen(filename) - 5] = 'm';
@@ -131,6 +130,62 @@ void Game::enterLocation(uint16 locId) {
 
 	_vm->panel()->setLocationDesc(loc->desc);
 	_vm->panel()->showLoading(false);
+}
+
+void Game::doStat(const Command *cmd) {
+	bool keepProcessing = true;
+
+	debug(1, "Trying to execute Command %d - value %hd", cmd->cmd, cmd->value);
+
+	for (Common::List<OpCode>::const_iterator j = cmd->opcodes.begin();
+			j != cmd->opcodes.end() && keepProcessing; ++j) {
+
+		switch (j->opcode) {
+		case 327:
+			_vm->database()->setVar(j->arg2, j->arg3);
+			break;
+		case 331:
+			_vm->database()->setVar(j->arg2, 0);
+			break;
+		case 453:
+			_settings.dayMode = 0;
+			warning("TODO: Quick hack to change day");
+			break;
+		case 454:
+			_settings.dayMode = 1;
+			warning("TODO: Quick hack to change day");
+			break;
+		case 474:
+			if (strcmp(j->arg1, "REFRESH") == 0) {
+				warning("TODO: Unhandled external action: REFRESH");
+			} else {
+				_vm->database()->setVar(j->arg2, doExternalAction(j->arg1));
+			}
+			break;
+		case 475:
+			keepProcessing = false;
+			break;
+		case 485:
+			_settings.fightEnabled = true;
+			break;
+		case 486:
+			_settings.fightEnabled = false;
+			break;
+		default:
+			warning("Unhandled OpCode: %d - (%s, %d, %d, %d, %d, %d)", j->opcode,
+				j->arg1, j->arg2, j->arg3, j->arg4, j->arg5, j->arg6);
+		}
+	}
+
+}
+
+int16 Game::doExternalAction(const char *action) {
+	if (strcmp(action, "getquest") == 0) {
+		return _settings.selectedQuest;
+	} else {
+		warning("Unknown external action: %s", action);
+		return 0;
+	}
 }
 
 } // End of namespace Kom
