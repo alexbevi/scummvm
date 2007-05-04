@@ -39,7 +39,7 @@ struct RoomDoor {
 struct Settings {
 	uint8 selectedChar; // 0 - thidney. 1 - shahron
 	uint8 selectedQuest;
-}
+};
 
 class Game {
 public:
@@ -48,7 +48,7 @@ public:
 
 	void enterLocation(uint16 locId);
 
-	Settings* settings() const { return &_settings; }
+	Settings* settings() { return &_settings; }
 
 private:
 
