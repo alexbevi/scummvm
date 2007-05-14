@@ -144,8 +144,84 @@ void Game::doStat(const Command *cmd) {
 		case 327:
 			_vm->database()->setVar(j->arg2, j->arg3);
 			break;
+		case 328:
+			_vm->database()->setVar(j->arg2, _vm->database()->getVar(j->arg3));
+			break;
 		case 331:
 			_vm->database()->setVar(j->arg2, 0);
+			break;
+		case 334:
+			_vm->database()->setVar(j->arg2, _rnd.getRandomNumber(j->arg3));
+			break;
+		case 337:
+			keepProcessing = _vm->database()->getVar(j->arg2) == 0;
+			break;
+		case 338:
+			keepProcessing = _vm->database()->getVar(j->arg2) != 0;
+			break;
+		case 340:
+			keepProcessing = _vm->database()->getVar(j->arg2) == j->arg3;
+			break;
+		case 345:
+			keepProcessing = _vm->database()->getVar(j->arg2) != j->arg3;
+			break;
+		case 346:
+			keepProcessing = _vm->database()->getVar(j->arg2) !=
+				_vm->database()->getVar(j->arg3);
+			break;
+		case 350:
+			keepProcessing = _vm->database()->getVar(j->arg2) > j->arg3;
+			break;
+		case 353:
+			keepProcessing = _vm->database()->getVar(j->arg2) >= j->arg3;
+			break;
+		case 356:
+			keepProcessing = _vm->database()->getVar(j->arg2) < j->arg3;
+			break;
+		case 359:
+			keepProcessing = _vm->database()->getVar(j->arg2) <= j->arg3;
+			break;
+		case 373:
+			_vm->database()->setVar(j->arg2, _vm->database()->getVar(j->arg2) + 1);
+			break;
+		case 374:
+			_vm->database()->setVar(j->arg2, _vm->database()->getVar(j->arg2) - 1);
+			break;
+		case 376:
+			_vm->database()->setVar(j->arg2,
+				_vm->database()->getVar(j->arg2) + _vm->database()->getVar(j->arg3));
+			break;
+		case 377:
+			_vm->database()->setVar(j->arg2, _vm->database()->getVar(j->arg2) + j->arg3);
+			break;
+		case 379:
+			_vm->database()->setVar(j->arg2,
+				_vm->database()->getVar(j->arg2) - _vm->database()->getVar(j->arg3));
+			break;
+		case 380:
+			_vm->database()->setVar(j->arg2, _vm->database()->getVar(j->arg2) - j->arg3);
+			break;
+		case 381:
+			keepProcessing = _vm->database()->getChar(0)->locationId == j->arg2;
+			break;
+		case 382:
+			keepProcessing = _vm->database()->getChar(0)->locationId != j->arg2;
+			break;
+		case 426:
+			keepProcessing = _vm->database()->getChar(j->arg2)->locationId ==
+			    _vm->database()->getChar(j->arg3)->locationId;
+			break;
+		case 445:
+			_vm->database()->getObj(j->arg2)->isVisible = 1;
+			break;
+		case 448:
+			_vm->database()->getObj(j->arg2)->isVisible = 0;
+			break;
+		case 449:
+			keepProcessing = _settings.dayMode == 0;
+			break;
+		case 450:
+			keepProcessing = _settings.dayMode == 1;
 			break;
 		case 453:
 			_settings.dayMode = 0;

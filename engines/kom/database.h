@@ -127,6 +127,7 @@ struct Command {
 	int cmd;
 	uint16 value;
 	Common::List<OpCode> opcodes;
+	Command() : value(0) {};
 };
 
 struct Process {
@@ -172,6 +173,8 @@ public:
 	Exit *getExits(int locId) const { return _locRoutes[locId].exits; }
 
 	Process *getProc(uint16 procIndex) const { return procIndex < _procsNum ? &(_processes[procIndex]) : NULL; }
+	Character *getChar(uint16 charIndex) const { return charIndex < _charactersNum ? &(_characters[charIndex]) : NULL; }
+	Object *getObj(uint16 objIndex) const { return objIndex < _objectsNum ? &(_objects[objIndex]) : NULL; }
 
 	int16 getVar(uint16 index) { assert(index < _varSize); return _variables[index]; }
 	void setVar(uint16 index, int16 value) { assert(index < _varSize); _variables[index] = value; }

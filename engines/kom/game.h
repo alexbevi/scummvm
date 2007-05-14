@@ -25,6 +25,7 @@
 
 #include "common/scummsys.h"
 #include "common/array.h"
+#include "common/util.h"
 
 #include "kom/database.h"
 
@@ -62,6 +63,8 @@ private:
 
 	Common::Array<RoomObject> _roomObjects;
 	Common::Array<RoomDoor> _roomDoors;
+
+	Common::RandomSource _rnd;
 
     // Settings
     Settings _settings;
