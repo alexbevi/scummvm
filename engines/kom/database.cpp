@@ -238,6 +238,9 @@ void Database::initObjects() {
 		} while (line[0] == '\0');
 		sscanf(line, "%d", &index);
 
+		// Object indices in .pro are smaller than in .obs - adjusting
+		index--;
+
 		sscanf(line, "%*d %s %d",
 			_objects[index].name,
 			&(_objects[index].data1));
