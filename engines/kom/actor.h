@@ -39,6 +39,8 @@ struct Scope {
 	const uint8* aliasData;
 };
 
+class KomEngine;
+
 class Actor {
 
 friend class ActorManager;
