@@ -28,6 +28,8 @@
 #include "common/str.h"
 #include "common/array.h"
 
+#include "kom/kom.h"
+
 namespace Kom {
 
 struct Scope {
