@@ -28,6 +28,8 @@
 #include "common/file.h"
 #include "engines/engine.h"
 
+#include "kom/actor.h"
+
 #if defined(__GNUC__)
 	#define KOM_GCC_SCANF(x,y) __attribute__((format(scanf, x, y)))
 #else
@@ -153,6 +155,18 @@ struct LocRoute {
 	Box boxes[32];
 };
 
+struct ActorScope {
+	Scope scopes[18];
+	uint16 speed1;
+	uint16 speed2;
+	uint16 timeout;
+	uint32 start1;
+	uint32 start2;
+	uint32 start3;
+	uint32 start4;
+	uint32 start5;
+};
+
 class Database {
 public:
 	Database(KomEngine *vm, OSystem *system);
@@ -189,6 +203,7 @@ private:
 	void initCharacterLocs();
 	void initProcs();
 	void initRoutes();
+	void initScopes();
 
 	OSystem *_system;
 	KomEngine *_vm;
@@ -206,6 +221,8 @@ private:
 
 	Process *_processes;
 	int _procsNum;
+
+	ActorScope *_actorScopes;
 
 	int _varSize;
 	int16 *_variables;

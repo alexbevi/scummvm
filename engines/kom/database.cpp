@@ -45,6 +45,7 @@ Database::Database(KomEngine *vm, OSystem *system)
 	_routes = 0;
 	_map = 0;
 	_locRoutes = 0;
+	_actorScopes = new ActorScope[100];
 }
 
 Database::~Database() {
@@ -57,6 +58,7 @@ Database::~Database() {
 	delete[] _routes;
 	delete[] _map;
 	delete[] _locRoutes;
+	delete[] _actorScopes;
 }
 
 void Database::init(Common::String databasePrefix) {
@@ -101,7 +103,6 @@ void Database::initLocations() {
 
 	// Get number of entries in file
 	readLineScanf(f, "%d", &_locationsNum);
-	printf("%d loc entries\n", _locationsNum);
 
 	_locations = new Location[_locationsNum];
 
@@ -143,7 +144,6 @@ void Database::initCharacters() {
 
 	// Get number of entries in file
 	readLineScanf(f, "%d", &_charactersNum);
-	printf("%d chr entries\n", _charactersNum);
 
 	_characters = new Character[_charactersNum];
 
@@ -215,7 +215,7 @@ void Database::initCharacters() {
 			_characters[i].spellpoints);
 	}*/
 
-	// TODO: load scp file
+	initScopes();
 }
 
 void Database::initObjects() {
@@ -225,7 +225,6 @@ void Database::initObjects() {
 
 	// Get number of entries in file
 	readLineScanf(f, "%d", &_objectsNum);
-	printf("%d obs entries\n", _objectsNum);
 
 	_objects = new Object[_objectsNum];
 
@@ -371,12 +370,10 @@ void Database::initProcs() {
 	// Get number of entries in file
 	readLineScanf(f, "%d", &_varSize);
 
-	printf("var size: %d\n", _varSize);
 	_variables = (int16 *)calloc(_varSize, sizeof(_variables[0]));
 
 	readLineScanf(f, "%d", &_procsNum);
 
-	printf("proc entries: %d\n", _procsNum);
 	_processes = new Process[_procsNum];
 
 	for (int i = 0; i < _procsNum; ++i) {
@@ -684,6 +681,65 @@ void Database::initRoutes() {
 		do {
 			f.readLine(line, 100);
 		} while (line[0] == '\0');
+	}
+
+	f.close();
+}
+
+void Database::initScopes() {
+	File f;
+	char keyword[30];
+	uint8 actorIndex = 0;
+	uint8 scopeIndex = 0;
+
+	// Temporary variables to bypass scanf's %hhu - not supported by ISO C++
+	uint16 tmp1, tmp2, tmp3;
+
+	f.open(_databasePrefix + ".scp");
+	do {
+		f.readLine(line, 100);
+	} while (line[0] == '\0');
+
+	while (!f.eof()) {
+		sscanf(line, "%s", keyword);
+
+		if (strcmp(keyword, "ACTOR") == 0) {
+			sscanf(line, "%*s %hu", &tmp1);
+			actorIndex = tmp1;
+
+		} else if (strcmp(keyword, "SCOPE") == 0) {
+			sscanf(line, "%*s %hu", &tmp1);
+			scopeIndex = tmp1;
+
+			sscanf(line, "%*s %*u %hu %hu %hu",
+				&(tmp1), &(tmp2), &(tmp3));
+
+			_actorScopes[actorIndex].scopes[scopeIndex].minFrame = tmp1;
+			_actorScopes[actorIndex].scopes[scopeIndex].maxFrame = tmp2;
+			_actorScopes[actorIndex].scopes[scopeIndex].startFrame = tmp3;
+
+		} else if (strcmp(keyword, "SPEED") == 0) {
+			sscanf(line, "%*s %hu %hu",
+				&(_actorScopes[actorIndex].speed1),
+				&(_actorScopes[actorIndex].speed2));
+
+		} else if (strcmp(keyword, "TIMEOUT") == 0) {
+			sscanf(line, "%*s %hu",
+				&(_actorScopes[actorIndex].timeout));
+			_actorScopes[actorIndex].timeout *= 24;
+
+		} else if (strcmp(keyword, "START") == 0) {
+			sscanf(line, "%*s %u %u %u %u %u",
+				&(_actorScopes[actorIndex].start1),
+				&(_actorScopes[actorIndex].start2),
+				&(_actorScopes[actorIndex].start3),
+				&(_actorScopes[actorIndex].start4),
+				&(_actorScopes[actorIndex].start5));
+		}
+
+		do {
+			f.readLine(line, 100);
+		} while (line[0] == '\0' && !f.eof());
 	}
 
 	f.close();
