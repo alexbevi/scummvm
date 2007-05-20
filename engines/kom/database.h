@@ -80,6 +80,7 @@ struct Object {
 };
 
 struct Character {
+	Character() : mode(0), isAlive(true) {}
 	char name[7];
 	int xtend;
 	int data2;
@@ -93,6 +94,9 @@ struct Character {
 	int data8;
 	int data9;
 	int hitpoints;
+	uint16 mode;
+	bool isBusy;
+	bool isAlive;
 	int data10;
 	int data11;
 	int data12;
@@ -189,6 +193,9 @@ public:
 	Process *getProc(uint16 procIndex) const { return procIndex < _procsNum ? &(_processes[procIndex]) : NULL; }
 	Character *getChar(uint16 charIndex) const { return charIndex < _charactersNum ? &(_characters[charIndex]) : NULL; }
 	Object *getObj(uint16 objIndex) const { return objIndex < _objectsNum ? &(_objects[objIndex]) : NULL; }
+	Location *getLoc(uint16 locIndex) const { return locIndex < _locationsNum ? &(_locations[locIndex]) : NULL; }
+
+	int charactersNum() { return _charactersNum; }
 
 	int16 getVar(uint16 index) { assert(index < _varSize); return _variables[index]; }
 	void setVar(uint16 index, int16 value) { assert(index < _varSize); _variables[index] = value; }

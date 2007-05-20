@@ -79,7 +79,7 @@ void Database::init(Common::String databasePrefix) {
 		for (Common::List<Command>::iterator j = _processes[i].commands.begin();
 				j != _processes[i].commands.end(); ++j) {
 			if (j->cmd == 312) { // Init
-				debug(1, "Calling init for %s", _processes[i].name);
+				debug(1, "Processing init in %s", _processes[i].name);
 				_vm->game()->doStat(&(*j));
 			}
 		}

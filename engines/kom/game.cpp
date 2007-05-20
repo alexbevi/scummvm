@@ -132,8 +132,104 @@ void Game::enterLocation(uint16 locId) {
 	_vm->panel()->showLoading(false);
 }
 
-void Game::doStat(const Command *cmd) {
+void Game::processTime() {
+	if (_settings.dayMode == 0) {
+		if (_vm->database()->getChar(0)->isBusy && _settings.gameCycles >= 6000)
+			_settings.gameCycles = 5990;
+
+		if (_vm->database()->getLoc(0)->data2 == 2) {
+			_settings.dayMode = 3;
+			// TODO - doActionDusk
+			processChars();
+			_settings.dayMode = 1;
+			_settings.gameCycles = 0;
+		}
+
+		if (_settings.gameCycles < 6000) {
+
+			if (!_vm->database()->getChar(0)->isBusy)
+				(_settings.gameCycles)++;
+
+		} else if (_vm->database()->getLoc(0)->data2 == 0) {
+			_settings.dayMode = 3;
+			// TODO - doActionDusk
+			processChars();
+			_settings.dayMode = 1;
+			_settings.gameCycles = 0;
+		}
+
+	} else if (_settings.dayMode == 1) {
+
+		if (_vm->database()->getChar(0)->isBusy && _settings.gameCycles >= 3600)
+			_settings.gameCycles = 3590;
+
+		if (_vm->database()->getLoc(0)->data2 == 1) {
+			_settings.dayMode = 2;
+			// TODO - doActionDawn
+			processChars();
+			_settings.dayMode = 0;
+			_settings.gameCycles = 0;
+		}
+
+		if (_settings.gameCycles < 3600) {
+
+			if (!_vm->database()->getChar(0)->isBusy)
+				(_settings.gameCycles)++;
+
+		} else if (_vm->database()->getLoc(0)->data2 == 0) {
+			_settings.dayMode = 2;
+			// TODO - doActionDawn
+			processChars();
+			_settings.dayMode = 0;
+			_settings.gameCycles = 0;
+
+			// TODO - increase hit points and spell points
+		}
+	}
+
+	processChars();
+}
+
+void Game::processChars() {
+	for (int i = 0; i < _vm->database()->charactersNum(); ++i) {
+		Character *ch = _vm->database()->getChar(i);
+		if (ch->isAlive && ch->proc != -1 && ch->mode < 6) {
+			switch (ch->mode) {
+			case 0:
+			case 3:
+				processChar(ch->proc);
+				break;
+			case 1:
+				warning("TODO: processChars 1");
+				break;
+			case 2:
+				warning("TODO: processChars 2");
+				break;
+			case 4:
+			case 5:
+				warning("TODO: processChars 4/5");
+				break;
+			}
+		}
+	}
+}
+
+void Game::processChar(int proc) {
+	bool stop = false;
+	Process *p = _vm->database()->getProc(proc);
+
+	for (Common::List<Command>::iterator i = p->commands.begin();
+			i != p->commands.end() && !stop; ++i) {
+		if (i->cmd == 313) { // Character
+			debug(1, "Processing char in %s", p->name);
+			stop = doStat(&(*i));
+		}
+	}
+}
+
+bool Game::doStat(const Command *cmd) {
 	bool keepProcessing = true;
+	bool rc = false;
 
 	debug(1, "Trying to execute Command %d - value %hd", cmd->cmd, cmd->value);
 
@@ -207,6 +303,16 @@ void Game::doStat(const Command *cmd) {
 		case 382:
 			keepProcessing = _vm->database()->getChar(0)->locationId != j->arg2;
 			break;
+		case 411:
+			keepProcessing = _vm->database()->getChar(j->arg2)->isAlive;
+			break;
+		case 412:
+			keepProcessing = !(_vm->database()->getChar(j->arg2)->isAlive);
+			break;
+		case 414:
+			warning("TODO: unset spell");
+			_vm->database()->getChar(j->arg2)->isAlive = false;
+			break;
 		case 426:
 			keepProcessing = _vm->database()->getChar(j->arg2)->locationId ==
 			    _vm->database()->getChar(j->arg3)->locationId;
@@ -223,6 +329,12 @@ void Game::doStat(const Command *cmd) {
 		case 450:
 			keepProcessing = _settings.dayMode == 1;
 			break;
+		case 451:
+			keepProcessing = _settings.dayMode == 2;
+			break;
+		case 452:
+			keepProcessing = _settings.dayMode == 3;
+			break;
 		case 453:
 			_settings.dayMode = 0;
 			warning("TODO: Quick hack to change day");
@@ -230,6 +342,14 @@ void Game::doStat(const Command *cmd) {
 		case 454:
 			_settings.dayMode = 1;
 			warning("TODO: Quick hack to change day");
+			break;
+		case 458:
+			_vm->database()->getChar(j->arg2)->xtend = j->arg3;
+			changeMode(j->arg2, 2);
+			break;
+		case 459:
+			_vm->database()->getLoc(j->arg2)->xtend = j->arg3;
+			changeMode(j->arg2, 3);
 			break;
 		case 474:
 			if (strcmp(j->arg1, "REFRESH") == 0) {
@@ -240,6 +360,7 @@ void Game::doStat(const Command *cmd) {
 			break;
 		case 475:
 			keepProcessing = false;
+			rc = 1;
 			break;
 		case 485:
 			_settings.fightEnabled = true;
@@ -253,6 +374,11 @@ void Game::doStat(const Command *cmd) {
 		}
 	}
 
+	return rc;
+}
+
+void Game::changeMode(int value, int mode) {
+	warning("TODO: changeMode - unsupported mode");
 }
 
 int16 Game::doExternalAction(const char *action) {

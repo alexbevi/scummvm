@@ -40,9 +40,11 @@ struct RoomDoor {
 };
 
 struct Settings {
+	Settings() : gameCycles(6000) {}
 	uint8 selectedChar; // 0 - thidney. 1 - shahron
 	uint8 selectedQuest;
 	uint8 dayMode; // 0 - day. 1 - night
+	uint16 gameCycles;
 	bool fightEnabled;
 };
 
@@ -52,7 +54,8 @@ public:
 	~Game();
 
 	void enterLocation(uint16 locId);
-	void doStat(const Command *cmd);
+	void processTime();
+	bool doStat(const Command *cmd);
 
 	Settings* settings() { return &_settings; }
 
@@ -69,6 +72,9 @@ private:
     // Settings
     Settings _settings;
 
+	void processChars();
+	void processChar(int proc);
+	void changeMode(int value, int mode);
 	int16 doExternalAction(const char *action);
 };
 
