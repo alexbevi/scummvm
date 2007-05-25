@@ -381,6 +381,9 @@ bool Game::doStat(const Command *cmd) {
 		case 486:
 			_settings.fightEnabled = false;
 			break;
+		case 494:
+			_vm->endGame();
+			break;
 		default:
 			warning("Unhandled OpCode: %d - (%s, %d, %d, %d, %d, %d)", j->opcode,
 				j->arg1, j->arg2, j->arg3, j->arg4, j->arg5, j->arg6);

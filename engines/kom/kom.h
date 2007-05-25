@@ -72,6 +72,8 @@ public:
 
 	FilesystemNode *dataDir() const { return _fsNode; }
 
+	void endGame() { _gameLoopState = GAMELOOP_DEATH; }
+
 private:
 	void gameLoop();
 
