@@ -69,6 +69,7 @@ void Game::enterLocation(uint16 locId) {
 	sprintf(filename, "%s%db.flc", locName.c_str(), loc->xtend + _settings.dayMode);
 	_vm->screen()->loadBackground(locNode.getChild(filename));
 
+	filename[strlen(filename) - 6] = '0';
 	filename[strlen(filename) - 5] = 'm';
 	FlicPlayer mask(locNode.getChild(filename));
 	mask.decodeFrame();
