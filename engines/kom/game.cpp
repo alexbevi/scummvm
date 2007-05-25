@@ -59,6 +59,11 @@ void Game::enterLocation(uint16 locId) {
 	}
 	_roomDoors.clear();
 
+	if (locId == 0) {
+		_vm->panel()->showLoading(false);
+		return;
+	}
+
 	Location *loc = _vm->database()->location(locId);
 	String locName(loc->name);
 	locName.toLowercase();
@@ -66,7 +71,7 @@ void Game::enterLocation(uint16 locId) {
 
 	// Load room background and mask
 
-	sprintf(filename, "%s%db.flc", locName.c_str(), loc->xtend + _settings.dayMode);
+	sprintf(filename, "%s%db.flc", locName.c_str(), loc->xtend + _player.isNight);
 	_vm->screen()->loadBackground(locNode.getChild(filename));
 
 	filename[strlen(filename) - 6] = '0';
@@ -138,9 +143,9 @@ void Game::processTime() {
 		if (_vm->database()->getChar(0)->isBusy && _settings.gameCycles >= 6000)
 			_settings.gameCycles = 5990;
 
-		if (_vm->database()->getLoc(0)->data2 == 2) {
+		if (_vm->database()->getLoc(_settings.currLocation)->allowedTime == 2) {
 			_settings.dayMode = 3;
-			// TODO - doActionDusk
+			doActionDusk();
 			processChars();
 			_settings.dayMode = 1;
 			_settings.gameCycles = 0;
@@ -151,9 +156,9 @@ void Game::processTime() {
 			if (!_vm->database()->getChar(0)->isBusy)
 				(_settings.gameCycles)++;
 
-		} else if (_vm->database()->getLoc(0)->data2 == 0) {
+		} else if (_vm->database()->getLoc(_settings.currLocation)->allowedTime == 0) {
 			_settings.dayMode = 3;
-			// TODO - doActionDusk
+			doActionDusk();
 			processChars();
 			_settings.dayMode = 1;
 			_settings.gameCycles = 0;
@@ -164,9 +169,9 @@ void Game::processTime() {
 		if (_vm->database()->getChar(0)->isBusy && _settings.gameCycles >= 3600)
 			_settings.gameCycles = 3590;
 
-		if (_vm->database()->getLoc(0)->data2 == 1) {
+		if (_vm->database()->getLoc(_settings.currLocation)->allowedTime == 1) {
 			_settings.dayMode = 2;
-			// TODO - doActionDawn
+			doActionDawn();
 			processChars();
 			_settings.dayMode = 0;
 			_settings.gameCycles = 0;
@@ -177,9 +182,9 @@ void Game::processTime() {
 			if (!_vm->database()->getChar(0)->isBusy)
 				(_settings.gameCycles)++;
 
-		} else if (_vm->database()->getLoc(0)->data2 == 0) {
+		} else if (_vm->database()->getLoc(_settings.currLocation)->allowedTime == 0) {
 			_settings.dayMode = 2;
-			// TODO - doActionDawn
+			doActionDawn();
 			processChars();
 			_settings.dayMode = 0;
 			_settings.gameCycles = 0;
@@ -304,6 +309,12 @@ bool Game::doStat(const Command *cmd) {
 		case 382:
 			keepProcessing = _vm->database()->getChar(0)->locationId != j->arg2;
 			break;
+		case 403:
+			warning("TODO: move actor stub: %d %d", j->arg2, j->arg3);
+			_vm->database()->getChar(j->arg2)->locationId = j->arg3;
+			if (j->arg2 == 0)
+				enterLocation(j->arg3);
+			break;
 		case 411:
 			keepProcessing = _vm->database()->getChar(j->arg2)->isAlive;
 			break;
@@ -337,12 +348,10 @@ bool Game::doStat(const Command *cmd) {
 			keepProcessing = _settings.dayMode == 3;
 			break;
 		case 453:
-			_settings.dayMode = 0;
-			warning("TODO: Quick hack to change day");
+			setDay();
 			break;
 		case 454:
-			_settings.dayMode = 1;
-			warning("TODO: Quick hack to change day");
+			setNight();
 			break;
 		case 458:
 			_vm->database()->getChar(j->arg2)->xtend = j->arg3;
@@ -351,6 +360,9 @@ bool Game::doStat(const Command *cmd) {
 		case 459:
 			_vm->database()->getLoc(j->arg2)->xtend = j->arg3;
 			changeMode(j->arg2, 3);
+			break;
+		case 467:
+			warning("TODO: PlayVideo(%s)", j->arg1);
 			break;
 		case 474:
 			if (strcmp(j->arg1, "REFRESH") == 0) {
@@ -388,6 +400,29 @@ int16 Game::doExternalAction(const char *action) {
 	} else {
 		warning("Unknown external action: %s", action);
 		return 0;
+	}
+}
+void Game::doActionDusk() {
+	_player.isNight = 1;
+	enterLocation(_vm->database()->getChar(0)->locationId);
+}
+
+void Game::doActionDawn() {
+	_player.isNight = 0;
+	enterLocation(_vm->database()->getChar(0)->locationId);
+}
+
+void Game::setDay() {
+	if (_vm->database()->getLoc(_settings.currLocation)->allowedTime != 2 && _settings.dayMode != 0) {
+		_settings.gameCycles = 3600;
+		_settings.dayMode = 1;
+	}
+}
+
+void Game::setNight() {
+	if (_vm->database()->getLoc(_settings.currLocation)->allowedTime != 1 && _settings.dayMode != 1) {
+		_settings.gameCycles = 6000;
+		_settings.dayMode = 0;
 	}
 }
 

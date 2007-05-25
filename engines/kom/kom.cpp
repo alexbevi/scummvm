@@ -115,7 +115,7 @@ int KomEngine::go() {
 	_panel->enable(true);
 
 	// temporary test
-	_game->enterLocation(3);
+	_game->setDay();
 
 	while (_gameLoopState != GAMELOOP_QUIT) {
 		gameLoop();
@@ -133,22 +133,56 @@ void KomEngine::gameLoop() {
 		_debugger->onFrame();
 	}
 
+	// TODO:
 	// setFrameRate(24)
 	// setBrightness(256)
 	// clearWorkScreen
 	// init some global vars
 	_database->getChar(0)->isBusy = false;
-	// fadeTo(target = 256, speed 16)
 	// init something in the procs struct
 	// init some more vars
 	// some tricks with the loop input based on day/night
-	_game->processTime();
-	// conditioned: ambientStart
-	// loopMove
-	// loopCollide
-	// TODO more
 
-	_screen->processGraphics();
+	_game->player()->isNight = (_game->settings()->dayMode == 1 || _game->settings()->dayMode == 3) ? 1 : 0;
+	// fadeTo(target = 256, speed = 16)
+	_gameLoopState = GAMELOOP_RUNNING;
+	// _flicLoaded = 2;
+	_panel->noLoading(1);
+
+
+	if (_gameLoopState == GAMELOOP_RUNNING) {
+		// if _sleepTimer == 0
+		//     loopInput()
+
+		_game->processTime();
+
+		//if (_gameLoopState == GAMELOOP_DEATH)
+			// ambientStart(currLocation)
+		// loopMove
+		// loopCollide
+		// if in a fight, do something
+		// collision stuff
+		// if not speed something:
+		//     do command (walk, use, talk, pickup, look, fight, exit, magic)
+		// loopSpriteCut
+		// loopSpells
+		// loopTimeouts
+		// lose/get item
+		// TODO
+
+		_screen->processGraphics();
+
+	} else {
+		// stopNarrator()
+		// stopGreeting()
+		// ambientStop()
+		if (_gameLoopState == GAMELOOP_DEATH) {
+			// TODO
+			// play death video
+			// play credits
+		}
+	}
+
 
 	if (_input->debugMode()) {
 		_input->resetDebugMode();

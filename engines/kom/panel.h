@@ -43,6 +43,8 @@ public:
 	void enable(bool state) { _isEnabled = state; }
 	void clear();
 
+	void noLoading(uint8 n) { _noLoading += n; }
+
 private:
 
 	KomEngine *_vm;
@@ -53,6 +55,7 @@ private:
 	bool _isEnabled;
 	bool _isLoading;
 	bool _isDirty;
+	uint8 _noLoading;
 
 	char *_locationDesc;
 

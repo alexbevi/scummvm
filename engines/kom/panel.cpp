@@ -31,7 +31,7 @@ using Common::File;
 namespace Kom {
 
 Panel::Panel(KomEngine *vm, FilesystemNode fileNode) : _vm(vm), _isEnabled(true),
-	_isLoading(false), _locationDesc(0) {
+	_isLoading(false), _noLoading(0), _locationDesc(0) {
 	File f;
 	f.open(fileNode);
 
@@ -87,6 +87,9 @@ void Panel::update() {
 }
 
 void Panel::showLoading(bool isLoading) {
+	if (_noLoading > 0)
+		return;
+
 	if (isLoading != _isLoading) {
 		_isLoading = isLoading;
 		update();

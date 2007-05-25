@@ -40,12 +40,19 @@ struct RoomDoor {
 };
 
 struct Settings {
-	Settings() : gameCycles(6000) {}
+	Settings() : gameCycles(6000), dayMode(1) {}
 	uint8 selectedChar; // 0 - thidney. 1 - shahron
 	uint8 selectedQuest;
-	uint8 dayMode; // 0 - day. 1 - night
+	uint8 dayMode; // 0 - day. 1 - night. 2 - dawn. 3 - dusk
+	uint8 currLocation;
 	uint16 gameCycles;
 	bool fightEnabled;
+};
+
+struct Player {
+	Player() : isNight(0), sleepTimer(0) {}
+	uint8 isNight;
+	uint16 sleepTimer;
 };
 
 class Game {
@@ -58,6 +65,10 @@ public:
 	bool doStat(const Command *cmd);
 
 	Settings* settings() { return &_settings; }
+	Player* player() { return &_player; }
+
+	void setDay();
+	void setNight();
 
 private:
 
@@ -71,11 +82,15 @@ private:
 
     // Settings
     Settings _settings;
+    Player _player;
 
 	void processChars();
 	void processChar(int proc);
 	void changeMode(int value, int mode);
 	int16 doExternalAction(const char *action);
+
+	void doActionDusk();
+	void doActionDawn();
 };
 
 } // End of namespace Kom

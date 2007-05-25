@@ -80,7 +80,7 @@ struct Object {
 };
 
 struct Character {
-	Character() : mode(0), isAlive(true) {}
+	Character() : mode(0), isAlive(true), isBusy(false) {}
 	char name[7];
 	int xtend;
 	int data2;
@@ -111,7 +111,7 @@ struct Character {
 struct Location {
 	char name[7];
 	int xtend;
-	int data2;
+	int allowedTime;
 	char desc[50];
 	Common::List<EventLink> events;
 	Common::List<int> objects;

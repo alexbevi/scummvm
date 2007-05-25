@@ -117,7 +117,7 @@ void Database::initLocations() {
 		sscanf(line, "%*d %s %d %d",
 			_locations[index].name,
 			&(_locations[index].xtend),
-			&(_locations[index].data2));
+			&(_locations[index].allowedTime));
 
 		f.readLine(_locations[index].desc, 50);
 		stripUndies(_locations[index].desc);
@@ -132,7 +132,7 @@ void Database::initLocations() {
 			i,
 			_locations[i].name,
 			_locations[i].xtend,
-			_locations[i].data2,
+			_locations[i].allowedTime,
 			_locations[i].desc);
 	}*/
 }
@@ -360,6 +360,7 @@ void Database::initObjectLocs() {
 void Database::initCharacterLocs() {
 	for (int i = 0; i < _charactersNum; ++i)
 		_locations[_characters[i].locationId].characters.push_back(i);
+	_vm->game()->settings()->currLocation = _characters[0].locationId;
 }
 
 void Database::initProcs() {
