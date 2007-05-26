@@ -235,6 +235,7 @@ void Game::processChar(int proc) {
 bool Game::doStat(const Command *cmd) {
 	bool keepProcessing = true;
 	bool rc = false;
+	Database *db = _vm->database();
 
 	debug(1, "Trying to execute Command %d - value %hd", cmd->cmd, cmd->value);
 
@@ -243,96 +244,119 @@ bool Game::doStat(const Command *cmd) {
 
 		switch (j->opcode) {
 		case 327:
-			_vm->database()->setVar(j->arg2, j->arg3);
+			db->setVar(j->arg2, j->arg3);
 			break;
 		case 328:
-			_vm->database()->setVar(j->arg2, _vm->database()->getVar(j->arg3));
+			db->setVar(j->arg2, db->getVar(j->arg3));
 			break;
 		case 331:
-			_vm->database()->setVar(j->arg2, 0);
+			db->setVar(j->arg2, 0);
 			break;
 		case 334:
-			_vm->database()->setVar(j->arg2, _rnd.getRandomNumber(j->arg3));
+			db->setVar(j->arg2, _rnd.getRandomNumber(j->arg3));
 			break;
 		case 337:
-			keepProcessing = _vm->database()->getVar(j->arg2) == 0;
+			keepProcessing = db->getVar(j->arg2) == 0;
 			break;
 		case 338:
-			keepProcessing = _vm->database()->getVar(j->arg2) != 0;
+			keepProcessing = db->getVar(j->arg2) != 0;
 			break;
 		case 340:
-			keepProcessing = _vm->database()->getVar(j->arg2) == j->arg3;
+			keepProcessing = db->getVar(j->arg2) == j->arg3;
 			break;
 		case 345:
-			keepProcessing = _vm->database()->getVar(j->arg2) != j->arg3;
+			keepProcessing = db->getVar(j->arg2) != j->arg3;
 			break;
 		case 346:
-			keepProcessing = _vm->database()->getVar(j->arg2) !=
-				_vm->database()->getVar(j->arg3);
+			keepProcessing = db->getVar(j->arg2) !=
+				db->getVar(j->arg3);
 			break;
 		case 350:
-			keepProcessing = _vm->database()->getVar(j->arg2) > j->arg3;
+			keepProcessing = db->getVar(j->arg2) > j->arg3;
 			break;
 		case 353:
-			keepProcessing = _vm->database()->getVar(j->arg2) >= j->arg3;
+			keepProcessing = db->getVar(j->arg2) >= j->arg3;
 			break;
 		case 356:
-			keepProcessing = _vm->database()->getVar(j->arg2) < j->arg3;
+			keepProcessing = db->getVar(j->arg2) < j->arg3;
 			break;
 		case 359:
-			keepProcessing = _vm->database()->getVar(j->arg2) <= j->arg3;
+			keepProcessing = db->getVar(j->arg2) <= j->arg3;
 			break;
 		case 373:
-			_vm->database()->setVar(j->arg2, _vm->database()->getVar(j->arg2) + 1);
+			db->setVar(j->arg2, db->getVar(j->arg2) + 1);
 			break;
 		case 374:
-			_vm->database()->setVar(j->arg2, _vm->database()->getVar(j->arg2) - 1);
+			db->setVar(j->arg2, db->getVar(j->arg2) - 1);
 			break;
 		case 376:
-			_vm->database()->setVar(j->arg2,
-				_vm->database()->getVar(j->arg2) + _vm->database()->getVar(j->arg3));
+			db->setVar(j->arg2,
+				db->getVar(j->arg2) + db->getVar(j->arg3));
 			break;
 		case 377:
-			_vm->database()->setVar(j->arg2, _vm->database()->getVar(j->arg2) + j->arg3);
+			db->setVar(j->arg2, db->getVar(j->arg2) + j->arg3);
 			break;
 		case 379:
-			_vm->database()->setVar(j->arg2,
-				_vm->database()->getVar(j->arg2) - _vm->database()->getVar(j->arg3));
+			db->setVar(j->arg2,
+				db->getVar(j->arg2) - db->getVar(j->arg3));
 			break;
 		case 380:
-			_vm->database()->setVar(j->arg2, _vm->database()->getVar(j->arg2) - j->arg3);
+			db->setVar(j->arg2, db->getVar(j->arg2) - j->arg3);
 			break;
 		case 381:
-			keepProcessing = _vm->database()->getChar(0)->locationId == j->arg2;
+			keepProcessing = db->getChar(0)->locationId == j->arg2;
 			break;
 		case 382:
-			keepProcessing = _vm->database()->getChar(0)->locationId != j->arg2;
+			keepProcessing = db->getChar(0)->locationId != j->arg2;
+			break;
+		case 391:
+			keepProcessing = db->getChar(0)->gold != 0;
+			break;
+		case 392:
+			keepProcessing = db->getChar(0)->gold == 0;
+			break;
+		case 393:
+			if (db->getChar(0)->gold >= j->arg3) {
+				db->getChar(0)->gold -= j->arg3;
+				db->getChar(j->arg2)->gold += j->arg3;
+			}
 			break;
 		case 403:
 			warning("TODO: move actor stub: %d %d", j->arg2, j->arg3);
-			_vm->database()->getChar(j->arg2)->locationId = j->arg3;
+			db->getChar(j->arg2)->locationId = j->arg3;
 			if (j->arg2 == 0)
 				enterLocation(j->arg3);
 			break;
 		case 411:
-			keepProcessing = _vm->database()->getChar(j->arg2)->isAlive;
+			keepProcessing = db->getChar(j->arg2)->isAlive;
 			break;
 		case 412:
-			keepProcessing = !(_vm->database()->getChar(j->arg2)->isAlive);
+			keepProcessing = !(db->getChar(j->arg2)->isAlive);
 			break;
 		case 414:
 			warning("TODO: unset spell");
-			_vm->database()->getChar(j->arg2)->isAlive = false;
+			db->getChar(j->arg2)->isAlive = false;
+			break;
+		case 417:
+			db->getChar(j->arg2)->gold =
+				db->getVar(j->arg3);
+			break;
+		case 424:
+			db->setVar(j->arg2, db->getChar(j->arg3)->gold);
 			break;
 		case 426:
-			keepProcessing = _vm->database()->getChar(j->arg2)->locationId ==
-			    _vm->database()->getChar(j->arg3)->locationId;
+			keepProcessing = db->getChar(j->arg2)->locationId ==
+			    db->getChar(j->arg3)->locationId;
+			break;
+		case 427:
+			keepProcessing = db->getChar(j->arg2)->locationId !=
+			    db->getChar(j->arg3)->locationId;
 			break;
 		case 445:
-			_vm->database()->getObj(j->arg2)->isVisible = 1;
+			db->getObj(j->arg2)->isVisible = 1;
 			break;
 		case 448:
-			_vm->database()->getObj(j->arg2)->isVisible = 0;
+			db->getObj(j->arg2)->isVisible = 0;
 			break;
 		case 449:
 			keepProcessing = _settings.dayMode == 0;
@@ -353,11 +377,11 @@ bool Game::doStat(const Command *cmd) {
 			setNight();
 			break;
 		case 458:
-			_vm->database()->getChar(j->arg2)->xtend = j->arg3;
+			db->getChar(j->arg2)->xtend = j->arg3;
 			changeMode(j->arg2, 2);
 			break;
 		case 459:
-			_vm->database()->getLoc(j->arg2)->xtend = j->arg3;
+			db->getLoc(j->arg2)->xtend = j->arg3;
 			changeMode(j->arg2, 3);
 			break;
 		case 467:
@@ -367,7 +391,7 @@ bool Game::doStat(const Command *cmd) {
 			if (strcmp(j->arg1, "REFRESH") == 0) {
 				warning("TODO: Unhandled external action: REFRESH");
 			} else {
-				_vm->database()->setVar(j->arg2, doExternalAction(j->arg1));
+				db->setVar(j->arg2, doExternalAction(j->arg1));
 			}
 			break;
 		case 475:
