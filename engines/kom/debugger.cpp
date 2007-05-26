@@ -32,11 +32,15 @@ Debugger::Debugger(KomEngine *vm) : GUI::Debugger(), _vm(vm) {
 
 	DCmd_Register("room", WRAP_METHOD(Debugger, Cmd_Room));
 	DCmd_Register("proc", WRAP_METHOD(Debugger, Cmd_Proc));
+	DCmd_Register("day", WRAP_METHOD(Debugger, Cmd_Day));
+	DCmd_Register("night", WRAP_METHOD(Debugger, Cmd_Night));
 }
 
 bool Debugger::Cmd_Room(int argc, const char **argv) {
 	if (argc == 2) {
 		uint16 roomNum = atoi(argv[1]);
+		_vm->game()->settings()->currLocation = roomNum;
+		_vm->database()->getChar(0)->locationId = roomNum;
 		_vm->game()->enterLocation(roomNum);
 		return false;
 	}
@@ -65,4 +69,16 @@ bool Debugger::Cmd_Proc(int argc, const char **argv) {
 	}
 	return true;
 }
+
+
+bool Debugger::Cmd_Day(int argc, const char **argv) {
+	_vm->game()->setDay();
+	return false;
+}
+
+bool Debugger::Cmd_Night(int argc, const char **argv) {
+	_vm->game()->setNight();
+	return false;
+}
+
 } // End of namespace Kom
