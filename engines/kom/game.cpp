@@ -114,8 +114,7 @@ void Game::enterLocation(uint16 locId) {
 			String exitName(_vm->database()->location(exits[i].exitLoc)->name);
 			exitName.toLowercase();
 
-			// TODO: add day/night modifier to xtend
-			sprintf(filename, "%s%dd", exitName.c_str(), loc->xtend);
+			sprintf(filename, "%s%dd", exitName.c_str(), loc->xtend + _player.isNight);
 
 			// The exit can have no door
 			if (locNode.getChild(filename + String(".act")).isValid()) {
