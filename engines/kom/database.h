@@ -47,8 +47,8 @@ struct EventLink {
 
 struct Object {
 	Object() : data1(0), type(0), data2(0), proc(0),
-	           data4(0), data5(0), isVisible(0), data6(0), isSprite(0), isUseImmediate(0),
-	           data9(0), data10(0), price(0), data11(0), spellCost(0), data12(0),
+	           data4(0), isCarryable(0), isContainer(0), isVisible(0), isSprite(0), isUseImmediate(0),
+	           data9(0), isUsable(0), price(0), data11(0), spellCost(0), data12(0),
 	           data13(0), locationType(0), locationId(0), box(0), data16(0), data17(0),
 	           data18(0) {}
 
@@ -59,13 +59,13 @@ struct Object {
 	int data2;
 	int proc;
 	int data4;
-	int data5;
+	int isCarryable;
+	int isContainer;
 	int isVisible;
-	int data6;
 	int isSprite;
 	int isUseImmediate;
 	int data9;
-	int data10;
+	int isUsable;
 	int price;
 	int data11;
 	int spellCost;

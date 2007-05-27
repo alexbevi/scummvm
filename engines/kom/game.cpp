@@ -345,6 +345,16 @@ bool Game::doStat(const Command *cmd) {
 			else if (db->getChar(j->arg2)->locationId == j->arg3)
 				keepProcessing = db->getChar(j->arg2)->box != j->arg4;
 			break;
+		case 398:
+			keepProcessing =
+				db->getObj(j->arg3)->locationType == 3 &&
+				db->getObj(j->arg3)->locationId == j->arg2;
+			break;
+		case 399:
+			keepProcessing = true;
+			if (db->getObj(j->arg3)->locationType == 3)
+				keepProcessing = db->getObj(j->arg3)->locationId != j->arg2;
+			break;
 		case 403:
 			warning("TODO: move actor stub: %d %d", j->arg2, j->arg3);
 			db->getChar(j->arg2)->locationId = j->arg3;
@@ -375,6 +385,9 @@ bool Game::doStat(const Command *cmd) {
 		case 427:
 			keepProcessing = db->getChar(j->arg2)->locationId !=
 			    db->getChar(j->arg3)->locationId;
+			break;
+		case 444:
+			db->getObj(j->arg2)->isCarryable = 1;
 			break;
 		case 445:
 			db->getObj(j->arg2)->isVisible = 1;
