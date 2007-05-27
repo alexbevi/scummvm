@@ -167,7 +167,7 @@ void Database::initCharacters() {
 			&(_characters[index].proc));
 		readLineScanf(f, "%d %d %d %d %d",
 			&(_characters[index].locationId),
-			&(_characters[index].data4),
+			&(_characters[index].box),
 			&(_characters[index].data5),
 			&(_characters[index].data6),
 			&(_characters[index].data7));
@@ -198,7 +198,7 @@ void Database::initCharacters() {
 			_characters[i].desc,
 			_characters[i].proc,
 			_characters[i].locationId,
-			_characters[i].data4,
+			_characters[i].box,
 			_characters[i].data5,
 			_characters[i].data6,
 			_characters[i].data7,

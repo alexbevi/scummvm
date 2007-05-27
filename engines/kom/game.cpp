@@ -331,6 +331,20 @@ bool Game::doStat(const Command *cmd) {
 				db->getChar(j->arg2)->gold += j->arg3;
 			}
 			break;
+		case 394:
+			keepProcessing = false;
+			if (j->arg4 == -1)
+				keepProcessing = db->getChar(j->arg2)->locationId == j->arg3;
+			else if (db->getChar(j->arg2)->locationId == j->arg3)
+				keepProcessing = db->getChar(j->arg2)->box == j->arg4;
+			break;
+		case 395:
+			keepProcessing = true;
+			if (j->arg4 == -1)
+				keepProcessing = db->getChar(j->arg2)->locationId != j->arg3;
+			else if (db->getChar(j->arg2)->locationId == j->arg3)
+				keepProcessing = db->getChar(j->arg2)->box != j->arg4;
+			break;
 		case 403:
 			warning("TODO: move actor stub: %d %d", j->arg2, j->arg3);
 			db->getChar(j->arg2)->locationId = j->arg3;
@@ -406,7 +420,7 @@ bool Game::doStat(const Command *cmd) {
 			break;
 		case 475:
 			keepProcessing = false;
-			rc = 1;
+			rc = true;
 			break;
 		case 485:
 			_settings.fightEnabled = true;

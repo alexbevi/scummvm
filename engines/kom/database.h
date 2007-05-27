@@ -87,7 +87,7 @@ struct Character {
 	char desc[50];
 	int proc;
 	int locationId;
-	int data4;
+	int box;
 	int data5;
 	int data6;
 	int data7;
