@@ -309,6 +309,16 @@ bool Game::doStat(const Command *cmd) {
 		case 382:
 			keepProcessing = db->getChar(0)->locationId != j->arg2;
 			break;
+		case 383:
+			keepProcessing = false;
+			if (db->getObj(j->arg2)->locationType == 3)
+				keepProcessing = db->getObj(j->arg2)->locationId == 0;
+			break;
+		case 384:
+			keepProcessing = true;
+			if (db->getObj(j->arg2)->locationType == 3)
+				keepProcessing = db->getObj(j->arg2)->locationId != 0;
+			break;
 		case 391:
 			keepProcessing = db->getChar(0)->gold != 0;
 			break;
