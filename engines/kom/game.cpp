@@ -90,7 +90,7 @@ void Game::enterLocation(uint16 locId) {
 	for (Common::List<int>::iterator objId = objList.begin(); objId != objList.end(); ++objId) {
 		Object *obj = db->object(*objId);
 		if (obj->isSprite) {
-			sprintf(filename, "%s%d", obj->name, loc->xtend);
+			sprintf(filename, "%s%d", obj->name, _player.isNight);
 			RoomObject roomObj;
 			roomObj.actorId = _vm->actorMan()->load(locNode, String(filename));
 			Actor *act = _vm->actorMan()->get(roomObj.actorId);
