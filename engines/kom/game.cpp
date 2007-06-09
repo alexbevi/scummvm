@@ -439,6 +439,12 @@ bool Game::doStat(const Command *cmd) {
 			warning("TODO: doActionCollide(%d, %d)", j->arg2, j->arg3);
 			keepProcessing = false;
 			break;
+		case 438:
+			db->getChar(j->arg2)->strength = j->arg3;
+			db->getChar(j->arg2)->defense = j->arg4;
+			db->getChar(j->arg2)->damageMin = j->arg5;
+			db->getChar(j->arg2)->damageMax = j->arg6;
+			break;
 		case 441:
 			keepProcessing = db->giveObject(j->arg2, j->arg3, j->arg4);
 			break;
@@ -511,6 +517,13 @@ bool Game::doStat(const Command *cmd) {
 			break;
 		case 486:
 			_settings.fightEnabled = false;
+			break;
+		case 487:
+			warning("TODO: npcFight(%d, %d)", j->arg2, j->arg3);
+			keepProcessing = false;
+			break;
+		case 488:
+			warning("TODO: castSpell(%d, %d, %d)", j->arg2, j->arg3, j->arg4);
 			break;
 		case 494:
 			_vm->endGame();

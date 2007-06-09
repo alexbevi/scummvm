@@ -105,10 +105,10 @@ struct Character {
 	bool isAlive;
 	bool isVisible;
 	uint8 spellMode;
-	int data10;
-	int data11;
-	int data12;
-	int data13;
+	int strength;
+	int defense;
+	int damageMin;
+	int damageMax;
 	int data14; // spell speed - unused
 	int data15; // spell time - unused
 	int data16;
