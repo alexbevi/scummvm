@@ -314,13 +314,16 @@ bool Game::doStat(const Command *cmd) {
 			break;
 		case 383:
 			keepProcessing = false;
-			if (db->getObj(j->arg2)->locationType == 3)
-				keepProcessing = db->getObj(j->arg2)->locationId == 0;
+			if (db->getObj(j->arg2)->ownerType == 3)
+				keepProcessing = db->getObj(j->arg2)->ownerId == 0;
 			break;
 		case 384:
 			keepProcessing = true;
-			if (db->getObj(j->arg2)->locationType == 3)
-				keepProcessing = db->getObj(j->arg2)->locationId != 0;
+			if (db->getObj(j->arg2)->ownerType == 3)
+				keepProcessing = db->getObj(j->arg2)->ownerId != 0;
+			break;
+		case 387:
+			keepProcessing = db->giveObject(j->arg2, 0, false);
 			break;
 		case 391:
 			keepProcessing = db->getChar(0)->gold != 0;
@@ -350,17 +353,17 @@ bool Game::doStat(const Command *cmd) {
 			break;
 		case 398:
 			keepProcessing =
-				db->getObj(j->arg3)->locationType == 3 &&
-				db->getObj(j->arg3)->locationId == j->arg2;
+				db->getObj(j->arg3)->ownerType == 3 &&
+				db->getObj(j->arg3)->ownerId == j->arg2;
 			break;
 		case 399:
 			keepProcessing = true;
-			if (db->getObj(j->arg3)->locationType == 3)
-				keepProcessing = db->getObj(j->arg3)->locationId != j->arg2;
+			if (db->getObj(j->arg3)->ownerType == 3)
+				keepProcessing = db->getObj(j->arg3)->ownerId != j->arg2;
 			break;
 		case 403:
-			warning("TODO: move actor stub: %d %d", j->arg2, j->arg3);
-			db->getChar(j->arg2)->locationId = j->arg3;
+			warning("TODO: move actor stub: %d %d %d", j->arg2, j->arg3, j->arg4);
+			db->setCharPos(j->arg2, j->arg3, j->arg4);
 			if (j->arg2 == 0)
 				enterLocation(j->arg3);
 			break;
@@ -436,11 +439,17 @@ bool Game::doStat(const Command *cmd) {
 			warning("TODO: doActionCollide(%d, %d)", j->arg2, j->arg3);
 			keepProcessing = false;
 			break;
+		case 441:
+			keepProcessing = db->giveObject(j->arg2, j->arg3, j->arg4);
+			break;
 		case 444:
 			db->getObj(j->arg2)->isCarryable = 1;
 			break;
 		case 445:
 			db->getObj(j->arg2)->isVisible = 1;
+			break;
+		case 446:
+			db->getObj(j->arg2)->data4 = 0;
 			break;
 		case 448:
 			db->getObj(j->arg2)->isVisible = 0;

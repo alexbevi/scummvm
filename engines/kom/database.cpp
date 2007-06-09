@@ -272,11 +272,11 @@ void Database::initObjects() {
 
 		f.readLine(line, 100);
 		sscanf(line, "%d %d",
-			&(_objects[index].locationType),
-			&(_objects[index].locationId));
+			&(_objects[index].ownerType),
+			&(_objects[index].ownerId));
 
 
-		if (_objects[index].locationType == 1) {
+		if (_objects[index].ownerType == 1) {
 			sscanf(line, "%*d %*d %d %d %d %d",
 				&(_objects[index].box),
 				&(_objects[index].data16),
@@ -309,8 +309,8 @@ void Database::initObjects() {
 			_objects[i].spellCost,
 			_objects[i].data12,
 			_objects[i].data13,
-			_objects[i].locationType,
-			_objects[i].locationId,
+			_objects[i].ownerType,
+			_objects[i].ownerId,
 			_objects[i].box,
 			_objects[i].data16,
 			_objects[i].data17,
@@ -352,10 +352,10 @@ void Database::initEvents() {
 void Database::initObjectLocs() {
 	for (int i = 0; i < _objectsNum; ++i) {
 		if (_objects[i].type != 0) {
-			if (_objects[i].locationType == 1)
-				_locations[_objects[i].locationId].objects.push_back(i);
+			if (_objects[i].ownerType == 1)
+				_locations[_objects[i].ownerId].objects.push_back(i);
 			else
-				_characters[_objects[i].locationId].inventory.push_back(i);
+				_characters[_objects[i].ownerId].inventory.push_back(i);
 		}
 	}
 }
@@ -747,6 +747,103 @@ void Database::initScopes() {
 	}
 
 	f.close();
+}
+
+int8 Database::whatBox(int locId, int x, int y) {
+	Box *boxes = _locRoutes[locId].boxes;
+
+	for (int i = 0; i < 32; ++i)
+		if (boxes[i].attrib == 6 &&
+			x >= boxes[i].x1 &&
+			x <= boxes[i].x2 &&
+			y >= boxes[i].y1 &&
+			y <= boxes[i].y2)
+			return i;
+
+	return -1;
+}
+
+void Database::setCharPos(int charId, int loc, int box) {
+	_characters[charId].box = box;
+
+	_locations[_characters[charId].locationId].characters.remove(charId);
+
+	_characters[charId].locationId = loc;
+	_locations[loc].characters.push_back(charId);
+
+	if (charId == 0) {
+		_characters[0].destLoc = loc;
+		_characters[0].destBox = box;
+	}
+}
+
+bool Database::giveObject(int charId, int obj, bool something) {
+	int type;
+	int oldOwner, oldOwnerType;
+
+	if (!(_objects[obj].data4) || !(_objects[obj].isCarryable))
+		return false;
+
+	type = _objects[obj].type - 1;
+	oldOwnerType = _objects[obj].ownerType;
+	oldOwner = _objects[obj].ownerId;
+ 
+
+	if (type <= 4) {
+
+		_objects[obj].ownerType = 3;
+		_objects[obj].ownerId = charId;
+
+		switch (type) {
+		case 3:
+			_characters[charId].gold += _objects[obj].price;
+			// Fall through
+		case 0:
+		case 4:
+			_characters[charId].inventory.push_back(obj);
+			break;
+		case 1:
+			_characters[charId].weapons.push_back(obj);
+			break;
+		case 2:
+			_characters[charId].spells.push_back(obj);
+			break;
+		}
+	}
+
+	if (charId == 0 && !something) {
+		warning("TODO: actionGotObject");
+	}
+
+	switch (oldOwnerType) {
+	case 1:
+		_locations[oldOwner].objects.remove(obj);
+		break;
+	case 2:
+		_objects[oldOwner].contents.remove(obj);
+		break;
+	case 3:
+		if (oldOwner == 0 && !something) {
+			warning("TODO: actionLostObject");
+		}
+
+		switch (type) {
+		case 0:
+		case 4:
+			_characters[charId].inventory.remove(obj);
+			break;
+		case 1:
+			_characters[charId].weapons.remove(obj);
+			break;
+		case 2:
+			_characters[charId].spells.remove(obj);
+			break;
+		}
+
+		break;
+	}
+
+	return true;
 }
 
 void Database::stripUndies(char *s) {

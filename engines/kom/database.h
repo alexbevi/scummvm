@@ -52,7 +52,7 @@ struct Object {
 	Object() : data1(0), type(0), data2(0), proc(0),
 	           data4(0), isCarryable(0), isContainer(0), isVisible(0), isSprite(0), isUseImmediate(0),
 	           data9(0), isUsable(0), price(0), data11(0), spellCost(0), data12(0),
-	           data13(0), locationType(0), locationId(0), box(0), data16(0), data17(0),
+	           data13(0), ownerType(0), ownerId(0), box(0), data16(0), data17(0),
 	           data18(0) {}
 
 	char name[7];
@@ -74,12 +74,13 @@ struct Object {
 	int spellCost;
 	int data12;
 	int data13;
-	int locationType;
-	int locationId;
+	int ownerType;
+	int ownerId;
 	int box;
 	int data16;
 	int data17;
 	int data18;
+	Common::List<int> contents;
 };
 
 struct Character {
@@ -116,6 +117,8 @@ struct Character {
 	int16 destBox;
 	int gold;
 	Common::List<int> inventory;
+	Common::List<int> weapons;
+	Common::List<int> spells;
 };
 
 struct Location {
@@ -199,6 +202,11 @@ public:
 
 	Box *getBox(int locId, int boxId) const { return &(_locRoutes[locId].boxes[boxId]); }
 	Exit *getExits(int locId) const { return _locRoutes[locId].exits; }
+
+	int8 whatBox(int locId, int x, int y);
+
+	void setCharPos(int charId, int loc, int box);
+	bool giveObject(int charId, int obj, bool something);
 
 	Process *getProc(uint16 procIndex) const { return procIndex < _procsNum ? &(_processes[procIndex]) : NULL; }
 	Character *getChar(uint16 charIndex) const { return charIndex < _charactersNum ? &(_characters[charIndex]) : NULL; }
