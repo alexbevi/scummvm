@@ -364,6 +364,32 @@ bool Game::doStat(const Command *cmd) {
 			if (j->arg2 == 0)
 				enterLocation(j->arg3);
 			break;
+		case 402:
+			db->getChar(j->arg2)->destLoc = j->arg3;
+			db->getChar(j->arg2)->destBox = j->arg4;
+			break;
+		case 405:
+			db->getChar(j->arg2)->destLoc =
+			db->getChar(j->arg2)->destBox = -2;
+			break;
+		case 406:
+			db->getChar(j->arg2)->destLoc =
+			db->getChar(j->arg2)->destBox = -3;
+			break;
+		case 407:
+			db->getChar(j->arg2)->destLoc =
+			db->getChar(j->arg2)->destBox = -4;
+			break;
+		case 408:
+			db->getChar(j->arg2)->destLoc =
+			db->getChar(j->arg2)->destBox = -5;
+			break;
+		case 409:
+			keepProcessing = db->getChar(j->arg2)->isBusy;
+			break;
+		case 410:
+			keepProcessing = !(db->getChar(j->arg2)->isBusy);
+			break;
 		case 411:
 			keepProcessing = db->getChar(j->arg2)->isAlive;
 			break;
@@ -378,6 +404,9 @@ bool Game::doStat(const Command *cmd) {
 			db->getChar(j->arg2)->gold =
 				db->getVar(j->arg3);
 			break;
+		case 423:
+			db->setVar(j->arg2, db->getChar(j->arg3)->spellMode);
+			break;
 		case 424:
 			db->setVar(j->arg2, db->getChar(j->arg3)->gold);
 			break;
@@ -388,6 +417,24 @@ bool Game::doStat(const Command *cmd) {
 		case 427:
 			keepProcessing = db->getChar(j->arg2)->locationId !=
 			    db->getChar(j->arg3)->locationId;
+			break;
+		case 430:
+			db->getChar(j->arg2)->mode = 1;
+			db->getChar(j->arg2)->modeCount = j->arg3;
+			break;
+		case 431:
+			db->getChar(j->arg2)->mode = 1;
+			db->getChar(j->arg2)->modeCount = db->getVar(j->arg3);
+			break;
+		case 432:
+			db->getChar(j->arg2)->isVisible = true;
+			break;
+		case 433:
+			db->getChar(j->arg2)->isVisible = false;
+			break;
+		case 434:
+			warning("TODO: doActionCollide(%d, %d)", j->arg2, j->arg3);
+			keepProcessing = false;
 			break;
 		case 444:
 			db->getObj(j->arg2)->isCarryable = 1;
@@ -424,8 +471,20 @@ bool Game::doStat(const Command *cmd) {
 			db->getLoc(j->arg2)->xtend = j->arg3;
 			changeMode(j->arg2, 3);
 			break;
+		case 465:
+			db->setVar(j->arg2, db->getChar(j->arg3)->xtend);
+			break;
+		case 466:
+			db->setVar(j->arg2, db->getLoc(j->arg3)->xtend);
+			break;
 		case 467:
 			warning("TODO: PlayVideo(%s)", j->arg1);
+			break;
+		case 468:
+			warning("TODO: PlaySpriteScene(%s, %d, %d, %d)", j->arg1, j->arg2, j->arg3, j->arg4);
+			break;
+		case 469:
+			warning("TODO: PlaySample(%s)", j->arg1);
 			break;
 		case 474:
 			if (strcmp(j->arg1, "REFRESH") == 0) {

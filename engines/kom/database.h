@@ -83,7 +83,8 @@ struct Object {
 };
 
 struct Character {
-	Character() : mode(0), isAlive(true), isBusy(false), gold(0) {}
+	Character() : mode(0), modeCount(0), isBusy(false), isAlive(true), isVisible(true),
+		spellMode(0), gold(0) {}
 	char name[7];
 	int xtend;
 	int data2;
@@ -98,8 +99,11 @@ struct Character {
 	int data9;
 	int hitpoints;
 	uint16 mode;
+	uint16 modeCount;
 	bool isBusy;
 	bool isAlive;
+	bool isVisible;
+	uint8 spellMode;
 	int data10;
 	int data11;
 	int data12;
@@ -108,6 +112,8 @@ struct Character {
 	int data15; // spell time - unused
 	int data16;
 	int spellpoints;
+	int16 destLoc;
+	int16 destBox;
 	int gold;
 	Common::List<int> inventory;
 };
