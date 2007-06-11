@@ -724,8 +724,8 @@ void Database::initScopes() {
 
 		} else if (strcmp(keyword, "SPEED") == 0) {
 			sscanf(line, "%*s %hu %hu",
-				&(_actorScopes[actorIndex].speed1),
-				&(_actorScopes[actorIndex].speed2));
+				&(_actorScopes[actorIndex].walkSpeed),
+				&(_actorScopes[actorIndex].animSpeed));
 
 		} else if (strcmp(keyword, "TIMEOUT") == 0) {
 			sscanf(line, "%*s %hu",

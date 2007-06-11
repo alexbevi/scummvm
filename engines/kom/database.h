@@ -173,9 +173,11 @@ struct LocRoute {
 };
 
 struct ActorScope {
+	ActorScope() : relativeSpeed(1024) {}
 	Scope scopes[18];
-	uint16 speed1;
-	uint16 speed2;
+	uint16 walkSpeed;
+	uint16 relativeSpeed;
+	uint16 animSpeed;
 	uint16 timeout;
 	uint32 lastLocation;
 	uint32 lastBox;
