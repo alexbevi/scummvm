@@ -734,8 +734,8 @@ void Database::initScopes() {
 
 		} else if (strcmp(keyword, "START") == 0) {
 			sscanf(line, "%*s %u %u %u %u %u",
-				&(_actorScopes[actorIndex].start1),
-				&(_actorScopes[actorIndex].start2),
+				&(_actorScopes[actorIndex].lastLocation),
+				&(_actorScopes[actorIndex].lastBox),
 				&(_actorScopes[actorIndex].start3),
 				&(_actorScopes[actorIndex].start4),
 				&(_actorScopes[actorIndex].start5));

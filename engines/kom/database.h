@@ -177,8 +177,8 @@ struct ActorScope {
 	uint16 speed1;
 	uint16 speed2;
 	uint16 timeout;
-	uint32 start1;
-	uint32 start2;
+	uint32 lastLocation;
+	uint32 lastBox;
 	uint32 start3;
 	uint32 start4;
 	uint32 start5;
