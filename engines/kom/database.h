@@ -98,7 +98,8 @@ struct Character {
 	int data7;
 	int data8;
 	int data9;
-	int hitpoints;
+	int hitPoints;
+	int hitPointsMax;
 	uint16 mode;
 	uint16 modeCount;
 	bool isBusy;
@@ -112,7 +113,8 @@ struct Character {
 	int data14; // spell speed - unused
 	int data15; // spell time - unused
 	int data16;
-	int spellpoints;
+	int spellPoints;
+	int spellPointsMax;
 	int16 destLoc;
 	int16 destBox;
 	int gold;

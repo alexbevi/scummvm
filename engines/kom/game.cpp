@@ -403,15 +403,33 @@ bool Game::doStat(const Command *cmd) {
 			warning("TODO: unset spell");
 			db->getChar(j->arg2)->isAlive = false;
 			break;
+		case 416:
+			db->getChar(j->arg2)->hitPoints =
+				(db->getVar(j->arg3) ? db->getVar(j->arg3) : 0);
+			if (db->getChar(j->arg2)->hitPoints > db->getChar(j->arg2)->hitPointsMax)
+				db->getChar(j->arg2)->hitPoints = db->getChar(j->arg2)->hitPointsMax;
+			break;
 		case 417:
 			db->getChar(j->arg2)->gold =
 				db->getVar(j->arg3);
+			break;
+		case 418:
+			db->getChar(j->arg2)->spellPoints =
+				(db->getVar(j->arg3) ? db->getVar(j->arg3) : 0);
+			if (db->getChar(j->arg2)->spellPoints > db->getChar(j->arg2)->spellPointsMax)
+				db->getChar(j->arg2)->spellPoints = db->getChar(j->arg2)->spellPointsMax;
+			break;
+		case 422:
+			db->setVar(j->arg2, db->getChar(j->arg3)->hitPoints);
 			break;
 		case 423:
 			db->setVar(j->arg2, db->getChar(j->arg3)->spellMode);
 			break;
 		case 424:
 			db->setVar(j->arg2, db->getChar(j->arg3)->gold);
+			break;
+		case 425:
+			db->setVar(j->arg2, db->getChar(j->arg3)->spellPoints);
 			break;
 		case 426:
 			keepProcessing = db->getChar(j->arg2)->locationId ==

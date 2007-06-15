@@ -177,7 +177,7 @@ void Database::initCharacters() {
 		readLineScanf(f, "%d %d %d",
 			&(_characters[index].data8),
 			&(_characters[index].data9),
-			&(_characters[index].hitpoints));
+			&(_characters[index].hitPoints));
 		readLineScanf(f, "%d %d %d %d",
 			&(_characters[index].strength),
 			&(_characters[index].defense),
@@ -187,7 +187,10 @@ void Database::initCharacters() {
 			&(_characters[index].data14),
 			&(_characters[index].data15),
 			&(_characters[index].data16),
-			&(_characters[index].spellpoints));
+			&(_characters[index].spellPoints));
+
+	_characters[index].hitPointsMax = _characters[index].hitPoints;
+	_characters[index].spellPointsMax = _characters[index].spellPoints;
 	}
 
 	f.close();
@@ -207,7 +210,7 @@ void Database::initCharacters() {
 			_characters[i].data7,
 			_characters[i].data8,
 			_characters[i].data9,
-			_characters[i].hitpoints,
+			_characters[i].hitPoints,
 			_characters[i].strength,
 			_characters[i].defense,
 			_characters[i].damageMin,
@@ -215,7 +218,7 @@ void Database::initCharacters() {
 			_characters[i].data14,
 			_characters[i].data15,
 			_characters[i].data16,
-			_characters[i].spellpoints);
+			_characters[i].spellPoints);
 	}*/
 
 	initScopes();
