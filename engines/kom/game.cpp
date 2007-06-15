@@ -70,7 +70,7 @@ void Game::enterLocation(uint16 locId) {
 		return;
 	}
 
-	Location *loc = _vm->database()->location(locId);
+	Location *loc = _vm->database()->getLoc(locId);
 	String locName(loc->name);
 	locName.toLowercase();
 	FilesystemNode locNode(_vm->dataDir()->getChild("kom").getChild("locs").getChild(String(locName.c_str(), 2)).getChild(locName));
@@ -117,7 +117,7 @@ void Game::enterLocation(uint16 locId) {
 	for (int i = 0; i < 6; ++i) {
 		// FIXME: room 45 has one NULL exit. what's it for?
 		if (exits[i].exit > 0) {
-			String exitName(_vm->database()->location(exits[i].exitLoc)->name);
+			String exitName(_vm->database()->getLoc(exits[i].exitLoc)->name);
 			exitName.toLowercase();
 
 			sprintf(filename, "%s%dd", exitName.c_str(), loc->xtend + _player.isNight);

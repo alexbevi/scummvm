@@ -198,8 +198,6 @@ public:
 	static void stripUndies(char *s);
 	int CDECL readLineScanf(Common::File &f, const char *format, ...) KOM_GCC_SCANF(3, 4);
 
-	Location *location(uint16 locId) const { return &(_locations[locId]); }
-
 	int8 loc2loc(int from, int to) { return ((int8)(_routes[(int8)(_routes[0]) * to + from + 1])); }
 
 	Object *object(int obj) const { return &(_objects[obj]); }
