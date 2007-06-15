@@ -206,6 +206,8 @@ public:
 	Exit *getExits(int locId) const { return _locRoutes[locId].exits; }
 
 	int8 whatBox(int locId, int x, int y);
+	int16 getMidX(int loc, int box) { return (_locRoutes[loc].boxes[box].x2 - _locRoutes[loc].boxes[box].x1) / 2; }
+	int16 getMidY(int loc, int box) { return (_locRoutes[loc].boxes[box].y2 - _locRoutes[loc].boxes[box].y1) / 2; }
 
 	void setCharPos(int charId, int loc, int box);
 	bool giveObject(int charId, int obj, bool something);
