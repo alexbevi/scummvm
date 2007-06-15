@@ -174,8 +174,8 @@ struct LocRoute {
 	Box boxes[32];
 };
 
-struct ActorScope {
-	ActorScope() : relativeSpeed(1024) {}
+struct CharScope {
+	CharScope() : relativeSpeed(1024) {}
 	Scope scopes[18];
 	uint16 walkSpeed;
 	uint16 relativeSpeed;
@@ -218,6 +218,7 @@ public:
 	Character *getChar(uint16 charIndex) const { return charIndex < _charactersNum ? &(_characters[charIndex]) : NULL; }
 	Object *getObj(uint16 objIndex) const { return objIndex < _objectsNum ? &(_objects[objIndex]) : NULL; }
 	Location *getLoc(uint16 locIndex) const { return locIndex < _locationsNum ? &(_locations[locIndex]) : NULL; }
+	CharScope *getCharScope(uint16 scpIndex) const { return scpIndex < _charactersNum ? &(_charScopes[scpIndex]) : NULL; }
 
 	int charactersNum() { return _charactersNum; }
 
@@ -253,7 +254,7 @@ private:
 	Process *_processes;
 	int _procsNum;
 
-	ActorScope *_actorScopes;
+	CharScope *_charScopes;
 
 	int _varSize;
 	int16 *_variables;

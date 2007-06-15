@@ -48,7 +48,7 @@ Database::Database(KomEngine *vm, OSystem *system)
 	_routes = 0;
 	_map = 0;
 	_locRoutes = 0;
-	_actorScopes = new ActorScope[100];
+	_charScopes = new CharScope[100];
 }
 
 Database::~Database() {
@@ -61,7 +61,7 @@ Database::~Database() {
 	delete[] _routes;
 	delete[] _map;
 	delete[] _locRoutes;
-	delete[] _actorScopes;
+	delete[] _charScopes;
 }
 
 void Database::init(Common::String databasePrefix) {
@@ -721,27 +721,27 @@ void Database::initScopes() {
 			sscanf(line, "%*s %*u %hu %hu %hu",
 				&(tmp1), &(tmp2), &(tmp3));
 
-			_actorScopes[actorIndex].scopes[scopeIndex].minFrame = tmp1;
-			_actorScopes[actorIndex].scopes[scopeIndex].maxFrame = tmp2;
-			_actorScopes[actorIndex].scopes[scopeIndex].startFrame = tmp3;
+			_charScopes[actorIndex].scopes[scopeIndex].minFrame = tmp1;
+			_charScopes[actorIndex].scopes[scopeIndex].maxFrame = tmp2;
+			_charScopes[actorIndex].scopes[scopeIndex].startFrame = tmp3;
 
 		} else if (strcmp(keyword, "SPEED") == 0) {
 			sscanf(line, "%*s %hu %hu",
-				&(_actorScopes[actorIndex].walkSpeed),
-				&(_actorScopes[actorIndex].animSpeed));
+				&(_charScopes[actorIndex].walkSpeed),
+				&(_charScopes[actorIndex].animSpeed));
 
 		} else if (strcmp(keyword, "TIMEOUT") == 0) {
 			sscanf(line, "%*s %hu",
-				&(_actorScopes[actorIndex].timeout));
-			_actorScopes[actorIndex].timeout *= 24;
+				&(_charScopes[actorIndex].timeout));
+			_charScopes[actorIndex].timeout *= 24;
 
 		} else if (strcmp(keyword, "START") == 0) {
 			sscanf(line, "%*s %u %u %u %u %u",
-				&(_actorScopes[actorIndex].lastLocation),
-				&(_actorScopes[actorIndex].lastBox),
-				&(_actorScopes[actorIndex].start3),
-				&(_actorScopes[actorIndex].start4),
-				&(_actorScopes[actorIndex].start5));
+				&(_charScopes[actorIndex].lastLocation),
+				&(_charScopes[actorIndex].lastBox),
+				&(_charScopes[actorIndex].start3),
+				&(_charScopes[actorIndex].start4),
+				&(_charScopes[actorIndex].start5));
 		}
 
 		do {
