@@ -51,8 +51,15 @@ ActorManager::~ActorManager() {
 int ActorManager::load(FilesystemNode dirNode, String name) {
 
 	Actor *act = new Actor(_vm, dirNode, name, false);
-	_actors.push_back(act);
 
+	// find an empty place in the array. if none exist, create a new cell
+	for (uint i = 0; i < _actors.size(); ++i)
+		if (_actors[i] == NULL) {
+			_actors[i] = act;
+			return i;
+		}
+
+	_actors.push_back(act);
 	return _actors.size() - 1;
 }
 
