@@ -149,7 +149,7 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, uint1
 		drawActorFrameLine(_screenBuf, SCREEN_W, data + lineOffset, (realX < 0 ? 0 : realX),
 		                   (realY < 0 ? 0 : realY) + line - startLine, startCol, endCol, maskDepth);
 	}
-	_dirtyRects->push_back(Rect(realX, realY, realX + endCol, realY + endLine));
+	_dirtyRects->push_back(Rect(realX + startCol, realY + startLine, realX + endCol, realY + endLine));
 }
 
 void Screen::drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16 xOffset, int16 yOffset) {
