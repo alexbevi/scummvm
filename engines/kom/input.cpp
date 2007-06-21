@@ -61,7 +61,7 @@ void Input::checkKeys() {
 				} else {
 					_inKey = event.kbd.keycode;
 					switch (_inKey) {
-						case 27:
+						case Common::KEYCODE_ESCAPE:
 							_system->quit();
 							break;
 						default:
