@@ -765,6 +765,13 @@ int8 Database::whatBox(int locId, int x, int y) {
 
 	return -1;
 }
+uint16 Database::getExitBox(int currLoc, int nextLoc) {
+	for (int i = 0; i < 6; ++i)
+		if (_locRoutes[currLoc].exits[i].exitLoc == nextLoc)
+			return _locRoutes[currLoc].exits[i].exitBox;
+
+	return 0;
+}
 
 void Database::setCharPos(int charId, int loc, int box) {
 	_characters[charId].box = box;
