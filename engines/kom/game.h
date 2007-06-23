@@ -73,6 +73,8 @@ public:
 	void setDay();
 	void setNight();
 
+	void setScope(uint16 charId, int16 scope);
+
 private:
 
 	OSystem *_system;
@@ -94,6 +96,8 @@ private:
 
 	void doActionDusk();
 	void doActionDawn();
+
+	void setScopeX(uint16 charId, int16 scope);
 };
 
 } // End of namespace Kom

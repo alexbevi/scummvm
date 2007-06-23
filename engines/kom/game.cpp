@@ -594,4 +594,50 @@ void Game::setNight() {
 	}
 }
 
+void Game::setScope(uint16 charId, int16 scope) {
+	Actor *act;
+
+	// TODO - handle spell effect
+	// TODO - pretty much everything
+
+	// TODO - hack
+	if (_vm->database()->getCharScope(charId)->actorId == -1) {
+		setScopeX(charId, scope);
+	}
+	act = _vm->actorMan()->get(_vm->database()->getCharScope(charId)->actorId);
+
+}
+
+void Game::setScopeX(uint16 charId, int16 scope) {
+	char filename[50];
+	Actor *act;
+
+	Character *character = _vm->database()->getChar(charId);
+	String charName(character->name);
+	charName.toLowercase();
+	sprintf(filename, "%s%d", charName.c_str(), character->xtend);
+
+	_vm->panel()->showLoading(true);
+	_vm->database()->getCharScope(charId)->actorId =
+		_vm->actorMan()->load(_vm->dataDir()->getChild("kom").getChild("actors"), filename);
+	_vm->panel()->showLoading(false);
+
+
+	act = _vm->actorMan()->get(_vm->database()->getCharScope(charId)->actorId);
+
+	// TODO - lots
+	act->defineScope(0, 0, act->getFramesNum() - 1, 0);
+	act->setScope(0, _vm->database()->getCharScope(charId)->animSpeed);
+
+	// TODO - this should be in processGraphics
+	act->setPos(_vm->database()->getCharScope(charId)->start3 >> 9,
+	            _vm->database()->getCharScope(charId)->start4 >> 9);
+	act->setRatio(1024, 1024);
+
+	// TODO - this should be in loopMove
+	act->setMaskDepth(_vm->database()->getPriority(
+		_vm->database()->getCharScope(charId)->lastLocation,
+		_vm->database()->getCharScope(charId)->lastBox));
+}
+
 } // End of namespace Kom

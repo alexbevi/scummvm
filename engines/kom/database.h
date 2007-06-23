@@ -175,8 +175,9 @@ struct LocRoute {
 };
 
 struct CharScope {
-	CharScope() : relativeSpeed(1024) {}
+	CharScope() : actorId(-1), relativeSpeed(1024), scopeInUse(-1) {}
 	Scope scopes[18];
+	int16  actorId;
 	uint16 walkSpeed;
 	uint16 relativeSpeed;
 	uint16 animSpeed;
@@ -186,6 +187,7 @@ struct CharScope {
 	uint32 start3;
 	uint32 start4;
 	uint32 start5;
+	int16 scopeInUse;
 };
 
 class Database {

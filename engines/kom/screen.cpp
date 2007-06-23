@@ -88,6 +88,35 @@ bool Screen::init() {
 void Screen::processGraphics() {
 	//memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 
+	// handle screen objects
+	// handle dust clouds
+	
+	// unload actors in other rooms
+	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
+		if (_vm->database()->getCharScope(0)->lastLocation !=
+		    _vm->database()->getCharScope(i)->lastLocation ||
+			!_vm->database()->getChar(i)->isVisible) {
+
+			// TODO - init scope stuff
+			if (_vm->database()->getCharScope(i)->actorId >= 0) {
+				_vm->actorMan()->unload(_vm->database()->getCharScope(i)->actorId);
+				_vm->database()->getCharScope(i)->actorId = -1;
+			}
+		}
+	}
+
+	// load actors in this room
+	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
+		// TODO - init scope stuff
+		// TODO - disable actor if in fight
+		if (_vm->database()->getCharScope(0)->lastLocation ==
+		    _vm->database()->getCharScope(i)->lastLocation &&
+			_vm->database()->getChar(i)->isVisible) {
+
+			_vm->game()->setScope(i, _vm->database()->getCharScope(i)->scopeInUse);
+		}
+	}
+
 	updateCursor();
 	displayMouse();
 	updateBackground();
