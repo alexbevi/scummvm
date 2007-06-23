@@ -752,6 +752,11 @@ void Database::initScopes() {
 	f.close();
 }
 
+int8 Database::box2box(int loc, int fromBox, int toBox) {
+	byte *ptr = _map + READ_LE_UINT32(_map + loc * 4);
+	return (int8)(_map[*ptr * toBox + fromBox]);
+}
+
 int8 Database::whatBox(int locId, int x, int y) {
 	Box *boxes = _locRoutes[locId].boxes;
 
