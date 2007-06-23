@@ -98,7 +98,7 @@ Actor::Actor(KomEngine *vm, FilesystemNode dirNode, String name, bool isMouse) :
 	_scope = 255;
 	_isAnimating = false;
 	_animDuration = 0;
-	_isActive = true;
+	_isActive = 1;
 	_currentFrame = _minFrame = _maxFrame = 0;
 	_xPos = _yPos = 0;
 	_xRatio = _yRatio = 1024;

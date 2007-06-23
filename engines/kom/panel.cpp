@@ -76,11 +76,11 @@ void Panel::update() {
 
 	if (_isLoading) {
 		Actor *mouse = _vm->actorMan()->getMouse();
-		mouse->enable(true);
+		mouse->enable(1);
 		mouse->setScope(6, 0);
 		mouse->setPos(303, 185);
 		mouse->display();
-		mouse->enable(false);
+		mouse->enable(0);
 	}
 
 	// TODO: lose/get items
