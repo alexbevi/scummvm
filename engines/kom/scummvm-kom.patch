@@ -1,16 +1,16 @@
 Index: configure
 ===================================================================
---- configure	(revision 27692)
+--- configure	(revision 27697)
 +++ configure	(working copy)
 @@ -63,6 +63,7 @@
  _build_touche=yes
  _build_parallaction=yes
  _build_cruise=no
 +_build_kom=no
- _need_memalign=no
- _build_plugins=no
- _nasm=auto
-@@ -337,6 +338,7 @@
+ _build_hq_scalers=yes
+ _build_scalers=yes
+ 
+@@ -367,6 +368,7 @@
    --disable-sword2         don't build the Broken Sword 2 engine
    --disable-touche         don't build the Touche: The Adventures of the Fifth Musketeer engine
  
@@ -18,7 +18,7 @@ Index: configure
    --enable-plugins         build engines as loadable modules instead of
                             static linking them
    --disable-mt32emu        don't enable the integrated MT-32 emulator
-@@ -408,6 +410,7 @@
+@@ -438,6 +440,7 @@
        --disable-touche)         _build_touche=no ;;
        --disable-parallaction)   _build_parallaction=no ;;
        --enable-cruise)          _build_cruise=yes ;;
@@ -26,7 +26,7 @@ Index: configure
        --disable-hq-scalers)     _build_hq_scalers=no ;;
        --disable-scalers)        _build_scalers=no ;;
        --enable-alsa)            _alsa=yes       ;;
-@@ -700,6 +703,7 @@
+@@ -730,6 +733,7 @@
  add_to_config_mk_if_no $_build_touche       'DISABLE_TOUCHE = 1'
  add_to_config_mk_if_no $_build_parallaction 'DISABLE_PARALLACTION = 1'
  add_to_config_mk_if_no $_build_cruise       'DISABLE_CRUISE = 1'
@@ -34,7 +34,7 @@ Index: configure
  add_to_config_mk_if_no $_build_hq_scalers   'DISABLE_HQ_SCALERS = 1'
  add_to_config_mk_if_no $_build_scalers      'DISABLE_SCALERS = 1'
  
-@@ -1364,6 +1368,9 @@
+@@ -1386,6 +1390,9 @@
  if test "$_build_cruise" = yes ; then
  	echo "    Cinematique evo 2"
  fi
@@ -46,7 +46,7 @@ Index: configure
  
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 27692)
+--- engines/engines.mk	(revision 27697)
 +++ engines/engines.mk	(working copy)
 @@ -96,3 +96,9 @@
  else
@@ -60,7 +60,7 @@ Index: engines/engines.mk
 +endif
 Index: base/plugins.cpp
 ===================================================================
---- base/plugins.cpp	(revision 27692)
+--- base/plugins.cpp	(revision 27697)
 +++ base/plugins.cpp	(working copy)
 @@ -131,6 +131,9 @@
  		#ifndef DISABLE_CRUISE
