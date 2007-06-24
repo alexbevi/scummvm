@@ -66,6 +66,7 @@ public:
 	void enterLocation(uint16 locId);
 	void processTime();
 	bool doStat(const Command *cmd);
+	void loopMove();
 
 	Settings* settings() { return &_settings; }
 	Player* player() { return &_player; }
@@ -98,6 +99,7 @@ private:
 	void doActionDawn();
 
 	void setScopeX(uint16 charId, int16 scope);
+	void moveChar(uint16 charId, bool something);
 };
 
 } // End of namespace Kom

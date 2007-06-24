@@ -742,6 +742,10 @@ void Database::initScopes() {
 				&(_charScopes[actorIndex].start3),
 				&(_charScopes[actorIndex].start4),
 				&(_charScopes[actorIndex].start5));
+
+			_charScopes[actorIndex].gotoLoc = _charScopes[actorIndex].lastLocation;
+			_charScopes[actorIndex].gotoX = _charScopes[actorIndex].start3 / 256;
+			_charScopes[actorIndex].gotoY = _charScopes[actorIndex].start4 / 256;
 		}
 
 		do {

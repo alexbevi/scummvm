@@ -175,19 +175,28 @@ struct LocRoute {
 };
 
 struct CharScope {
-	CharScope() : actorId(-1), relativeSpeed(1024), scopeInUse(-1) {}
+	CharScope() : actorId(-1), relativeSpeed(1024), scopeInUse(-1), scopeWanted(8),
+		priority(0), fightPartner(-1), spriteSceneState(0), spriteTimer(0) {}
 	Scope scopes[18];
 	int16  actorId;
+	int16 gotoX;
+	int16 gotoY;
+	int16 gotoLoc;
 	uint16 walkSpeed;
 	uint16 relativeSpeed;
 	uint16 animSpeed;
 	uint16 timeout;
+	int16 priority;
 	uint32 lastLocation;
 	uint32 lastBox;
 	uint32 start3;
 	uint32 start4;
 	uint32 start5;
+	int16 fightPartner;
+	uint8 spriteSceneState;
+	uint16 spriteTimer;
 	int16 scopeInUse;
+	uint16 scopeWanted;
 };
 
 class Database {

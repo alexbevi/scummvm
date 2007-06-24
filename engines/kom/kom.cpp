@@ -161,16 +161,18 @@ void KomEngine::gameLoop() {
 
 		//if (_gameLoopState == GAMELOOP_DEATH)
 			// ambientStart(currLocation)
-		// loopMove
+		_game->loopMove();
 		// loopCollide
 		// if in a fight, do something
 		// collision stuff
-		// if not speed something:
+		// if player not stopped:
 		//     do command (walk, use, talk, pickup, look, fight, exit, magic)
 		// loopSpriteCut
 		// loopSpells
 		// loopTimeouts
-		// lose/get item
+		// lose/get gold
+		// stop narrator if needed
+		//
 		// TODO
 
 		_screen->processGraphics();

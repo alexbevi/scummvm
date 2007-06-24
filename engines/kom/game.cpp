@@ -558,6 +558,69 @@ bool Game::doStat(const Command *cmd) {
 	return rc;
 }
 
+void Game::loopMove() {
+	// TODO - handle player char
+
+	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
+		CharScope *scp = _vm->database()->getCharScope(i);
+
+		if (!(_vm->database()->getChar(i)->isAlive)) {
+			// set some stuff
+			// moveCharOther()
+
+		} else {
+			if (scp->walkSpeed == 0) {
+				scp->scopeWanted = 17;
+				scp->priority = _vm->database()->getPriority(scp->lastLocation, scp->lastBox);
+				// moveCharOther()
+
+			} else {
+				if (scp->spriteSceneState == 0) {
+					if (scp->fightPartner < 0) {
+						int16 destBox = _vm->database()->getChar(i)->destBox;
+						scp->gotoLoc = _vm->database()->getChar(i)->destLoc;
+
+						if (destBox + 5 <= 3)  {
+							switch (destBox + 5) {
+							case 0:
+							case 1:
+							case 2:
+							case 3:
+								break;
+							}
+							// TODO
+						} else {
+							scp->gotoX = _vm->database()->getMidX(scp->gotoLoc, destBox);
+							scp->gotoY = _vm->database()->getMidY(scp->gotoLoc, destBox);
+						}
+
+						// TODO - collision
+						// TODO - fight-related thing
+
+						if (_vm->database()->getChar(i)->mode == 1) {
+							// TODO - stop actor
+						}
+
+						if (scp->spriteTimer == 0 && scp->fightPartner < 0) {
+							moveChar(i, true);
+						}
+						// moveCharOther()
+
+						// if goto_box != last_box:
+							// goto_box = last_box
+							_vm->database()->setCharPos(i, scp->lastLocation, scp->lastBox);
+
+					}
+				} else {
+
+				}
+			}
+		}
+	}
+
+	// TODO - handle magic actors
+}
+
 void Game::changeMode(int value, int mode) {
 	warning("TODO: changeMode - unsupported mode");
 }
@@ -638,6 +701,10 @@ void Game::setScopeX(uint16 charId, int16 scope) {
 	act->setMaskDepth(_vm->database()->getPriority(
 		_vm->database()->getCharScope(charId)->lastLocation,
 		_vm->database()->getCharScope(charId)->lastBox));
+}
+
+void Game::moveChar(uint16 charId, bool something) {
+
 }
 
 } // End of namespace Kom
