@@ -189,6 +189,8 @@ void Database::initCharacters() {
 			&(_characters[index].data16),
 			&(_characters[index].spellPoints));
 
+	_characters[index].destLoc = _characters[index].locationId;
+	_characters[index].destBox = _characters[index].box;
 	_characters[index].hitPointsMax = _characters[index].hitPoints;
 	_characters[index].spellPointsMax = _characters[index].spellPoints;
 	}
