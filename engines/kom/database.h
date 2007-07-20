@@ -163,9 +163,11 @@ struct Exit {
 };
 
 struct Box {
+	Box() : enabled(false) {}
+	bool enabled;
 	int16 x1, y1, x2, y2, priority;
 	int32 z1, z2;
-	int16 attrib;
+	uint8 attrib;
 	int8 joins[6];
 };
 

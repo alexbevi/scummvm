@@ -640,6 +640,7 @@ void Database::initRoutes() {
 
 		} else if (strcmp(keyword, "BOX") == 0) {
 			sscanf(line, "%*s %hd", &boxIndex);
+			_locRoutes[locIndex].boxes[boxIndex].enabled = true;
 
 		} else if (strcmp(keyword, "x1") == 0) {
 			sscanf(line, "%*s %d", &parmData);
@@ -767,7 +768,8 @@ int8 Database::whatBox(int locId, int x, int y) {
 	Box *boxes = _locRoutes[locId].boxes;
 
 	for (int i = 0; i < 32; ++i)
-		if (boxes[i].attrib == 6 &&
+		if (boxes[i].enabled &&
+			!(boxes[i].attrib & 6) &&
 			x >= boxes[i].x1 &&
 			x <= boxes[i].x2 &&
 			y >= boxes[i].y1 &&
