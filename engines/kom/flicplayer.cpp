@@ -23,7 +23,6 @@
  *
  */
 
-#include "common/stdafx.h"
 #include "common/fs.h"
 #include "common/file.h"
 #include "common/list.h"

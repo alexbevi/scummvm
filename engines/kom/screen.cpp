@@ -21,7 +21,6 @@
  */
 
 #include <memory.h>
-#include "common/stdafx.h"
 #include "common/system.h"
 #include "common/file.h"
 #include "common/fs.h"

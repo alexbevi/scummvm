@@ -23,7 +23,6 @@
  *
  */
 
-#include "common/stdafx.h"
 #include "base/plugins.h"
 
 #include "common/config-manager.h"
@@ -82,8 +81,8 @@ PluginError Engine_KOM_create(OSystem *syst, Engine **engine) {
 	FilesystemNode dir(ConfMan.get("path"));
 
 	// Unable to locate game data
-	if (!(dir.getChild("thidney.dsk").isValid() || dir.getChild("shahron.dsk").isValid())) {
-		warning("KOM: unable to locate game data at path '%s'", dir.path().c_str());
+	if (!(dir.getChild("thidney.dsk").exists() || dir.getChild("shahron.dsk").exists())) {
+		warning("KOM: unable to locate game data at path '%s'", dir.getPath().c_str());
 		return kNoGameDataFoundError;
 	}
 

@@ -26,7 +26,6 @@
 #ifndef KOM_FLICPLAYER_H
 #define KOM_FLICPLAYER_H
 
-#include "common/stdafx.h"
 #include "common/endian.h"
 #include "common/fs.h"
 #include "common/list.h"

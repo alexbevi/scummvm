@@ -23,7 +23,8 @@
  *
  */
 
-#include "common/stdafx.h"
+#include <stdlib.h>
+
 #include "common/fs.h"
 #include "common/str.h"
 
@@ -123,7 +124,7 @@ void Game::enterLocation(uint16 locId) {
 			sprintf(filename, "%s%dd", exitName.c_str(), loc->xtend + _player.isNight);
 
 			// The exit can have no door
-			if (locNode.getChild(filename + String(".act")).isValid()) {
+			if (locNode.getChild(filename + String(".act")).exists()) {
 				RoomDoor roomDoor;
 				roomDoor.actorId = _vm->actorMan()->load(locNode, String(filename));
 				Actor *act = _vm->actorMan()->get(roomDoor.actorId);
