@@ -64,7 +64,7 @@ GameList Engine_KOM_detectGames(const FSList &fslist) {
 	GameList detectedGames;
 	for (FSList::const_iterator file = fslist.begin(); file != fslist.end(); ++file) {
 		if (!file->isDirectory()) {
-			const char *filename = file->displayName().c_str();
+			const char *filename = file->getName().c_str();
 
 			if (0 == scumm_stricmp("thidney.dsk", filename) ||
 			    0 == scumm_stricmp("shahron.dsk", filename)) {
