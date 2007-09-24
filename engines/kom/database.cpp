@@ -739,7 +739,7 @@ void Database::initScopes() {
 			_charScopes[actorIndex].timeout *= 24;
 
 		} else if (strcmp(keyword, "START") == 0) {
-			sscanf(line, "%*s %u %u %u %u %u",
+			sscanf(line, "%*s %d %d %d %d %d",
 				&(_charScopes[actorIndex].lastLocation),
 				&(_charScopes[actorIndex].lastBox),
 				&(_charScopes[actorIndex].start3),
@@ -747,8 +747,8 @@ void Database::initScopes() {
 				&(_charScopes[actorIndex].start5));
 
 			_charScopes[actorIndex].gotoLoc = _charScopes[actorIndex].lastLocation;
-			_charScopes[actorIndex].gotoX = _charScopes[actorIndex].start3 / 256;
-			_charScopes[actorIndex].gotoY = _charScopes[actorIndex].start4 / 256;
+			_charScopes[actorIndex].screenX = _charScopes[actorIndex].gotoX = _charScopes[actorIndex].start3 / 256;
+			_charScopes[actorIndex].screenY = _charScopes[actorIndex].gotoY = _charScopes[actorIndex].start4 / 256;
 		}
 
 		do {
@@ -778,12 +778,60 @@ int8 Database::whatBox(int locId, int x, int y) {
 
 	return -1;
 }
+
+int16 Database::getMidOverlapX(int loc, int box1, int box2) {
+	int16 x1Max, x2Min;
+
+	Box *b1 = &(_locRoutes[loc].boxes[box1]);
+	Box *b2 = &(_locRoutes[loc].boxes[box2]);
+
+	x1Max = MAX(b1->x1, b2->x1);
+	x2Min = MIN(b1->x2, b2->x2);
+
+	if (x2Min < x1Max) {
+		x2Min ^= x1Max;
+		x1Max ^= x2Min;
+		x2Min ^= x1Max;
+	}
+
+	if (x1Max + x2Min <= 1)
+		return x1Max;
+	else
+		return x1Max + 1;
+}
+
+int16 Database::getMidOverlapY(int loc, int box1, int box2) {
+	int16 y1Max, y2Min;
+
+	Box *b1 = &(_locRoutes[loc].boxes[box1]);
+	Box *b2 = &(_locRoutes[loc].boxes[box2]);
+
+	y1Max = MAX(b1->y1, b2->y1);
+	y2Min = MIN(b1->y2, b2->y2);
+
+	if (y2Min < y1Max) {
+		y2Min ^= y1Max;
+		y1Max ^= y2Min;
+		y2Min ^= y1Max;
+	}
+
+	if (y1Max + y2Min <= 1)
+		return y1Max;
+	else
+		return y1Max + 1;
+}
+
 uint16 Database::getExitBox(int currLoc, int nextLoc) {
 	for (int i = 0; i < 6; ++i)
 		if (_locRoutes[currLoc].exits[i].exitLoc == nextLoc)
 			return _locRoutes[currLoc].exits[i].exitBox;
 
 	return 0;
+}
+bool Database::isInLine(int loc, int box, int x, int y) {
+	Box *b = (&_locRoutes[loc].boxes[box]);
+
+	return (x > b->x1 && x < b->x2 || y > b->y1 && y < b->y2);
 }
 
 void Database::setCharPos(int charId, int loc, int box) {

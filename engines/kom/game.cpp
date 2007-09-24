@@ -96,7 +96,9 @@ void Game::enterLocation(uint16 locId) {
 		if (obj->isSprite) {
 			sprintf(filename, "%s%d", obj->name, _player.isNight);
 			RoomObject roomObj;
+			roomObj.objectId = *objId;
 			roomObj.actorId = _vm->actorMan()->load(locNode, String(filename));
+			roomObj.priority = db->getBox(locId, obj->box)->priority;
 			Actor *act = _vm->actorMan()->get(roomObj.actorId);
 			act->defineScope(0, 0, act->getFramesNum() - 1, 0);
 			act->setScope(0, 3);
@@ -104,8 +106,8 @@ void Game::enterLocation(uint16 locId) {
 
 			_roomObjects.push_back(roomObj);
 
-			Box *box = db->getBox(locId, obj->box);
-			act->setMaskDepth(box->priority);
+			// TODO - move this to processGraphics?
+			act->setMaskDepth(roomObj.priority);
 
 			// TODO:
 			// * store actor in screenObjects
@@ -366,7 +368,7 @@ bool Game::doStat(const Command *cmd) {
 				keepProcessing = db->getObj(j->arg3)->ownerId != j->arg2;
 			break;
 		case 403:
-			warning("TODO: move actor stub: %d %d %d", j->arg2, j->arg3, j->arg4);
+			// warning("TODO: move actor stub: %d %d %d", j->arg2, j->arg3, j->arg4);
 			db->setCharPos(j->arg2, j->arg3, j->arg4);
 			if (j->arg2 == 0)
 				enterLocation(j->arg3);
@@ -458,7 +460,7 @@ bool Game::doStat(const Command *cmd) {
 			db->getChar(j->arg2)->isVisible = false;
 			break;
 		case 434:
-			warning("TODO: doActionCollide(%d, %d)", j->arg2, j->arg3);
+			//warning("TODO: doActionCollide(%d, %d)", j->arg2, j->arg3);
 			keepProcessing = false;
 			break;
 		case 438:
@@ -541,7 +543,7 @@ bool Game::doStat(const Command *cmd) {
 			_settings.fightEnabled = false;
 			break;
 		case 487:
-			warning("TODO: npcFight(%d, %d)", j->arg2, j->arg3);
+			// warning("TODO: npcFight(%d, %d)", j->arg2, j->arg3);
 			keepProcessing = false;
 			break;
 		case 488:
@@ -603,7 +605,7 @@ void Game::loopMove() {
 						}
 
 						if (scp->spriteTimer == 0 && scp->fightPartner < 0) {
-							moveChar(i, true);
+							moveChar(i, 1);
 						}
 						// moveCharOther()
 
@@ -630,7 +632,7 @@ int16 Game::doExternalAction(const char *action) {
 	if (strcmp(action, "getquest") == 0) {
 		return _settings.selectedQuest;
 	} else {
-		warning("Unknown external action: %s", action);
+		// TODO - warning("Unknown external action: %s", action);
 		return 0;
 	}
 }
@@ -704,8 +706,94 @@ void Game::setScopeX(uint16 charId, int16 scope) {
 		_vm->database()->getCharScope(charId)->lastBox));
 }
 
-void Game::moveChar(uint16 charId, bool something) {
+void Game::moveChar(uint16 charId, int something) {
+	CharScope *scp = _vm->database()->getCharScope(charId);
+	int16 nextLoc, targetBox, targetBoxX, targetBoxY, nextBox;
 
+	//printf("moving char %hu\n", charId);
+
+	if (scp->lastLocation == 0) return;
+
+	if (scp->gotoLoc != scp->lastLocation) {
+
+		if (scp->gotoLoc >= 0 && scp->lastLocation >= 0)
+			nextLoc = _vm->database()->loc2loc(scp->lastLocation, scp->gotoLoc);
+		else
+			nextLoc = -1;
+
+		if (nextLoc > 0) {
+			targetBox = _vm->database()->getExitBox(scp->lastLocation, nextLoc);
+
+			if (scp->lastLocation >= 0 && targetBox > 0) {
+				Box *b = _vm->database()->getBox(scp->lastLocation, targetBox);
+				targetBoxX = (b->x2 - b->x1) / 2 + b->x1;
+				targetBoxY = (b->y2 - b->y1) / 2 + b->y1;
+			} else {
+				targetBoxX = 319;
+				targetBoxY = 389;
+			}
+
+			scp->gotoX = targetBoxX;
+			scp->gotoY = targetBoxY;
+
+		} else
+			targetBox = scp->lastBox;
+
+	} else {
+		targetBox = _vm->database()->whatBox(scp->lastLocation, scp->gotoX, scp->gotoY);
+	}
+
+	assert(targetBox != -1);
+
+	if (scp->lastLocation > 127 || scp->lastBox > 127 || targetBox > 127) {
+		nextBox = -1;
+	} else {
+		nextBox = _vm->database()->box2box(scp->lastLocation, scp->lastBox, targetBox);
+	}
+
+	int16 x, y, xMove, yMove;
+
+	if (nextBox == scp->lastBox) {
+		x = scp->gotoX;
+		y = scp->gotoY;
+	} else {
+		if (nextBox == -1) {
+			x = scp->screenX;
+			y = scp->screenY;
+		} else {
+			if (_vm->database()->isInLine(scp->lastLocation, nextBox, scp->screenY, scp->screenY)) {
+				if (scp->lastLocation > 0 && nextBox > 0) {
+					Box *b = _vm->database()->getBox(scp->lastLocation, nextBox);
+					x = b->x1 + (b->x2 - b->x1) / 2;
+					y = b->y1 + (b->y2 - b->y1) / 2;
+				} else {
+					x = 319;
+					y = 389;
+				}
+
+			} else {
+				x = _vm->database()->getMidOverlapX(scp->lastLocation, scp->lastBox, nextBox);
+				y = _vm->database()->getMidOverlapY(scp->lastLocation, scp->lastBox, nextBox);
+			}
+		}
+	}
+
+	xMove = abs(x - scp->screenX);
+	yMove = abs(y - scp->screenY) * 2;
+
+	if (xMove + yMove == 0) {
+		// TODO: zero the calculated value (64h and 68h)
+	} else {
+		int thing;
+		assert(scp->start5 != 0);
+
+		if (scp->relativeSpeed != 1024) {
+			// TODO
+		}
+
+		thing = scp->relativeSpeed / (xMove + yMove) * scp->start5;
+
+	}
 }
 
 } // End of namespace Kom

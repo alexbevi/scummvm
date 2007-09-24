@@ -35,7 +35,10 @@
 namespace Kom {
 
 struct RoomObject {
-	int actorId;
+	uint16 objectId;
+	int16 actorId;
+	int16 z2;
+	int16 priority;
 };
 
 struct RoomDoor {
@@ -99,7 +102,7 @@ private:
 	void doActionDawn();
 
 	void setScopeX(uint16 charId, int16 scope);
-	void moveChar(uint16 charId, bool something);
+	void moveChar(uint16 charId, int something);
 };
 
 } // End of namespace Kom
