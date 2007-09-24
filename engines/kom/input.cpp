@@ -45,6 +45,17 @@ Input::~Input() {
 
 }
 
+void Input::loopInput() {
+	// TODO: if flic not loaded
+	handleMouse();
+}
+
+void Input::handleMouse() {
+	if (1) {// FIXME - check "invisible"?
+	} else {
+	}
+}
+
 // TODO: hack
 void Input::checkKeys() {
 		Common::Event event;

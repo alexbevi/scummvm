@@ -38,6 +38,8 @@ public:
 	Input(KomEngine *vm, OSystem *system);
 	~Input();
 
+	void loopInput();
+
 	void checkKeys();
 	bool debugMode() const { return _debugMode; }
 	void resetDebugMode() { _debugMode = false; }
@@ -52,6 +54,8 @@ private:
 	int _inKey;
 	bool _debugMode;
 	uint16 _mouseX, _mouseY;
+
+	void handleMouse();
 };
 
 } // End of namespace Kom

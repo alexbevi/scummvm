@@ -153,8 +153,8 @@ void KomEngine::gameLoop() {
 
 
 	if (_gameLoopState == GAMELOOP_RUNNING) {
-		// if _sleepTimer == 0
-		//     loopInput()
+		if (_game->player()->sleepTimer == 0)
+			_input->loopInput();
 
 		_game->processTime();
 
