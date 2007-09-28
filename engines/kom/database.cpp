@@ -779,6 +779,33 @@ int8 Database::whatBox(int locId, int x, int y) {
 	return -1;
 }
 
+int8 Database::whatBoxLinked(int locId, int8 boxId, int x, int y) {
+	Box *box = &(_locRoutes[locId].boxes[boxId]);
+
+	if (box->attrib & 14 == 0 &&
+		x >= box->x1 && x <= box->x2 &&
+		y >= box->y1 && y <= box->y2) {
+
+		return boxId;
+	}
+
+	// search joined boxes
+	for (int i = 0; i < 6; ++i) {
+		if (box->joins[i] >= 0) {
+			Box *link = &(_locRoutes[locId].boxes[box->joins[i]]);
+
+			if (link->attrib & 14 == 0 &&
+				x >= link->x1 && x <= link->x2 &&
+				y >= link->y1 && y <= link->y2) {
+
+				return link->joins[i];
+			}
+		}
+	}
+
+	return -1;
+}
+
 int16 Database::getMidOverlapX(int loc, int box1, int box2) {
 	int16 x1Max, x2Min;
 
