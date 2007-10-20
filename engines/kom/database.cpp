@@ -711,11 +711,14 @@ void Database::initScopes() {
 	} while (line[0] == '\0');
 
 	while (!f.eof()) {
+		CharScope *charScope;
+
 		sscanf(line, "%s", keyword);
 
 		if (strcmp(keyword, "ACTOR") == 0) {
 			sscanf(line, "%*s %hu", &tmp1);
 			actorIndex = tmp1;
+			charScope = _charScopes + actorIndex;
 
 		} else if (strcmp(keyword, "SCOPE") == 0) {
 			sscanf(line, "%*s %hu", &tmp1);
@@ -724,31 +727,34 @@ void Database::initScopes() {
 			sscanf(line, "%*s %*u %hu %hu %hu",
 				&(tmp1), &(tmp2), &(tmp3));
 
-			_charScopes[actorIndex].scopes[scopeIndex].minFrame = tmp1;
-			_charScopes[actorIndex].scopes[scopeIndex].maxFrame = tmp2;
-			_charScopes[actorIndex].scopes[scopeIndex].startFrame = tmp3;
+			charScope->scopes[scopeIndex].minFrame = tmp1;
+			charScope->scopes[scopeIndex].maxFrame = tmp2;
+			charScope->scopes[scopeIndex].startFrame = tmp3;
 
 		} else if (strcmp(keyword, "SPEED") == 0) {
 			sscanf(line, "%*s %hu %hu",
-				&(_charScopes[actorIndex].walkSpeed),
-				&(_charScopes[actorIndex].animSpeed));
+				&(charScope->walkSpeed),
+				&(charScope->animSpeed));
 
 		} else if (strcmp(keyword, "TIMEOUT") == 0) {
 			sscanf(line, "%*s %hu",
-				&(_charScopes[actorIndex].timeout));
-			_charScopes[actorIndex].timeout *= 24;
+				&(charScope->timeout));
+			charScope->timeout *= 24;
 
 		} else if (strcmp(keyword, "START") == 0) {
 			sscanf(line, "%*s %d %d %d %d %d",
-				&(_charScopes[actorIndex].lastLocation),
-				&(_charScopes[actorIndex].lastBox),
-				&(_charScopes[actorIndex].start3),
-				&(_charScopes[actorIndex].start4),
-				&(_charScopes[actorIndex].start5));
+				&(charScope->lastLocation),
+				&(charScope->lastBox),
+				&(charScope->start3),
+				&(charScope->start4),
+				&(charScope->start5));
 
-			_charScopes[actorIndex].gotoLoc = _charScopes[actorIndex].lastLocation;
-			_charScopes[actorIndex].screenX = _charScopes[actorIndex].gotoX = _charScopes[actorIndex].start3 / 256;
-			_charScopes[actorIndex].screenY = _charScopes[actorIndex].gotoY = _charScopes[actorIndex].start4 / 256;
+			charScope->gotoLoc = charScope->lastLocation;
+			charScope->screenX = charScope->gotoX = charScope->start3 / 256;
+			charScope->screenY = charScope->gotoY = charScope->start4 / 256;
+			charScope->start3Prev = charScope->start3PrevPrev = charScope->start3;
+			charScope->start4Prev = charScope->start4PrevPrev = charScope->start4;
+			charScope->start5Prev = charScope->start5PrevPrev = charScope->start5;
 		}
 
 		do {
@@ -846,6 +852,18 @@ int16 Database::getMidOverlapY(int loc, int box1, int box2) {
 		return y1Max;
 	else
 		return y1Max + 1;
+}
+
+int16 Database::getZValue(int loc, int box, int32 y) {
+	Box *b;
+
+	if (loc == 0 && box == 0) return 1;
+
+	b = getBox(loc, box);
+
+	if (b->z2 == 0) return 1;
+
+	return b->z1 - ((y - b->x1 * 256) / (b->y2 - b->y1) * (b->z1 - b->z2)) / 256;
 }
 
 uint16 Database::getExitBox(int currLoc, int nextLoc) {

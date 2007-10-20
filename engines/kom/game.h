@@ -102,7 +102,7 @@ private:
 	void doActionDawn();
 
 	void setScopeX(uint16 charId, int16 scope);
-	void moveChar(uint16 charId, int something);
+	void moveChar(uint16 charId, bool param);
 };
 
 } // End of namespace Kom

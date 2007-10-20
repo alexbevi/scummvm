@@ -177,8 +177,9 @@ struct LocRoute {
 };
 
 struct CharScope {
-	CharScope() : actorId(-1), relativeSpeed(1024), scopeInUse(-1), scopeWanted(8),
-		priority(0), fightPartner(-1), spriteSceneState(0), spriteTimer(0) {}
+	CharScope() : actorId(-1), relativeSpeed(1024), direction(0), lastDirection(2),
+		scopeInUse(-1), scopeWanted(8), priority(0), fightPartner(-1),
+		spriteSceneState(0), spriteTimer(0), somethingX(0), somethingY(0) {}
 	Scope scopes[18];
 	int16 actorId;
 	int16 screenX;
@@ -189,13 +190,24 @@ struct CharScope {
 	uint16 walkSpeed;
 	uint16 relativeSpeed;
 	uint16 animSpeed;
+	uint16 direction;
+	uint16 lastDirection;
+	bool stopped;
 	uint16 timeout;
 	int16 priority;
 	int32 lastLocation;
 	int32 lastBox;
 	int32 start3;
+	int32 start3Prev;
+	int32 start3PrevPrev;
 	int32 start4;
+	int32 start4Prev;
+	int32 start4PrevPrev;
+	int32 somethingX;
+	int32 somethingY;
 	int32 start5;
+	int32 start5Prev;
+	int32 start5PrevPrev;
 	int16 fightPartner;
 	uint8 spriteSceneState;
 	uint16 spriteTimer;
@@ -230,6 +242,7 @@ public:
 	int16 getMidOverlapX(int loc, int box1, int box2);
 	int16 getMidOverlapY(int loc, int box1, int box2);
 	int16 getPriority(int loc, int box) { return _locRoutes[loc].boxes[box].priority; }
+	int16 getZValue(int loc, int box, int32 y);
 	uint16 getExitBox(int currLoc, int nextLoc);
 	bool isInLine(int loc, int box, int x, int y);
 

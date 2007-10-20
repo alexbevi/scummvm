@@ -605,7 +605,7 @@ void Game::loopMove() {
 						}
 
 						if (scp->spriteTimer == 0 && scp->fightPartner < 0) {
-							moveChar(i, 1);
+							moveChar(i, true);
 						}
 						// moveCharOther()
 
@@ -706,7 +706,7 @@ void Game::setScopeX(uint16 charId, int16 scope) {
 		_vm->database()->getCharScope(charId)->lastBox));
 }
 
-void Game::moveChar(uint16 charId, int something) {
+void Game::moveChar(uint16 charId, bool param) {
 	CharScope *scp = _vm->database()->getCharScope(charId);
 	int16 nextLoc, targetBox, targetBoxX, targetBoxY, nextBox;
 
@@ -778,21 +778,182 @@ void Game::moveChar(uint16 charId, int something) {
 		}
 	}
 
-	xMove = abs(x - scp->screenX);
-	yMove = abs(y - scp->screenY) * 2;
+	xMove = (x - scp->screenX);
+	yMove = (y - scp->screenY) * 2;
 
-	if (xMove + yMove == 0) {
-		// TODO: zero the calculated value (64h and 68h)
+	if (abs(xMove) + abs(yMove) == 0) {
+		scp->somethingX = scp->somethingY = 0;
 	} else {
 		int thing;
 		assert(scp->start5 != 0);
 
-		if (scp->relativeSpeed != 1024) {
-			// TODO
+		if (scp->relativeSpeed == 1024)
+			thing = scp->walkSpeed / ((xMove + yMove) * scp->start5);
+		else
+			thing = scp->walkSpeed * scp->relativeSpeed / ((xMove + yMove) * scp->start5);
+
+		// Now we should set 64h and 68h
+		scp->somethingX = xMove * thing / 256;
+		scp->somethingY = yMove * thing / 256;
+
+		if (abs(xMove) / 256 < abs(scp->somethingX)) {
+			scp->start3 = x * 256;
+			scp->somethingX = 0;
 		}
 
-		thing = scp->relativeSpeed / (xMove + yMove) * scp->start5;
+		if (abs(yMove)/ 256 < abs(scp->somethingY)) {
+			scp->start4 = y * 256;
+			scp->somethingY = 0;
+		}
+	}
 
+	int futureBox, futureBox2; // TODO: I know, but nextBox is already used. something is screwy
+
+	futureBox = scp->lastBox;
+	scp->somethingY /= 2;
+
+	if (!param) {
+		Box *box;
+
+		futureBox2 = _vm->database()->whatBox(scp->lastLocation,
+				(scp->start3 + scp->somethingX) / 256,
+				(scp->start4 + scp->somethingY) / 256);
+
+		// TODO : check if box doesn't exist?
+		box = _vm->database()->getBox(scp->lastLocation, futureBox2);
+
+		if (box->attrib == 8)
+			futureBox2 = -1;
+
+	} else if (param) {
+		futureBox2 = _vm->database()->whatBoxLinked(scp->lastLocation, scp->lastBox,
+				(scp->start3 + scp->somethingX) / 256,
+				(scp->start4 + scp->somethingY) / 256);
+	}
+
+	if (futureBox2 == -1) {
+		Box *box;
+
+		if (!param && nextBox == targetBox) {
+			scp->lastBox = targetBox;
+			futureBox = targetBox;
+		}
+
+		box = _vm->database()->getBox(scp->lastLocation, scp->lastBox);
+
+		if (scp->somethingX < box->x1 * 256) {
+			if (scp->somethingY < box->y1 * 256) {
+				scp->somethingX = box->x1 * 256 - scp->start3;
+				scp->somethingY = box->y1 * 256 - scp->start4;
+			} else {
+				if (scp->somethingY > box->y2 * 256) {
+					scp->somethingY = box->y2 * 256 - scp->start4;
+				}
+				scp->somethingX = box->x1 * 256 - scp->start3;
+			}
+		} else if (scp->somethingX > box->x2 * 256) {
+			if (scp->somethingY < box->y1 * 256) {
+				scp->somethingX = box->x2 * 256 - scp->start3;
+				scp->somethingY = box->y1 * 256 - scp->start4;
+			} else {
+				if (scp->somethingY > box->y2 * 256) {
+					scp->somethingY = box->y2 * 256 - scp->start4;
+				}
+				scp->somethingX = box->x2 * 256 - scp->start3;
+			}
+		} else {
+			scp->somethingY = box->y1 * 256 - scp->start4;
+		}
+	} else {
+		futureBox = futureBox2;
+	}
+
+	if (nextBox == -1 && scp->somethingX == 0 && scp->somethingY == 0) {
+		scp->direction = 0;
+		scp->stopped = true;
+	} else {
+		scp->stopped = false;
+	}
+
+	scp->start3 += scp->somethingX;
+	scp->start4 += scp->somethingY;
+	scp->screenX = scp->start3 / 256;
+	scp->screenY = scp->start4 / 256;
+	scp->lastBox = futureBox;
+
+	if (scp->lastLocation != 0 || scp->lastBox != 0) {
+		scp->priority = _vm->database()->getBox(scp->lastLocation, scp->lastBox)->priority;
+	} else {
+		scp->priority = -1;
+	}
+
+	scp->start5 = _vm->database()->getZValue(scp->lastLocation, scp->lastBox, scp->start4);
+
+	if (scp->lastLocation == _vm->database()->getCharScope(0)->lastLocation) {
+		int32 tmp = (scp->start3 - scp->start3Prev) * scp->start5 / 256;
+		int32 tmp2 = (scp->start5 - scp->start5PrevPrev) * 256;
+
+		if (scp->direction != 0 && (abs(tmp) - abs(tmp2) & (int32)-128 == 0))
+			scp->direction = scp->lastDirection;
+		else if (abs(tmp) >= abs(tmp2)) {
+			if (tmp < -4)
+				scp->direction = 1;
+			else if (tmp > 4)
+				scp->direction = 2;
+			else
+				scp->direction = 0;
+		} else {
+			if (tmp2 < -4)
+				scp->direction = 4;
+			else if (tmp2 > 4)
+				scp->direction = 3;
+			else
+				scp->direction = 0;
+		}
+	}
+
+	switch (scp->direction) {
+	case 0:
+		switch (scp->lastDirection - 1) {
+		case 0:
+			scp->scopeWanted = 9;
+			break;
+		case 1:
+			scp->scopeWanted = 7;
+			break;
+		case 2:
+			scp->scopeWanted = 4;
+			break;
+		case 3:
+		default:
+			scp->scopeWanted = 8;
+			break;
+		}
+		break;
+	case 1:
+		if (scp->lastDirection == 1)
+			scp->scopeWanted = 1;
+		else
+			scp->lastDirection = 1;
+		break;
+	case 2:
+		if (scp->lastDirection == 2)
+			scp->scopeWanted = 0;
+		else
+			scp->lastDirection = 2;
+		break;
+	case 3:
+		if (scp->lastDirection == 3)
+			scp->scopeWanted = 2;
+		else
+			scp->lastDirection = 3;
+		break;
+	case 4:
+		if (scp->lastDirection == 4)
+			scp->scopeWanted = 3;
+		else
+			scp->lastDirection = 4;
+		break;
 	}
 }
 
