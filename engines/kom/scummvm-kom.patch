@@ -34,12 +34,15 @@ Index: configure
  add_to_config_mk_if_no $_build_kyra         'DISABLE_KYRA = 1'
  add_to_config_mk_if_no $_build_lure         'DISABLE_LURE = 1'
  add_to_config_mk_if_no $_build_parallaction 'DISABLE_PARALLACTION = 1'
-@@ -1385,6 +1389,9 @@
+@@ -1385,6 +1389,12 @@
  else
  	echo "disable"
  fi
++echo_n "    Kingdom O' Magic..."
 +if test "$_build_kom" = yes ; then
-+	echo "    Kingdom O' Magic"
++	echo "enable"
++else
++	echo "disable"
 +fi
  echo_n "    Legend of Kyrandia engine..."
  if test "$_build_kyra" = yes ; then
