@@ -1,55 +1,55 @@
 Index: configure
 ===================================================================
---- configure	(revision 29089)
+--- configure	(revision 29322)
 +++ configure	(working copy)
-@@ -55,6 +55,7 @@
- _build_cruise=no
+@@ -56,6 +56,7 @@
  _build_drascula=no
  _build_gob=yes
+ _build_igor=no
 +_build_kom=no
  _build_kyra=yes
  _build_lure=yes
  _build_parallaction=yes
-@@ -359,6 +360,7 @@
-   --enable-cruise          build the Cruise for a Corpse engine
+@@ -352,6 +353,7 @@
    --enable-drascula        build the Drascula: The Vampire Strikes Back engine
    --disable-gob            don't build the Gobli*ns engine
+   --enable-igor            build the Igor: Objective Uikokahonia engine
 +  --enable-kom             build the Kingdom O' Magic engine
    --disable-kyra           don't build the Legend of Kyrandia engine
    --disable-lure           don't build the Lure of the Temptress engine
    --disable-parallaction   don't build the Parallaction engine
-@@ -432,6 +434,7 @@
-       --enable-cruise)          _build_cruise=yes ;;
+@@ -426,6 +428,7 @@
        --enable-drascula)        _build_drascula=yes ;;
        --disable-gob)            _build_gob=no ;;
+       --enable-igor)            _build_igor=yes ;;
 +      --enable-kom)             _build_kom=yes ;;
        --disable-kyra)           _build_kyra=no ;;
        --disable-lure)           _build_lure=no ;;
        --disable-parallaction)   _build_parallaction=no ;;
-@@ -725,6 +728,7 @@
- add_to_config_mk_if_no $_build_cruise       'DISABLE_CRUISE = 1'
+@@ -724,6 +727,7 @@
  add_to_config_mk_if_no $_build_drascula     'DISABLE_DRASCULA = 1'
  add_to_config_mk_if_no $_build_gob          'DISABLE_GOB = 1'
+ add_to_config_mk_if_no $_build_igor         'DISABLE_IGOR = 1'
 +add_to_config_mk_if_no $_build_kom          'DISABLE_KOM = 1'
  add_to_config_mk_if_no $_build_kyra         'DISABLE_KYRA = 1'
  add_to_config_mk_if_no $_build_lure         'DISABLE_LURE = 1'
  add_to_config_mk_if_no $_build_parallaction 'DISABLE_PARALLACTION = 1'
-@@ -1358,6 +1362,9 @@
- if test "$_build_gob" = yes ; then
- 	echo "    Gobli*ns"
+@@ -1385,6 +1389,9 @@
+ else
+ 	echo "disable"
  fi
 +if test "$_build_kom" = yes ; then
 +	echo "    Kingdom O' Magic"
 +fi
+ echo_n "    Legend of Kyrandia engine..."
  if test "$_build_kyra" = yes ; then
- 	echo "    Legend of Kyrandia"
- fi
+ 	echo "enable"
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 29089)
+--- engines/engines.mk	(revision 29322)
 +++ engines/engines.mk	(working copy)
-@@ -49,6 +49,12 @@
- MODULES += engines/gob
+@@ -55,6 +55,12 @@
+ MODULES += engines/igor
  endif
  
 +ifdef DISABLE_KOM
@@ -63,11 +63,11 @@ Index: engines/engines.mk
  else
 Index: base/plugins.cpp
 ===================================================================
---- base/plugins.cpp	(revision 29089)
+--- base/plugins.cpp	(revision 29322)
 +++ base/plugins.cpp	(working copy)
-@@ -107,6 +107,9 @@
- 		#ifndef DISABLE_GOB
- 		LINK_PLUGIN(GOB)
+@@ -110,6 +110,9 @@
+ 		#ifndef DISABLE_IGOR
+ 		LINK_PLUGIN(IGOR)
  		#endif
 +		#ifndef DISABLE_KOM
 +		LINK_PLUGIN(KOM)
