@@ -1,55 +1,27 @@
 Index: configure
 ===================================================================
---- configure	(revision 29322)
+--- configure	(revision 29343)
 +++ configure	(working copy)
-@@ -56,6 +56,7 @@
- _build_drascula=no
- _build_gob=yes
- _build_igor=no
-+_build_kom=no
- _build_kyra=yes
- _build_lure=yes
- _build_parallaction=yes
-@@ -352,6 +353,7 @@
-   --enable-drascula        build the Drascula: The Vampire Strikes Back engine
-   --disable-gob            don't build the Gobli*ns engine
-   --enable-igor            build the Igor: Objective Uikokahonia engine
-+  --enable-kom             build the Kingdom O' Magic engine
-   --disable-kyra           don't build the Legend of Kyrandia engine
-   --disable-lure           don't build the Lure of the Temptress engine
-   --disable-parallaction   don't build the Parallaction engine
-@@ -426,6 +428,7 @@
-       --enable-drascula)        _build_drascula=yes ;;
-       --disable-gob)            _build_gob=no ;;
-       --enable-igor)            _build_igor=yes ;;
-+      --enable-kom)             _build_kom=yes ;;
-       --disable-kyra)           _build_kyra=no ;;
-       --disable-lure)           _build_lure=no ;;
-       --disable-parallaction)   _build_parallaction=no ;;
-@@ -724,6 +727,7 @@
- add_to_config_mk_if_no $_build_drascula     'DISABLE_DRASCULA = 1'
- add_to_config_mk_if_no $_build_gob          'DISABLE_GOB = 1'
- add_to_config_mk_if_no $_build_igor         'DISABLE_IGOR = 1'
-+add_to_config_mk_if_no $_build_kom          'DISABLE_KOM = 1'
- add_to_config_mk_if_no $_build_kyra         'DISABLE_KYRA = 1'
- add_to_config_mk_if_no $_build_lure         'DISABLE_LURE = 1'
- add_to_config_mk_if_no $_build_parallaction 'DISABLE_PARALLACTION = 1'
-@@ -1385,6 +1389,12 @@
- else
- 	echo "disable"
- fi
-+echo_n "    Kingdom O' Magic..."
-+if test "$_build_kom" = yes ; then
-+	echo "enable"
-+else
-+	echo "disable"
-+fi
- echo_n "    Legend of Kyrandia engine..."
- if test "$_build_kyra" = yes ; then
- 	echo "enable"
+@@ -60,6 +60,7 @@
+ drascula
+ gob
+ igor
++kom
+ kyra
+ lure
+ parallaction
+@@ -93,6 +94,8 @@
+ _engine_gob_build=yes
+ _engine_igor_name="Igor: Objective Uikokahonia"
+ _engine_igor_build=no
++_engine_kom_name="Kingdom O' Magic"
++_engine_kom_build=no
+ _engine_kyra_name="Legend of Kyrandia"
+ _engine_kyra_build=yes
+ _engine_lure_name="Lure of the Temptress"
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 29322)
+--- engines/engines.mk	(revision 29343)
 +++ engines/engines.mk	(working copy)
 @@ -55,6 +55,12 @@
  MODULES += engines/igor
@@ -66,7 +38,7 @@ Index: engines/engines.mk
  else
 Index: base/plugins.cpp
 ===================================================================
---- base/plugins.cpp	(revision 29322)
+--- base/plugins.cpp	(revision 29343)
 +++ base/plugins.cpp	(working copy)
 @@ -110,6 +110,9 @@
  		#ifndef DISABLE_IGOR
