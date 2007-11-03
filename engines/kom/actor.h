@@ -71,7 +71,7 @@ public:
 	void enable(bool state) { _isActive = state; }
 	void setPos(int xPos, int yPos) { _xPos = xPos; _yPos = yPos; }
 	void setRatio(uint16 xRatio, uint16 yRatio) { _xRatio = xRatio; _yRatio = yRatio; }
-	void setMaskDepth(int depth) { _maskDepth = depth; }
+	void setMaskDepth(int maskDepth, int depth) { _maskDepth = depth; _depth = depth; }
 	void setEffect(uint8 effect) { _effect = effect; }
 	int getXPos() { return _xPos; }
 	int getYPos() { return _yPos; }

@@ -755,6 +755,16 @@ void Database::initScopes() {
 			charScope->start3Prev = charScope->start3PrevPrev = charScope->start3;
 			charScope->start4Prev = charScope->start4PrevPrev = charScope->start4;
 			charScope->start5Prev = charScope->start5PrevPrev = charScope->start5;
+
+			if (charScope->walkSpeed == 0) {
+				charScope->stopped = true;
+				charScope->timeout = 50;
+				charScope->offset78 = 0x80000;
+			} else {
+				charScope->stopped = false;
+				charScope->timeout = 0;
+				charScope->offset78 = 0xc0000;
+			}
 		}
 
 		do {

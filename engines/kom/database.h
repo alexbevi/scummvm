@@ -177,13 +177,28 @@ struct LocRoute {
 };
 
 struct CharScope {
-	CharScope() : actorId(-1), relativeSpeed(1024), direction(0), lastDirection(2),
+	CharScope() : actorId(-1), screenH(0), screenDH(0), offset0c(0), offset10(0),
+		offset14(262144), offset1c(0), offset20(262144), offset28(0), ratioX(262144),
+		ratioY(262144), relativeSpeed(1024), direction(0), lastDirection(2),
 		scopeInUse(-1), scopeWanted(8), priority(0), fightPartner(-1),
 		spriteSceneState(0), spriteTimer(0), somethingX(0), somethingY(0) {}
 	Scope scopes[18];
 	int16 actorId;
 	int16 screenX;
 	int16 screenY;
+	int16 screenH;
+	int16 screenDH;
+	int32 offset0c;
+	int32 offset10;
+	int32 offset14;
+	int32 offset1c;
+	int32 offset20;
+	int32 offset28;
+	int32 ratioX;
+	int32 ratioY;
+	int16 priority;
+	int32 lastLocation;
+	int32 lastBox;
 	int16 gotoX;
 	int16 gotoY;
 	int16 gotoLoc;
@@ -194,9 +209,6 @@ struct CharScope {
 	uint16 lastDirection;
 	bool stopped;
 	uint16 timeout;
-	int16 priority;
-	int32 lastLocation;
-	int32 lastBox;
 	int32 start3;
 	int32 start3Prev;
 	int32 start3PrevPrev;
@@ -208,6 +220,7 @@ struct CharScope {
 	int32 start5;
 	int32 start5Prev;
 	int32 start5PrevPrev;
+	uint32 offset78;
 	int16 fightPartner;
 	uint8 spriteSceneState;
 	uint16 spriteTimer;

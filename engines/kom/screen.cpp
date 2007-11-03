@@ -21,6 +21,8 @@
  */
 
 #include <memory.h>
+#include <stdlib.h>
+
 #include "common/system.h"
 #include "common/file.h"
 #include "common/fs.h"
@@ -159,8 +161,74 @@ void Screen::gfxUpdate() {
 	_lastFrameTime = _system->getMillis();
 }
 
+void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart,
+                            uint16 xEnd, uint16 yEnd, int maskDepth) {
+
+	uint16 startCol = (xStart < 0 ? -xStart : 0);
+	uint16 startLine = (yStart < 0 ? -yStart : 0);
+	uint16 endCol = (xStart + width > SCREEN_W ? SCREEN_W - xStart : width);
+	uint16 endLine = (yStart + height - 1 > SCREEN_H ? SCREEN_H - yStart - 1: height - 2);
+
+	int16 pixelWidth = xEnd - xStart, fullPixelWidth = pixelWidth;
+	int16 pixelHeight = yEnd - yStart, fullPixelHeight = pixelHeight;
+	int32 help1, help2, help3;
+	const int8 *dataPtr = data;
+	div_t d;
+
+	if (xStart < 0) {
+		// frame is entirely off-screen
+		if ((pixelWidth += xStart) < 0)
+			return;
+
+		d = div(-xStart * width, xEnd - xStart);
+		help1 = d.quot;
+		help2 = d.rem;
+
+		xStart = 0;
+	}
+
+	// frame is entirely off-screen
+	if (xStart >= SCREEN_W) return;
+
+	// check if frame spills over the edge
+	if (pixelWidth + xStart >= SCREEN_W)
+		if ((pixelWidth -= pixelWidth + xStart - SCREEN_W) <= 0)
+			return;
+
+	if (yStart < 0) {
+		// frame is entirely off-screen
+		if ((pixelHeight += yStart) < 0)
+			return;
+
+		d = div(-yStart * height, yEnd - yStart);
+		dataPtr += d.quot * 2;
+		help3 = d.rem;
+
+		yStart = 0;
+	}
+
+	// frame is entirely off-screen
+	if (yStart >= SCREEN_H) return;
+
+	// check if frame spills over the edge
+	if (pixelHeight + yStart >= SCREEN_H)
+		if ((pixelHeight -= pixelHeight + yStart - SCREEN_H + 1) <= 0)
+			return;
+
+	// TODO
+
+	for (int line = startLine; line < endLine; ++line) {
+		uint16 lineOffset = READ_LE_UINT16(data + line * 2);
+
+		drawActorFrameLine(_screenBuf, SCREEN_W, data + lineOffset, (xStart < 0 ? 0 : xStart),
+		                   (yStart < 0 ? 0 : yStart) + line - startLine, xStart, xEnd, maskDepth);
+	}
+	_dirtyRects->push_back(Rect(xStart, yStart, xEnd, yEnd));
+}
+
+/*
 void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos,
-                            int16 xOffset, int16 yOffset, int maskDepth) {
+                            int16 xOffset, int16 yOffset, int maskDepth, uint16 xRatio, uint16 yRatio) {
 
 	// Check which lines and columns to draw
 	int16 realX = xPos + xOffset;
@@ -179,6 +247,7 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, uint1
 	}
 	_dirtyRects->push_back(Rect(realX + startCol, realY + startLine, realX + endCol, realY + endLine));
 }
+*/
 
 void Screen::drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16 xOffset, int16 yOffset) {
 

@@ -107,7 +107,7 @@ void Game::enterLocation(uint16 locId) {
 			_roomObjects.push_back(roomObj);
 
 			// TODO - move this to processGraphics?
-			act->setMaskDepth(roomObj.priority);
+			act->setMaskDepth(roomObj.priority, 1); // TODO - check dummy depth value
 
 			// TODO:
 			// * store actor in screenObjects
@@ -564,18 +564,22 @@ bool Game::doStat(const Command *cmd) {
 void Game::loopMove() {
 	// TODO - handle player char
 
-	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
+	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
 		CharScope *scp = _vm->database()->getCharScope(i);
 
 		if (!(_vm->database()->getChar(i)->isAlive)) {
-			// set some stuff
-			// moveCharOther()
+			// TODO - set some stuff
+			scp->screenH = 0;
+			scp->offset10 = 0;
+			scp->offset14 = scp->offset20 = 262144;
+			scp->scopeWanted = 100;
+			moveCharOther(i);
 
 		} else {
 			if (scp->walkSpeed == 0) {
 				scp->scopeWanted = 17;
 				scp->priority = _vm->database()->getPriority(scp->lastLocation, scp->lastBox);
-				// moveCharOther()
+				moveCharOther(i);
 
 			} else {
 				if (scp->spriteSceneState == 0) {
@@ -607,7 +611,7 @@ void Game::loopMove() {
 						if (scp->spriteTimer == 0 && scp->fightPartner < 0) {
 							moveChar(i, true);
 						}
-						// moveCharOther()
+						moveCharOther(i);
 
 						// if goto_box != last_box:
 							// goto_box = last_box
@@ -677,33 +681,33 @@ void Game::setScope(uint16 charId, int16 scope) {
 void Game::setScopeX(uint16 charId, int16 scope) {
 	char filename[50];
 	Actor *act;
+	int scale;
 
 	Character *character = _vm->database()->getChar(charId);
+	CharScope *scp = _vm->database()->getCharScope(charId);
 	String charName(character->name);
 	charName.toLowercase();
 	sprintf(filename, "%s%d", charName.c_str(), character->xtend);
 
 	_vm->panel()->showLoading(true);
-	_vm->database()->getCharScope(charId)->actorId =
+	scp->actorId =
 		_vm->actorMan()->load(_vm->dataDir()->getChild("kom").getChild("actors"), filename);
 	_vm->panel()->showLoading(false);
 
 
-	act = _vm->actorMan()->get(_vm->database()->getCharScope(charId)->actorId);
+	act = _vm->actorMan()->get(scp->actorId);
 
 	// TODO - lots
 	act->defineScope(0, 0, act->getFramesNum() - 1, 0);
-	act->setScope(0, _vm->database()->getCharScope(charId)->animSpeed);
+	act->setScope(0, scp->animSpeed);
 
 	// TODO - this should be in processGraphics
-	act->setPos(_vm->database()->getCharScope(charId)->start3 >> 9,
-	            _vm->database()->getCharScope(charId)->start4 >> 9);
-	act->setRatio(1024, 1024);
+	scale = (scp->start5 * 88) / 60;
+	act->setPos(scp->screenX / 2, (scp->start4 + (scp->screenH + scp->offset78) / scale) / 256 / 2);
+	act->setRatio(scp->ratioX / scale, scp->ratioY / scale);
 
 	// TODO - this should be in loopMove
-	act->setMaskDepth(_vm->database()->getPriority(
-		_vm->database()->getCharScope(charId)->lastLocation,
-		_vm->database()->getCharScope(charId)->lastBox));
+	act->setMaskDepth(_vm->database()->getPriority( scp->lastLocation, scp->lastBox), scp->start5);
 }
 
 void Game::moveChar(uint16 charId, bool param) {
@@ -954,6 +958,86 @@ void Game::moveChar(uint16 charId, bool param) {
 		else
 			scp->lastDirection = 4;
 		break;
+	}
+}
+
+void Game::moveCharOther(uint16 charId) {
+	CharScope *scp = _vm->database()->getCharScope(charId);
+
+	if (scp->offset10 != 0 || scp->screenH != 0) {
+		if (scp->screenH > scp->offset10)
+			scp->offset0c -= 65536;
+		else
+			scp->offset0c += 65536;
+	}
+
+	scp->screenH += scp->offset0c;
+
+	if (scp->screenH > 0) {
+		if (scp->offset0c <= 262144) {
+			scp->screenH = scp->offset0c = 0;
+		} else {
+			scp->screenH = 1;
+			scp->offset0c /= -4;
+		}
+	}
+
+	// X ratio
+	if (scp->ratioX < scp->offset14) {
+		if (scp->offset1c < 0)
+			scp->offset1c += 131072;
+		else
+			scp->offset1c += 65536;
+	} else if (scp->ratioX > scp->offset14) {
+		if (scp->offset1c > 0)
+			scp->offset1c -= 131072;
+		else
+			scp->offset1c -= 65536;
+	}
+
+	if (scp->ratioX != scp->offset14) {
+		int32 foo = abs(scp->ratioX - scp->offset14);
+
+		if (foo <= 65536 && abs(scp->offset1c) <= 131072) {
+			scp->offset1c = 0;
+			scp->ratioX = scp->offset14;
+		} else {
+			scp->ratioX += scp->offset1c;
+		}
+
+		if (scp->ratioX < 1280) {
+			scp->offset1c /= -2;
+			scp->ratioX = 1280;
+		}
+	}
+
+	// Y ratio
+	if (scp->ratioY < scp->offset20) {
+		if (scp->offset28 < 0)
+			scp->offset28 += 131072;
+		else
+			scp->offset28 += 65536;
+	} else if (scp->ratioY > scp->offset20) {
+		if (scp->offset28 > 0)
+			scp->offset28 -= 131072;
+		else
+			scp->offset28 -= 65536;
+	}
+
+	if (scp->ratioY != scp->offset20) {
+		int32 foo = abs(scp->ratioY - scp->offset20);
+
+		if (foo <= 65536 && abs(scp->offset28) <= 131072) {
+			scp->offset28 = 0;
+			scp->ratioY = scp->offset20;
+		} else {
+			scp->ratioY += scp->offset28;
+		}
+
+		if (scp->ratioY < 1280) {
+			scp->offset28 /= -2;
+			scp->ratioY = 1280;
+		}
 	}
 }
 

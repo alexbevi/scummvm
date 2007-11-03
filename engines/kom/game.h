@@ -103,6 +103,7 @@ private:
 
 	void setScopeX(uint16 charId, int16 scope);
 	void moveChar(uint16 charId, bool param);
+	void moveCharOther(uint16 charId);
 };
 
 } // End of namespace Kom
