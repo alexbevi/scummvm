@@ -1,27 +1,18 @@
 Index: configure
 ===================================================================
---- configure	(revision 29343)
+--- configure	(revision 29413)
 +++ configure	(working copy)
-@@ -60,6 +60,7 @@
- drascula
- gob
- igor
-+kom
- kyra
- lure
- parallaction
-@@ -93,6 +94,8 @@
- _engine_gob_build=yes
- _engine_igor_name="Igor: Objective Uikokahonia"
- _engine_igor_build=no
-+_engine_kom_name="Kingdom O' Magic"
-+_engine_kom_build=no
- _engine_kyra_name="Legend of Kyrandia"
- _engine_kyra_build=yes
- _engine_lure_name="Lure of the Temptress"
+@@ -69,6 +69,7 @@
+ add_engine cruise "Cinematique evo 2" no
+ add_engine drascula "Drascula: The Vampire Strikes Back" no
+ add_engine gob "Gobli*ns" yes
++add_engine kom "Kingdom O' Magic" no
+ add_engine igor "Igor: Objective Uikokahonia" no
+ add_engine kyra "Legend of Kyrandia" yes
+ add_engine lure "Lure of the Temptress" yes
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 29343)
+--- engines/engines.mk	(revision 29413)
 +++ engines/engines.mk	(working copy)
 @@ -55,6 +55,12 @@
  MODULES += engines/igor
@@ -38,7 +29,7 @@ Index: engines/engines.mk
  else
 Index: base/plugins.cpp
 ===================================================================
---- base/plugins.cpp	(revision 29343)
+--- base/plugins.cpp	(revision 29413)
 +++ base/plugins.cpp	(working copy)
 @@ -110,6 +110,9 @@
  		#ifndef DISABLE_IGOR
