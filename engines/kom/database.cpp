@@ -776,8 +776,13 @@ void Database::initScopes() {
 }
 
 int8 Database::box2box(int loc, int fromBox, int toBox) {
-	byte *ptr = _map + READ_LE_UINT32(_map + loc * 4);
-	return (int8)(_map[*ptr * toBox + fromBox]);
+	uint32 locOffset;
+
+	if (loc > 127 || fromBox > 127 || toBox > 127)
+		return -1;
+
+	locOffset = READ_LE_UINT32(_map + loc * 4);
+	return (int8)(_map[locOffset + *(int8*)(_map + locOffset) * toBox + fromBox + 1]);
 }
 
 int8 Database::whatBox(int locId, int x, int y) {
@@ -885,7 +890,6 @@ uint16 Database::getExitBox(int currLoc, int nextLoc) {
 }
 bool Database::isInLine(int loc, int box, int x, int y) {
 	Box *b = (&_locRoutes[loc].boxes[box]);
-	// FIXME: assert(b->enabled);
 
 	return (x > b->x1 && x < b->x2 || y > b->y1 && y < b->y2);
 }
