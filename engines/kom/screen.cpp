@@ -161,28 +161,30 @@ void Screen::gfxUpdate() {
 	_lastFrameTime = _system->getMillis();
 }
 
+static byte lineBuffer[SCREEN_W];
+
 void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart,
                             uint16 xEnd, uint16 yEnd, int maskDepth) {
 
-	uint16 startCol = (xStart < 0 ? -xStart : 0);
-	uint16 startLine = (yStart < 0 ? -yStart : 0);
-	uint16 endCol = (xStart + width > SCREEN_W ? SCREEN_W - xStart : width);
-	uint16 endLine = (yStart + height - 1 > SCREEN_H ? SCREEN_H - yStart - 1: height - 2);
+	uint16 startLine = 0;
+	uint16 startCol = 0;
 
-	int16 pixelWidth = xEnd - xStart, fullPixelWidth = pixelWidth;
-	int16 pixelHeight = yEnd - yStart, fullPixelHeight = pixelHeight;
-	int32 help1, help2, help3;
-	const int8 *dataPtr = data;
+	int16 visibleWidth = xEnd - xStart;
+	int16 scaledWidth = visibleWidth;
+	int16 visibleHeight = yEnd - yStart;
+	int16 scaledHeight = visibleHeight;
+	int32 colSkip = 0;
+	int32 rowSkip = 0;
 	div_t d;
 
 	if (xStart < 0) {
 		// frame is entirely off-screen
-		if ((pixelWidth += xStart) < 0)
+		if ((visibleWidth += xStart) < 0)
 			return;
 
-		d = div(-xStart * width, xEnd - xStart);
-		help1 = d.quot;
-		help2 = d.rem;
+		d = div(-xStart * width, scaledWidth);
+		colSkip = d.quot;
+		startCol = d.rem;
 
 		xStart = 0;
 	}
@@ -191,18 +193,18 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 	if (xStart >= SCREEN_W) return;
 
 	// check if frame spills over the edge
-	if (pixelWidth + xStart >= SCREEN_W)
-		if ((pixelWidth -= pixelWidth + xStart - SCREEN_W) <= 0)
+	if (visibleWidth + xStart >= SCREEN_W)
+		if ((visibleWidth -= visibleWidth + xStart - SCREEN_W) <= 0)
 			return;
 
 	if (yStart < 0) {
 		// frame is entirely off-screen
-		if ((pixelHeight += yStart) < 0)
+		if ((visibleHeight += yStart) < 0)
 			return;
 
-		d = div(-yStart * height, yEnd - yStart);
-		dataPtr += d.quot * 2;
-		help3 = d.rem;
+		d = div(-yStart * height, scaledHeight);
+		startLine = d.quot;
+		rowSkip = d.rem;
 
 		yStart = 0;
 	}
@@ -211,43 +213,56 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 	if (yStart >= SCREEN_H) return;
 
 	// check if frame spills over the edge
-	if (pixelHeight + yStart >= SCREEN_H)
-		if ((pixelHeight -= pixelHeight + yStart - SCREEN_H + 1) <= 0)
+	if (visibleHeight + yStart >= SCREEN_H)
+		if ((visibleHeight -= visibleHeight + yStart - SCREEN_H + 1) <= 0)
 			return;
 
-	// TODO
+	uint8 sourceLine = startLine;
+	uint8 targetLine = yStart;
+	int16 rowThing = scaledHeight - rowSkip;
 
-	for (int line = startLine; line < endLine; ++line) {
-		uint16 lineOffset = READ_LE_UINT16(data + line * 2);
+	for (int i = 0; i < visibleHeight; i += 1) {
+		uint16 lineOffset = READ_LE_UINT16(data + sourceLine * 2);
 
-		drawActorFrameLine(_screenBuf, SCREEN_W, data + lineOffset, (xStart < 0 ? 0 : xStart),
-		                   (yStart < 0 ? 0 : yStart) + line - startLine, xStart, xEnd, maskDepth);
+		// FIXME: the original doesn't have this check, but the room mask doesn't
+		// cover the panel area -- check
+		if (sourceLine < SCREEN_H - PANEL_H) {
+			uint16 targetPixel = targetLine * SCREEN_W + xStart;
+			drawActorFrameLine(lineBuffer, data + lineOffset, width);
+
+			// Copy line to screen
+			uint8 sourcePixel = startCol;
+			int16 colThing = scaledWidth - colSkip;
+
+			for (int j = 0; j < visibleWidth; ++j) {
+				if (lineBuffer[sourcePixel] != 0 && _mask[targetPixel] >= maskDepth)
+					_screenBuf[targetPixel] = lineBuffer[sourcePixel];
+
+				sourcePixel += width / scaledWidth;
+				colThing -= width % scaledWidth;
+
+				if (colThing < 0) {
+					sourcePixel++;
+					colThing += scaledWidth;
+				}
+
+				targetPixel++;
+			}
+		}
+
+		sourceLine += height / scaledHeight;
+		rowThing -= height % scaledHeight;
+
+		if (rowThing < 0) {
+			sourceLine++;
+			rowThing += scaledHeight;
+		}
+
+		targetLine++;
 	}
-	_dirtyRects->push_back(Rect(xStart, yStart, xEnd, yEnd));
+
+	_dirtyRects->push_back(Rect(xStart, yStart, xStart + visibleWidth, yStart + visibleHeight));
 }
-
-/*
-void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos,
-                            int16 xOffset, int16 yOffset, int maskDepth, uint16 xRatio, uint16 yRatio) {
-
-	// Check which lines and columns to draw
-	int16 realX = xPos + xOffset;
-	int16 realY = yPos + yOffset;
-
-	uint16 startCol = (realX < 0 ? -realX : 0);
-	uint16 startLine = (realY < 0 ? -realY : 0);
-	uint16 endCol = (realX + width > SCREEN_W ? SCREEN_W - realX : width);
-	uint16 endLine = (realY + height - 1 > SCREEN_H ? SCREEN_H - realY - 1: height - 2);
-
-	for (int line = startLine; line < endLine; ++line) {
-		uint16 lineOffset = READ_LE_UINT16(data + line * 2);
-
-		drawActorFrameLine(_screenBuf, SCREEN_W, data + lineOffset, (realX < 0 ? 0 : realX),
-		                   (realY < 0 ? 0 : realY) + line - startLine, startCol, endCol, maskDepth);
-	}
-	_dirtyRects->push_back(Rect(realX + startCol, realY + startLine, realX + endCol, realY + endLine));
-}
-*/
 
 void Screen::drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16 xOffset, int16 yOffset) {
 
@@ -256,90 +271,29 @@ void Screen::drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16
 	for (int line = 0; line <= height - 1; ++line) {
 		uint16 lineOffset = READ_LE_UINT16(data + line * 2);
 
-		drawActorFrameLine(_mouseBuf, MOUSE_W, data + lineOffset, 0, line, 0, width, 0);
+		drawActorFrameLine(lineBuffer, data + lineOffset, width);
+		for (int i = 0; i < width; ++i)
+			if (lineBuffer[i] != 0)
+				_mouseBuf[line * MOUSE_W + i] = lineBuffer[i];
 	}
 
 	setMouseCursor(_mouseBuf, MOUSE_W, MOUSE_H, -xOffset, -yOffset);
 }
 
-void Screen::drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data,
-                                uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel,
-                                int maskDepth) {
-	uint16 dataIndex = 0;
-	uint16 pixelsDrawn = 0;
-	uint16 pixelsParsed = 0;
-	int8 imageData;
-	bool shouldDraw = false;
+void Screen::drawActorFrameLine(byte *outBuffer, const int8 *rowData, uint16 length) {
+	uint8 dataIndex = 0;
+	uint8 outIndex = 0;
 
-	if (startPixel == 0)
-		shouldDraw = true;
-
-	while (pixelsDrawn < endPixel - startPixel) {
-
-		imageData = data[dataIndex];
-		dataIndex++;
-
-		// Handle transparent pixels
-		if (imageData > 0) {
-
-			// Skip pixels
-			if (!shouldDraw && pixelsParsed < startPixel && pixelsParsed + imageData >= startPixel) {
-				uint8 pixelsToSkip = startPixel - pixelsParsed;
-
-				pixelsParsed += imageData;
-				imageData -= pixelsToSkip;
-				shouldDraw = true;
-
-			// Not at start pos yet
-			} else {
-				pixelsParsed += imageData;
-			}
-
-			if (shouldDraw) {
-				pixelsDrawn += imageData;
-			}
-
-		// Handle visible pixels
-		} else {
-
-			imageData &= 0x7F;
-
-			// Skip pixels
-			if (!shouldDraw && pixelsParsed < startPixel && pixelsParsed + imageData >= startPixel) {
-				uint8 pixelsToSkip = startPixel - pixelsParsed;
-
-				pixelsParsed += imageData;
-				imageData -= pixelsToSkip;
-				dataIndex += pixelsToSkip;
-
-				shouldDraw = true;
-
-			// Not at start pos yet
-			} else {
-				pixelsParsed += imageData;
-			}
-
-			if (shouldDraw) {
-				// Don't draw over the edge!
-				if (pixelsDrawn + imageData > endPixel)
-					imageData = endPixel - pixelsDrawn;
-
-				for (int i = 0; i < imageData; ++i) {
-					// Check with background mask
-					if (yPos > SCREEN_H - PANEL_H ||
-					    _mask[(yPos * bufWidth) + xPos + pixelsDrawn + i] >= maskDepth)
-
-						// FIXME: valgrind sometimes reports invalid write of 1 byte
-						buf[(yPos * bufWidth) + xPos + pixelsDrawn + i] =
-							data[dataIndex + i];
-				}
-
-				dataIndex += imageData;
-				pixelsDrawn += imageData;
-			} else {
-				dataIndex += imageData;
-			}
-		}
+	while (outIndex <= length) {
+		// FIXME: valgrind reports invalid read of size 1
+		int8 imageData = rowData[dataIndex++];
+		if (imageData > 0)
+			while (imageData-- > 0)
+				outBuffer[outIndex++] = 0;
+		else if ((imageData &= 0x7F) > 0)
+			while (imageData-- > 0)
+				// FIXME: valgrind reports invalid read of size 1
+				outBuffer[outIndex++] = rowData[dataIndex++];
 	}
 }
 

@@ -83,8 +83,6 @@ void Input::checkKeys() {
 			case Common::EVENT_MOUSEMOVE:
 				_mouseX = event.mouse.x;
 				_mouseY = event.mouse.y;
-				// Temporary
-				_vm->actorMan()->getMouse()->setPos(_mouseX, _mouseY);
 				break;
 
 			case Common::EVENT_QUIT:

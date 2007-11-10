@@ -249,18 +249,12 @@ void Actor::display() {
 
 		// The loading icon is NOT a mouse cursor, but is stored in the mouse actor
 		if (_isMouse && _scope != 6) {
-			//_vm->screen()->drawMouseFrame((int8 *)(_framesData + frameStream.pos()),
-			//									  width, height, xOffset, yOffset);
+			_vm->screen()->drawMouseFrame((int8 *)(_framesData + frameStream.pos()),
+												  width, height, xStart, yStart);
 		} else {
-			printf("drawing actor: %s\n", _name.c_str());
-			printf("x, y: (%d, %d)\n", _xPos, _yPos);
-			printf("x, y: (%d, %d)\n", xStart, yStart);
-			printf("w, h: (%d, %d)\n", xStart + scaledWidth, yStart + scaledHeight);
-			printf("ratio: (%d, %d)\n", _xRatio, _yRatio);
+			//printf("drawing actor: %s\n", _name.c_str());
 			_vm->screen()->drawActorFrame((int8 *)(_framesData + frameStream.pos()),
 				width, height, xStart, yStart, xStart + scaledWidth, yStart + scaledHeight, _maskDepth);
-			//_vm->screen()->drawActorFrame((int8 *)(_framesData + frameStream.pos()),
-			//  width, height, _xPos, _yPos, xOffset, yOffset, _maskDepth, _xRatio, _yRatio);
 		}
 	}
 }

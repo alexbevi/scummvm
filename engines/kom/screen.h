@@ -89,8 +89,7 @@ private:
 
 	void copyRectListToScreen(const Common::List<Common::Rect> *);
 
-	void drawActorFrameLine(uint8 *buf, uint16 bufWidth, const int8 *data, uint16 xPos, uint16 yPos, uint16 startPixel, uint16 endPixel,
-	                        int maskDepth);
+	void drawActorFrameLine(byte *outBuffer, const int8 *rowData, uint16 length);
 	byte *loadColorSet(FilesystemNode fsNode);
 
 	uint16 getTextWidth(const char *text);

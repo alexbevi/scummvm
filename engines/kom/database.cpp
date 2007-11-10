@@ -885,6 +885,7 @@ uint16 Database::getExitBox(int currLoc, int nextLoc) {
 }
 bool Database::isInLine(int loc, int box, int x, int y) {
 	Box *b = (&_locRoutes[loc].boxes[box]);
+	// FIXME: assert(b->enabled);
 
 	return (x > b->x1 && x < b->x2 || y > b->y1 && y < b->y2);
 }
