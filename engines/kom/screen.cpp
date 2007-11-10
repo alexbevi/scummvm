@@ -284,7 +284,7 @@ void Screen::drawActorFrameLine(byte *outBuffer, const int8 *rowData, uint16 len
 	uint8 dataIndex = 0;
 	uint8 outIndex = 0;
 
-	while (outIndex <= length) {
+	while (outIndex < length) {
 		// FIXME: valgrind reports invalid read of size 1
 		int8 imageData = rowData[dataIndex++];
 		if (imageData > 0)
