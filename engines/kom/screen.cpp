@@ -115,6 +115,21 @@ void Screen::processGraphics() {
 			_vm->database()->getChar(i)->isVisible) {
 
 			_vm->game()->setScope(i, _vm->database()->getCharScope(i)->scopeInUse);
+
+			// FIXME: this is here just for testing
+
+			int scale;
+			CharScope *scp = _vm->database()->getCharScope(i);
+			Actor *act = _vm->actorMan()->get(scp->actorId);
+			// TODO - this should be in processGraphics
+			scale = (scp->start5 * 88) / 60;
+			//printf("%s: (%d, %d)\n", _vm->database()->getChar(i)->name, scp->screenX / 2, (scp->start4 + (scp->screenH + scp->offset78) / scale) / 256 / 2);
+			act->setPos(scp->screenX / 2, (scp->start4 + (scp->screenH + scp->offset78) / scale) / 256 / 2);
+			act->setRatio(scp->ratioX / scale, scp->ratioY / scale);
+
+			act->setMaskDepth(_vm->database()->getPriority( scp->lastLocation, scp->lastBox), scp->start5);
+
+			// FIXME end above
 		}
 	}
 

@@ -681,7 +681,6 @@ void Game::setScope(uint16 charId, int16 scope) {
 void Game::setScopeX(uint16 charId, int16 scope) {
 	char filename[50];
 	Actor *act;
-	int scale;
 
 	Character *character = _vm->database()->getChar(charId);
 	CharScope *scp = _vm->database()->getCharScope(charId);
@@ -700,14 +699,6 @@ void Game::setScopeX(uint16 charId, int16 scope) {
 	// TODO - lots
 	act->defineScope(0, 0, act->getFramesNum() - 1, 0);
 	act->setScope(0, scp->animSpeed);
-
-	// TODO - this should be in processGraphics
-	scale = (scp->start5 * 88) / 60;
-	act->setPos(scp->screenX / 2, (scp->start4 + (scp->screenH + scp->offset78) / scale) / 256 / 2);
-	act->setRatio(scp->ratioX / scale, scp->ratioY / scale);
-
-	// TODO - this should be in loopMove
-	act->setMaskDepth(_vm->database()->getPriority( scp->lastLocation, scp->lastBox), scp->start5);
 }
 
 void Game::moveChar(uint16 charId, bool param) {
