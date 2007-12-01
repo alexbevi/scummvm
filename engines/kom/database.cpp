@@ -819,7 +819,7 @@ int8 Database::whatBoxLinked(int locId, int8 boxId, int x, int y) {
 				x >= link->x1 && x <= link->x2 &&
 				y >= link->y1 && y <= link->y2) {
 
-				return link->joins[i];
+				return box->joins[i];
 			}
 		}
 	}
