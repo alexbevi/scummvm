@@ -791,21 +791,21 @@ void Game::moveChar(uint16 charId, bool param) {
 		int thing;
 		assert(scp->start5 != 0);
 
-		if (scp->relativeSpeed == 1024)
-			thing = scp->walkSpeed / ((xMove + yMove) * scp->start5);
-		else
-			thing = scp->walkSpeed * scp->relativeSpeed / ((xMove + yMove) * scp->start5);
+		if (scp->relativeSpeed == 1024) {
+			thing = scp->walkSpeed * 65536 / ((abs(xMove) + abs(yMove)) * scp->start5);
+		} else
+			thing = scp->walkSpeed * scp->relativeSpeed * 65536 / ((abs(xMove) + abs(yMove)) * scp->start5);
 
 		// Now we should set 64h and 68h
 		scp->somethingX = xMove * thing / 256;
 		scp->somethingY = yMove * thing / 256;
 
-		if (abs(xMove) / 256 < abs(scp->somethingX)) {
+		if (abs(xMove) * 256 < abs(scp->somethingX)) {
 			scp->start3 = x * 256;
 			scp->somethingX = 0;
 		}
 
-		if (abs(yMove)/ 256 < abs(scp->somethingY)) {
+		if (abs(yMove) * 256 < abs(scp->somethingY)) {
 			scp->start4 = y * 256;
 			scp->somethingY = 0;
 		}
@@ -845,28 +845,30 @@ void Game::moveChar(uint16 charId, bool param) {
 
 		box = _vm->database()->getBox(scp->lastLocation, scp->lastBox);
 
-		if (scp->somethingX < box->x1 * 256) {
-			if (scp->somethingY < box->y1 * 256) {
+		if (scp->start3 + scp->somethingX < box->x1 * 256) {
+			if (scp->start4 + scp->somethingY < box->y1 * 256) {
 				scp->somethingX = box->x1 * 256 - scp->start3;
 				scp->somethingY = box->y1 * 256 - scp->start4;
 			} else {
-				if (scp->somethingY > box->y2 * 256) {
+				if (scp->start4 + scp->somethingY > box->y2 * 256) {
 					scp->somethingY = box->y2 * 256 - scp->start4;
 				}
 				scp->somethingX = box->x1 * 256 - scp->start3;
 			}
-		} else if (scp->somethingX > box->x2 * 256) {
-			if (scp->somethingY < box->y1 * 256) {
+		} else if (scp->start3 + scp->somethingX > box->x2 * 256) {
+			if (scp->start4 + scp->somethingY < box->y1 * 256) {
 				scp->somethingX = box->x2 * 256 - scp->start3;
 				scp->somethingY = box->y1 * 256 - scp->start4;
 			} else {
-				if (scp->somethingY > box->y2 * 256) {
+				if (scp->start4 + scp->somethingY > box->y2 * 256) {
 					scp->somethingY = box->y2 * 256 - scp->start4;
 				}
 				scp->somethingX = box->x2 * 256 - scp->start3;
 			}
-		} else {
+		} else if (scp->start4 + scp->somethingY < box->y1 * 256) {
 			scp->somethingY = box->y1 * 256 - scp->start4;
+		} else if (scp->start4 + scp->somethingY > box->y2 * 256) {
+			scp->somethingY = box->y2 * 256 - scp->start4;
 		}
 	} else {
 		futureBox = futureBox2;
