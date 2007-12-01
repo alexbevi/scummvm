@@ -897,7 +897,7 @@ void Game::moveChar(uint16 charId, bool param) {
 		int32 tmp = (scp->start3 - scp->start3Prev) * scp->start5 / 256;
 		int32 tmp2 = (scp->start5 - scp->start5PrevPrev) * 256;
 
-		if (scp->direction != 0 && (abs(tmp) - abs(tmp2) & (int32)-128 == 0))
+		if (scp->direction != 0 && (abs(tmp) - abs(tmp2) & (int32)-128) == 0)
 			scp->direction = scp->lastDirection;
 		else if (abs(tmp) >= abs(tmp2)) {
 			if (tmp < -4)

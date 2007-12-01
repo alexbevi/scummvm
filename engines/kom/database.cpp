@@ -778,7 +778,7 @@ void Database::initScopes() {
 int8 Database::box2box(int loc, int fromBox, int toBox) {
 	uint32 locOffset;
 
-	if (loc > 127 || fromBox > 127 || toBox > 127)
+	if ((loc | fromBox | toBox) > 127)
 		return -1;
 
 	locOffset = READ_LE_UINT32(_map + loc * 4);
@@ -803,7 +803,7 @@ int8 Database::whatBox(int locId, int x, int y) {
 int8 Database::whatBoxLinked(int locId, int8 boxId, int x, int y) {
 	Box *box = &(_locRoutes[locId].boxes[boxId]);
 
-	if (box->attrib & 14 == 0 &&
+	if ((box->attrib & 14) == 0 &&
 		x >= box->x1 && x <= box->x2 &&
 		y >= box->y1 && y <= box->y2) {
 
@@ -815,7 +815,7 @@ int8 Database::whatBoxLinked(int locId, int8 boxId, int x, int y) {
 		if (box->joins[i] >= 0) {
 			Box *link = &(_locRoutes[locId].boxes[box->joins[i]]);
 
-			if (link->attrib & 14 == 0 &&
+			if ((link->attrib & 14) == 0 &&
 				x >= link->x1 && x <= link->x2 &&
 				y >= link->y1 && y <= link->y2) {
 
