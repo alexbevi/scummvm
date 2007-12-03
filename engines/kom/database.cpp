@@ -878,7 +878,7 @@ int16 Database::getZValue(int loc, int box, int32 y) {
 
 	if (b->z2 == 0) return 1;
 
-	return b->z1 - ((y - b->x1 * 256) / (b->y2 - b->y1) * (b->z1 - b->z2)) / 256;
+	return b->z1 - ((y - b->y1 * 256) / (b->y2 - b->y1) * (b->z1 - b->z2)) / 256;
 }
 
 uint16 Database::getExitBox(int currLoc, int nextLoc) {
