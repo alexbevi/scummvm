@@ -603,9 +603,8 @@ void Game::loopMove() {
 			// TODO - collision
 			// TODO - fight-related thing
 
-			if (_vm->database()->getChar(i)->mode == 1) {
-				// TODO - stop actor
-			}
+			if (_vm->database()->getChar(i)->mode == 1)
+				stopChar(i);
 
 			if (scp->spriteTimer <= 0 && scp->fightPartner < 0)
 				moveChar(i, true);
@@ -1056,6 +1055,24 @@ void Game::moveCharOther(uint16 charId) {
 			scp->ratioY = 1280;
 		}
 	}
+}
+
+void Game::stopChar(uint16 charId) {
+	CharScope *scp = _vm->database()->getCharScope(charId);
+
+	scp->gotoLoc = scp->lastLocation;
+	scp->gotoX = scp->screenX;
+	scp->gotoY = scp->screenY;
+	scp->start3 = scp->start3Prev = scp->start3PrevPrev = scp->screenX * 256;
+	scp->start4 = scp->start4Prev = scp->start4PrevPrev = scp->screenY * 256;
+	scp->lastBox = _vm->database()->whatBox(scp->lastLocation, scp->gotoX, scp->gotoY);
+	scp->start5 = scp->start5Prev = scp->start5PrevPrev =
+		_vm->database()->getZValue(scp->lastLocation, scp->lastBox, scp->start4);
+
+	scp->direction = 0;
+	scp->stopped = true;
+	scp->priority = _vm->database()->getPriority(scp->lastLocation, scp->lastBox);
+	_vm->database()->setCharPos(charId, scp->lastLocation, scp->lastBox);
 }
 
 } // End of namespace Kom
