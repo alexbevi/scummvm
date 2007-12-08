@@ -262,7 +262,7 @@ bool Game::doStat(const Command *cmd) {
 			db->setVar(j->arg2, 0);
 			break;
 		case 334:
-			db->setVar(j->arg2, _rnd.getRandomNumber(j->arg3));
+			db->setVar(j->arg2, _rnd.getRandomNumber(j->arg3 - 1));
 			break;
 		case 337:
 			keepProcessing = db->getVar(j->arg2) == 0;
