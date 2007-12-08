@@ -575,52 +575,45 @@ void Game::loopMove() {
 			scp->scopeWanted = 100;
 			moveCharOther(i);
 
+		} else if (scp->walkSpeed == 0) {
+			scp->scopeWanted = 17;
+			scp->priority = _vm->database()->getPriority(scp->lastLocation, scp->lastBox);
+			moveCharOther(i);
+
 		} else {
-			if (scp->walkSpeed == 0) {
-				scp->scopeWanted = 17;
-				scp->priority = _vm->database()->getPriority(scp->lastLocation, scp->lastBox);
-				moveCharOther(i);
+			if (scp->spriteSceneState == 0 && scp->fightPartner < 0) {
+				int16 destBox = _vm->database()->getChar(i)->destBox;
+				scp->gotoLoc = _vm->database()->getChar(i)->destLoc;
 
-			} else {
-				if (scp->spriteSceneState == 0) {
-					if (scp->fightPartner < 0) {
-						int16 destBox = _vm->database()->getChar(i)->destBox;
-						scp->gotoLoc = _vm->database()->getChar(i)->destLoc;
-
-						if (destBox + 5 <= 3)  {
-							switch (destBox + 5) {
-							case 0:
-							case 1:
-							case 2:
-							case 3:
-								break;
-							}
-							// TODO
-						} else {
-							scp->gotoX = _vm->database()->getMidX(scp->gotoLoc, destBox);
-							scp->gotoY = _vm->database()->getMidY(scp->gotoLoc, destBox);
-						}
-
-						// TODO - collision
-						// TODO - fight-related thing
-
-						if (_vm->database()->getChar(i)->mode == 1) {
-							// TODO - stop actor
-						}
-
-						if (scp->spriteTimer == 0 && scp->fightPartner < 0) {
-							moveChar(i, true);
-						}
-						moveCharOther(i);
-
-						// if goto_box != last_box:
-							// goto_box = last_box
-							_vm->database()->setCharPos(i, scp->lastLocation, scp->lastBox);
-
+				if (destBox + 5 <= 3)  {
+					switch (destBox + 5) {
+					case 0:
+					case 1:
+					case 2:
+					case 3:
+						break;
 					}
+					// TODO
 				} else {
-
+					scp->gotoX = _vm->database()->getMidX(scp->gotoLoc, destBox);
+					scp->gotoY = _vm->database()->getMidY(scp->gotoLoc, destBox);
 				}
+			}
+
+			// TODO - collision
+			// TODO - fight-related thing
+
+			if (_vm->database()->getChar(i)->mode == 1) {
+				// TODO - stop actor
+			}
+
+			if (scp->spriteTimer <= 0 && scp->fightPartner < 0)
+				moveChar(i, true);
+			moveCharOther(i);
+
+			if (scp->gotoBox != scp->lastBox) {
+				scp->gotoBox = scp->lastBox;
+				_vm->database()->setCharPos(i, scp->lastLocation, scp->lastBox);
 			}
 		}
 	}

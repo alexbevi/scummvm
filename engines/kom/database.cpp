@@ -749,7 +749,8 @@ void Database::initScopes() {
 				&(charScope->start4),
 				&(charScope->start5));
 
-			charScope->gotoLoc = charScope->lastLocation;
+			charScope->gotoLoc = charScope->lastLocation; // FIXME: Not in original. just in case
+			charScope->gotoBox = charScope->lastBox;
 			charScope->screenX = charScope->gotoX = charScope->start3 / 256;
 			charScope->screenY = charScope->gotoY = charScope->start4 / 256;
 			charScope->start3Prev = charScope->start3PrevPrev = charScope->start3;

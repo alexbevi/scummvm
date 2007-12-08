@@ -199,6 +199,7 @@ struct CharScope {
 	int16 priority;
 	int32 lastLocation;
 	int32 lastBox;
+	int32 gotoBox;
 	int16 gotoX;
 	int16 gotoY;
 	int16 gotoLoc;
