@@ -166,7 +166,7 @@ void KomEngine::gameLoop() {
 		// collision stuff
 		// if player not stopped:
 		//     do command (walk, use, talk, pickup, look, fight, exit, magic)
-		// loopSpriteCut
+		_game->loopSpriteCut();
 		// loopSpells
 		// loopTimeouts
 		// lose/get gold

@@ -70,6 +70,7 @@ public:
 	void processTime();
 	bool doStat(const Command *cmd);
 	void loopMove();
+	void loopSpriteCut();
 
 	Settings* settings() { return &_settings; }
 	Player* player() { return &_player; }

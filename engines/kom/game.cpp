@@ -621,6 +621,37 @@ void Game::loopMove() {
 	// TODO - handle magic actors
 }
 
+void Game::loopSpriteCut() {
+	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
+		CharScope *scp = _vm->database()->getCharScope(i);
+
+		if (scp->actorId < 0)
+			continue;
+
+		switch (scp->spriteSceneState) {
+		case 0:
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			if (scp->spriteTimer > 0)
+				scp->spriteTimer--;
+			if (scp->spriteTimer <= 1)
+				_vm->database()->getChar(i)->isBusy = false;
+
+			if (scp->spriteTimer == 0) {
+				scp->spriteSceneState = 0;
+				scp->lastDirection = 4;
+			}
+			break;
+		default:
+			continue;
+		}
+	}
+}
+
 void Game::changeMode(int value, int mode) {
 	warning("TODO: changeMode - unsupported mode");
 }
