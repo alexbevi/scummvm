@@ -94,36 +94,37 @@ void Screen::processGraphics() {
 	
 	// unload actors in other rooms
 	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
-		if (_vm->database()->getCharScope(0)->lastLocation !=
-		    _vm->database()->getCharScope(i)->lastLocation ||
+		CharScope *scp = _vm->database()->getCharScope(i);
+
+		if (_vm->database()->getCharScope(0)->lastLocation != scp->lastLocation ||
 			!_vm->database()->getChar(i)->isVisible) {
 
 			// TODO - init scope stuff
-			if (_vm->database()->getCharScope(i)->actorId >= 0) {
-				_vm->actorMan()->unload(_vm->database()->getCharScope(i)->actorId);
-				_vm->database()->getCharScope(i)->actorId = -1;
+			if (scp->actorId >= 0) {
+				_vm->actorMan()->unload(scp->actorId);
+				scp->actorId = scp->scopeLoaded = scp->scopeInUse = -1;
 			}
 		}
 	}
 
 	// load actors in this room
 	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
+		CharScope *scp = _vm->database()->getCharScope(i);
+
 		// TODO - init scope stuff
 		// TODO - disable actor if in fight
-		if (_vm->database()->getCharScope(0)->lastLocation ==
-		    _vm->database()->getCharScope(i)->lastLocation &&
+		if (_vm->database()->getCharScope(0)->lastLocation == scp->lastLocation &&
 			_vm->database()->getChar(i)->isVisible) {
 
-			_vm->game()->setScope(i, _vm->database()->getCharScope(i)->scopeInUse);
+			_vm->game()->setScope(i, _vm->database()->getCharScope(i)->scopeWanted);
 
 			// FIXME: this is here just for testing
 
 			int scale;
-			CharScope *scp = _vm->database()->getCharScope(i);
+
 			Actor *act = _vm->actorMan()->get(scp->actorId);
-			// TODO - this should be in processGraphics
+
 			scale = (scp->start5 * 88) / 60;
-			//printf("%s: (%d, %d)\n", _vm->database()->getChar(i)->name, scp->screenX / 2, (scp->start4 + (scp->screenH + scp->offset78) / scale) / 256 / 2);
 			act->setPos(scp->screenX / 2, (scp->start4 + (scp->screenH + scp->offset78) / scale) / 256 / 2);
 			act->setRatio(scp->ratioX / scale, scp->ratioY / scale);
 
@@ -131,6 +132,13 @@ void Screen::processGraphics() {
 
 			// FIXME end above
 		}
+
+		scp->start5PrevPrev = scp->start5Prev;
+		scp->start5Prev = scp->start5;
+		scp->start4PrevPrev = scp->start4Prev;
+		scp->start4Prev = scp->start4;
+		scp->start3PrevPrev = scp->start3Prev;
+		scp->start3Prev = scp->start3;
 	}
 
 	updateCursor();
@@ -198,8 +206,8 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 			return;
 
 		d = div(-xStart * width, scaledWidth);
-		colSkip = d.quot;
-		startCol = d.rem;
+		startCol = d.quot;
+		colSkip = d.rem;
 
 		xStart = 0;
 	}

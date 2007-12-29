@@ -688,50 +688,88 @@ void Game::setNight() {
 }
 
 void Game::setScope(uint16 charId, int16 scope) {
-	Actor *act;
+	//Actor *act;
+	int16 newScope = scope;
 
-	// TODO - handle spell effect
-	// TODO - pretty much everything
+	// TODO - handle spell effect (overrides the scope)
 
 	// TODO - hack
-	if (_vm->database()->getCharScope(charId)->actorId == -1) {
-		setScopeX(charId, scope);
-	}
-	act = _vm->actorMan()->get(_vm->database()->getCharScope(charId)->actorId);
+	//if (_vm->database()->getCharScope(charId)->actorId == -1) {
+	setScopeX(charId, newScope);
+	//}
 
+	// TODO - a bit more
+	//act = _vm->actorMan()->get(_vm->database()->getCharScope(charId)->actorId);
 }
 
 void Game::setScopeX(uint16 charId, int16 scope) {
-	char filename[50];
-	Actor *act;
-
-	Character *character = _vm->database()->getChar(charId);
 	CharScope *scp = _vm->database()->getCharScope(charId);
+	Character *character = _vm->database()->getChar(charId);
+	char filename[50];
 	String charName(character->name);
 	charName.toLowercase();
-	sprintf(filename, "%s%d", charName.c_str(), character->xtend);
+	Actor *act;
 
-	_vm->panel()->showLoading(true);
-	scp->actorId =
-		_vm->actorMan()->load(_vm->dataDir()->getChild("kom").getChild("actors"), filename);
-	_vm->panel()->showLoading(false);
+	if (scp->spriteTimer > 0)
+		scope = scp->spriteScope;
 
+	if (scp->scopeLoaded != -1 && scp->scopeInUse == scope)
+		return;
+
+	// TODO - check spell effect and handle cabbage/grave/cutscene
+
+	assert(scp->scopes[scope].startFrame != -1);
+
+	if (scp->scopeLoaded !=
+			character->xtend + (scp->walkSpeed == 0 ? _player.isNight : 0)) {
+
+		char xtend = character->xtend;
+
+		if (scp->scopeLoaded != -1 && scp->actorId != -1) {
+			_vm->actorMan()->unload(scp->actorId);
+			scp->actorId = -1;
+		}
+
+		if (scp->walkSpeed == 0)
+			xtend += _player.isNight;
+
+		sprintf(filename, "%s%c", charName.c_str(), xtend + (xtend < 10 ? '0' : '7'));
+		scp->scopeLoaded = xtend;
+
+		_vm->panel()->showLoading(true);
+		scp->actorId =
+			_vm->actorMan()->load(_vm->dataDir()->getChild("kom").getChild("actors"), filename);
+		_vm->actorMan()->get(scp->actorId)->enable(1);
+		_vm->panel()->showLoading(false);
+	}
+
+	if (scp->scopeInUse == scope)
+		return;
+
+	scp->scopeInUse = scope;
 
 	act = _vm->actorMan()->get(scp->actorId);
-
-	// TODO - lots
-	act->defineScope(0, 0, act->getFramesNum() - 1, 0);
+	act->defineScope(0, scp->scopes[scope].minFrame, scp->scopes[scope].maxFrame, scp->scopes[scope].startFrame);
 	act->setScope(0, scp->animSpeed);
+
+	if (scope != 12)
+		return;
+
+	scp->spriteSceneState = 3;
+	scp->spriteTimer = (scp->scopes[scope].maxFrame - scp->scopes[scope].minFrame) * scp->animSpeed - 1;
+	scp->spriteScope = scope;
+	scp->scopeInUse = scope;
+	character->isBusy = true;
 }
 
+// TODO - move to Character class?
 void Game::moveChar(uint16 charId, bool param) {
 	CharScope *scp = _vm->database()->getCharScope(charId);
 	int16 nextLoc, targetBox, targetBoxX, targetBoxY, nextBox;
 
-	//printf("moving char %hu\n", charId);
-
 	if (scp->lastLocation == 0) return;
 
+	// Find the final box we're supposed to reach
 	if (scp->gotoLoc != scp->lastLocation) {
 
 		if (scp->gotoLoc >= 0 && scp->lastLocation >= 0)
@@ -763,37 +801,34 @@ void Game::moveChar(uint16 charId, bool param) {
 
 	assert(targetBox != -1);
 
-	if (scp->lastLocation > 127 || scp->lastBox > 127 || targetBox > 127) {
-		nextBox = -1;
-	} else {
-		nextBox = _vm->database()->box2box(scp->lastLocation, scp->lastBox, targetBox);
-	}
+	nextBox = _vm->database()->box2box(scp->lastLocation, scp->lastBox, targetBox);
 
 	int16 x, y, xMove, yMove;
 
+	// Walk to the center of the current box
 	if (nextBox == scp->lastBox) {
 		x = scp->gotoX;
 		y = scp->gotoY;
-	} else {
-		if (nextBox == -1) {
-			x = scp->screenX;
-			y = scp->screenY;
-		} else {
-			if (_vm->database()->isInLine(scp->lastLocation, nextBox, scp->screenY, scp->screenY)) {
-				if (scp->lastLocation > 0 && nextBox > 0) {
-					Box *b = _vm->database()->getBox(scp->lastLocation, nextBox);
-					x = b->x1 + (b->x2 - b->x1) / 2;
-					y = b->y1 + (b->y2 - b->y1) / 2;
-				} else {
-					x = 319;
-					y = 389;
-				}
 
-			} else {
-				x = _vm->database()->getMidOverlapX(scp->lastLocation, scp->lastBox, nextBox);
-				y = _vm->database()->getMidOverlapY(scp->lastLocation, scp->lastBox, nextBox);
-			}
+	// Stand in place
+	} else if (nextBox == -1) {
+		x = scp->screenX;
+		y = scp->screenY;
+
+	// Walk from box to box
+	} else if (_vm->database()->isInLine(scp->lastLocation, nextBox, scp->screenX, scp->screenY)) {
+		if (scp->lastLocation > 0 && nextBox > 0) {
+			Box *b = _vm->database()->getBox(scp->lastLocation, nextBox);
+			x = b->x1 + (b->x2 - b->x1) / 2;
+			y = b->y1 + (b->y2 - b->y1) / 2;
+		} else {
+			x = 319;
+			y = 389;
 		}
+
+	} else {
+		x = _vm->database()->getMidOverlapX(scp->lastLocation, scp->lastBox, nextBox);
+		y = _vm->database()->getMidOverlapY(scp->lastLocation, scp->lastBox, nextBox);
 	}
 
 	xMove = (x - scp->screenX);
@@ -825,36 +860,38 @@ void Game::moveChar(uint16 charId, bool param) {
 		}
 	}
 
-	int futureBox, futureBox2; // TODO: I know, but nextBox is already used. something is screwy
+	int boxAfterStep, boxAfterStep2;
 
-	futureBox = scp->lastBox;
+	boxAfterStep = scp->lastBox;
 	scp->somethingY /= 2;
 
 	if (!param) {
 		Box *box;
 
-		futureBox2 = _vm->database()->whatBox(scp->lastLocation,
+		boxAfterStep2 = _vm->database()->whatBox(scp->lastLocation,
 				(scp->start3 + scp->somethingX) / 256,
 				(scp->start4 + scp->somethingY) / 256);
 
 		// TODO : check if box doesn't exist?
-		box = _vm->database()->getBox(scp->lastLocation, futureBox2);
+		box = _vm->database()->getBox(scp->lastLocation, boxAfterStep2);
 
 		if (box->attrib == 8)
-			futureBox2 = -1;
+			boxAfterStep2 = -1;
 
-	} else if (param) {
-		futureBox2 = _vm->database()->whatBoxLinked(scp->lastLocation, scp->lastBox,
+	} else {
+		boxAfterStep2 = _vm->database()->whatBoxLinked(scp->lastLocation, scp->lastBox,
 				(scp->start3 + scp->somethingX) / 256,
 				(scp->start4 + scp->somethingY) / 256);
 	}
 
-	if (futureBox2 == -1) {
+	if (boxAfterStep2 != -1) {
+		boxAfterStep = boxAfterStep2;
+	} else {
 		Box *box;
 
 		if (!param && nextBox == targetBox) {
 			scp->lastBox = targetBox;
-			futureBox = targetBox;
+			boxAfterStep = targetBox;
 		}
 
 		box = _vm->database()->getBox(scp->lastLocation, scp->lastBox);
@@ -884,8 +921,6 @@ void Game::moveChar(uint16 charId, bool param) {
 		} else if (scp->start4 + scp->somethingY > box->y2 * 256) {
 			scp->somethingY = box->y2 * 256 - scp->start4;
 		}
-	} else {
-		futureBox = futureBox2;
 	}
 
 	if (nextBox == -1 && scp->somethingX == 0 && scp->somethingY == 0) {
@@ -899,7 +934,7 @@ void Game::moveChar(uint16 charId, bool param) {
 	scp->start4 += scp->somethingY;
 	scp->screenX = scp->start3 / 256;
 	scp->screenY = scp->start4 / 256;
-	scp->lastBox = futureBox;
+	scp->lastBox = boxAfterStep;
 
 	if (scp->lastLocation != 0 || scp->lastBox != 0) {
 		scp->priority = _vm->database()->getBox(scp->lastLocation, scp->lastBox)->priority;
@@ -909,68 +944,72 @@ void Game::moveChar(uint16 charId, bool param) {
 
 	scp->start5 = _vm->database()->getZValue(scp->lastLocation, scp->lastBox, scp->start4);
 
+	// Set direction
 	if (scp->lastLocation == _vm->database()->getCharScope(0)->lastLocation) {
-		int32 tmp = (scp->start3 - scp->start3Prev) * scp->start5 / 256;
-		int32 tmp2 = (scp->start5 - scp->start5PrevPrev) * 256;
+		int32 xVector = (scp->start3 - scp->start3Prev) * scp->start5 / 256;
+		int32 yVector = (scp->start5 - scp->start5PrevPrev) * 256;
 
-		if (scp->direction != 0 && (abs(tmp) - abs(tmp2) & (int32)-128) == 0)
+		// FIXME: verify the correct condition
+		if (scp->direction != 0 && /*(*/abs(abs(xVector) - abs(yVector)) < 127/*& 0xFFFFFF80) == 0*/) {
 			scp->direction = scp->lastDirection;
-		else if (abs(tmp) >= abs(tmp2)) {
-			if (tmp < -4)
-				scp->direction = 1;
-			else if (tmp > 4)
-				scp->direction = 2;
+		} else if (abs(xVector) >= abs(yVector)) {
+			if (xVector < -4)
+				scp->direction = 1; // left
+			else if (xVector > 4)
+				scp->direction = 2; // right
 			else
 				scp->direction = 0;
 		} else {
-			if (tmp2 < -4)
-				scp->direction = 4;
-			else if (tmp2 > 4)
-				scp->direction = 3;
+			if (yVector < -4)
+				scp->direction = 4; // front
+			else if (yVector > 4) {
+				scp->direction = 3; // back
+			}
 			else
 				scp->direction = 0;
 		}
 	}
 
+	// Set wanted scope
 	switch (scp->direction) {
 	case 0:
 		switch (scp->lastDirection - 1) {
 		case 0:
-			scp->scopeWanted = 9;
+			scp->scopeWanted = 9; // face left
 			break;
 		case 1:
-			scp->scopeWanted = 7;
+			scp->scopeWanted = 7; // face right
 			break;
 		case 2:
-			scp->scopeWanted = 4;
+			scp->scopeWanted = 4; // face back
 			break;
 		case 3:
 		default:
-			scp->scopeWanted = 8;
+			scp->scopeWanted = 8; // face front
 			break;
 		}
 		break;
 	case 1:
 		if (scp->lastDirection == 1)
-			scp->scopeWanted = 1;
+			scp->scopeWanted = 1; // walk left
 		else
 			scp->lastDirection = 1;
 		break;
 	case 2:
 		if (scp->lastDirection == 2)
-			scp->scopeWanted = 0;
+			scp->scopeWanted = 0; // walk right
 		else
 			scp->lastDirection = 2;
 		break;
 	case 3:
 		if (scp->lastDirection == 3)
-			scp->scopeWanted = 2;
+			scp->scopeWanted = 2; // walk backward
 		else
 			scp->lastDirection = 3;
 		break;
 	case 4:
 		if (scp->lastDirection == 4)
-			scp->scopeWanted = 3;
+			scp->scopeWanted = 3; // walk forward
 		else
 			scp->lastDirection = 4;
 		break;

@@ -180,8 +180,8 @@ struct CharScope {
 	CharScope() : actorId(-1), screenH(0), screenDH(0), offset0c(0), offset10(0),
 		offset14(262144), offset1c(0), offset20(262144), offset28(0), ratioX(262144),
 		ratioY(262144), relativeSpeed(1024), direction(0), lastDirection(2),
-		scopeInUse(-1), scopeWanted(8), priority(0), fightPartner(-1),
-		spriteSceneState(0), spriteTimer(0), somethingX(0), somethingY(0) {}
+		scopeInUse(-1), scopeWanted(8), scopeLoaded(-1), priority(0), fightPartner(-1),
+		spriteSceneState(0), spriteScope(0), spriteTimer(0), somethingX(0), somethingY(0) {}
 	Scope scopes[18];
 	int16 actorId;
 	int16 screenX;
@@ -224,9 +224,11 @@ struct CharScope {
 	uint32 offset78;
 	int16 fightPartner;
 	uint8 spriteSceneState;
+	uint16 spriteScope;
 	uint16 spriteTimer;
 	int16 scopeInUse;
-	uint16 scopeWanted;
+	int16 scopeWanted;
+	int16 scopeLoaded;
 };
 
 class Database {

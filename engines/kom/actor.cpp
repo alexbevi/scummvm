@@ -130,7 +130,7 @@ Actor::~Actor() {
 	delete[] _framesData;
 }
 
-void Actor::defineScope(uint8 scopeId, uint8 minFrame, uint8 maxFrame, uint8 startFrame) {
+void Actor::defineScope(uint8 scopeId, int8 minFrame, int8 maxFrame, int8 startFrame) {
 	assert(scopeId < 8);
 
 	_scopes[scopeId].minFrame = minFrame;

@@ -36,11 +36,11 @@
 namespace Kom {
 
 struct Scope {
-	Scope() : aliasData(NULL), minFrame(0), maxFrame(0) {}
+	Scope() : aliasData(NULL), minFrame(0), maxFrame(0), startFrame(-1) {}
 	~Scope() { delete[] aliasData; }
-	uint8 minFrame;
-	uint8 maxFrame;
-	uint8 startFrame;
+	int8 minFrame;
+	int8 maxFrame;
+	int8 startFrame;
 	const uint8* aliasData;
 };
 
@@ -53,7 +53,7 @@ friend class ActorManager;
 public:
 	~Actor();
 
-	void defineScope(uint8 scopeId, uint8 minFrame, uint8 maxFrame, uint8 startFrame);
+	void defineScope(uint8 scopeId, int8 minFrame, int8 maxFrame, int8 startFrame);
 
 	/**
 	 * Allows a hard-coded frame sequence. It is only used for the exit/inventory cursor
@@ -68,7 +68,7 @@ public:
 	void animate();
 	void display();
 
-	void enable(bool state) { _isActive = state; }
+	void enable(int state) { _isActive = state; }
 	void setPos(int xPos, int yPos) { _xPos = xPos; _yPos = yPos; }
 	void setRatio(uint16 xRatio, uint16 yRatio) { _xRatio = xRatio; _yRatio = yRatio; }
 	void setMaskDepth(int maskDepth, int depth) { _maskDepth = maskDepth; _depth = depth; }
