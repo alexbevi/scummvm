@@ -806,7 +806,7 @@ void Game::moveChar(uint16 charId, bool param) {
 	int16 x, y, xMove, yMove;
 
 	// Walk to the center of the current box
-	if (nextBox == scp->lastBox) {
+	if (targetBox == scp->lastBox) {
 		x = scp->gotoX;
 		y = scp->gotoY;
 
