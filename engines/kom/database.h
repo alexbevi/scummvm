@@ -31,6 +31,7 @@
 #include "common/file.h"
 #include "engines/engine.h"
 
+#include "kom/character.h"
 #include "kom/actor.h"
 
 #if defined(__GNUC__)
@@ -81,46 +82,6 @@ struct Object {
 	int data17;
 	int data18;
 	Common::List<int> contents;
-};
-
-struct Character {
-	Character() : mode(0), modeCount(0), isBusy(false), isAlive(true), isVisible(true),
-		spellMode(0), gold(0) {}
-	char name[7];
-	int xtend;
-	int data2;
-	char desc[50];
-	int proc;
-	int locationId;
-	int box;
-	int data5;
-	int data6;
-	int data7;
-	int data8;
-	int data9;
-	int hitPoints;
-	int hitPointsMax;
-	uint16 mode;
-	uint16 modeCount;
-	bool isBusy;
-	bool isAlive;
-	bool isVisible;
-	uint8 spellMode;
-	int strength;
-	int defense;
-	int damageMin;
-	int damageMax;
-	int data14; // spell speed - unused
-	int data15; // spell time - unused
-	int data16;
-	int spellPoints;
-	int spellPointsMax;
-	int16 destLoc;
-	int16 destBox;
-	int gold;
-	Common::List<int> inventory;
-	Common::List<int> weapons;
-	Common::List<int> spells;
 };
 
 struct Location {
@@ -176,61 +137,6 @@ struct LocRoute {
 	Box boxes[32];
 };
 
-struct CharScope {
-	CharScope() : actorId(-1), screenH(0), screenDH(0), offset0c(0), offset10(0),
-		offset14(262144), offset1c(0), offset20(262144), offset28(0), ratioX(262144),
-		ratioY(262144), relativeSpeed(1024), direction(0), lastDirection(2),
-		scopeInUse(-1), scopeWanted(8), scopeLoaded(-1), priority(0), fightPartner(-1),
-		spriteSceneState(0), spriteScope(0), spriteTimer(0), somethingX(0), somethingY(0) {}
-	Scope scopes[18];
-	int16 actorId;
-	int16 screenX;
-	int16 screenY;
-	int16 screenH;
-	int16 screenDH;
-	int32 offset0c;
-	int32 offset10;
-	int32 offset14;
-	int32 offset1c;
-	int32 offset20;
-	int32 offset28;
-	int32 ratioX;
-	int32 ratioY;
-	int16 priority;
-	int32 lastLocation;
-	int32 lastBox;
-	int32 gotoBox;
-	int16 gotoX;
-	int16 gotoY;
-	int16 gotoLoc;
-	uint16 walkSpeed;
-	uint16 relativeSpeed;
-	uint16 animSpeed;
-	uint16 direction;
-	uint16 lastDirection;
-	bool stopped;
-	uint16 timeout;
-	int32 start3;
-	int32 start3Prev;
-	int32 start3PrevPrev;
-	int32 start4;
-	int32 start4Prev;
-	int32 start4PrevPrev;
-	int32 somethingX;
-	int32 somethingY;
-	int32 start5;
-	int32 start5Prev;
-	int32 start5PrevPrev;
-	uint32 offset78;
-	int16 fightPartner;
-	uint8 spriteSceneState;
-	uint16 spriteScope;
-	uint16 spriteTimer;
-	int16 scopeInUse;
-	int16 scopeWanted;
-	int16 scopeLoaded;
-};
-
 class Database {
 public:
 	Database(KomEngine *vm, OSystem *system);
@@ -269,7 +175,6 @@ public:
 	Character *getChar(uint16 charIndex) const { return charIndex < _charactersNum ? &(_characters[charIndex]) : NULL; }
 	Object *getObj(uint16 objIndex) const { return objIndex < _objectsNum ? &(_objects[objIndex]) : NULL; }
 	Location *getLoc(uint16 locIndex) const { return locIndex < _locationsNum ? &(_locations[locIndex]) : NULL; }
-	CharScope *getCharScope(uint16 scpIndex) const { return scpIndex < _charactersNum ? &(_charScopes[scpIndex]) : NULL; }
 
 	int charactersNum() { return _charactersNum; }
 
@@ -304,8 +209,6 @@ private:
 
 	Process *_processes;
 	int _procsNum;
-
-	CharScope *_charScopes;
 
 	int _varSize;
 	int16 *_variables;

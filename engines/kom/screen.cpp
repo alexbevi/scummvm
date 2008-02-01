@@ -94,51 +94,51 @@ void Screen::processGraphics() {
 	
 	// unload actors in other rooms
 	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
-		CharScope *scp = _vm->database()->getCharScope(i);
+		Character *chr = _vm->database()->getChar(i);
 
-		if (_vm->database()->getCharScope(0)->lastLocation != scp->lastLocation ||
-			!_vm->database()->getChar(i)->isVisible) {
+		if (_vm->database()->getChar(0)->_lastLocation != chr->_lastLocation ||
+			!_vm->database()->getChar(i)->_isVisible) {
 
 			// TODO - init scope stuff
-			if (scp->actorId >= 0) {
-				_vm->actorMan()->unload(scp->actorId);
-				scp->actorId = scp->scopeLoaded = scp->scopeInUse = -1;
+			if (chr->_actorId >= 0) {
+				_vm->actorMan()->unload(chr->_actorId);
+				chr->_actorId = chr->_scopeLoaded = chr->_scopeInUse = -1;
 			}
 		}
 	}
 
 	// load actors in this room
 	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
-		CharScope *scp = _vm->database()->getCharScope(i);
+		Character *chr = _vm->database()->getChar(i);
 
 		// TODO - init scope stuff
 		// TODO - disable actor if in fight
-		if (_vm->database()->getCharScope(0)->lastLocation == scp->lastLocation &&
-			_vm->database()->getChar(i)->isVisible) {
+		if (_vm->database()->getChar(0)->_lastLocation == chr->_lastLocation &&
+			chr->_isVisible) {
 
-			_vm->game()->setScope(i, _vm->database()->getCharScope(i)->scopeWanted);
+			chr->setScope(chr->_scopeWanted);
 
 			// FIXME: this is here just for testing
 
 			int scale;
 
-			Actor *act = _vm->actorMan()->get(scp->actorId);
+			Actor *act = _vm->actorMan()->get(chr->_actorId);
 
-			scale = (scp->start5 * 88) / 60;
-			act->setPos(scp->screenX / 2, (scp->start4 + (scp->screenH + scp->offset78) / scale) / 256 / 2);
-			act->setRatio(scp->ratioX / scale, scp->ratioY / scale);
+			scale = (chr->_start5 * 88) / 60;
+			act->setPos(chr->_screenX / 2, (chr->_start4 + (chr->_screenH + chr->_offset78) / scale) / 256 / 2);
+			act->setRatio(chr->_ratioX / scale, chr->_ratioY / scale);
 
-			act->setMaskDepth(_vm->database()->getPriority( scp->lastLocation, scp->lastBox), scp->start5);
+			act->setMaskDepth(_vm->database()->getPriority( chr->_lastLocation, chr->_lastBox), chr->_start5);
 
 			// FIXME end above
 		}
 
-		scp->start5PrevPrev = scp->start5Prev;
-		scp->start5Prev = scp->start5;
-		scp->start4PrevPrev = scp->start4Prev;
-		scp->start4Prev = scp->start4;
-		scp->start3PrevPrev = scp->start3Prev;
-		scp->start3Prev = scp->start3;
+		chr->_start5PrevPrev = chr->_start5Prev;
+		chr->_start5Prev = chr->_start5;
+		chr->_start4PrevPrev = chr->_start4Prev;
+		chr->_start4Prev = chr->_start4;
+		chr->_start3PrevPrev = chr->_start3Prev;
+		chr->_start3Prev = chr->_start3;
 	}
 
 	updateCursor();
@@ -200,6 +200,8 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 	int32 rowSkip = 0;
 	div_t d;
 
+	//printf("drawActorFrame(%hu, %hu, %hd, %hd, %hu, %hu)\n", width, height, xStart, yStart, xEnd, yEnd);
+
 	if (xStart < 0) {
 		// frame is entirely off-screen
 		if ((visibleWidth += xStart) < 0)
@@ -208,6 +210,7 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 		d = div(-xStart * width, scaledWidth);
 		startCol = d.quot;
 		colSkip = d.rem;
+		//printf("startCol: %hu, colSkip: %d\n", startCol, colSkip);
 
 		xStart = 0;
 	}
@@ -228,6 +231,7 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 		d = div(-yStart * height, scaledHeight);
 		startLine = d.quot;
 		rowSkip = d.rem;
+		//printf("startLine: %hu, rowSkip: %d\n", startLine, rowSkip);
 
 		yStart = 0;
 	}

@@ -3,6 +3,7 @@ MODULE := engines/kom
 MODULE_OBJS := \
 	kom.o \
 	screen.o \
+	character.o \
 	database.o \
 	actor.o \
 	input.o \

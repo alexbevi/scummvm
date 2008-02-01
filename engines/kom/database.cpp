@@ -31,6 +31,7 @@
 
 #include "kom/kom.h"
 #include "kom/database.h"
+#include "kom/character.h"
 
 using Common::File;
 
@@ -48,7 +49,6 @@ Database::Database(KomEngine *vm, OSystem *system)
 	_routes = 0;
 	_map = 0;
 	_locRoutes = 0;
-	_charScopes = new CharScope[100];
 }
 
 Database::~Database() {
@@ -61,7 +61,6 @@ Database::~Database() {
 	delete[] _routes;
 	delete[] _map;
 	delete[] _locRoutes;
-	delete[] _charScopes;
 }
 
 void Database::init(Common::String databasePrefix) {
@@ -149,6 +148,7 @@ void Database::initCharacters() {
 	readLineScanf(f, "%d", &_charactersNum);
 
 	_characters = new Character[_charactersNum];
+	Character::_vm = _vm;
 
 	for (int i = 0; i < _charactersNum; ++i) {
 		int index;
@@ -158,41 +158,43 @@ void Database::initCharacters() {
 		} while (line[0] == '\0');
 		sscanf(line, "%d", &index);
 
-		sscanf(line, "%*d %s %d %d",
-			_characters[index].name,
-			&(_characters[index].xtend),
-			&(_characters[index].data2));
+		_characters[index]._id = index;
 
-		f.readLine(_characters[index].desc, 50);
-		stripUndies(_characters[index].desc);
+		sscanf(line, "%*d %s %d %d",
+			_characters[index]._name,
+			&(_characters[index]._xtend),
+			&(_characters[index]._data2));
+
+		f.readLine(_characters[index]._desc, 50);
+		stripUndies(_characters[index]._desc);
 
 		readLineScanf(f, "%d",
-			&(_characters[index].proc));
+			&(_characters[index]._proc));
 		readLineScanf(f, "%d %d %d %d %d",
-			&(_characters[index].locationId),
-			&(_characters[index].box),
-			&(_characters[index].data5),
-			&(_characters[index].data6),
-			&(_characters[index].data7));
+			&(_characters[index]._locationId),
+			&(_characters[index]._box),
+			&(_characters[index]._data5),
+			&(_characters[index]._data6),
+			&(_characters[index]._data7));
 		readLineScanf(f, "%d %d %d",
-			&(_characters[index].data8),
-			&(_characters[index].data9),
-			&(_characters[index].hitPoints));
+			&(_characters[index]._data8),
+			&(_characters[index]._data9),
+			&(_characters[index]._hitPoints));
 		readLineScanf(f, "%d %d %d %d",
-			&(_characters[index].strength),
-			&(_characters[index].defense),
-			&(_characters[index].damageMin),
-			&(_characters[index].damageMax));
+			&(_characters[index]._strength),
+			&(_characters[index]._defense),
+			&(_characters[index]._damageMin),
+			&(_characters[index]._damageMax));
 		readLineScanf(f, "%d %d %d %d",
-			&(_characters[index].data14),
-			&(_characters[index].data15),
-			&(_characters[index].data16),
-			&(_characters[index].spellPoints));
+			&(_characters[index]._data14),
+			&(_characters[index]._data15),
+			&(_characters[index]._data16),
+			&(_characters[index]._spellPoints));
 
-	_characters[index].destLoc = _characters[index].locationId;
-	_characters[index].destBox = _characters[index].box;
-	_characters[index].hitPointsMax = _characters[index].hitPoints;
-	_characters[index].spellPointsMax = _characters[index].spellPoints;
+		_characters[index]._destLoc = _characters[index]._locationId;
+		_characters[index]._destBox = _characters[index]._box;
+		_characters[index]._hitPointsMax = _characters[index]._hitPoints;
+		_characters[index]._spellPointsMax = _characters[index]._spellPoints;
 	}
 
 	f.close();
@@ -360,15 +362,15 @@ void Database::initObjectLocs() {
 			if (_objects[i].ownerType == 1)
 				_locations[_objects[i].ownerId].objects.push_back(i);
 			else
-				_characters[_objects[i].ownerId].inventory.push_back(i);
+				_characters[_objects[i].ownerId]._inventory.push_back(i);
 		}
 	}
 }
 
 void Database::initCharacterLocs() {
 	for (int i = 0; i < _charactersNum; ++i)
-		_locations[_characters[i].locationId].characters.push_back(i);
-	_vm->game()->settings()->currLocation = _characters[0].locationId;
+		_locations[_characters[i]._locationId].characters.push_back(i);
+	_vm->game()->settings()->currLocation = _characters[0]._locationId;
 }
 
 void Database::initProcs() {
@@ -711,14 +713,14 @@ void Database::initScopes() {
 	} while (line[0] == '\0');
 
 	while (!f.eof()) {
-		CharScope *charScope;
+		Character *charScope;
 
 		sscanf(line, "%s", keyword);
 
 		if (strcmp(keyword, "ACTOR") == 0) {
 			sscanf(line, "%*s %hu", &tmp1);
 			actorIndex = tmp1;
-			charScope = _charScopes + actorIndex;
+			charScope = getChar(actorIndex);
 
 		} else if (strcmp(keyword, "SCOPE") == 0) {
 			sscanf(line, "%*s %hu", &tmp1);
@@ -727,44 +729,44 @@ void Database::initScopes() {
 			sscanf(line, "%*s %*u %hu %hu %hu",
 				&(tmp1), &(tmp2), &(tmp3));
 
-			charScope->scopes[scopeIndex].minFrame = tmp1;
-			charScope->scopes[scopeIndex].maxFrame = tmp2;
-			charScope->scopes[scopeIndex].startFrame = tmp3;
+			charScope->_scopes[scopeIndex].minFrame = tmp1;
+			charScope->_scopes[scopeIndex].maxFrame = tmp2;
+			charScope->_scopes[scopeIndex].startFrame = tmp3;
 
 		} else if (strcmp(keyword, "SPEED") == 0) {
 			sscanf(line, "%*s %hu %hu",
-				&(charScope->walkSpeed),
-				&(charScope->animSpeed));
+				&(charScope->_walkSpeed),
+				&(charScope->_animSpeed));
 
 		} else if (strcmp(keyword, "TIMEOUT") == 0) {
 			sscanf(line, "%*s %hu",
-				&(charScope->timeout));
-			charScope->timeout *= 24;
+				&(charScope->_timeout));
+			charScope->_timeout *= 24;
 
 		} else if (strcmp(keyword, "START") == 0) {
 			sscanf(line, "%*s %d %d %d %d %d",
-				&(charScope->lastLocation),
-				&(charScope->lastBox),
-				&(charScope->start3),
-				&(charScope->start4),
-				&(charScope->start5));
+				&(charScope->_lastLocation),
+				&(charScope->_lastBox),
+				&(charScope->_start3),
+				&(charScope->_start4),
+				&(charScope->_start5));
 
-			charScope->gotoLoc = charScope->lastLocation; // FIXME: Not in original. just in case
-			charScope->gotoBox = charScope->lastBox;
-			charScope->screenX = charScope->gotoX = charScope->start3 / 256;
-			charScope->screenY = charScope->gotoY = charScope->start4 / 256;
-			charScope->start3Prev = charScope->start3PrevPrev = charScope->start3;
-			charScope->start4Prev = charScope->start4PrevPrev = charScope->start4;
-			charScope->start5Prev = charScope->start5PrevPrev = charScope->start5;
+			charScope->_gotoLoc = charScope->_lastLocation; // FIXME: Not in original. just in case
+			charScope->_gotoBox = charScope->_lastBox;
+			charScope->_screenX = charScope->_gotoX = charScope->_start3 / 256;
+			charScope->_screenY = charScope->_gotoY = charScope->_start4 / 256;
+			charScope->_start3Prev = charScope->_start3PrevPrev = charScope->_start3;
+			charScope->_start4Prev = charScope->_start4PrevPrev = charScope->_start4;
+			charScope->_start5Prev = charScope->_start5PrevPrev = charScope->_start5;
 
-			if (charScope->walkSpeed == 0) {
-				charScope->stopped = true;
-				charScope->timeout = 50;
-				charScope->offset78 = 0x80000;
+			if (charScope->_walkSpeed == 0) {
+				charScope->_stopped = true;
+				charScope->_timeout = 50;
+				charScope->_offset78 = 0x80000;
 			} else {
-				charScope->stopped = false;
-				charScope->timeout = 0;
-				charScope->offset78 = 0xc0000;
+				charScope->_stopped = false;
+				charScope->_timeout = 0;
+				charScope->_offset78 = 0xc0000;
 			}
 		}
 
@@ -896,16 +898,16 @@ bool Database::isInLine(int loc, int box, int x, int y) {
 }
 
 void Database::setCharPos(int charId, int loc, int box) {
-	_characters[charId].box = box;
+	_characters[charId]._box = box;
 
-	_locations[_characters[charId].locationId].characters.remove(charId);
+	_locations[_characters[charId]._locationId].characters.remove(charId);
 
-	_characters[charId].locationId = loc;
+	_characters[charId]._locationId = loc;
 	_locations[loc].characters.push_back(charId);
 
 	if (charId == 0) {
-		_characters[0].destLoc = loc;
-		_characters[0].destBox = box;
+		_characters[0]._destLoc = loc;
+		_characters[0]._destBox = box;
 	}
 }
 
@@ -928,17 +930,17 @@ bool Database::giveObject(int charId, int obj, bool something) {
 
 		switch (type) {
 		case 3:
-			_characters[charId].gold += _objects[obj].price;
+			_characters[charId]._gold += _objects[obj].price;
 			// Fall through
 		case 0:
 		case 4:
-			_characters[charId].inventory.push_back(obj);
+			_characters[charId]._inventory.push_back(obj);
 			break;
 		case 1:
-			_characters[charId].weapons.push_back(obj);
+			_characters[charId]._weapons.push_back(obj);
 			break;
 		case 2:
-			_characters[charId].spells.push_back(obj);
+			_characters[charId]._spells.push_back(obj);
 			break;
 		}
 	}
@@ -962,13 +964,13 @@ bool Database::giveObject(int charId, int obj, bool something) {
 		switch (type) {
 		case 0:
 		case 4:
-			_characters[charId].inventory.remove(obj);
+			_characters[charId]._inventory.remove(obj);
 			break;
 		case 1:
-			_characters[charId].weapons.remove(obj);
+			_characters[charId]._weapons.remove(obj);
 			break;
 		case 2:
-			_characters[charId].spells.remove(obj);
+			_characters[charId]._spells.remove(obj);
 			break;
 		}
 

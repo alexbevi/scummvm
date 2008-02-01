@@ -140,7 +140,7 @@ void KomEngine::gameLoop() {
 	// setBrightness(256)
 	// clearWorkScreen
 	// init some global vars
-	_database->getChar(0)->isBusy = false;
+	_database->getChar(0)->_isBusy = false;
 	// init something in the procs struct
 	// init some more vars
 	// some tricks with the loop input based on day/night

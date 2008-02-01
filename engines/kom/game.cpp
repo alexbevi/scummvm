@@ -51,7 +51,7 @@ void Game::enterLocation(uint16 locId) {
 	char filename[50];
 
 	// FIXME - hack
-	_vm->database()->getCharScope(0)->lastLocation = locId;
+	_vm->database()->getChar(0)->_lastLocation = locId;
 
 	_vm->panel()->showLoading(true);
 
@@ -148,7 +148,7 @@ void Game::enterLocation(uint16 locId) {
 
 void Game::processTime() {
 	if (_settings.dayMode == 0) {
-		if (_vm->database()->getChar(0)->isBusy && _settings.gameCycles >= 6000)
+		if (_vm->database()->getChar(0)->_isBusy && _settings.gameCycles >= 6000)
 			_settings.gameCycles = 5990;
 
 		if (_vm->database()->getLoc(_settings.currLocation)->allowedTime == 2) {
@@ -161,7 +161,7 @@ void Game::processTime() {
 
 		if (_settings.gameCycles < 6000) {
 
-			if (!_vm->database()->getChar(0)->isBusy)
+			if (!_vm->database()->getChar(0)->_isBusy)
 				(_settings.gameCycles)++;
 
 		} else if (_vm->database()->getLoc(_settings.currLocation)->allowedTime == 0) {
@@ -174,7 +174,7 @@ void Game::processTime() {
 
 	} else if (_settings.dayMode == 1) {
 
-		if (_vm->database()->getChar(0)->isBusy && _settings.gameCycles >= 3600)
+		if (_vm->database()->getChar(0)->_isBusy && _settings.gameCycles >= 3600)
 			_settings.gameCycles = 3590;
 
 		if (_vm->database()->getLoc(_settings.currLocation)->allowedTime == 1) {
@@ -187,7 +187,7 @@ void Game::processTime() {
 
 		if (_settings.gameCycles < 3600) {
 
-			if (!_vm->database()->getChar(0)->isBusy)
+			if (!_vm->database()->getChar(0)->_isBusy)
 				(_settings.gameCycles)++;
 
 		} else if (_vm->database()->getLoc(_settings.currLocation)->allowedTime == 0) {
@@ -207,11 +207,11 @@ void Game::processTime() {
 void Game::processChars() {
 	for (int i = 0; i < _vm->database()->charactersNum(); ++i) {
 		Character *ch = _vm->database()->getChar(i);
-		if (ch->isAlive && ch->proc != -1 && ch->mode < 6) {
-			switch (ch->mode) {
+		if (ch->_isAlive && ch->_proc != -1 && ch->_mode < 6) {
+			switch (ch->_mode) {
 			case 0:
 			case 3:
-				processChar(ch->proc);
+				processChar(ch->_proc);
 				break;
 			case 1:
 				warning("TODO: processChars 1");
@@ -313,10 +313,10 @@ bool Game::doStat(const Command *cmd) {
 			db->setVar(j->arg2, db->getVar(j->arg2) - j->arg3);
 			break;
 		case 381:
-			keepProcessing = db->getChar(0)->locationId == j->arg2;
+			keepProcessing = db->getChar(0)->_locationId == j->arg2;
 			break;
 		case 382:
-			keepProcessing = db->getChar(0)->locationId != j->arg2;
+			keepProcessing = db->getChar(0)->_locationId != j->arg2;
 			break;
 		case 383:
 			keepProcessing = false;
@@ -332,30 +332,30 @@ bool Game::doStat(const Command *cmd) {
 			keepProcessing = db->giveObject(j->arg2, 0, false);
 			break;
 		case 391:
-			keepProcessing = db->getChar(0)->gold != 0;
+			keepProcessing = db->getChar(0)->_gold != 0;
 			break;
 		case 392:
-			keepProcessing = db->getChar(0)->gold == 0;
+			keepProcessing = db->getChar(0)->_gold == 0;
 			break;
 		case 393:
-			if (db->getChar(0)->gold >= j->arg3) {
-				db->getChar(0)->gold -= j->arg3;
-				db->getChar(j->arg2)->gold += j->arg3;
+			if (db->getChar(0)->_gold >= j->arg3) {
+				db->getChar(0)->_gold -= j->arg3;
+				db->getChar(j->arg2)->_gold += j->arg3;
 			}
 			break;
 		case 394:
 			keepProcessing = false;
 			if (j->arg4 == -1)
-				keepProcessing = db->getChar(j->arg2)->locationId == j->arg3;
-			else if (db->getChar(j->arg2)->locationId == j->arg3)
-				keepProcessing = db->getChar(j->arg2)->box == j->arg4;
+				keepProcessing = db->getChar(j->arg2)->_locationId == j->arg3;
+			else if (db->getChar(j->arg2)->_locationId == j->arg3)
+				keepProcessing = db->getChar(j->arg2)->_box == j->arg4;
 			break;
 		case 395:
 			keepProcessing = true;
 			if (j->arg4 == -1)
-				keepProcessing = db->getChar(j->arg2)->locationId != j->arg3;
-			else if (db->getChar(j->arg2)->locationId == j->arg3)
-				keepProcessing = db->getChar(j->arg2)->box != j->arg4;
+				keepProcessing = db->getChar(j->arg2)->_locationId != j->arg3;
+			else if (db->getChar(j->arg2)->_locationId == j->arg3)
+				keepProcessing = db->getChar(j->arg2)->_box != j->arg4;
 			break;
 		case 398:
 			keepProcessing =
@@ -374,100 +374,100 @@ bool Game::doStat(const Command *cmd) {
 				enterLocation(j->arg3);
 			break;
 		case 402:
-			db->getChar(j->arg2)->destLoc = j->arg3;
-			db->getChar(j->arg2)->destBox = j->arg4;
+			db->getChar(j->arg2)->_destLoc = j->arg3;
+			db->getChar(j->arg2)->_destBox = j->arg4;
 			break;
 		case 405:
-			db->getChar(j->arg2)->destLoc =
-			db->getChar(j->arg2)->destBox = -2;
+			db->getChar(j->arg2)->_destLoc =
+			db->getChar(j->arg2)->_destBox = -2;
 			break;
 		case 406:
-			db->getChar(j->arg2)->destLoc =
-			db->getChar(j->arg2)->destBox = -3;
+			db->getChar(j->arg2)->_destLoc =
+			db->getChar(j->arg2)->_destBox = -3;
 			break;
 		case 407:
-			db->getChar(j->arg2)->destLoc =
-			db->getChar(j->arg2)->destBox = -4;
+			db->getChar(j->arg2)->_destLoc =
+			db->getChar(j->arg2)->_destBox = -4;
 			break;
 		case 408:
-			db->getChar(j->arg2)->destLoc =
-			db->getChar(j->arg2)->destBox = -5;
+			db->getChar(j->arg2)->_destLoc =
+			db->getChar(j->arg2)->_destBox = -5;
 			break;
 		case 409:
-			keepProcessing = db->getChar(j->arg2)->isBusy;
+			keepProcessing = db->getChar(j->arg2)->_isBusy;
 			break;
 		case 410:
-			keepProcessing = !(db->getChar(j->arg2)->isBusy);
+			keepProcessing = !(db->getChar(j->arg2)->_isBusy);
 			break;
 		case 411:
-			keepProcessing = db->getChar(j->arg2)->isAlive;
+			keepProcessing = db->getChar(j->arg2)->_isAlive;
 			break;
 		case 412:
-			keepProcessing = !(db->getChar(j->arg2)->isAlive);
+			keepProcessing = !(db->getChar(j->arg2)->_isAlive);
 			break;
 		case 414:
 			warning("TODO: unset spell");
-			db->getChar(j->arg2)->isAlive = false;
+			db->getChar(j->arg2)->_isAlive = false;
 			break;
 		case 416:
-			db->getChar(j->arg2)->hitPoints =
+			db->getChar(j->arg2)->_hitPoints =
 				(db->getVar(j->arg3) ? db->getVar(j->arg3) : 0);
-			if (db->getChar(j->arg2)->hitPoints > db->getChar(j->arg2)->hitPointsMax)
-				db->getChar(j->arg2)->hitPoints = db->getChar(j->arg2)->hitPointsMax;
+			if (db->getChar(j->arg2)->_hitPoints > db->getChar(j->arg2)->_hitPointsMax)
+				db->getChar(j->arg2)->_hitPoints = db->getChar(j->arg2)->_hitPointsMax;
 			break;
 		case 417:
-			db->getChar(j->arg2)->gold =
+			db->getChar(j->arg2)->_gold =
 				db->getVar(j->arg3);
 			break;
 		case 418:
-			db->getChar(j->arg2)->spellPoints =
+			db->getChar(j->arg2)->_spellPoints =
 				(db->getVar(j->arg3) ? db->getVar(j->arg3) : 0);
-			if (db->getChar(j->arg2)->spellPoints > db->getChar(j->arg2)->spellPointsMax)
-				db->getChar(j->arg2)->spellPoints = db->getChar(j->arg2)->spellPointsMax;
+			if (db->getChar(j->arg2)->_spellPoints > db->getChar(j->arg2)->_spellPointsMax)
+				db->getChar(j->arg2)->_spellPoints = db->getChar(j->arg2)->_spellPointsMax;
 			break;
 		case 422:
-			db->setVar(j->arg2, db->getChar(j->arg3)->hitPoints);
+			db->setVar(j->arg2, db->getChar(j->arg3)->_hitPoints);
 			break;
 		case 423:
-			db->setVar(j->arg2, db->getChar(j->arg3)->spellMode);
+			db->setVar(j->arg2, db->getChar(j->arg3)->_spellMode);
 			break;
 		case 424:
-			db->setVar(j->arg2, db->getChar(j->arg3)->gold);
+			db->setVar(j->arg2, db->getChar(j->arg3)->_gold);
 			break;
 		case 425:
-			db->setVar(j->arg2, db->getChar(j->arg3)->spellPoints);
+			db->setVar(j->arg2, db->getChar(j->arg3)->_spellPoints);
 			break;
 		case 426:
-			keepProcessing = db->getChar(j->arg2)->locationId ==
-			    db->getChar(j->arg3)->locationId;
+			keepProcessing = db->getChar(j->arg2)->_locationId ==
+			    db->getChar(j->arg3)->_locationId;
 			break;
 		case 427:
-			keepProcessing = db->getChar(j->arg2)->locationId !=
-			    db->getChar(j->arg3)->locationId;
+			keepProcessing = db->getChar(j->arg2)->_locationId !=
+			    db->getChar(j->arg3)->_locationId;
 			break;
 		case 430:
-			db->getChar(j->arg2)->mode = 1;
-			db->getChar(j->arg2)->modeCount = j->arg3;
+			db->getChar(j->arg2)->_mode = 1;
+			db->getChar(j->arg2)->_modeCount = j->arg3;
 			break;
 		case 431:
-			db->getChar(j->arg2)->mode = 1;
-			db->getChar(j->arg2)->modeCount = db->getVar(j->arg3);
+			db->getChar(j->arg2)->_mode = 1;
+			db->getChar(j->arg2)->_modeCount = db->getVar(j->arg3);
 			break;
 		case 432:
-			db->getChar(j->arg2)->isVisible = true;
+			db->getChar(j->arg2)->_isVisible = true;
 			break;
 		case 433:
-			db->getChar(j->arg2)->isVisible = false;
+			db->getChar(j->arg2)->_isVisible = false;
 			break;
 		case 434:
 			//warning("TODO: doActionCollide(%d, %d)", j->arg2, j->arg3);
 			keepProcessing = false;
 			break;
 		case 438:
-			db->getChar(j->arg2)->strength = j->arg3;
-			db->getChar(j->arg2)->defense = j->arg4;
-			db->getChar(j->arg2)->damageMin = j->arg5;
-			db->getChar(j->arg2)->damageMax = j->arg6;
+			db->getChar(j->arg2)->_strength = j->arg3;
+			db->getChar(j->arg2)->_defense = j->arg4;
+			db->getChar(j->arg2)->_damageMin = j->arg5;
+			db->getChar(j->arg2)->_damageMax = j->arg6;
 			break;
 		case 441:
 			keepProcessing = db->giveObject(j->arg2, j->arg3, j->arg4);
@@ -503,7 +503,7 @@ bool Game::doStat(const Command *cmd) {
 			setNight();
 			break;
 		case 458:
-			db->getChar(j->arg2)->xtend = j->arg3;
+			db->getChar(j->arg2)->_xtend = j->arg3;
 			changeMode(j->arg2, 2);
 			break;
 		case 459:
@@ -511,7 +511,7 @@ bool Game::doStat(const Command *cmd) {
 			changeMode(j->arg2, 3);
 			break;
 		case 465:
-			db->setVar(j->arg2, db->getChar(j->arg3)->xtend);
+			db->setVar(j->arg2, db->getChar(j->arg3)->_xtend);
 			break;
 		case 466:
 			db->setVar(j->arg2, db->getLoc(j->arg3)->xtend);
@@ -565,25 +565,25 @@ void Game::loopMove() {
 	// TODO - handle player char
 
 	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
-		CharScope *scp = _vm->database()->getCharScope(i);
+		Character *chr = _vm->database()->getChar(i);
 
-		if (!(_vm->database()->getChar(i)->isAlive)) {
+		if (!(chr->_isAlive)) {
 			// TODO - set some stuff
-			scp->screenH = 0;
-			scp->offset10 = 0;
-			scp->offset14 = scp->offset20 = 262144;
-			scp->scopeWanted = 100;
-			moveCharOther(i);
+			chr->_screenH = 0;
+			chr->_offset10 = 0;
+			chr->_offset14 = chr->_offset20 = 262144;
+			chr->_scopeWanted = 100;
+			chr->moveCharOther();
 
-		} else if (scp->walkSpeed == 0) {
-			scp->scopeWanted = 17;
-			scp->priority = _vm->database()->getPriority(scp->lastLocation, scp->lastBox);
-			moveCharOther(i);
+		} else if (chr->_walkSpeed == 0) {
+			chr->_scopeWanted = 17;
+			chr->_priority = _vm->database()->getPriority(chr->_lastLocation, chr->_lastBox);
+			chr->moveCharOther();
 
 		} else {
-			if (scp->spriteSceneState == 0 && scp->fightPartner < 0) {
-				int16 destBox = _vm->database()->getChar(i)->destBox;
-				scp->gotoLoc = _vm->database()->getChar(i)->destLoc;
+			if (chr->_spriteSceneState == 0 && chr->_fightPartner < 0) {
+				int16 destBox = chr->_destBox;
+				chr->_gotoLoc = chr->_destLoc;
 
 				if (destBox + 5 <= 3)  {
 					switch (destBox + 5) {
@@ -595,24 +595,24 @@ void Game::loopMove() {
 					}
 					// TODO
 				} else {
-					scp->gotoX = _vm->database()->getMidX(scp->gotoLoc, destBox);
-					scp->gotoY = _vm->database()->getMidY(scp->gotoLoc, destBox);
+					chr->_gotoX = _vm->database()->getMidX(chr->_gotoLoc, destBox);
+					chr->_gotoY = _vm->database()->getMidY(chr->_gotoLoc, destBox);
 				}
 			}
 
 			// TODO - collision
 			// TODO - fight-related thing
 
-			if (_vm->database()->getChar(i)->mode == 1)
-				stopChar(i);
+			if (chr->_mode == 1)
+				chr->stopChar();
 
-			if (scp->spriteTimer <= 0 && scp->fightPartner < 0)
-				moveChar(i, true);
-			moveCharOther(i);
+			if (chr->_spriteTimer <= 0 && chr->_fightPartner < 0)
+				chr->moveChar(true);
+			chr->moveCharOther();
 
-			if (scp->gotoBox != scp->lastBox) {
-				scp->gotoBox = scp->lastBox;
-				_vm->database()->setCharPos(i, scp->lastLocation, scp->lastBox);
+			if (chr->_gotoBox != chr->_lastBox) {
+				chr->_gotoBox = chr->_lastBox;
+				_vm->database()->setCharPos(i, chr->_lastLocation, chr->_lastBox);
 			}
 		}
 	}
@@ -622,12 +622,12 @@ void Game::loopMove() {
 
 void Game::loopSpriteCut() {
 	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
-		CharScope *scp = _vm->database()->getCharScope(i);
+		Character *chr = _vm->database()->getChar(i);
 
-		if (scp->actorId < 0)
+		if (chr->_actorId < 0)
 			continue;
 
-		switch (scp->spriteSceneState) {
+		switch (chr->_spriteSceneState) {
 		case 0:
 			break;
 		case 1:
@@ -635,14 +635,14 @@ void Game::loopSpriteCut() {
 		case 2:
 			break;
 		case 3:
-			if (scp->spriteTimer > 0)
-				scp->spriteTimer--;
-			if (scp->spriteTimer <= 1)
-				_vm->database()->getChar(i)->isBusy = false;
+			if (chr->_spriteTimer > 0)
+				chr->_spriteTimer--;
+			if (chr->_spriteTimer <= 1)
+				chr->_isBusy = false;
 
-			if (scp->spriteTimer == 0) {
-				scp->spriteSceneState = 0;
-				scp->lastDirection = 4;
+			if (chr->_spriteTimer == 0) {
+				chr->_spriteSceneState = 0;
+				chr->_lastDirection = 4;
 			}
 			break;
 		default:
@@ -665,12 +665,12 @@ int16 Game::doExternalAction(const char *action) {
 }
 void Game::doActionDusk() {
 	_player.isNight = 1;
-	enterLocation(_vm->database()->getChar(0)->locationId);
+	enterLocation(_vm->database()->getChar(0)->_locationId);
 }
 
 void Game::doActionDawn() {
 	_player.isNight = 0;
-	enterLocation(_vm->database()->getChar(0)->locationId);
+	enterLocation(_vm->database()->getChar(0)->_locationId);
 }
 
 void Game::setDay() {
@@ -685,433 +685,6 @@ void Game::setNight() {
 		_settings.gameCycles = 6000;
 		_settings.dayMode = 0;
 	}
-}
-
-void Game::setScope(uint16 charId, int16 scope) {
-	//Actor *act;
-	int16 newScope = scope;
-
-	// TODO - handle spell effect (overrides the scope)
-
-	// TODO - hack
-	//if (_vm->database()->getCharScope(charId)->actorId == -1) {
-	setScopeX(charId, newScope);
-	//}
-
-	// TODO - a bit more
-	//act = _vm->actorMan()->get(_vm->database()->getCharScope(charId)->actorId);
-}
-
-void Game::setScopeX(uint16 charId, int16 scope) {
-	CharScope *scp = _vm->database()->getCharScope(charId);
-	Character *character = _vm->database()->getChar(charId);
-	char filename[50];
-	String charName(character->name);
-	charName.toLowercase();
-	Actor *act;
-
-	if (scp->spriteTimer > 0)
-		scope = scp->spriteScope;
-
-	if (scp->scopeLoaded != -1 && scp->scopeInUse == scope)
-		return;
-
-	// TODO - check spell effect and handle cabbage/grave/cutscene
-
-	assert(scp->scopes[scope].startFrame != -1);
-
-	if (scp->scopeLoaded !=
-			character->xtend + (scp->walkSpeed == 0 ? _player.isNight : 0)) {
-
-		char xtend = character->xtend;
-
-		if (scp->scopeLoaded != -1 && scp->actorId != -1) {
-			_vm->actorMan()->unload(scp->actorId);
-			scp->actorId = -1;
-		}
-
-		if (scp->walkSpeed == 0)
-			xtend += _player.isNight;
-
-		sprintf(filename, "%s%c", charName.c_str(), xtend + (xtend < 10 ? '0' : '7'));
-		scp->scopeLoaded = xtend;
-
-		_vm->panel()->showLoading(true);
-		scp->actorId =
-			_vm->actorMan()->load(_vm->dataDir()->getChild("kom").getChild("actors"), filename);
-		_vm->actorMan()->get(scp->actorId)->enable(1);
-		_vm->panel()->showLoading(false);
-	}
-
-	if (scp->scopeInUse == scope)
-		return;
-
-	scp->scopeInUse = scope;
-
-	act = _vm->actorMan()->get(scp->actorId);
-	act->defineScope(0, scp->scopes[scope].minFrame, scp->scopes[scope].maxFrame, scp->scopes[scope].startFrame);
-	act->setScope(0, scp->animSpeed);
-
-	if (scope != 12)
-		return;
-
-	scp->spriteSceneState = 3;
-	scp->spriteTimer = (scp->scopes[scope].maxFrame - scp->scopes[scope].minFrame) * scp->animSpeed - 1;
-	scp->spriteScope = scope;
-	scp->scopeInUse = scope;
-	character->isBusy = true;
-}
-
-// TODO - move to Character class?
-void Game::moveChar(uint16 charId, bool param) {
-	CharScope *scp = _vm->database()->getCharScope(charId);
-	int16 nextLoc, targetBox, targetBoxX, targetBoxY, nextBox;
-
-	if (scp->lastLocation == 0) return;
-
-	// Find the final box we're supposed to reach
-	if (scp->gotoLoc != scp->lastLocation) {
-
-		if (scp->gotoLoc >= 0 && scp->lastLocation >= 0)
-			nextLoc = _vm->database()->loc2loc(scp->lastLocation, scp->gotoLoc);
-		else
-			nextLoc = -1;
-
-		if (nextLoc > 0) {
-			targetBox = _vm->database()->getExitBox(scp->lastLocation, nextLoc);
-
-			if (scp->lastLocation >= 0 && targetBox > 0) {
-				Box *b = _vm->database()->getBox(scp->lastLocation, targetBox);
-				targetBoxX = (b->x2 - b->x1) / 2 + b->x1;
-				targetBoxY = (b->y2 - b->y1) / 2 + b->y1;
-			} else {
-				targetBoxX = 319;
-				targetBoxY = 389;
-			}
-
-			scp->gotoX = targetBoxX;
-			scp->gotoY = targetBoxY;
-
-		} else
-			targetBox = scp->lastBox;
-
-	} else {
-		targetBox = _vm->database()->whatBox(scp->lastLocation, scp->gotoX, scp->gotoY);
-	}
-
-	assert(targetBox != -1);
-
-	nextBox = _vm->database()->box2box(scp->lastLocation, scp->lastBox, targetBox);
-
-	int16 x, y, xMove, yMove;
-
-	// Walk to the center of the current box
-	if (targetBox == scp->lastBox) {
-		x = scp->gotoX;
-		y = scp->gotoY;
-
-	// Stand in place
-	} else if (nextBox == -1) {
-		x = scp->screenX;
-		y = scp->screenY;
-
-	// Walk from box to box
-	} else if (_vm->database()->isInLine(scp->lastLocation, nextBox, scp->screenX, scp->screenY)) {
-		if (scp->lastLocation > 0 && nextBox > 0) {
-			Box *b = _vm->database()->getBox(scp->lastLocation, nextBox);
-			x = b->x1 + (b->x2 - b->x1) / 2;
-			y = b->y1 + (b->y2 - b->y1) / 2;
-		} else {
-			x = 319;
-			y = 389;
-		}
-
-	} else {
-		x = _vm->database()->getMidOverlapX(scp->lastLocation, scp->lastBox, nextBox);
-		y = _vm->database()->getMidOverlapY(scp->lastLocation, scp->lastBox, nextBox);
-	}
-
-	xMove = (x - scp->screenX);
-	yMove = (y - scp->screenY) * 2;
-
-	if (abs(xMove) + abs(yMove) == 0) {
-		scp->somethingX = scp->somethingY = 0;
-	} else {
-		int thing;
-		assert(scp->start5 != 0);
-
-		if (scp->relativeSpeed == 1024) {
-			thing = scp->walkSpeed * 65536 / ((abs(xMove) + abs(yMove)) * scp->start5);
-		} else
-			thing = scp->walkSpeed * scp->relativeSpeed * 65536 / ((abs(xMove) + abs(yMove)) * scp->start5);
-
-		// Now we should set 64h and 68h
-		scp->somethingX = xMove * thing / 256;
-		scp->somethingY = yMove * thing / 256;
-
-		if (abs(xMove) * 256 < abs(scp->somethingX)) {
-			scp->start3 = x * 256;
-			scp->somethingX = 0;
-		}
-
-		if (abs(yMove) * 256 < abs(scp->somethingY)) {
-			scp->start4 = y * 256;
-			scp->somethingY = 0;
-		}
-	}
-
-	int boxAfterStep, boxAfterStep2;
-
-	boxAfterStep = scp->lastBox;
-	scp->somethingY /= 2;
-
-	if (!param) {
-		Box *box;
-
-		boxAfterStep2 = _vm->database()->whatBox(scp->lastLocation,
-				(scp->start3 + scp->somethingX) / 256,
-				(scp->start4 + scp->somethingY) / 256);
-
-		// TODO : check if box doesn't exist?
-		box = _vm->database()->getBox(scp->lastLocation, boxAfterStep2);
-
-		if (box->attrib == 8)
-			boxAfterStep2 = -1;
-
-	} else {
-		boxAfterStep2 = _vm->database()->whatBoxLinked(scp->lastLocation, scp->lastBox,
-				(scp->start3 + scp->somethingX) / 256,
-				(scp->start4 + scp->somethingY) / 256);
-	}
-
-	if (boxAfterStep2 != -1) {
-		boxAfterStep = boxAfterStep2;
-	} else {
-		Box *box;
-
-		if (!param && nextBox == targetBox) {
-			scp->lastBox = targetBox;
-			boxAfterStep = targetBox;
-		}
-
-		box = _vm->database()->getBox(scp->lastLocation, scp->lastBox);
-
-		if (scp->start3 + scp->somethingX < box->x1 * 256) {
-			if (scp->start4 + scp->somethingY < box->y1 * 256) {
-				scp->somethingX = box->x1 * 256 - scp->start3;
-				scp->somethingY = box->y1 * 256 - scp->start4;
-			} else {
-				if (scp->start4 + scp->somethingY > box->y2 * 256) {
-					scp->somethingY = box->y2 * 256 - scp->start4;
-				}
-				scp->somethingX = box->x1 * 256 - scp->start3;
-			}
-		} else if (scp->start3 + scp->somethingX > box->x2 * 256) {
-			if (scp->start4 + scp->somethingY < box->y1 * 256) {
-				scp->somethingX = box->x2 * 256 - scp->start3;
-				scp->somethingY = box->y1 * 256 - scp->start4;
-			} else {
-				if (scp->start4 + scp->somethingY > box->y2 * 256) {
-					scp->somethingY = box->y2 * 256 - scp->start4;
-				}
-				scp->somethingX = box->x2 * 256 - scp->start3;
-			}
-		} else if (scp->start4 + scp->somethingY < box->y1 * 256) {
-			scp->somethingY = box->y1 * 256 - scp->start4;
-		} else if (scp->start4 + scp->somethingY > box->y2 * 256) {
-			scp->somethingY = box->y2 * 256 - scp->start4;
-		}
-	}
-
-	if (nextBox == -1 && scp->somethingX == 0 && scp->somethingY == 0) {
-		scp->direction = 0;
-		scp->stopped = true;
-	} else {
-		scp->stopped = false;
-	}
-
-	scp->start3 += scp->somethingX;
-	scp->start4 += scp->somethingY;
-	scp->screenX = scp->start3 / 256;
-	scp->screenY = scp->start4 / 256;
-	scp->lastBox = boxAfterStep;
-
-	if (scp->lastLocation != 0 || scp->lastBox != 0) {
-		scp->priority = _vm->database()->getBox(scp->lastLocation, scp->lastBox)->priority;
-	} else {
-		scp->priority = -1;
-	}
-
-	scp->start5 = _vm->database()->getZValue(scp->lastLocation, scp->lastBox, scp->start4);
-
-	// Set direction
-	if (scp->lastLocation == _vm->database()->getCharScope(0)->lastLocation) {
-		int32 xVector = (scp->start3 - scp->start3Prev) * scp->start5 / 256;
-		int32 yVector = (scp->start5 - scp->start5PrevPrev) * 256;
-
-		// FIXME: verify the correct condition
-		if (scp->direction != 0 && /*(*/abs(abs(xVector) - abs(yVector)) < 127/*& 0xFFFFFF80) == 0*/) {
-			scp->direction = scp->lastDirection;
-		} else if (abs(xVector) >= abs(yVector)) {
-			if (xVector < -4)
-				scp->direction = 1; // left
-			else if (xVector > 4)
-				scp->direction = 2; // right
-			else
-				scp->direction = 0;
-		} else {
-			if (yVector < -4)
-				scp->direction = 4; // front
-			else if (yVector > 4) {
-				scp->direction = 3; // back
-			}
-			else
-				scp->direction = 0;
-		}
-	}
-
-	// Set wanted scope
-	switch (scp->direction) {
-	case 0:
-		switch (scp->lastDirection - 1) {
-		case 0:
-			scp->scopeWanted = 9; // face left
-			break;
-		case 1:
-			scp->scopeWanted = 7; // face right
-			break;
-		case 2:
-			scp->scopeWanted = 4; // face back
-			break;
-		case 3:
-		default:
-			scp->scopeWanted = 8; // face front
-			break;
-		}
-		break;
-	case 1:
-		if (scp->lastDirection == 1)
-			scp->scopeWanted = 1; // walk left
-		else
-			scp->lastDirection = 1;
-		break;
-	case 2:
-		if (scp->lastDirection == 2)
-			scp->scopeWanted = 0; // walk right
-		else
-			scp->lastDirection = 2;
-		break;
-	case 3:
-		if (scp->lastDirection == 3)
-			scp->scopeWanted = 2; // walk backward
-		else
-			scp->lastDirection = 3;
-		break;
-	case 4:
-		if (scp->lastDirection == 4)
-			scp->scopeWanted = 3; // walk forward
-		else
-			scp->lastDirection = 4;
-		break;
-	}
-}
-
-void Game::moveCharOther(uint16 charId) {
-	CharScope *scp = _vm->database()->getCharScope(charId);
-
-	if (scp->offset10 != 0 || scp->screenH != 0) {
-		if (scp->screenH > scp->offset10)
-			scp->offset0c -= 65536;
-		else
-			scp->offset0c += 65536;
-	}
-
-	scp->screenH += scp->offset0c;
-
-	if (scp->screenH > 0) {
-		if (scp->offset0c <= 262144) {
-			scp->screenH = scp->offset0c = 0;
-		} else {
-			scp->screenH = 1;
-			scp->offset0c /= -4;
-		}
-	}
-
-	// X ratio
-	if (scp->ratioX < scp->offset14) {
-		if (scp->offset1c < 0)
-			scp->offset1c += 131072;
-		else
-			scp->offset1c += 65536;
-	} else if (scp->ratioX > scp->offset14) {
-		if (scp->offset1c > 0)
-			scp->offset1c -= 131072;
-		else
-			scp->offset1c -= 65536;
-	}
-
-	if (scp->ratioX != scp->offset14) {
-		int32 foo = abs(scp->ratioX - scp->offset14);
-
-		if (foo <= 65536 && abs(scp->offset1c) <= 131072) {
-			scp->offset1c = 0;
-			scp->ratioX = scp->offset14;
-		} else {
-			scp->ratioX += scp->offset1c;
-		}
-
-		if (scp->ratioX < 1280) {
-			scp->offset1c /= -2;
-			scp->ratioX = 1280;
-		}
-	}
-
-	// Y ratio
-	if (scp->ratioY < scp->offset20) {
-		if (scp->offset28 < 0)
-			scp->offset28 += 131072;
-		else
-			scp->offset28 += 65536;
-	} else if (scp->ratioY > scp->offset20) {
-		if (scp->offset28 > 0)
-			scp->offset28 -= 131072;
-		else
-			scp->offset28 -= 65536;
-	}
-
-	if (scp->ratioY != scp->offset20) {
-		int32 foo = abs(scp->ratioY - scp->offset20);
-
-		if (foo <= 65536 && abs(scp->offset28) <= 131072) {
-			scp->offset28 = 0;
-			scp->ratioY = scp->offset20;
-		} else {
-			scp->ratioY += scp->offset28;
-		}
-
-		if (scp->ratioY < 1280) {
-			scp->offset28 /= -2;
-			scp->ratioY = 1280;
-		}
-	}
-}
-
-void Game::stopChar(uint16 charId) {
-	CharScope *scp = _vm->database()->getCharScope(charId);
-
-	scp->gotoLoc = scp->lastLocation;
-	scp->gotoX = scp->screenX;
-	scp->gotoY = scp->screenY;
-	scp->start3 = scp->start3Prev = scp->start3PrevPrev = scp->screenX * 256;
-	scp->start4 = scp->start4Prev = scp->start4PrevPrev = scp->screenY * 256;
-	scp->lastBox = _vm->database()->whatBox(scp->lastLocation, scp->gotoX, scp->gotoY);
-	scp->start5 = scp->start5Prev = scp->start5PrevPrev =
-		_vm->database()->getZValue(scp->lastLocation, scp->lastBox, scp->start4);
-
-	scp->direction = 0;
-	scp->stopped = true;
-	scp->priority = _vm->database()->getPriority(scp->lastLocation, scp->lastBox);
-	_vm->database()->setCharPos(charId, scp->lastLocation, scp->lastBox);
 }
 
 } // End of namespace Kom
