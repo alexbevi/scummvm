@@ -78,6 +78,8 @@ public:
 	void setDay();
 	void setNight();
 
+	void doActionMoveChar(uint16 charId, int16 loc, int16 box);
+
 private:
 
 	OSystem *_system;

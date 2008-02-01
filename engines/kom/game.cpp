@@ -370,8 +370,9 @@ bool Game::doStat(const Command *cmd) {
 		case 403:
 			// warning("TODO: move actor stub: %d %d %d", j->arg2, j->arg3, j->arg4);
 			db->setCharPos(j->arg2, j->arg3, j->arg4);
-			if (j->arg2 == 0)
-				enterLocation(j->arg3);
+			doActionMoveChar(j->arg2, j->arg3, j->arg4);
+			db->getChar(j->arg2)->_destLoc =
+			db->getChar(j->arg2)->_destBox = -4;
 			break;
 		case 402:
 			db->getChar(j->arg2)->_destLoc = j->arg3;
@@ -685,6 +686,32 @@ void Game::setNight() {
 		_settings.gameCycles = 6000;
 		_settings.dayMode = 0;
 	}
+}
+
+void Game::doActionMoveChar(uint16 charId, int16 loc, int16 box) {
+	Character *chr = _vm->database()->getChar(charId);
+	if (charId == 0 && loc > 0) {
+		enterLocation(loc);
+		// TODO: flicUpdateBG()
+	}
+
+	if (_vm->database()->loc2loc(loc, chr->_lastLocation) == -1) {
+		// TODO: magicActors thing
+		//for (int i = 0; i < 10; ++i) {
+		//}
+	}
+
+	chr->_lastLocation = loc;
+	chr->_lastBox = box;
+	chr->_gotoBox = -1;
+
+	chr->_screenX = _vm->database()->getMidX(loc, box);
+	chr->_start3 = chr->_screenX * 256;
+	chr->_screenY = _vm->database()->getMidY(loc, box);
+	chr->_start4 = chr->_screenY * 256;
+	chr->_start5 = _vm->database()->getZValue(loc, box, chr->_start4);
+	chr->stopChar();
+	chr->_lastDirection = 4;
 }
 
 } // End of namespace Kom
