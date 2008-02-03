@@ -32,6 +32,8 @@
 
 #include "kom/kom.h"
 
+#include "engines/metaengine.h"
+
 namespace Kom {
 
 static const PlainGameDescriptor kom_list[] = {
@@ -39,7 +41,27 @@ static const PlainGameDescriptor kom_list[] = {
 	{ 0, 0 }
 };
 
-GameList Engine_KOM_gameIDList() {
+class KomMetaEngine : public MetaEngine {
+public:
+	virtual const char *getName() const;
+	virtual const char *getCopyright() const;
+
+	virtual GameList getSupportedGames() const;
+	virtual GameDescriptor findGame(const char *gameid) const;
+	virtual GameList detectGames(const FSList &fslist) const;
+
+	virtual PluginError createInstance(OSystem *syst, Engine **engine) const;
+};
+
+const char *KomMetaEngine::getName() const {
+	return "Kingdom O\' Magic";
+}
+
+const char *KomMetaEngine::getCopyright() const {
+	return "Kingdom O' Magic (C) 1996 SCi (Sales Curve Interactive) Ltd.";
+}
+
+GameList KomMetaEngine::getSupportedGames() const {
 	GameList games;
 	const PlainGameDescriptor *g = kom_list;
 
@@ -50,7 +72,7 @@ GameList Engine_KOM_gameIDList() {
 	return games;
 }
 
-GameDescriptor Engine_KOM_findGameID(const char *gameid) {
+GameDescriptor KomMetaEngine::findGame(const char *gameid) const {
 	const PlainGameDescriptor *g = kom_list;
 	while (g->gameid) {
 		if (0 == scumm_stricmp(gameid, g->gameid))
@@ -60,7 +82,7 @@ GameDescriptor Engine_KOM_findGameID(const char *gameid) {
 	return *g;
 }
 
-GameList Engine_KOM_detectGames(const FSList &fslist) {
+GameList KomMetaEngine::detectGames(const FSList &fslist) const {
 	GameList detectedGames;
 	for (FSList::const_iterator file = fslist.begin(); file != fslist.end(); ++file) {
 		if (!file->isDirectory()) {
@@ -77,7 +99,7 @@ GameList Engine_KOM_detectGames(const FSList &fslist) {
 	return detectedGames;
 }
 
-PluginError Engine_KOM_create(OSystem *syst, Engine **engine) {
+PluginError KomMetaEngine::createInstance(OSystem *syst, Engine **engine) const {
 	FilesystemNode dir(ConfMan.get("path"));
 
 	// Unable to locate game data
@@ -98,4 +120,4 @@ PluginError Engine_KOM_create(OSystem *syst, Engine **engine) {
 
 using namespace Kom;
 
-REGISTER_PLUGIN(KOM, "Kingdom O\' Magic", "Kingdom O' Magic (C) 1996 SCi (Sales Curve Interactive) Ltd.");
+REGISTER_PLUGIN(KOM, KomMetaEngine);
