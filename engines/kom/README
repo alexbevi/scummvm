@@ -17,7 +17,7 @@ Darcs is a version control system. It allows you to easily fetch the latest
 changes, make changes of your own, and send them as patches via email.
 
 To check-out the repository, run:
-$ darcs get http://www2.mta.ac.il/~oravtali/repos/kom/
+$ darcs get http://ori.avtalion.name/repos/kom/
 
 To get the latest changes, run:
 $ darcs pull
