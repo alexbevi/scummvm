@@ -132,11 +132,11 @@ void FlicPlayer::decodeDeltaFLC(uint8 *data) {
 
 	while (linesInChunk--) {
 		uint16 opcode; 
-		
+
 		// First process all the opcodes.
 		do {
 			opcode = READ_LE_UINT16(data); data += 2;
-			
+
 			switch ((opcode >> 14) & 3) {
 			case OP_PACKETCOUNT:
 				packetCount = opcode;
@@ -154,12 +154,12 @@ void FlicPlayer::decodeDeltaFLC(uint8 *data) {
 		} while (((opcode >> 14) & 3) != OP_PACKETCOUNT);
 
 		uint16 column = 0;
-		
+
 		// Now interpret the RLE data
 		while (packetCount--) {
 			column += *data++;
 			int8 rleCount = (int8)*data++;
-			
+
 			if (rleCount > 0) {
 				memcpy((void *)(_offscreen + (currentLine * _flicInfo.width) + column), data, rleCount * 2);
 				_dirtyRects->push_back(Rect(column, currentLine, column + (rleCount * 2), currentLine + 1));
