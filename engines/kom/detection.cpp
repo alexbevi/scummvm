@@ -120,4 +120,4 @@ PluginError KomMetaEngine::createInstance(OSystem *syst, Engine **engine) const 
 
 using namespace Kom;
 
-REGISTER_PLUGIN(KOM, KomMetaEngine);
+REGISTER_PLUGIN(KOM, PLUGIN_TYPE_ENGINE, KomMetaEngine);
