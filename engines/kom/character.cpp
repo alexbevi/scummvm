@@ -50,7 +50,7 @@ void Character::moveChar(bool param) {
 		if (nextLoc > 0) {
 			targetBox = _vm->database()->getExitBox(_lastLocation, nextLoc);
 
-			if (_lastLocation >= 0 && targetBox > 0) {
+			if (_lastLocation >= 0 && targetBox >= 0) {
 				Box *b = _vm->database()->getBox(_lastLocation, targetBox);
 				targetBoxX = (b->x2 - b->x1) / 2 + b->x1;
 				targetBoxY = (b->y2 - b->y1) / 2 + b->y1;
