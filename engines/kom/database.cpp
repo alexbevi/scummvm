@@ -887,7 +887,7 @@ int16 Database::getZValue(int loc, int box, int32 y) {
 uint16 Database::getExitBox(int currLoc, int nextLoc) {
 	for (int i = 0; i < 6; ++i)
 		if (_locRoutes[currLoc].exits[i].exitLoc == nextLoc)
-			return _locRoutes[currLoc].exits[i].exitBox;
+			return _locRoutes[currLoc].exits[i].exit;
 
 	return 0;
 }
