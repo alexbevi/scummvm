@@ -87,7 +87,7 @@ void Character::moveChar(bool param) {
 
 	// Walk from box to box
 	} else if (_vm->database()->isInLine(_lastLocation, nextBox, _screenX, _screenY)) {
-		if (_lastLocation > 0 && nextBox > 0) {
+		if (_lastLocation >= 0 && nextBox >= 0) {
 			Box *b = _vm->database()->getBox(_lastLocation, nextBox);
 			x = b->x1 + (b->x2 - b->x1) / 2;
 			y = b->y1 + (b->y2 - b->y1) / 2;
