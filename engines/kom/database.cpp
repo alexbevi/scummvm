@@ -891,6 +891,24 @@ uint16 Database::getExitBox(int currLoc, int nextLoc) {
 
 	return 0;
 }
+
+int8 Database::getBoxLink(int loc, int box, int join) {
+	// FIXME - the original has an unidentified test here
+	return _locRoutes[loc].boxes[box].joins[join];
+}
+
+bool Database::getExitInfo(int loc, int box, int *exitLoc, int *exitBox) {
+	for (int i = 0; i < 6; ++i)
+		if (_locRoutes[loc].exits[i].exit == box) {
+			*exitLoc = _locRoutes[loc].exits[i].exitLoc;
+			*exitBox = _locRoutes[loc].exits[i].exitBox;
+
+			return true;
+		}
+
+	return false;
+}
+
 bool Database::isInLine(int loc, int box, int x, int y) {
 	Box *b = (&_locRoutes[loc].boxes[box]);
 

@@ -161,7 +161,7 @@ void KomEngine::gameLoop() {
 		//if (_gameLoopState == GAMELOOP_DEATH)
 			// ambientStart(currLocation)
 		_game->loopMove();
-		// loopCollide
+		_game->loopCollide();
 		// if in a fight, do something
 		// collision stuff
 		// if player not stopped:

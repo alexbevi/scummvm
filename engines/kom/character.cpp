@@ -35,7 +35,7 @@ using Common::String;
 void Character::moveChar(bool param) {
 	int16 nextLoc, targetBox, targetBoxX, targetBoxY, nextBox;
 
-	//if (id != 52) return; //FIXME FIXME FIXME - don't forget to delete
+	//if (_id != 21) return; //FIXME FIXME FIXME - don't forget to delete
 
 	if (_lastLocation == 0) return;
 

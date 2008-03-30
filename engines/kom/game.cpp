@@ -146,6 +146,55 @@ void Game::enterLocation(uint16 locId) {
 	_vm->panel()->showLoading(false);
 }
 
+void Game::hitExit(uint16 charId, bool something) {
+	int exitLoc, exitBox;
+	Character *chr = _vm->database()->getChar(charId);
+
+	_vm->database()->getExitInfo(chr->_lastLocation, chr->_lastBox,
+			&exitLoc, &exitBox);
+
+	if (charId == 0) {
+		enterLocation(exitLoc);
+	} else if (something) {
+		// TODO? used for cheat codes?
+		// housingProblem(charId);
+	}
+
+	chr->_gotoBox = -1;
+	chr->_lastLocation = exitLoc;
+	chr->_lastBox = exitBox;
+
+	for (int i = 0; i < 6; ++i) {
+		int8 linkBox = _vm->database()->getBoxLink(exitLoc, exitBox, i);
+
+		if (linkBox == -1 || (_vm->database()->getBox(exitLoc, linkBox)->attrib & 0xe) != 0)
+			continue;
+
+		chr->_screenX = _vm->database()->getMidX(exitLoc, linkBox);
+		chr->_screenY = _vm->database()->getMidY(exitLoc, linkBox);
+
+		if (chr->_spriteSceneState == 0) {
+			chr->_gotoX = chr->_screenX;
+			chr->_gotoY = chr->_screenY;
+			chr->_gotoLoc = exitLoc;
+		} else if (chr->_lastLocation == chr->_gotoLoc) {
+			chr->_gotoX = _vm->database()->getMidX(chr->_lastLocation, chr->_spriteBox);
+			chr->_gotoY = _vm->database()->getMidY(chr->_lastLocation, chr->_spriteBox);
+		}
+
+		chr->_start3 = chr->_screenX * 256;
+		chr->_start4 = chr->_screenY * 256;
+		chr->_start3PrevPrev = chr->_start3Prev;
+		chr->_start3Prev = chr->_start3;
+		chr->_start4PrevPrev = chr->_start4Prev;
+		chr->_start4Prev = chr->_start4;
+		chr->_start5 = 65280;
+		chr->_start5Prev = 65536;
+		chr->_start5PrevPrev = 66048;
+		chr->_lastDirection = 4;
+	}
+}
+
 void Game::processTime() {
 	if (_settings.dayMode == 0) {
 		if (_vm->database()->getChar(0)->_isBusy && _settings.gameCycles >= 6000)
@@ -619,6 +668,39 @@ void Game::loopMove() {
 	}
 
 	// TODO - handle magic actors
+}
+
+void Game::loopCollide() {
+	// FIXME: start from 0 because "room" debug command fails. re-add later
+	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
+		Character *chr = _vm->database()->getChar(i);
+
+		if ((_vm->database()->getBox(chr->_lastLocation, chr->_lastBox)->attrib & 1) != 0) {
+			hitExit(i, true);
+
+			_vm->database()->setCharPos(i, chr->_lastLocation, chr->_lastBox);
+
+			// If in the same room as the player
+			if (i != 0 && chr->_lastLocation == _vm->database()->getChar(0)->_lastLocation) {
+
+				int counter = 0;
+				//for (uint16 j = 1; j < _vm->database()->charactersNum(); ++j) {
+				//	Character *chr2 = _vm->database()->getChar(j);
+
+				//	if (chr2->_isAlive && chr2->_isVisible)
+				//		if (_vm->database()->getChar(0)->_lastLocation == chr2->_lastLocation)
+				//			++counter;
+				//}
+
+				if (counter > 1) {
+					// TODO: komdbDoCommand(9, ...) -- call the character's "collide" script
+				}
+
+			}
+		}
+	}
+
+	// TODO: collide magic actors
 }
 
 void Game::loopSpriteCut() {

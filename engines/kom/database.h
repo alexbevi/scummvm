@@ -166,6 +166,8 @@ public:
 	int16 getPriority(int loc, int box) { return _locRoutes[loc].boxes[box].priority; }
 	int16 getZValue(int loc, int box, int32 y);
 	uint16 getExitBox(int currLoc, int nextLoc);
+	int8 getBoxLink(int loc, int box, int join);
+	bool getExitInfo(int loc, int box, int *exitLoc, int *exitBox);
 	bool isInLine(int loc, int box, int x, int y);
 
 	void setCharPos(int charId, int loc, int box);

@@ -67,9 +67,11 @@ public:
 	~Game();
 
 	void enterLocation(uint16 locId);
+	void hitExit(uint16 charId, bool something);
 	void processTime();
 	bool doStat(const Command *cmd);
 	void loopMove();
+	void loopCollide();
 	void loopSpriteCut();
 
 	Settings* settings() { return &_settings; }
