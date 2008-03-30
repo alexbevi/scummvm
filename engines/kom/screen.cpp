@@ -202,6 +202,8 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 
 	//printf("drawActorFrame(%hu, %hu, %hd, %hd, %hu, %hu)\n", width, height, xStart, yStart, xEnd, yEnd);
 
+	if (visibleWidth == 0 || visibleHeight == 0) return;
+
 	if (xStart < 0) {
 		// frame is entirely off-screen
 		if ((visibleWidth += xStart) < 0)
