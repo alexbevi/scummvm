@@ -73,6 +73,7 @@ public:
 	void setRatio(uint16 xRatio, uint16 yRatio) { _xRatio = xRatio; _yRatio = yRatio; }
 	void setMaskDepth(int maskDepth, int depth) { _maskDepth = maskDepth; _depth = depth; }
 	void setEffect(uint8 effect) { _effect = effect; }
+	void setFrame(uint8 frame) { _currentFrame = frame; }
 	int getXPos() { return _xPos; }
 	int getYPos() { return _yPos; }
 	uint8 getFramesNum() { return _framesNum; }

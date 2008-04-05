@@ -35,6 +35,7 @@
 #include "kom/kom.h"
 #include "kom/panel.h"
 #include "kom/actor.h"
+#include "kom/game.h"
 
 using Common::File;
 using Common::List;
@@ -145,6 +146,7 @@ void Screen::processGraphics() {
 	displayMouse();
 	updateBackground();
 	drawBackground();
+	displayDoors();
 	_vm->actorMan()->displayAll();
 
 	// Copy dirty rects to screen
@@ -445,6 +447,16 @@ uint16 Screen::getTextWidth(const char *text) {
 	if (w > 0) --w;
 
 	return w;
+}
+
+void Screen::displayDoors() {
+	Common::Array<RoomDoor> *roomDoors = _vm->game()->getDoors();
+
+	for (uint i = 0; i < roomDoors->size(); i++) {
+		Actor *act = _vm->actorMan()->get((*roomDoors)[i].actorId);
+
+		act->setFrame((*roomDoors)[i].frame);
+	}
 }
 
 void Screen::writeTextCentered(byte *buf, const char *text, uint8 row, uint8 color, bool isEmbossed) {

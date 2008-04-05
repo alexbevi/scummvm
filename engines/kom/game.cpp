@@ -111,7 +111,6 @@ void Game::enterLocation(uint16 locId) {
 
 			// TODO:
 			// * store actor in screenObjects
-			// * load doors
 		}
 	}
 
@@ -120,25 +119,38 @@ void Game::enterLocation(uint16 locId) {
 	for (int i = 0; i < 6; ++i) {
 		// FIXME: room 45 has one NULL exit. what's it for?
 		if (exits[i].exit > 0) {
-			String exitName(_vm->database()->getLoc(exits[i].exitLoc)->name);
+			String exitName(db->getLoc(exits[i].exitLoc)->name);
 			exitName.toLowercase();
 
 			sprintf(filename, "%s%dd", exitName.c_str(), loc->xtend + _player.isNight);
 
 			// The exit can have no door
-			if (locNode.getChild(filename + String(".act")).exists()) {
-				RoomDoor roomDoor;
-				roomDoor.actorId = _vm->actorMan()->load(locNode, String(filename));
-				Actor *act = _vm->actorMan()->get(roomDoor.actorId);
+			if (!(locNode.getChild(filename + String(".act")).exists()))
+				continue;
 
-				// Temporary: have fun with the door
-				act->defineScope(0, 0, act->getFramesNum() - 1, 0);
-				act->setScope(0, 1);
-				act->setPos(0, SCREEN_H - 1);
-				act->setEffect(4);
+			RoomDoor roomDoor;
+			roomDoor.actorId = _vm->actorMan()->load(locNode, String(filename));
+			Actor *act = _vm->actorMan()->get(roomDoor.actorId);
+			act->enable(true);
+			act->setEffect(4);
+			act->setPos(0, SCREEN_H - 1);
+			act->setMaskDepth(0, 32766);
 
-				_roomDoors.push_back(roomDoor);
+			// Find door-opening boxes (two of them)
+			for (int j = 0; j < 6; ++j) {
+				roomDoor.boxOpenFast = db->getBoxLink(locId, exits[i].exit, j);
+				if (db->getBox(locId, roomDoor.boxOpenFast)->attrib == 0)
+					break;
 			}
+
+			for (int j = 0; j < 6; ++j) {
+				roomDoor.boxOpenSlow = db->getBoxLink(locId, roomDoor.boxOpenFast, j);
+				if (roomDoor.boxOpenSlow != exits[i].exit &&
+					db->getBox(locId, roomDoor.boxOpenSlow)->attrib == 0)
+					break;
+			}
+
+			_roomDoors.push_back(roomDoor);
 		}
 	}
 
@@ -681,7 +693,7 @@ void Game::loopCollide() {
 			_vm->database()->setCharPos(i, chr->_lastLocation, chr->_lastBox);
 
 			// If in the same room as the player
-			if (i != 0 && chr->_lastLocation == _vm->database()->getChar(0)->_lastLocation) {
+			if (chr->_lastLocation == _vm->database()->getChar(0)->_lastLocation) {
 
 				int counter = 0;
 				//for (uint16 j = 1; j < _vm->database()->charactersNum(); ++j) {
@@ -701,6 +713,63 @@ void Game::loopCollide() {
 	}
 
 	// TODO: collide magic actors
+
+	// Collide characters with doors
+	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
+		Character *chr = _vm->database()->getChar(i);
+		if (chr->_lastLocation != _vm->database()->getChar(0)->_lastLocation)
+			continue;
+
+		for (uint j = 0; j < _roomDoors.size(); j++) {
+			if (_roomDoors[j].boxHit < 2)
+				if (chr->_lastBox == _roomDoors[j].boxOpenSlow)
+					_roomDoors[j].boxHit = 1;
+				else if (chr->_lastBox == _roomDoors[j].boxOpenFast)
+					_roomDoors[j].boxHit = 2;
+		}
+	}
+
+	// Animate doors
+	for (uint i = 0; i < _roomDoors.size(); i++) {
+		int newState;
+		Actor *act = _vm->actorMan()->get(_roomDoors[i].actorId);
+
+		switch (_roomDoors[i].boxHit) {
+		// Close the door
+		case 0:
+			newState = 1;
+			if (_roomDoors[i].frame > 0)
+				(_roomDoors[i].frame)--;
+			break;
+		// Open slowly
+		case 1:
+			newState = 0;
+			if (_roomDoors[i].frame < act->getFramesNum() - 1)
+				(_roomDoors[i].frame)++;
+			break;
+		// Open fast
+		case 2:
+			newState = 2;
+			_roomDoors[i].frame = act->getFramesNum() - 1;
+		}
+
+		_roomDoors[i].boxHit = 0;
+		if (_roomDoors[i].frame > 0) {
+			switch (newState) {
+			case 0:
+				if (_roomDoors[i].state == 1 /* TODO: && _flicLoaded == 2 */) {
+					// TODO: play door sound
+				}
+				break;
+			case 1:
+				if (_roomDoors[i].state != 1 /* TODO: && _flicLoaded == 2 */) {
+					// TODO: play door sound
+				}
+			}
+		}
+
+		_roomDoors[i].state = newState;
+	}
 }
 
 void Game::loopSpriteCut() {

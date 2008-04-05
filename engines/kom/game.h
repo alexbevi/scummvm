@@ -42,7 +42,13 @@ struct RoomObject {
 };
 
 struct RoomDoor {
+	RoomDoor() : frame(0), boxHit(0), state(0) {}
 	int actorId;
+	uint8 frame;
+	uint8 boxHit;
+	int8 boxOpenFast; // Box closest to exit
+	int8 boxOpenSlow; // Box farther from exit
+	int8 state;
 };
 
 struct Settings {
@@ -81,6 +87,8 @@ public:
 	void setNight();
 
 	void doActionMoveChar(uint16 charId, int16 loc, int16 box);
+
+	Common::Array<RoomDoor> *getDoors() { return &_roomDoors; }
 
 private:
 

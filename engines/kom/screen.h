@@ -70,7 +70,6 @@ public:
 	void setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int hotspotY);
 	void showMouseCursor(bool show);
 	void displayMouse();
-
 	void updateCursor();
 
 	void drawPanel(const byte *panelData);
@@ -81,6 +80,8 @@ public:
 	void updateBackground();
 	void drawBackground();
 	void setMask(const uint8 *data);
+
+	void displayDoors();
 
 	void writeTextCentered(byte *buf, const char *text, uint8 row, uint8 color, bool isEmbossed);
 	void writeText(byte *buf, const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed);
