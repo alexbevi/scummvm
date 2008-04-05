@@ -42,8 +42,13 @@ Debugger::Debugger(KomEngine *vm) : GUI::Debugger(), _vm(vm) {
 bool Debugger::Cmd_Room(int argc, const char **argv) {
 	if (argc == 2) {
 		uint16 roomNum = atoi(argv[1]);
+		if (roomNum == 0)
+			return false;
+
 		_vm->game()->settings()->currLocation = roomNum;
 		_vm->database()->getChar(0)->_locationId = roomNum;
+		_vm->database()->getChar(0)->_lastLocation = roomNum;
+
 		_vm->game()->enterLocation(roomNum);
 		return false;
 	}

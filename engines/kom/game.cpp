@@ -50,9 +50,6 @@ Game::~Game() {
 void Game::enterLocation(uint16 locId) {
 	char filename[50];
 
-	// FIXME - hack
-	_vm->database()->getChar(0)->_lastLocation = locId;
-
 	_vm->panel()->showLoading(true);
 
 	// Unload last room elements
