@@ -88,6 +88,7 @@ public:
 
 	void doActionMoveChar(uint16 charId, int16 loc, int16 box);
 
+	Common::Array<RoomObject> *getObjects() { return &_roomObjects; }
 	Common::Array<RoomDoor> *getDoors() { return &_roomDoors; }
 
 private:

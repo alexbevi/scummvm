@@ -174,7 +174,8 @@ void KomEngine::gameLoop() {
 		//
 		// TODO
 
-		_screen->processGraphics();
+		// TODO - handle other graphics modes
+		_screen->processGraphics(1);
 
 	} else {
 		// stopNarrator()

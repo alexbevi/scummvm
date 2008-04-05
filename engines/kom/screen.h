@@ -59,7 +59,7 @@ public:
 
 	bool init();
 
-	void processGraphics();
+	void processGraphics(int mode);
 	void gfxUpdate();
 	void drawActorFrame(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart,
 			uint16 xEnd, uint16 yEnd, int maskDepth);

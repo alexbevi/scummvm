@@ -87,10 +87,23 @@ bool Screen::init() {
 	return true;
 }
 
-void Screen::processGraphics() {
+void Screen::processGraphics(int mode) {
 	//memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 
 	// handle screen objects
+	if (mode > 0) {
+	Common::Array<RoomObject> *roomObjects = _vm->game()->getObjects();
+
+		for (uint i = 0; i < roomObjects->size(); i++) {
+			Actor *act = _vm->actorMan()->get((*roomObjects)[i].actorId);
+			Object *obj = _vm->database()->object((*roomObjects)[i].objectId);
+
+			// TODO - handle disappear delay
+
+			act->enable(obj->isVisible);
+		}
+	}
+
 	// handle dust clouds
 	
 	// unload actors in other rooms
