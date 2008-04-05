@@ -275,7 +275,19 @@ void Game::processChars() {
 				processChar(ch->_proc);
 				break;
 			case 1:
-				warning("TODO: processChars 1");
+				if (ch->_modeCount ==  0)
+					ch->_mode = 0;
+				else
+					ch->_modeCount--;
+
+				if (ch->_spellMode != 0) {
+					if (ch->_spellDuration == 0) {
+						ch->unsetSpell();
+					}
+
+					if (ch->_spellDuration > 0)
+						ch->_spellDuration--;
+				}
 				break;
 			case 2:
 				warning("TODO: processChars 2");
@@ -468,7 +480,7 @@ bool Game::doStat(const Command *cmd) {
 			keepProcessing = !(db->getChar(j->arg2)->_isAlive);
 			break;
 		case 414:
-			warning("TODO: unset spell");
+			db->getChar(j->arg2)->unsetSpell();
 			db->getChar(j->arg2)->_isAlive = false;
 			break;
 		case 416:

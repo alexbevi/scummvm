@@ -69,8 +69,12 @@ public:
 	bool _isAlive;
 	bool _isVisible;
 	uint8 _spellMode;
+	int16 _spellDuration;
 	int _strength;
 	int _defense;
+	int _oldHitPoints;
+	int _oldStrength;
+	int _oldDefense;
 	int _damageMin;
 	int _damageMax;
 	int _data14; // spell speed - unused
@@ -139,6 +143,7 @@ public:
 	void moveCharOther();
 	void stopChar();
 	void setScope(int16 scope);
+	void unsetSpell();
 
 	friend class Database;
 

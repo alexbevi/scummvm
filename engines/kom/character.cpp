@@ -452,6 +452,30 @@ void Character::setScopeX(int16 scope) {
 	_isBusy = true;
 }
 
+void Character::unsetSpell() {
+	if (_spellMode == 1 || _spellMode == 2 || _spellMode == 3 ||
+		_spellMode == 4 || _spellMode == 6) {
+
+		_strength = _oldStrength;
+		_defense = _oldDefense;
+
+		// FIXME: check if 3 is never used
+		assert(_spellMode != 3);
+
+		if (_spellMode == 1) {
+			_hitPoints = _oldHitPoints;
+		}
+	}
+
+	if (_spellMode != 0) {
+		// TODO - doActionUnsetSpell(_spellMode)
+	}
+
+	_mode = _modeCount = _spellMode = _spellDuration = 0;
+
+	// TODO - doActionSetSpell
+}
+
 KomEngine *Character::_vm = 0;
 
 } // End of namespace Kom
