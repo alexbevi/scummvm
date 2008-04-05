@@ -122,7 +122,7 @@ void Screen::processGraphics(int mode) {
 	}
 
 	// load actors in this room
-	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
+	for (int i = 0; i < _vm->database()->charactersNum(); ++i) {
 		Character *chr = _vm->database()->getChar(i);
 
 		// TODO - init scope stuff
