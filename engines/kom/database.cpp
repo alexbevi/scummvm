@@ -738,6 +738,16 @@ void Database::initScopes() {
 				&(charScope->_walkSpeed),
 				&(charScope->_animSpeed));
 
+			if (charScope->_walkSpeed == 0) {
+				charScope->_stopped = true;
+				charScope->_timeout = 50;
+				charScope->_offset78 = 0x80000;
+			} else {
+				charScope->_stopped = false;
+				charScope->_timeout = 0;
+				charScope->_offset78 = 0xc0000;
+			}
+
 		} else if (strcmp(keyword, "TIMEOUT") == 0) {
 			sscanf(line, "%*s %hu",
 				&(charScope->_timeout));
@@ -758,16 +768,6 @@ void Database::initScopes() {
 			charScope->_start3Prev = charScope->_start3PrevPrev = charScope->_start3;
 			charScope->_start4Prev = charScope->_start4PrevPrev = charScope->_start4;
 			charScope->_start5Prev = charScope->_start5PrevPrev = charScope->_start5;
-
-			if (charScope->_walkSpeed == 0) {
-				charScope->_stopped = true;
-				charScope->_timeout = 50;
-				charScope->_offset78 = 0x80000;
-			} else {
-				charScope->_stopped = false;
-				charScope->_timeout = 0;
-				charScope->_offset78 = 0xc0000;
-			}
 		}
 
 		do {
