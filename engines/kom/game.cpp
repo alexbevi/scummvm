@@ -724,7 +724,7 @@ void Game::loopCollide() {
 	// TODO: collide magic actors
 
 	// Collide characters with doors
-	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
+	for (uint16 i = 0; i < _vm->database()->charactersNum(); ++i) {
 		Character *chr = _vm->database()->getChar(i);
 		if (chr->_lastLocation != _vm->database()->getChar(0)->_lastLocation)
 			continue;
