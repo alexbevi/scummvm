@@ -42,6 +42,7 @@ public:
 		_actorId(-1), _screenH(0), _screenDH(0), _offset0c(0), _offset10(0),
 		_offset14(262144), _offset1c(0), _offset20(262144), _offset28(0), _ratioX(262144),
 		_ratioY(262144), _relativeSpeed(1024), _direction(0), _lastDirection(2),
+		_stoppedTime(0),
 		_scopeInUse(-1), _scopeWanted(8), _scopeLoaded(-1), _priority(0), _fightPartner(-1),
 		_spriteSceneState(0), _spriteScope(0), _spriteTimer(0), _spriteBox(0), _somethingX(0),
 		_somethingY(0) {}
@@ -117,6 +118,7 @@ public:
 	uint16 _direction;
 	uint16 _lastDirection;
 	bool _stopped;
+	uint16 _stoppedTime;
 	uint16 _timeout;
 	int32 _start3;
 	int32 _start3Prev;

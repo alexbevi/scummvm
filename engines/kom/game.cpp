@@ -812,6 +812,43 @@ void Game::loopSpriteCut() {
 	}
 }
 
+/** Play idle animations */
+void Game::loopTimeouts() {
+	// TODO - check flicLoaded
+	// if (_flicLoaded) return;
+
+	// TODO: something with spriteCutNum
+
+	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
+		Character *chr = _vm->database()->getChar(i);
+
+		if (chr->_isAlive) {
+			if (!(chr->_stopped)) {
+				chr->_stoppedTime = 0;
+			} else {
+				if (chr->_spriteTimer == 0)
+					chr->_stoppedTime++;
+
+				if (chr->_timeout == chr->_stoppedTime)
+					chr->_lastDirection = 4;
+
+				if (chr->_timeout > 0 && chr->_stoppedTime >= chr->_timeout) {
+					chr->_stoppedTime = 0;
+					chr->_scopeWanted = 12;
+				}
+			}
+		}
+
+		if (chr->_lastLocation == _vm->database()->getChar(0)->_lastLocation) {
+			if (chr->_spriteTimer > 0 && chr->_scopeInUse == 12) {
+				// TODO - spriteCut again
+			}
+		}
+
+	}
+
+}
+
 void Game::changeMode(int value, int mode) {
 	warning("TODO: changeMode - unsupported mode");
 }

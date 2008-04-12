@@ -79,6 +79,7 @@ public:
 	void loopMove();
 	void loopCollide();
 	void loopSpriteCut();
+	void loopTimeouts();
 
 	Settings* settings() { return &_settings; }
 	Player* player() { return &_player; }

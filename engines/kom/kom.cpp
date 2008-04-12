@@ -168,7 +168,7 @@ void KomEngine::gameLoop() {
 		//     do command (walk, use, talk, pickup, look, fight, exit, magic)
 		_game->loopSpriteCut();
 		// loopSpells
-		// loopTimeouts
+		_game->loopTimeouts();
 		// lose/get gold
 		// stop narrator if needed
 		//
