@@ -57,7 +57,7 @@ public:
 
 	/**
 	 * Allows a hard-coded frame sequence. It is only used for the exit/inventory cursor
-	 * animations which repeat the edge frames frames several times and play the frames
+	 * animations which repeat the edge frames several times and play the frames
 	 * forward and then in reverse
 	 */
 	void defineScopeAlias(uint8 scopeId, const uint8 *aliasData, uint8 length);
