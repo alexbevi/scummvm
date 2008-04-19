@@ -149,8 +149,6 @@ void KomEngine::gameLoop() {
 	// fadeTo(target = 256, speed = 16)
 	_gameLoopState = GAMELOOP_RUNNING;
 	// _flicLoaded = 2;
-	_panel->noLoading(1);
-
 
 	if (_gameLoopState == GAMELOOP_RUNNING) {
 		if (_game->player()->sleepTimer == 0)

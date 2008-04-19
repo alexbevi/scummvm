@@ -74,13 +74,15 @@ void Panel::update() {
 
 	_vm->screen()->copyPanelToScreen(_panelBuf);
 
+	Actor *mouse = _vm->actorMan()->getMouse();
 	if (_isLoading) {
-		Actor *mouse = _vm->actorMan()->getMouse();
 		mouse->enable(1);
 		mouse->setScope(6, 0);
 		mouse->setPos(303, 185);
 		mouse->display();
 		mouse->enable(0);
+	} else {
+		mouse->setPos(0, 0);
 	}
 
 	// TODO: lose/get items
@@ -90,10 +92,7 @@ void Panel::update() {
 }
 
 void Panel::showLoading(bool isLoading) {
-	if (_noLoading > 0)
-		return;
-
-	if (isLoading != _isLoading) {
+	if (_isLoading != isLoading) {
 		_isLoading = isLoading;
 		update();
 	}

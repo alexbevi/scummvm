@@ -46,8 +46,6 @@ public:
 	void enable(bool state) { _isEnabled = state; }
 	void clear();
 
-	void noLoading(uint8 n) { _noLoading += n; }
-
 private:
 
 	KomEngine *_vm;
@@ -58,7 +56,7 @@ private:
 	bool _isEnabled;
 	bool _isLoading;
 	bool _isDirty;
-	uint8 _noLoading;
+	uint8 _noLoading; // FIXME - do I really want to implement this "loading" timer thingy?
 
 	char *_locationDesc;
 
