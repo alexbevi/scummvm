@@ -116,7 +116,7 @@ void Screen::processGraphics(int mode) {
 			// TODO - init scope stuff
 			if (chr->_actorId >= 0) {
 				_vm->actorMan()->unload(chr->_actorId);
-				chr->_actorId = chr->_scopeLoaded = chr->_scopeInUse = -1;
+				chr->_actorId = chr->_loadedXtend = chr->_scopeInUse = -1;
 			}
 		}
 	}

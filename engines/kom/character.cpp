@@ -403,28 +403,32 @@ void Character::setScopeX(int16 scope) {
 	if (_spriteTimer > 0)
 		scope = _spriteScope;
 
-	if (_scopeLoaded != -1 && _scopeInUse == scope)
+	if (_loadedXtend != -1 && _scopeInUse == scope)
 		return;
 
 	// TODO - check spell effect and handle cabbage/grave/cutscene
 
 	assert(_scopes[scope].startFrame != -1);
 
-	if (_scopeLoaded !=
-			_xtend + (_walkSpeed == 0 ? _vm->game()->player()->isNight : 0)) {
+	char xtend = _xtend;
 
-		char xtend = _xtend;
 
-		if (_scopeLoaded != -1 && _actorId != -1) {
+	if (_walkSpeed == 0) {
+		xtend += _vm->game()->player()->isNight;
+
+	// Idle animations are stored in a seperate actor file for some reason
+	} else if (scope == 12)
+		xtend += 1;
+
+	if (_loadedXtend != xtend) {
+
+		if (_loadedXtend != -1 && _actorId != -1) {
 			_vm->actorMan()->unload(_actorId);
 			_actorId = -1;
 		}
 
-		if (_walkSpeed == 0)
-			xtend += _vm->game()->player()->isNight;
-
 		sprintf(filename, "%s%c", charName.c_str(), xtend + (xtend < 10 ? '0' : '7'));
-		_scopeLoaded = xtend;
+		_loadedXtend = xtend;
 
 		_vm->panel()->showLoading(true);
 		_actorId =
@@ -442,14 +446,14 @@ void Character::setScopeX(int16 scope) {
 	act->defineScope(0, _scopes[scope].minFrame, _scopes[scope].maxFrame, _scopes[scope].startFrame);
 	act->setScope(0, _animSpeed);
 
-	if (scope != 12)
-		return;
-
-	_spriteSceneState = 3;
-	_spriteTimer = (_scopes[scope].maxFrame - _scopes[scope].minFrame) * _animSpeed - 1;
-	_spriteScope = scope;
-	_scopeInUse = scope;
-	_isBusy = true;
+	// Handle idle animation
+	if (scope == 12) {
+		_spriteSceneState = 3;
+		_spriteTimer = (_scopes[scope].maxFrame - _scopes[scope].minFrame) * _animSpeed - 1;
+		_spriteScope = scope;
+		_scopeInUse = scope;
+		_isBusy = true;
+	}
 }
 
 void Character::unsetSpell() {
