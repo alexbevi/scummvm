@@ -145,19 +145,27 @@ void Screen::processGraphics(int mode) {
 			chr->_isVisible) {
 
 			chr->setScope(chr->_scopeWanted);
-
-			// FIXME: this is here just for testing
-
 			Actor *act = _vm->actorMan()->get(chr->_actorId);
 
-			act->setPos(chr->_screenX / 2, (chr->_start4 + (chr->_screenH + chr->_offset78) / scale) / 256 / 2);
+			if (scale == 256 && chr->_walkSpeed == 0) {
+				printf("TODO: scale == 256\n");
+			} else if (i == 0 && chr->_spriteTimer != 0 &&
+					   _vm->game()->player()->spriteCutMoving) {
+
+				act->setPos(_vm->game()->player()->spriteCutX,
+						    _vm->game()->player()->spriteCutY);
+			} else {
+				act->setPos(chr->_screenX / 2,
+						(chr->_start4 + (chr->_screenH + chr->_offset78)
+						 / scale) / 256 / 2);
+			}
+
 			act->setRatio(chr->_ratioX / scale, chr->_ratioY / scale);
-
 			act->setMaskDepth(_vm->database()->getPriority( chr->_lastLocation, chr->_lastBox), chr->_start5);
-
-			// FIXME end above
 		}
 	}
+
+	// TODO - handle dust clouds again?
 
 	updateCursor();
 	displayMouse();
@@ -165,6 +173,9 @@ void Screen::processGraphics(int mode) {
 	drawBackground();
 	displayDoors();
 	_vm->actorMan()->displayAll();
+	// TODO - handle snow
+	// TODO - handle fight bars
+	// TODO - handle mouse
 
 	// Copy dirty rects to screen
 	copyRectListToScreen(_prevDirtyRects);
