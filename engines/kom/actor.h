@@ -140,6 +140,8 @@ private:
 	KomEngine *_vm;
 	Common::Array<Actor *> _actors;
 	Actor *_mouseActor;
+
+	Actor *getFarthestActor();
 };
 
 } // End of namespace Kom

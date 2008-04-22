@@ -82,13 +82,39 @@ void ActorManager::loadMouse(FilesystemNode dirNode, String name) {
 }
 
 void ActorManager::displayAll() {
-	Common::Array<Actor *>::iterator act;
+	Actor *act;
 
-	for (act = _actors.begin(); act != _actors.end(); act++) {
-		if (*act != NULL && (*act)->_isActive) {
-			(*act)->display();
+	for (uint i = 0; i < _actors.size(); ++i) {
+		act = getFarthestActor();
+		if (act == NULL)
+			break;
+
+		act->display();
+		act->_isActive = 99; // == "displayed"
+	}
+
+	for (uint i = 0; i < _actors.size(); ++i) {
+		act = _actors[i];
+		if (act != NULL && act->_isActive == 99) {
+			act->_isActive = 1;
 		}
 	}
+}
+
+Actor *ActorManager::getFarthestActor() {
+	Common::Array<Actor *>::iterator act;
+	int maxDepth = 0;
+	Actor *maxActor = NULL;
+
+	for (act = _actors.begin(); act != _actors.end(); act++) {
+		if (*act != NULL && (*act)->_isActive == 1)
+			if ((*act)->_depth > maxDepth) {
+				maxDepth = (*act)->_depth;
+				maxActor = *act;
+			}
+	}
+
+	return maxActor;
 }
 
 Actor::Actor(KomEngine *vm, FilesystemNode dirNode, String name, bool isMouse) : _vm(vm) {

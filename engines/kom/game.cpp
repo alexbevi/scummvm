@@ -105,7 +105,7 @@ void Game::enterLocation(uint16 locId) {
 			_roomObjects.push_back(roomObj);
 
 			// TODO - move this to processGraphics?
-			act->setMaskDepth(roomObj.priority, 1); // TODO - check dummy depth value
+			act->setMaskDepth(roomObj.priority, 32767);
 
 			// TODO:
 			// * store actor in screenObjects
