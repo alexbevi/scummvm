@@ -89,6 +89,7 @@ bool Screen::init() {
 
 void Screen::processGraphics(int mode) {
 	//memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
+	int scale;
 
 	// handle screen objects
 	if (mode > 0) {
@@ -113,10 +114,14 @@ void Screen::processGraphics(int mode) {
 		if (_vm->database()->getChar(0)->_lastLocation != chr->_lastLocation ||
 			!_vm->database()->getChar(i)->_isVisible) {
 
-			// TODO - init scope stuff
-			if (chr->_actorId >= 0) {
-				_vm->actorMan()->unload(chr->_actorId);
-				chr->_actorId = chr->_loadedXtend = chr->_scopeInUse = -1;
+			if (chr->_loadedScopeXtend != -1) {
+				chr->_spriteTimer = chr->_spriteCutState = 0;
+				chr->_isBusy = false;
+
+				if (chr->_actorId >= 0) {
+					_vm->actorMan()->unload(chr->_actorId);
+					chr->_actorId = chr->_loadedScopeXtend = chr->_scopeInUse = -1;
+				}
 			}
 		}
 	}
@@ -124,6 +129,15 @@ void Screen::processGraphics(int mode) {
 	// load actors in this room
 	for (int i = 0; i < _vm->database()->charactersNum(); ++i) {
 		Character *chr = _vm->database()->getChar(i);
+
+		chr->_start5PrevPrev = chr->_start5Prev;
+		chr->_start5Prev = chr->_start5;
+		chr->_start4PrevPrev = chr->_start4Prev;
+		chr->_start4Prev = chr->_start4;
+		chr->_start3PrevPrev = chr->_start3Prev;
+		chr->_start3Prev = chr->_start3;
+
+		scale = (chr->_start5 * 88) / 60;
 
 		// TODO - init scope stuff
 		// TODO - disable actor if in fight
@@ -134,11 +148,8 @@ void Screen::processGraphics(int mode) {
 
 			// FIXME: this is here just for testing
 
-			int scale;
-
 			Actor *act = _vm->actorMan()->get(chr->_actorId);
 
-			scale = (chr->_start5 * 88) / 60;
 			act->setPos(chr->_screenX / 2, (chr->_start4 + (chr->_screenH + chr->_offset78) / scale) / 256 / 2);
 			act->setRatio(chr->_ratioX / scale, chr->_ratioY / scale);
 
@@ -146,13 +157,6 @@ void Screen::processGraphics(int mode) {
 
 			// FIXME end above
 		}
-
-		chr->_start5PrevPrev = chr->_start5Prev;
-		chr->_start5Prev = chr->_start5;
-		chr->_start4PrevPrev = chr->_start4Prev;
-		chr->_start4Prev = chr->_start4;
-		chr->_start3PrevPrev = chr->_start3Prev;
-		chr->_start3Prev = chr->_start3;
 	}
 
 	updateCursor();

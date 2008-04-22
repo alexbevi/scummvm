@@ -24,6 +24,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "common/fs.h"
 #include "common/str.h"
@@ -41,7 +42,7 @@ using Common::String;
 Game::Game(KomEngine *vm, OSystem *system) : _system(system), _vm(vm) {
 
 	// FIXME: Temporary
-    _settings.selectedChar = _settings.selectedQuest = 0;
+    _player.selectedChar = _player.selectedQuest = 0;
 }
 
 Game::~Game() {
@@ -182,7 +183,7 @@ void Game::hitExit(uint16 charId, bool something) {
 		chr->_screenX = _vm->database()->getMidX(exitLoc, linkBox);
 		chr->_screenY = _vm->database()->getMidY(exitLoc, linkBox);
 
-		if (chr->_spriteSceneState == 0) {
+		if (chr->_spriteCutState == 0) {
 			chr->_gotoX = chr->_screenX;
 			chr->_gotoY = chr->_screenY;
 			chr->_gotoLoc = exitLoc;
@@ -591,7 +592,7 @@ bool Game::doStat(const Command *cmd) {
 			warning("TODO: PlayVideo(%s)", j->arg1);
 			break;
 		case 468:
-			warning("TODO: PlaySpriteScene(%s, %d, %d, %d)", j->arg1, j->arg2, j->arg3, j->arg4);
+			doActionSpriteScene(j->arg1, j->arg2, j->arg3, j->arg4);
 			break;
 		case 469:
 			warning("TODO: PlaySample(%s)", j->arg1);
@@ -634,6 +635,7 @@ bool Game::doStat(const Command *cmd) {
 
 void Game::loopMove() {
 	// TODO - handle player char
+	_vm->database()->getChar(0)->_stopped = false; // FIXME - hack
 
 	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
 		Character *chr = _vm->database()->getChar(i);
@@ -652,7 +654,7 @@ void Game::loopMove() {
 			chr->moveCharOther();
 
 		} else {
-			if (chr->_spriteSceneState == 0 && chr->_fightPartner < 0) {
+			if (chr->_spriteCutState == 0 && chr->_fightPartner < 0) {
 				int16 destBox = chr->_destBox;
 				chr->_gotoLoc = chr->_destLoc;
 
@@ -782,18 +784,30 @@ void Game::loopCollide() {
 }
 
 void Game::loopSpriteCut() {
-	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
+	for (uint16 i = 0; i < _vm->database()->charactersNum(); ++i) {
 		Character *chr = _vm->database()->getChar(i);
 
 		if (chr->_actorId < 0)
 			continue;
 
-		switch (chr->_spriteSceneState) {
+		switch (chr->_spriteCutState) {
 		case 0:
 			break;
 		case 1:
+			chr->_spriteCutState = 2;
 			break;
 		case 2:
+			if (!(chr->_stopped)) {
+				chr->_lastDirection = 4;
+				if (chr->_sprite8c != 0 || strlen(chr->_spriteName) >= 2) {
+					chr->_spriteTimer = 0;
+					chr->setScope(101);
+					chr->_spriteCutState = 3;
+				} else {
+					chr->_spriteCutState = 0;
+					chr->_isBusy = false;
+				}
+			}
 			break;
 		case 3:
 			if (chr->_spriteTimer > 0)
@@ -802,12 +816,12 @@ void Game::loopSpriteCut() {
 				chr->_isBusy = false;
 
 			if (chr->_spriteTimer == 0) {
-				chr->_spriteSceneState = 0;
+				chr->_spriteCutState = 0;
 				chr->_lastDirection = 4;
 			}
 			break;
 		default:
-			continue;
+			break;
 		}
 	}
 }
@@ -855,7 +869,7 @@ void Game::changeMode(int value, int mode) {
 
 int16 Game::doExternalAction(const char *action) {
 	if (strcmp(action, "getquest") == 0) {
-		return _settings.selectedQuest;
+		return _player.selectedQuest;
 	} else {
 		// TODO - warning("Unknown external action: %s", action);
 		return 0;
@@ -909,6 +923,62 @@ void Game::doActionMoveChar(uint16 charId, int16 loc, int16 box) {
 	chr->_start5 = _vm->database()->getZValue(loc, box, chr->_start4);
 	chr->stopChar();
 	chr->_lastDirection = 4;
+}
+
+void Game::doActionSpriteScene(const char *name, int charId, int loc, int box) {
+	static const char *prefixes[] = { "DLC001", "DLC006", "EWC000" };
+	static int tabs[] = { 0, 1, 2 }; // TODO - check real values
+	static int nums[] = { 29, 30, 29 };
+	Character *chr = _vm->database()->getChar(charId);
+	String spriteName(name);
+
+	spriteName.toUppercase();
+
+	if (loc < 0)
+		chr->_gotoLoc = chr->_lastLocation;
+	else
+		chr->_gotoLoc = loc;
+
+	if (box < 0) {
+		chr->_gotoX = chr->_screenX;
+		chr->_gotoY = chr->_screenY;
+	} else {
+		chr->_spriteBox = box;
+		chr->_gotoX = _vm->database()->getMidX(loc, box);
+		chr->_gotoY = _vm->database()->getMidY(loc, box);
+	}
+
+	_player.spriteCutMoving = false;
+
+	// Check if it's a moving sprite
+	if (charId == 0 && name != 0) {
+		int8 match = -1;
+		for (int8 i = 0; i < 3; ++i) {
+			if (spriteName.hasPrefix(prefixes[i])) {
+				_player.spriteCutTab = -1;
+				match = i;
+				break;
+			}
+		}
+
+		if (match != -1) {
+			_player.spriteCutNum = nums[match];
+			_player.spriteCutTab = tabs[match];
+			_player.spriteCutPos = 0;
+
+			_player.spriteCutMoving = true;
+			_player.spriteCutX = chr->_screenX / 2;
+			_player.spriteCutY = chr->_screenY / 2;
+		}
+	}
+
+	// Scope 12 is the idle animation
+	if (chr->_spriteCutState == 0 || chr->_scopeInUse == 12)
+		chr->_spriteCutState = 1;
+
+	chr->_spriteName = name;
+	chr->_sprite8c = 0;
+	chr->_isBusy = true;
 }
 
 } // End of namespace Kom

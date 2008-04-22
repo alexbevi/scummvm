@@ -53,18 +53,25 @@ struct RoomDoor {
 
 struct Settings {
 	Settings() : gameCycles(6000), dayMode(1) {}
-	uint8 selectedChar; // 0 - thidney. 1 - shahron
-	uint8 selectedQuest;
 	uint8 dayMode; // 0 - day. 1 - night. 2 - dawn. 3 - dusk
 	uint8 currLocation;
 	uint16 gameCycles;
 	bool fightEnabled;
 };
 
+/** Player settings */
 struct Player {
 	Player() : isNight(0), sleepTimer(0) {}
+	uint8 selectedChar; // 0 - thidney. 1 - shahron
+	uint8 selectedQuest;
 	uint8 isNight;
 	uint16 sleepTimer;
+	bool spriteCutMoving;
+	int16 spriteCutX;
+	int16 spriteCutY;
+	int spriteCutTab;
+	int16 spriteCutPos;
+	int16 spriteCutNum;
 };
 
 class Game {
@@ -88,6 +95,7 @@ public:
 	void setNight();
 
 	void doActionMoveChar(uint16 charId, int16 loc, int16 box);
+	void doActionSpriteScene(const char *name, int charId, int loc, int box);
 
 	Common::Array<RoomObject> *getObjects() { return &_roomObjects; }
 	Common::Array<RoomDoor> *getDoors() { return &_roomDoors; }

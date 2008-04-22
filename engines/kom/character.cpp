@@ -24,6 +24,7 @@
  */
 
 #include "common/str.h"
+#include "common/fs.h"
 
 #include "kom/kom.h"
 #include "kom/character.h"
@@ -395,6 +396,8 @@ void Character::setScope(int16 scope) {
 }
 
 void Character::setScopeX(int16 scope) {
+	static FilesystemNode spritesDir =
+		_vm->dataDir()->getChild("kom").getChild("cutsprit");
 	char filename[50];
 	String charName(_name);
 	charName.toLowercase();
@@ -403,56 +406,140 @@ void Character::setScopeX(int16 scope) {
 	if (_spriteTimer > 0)
 		scope = _spriteScope;
 
-	if (_loadedXtend != -1 && _scopeInUse == scope)
+	if (_loadedScopeXtend != -1 && _scopeInUse == scope)
 		return;
 
 	// TODO - check spell effect and handle cabbage/grave/cutscene
 
-	assert(_scopes[scope].startFrame != -1);
+	if (scope == 100) {
+		printf("TODO: grave\n");
 
-	char xtend = _xtend;
+	// sprite cutscene
+	} else if (scope == 101) {
+		String name(_spriteName);
+		name.toLowercase();
+
+		switch (_sprite8c) {
+		case 0:
+			if (_loadedScopeXtend != -1 && _actorId != -1) {
+				_vm->actorMan()->unload(_actorId);
+				_actorId = -1;
+			}
+			// TODO: load sprite
+
+			// If char is thidney
+			if (_vm->game()->player()->selectedChar == 0) {
+				if (name.lastChar() == 's')
+					name.setChar('t', name.size() - 1);
+				// SHAR -> SMAN
+				if (name.hasPrefix("shar")) {
+					name.setChar('m', 1);
+					name.setChar('n', 3);
+				}
+			}
+
+			// Figure out if the prefix directory is 3 or 4 characters long
+			char prefix[5];
+			strncpy(prefix, name.c_str(), 4);
+			prefix[4] = '\0';
+
+			if (!(spritesDir.getChild(prefix).exists()))
+				prefix[3] = '\0';
+
+			sprintf(filename, "%s%d", name.c_str(),
+					_vm->game()->player()->isNight);
+
+			_vm->panel()->showLoading(true);
+			_actorId =
+				_vm->actorMan()->load(spritesDir.getChild(prefix), filename);
+
+			// TODO:
+			// stop greeting
+			// play audio
+			_vm->panel()->showLoading(false);
+
+			act = _vm->actorMan()->get(_actorId);
+			act->enable(1);
+			act->defineScope(0, 0, act->getFramesNum() - 1, 0);
+			act->setScope(0, 2);
+
+			_spriteTimer = act->getFramesNum() * 2 - 1;
+			_spriteScope = scope;
+			_scopeInUse = scope;
+			_loadedScopeXtend = -8888;
+
+			break;
+		case 1:
+			printf("TODO: character animation 1\n");
+			break;
+		case 2:
+			printf("TODO: character animation 2\n");
+			break;
+		case 3:
+			printf("TODO: character animation 3\n");
+			break;
+		case 4:
+			printf("TODO: character animation 4\n");
+			break;
+		default:
+			error("Illegal sprite type");
+		}
+	} else if (scope == 102) {
+		printf("TODO: cabbage\n");
+
+	// regular scope
+	} else if (scope < 100) {
+
+		assert(_scopes[scope].startFrame != -1);
+
+		char xtend = _xtend;
 
 
-	if (_walkSpeed == 0) {
-		xtend += _vm->game()->player()->isNight;
+		if (_walkSpeed == 0) {
+			xtend += _vm->game()->player()->isNight;
 
-	// Idle animations are stored in a seperate actor file for some reason
-	} else if (scope == 12)
-		xtend += 1;
+		// Idle animations are stored in a seperate actor file for some reason
+		} else if (scope == 12)
+			xtend += 1;
 
-	if (_loadedXtend != xtend) {
+		if (_loadedScopeXtend != xtend) {
 
-		if (_loadedXtend != -1 && _actorId != -1) {
-			_vm->actorMan()->unload(_actorId);
-			_actorId = -1;
+			if (_loadedScopeXtend != -1 && _actorId != -1) {
+				_vm->actorMan()->unload(_actorId);
+				_actorId = -1;
+			}
+
+			sprintf(filename, "%s%c", charName.c_str(),
+					xtend + (xtend < 10 ? '0' : '7'));
+			_loadedScopeXtend = xtend;
+
+			_vm->panel()->showLoading(true);
+			_actorId =
+				_vm->actorMan()->load(_vm->dataDir()->getChild("kom").
+						getChild("actors"), filename);
+			_vm->actorMan()->get(_actorId)->enable(1);
+			_vm->panel()->showLoading(false);
 		}
 
-		sprintf(filename, "%s%c", charName.c_str(), xtend + (xtend < 10 ? '0' : '7'));
-		_loadedXtend = xtend;
+		if (_scopeInUse == scope)
+			return;
 
-		_vm->panel()->showLoading(true);
-		_actorId =
-			_vm->actorMan()->load(_vm->dataDir()->getChild("kom").getChild("actors"), filename);
-		_vm->actorMan()->get(_actorId)->enable(1);
-		_vm->panel()->showLoading(false);
-	}
-
-	if (_scopeInUse == scope)
-		return;
-
-	_scopeInUse = scope;
-
-	act = _vm->actorMan()->get(_actorId);
-	act->defineScope(0, _scopes[scope].minFrame, _scopes[scope].maxFrame, _scopes[scope].startFrame);
-	act->setScope(0, _animSpeed);
-
-	// Handle idle animation
-	if (scope == 12) {
-		_spriteSceneState = 3;
-		_spriteTimer = (_scopes[scope].maxFrame - _scopes[scope].minFrame) * _animSpeed - 1;
-		_spriteScope = scope;
 		_scopeInUse = scope;
-		_isBusy = true;
+
+		act = _vm->actorMan()->get(_actorId);
+		act->defineScope(0, _scopes[scope].minFrame, _scopes[scope].maxFrame,
+				_scopes[scope].startFrame);
+		act->setScope(0, _animSpeed);
+
+		// Handle idle animation
+		if (scope == 12) {
+			_spriteCutState = 3;
+			_spriteTimer = (_scopes[scope].maxFrame -
+					_scopes[scope].minFrame) * _animSpeed - 1;
+			_spriteScope = scope;
+			_scopeInUse = scope;
+			_isBusy = true;
+		}
 	}
 }
 

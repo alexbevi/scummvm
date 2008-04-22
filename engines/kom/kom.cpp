@@ -102,7 +102,7 @@ int KomEngine::go() {
 	 */
 
 	FilesystemNode installDir(_fsNode->getChild("install"));
-	if (_game->settings()->selectedChar == 0) {
+	if (_game->player()->selectedChar == 0) {
 		File::addDefaultDirectory(installDir.getChild("db0"));
 		_database->init("thid");
 	} else {

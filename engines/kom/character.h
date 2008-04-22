@@ -42,9 +42,9 @@ public:
 		_actorId(-1), _screenH(0), _screenDH(0), _offset0c(0), _offset10(0),
 		_offset14(262144), _offset1c(0), _offset20(262144), _offset28(0), _ratioX(262144),
 		_ratioY(262144), _relativeSpeed(1024), _direction(0), _lastDirection(2),
-		_stoppedTime(0),
-		_scopeInUse(-1), _scopeWanted(8), _loadedXtend(-1), _priority(0), _fightPartner(-1),
-		_spriteSceneState(0), _spriteScope(0), _spriteTimer(0), _spriteBox(0), _somethingX(0),
+		_stoppedTime(0), _spriteName(0),
+		_scopeInUse(-1), _scopeWanted(8), _loadedScopeXtend(-1), _priority(0), _fightPartner(-1),
+		_spriteCutState(0), _spriteScope(0), _spriteTimer(0), _spriteBox(0), _somethingX(0),
 		_somethingY(0) {}
 
 	int _id;
@@ -133,13 +133,15 @@ public:
 	int32 _start5PrevPrev;
 	uint32 _offset78;
 	int16 _fightPartner;
-	uint8 _spriteSceneState;
+	uint8 _spriteCutState;
 	uint16 _spriteScope;
 	uint16 _spriteTimer;
 	uint16 _spriteBox;
+	uint16 _sprite8c;
+	const char *_spriteName;
 	int16 _scopeInUse;
 	int16 _scopeWanted;
-	int16 _loadedXtend;
+	int16 _loadedScopeXtend;
 
 	void moveChar(bool param);
 	void moveCharOther();
