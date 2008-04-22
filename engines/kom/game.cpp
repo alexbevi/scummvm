@@ -852,12 +852,9 @@ void Game::loopTimeouts() {
 			}
 		}
 
-		if (chr->_lastLocation == _vm->database()->getChar(0)->_lastLocation) {
-			if (chr->_spriteTimer > 0 && chr->_scopeInUse == 12) {
-				// TODO - spriteCut again
-			}
-		}
-
+		if (chr->_lastLocation == _vm->database()->getChar(0)->_lastLocation &&
+			chr->_spriteTimer > 0 && chr->_scopeInUse == 12)
+				_player.spriteCutNum++;
 	}
 
 }
