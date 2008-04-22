@@ -635,7 +635,6 @@ bool Game::doStat(const Command *cmd) {
 
 void Game::loopMove() {
 	// TODO - handle player char
-	_vm->database()->getChar(0)->_stopped = false; // FIXME - hack
 
 	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
 		Character *chr = _vm->database()->getChar(i);
@@ -797,7 +796,7 @@ void Game::loopSpriteCut() {
 			chr->_spriteCutState = 2;
 			break;
 		case 2:
-			if (!(chr->_stopped)) {
+			if (chr->_stopped) {
 				chr->_lastDirection = 4;
 				if (chr->_sprite8c != 0 || strlen(chr->_spriteName) >= 2) {
 					chr->_spriteTimer = 0;
