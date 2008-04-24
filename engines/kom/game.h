@@ -59,9 +59,16 @@ struct Settings {
 	bool fightEnabled;
 };
 
+typedef enum {
+	CMD_SPRITE_SCENE = 100,
+	CMD_NOTHING      = 101
+} CommandType;
+
 /** Player settings */
 struct Player {
 	Player() : isNight(0), sleepTimer(0) {}
+	CommandType command;
+	int16 commandState;
 	uint8 selectedChar; // 0 - thidney. 1 - shahron
 	uint8 selectedQuest;
 	uint8 isNight;

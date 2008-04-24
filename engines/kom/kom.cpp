@@ -139,7 +139,9 @@ void KomEngine::gameLoop() {
 	// setFrameRate(24)
 	// setBrightness(256)
 	// clearWorkScreen
-	// init some global vars
+	// init some global vars, Player settings
+	_game->player()->command = CMD_NOTHING;
+	_game->player()->commandState = 0;
 	_database->getChar(0)->_isBusy = false;
 	// init something in the procs struct
 	// init some more vars

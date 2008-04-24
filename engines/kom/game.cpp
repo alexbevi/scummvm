@@ -948,6 +948,9 @@ void Game::doActionSpriteScene(const char *name, int charId, int loc, int box) {
 
 	// Check if it's a moving sprite
 	if (charId == 0 && name != 0) {
+
+		_player.command = CMD_SPRITE_SCENE;
+
 		int8 match = -1;
 		for (int8 i = 0; i < 3; ++i) {
 			if (spriteName.hasPrefix(prefixes[i])) {
