@@ -131,10 +131,6 @@ void KomEngine::errorString(const char *buf1, char *buf2) {
 }
 
 void KomEngine::gameLoop() {
-	if (_debugger->isAttached()) {
-		_debugger->onFrame();
-	}
-
 	// TODO:
 	// setFrameRate(24)
 	// setBrightness(256)
@@ -149,10 +145,17 @@ void KomEngine::gameLoop() {
 
 	_game->player()->isNight = (_game->settings()->dayMode == 1 || _game->settings()->dayMode == 3) ? 1 : 0;
 	// fadeTo(target = 256, speed = 16)
+	// TODO: loop actually starts with the menu, and then switches to RUNNING
 	_gameLoopState = GAMELOOP_RUNNING;
 	// _flicLoaded = 2;
 
-	if (_gameLoopState == GAMELOOP_RUNNING) {
+	// Main game loop
+	while (_gameLoopState == GAMELOOP_RUNNING) {
+
+		if (_debugger->isAttached()) {
+			_debugger->onFrame();
+		}
+
 		if (_game->player()->sleepTimer == 0)
 			_input->loopInput();
 
@@ -179,22 +182,21 @@ void KomEngine::gameLoop() {
 		// TODO - handle other graphics modes
 		_screen->processGraphics(1);
 
-	} else {
-		// stopNarrator()
-		// stopGreeting()
-		// ambientStop()
-		if (_gameLoopState == GAMELOOP_DEATH) {
-			// TODO
-			// play death video
-			// play credits
+		if (_input->debugMode()) {
+			_input->resetDebugMode();
+			_debugger->attach();
 		}
 	}
 
-
-	if (_input->debugMode()) {
-		_input->resetDebugMode();
-		_debugger->attach();
+	// stopNarrator()
+	// stopGreeting()
+	// ambientStop()
+	if (_gameLoopState == GAMELOOP_DEATH) {
+		// TODO
+		// play death video
+		// play credits
 	}
+
 }
 
 } // End of namespace Kom
