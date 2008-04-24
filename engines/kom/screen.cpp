@@ -93,7 +93,7 @@ void Screen::processGraphics(int mode) {
 
 	// handle screen objects
 	if (mode > 0) {
-	Common::Array<RoomObject> *roomObjects = _vm->game()->getObjects();
+		Common::Array<RoomObject> *roomObjects = _vm->game()->getObjects();
 
 		for (uint i = 0; i < roomObjects->size(); i++) {
 			Actor *act = _vm->actorMan()->get((*roomObjects)[i].actorId);
