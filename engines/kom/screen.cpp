@@ -167,8 +167,6 @@ void Screen::processGraphics(int mode) {
 
 	// TODO - handle dust clouds again?
 
-	updateCursor();
-	displayMouse();
 	updateBackground();
 	drawBackground();
 	displayDoors();
@@ -176,6 +174,14 @@ void Screen::processGraphics(int mode) {
 	// TODO - handle snow
 	// TODO - handle fight bars
 	// TODO - handle mouse
+
+	// FIXME - add more checks for cursor display
+	if (_vm->database()->getChar(0)->_spriteCutState == 0) {
+		updateCursor();
+		displayMouse();
+	} else {
+		showMouseCursor(false);
+	}
 
 	// Copy dirty rects to screen
 	copyRectListToScreen(_prevDirtyRects);
@@ -383,6 +389,7 @@ void Screen::showMouseCursor(bool show) {
 }
 
 void Screen::displayMouse() {
+	showMouseCursor(true);
 	_vm->actorMan()->getMouse()->display();
 }
 
