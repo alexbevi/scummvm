@@ -439,7 +439,6 @@ bool Game::doStat(const Command *cmd) {
 				keepProcessing = db->getObj(j->arg3)->ownerId != j->arg2;
 			break;
 		case 403:
-			// warning("TODO: move actor stub: %d %d %d", j->arg2, j->arg3, j->arg4);
 			db->setCharPos(j->arg2, j->arg3, j->arg4);
 			doActionMoveChar(j->arg2, j->arg3, j->arg4);
 			db->getChar(j->arg2)->_destLoc =
