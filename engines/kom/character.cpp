@@ -498,7 +498,7 @@ void Character::setScopeX(int16 scope) {
 		if (_walkSpeed == 0) {
 			xtend += _vm->game()->player()->isNight;
 
-		// Idle animations are stored in a seperate actor file for some reason
+		// Idle animations are stored in a separate actor file for some reason
 		} else if (scope == 12)
 			xtend += 1;
 
