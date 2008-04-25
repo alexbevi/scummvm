@@ -1040,6 +1040,8 @@ void Game::loopInterfaceCollide() {
 
 	_settings.oldOverType = _settings.overType;
 	_settings.oldOverNum = _settings.overNum;
+	_settings.overType = 0;
+	_settings.overNum = -1;
 
 	// FIXME - some code duplication in this horrible tree
 	if (_settings.objectNum < 0) {
