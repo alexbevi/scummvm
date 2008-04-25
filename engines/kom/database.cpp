@@ -875,7 +875,7 @@ int16 Database::getMidOverlapY(int loc, int box1, int box2) {
 int16 Database::getZValue(int loc, int box, int32 y) {
 	Box *b;
 
-	if (loc == 0 && box == 0) return 1;
+	if (loc < 0 || box < 0) return 1;
 
 	b = getBox(loc, box);
 
