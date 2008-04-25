@@ -167,8 +167,12 @@ public:
 	int16 getZValue(int loc, int box, int32 y);
 	uint16 getExitBox(int currLoc, int nextLoc);
 	int8 getBoxLink(int loc, int box, int join);
+	int8 getFirstLink(int loc, int box);
 	bool getExitInfo(int loc, int box, int *exitLoc, int *exitBox);
 	bool isInLine(int loc, int box, int x, int y);
+	void getClosestBox(int loc, uint16 mouseX, uint16 mouseY,
+			int16 screenX, int16 screenY,
+			int16 *collideBox, uint16 *collideBoxX, uint16 *collideBoxY);
 
 	void setCharPos(int charId, int loc, int box);
 	bool giveObject(int charId, int obj, bool something);

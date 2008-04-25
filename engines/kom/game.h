@@ -53,6 +53,29 @@ struct RoomDoor {
 
 struct Settings {
 	Settings() : gameCycles(6000), dayMode(1) {}
+	uint16 mouseState;
+	bool mouseOverExit;
+	uint16 mouseX;
+	uint16 mouseY;
+	int16 mouseBox;
+	int16 overType;
+	int16 oldOverType;
+	int16 overNum;
+	int16 oldOverNum;
+	int16 collideBox;
+	uint16 collideBoxX;
+	uint16 collideBoxY;
+	int16 collideBoxZ;
+	int16 collideObj;
+	uint16 collideObjX;
+	uint16 collideObjY;
+	int32 collideObjZ;
+	int16 collideChar;
+	uint16 collideCharX;
+	uint16 collideCharY;
+	int32 collideCharZ;
+	int16 objectNum;
+	int16 object2Num;
 	uint8 dayMode; // 0 - day. 1 - night. 2 - dawn. 3 - dusk
 	uint8 currLocation;
 	uint16 gameCycles;
@@ -61,7 +84,10 @@ struct Settings {
 
 typedef enum {
 	CMD_SPRITE_SCENE = 100,
-	CMD_NOTHING      = 101
+	CMD_NOTHING      = 101,
+	CMD_THING1       = 102,
+	CMD_THING2       = 106,
+	CMD_THING3       = 107
 } CommandType;
 
 /** Player settings */
@@ -94,6 +120,7 @@ public:
 	void loopCollide();
 	void loopSpriteCut();
 	void loopTimeouts();
+	void loopInterfaceCollide();
 
 	Settings* settings() { return &_settings; }
 	Player* player() { return &_player; }

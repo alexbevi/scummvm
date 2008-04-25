@@ -403,7 +403,17 @@ void Screen::updateCursor() {
 	if (_vm->input()->getMouseY() >= SCREEN_H - PANEL_H) {
 		mouse->switchScope(5, 2);
 	} else {
-		mouse->switchScope(0, 2);
+		switch (_vm->game()->settings()->mouseState) {
+		case 2: // exit
+			mouse->switchScope(2, 2);
+			break;
+		case 3: // hot spot
+			mouse->switchScope(3, 2);
+			break;
+		case 0: // walk
+		default:
+			mouse->switchScope(0, 2);
+		}
 	}
 
 	// The scopes:

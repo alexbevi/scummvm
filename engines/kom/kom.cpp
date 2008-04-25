@@ -139,6 +139,7 @@ void KomEngine::gameLoop() {
 	_game->player()->command = CMD_NOTHING;
 	_game->player()->commandState = 0;
 	_database->getChar(0)->_isBusy = false;
+	_game->settings()->objectNum = _game->settings()->object2Num = -1;
 	// init something in the procs struct
 	// init some more vars
 	// some tricks with the loop input based on day/night
@@ -181,6 +182,8 @@ void KomEngine::gameLoop() {
 
 		// TODO - handle other graphics modes
 		_screen->processGraphics(1);
+		// if not flic loaded:
+		_game->loopInterfaceCollide();
 
 		if (_input->debugMode()) {
 			_input->resetDebugMode();

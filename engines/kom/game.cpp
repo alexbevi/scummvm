@@ -106,10 +106,9 @@ void Game::enterLocation(uint16 locId) {
 
 			// TODO - move this to processGraphics?
 			act->setMaskDepth(roomObj.priority, 32767);
-
-			// TODO:
-			// * store actor in screenObjects
 		}
+
+		_roomObjects.push_back(roomObj);
 	}
 
 	// Load room doors
@@ -855,7 +854,251 @@ void Game::loopTimeouts() {
 			chr->_spriteTimer > 0 && chr->_scopeInUse == 12)
 				_player.spriteCutNum++;
 	}
+}
 
+void Game::loopInterfaceCollide() {
+	Character *playerChar = _vm->database()->getChar(0);
+	int boxId;
+
+	if (playerChar->_lastLocation == 0)
+		return;
+
+	_settings.collideBoxX = _settings.mouseX = _vm->input()->getMouseX() * 2;
+	_settings.collideBoxY = _settings.mouseY = _vm->input()->getMouseY() * 2;
+
+	_settings.collideBox = _settings.mouseBox =
+		_vm->database()->whatBox(playerChar->_lastLocation,
+			_settings.collideBoxX, _settings.collideBoxY);
+
+	if (_settings.collideBox < 0) {
+		_settings.mouseOverExit = false;
+
+		_vm->database()->getClosestBox(playerChar->_lastLocation,
+				_settings.mouseX, _settings.mouseY,
+				playerChar->_screenX, playerChar->_screenY,
+				&_settings.collideBox, &_settings.collideBoxX,
+				&_settings.collideBoxY);
+	} else {
+		Box *box = _vm->database()->getBox(playerChar->_lastLocation,
+				_settings.collideBox);
+
+		boxId = _settings.collideBox;
+
+		if ((box->attrib & 8) != 0) {
+			int link = _vm->database()->getFirstLink(
+						playerChar->_lastLocation,
+						_settings.collideBox);
+			if (link != -1)
+				boxId = link;
+		}
+
+		box = _vm->database()->getBox(playerChar->_lastLocation,
+				boxId);
+
+		if ((box->attrib & 1) == 0) {
+			_settings.mouseOverExit = false;
+		} else {
+			_settings.collideBox = boxId;
+
+			_settings.collideBoxX =
+				_vm->database()->getMidX(playerChar->_lastLocation,
+						_settings.collideBox);
+
+			_settings.collideBoxY =
+				_vm->database()->getMidY(playerChar->_lastLocation,
+						_settings.collideBox);
+
+			_settings.mouseOverExit = true;
+		}
+
+		box = _vm->database()->getBox(playerChar->_lastLocation,
+				_settings.collideBox);
+
+		if ((box->attrib & 8) != 0) {
+			_settings.collideBox = _vm->database()->getFirstLink(
+					playerChar->_lastLocation,
+					_settings.collideBox);
+
+			_settings.collideBoxX =
+				_vm->database()->getMidX(playerChar->_lastLocation,
+						_settings.collideBox);
+
+			_settings.collideBoxY =
+				_vm->database()->getMidY(playerChar->_lastLocation,
+						_settings.collideBox);
+		}
+	}
+
+	// Hover over objects
+
+	_settings.collideObj = -1;
+	_settings.collideObjZ = 1073741824;
+
+	Common::Array<RoomObject> *roomObjects = _vm->game()->getObjects();
+
+	for (uint i = 0; i < roomObjects->size(); i++) {
+		Object *obj = _vm->database()->object((*roomObjects)[i].objectId);
+		int32 z = 0;
+		int16 x, y;
+
+		if (!obj->isVisible)
+			continue;
+
+		// If the mouse box is on the object box
+		if (obj->box == _settings.mouseBox) {
+			int8 link = _vm->database()->getFirstLink(
+					playerChar->_lastLocation, obj->box);
+			Box *box = _vm->database()->getBox(playerChar->_lastLocation, link);
+			x = _vm->database()->getMidX(playerChar->_lastLocation, link);
+			y = _vm->database()->getMidY(playerChar->_lastLocation, link);
+			z = box->z1;
+		}
+
+		// If the mouse is over the drawn object
+		if ((*roomObjects)[i].actorId >= 0) {
+
+			Actor *act = _vm->actorMan()->get((*roomObjects)[i].actorId);
+			if (act->inPos(_settings.mouseX / 2, _settings.mouseY / 2)) {
+				int8 link = _vm->database()->getFirstLink(
+						playerChar->_lastLocation, obj->box);
+				Box *box = _vm->database()->getBox(playerChar->_lastLocation, link);
+				x = _vm->database()->getMidX(playerChar->_lastLocation, link);
+				y = _vm->database()->getMidY(playerChar->_lastLocation, link);
+				z = box->z1;
+			}
+		}
+
+		if (z > 0 && z < _settings.collideObjZ) {
+			_settings.collideObj = (*roomObjects)[i].objectId;
+			_settings.collideObjX = x;
+			_settings.collideObjY = y;
+			_settings.collideObjZ = z;
+		}
+	}
+
+	// Hover over characters
+
+	_settings.collideChar = -1;
+	_settings.collideCharZ = 1073741824;
+
+	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
+		Character *chr = _vm->database()->getChar(i);
+
+		if (playerChar->_lastLocation != chr->_lastLocation ||
+			!chr->_isVisible)
+			continue;
+
+		if (chr->_spriteCutState != 0 && chr->_scopeInUse != 12)
+			continue;
+
+		// If the mouse is over the drawn character
+		Actor *act = _vm->actorMan()->get(chr->_actorId);
+		if (!act->inPos(_settings.mouseX / 2, _settings.mouseY / 2))
+			continue;
+
+		if (chr->_start5 >= _settings.collideCharZ)
+			continue;
+
+		Box *box = _vm->database()->getBox(chr->_lastLocation,
+				chr->_lastBox);
+
+		if (box->attrib == 8) {
+			int link = _vm->database()->getFirstLink(chr->_lastLocation,
+				chr->_lastBox);
+			_settings.collideCharX =
+				_vm->database()->getMidX(chr->_lastLocation, link);
+			_settings.collideCharY =
+				_vm->database()->getMidY(chr->_lastLocation, link);
+		} else {
+			_settings.collideCharX = chr->_screenX;
+			_settings.collideCharY = chr->_screenY;
+		}
+
+		_settings.collideChar = i;
+		_settings.collideCharZ = chr->_start5;
+	}
+
+	// Special handling of the Ninja Baker.
+	// His idle animation moves outside his box, so don't allow focus.
+	// (This actually makes sense, this he's a ninja and moves very fast)
+	if (_settings.collideChar == 62 &&
+			_vm->database()->getChar(62)->_spriteTimer > 0) {
+		_settings.collideChar = -1;
+	}
+
+	_settings.mouseBox = _settings.collideBox;
+
+	if (_settings.mouseOverExit) {
+		_settings.collideBoxZ = 32000;
+	} else {
+		_settings.collideBoxZ =
+			_vm->database()->getZValue(playerChar->_lastLocation,
+					_settings.collideBox, _settings.collideBoxY * 256);
+	}
+
+	// TODO: handle inventory, flic loaded
+
+	_settings.oldOverType = _settings.overType;
+	_settings.oldOverNum = _settings.overNum;
+
+	// FIXME - some code duplication in this horrible tree
+	if (_settings.objectNum < 0) {
+		if (_settings.mouseOverExit &&
+		    _settings.collideBoxZ < _settings.collideCharZ &&
+		    _settings.collideBoxZ < _settings.collideObjZ) {
+
+			_settings.overType = 1;
+			_settings.overNum = _settings.collideBox;
+			_settings.mouseState = 2; // Exit
+
+		} else if (_settings.collideChar >= 0 &&
+			_settings.collideCharZ < _settings.collideObjZ) {
+
+			_settings.overType = 2;
+			_settings.overNum = _settings.collideChar;
+			_settings.mouseState = 3; // Hotspot
+
+		} else if (_settings.collideObj >= 0) {
+
+			_settings.overType = 3;
+			_settings.overNum = _settings.collideObj;
+			_settings.mouseState = 3; // Hotspot
+
+		} else {
+			_settings.mouseState = 0; // Walk
+		}
+
+	} else {
+		if (_player.command == CMD_THING1) {
+
+			if (_settings.collideChar >= 0 &&
+				_settings.collideCharZ < _settings.collideObjZ) {
+
+				_settings.overType = 2;
+				_settings.overNum = _settings.collideChar;
+				_settings.mouseState = 3; // Hotspot
+
+			} else if (_settings.collideObj >= 0) {
+
+				_settings.overType = 3;
+				_settings.overNum = _settings.collideObj;
+				_settings.mouseState = 3; // Hotspot
+
+			} else {
+				_settings.mouseState = 0; // Walk
+			}
+
+		} else if (_player.command == CMD_THING2 ||
+		           _player.command == CMD_THING3) {
+			if (_settings.collideChar < 0)
+				_settings.mouseState = 0; // Walk
+			else {
+				_settings.overType = 2;
+				_settings.overNum = _settings.collideChar;
+				_settings.mouseState = 3; // Hotspot
+			}
+		}
+	}
 }
 
 void Game::changeMode(int value, int mode) {

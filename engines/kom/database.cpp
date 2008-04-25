@@ -897,6 +897,14 @@ int8 Database::getBoxLink(int loc, int box, int join) {
 	return _locRoutes[loc].boxes[box].joins[join];
 }
 
+int8 Database::getFirstLink(int loc, int box) {
+	int8 linkBox = -1;
+	for (int join = 0; join < 6; ++join)
+		if ((linkBox = _locRoutes[loc].boxes[box].joins[join]) != -1)
+			return linkBox;
+	return linkBox;
+}
+
 bool Database::getExitInfo(int loc, int box, int *exitLoc, int *exitBox) {
 	for (int i = 0; i < 6; ++i)
 		if (_locRoutes[loc].exits[i].exit == box) {
@@ -913,6 +921,112 @@ bool Database::isInLine(int loc, int box, int x, int y) {
 	Box *b = (&_locRoutes[loc].boxes[box]);
 
 	return (x > b->x1 && x < b->x2 || y > b->y1 && y < b->y2);
+}
+
+
+void Database::getClosestBox(int loc, uint16 mouseX, uint16 mouseY,
+		int16 screenX, int16 screenY,
+		int16 *collideBox, uint16 *collideBoxX, uint16 *collideBoxY) {
+
+	int tmp = 399;
+	int tmpBox = -1;
+	int tmp2 = -1;
+	int tmp2Box = -1;
+	int tmp3 = -1;
+	int tmp3Box = -1;
+	int tmp4 = 639;
+	int tmp4Box = -1;
+
+	for (int i = 0; i < 32; ++i) {
+		Box *box = getBox(loc, i);
+		if (!box->enabled)
+			continue;
+
+		if (box->attrib != 0 || box->x1 > mouseX || box->x2 < mouseX)
+			continue;
+
+		if (box->y2 >= mouseY && box->y1 < tmp) {
+			tmp = box->y1;
+			tmpBox = i;
+		}
+
+		if (box->y1 <= mouseY && box->y2 > tmp2) {
+			tmp2 = box->y2;
+			tmp2Box = i;
+		}
+	}
+
+	if (tmpBox == -1 && tmp2Box == -1) {
+		for (int i = 0; i < 32; ++i) {
+			Box *box = getBox(loc, i);
+			if (!box->enabled)
+				continue;
+
+			if (box->attrib != 0 || box->y1 > screenY || box->y2 < screenY)
+				continue;
+
+			if (box->x2 <= mouseX && box->x2 > tmp3) {
+				tmp3 = box->x2;
+				tmp3Box = i;
+			}
+
+			if (box->x2 >= mouseX && box->x2 < tmp4) {
+				tmp4 = box->x1;
+				tmp4Box = i;
+			}
+		}
+	}
+
+	if (tmpBox != -1) {
+		*collideBoxX = mouseX;
+
+		// TODO: verify
+		if ((tmpBox|loc) <= 0) {
+			*collideBoxY = 389;
+		} else {
+			Box *box = getBox(loc, tmpBox);
+			*collideBoxY = (box->y2 - box->y1) / 2 + box->y1;
+		}
+		*collideBox = tmpBox;
+
+	} else if (tmp2Box != -1) {
+		*collideBoxX = mouseX;
+
+		// TODO: verify
+		if ((tmp2Box|loc) <= 0) {
+			*collideBoxY = 389;
+		} else {
+			Box *box = getBox(loc, tmp2Box);
+			*collideBoxY = (box->y2 - box->y1) / 2 + box->y1;
+		}
+		*collideBox = tmp2Box;
+
+	} else if (mouseX >= screenX) {
+
+		// TODO: verify
+		if ((tmp3Box|loc) <= 0) {
+			*collideBoxX = 319;
+		} else {
+			Box *box = getBox(loc, tmp3Box);
+			*collideBoxX = (box->x2 - box->x1) / 2 + box->x1;
+		}
+
+		*collideBoxY = screenY;
+		*collideBox = tmp3Box;
+
+	} else {
+
+		// TODO: verify
+		if ((tmp4Box|loc) <= 0) {
+			*collideBoxX = 319;
+		} else {
+			Box *box = getBox(loc, tmp4Box);
+			*collideBoxX = (box->x2 - box->x1) / 2 + box->x1;
+		}
+
+		*collideBoxY = screenY;
+		*collideBox = tmp4Box;
+	}
 }
 
 void Database::setCharPos(int charId, int loc, int box) {

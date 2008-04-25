@@ -77,6 +77,10 @@ public:
 	int getXPos() { return _xPos; }
 	int getYPos() { return _yPos; }
 	uint8 getFramesNum() { return _framesNum; }
+	bool inPos(uint32 x, uint32 y) {
+		return x >= _displayLeft && x <= _displayRight &&
+		       y >= _displayTop && y <= _displayBottom; }
+
 
 protected:
 	Actor(KomEngine *vm, FilesystemNode dirNode, Common::String name, bool isMouse);
