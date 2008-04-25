@@ -96,12 +96,16 @@ void Screen::processGraphics(int mode) {
 		Common::Array<RoomObject> *roomObjects = _vm->game()->getObjects();
 
 		for (uint i = 0; i < roomObjects->size(); i++) {
-			Actor *act = _vm->actorMan()->get((*roomObjects)[i].actorId);
-			Object *obj = _vm->database()->object((*roomObjects)[i].objectId);
+			if ((*roomObjects)[i].actorId >= 0) {
+				Actor *act =
+					_vm->actorMan()->get((*roomObjects)[i].actorId);
+				Object *obj =
+					_vm->database()->object((*roomObjects)[i].objectId);
 
-			// TODO - handle disappear delay
+				// TODO - handle disappear delay
 
-			act->enable(obj->isVisible);
+				act->enable(obj->isVisible);
+			}
 		}
 	}
 

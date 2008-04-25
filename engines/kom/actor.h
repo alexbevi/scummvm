@@ -131,7 +131,7 @@ public:
 	void loadMouse(FilesystemNode dirNode, Common::String name);
 	Actor *get(int idx) { return _actors[idx]; }
 	Actor *getMouse() { return _mouseActor; }
-	void unload(int idx) { delete _actors[idx]; _actors[idx] = 0; }
+	void unload(int idx) { if (idx >= 0) { delete _actors[idx]; _actors[idx] = 0; } }
 	void unloadAll() { _actors.clear(); }
 	void displayAll();
 

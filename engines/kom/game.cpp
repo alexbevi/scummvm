@@ -91,18 +91,18 @@ void Game::enterLocation(uint16 locId) {
 	Common::List<int> objList = loc->objects;
 	for (Common::List<int>::iterator objId = objList.begin(); objId != objList.end(); ++objId) {
 		Object *obj = db->object(*objId);
+		RoomObject roomObj;
+		roomObj.actorId = -1;
+		roomObj.objectId = *objId;
+
 		if (obj->isSprite) {
 			sprintf(filename, "%s%d", obj->name, _player.isNight);
-			RoomObject roomObj;
-			roomObj.objectId = *objId;
 			roomObj.actorId = _vm->actorMan()->load(locNode, String(filename));
 			roomObj.priority = db->getBox(locId, obj->box)->priority;
 			Actor *act = _vm->actorMan()->get(roomObj.actorId);
 			act->defineScope(0, 0, act->getFramesNum() - 1, 0);
 			act->setScope(0, 3);
 			act->setPos(0, SCREEN_H - 1);
-
-			_roomObjects.push_back(roomObj);
 
 			// TODO - move this to processGraphics?
 			act->setMaskDepth(roomObj.priority, 32767);
