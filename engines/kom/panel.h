@@ -40,7 +40,8 @@ public:
 
 	void update();
 	void showLoading(bool isLoading);
-	void setLocationDesc(char *desc);
+	void setLocationDesc(const char *desc);
+	void setActionDesc(const char *desc);
 	bool isEnabled() const { return _isEnabled; }
 	bool isDirty() const { return _isDirty; }
 	void enable(bool state) { _isEnabled = state; }
@@ -59,6 +60,7 @@ private:
 	uint8 _noLoading; // FIXME - do I really want to implement this "loading" timer thingy?
 
 	char *_locationDesc;
+	char *_actionDesc;
 
 };
 } // End of namespace Kom

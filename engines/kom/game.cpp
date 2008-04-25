@@ -152,6 +152,7 @@ void Game::enterLocation(uint16 locId) {
 	}
 
 	_vm->panel()->setLocationDesc(loc->desc);
+	_vm->panel()->setActionDesc("");
 	_vm->panel()->showLoading(false);
 }
 

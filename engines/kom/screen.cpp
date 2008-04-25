@@ -399,11 +399,22 @@ void Screen::displayMouse() {
 
 void Screen::updateCursor() {
 	Actor *mouse = _vm->actorMan()->getMouse();
+	Settings *settings = _vm->game()->settings();
+
+	int hoverId = -1;
+	int hoverType;
+	const char *text = "TODO";
+	const char *text2 = "TODO2";
+	char panelText[200];
 
 	if (_vm->input()->getMouseY() >= SCREEN_H - PANEL_H) {
 		mouse->switchScope(5, 2);
 	} else {
-		switch (_vm->game()->settings()->mouseState) {
+		if (settings->objectNum >= 0) {
+			// TODO - holding item?
+		}
+
+		switch (settings->mouseState) {
 		case 2: // exit
 			mouse->switchScope(2, 2);
 			break;
@@ -415,6 +426,79 @@ void Screen::updateCursor() {
 			mouse->switchScope(0, 2);
 		}
 	}
+
+	if (settings->overType != settings->oldOverType ||
+		settings->overNum != settings->oldOverNum) {
+
+		if (settings->overType <= 1) {
+			// TODO - stop hot spot sound
+		} else if (settings->overType <= 3) {
+			// TODO - play hot spot sound
+		}
+	}
+
+	// TODO - if flic loaded, do nothing
+
+	if (_vm->game()->player()->commandState != 0 /* && collideType != 0*/) {
+		// TODO
+	} else {
+		text = "TODO";
+		hoverType = settings->overType;
+
+		switch (settings->overType) {
+			case 2:
+				hoverId = settings->collideChar;
+				break;
+			case 3:
+				hoverId = settings->collideObj;
+				break;
+		}
+	}
+
+	if (settings->objectNum < 0) {
+		text = "Walk to";
+		if (_vm->game()->player()->commandState > 0) {
+			// TODO - talk to / pick up / look at / ...
+		}
+
+		switch (hoverType) {
+		case 1:
+			if (settings->mouseOverExit) {
+				int exitLoc, exitBox;
+				text = "Exit to";
+				_vm->database()->getExitInfo(
+						_vm->database()->getChar(0)->_lastLocation,
+						settings->collideBox,
+						&exitLoc, &exitBox);
+
+				text2 = _vm->database()->getLoc(exitLoc)->desc;
+			}
+			break;
+		case 2:
+			text2 = _vm->database()->getChar(settings->collideChar)->_desc;
+			break;
+		case 3:
+			text2 = _vm->database()->getObj(settings->collideObj)->desc;
+			break;
+		default:
+			text2 = "...";
+		}
+
+	} else {
+		// TODO - "use # with #"
+	}
+
+	// TODO - build "use # with #" string
+
+	if (hoverType == 2) {
+		// TODO - add " (RIP)" if dead
+	} else {
+		// TODO
+	}
+
+	sprintf(panelText, "%s %s", text, text2);
+	_vm->panel()->setActionDesc(panelText);
+
 
 	// The scopes:
 	// setScope(0, 2);
