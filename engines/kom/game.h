@@ -86,6 +86,7 @@ typedef enum {
 	CMD_SPRITE_SCENE = 100,
 	CMD_NOTHING      = 101,
 	CMD_THING1       = 102,
+	CMD_LOOK         = 105,
 	CMD_THING2       = 106,
 	CMD_THING3       = 107
 } CommandType;
@@ -94,6 +95,8 @@ typedef enum {
 struct Player {
 	Player() : isNight(0), sleepTimer(0) {}
 	CommandType command;
+	int16 collideType;
+	int16 collideNum;
 	int16 commandState;
 	uint8 selectedChar; // 0 - thidney. 1 - shahron
 	uint8 selectedQuest;

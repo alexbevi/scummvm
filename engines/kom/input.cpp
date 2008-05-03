@@ -38,7 +38,7 @@ using Common::String;
 namespace Kom {
 
 Input::Input(KomEngine *vm, OSystem *system) : _system(system), _vm(vm), _debugMode(false),
-	_mouseX(0), _mouseY(0) {
+	_mouseX(0), _mouseY(0), _leftClick(false), _rightClick(false) {
 }
 
 Input::~Input() {
@@ -48,12 +48,102 @@ Input::~Input() {
 void Input::loopInput() {
 	// TODO: if flic not loaded
 	handleMouse();
+
+	_leftClick = _rightClick = false;
 }
 
 void Input::handleMouse() {
-	if (1) {// FIXME - check "invisible"?
-	} else {
+	static Settings *settings = _vm->game()->settings();
+	Character *playerChar = _vm->database()->getChar(0);
+	uint16 gotoX, gotoY = 0;
+	uint16 collideType;
+	int donutState;
+
+	if (1 && _leftClick) { // FIXME - check "invisible"?
+		if (settings->mouseY >= 344) {
+			// TODO - inventory
+			printf("Inventory click!\n");
+
+		// "Exit to"
+		} else {
+			if (settings->mouseState == 2) {
+				gotoX = settings->collideBoxX;
+				gotoY = settings->collideBoxY;
+				collideType = 1;
+
+			} else switch (settings->overType) {
+			case 2:
+				gotoX = settings->collideCharX;
+				gotoY = settings->collideCharY;
+				collideType = 2;
+				break;
+			case 3:
+				gotoX = settings->collideObjX;
+				gotoY = settings->collideObjY;
+				collideType = 3;
+				break;
+			default:
+				gotoX = settings->collideBoxX;
+				gotoY = settings->collideBoxY;
+				collideType = 1;
+			}
+
+			if (collideType == 2 || collideType == 3) {
+				donutState = 0;
+				// TODO
+
+			} else if (settings->objectNum >= 0) {
+				donutState = -1;
+			} else {
+				donutState = 0;
+				_vm->game()->player()->command = CMD_SPRITE_SCENE;
+			}
+
+			if (donutState != -1) {
+				switch (_vm->game()->player()->command) {
+				case 0x64:
+					if (collideType != 0) {
+						playerChar->_gotoX = gotoX;
+						playerChar->_gotoY = gotoY;
+						_vm->game()->player()->commandState = 1;
+						_vm->game()->player()->collideNum = -1;
+						_vm->game()->player()->collideType = 0;
+					}
+					break;
+
+				case 0x65:
+					break;
+
+				case 0x66:
+					// TODO
+					break;
+
+				case 0x67:
+					// TODO
+					break;
+				case 0x68:
+					// TODO
+					break;
+				case 0x69:
+					// TODO
+					break;
+				case 0x6A:
+					// TODO
+					break;
+				case 0x6B:
+					// TODO
+					break;
+				case 0x6C:
+					// TODO
+					break;
+				default:
+					error("Wrong player command");
+				}
+			}
+		}
 	}
+
+	// TODO - handle right click, menu request
 }
 
 // TODO: hack
@@ -83,6 +173,14 @@ void Input::checkKeys() {
 			case Common::EVENT_MOUSEMOVE:
 				_mouseX = event.mouse.x;
 				_mouseY = event.mouse.y;
+				break;
+
+			case Common::EVENT_LBUTTONDOWN:
+				_leftClick = true;
+				break;
+
+			case Common::EVENT_RBUTTONDOWN:
+				_rightClick = true;
 				break;
 
 			case Common::EVENT_QUIT:

@@ -633,10 +633,27 @@ bool Game::doStat(const Command *cmd) {
 }
 
 void Game::loopMove() {
-	// TODO - handle player char
+	Character *chr = _vm->database()->getChar(0);
+
+	if (chr->_spriteTimer == 0)
+		chr->moveChar(true);
+	chr->moveCharOther();
+
+	if (chr->_spriteTimer > 0) {
+		// TODO
+	}
+
+	// TODO: something with cbMemory
+
+	if (chr->_gotoBox != chr->_lastBox) {
+		chr->_gotoBox = chr->_lastBox;
+
+		_vm->database()->setCharPos(0, chr->_lastLocation, chr->_lastBox);
+		// TODO: komdbDoCommand(7, ...) - call the box script - does nothing?
+	}
 
 	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
-		Character *chr = _vm->database()->getChar(i);
+		chr = _vm->database()->getChar(i);
 
 		if (!(chr->_isAlive)) {
 			// TODO - set some stuff
@@ -693,7 +710,7 @@ void Game::loopMove() {
 
 void Game::loopCollide() {
 	// FIXME: start from 0 because "room" debug command fails. re-add later
-	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
+	for (uint16 i = 0; i < _vm->database()->charactersNum(); ++i) {
 		Character *chr = _vm->database()->getChar(i);
 
 		if ((_vm->database()->getBox(chr->_lastLocation, chr->_lastBox)->attrib & 1) != 0) {

@@ -55,6 +55,8 @@ private:
 	bool _debugMode;
 	uint16 _mouseX, _mouseY;
 
+	bool _leftClick, _rightClick;
+
 	void handleMouse();
 };
 

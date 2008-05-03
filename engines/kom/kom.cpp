@@ -168,6 +168,35 @@ void KomEngine::gameLoop() {
 		_game->loopCollide();
 		// if in a fight, do something
 		// collision stuff
+		if (_game->player()->commandState != 0) {
+			switch (_game->player()->command) {
+			case 0x64:
+				_game->player()->command = CMD_NOTHING;
+				_game->player()->commandState = 0;
+				_game->player()->collideType = 0;
+				_game->player()->collideNum = -1;
+				break;
+
+			case 0x66:
+				break;
+
+			case 0x67:
+				break;
+			case 0x68:
+				break;
+			case 0x69:
+				break;
+			case 0x6A:
+				break;
+			case 0x6B:
+				break;
+			case 0x6C:
+				break;
+			case 0x65:
+			default:
+				error("Illegal player mode");
+			}
+		}
 		// if player stopped:
 		//     do command (walk, use, talk, pickup, look, fight, exit, magic)
 		_game->loopSpriteCut();
