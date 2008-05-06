@@ -64,6 +64,7 @@ public:
 	int init();
 	int go();
 
+	::GUI::Debugger *getDebugger() { return _debugger; }
 	void errorString(const char *buf1, char *buf2);
 
 	Input *input() const { return _input; }
