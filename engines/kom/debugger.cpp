@@ -23,7 +23,7 @@
  *
  */
 
-#include "gui/debugger.cpp"
+#include "gui/debugger.h"
 
 #include "kom/kom.h"
 #include "kom/debugger.h"
