@@ -1,43 +1,42 @@
+Index: base/plugins.cpp
+===================================================================
+--- base/plugins.cpp	(revision 31898)
++++ base/plugins.cpp	(working copy)
+@@ -123,6 +123,9 @@
+ 		#if PLUGIN_ENABLED_STATIC(IGOR)
+ 		LINK_PLUGIN(IGOR)
+ 		#endif
++		#if PLUGIN_ENABLED_STATIC(KOM)
++		LINK_PLUGIN(KOM)
++		#endif
+ 		#if PLUGIN_ENABLED_STATIC(KYRA)
+ 		LINK_PLUGIN(KYRA)
+ 		#endif
 Index: configure
 ===================================================================
---- configure	(revision 29413)
+--- configure	(revision 31898)
 +++ configure	(working copy)
-@@ -69,6 +69,7 @@
- add_engine cruise "Cinematique evo 2" no
- add_engine drascula "Drascula: The Vampire Strikes Back" no
+@@ -90,6 +90,7 @@
+ add_engine drascula "Drascula: The Vampire Strikes Back" yes
  add_engine gob "Gobli*ns" yes
-+add_engine kom "Kingdom O' Magic" no
  add_engine igor "Igor: Objective Uikokahonia" no
++add_engine kom "Kingdom O' Magic" no
  add_engine kyra "Legend of Kyrandia" yes
  add_engine lure "Lure of the Temptress" yes
+ add_engine m4 "M4/MADS" no
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 29413)
+--- engines/engines.mk	(revision 31898)
 +++ engines/engines.mk	(working copy)
-@@ -55,6 +55,12 @@
+@@ -47,6 +47,11 @@
  MODULES += engines/igor
  endif
  
-+ifdef DISABLE_KOM
-+DEFINES += -DDISABLE_KOM
-+else 
++ifdef ENABLE_KOM
++DEFINES += -DENABLE_KOM=$(ENABLE_KOM)
 +MODULES += engines/kom
 +endif
 +
- ifdef DISABLE_KYRA
- DEFINES += -DDISABLE_KYRA
- else
-Index: base/plugins.cpp
-===================================================================
---- base/plugins.cpp	(revision 29413)
-+++ base/plugins.cpp	(working copy)
-@@ -110,6 +110,9 @@
- 		#ifndef DISABLE_IGOR
- 		LINK_PLUGIN(IGOR)
- 		#endif
-+		#ifndef DISABLE_KOM
-+		LINK_PLUGIN(KOM)
-+		#endif
- 		#ifndef DISABLE_KYRA
- 		LINK_PLUGIN(KYRA)
- 		#endif
+ ifdef ENABLE_KYRA
+ DEFINES += -DENABLE_KYRA=$(ENABLE_KYRA)
+ MODULES += engines/kyra

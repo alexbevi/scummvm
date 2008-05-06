@@ -15,7 +15,7 @@ MODULE_OBJS := \
 	detection.o
 
 # This module can be built as a plugin
-ifdef BUILD_PLUGINS
+ifeq ($(ENABLE_KOM), DYNAMIC_PLUGIN)
 PLUGIN := 1
 endif
 
