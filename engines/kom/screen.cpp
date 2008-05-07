@@ -152,20 +152,30 @@ void Screen::processGraphics(int mode) {
 			Actor *act = _vm->actorMan()->get(chr->_actorId);
 
 			if (scale == 256 && chr->_walkSpeed == 0) {
-				printf("TODO: scale == 256\n");
+				act->setPos(chr->_screenX / 2,
+						(chr->_start4 + (chr->_screenH + chr->_offset78)
+						 / scale) / 256 / 2);
+				act->setMaskDepth(
+						_vm->database()->getPriority(chr->_lastLocation, chr->_lastBox),
+						32767);
 			} else if (i == 0 && chr->_spriteTimer != 0 &&
 					   _vm->game()->player()->spriteCutMoving) {
 
 				act->setPos(_vm->game()->player()->spriteCutX,
 						    _vm->game()->player()->spriteCutY);
+				act->setMaskDepth(
+						_vm->database()->getPriority(chr->_lastLocation, chr->_lastBox),
+						chr->_start5);
 			} else {
 				act->setPos(chr->_screenX / 2,
 						(chr->_start4 + (chr->_screenH + chr->_offset78)
 						 / scale) / 256 / 2);
+				act->setMaskDepth(
+						_vm->database()->getPriority(chr->_lastLocation, chr->_lastBox),
+						chr->_start5);
 			}
 
 			act->setRatio(chr->_ratioX / scale, chr->_ratioY / scale);
-			act->setMaskDepth(_vm->database()->getPriority( chr->_lastLocation, chr->_lastBox), chr->_start5);
 		}
 	}
 
