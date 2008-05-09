@@ -596,6 +596,21 @@ bool Game::doStat(const Command *cmd) {
 		case 469:
 			warning("TODO: PlaySample(%s)", j->arg1);
 			break;
+		case 473:
+			db->getChar(0)->_start3 = db->getChar(0)->_start3PrevPrev;
+			db->getChar(0)->_start4 = db->getChar(0)->_start4PrevPrev;
+			db->getChar(0)->_start5 = db->getChar(0)->_start5Prev;
+			db->getChar(0)->_screenX = db->getChar(0)->_start3 / 256;
+			db->getChar(0)->_screenY = db->getChar(0)->_start4 / 256;
+			db->getChar(0)->_gotoX = db->getChar(0)->_screenX;
+			db->getChar(0)->_gotoY = db->getChar(0)->_screenY;
+			db->getChar(0)->_lastBox = db->whatBox(db->getChar(0)->_lastLocation,
+				db->getChar(0)->_screenX, db->getChar(0)->_screenY);
+
+			_player.command = CMD_NOTHING;
+			_player.commandState = 0;
+
+			break;
 		case 474:
 			if (strcmp(j->arg1, "REFRESH") == 0) {
 				warning("TODO: Unhandled external action: REFRESH");
