@@ -30,6 +30,7 @@
 #include "kom/actor.h"
 #include "kom/database.h"
 #include "kom/input.h"
+#include "kom/sound.h"
 #include "kom/game.h"
 
 using Common::File;
@@ -43,6 +44,7 @@ KomEngine::KomEngine(OSystem *system)
 	_database = 0;
 	_actorMan = 0;
 	_input = 0;
+	_sound = 0;
 	_game = 0;
 	_gameLoopState = GAMELOOP_RUNNING;
 
@@ -55,6 +57,7 @@ KomEngine::~KomEngine() {
 	delete _database;
 	delete _actorMan;
 	delete _input;
+	delete _sound;
 	delete _debugger;
 	delete _panel;
 	delete _game;
@@ -70,6 +73,7 @@ int KomEngine::init() {
 
 	_database = new Database(this, _system);
 	_input = new Input(this, _system);
+	_sound = new Sound(this, _mixer);
 	_debugger = new Debugger(this);
 	_panel = new Panel(this, _fsNode->getChild("kom").getChild("oneoffs").getChild("pan1.img"));
 	_game = new Game(this, _system);

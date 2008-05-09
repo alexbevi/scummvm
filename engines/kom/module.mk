@@ -7,6 +7,7 @@ MODULE_OBJS := \
 	database.o \
 	actor.o \
 	input.o \
+	sound.o \
 	panel.o \
 	flicplayer.o \
 	game.o \

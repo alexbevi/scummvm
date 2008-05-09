@@ -34,6 +34,7 @@
 #include "kom/actor.h"
 #include "kom/panel.h"
 #include "kom/input.h"
+#include "kom/sound.h"
 #include "kom/debugger.h"
 #include "kom/game.h"
 #include "kom/font.h"
@@ -85,6 +86,7 @@ private:
 	Database *_database;
 	ActorManager *_actorMan;
 	Input *_input;
+	Sound *_sound;
 	Panel *_panel;
 	Debugger *_debugger;
 	Game *_game;
