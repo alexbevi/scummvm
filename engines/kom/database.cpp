@@ -1038,6 +1038,7 @@ void Database::setCharPos(int charId, int loc, int box) {
 	_locations[loc].characters.push_back(charId);
 
 	if (charId == 0) {
+		_vm->game()->settings()->currLocation = loc;
 		_characters[0]._destLoc = loc;
 		_characters[0]._destBox = box;
 	}

@@ -119,6 +119,7 @@ public:
 	void hitExit(uint16 charId, bool something);
 	void processTime();
 	bool doStat(const Command *cmd);
+	void doCommand(int command, int type, int id, int thingy);
 	void loopMove();
 	void loopCollide();
 	void loopSpriteCut();
@@ -153,6 +154,7 @@ private:
 
 	void processChars();
 	void processChar(int proc);
+	bool doProc(int id, int type, int cmd, int value);
 	void changeMode(int value, int mode);
 	int16 doExternalAction(const char *action);
 

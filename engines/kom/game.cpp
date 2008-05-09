@@ -312,6 +312,45 @@ void Game::processChar(int proc) {
 	}
 }
 
+bool Game::doProc(int id, int type, int cmd, int value) {
+	int proc;
+	Process *p;
+	bool stop;
+
+	switch (type) {
+	case 1: // Object
+		proc = _vm->database()->getObj(id)->proc;
+		break;
+	case 2: // Char
+		proc = _vm->database()->getChar(id)->_proc;
+		break;
+	case 3: // Specific proc
+		proc = id;
+		break;
+	default:
+		return false;
+	}
+
+	p = _vm->database()->getProc(proc);
+
+	for (Common::List<Command>::iterator i = p->commands.begin();
+			i != p->commands.end() && !stop; ++i) {
+		if (i->cmd == cmd) {
+			switch (cmd) {
+			case 318:
+				if(doStat(&(*i)))
+					return true;
+				break;
+			default:
+				warning("Unhandled proc type: %d\n", type);
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 bool Game::doStat(const Command *cmd) {
 	bool keepProcessing = true;
 	bool rc = false;
@@ -647,6 +686,37 @@ bool Game::doStat(const Command *cmd) {
 	return rc;
 }
 
+void Game::doCommand(int command, int type, int id, int thingy) {
+	Common::List<EventLink> events;
+	switch (command) {
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	case 5:
+		break;
+	case 6:
+		break;
+
+	// Enter room
+	case 7:
+		events = _vm->database()->getLoc(_settings.currLocation)->events;
+		for (Common::List<EventLink>::iterator j = events.begin(); j != events.end(); ++j) {
+			if (j->exitBox == id) {
+				doProc(j->proc, 3, 318, -1);
+				break;
+			}
+		}
+		break;
+	case 9:
+		break;
+	case 10:
+		break;
+	}
+}
+
 void Game::loopMove() {
 	Character *chr = _vm->database()->getChar(0);
 
@@ -664,7 +734,9 @@ void Game::loopMove() {
 		chr->_gotoBox = chr->_lastBox;
 
 		_vm->database()->setCharPos(0, chr->_lastLocation, chr->_lastBox);
-		// TODO: komdbDoCommand(7, ...) - call the box script - does nothing?
+
+		// Run "enter room" script
+		doCommand(7, -1, chr->_lastBox, -1);
 	}
 
 	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
@@ -748,7 +820,6 @@ void Game::loopCollide() {
 				if (counter > 1) {
 					// TODO: komdbDoCommand(9, ...) -- call the character's "collide" script
 				}
-
 			}
 		}
 	}
