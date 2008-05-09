@@ -45,8 +45,8 @@ namespace Kom {
 class KomEngine;
 
 struct EventLink {
-	int data1;
-	int data2;
+	int exitBox;
+	int proc;
 };
 
 struct Object {

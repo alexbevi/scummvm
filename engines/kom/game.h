@@ -95,9 +95,9 @@ typedef enum {
 struct Player {
 	Player() : isNight(0), sleepTimer(0) {}
 	CommandType command;
+	int16 commandState;
 	int16 collideType;
 	int16 collideNum;
-	int16 commandState;
 	uint8 selectedChar; // 0 - thidney. 1 - shahron
 	uint8 selectedQuest;
 	uint8 isNight;

@@ -338,7 +338,7 @@ void Database::initEvents() {
 		int loc;
 		EventLink ev;
 
-		readLineScanf(f, "%d %d %d", &loc, &(ev.data1), &(ev.data2));
+		readLineScanf(f, "%d %d %d", &loc, &(ev.exitBox), &(ev.proc));
 		// Skip line
 		f.readLine(line, 100);
 
@@ -351,7 +351,7 @@ void Database::initEvents() {
 		printf("location %d\n", i);
 		for (Common::List<EventLink>::iterator j = _locations[i].events.begin(); j != _locations[i].events.end(); ++j) {
 		printf("%d %d\n",
-			j->data1, j->data2);
+			j->exitBox, j->proc);
 		}
 	}*/
 }
