@@ -79,6 +79,8 @@ public:
 
 	void endGame() { _gameLoopState = GAMELOOP_DEATH; }
 
+	uint8 _flicLoaded;
+
 private:
 	void gameLoop();
 

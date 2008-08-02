@@ -447,7 +447,8 @@ void Screen::updateCursor() {
 		}
 	}
 
-	// TODO - if flic loaded, do nothing
+	if (_vm->_flicLoaded != 0)
+		return;
 
 	if (_vm->game()->player()->commandState != 0 /* && collideType != 0*/) {
 		// TODO

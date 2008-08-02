@@ -144,6 +144,8 @@ void KomEngine::gameLoop() {
 	_game->player()->commandState = 0;
 	_database->getChar(0)->_isBusy = false;
 	_game->settings()->objectNum = _game->settings()->object2Num = -1;
+	_game->settings()->overType = _game->settings()->oldOverType = 0;
+	_game->settings()->overNum = _game->settings()->oldOverNum = -1;
 	// init something in the procs struct
 	// init some more vars
 	// some tricks with the loop input based on day/night
@@ -152,7 +154,7 @@ void KomEngine::gameLoop() {
 	// fadeTo(target = 256, speed = 16)
 	// TODO: loop actually starts with the menu, and then switches to RUNNING
 	_gameLoopState = GAMELOOP_RUNNING;
-	// _flicLoaded = 2;
+	_flicLoaded = 2;
 
 	// Main game loop
 	while (_gameLoopState == GAMELOOP_RUNNING) {
@@ -214,9 +216,18 @@ void KomEngine::gameLoop() {
 		// TODO
 
 		// TODO - handle other graphics modes
-		_screen->processGraphics(1);
-		// if not flic loaded:
-		_game->loopInterfaceCollide();
+		if (_game->player()->sleepTimer != 0)
+			_screen->processGraphics(0);
+		else if (_flicLoaded < 2)
+			_screen->processGraphics(1);
+		else
+			_screen->processGraphics(2);
+
+		if (_flicLoaded != 0)
+			_flicLoaded--;
+
+		if (_flicLoaded == 0)
+			_game->loopInterfaceCollide();
 
 		if (_input->debugMode()) {
 			_input->resetDebugMode();

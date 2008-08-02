@@ -79,6 +79,9 @@ void Game::enterLocation(uint16 locId) {
 	sprintf(filename, "%s%db.flc", locName.c_str(), loc->xtend + _player.isNight);
 	_vm->screen()->loadBackground(locNode.getChild(filename));
 
+	// TODO - init some other flic var
+	_vm->_flicLoaded = 2;
+
 	filename[strlen(filename) - 6] = '0';
 	filename[strlen(filename) - 5] = 'm';
 	FlicPlayer mask(locNode.getChild(filename));
@@ -869,12 +872,12 @@ void Game::loopCollide() {
 		if (_roomDoors[i].frame > 0) {
 			switch (newState) {
 			case 0:
-				if (_roomDoors[i].state == 1 /* TODO: && _flicLoaded == 2 */) {
+				if (_roomDoors[i].state == 1 && _vm->_flicLoaded != 2) {
 					// TODO: play door sound
 				}
 				break;
 			case 1:
-				if (_roomDoors[i].state != 1 /* TODO: && _flicLoaded == 2 */) {
+				if (_roomDoors[i].state != 1 && _vm->_flicLoaded != 2) {
 					// TODO: play door sound
 				}
 			}
@@ -929,8 +932,8 @@ void Game::loopSpriteCut() {
 
 /** Play idle animations */
 void Game::loopTimeouts() {
-	// TODO - check flicLoaded
-	// if (_flicLoaded) return;
+	if (_vm->_flicLoaded != 0)
+		return;
 
 	// TODO: something with spriteCutNum
 
@@ -1140,7 +1143,9 @@ void Game::loopInterfaceCollide() {
 					_settings.collideBox, _settings.collideBoxY * 256);
 	}
 
-	// TODO: handle inventory, flic loaded
+	// TODO: handle inventory
+	if (_vm->_flicLoaded != 0)
+		return;
 
 	_settings.oldOverType = _settings.overType;
 	_settings.oldOverNum = _settings.overNum;

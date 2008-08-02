@@ -914,6 +914,7 @@ bool Database::getExitInfo(int loc, int box, int *exitLoc, int *exitBox) {
 			return true;
 		}
 
+	error("no exit info. loc %d, box %d", loc, box);
 	return false;
 }
 

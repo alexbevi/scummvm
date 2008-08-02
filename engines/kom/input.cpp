@@ -46,8 +46,9 @@ Input::~Input() {
 }
 
 void Input::loopInput() {
-	// TODO: if flic not loaded
-	handleMouse();
+	if (_vm->_flicLoaded == 0) {
+		handleMouse();
+	}
 
 	_leftClick = _rightClick = false;
 }
