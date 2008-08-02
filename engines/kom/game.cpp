@@ -558,6 +558,10 @@ bool Game::doStat(const Command *cmd) {
 			keepProcessing = db->getChar(j->arg2)->_locationId !=
 			    db->getChar(j->arg3)->_locationId;
 			break;
+		case 428:
+			keepProcessing = db->getChar(j->arg2)->_box ==
+			    db->getChar(j->arg3)->_box;
+			break;
 		case 430:
 			db->getChar(j->arg2)->_mode = 1;
 			db->getChar(j->arg2)->_modeCount = j->arg3;
