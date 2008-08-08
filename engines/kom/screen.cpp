@@ -148,6 +148,8 @@ void Screen::processGraphics(int mode) {
 		if (_vm->database()->getChar(0)->_lastLocation == chr->_lastLocation &&
 			chr->_isVisible) {
 
+			int maskDepth;
+
 			chr->setScope(chr->_scopeWanted);
 			Actor *act = _vm->actorMan()->get(chr->_actorId);
 
@@ -155,26 +157,23 @@ void Screen::processGraphics(int mode) {
 				act->setPos(chr->_screenX / 2,
 						(chr->_start4 + (chr->_screenH + chr->_offset78)
 						 / scale) / 256 / 2);
-				act->setMaskDepth(
-						_vm->database()->getPriority(chr->_lastLocation, chr->_lastBox),
-						32767);
+				maskDepth = 32767;
 			} else if (i == 0 && chr->_spriteTimer != 0 &&
 					   _vm->game()->player()->spriteCutMoving) {
 
 				act->setPos(_vm->game()->player()->spriteCutX,
 						    _vm->game()->player()->spriteCutY);
-				act->setMaskDepth(
-						_vm->database()->getPriority(chr->_lastLocation, chr->_lastBox),
-						chr->_start5);
+				maskDepth = chr->_start5;
 			} else {
 				act->setPos(chr->_screenX / 2,
 						(chr->_start4 + (chr->_screenH + chr->_offset78)
 						 / scale) / 256 / 2);
-				act->setMaskDepth(
-						_vm->database()->getPriority(chr->_lastLocation, chr->_lastBox),
-						chr->_start5);
+				maskDepth = chr->_start5;
 			}
 
+			act->setMaskDepth(
+					_vm->database()->getPriority(chr->_lastLocation, chr->_lastBox),
+					maskDepth);
 			act->setRatio(chr->_ratioX / scale, chr->_ratioY / scale);
 		}
 	}
