@@ -265,6 +265,9 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 
 	if (visibleWidth == 0 || visibleHeight == 0) return;
 
+	div_t widthRatio = div(width, scaledWidth);
+	div_t heightRatio = div(height, scaledHeight);
+
 	if (xStart < 0) {
 		// frame is entirely off-screen
 		if ((visibleWidth += xStart) < 0)
@@ -316,32 +319,34 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 
 		// FIXME: the original doesn't have this check, but the room mask doesn't
 		// cover the panel area -- check
-		if (sourceLine < SCREEN_H - PANEL_H) {
-			uint16 targetPixel = targetLine * SCREEN_W + xStart;
-			drawActorFrameLine(lineBuffer, data + lineOffset, width);
+		//if (sourceLine < SCREEN_H - PANEL_H) {
 
-			// Copy line to screen
-			uint8 sourcePixel = startCol;
-			int16 colThing = scaledWidth - colSkip;
+		uint16 targetPixel = targetLine * SCREEN_W + xStart;
+		drawActorFrameLine(lineBuffer, data + lineOffset, width);
 
-			for (int j = 0; j < visibleWidth; ++j) {
-				if (lineBuffer[sourcePixel] != 0 && _mask[targetPixel] >= maskDepth)
-					_screenBuf[targetPixel] = lineBuffer[sourcePixel];
+		// Copy line to screen
+		uint8 sourcePixel = startCol;
+		int16 colThing = scaledWidth - colSkip;
 
-				sourcePixel += width / scaledWidth;
-				colThing -= width % scaledWidth;
+		for (int j = 0; j < visibleWidth; ++j) {
+			if (lineBuffer[sourcePixel] != 0 && _mask[targetPixel] >= maskDepth)
+				_screenBuf[targetPixel] = lineBuffer[sourcePixel];
 
-				if (colThing < 0) {
-					sourcePixel++;
-					colThing += scaledWidth;
-				}
+			sourcePixel += widthRatio.quot;
+			colThing -= widthRatio.rem;
 
-				targetPixel++;
+			if (colThing < 0) {
+				sourcePixel++;
+				colThing += scaledWidth;
 			}
+
+			targetPixel++;
 		}
 
-		sourceLine += height / scaledHeight;
-		rowThing -= height % scaledHeight;
+		//}
+
+		sourceLine += heightRatio.quot;
+		rowThing -= heightRatio.rem;
 
 		if (rowThing < 0) {
 			sourceLine++;
