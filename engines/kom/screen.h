@@ -79,6 +79,7 @@ public:
 	void loadBackground(FilesystemNode node);
 	void updateBackground();
 	void drawBackground();
+	void pauseBackground(bool pause) { _backgroundPaused = pause; }
 	void setMask(const uint8 *data);
 
 	void displayDoors();
@@ -106,6 +107,7 @@ private:
 	FlicPlayer *_roomBackground;
 	Font *_font;
 	uint32 _roomBackgroundTime;
+	bool _backgroundPaused;
 
 	byte *_c0ColorSet;
 

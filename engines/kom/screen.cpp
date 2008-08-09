@@ -92,20 +92,19 @@ void Screen::processGraphics(int mode) {
 	int scale;
 
 	// handle screen objects
-	if (mode > 0) {
-		Common::Array<RoomObject> *roomObjects = _vm->game()->getObjects();
+	Common::Array<RoomObject> *roomObjects = _vm->game()->getObjects();
 
-		for (uint i = 0; i < roomObjects->size(); i++) {
-			if ((*roomObjects)[i].actorId >= 0) {
-				Actor *act =
-					_vm->actorMan()->get((*roomObjects)[i].actorId);
-				Object *obj =
-					_vm->database()->object((*roomObjects)[i].objectId);
+	for (uint i = 0; i < roomObjects->size(); i++) {
+		if ((*roomObjects)[i].actorId >= 0) {
+			Actor *act =
+				_vm->actorMan()->get((*roomObjects)[i].actorId);
+			Object *obj =
+				_vm->database()->object((*roomObjects)[i].objectId);
 
-				// TODO - handle disappear delay
+			// TODO - handle disappear delay
 
+			if (mode >= 0)
 				act->enable(obj->isVisible);
-			}
 		}
 	}
 
@@ -143,47 +142,57 @@ void Screen::processGraphics(int mode) {
 
 		scale = (chr->_start5 * 88) / 60;
 
-		// TODO - init scope stuff
-		// TODO - disable actor if in fight
-		if (_vm->database()->getChar(0)->_lastLocation == chr->_lastLocation &&
-			chr->_isVisible) {
+		if (mode > 0) {
 
-			int maskDepth;
+			// TODO - disable actor if in fight
+			if (_vm->database()->getChar(0)->_lastLocation == chr->_lastLocation &&
+				chr->_isVisible) {
 
-			chr->setScope(chr->_scopeWanted);
-			Actor *act = _vm->actorMan()->get(chr->_actorId);
+				int maskDepth;
 
-			if (scale == 256 && chr->_walkSpeed == 0) {
-				act->setPos(chr->_screenX / 2,
-						(chr->_start4 + (chr->_screenH + chr->_offset78)
-						 / scale) / 256 / 2);
-				maskDepth = 32767;
-			} else if (i == 0 && chr->_spriteTimer != 0 &&
-					   _vm->game()->player()->spriteCutMoving) {
+				chr->setScope(chr->_scopeWanted);
+				Actor *act = _vm->actorMan()->get(chr->_actorId);
 
-				act->setPos(_vm->game()->player()->spriteCutX,
-						    _vm->game()->player()->spriteCutY);
-				maskDepth = chr->_start5;
-			} else {
-				act->setPos(chr->_screenX / 2,
-						(chr->_start4 + (chr->_screenH + chr->_offset78)
-						 / scale) / 256 / 2);
-				maskDepth = chr->_start5;
+				if (scale == 256 && chr->_walkSpeed == 0) {
+					act->setPos(chr->_screenX / 2,
+							(chr->_start4 + (chr->_screenH + chr->_offset78)
+							 / scale) / 256 / 2);
+					maskDepth = 32767;
+				} else if (i == 0 && chr->_spriteTimer != 0 &&
+						   _vm->game()->player()->spriteCutMoving) {
+
+					act->setPos(_vm->game()->player()->spriteCutX,
+								_vm->game()->player()->spriteCutY);
+					maskDepth = chr->_start5;
+				} else {
+					act->setPos(chr->_screenX / 2,
+							(chr->_start4 + (chr->_screenH + chr->_offset78)
+							 / scale) / 256 / 2);
+					maskDepth = chr->_start5;
+				}
+
+				act->setMaskDepth(
+						_vm->database()->getPriority(chr->_lastLocation, chr->_lastBox),
+						maskDepth);
+				act->setRatio(chr->_ratioX / scale, chr->_ratioY / scale);
 			}
-
-			act->setMaskDepth(
-					_vm->database()->getPriority(chr->_lastLocation, chr->_lastBox),
-					maskDepth);
-			act->setRatio(chr->_ratioX / scale, chr->_ratioY / scale);
 		}
 	}
 
 	// TODO - handle dust clouds again?
+	// TODO - handle magic actors
 
-	updateBackground();
-	drawBackground();
-	displayDoors();
-	_vm->actorMan()->displayAll();
+	if (mode > 0) {
+		pauseBackground(false);
+		updateBackground();
+		drawBackground();
+
+		displayDoors();
+		_vm->actorMan()->displayAll();
+	} else {
+		pauseBackground(true);
+	}
+
 	// TODO - handle snow
 	// TODO - handle fight bars
 	// TODO - handle mouse
@@ -208,10 +217,13 @@ void Screen::processGraphics(int mode) {
 	if (_roomBackground)
 		copyRectListToScreen(_bgDirtyRects);
 
-	if (_vm->panel()->isDirty())
+	if (mode > 0 && _vm->panel()->isDirty())
 		_vm->panel()->update();
 
-	gfxUpdate();
+	// TODO: check game loop state?
+
+	if (mode == 1)
+		gfxUpdate();
 }
 
 void Screen::copyRectListToScreen(const Common::List<Common::Rect> *list) {
@@ -538,6 +550,7 @@ void Screen::loadBackground(FilesystemNode node) {
 	delete _roomBackground;
 	_roomBackground = new FlicPlayer(node);
 	_roomBackgroundTime = 0;
+	_backgroundPaused = false;
 
 	// Redraw everything
 	_dirtyRects->clear();
@@ -550,6 +563,7 @@ void Screen::updateBackground() {
 		if (_system->getMillis() >= _roomBackgroundTime) {
 			_roomBackgroundTime = _system->getMillis() + _roomBackground->speed();
 
+			if (!_backgroundPaused)
 			_roomBackground->decodeFrame();
 
 			if (_roomBackground->paletteDirty()) {
