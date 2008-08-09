@@ -1131,7 +1131,7 @@ void Game::loopInterfaceCollide() {
 
 	// Special handling of the Ninja Baker.
 	// His idle animation moves outside his box, so don't allow focus.
-	// (This actually makes sense, this he's a ninja and moves very fast)
+	// (This actually makes sense -- ninjas move very fast)
 	if (_settings.collideChar == 62 &&
 			_vm->database()->getChar(62)->_spriteTimer > 0) {
 		_settings.collideChar = -1;
