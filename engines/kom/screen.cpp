@@ -247,7 +247,7 @@ void Screen::gfxUpdate() {
 
 static byte lineBuffer[SCREEN_W];
 
-void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart,
+void Screen::drawActorFrame0(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart,
                             uint16 xEnd, uint16 yEnd, int maskDepth) {
 
 	uint16 startLine = 0;
@@ -317,10 +317,6 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 	for (int i = 0; i < visibleHeight; i += 1) {
 		uint16 lineOffset = READ_LE_UINT16(data + sourceLine * 2);
 
-		// FIXME: the original doesn't have this check, but the room mask doesn't
-		// cover the panel area -- check
-		//if (sourceLine < SCREEN_H - PANEL_H) {
-
 		uint16 targetPixel = targetLine * SCREEN_W + xStart;
 		drawActorFrameLine(lineBuffer, data + lineOffset, width);
 
@@ -343,8 +339,6 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 			targetPixel++;
 		}
 
-		//}
-
 		sourceLine += heightRatio.quot;
 		rowThing -= heightRatio.rem;
 
@@ -353,6 +347,74 @@ void Screen::drawActorFrame(const int8 *data, uint16 width, uint16 height, int16
 			rowThing += scaledHeight;
 		}
 
+		targetLine++;
+	}
+
+	_dirtyRects->push_back(Rect(xStart, yStart, xStart + visibleWidth, yStart + visibleHeight));
+}
+
+void Screen::drawActorFrame4(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart) {
+
+	uint16 startLine = 0;
+	uint16 startCol = 0;
+
+	int16 visibleWidth = width;
+	int16 visibleHeight = height;
+
+	if (visibleWidth == 0 || visibleHeight == 0) return;
+
+	if (xStart < 0) {
+		// frame is entirely off-screen
+		if ((visibleWidth += xStart) < 0)
+			return;
+
+		xStart = 0;
+	}
+
+	// frame is entirely off-screen
+	if (xStart >= SCREEN_W) return;
+
+	// check if frame spills over the edge
+	if (visibleWidth + xStart >= SCREEN_W)
+		if ((visibleWidth -= visibleWidth + xStart - SCREEN_W) <= 0)
+			return;
+
+	if (yStart < 0) {
+		// frame is entirely off-screen
+		if ((visibleHeight += yStart) < 0)
+			return;
+
+		yStart = 0;
+	}
+
+	// frame is entirely off-screen
+	if (yStart >= SCREEN_H) return;
+
+	// check if frame spills over the edge
+	if (visibleHeight + yStart >= SCREEN_H)
+		if ((visibleHeight -= visibleHeight + yStart - SCREEN_H + 1) <= 0)
+			return;
+
+	uint8 sourceLine = startLine;
+	uint8 targetLine = yStart;
+
+	for (int i = 0; i < visibleHeight; i += 1) {
+		uint16 lineOffset = READ_LE_UINT16(data + sourceLine * 2);
+
+		uint16 targetPixel = targetLine * SCREEN_W + xStart;
+		drawActorFrameLine(lineBuffer, data + lineOffset, width);
+
+		// Copy line to screen
+		uint8 sourcePixel = startCol;
+
+		for (int j = 0; j < visibleWidth; ++j) {
+			if (lineBuffer[sourcePixel] != 0)
+				_screenBuf[targetPixel] = lineBuffer[sourcePixel];
+			sourcePixel++;
+			targetPixel++;
+		}
+
+		sourceLine++;
 		targetLine++;
 	}
 

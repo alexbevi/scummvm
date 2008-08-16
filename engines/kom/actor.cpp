@@ -65,6 +65,8 @@ int ActorManager::load(FilesystemNode dirNode, String name) {
 
 void ActorManager::loadMouse(FilesystemNode dirNode, String name) {
 
+	// TODO: this should be changed to allow different mouse actors
+
 	_mouseActor = new Actor(_vm, dirNode, name, true);
 	_mouseActor->defineScope(0, 0, 3, 0);
 	_mouseActor->defineScope(1, 4, 4, 4);
@@ -76,6 +78,7 @@ void ActorManager::loadMouse(FilesystemNode dirNode, String name) {
 
 	_mouseActor->setScope(0, 2);
 	_mouseActor->setPos(0, 0);
+	_mouseActor->setEffect(4);
 
 	// Init CursorMan
 	_vm->screen()->displayMouse();
@@ -279,8 +282,17 @@ void Actor::display() {
 												  width, height, xStart, yStart);
 		} else {
 			//printf("drawing actor: %s\n", _name.c_str());
-			_vm->screen()->drawActorFrame((int8 *)(_framesData + frameStream.pos()),
-				width, height, xStart, yStart, xStart + scaledWidth, yStart + scaledHeight, _maskDepth);
+			switch (_effect) {
+			case 4:
+				_vm->screen()->drawActorFrame4((int8 *)(_framesData + frameStream.pos()),
+					width, height, xStart, yStart);
+				break;
+			case 0:
+			default:
+				_vm->screen()->drawActorFrame0((int8 *)(_framesData + frameStream.pos()),
+					width, height, xStart, yStart, xStart + scaledWidth, yStart + scaledHeight, _maskDepth);
+				break;
+			}
 		}
 	}
 }

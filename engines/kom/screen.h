@@ -61,10 +61,9 @@ public:
 
 	void processGraphics(int mode);
 	void gfxUpdate();
-	void drawActorFrame(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart,
+	void drawActorFrame0(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart,
 			uint16 xEnd, uint16 yEnd, int maskDepth);
-	//void drawActorFrame(const int8 *data, uint16 width, uint16 height, uint16 xPos, uint16 yPos, int16 xOffset, int16 yOffset,
-	//                    int maskDepth, uint16 xRatio, uint16 yRatio);
+	void drawActorFrame4(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart);
 	void drawMouseFrame(const int8 *data, uint16 width, uint16 height, int16 xOffset, int16 yOffset);
 
 	void setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int hotspotY);
