@@ -31,6 +31,7 @@
 #include "common/util.h"
 
 #include "kom/database.h"
+#include "kom/sound.h"
 
 namespace Kom {
 
@@ -98,6 +99,7 @@ struct Player {
 	int16 commandState;
 	int16 collideType;
 	int16 collideNum;
+	SoundSample spriteSample;
 	uint8 selectedChar; // 0 - thidney. 1 - shahron
 	uint8 selectedQuest;
 	uint8 isNight;

@@ -74,12 +74,17 @@ public:
 	Database *database() const { return _database; }
 	Panel *panel() const { return _panel; }
 	Game *game() const { return _game; }
+	Sound *sound() const { return _sound; }
 
 	FilesystemNode *dataDir() const { return _fsNode; }
 
 	void endGame() { _gameLoopState = GAMELOOP_DEATH; }
 
 	uint8 _flicLoaded;
+
+	// Samples
+	SoundSample _hotspotSample;
+	SoundSample _doorsSample;
 
 private:
 	void gameLoop();

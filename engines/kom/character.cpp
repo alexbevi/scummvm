@@ -453,9 +453,14 @@ void Character::setScopeX(int16 scope) {
 			_actorId =
 				_vm->actorMan()->load(spritesDir.getChild(prefix), filename);
 
-			// TODO:
-			// stop greeting
-			// play audio
+			if (_lastLocation == _vm->database()->getChar(0)->_lastLocation) {
+				// TODO: stop greeting
+
+				// play sample
+				_vm->game()->player()->spriteSample.loadFile(spritesDir.getChild(prefix), name + '0');
+				_vm->sound()->playSampleSFX(_vm->game()->player()->spriteSample, false);
+			}
+
 			_vm->panel()->showLoading(false);
 
 			act = _vm->actorMan()->get(_actorId);

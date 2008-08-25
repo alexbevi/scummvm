@@ -877,12 +877,12 @@ void Game::loopCollide() {
 			switch (newState) {
 			case 0:
 				if (_roomDoors[i].state == 1 && _vm->_flicLoaded != 2) {
-					// TODO: play door sound
+					_vm->sound()->playSampleSFX(_vm->_doorsSample, false);
 				}
 				break;
 			case 1:
 				if (_roomDoors[i].state != 1 && _vm->_flicLoaded != 2) {
-					// TODO: play door sound
+					_vm->sound()->playSampleSFX(_vm->_doorsSample, false);
 				}
 			}
 		}

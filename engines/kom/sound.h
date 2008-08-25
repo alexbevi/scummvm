@@ -30,10 +30,32 @@
 #include "common/file.h"
 #include "common/mutex.h"
 #include "common/ptr.h"
+#include "common/str.h"
 
 #include "sound/mixer.h"
 
 namespace Kom {
+
+#define SOUND_HANDLES 16
+
+struct SoundHandle {
+	int index;
+	Audio::SoundHandle handle;
+};
+
+class SoundSample {
+	friend class Sound;
+public:
+	SoundSample() { _data = 0; }
+	~SoundSample() { delete _data; }
+
+	void loadFile(FilesystemNode dirNode, Common::String name);
+
+private:
+	SoundHandle _handle;
+	uint32 _size;
+	byte* _data;
+};
 
 class Sound {
 public:
@@ -43,8 +65,17 @@ public:
 	bool _musicEnabled;
 	bool _sfxEnabled;
 
+	void playSampleSFX(SoundSample &sample, bool loop);
+	void stopSample(SoundSample &sample);
+
+private:
+
 	KomEngine *_vm;
 	Audio::Mixer *_mixer;
+
+	SoundHandle *_handles[SOUND_HANDLES];
+
+	uint8 getFreeHandle();
 };
 
 } // end of namespace Kom

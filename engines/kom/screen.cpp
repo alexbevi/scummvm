@@ -515,13 +515,15 @@ void Screen::updateCursor() {
 		}
 	}
 
+	// FIXME: if the mouse is already over a hotspot when the game starts,
+	//        the sound should be playing
 	if (settings->overType != settings->oldOverType ||
 		settings->overNum != settings->oldOverNum) {
 
 		if (settings->overType <= 1) {
-			// TODO - stop hot spot sound
+			_vm->sound()->stopSample(_vm->_hotspotSample);
 		} else if (settings->overType <= 3) {
-			// TODO - play hot spot sound
+			_vm->sound()->playSampleSFX(_vm->_hotspotSample, false);
 		}
 	}
 

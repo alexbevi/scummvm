@@ -105,6 +105,11 @@ int KomEngine::go() {
 	 * check cd
 	 */
 
+	// Load sound effects
+	FilesystemNode samplesDir(_fsNode->getChild("kom").getChild("samples"));
+	_hotspotSample.loadFile(samplesDir, String("hotspot"));
+	_doorsSample.loadFile(samplesDir, String("doors"));
+
 	FilesystemNode installDir(_fsNode->getChild("install"));
 	if (_game->player()->selectedChar == 0) {
 		File::addDefaultDirectory(installDir.getChild("db0"));

@@ -26,6 +26,9 @@
 
 #include "common/system.h"
 #include "common/config-manager.h"
+#include "common/file.h"
+#include "common/fs.h"
+#include "common/str.h"
 
 #include "kom/kom.h"
 #include "kom/sound.h"
@@ -34,20 +37,79 @@
 #include "sound/voc.h"
 #include "sound/audiostream.h"
 
-#include "sound/mp3.h"
-#include "sound/vorbis.h"
-#include "sound/flac.h"
+using Common::File;
+using Common::String;
 
 namespace Kom {
+
+void SoundSample::loadFile(FilesystemNode dirNode, String name) {
+	File f;
+
+	if (_data != 0)
+		delete _data;
+	_handle.index = -1;
+
+	f.open(dirNode.getChild(name + ".raw"));
+	_size = f.size();
+	_data = new byte[_size];
+	f.read(_data, f.size());
+	f.close();
+}
 
 Sound::Sound(KomEngine *vm, Audio::Mixer *mixer)
 	: _vm(vm), _mixer(mixer), _musicEnabled(true),
 	_sfxEnabled(true) {
+
+	for (int i = 0; i < SOUND_HANDLES; i++)
+		_handles[i] = 0;
 }
 
 Sound::~Sound() {
 }
 
+void Sound::playSampleSFX(SoundSample &sample, bool loop) {
+	byte flags;
+
+	uint8 i;
+
+	if (_mixer->isSoundHandleActive(sample._handle.handle)) {
+		_mixer->stopHandle(sample._handle.handle);
+	} else {
+		i = getFreeHandle();
+		sample._handle.index = i;
+		_handles[i] = &(sample._handle);
+	}
+
+	flags = Audio::Mixer::FLAG_UNSIGNED;
+
+	if (loop)
+		flags |= Audio::Mixer::FLAG_LOOP;
+
+	_mixer->playRaw(Audio::Mixer::kSFXSoundType, &(sample._handle.handle), sample._data, sample._size, 11025, flags, -1, 255);
+}
+
+void Sound::stopSample(SoundSample &sample) {
+	if (_mixer->isSoundHandleActive(sample._handle.handle)) {
+		_handles[sample._handle.index] = 0;
+		sample._handle.index = -1;
+		_mixer->stopHandle(sample._handle.handle);
+	}
+}
+
+uint8 Sound::getFreeHandle() {
+	for (int i = 0; i < SOUND_HANDLES; i++) {
+		if (_handles[i] == 0)
+			return i;
+
+		if (!_mixer->isSoundHandleActive(_handles[i]->handle)) {
+			_handles[i] = 0;
+			return i;
+		}
+	}
+
+	error("Sound::getHandle(): Too many sound handles");
+
+	return 0;
+}
+
 } // end of namespace Kom
-
-
