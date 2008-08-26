@@ -232,8 +232,8 @@ void Actor::animate() {
 
 void Actor::display() {
 	uint8 frame;
-	uint32 offset;
-	uint16 width, height;
+	int32 offset;
+	int16 width, height;
 	int32 xStart, yStart;
 	uint32 scaledWidth, scaledHeight;
 
@@ -248,13 +248,13 @@ void Actor::display() {
 	MemoryReadStream frameStream(_framesData, _framesDataSize);
 
 	frameStream.seek(frame * 4);
-	offset = frameStream.readUint32LE() - 10;
+	offset = frameStream.readSint32LE() - 10;
 
 	frameStream.seek(offset);
-	width = frameStream.readUint16LE();
-	height = frameStream.readUint16LE();
+	width = frameStream.readSint16LE();
+	height = frameStream.readSint16LE();
 
-	if (width == 0 || height == 0)
+	if (width <= 0 || height <= 0)
 		return;
 
 	xStart = _xPos + frameStream.readSint16LE() * _xRatio / 1024;
