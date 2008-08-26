@@ -23,6 +23,8 @@
  *
  */
 
+#include <stdio.h>
+
 #include "common/util.h"
 #include "common/file.h"
 
@@ -47,6 +49,7 @@ KomEngine::KomEngine(OSystem *system)
 	_sound = 0;
 	_game = 0;
 	_gameLoopState = GAMELOOP_RUNNING;
+	_playingMusicId = _playingMusicVolume = 0;
 
 	_fsNode = new FilesystemNode(_gameDataPath);
 }
@@ -158,6 +161,7 @@ void KomEngine::gameLoop() {
 	_game->player()->isNight = (_game->settings()->dayMode == 1 || _game->settings()->dayMode == 3) ? 1 : 0;
 	// fadeTo(target = 256, speed = 16)
 	// TODO: loop actually starts with the menu, and then switches to RUNNING
+	_gameLoopTimer = 0;
 	_gameLoopState = GAMELOOP_RUNNING;
 	_flicLoaded = 2;
 
@@ -173,8 +177,9 @@ void KomEngine::gameLoop() {
 
 		_game->processTime();
 
-		//if (_gameLoopState == GAMELOOP_DEATH)
-			// ambientStart(currLocation)
+		if (_gameLoopTimer == 1)
+			ambientStart(_database->getChar(0)->_lastLocation);
+
 		_game->loopMove();
 		_game->loopCollide();
 		// if in a fight, do something
@@ -234,6 +239,9 @@ void KomEngine::gameLoop() {
 		if (_flicLoaded == 0)
 			_game->loopInterfaceCollide();
 
+		if (_gameLoopTimer++ > 0x20000)
+			_gameLoopTimer -= 0x10000;
+
 		if (_input->debugMode()) {
 			_input->resetDebugMode();
 			_debugger->attach();
@@ -247,6 +255,85 @@ void KomEngine::gameLoop() {
 		// TODO
 		// play death video
 		// play credits
+	}
+
+}
+
+void KomEngine::ambientStart(int locId) {
+
+	char musicIdStr[7];
+
+	// Each loc has 3 values:
+	// 1) Night music
+	// 2) Day music
+	// 3) Volume diff
+	static int16 musicTable[] = {
+		0, 0, 0, 290, 290, 30, 110, 110, 30, 80, 90, -25,
+		480, 480, 0, 250, 250, 0, 210, 210, 0, 290, 290, 50,
+		290, 290, 30, 240, 240, 0, 240, 240, 0, 40, 40, 0,
+		220, 220, 0, 230, 230, 0, 220, 220, 0, 240, 240, 0,
+		240, 240, 0, 240, 240, 0, 110, 110, 30, 20, 20, 0,
+		110, 110, 50, 110, 110, 75, 260, 260, 0, 240, 240, 0,
+		20, 20, 0, 10, 10, 0, 190, 201, 0, 240, 240, 0,
+		420, 420, 0, 420, 420, 30, 190, 201, 0, 270, 270, 0,
+		270, 270, 0, 40, 40, 0, 20, 20, 0, 20, 20, 0,
+		20, 20, 0, 40, 40, 0, 20, 20, 0, 290, 290, 0,
+		290, 290, 0, 280, 280, 25, 280, 280, 15, 280, 280, 0,
+		240, 240, 0, 110, 110, 60, 430, 430, 0, 380, 380, 0,
+		250, 250, 25, 250, 250, 0, 410, 410, 0, 80, 121, 0,
+		80, 90, -25, 110, 110, 50, 101, 101, 0, 240, 240, 0,
+		320, 320, 50, 350, 350, 0, 30, 30, 0, 320, 320, 75,
+		460, 141, 0, 470, 181, 0, 460, 141, 0, 130, 141, 25,
+		330, 330, 40, 110, 110, 30, 250, 250, 25, 240, 240, 0,
+		440, 440, 0, 240, 240, 0, 240, 240, 0, 370, 370, 0,
+		400, 400, 0, 240, 240, 0, 70, 70, 0, 70, 70, 0,
+		70, 70, 0, 70, 70, 0, 340, 340, 0, 50, 50, 0,
+		70, 70, 0, 70, 70, 0, 310, 310, 0, 70, 70, 0,
+		240, 240, 0, 330, 330, 50, 360, 360, 0, 130, 141, 0,
+		130, 141, 0, 260, 260, 60, 170, 181, 0, 260, 260, 0,
+		40, 40, 0, 60, 60, 0, 260, 260, 0, 240, 240, 0,
+		240, 240, 0, 240, 240, 0, 260, 260, 0, 220, 220, 0,
+		290, 290, 0, 250, 250, 0, 300, 300, 0, 240, 240, 0,
+		20, 20, 0, 260, 260, 0, 360, 360, 0, 360, 360, 0,
+		40, 40, 0, 240, 240, 0
+	};
+
+	int16 musicId, musicVolume;
+
+	static FilesystemNode musicNode =
+		_fsNode->getChild("kom").getChild("music");
+
+	// Special handling for the honeymoon suite
+   	if (locId == 21 && _database->getLoc(locId)->xtend == 2) {
+		musicId = 500;
+		musicVolume = 35;
+	} else {
+		musicId = musicTable[locId * 3 + _game->player()->isNight];
+		musicVolume = musicTable[locId * 3 + 2];
+	}
+
+	// TODO: use volume information
+
+	if (musicId != _playingMusicId && _ambientSample.isLoaded()) {
+		_sound->stopSample(_ambientSample);
+		_ambientSample.unload();
+	}
+
+	if (musicId == 0) {
+		_playingMusicId = 0;
+		_playingMusicVolume = 0;
+
+	} else if (musicId != _playingMusicId) {
+
+		sprintf(musicIdStr, "amb%d", musicId);
+		_ambientSample.loadFile(musicNode, musicIdStr);
+		_sound->playSampleMusic(_ambientSample);
+
+		_playingMusicId = musicId;
+		_playingMusicVolume = musicVolume;
+
+	// TODO: Change volume
+	} else if (musicVolume != _playingMusicVolume ) {
 	}
 
 }

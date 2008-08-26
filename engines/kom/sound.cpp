@@ -45,8 +45,8 @@ namespace Kom {
 void SoundSample::loadFile(FilesystemNode dirNode, String name) {
 	File f;
 
-	if (_data != 0)
-		delete _data;
+	unload();
+
 	_handle.index = -1;
 
 	f.open(dirNode.getChild(name + ".raw"));
@@ -54,6 +54,11 @@ void SoundSample::loadFile(FilesystemNode dirNode, String name) {
 	_data = new byte[_size];
 	f.read(_data, f.size());
 	f.close();
+}
+
+void SoundSample::unload() {
+	delete[] _data;
+	_data = 0;
 }
 
 Sound::Sound(KomEngine *vm, Audio::Mixer *mixer)
@@ -68,6 +73,14 @@ Sound::~Sound() {
 }
 
 void Sound::playSampleSFX(SoundSample &sample, bool loop) {
+	playSample(sample, loop, Audio::Mixer::kSFXSoundType, 255);
+}
+
+void Sound::playSampleMusic(SoundSample &sample) {
+	playSample(sample, true, Audio::Mixer::kMusicSoundType, 100);
+}
+
+void Sound::playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume) {
 	byte flags;
 
 	uint8 i;
@@ -85,7 +98,8 @@ void Sound::playSampleSFX(SoundSample &sample, bool loop) {
 	if (loop)
 		flags |= Audio::Mixer::FLAG_LOOP;
 
-	_mixer->playRaw(Audio::Mixer::kSFXSoundType, &(sample._handle.handle), sample._data, sample._size, 11025, flags, -1, 255);
+	_mixer->playRaw(type, &(sample._handle.handle), sample._data,
+			sample._size, 11025, flags, -1, volume);
 }
 
 void Sound::stopSample(SoundSample &sample) {

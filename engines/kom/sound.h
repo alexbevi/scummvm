@@ -50,6 +50,8 @@ public:
 	~SoundSample() { delete _data; }
 
 	void loadFile(FilesystemNode dirNode, Common::String name);
+	void unload();
+	bool isLoaded() { return _data != 0; }
 
 private:
 	SoundHandle _handle;
@@ -66,6 +68,8 @@ public:
 	bool _sfxEnabled;
 
 	void playSampleSFX(SoundSample &sample, bool loop);
+	void playSampleMusic(SoundSample &sample);
+	void playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume);
 	void stopSample(SoundSample &sample);
 
 private:

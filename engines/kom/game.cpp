@@ -76,6 +76,9 @@ void Game::enterLocation(uint16 locId) {
 
 	// Load room background and mask
 
+	if (_vm->gameLoopTimer() > 1)
+		_vm->ambientStart(locId);
+
 	sprintf(filename, "%s%db.flc", locName.c_str(), loc->xtend + _player.isNight);
 	_vm->screen()->loadBackground(locNode.getChild(filename));
 

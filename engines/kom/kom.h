@@ -78,13 +78,23 @@ public:
 
 	FilesystemNode *dataDir() const { return _fsNode; }
 
+	int gameLoopTimer() { return _gameLoopTimer; }
 	void endGame() { _gameLoopState = GAMELOOP_DEATH; }
+
+	void ambientStart(int locId);
+
+	// TODO - original deletes the data. check if there's a benefit
+	void ambientStop() { _sound->stopSample(_ambientSample); }
 
 	uint8 _flicLoaded;
 
 	// Samples
 	SoundSample _hotspotSample;
 	SoundSample _doorsSample;
+	SoundSample _ambientSample;
+
+	// music
+	int16 _playingMusicId, _playingMusicVolume;
 
 private:
 	void gameLoop();
@@ -101,6 +111,7 @@ private:
 
 	FilesystemNode *_fsNode;
 	int _gameLoopState;
+	int _gameLoopTimer;
 };
 
 } // End of namespace Kom
