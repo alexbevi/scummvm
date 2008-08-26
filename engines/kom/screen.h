@@ -45,7 +45,8 @@ enum {
 	SCREEN_H = 200,
 	MOUSE_W = 40,
 	MOUSE_H = 40,
-	PANEL_H = 32
+	PANEL_H = 32,
+	INVENTORY_OFFSET = 344
 };
 
 class KomEngine;

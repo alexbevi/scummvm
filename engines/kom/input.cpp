@@ -32,6 +32,7 @@
 #include "kom/kom.h"
 #include "kom/actor.h"
 #include "kom/input.h"
+#include "kom/screen.h"
 
 using Common::String;
 
@@ -61,7 +62,7 @@ void Input::handleMouse() {
 	int donutState;
 
 	if (1 && _leftClick) { // FIXME - check "invisible"?
-		if (settings->mouseY >= 344) {
+		if (settings->mouseY >= INVENTORY_OFFSET) {
 			// TODO - inventory
 			printf("Inventory click!\n");
 

@@ -495,7 +495,7 @@ void Screen::updateCursor() {
 	const char *text2 = "TODO2";
 	char panelText[200];
 
-	if (_vm->input()->getMouseY() >= SCREEN_H - PANEL_H) {
+	if (_vm->game()->settings()->mouseY >= INVENTORY_OFFSET) {
 		mouse->switchScope(5, 2);
 	} else {
 		if (settings->objectNum >= 0) {
