@@ -270,7 +270,7 @@ void Screen::drawActorFrame0(const int8 *data, uint16 width, uint16 height, int1
 
 	if (xStart < 0) {
 		// frame is entirely off-screen
-		if ((visibleWidth += xStart) < 0)
+		if ((visibleWidth += xStart) <= 0)
 			return;
 
 		d = div(-xStart * width, scaledWidth);
@@ -291,7 +291,7 @@ void Screen::drawActorFrame0(const int8 *data, uint16 width, uint16 height, int1
 
 	if (yStart < 0) {
 		// frame is entirely off-screen
-		if ((visibleHeight += yStart) < 0)
+		if ((visibleHeight += yStart) <= 0)
 			return;
 
 		d = div(-yStart * height, scaledHeight);
@@ -365,7 +365,7 @@ void Screen::drawActorFrame4(const int8 *data, uint16 width, uint16 height, int1
 
 	if (xStart < 0) {
 		// frame is entirely off-screen
-		if ((visibleWidth += xStart) < 0)
+		if ((visibleWidth += xStart) <= 0)
 			return;
 
 		xStart = 0;
@@ -381,7 +381,7 @@ void Screen::drawActorFrame4(const int8 *data, uint16 width, uint16 height, int1
 
 	if (yStart < 0) {
 		// frame is entirely off-screen
-		if ((visibleHeight += yStart) < 0)
+		if ((visibleHeight += yStart) <= 0)
 			return;
 
 		yStart = 0;
