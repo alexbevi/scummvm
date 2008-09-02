@@ -33,8 +33,9 @@ using Common::File;
 
 namespace Kom {
 
-Panel::Panel(KomEngine *vm, FilesystemNode fileNode) : _vm(vm), _isEnabled(true),
-	_isLoading(false), _noLoading(0), _locationDesc(0), _actionDesc(0) {
+Panel::Panel(KomEngine *vm, FilesystemNode fileNode) : _vm(vm),
+	_isEnabled(true), _isLoading(false), _noLoading(0),
+	_locationDesc(0), _actionDesc(0), _hotspotDesc(0) {
 	File f;
 	f.open(fileNode);
 
@@ -73,31 +74,36 @@ void Panel::update() {
 		_vm->screen()->writeTextCentered(_panelBuf, _locationDesc, 3, 31, true);
 
 	if (_actionDesc)
-		_vm->screen()->writeText(_panelBuf, _actionDesc, 22, 10, 31, true);
+		_vm->screen()->writeText(_panelBuf, _actionDesc, 12, 10, 31, true);
 
-	_vm->screen()->copyPanelToScreen(_panelBuf);
-
-	Actor *mouse = _vm->actorMan()->getMouse();
-	if (_isLoading) {
-		mouse->enable(1);
-		mouse->setScope(6, 0);
-		mouse->setPos(303, 185);
-		mouse->display();
-		mouse->enable(0);
-	} else {
-		mouse->setPos(0, 0);
-	}
+	if (_hotspotDesc)
+		_vm->screen()->writeText(_panelBuf, _hotspotDesc, 22, 10, 31, true);
 
 	// TODO: lose/get items
 	//
 
-	_vm->screen()->refreshPanelArea();
+	_vm->screen()->drawPanel(_panelBuf);
 }
 
 void Panel::showLoading(bool isLoading) {
 	if (_isLoading != isLoading) {
 		_isLoading = isLoading;
-		update();
+
+		_vm->screen()->drawPanel(_panelBuf);
+
+		Actor *mouse = _vm->actorMan()->getMouse();
+		if (_isLoading) {
+			mouse->enable(1);
+			mouse->setScope(6, 0);
+			mouse->setPos(303, 185);
+			mouse->display();
+			mouse->enable(0);
+		} else {
+			mouse->setPos(0, 0);
+		}
+
+		// The 'loading' icon should be copied directly to screen
+		_vm->screen()->updatePanelOnScreen();
 	}
 }
 
@@ -112,6 +118,13 @@ void Panel::setActionDesc(const char *desc) {
 	delete[] _actionDesc;
 	_actionDesc = new char[strlen(desc) + 1];
 	strcpy(_actionDesc, desc);
+	_isDirty = true;
+}
+
+void Panel::setHotspotDesc(const char *desc) {
+	delete[] _hotspotDesc;
+	_hotspotDesc = new char[strlen(desc) + 1];
+	strcpy(_hotspotDesc, desc);
 	_isDirty = true;
 }
 

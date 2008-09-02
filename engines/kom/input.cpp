@@ -50,15 +50,12 @@ void Input::loopInput() {
 	if (_vm->_flicLoaded == 0) {
 		handleMouse();
 	}
-
-	_leftClick = _rightClick = false;
 }
 
 void Input::handleMouse() {
 	static Settings *settings = _vm->game()->settings();
 	Character *playerChar = _vm->database()->getChar(0);
 	uint16 gotoX, gotoY = 0;
-	uint16 collideType;
 	int donutState;
 
 	if (1 && _leftClick) { // FIXME - check "invisible"?
@@ -71,40 +68,44 @@ void Input::handleMouse() {
 			if (settings->mouseState == 2) {
 				gotoX = settings->collideBoxX;
 				gotoY = settings->collideBoxY;
-				collideType = 1;
+				settings->collideType = 1;
 
 			} else switch (settings->overType) {
 			case 2:
 				gotoX = settings->collideCharX;
 				gotoY = settings->collideCharY;
-				collideType = 2;
+				settings->collideType = 2;
 				break;
 			case 3:
 				gotoX = settings->collideObjX;
 				gotoY = settings->collideObjY;
-				collideType = 3;
+				settings->collideType = 3;
 				break;
 			default:
 				gotoX = settings->collideBoxX;
 				gotoY = settings->collideBoxY;
-				collideType = 1;
+				settings->collideType = 1;
 			}
 
-			if (collideType == 2 || collideType == 3) {
-				donutState = 0;
-				// TODO
+			if (settings->collideType == 2 || settings->collideType == 3) {
+				if (settings->objectNum < 0) {
+					_vm->game()->doDonut(0, false);
+				} else {
+					donutState = 0;
+					// TODO
+				}
 
 			} else if (settings->objectNum >= 0) {
 				donutState = -1;
 			} else {
 				donutState = 0;
-				_vm->game()->player()->command = CMD_SPRITE_SCENE;
+				_vm->game()->player()->command = CMD_NOTHING1;
 			}
 
 			if (donutState != -1) {
 				switch (_vm->game()->player()->command) {
 				case 0x64:
-					if (collideType != 0) {
+					if (settings->collideType != 0) {
 						playerChar->_gotoX = gotoX;
 						playerChar->_gotoY = gotoY;
 						_vm->game()->player()->commandState = 1;
@@ -150,49 +151,56 @@ void Input::handleMouse() {
 
 // TODO: hack
 void Input::checkKeys() {
-		Common::Event event;
+	Common::Event event;
 
-		Common::EventManager *eventMan = _system->getEventManager();
-		while (eventMan->pollEvent(event)) {
-			switch (event.type) {
-			case Common::EVENT_KEYDOWN:
-				if (event.kbd.flags == Common::KBD_CTRL) {
-					if (event.kbd.keycode == 'd') {
-						_debugMode = true;
-					}
-				} else {
-					_inKey = event.kbd.keycode;
-					switch (_inKey) {
-						case Common::KEYCODE_ESCAPE:
-							_system->quit();
-							break;
-						default:
-							break;
-					}
+	Common::EventManager *eventMan = _system->getEventManager();
+	while (eventMan->pollEvent(event)) {
+		switch (event.type) {
+		case Common::EVENT_KEYDOWN:
+			if (event.kbd.flags == Common::KBD_CTRL) {
+				if (event.kbd.keycode == 'd') {
+					_debugMode = true;
 				}
-				break;
-
-			case Common::EVENT_MOUSEMOVE:
-				_mouseX = event.mouse.x;
-				_mouseY = event.mouse.y;
-				break;
-
-			case Common::EVENT_LBUTTONDOWN:
-				_leftClick = true;
-				break;
-
-			case Common::EVENT_RBUTTONDOWN:
-				_rightClick = true;
-				break;
-
-			case Common::EVENT_QUIT:
-				_system->quit();
-				break;
-
-			default:
-				break;
+			} else {
+				_inKey = event.kbd.keycode;
+				switch (_inKey) {
+					case Common::KEYCODE_ESCAPE:
+						_system->quit();
+						break;
+					default:
+						break;
+				}
 			}
+			break;
+
+		case Common::EVENT_MOUSEMOVE:
+			_mouseX = event.mouse.x;
+			_mouseY = event.mouse.y;
+			break;
+
+		case Common::EVENT_LBUTTONDOWN:
+			_leftClick = true;
+			break;
+
+		case Common::EVENT_RBUTTONDOWN:
+			_rightClick = true;
+			break;
+
+		case Common::EVENT_QUIT:
+			_system->quit();
+			break;
+
+		default:
+			break;
 		}
+	}
+}
+
+
+void Input::setMousePos(uint16 x, uint16 y) {
+	_mouseX = x;
+	_mouseY = y;
+	_system->warpMouse(x, y);
 }
 
 } // End of namespace Kom

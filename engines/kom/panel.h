@@ -42,6 +42,7 @@ public:
 	void showLoading(bool isLoading);
 	void setLocationDesc(const char *desc);
 	void setActionDesc(const char *desc);
+	void setHotspotDesc(const char *desc);
 	bool isEnabled() const { return _isEnabled; }
 	bool isDirty() const { return _isDirty; }
 	void enable(bool state) { _isEnabled = state; }
@@ -61,6 +62,7 @@ private:
 
 	char *_locationDesc;
 	char *_actionDesc;
+	char *_hotspotDesc;
 
 };
 } // End of namespace Kom

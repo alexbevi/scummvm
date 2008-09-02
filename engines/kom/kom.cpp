@@ -112,6 +112,7 @@ int KomEngine::go() {
 	FilesystemNode samplesDir(_fsNode->getChild("kom").getChild("samples"));
 	_hotspotSample.loadFile(samplesDir, String("hotspot"));
 	_doorsSample.loadFile(samplesDir, String("doors"));
+	_clickSample.loadFile(samplesDir, String("mouse_l"));
 
 	FilesystemNode installDir(_fsNode->getChild("install"));
 	if (_game->player()->selectedChar == 0) {
@@ -122,7 +123,7 @@ int KomEngine::go() {
 		_database->init("shar");
 	}
 
-	_actorMan->loadMouse(_fsNode->getChild("kom").getChild("oneoffs"), String("m_icons"));
+	_actorMan->loadExtras(_fsNode->getChild("kom"));
 
 	_screen->showMouseCursor(true);
 
@@ -148,7 +149,7 @@ void KomEngine::gameLoop() {
 	// setBrightness(256)
 	// clearWorkScreen
 	// init some global vars, Player settings
-	_game->player()->command = CMD_NOTHING;
+	_game->player()->command = CMD_NOTHING2;
 	_game->player()->commandState = 0;
 	_database->getChar(0)->_isBusy = false;
 	_game->settings()->objectNum = _game->settings()->object2Num = -1;
@@ -187,7 +188,7 @@ void KomEngine::gameLoop() {
 		if (_game->player()->commandState != 0) {
 			switch (_game->player()->command) {
 			case 0x64:
-				_game->player()->command = CMD_NOTHING;
+				_game->player()->command = CMD_NOTHING2;
 				_game->player()->commandState = 0;
 				_game->player()->collideType = 0;
 				_game->player()->collideNum = -1;

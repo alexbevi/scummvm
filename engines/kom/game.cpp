@@ -312,7 +312,7 @@ void Game::processChar(int proc) {
 	for (Common::List<Command>::iterator i = p->commands.begin();
 			i != p->commands.end() && !stop; ++i) {
 		if (i->cmd == 313) { // Character
-			debug(1, "Processing char in %s", p->name);
+			debug(5, "Processing char in %s", p->name);
 			stop = doStat(&(*i));
 		}
 	}
@@ -362,7 +362,7 @@ bool Game::doStat(const Command *cmd) {
 	bool rc = false;
 	Database *db = _vm->database();
 
-	debug(1, "Trying to execute Command %d - value %hd", cmd->cmd, cmd->value);
+	debug(5, "Trying to execute Command %d - value %hd", cmd->cmd, cmd->value);
 
 	for (Common::List<OpCode>::const_iterator j = cmd->opcodes.begin();
 			j != cmd->opcodes.end() && keepProcessing; ++j) {
@@ -656,7 +656,7 @@ bool Game::doStat(const Command *cmd) {
 			db->getChar(0)->_lastBox = db->whatBox(db->getChar(0)->_lastLocation,
 				db->getChar(0)->_screenX, db->getChar(0)->_screenY);
 
-			_player.command = CMD_NOTHING;
+			_player.command = CMD_NOTHING2;
 			_player.commandState = 0;
 
 			break;
@@ -1187,7 +1187,7 @@ void Game::loopInterfaceCollide() {
 		}
 
 	} else {
-		if (_player.command == CMD_THING1) {
+		if (_player.command == CMD_USE) {
 
 			if (_settings.collideChar >= 0 &&
 				_settings.collideCharZ < _settings.collideObjZ) {
@@ -1206,8 +1206,8 @@ void Game::loopInterfaceCollide() {
 				_settings.mouseState = 0; // Walk
 			}
 
-		} else if (_player.command == CMD_THING2 ||
-		           _player.command == CMD_THING3) {
+		} else if (_player.command == CMD_FIGHT ||
+		           _player.command == CMD_CAST_SPELL) {
 			if (_settings.collideChar < 0)
 				_settings.mouseState = 0; // Walk
 			else {
@@ -1309,7 +1309,7 @@ void Game::doActionSpriteScene(const char *name, int charId, int loc, int box) {
 	// Check if it's a moving sprite
 	if (charId == 0 && name != 0) {
 
-		_player.command = CMD_SPRITE_SCENE;
+		_player.command = CMD_NOTHING1;
 
 		int8 match = -1;
 		for (int8 i = 0; i < 3; ++i) {
@@ -1338,6 +1338,335 @@ void Game::doActionSpriteScene(const char *name, int charId, int loc, int box) {
 	chr->_spriteName = name;
 	chr->_sprite8c = 0;
 	chr->_isBusy = true;
+}
+
+/**
+ * Displays the verb 'donut' on the screen. Sets a variable to the
+ * selected verb.
+ *
+ * @param type where the donut is displayed:
+ * 	* 0 - in room.
+ * 	* 1 - in inventory.
+ * 	* 2 - in store.
+ * @param param passed to the inventory function
+ *
+ * @return whether a valid verb was chosen
+ *
+ * FIXME: handle mouse key-up events like the original
+ */
+bool Game::doDonut(int type, int param) {
+	uint16 hotspotX, hotspotY;
+	Actor *mouse = _vm->actorMan()->getMouse();
+	Actor *donut = _vm->actorMan()->getDonut();
+	int8 donutLoopState = 1;
+	bool overVerb = false;
+	CommandType overCommand;
+
+	enum {
+		PICKUP = 0,
+		FIGHT,
+		TALK_TO,
+		LOOK_AT,
+		USE, // Also purchase
+		CAST_SPELL
+	};
+
+	// Verbs
+	// 0 - active
+	// 6 - inactive
+	uint8 verbs[6];
+
+	_vm->actorMan()->pauseAnimAll(true);
+
+	if (type == 0) {
+		_vm->screen()->pauseBackground(true);
+		// TODO: pause snow
+	}
+
+	// Move the mouse away from the edge of the screen
+	if (_settings.mouseX < 78) {
+		_settings.mouseX = 78;
+		_vm->input()->setMousePos(39, _settings.mouseY / 2);
+
+	} else if (_settings.mouseX > 562) {
+		_settings.mouseX = 562;
+		_vm->input()->setMousePos(281, _settings.mouseY / 2);
+	}
+
+	if (_settings.mouseY < 78) {
+		_settings.mouseY = 78;
+		_vm->input()->setMousePos(_settings.mouseX / 2, 39);
+
+	} else if (_settings.mouseY > 322) {
+		_settings.mouseY = 322;
+		_vm->input()->setMousePos(_settings.mouseX / 2, 161);
+	}
+
+	hotspotX = _settings.mouseX;
+	hotspotY = _settings.mouseY + 78;
+
+	// FIXME - is the first switch to "walk to" required?
+	mouse->switchScope(0, 2);
+	mouse->switchScope(1, 2);
+
+	// Set active verbs
+	if (type != 0)	{
+		verbs[PICKUP] = 6;
+		verbs[FIGHT] = 6;
+		verbs[TALK_TO] = 6;
+		verbs[LOOK_AT] = 0;
+		verbs[USE] = 0;
+		verbs[CAST_SPELL] = 6;
+
+	} else switch (_settings.collideType) {
+
+	// Character
+	case 2:
+		if (_vm->database()->getChar(_settings.collideChar)->_isAlive) {
+			verbs[PICKUP] = 6;
+			verbs[FIGHT] = 0;
+			verbs[TALK_TO] = 0;
+			verbs[LOOK_AT] = 0;
+			verbs[USE] = 6;
+			verbs[CAST_SPELL] = 0;
+		} else {
+			verbs[PICKUP] = 6;
+			verbs[FIGHT] = 6;
+			verbs[TALK_TO] = 0;
+			verbs[LOOK_AT] = 0;
+			verbs[USE] = 6;
+			verbs[CAST_SPELL] = 6;
+		}
+
+		// Special cases:
+		// Can't talk to the behemoth, troll statues
+		if (_settings.collideChar >= 6 && _settings.collideChar <= 9)
+			verbs[TALK_TO] = 6;
+
+		// Can't fight with giant spiders
+		else if (_settings.collideChar >= 85 && _settings.collideChar <= 87)
+			verbs[FIGHT] = 6;
+
+		break;
+
+	// Object
+	case 3:
+		verbs[PICKUP] =
+			_vm->database()->getObj(_settings.collideObj)->isPickable ? 0 : 6;
+		verbs[FIGHT] = 6;
+		verbs[TALK_TO] = 6;
+		verbs[LOOK_AT] = 0;
+		verbs[USE] =
+			_vm->database()->getObj(_settings.collideObj)->isUsable ? 0 : 6;
+		verbs[CAST_SPELL] = 6;
+
+		break;
+	default:
+		error("Illegal type for donut\n");
+	}
+
+	while (donutLoopState != 0) {
+		int16 donutX = _vm->input()->getMouseX() * 2 - _settings.mouseX;
+		int16 donutY = _vm->input()->getMouseY() * 2 - _settings.mouseY;
+		int32 segment;
+		const char *verbDesc, *hotspotDesc;
+
+		if (abs(donutX) + abs(donutY) == 0) {
+			segment = -1;
+		} else {
+			int32 sum = donutX * donutX + donutY * donutY;
+
+			if (0x4000000 / sum > 0x10000)
+				segment = -1;
+			else if (0x17C40000 / sum <= 0x10000)
+				segment = -2;
+			else
+				segment = getDonutSegment(donutX, donutY);
+		}
+
+		switch (donutLoopState) {
+		case 1:
+			if (segment != -1)
+				donutLoopState = 3;
+			else if (!_vm->input()->getLeftClick())
+				donutLoopState = 2;
+			break;
+		case 2:
+			if (_vm->input()->getRightClick()) {
+				overVerb = false;
+				segment = -1;
+				donutLoopState = 0;
+			}
+
+			if (_vm->input()->getLeftClick()) {
+				if (overVerb || overCommand == CMD_NOTHING1)
+					donutLoopState = 3;
+			}
+			break;
+
+		// Outside of donut
+		case 3:
+			if (!_vm->input()->getLeftClick() && !_vm->input()->getRightClick())
+				donutLoopState = 0;
+		}
+
+		verbDesc = "";
+		overCommand = CMD_NOTHING1;
+		overVerb = false;
+
+		// Set strings and action
+		if (segment == 0 || segment == 1 || segment == 30 || segment == 31) {
+			overCommand = CMD_PICKUP;
+			if (verbs[PICKUP] == 0) {
+				verbDesc = "Pickup";
+				overVerb = true;
+			}
+		} else if (3 <= segment && segment <= 6) {
+			overCommand = CMD_FIGHT;
+			if (verbs[FIGHT] == 0) {
+				verbDesc = "Fight";
+				overVerb = true;
+			}
+		} else if (9 <= segment && segment <= 12) {
+			overCommand = CMD_TALK_TO;
+			if (verbs[TALK_TO] == 0) {
+				verbDesc = "Talk to";
+				overVerb = true;
+			}
+		} else if (14 <= segment && segment <= 17) {
+			overCommand = CMD_LOOK_AT;
+			if (verbs[LOOK_AT] == 0) {
+				verbDesc = "Look at";
+				overVerb = true;
+			}
+		} else if (19 <= segment && segment <= 22) {
+			overCommand = CMD_USE;
+			if (verbs[USE] == 0) {
+				if (type == 2)
+					verbDesc = "Purchase";
+				else
+					verbDesc = "Use";
+				overVerb = true;
+			}
+		} else if (25 <= segment && segment <= 28) {
+			overCommand = CMD_CAST_SPELL;
+			if (verbs[CAST_SPELL] == 0) {
+				verbDesc = "Cast spell at";
+				overVerb = true;
+			}
+		}
+
+		mouse->switchScope(1, 2);
+
+		if (type != 0) {
+			// TODO - draw inventory
+		} else {
+			_vm->screen()->drawBackground();
+			_vm->screen()->displayDoors();
+			_vm->actorMan()->displayAll();
+			mouse->display();
+			// TODO - display fight bars
+		}
+
+
+		// TODO - set strings
+		_vm->panel()->setActionDesc(verbDesc);
+
+		if (type == 0) {
+			if (_settings.collideType == 2)
+				hotspotDesc =
+					_vm->database()->getChar(_settings.collideChar)->_desc;
+			else if (_settings.collideType == 3)
+				hotspotDesc =
+					_vm->database()->getObj(_settings.collideObj)->desc;
+			else
+				error("Illegal collide type in donut\n");
+
+			_vm->panel()->setHotspotDesc(hotspotDesc);
+		}
+
+		_vm->panel()->update();
+
+		// TODO - do snow
+
+		// Display the donut verbs
+		donut->enable(true);
+		donut->setPos(hotspotX / 2, hotspotY / 2);
+		for (int i = 0; i < 6; ++i) {
+			donut->setFrame(verbs[i] + i);
+			donut->display();
+		}
+		donut->enable(false);
+
+		_vm->screen()->gfxUpdate();
+	}
+
+	if (overVerb) {
+		_vm->sound()->playSampleSFX(_vm->_clickSample, false);
+	}
+
+	if (type == 0) {
+		// TODO: unpause snow
+	}
+
+	_vm->screen()->pauseBackground(false);
+	_vm->actorMan()->pauseAnimAll(false);
+
+	// TODO - wait for mouse clicks to finish...?
+
+	if (overVerb) {
+		_player.command = overCommand;
+		return true;
+	} else {
+		_vm->panel()->setActionDesc("");
+		_vm->panel()->setHotspotDesc("");
+		return false;
+	}
+}
+
+/**
+ * Calculate where the cursor is on the round verb donut
+ *
+ * @return a number between 0 and 31, equivalent to the
+ *         hour in a 32-hour clock
+ */
+int Game::getDonutSegment(int xPos, int yPos) {
+	uint32 tangent;
+	int segment;
+
+	if (yPos == 0)
+		tangent = 0x40000000;
+	else
+		tangent = (abs(xPos) << 8) / abs(yPos);
+
+	if (tangent > 0x400)
+		segment = 0;
+	else if (0x200 < tangent && tangent <= 0x400)
+	  segment = 1;
+	else if (0x155 < tangent && tangent <= 0x200)
+	  segment = 2;
+	else if (0x100 < tangent && tangent <= 0x155)
+	  segment = 3;
+	else if (0xC0 <= tangent && tangent <= 0x100)
+	  segment = 4;
+	else if (0x80 <= tangent && tangent < 0xC0)
+	  segment = 5;
+	else if (0x40 <= tangent && tangent < 0x80)
+	  segment = 6;
+	else if (tangent < 0x40)
+	  segment = 7;
+
+
+	// Focus on the correct quadrant
+	if (xPos < 0) {
+		if (yPos < 0)
+			return segment + 24;
+		else
+			return 23 - segment;
+	} else if (yPos < 0)
+		return 7 - segment;
+	else
+		return segment + 8;
 }
 
 } // End of namespace Kom

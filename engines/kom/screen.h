@@ -73,8 +73,7 @@ public:
 	void updateCursor();
 
 	void drawPanel(const byte *panelData);
-	void refreshPanelArea();
-	void copyPanelToScreen(const byte *data);
+	void updatePanelOnScreen();
 
 	void loadBackground(FilesystemNode node);
 	void updateBackground();

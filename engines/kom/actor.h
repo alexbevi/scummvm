@@ -101,7 +101,7 @@ protected:
 	int _maskDepth;
 	int _depth;
 	bool _isAnimating;
-	int _pausedAnimFrame;
+	bool _pausedAnim;
 	int _targetX;
 	int _targetY;
 	uint8 _scope;
@@ -132,18 +132,21 @@ public:
 	ActorManager(KomEngine *vm);
 	~ActorManager();
 	int load(FilesystemNode dirNode, Common::String name);
-	void loadMouse(FilesystemNode dirNode, Common::String name);
+	void loadExtras(FilesystemNode dirNode);
 	Actor *get(int idx) { return _actors[idx]; }
 	Actor *getMouse() { return _mouseActor; }
+	Actor *getDonut() { return _donutActor; }
 	void unload(int idx) { if (idx >= 0) { delete _actors[idx]; _actors[idx] = 0; } }
 	void unloadAll() { _actors.clear(); }
 	void displayAll();
+	void pauseAnimAll(bool pause);
 
 private:
 
 	KomEngine *_vm;
 	Common::Array<Actor *> _actors;
 	Actor *_mouseActor;
+	Actor *_donutActor;
 
 	Actor *getFarthestActor();
 };

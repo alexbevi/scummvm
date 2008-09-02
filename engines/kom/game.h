@@ -63,6 +63,7 @@ struct Settings {
 	int16 oldOverType;
 	int16 overNum;
 	int16 oldOverNum;
+	uint16 collideType;
 	int16 collideBox;
 	uint16 collideBoxX;
 	uint16 collideBoxY;
@@ -84,12 +85,14 @@ struct Settings {
 };
 
 typedef enum {
-	CMD_SPRITE_SCENE = 100,
-	CMD_NOTHING      = 101,
-	CMD_THING1       = 102,
-	CMD_LOOK         = 105,
-	CMD_THING2       = 106,
-	CMD_THING3       = 107
+	CMD_NOTHING1     = 100,
+	CMD_NOTHING2     = 101,
+	CMD_USE          = 102,
+	CMD_TALK_TO      = 103,
+	CMD_PICKUP       = 104,
+	CMD_LOOK_AT      = 105,
+	CMD_FIGHT        = 106,
+	CMD_CAST_SPELL   = 107
 } CommandType;
 
 /** Player settings */
@@ -137,6 +140,8 @@ public:
 	void doActionMoveChar(uint16 charId, int16 loc, int16 box);
 	void doActionSpriteScene(const char *name, int charId, int loc, int box);
 
+	bool doDonut(int type, int param);
+
 	Common::Array<RoomObject> *getObjects() { return &_roomObjects; }
 	Common::Array<RoomDoor> *getDoors() { return &_roomDoors; }
 
@@ -165,6 +170,8 @@ private:
 
 	void moveChar(uint16 charId, bool param);
 	void moveCharOther(uint16 charId);
+
+	int getDonutSegment(int xPos, int yPos);
 };
 
 } // End of namespace Kom

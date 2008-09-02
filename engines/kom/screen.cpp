@@ -205,18 +205,6 @@ void Screen::processGraphics(int mode) {
 		showMouseCursor(false);
 	}
 
-	// Copy dirty rects to screen
-	copyRectListToScreen(_prevDirtyRects);
-	copyRectListToScreen(_dirtyRects);
-	delete _prevDirtyRects;
-	_prevDirtyRects = _dirtyRects;
-	_dirtyRects = new List<Rect>();
-
-	// No need to save a prev, since the background reports
-	// all changes
-	if (_roomBackground)
-		copyRectListToScreen(_bgDirtyRects);
-
 	if (mode > 0 && _vm->panel()->isDirty())
 		_vm->panel()->update();
 
@@ -237,6 +225,21 @@ void Screen::copyRectListToScreen(const Common::List<Common::Rect> *list) {
 }
 
 void Screen::gfxUpdate() {
+
+	// Copy dirty rects to screen
+	copyRectListToScreen(_prevDirtyRects);
+	copyRectListToScreen(_dirtyRects);
+	delete _prevDirtyRects;
+	_prevDirtyRects = _dirtyRects;
+	_dirtyRects = new List<Rect>();
+
+	// No need to save a prev, since the background reports
+	// all changes
+	if (_roomBackground)
+		copyRectListToScreen(_bgDirtyRects);
+
+	_vm->input()->resetInput();
+
 	while (_system->getMillis() < _lastFrameTime + 41 /* 24 fps */) {
 		_vm->input()->checkKeys();
 		_system->delayMillis(10);
@@ -588,7 +591,7 @@ void Screen::updateCursor() {
 	}
 
 	sprintf(panelText, "%s %s", text, text2);
-	_vm->panel()->setActionDesc(panelText);
+	_vm->panel()->setHotspotDesc(panelText);
 
 
 	// The scopes:
@@ -603,16 +606,13 @@ void Screen::updateCursor() {
 
 void Screen::drawPanel(const byte *panelData) {
 	memcpy(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H), panelData, SCREEN_W * PANEL_H);
+	_dirtyRects->push_back(Rect(0, SCREEN_H - PANEL_H, SCREEN_W, SCREEN_H));
 }
 
-void Screen::refreshPanelArea() {
+void Screen::updatePanelOnScreen() {
 	_system->copyRectToScreen(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H),
 		SCREEN_W, 0, SCREEN_H - PANEL_H, SCREEN_W, PANEL_H);
 	_system->updateScreen();
-}
-
-void Screen::copyPanelToScreen(const byte *data) {
-	memcpy(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H), data, SCREEN_W * PANEL_H);
 }
 
 void Screen::loadBackground(FilesystemNode node) {

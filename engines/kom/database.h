@@ -52,7 +52,7 @@ struct EventLink {
 struct Object {
 	Object() : data1(0), type(0), data2(0), proc(0),
 	           data4(0), isCarryable(0), isContainer(0), isVisible(0), isSprite(0), isUseImmediate(0),
-	           data9(0), isUsable(0), price(0), data11(0), spellCost(0), data12(0),
+	           isPickable(0), isUsable(0), price(0), data11(0), spellCost(0), data12(0),
 	           data13(0), ownerType(0), ownerId(0), box(0), data16(0), data17(0),
 	           data18(0) {}
 
@@ -68,7 +68,7 @@ struct Object {
 	int isVisible;
 	int isSprite;
 	int isUseImmediate;
-	int data9;
+	int isPickable;
 	int isUsable;
 	int price;
 	int data11;

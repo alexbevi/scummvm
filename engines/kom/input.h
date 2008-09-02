@@ -46,6 +46,11 @@ public:
 
 	uint16 getMouseX() const { return _mouseX; }
 	uint16 getMouseY() const { return _mouseY; }
+	bool getLeftClick() const { return _leftClick; }
+	bool getRightClick() const { return _rightClick; }
+	void setMousePos(uint16 x, uint16 y);
+	void resetInput() { _leftClick = _rightClick = false; }
+
 private:
 
 	OSystem *_system;

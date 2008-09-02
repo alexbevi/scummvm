@@ -91,6 +91,7 @@ public:
 	// Samples
 	SoundSample _hotspotSample;
 	SoundSample _doorsSample;
+	SoundSample _clickSample;
 	SoundSample _ambientSample;
 
 	// music

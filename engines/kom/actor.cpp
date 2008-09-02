@@ -46,6 +46,8 @@ ActorManager::ActorManager(KomEngine *vm) : _vm(vm) {
 
 ActorManager::~ActorManager() {
 	unloadAll();
+	delete _mouseActor;
+	delete _donutActor;
 }
 
 int ActorManager::load(FilesystemNode dirNode, String name) {
@@ -63,11 +65,12 @@ int ActorManager::load(FilesystemNode dirNode, String name) {
 	return _actors.size() - 1;
 }
 
-void ActorManager::loadMouse(FilesystemNode dirNode, String name) {
+void ActorManager::loadExtras(FilesystemNode dirNode) {
 
 	// TODO: this should be changed to allow different mouse actors
 
-	_mouseActor = new Actor(_vm, dirNode, name, true);
+	_mouseActor = new Actor(_vm, dirNode.getChild("oneoffs"),
+			String("m_icons"), true);
 	_mouseActor->defineScope(0, 0, 3, 0);
 	_mouseActor->defineScope(1, 4, 4, 4);
 	_mouseActor->defineScopeAlias(2, Actor::_exitCursorAnimation, 16);
@@ -82,6 +85,12 @@ void ActorManager::loadMouse(FilesystemNode dirNode, String name) {
 
 	// Init CursorMan
 	_vm->screen()->displayMouse();
+
+	_donutActor = new Actor(_vm, dirNode.getChild("oneoffs"),
+			String("donut"), false);
+	_donutActor->enable(false);
+	_donutActor->setEffect(4);
+	_donutActor->setMaskDepth(0, 2);
 }
 
 void ActorManager::displayAll() {
@@ -100,6 +109,27 @@ void ActorManager::displayAll() {
 		act = _actors[i];
 		if (act != NULL && act->_isActive == 99) {
 			act->_isActive = 1;
+		}
+	}
+}
+
+void ActorManager::pauseAnimAll(bool pause) {
+	Actor *act;
+
+	// Sanity check
+	static bool pauseState = false;
+	if (pause == pauseState)
+		return;
+	pauseState = pause;
+
+	for (uint i = 0; i < _actors.size(); ++i) {
+		act = _actors[i];
+		if (act != NULL) {
+			if (pause) {
+				act->_pausedAnim = act->_isAnimating;
+				act->_isAnimating = false;
+			} else
+				act->_isAnimating = act->_pausedAnim;
 		}
 	}
 }

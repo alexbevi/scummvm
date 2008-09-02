@@ -268,7 +268,7 @@ void Database::initObjects() {
 			&(_objects[index].isVisible),
 			&(_objects[index].isSprite),
 			&(_objects[index].isUseImmediate),
-			&(_objects[index].data9),
+			&(_objects[index].isPickable),
 			&(_objects[index].isUsable));
 		readLineScanf(f, "%d %d %d %d %d",
 			&(_objects[index].price),
@@ -309,7 +309,7 @@ void Database::initObjects() {
 			_objects[i].isVisible,
 			_objects[i].isSprite,
 			_objects[i].isUseImmediate,
-			_objects[i].data9,
+			_objects[i].isPickable,
 			_objects[i].isUsable,
 			_objects[i].price,
 			_objects[i].data11,
