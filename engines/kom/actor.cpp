@@ -50,7 +50,7 @@ ActorManager::~ActorManager() {
 	delete _donutActor;
 }
 
-int ActorManager::load(FilesystemNode dirNode, String name) {
+int ActorManager::load(Common::FilesystemNode dirNode, String name) {
 
 	Actor *act = new Actor(_vm, dirNode, name, false);
 
@@ -65,7 +65,7 @@ int ActorManager::load(FilesystemNode dirNode, String name) {
 	return _actors.size() - 1;
 }
 
-void ActorManager::loadExtras(FilesystemNode dirNode) {
+void ActorManager::loadExtras(Common::FilesystemNode dirNode) {
 
 	// TODO: this should be changed to allow different mouse actors
 
@@ -150,7 +150,7 @@ Actor *ActorManager::getFarthestActor() {
 	return maxActor;
 }
 
-Actor::Actor(KomEngine *vm, FilesystemNode dirNode, String name, bool isMouse) : _vm(vm) {
+Actor::Actor(KomEngine *vm, Common::FilesystemNode dirNode, String name, bool isMouse) : _vm(vm) {
 	File f;
 	char magicName[8];
 

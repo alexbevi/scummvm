@@ -72,7 +72,7 @@ void Game::enterLocation(uint16 locId) {
 	Location *loc = _vm->database()->getLoc(locId);
 	String locName(loc->name);
 	locName.toLowercase();
-	FilesystemNode locNode(_vm->dataDir()->getChild("kom").getChild("locs").getChild(String(locName.c_str(), 2)).getChild(locName));
+	Common::FilesystemNode locNode(_vm->dataDir()->getChild("kom").getChild("locs").getChild(String(locName.c_str(), 2)).getChild(locName));
 
 	// Load room background and mask
 

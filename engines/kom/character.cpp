@@ -396,7 +396,7 @@ void Character::setScope(int16 scope) {
 }
 
 void Character::setScopeX(int16 scope) {
-	static FilesystemNode spritesDir =
+	static Common::FilesystemNode spritesDir =
 		_vm->dataDir()->getChild("kom").getChild("cutsprit");
 	char filename[50];
 	String charName(_name);

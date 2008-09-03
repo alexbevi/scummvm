@@ -35,7 +35,7 @@
 #include "kom/font.h"
 
 class OSystem;
-class FilesystemNode;
+class Common::FilesystemNode;
 class FlicPlayer;
 
 namespace Kom {
@@ -75,7 +75,7 @@ public:
 	void drawPanel(const byte *panelData);
 	void updatePanelOnScreen();
 
-	void loadBackground(FilesystemNode node);
+	void loadBackground(Common::FilesystemNode node);
 	void updateBackground();
 	void drawBackground();
 	void pauseBackground(bool pause) { _backgroundPaused = pause; }
@@ -91,7 +91,7 @@ private:
 	void copyRectListToScreen(const Common::List<Common::Rect> *);
 
 	void drawActorFrameLine(byte *outBuffer, const int8 *rowData, uint16 length);
-	byte *loadColorSet(FilesystemNode fsNode);
+	byte *loadColorSet(Common::FilesystemNode fsNode);
 
 	uint16 getTextWidth(const char *text);
 	void writeTextStyle(byte *buf, const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isBackground);

@@ -42,7 +42,7 @@ using Common::String;
 
 namespace Kom {
 
-void SoundSample::loadFile(FilesystemNode dirNode, String name) {
+void SoundSample::loadFile(Common::FilesystemNode dirNode, String name) {
 	File f;
 
 	unload();

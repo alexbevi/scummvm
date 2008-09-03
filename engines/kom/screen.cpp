@@ -457,7 +457,7 @@ void Screen::drawActorFrameLine(byte *outBuffer, const int8 *rowData, uint16 len
 	}
 }
 
-byte *Screen::loadColorSet(FilesystemNode fsNode) {
+byte *Screen::loadColorSet(Common::FilesystemNode fsNode) {
 	File f;
 
 	f.open(fsNode);
@@ -615,7 +615,7 @@ void Screen::updatePanelOnScreen() {
 	_system->updateScreen();
 }
 
-void Screen::loadBackground(FilesystemNode node) {
+void Screen::loadBackground(Common::FilesystemNode node) {
 	delete _roomBackground;
 	_roomBackground = new FlicPlayer(node);
 	_roomBackgroundTime = 0;

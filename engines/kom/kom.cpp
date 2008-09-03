@@ -51,7 +51,7 @@ KomEngine::KomEngine(OSystem *system)
 	_gameLoopState = GAMELOOP_RUNNING;
 	_playingMusicId = _playingMusicVolume = 0;
 
-	_fsNode = new FilesystemNode(_gameDataPath);
+	_fsNode = new Common::FilesystemNode(_gameDataPath);
 }
 
 KomEngine::~KomEngine() {
@@ -109,12 +109,12 @@ int KomEngine::go() {
 	 */
 
 	// Load sound effects
-	FilesystemNode samplesDir(_fsNode->getChild("kom").getChild("samples"));
+	Common::FilesystemNode samplesDir(_fsNode->getChild("kom").getChild("samples"));
 	_hotspotSample.loadFile(samplesDir, String("hotspot"));
 	_doorsSample.loadFile(samplesDir, String("doors"));
 	_clickSample.loadFile(samplesDir, String("mouse_l"));
 
-	FilesystemNode installDir(_fsNode->getChild("install"));
+	Common::FilesystemNode installDir(_fsNode->getChild("install"));
 	if (_game->player()->selectedChar == 0) {
 		File::addDefaultDirectory(installDir.getChild("db0"));
 		_database->init("thid");
@@ -301,7 +301,7 @@ void KomEngine::ambientStart(int locId) {
 
 	int16 musicId, musicVolume;
 
-	static FilesystemNode musicNode =
+	static Common::FilesystemNode musicNode =
 		_fsNode->getChild("kom").getChild("music");
 
 	// Special handling for the honeymoon suite

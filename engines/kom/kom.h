@@ -39,7 +39,7 @@
 #include "kom/game.h"
 #include "kom/font.h"
 
-class FilesystemNode;
+class Common::FilesystemNode;
 
 namespace Kom {
 
@@ -76,7 +76,7 @@ public:
 	Game *game() const { return _game; }
 	Sound *sound() const { return _sound; }
 
-	FilesystemNode *dataDir() const { return _fsNode; }
+	Common::FilesystemNode *dataDir() const { return _fsNode; }
 
 	int gameLoopTimer() { return _gameLoopTimer; }
 	void endGame() { _gameLoopState = GAMELOOP_DEATH; }
@@ -110,7 +110,7 @@ private:
 	Game *_game;
 	Font *_font;
 
-	FilesystemNode *_fsNode;
+	Common::FilesystemNode *_fsNode;
 	int _gameLoopState;
 	int _gameLoopTimer;
 };

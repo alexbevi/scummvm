@@ -48,7 +48,7 @@ public:
 
 	virtual GameList getSupportedGames() const;
 	virtual GameDescriptor findGame(const char *gameid) const;
-	virtual GameList detectGames(const FSList &fslist) const;
+	virtual GameList detectGames(const Common::FSList &fslist) const;
 
 	virtual PluginError createInstance(OSystem *syst, Engine **engine) const;
 };
@@ -82,9 +82,9 @@ GameDescriptor KomMetaEngine::findGame(const char *gameid) const {
 	return *g;
 }
 
-GameList KomMetaEngine::detectGames(const FSList &fslist) const {
+GameList KomMetaEngine::detectGames(const Common::FSList &fslist) const {
 	GameList detectedGames;
-	for (FSList::const_iterator file = fslist.begin(); file != fslist.end(); ++file) {
+	for (Common::FSList::const_iterator file = fslist.begin(); file != fslist.end(); ++file) {
 		if (!file->isDirectory()) {
 			const char *filename = file->getName().c_str();
 
@@ -100,7 +100,7 @@ GameList KomMetaEngine::detectGames(const FSList &fslist) const {
 }
 
 PluginError KomMetaEngine::createInstance(OSystem *syst, Engine **engine) const {
-	FilesystemNode dir(ConfMan.get("path"));
+	Common::FilesystemNode dir(ConfMan.get("path"));
 
 	// Unable to locate game data
 	if (!(dir.getChild("thidney.dsk").exists() || dir.getChild("shahron.dsk").exists())) {
