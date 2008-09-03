@@ -65,121 +65,123 @@ void Input::handleMouse() {
 			printf("Inventory click!\n");
 
 		// "Exit to"
-		} else if (settings->mouseState == 2) {
-			gotoX = settings->collideBoxX;
-			gotoY = settings->collideBoxY;
-			settings->collideType = 1;
+		} else {
+			if (settings->mouseState == 2) {
+				gotoX = settings->collideBoxX;
+				gotoY = settings->collideBoxY;
+				settings->collideType = 1;
 
-		} else switch (settings->overType) {
-		case 2:
-			gotoX = settings->collideCharX;
-			gotoY = settings->collideCharY;
-			settings->collideType = 2;
-			break;
-		case 3:
-			gotoX = settings->collideObjX;
-			gotoY = settings->collideObjY;
-			settings->collideType = 3;
-			break;
-		default:
-			gotoX = settings->collideBoxX;
-			gotoY = settings->collideBoxY;
-			settings->collideType = 1;
-		}
-
-		if (settings->collideType == 2 || settings->collideType == 3) {
-			if (settings->objectNum < 0) {
-				_vm->game()->doDonut(0, false);
-			} else {
-				donutState = 0;
-				// TODO
+			} else switch (settings->overType) {
+			case 2:
+				gotoX = settings->collideCharX;
+				gotoY = settings->collideCharY;
+				settings->collideType = 2;
+				break;
+			case 3:
+				gotoX = settings->collideObjX;
+				gotoY = settings->collideObjY;
+				settings->collideType = 3;
+				break;
+			default:
+				gotoX = settings->collideBoxX;
+				gotoY = settings->collideBoxY;
+				settings->collideType = 1;
 			}
 
-		} else if (settings->objectNum >= 0) {
-			donutState = -1;
-		} else {
-			donutState = 0;
-			player->command = CMD_WALK;
-		}
+			if (settings->collideType == 2 || settings->collideType == 3) {
+				if (settings->objectNum < 0) {
+					_vm->game()->doDonut(0, false);
+				} else {
+					donutState = 0;
+					// TODO
+				}
 
-		if (donutState != -1) {
-			switch (player->command) {
-			case CMD_WALK:
-				if (settings->collideType == 0)
+			} else if (settings->objectNum >= 0) {
+				donutState = -1;
+			} else {
+				donutState = 0;
+				player->command = CMD_WALK;
+			}
+
+			if (donutState != -1) {
+				switch (player->command) {
+				case CMD_WALK:
+					if (settings->collideType == 0)
+						break;
+					playerChar->_gotoX = gotoX;
+					playerChar->_gotoY = gotoY;
+					player->commandState = 1;
+					player->collideType = 0;
+					player->collideNum = -1;
 					break;
-				playerChar->_gotoX = gotoX;
-				playerChar->_gotoY = gotoY;
-				player->commandState = 1;
-				player->collideType = 0;
-				player->collideNum = -1;
-				break;
 
-			case CMD_NOTHING:
-				break;
-
-			case CMD_USE:
-				// TODO
-				break;
-
-			case CMD_TALK_TO:
-				if (settings->collideType == 0)
+				case CMD_NOTHING:
 					break;
-				playerChar->_gotoX = gotoX;
-				playerChar->_gotoY = gotoY;
-				player->commandState = 1;
-				player->collideType = 2;
-				player->collideNum = settings->collideChar;
-				playerChar->_isBusy = true;
-				break;
 
-			case CMD_PICKUP:
-				if (settings->collideType == 0)
+				case CMD_USE:
+					// TODO
 					break;
-				playerChar->_gotoX = gotoX;
-				playerChar->_gotoY = gotoY;
-				player->commandState = 1;
-				player->collideType = 3;
-				player->collideNum = settings->collideObj;
-				playerChar->_isBusy = true;
-				break;
 
-			case CMD_LOOK_AT:
-				if (settings->collideType == 0)
-					break;
-				playerChar->_gotoX = gotoX;
-				playerChar->_gotoY = gotoY;
-				player->commandState = 1;
-
-				assert(settings->collideType > 1);
-
-				// Character
-				if (settings->collideType == 2) {
+				case CMD_TALK_TO:
+					if (settings->collideType == 0)
+						break;
+					playerChar->_gotoX = gotoX;
+					playerChar->_gotoY = gotoY;
+					player->commandState = 1;
 					player->collideType = 2;
 					player->collideNum = settings->collideChar;
-					if (_vm->database()->
-							getChar(settings->collideChar)->_isAlive) {
-						playerChar->_gotoX = playerChar->_screenX;
-						playerChar->_gotoY = playerChar->_screenY;
-					}
 					playerChar->_isBusy = true;
+					break;
 
-				// Box
-				} else {
+				case CMD_PICKUP:
+					if (settings->collideType == 0)
+						break;
+					playerChar->_gotoX = gotoX;
+					playerChar->_gotoY = gotoY;
+					player->commandState = 1;
 					player->collideType = 3;
 					player->collideNum = settings->collideObj;
 					playerChar->_isBusy = true;
+					break;
+
+				case CMD_LOOK_AT:
+					if (settings->collideType == 0)
+						break;
+					playerChar->_gotoX = gotoX;
+					playerChar->_gotoY = gotoY;
+					player->commandState = 1;
+
+					assert(settings->collideType > 1);
+
+					// Character
+					if (settings->collideType == 2) {
+						player->collideType = 2;
+						player->collideNum = settings->collideChar;
+						if (_vm->database()->
+								getChar(settings->collideChar)->_isAlive) {
+							playerChar->_gotoX = playerChar->_screenX;
+							playerChar->_gotoY = playerChar->_screenY;
+						}
+						playerChar->_isBusy = true;
+
+					// Box
+					} else {
+						player->collideType = 3;
+						player->collideNum = settings->collideObj;
+						playerChar->_isBusy = true;
+					}
+					break;
+
+				case CMD_FIGHT:
+					// TODO
+					break;
+
+				case CMD_CAST_SPELL:
+					// TODO
+					break;
+				default:
+					error("Wrong player command");
 				}
-				break;
-
-			case CMD_FIGHT:
-				// TODO
-				break;
-
-			case CMD_CAST_SPELL:
-				// TODO
-				break;
-			default:
-				error("Wrong player command");
 			}
 		}
 	}

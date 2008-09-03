@@ -134,6 +134,9 @@ int KomEngine::go() {
 
 	while (_gameLoopState != GAMELOOP_QUIT) {
 		gameLoop();
+		_panel->setLocationDesc("");
+		_panel->setActionDesc("");
+		_panel->setHotspotDesc("");
 	}
 
 	return 0;

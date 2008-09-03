@@ -496,11 +496,12 @@ void Screen::updateCursor() {
 
 	int hoverId = -1;
 	int hoverType;
-	const char *text = "TODO";
-	const char *text2 = "TODO2";
+	const char *text1, *text2, *text3, *text4, *space1, *space2, *textRIP;
 	char panelText[200];
 
-	if (_vm->game()->settings()->mouseY >= INVENTORY_OFFSET) {
+	text1 = text2 = text3 = text4 = space1 = space2 = textRIP = "";
+
+	if (settings->mouseY >= INVENTORY_OFFSET) {
 		mouse->switchScope(5, 2);
 	} else {
 		if (settings->objectNum >= 0) {
@@ -535,10 +536,13 @@ void Screen::updateCursor() {
 	if (_vm->_flicLoaded != 0)
 		return;
 
-	if (_vm->game()->player()->commandState != 0 /* && collideType != 0*/) {
-		// TODO
+	if (_vm->game()->player()->commandState != 0 &&
+		_vm->game()->player()->collideType != 0) {
+
+		hoverType = _vm->game()->player()->collideType;
+		hoverId = _vm->game()->player()->collideNum;
+
 	} else {
-		text = "TODO";
 		hoverType = settings->overType;
 
 		switch (settings->overType) {
@@ -548,62 +552,124 @@ void Screen::updateCursor() {
 			case 3:
 				hoverId = settings->collideObj;
 				break;
+			default:
+				hoverId = -1;
 		}
 	}
 
-	if (settings->objectNum < 0) {
-		text = "Walk to";
+	// Use # with #
+	if (settings->objectNum >= 0) {
+
+		if (_vm->game()->player()->command == CMD_USE) {
+
+			text1 = "Use";
+			text2 = _vm->database()->
+				getObj(settings->objectNum)->desc;
+			text3 = "with";
+			switch (hoverType) {
+			case 2:
+				text4 = _vm->database()->getChar(hoverId)->_desc;
+				break;
+			case 3:
+				text4 = _vm->database()->getObj(hoverId)->desc;
+				break;
+			default:
+				text4 = "...";
+			}
+		} else if (_vm->game()->player()->command == CMD_FIGHT ||
+		           _vm->game()->player()->command == CMD_CAST_SPELL) {
+
+			if (_vm->game()->player()->command == CMD_FIGHT)
+				text3 = "Fight with";
+			else
+				text3 = "Cast spell at";
+
+			if (hoverId != 2)
+				text4 = "...";
+			else
+				text4 = _vm->database()->getChar(hoverId)->_desc;
+		}
+
+	// Use #
+	} else {
+		text3 = "Walk to";
 		if (_vm->game()->player()->commandState > 0) {
-			// TODO - talk to / pick up / look at / ...
+			switch (_vm->game()->player()->command) {
+			case CMD_USE:
+				text3 = "Use";
+				break;
+            case CMD_TALK_TO:
+				text3 = "Talk to";
+				break;
+            case CMD_PICKUP:
+				text3 = "Pickup";
+				break;
+            case CMD_LOOK_AT:
+				text3 = "Look at";
+				break;
+            case CMD_FIGHT:
+				text3 = "Fight with";
+				break;
+			case CMD_CAST_SPELL:
+				text3 = "Cast spell at";
+				break;
+			case CMD_WALK:
+			case CMD_NOTHING:
+				error("Illegal commands in updateCursor");
+			}
 		}
 
 		switch (hoverType) {
 		case 1:
 			if (settings->mouseOverExit) {
 				int exitLoc, exitBox;
-				text = "Exit to";
+				text3 = "Exit to";
 				_vm->database()->getExitInfo(
 						_vm->database()->getChar(0)->_lastLocation,
 						settings->collideBox,
 						&exitLoc, &exitBox);
 
-				text2 = _vm->database()->getLoc(exitLoc)->desc;
+				text4 = _vm->database()->getLoc(exitLoc)->desc;
 			}
 			break;
 		case 2:
-			text2 = _vm->database()->getChar(settings->collideChar)->_desc;
+			text4 = _vm->database()->getChar(hoverId)->_desc;
 			break;
 		case 3:
-			text2 = _vm->database()->getObj(settings->collideObj)->desc;
+			text4 = _vm->database()->getObj(hoverId)->desc;
 			break;
 		default:
-			text2 = "...";
+			text4 = "...";
 		}
-
-	} else {
-		// TODO - "use # with #"
 	}
 
-	// TODO - build "use # with #" string
+	// Set panel strings
+
+	sprintf(panelText, "%s %s", text1, text2);
+	_vm->panel()->setActionDesc(panelText);
+
+	if (text1[0] != 0)
+		space1 = " ";
+	if (text4[0] != '.')
+		space2 = " ";
 
 	if (hoverType == 2) {
-		// TODO - add " (RIP)" if dead
+		if (!_vm->database()->getChar(hoverId)->_isAlive)
+			textRIP = " (RIP)";
+
+		sprintf(panelText, "%s%s%s%s%s", space1, text3, space2, text4, textRIP);
+
 	} else {
-		// TODO
+		sprintf(panelText, "%s%s%s%s", space1, text3, space2, text4);
 	}
 
-	sprintf(panelText, "%s %s", text, text2);
 	_vm->panel()->setHotspotDesc(panelText);
 
-
-	// The scopes:
-	// setScope(0, 2);
-	// setScope(1, 2);
-	// setScope(2, 2);
-	// setScope(3, 2);
-	// setScope(4, 2);
-	// setScope(5, 2);
-	// setScope(6, 0);
+	// TODO - inventory strings
+	if (settings->mouseY >= INVENTORY_OFFSET /* TODO: && not inside inventory */) {
+		_vm->panel()->setActionDesc("");
+		_vm->panel()->setHotspotDesc("Inventory...");
+	}
 }
 
 void Screen::drawPanel(const byte *panelData) {
