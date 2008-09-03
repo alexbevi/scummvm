@@ -656,7 +656,7 @@ bool Game::doStat(const Command *cmd) {
 			db->getChar(0)->_lastBox = db->whatBox(db->getChar(0)->_lastLocation,
 				db->getChar(0)->_screenX, db->getChar(0)->_screenY);
 
-			_player.command = CMD_NOTHING2;
+			_player.command = CMD_NOTHING;
 			_player.commandState = 0;
 
 			break;
@@ -1309,7 +1309,7 @@ void Game::doActionSpriteScene(const char *name, int charId, int loc, int box) {
 	// Check if it's a moving sprite
 	if (charId == 0 && name != 0) {
 
-		_player.command = CMD_NOTHING1;
+		_player.command = CMD_WALK;
 
 		int8 match = -1;
 		for (int8 i = 0; i < 3; ++i) {
@@ -1499,7 +1499,7 @@ bool Game::doDonut(int type, int param) {
 			}
 
 			if (_vm->input()->getLeftClick()) {
-				if (overVerb || overCommand == CMD_NOTHING1)
+				if (overVerb || overCommand == CMD_WALK)
 					donutLoopState = 3;
 			}
 			break;
@@ -1511,7 +1511,7 @@ bool Game::doDonut(int type, int param) {
 		}
 
 		verbDesc = "";
-		overCommand = CMD_NOTHING1;
+		overCommand = CMD_WALK;
 		overVerb = false;
 
 		// Set strings and action

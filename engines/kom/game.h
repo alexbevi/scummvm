@@ -85,14 +85,14 @@ struct Settings {
 };
 
 typedef enum {
-	CMD_NOTHING1     = 100,
-	CMD_NOTHING2     = 101,
-	CMD_USE          = 102,
-	CMD_TALK_TO      = 103,
-	CMD_PICKUP       = 104,
-	CMD_LOOK_AT      = 105,
-	CMD_FIGHT        = 106,
-	CMD_CAST_SPELL   = 107
+	CMD_WALK = 0,
+	CMD_NOTHING,
+	CMD_USE,
+	CMD_TALK_TO,
+	CMD_PICKUP,
+	CMD_LOOK_AT,
+	CMD_FIGHT,
+	CMD_CAST_SPELL
 } CommandType;
 
 /** Player settings */

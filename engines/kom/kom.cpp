@@ -149,7 +149,7 @@ void KomEngine::gameLoop() {
 	// setBrightness(256)
 	// clearWorkScreen
 	// init some global vars, Player settings
-	_game->player()->command = CMD_NOTHING2;
+	_game->player()->command = CMD_NOTHING;
 	_game->player()->commandState = 0;
 	_database->getChar(0)->_isBusy = false;
 	_game->settings()->objectNum = _game->settings()->object2Num = -1;
@@ -187,29 +187,30 @@ void KomEngine::gameLoop() {
 		// collision stuff
 		if (_game->player()->commandState != 0) {
 			switch (_game->player()->command) {
-			case 0x64:
-				_game->player()->command = CMD_NOTHING2;
+			case CMD_WALK:
+				_game->player()->command = CMD_WALK;
 				_game->player()->commandState = 0;
 				_game->player()->collideType = 0;
 				_game->player()->collideNum = -1;
 				break;
 
-			case 0x66:
+			case CMD_USE:
 				break;
 
-			case 0x67:
+			case CMD_TALK_TO:
 				break;
-			case 0x68:
+			case CMD_PICKUP:
 				break;
-			case 0x69:
+			case CMD_LOOK_AT:
 				break;
-			case 0x6A:
+			case CMD_FIGHT:
 				break;
-			case 0x6B:
+			case CMD_CAST_SPELL:
 				break;
 			case 0x6C:
 				break;
-			case 0x65:
+
+			case CMD_NOTHING:
 			default:
 				error("Illegal player mode");
 			}
