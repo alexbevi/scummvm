@@ -114,7 +114,6 @@ private:
 
 	Common::List<Common::Rect> *_dirtyRects;
 	Common::List<Common::Rect> *_prevDirtyRects;
-	const Common::List<Common::Rect> *_bgDirtyRects;
 };
 
 } // End of namespace Kom

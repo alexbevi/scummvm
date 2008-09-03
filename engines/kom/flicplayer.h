@@ -74,6 +74,7 @@ public:
 	const uint8 *getPalette() { _paletteDirty = false; return _palette; }
 	const uint8 *getOffscreen() const { return _offscreen; }
 	const Common::List<Common::Rect> *getDirtyRects() const { return _dirtyRects; }
+	void clearDirtyRects() const { _dirtyRects->clear(); }
 
 protected:
 	ChunkHeader readChunkHeader();

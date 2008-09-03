@@ -191,8 +191,6 @@ void FlicPlayer::decodeDeltaFLC(uint8 *data) {
 bool FlicPlayer::decodeFrame() {
 	FrameTypeChunkHeader frameHeader;
 
-	_dirtyRects->clear();
-
 	// Read chunk
 	ChunkHeader cHeader = readChunkHeader();
 	switch (cHeader.type) {

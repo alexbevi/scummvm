@@ -235,8 +235,10 @@ void Screen::gfxUpdate() {
 
 	// No need to save a prev, since the background reports
 	// all changes
-	if (_roomBackground)
-		copyRectListToScreen(_bgDirtyRects);
+	if (_roomBackground) {
+		copyRectListToScreen(_roomBackground->getDirtyRects());
+		_roomBackground->clearDirtyRects();
+	}
 
 	_vm->input()->resetInput();
 
@@ -633,7 +635,7 @@ void Screen::updateBackground() {
 			_roomBackgroundTime = _system->getMillis() + _roomBackground->speed();
 
 			if (!_backgroundPaused)
-			_roomBackground->decodeFrame();
+				_roomBackground->decodeFrame();
 
 			if (_roomBackground->paletteDirty()) {
 				_system->setPalette(_roomBackground->getPalette(), 0, 1);
@@ -644,8 +646,7 @@ void Screen::updateBackground() {
 }
 
 void Screen::drawBackground() {
-	if (_roomBackground != 0) {
-		_bgDirtyRects = _roomBackground->getDirtyRects();
+	if (_roomBackground) {
 		memcpy(_screenBuf, _roomBackground->getOffscreen(), SCREEN_W * (SCREEN_H - PANEL_H));
 	}
 }
