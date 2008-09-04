@@ -6,6 +6,10 @@
 
 namespace Innocent {
 
+enum Debug {
+	kOpcodeDetails = 3
+};
+
 enum {
 	kOpcodeMax = 0xfd
 };
@@ -24,7 +28,7 @@ void Interpreter::run() {
 	if (_logic->_status != Logic::kStatusOk)
 		return;
 
-	byte opcode = *_code;
+	byte opcode = *(_code++);
 	if (opcode > kOpcodeMax) {
 		_logic->_status = Logic::kInvalidOpcode;
 		return;
@@ -32,7 +36,7 @@ void Interpreter::run() {
 
 	uint8 nargs = _argumentsCounts[opcode];
 
-	_currentCode = *_code;
+	_currentCode = opcode;
 	OpcodeHandler handler = _handlers[opcode];
 	if (!handler)
 		handler = &Interpreter::defaultHandler;
@@ -42,6 +46,9 @@ void Interpreter::run() {
 	for (uint i = 0; i < nargs; i++)
 		args[i] = getArgument();
 
+	if (nargs == 0)
+		_code += 2;
+
 	(this->*handler)(args);
 }
 
@@ -50,6 +57,10 @@ void Interpreter::defaultHandler(const Argument /*args*/[]) {
 }
 
 Argument Interpreter::getArgument() {
+	uint8 argument_type = _code[1];
+	_code += 2;
+	debug(kOpcodeDetails, "argument type %02x", argument_type);
+
 	return Argument();
 }
 
