@@ -16,6 +16,8 @@ public:
 	 */
 	void loadInterface();
 
+	void init() { loadInterface(); }
+
 	/**
 	 * Paint the interface to proper portion of the screen.
 	 */

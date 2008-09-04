@@ -17,6 +17,7 @@ public:
 	Resources();
 	~Resources();
 	void load();
+	void init() { load(); }
 
 	MainDat *mainDat() const { return _main.get(); }
 	GraphicsMap *graphicsMap() const { return _graphicsMap.get(); }

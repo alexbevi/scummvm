@@ -28,7 +28,8 @@ Engine::~Engine() {
 }
 
 int Engine::init() {
-	_resources->load();
+	_resources->init();
+	_graphics->init();
 	GFX_TRANSACTION {
 		initCommonGFX(true);
 		_system->initSize(320, 200);
@@ -44,7 +45,6 @@ int Engine::go() {
 	printf("Innocent::Engine: Hello, world!\n");
 	debugC(1, kDebug, "example debug call");
 	
-	_graphics->loadInterface();
 	_graphics->paintInterface();
 	
 	_system->updateScreen();
