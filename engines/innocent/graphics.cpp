@@ -1,37 +1,26 @@
-#include "common/file.h"
-#include "common/func.h"
-#include "common/util.h"
-
-#include "innocent/logic.h"
-
 #include "innocent/graphics.h"
 
-using namespace std;
+#include "common/system.h"
+
+#include "innocent/innocent.h"
+#include "innocent/resources.h"
 
 namespace Innocent {
 
-Graphics::Graphics(Logic *logic) : _logic(logic) {}
+void Graphics::loadInterface() {
+	byte palette[0x400];
 
-void Graphics::load() {
-	Common::File fd;
-	if (!fd.open("iuc_graf.dat"))
-		error("Graphics::load() Could not open iuc_graf.dat");
+	_engine->_resources->loadInterfaceImage(_interface, palette);
+	debug(kAck, "loaded interface image");
 
-	uint32 actually_read = fd.read(&_map, 1200);
-	debug(1, "Read %d bytes from iuc_graf.", actually_read);
-	
-	if (actually_read >> 2 != _logic->graphicsCount())
-		error("ILL Error: Incorrect graphics for current logic.");
-
-	const vector<string> graphic_files = _logic->graphicFileNames();
-	for_each(graphic_files.begin(), graphic_files.end(), bind1st(mem_fun(loadDataFile), this));
+	_engine->_system->setPalette(palette + 160 * 4, 160, 96);
+	debug(kAck, "set interface palette");
 }
 
-void Graphics::loadDataFile(string name) {
-	Common::File file;
-	if (!file.open(name))
-		error("Graphics::loadDataFile() couldn't load %s", name);
-	_dataFiles.push_back(file);
+void Graphics::paintInterface() {
+	debug(kAck, "painting interface");
+	_engine->_system->copyRectToScreen(_interface, 320, 0, 152, 320, 48);
+	debug(kAck, "painted interface");
 }
 
 } // End of namespace Innocent

@@ -1,15 +1,17 @@
 #ifndef INNOCENT_H
 #define INNOCENT_H
 
+#include <memory>
+
 #include "common/ptr.h"
 #include "engines/engine.h"
 #include "gui/debugger.h"
 
-#include "innocent/resources.h"
-
 namespace Innocent {
 
 class Console;
+class Resources;
+class Graphics;
 
 enum {
 	kDebug = 1 << 0
@@ -23,12 +25,13 @@ public:
 	virtual int init();
 	virtual int go();
 
+	std::auto_ptr<Resources> _resources;
+	std::auto_ptr<Graphics> _graphics;
+
 private:
 	Console *_console;
 
 	Common::RandomSource _rnd;
-
-	Resources _resources;
 };
 
 class Console : public GUI::Debugger {

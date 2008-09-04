@@ -1,25 +1,29 @@
 #ifndef INNOCENT_GRAPHICS_H
 #define INNOCENT_GRAPHICS_H
 
-#include <vector>
-
-#include "common/file.h"
+#include "config.h"
 
 namespace Innocent {
 
-class Logic;
+class Engine;
 
 class Graphics {
 public:
-	Graphics(Logic *logic);
-	void load();
+	Graphics(Engine *engine) : _engine(engine) {}
+
+	/**
+	 * Load interface image and palette; sets the palette.
+	 */
+	void loadInterface();
+
+	/**
+	 * Paint the interface to proper portion of the screen.
+	 */
+	void paintInterface();
 
 private:
-	Logic *_logic;
-	byte _map[1200];
-
-	void loadDataFile(string name);
-	std::vector<Common::File> _dataFiles;
+	byte _interface[0x3c00];
+	Engine *_engine;
 };
 
 } // End of namespace Innocent
