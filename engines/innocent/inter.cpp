@@ -11,8 +11,7 @@ enum {
 };
 
 Interpreter::Interpreter(Logic *l) :
-		_logic(l),
-		_opcodes(this) {
+		_logic(l) {
 }
 
 void Interpreter::run(const byte *code, uint16 mode) {
@@ -25,37 +24,23 @@ void Interpreter::run(const byte *code, uint16 mode) {
 		return;
 	}
 
-	const Opcode *operation = _opcodes[opcode];
+//	uint8 nargs = _argumentsCounts[opcode];
+
+	_currentCode = *code;
+	OpcodeHandler handler = _handlers[opcode];
+	if (!handler)
+		handler = &Interpreter::defaultHandler;
+
 	Argument args[6];
-	(*operation)(args);
+	(this->*handler)(args);
 }
 
-const uint8 OpcodeFactory::_argumentsCounts[] = {
+void Interpreter::defaultHandler(const Argument /*args*/[]) {
+	warning("unhandled opcode %02x", _currentCode);
+}
+
+const uint8 Interpreter::_argumentsCounts[] = {
 	#include "opcodes_nargs.data"
 };
-
-static void default_handler(const Opcode *self, const Argument /*args*/[]) {
-	warning("unhandled opcode %02x", self->code());
-}
-
-OpcodeFactory::OpcodeFactory(Interpreter *i) : _interpreter(i) {}
-
-const Opcode *OpcodeFactory::operator[](byte code) const {
-	if (!_opcodes[code].get()) {
-		Opcode * op = new Opcode;
-		op->_code = code;
-		op->_handler = _handlers[code];
-		if (!op->_handler)
-			op->_handler = default_handler;
-		op->_argumentsCount = _argumentsCounts[code];
-		_opcodes[code].reset(op);
-	}
-
-	return _opcodes[code].get();
-}
-
-void Opcode::operator()(const Argument args[]) const {
-	_handler(this, args);
-}
 
 } // End of namespace Innocent

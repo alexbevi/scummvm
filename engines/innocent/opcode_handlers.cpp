@@ -2,7 +2,7 @@
 
 namespace Innocent {
 
-void(*OpcodeFactory::_handlers[])(const Opcode *self, const Argument args[]) = {
+Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 00 */ 0,
 	/* opcode 01 */ 0,
 	/* opcode 02 */ 0,
