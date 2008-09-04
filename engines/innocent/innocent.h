@@ -5,13 +5,11 @@
 #include "engines/engine.h"
 #include "gui/debugger.h"
 
-#include "innocent/util.h"
+#include "innocent/resources.h"
 
 namespace Innocent {
 
 class Console;
-class Logic;
-class Graphics;
 
 enum {
 	kDebug = 1 << 0
@@ -30,8 +28,7 @@ private:
 
 	Common::RandomSource _rnd;
 
-	Pointer<Logic> _logic;
-	Pointer<Graphics> _graphics;
+	Resources _resources;
 };
 
 class Console : public GUI::Debugger {

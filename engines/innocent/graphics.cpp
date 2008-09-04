@@ -1,13 +1,16 @@
 #include "common/file.h"
+#include "common/func.h"
 #include "common/util.h"
 
 #include "innocent/logic.h"
 
 #include "innocent/graphics.h"
 
+using namespace std;
+
 namespace Innocent {
 
-Graphics::Graphics(Pointer<Logic>logic) : _logic(logic) {}
+Graphics::Graphics(Logic *logic) : _logic(logic) {}
 
 void Graphics::load() {
 	Common::File fd;
@@ -19,6 +22,16 @@ void Graphics::load() {
 	
 	if (actually_read >> 2 != _logic->graphicsCount())
 		error("ILL Error: Incorrect graphics for current logic.");
+
+	const vector<string> graphic_files = _logic->graphicFileNames();
+	for_each(graphic_files.begin(), graphic_files.end(), bind1st(mem_fun(loadDataFile), this));
+}
+
+void Graphics::loadDataFile(string name) {
+	Common::File file;
+	if (!file.open(name))
+		error("Graphics::loadDataFile() couldn't load %s", name);
+	_dataFiles.push_back(file);
 }
 
 } // End of namespace Innocent

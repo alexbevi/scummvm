@@ -1,7 +1,9 @@
 #ifndef INNOCENT_GRAPHICS_H
 #define INNOCENT_GRAPHICS_H
 
-#include "innocent/util.h"
+#include <vector>
+
+#include "common/file.h"
 
 namespace Innocent {
 
@@ -9,12 +11,15 @@ class Logic;
 
 class Graphics {
 public:
-	Graphics(Pointer<Logic> logic);
+	Graphics(Logic *logic);
 	void load();
 
 private:
-	Pointer<Logic> _logic;
+	Logic *_logic;
 	byte _map[1200];
+
+	void loadDataFile(string name);
+	std::vector<Common::File> _dataFiles;
 };
 
 } // End of namespace Innocent

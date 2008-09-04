@@ -7,6 +7,7 @@
 
 #include "common/file.h"
 
+using namespace std;
 using namespace Common;
 
 namespace Innocent {
@@ -43,6 +44,20 @@ void Logic::load() {
 
 	_descriptor.reset(s.readStream(kDescriptorSize));
 	s.close();
+
+	_descriptor->seek(kDescriptorGraphicsCount);
+	_graphicsCount = _descriptor->readUint16LE();
+
+	_descriptor->seek(kDescriptorGraphicFilesCount);
+	uint16 graphic_files_count = _descriptor->readUint16LE();
+
+	_descriptor->seek(kDescriptorGraphicFileNames);
+	uint16 graphic_filenames_offset = _descriptor->readUint16LE();
+
+	_mainData->seek(graphic_filenames_offset);
+	for (; graphic_files_count; graphic_files_count--) {
+		uint16 data_set = _mainData->readUint16LE();
+		
 }
 
 void Logic::descramble(byte *data, uint16 length) {
@@ -51,11 +66,11 @@ void Logic::descramble(byte *data, uint16 length) {
 }
 
 uint16 Logic::graphicsCount() const {
-	static uint16 count = 0;
-	if (count) return count;
+	return _graphicsCount;
+}
 
-	_descriptor->seek(kDescriptorGraphicsCount);
-	return (count = _descriptor->readUint16LE());
+const vector<string> &graphicFiles() const  {
+	return _graphicFiles;
 }
 
 } // End of namespace Innocent
