@@ -15,28 +15,42 @@ Interpreter::Interpreter(Logic *l) :
 }
 
 void Interpreter::run(const byte *code, uint16 mode) {
+	_code = code;
+	_mode = mode;
+	run();
+}
+
+void Interpreter::run() {
 	if (_logic->_status != Logic::kStatusOk)
 		return;
 
-	byte opcode = *code;
+	byte opcode = *_code;
 	if (opcode > kOpcodeMax) {
 		_logic->_status = Logic::kInvalidOpcode;
 		return;
 	}
 
-//	uint8 nargs = _argumentsCounts[opcode];
+	uint8 nargs = _argumentsCounts[opcode];
 
-	_currentCode = *code;
+	_currentCode = *_code;
 	OpcodeHandler handler = _handlers[opcode];
 	if (!handler)
 		handler = &Interpreter::defaultHandler;
 
 	Argument args[6];
+
+	for (uint i = 0; i < nargs; i++)
+		args[i] = getArgument();
+
 	(this->*handler)(args);
 }
 
 void Interpreter::defaultHandler(const Argument /*args*/[]) {
 	warning("unhandled opcode %02x", _currentCode);
+}
+
+Argument Interpreter::getArgument() {
+	return Argument();
 }
 
 const uint8 Interpreter::_argumentsCounts[] = {
