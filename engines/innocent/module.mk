@@ -8,7 +8,9 @@ MODULE_OBJS = \
 	main_dat.o \
 	graph_dat.o \
 	prog_dat.o \
-	graphics.o
+	graphics.o \
+	logic.o \
+	inter.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_MADE), DYNAMIC_PLUGIN)

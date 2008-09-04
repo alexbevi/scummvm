@@ -19,6 +19,7 @@ private:
 		kImageDirectory		= 0x1E,
 		kGraphicFileCount	= 0x20,
 		kGraphicFileNames	= 0x22,
+		kEntryPoint			= 0x42,
 		kInterfaceImgIdx	= 0xB4
 	};
 
@@ -50,6 +51,10 @@ public:
 
 	uint16 interfaceImageIndex() const {
 		return READ_LE_UINT16(_footer + kInterfaceImgIdx);
+	}
+
+	const byte *getEntryPoint() const {
+		return _data + READ_LE_UINT16(_footer + kEntryPoint);
 	}
 
 private:
