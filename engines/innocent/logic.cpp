@@ -43,6 +43,8 @@ void MainDat::load(Common::SeekableReadStream &s) {
 		fd.close();
 		debug(5, "MainDat::load() dumped descrambled file to  maindat.dump");
 	}
+
+	s.read(&_footer, sizeof(_footer));
 }
 
 void MainDat::descramble(byte *data, uint16 length) {
