@@ -41,7 +41,7 @@ int Engine::go() {
 	_resources.loadInterfaceImage(interface, palette);
 
 	_system->setPalette(palette, 0, 256);
-	_system->copyRectToScreen(interface, 320, 0, 152, 320, 24);
+	_system->copyRectToScreen(interface, 320, 0, 152, 320, 48);
 	_system->updateScreen();
 	_system->delayMillis(1000);
 
