@@ -16,7 +16,13 @@ namespace Innocent {
 Resources::Resources() :
 	_main(new MainDat(this)),
 	_graphicsMap(new GraphicsMap(this)),
-	_progDat(new ProgDat(this)) {}
+	_progDat(new ProgDat(this)),
+	_graphicFiles(0) {}
+
+Resources::~Resources() {
+	if (_graphicFiles)
+		delete[] _graphicFiles;
+}
 
 void Resources::load() {
 	_main->load();
@@ -30,8 +36,25 @@ void Resources::load() {
 void Resources::loadGraphicFiles() {
 	const list<MainDat::GraphicFile> files(_main->graphicFiles());
 
-	for (list<MainDat::GraphicFile>::const_iterator it = files.begin(); it != files.end(); ++it)
-		debug(1, "would open file %s of dataset %04x", it->filename, it->data_set);
+	_graphicFiles = new auto_ptr<SeekableReadStream>[files.size()];
+
+	auto_ptr<SeekableReadStream> *ptr = _graphicFiles;
+	for (list<MainDat::GraphicFile>::const_iterator it = files.begin(); it != files.end(); ++it) {
+		File *file = new File();
+		file->open(String(it->filename));
+		auto_ptr<SeekableReadStream> pointer(file);
+		*(ptr++) = pointer;
+		debug(kAck, "opened %s", it->filename.c_str());
+	}
+}
+
+void Resources::loadImage(uint16 index, byte *target, uint16 size) {
+	uint16 file_index = _main->fileIndexOfImage(index);
+	uint32 offset = _graphicsMap->offsetOfImage(index);
+
+	SeekableReadStream *file = _graphicFiles[file_index].get();
+	file->seek(offset + 4);
+	file->read(target, size);
 }
 
 } // End of namespace Innocent

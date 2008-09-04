@@ -19,4 +19,8 @@ void GraphicsMap::readFile(SeekableReadStream &stream) {
 		error("ILL Error: Incorrect graphics for current logic.");
 }
 
+uint32 GraphicsMap::offsetOfImage(uint16 index) {
+	return _data[index];
+}
+
 } // End of namespace Innocent

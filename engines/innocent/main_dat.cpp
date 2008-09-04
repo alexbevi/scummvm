@@ -25,6 +25,8 @@ void MainDat::readFile(SeekableReadStream &stream) {
 	descramble();
 
 	stream.read(_footer, kFooterLen);
+
+	_imageDirectory = _data + READ_LE_UINT16(_footer + kImageDirectory);
 }
 
 void MainDat::descramble() {
@@ -44,6 +46,10 @@ uint16 MainDat::progEntriesCount1() const {
 	return READ_LE_UINT16(_footer + kProgEntriesCount1);
 }
 
+uint16 MainDat::fileIndexOfImage(uint16 index) const {
+	return READ_LE_UINT16(_imageDirectory + (index - 1) * 4 + 2);
+}
+
 list<MainDat::GraphicFile> MainDat::graphicFiles() const {
 	uint16 file_count = READ_LE_UINT16(_footer + kGraphicFileCount);
 	uint16 names_offset = READ_LE_UINT16(_footer + kGraphicFileNames);
@@ -54,7 +60,7 @@ list<MainDat::GraphicFile> MainDat::graphicFiles() const {
 		GraphicFile file;
 		file.data_set = READ_LE_UINT16(data);
 		data += 2;
-		file.filename = data;
+		file.filename = reinterpret_cast<char *>(data);
 		files.push_back(file);
 		while (*data)
 			data++;

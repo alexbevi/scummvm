@@ -15,8 +15,10 @@ public:
 	const char *filename() const { return "iuc_graf.dat"; }
 	void readFile(Common::SeekableReadStream &stream);
 
+	uint32 offsetOfImage(uint16 index);
+
 private:
-	byte _data[1200];
+	uint32 _data[1200/4];
 	uint16 _imgCount;
 };
 
