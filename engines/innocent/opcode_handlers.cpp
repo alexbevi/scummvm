@@ -1,6 +1,25 @@
 #include "innocent/inter.h"
 
+#include "common/util.h"
+
+#include "innocent/logic.h"
+
 namespace Innocent {
+
+enum Debug {
+	kOpcodesHit = 2
+};
+
+class OpcodeHandlers {
+public:
+
+	// 0x9d
+	static void setProtagonist(Interpreter *self, Argument *args[]) {
+		debug(kOpcodesHit, "setProtagonist(0x%04d)", args[0]->value());
+
+		self->_logic->setProtagonistId(args[0]->value());
+	}
+};
 
 Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 00 */ 0,
@@ -160,7 +179,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 9a */ 0,
 	/* opcode 9b */ 0,
 	/* opcode 9c */ 0,
-	/* opcode 9d */ 0,
+	/* opcode 9d */ OpcodeHandlers::setProtagonist,
 	/* opcode 9e */ 0,
 	/* opcode 9f */ 0,
 	/* opcode a0 */ 0,

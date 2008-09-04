@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "common/util.h"
 #include "config.h"
 
 namespace Innocent {
@@ -11,14 +12,9 @@ class Logic;
 class Opcode;
 
 class Argument {
-};
-
-class Uint16Argument : public Argument {
 public:
-	Uint16Argument(byte *ptr) : _ptr(ptr) {}
-
-private:
-	byte *_ptr;
+	virtual ~Argument() {}
+	virtual uint16 value() const { error("unimplemented attribute dereference"); }
 };
 
 class Interpreter {
@@ -33,16 +29,17 @@ public:
 	void run(byte *code, uint16 mode);
 	void run();
 
-	Argument getArgument();
+	Argument *getArgument();
 
 	friend class Opcode;
 
-	void defaultHandler(const Argument args[]);
+	static void defaultHandler(Interpreter *interpreter, Argument *args[]);
 
 	static const uint8 _argumentsCounts[];
 
-	typedef void(Innocent::Interpreter::*OpcodeHandler)(const Argument args[]);
+	typedef void(*OpcodeHandler)(Interpreter *interpreter, Argument *args[]);
 	static OpcodeHandler _handlers[];
+	friend class OpcodeHandlers;
 
 	Logic *_logic;
 

@@ -15,6 +15,15 @@ enum {
 	kOpcodeMax = 0xfd
 };
 
+class Uint16Argument : public Argument {
+public:
+	Uint16Argument(byte *ptr) : _ptr(ptr) {}
+	uint16 value() const { return READ_LE_UINT16(_ptr); }
+
+private:
+	byte *_ptr;
+};
+
 Interpreter::Interpreter(Logic *l) :
 		_logic(l) {
 }
@@ -45,7 +54,7 @@ void Interpreter::run() {
 		if (!handler)
 			handler = &Interpreter::defaultHandler;
 
-		Argument args[6];
+		Argument *args[6];
 
 		for (uint i = 0; i < nargs; i++)
 			args[i] = getArgument();
@@ -54,24 +63,27 @@ void Interpreter::run() {
 			_code += 2;
 
 		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !abort)
-			(this->*handler)(args);
+			(*handler)(this, args);
 		else if (opcode != 0 && opcode < 0x26)
-				abort++;
+			abort++;
+
+		for (int i = 0; i < nargs; i++)
+			delete args[i];
 
 		if (abort || abort_exec0 || abort_exec1)
 			break;
 	}
 }
 
-void Interpreter::defaultHandler(const Argument /*args*/[]) {
-	warning("unhandled opcode %02x", _currentCode);
+void Interpreter::defaultHandler(Interpreter *self, Argument /*args*/*[]) {
+	warning("unhandled opcode %02x", self->_currentCode);
 }
 
 enum ArgumentTypes {
 	kArgumentImmediate = 1
 };
 
-Argument Interpreter::getArgument() {
+Argument *Interpreter::getArgument() {
 	uint8 argument_type = _code[1];
 	_code += 2;
 	debug(kOpcodeDetails, "argument type %02x", argument_type);
@@ -82,12 +94,10 @@ Argument Interpreter::getArgument() {
 			debug(kOpcodeDetails, "immediate, value 0x%04x", READ_LE_UINT16(_code));
 			ptr = _code;
 			_code += 2;
-			return Uint16Argument(ptr);
+			return new Uint16Argument(ptr);
 		default:
 			error("don't know how to handle argument type 0x%02x", argument_type);
 	}
-
-	return Argument();
 }
 
 const uint8 Interpreter::_argumentsCounts[] = {

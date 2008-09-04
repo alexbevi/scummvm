@@ -25,8 +25,11 @@ public:
 		kInvalidOpcode	= 1
 	};
 
+	void setProtagonistId(uint16 id) { _protagonistId = id; }
+
 private:
 	Engine *_engine;
+	uint16 _protagonistId;
 };
 
 } // End of namespace Innocent
