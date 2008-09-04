@@ -4,6 +4,7 @@
 #include "common/util.h"
 
 using namespace Common;
+using namespace std;
 
 namespace Innocent {
 
@@ -33,6 +34,27 @@ void MainDat::descramble() {
 
 uint16 MainDat::imagesCount() const {
 	return READ_LE_UINT16(_footer + kImagesCount);
+}
+
+list<MainDat::GraphicFile> MainDat::graphicFiles() const {
+	uint16 file_count = READ_LE_UINT16(_footer + kGraphicFileCount);
+	uint16 names_offset = READ_LE_UINT16(_footer + kGraphicFileNames);
+
+	byte *data = _data + names_offset;
+	list<GraphicFile> files;
+	for (; file_count > 0; file_count--) {
+		GraphicFile file;
+		file.data_set = READ_LE_UINT16(data);
+		data += 2;
+		file.filename = data;
+		files.push_back(file);
+		while (*data)
+			data++;
+		while (!*data)
+			data++;
+	}
+
+	return files;
 }
 
 } // End of namespace Innocent

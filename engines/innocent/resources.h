@@ -17,6 +17,8 @@ public:
 	GraphicsMap *graphicsMap() const { return _graphicsMap.get(); }
 
 private:
+	void loadGraphicFiles();
+
 	std::auto_ptr<MainDat> _main;
 	std::auto_ptr<GraphicsMap> _graphicsMap;
 };
