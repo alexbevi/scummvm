@@ -3,7 +3,10 @@ MODULE := engines/innocent
 MODULE_OBJS = \
 	detection.o \
 	innocent.o \
-	resources.o
+	resources.o \
+	datafile.o \
+	main_dat.o \
+	graph_dat.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_MADE), DYNAMIC_PLUGIN)
