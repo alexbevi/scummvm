@@ -36,6 +36,14 @@ int Engine::init() {
 int Engine::go() {
 	printf("Innocent::Engine: Hello, world!\n");
 	debugC(1, kDebug, "example debug call");
+	byte interface[0x3c00];
+	byte palette[0x400];
+	_resources.loadInterfaceImage(interface, palette);
+
+	_system->setPalette(palette+160*4, 160, 96);
+	_system->copyRectToScreen(interface, 320, 0, 152, 320, 24);
+	_system->updateScreen();
+	_system->delayMillis(5000);
 
 	return 0;
 }

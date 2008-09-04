@@ -5,9 +5,10 @@
 
 #include "common/stream.h"
 
+#include "innocent/main_dat.h"
+
 namespace Innocent {
 
-class MainDat;
 class GraphicsMap;
 class ProgDat;
 
@@ -25,9 +26,14 @@ public:
 	 * Load an image. Automatically consult maps to choose the right file.
 	 * @param index image index,
 	 * @param target buffer,
-	 * @param size of the image.
+	 * @param size of the image,
+	 * @param palette optional buffer to read the palette to (size 0x400).
 	 */
-	void loadImage(uint16 index, byte *target, uint16 size);
+	void loadImage(uint16 index, byte *target, uint16 size, byte *palette = 0);
+
+	void loadInterfaceImage(byte *target, byte *palette = 0) {
+		loadImage(_main->interfaceImageIndex(), target, 0x3c00, palette);
+	}
 
 private:
 	void loadGraphicFiles();
