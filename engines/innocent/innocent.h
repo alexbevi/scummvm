@@ -7,6 +7,7 @@
 namespace Innocent {
 
 class Console;
+class MainDat;
 
 enum {
 	kDebug = 1 << 0
@@ -24,6 +25,7 @@ private:
 	Console *_console;
 
 	Common::RandomSource _rnd;
+	MainDat *_mainDat;
 };
 
 class Console : public GUI::Debugger {

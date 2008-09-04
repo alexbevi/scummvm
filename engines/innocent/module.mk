@@ -2,7 +2,8 @@ MODULE := engines/innocent
 
 MODULE_OBJS = \
 	detection.o \
-	innocent.o
+	innocent.o \
+	logic.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_MADE), DYNAMIC_PLUGIN)
