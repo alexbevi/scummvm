@@ -1,5 +1,7 @@
 #include "innocent/inter.h"
 
+#include "common/util.h"
+
 #include "innocent/logic.h"
 
 namespace Innocent {
@@ -27,11 +29,24 @@ void Interpreter::run(const byte *code, uint16 mode) {
 	(void) operation;
 }
 
+const uint8 OpcodeFactory::_argumentsCounts[] = {
+	#include "opcodes_nargs.data"
+};
+
 OpcodeFactory::OpcodeFactory(Interpreter *i) : _interpreter(i) {}
+
+static void default_handler(const Opcode *self, const Argument /*args*/[]) {
+	warning("unhandled opcode %02x", self->code());
+}
 
 const Opcode *OpcodeFactory::operator[](byte code) const {
 	if (!_opcodes[code].get()) {
 		Opcode * op = new Opcode;
+		op->_code = code;
+		op->_handler = _handlers[code];
+		if (!op->_handler)
+			op->_handler = default_handler;
+		op->_argumentsCount = _argumentsCounts[code];
 		_opcodes[code].reset(op);
 	}
 
@@ -39,7 +54,7 @@ const Opcode *OpcodeFactory::operator[](byte code) const {
 }
 
 void Opcode::operator()(const Argument args[]) const {
-	_handler(args);
+	_handler(this, args);
 }
 
 } // End of namespace Innocent
