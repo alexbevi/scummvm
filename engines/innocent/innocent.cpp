@@ -4,12 +4,13 @@
 
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
+#include "innocent/graphics.h"
 
 #define GFX_TRANSACTION for (int ___i = 1; ___i && (_system->beginGFXTransaction(), true); ___i--, _system->endGFXTransaction() )
 
 namespace Innocent {
 
-Engine::Engine(OSystem *syst) : ::Engine(syst), _mainDat(0) {
+Engine::Engine(OSystem *syst) : ::Engine(syst) {
 	Common::addSpecialDebugLevel(kDebug, "example", "example special debug level");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
@@ -19,9 +20,6 @@ Engine::Engine(OSystem *syst) : ::Engine(syst), _mainDat(0) {
 Engine::~Engine() {
 	printf("Innocent::Engine::Engine\n");
 	Common::clearAllSpecialDebugLevels();
-
-	if (_mainDat)
-		delete _mainDat;
 }
 
 int Engine::init() {
@@ -32,7 +30,8 @@ int Engine::init() {
 
 	_console = new Console(this);
 
-	_mainDat = new MainDat();
+	_logic = new Logic();
+	_graphics = new Graphics(_logic);
 
 	printf("Innocent::Engine::init\n");
 	return 0;
@@ -42,7 +41,8 @@ int Engine::go() {
 	printf("Innocent::Engine: Hello, world!\n");
 	debugC(1, kDebug, "example debug call");
 
-	_mainDat->open("iuc_main.dat");
+	_logic->load();
+	_graphics->load();
 	
 	return 0;
 }

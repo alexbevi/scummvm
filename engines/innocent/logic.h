@@ -1,28 +1,34 @@
 #ifndef INNOCENT_LOGIC_H
 #define INNOCENT_LOGIC_H
 
+#include <memory>
+
+#include "common/ptr.h"
 #include "common/stream.h"
 
 namespace Innocent {
 
-class MainDat {
+class Logic {
 public:
-	MainDat();
-	~MainDat();
+	Logic();
+	~Logic();
 
-	void open(const char *filename);
-	void load(Common::SeekableReadStream &sourceS);
+	void load();
+
+	uint16 graphicsCount() const;
 
 private:
-	byte *_data;
+	std::auto_ptr<Common::MemoryReadStream> _mainData;
 
 	static void descramble(byte *data, uint16 size);
 
-	struct Footer {
-		byte dummy[0xB6];
+	enum DescriptorOffsets {
+		kDescriptorGraphicsCount = 0x1C,
+
+		kDescriptorSize = 0xB6
 	};
 
-	struct Footer _footer;
+	std::auto_ptr<Common::MemoryReadStream> _descriptor;
 };
 
 } // End of namespace Innocent

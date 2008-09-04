@@ -1,13 +1,17 @@
 #ifndef INNOCENT_H
 #define INNOCENT_H
 
+#include "common/ptr.h"
 #include "engines/engine.h"
 #include "gui/debugger.h"
+
+#include "innocent/util.h"
 
 namespace Innocent {
 
 class Console;
-class MainDat;
+class Logic;
+class Graphics;
 
 enum {
 	kDebug = 1 << 0
@@ -25,7 +29,9 @@ private:
 	Console *_console;
 
 	Common::RandomSource _rnd;
-	MainDat *_mainDat;
+
+	Pointer<Logic> _logic;
+	Pointer<Graphics> _graphics;
 };
 
 class Console : public GUI::Debugger {
