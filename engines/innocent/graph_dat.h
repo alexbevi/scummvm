@@ -18,7 +18,7 @@ public:
 	uint32 offsetOfImage(uint16 index);
 
 private:
-	uint32 _data[1200/4];
+	byte _data[1200];
 	uint16 _imgCount;
 };
 

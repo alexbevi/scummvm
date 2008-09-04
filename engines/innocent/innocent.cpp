@@ -40,10 +40,10 @@ int Engine::go() {
 	byte palette[0x400];
 	_resources.loadInterfaceImage(interface, palette);
 
-	_system->setPalette(palette+160*4, 160, 96);
+	_system->setPalette(palette, 0, 256);
 	_system->copyRectToScreen(interface, 320, 0, 152, 320, 24);
 	_system->updateScreen();
-	_system->delayMillis(5000);
+	_system->delayMillis(1000);
 
 	return 0;
 }

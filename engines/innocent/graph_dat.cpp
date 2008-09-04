@@ -1,5 +1,6 @@
 #include "innocent/graph_dat.h"
 
+#include "common/endian.h"
 #include "common/util.h"
 
 #include "innocent/main_dat.h"
@@ -20,7 +21,8 @@ void GraphicsMap::readFile(SeekableReadStream &stream) {
 }
 
 uint32 GraphicsMap::offsetOfImage(uint16 index) {
-	return _data[index];
+	debug(kDataRead, "moved to offset %04x in iuc_graf, read %08x", (index-1)*4, READ_LE_UINT32(_data + (index-1)*4));
+	return READ_LE_UINT32(_data + (index-1)*4);
 }
 
 } // End of namespace Innocent

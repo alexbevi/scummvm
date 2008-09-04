@@ -49,7 +49,7 @@ public:
 	uint16 fileIndexOfImage(uint16 index) const;
 
 	uint16 interfaceImageIndex() const {
-		return READ_LE_UINT16(_data + kInterfaceImgIdx);
+		return READ_LE_UINT16(_footer + kInterfaceImgIdx);
 	}
 
 private:

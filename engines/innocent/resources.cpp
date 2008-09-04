@@ -49,8 +49,11 @@ void Resources::loadGraphicFiles() {
 }
 
 void Resources::loadImage(uint16 index, byte *target, uint16 size, byte *palette) {
+	debug(kAck, "loading image %04x", index);
 	uint16 file_index = _main->fileIndexOfImage(index);
+	debug(kDataRead, "file index is %d", file_index);
 	uint32 offset = _graphicsMap->offsetOfImage(index);
+	debug(kDataRead, "offset is %04d", offset);
 
 	SeekableReadStream *file = _graphicFiles[file_index].get();
 	file->seek(offset + 4);

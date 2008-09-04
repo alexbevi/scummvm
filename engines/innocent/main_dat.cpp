@@ -27,6 +27,7 @@ void MainDat::readFile(SeekableReadStream &stream) {
 	stream.read(_footer, kFooterLen);
 
 	_imageDirectory = _data + READ_LE_UINT16(_footer + kImageDirectory);
+	debug(kDataRead, "image directory offset is %04x", _imageDirectory - _data);
 }
 
 void MainDat::descramble() {
@@ -47,7 +48,12 @@ uint16 MainDat::progEntriesCount1() const {
 }
 
 uint16 MainDat::fileIndexOfImage(uint16 index) const {
-	return READ_LE_UINT16(_imageDirectory + (index - 1) * 4 + 2);
+	uint32 offset = (index - 1) * 4;
+	debug(kAck, "finding file index of image 0x%x at offset 0x%x of directory", index, offset);
+	uint16 fst = READ_LE_UINT16(_imageDirectory + offset);
+	uint16 snd = READ_LE_UINT16(_imageDirectory + offset + 2);
+	debug(kDataRead, "read 0x%04x 0x%04x", fst, snd);
+	return snd;
 }
 
 list<MainDat::GraphicFile> MainDat::graphicFiles() const {
