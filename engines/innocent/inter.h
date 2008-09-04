@@ -9,13 +9,28 @@ namespace Innocent {
 
 class Logic;
 class Opcode;
-typedef int Argument; // TODO
+
+class Argument {
+};
+
+class Uint16Argument : public Argument {
+public:
+	Uint16Argument(byte *ptr) : _ptr(ptr) {}
+
+private:
+	byte *_ptr;
+};
 
 class Interpreter {
 public:
 	Interpreter(Logic *l);
 
-	void run(const byte *code, uint16 mode);
+	/**
+	 * Run bytecode.
+	 * @param code a Common::ReadStream pointing to code. The interpreter takes ownership of it.
+	 * @param mode interpreting mode.
+	 */
+	void run(byte *code, uint16 mode);
 	void run();
 
 	Argument getArgument();
@@ -33,8 +48,8 @@ public:
 
 private:
 	uint8 _currentCode; // for error reporting
-	byte const *_code;
-	uint8 _mode;
+	byte *_code;
+	uint16 _mode;
 };
 
 } // End of namespace Innocent

@@ -14,7 +14,7 @@ Logic::Logic(Engine *e) :
 	{}
 
 void Logic::start() {
-	const byte *entry_point = _engine->_resources->_main->getEntryPoint();
+	byte *entry_point = _engine->_resources->_main->getEntryPoint();
 
 	_interpreter->run(entry_point, 0);
 }

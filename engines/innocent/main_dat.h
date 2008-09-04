@@ -53,9 +53,10 @@ public:
 		return READ_LE_UINT16(_footer + kInterfaceImgIdx);
 	}
 
-	const byte *getEntryPoint() const {
+	byte *getEntryPoint() const {
 		return _data + READ_LE_UINT16(_footer + kEntryPoint);
 	}
+	byte *_data;
 
 private:
 	enum {
@@ -63,7 +64,6 @@ private:
 	};
 
 	uint16 _dataLen;
-	byte *_data;
 	byte _footer[kFooterLen];
 	byte *_imageDirectory;
 
