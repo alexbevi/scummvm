@@ -23,7 +23,7 @@ private:
 	Interpreter *_interpreter;
 	mutable std::auto_ptr<Opcode> _opcodes[0xFE];
 	static const uint8 _argumentsCounts[];
-	static void(**_handlers)(const Opcode *self, const Argument args[]);
+	static void(*_handlers[])(const Opcode *self, const Argument args[]);
 };
 
 class Interpreter {
@@ -46,7 +46,7 @@ public:
 	uint8 code() const { return _code; }
 
 private:
-	Opcode();
+	Opcode() {}
 	friend class OpcodeFactory;
 
 	void(*_handler)(const Opcode *self, const Argument args[]);

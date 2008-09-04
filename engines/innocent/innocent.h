@@ -12,6 +12,7 @@ namespace Innocent {
 class Console;
 class Resources;
 class Graphics;
+class Logic;
 
 enum {
 	kDebug = 1 << 0
@@ -27,6 +28,7 @@ public:
 
 	std::auto_ptr<Resources> _resources;
 	std::auto_ptr<Graphics> _graphics;
+	std::auto_ptr<Logic> _logic;
 
 private:
 	Console *_console;

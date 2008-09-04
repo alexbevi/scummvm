@@ -6,6 +6,7 @@
 #include "common/events.h"
 
 #include "innocent/graphics.h"
+#include "innocent/logic.h"
 #include "innocent/resources.h"
 
 #define GFX_TRANSACTION for (int ___i = 1; ___i && (_system->beginGFXTransaction(), true); ___i--, _system->endGFXTransaction() )
@@ -15,7 +16,8 @@ namespace Innocent {
 Engine::Engine(OSystem *syst) :
 		::Engine(syst),
 		_resources(new Resources),
-		_graphics(new Graphics(this)) {
+		_graphics(new Graphics(this)),
+		_logic(new Logic(this)) {
 	Common::addSpecialDebugLevel(kDebug, "example", "example special debug level");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
@@ -48,6 +50,7 @@ int Engine::go() {
 	_graphics->paintInterface();
 	
 	_system->updateScreen();
+	_logic->start();
 	_system->delayMillis(1000);
 
 	return 0;

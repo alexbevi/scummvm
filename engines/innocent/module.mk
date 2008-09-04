@@ -10,7 +10,8 @@ MODULE_OBJS = \
 	prog_dat.o \
 	graphics.o \
 	logic.o \
-	inter.o
+	inter.o \
+	opcode_handlers.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_MADE), DYNAMIC_PLUGIN)

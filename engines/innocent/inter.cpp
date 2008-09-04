@@ -26,18 +26,19 @@ void Interpreter::run(const byte *code, uint16 mode) {
 	}
 
 	const Opcode *operation = _opcodes[opcode];
-	(void) operation;
+	Argument args[6];
+	(*operation)(args);
 }
 
 const uint8 OpcodeFactory::_argumentsCounts[] = {
 	#include "opcodes_nargs.data"
 };
 
-OpcodeFactory::OpcodeFactory(Interpreter *i) : _interpreter(i) {}
-
 static void default_handler(const Opcode *self, const Argument /*args*/[]) {
 	warning("unhandled opcode %02x", self->code());
 }
+
+OpcodeFactory::OpcodeFactory(Interpreter *i) : _interpreter(i) {}
 
 const Opcode *OpcodeFactory::operator[](byte code) const {
 	if (!_opcodes[code].get()) {
