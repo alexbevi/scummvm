@@ -32,6 +32,8 @@ public:
 private:
 	void loadGraphicFiles();
 
+	static void decodeImage(Common::ReadStream *stream, byte *target, uint16 size);
+
 	std::auto_ptr<MainDat> _main;
 	std::auto_ptr<GraphicsMap> _graphicsMap;
 	std::auto_ptr<ProgDat> _progDat;

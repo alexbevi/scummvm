@@ -54,7 +54,30 @@ void Resources::loadImage(uint16 index, byte *target, uint16 size) {
 
 	SeekableReadStream *file = _graphicFiles[file_index].get();
 	file->seek(offset + 4);
-	file->read(target, size);
+
+	decodeImage(file, target, size);
+}
+
+void Resources::decodeImage(Common::ReadStream *stream, byte *target, uint16 size) {
+	enum {
+		kRunFlag = 0xc0
+	};
+
+	while (size) {
+		byte color = stream->readByte();
+
+		uint8 runLength = 1;
+		if ((color & kRunFlag) == kRunFlag) {
+			runLength = color & (~kRunFlag);
+			color = stream->readByte();
+		}
+
+		for (; runLength; runLength--) {
+			*(target++) = color;
+			if (!--size)
+				return;
+		}
+	}
 }
 
 } // End of namespace Innocent
