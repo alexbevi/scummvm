@@ -6,7 +6,8 @@ MODULE_OBJS = \
 	resources.o \
 	datafile.o \
 	main_dat.o \
-	graph_dat.o
+	graph_dat.o \
+	prog_dat.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_MADE), DYNAMIC_PLUGIN)

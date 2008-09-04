@@ -6,20 +6,25 @@
 
 #include "innocent/main_dat.h"
 #include "innocent/graph_dat.h"
+#include "innocent/prog_dat.h"
 
 using namespace Common;
 using namespace std;
 
 namespace Innocent {
 
-Resources::Resources() : _main(new MainDat(this)), _graphicsMap(new GraphicsMap(this)) {
-}
+Resources::Resources() :
+	_main(new MainDat(this)),
+	_graphicsMap(new GraphicsMap(this)),
+	_progDat(new ProgDat(this)) {}
 
 void Resources::load() {
 	_main->load();
 	_graphicsMap->load();
 
 	loadGraphicFiles();
+
+	_progDat->load();
 }
 
 void Resources::loadGraphicFiles() {

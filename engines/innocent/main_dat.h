@@ -24,15 +24,20 @@ public:
 
 	std::list<struct GraphicFile> graphicFiles() const;
 
+	uint16 progEntriesCount0() const;
+	uint16 progEntriesCount1() const;
+
 private:
 	enum {
 		kFooterLen = 0xB6
 	};
 
 	enum Offsets {
-		kImagesCount = 		0x1C,
-		kGraphicFileCount = 0x20,
-		kGraphicFileNames = 0x22
+		kProgEntriesCount0 = 	0x06,
+		kProgEntriesCount1 = 	0x08,
+		kImagesCount = 			0x1C,
+		kGraphicFileCount = 	0x20,
+		kGraphicFileNames = 	0x22
 	};
 
 	uint16 _dataLen;

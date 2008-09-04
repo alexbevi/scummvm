@@ -36,6 +36,14 @@ uint16 MainDat::imagesCount() const {
 	return READ_LE_UINT16(_footer + kImagesCount);
 }
 
+uint16 MainDat::progEntriesCount0() const {
+	return READ_LE_UINT16(_footer + kProgEntriesCount0);
+}
+
+uint16 MainDat::progEntriesCount1() const {
+	return READ_LE_UINT16(_footer + kProgEntriesCount1);
+}
+
 list<MainDat::GraphicFile> MainDat::graphicFiles() const {
 	uint16 file_count = READ_LE_UINT16(_footer + kGraphicFileCount);
 	uint16 names_offset = READ_LE_UINT16(_footer + kGraphicFileNames);

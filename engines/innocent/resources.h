@@ -7,6 +7,7 @@ namespace Innocent {
 
 class MainDat;
 class GraphicsMap;
+class ProgDat;
 
 class Resources {
 public:
@@ -15,12 +16,14 @@ public:
 
 	MainDat *mainDat() const { return _main.get(); }
 	GraphicsMap *graphicsMap() const { return _graphicsMap.get(); }
+	ProgDat *progDat() const { return _progDat.get(); }
 
 private:
 	void loadGraphicFiles();
 
 	std::auto_ptr<MainDat> _main;
 	std::auto_ptr<GraphicsMap> _graphicsMap;
+	std::auto_ptr<ProgDat> _progDat;
 };
 
 } // End of namespace Innocent
