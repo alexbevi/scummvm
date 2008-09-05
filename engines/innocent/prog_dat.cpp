@@ -41,6 +41,8 @@ void ProgDat::readFile(Common::SeekableReadStream &stream) {
 }
 
 Program *ProgDat::getScript(uint16 id) {
+	if (!id) return 0;
+
 	uint32 offset = READ_LE_UINT32(_data + (id - 1) * 4);
 	debug(kDataRead, "loading script 0x%02x from 0x%08x", id, offset);
 	_file->seek(offset);

@@ -111,12 +111,22 @@ byte *MainDat::getEntryPoint() const {
 }
 
 uint16 MainDat::getRoomScriptId(uint16 room) const {
-	byte *programInfo = _programsMap + 2;
-	for (int i = 1; i <= _programsCount; i++)
-		if (READ_LE_UINT16(programInfo) == room)
-			return i;
-		else
-			programInfo += 4;
+	debug(4, "looking for script for room 0x%04x", room);
+
+	byte *programInfo = _programsMap;
+	for (int i = 1; i <= _programsCount; i++) {
+		debug(4, "trying dataset 0x%04x", READ_LE_UINT16(programInfo));
+		programInfo += 2;
+
+		uint16 this_room;
+		while ((this_room = READ_LE_UINT16(programInfo)) != 0xffff) {
+			debug(4, "trying 0x%04x", this_room);
+			if (this_room == room)
+				return i;
+			else
+				programInfo += 2;
+		}
+	}
 
 	return 0;
 }
