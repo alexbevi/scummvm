@@ -84,8 +84,8 @@ enum ArgumentTypes {
 };
 
 Argument *Interpreter::getArgument() {
-	uint8 argument_type = _code[1];
-	_code += 2;
+	uint8 argument_type = _code[0];
+	_code += 1;
 	debug(kOpcodeDetails, "argument type %02x", argument_type);
 
 	byte *ptr;

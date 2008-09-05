@@ -12,6 +12,12 @@ enum Debug {
 
 class OpcodeHandlers {
 public:
+	// take bitmask of sound modes and see if they're supported
+	static void test_sound(Interpreter *self, Argument *args[]) {
+		debug(kOpcodesHit, "test_sound(0x%04x) STUB", args[0]->value());
+		// stub
+		// if no sound self->_abort = 1;
+	}
 
 	// 0x9d
 	static void setProtagonist(Interpreter *self, Argument *args[]) {
@@ -40,7 +46,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 0f */ 0,
 	/* opcode 10 */ 0,
 	/* opcode 11 */ 0,
-	/* opcode 12 */ 0,
+	/* opcode 12 */ OpcodeHandlers::test_sound,
 	/* opcode 13 */ 0,
 	/* opcode 14 */ 0,
 	/* opcode 15 */ 0,
