@@ -15,7 +15,7 @@ public:
 
 	// 0x9d
 	static void setProtagonist(Interpreter *self, Argument *args[]) {
-		debug(kOpcodesHit, "setProtagonist(0x%04d)", args[0]->value());
+		debug(kOpcodesHit, "setProtagonist(0x%04x)", args[0]->value());
 
 		self->_logic->setProtagonistId(args[0]->value());
 	}
