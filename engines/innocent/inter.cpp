@@ -4,6 +4,7 @@
 #include "common/util.h"
 
 #include "innocent/logic.h"
+#include "innocent/program.h"
 
 namespace Innocent {
 
@@ -101,7 +102,8 @@ void Interpreter::defaultHandler(Interpreter *self, Argument /*args*/*[]) {
 enum ArgumentTypes {
 	kArgumentImmediate = 1,
 	kArgumentMainWord = 2,
-	kArgumentMainByte = 3
+	kArgumentMainByte = 3,
+	kArgumentLocal = 9
 };
 
 Argument *Interpreter::readImmediateArg() {
@@ -127,6 +129,14 @@ Argument *Interpreter::readMainWordArg() {
 	return arg;
 }
 
+Argument *Interpreter::readLocalArg() {
+	uint16 offset = READ_LE_UINT16(_code);
+	_code += 2;
+	Argument *arg = new Uint16Argument(_logic->roomScript()->localVariable(offset));
+	debug(kOpcodeDetails, "local variable, offset 0x%04x, value 0x%04x", offset, uint16(*arg));
+	return arg;
+}
+
 Argument *Interpreter::getArgument() {
 	uint8 argument_type = _code[1];
 	_code += 2;
@@ -139,6 +149,8 @@ Argument *Interpreter::getArgument() {
 			return readMainWordArg();
 		case kArgumentMainByte:
 			return readMainByteArg();
+		case kArgumentLocal:
+			return readLocalArg();
 		default:
 			error("don't know how to handle argument type 0x%02x", argument_type);
 	}

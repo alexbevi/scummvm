@@ -59,6 +59,7 @@ private:
 	Argument *readImmediateArg();
 	Argument *readMainWordArg();
 	Argument *readMainByteArg();
+	Argument *readLocalArg();
 
 	void forgetLastError();
 	void returnUp();

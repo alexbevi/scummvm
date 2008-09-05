@@ -37,6 +37,8 @@ public:
 
 	void runRoomScript();
 
+	Program *roomScript();
+
 private:
 	uint16 _protagonistId;
 	MainDat *_main;

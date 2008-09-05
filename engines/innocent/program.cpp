@@ -36,4 +36,8 @@ uint16 Program::entryPointOffset() {
 	return READ_LE_UINT16(_footer + kEntryPointOffset);
 }
 
+byte *Program::localVariable(uint16 offset) {
+	return _code + offset;
+}
+
 } // End of namespace Innocent

@@ -11,6 +11,7 @@ public:
 	~Program();
 
 	byte *begin();
+	byte *localVariable(uint16 offset);
 
 private:
 	Program() { /* can only be created from a file */ }

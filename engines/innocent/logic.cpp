@@ -41,4 +41,8 @@ void Logic::runRoomScript() {
 	_interpreter->run(_roomScript->begin(), 8);
 }
 
+Program *Logic::roomScript() {
+	return _roomScript.get();
+}
+
 } // End of namespace Innocent
