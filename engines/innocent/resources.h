@@ -11,6 +11,7 @@ namespace Innocent {
 
 class GraphicsMap;
 class ProgDat;
+class Program;
 
 class Resources {
 public:
@@ -37,6 +38,10 @@ public:
 	}
 
 	std::auto_ptr<MainDat> _main;
+
+	Program *getRoomScript(uint16 room);
+
+	static void descramble(byte *data, uint32 length);
 
 private:
 	void loadGraphicFiles();

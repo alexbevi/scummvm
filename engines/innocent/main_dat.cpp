@@ -3,6 +3,8 @@
 #include "common/endian.h"
 #include "common/util.h"
 
+#include "innocent/resources.h"
+
 using namespace Common;
 using namespace std;
 
@@ -18,6 +20,7 @@ MainDat::~MainDat() {
 enum Offsets {
 	kProgEntriesCount0	= 0x06,
 	kProgEntriesCount1	= 0x08,
+	kProgramsMap		= 0x0A,
 	kImagesCount		= 0x1C,
 	kImageDirectory		= 0x1E,
 	kGraphicFileCount	= 0x20,
@@ -35,17 +38,16 @@ void MainDat::readFile(SeekableReadStream &stream) {
 	_data = new byte[_dataLen];
 	stream.seek(0);
 	stream.read(_data, _dataLen);
-	descramble();
+	Resources::descramble(_data + 2, _dataLen - 2);
 
 	stream.read(_footer, kFooterLen);
 
 	_imageDirectory = _data + READ_LE_UINT16(_footer + kImageDirectory);
 	debug(kDataRead, "image directory offset is %04x", _imageDirectory - _data);
-}
 
-void MainDat::descramble() {
-	for (int i = 2; i < _dataLen; i++)
-		_data[i] ^= 0x6f;
+	_programsCount = READ_LE_UINT16(_footer + kProgEntriesCount1);
+
+	_programsMap = _data + READ_LE_UINT16(_footer + kProgramsMap);
 }
 
 uint16 MainDat::imagesCount() const {
@@ -106,6 +108,17 @@ uint16 MainDat::interfaceImageIndex() const {
 
 byte *MainDat::getEntryPoint() const {
 	return _data + READ_LE_UINT16(_footer + kEntryPoint);
+}
+
+uint16 MainDat::getRoomScriptId(uint16 room) const {
+	byte *programInfo = _programsMap + 2;
+	for (int i = 1; i <= _programsCount; i++)
+		if (READ_LE_UINT16(programInfo) == room)
+			return i;
+		else
+			programInfo += 4;
+
+	return 0;
 }
 
 } // End of namespace Innocent

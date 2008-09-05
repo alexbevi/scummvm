@@ -10,6 +10,8 @@ namespace Innocent {
 class Engine;
 class Interpreter;
 class MainDat;
+class Resources;
+class Program;
 
 class Logic {
 public:
@@ -33,10 +35,14 @@ public:
 
 	void setRoom(uint16 room);
 
+	void runRoomScript();
+
 private:
 	uint16 _protagonistId;
 	MainDat *_main;
 	uint16 _currentRoom;
+	Resources *_resources;
+	std::auto_ptr<Program> _roomScript;
 };
 
 } // End of namespace Innocent

@@ -92,4 +92,14 @@ void Resources::decodeImage(Common::ReadStream *stream, byte *target, uint16 siz
 	}
 }
 
+Program *Resources::getRoomScript(uint16 room) {
+	uint16 program_id = _main->getRoomScriptId(room);
+	return _progDat->getScript(program_id);
+}
+
+void Resources::descramble(byte *data, uint32 len) {
+	for (uint32 i = 0; i < len; i++)
+		data[i] ^= 0x6f;
+}
+
 } // End of namespace Innocent

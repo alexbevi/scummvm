@@ -47,11 +47,7 @@ int Engine::go() {
 	printf("Innocent::Engine: Hello, world!\n");
 	debugC(1, kDebug, "example debug call");
 	
-	_graphics->paintInterface();
-	
-	_system->updateScreen();
 	_logic->start();
-	_system->delayMillis(1000);
 
 	return 0;
 }

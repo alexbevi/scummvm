@@ -45,6 +45,7 @@ public:
 
 	byte *getByteVar(uint16 index);
 	byte *getWordVar(uint16 index);
+	uint16 getRoomScriptId(uint16 room) const;
 
 private:
 	enum {
@@ -54,8 +55,8 @@ private:
 	uint16 _dataLen;
 	byte _footer[kFooterLen];
 	byte *_imageDirectory;
-
-	void descramble();
+	uint16 _programsCount;
+	byte *_programsMap;
 };
 
 } // End of namespace Innocent
