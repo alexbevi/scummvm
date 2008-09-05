@@ -31,9 +31,12 @@ public:
 	byte *getGlobalWordVar(uint16 id);
 	Engine *_engine;
 
+	void setRoom(uint16 room);
+
 private:
 	uint16 _protagonistId;
 	MainDat *_main;
+	uint16 _currentRoom;
 };
 
 } // End of namespace Innocent

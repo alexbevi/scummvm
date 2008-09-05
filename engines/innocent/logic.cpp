@@ -28,4 +28,9 @@ byte *Logic::getGlobalWordVar(uint16 index) {
 	return _main->getWordVar(index);
 }
 
+void Logic::setRoom(uint16 room) {
+	debug(2, "changing room to 0x%04x", room);
+	_currentRoom = room;
+}
+
 } // End of namespace Innocent

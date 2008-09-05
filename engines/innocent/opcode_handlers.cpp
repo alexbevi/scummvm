@@ -53,6 +53,11 @@ public:
 		self->_logic->_engine->_graphics->setBackdrop(*args[0]);
 	}
 
+	// 0xd6 change room // TODO perhaps more
+	OPCODE(setRoom) {
+		self->_logic->setRoom(*args[0]);
+	}
+
 	// 0xf9
 	// turn sound on/off
 	// first arg - 1=music, 2=sfx
@@ -278,7 +283,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode d3 */ 0,
 	/* opcode d4 */ 0,
 	/* opcode d5 */ 0,
-	/* opcode d6 */ 0,
+	/* opcode d6 */ OpcodeHandlers::setRoom,
 	/* opcode d7 */ 0,
 	/* opcode d8 */ 0,
 	/* opcode d9 */ 0,
