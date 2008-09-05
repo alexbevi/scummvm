@@ -51,7 +51,7 @@ void Interpreter::run() {
 		if (_logic->_status != Logic::kStatusOk)
 			return;
 
-		byte opcode = *(_code++);
+		byte opcode = *_code;
 		if (opcode > kOpcodeMax) {
 			_logic->_status = Logic::kInvalidOpcode;
 			return;
@@ -111,8 +111,8 @@ Argument *Interpreter::readMainByteArg() {
 }
 
 Argument *Interpreter::getArgument() {
-	uint8 argument_type = _code[0];
-	_code += 1;
+	uint8 argument_type = _code[1];
+	_code += 2;
 	debug(kOpcodeDetails, "argument type %02x", argument_type);
 
 	switch (argument_type) {
