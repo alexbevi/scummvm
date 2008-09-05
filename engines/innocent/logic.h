@@ -9,6 +9,7 @@ namespace Innocent {
 
 class Engine;
 class Interpreter;
+class MainDat;
 
 class Logic {
 public:
@@ -26,10 +27,12 @@ public:
 	};
 
 	void setProtagonistId(uint16 id) { _protagonistId = id; }
+	byte *getGlobalByteVar(uint16 id);
 
 private:
 	Engine *_engine;
 	uint16 _protagonistId;
+	MainDat *_main;
 };
 
 } // End of namespace Innocent

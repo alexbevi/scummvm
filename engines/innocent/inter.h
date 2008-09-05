@@ -15,6 +15,7 @@ class Argument {
 public:
 	virtual ~Argument() {}
 	virtual uint16 value() const { error("unimplemented attribute dereference"); }
+	virtual operator byte() const { error("unimplemented attribute dereference"); }
 };
 
 class Interpreter {
@@ -47,6 +48,9 @@ private:
 	uint8 _currentCode; // for error reporting
 	byte *_code;
 	uint16 _mode;
+
+	Argument *readImmediateArg();
+	Argument *readMainByteArg();
 };
 
 } // End of namespace Innocent

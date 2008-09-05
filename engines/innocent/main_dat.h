@@ -19,6 +19,7 @@ private:
 		kImageDirectory		= 0x1E,
 		kGraphicFileCount	= 0x20,
 		kGraphicFileNames	= 0x22,
+		kByteVars			= 0x3E,
 		kEntryPoint			= 0x42,
 		kInterfaceImgIdx	= 0xB4
 	};
@@ -57,6 +58,8 @@ public:
 		return _data + READ_LE_UINT16(_footer + kEntryPoint);
 	}
 	byte *_data;
+
+	byte *getByteVar(uint16 index);
 
 private:
 	enum {

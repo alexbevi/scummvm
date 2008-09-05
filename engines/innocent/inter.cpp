@@ -24,6 +24,15 @@ private:
 	byte *_ptr;
 };
 
+class ByteArgument : public Argument {
+public:
+	ByteArgument(byte *ptr) : _ptr(ptr) {}
+	operator byte() const { return *_ptr; }
+
+private:
+	byte *_ptr;
+};
+
 Interpreter::Interpreter(Logic *l) :
 		_logic(l) {
 }
@@ -80,21 +89,36 @@ void Interpreter::defaultHandler(Interpreter *self, Argument /*args*/*[]) {
 }
 
 enum ArgumentTypes {
-	kArgumentImmediate = 1
+	kArgumentImmediate = 1,
+	// 2
+	kArgumentMainByte = 3
 };
+
+Argument *Interpreter::readImmediateArg() {
+	debug(kOpcodeDetails, "immediate, value 0x%04x", READ_LE_UINT16(_code));
+	byte *ptr = _code;
+	_code += 2;
+	return new Uint16Argument(ptr);
+}
+
+Argument *Interpreter::readMainByteArg() {
+	uint16 index = READ_LE_UINT16(_code);
+	_code += 2;
+	Argument *arg = new ByteArgument(_logic->getGlobalByteVar(index));
+	debug(kOpcodeDetails, "byte wide variable in main, index 0x%04x, value 0x%02x", index, byte(*arg));
+	return arg;
+}
 
 Argument *Interpreter::getArgument() {
 	uint8 argument_type = _code[0];
 	_code += 1;
 	debug(kOpcodeDetails, "argument type %02x", argument_type);
 
-	byte *ptr;
 	switch (argument_type) {
 		case kArgumentImmediate:
-			debug(kOpcodeDetails, "immediate, value 0x%04x", READ_LE_UINT16(_code));
-			ptr = _code;
-			_code += 2;
-			return new Uint16Argument(ptr);
+			return readImmediateArg();
+		case kArgumentMainByte:
+			return readMainByteArg();
 		default:
 			error("don't know how to handle argument type 0x%02x", argument_type);
 	}
