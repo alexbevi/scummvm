@@ -38,7 +38,15 @@ public:
 	// 0x72
 	// set first argument to 1
 	OPCODE(assignOne) {
+		debug(kOpcodesHit, "[%p] = 1", args[0]->_ptr);
 		*args[0] = byte(1);
+	}
+
+	// 0x73
+	// set first argument to 0
+	OPCODE(assignZero) {
+		debug(kOpcodesHit, "[%p] = 0", args[0]->_ptr);
+		*args[0] = byte(0);
 	}
 
 	// 0x9d
@@ -190,7 +198,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 70 */ OpcodeHandlers::assign,
 	/* opcode 71 */ 0,
 	/* opcode 72 */ OpcodeHandlers::assignOne,
-	/* opcode 73 */ 0,
+	/* opcode 73 */ OpcodeHandlers::assignZero,
 	/* opcode 74 */ 0,
 	/* opcode 75 */ 0,
 	/* opcode 76 */ 0,
