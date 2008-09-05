@@ -24,4 +24,8 @@ byte *Logic::getGlobalByteVar(uint16 index) {
 	return _main->getByteVar(index);
 }
 
+byte *Logic::getGlobalWordVar(uint16 index) {
+	return _main->getWordVar(index);
+}
+
 } // End of namespace Innocent

@@ -28,6 +28,7 @@ public:
 
 	void setProtagonistId(uint16 id) { _protagonistId = id; }
 	byte *getGlobalByteVar(uint16 id);
+	byte *getGlobalWordVar(uint16 id);
 	Engine *_engine;
 
 private:

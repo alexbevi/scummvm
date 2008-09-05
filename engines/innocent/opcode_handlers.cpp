@@ -28,11 +28,17 @@ public:
 		self->forgetLastError();
 	}
 
+	// 0x70
+	// assign second arg to first
+	OPCODE(assign) {
+		debug(kOpcodesHit, "[%p] = 0x%04d", args[0]->_ptr, uint16(*args[1]));
+		*args[0] = uint16(*args[1]);
+	}
+
 	// 0x72
 	// set first argument to 1
 	OPCODE(assignOne) {
-		debug(kOpcodesHit, "set_1");
-		*args[0] = 1;
+		*args[0] = byte(1);
 	}
 
 	// 0x9d
@@ -170,7 +176,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 6d */ 0,
 	/* opcode 6e */ 0,
 	/* opcode 6f */ 0,
-	/* opcode 70 */ 0,
+	/* opcode 70 */ OpcodeHandlers::assign,
 	/* opcode 71 */ 0,
 	/* opcode 72 */ OpcodeHandlers::assignOne,
 	/* opcode 73 */ 0,

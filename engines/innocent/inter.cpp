@@ -17,21 +17,18 @@ enum {
 
 class Uint16Argument : public Argument {
 public:
-	Uint16Argument(byte *ptr) : _ptr(ptr) {}
+	Uint16Argument(byte *ptr) : Argument(ptr) {}
 	operator uint16() const { return READ_LE_UINT16(_ptr); }
-
-private:
-	byte *_ptr;
+	Argument operator=(uint16 value) { WRITE_LE_UINT16(_ptr, value); return *this; }
+	operator byte() const { return READ_LE_UINT16(_ptr); }
+	Argument operator=(byte value) { WRITE_LE_UINT16(_ptr, value); return *this; }
 };
 
 class ByteArgument : public Argument {
 public:
-	ByteArgument(byte *ptr) : _ptr(ptr) {}
+	ByteArgument(byte *ptr) : Argument(ptr) {}
 	operator byte() const { return *_ptr; }
 	Argument operator=(byte b) { *_ptr = b; return *this; }
-
-private:
-	byte *_ptr;
 };
 
 Interpreter::Interpreter(Logic *l) :
@@ -98,7 +95,7 @@ void Interpreter::defaultHandler(Interpreter *self, Argument /*args*/*[]) {
 
 enum ArgumentTypes {
 	kArgumentImmediate = 1,
-	// 2
+	kArgumentMainWord = 2,
 	kArgumentMainByte = 3
 };
 
@@ -117,6 +114,14 @@ Argument *Interpreter::readMainByteArg() {
 	return arg;
 }
 
+Argument *Interpreter::readMainWordArg() {
+	uint16 offset = READ_LE_UINT16(_code);
+	_code += 2;
+	Argument *arg = new Uint16Argument(_logic->getGlobalWordVar(offset/2));
+	debug(kOpcodeDetails, "word wide variable in main, index 0x%04x, value 0x%04x", offset/2, uint16(*arg));
+	return arg;
+}
+
 Argument *Interpreter::getArgument() {
 	uint8 argument_type = _code[1];
 	_code += 2;
@@ -125,6 +130,8 @@ Argument *Interpreter::getArgument() {
 	switch (argument_type) {
 		case kArgumentImmediate:
 			return readImmediateArg();
+		case kArgumentMainWord:
+			return readMainWordArg();
 		case kArgumentMainByte:
 			return readMainByteArg();
 		default:

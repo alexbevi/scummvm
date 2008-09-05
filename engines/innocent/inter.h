@@ -11,12 +11,17 @@ namespace Innocent {
 class Logic;
 class Opcode;
 
+#define UNIMPLEMENTED { error("type conversion unimplemented"); }
+
 class Argument {
 public:
+	Argument(byte *ptr) : _ptr(ptr) {}
 	virtual ~Argument() {}
-	virtual operator uint16() const { error("unimplemented attribute dereference"); }
-	virtual operator byte() const { error("unimplemented attribute dereference"); }
-	virtual Argument operator=(byte b) { error("unimplemented variable setting"); }
+	virtual operator uint16() const UNIMPLEMENTED
+	virtual operator byte() const UNIMPLEMENTED
+	virtual Argument operator=(byte b) UNIMPLEMENTED
+	virtual Argument operator=(uint16 b) UNIMPLEMENTED
+	byte *_ptr; // for debug
 };
 
 class Interpreter {
@@ -52,6 +57,7 @@ private:
 	uint16 _errorCount;
 
 	Argument *readImmediateArg();
+	Argument *readMainWordArg();
 	Argument *readMainByteArg();
 
 	void forgetLastError();

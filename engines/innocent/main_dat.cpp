@@ -15,6 +15,19 @@ MainDat::~MainDat() {
 		delete[] _data;
 }
 
+enum Offsets {
+	kProgEntriesCount0	= 0x06,
+	kProgEntriesCount1	= 0x08,
+	kImagesCount		= 0x1C,
+	kImageDirectory		= 0x1E,
+	kGraphicFileCount	= 0x20,
+	kGraphicFileNames	= 0x22,
+	kWordVars			= 0x3A,
+	kByteVars			= 0x3E,
+	kEntryPoint			= 0x42,
+	kInterfaceImgIdx	= 0xB4
+};
+
 void MainDat::readFile(SeekableReadStream &stream) {
 	_dataLen = stream.readUint16LE();
 	debug(kDataRead, "length of main data is %d", _dataLen);
@@ -79,7 +92,20 @@ list<MainDat::GraphicFile> MainDat::graphicFiles() const {
 
 byte *MainDat::getByteVar(uint16 index) {
 	uint16 offset = READ_LE_UINT16(_footer + kByteVars);
-	return _data + offset;
+	return _data + offset + index;
+}
+
+byte *MainDat::getWordVar(uint16 index) {
+	uint16 offset = READ_LE_UINT16(_footer + kWordVars);
+	return _data + offset + index * 2;
+}
+
+uint16 MainDat::interfaceImageIndex() const {
+	return READ_LE_UINT16(_footer + kInterfaceImgIdx);
+}
+
+byte *MainDat::getEntryPoint() const {
+	return _data + READ_LE_UINT16(_footer + kEntryPoint);
 }
 
 } // End of namespace Innocent
