@@ -61,6 +61,8 @@ private:
 	Argument *readMainByteArg();
 
 	void forgetLastError();
+	void returnUp();
+	uint8 _return;
 };
 
 } // End of namespace Innocent

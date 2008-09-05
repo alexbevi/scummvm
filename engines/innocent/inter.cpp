@@ -42,7 +42,7 @@ void Interpreter::run(byte *code, uint16 mode) {
 }
 
 void Interpreter::run() {
-	uint16 abort_exec0 = 0, abort_exec1 = 0;
+	uint16 abort_exec0 = 0;
 
 	_errorCount = 0;
 
@@ -79,9 +79,14 @@ void Interpreter::run() {
 		for (int i = 0; i < nargs; i++)
 			delete args[i];
 
-		if (abort_exec0 || abort_exec1)
+		if (abort_exec0 || _return)
 			break;
 	}
+}
+
+void Interpreter::returnUp() {
+	_return = 1;
+	// TODO currently only to the toplevel
 }
 
 void Interpreter::forgetLastError() {

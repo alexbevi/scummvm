@@ -16,6 +16,14 @@ enum Debug {
 
 class OpcodeHandlers {
 public:
+	// 0x01 return
+	// goes to the caller or terminates interpretation
+	OPCODE(returnUp) {
+		debug(kOpcodesHit, "returning control to ScummVM");
+		self->returnUp();
+		// TODO no callstack
+	}
+
 	// 0x12 take bitmask of sound modes and see if they're supported
 	OPCODE(testSound) {
 		debug(kOpcodesHit, "test_sound(0x%04x) STUB", uint16(*args[0]));
@@ -82,9 +90,12 @@ public:
 	}
 };
 
+#undef OPCODE
+#define OPCODE(name) OpcodeHandlers::name
+
 Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 00 */ 0,
-	/* opcode 01 */ 0,
+	/* opcode 01 */ OPCODE(returnUp),
 	/* opcode 02 */ 0,
 	/* opcode 03 */ 0,
 	/* opcode 04 */ 0,
