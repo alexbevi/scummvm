@@ -28,6 +28,7 @@ class ByteArgument : public Argument {
 public:
 	ByteArgument(byte *ptr) : _ptr(ptr) {}
 	operator byte() const { return *_ptr; }
+	Argument operator=(byte b) { *_ptr = b; return *this; }
 
 private:
 	byte *_ptr;

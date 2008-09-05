@@ -10,13 +10,22 @@ enum Debug {
 	kOpcodesHit = 2
 };
 
+#define OPCODE(name) static void name(Interpreter *self, Argument *args[])
+
 class OpcodeHandlers {
 public:
-	// take bitmask of sound modes and see if they're supported
-	static void test_sound(Interpreter *self, Argument *args[]) {
+	// 0x12 take bitmask of sound modes and see if they're supported
+	OPCODE(test_sound) {
 		debug(kOpcodesHit, "test_sound(0x%04x) STUB", args[0]->value());
 		// stub
 		// if no sound self->_abort = 1;
+	}
+
+	// 0x72
+	// set first argument to 1
+	OPCODE(set_1) {
+		debug(kOpcodesHit, "set_1");
+		*args[0] = 1;
 	}
 
 	// 0x9d
@@ -142,7 +151,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 6f */ 0,
 	/* opcode 70 */ 0,
 	/* opcode 71 */ 0,
-	/* opcode 72 */ 0,
+	/* opcode 72 */ OpcodeHandlers::set_1,
 	/* opcode 73 */ 0,
 	/* opcode 74 */ 0,
 	/* opcode 75 */ 0,

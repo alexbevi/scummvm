@@ -16,6 +16,7 @@ public:
 	virtual ~Argument() {}
 	virtual uint16 value() const { error("unimplemented attribute dereference"); }
 	virtual operator byte() const { error("unimplemented attribute dereference"); }
+	virtual Argument operator=(byte b) { error("unimplemented variable setting"); }
 };
 
 class Interpreter {
