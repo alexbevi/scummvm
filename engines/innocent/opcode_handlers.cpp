@@ -58,6 +58,12 @@ public:
 		self->_logic->setRoom(*args[0]);
 	}
 
+	// 0xf0 load sfx file
+	OPCODE(loadSfxFile) {
+		// TODO
+		debug(1, "loadSfxFile(%d) STUB", uint16(*args[0]));
+	}
+
 	// 0xf9
 	// turn sound on/off
 	// first arg - 1=music, 2=sfx
@@ -309,7 +315,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode ed */ 0,
 	/* opcode ee */ 0,
 	/* opcode ef */ 0,
-	/* opcode f0 */ 0,
+	/* opcode f0 */ OpcodeHandlers::loadSfxFile,
 	/* opcode f1 */ 0,
 	/* opcode f2 */ 0,
 	/* opcode f3 */ 0,
