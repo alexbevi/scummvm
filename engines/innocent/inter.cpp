@@ -85,7 +85,7 @@ void Interpreter::run() {
 }
 
 void Interpreter::defaultHandler(Interpreter *self, Argument /*args*/*[]) {
-	warning("unhandled opcode %02x", self->_currentCode);
+	warning("unhandled opcode %d [=0x%02x]", self->_currentCode, self->_currentCode);
 }
 
 enum ArgumentTypes {
