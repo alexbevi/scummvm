@@ -23,4 +23,9 @@ void Graphics::paintInterface() {
 	debug(kAck, "painted interface");
 }
 
+void Graphics::setBackdrop(uint16 id) {
+	debug(kAck, "setting backdrop image id to 0x%04x", id);
+	_backdrop = id;
+}
+
 } // End of namespace Innocent

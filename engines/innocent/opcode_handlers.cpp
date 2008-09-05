@@ -2,7 +2,9 @@
 
 #include "common/util.h"
 
+#include "innocent/innocent.h"
 #include "innocent/logic.h"
+#include "innocent/graphics.h"
 
 namespace Innocent {
 
@@ -21,6 +23,11 @@ public:
 		// if no sound self->_abort = 1;
 	}
 
+	// 0x2d forget about last error
+	OPCODE(decErrors) {
+		self->forgetLastError();
+	}
+
 	// 0x72
 	// set first argument to 1
 	OPCODE(assignOne) {
@@ -33,6 +40,11 @@ public:
 		debug(kOpcodesHit, "setProtagonist(0x%04x)", uint16(*args[0]));
 
 		self->_logic->setProtagonistId(*args[0]);
+	}
+
+	// 0xc9 set backdrop image id (probably)
+	OPCODE(setBackdrop) {
+		self->_logic->_engine->_graphics->setBackdrop(*args[0]);
 	}
 
 	// 0xf9
@@ -91,7 +103,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 2a */ 0,
 	/* opcode 2b */ 0,
 	/* opcode 2c */ 0,
-	/* opcode 2d */ 0,
+	/* opcode 2d */ OpcodeHandlers::decErrors,
 	/* opcode 2e */ 0,
 	/* opcode 2f */ 0,
 	/* opcode 30 */ 0,
@@ -247,7 +259,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode c6 */ 0,
 	/* opcode c7 */ 0,
 	/* opcode c8 */ 0,
-	/* opcode c9 */ 0,
+	/* opcode c9 */ OpcodeHandlers::setBackdrop,
 	/* opcode ca */ 0,
 	/* opcode cb */ 0,
 	/* opcode cc */ 0,

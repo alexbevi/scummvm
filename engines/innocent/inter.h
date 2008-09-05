@@ -49,9 +49,12 @@ private:
 	uint8 _currentCode; // for error reporting
 	byte *_code;
 	uint16 _mode;
+	uint16 _errorCount;
 
 	Argument *readImmediateArg();
 	Argument *readMainByteArg();
+
+	void forgetLastError();
 };
 
 } // End of namespace Innocent

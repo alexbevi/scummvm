@@ -45,7 +45,9 @@ void Interpreter::run(byte *code, uint16 mode) {
 }
 
 void Interpreter::run() {
-	uint16 abort = 0, abort_exec0 = 0, abort_exec1 = 0;
+	uint16 abort_exec0 = 0, abort_exec1 = 0;
+
+	_errorCount = 0;
 
 	while (_logic->_status == Logic::kStatusOk) {
 		if (_logic->_status != Logic::kStatusOk)
@@ -72,17 +74,22 @@ void Interpreter::run() {
 		if (nargs == 0)
 			_code += 2;
 
-		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !abort)
+		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_errorCount)
 			(*handler)(this, args);
 		else if (opcode != 0 && opcode < 0x26)
-			abort++;
+			_errorCount++;
 
 		for (int i = 0; i < nargs; i++)
 			delete args[i];
 
-		if (abort || abort_exec0 || abort_exec1)
+		if (abort_exec0 || abort_exec1)
 			break;
 	}
+}
+
+void Interpreter::forgetLastError() {
+	if (_errorCount) _errorCount--;
+	debug(kOpcodeDetails, "forgotten last error, count now %d", _errorCount);
 }
 
 void Interpreter::defaultHandler(Interpreter *self, Argument /*args*/*[]) {

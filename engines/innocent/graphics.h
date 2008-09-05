@@ -23,9 +23,12 @@ public:
 	 */
 	void paintInterface();
 
+	void setBackdrop(uint16 id);
+
 private:
 	byte _interface[0x3c00];
 	Engine *_engine;
+	uint16 _backdrop; // id of backdrop image (perhaps)
 };
 
 } // End of namespace Innocent
