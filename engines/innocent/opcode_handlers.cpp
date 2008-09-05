@@ -15,24 +15,33 @@ enum Debug {
 class OpcodeHandlers {
 public:
 	// 0x12 take bitmask of sound modes and see if they're supported
-	OPCODE(test_sound) {
-		debug(kOpcodesHit, "test_sound(0x%04x) STUB", args[0]->value());
+	OPCODE(testSound) {
+		debug(kOpcodesHit, "test_sound(0x%04x) STUB", uint16(*args[0]));
 		// stub
 		// if no sound self->_abort = 1;
 	}
 
 	// 0x72
 	// set first argument to 1
-	OPCODE(set_1) {
+	OPCODE(assignOne) {
 		debug(kOpcodesHit, "set_1");
 		*args[0] = 1;
 	}
 
 	// 0x9d
 	static void setProtagonist(Interpreter *self, Argument *args[]) {
-		debug(kOpcodesHit, "setProtagonist(0x%04x)", args[0]->value());
+		debug(kOpcodesHit, "setProtagonist(0x%04x)", uint16(*args[0]));
 
-		self->_logic->setProtagonistId(args[0]->value());
+		self->_logic->setProtagonistId(*args[0]);
+	}
+
+	// 0xf9
+	// turn sound on/off
+	// first arg - 1=music, 2=sfx
+	// second arg - 1=on, 0=off
+	OPCODE(setSound) {
+		debug(kOpcodesHit, "setSound(): turning %s %s", uint16(*args[0]) == 1 ? "music" : "sfx", uint16(*args[1]) ? "on" : "off");
+		warning("setSound(): opcode STUB");
 	}
 };
 
@@ -55,7 +64,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 0f */ 0,
 	/* opcode 10 */ 0,
 	/* opcode 11 */ 0,
-	/* opcode 12 */ OpcodeHandlers::test_sound,
+	/* opcode 12 */ OpcodeHandlers::testSound,
 	/* opcode 13 */ 0,
 	/* opcode 14 */ 0,
 	/* opcode 15 */ 0,
@@ -151,7 +160,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 6f */ 0,
 	/* opcode 70 */ 0,
 	/* opcode 71 */ 0,
-	/* opcode 72 */ OpcodeHandlers::set_1,
+	/* opcode 72 */ OpcodeHandlers::assignOne,
 	/* opcode 73 */ 0,
 	/* opcode 74 */ 0,
 	/* opcode 75 */ 0,
@@ -286,7 +295,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode f6 */ 0,
 	/* opcode f7 */ 0,
 	/* opcode f8 */ 0,
-	/* opcode f9 */ 0,
+	/* opcode f9 */ OpcodeHandlers::setSound,
 	/* opcode fa */ 0,
 	/* opcode fb */ 0,
 	/* opcode fc */ 0,

@@ -18,7 +18,7 @@ enum {
 class Uint16Argument : public Argument {
 public:
 	Uint16Argument(byte *ptr) : _ptr(ptr) {}
-	uint16 value() const { return READ_LE_UINT16(_ptr); }
+	operator uint16() const { return READ_LE_UINT16(_ptr); }
 
 private:
 	byte *_ptr;

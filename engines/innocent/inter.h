@@ -14,7 +14,7 @@ class Opcode;
 class Argument {
 public:
 	virtual ~Argument() {}
-	virtual uint16 value() const { error("unimplemented attribute dereference"); }
+	virtual operator uint16() const { error("unimplemented attribute dereference"); }
 	virtual operator byte() const { error("unimplemented attribute dereference"); }
 	virtual Argument operator=(byte b) { error("unimplemented variable setting"); }
 };
