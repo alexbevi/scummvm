@@ -1045,7 +1045,7 @@ void Database::setCharPos(int charId, int loc, int box) {
 	}
 }
 
-bool Database::giveObject(int charId, int obj, bool something) {
+bool Database::giveObject(int obj, int charId, bool something) {
 	int type;
 	int oldOwner, oldOwnerType;
 
