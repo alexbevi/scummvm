@@ -239,7 +239,7 @@ void Database::initObjects() {
 	_objects = new Object[_objectsNum];
 
 	// There are less objects than reported
-	for (int i = 0; i < _objectsNum; ++i) {
+	for (int i = 0; i < 327; ++i) {
 		int index;
 
 		do {
