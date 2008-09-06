@@ -102,7 +102,7 @@ struct OpCode {
 	int arg4;
 	int arg5;
 	int arg6;
-	OpCode() : arg2(0), arg3(0), arg4(0), arg5(0), arg6(0) { arg1[0] = '\0'; }; 
+	OpCode() : arg2(0), arg3(0), arg4(0), arg5(0), arg6(0) { arg1[0] = '\0'; };
 };
 
 struct Command {

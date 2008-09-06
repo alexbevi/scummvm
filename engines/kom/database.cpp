@@ -112,7 +112,7 @@ void Database::initLocations() {
 		int index;
 
 		do {
-			f.readLine(line, 100);
+			f.readLine_OLD(line, 100);
 		} while (line[0] == '\0');
 		sscanf(line, "%d", &index);
 
@@ -121,7 +121,7 @@ void Database::initLocations() {
 			&(_locations[index].xtend),
 			&(_locations[index].allowedTime));
 
-		f.readLine(_locations[index].desc, 50);
+		f.readLine_OLD(_locations[index].desc, 50);
 		stripUndies(_locations[index].desc);
 
 		readLineScanf(f, "-1");
@@ -154,7 +154,7 @@ void Database::initCharacters() {
 		int index;
 
 		do {
-			f.readLine(line, 100);
+			f.readLine_OLD(line, 100);
 		} while (line[0] == '\0');
 		sscanf(line, "%d", &index);
 
@@ -165,7 +165,7 @@ void Database::initCharacters() {
 			&(_characters[index]._xtend),
 			&(_characters[index]._data2));
 
-		f.readLine(_characters[index]._desc, 50);
+		f.readLine_OLD(_characters[index]._desc, 50);
 		stripUndies(_characters[index]._desc);
 
 		readLineScanf(f, "%d",
@@ -243,7 +243,7 @@ void Database::initObjects() {
 		int index;
 
 		do {
-			f.readLine(line, 100);
+			f.readLine_OLD(line, 100);
 		} while (line[0] == '\0');
 		sscanf(line, "%d", &index);
 
@@ -254,7 +254,7 @@ void Database::initObjects() {
 			_objects[index].name,
 			&(_objects[index].data1));
 
-		f.readLine(_objects[index].desc, 50);
+		f.readLine_OLD(_objects[index].desc, 50);
 		stripUndies(_objects[index].desc);
 
 		readLineScanf(f, "%d %d %d",
@@ -277,7 +277,7 @@ void Database::initObjects() {
 			&(_objects[index].data12),
 			&(_objects[index].data13));
 
-		f.readLine(line, 100);
+		f.readLine_OLD(line, 100);
 		sscanf(line, "%d %d",
 			&(_objects[index].ownerType),
 			&(_objects[index].ownerId));
@@ -340,7 +340,7 @@ void Database::initEvents() {
 
 		readLineScanf(f, "%d %d %d", &loc, &(ev.exitBox), &(ev.proc));
 		// Skip line
-		f.readLine(line, 100);
+		f.readLine_OLD(line, 100);
 
 		_locations[loc].events.push_back(ev);
 	}
@@ -393,10 +393,10 @@ void Database::initProcs() {
 
 		readLineScanf(f, "%d", &index);
 
-		f.readLine(_processes[index].name, 50);
+		f.readLine_OLD(_processes[index].name, 50);
 
 		do {
-			f.readLine(line, 100);
+			f.readLine_OLD(line, 100);
 		} while (line[0] == '\0');
 		sscanf(line, "%d", &cmd);
 
@@ -412,7 +412,7 @@ void Database::initProcs() {
 
 			// Read opcodes
 			do {
-				f.readLine(line, 100);
+				f.readLine_OLD(line, 100);
 			} while (line[0] == '\0');
 			sscanf(line, "%d", &opcode);
 
@@ -424,22 +424,22 @@ void Database::initProcs() {
 
 				// string + int/short
 				case 474:
-					f.readLine(opObject.arg1, 30);
+					f.readLine_OLD(opObject.arg1, 30);
 					readLineScanf(f, "%d", &(opObject.arg2));
 					break;
 
 				// string
 				case 467:
 				case 469:
-					f.readLine(opObject.arg1, 30);
+					f.readLine_OLD(opObject.arg1, 30);
 
 					// Skip empty line
-					f.readLine(line, 100);
+					f.readLine_OLD(line, 100);
 					break;
 
 				// string + int + int + int
 				case 468:
-					f.readLine(opObject.arg1, 30);
+					f.readLine_OLD(opObject.arg1, 30);
 					readLineScanf(f, "%d %d %d", &(opObject.arg2),
 						   &(opObject.arg3), &(opObject.arg4));
 					break;
@@ -576,7 +576,7 @@ void Database::initProcs() {
 				cmdObject.opcodes.push_back(opObject);
 
 				do {
-					f.readLine(line, 100);
+					f.readLine_OLD(line, 100);
 				} while (line[0] == '\0');
 				sscanf(line, "%d", &opcode);
 			}
@@ -584,7 +584,7 @@ void Database::initProcs() {
 			_processes[index].commands.push_back(cmdObject);
 
 			do {
-				f.readLine(line, 100);
+				f.readLine_OLD(line, 100);
 			} while (line[0] == '\0');
 			sscanf(line, "%d", &cmd);
 		}
@@ -616,7 +616,7 @@ void Database::initRoutes() {
 	f.open("test0r.ked");
 
 	do {
-		f.readLine(line, 100);
+		f.readLine_OLD(line, 100);
 	} while (line[0] == '\0');
 
 	while (!f.eof()) {
@@ -691,7 +691,7 @@ void Database::initRoutes() {
 		}
 
 		do {
-			f.readLine(line, 100);
+			f.readLine_OLD(line, 100);
 		} while (line[0] == '\0');
 	}
 
@@ -709,7 +709,7 @@ void Database::initScopes() {
 
 	f.open(_databasePrefix + ".scp");
 	do {
-		f.readLine(line, 100);
+		f.readLine_OLD(line, 100);
 	} while (line[0] == '\0');
 
 	while (!f.eof()) {
@@ -771,7 +771,7 @@ void Database::initScopes() {
 		}
 
 		do {
-			f.readLine(line, 100);
+			f.readLine_OLD(line, 100);
 		} while (line[0] == '\0' && !f.eof());
 	}
 
@@ -1125,7 +1125,7 @@ int CDECL Database::readLineScanf(File &f, const char *format, ...) {
 	int done;
 
 	do {
-		f.readLine(line, 100);
+		f.readLine_OLD(line, 100);
 	} while (line[0] == '\0');
 
 	if (f.eos())
