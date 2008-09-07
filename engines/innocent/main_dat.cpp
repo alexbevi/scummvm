@@ -147,7 +147,7 @@ enum SpriteMap {
 	kSpriteMapLeft = 2,
 	kSpriteMapTop = 4,
 	kSpriteMapWidth = 6,
-	kSpriteMapHeight = 8,
+	kSpriteMapHeight = 7,
 	kSpriteMapSize = 0xa
 };
 
@@ -164,8 +164,16 @@ SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
 	si.width = spritemap[kSpriteMapWidth];
 	si.height = spritemap[kSpriteMapHeight];
 	si.image = READ_LE_UINT16(spritemap + kSpriteMapImage);
+	debug(3, "found sprite info at 0x%04x for %d: %s", spritemap - _data, index, si.inspect());
 
 	return si;
+}
+
+char SpriteInfo::_debugBuf[100];
+
+const char *SpriteInfo::inspect() const {
+	snprintf(_debugBuf, 100, "%d#%d:%d:%dx%d", image, left, top, width, height);
+	return _debugBuf;
 }
 
 } // End of namespace Innocent
