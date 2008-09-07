@@ -169,13 +169,36 @@ Argument *Interpreter::readLocalArg(byte *&code) {
 	return arg;
 }
 
-class StringArgument : public Argument {
-public:
-	StringArgument(byte *code) : Argument(code) {}
-};
+Interpreter::StringArgument::StringArgument(byte *code, Resources *res) : Argument(code) {
+	byte ch;
+	byte *str = _translateBuf;
+	uint16 offset, value;
+	while ((ch = *(code++))) {
+		switch (ch) {
+		case kStringGlobalWord:
+			offset = READ_LE_UINT16(code);
+			code += 2;
+			value = READ_LE_UINT16(res->getGlobalWordVariable(offset/2));
+			str += snprintf(reinterpret_cast<char *>(str), _translateBuf - str, "%d", value);
+			break;
+		case kStringSetColour:
+			*(str++) = ch;
+			*(str++) = *(code++);
+			break;
+		case kStringCountSpacesIf0:
+		case kStringCountSpacesIf1:
+			error("unhandled string special 0x%02x", ch);
+			break;
+		case kStringCountSpacesTerminate:
+			break;
+		default:
+			*(str++) = ch;
+		}
+	}
+}
 
 Argument *Interpreter::readStringArg(byte *&code) {
-	Argument *arg = new StringArgument(code);
+	Argument *arg = new StringArgument(code, _resources);
 
 	// skip the string
 	byte ch;

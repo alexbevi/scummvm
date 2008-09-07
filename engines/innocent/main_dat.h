@@ -10,6 +10,10 @@
 
 namespace Innocent {
 
+struct SpriteInfo {
+	uint16 left, top, width, height, image;
+};
+
 class MainDat : public Datafile {
 public:
 	MainDat(Resources *resources);
@@ -46,6 +50,9 @@ public:
 	byte *getByteVariable(uint16 index);
 	byte *getWordVariable(uint16 index);
 	uint16 getRoomScriptId(uint16 room) const;
+	uint16 getGlyphSpriteId(byte character) const;
+
+	SpriteInfo getSpriteInfo(uint16 index) const;
 
 private:
 	enum {

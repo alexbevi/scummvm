@@ -1,5 +1,8 @@
 #include "resources.h"
 
+#include <algorithm>
+#include <ext/algorithm>
+
 #include "common/endian.h"
 #include "common/file.h"
 #include "common/util.h"
@@ -57,7 +60,7 @@ void Resources::loadGraphicFiles() {
 	}
 }
 
-Common::ReadStream *Resources::imageStream(uint16 index) {
+Common::ReadStream *Resources::imageStream(uint16 index) const {
 	debug(kAck, "seeking image %04x", index);
 	uint16 file_index = _main->fileIndexOfImage(index);
 	debug(kDataRead, "file index is %d", file_index);
@@ -78,7 +81,7 @@ void Resources::readPalette(Common::ReadStream *stream, byte *palette) {
 	}
 }
 
-void Resources::loadImage(uint16 index, byte *target, uint16 size, byte *palette) {
+void Resources::loadImage(uint16 index, byte *target, uint16 size, byte *palette) const {
 	Common::ReadStream *file = imageStream(index);
 	(void) file->readUint16LE();
 	(void) file->readUint16LE(); // we know size alright
@@ -91,6 +94,14 @@ void Resources::loadImage(uint16 index, byte *target, uint16 size, byte *palette
 	file->readByte(); // skip zero
 
 	readPalette(file, palette);
+}
+
+Image *Resources::loadImage(uint16 index) const {
+	Image * img = new Image;
+	img->create(320, 200, 8);
+	assert(img->pitch == 320);
+	loadImage(index, reinterpret_cast<byte *>(img->pixels), 320*200);
+	return img;
 }
 
 void Resources::decodeImage(Common::ReadStream *stream, byte *target, uint16 size) {
@@ -160,5 +171,43 @@ uint16 Resources::mainEntryPoint() const {
 	return backdrop;
 }
 
+Sprite *Resources::getGlyph(byte ch) const {
+	if (ch <= ' ' || ch > '~')
+		return 0;
+	uint16 id = _main->getGlyphSpriteId(ch - ' ');
+	return loadSprite(id);
+}
+
+Sprite *Resources::loadSprite(uint16 id) const {
+	SpriteInfo info = _main->getSpriteInfo(id);
+	Image *image = loadImage(info.image);
+	Sprite *sprite = image->cut(Common::Rect(info.left, info.top, info.left + info.width, info.top + info.height));
+	delete image;
+	return sprite;
+}
+
+Sprite *Image::cut(Common::Rect rect) const {
+	Sprite *sprite = new Sprite;
+	sprite->create(rect.width(), rect.height(), 8);
+
+	const byte *src = reinterpret_cast<const byte *>(getBasePtr(rect.left, rect.top));
+	byte *dest = reinterpret_cast<byte *>(sprite->pixels);
+	for (uint16 y = 0; y < rect.height(); y++) {
+		// TODO make it portable across compilers (probably replacing with std::copy is ok)
+		__gnu_cxx::copy_n(src, rect.width(), dest);
+		src += pitch;
+		dest += sprite->pitch;
+	}
+	return sprite;
+}
+
+enum {
+	kChangeableColour = 235
+};
+
+void Sprite::recolour(byte colour) {
+	byte *data = reinterpret_cast<byte *>(pixels);
+	std::replace(data, data + h * pitch, byte(kChangeableColour), colour);
+}
 
 } // End of namespace Innocent

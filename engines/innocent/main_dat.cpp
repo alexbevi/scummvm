@@ -21,6 +21,8 @@ enum Offsets {
 	kProgEntriesCount0	= 0x06,
 	kProgEntriesCount1	= 0x08,
 	kProgramsMap		= 0x0A,
+	kSpriteCount		= 0x18,
+	kSpriteMap			= 0x1A,
 	kImagesCount		= 0x1C,
 	kImageDirectory		= 0x1E,
 	kGraphicFileCount	= 0x20,
@@ -28,6 +30,7 @@ enum Offsets {
 	kWordVars			= 0x3A,
 	kByteVars			= 0x3E,
 	kEntryPoint			= 0x42,
+	kCharacterMap		= 0x48,
 	kInterfaceImgIdx	= 0xB4
 };
 
@@ -129,6 +132,40 @@ uint16 MainDat::getRoomScriptId(uint16 room) const {
 	}
 
 	return 0;
+}
+
+uint16 MainDat::getGlyphSpriteId(byte character) const {
+	byte *charmap = _data + READ_LE_UINT16(_footer + kCharacterMap);
+	charmap += (character - ' ') * 2;
+	uint16 id = READ_LE_UINT16(charmap);
+	debug(5, "searching for sprite of glyph %c, %d found", character, id);
+	return id;
+}
+
+enum SpriteMap {
+	kSpriteMapImage = 0,
+	kSpriteMapLeft = 2,
+	kSpriteMapTop = 4,
+	kSpriteMapWidth = 6,
+	kSpriteMapHeight = 8,
+	kSpriteMapSize = 0xa
+};
+
+SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
+	SpriteInfo si;
+	byte *spritemap = _data + READ_LE_UINT16(_footer + kSpriteMap);
+	uint16 nsprites = READ_LE_UINT16(_footer + kSpriteCount);
+	if (index >= nsprites)
+		error("local sprites not handled yet (index: 0x%04x)", index);
+
+	spritemap += index * kSpriteMapSize;
+	si.top = READ_LE_UINT16(spritemap + kSpriteMapTop);
+	si.left = READ_LE_UINT16(spritemap + kSpriteMapLeft);
+	si.width = spritemap[kSpriteMapWidth];
+	si.height = spritemap[kSpriteMapHeight];
+	si.image = READ_LE_UINT16(spritemap + kSpriteMapImage);
+
+	return si;
 }
 
 } // End of namespace Innocent

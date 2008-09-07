@@ -92,6 +92,14 @@ public:
 	Logic *_logic;
 
 private:
+	class StringArgument : public Argument {
+	public:
+		StringArgument(byte *code, Resources *res);
+		byte *translated() { return _translateBuf; }
+	private:
+		byte _translateBuf[100];
+	};
+
 	byte *_base;
 	uint16 _mode;
 

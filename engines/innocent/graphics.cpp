@@ -48,4 +48,52 @@ void Graphics::paintBackdrop() {
 	_system->copyRectToScreen(reinterpret_cast<byte *>(_backdrop->pixels), 320, 0, 0, 320, 200);
 }
 
+void Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string) {
+	byte ch;
+	uint16 current_left = left;
+	byte current_colour = colour;
+
+	while ((ch = *(string++))) {
+		switch(ch) {
+		case '\r':
+			current_left = left;
+			top += kLineHeight;
+			break;
+		case kStringDefaultColour:
+			current_colour = colour;
+			break;
+		case kStringSetColour:
+			current_colour = *(string++);
+			break;
+		default:
+			current_left += paintChar(current_left, top, current_colour, ch);
+		}
+	}
+}
+
+byte Graphics::clampChar(byte ch) {
+	if (ch == '#')
+		return '!';
+	if (ch < ' ' || ch > '~')
+		return '?';
+	return ch;
+}
+
+/**
+ * @returns char width
+ */
+uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch) const {
+	// TODO perhaps cache or sth
+	ch = clampChar(ch);
+	if (ch == ' ')
+		return 4; // space has no glyph, just width 4
+	Sprite *glyph = _resources->getGlyph(ch);
+	glyph->recolour(colour);
+	_system->copyRectToScreen(reinterpret_cast<byte *>(glyph->pixels), glyph->pitch,
+							   left, top, glyph->w, glyph->h);
+	uint16 w = glyph->w;
+	delete glyph;
+	return w;
+}
+
 } // End of namespace Innocent

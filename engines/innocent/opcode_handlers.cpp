@@ -36,6 +36,12 @@ OPCODE(0x3d) {
 	debug(1, "set skip point opcode 0x3d stub");
 }
 
+OPCODE(0x55) {
+	// paint text
+	// args: left, top, colour, text
+	_graphics->paintText(*args[0], *args[1], *args[2], static_cast<StringArgument *>(args[3])->translated());
+}
+
 OPCODE(0x60) {
 	// lookup locally
 	// takes a local variable index (1st)

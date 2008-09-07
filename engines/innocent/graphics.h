@@ -35,7 +35,18 @@ public:
 	void setBackdrop(uint16 id);
 	void paintBackdrop();
 
+	void paintText(uint16 left, uint16 top, byte colour, byte *string);
+
 private:
+	enum {
+		kLineHeight = 12
+	};
+	static byte clampChar(byte ch);
+	/**
+	 * paint a character on screen
+	 * @returns char width
+	 */
+	uint16 paintChar(uint16 left, uint16 top, byte colour, byte character) const;
 	byte _interface[0x3c00];
 	Engine *_engine;
 	Resources *_resources;
