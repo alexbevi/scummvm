@@ -17,6 +17,21 @@ enum {
 	kOpcodeMax = 0xfd
 };
 
+template <int opcode>
+void Interpreter::opcodeHandler(Argument *args[]){
+	error("unhandled opcode %d [=0x%02x]", opcode, opcode);
+}
+
+
+template<int N>
+void Interpreter::init_opcodes() {
+	_handlers[N] = &Innocent::Interpreter::opcodeHandler<N>;
+	init_opcodes<N-1>();
+}
+
+template<>
+void Interpreter::init_opcodes<-1>() {}
+
 class Uint16Argument : public Argument {
 public:
 	Uint16Argument(byte *ptr) : Argument(ptr) {}
@@ -38,6 +53,7 @@ Interpreter::Interpreter(Engine *e) :
 		_logic(e->logic()),
 		_resources(e->resources())
 		{
+	init_opcodes<255>();
 }
 
 
@@ -66,8 +82,6 @@ Status Interpreter::run() {
 
 		_currentCode = opcode;
 		OpcodeHandler handler = _handlers[opcode];
-		if (!handler)
-			handler = &Interpreter::defaultHandler;
 
 		Argument *args[6];
 
@@ -78,7 +92,7 @@ Status Interpreter::run() {
 			_code += 2;
 
 		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_errorCount)
-			(*handler)(this, args);
+			(this->*handler)(args);
 		else if (opcode != 0 && opcode < 0x26)
 			_errorCount++;
 
@@ -100,10 +114,6 @@ void Interpreter::returnUp() {
 void Interpreter::forgetLastError() {
 	if (_errorCount) _errorCount--;
 	debug(kOpcodeDetails, "forgotten last error, count now %d", _errorCount);
-}
-
-void Interpreter::defaultHandler(Interpreter *self, Argument /*args*/*[]) {
-	error("unhandled opcode %d [=0x%02x]", self->_currentCode, self->_currentCode);
 }
 
 enum ArgumentTypes {

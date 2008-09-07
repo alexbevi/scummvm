@@ -11,7 +11,6 @@ MODULE_OBJS = \
 	graphics.o \
 	logic.o \
 	inter.o \
-	opcode_handlers.o \
 	program.o
 
 # This module can be built as a plugin

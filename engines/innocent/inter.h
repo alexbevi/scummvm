@@ -50,13 +50,15 @@ public:
 
 	friend class Opcode;
 
-	static void defaultHandler(Interpreter *interpreter, Argument *args[]);
+	template <int opcode>
+	void opcodeHandler(Argument *args[]);
 
+	template <int N>
+	void init_opcodes();
+
+	typedef void (Interpreter::*OpcodeHandler)(Argument *args[]);
+	OpcodeHandler _handlers[256];
 	static const uint8 _argumentsCounts[];
-
-	typedef void(*OpcodeHandler)(Interpreter *interpreter, Argument *args[]);
-	static OpcodeHandler _handlers[];
-	friend class OpcodeHandlers;
 
 	Logic *_logic;
 
