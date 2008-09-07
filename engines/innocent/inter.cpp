@@ -149,14 +149,14 @@ Argument *Interpreter::readMainWordArg() {
 }
 
 
-/*Argument *Interpreter::readLocalArg() {
+Argument *Interpreter::readLocalArg() {
 	uint16 offset = READ_LE_UINT16(_code);
 	_code += 2;
-	Argument *arg = new Uint16Argument(_logic->roomScript()->localVariable(offset));
+	Argument *arg = new Uint16Argument(_base + offset);
 	debug(kOpcodeDetails, "local variable, offset 0x%04x, value 0x%04x", offset, uint16(*arg));
 	return arg;
 }
-*/
+
 
 Argument *Interpreter::getArgument() {
 	uint8 argument_type = _code[1];
@@ -170,8 +170,8 @@ Argument *Interpreter::getArgument() {
 			return readMainWordArg();
 		case kArgumentMainByte:
 			return readMainByteArg();
-		/*case kArgumentLocal:
-			return readLocalArg();*/
+		case kArgumentLocal:
+			return readLocalArg();
 		default:
 			error("don't know how to handle argument type 0x%02x", argument_type);
 	}
