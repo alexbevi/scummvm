@@ -1,6 +1,7 @@
 #include "innocent/graphics.h"
 
 #include "common/system.h"
+#include "graphics/surface.h"
 
 #include "innocent/innocent.h"
 #include "innocent/resources.h"
@@ -13,6 +14,7 @@ Graphics::Graphics(Engine *engine)
 
 void Graphics::init() {
 	 _resources = _engine->resources();
+	 _system = _engine->_system;
 	 loadInterface();
 }
 
@@ -38,6 +40,12 @@ void Graphics::setBackdrop(uint16 id) {
 	byte palette[0x400];
 	_backdrop.reset(_resources->loadBackdrop(id, palette));
 	debug(3, "backdrop loaded");
+	_system->setPalette(palette, 0, 256);
+}
+
+void Graphics::paintBackdrop() {
+	// TODO cropping
+	_system->copyRectToScreen(reinterpret_cast<byte *>(_backdrop->pixels), 320, 0, 0, 320, 200);
 }
 
 } // End of namespace Innocent

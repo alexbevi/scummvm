@@ -47,6 +47,9 @@ int Engine::init() {
 int Engine::go() {
 	printf("Innocent::Engine: Hello, world!\n");
 	debugC(1, kDebug, "example debug call");
+	_graphics->paintBackdrop();
+	_system->updateScreen();
+	_system->delayMillis(2000);
 
 /*	while (1) {
 		_logic->invokeNewRoomCode();

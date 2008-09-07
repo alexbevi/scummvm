@@ -5,6 +5,8 @@
 
 #include "config.h"
 
+class OSystem;
+
 namespace Graphics {
 class Surface;
 }
@@ -31,11 +33,13 @@ public:
 	void paintInterface();
 
 	void setBackdrop(uint16 id);
+	void paintBackdrop();
 
 private:
 	byte _interface[0x3c00];
 	Engine *_engine;
 	Resources *_resources;
+	OSystem *_system;
 	std::auto_ptr< ::Graphics::Surface> _backdrop;
 };
 
