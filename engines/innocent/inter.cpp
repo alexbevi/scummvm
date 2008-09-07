@@ -170,4 +170,8 @@ const uint8 Interpreter::_argumentsCounts[] = {
 	#include "opcodes_nargs.data"
 };
 
+void Interpreter::failedCondition() {
+	_failedCondition = true;
+}
+
 } // End of namespace Innocent

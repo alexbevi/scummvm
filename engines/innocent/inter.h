@@ -72,7 +72,7 @@ private:
 	Argument *readMainByteArg();
 	Argument *readLocalArg();
 
-	void failedCondition() { _failedCondition = true; }
+	void failedCondition();
 
 	uint16 _failedCondition;
 	uint8 _return;
