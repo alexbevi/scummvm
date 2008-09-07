@@ -81,7 +81,7 @@ OPCODE(0x9d) {
 }
 
 OPCODE(0xc2) {
-	callPeriodically(args[0]->_ptr);
+	addPeriodiCall(args[0]->_ptr);
 }
 
 OPCODE(0xc8) {

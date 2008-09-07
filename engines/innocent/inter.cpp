@@ -67,29 +67,12 @@ void Interpreter::setRoomLoop(byte *code) {
 }
 
 void Interpreter::tick() {
-	for (Common::List<byte *>::iterator it = _periodiCalls.begin(); it != _periodiCalls.end(); ++it)
-		executeRestricted(*it);
+ 	for (Common::List<PeriodiCall>::iterator it = _periodiCalls.begin(); it != _periodiCalls.end(); ++it)
+ 		it->call();
 
 	if (_roomLoop)
 		run(_roomLoop - _base, kCodeRoomLoop);
 }
-
-void Interpreter::executeRestricted(byte *code) {
-	debug(3, "running a trigger in restricted environment, opcode 0x%02x", *code);
-	if (!(*code & 0x80)) {
-		debug(3, "mask fail!");
-		return;
-	}
-	byte opcode = ~*code;
-	debug(3, "transformed 0x%02x", opcode);
-	if (opcode >= 0x27) {
-		debug(3, "code fail!");
-		return;
-	}
-	OpcodeHandler handler = _handlers[opcode];
-	(this->*handler)(0);
-}
-
 
 /* mode:
 0 - initialization,
@@ -224,9 +207,45 @@ void Interpreter::goBack() {
 	_return = true;
 }
 
-void Interpreter::callPeriodically(byte *code) {
-	debug(2, "will call 0x%04x periodically", code - _base);
-	_periodiCalls.push_back(code);
+void Interpreter::addPeriodiCall(byte *code) {
+	debug(2, "added periodicall 0x%04x", code - _base);
+	_periodiCalls.push_back(PeriodiCall(code));
+}
+
+PeriodiCall::PeriodiCall(byte *code) : _code(code) {
+	initializeHandlers<kCodesNumber-1>();
+}
+
+void PeriodiCall::call() {
+	byte opcode = *_code;
+
+	debug(3, "running periodicall opcode 0x%02x", opcode);
+	if (!(opcode & 0x80)) {
+		debug(3, "mask fail!");
+		return;
+	}
+	opcode = ~opcode;
+	debug(3, "transformed 0x%02x", opcode);
+	if (opcode >= 0x27) {
+		debug(3, "code fail!");
+		return;
+	}
+
+	(this->*_handlers[opcode])();
+}
+
+template<int N>
+void PeriodiCall::initializeHandlers() {
+	_handlers[N] = &PeriodiCall::handle<N>;
+	initializeHandlers<N-1>();
+}
+
+template<>
+void PeriodiCall::initializeHandlers<-1>() {}
+
+template<int N>
+void PeriodiCall::handle() {
+	error("unhandled periodicall code %d", N);
 }
 
 } // End of namespace Innocent

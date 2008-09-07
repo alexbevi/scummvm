@@ -40,6 +40,23 @@ public:
 	byte *_ptr; // for debug
 };
 
+class PeriodiCall {
+public:
+	PeriodiCall(byte *code);
+	void call();
+
+private:
+	byte *_code;
+	static const int kCodesNumber = 38;
+	void (PeriodiCall::*_handlers[kCodesNumber])();
+
+	template<int N>
+	void initializeHandlers();
+
+	template<int N>
+	void handle();
+};
+
 class Interpreter {
 public:
 	Interpreter(Logic *l, byte *base);
@@ -85,12 +102,12 @@ private:
 	void failedCondition();
 	void endIf();
 	void goBack();
-	void callPeriodically(byte *code);
+	void addPeriodiCall(byte *code);
 	void setRoomLoop(byte *code);
 
 	uint16 _failedCondition;
 	bool _return;
-	Common::List<byte *> _periodiCalls;
+	Common::List<PeriodiCall> _periodiCalls;
 	byte *_roomLoop;
 	
 	Engine *_engine;
