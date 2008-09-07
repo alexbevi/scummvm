@@ -94,14 +94,14 @@ Status Interpreter::run() {
 
 		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_failedCondition)
 			(this->*handler)(args);
-		else if (opcode != 0 && opcode < 0x26)
-			_failedCondition++;
+		else {
+			debug(4, "skipped, skip depth = %d", _failedCondition);
+			if (opcode != 0 && opcode < 0x26)
+				_failedCondition++;
+		}
 
 		for (int i = 0; i < nargs; i++)
 			delete args[i];
-
-		if (_return)
-			break;
 	}
 
 	return kReturned;
@@ -172,6 +172,7 @@ const uint8 Interpreter::_argumentsCounts[] = {
 
 void Interpreter::failedCondition() {
 	_failedCondition = true;
+	debug(2, "if() condition failed, skipping instructions (depth %d)", _failedCondition);
 }
 
 } // End of namespace Innocent

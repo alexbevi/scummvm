@@ -75,7 +75,6 @@ private:
 	void failedCondition();
 
 	uint16 _failedCondition;
-	uint8 _return;
 	Engine *_engine;
 	Resources *_resources;
 };
