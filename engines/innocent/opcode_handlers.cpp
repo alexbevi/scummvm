@@ -61,6 +61,11 @@ OPCODE(0xc9) {
 	_graphics->setBackdrop(*args[0]);
 }
 
+OPCODE(0xcc) {
+	// start cutscene -- allow fade, fullscreen, etc.
+	debug(1, "start cutscene opcode 0xcc stub");
+}
+
 OPCODE(0xd6) {
 	// change room
 	_logic->changeRoom(*args[0]);
