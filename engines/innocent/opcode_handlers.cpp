@@ -50,6 +50,12 @@ OPCODE(0x9d) {
 	_logic->setProtagonist(*args[0]);
 }
 
+OPCODE(0xc8) {
+	// set backdrop
+	// (not sure what's the difference to c9)
+	_graphics->setBackdrop(*args[0]);
+}
+
 OPCODE(0xc9) {
 	// set backdrop
 	_graphics->setBackdrop(*args[0]);
