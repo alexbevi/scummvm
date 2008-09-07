@@ -97,7 +97,7 @@ byte *MainDat::getByteVariable(uint16 index) {
 	return _data + offset + index;
 }
 
-byte *MainDat::getWordVar(uint16 index) {
+byte *MainDat::getWordVariable(uint16 index) {
 	uint16 offset = READ_LE_UINT16(_footer + kWordVars);
 	return _data + offset + index * 2;
 }

@@ -49,6 +49,7 @@ public:
 
 	byte *initialCode() const;
 	byte *getGlobalByteVariable(uint16 var) const;
+	byte *getGlobalWordVariable(uint16 var) const;
 
 	::Graphics::Surface *loadBackdrop(uint16 index, byte *palette);
 

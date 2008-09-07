@@ -136,16 +136,16 @@ Argument *Interpreter::readMainByteArg() {
 	return arg;
 }
 
-/*Argument *Interpreter::readMainWordArg() {
+Argument *Interpreter::readMainWordArg() {
 	uint16 offset = READ_LE_UINT16(_code);
 	_code += 2;
-	Argument *arg = new Uint16Argument(_resources->getGlobalWordVar(offset/2));
+	Argument *arg = new Uint16Argument(_resources->getGlobalWordVariable(offset/2));
 	debug(kOpcodeDetails, "word wide variable in main, index 0x%04x, value 0x%04x", offset/2, uint16(*arg));
 	return arg;
 }
 
 
-Argument *Interpreter::readLocalArg() {
+/*Argument *Interpreter::readLocalArg() {
 	uint16 offset = READ_LE_UINT16(_code);
 	_code += 2;
 	Argument *arg = new Uint16Argument(_logic->roomScript()->localVariable(offset));
@@ -162,8 +162,8 @@ Argument *Interpreter::getArgument() {
 	switch (argument_type) {
 		case kArgumentImmediate:
 			return readImmediateArg();
-/*		case kArgumentMainWord:
-			return readMainWordArg();*/
+		case kArgumentMainWord:
+			return readMainWordArg();
 		case kArgumentMainByte:
 			return readMainByteArg();
 		/*case kArgumentLocal:

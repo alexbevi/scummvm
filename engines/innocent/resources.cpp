@@ -38,6 +38,10 @@ byte *Resources::getGlobalByteVariable(uint16 var) const {
 	return _main->getByteVariable(var);
 }
 
+byte *Resources::getGlobalWordVariable(uint16 var) const {
+	return _main->getWordVariable(var);
+}
+
 void Resources::loadGraphicFiles() {
 	const list<MainDat::GraphicFile> files(_main->graphicFiles());
 
