@@ -37,7 +37,9 @@ public:
 		loadImage(_main->interfaceImageIndex(), target, 0x3c00, palette);
 	}
 
-	Program *getRoomScript(uint16 room);
+	uint16 blockOfRoom(uint16 room) const;
+
+	Program *loadCodeBlock(uint16 block) const;
 
 	static void descramble(byte *data, uint32 length);
 

@@ -115,9 +115,12 @@ void Resources::decodeImage(Common::ReadStream *stream, byte *target, uint16 siz
 	}
 }
 
-Program *Resources::getRoomScript(uint16 room) {
-	uint16 program_id = _main->getRoomScriptId(room);
-	return _progDat->getScript(program_id);
+uint16 Resources::blockOfRoom(uint16 room) const {
+	return _main->getRoomScriptId(room);
+}
+
+Program *Resources::loadCodeBlock(uint16 block) const {
+	return _progDat->getScript(block);
 }
 
 void Resources::descramble(byte *data, uint32 len) {

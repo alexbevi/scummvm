@@ -10,6 +10,7 @@ namespace Innocent {
 class Engine;
 class Resources;
 class Interpreter;
+class Program;
 
 class Logic {
 public:
@@ -27,9 +28,11 @@ public:
 private:
 	Engine *_engine;
 	Resources *_resources;
-	std::auto_ptr<Interpreter> _toplevelInterpreter;
+	std::auto_ptr<Interpreter> _toplevelInterpreter, _blockInterpreter;
 	uint16 _protagonist;
 	uint16 _currentRoom;
+	uint16 _currentBlock;
+	std::auto_ptr<Program> _blockProgram;
 };
 
 } // End of namespace Innocent

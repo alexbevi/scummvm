@@ -10,9 +10,10 @@ public:
 	Program(Common::ReadStream &file);
 	~Program();
 
-	byte *begin();
+	uint16 begin();
 	byte *localVariable(uint16 offset);
-	byte *roomHandler(uint16 room);
+	uint16 roomHandler(uint16 room);
+	byte *base() const { return _code; }
 
 private:
 	Program() { /* can only be created from a file */ }

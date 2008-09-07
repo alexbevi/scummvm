@@ -28,8 +28,8 @@ Program::~Program() {
 	delete[] _code;
 }
 
-byte *Program::begin() {
-	return _code + entryPointOffset();
+uint16 Program::begin() {
+	return entryPointOffset();
 }
 
 uint16 Program::entryPointOffset() {
@@ -40,7 +40,7 @@ byte *Program::localVariable(uint16 offset) {
 	return _code + offset;
 }
 
-byte *Program::roomHandler(uint16 room) {
+uint16 Program::roomHandler(uint16 room) {
 	byte *index = _code + 2;
 
 	uint16 r;
@@ -48,7 +48,7 @@ byte *Program::roomHandler(uint16 room) {
 		if (r == room) {
 			index += 2;
 			uint16 offset = READ_LE_UINT16(index);
-			return _code + offset;
+			return offset;
 		}
 
 	return 0;
