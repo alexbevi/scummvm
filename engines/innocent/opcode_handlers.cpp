@@ -36,6 +36,28 @@ OPCODE(0x3d) {
 	debug(1, "set skip point opcode 0x3d stub");
 }
 
+OPCODE(0x60) {
+	// lookup locally
+	// takes a local variable index (1st)
+	// a value (2nd)
+	// an offset (3rd)
+	// searches through a -1-terminated list starting at the variable for the value
+	// returns it if found, -1 otherwise
+	// if out arg is 4-byte, return a value from position shifted by the offset from the matched position
+	// saves result in 4th argument
+	byte *pos = _base + uint16(*args[0]);
+	debug(2, "looking for %d starting at %p", uint16(*args[1]), pos);
+	uint16 result;
+	while ((result = READ_LE_UINT16(pos)) != 0xffff) {
+		if (result == uint16(*args[1]))
+			break;
+		pos += 2;
+	}
+
+	*args[3] = result;
+	debug(2, "result: %p = %d", args[3]->_ptr, result);
+}
+
 OPCODE(0x70) {
 	// assign
 	*args[0] = *args[1];
