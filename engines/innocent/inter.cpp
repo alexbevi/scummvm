@@ -196,4 +196,9 @@ void Interpreter::goBack() {
 	_return = true;
 }
 
+void Interpreter::callPeriodically(byte *code) {
+	debug(2, "will call 0x%04x periodically", code - _base);
+	_periodiCalls.push_back(code);
+}
+
 } // End of namespace Innocent

@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "common/list.h"
 #include "common/util.h"
 #include "config.h"
 
@@ -81,9 +82,11 @@ private:
 	void failedCondition();
 	void endIf();
 	void goBack();
+	void callPeriodically(byte *code);
 
 	uint16 _failedCondition;
 	bool _return;
+	Common::List<byte *> _periodiCalls;
 	
 	Engine *_engine;
 	Resources *_resources;

@@ -50,6 +50,10 @@ OPCODE(0x9d) {
 	_logic->setProtagonist(*args[0]);
 }
 
+OPCODE(0xc2) {
+	callPeriodically(args[0]->_ptr);
+}
+
 OPCODE(0xc8) {
 	// set backdrop
 	// (not sure what's the difference to c9)
