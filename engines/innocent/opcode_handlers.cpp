@@ -16,6 +16,12 @@ OPCODE(0x2d) {
 	endIf();
 }
 
+OPCODE(0x72) {
+	// assign 1
+	*args[0] = byte(1);
+	debug(2, "%p = 1", args[0]->_ptr);
+}
+
 OPCODE(0x9d) {
 	// set protagonist
 	_logic->setProtagonist(*args[0]);
