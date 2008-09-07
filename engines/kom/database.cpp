@@ -619,7 +619,7 @@ void Database::initRoutes() {
 		f.readLine_OLD(line, 100);
 	} while (line[0] == '\0');
 
-	while (!f.eof()) {
+	while (!f.eos()) {
 		sscanf(line, "%s", keyword);
 
 		if (strcmp(keyword, "LOC") == 0) {
@@ -712,7 +712,7 @@ void Database::initScopes() {
 		f.readLine_OLD(line, 100);
 	} while (line[0] == '\0');
 
-	while (!f.eof()) {
+	while (!f.eos()) {
 		Character *charScope;
 
 		sscanf(line, "%s", keyword);
@@ -772,7 +772,7 @@ void Database::initScopes() {
 
 		do {
 			f.readLine_OLD(line, 100);
-		} while (line[0] == '\0' && !f.eof());
+		} while (line[0] == '\0' && !f.eos());
 	}
 
 	f.close();
