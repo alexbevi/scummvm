@@ -2,7 +2,6 @@
 #define INNOCENT_LOGIC_H
 
 #include <memory>
-#include <utility>
 
 #include "config.h"
 
@@ -26,7 +25,7 @@ public:
 
 	Engine *engine() { return _engine; }
 
-	void setRoomLoopCode(Interpreter *interpreter, uint16 offset);
+	void tick();
 
 private:
 	Engine *_engine;
@@ -36,7 +35,6 @@ private:
 	uint16 _currentRoom;
 	uint16 _currentBlock;
 	std::auto_ptr<Program> _blockProgram;
-	std::pair<Interpreter *, uint16> _roomLoopCode;
 };
 
 } // End of namespace Innocent

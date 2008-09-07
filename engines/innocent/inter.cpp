@@ -55,10 +55,39 @@ Interpreter::Interpreter(Logic *l, byte *base) :
 		_logic(l),
 		_engine(l->engine()),
 		_resources(_engine->resources()),
-		_base(base)
+		_base(base),
+		_roomLoop(0)
 		{
 	init_opcodes<255>();
 	init();
+}
+
+void Interpreter::setRoomLoop(byte *code) {
+	_roomLoop = code;
+}
+
+void Interpreter::tick() {
+	for (Common::List<byte *>::iterator it = _periodiCalls.begin(); it != _periodiCalls.end(); ++it)
+		executeRestricted(*it);
+
+	if (_roomLoop)
+		run(_roomLoop - _base, kCodeRoomLoop);
+}
+
+void Interpreter::executeRestricted(byte *code) {
+	debug(3, "running a trigger in restricted environment, opcode 0x%02x", *code);
+	if (!(*code & 0x80)) {
+		debug(3, "mask fail!");
+		return;
+	}
+	byte opcode = ~*code;
+	debug(3, "transformed 0x%02x", opcode);
+	if (opcode >= 0x27) {
+		debug(3, "code fail!");
+		return;
+	}
+	OpcodeHandler handler = _handlers[opcode];
+	(this->*handler)(0);
 }
 
 

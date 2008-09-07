@@ -107,9 +107,7 @@ OPCODE(0xd6) {
 
 OPCODE(0xe6) {
 	// set room loop code
-	const uint16 offset = args[0]->_ptr - _base;
-	debug(2, "setting room loop code to 0x%04x", offset);
-	_logic->setRoomLoopCode(this, offset);
+	setRoomLoop(args[0]->_ptr);
 }
 
 OPCODE(0xef) {

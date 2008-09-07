@@ -20,6 +20,7 @@ class Graphics;
 enum OpcodeMode {
 	kCodeInitial = 0,
 	kCodeNewRoom = 1,
+	kCodeRoomLoop = 2,
 	kCodeNewBlock = 8
 };
 
@@ -51,6 +52,8 @@ public:
 	 * @param mode interpreting mode.
 	 */
 	Status run(uint16 offset, OpcodeMode mode);
+	void tick();
+	void executeRestricted(byte *code);
 
 	Argument *getArgument(byte *&code);
 
@@ -83,10 +86,12 @@ private:
 	void endIf();
 	void goBack();
 	void callPeriodically(byte *code);
+	void setRoomLoop(byte *code);
 
 	uint16 _failedCondition;
 	bool _return;
 	Common::List<byte *> _periodiCalls;
+	byte *_roomLoop;
 	
 	Engine *_engine;
 	Resources *_resources;
