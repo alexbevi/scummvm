@@ -92,7 +92,7 @@ list<MainDat::GraphicFile> MainDat::graphicFiles() const {
 	return files;
 }
 
-byte *MainDat::getByteVar(uint16 index) {
+byte *MainDat::getByteVariable(uint16 index) {
 	uint16 offset = READ_LE_UINT16(_footer + kByteVars);
 	return _data + offset + index;
 }

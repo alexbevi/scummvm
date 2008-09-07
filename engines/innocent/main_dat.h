@@ -43,7 +43,7 @@ public:
 	
 	byte *_data;
 
-	byte *getByteVar(uint16 index);
+	byte *getByteVariable(uint16 index);
 	byte *getWordVar(uint16 index);
 	uint16 getRoomScriptId(uint16 room) const;
 

@@ -11,6 +11,11 @@ OPCODE(0x12) {
 	failedCondition();
 }
 
+OPCODE(0x2d) {
+	// else
+	endIf();
+}
+
 OPCODE(0x9d) {
 	// set protagonist
 	_logic->setProtagonist(*args[0]);

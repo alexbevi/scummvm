@@ -73,6 +73,7 @@ private:
 	Argument *readLocalArg();
 
 	void failedCondition();
+	void endIf();
 
 	uint16 _failedCondition;
 	Engine *_engine;

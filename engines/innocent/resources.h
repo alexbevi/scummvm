@@ -44,6 +44,7 @@ public:
 	static void descramble(byte *data, uint32 length);
 
 	byte *initialCode() const;
+	byte *getGlobalByteVariable(uint16 var) const;
 
 private:
 	void loadGraphicFiles();

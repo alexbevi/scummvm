@@ -33,6 +33,10 @@ void Resources::load() {
 	_progDat->load();
 }
 
+byte *Resources::getGlobalByteVariable(uint16 var) const {
+	return _main->getByteVariable(var);
+}
+
 void Resources::loadGraphicFiles() {
 	const list<MainDat::GraphicFile> files(_main->graphicFiles());
 

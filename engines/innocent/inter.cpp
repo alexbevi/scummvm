@@ -6,6 +6,7 @@
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
 #include "innocent/program.h"
+#include "innocent/resources.h"
 
 #include "innocent/opcode_handlers.cpp"
 
@@ -121,15 +122,15 @@ Argument *Interpreter::readImmediateArg() {
 	return new Uint16Argument(ptr);
 }
 
-/*Argument *Interpreter::readMainByteArg() {
+Argument *Interpreter::readMainByteArg() {
 	uint16 index = READ_LE_UINT16(_code);
 	_code += 2;
-	Argument *arg = new ByteArgument(_resources->getGlobalByteVar(index));
+	Argument *arg = new ByteArgument(_resources->getGlobalByteVariable(index));
 	debug(kOpcodeDetails, "byte wide variable in main, index 0x%04x, value 0x%02x", index, byte(*arg));
 	return arg;
 }
 
-Argument *Interpreter::readMainWordArg() {
+/*Argument *Interpreter::readMainWordArg() {
 	uint16 offset = READ_LE_UINT16(_code);
 	_code += 2;
 	Argument *arg = new Uint16Argument(_resources->getGlobalWordVar(offset/2));
@@ -156,10 +157,10 @@ Argument *Interpreter::getArgument() {
 		case kArgumentImmediate:
 			return readImmediateArg();
 /*		case kArgumentMainWord:
-			return readMainWordArg();
+			return readMainWordArg();*/
 		case kArgumentMainByte:
 			return readMainByteArg();
-		case kArgumentLocal:
+		/*case kArgumentLocal:
 			return readLocalArg();*/
 		default:
 			error("don't know how to handle argument type 0x%02x", argument_type);
@@ -171,8 +172,13 @@ const uint8 Interpreter::_argumentsCounts[] = {
 };
 
 void Interpreter::failedCondition() {
-	_failedCondition = true;
+	_failedCondition++;
 	debug(2, "if() condition failed, skipping instructions (depth %d)", _failedCondition);
+}
+
+void Interpreter::endIf() {
+	debug(2, "end if");
+	if (_failedCondition) _failedCondition--;
 }
 
 } // End of namespace Innocent
