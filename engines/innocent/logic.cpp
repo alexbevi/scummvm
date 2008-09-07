@@ -11,7 +11,9 @@ namespace Innocent {
 
 Logic::Logic(Engine *e) :
 		_engine(e),
-		_resources(e->resources())
+		_resources(e->resources()),
+		_currentRoom(0xffff),
+		_currentBlock(0xffff)
 	{}
 
 void Logic::init() {

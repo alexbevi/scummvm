@@ -18,7 +18,7 @@ public:
 private:
 	Program() { /* can only be created from a file */ }
 	byte *_code;
-	byte _footer[10];
+	byte _footer[0x10];
 
 	uint16 entryPointOffset();
 };
