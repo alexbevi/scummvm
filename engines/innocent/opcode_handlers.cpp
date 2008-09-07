@@ -105,6 +105,13 @@ OPCODE(0xd6) {
 	_logic->changeRoom(*args[0]);
 }
 
+OPCODE(0xe6) {
+	// set room loop code
+	const uint16 offset = args[0]->_ptr - _base;
+	debug(2, "setting room loop code to 0x%04x", offset);
+	_logic->setRoomLoopCode(this, offset);
+}
+
 OPCODE(0xef) {
 	// random
 	*args[1] = _engine->getRandom(*args[0]);

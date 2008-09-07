@@ -24,10 +24,16 @@ void Logic::setProtagonist(uint16 actor) {
 	_protagonist = actor;
 }
 
+void Logic::setRoomLoopCode(Interpreter *interpreter, uint16 offset) {
+	_roomLoopCode.first = interpreter;
+	_roomLoopCode.second = offset;
+}
+
 void Logic::changeRoom(uint16 newRoom) {
 	if (newRoom == _currentRoom)
 		return;
 	_currentRoom = newRoom;
+	_roomLoopCode.first = 0;
 	debug(2, "changing room to %d", newRoom);
 	uint16 newBlock = _resources->blockOfRoom(_currentRoom);
 	if (newBlock != _currentBlock) {
