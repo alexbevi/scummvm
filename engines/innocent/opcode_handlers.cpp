@@ -23,6 +23,11 @@ OPCODE(0x2d) {
 	endIf();
 }
 
+OPCODE(0x3d) {
+	// save first arg -- instruction pointer -- for after skipping animation
+	debug(1, "set skip point opcode 0x3d stub");
+}
+
 OPCODE(0x70) {
 	// assign
 	*args[0] = *args[1];
