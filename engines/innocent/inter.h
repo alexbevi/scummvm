@@ -98,6 +98,7 @@ private:
 	Argument *readImmediateArg(byte *&code);
 	Argument *readMainWordArg(byte *&code);
 	Argument *readMainByteArg(byte *&code);
+	Argument *readStringArg(byte *&code);
 	Argument *readLocalArg(byte *&code);
 
 	Status run(uint16 offset);

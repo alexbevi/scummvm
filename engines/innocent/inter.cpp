@@ -133,6 +133,7 @@ enum ArgumentTypes {
 	kArgumentImmediate = 1,
 	kArgumentMainWord = 2,
 	kArgumentMainByte = 3,
+	kArgumentString = 7,
 	kArgumentLocal = 9
 };
 
@@ -168,6 +169,53 @@ Argument *Interpreter::readLocalArg(byte *&code) {
 	return arg;
 }
 
+class StringArgument : public Argument {
+public:
+	StringArgument(byte *code) : Argument(code) {}
+};
+
+Argument *Interpreter::readStringArg(byte *&code) {
+	Argument *arg = new StringArgument(code);
+
+	// skip the string
+	byte ch;
+
+	debug(3, "string argument");
+
+	bool displayed = false;
+
+	do {
+		ch = *(code++);
+		// try string args len
+		switch (ch) {
+		case 9:
+		case 7:
+			code ++;
+		case 6:
+		case 10:
+		case 11:
+			code ++;
+		case 14:
+		case 3:
+			code += 2;
+			displayed = false;
+		}
+
+		if (ch == 5) {
+			while (*(code++) != 0);
+			code += 2;
+			displayed = false;
+			continue;
+		}
+
+		if (!displayed) {
+			debug(4, "string part: %s", code - 1);
+			displayed = true;
+		}
+	} while (ch != 0);
+
+	return arg;
+}
 
 Argument *Interpreter::getArgument(byte *&code) {
 	uint8 argument_type = code[1];
@@ -181,6 +229,8 @@ Argument *Interpreter::getArgument(byte *&code) {
 			return readMainWordArg(code);
 		case kArgumentMainByte:
 			return readMainByteArg(code);
+		case kArgumentString:
+			return readStringArg(code);
 		case kArgumentLocal:
 			return readLocalArg(code);
 		default:
