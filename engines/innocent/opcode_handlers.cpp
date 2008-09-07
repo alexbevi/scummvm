@@ -83,5 +83,10 @@ OPCODE(0xd6) {
 	_logic->changeRoom(*args[0]);
 }
 
+OPCODE(0xef) {
+	// random
+	*args[1] = _engine->getRandom(*args[0]);
+	debug(2, "%p = %d (random, max %d)", args[1]->_ptr, uint16(*args[1]), uint16(*args[0]));
+}
 
 } // End of namespace Innocent

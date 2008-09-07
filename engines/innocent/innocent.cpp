@@ -63,4 +63,8 @@ int Engine::go() {
 	return 0;
 }
 
+uint16 Engine::getRandom(uint16 max) const {
+	return _rnd.getRandomNumber(max);
+}
+
 } // End of namespace Innocent
