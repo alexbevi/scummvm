@@ -55,8 +55,7 @@ Interpreter::Interpreter(Logic *l, byte *base) :
 		_logic(l),
 		_engine(l->engine()),
 		_resources(_engine->resources()),
-		_base(base),
-		_code(base)
+		_base(base)
 		{
 	init_opcodes<255>();
 	init();
@@ -74,17 +73,17 @@ void Interpreter::init() {
 }
 
 Status Interpreter::run(uint16 offset, OpcodeMode mode) {
-	_code = _base + offset;
 	_mode = mode;
-	return run();
+	return run(offset);
 }
 
-Status Interpreter::run() {
+Status Interpreter::run(uint16 offset) {
+	byte *code = _base + offset;
 	_failedCondition = 0;
 	_return = false;
 
 	while (!_return) {
-		byte opcode = *_code;
+		byte opcode = *code;
 		if (opcode > kOpcodeMax) {
 			return kInvalidOpcode;
 		}
@@ -97,10 +96,10 @@ Status Interpreter::run() {
 		Argument *args[6];
 
 		for (uint i = 0; i < nargs; i++)
-			args[i] = getArgument();
+			args[i] = getArgument(code);
 
 		if (nargs == 0)
-			_code += 2;
+			code += 2;
 
 		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_failedCondition)
 			(this->*handler)(args);
@@ -125,53 +124,53 @@ enum ArgumentTypes {
 	kArgumentLocal = 9
 };
 
-Argument *Interpreter::readImmediateArg() {
-	debug(kOpcodeDetails, "immediate, value 0x%04x", READ_LE_UINT16(_code));
-	byte *ptr = _code;
-	_code += 2;
+Argument *Interpreter::readImmediateArg(byte *&code) {
+	debug(kOpcodeDetails, "immediate, value 0x%04x", READ_LE_UINT16(code));
+	byte *ptr = code;
+	code += 2;
 	return new Uint16Argument(ptr);
 }
 
-Argument *Interpreter::readMainByteArg() {
-	uint16 index = READ_LE_UINT16(_code);
-	_code += 2;
+Argument *Interpreter::readMainByteArg(byte *&code) {
+	uint16 index = READ_LE_UINT16(code);
+	code += 2;
 	Argument *arg = new ByteArgument(_resources->getGlobalByteVariable(index));
 	debug(kOpcodeDetails, "byte wide variable in main, index 0x%04x, value 0x%02x", index, byte(*arg));
 	return arg;
 }
 
-Argument *Interpreter::readMainWordArg() {
-	uint16 offset = READ_LE_UINT16(_code);
-	_code += 2;
+Argument *Interpreter::readMainWordArg(byte *&code) {
+	uint16 offset = READ_LE_UINT16(code);
+	code += 2;
 	Argument *arg = new Uint16Argument(_resources->getGlobalWordVariable(offset/2));
 	debug(kOpcodeDetails, "word wide variable in main, index 0x%04x, value 0x%04x", offset/2, uint16(*arg));
 	return arg;
 }
 
 
-Argument *Interpreter::readLocalArg() {
-	uint16 offset = READ_LE_UINT16(_code);
-	_code += 2;
+Argument *Interpreter::readLocalArg(byte *&code) {
+	uint16 offset = READ_LE_UINT16(code);
+	code += 2;
 	Argument *arg = new Uint16Argument(_base + offset);
 	debug(kOpcodeDetails, "local variable, offset 0x%04x, value 0x%04x", offset, uint16(*arg));
 	return arg;
 }
 
 
-Argument *Interpreter::getArgument() {
-	uint8 argument_type = _code[1];
-	_code += 2;
+Argument *Interpreter::getArgument(byte *&code) {
+	uint8 argument_type = code[1];
+	code += 2;
 	debug(kOpcodeDetails, "argument type %02x", argument_type);
 
 	switch (argument_type) {
 		case kArgumentImmediate:
-			return readImmediateArg();
+			return readImmediateArg(code);
 		case kArgumentMainWord:
-			return readMainWordArg();
+			return readMainWordArg(code);
 		case kArgumentMainByte:
-			return readMainByteArg();
+			return readMainByteArg(code);
 		case kArgumentLocal:
-			return readLocalArg();
+			return readLocalArg(code);
 		default:
 			error("don't know how to handle argument type 0x%02x", argument_type);
 	}

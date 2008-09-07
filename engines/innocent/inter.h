@@ -52,7 +52,7 @@ public:
 	 */
 	Status run(uint16 offset, OpcodeMode mode);
 
-	Argument *getArgument();
+	Argument *getArgument(byte *&code);
 
 	friend class Opcode;
 
@@ -69,15 +69,15 @@ public:
 	Logic *_logic;
 
 private:
-	Status run();
 	byte *_base;
-	byte *_code;
 	uint16 _mode;
 
-	Argument *readImmediateArg();
-	Argument *readMainWordArg();
-	Argument *readMainByteArg();
-	Argument *readLocalArg();
+	Argument *readImmediateArg(byte *&code);
+	Argument *readMainWordArg(byte *&code);
+	Argument *readMainByteArg(byte *&code);
+	Argument *readLocalArg(byte *&code);
+
+	Status run(uint16 offset);
 
 	void failedCondition();
 	void endIf();

@@ -9,6 +9,7 @@ namespace Innocent {
 
 OPCODE(0x01) {
 	// return (to caller or toplevel)
+	// TODO how does it play with 0x36?
 	goBack();
 }
 
@@ -21,6 +22,13 @@ OPCODE(0x12) {
 OPCODE(0x2d) {
 	// else
 	endIf();
+}
+
+OPCODE(0x36) {
+	// call
+	uint16 offset = args[0]->_ptr - _base;
+	debug(2, "calling procedure 0x%04x", offset);
+	run(offset);
 }
 
 OPCODE(0x3d) {
