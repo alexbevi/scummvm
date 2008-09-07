@@ -44,24 +44,32 @@ OPCODE(0x55) {
 
 OPCODE(0x60) {
 	// lookup locally
-	// takes a local variable index (1st)
+	// takes a list (1st)
 	// a value (2nd)
-	// an offset (3rd)
-	// searches through a -1-terminated list starting at the variable for the value
-	// returns it if found, -1 otherwise
-	// if out arg is 4-byte, return a value from position shifted by the offset from the matched position
-	// saves result in 4th argument
-	byte *pos = _base + uint16(*args[0]);
-	debug(2, "looking for %d starting at %p", uint16(*args[1]), pos);
-	uint16 result;
-	while ((result = READ_LE_UINT16(pos)) != 0xffff) {
-		if (result == uint16(*args[1]))
+	// a field (as offset from structure start) (3rd)
+	// first word on the list is entry length in words (minus one for index)
+	// then are entries, first word being index
+	// finds entry matching index == value in the list and
+	// saves value of specified field in 4th argument
+	byte *pos = args[0]->_ptr;
+	uint16 width = READ_LE_UINT16(pos);
+	debug(3, "looking for 0x%04x locally at offset 0x%04x, struct width is %d", pos - _base, uint16(*args[0]), width);
+	pos += 2;
+	while(true) {
+		uint16 index = READ_LE_UINT16(pos);
+		if (index == 0xffff) {
+			*args[3] = index;
 			break;
+		}
 		pos += 2;
+		if (index == uint16(*args[1])) {
+			*args[3] = READ_LE_UINT16(pos + uint16(*args[2]));
+			break;
+		}
+		pos += width * 2;
 	}
 
-	*args[3] = result;
-	debug(2, "result: %p = %d", args[3]->_ptr, result);
+	debug(2, "list lookup result: %p = %d", args[3]->_ptr, uint16(*args[3]));
 }
 
 OPCODE(0x70) {
@@ -118,9 +126,7 @@ OPCODE(0xe6) {
 
 OPCODE(0xef) {
 	// random
-//	debug(1, "opcode 0xef seems to be random, but that breaks copyprot. returning 0 instead.");
-//	*args[1] = uint16(_engine->getRandom(*args[0]) >> 8);
-	*args[1] = byte(7);
+	*args[1] = uint16(_engine->getRandom(*args[0]));
 	debug(2, "%p = %d (random, max %d)", args[1]->_ptr, uint16(*args[1]), uint16(*args[0]));
 }
 
