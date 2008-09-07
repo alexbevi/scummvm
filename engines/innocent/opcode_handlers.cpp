@@ -18,6 +18,12 @@ OPCODE(0x2d) {
 	endIf();
 }
 
+OPCODE(0x70) {
+	// assign
+	*args[0] = *args[1];
+	debug(2, "%p = %d", args[0]->_ptr, uint16(*args[1]));
+}
+
 OPCODE(0x72) {
 	// assign 1
 	*args[0] = byte(1);
