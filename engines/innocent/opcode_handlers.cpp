@@ -8,94 +8,9 @@
 
 namespace Innocent {
 
-enum Debug {
-	kOpcodesHit = 2
-};
-
-#define OPCODE(name) static void name(Interpreter *self, Argument *args[])
-
-class OpcodeHandlers {
-public:
-	// 0x01 return
-	// goes to the caller or terminates interpretation
-	OPCODE(returnUp) {
-		debug(kOpcodesHit, "returning control to ScummVM");
-		self->returnUp();
-		// TODO no callstack
-	}
-
-	// 0x12 take bitmask of sound modes and see if they're supported
-	OPCODE(testSound) {
-		debug(kOpcodesHit, "test_sound(0x%04x) STUB", uint16(*args[0]));
-		// stub
-		// if no sound self->_abort = 1;
-	}
-
-	// 0x2d forget about last error
-	OPCODE(decErrors) {
-		self->forgetLastError();
-	}
-
-	// 0x70
-	// assign second arg to first
-	OPCODE(assign) {
-		debug(kOpcodesHit, "[%p] = 0x%04d", args[0]->_ptr, uint16(*args[1]));
-		*args[0] = uint16(*args[1]);
-	}
-
-	// 0x72
-	// set first argument to 1
-	OPCODE(assignOne) {
-		debug(kOpcodesHit, "[%p] = 1", args[0]->_ptr);
-		*args[0] = byte(1);
-	}
-
-	// 0x73
-	// set first argument to 0
-	OPCODE(assignZero) {
-		debug(kOpcodesHit, "[%p] = 0", args[0]->_ptr);
-		*args[0] = byte(0);
-	}
-
-	// 0x9d
-	static void setProtagonist(Interpreter *self, Argument *args[]) {
-		debug(kOpcodesHit, "setProtagonist(0x%04x)", uint16(*args[0]));
-
-		self->_logic->setProtagonistId(*args[0]);
-	}
-
-	// 0xc9 set backdrop image id (probably)
-	OPCODE(setBackdrop) {
-		self->_logic->_engine->_graphics->setBackdrop(*args[0]);
-	}
-
-	// 0xd6 change room // TODO perhaps more
-	OPCODE(setRoom) {
-		self->_logic->setRoom(*args[0]);
-	}
-
-	// 0xf0 load sfx file
-	OPCODE(loadSfxFile) {
-		// TODO
-		debug(1, "loadSfxFile(%d) STUB", uint16(*args[0]));
-	}
-
-	// 0xf9
-	// turn sound on/off
-	// first arg - 1=music, 2=sfx
-	// second arg - 1=on, 0=off
-	OPCODE(setSound) {
-		debug(kOpcodesHit, "setSound(): turning %s %s", uint16(*args[0]) == 1 ? "music" : "sfx", uint16(*args[1]) ? "on" : "off");
-		warning("setSound(): opcode STUB");
-	}
-};
-
-#undef OPCODE
-#define OPCODE(name) OpcodeHandlers::name
-
 Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 00 */ 0,
-	/* opcode 01 */ OPCODE(returnUp),
+	/* opcode 01 */ 0, //OPCODE(returnUp),
 	/* opcode 02 */ 0,
 	/* opcode 03 */ 0,
 	/* opcode 04 */ 0,
@@ -112,7 +27,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 0f */ 0,
 	/* opcode 10 */ 0,
 	/* opcode 11 */ 0,
-	/* opcode 12 */ OpcodeHandlers::testSound,
+	/* opcode 12 */ 0, //OpcodeHandlers::testSound,
 	/* opcode 13 */ 0,
 	/* opcode 14 */ 0,
 	/* opcode 15 */ 0,
@@ -139,7 +54,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 2a */ 0,
 	/* opcode 2b */ 0,
 	/* opcode 2c */ 0,
-	/* opcode 2d */ OpcodeHandlers::decErrors,
+	/* opcode 2d */ 0, //OpcodeHandlers::decErrors,
 	/* opcode 2e */ 0,
 	/* opcode 2f */ 0,
 	/* opcode 30 */ 0,
@@ -206,10 +121,10 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 6d */ 0,
 	/* opcode 6e */ 0,
 	/* opcode 6f */ 0,
-	/* opcode 70 */ OpcodeHandlers::assign,
+	/* opcode 70 */ 0, //OpcodeHandlers::assign,
 	/* opcode 71 */ 0,
-	/* opcode 72 */ OpcodeHandlers::assignOne,
-	/* opcode 73 */ OpcodeHandlers::assignZero,
+	/* opcode 72 */ 0, //OpcodeHandlers::assignOne,
+	/* opcode 73 */ 0, //OpcodeHandlers::assignZero,
 	/* opcode 74 */ 0,
 	/* opcode 75 */ 0,
 	/* opcode 76 */ 0,
@@ -251,7 +166,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode 9a */ 0,
 	/* opcode 9b */ 0,
 	/* opcode 9c */ 0,
-	/* opcode 9d */ OpcodeHandlers::setProtagonist,
+	/* opcode 9d */ 0, //OpcodeHandlers::setProtagonist,
 	/* opcode 9e */ 0,
 	/* opcode 9f */ 0,
 	/* opcode a0 */ 0,
@@ -295,7 +210,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode c6 */ 0,
 	/* opcode c7 */ 0,
 	/* opcode c8 */ 0,
-	/* opcode c9 */ OpcodeHandlers::setBackdrop,
+	/* opcode c9 */ 0, //OpcodeHandlers::setBackdrop,
 	/* opcode ca */ 0,
 	/* opcode cb */ 0,
 	/* opcode cc */ 0,
@@ -308,7 +223,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode d3 */ 0,
 	/* opcode d4 */ 0,
 	/* opcode d5 */ 0,
-	/* opcode d6 */ OpcodeHandlers::setRoom,
+	/* opcode d6 */ 0, //OpcodeHandlers::setRoom,
 	/* opcode d7 */ 0,
 	/* opcode d8 */ 0,
 	/* opcode d9 */ 0,
@@ -334,7 +249,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode ed */ 0,
 	/* opcode ee */ 0,
 	/* opcode ef */ 0,
-	/* opcode f0 */ OpcodeHandlers::loadSfxFile,
+	/* opcode f0 */ 0, //OpcodeHandlers::loadSfxFile,
 	/* opcode f1 */ 0,
 	/* opcode f2 */ 0,
 	/* opcode f3 */ 0,
@@ -343,7 +258,7 @@ Interpreter::OpcodeHandler Interpreter::_handlers[] = {
 	/* opcode f6 */ 0,
 	/* opcode f7 */ 0,
 	/* opcode f8 */ 0,
-	/* opcode f9 */ OpcodeHandlers::setSound,
+	/* opcode f9 */ 0, //OpcodeHandlers::setSound,
 	/* opcode fa */ 0,
 	/* opcode fb */ 0,
 	/* opcode fc */ 0,

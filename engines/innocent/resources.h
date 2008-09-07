@@ -43,6 +43,8 @@ public:
 
 	static void descramble(byte *data, uint32 length);
 
+	byte *initialCode() const;
+
 private:
 	void loadGraphicFiles();
 

@@ -12,6 +12,7 @@ public:
 
 	byte *begin();
 	byte *localVariable(uint16 offset);
+	byte *roomHandler(uint16 room);
 
 private:
 	Program() { /* can only be created from a file */ }

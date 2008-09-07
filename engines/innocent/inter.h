@@ -10,8 +10,19 @@ namespace Innocent {
 
 class Logic;
 class Opcode;
+class Engine;
+class Resources;
 
 #define UNIMPLEMENTED { error("type conversion unimplemented"); }
+
+enum OpcodeMode {
+	kCodeInitial = 0
+};
+
+enum Status {
+	kReturned = 0,
+	kInvalidOpcode = 1
+};
 
 class Argument {
 public:
@@ -26,15 +37,14 @@ public:
 
 class Interpreter {
 public:
-	Interpreter(Logic *l);
+	Interpreter(Engine *e);
 
 	/**
 	 * Run bytecode.
 	 * @param code a Common::ReadStream pointing to code. The interpreter takes ownership of it.
 	 * @param mode interpreting mode.
 	 */
-	void run(byte *code, uint16 mode);
-	void run();
+	Status run(byte *code, OpcodeMode mode);
 
 	Argument *getArgument();
 
@@ -51,6 +61,7 @@ public:
 	Logic *_logic;
 
 private:
+	Status run();
 	uint8 _currentCode; // for error reporting
 	byte *_code;
 	uint16 _mode;
@@ -64,6 +75,8 @@ private:
 	void forgetLastError();
 	void returnUp();
 	uint8 _return;
+	Engine *_engine;
+	Resources *_resources;
 };
 
 } // End of namespace Innocent

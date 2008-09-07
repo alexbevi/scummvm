@@ -14,10 +14,10 @@
 namespace Innocent {
 
 Engine::Engine(OSystem *syst) :
-		::Engine(syst),
-		_resources(new Resources),
-		_graphics(new Graphics(this)),
-		_logic(new Logic(this)) {
+		::Engine(syst) {
+	_resources.reset(new Resources);
+	_graphics.reset(new Graphics(this));
+	_logic.reset(new Logic(this));
 	Common::addSpecialDebugLevel(kDebug, "example", "example special debug level");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
@@ -31,11 +31,12 @@ Engine::~Engine() {
 
 int Engine::init() {
 	_resources->init();
-	_graphics->init();
 	GFX_TRANSACTION {
 		initCommonGFX(true);
 		_system->initSize(320, 200);
 	}
+	_graphics->init();
+	_logic->init();
 
 	_console = new Console(this);
 
@@ -46,8 +47,18 @@ int Engine::init() {
 int Engine::go() {
 	printf("Innocent::Engine: Hello, world!\n");
 	debugC(1, kDebug, "example debug call");
-	
-	_logic->start();
+
+/*	while (1) {
+		_logic->invokeNewRoomCode();
+		while (1) {
+			_graphics->clearScreen();
+			_graphics->loadBackdrop();
+			_graphics->paintBackdrop();
+			_graphics->paintInterface();
+
+			_system->updateScreen();
+		}
+	}*/
 
 	return 0;
 }

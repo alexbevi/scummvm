@@ -33,7 +33,7 @@ enum Offsets {
 
 void MainDat::readFile(SeekableReadStream &stream) {
 	_dataLen = stream.readUint16LE();
-	debug(kDataRead, "length of main data is %d", _dataLen);
+	debug(2, "length of main data is %d", _dataLen);
 
 	_data = new byte[_dataLen];
 	stream.seek(0);
@@ -43,7 +43,7 @@ void MainDat::readFile(SeekableReadStream &stream) {
 	stream.read(_footer, kFooterLen);
 
 	_imageDirectory = _data + READ_LE_UINT16(_footer + kImageDirectory);
-	debug(kDataRead, "image directory offset is %04x", _imageDirectory - _data);
+	debug(2, "image directory offset is %04x", _imageDirectory - _data);
 
 	_programsCount = READ_LE_UINT16(_footer + kProgEntriesCount1);
 

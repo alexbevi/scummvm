@@ -3,6 +3,7 @@
 #include "common/endian.h"
 #include "common/util.h"
 
+#include "innocent/innocent.h"
 #include "innocent/logic.h"
 #include "innocent/program.h"
 
@@ -32,32 +33,36 @@ public:
 	Argument operator=(byte b) { *_ptr = b; return *this; }
 };
 
-Interpreter::Interpreter(Logic *l) :
-		_logic(l) {
+Interpreter::Interpreter(Engine *e) :
+		_engine(e),
+		_logic(e->logic()),
+		_resources(e->resources())
+		{
 }
 
-void Interpreter::run(byte *code, uint16 mode) {
+
+/* mode:
+0 - initialization,
+1 - room handler,
+8 - dataset init
+*/
+Status Interpreter::run(byte *code, OpcodeMode mode) {
 	_code = code;
 	_mode = mode;
-	run();
+	return run();
 }
 
-void Interpreter::run() {
-	uint16 abort_exec0 = 0;
-
+Status Interpreter::run() {
 	_errorCount = 0;
 
-	while (_logic->_status == Logic::kStatusOk) {
-		if (_logic->_status != Logic::kStatusOk)
-			return;
-
+	while (true) {
 		byte opcode = *_code;
 		if (opcode > kOpcodeMax) {
-			_logic->_status = Logic::kInvalidOpcode;
-			return;
+			return kInvalidOpcode;
 		}
 
 		uint8 nargs = _argumentsCounts[opcode];
+		debug(4, "opcode %02x with %d args", opcode, nargs);
 
 		_currentCode = opcode;
 		OpcodeHandler handler = _handlers[opcode];
@@ -80,9 +85,11 @@ void Interpreter::run() {
 		for (int i = 0; i < nargs; i++)
 			delete args[i];
 
-		if (abort_exec0 || _return)
+		if (_return)
 			break;
 	}
+
+	return kReturned;
 }
 
 void Interpreter::returnUp() {
@@ -96,7 +103,7 @@ void Interpreter::forgetLastError() {
 }
 
 void Interpreter::defaultHandler(Interpreter *self, Argument /*args*/*[]) {
-	warning("unhandled opcode %d [=0x%02x]", self->_currentCode, self->_currentCode);
+	error("unhandled opcode %d [=0x%02x]", self->_currentCode, self->_currentCode);
 }
 
 enum ArgumentTypes {
@@ -113,10 +120,10 @@ Argument *Interpreter::readImmediateArg() {
 	return new Uint16Argument(ptr);
 }
 
-Argument *Interpreter::readMainByteArg() {
+/*Argument *Interpreter::readMainByteArg() {
 	uint16 index = READ_LE_UINT16(_code);
 	_code += 2;
-	Argument *arg = new ByteArgument(_logic->getGlobalByteVar(index));
+	Argument *arg = new ByteArgument(_resources->getGlobalByteVar(index));
 	debug(kOpcodeDetails, "byte wide variable in main, index 0x%04x, value 0x%02x", index, byte(*arg));
 	return arg;
 }
@@ -124,10 +131,11 @@ Argument *Interpreter::readMainByteArg() {
 Argument *Interpreter::readMainWordArg() {
 	uint16 offset = READ_LE_UINT16(_code);
 	_code += 2;
-	Argument *arg = new Uint16Argument(_logic->getGlobalWordVar(offset/2));
+	Argument *arg = new Uint16Argument(_resources->getGlobalWordVar(offset/2));
 	debug(kOpcodeDetails, "word wide variable in main, index 0x%04x, value 0x%04x", offset/2, uint16(*arg));
 	return arg;
 }
+
 
 Argument *Interpreter::readLocalArg() {
 	uint16 offset = READ_LE_UINT16(_code);
@@ -136,6 +144,7 @@ Argument *Interpreter::readLocalArg() {
 	debug(kOpcodeDetails, "local variable, offset 0x%04x, value 0x%04x", offset, uint16(*arg));
 	return arg;
 }
+*/
 
 Argument *Interpreter::getArgument() {
 	uint8 argument_type = _code[1];
@@ -145,12 +154,12 @@ Argument *Interpreter::getArgument() {
 	switch (argument_type) {
 		case kArgumentImmediate:
 			return readImmediateArg();
-		case kArgumentMainWord:
+/*		case kArgumentMainWord:
 			return readMainWordArg();
 		case kArgumentMainByte:
 			return readMainByteArg();
 		case kArgumentLocal:
-			return readLocalArg();
+			return readLocalArg();*/
 		default:
 			error("don't know how to handle argument type 0x%02x", argument_type);
 	}

@@ -2,47 +2,19 @@
 
 #include "innocent/innocent.h"
 #include "innocent/inter.h"
-#include "innocent/program.h"
 #include "innocent/resources.h"
-#include "innocent/main_dat.h"
 
 namespace Innocent {
 
 Logic::Logic(Engine *e) :
 		_engine(e),
-		_interpreter(new Interpreter(this)),
-		_status(kStatusOk),
-		_resources(_engine->_resources.get()),
-		_main(_engine->_resources->_main.get()) // FIXME careful when restarting
+		_resources(e->resources()),
+		_interpreter(new Interpreter(_engine))
 	{}
 
-void Logic::start() {
-	byte *entry_point = _main->getEntryPoint();
-
-	_interpreter->run(entry_point, 0);
-	runRoomScript();
-}
-
-byte *Logic::getGlobalByteVar(uint16 index) {
-	return _main->getByteVar(index);
-}
-
-byte *Logic::getGlobalWordVar(uint16 index) {
-	return _main->getWordVar(index);
-}
-
-void Logic::setRoom(uint16 room) {
-	debug(2, "changing room to 0x%04x", room);
-	_currentRoom = room;
-	_roomScript.reset(_resources->getRoomScript(_currentRoom));
-}
-
-void Logic::runRoomScript() {
-	_interpreter->run(_roomScript->begin(), 8);
-}
-
-Program *Logic::roomScript() {
-	return _roomScript.get();
+void Logic::init() {
+	byte *initial_code = _resources->initialCode();
+	_interpreter->run(initial_code, kCodeInitial);
 }
 
 } // End of namespace Innocent

@@ -7,10 +7,14 @@
 
 namespace Innocent {
 
+Graphics::Graphics(Engine *engine)
+	 : _engine(engine), _resources(engine->resources()) {
+}
+
 void Graphics::loadInterface() {
 	byte palette[0x400];
 
-	_engine->_resources->loadInterfaceImage(_interface, palette);
+	_resources->loadInterfaceImage(_interface, palette);
 	debug(kAck, "loaded interface image");
 
 	_engine->_system->setPalette(palette + 160 * 4, 160, 96);

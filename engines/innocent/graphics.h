@@ -6,10 +6,11 @@
 namespace Innocent {
 
 class Engine;
+class Resources;
 
 class Graphics {
 public:
-	Graphics(Engine *engine) : _engine(engine) {}
+	Graphics(Engine *engine);
 
 	/**
 	 * Load interface image and palette; sets the palette.
@@ -28,6 +29,7 @@ public:
 private:
 	byte _interface[0x3c00];
 	Engine *_engine;
+	Resources *_resources;
 	uint16 _backdrop; // id of backdrop image (perhaps)
 };
 

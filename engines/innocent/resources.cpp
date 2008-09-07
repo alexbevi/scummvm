@@ -102,4 +102,8 @@ void Resources::descramble(byte *data, uint32 len) {
 		data[i] ^= 0x6f;
 }
 
+byte *Resources::initialCode() const {
+	return _main->getEntryPoint();
+}
+
 } // End of namespace Innocent
