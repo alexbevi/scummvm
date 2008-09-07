@@ -175,6 +175,7 @@ uint16 Resources::mainEntryPoint() const {
 Sprite *Resources::getGlyph(byte ch) const {
 	if (ch <= ' ' || ch > '~')
 		return 0;
+	debug(4, "looking for glyph '%c'", ch);
 	uint16 id = _main->getGlyphSpriteId(ch - ' ');
 	Sprite *s = loadSprite(id);
 	debug(4, "got glyph for '%c', %dx%d", ch, s->w, s->h);
