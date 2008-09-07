@@ -116,4 +116,13 @@ OPCODE(0xef) {
 	debug(2, "%p = %d (random, max %d)", args[1]->_ptr, uint16(*args[1]), uint16(*args[0]));
 }
 
+#define PCCODE(n) template<> void PeriodiCall::handle<n>()
+
+PCCODE(26) {
+	// set z index
+	setZIndex(_code[1]);
+	// TODO set field 16 to 0
+	_code += 2;
+}
+
 } // End of namespace Innocent

@@ -55,6 +55,9 @@ private:
 
 	template<int N>
 	void handle();
+
+	void setZIndex(int8 index);
+	int8 _zIndex;
 };
 
 class Interpreter {

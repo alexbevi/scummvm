@@ -212,7 +212,7 @@ void Interpreter::addPeriodiCall(byte *code) {
 	_periodiCalls.push_back(PeriodiCall(code));
 }
 
-PeriodiCall::PeriodiCall(byte *code) : _code(code) {
+PeriodiCall::PeriodiCall(byte *code) : _code(code), _zIndex(-1) {
 	initializeHandlers<kCodesNumber-1>();
 }
 
@@ -238,6 +238,11 @@ template<int N>
 void PeriodiCall::initializeHandlers() {
 	_handlers[N] = &PeriodiCall::handle<N>;
 	initializeHandlers<N-1>();
+}
+
+void PeriodiCall::setZIndex(int8 index) {
+	debug(3, "setting z index to %d", index);
+	_zIndex = index;
 }
 
 template<>
