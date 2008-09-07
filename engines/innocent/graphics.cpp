@@ -8,7 +8,12 @@
 namespace Innocent {
 
 Graphics::Graphics(Engine *engine)
-	 : _engine(engine), _resources(engine->resources()) {
+	 : _engine(engine) {
+}
+
+void Graphics::init() {
+	 _resources = _engine->resources();
+	 loadInterface();
 }
 
 void Graphics::loadInterface() {
@@ -28,8 +33,11 @@ void Graphics::paintInterface() {
 }
 
 void Graphics::setBackdrop(uint16 id) {
-	debug(kAck, "setting backdrop image id to 0x%04x", id);
-	_backdrop = id;
+	debug(2, "setting backdrop image id to 0x%04x", id);
+
+	byte palette[0x400];
+	_backdrop.reset(_resources->loadBackdrop(id, palette));
+	debug(3, "backdrop loaded");
 }
 
 } // End of namespace Innocent

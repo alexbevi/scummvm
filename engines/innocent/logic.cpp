@@ -15,6 +15,7 @@ Logic::Logic(Engine *e) :
 	{}
 
 void Logic::init() {
+	_interpreter->init();
 	byte *initial_code = _resources->initialCode();
 	_interpreter->run(initial_code, kCodeInitial);
 }

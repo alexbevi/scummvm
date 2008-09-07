@@ -1,7 +1,13 @@
 #ifndef INNOCENT_GRAPHICS_H
 #define INNOCENT_GRAPHICS_H
 
+#include <memory>
+
 #include "config.h"
+
+namespace Graphics {
+class Surface;
+}
 
 namespace Innocent {
 
@@ -17,7 +23,7 @@ public:
 	 */
 	void loadInterface();
 
-	void init() { loadInterface(); }
+	void init();
 
 	/**
 	 * Paint the interface to proper portion of the screen.
@@ -30,7 +36,7 @@ private:
 	byte _interface[0x3c00];
 	Engine *_engine;
 	Resources *_resources;
-	uint16 _backdrop; // id of backdrop image (perhaps)
+	std::auto_ptr< ::Graphics::Surface> _backdrop;
 };
 
 } // End of namespace Innocent

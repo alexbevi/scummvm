@@ -65,6 +65,11 @@ Interpreter::Interpreter(Logic *l) :
 1 - room handler,
 8 - dataset init
 */
+
+void Interpreter::init() {
+	_graphics = _engine->graphics();
+}
+
 Status Interpreter::run(byte *code, OpcodeMode mode) {
 	_code = code;
 	_mode = mode;
@@ -100,6 +105,7 @@ Status Interpreter::run() {
 			if (opcode != 0 && opcode < 0x26)
 				_failedCondition++;
 		}
+		debug(4, "opcode executed");
 
 		for (int i = 0; i < nargs; i++)
 			delete args[i];

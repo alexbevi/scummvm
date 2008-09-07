@@ -28,13 +28,13 @@ public:
 
 	Logic *logic() { return _logic.get(); }
 	Resources *resources() { return _resources.get(); }
+	Graphics *graphics() { return _graphics.get(); }
 
-	std::auto_ptr<Graphics> _graphics;
 private:
 	Console *_console;
 	std::auto_ptr<Logic> _logic;
 	std::auto_ptr<Resources> _resources;
-
+	std::auto_ptr<Graphics> _graphics;
 
 	Common::RandomSource _rnd;
 };

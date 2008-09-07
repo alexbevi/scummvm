@@ -7,6 +7,10 @@
 
 #include "innocent/main_dat.h"
 
+namespace Graphics {
+class Surface;
+}
+
 namespace Innocent {
 
 class GraphicsMap;
@@ -46,7 +50,11 @@ public:
 	byte *initialCode() const;
 	byte *getGlobalByteVariable(uint16 var) const;
 
+	::Graphics::Surface *loadBackdrop(uint16 index, byte *palette);
+
 private:
+	void readPalette(Common::ReadStream *stream, byte *palette);
+	Common::ReadStream *imageStream(uint16 index);
 	void loadGraphicFiles();
 
 	static void decodeImage(Common::ReadStream *stream, byte *target, uint16 size);

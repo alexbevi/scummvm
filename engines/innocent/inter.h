@@ -12,6 +12,7 @@ class Logic;
 class Opcode;
 class Engine;
 class Resources;
+class Graphics;
 
 #define UNIMPLEMENTED { error("type conversion unimplemented"); }
 
@@ -38,6 +39,8 @@ public:
 class Interpreter {
 public:
 	Interpreter(Logic *l);
+
+	void init();
 
 	/**
 	 * Run bytecode.
@@ -78,6 +81,7 @@ private:
 	uint16 _failedCondition;
 	Engine *_engine;
 	Resources *_resources;
+	Graphics *_graphics;
 };
 
 } // End of namespace Innocent

@@ -3,6 +3,7 @@
 #include "common/endian.h"
 #include "common/file.h"
 #include "common/util.h"
+#include "graphics/surface.h"
 
 #include "innocent/main_dat.h"
 #include "innocent/graph_dat.h"
@@ -52,15 +53,31 @@ void Resources::loadGraphicFiles() {
 	}
 }
 
-void Resources::loadImage(uint16 index, byte *target, uint16 size, byte *palette) {
-	debug(kAck, "loading image %04x", index);
+Common::ReadStream *Resources::imageStream(uint16 index) {
+	debug(kAck, "seeking image %04x", index);
 	uint16 file_index = _main->fileIndexOfImage(index);
 	debug(kDataRead, "file index is %d", file_index);
 	uint32 offset = _graphicsMap->offsetOfImage(index);
 	debug(kDataRead, "offset is %04d", offset);
 
 	SeekableReadStream *file = _graphicFiles[file_index].get();
-	file->seek(offset + 4);
+	file->seek(offset);
+
+	return file;
+}
+
+void Resources::readPalette(Common::ReadStream *stream, byte *palette) {
+	for(int i = 256; i; i--) { // convert to rgba
+		stream->read(palette, 3);
+		palette[3] = 0;
+		palette += 4;
+	}
+}
+
+void Resources::loadImage(uint16 index, byte *target, uint16 size, byte *palette) {
+	Common::ReadStream *file = imageStream(index);
+	(void) file->readUint16LE();
+	(void) file->readUint16LE(); // we know size alright
 
 	decodeImage(file, target, size);
 
@@ -68,10 +85,8 @@ void Resources::loadImage(uint16 index, byte *target, uint16 size, byte *palette
 		return;
 
 	file->readByte(); // skip zero
-	for(int i = 256; i; i--) { // convert to rgba
-		file->read(palette, 3);
-		palette += 4;
-	}
+
+	readPalette(file, palette);
 }
 
 void Resources::decodeImage(Common::ReadStream *stream, byte *target, uint16 size) {
@@ -109,5 +124,30 @@ void Resources::descramble(byte *data, uint32 len) {
 byte *Resources::initialCode() const {
 	return _main->getEntryPoint();
 }
+
+::Graphics::Surface *Resources::loadBackdrop(uint16 index, byte *palette) {
+	Common::ReadStream *stream = imageStream(index);
+
+	uint16 width = stream->readUint16LE();
+	uint16 height = stream->readUint16LE();
+
+	debug(2, "loading backdrop of size %dx%d", width, height);
+
+	Graphics::Surface *backdrop = new Graphics::Surface;
+	backdrop->create(width, height, 8);
+	debug(3, "surface created");
+
+	decodeImage(stream, reinterpret_cast<byte *>(backdrop->pixels), width * height);
+	debug(3, "stream decoded");
+
+	stream->readByte(); // skip zero
+
+	debug(3, "reading palette");
+	readPalette(stream, palette);
+	debug(3, "palette read");
+
+	return backdrop;
+}
+
 
 } // End of namespace Innocent

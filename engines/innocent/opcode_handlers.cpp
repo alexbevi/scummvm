@@ -1,5 +1,7 @@
 #include "innocent/inter.h"
 
+#include "innocent/graphics.h"
+
 #include "common/util.h"
 
 namespace Innocent {
@@ -25,6 +27,11 @@ OPCODE(0x72) {
 OPCODE(0x9d) {
 	// set protagonist
 	_logic->setProtagonist(*args[0]);
+}
+
+OPCODE(0xc9) {
+	// set backdrop
+	_graphics->setBackdrop(*args[0]);
 }
 
 
