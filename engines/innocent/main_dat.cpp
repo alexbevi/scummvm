@@ -67,10 +67,10 @@ uint16 MainDat::progEntriesCount1() const {
 
 uint16 MainDat::fileIndexOfImage(uint16 index) const {
 	uint32 offset = (index - 1) * 4;
-	debug(3, "finding file index of image 0x%x at offset 0x%x of directory", index, offset);
+	debug(4, "finding file index of image 0x%x at offset 0x%x of directory", index, offset);
 	uint16 fst = READ_LE_UINT16(_imageDirectory + offset);
 	uint16 snd = READ_LE_UINT16(_imageDirectory + offset + 2);
-	debug(3, "read 0x%04x 0x%04x", fst, snd);
+	debug(4, "read 0x%04x 0x%04x", fst, snd);
 	return snd;
 }
 

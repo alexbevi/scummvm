@@ -118,7 +118,9 @@ OPCODE(0xe6) {
 
 OPCODE(0xef) {
 	// random
-	*args[1] = _engine->getRandom(*args[0]);
+//	debug(1, "opcode 0xef seems to be random, but that breaks copyprot. returning 0 instead.");
+//	*args[1] = uint16(_engine->getRandom(*args[0]) >> 8);
+	*args[1] = byte(7);
 	debug(2, "%p = %d (random, max %d)", args[1]->_ptr, uint16(*args[1]), uint16(*args[0]));
 }
 
