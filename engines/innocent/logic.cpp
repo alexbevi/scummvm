@@ -25,4 +25,10 @@ void Logic::setProtagonist(uint16 actor) {
 	_protagonist = actor;
 }
 
+void Logic::changeRoom(uint16 newRoom) {
+	debug(2, "changing room to %d", newRoom);
+	_currentRoom = newRoom;
+	// TODO transitions, triggers etc.
+}
+
 } // End of namespace Innocent

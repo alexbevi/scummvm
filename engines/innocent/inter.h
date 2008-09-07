@@ -77,8 +77,11 @@ private:
 
 	void failedCondition();
 	void endIf();
+	void goBack();
 
 	uint16 _failedCondition;
+	bool _return;
+	
 	Engine *_engine;
 	Resources *_resources;
 	Graphics *_graphics;

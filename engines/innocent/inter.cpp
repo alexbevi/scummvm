@@ -78,8 +78,9 @@ Status Interpreter::run(byte *code, OpcodeMode mode) {
 
 Status Interpreter::run() {
 	_failedCondition = 0;
+	_return = false;
 
-	while (true) {
+	while (!_return) {
 		byte opcode = *_code;
 		if (opcode > kOpcodeMax) {
 			return kInvalidOpcode;
@@ -185,6 +186,11 @@ void Interpreter::failedCondition() {
 void Interpreter::endIf() {
 	debug(2, "end if");
 	if (_failedCondition) _failedCondition--;
+}
+
+void Interpreter::goBack() {
+	debug(2, "ceeding control");
+	_return = true;
 }
 
 } // End of namespace Innocent

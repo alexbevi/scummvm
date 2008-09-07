@@ -20,6 +20,8 @@ public:
 	// set actor# of the protagonist
 	void setProtagonist(uint16);
 
+	void changeRoom(uint16);
+
 	Engine *engine() { return _engine; }
 
 private:
@@ -27,6 +29,7 @@ private:
 	Resources *_resources;
 	std::auto_ptr<Interpreter> _interpreter;
 	uint16 _protagonist;
+	uint16 _currentRoom;
 };
 
 } // End of namespace Innocent
