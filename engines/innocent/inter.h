@@ -37,7 +37,7 @@ public:
 
 class Interpreter {
 public:
-	Interpreter(Engine *e);
+	Interpreter(Logic *l);
 
 	/**
 	 * Run bytecode.
@@ -64,18 +64,17 @@ public:
 
 private:
 	Status run();
-	uint8 _currentCode; // for error reporting
 	byte *_code;
 	uint16 _mode;
-	uint16 _errorCount;
 
 	Argument *readImmediateArg();
 	Argument *readMainWordArg();
 	Argument *readMainByteArg();
 	Argument *readLocalArg();
 
-	void forgetLastError();
-	void returnUp();
+	void failedCondition() { _failedCondition = true; }
+
+	uint16 _failedCondition;
 	uint8 _return;
 	Engine *_engine;
 	Resources *_resources;

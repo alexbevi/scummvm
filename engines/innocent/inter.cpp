@@ -7,6 +7,8 @@
 #include "innocent/logic.h"
 #include "innocent/program.h"
 
+#include "innocent/opcode_handlers.cpp"
+
 namespace Innocent {
 
 enum Debug {
@@ -48,10 +50,10 @@ public:
 	Argument operator=(byte b) { *_ptr = b; return *this; }
 };
 
-Interpreter::Interpreter(Engine *e) :
-		_engine(e),
-		_logic(e->logic()),
-		_resources(e->resources())
+Interpreter::Interpreter(Logic *l) :
+		_logic(l),
+		_engine(l->engine()),
+		_resources(_engine->resources())
 		{
 	init_opcodes<255>();
 }
@@ -69,7 +71,7 @@ Status Interpreter::run(byte *code, OpcodeMode mode) {
 }
 
 Status Interpreter::run() {
-	_errorCount = 0;
+	_failedCondition = 0;
 
 	while (true) {
 		byte opcode = *_code;
@@ -80,7 +82,6 @@ Status Interpreter::run() {
 		uint8 nargs = _argumentsCounts[opcode];
 		debug(4, "opcode %02x with %d args", opcode, nargs);
 
-		_currentCode = opcode;
 		OpcodeHandler handler = _handlers[opcode];
 
 		Argument *args[6];
@@ -91,10 +92,10 @@ Status Interpreter::run() {
 		if (nargs == 0)
 			_code += 2;
 
-		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_errorCount)
+		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_failedCondition)
 			(this->*handler)(args);
 		else if (opcode != 0 && opcode < 0x26)
-			_errorCount++;
+			_failedCondition++;
 
 		for (int i = 0; i < nargs; i++)
 			delete args[i];
@@ -104,16 +105,6 @@ Status Interpreter::run() {
 	}
 
 	return kReturned;
-}
-
-void Interpreter::returnUp() {
-	_return = 1;
-	// TODO currently only to the toplevel
-}
-
-void Interpreter::forgetLastError() {
-	if (_errorCount) _errorCount--;
-	debug(kOpcodeDetails, "forgotten last error, count now %d", _errorCount);
 }
 
 enum ArgumentTypes {
