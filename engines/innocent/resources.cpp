@@ -99,7 +99,8 @@ void Resources::loadImage(uint16 index, byte *target, uint16 size, byte *palette
 Image *Resources::loadImage(uint16 index) const {
 	Image * img = new Image;
 	img->create(320, 200, 8);
-	assert(img->pitch == 320);
+	debug(4, "image pitch is %d", img->pitch/8);
+	assert(img->pitch == 320*8);
 	loadImage(index, reinterpret_cast<byte *>(img->pixels), 320*200);
 	return img;
 }
@@ -195,8 +196,8 @@ Sprite *Image::cut(Common::Rect rect) const {
 	for (uint16 y = 0; y < rect.height(); y++) {
 		// TODO make it portable across compilers (probably replacing with std::copy is ok)
 		__gnu_cxx::copy_n(src, rect.width(), dest);
-		src += pitch;
-		dest += sprite->pitch;
+		src += pitch / 8;
+		dest += sprite->pitch / 8;
 	}
 	return sprite;
 }
@@ -207,7 +208,7 @@ enum {
 
 void Sprite::recolour(byte colour) {
 	byte *data = reinterpret_cast<byte *>(pixels);
-	std::replace(data, data + h * pitch, byte(kChangeableColour), colour);
+	std::replace(data, data + h * pitch/8, byte(kChangeableColour), colour);
 }
 
 } // End of namespace Innocent
