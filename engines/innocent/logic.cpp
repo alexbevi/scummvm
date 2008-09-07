@@ -10,14 +10,12 @@ namespace Innocent {
 
 Logic::Logic(Engine *e) :
 		_engine(e),
-		_resources(e->resources()),
-		_interpreter(new Interpreter(this))
+		_resources(e->resources())
 	{}
 
 void Logic::init() {
-	_interpreter->init();
-	byte *initial_code = _resources->initialCode();
-	_interpreter->run(initial_code, kCodeInitial);
+	_toplevelInterpreter.reset(new Interpreter(this, _resources->mainBase()));
+	_toplevelInterpreter->run(_resources->mainEntryPoint(), kCodeInitial);
 }
 
 void Logic::setProtagonist(uint16 actor) {

@@ -38,7 +38,7 @@ public:
 
 class Interpreter {
 public:
-	Interpreter(Logic *l);
+	Interpreter(Logic *l, byte *base);
 
 	void init();
 
@@ -47,7 +47,7 @@ public:
 	 * @param code a Common::ReadStream pointing to code. The interpreter takes ownership of it.
 	 * @param mode interpreting mode.
 	 */
-	Status run(byte *code, OpcodeMode mode);
+	Status run(uint16 offset, OpcodeMode mode);
 
 	Argument *getArgument();
 
@@ -67,6 +67,7 @@ public:
 
 private:
 	Status run();
+	byte *_base;
 	byte *_code;
 	uint16 _mode;
 

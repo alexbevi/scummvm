@@ -27,7 +27,7 @@ public:
 private:
 	Engine *_engine;
 	Resources *_resources;
-	std::auto_ptr<Interpreter> _interpreter;
+	std::auto_ptr<Interpreter> _toplevelInterpreter;
 	uint16 _protagonist;
 	uint16 _currentRoom;
 };

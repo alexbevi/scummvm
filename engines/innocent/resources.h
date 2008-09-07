@@ -24,10 +24,6 @@ public:
 	void load();
 	void init() { load(); }
 
-	MainDat *mainDat() const { return _main.get(); }
-	GraphicsMap *graphicsMap() const { return _graphicsMap.get(); }
-	ProgDat *progDat() const { return _progDat.get(); }
-
 	/**
 	 * Load an image. Automatically consult maps to choose the right file.
 	 * @param index image index,
@@ -41,19 +37,29 @@ public:
 		loadImage(_main->interfaceImageIndex(), target, 0x3c00, palette);
 	}
 
-	std::auto_ptr<MainDat> _main;
-
 	Program *getRoomScript(uint16 room);
 
 	static void descramble(byte *data, uint32 length);
 
-	byte *initialCode() const;
 	byte *getGlobalByteVariable(uint16 var) const;
 	byte *getGlobalWordVariable(uint16 var) const;
 
 	::Graphics::Surface *loadBackdrop(uint16 index, byte *palette);
 
+	/* pointer to the base of the main code */
+	byte *mainBase() const;
+	/* initial entry point offset */
+	uint16 mainEntryPoint() const;
+
+	friend class GraphicsMap;
+	friend class ProgDat;
+
 private:
+	std::auto_ptr<MainDat> _main;
+	MainDat *mainDat() const { return _main.get(); }
+	GraphicsMap *graphicsMap() const { return _graphicsMap.get(); }
+	ProgDat *progDat() const { return _progDat.get(); }
+
 	void readPalette(Common::ReadStream *stream, byte *palette);
 	Common::ReadStream *imageStream(uint16 index);
 	void loadGraphicFiles();

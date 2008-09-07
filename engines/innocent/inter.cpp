@@ -51,12 +51,15 @@ public:
 	Argument operator=(byte b) { *_ptr = b; return *this; }
 };
 
-Interpreter::Interpreter(Logic *l) :
+Interpreter::Interpreter(Logic *l, byte *base) :
 		_logic(l),
 		_engine(l->engine()),
-		_resources(_engine->resources())
+		_resources(_engine->resources()),
+		_base(base),
+		_code(base)
 		{
 	init_opcodes<255>();
+	init();
 }
 
 
@@ -70,8 +73,8 @@ void Interpreter::init() {
 	_graphics = _engine->graphics();
 }
 
-Status Interpreter::run(byte *code, OpcodeMode mode) {
-	_code = code;
+Status Interpreter::run(uint16 offset, OpcodeMode mode) {
+	_code = _base + offset;
 	_mode = mode;
 	return run();
 }

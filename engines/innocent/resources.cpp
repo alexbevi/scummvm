@@ -125,8 +125,12 @@ void Resources::descramble(byte *data, uint32 len) {
 		data[i] ^= 0x6f;
 }
 
-byte *Resources::initialCode() const {
-	return _main->getEntryPoint();
+byte *Resources::mainBase() const {
+	return _main->_data;
+}
+
+uint16 Resources::mainEntryPoint() const {
+	return _main->getEntryPoint() - mainBase();
 }
 
 ::Graphics::Surface *Resources::loadBackdrop(uint16 index, byte *palette) {
