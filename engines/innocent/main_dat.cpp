@@ -138,7 +138,7 @@ uint16 MainDat::getGlyphSpriteId(byte character) const {
 	byte *charmap = _data + READ_LE_UINT16(_footer + kCharacterMap);
 	charmap += (character - ' ') * 2;
 	uint16 id = READ_LE_UINT16(charmap);
-	debug(5, "searching for sprite of glyph %c, %d found", character, id);
+	debug(4, "searching for sprite of glyph '%c', %d found at 0x%04x", character, id, charmap - _data);
 	return id;
 }
 
