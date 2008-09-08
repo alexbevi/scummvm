@@ -33,7 +33,6 @@ public:
 	uint16 getRandom(uint16 max) const;
 
 private:
-	std::auto_ptr<Debugger> _debugger;
 	std::auto_ptr<Logic> _logic;
 	std::auto_ptr<Resources> _resources;
 	std::auto_ptr<Graphics> _graphics;

@@ -5,7 +5,6 @@
 
 #include "common/events.h"
 
-#include "innocent/debugger.h"
 #include "innocent/graphics.h"
 #include "innocent/logic.h"
 #include "innocent/resources.h"
@@ -19,7 +18,6 @@ Engine::Engine(OSystem *syst) :
 	_resources.reset(new Resources);
 	_graphics.reset(new Graphics(this));
 	_logic.reset(new Logic(this));
-	Common::addSpecialDebugLevel(kDebug, "example", "example special debug level");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
 	printf("Innocent::Engine::Engine\n");
@@ -39,7 +37,6 @@ int Engine::init() {
 	_graphics->init();
 	_logic->init();
 
-	_debugger.reset(new Debugger(this));
 
 	printf("Innocent::Engine::init\n");
 	return 0;
@@ -47,12 +44,10 @@ int Engine::init() {
 
 int Engine::go() {
 	printf("Innocent::Engine: Hello, world!\n");
-	debugC(1, kDebug, "example debug call");
 
 	while(!quit()) {
 		_graphics->paintBackdrop();
 		_logic->tick();
-		_debugger->onFrame();
 		_system->updateScreen();
 		_system->delayMillis(1000/20);
 	}

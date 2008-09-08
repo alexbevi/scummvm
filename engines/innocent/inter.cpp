@@ -101,7 +101,6 @@ Status Interpreter::run(uint16 offset) {
 		}
 
 		uint8 nargs = _argumentsCounts[opcode];
-		debug(4, "opcode %02x with %d args", opcode, nargs);
 
 		OpcodeHandler handler = _handlers[opcode];
 
@@ -116,11 +115,9 @@ Status Interpreter::run(uint16 offset) {
 		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_failedCondition)
 			(this->*handler)(args);
 		else {
-			debug(4, "skipped, skip depth = %d", _failedCondition);
 			if (opcode != 0 && opcode < 0x26)
 				_failedCondition++;
 		}
-		debug(4, "opcode executed");
 
 		for (int i = 0; i < nargs; i++)
 			delete args[i];
@@ -138,7 +135,6 @@ enum ArgumentTypes {
 };
 
 Argument *Interpreter::readImmediateArg(byte *&code) {
-	debug(kOpcodeDetails, "immediate, value 0x%04x", READ_LE_UINT16(code));
 	byte *ptr = code;
 	code += 2;
 	return new Uint16Argument(ptr);
@@ -148,7 +144,6 @@ Argument *Interpreter::readMainByteArg(byte *&code) {
 	uint16 index = READ_LE_UINT16(code);
 	code += 2;
 	Argument *arg = new ByteArgument(_resources->getGlobalByteVariable(index));
-	debug(kOpcodeDetails, "byte wide variable in main, index 0x%04x, value 0x%02x", index, byte(*arg));
 	return arg;
 }
 
@@ -156,7 +151,6 @@ Argument *Interpreter::readMainWordArg(byte *&code) {
 	uint16 offset = READ_LE_UINT16(code);
 	code += 2;
 	Argument *arg = new Uint16Argument(_resources->getGlobalWordVariable(offset/2));
-	debug(kOpcodeDetails, "word wide variable in main, index 0x%04x, value 0x%04x", offset/2, uint16(*arg));
 	return arg;
 }
 
@@ -165,7 +159,6 @@ Argument *Interpreter::readLocalArg(byte *&code) {
 	uint16 offset = READ_LE_UINT16(code);
 	code += 2;
 	Argument *arg = new Uint16Argument(_base + offset);
-	debug(kOpcodeDetails, "local variable, offset 0x%04x, value 0x%04x", offset, uint16(*arg));
 	return arg;
 }
 
@@ -196,7 +189,6 @@ Interpreter::StringArgument::StringArgument(byte *code, Resources *res) : Argume
 		}
 	}
 	*str = 0;
-	debug(2, "string parameter: %s", _translateBuf);
 }
 
 Argument *Interpreter::readStringArg(byte *&code) {
@@ -205,7 +197,6 @@ Argument *Interpreter::readStringArg(byte *&code) {
 	// skip the string
 	byte ch;
 
-	debug(3, "string argument");
 
 	bool displayed = false;
 
@@ -234,7 +225,6 @@ Argument *Interpreter::readStringArg(byte *&code) {
 		}
 
 		if (!displayed) {
-			debug(4, "string part: %s", code - 1);
 			displayed = true;
 		}
 	} while (ch != 0);
@@ -245,7 +235,6 @@ Argument *Interpreter::readStringArg(byte *&code) {
 Argument *Interpreter::getArgument(byte *&code) {
 	uint8 argument_type = code[1];
 	code += 2;
-	debug(kOpcodeDetails, "argument type %02x", argument_type);
 
 	switch (argument_type) {
 		case kArgumentImmediate:
@@ -269,21 +258,17 @@ const uint8 Interpreter::_argumentsCounts[] = {
 
 void Interpreter::failedCondition() {
 	_failedCondition++;
-	debug(2, "if() condition failed, skipping instructions (depth %d)", _failedCondition);
 }
 
 void Interpreter::endIf() {
-	debug(2, "end if");
 	if (_failedCondition) _failedCondition--;
 }
 
 void Interpreter::goBack() {
-	debug(2, "ceeding control");
 	_return = true;
 }
 
 void Interpreter::addAnimation(byte *code) {
-	debug(2, "added animation 0x%04x", code - _base);
 	_animations.push_back(Animation(code, _resources));
 }
 
@@ -294,15 +279,11 @@ Animation::Animation(byte *code, Resources *resources) : _code(code), _zIndex(-1
 void Animation::tick() {
 	byte opcode = *_code;
 
-	debug(3, "running animation opcode 0x%02x", opcode);
 	if (!(opcode & 0x80)) {
-		debug(3, "mask fail!");
 		return;
 	}
 	opcode = ~opcode;
-	debug(3, "transformed 0x%02x", opcode);
 	if (opcode >= 0x27) {
-		debug(3, "code fail!");
 		return;
 	}
 
@@ -316,7 +297,6 @@ void Animation::initializeHandlers() {
 }
 
 void Animation::setZIndex(int8 index) {
-	debug(3, "setting z index to %d", index);
 	_zIndex = index;
 }
 

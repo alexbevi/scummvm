@@ -38,7 +38,6 @@ public:
 	virtual operator byte() const UNIMPLEMENTED
 	virtual Argument operator=(byte b) UNIMPLEMENTED
 	virtual Argument operator=(uint16 b) UNIMPLEMENTED
-	byte *_ptr; // for debug
 };
 
 class Animation {

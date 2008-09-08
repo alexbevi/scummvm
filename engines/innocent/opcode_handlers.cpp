@@ -15,7 +15,6 @@ OPCODE(0x01) {
 
 OPCODE(0x12) {
 	// if sound is on then
-	debug(1, "sound test opcode 0x12 stub");
 	failedCondition();
 }
 
@@ -27,13 +26,11 @@ OPCODE(0x2d) {
 OPCODE(0x36) {
 	// call
 	uint16 offset = args[0]->_ptr - _base;
-	debug(2, "calling procedure 0x%04x", offset);
 	run(offset);
 }
 
 OPCODE(0x3d) {
 	// save first arg -- instruction pointer -- for after skipping animation
-	debug(1, "set skip point opcode 0x3d stub");
 }
 
 OPCODE(0x55) {
@@ -53,7 +50,6 @@ OPCODE(0x60) {
 	// saves value of specified field in 4th argument
 	byte *pos = args[0]->_ptr;
 	uint16 width = READ_LE_UINT16(pos);
-	debug(3, "looking for 0x%04x locally at offset 0x%04x, struct width is %d", pos - _base, uint16(*args[0]), width);
 	pos += 2;
 	while(true) {
 		uint16 index = READ_LE_UINT16(pos);
@@ -69,19 +65,16 @@ OPCODE(0x60) {
 		pos += width * 2;
 	}
 
-	debug(2, "list lookup result: %p = %d", args[3]->_ptr, uint16(*args[3]));
 }
 
 OPCODE(0x70) {
 	// assign
 	*args[0] = *args[1];
-	debug(2, "%p = %d", args[0]->_ptr, uint16(*args[1]));
 }
 
 OPCODE(0x72) {
 	// assign 1
 	*args[0] = byte(1);
-	debug(2, "%p = 1", args[0]->_ptr);
 }
 
 OPCODE(0x73) {
@@ -112,7 +105,6 @@ OPCODE(0xc9) {
 
 OPCODE(0xcc) {
 	// go fullscreen
-	debug(1, "go fullscreen opcode 0xcc stub");
 }
 
 OPCODE(0xd6) {
@@ -128,7 +120,6 @@ OPCODE(0xe6) {
 OPCODE(0xef) {
 	// random
 	*args[1] = uint16(_engine->getRandom(*args[0]));
-	debug(2, "%p = %d (random, max %d)", args[1]->_ptr, uint16(*args[1]), uint16(*args[0]));
 }
 
 #define ANIMCODE(n) template<> void Animation::handle<n>()

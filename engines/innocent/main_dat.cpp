@@ -36,7 +36,6 @@ enum Offsets {
 
 void MainDat::readFile(SeekableReadStream &stream) {
 	_dataLen = stream.readUint16LE();
-	debug(2, "length of main data is %d", _dataLen);
 
 	_data = new byte[_dataLen];
 	stream.seek(0);
@@ -46,7 +45,6 @@ void MainDat::readFile(SeekableReadStream &stream) {
 	stream.read(_footer, kFooterLen);
 
 	_imageDirectory = _data + READ_LE_UINT16(_footer + kImageDirectory);
-	debug(2, "image directory offset is %04x", _imageDirectory - _data);
 
 	_programsCount = READ_LE_UINT16(_footer + kProgEntriesCount1);
 
@@ -67,10 +65,8 @@ uint16 MainDat::progEntriesCount1() const {
 
 uint16 MainDat::fileIndexOfImage(uint16 index) const {
 	uint32 offset = (index - 1) * 4;
-	debug(4, "finding file index of image 0x%x at offset 0x%x of directory", index, offset);
 	uint16 fst = READ_LE_UINT16(_imageDirectory + offset);
 	uint16 snd = READ_LE_UINT16(_imageDirectory + offset + 2);
-	debug(4, "read 0x%04x 0x%04x", fst, snd);
 	return snd;
 }
 
@@ -114,16 +110,13 @@ byte *MainDat::getEntryPoint() const {
 }
 
 uint16 MainDat::getRoomScriptId(uint16 room) const {
-	debug(4, "looking for script for room 0x%04x", room);
 
 	byte *programInfo = _programsMap;
 	for (int i = 1; i <= _programsCount; i++) {
-		debug(4, "trying dataset 0x%04x", READ_LE_UINT16(programInfo));
 		programInfo += 2;
 
 		uint16 this_room;
 		while ((this_room = READ_LE_UINT16(programInfo)) != 0xffff) {
-			debug(4, "trying 0x%04x", this_room);
 			if (this_room == room)
 				return i;
 			else
@@ -138,7 +131,6 @@ uint16 MainDat::getGlyphSpriteId(byte character) const {
 	byte *charmap = _data + READ_LE_UINT16(_footer + kCharacterMap);
 	charmap += (character - ' ') * 2;
 	uint16 id = READ_LE_UINT16(charmap);
-	debug(4, "searching for sprite of glyph '%c', %d found at 0x%04x", character, id, charmap - _data);
 	return id;
 }
 
@@ -168,16 +160,12 @@ SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
 	si.image = READ_LE_UINT16(spritemap + kSpriteMapImage);
 	si.hotLeft = *reinterpret_cast<int8 *>(spritemap + kSpriteMapHotLeft);
 	si.hotTop = *reinterpret_cast<int8 *>(spritemap + kSpriteMapHotTop);
-	debug(3, "found sprite info at 0x%04x for %d: %s", spritemap - _data, index, si.inspect());
 
 	return si;
 }
 
-char SpriteInfo::_debugBuf[100];
 
 const char *SpriteInfo::inspect() const {
-	snprintf(_debugBuf, 100, "%d#%d:%d:%dx%d (%d:%d)", image, left, top, width, height, hotLeft, hotTop);
-	return _debugBuf;
 }
 
 } // End of namespace Innocent

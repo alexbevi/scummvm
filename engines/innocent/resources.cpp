@@ -56,16 +56,12 @@ void Resources::loadGraphicFiles() {
 		file->open(String(it->filename));
 		auto_ptr<SeekableReadStream> pointer(file);
 		*(ptr++) = pointer;
-		debug(kAck, "opened %s", it->filename.c_str());
 	}
 }
 
 Common::ReadStream *Resources::imageStream(uint16 index) const {
-	debug(4, "seeking image %04x", index);
 	uint16 file_index = _main->fileIndexOfImage(index);
-	debug(4, "file index is %d", file_index);
 	uint32 offset = _graphicsMap->offsetOfImage(index);
-	debug(4, "offset is %04d", offset);
 
 	SeekableReadStream *file = _graphicFiles[file_index].get();
 	file->seek(offset);
@@ -99,7 +95,6 @@ void Resources::loadImage(uint16 index, byte *target, uint16 size, byte *palette
 Image *Resources::loadImage(uint16 index) const {
 	Image * img = new Image;
 	img->create(320, 200, 1);
-	debug(4, "image pitch is %d", img->pitch);
 	assert(img->pitch == 320);
 	loadImage(index, reinterpret_cast<byte *>(img->pixels), 320*200);
 	return img;
@@ -154,20 +149,15 @@ Surface *Resources::loadBackdrop(uint16 index, byte *palette) {
 	uint16 width = stream->readUint16LE();
 	uint16 height = stream->readUint16LE();
 
-	debug(2, "loading backdrop of size %dx%d", width, height);
 
 	Surface *backdrop = new Surface;
 	backdrop->create(width, height, 1);
-	debug(3, "surface created");
 
 	decodeImage(stream, reinterpret_cast<byte *>(backdrop->pixels), width * height);
-	debug(3, "stream decoded");
 
 	stream->readByte(); // skip zero
 
-	debug(3, "reading palette");
 	readPalette(stream, palette);
-	debug(3, "palette read");
 
 	return backdrop;
 }
@@ -175,10 +165,8 @@ Surface *Resources::loadBackdrop(uint16 index, byte *palette) {
 Sprite *Resources::getGlyph(byte ch) const {
 	if (ch <= ' ' || ch > '~')
 		return 0;
-	debug(4, "looking for glyph '%c'", ch);
 	uint16 id = _main->getGlyphSpriteId(ch);
 	Sprite *s = loadSprite(id);
-	debug(4, "got glyph for '%c', %dx%d", ch, s->w, s->h);
 	return s;
 }
 
