@@ -15,7 +15,7 @@ class Logic;
 class Debugger;
 
 enum {
-	kDebug = 1 << 0
+	kDebugLevelScript = 1 << 0
 };
 
 class Engine : public ::Engine {
@@ -36,8 +36,11 @@ private:
 	std::auto_ptr<Logic> _logic;
 	std::auto_ptr<Resources> _resources;
 	std::auto_ptr<Graphics> _graphics;
+	std::auto_ptr<Debugger> _debugger;
 
 	mutable Common::RandomSource _rnd;
+
+	void handleEvents();
 };
 
 } // End of namespace Innocent

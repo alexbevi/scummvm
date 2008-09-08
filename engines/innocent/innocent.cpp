@@ -5,6 +5,7 @@
 
 #include "common/events.h"
 
+#include "innocent/debugger.h"
 #include "innocent/graphics.h"
 #include "innocent/logic.h"
 #include "innocent/resources.h"
@@ -19,12 +20,12 @@ Engine::Engine(OSystem *syst) :
 	_graphics.reset(new Graphics(this));
 	_logic.reset(new Logic(this));
 
+	Common::addSpecialDebugLevel(kDebugLevelScript, "script", "bytecode scripts");
+
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
-	printf("Innocent::Engine::Engine\n");
 }
 
 Engine::~Engine() {
-	printf("Innocent::Engine::Engine\n");
 	Common::clearAllSpecialDebugLevels();
 }
 
@@ -34,37 +35,33 @@ int Engine::init() {
 		initCommonGFX(false);
 		_system->initSize(320, 200);
 	}
+	_debugger.reset(new Debugger(this));
 	_graphics->init();
 	_logic->init();
 
-
-	printf("Innocent::Engine::init\n");
 	return 0;
 }
 
 int Engine::go() {
-	printf("Innocent::Engine: Hello, world!\n");
-
 	while(!quit()) {
 		_graphics->paintBackdrop();
 		_logic->tick();
+		_debugger->onFrame();
 		_system->updateScreen();
 		_system->delayMillis(1000/20);
+		handleEvents();
 	}
 
-/*	while (1) {
-		_logic->invokeNewRoomCode();
-		while (1) {
-			_graphics->clearScreen();
-			_graphics->loadBackdrop();
-			_graphics->paintBackdrop();
-			_graphics->paintInterface();
-
-			_system->updateScreen();
-		}
-	}*/
-
 	return 0;
+}
+
+void Engine::handleEvents() {
+	Common::Event event;
+	while (_eventMan->pollEvent(event)) {
+		if (event.type == Common::EVENT_KEYUP)
+			if (event.kbd.keycode == Common::KEYCODE_BACKQUOTE)
+				_debugger->attach();
+	}
 }
 
 uint16 Engine::getRandom(uint16 max) const {
