@@ -1,6 +1,7 @@
 #ifndef INNOCENT_DEBUGGER_H
 #define INNOCENT_DEBUGGER_H
 
+#include "gui/debugger.h"
 
 namespace Innocent {
 

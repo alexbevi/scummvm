@@ -65,7 +65,7 @@ uint16 MainDat::progEntriesCount1() const {
 
 uint16 MainDat::fileIndexOfImage(uint16 index) const {
 	uint32 offset = (index - 1) * 4;
-	uint16 fst = READ_LE_UINT16(_imageDirectory + offset);
+	(void) READ_LE_UINT16(_imageDirectory + offset);
 	uint16 snd = READ_LE_UINT16(_imageDirectory + offset + 2);
 	return snd;
 }
@@ -162,10 +162,6 @@ SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
 	si.hotTop = *reinterpret_cast<int8 *>(spritemap + kSpriteMapHotTop);
 
 	return si;
-}
-
-
-const char *SpriteInfo::inspect() const {
 }
 
 } // End of namespace Innocent

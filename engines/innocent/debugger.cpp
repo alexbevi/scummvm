@@ -1,3 +1,4 @@
+#include "innocent/debugger.h"
 #include "innocent/innocent.h"
 #include "innocent/graphics.h"
 

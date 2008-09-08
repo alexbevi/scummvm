@@ -35,7 +35,7 @@ void ProgDat::readFile(Common::SeekableReadStream &stream) {
 
 
 	_data = new byte[total_entries * 4];
-	uint32 read_bytes = stream.read(_data, total_entries * 4);
+	(void) stream.read(_data, total_entries * 4);
 }
 
 Program *ProgDat::getScript(uint16 id) {
