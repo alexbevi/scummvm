@@ -26,6 +26,7 @@ Engine::Engine(OSystem *syst) :
 	Common::addSpecialDebugLevel(kDebugLevelFlow, "flow", "game code flow status");
 	Common::addSpecialDebugLevel(kDebugLevelAnimation, "animation", "animations");
 	Common::addSpecialDebugLevel(kDebugLevelValues, "values", "really low-level debugging of value manipulation");
+	Common::addSpecialDebugLevel(kDebugLevelFiles, "files", "file input and output");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
 }
@@ -35,11 +36,11 @@ Engine::~Engine() {
 }
 
 int Engine::init() {
-	_resources->init();
 	GFX_TRANSACTION {
 		initCommonGFX(false);
 		_system->initSize(320, 200);
 	}
+	_resources->init();
 	_debugger.reset(new Debugger(this));
 	_graphics->init();
 	_logic->init();
@@ -48,6 +49,7 @@ int Engine::init() {
 }
 
 int Engine::go() {
+	_resources->loadActors();
 	while(!quit()) {
 		_graphics->paintBackdrop();
 		_logic->tick();

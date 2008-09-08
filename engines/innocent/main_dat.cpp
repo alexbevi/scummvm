@@ -3,7 +3,9 @@
 #include "common/endian.h"
 #include "common/util.h"
 
+#include "innocent/actor.h"
 #include "innocent/resources.h"
+#include "innocent/util.h"
 
 using namespace Common;
 using namespace std;
@@ -15,12 +17,17 @@ MainDat::MainDat(Resources *res) : Datafile(res), _data(0) {}
 MainDat::~MainDat() {
 	if (_data)
 		delete[] _data;
+
+	foreach(Actor *, _actors)
+		delete (*it);
 }
 
 enum Offsets {
 	kProgEntriesCount0	= 0x06,
 	kProgEntriesCount1	= 0x08,
 	kProgramsMap		= 0x0A,
+	kActorsCount		= 0x10,
+	kActors 			= 0x12,
 	kSpriteCount		= 0x18,
 	kSpriteMap			= 0x1A,
 	kImagesCount		= 0x1C,
@@ -49,6 +56,15 @@ void MainDat::readFile(SeekableReadStream &stream) {
 	_programsCount = READ_LE_UINT16(_footer + kProgEntriesCount1);
 
 	_programsMap = _data + READ_LE_UINT16(_footer + kProgramsMap);
+}
+
+void MainDat::loadActors(Interpreter *in) {
+	uint16 nactors = READ_LE_UINT16(_footer + kActorsCount);
+	uint16 actors = READ_LE_UINT16(_footer + kActors);
+	for (int i = 0; i < nactors; ++i) {
+		_actors.push_back(new Actor(CodePointer(actors, in)));
+		actors += Actor::Size;
+	}
 }
 
 uint16 MainDat::imagesCount() const {
@@ -145,5 +161,6 @@ SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
 
 	return SpriteInfo(spritemap, index);
 }
+
 
 } // End of namespace Innocent

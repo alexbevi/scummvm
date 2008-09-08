@@ -46,7 +46,7 @@ public:
 	Resources(Engine *vm);
 	~Resources();
 	void load();
-	void init() { load(); }
+	void init();
 
 	/**
 	 * Load an image. Automatically consult maps to choose the right file.
@@ -84,6 +84,8 @@ public:
 	SpriteInfo getSpriteInfo(uint16 id) const;
 	Sprite *getGlyph(byte character) const;
 	Sprite *loadSprite(uint16 id) const;
+
+	void loadActors();
 
 private:
 	MainDat *mainDat() const { return _main.get(); }

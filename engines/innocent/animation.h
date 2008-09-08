@@ -29,7 +29,7 @@ public:
 
 	void paint(Graphics *g);
 
-private:
+protected:
 	class Sprite;
 
 	uint16 shift();

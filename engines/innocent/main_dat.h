@@ -4,12 +4,17 @@
 #include <list>
 
 #include "common/endian.h"
+#include "common/list.h"
 #include "common/str.h"
 
 #include "innocent/datafile.h"
 #include "innocent/sprite.h"
 
 namespace Innocent {
+//
+
+class Actor;
+class Interpreter;
 
 class MainDat : public Datafile {
 public:
@@ -52,7 +57,9 @@ public:
 	SpriteInfo getSpriteInfo(uint16 index) const;
 	uint16 spriteCount() const;
 
+	friend class Resources;
 private:
+	void loadActors(Interpreter *);
 	enum {
 		kFooterLen = 0xB6
 	};
@@ -62,6 +69,7 @@ private:
 	byte *_imageDirectory;
 	uint16 _programsCount;
 	byte *_programsMap;
+	Common::List<Actor *> _actors;
 };
 
 } // End of namespace Innocent

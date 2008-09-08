@@ -22,11 +22,12 @@ using namespace std;
 namespace Innocent {
 
 Resources::Resources(Engine *vm) :
-	_main(new MainDat(this)),
-	_graphicsMap(new GraphicsMap(this)),
-	_progDat(new ProgDat(this)),
-	_graphicFiles(0),
-	_vm(vm) {}
+		_main(new MainDat(this)),
+		_graphicsMap(new GraphicsMap(this)),
+		_progDat(new ProgDat(this)),
+		_graphicFiles(0),
+		_vm(vm) {
+}
 
 Resources::~Resources() {
 	if (_graphicFiles)
@@ -40,6 +41,14 @@ void Resources::load() {
 	loadGraphicFiles();
 
 	_progDat->load();
+}
+
+void Resources::init() {
+	load();
+}
+
+void Resources::loadActors() {
+	_main->loadActors(_vm->logic()->mainInterpreter());
 }
 
 byte *Resources::getGlobalByteVariable(uint16 var) const {
