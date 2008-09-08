@@ -5,6 +5,7 @@
 
 #include "common/events.h"
 
+#include "innocent/debug.h"
 #include "innocent/debugger.h"
 #include "innocent/graphics.h"
 #include "innocent/logic.h"

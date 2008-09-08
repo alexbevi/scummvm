@@ -139,6 +139,19 @@ Constant *Interpreter::readArgument<Constant>(byte *&code) {
 	return new Constant(value);
 }
 
+class GlobalByteVariable : public ByteVariable {
+public:
+	GlobalByteVariable(uint16 index, Resources *res) : ByteVariable(res->getGlobalByteVariable(index)) {}
+};
+
+template<>
+GlobalByteVariable *Interpreter::readArgument<GlobalByteVariable>(byte *&code) {
+	uint16 index = READ_LE_UINT16(code);
+	code += 2;
+	debugC(4, kDebugLevelScript, "read global byte variable %d as argument", index);
+	return new GlobalByteVariable(index, _resources);
+}
+
 // 
 // Argument *Interpreter::readMainByteArg(byte *&code) {
 // 	uint16 index = READ_LE_UINT16(code);
@@ -240,10 +253,10 @@ Value *Interpreter::getArgument(byte *&code) {
 		case kArgumentImmediate:
 			return readArgument<Constant>(code);
 /*		case kArgumentMainWord:
-			return readMainWordArg(code);
+			return readMainWordArg(code); */
 		case kArgumentMainByte:
-			return readMainByteArg(code);
-		case kArgumentString:
+			return readArgument<GlobalByteVariable>(code);
+/*		case kArgumentString:
 			return readStringArg(code);
 		case kArgumentLocal:
 			return readLocalArg(code);*/
