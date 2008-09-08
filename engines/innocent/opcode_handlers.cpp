@@ -40,11 +40,12 @@ OPCODE(0x3d) {
 	debugC(1, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped to %s STUB", +a[0]);
 }
 
-// OPCODE(0x55) {
-// 	// paint text
-// 	// args: left, top, colour, text
-// 	_graphics->paintText(*args[0], *args[1], *args[2], static_cast<StringArgument *>(args[3])->translated());
-// }
+OPCODE(0x55) {
+	// paint text
+	// args: left, top, colour, text
+	debugC(3, kDebugLevelScript, "opcode 0x55: paint '%s' with colour %s at %s:%s", +a[3], +a[2], +a[0], +a[1]);
+	_graphics->paintText(a[0], a[1], a[2], a[3]);
+}
 
 OPCODE(0x60) {
 	// lookup locally

@@ -174,6 +174,7 @@ public:
 	virtual const char *operator+() const {
 		return reinterpret_cast<const char *>(_translateBuf);
 	}
+	virtual operator byte *() { return _translateBuf; }
 private:
 	byte _translateBuf[500];
 };

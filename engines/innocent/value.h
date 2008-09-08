@@ -35,6 +35,8 @@ public:
 
 	virtual bool holdsCode() const { return false; }
 
+	virtual operator byte *() { assert(false); }
+
 	Value() {}
 
 private:
