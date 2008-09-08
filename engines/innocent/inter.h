@@ -72,17 +72,17 @@ public:
 	void tick();
 	void executeRestricted(byte *code);
 
-	Value getArgument(byte *&code);
+	Value *getArgument(byte *&code);
 
 	friend class Opcode;
 
 	template <int opcode>
-	void opcodeHandler(Value args[]);
+	void opcodeHandler(ValueVector args);
 
 	template <int N>
 	void init_opcodes();
 
-	typedef void (Interpreter::*OpcodeHandler)(Value args[]);
+	typedef void (Interpreter::*OpcodeHandler)(ValueVector args);
 	OpcodeHandler _handlers[256];
 	static const uint8 _argumentsCounts[];
 
@@ -90,7 +90,7 @@ public:
 
 private:
 	template<class T>
-	T readArgument(byte *&code);
+	T *readArgument(byte *&code);
 
 	byte *_base;
 	uint16 _mode;

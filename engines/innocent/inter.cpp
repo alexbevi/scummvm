@@ -21,7 +21,7 @@ enum {
 };
 
 template <int opcode>
-void Interpreter::opcodeHandler(Value args[]){
+void Interpreter::opcodeHandler(ValueVector args){
 	error("unhandled opcode %d [=0x%02x]", opcode, opcode);
 }
 
@@ -104,10 +104,10 @@ Status Interpreter::run(uint16 offset) {
 
 		OpcodeHandler handler = _handlers[opcode];
 
-		Value args[6];
+		ValueVector args;
 
 		for (uint i = 0; i < nargs; i++)
-			args[i] = getArgument(code);
+			args.push_back(getArgument(code));
 
 		if (nargs == 0)
 			code += 2;
@@ -132,11 +132,11 @@ enum ArgumentTypes {
 };
 
 template<>
-Constant Interpreter::readArgument<Constant>(byte *&code) {
+Constant *Interpreter::readArgument<Constant>(byte *&code) {
 	uint16 value = READ_LE_UINT16(code);
 	code += 2;
 	debugC(4, kDebugLevelScript, "read constant value %d as argument", value);
-	return Constant(value);
+	return new Constant(value);
 }
 
 // 
@@ -232,7 +232,7 @@ Constant Interpreter::readArgument<Constant>(byte *&code) {
 // 	return arg;
 // }
 
-Value Interpreter::getArgument(byte *&code) {
+Value *Interpreter::getArgument(byte *&code) {
 	uint8 argument_type = code[1];
 	code += 2;
 

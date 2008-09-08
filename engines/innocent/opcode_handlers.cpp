@@ -5,7 +5,7 @@
 #include "common/util.h"
 
 namespace Innocent {
-#define OPCODE(num) template<> void Interpreter::opcodeHandler<num>(Value args[])
+#define OPCODE(num) template<> void Interpreter::opcodeHandler<num>(ValueVector a)
 
 // OPCODE(0x01) {
 // 	// return (to caller or toplevel)
@@ -82,10 +82,11 @@ namespace Innocent {
 // 	*args[0] = byte(1);
 // }
 // 
-// OPCODE(0x9d) {
-// 	// set protagonist
-// 	_logic->setProtagonist(*args[0]);
-// }
+OPCODE(0x9d) {
+	// set protagonist
+	debugC(3, kDebugLevelScript, "opcode 0x9d: set protagonist(%d)", +a[0]);
+	_logic->setProtagonist(a[0]);
+}
 // 
 // OPCODE(0xc2) {
 // 	// add animation
