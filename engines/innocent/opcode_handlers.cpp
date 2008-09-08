@@ -132,11 +132,13 @@ OPCODE(0xd6) {
 // 	// set room loop code
 // 	setRoomLoop(args[0]->_ptr);
 // }
-// 
-// OPCODE(0xef) {
-// 	// random
-// 	*args[1] = uint16(_engine->getRandom(*args[0]));
-// }
+
+OPCODE(0xef) {
+	// random
+	uint16 value = _engine->getRandom(a[0]);
+	debugC(3, kDebugLevelScript, "opcode 0xef: %s = %d == random(%s)", +a[1], value, +a[0]);
+	a[1] = value;
+}
 
 // #define ANIMCODE(n) template<> void Animation::handle<n>()
 // 

@@ -24,7 +24,7 @@ public:
 	virtual ValueType type() const { return kValueVoid; }
 
 	virtual operator uint16() const { assert(false); }
-	virtual Value &operator=(byte value) { assert(false); }
+	virtual Value &operator=(uint16 value) { assert(false); }
 
 	Value() {}
 
@@ -46,7 +46,7 @@ private:
 class ByteVariable : public Value {
 public:
 	ByteVariable(byte *ptr) : _ptr(ptr) {}
-	virtual Value &operator=(byte value) { *_ptr = value; return *this; }
+	virtual Value &operator=(uint16 value) { assert(value < 256); *_ptr = value; return *this; }
 private:
 	byte *_ptr;
 };
