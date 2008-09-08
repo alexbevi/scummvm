@@ -84,6 +84,7 @@ byte Graphics::clampChar(byte ch) {
  */
 uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch) const {
 	// TODO perhaps cache or sth
+	debug(2, "painting glyph '%c' at position %d:%d", ch, left, top);
 	ch = clampChar(ch);
 	if (ch == ' ')
 		return 4; // space has no glyph, just width 4

@@ -147,8 +147,10 @@ enum SpriteMap {
 	kSpriteMapLeft = 2,
 	kSpriteMapTop = 4,
 	kSpriteMapWidth = 6,
-	kSpriteMapHeight = 7,
-	kSpriteMapSize = 0xa
+	kSpriteMapHeight,
+	kSpriteMapHotLeft,
+	kSpriteMapHotTop,
+	kSpriteMapSize
 };
 
 SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
@@ -164,6 +166,8 @@ SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
 	si.width = spritemap[kSpriteMapWidth];
 	si.height = spritemap[kSpriteMapHeight];
 	si.image = READ_LE_UINT16(spritemap + kSpriteMapImage);
+	si.hot_left = spritemap[kSpriteMapHotLeft];
+	si.hot_top = spritemap[kSpriteMapHotTop];
 	debug(3, "found sprite info at 0x%04x for %d: %s", spritemap - _data, index, si.inspect());
 
 	return si;
@@ -172,7 +176,7 @@ SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
 char SpriteInfo::_debugBuf[100];
 
 const char *SpriteInfo::inspect() const {
-	snprintf(_debugBuf, 100, "%d#%d:%d:%dx%d", image, left, top, width, height);
+	snprintf(_debugBuf, 100, "%d#%d:%d:%dx%d (%d:%d)", image, left, top, width, height, hot_left, hot_top);
 	return _debugBuf;
 }
 
