@@ -5,6 +5,7 @@
 
 #include "common/events.h"
 
+#include "innocent/debugger.h"
 #include "innocent/graphics.h"
 #include "innocent/logic.h"
 #include "innocent/resources.h"
@@ -38,7 +39,7 @@ int Engine::init() {
 	_graphics->init();
 	_logic->init();
 
-	_console = new Console(this);
+	_debugger.reset(new Debugger(this));
 
 	printf("Innocent::Engine::init\n");
 	return 0;
@@ -47,11 +48,12 @@ int Engine::init() {
 int Engine::go() {
 	printf("Innocent::Engine: Hello, world!\n");
 	debugC(1, kDebug, "example debug call");
-	int ticks = 1000;
-	while(ticks--) {
-		_graphics->paintBackdrop();
-		_logic->tick();
+	_debugger->attach();
+
+	while(!quit()) {
 		_system->updateScreen();
+		_debugger->onFrame();
+		_system->delayMillis(1000/20);
 	}
 
 /*	while (1) {

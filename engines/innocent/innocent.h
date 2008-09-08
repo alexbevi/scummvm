@@ -5,7 +5,6 @@
 
 #include "common/ptr.h"
 #include "engines/engine.h"
-#include "gui/debugger.h"
 
 namespace Innocent {
 
@@ -13,6 +12,7 @@ class Console;
 class Resources;
 class Graphics;
 class Logic;
+class Debugger;
 
 enum {
 	kDebug = 1 << 0
@@ -33,18 +33,12 @@ public:
 	uint16 getRandom(uint16 max) const;
 
 private:
-	Console *_console;
+	std::auto_ptr<Debugger> _debugger;
 	std::auto_ptr<Logic> _logic;
 	std::auto_ptr<Resources> _resources;
 	std::auto_ptr<Graphics> _graphics;
 
 	mutable Common::RandomSource _rnd;
-};
-
-class Console : public GUI::Debugger {
-public:
-	Console(Engine *vm) : GUI::Debugger() {}
-	virtual ~Console() {}
 };
 
 } // End of namespace Innocent

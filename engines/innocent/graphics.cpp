@@ -94,6 +94,7 @@ uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch) const 
 		return 4; // space has no glyph, just width 4
 	Sprite *glyph = _resources->getGlyph(ch);
 	glyph->recolour(colour);
+	debug(2, "copying rect to screen, %d %d %d %d %d", glyph->pitch/8, left, top, glyph->w, glyph->h);
 	_system->copyRectToScreen(reinterpret_cast<byte *>(glyph->pixels), glyph->pitch/8,
 							   left, top, glyph->w, glyph->h);
 	uint16 w = glyph->w;
