@@ -65,6 +65,8 @@ public:
 
 	const char *name() const { return _name; }
 
+	friend class CodePointer;
+
 private:
 	char _name[100];
 	template<class T>

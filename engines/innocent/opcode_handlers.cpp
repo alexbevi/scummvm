@@ -28,11 +28,12 @@ OPCODE(0x2d) {
 	endIf();
 }
 
-// OPCODE(0x36) {
-// 	// call
-// 	uint16 offset = args[0]->_ptr - _base;
-// 	run(offset);
-// }
+OPCODE(0x36) {
+	// call
+	debugC(3, kDebugLevelScript, ">>>opcode 0x36: call procedure %s", +a[0]);
+	static_cast<CodePointer &>(a[0]).run();
+	debugC(3, kDebugLevelScript, "<<<opcode 0x36: called procedure %s", +a[0]);
+}
 
 OPCODE(0x3d) {
 	// save first arg -- instruction pointer -- for after skipping animation

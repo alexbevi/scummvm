@@ -76,6 +76,7 @@ public:
 	CodePointer(const CodePointer &code) : Value() { CodePointer(code._offset, code._interpreter); }
 	CodePointer(uint16 offset, Interpreter *interpreter);
 	virtual const char *operator+() const { return _inspect; }
+	virtual void run() const;
 private:
 	char _inspect[40];
 	uint16 _offset;
