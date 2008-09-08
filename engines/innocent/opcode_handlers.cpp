@@ -75,12 +75,13 @@ OPCODE(0x2d) {
 // 	// assign
 // 	*args[0] = *args[1];
 // }
-// 
-// OPCODE(0x72) {
-// 	// assign 1
-// 	*args[0] = byte(1);
-// }
-// 
+
+OPCODE(0x72) {
+	// assign 1
+	debugC(3, kDebugLevelScript, "opcode 0x72: %s = 1", +a[0]);
+	a[0] = 1;
+}
+
 // OPCODE(0x73) {
 // 	// assign 0
 // 	*args[0] = byte(1);
