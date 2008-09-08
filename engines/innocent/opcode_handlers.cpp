@@ -12,11 +12,14 @@ namespace Innocent {
 // 	// TODO how does it play with 0x36?
 // 	goBack();
 // }
-// 
-// OPCODE(0x12) {
-// 	// if sound is on then
-// 	failedCondition();
-// }
+//
+
+OPCODE(0x12) {
+ 	// if sound is on then
+	// (argument is a set of flags, 1 - adlib, 2 - sb, 4 - roland)
+	debugC(1, kDebugLevelScript, "opcode 0x12: if sound is on then STUB");
+ 	failedCondition();
+}
 // 
 // OPCODE(0x2d) {
 // 	// else
@@ -84,7 +87,7 @@ namespace Innocent {
 // 
 OPCODE(0x9d) {
 	// set protagonist
-	debugC(3, kDebugLevelScript, "opcode 0x9d: set protagonist(%d)", +a[0]);
+	debugC(3, kDebugLevelScript, "opcode 0x9d: set protagonist(%s)", +a[0]);
 	_logic->setProtagonist(a[0]);
 }
 // 
