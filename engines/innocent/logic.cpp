@@ -37,8 +37,13 @@ void Logic::tick() {
 	}
 	
 	debugC(2, kDebugLevelFlow | kDebugLevelAnimation, "running animations");
-	for (Common::List<Animation *>::iterator it = _animations.begin(); it != _animations.end(); ++it)
-		(*it)->tick();
+	for (Common::List<Animation *>::iterator it = _animations.begin(); it != _animations.end(); ++it) {
+		Animation::Status ret = (*it)->tick();
+		if (ret == Animation::kRemove) {
+			delete (*it);
+			_animations.erase(it);
+		}
+	}
 }
 
 void Logic::setProtagonist(uint16 actor) {

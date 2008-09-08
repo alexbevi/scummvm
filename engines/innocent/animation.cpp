@@ -35,7 +35,7 @@ private:
 };
 
 template <int opcode>
-void Animation::opcodeHandler(){
+Animation::Status Animation::opcodeHandler(){
 	error("unhandled animation opcode %d [=0x%02x]", opcode, opcode);
 }
 
@@ -62,17 +62,25 @@ Animation::~Animation() {
 		delete *it;
 }
 
-void Animation::tick() {
+Animation::Status Animation::tick() {
 	debugC(3, kDebugLevelAnimation, "ticking animation %s", _debugInfo);
 
 	clearSprites();
 
-	int8 opcode = -*_code;
-	if (opcode < 0 || opcode >= 0x27)
-		error("invalid animation opcode 0x%02x while handling %s", *_code, _debugInfo);
-	_code += 2;
+	Status status = kOk;
+	while (status == kOk) {
+		int8 opcode = -*_code;
+		if (opcode < 0 || opcode >= 0x27)
+			error("invalid animation opcode 0x%02x while handling %s", *_code, _debugInfo);
+		_code += 2;
 
-	(this->*_handlers[opcode])();
+		status = (this->*_handlers[opcode])();
+	}
+
+	if (status == kRemove)
+		return status;
+
+	return kOk;
 }
 
 void Animation::clearSprites() {
@@ -99,7 +107,12 @@ uint16 Animation::shift() {
 	return value;
 }
 
-#define OPCODE(n) template<> void Animation::opcodeHandler<n>()
+#define OPCODE(n) template<> Animation::Status Animation::opcodeHandler<n>()
+
+OPCODE(0x00) {
+	debugC(4, kDebugLevelAnimation, "anim opcode 0x00: remove animation");
+	return kRemove;
+}
 
 OPCODE(0x08) {
 	uint16 left = shift();
@@ -108,6 +121,8 @@ OPCODE(0x08) {
 	debugC(4, kDebugLevelAnimation, "anim opcode 0x08: move to %d:%d", left, top);
 
 	_position = Common::Point(left, top);
+
+	return kOk;
 }
 
 OPCODE(0x1b) {
@@ -121,6 +136,8 @@ OPCODE(0x1b) {
 	s->setPosition(Common::Point(left, top));
 	s->setAbsolute();
 	_sprites.push_back(s);
+
+	return kOk;
 }
 
 }

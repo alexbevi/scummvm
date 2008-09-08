@@ -14,9 +14,14 @@ class Resources;
 
 class Animation {
 public:
+	enum Status {
+		kOk,
+		kRemove
+	};
+
 	Animation(const CodePointer &code, Common::Point position);
 	~Animation();
-	void tick();
+	Status tick();
 
 	void paint(Graphics *g);
 
@@ -27,14 +32,14 @@ private:
 	void clearSprites();
 
 	template <int opcode>
-	void opcodeHandler();
+	Status opcodeHandler();
 
 	template <int N>
 	void init_opcodes();
 
 	Resources *_resources;
 
-	typedef void (Animation::*OpcodeHandler)();
+	typedef Status (Animation::*OpcodeHandler)();
 	OpcodeHandler _handlers[38];
 
 	Common::Point _position;
