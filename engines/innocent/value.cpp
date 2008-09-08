@@ -3,6 +3,12 @@
 #include "innocent/inter.h"
 
 namespace Innocent {
+//
+
+Value &WordVariable::operator=(uint16 value) {
+	debugC(1, kDebugLevelValues, "setting %s to %d", +*this, value);
+	WRITE_LE_UINT16(_ptr, value); return *this;
+}
 
 CodePointer::CodePointer(uint16 off, Interpreter *i) : _offset(off), _interpreter(i) {
 	init();

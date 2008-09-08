@@ -45,7 +45,8 @@ enum DebugLevel {
 	kDebugLevelScript    = 1,
 	kDebugLevelGraphics  = 2,
 	kDebugLevelFlow		 = 4,
-	kDebugLevelAnimation = 8
+	kDebugLevelAnimation = 8,
+	kDebugLevelValues    = 16
 };
 
 }

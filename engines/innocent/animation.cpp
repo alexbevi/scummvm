@@ -90,8 +90,14 @@ void Animation::clearSprites() {
 	_sprites.clear();
 }
 
+void Animation::setMainSprite(uint16 sprite) {
+	_mainSprite.reset(_resources->loadSprite(sprite));
+}
+
 void Animation::paint(Graphics *g) {
 	debugC(4, kDebugLevelAnimation | kDebugLevelGraphics, "painting sprites for animation %s", _debugInfo);
+	g->paint(_mainSprite.get(), _position);
+
 	for (Common::List<Sprite *>::iterator it = _sprites.begin(); it != _sprites.end(); ++it)
 		(*it)->paint(g);
 }
@@ -131,6 +137,17 @@ OPCODE(0x02) {
 	debugC(4, kDebugLevelAnimation, "anim opcode 0x02: move to %d:%d", left, top);
 
 	_position = Common::Point(left, top);
+
+	return kOk;
+}
+
+OPCODE(0x07) {
+	uint16 var = shift();
+	uint16 sprite = READ_LE_UINT16(_resources->getGlobalWordVariable(var/2));
+
+	setMainSprite(sprite);
+
+	debugC(4, kDebugLevelAnimation, "anim opcode 0x07: set main sprite to %d (from global word 0x%04x)", sprite, var/2);
 
 	return kOk;
 }

@@ -25,6 +25,7 @@ Engine::Engine(OSystem *syst) :
 	Common::addSpecialDebugLevel(kDebugLevelGraphics, "graphics", "graphics handling");
 	Common::addSpecialDebugLevel(kDebugLevelFlow, "flow", "game code flow status");
 	Common::addSpecialDebugLevel(kDebugLevelAnimation, "animation", "animations");
+	Common::addSpecialDebugLevel(kDebugLevelValues, "values", "really low-level debugging of value manipulation");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
 }

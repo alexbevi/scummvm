@@ -1,6 +1,8 @@
 #ifndef INNOCENT_ANIMATION_H
 #define INNOCENT_ANIMATION_H
 
+#include <memory>
+
 #include "common/list.h"
 #include "common/rect.h"
 
@@ -11,6 +13,7 @@ namespace Innocent {
 
 class Graphics;
 class Resources;
+class Sprite;
 
 class Animation {
 public:
@@ -32,6 +35,7 @@ private:
 	int8 shiftByte();
 	int8 embeddedByte() const;
 	void clearSprites();
+	void setMainSprite(uint16 sprite);
 
 	template <int opcode>
 	Status opcodeHandler();
@@ -49,6 +53,7 @@ private:
 	byte *_code;
 	char _debugInfo[50];
 	Common::List<Sprite *> _sprites;
+	std::auto_ptr<Innocent::Sprite> _mainSprite;
 };
 
 }

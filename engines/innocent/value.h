@@ -32,15 +32,16 @@ public:
 
 	virtual operator uint16() const { assert(false); }
 	virtual Value &operator=(uint16 value) { assert(false); }
+	virtual Value &operator=(const Value &) { assert(false); }
 
-	virtual bool holdsCode() const { return false; }
+	virtual bool holdsCode() const { assert(false); }
 
 	virtual operator byte *() { assert(false); }
 
 	Value() {}
 
 private:
-	Value(Value &) : Inspectable<uint16>() { assert(false); } // no copying
+	explicit Value(Value &) : Inspectable<uint16>() { assert(false); } // no copying
 };
 
 class Constant : public Value {
@@ -66,7 +67,8 @@ class WordVariable : public Value {
 public:
 	WordVariable(byte *ptr) : _ptr(ptr) {}
 	virtual operator uint16() const { return READ_LE_UINT16(_ptr); }
-	virtual Value &operator=(uint16 value) { WRITE_LE_UINT16(_ptr, value); return *this; }
+	virtual Value &operator=(uint16 value);
+	virtual Value &operator=(const Value &other) { return *this = uint16(other); }
 private:
 	byte *_ptr;
 };
