@@ -70,11 +70,12 @@ OPCODE(0x2d) {
 // 	}
 // 
 // }
-// 
-// OPCODE(0x70) {
-// 	// assign
-// 	*args[0] = *args[1];
-// }
+
+OPCODE(0x70) {
+	// assign
+	debugC(3, kDebugLevelScript, "opcode 0x70: %s = %s", +a[0], +a[1]);
+	a[0] = a[1];
+}
 
 OPCODE(0x72) {
 	// assign 1

@@ -150,12 +150,30 @@ private:
 	char _inspect[27];
 };
 
+class GlobalWordVariable : public WordVariable {
+public:
+	GlobalWordVariable(uint16 index, Resources *res) : WordVariable(res->getGlobalWordVariable(index)) {
+		snprintf(_inspect, 27, "global word variable %d", index);
+	}
+	virtual const char *operator+() const { return _inspect; }
+private:
+	char _inspect[27];
+};
+
 template<>
 GlobalByteVariable *Interpreter::readArgument<GlobalByteVariable>(byte *&code) {
 	uint16 index = READ_LE_UINT16(code);
 	code += 2;
 	debugC(4, kDebugLevelScript, "read global byte variable %d as argument", index);
 	return new GlobalByteVariable(index, _resources);
+}
+
+template<>
+GlobalWordVariable *Interpreter::readArgument<GlobalWordVariable>(byte *&code) {
+	uint16 index = READ_LE_UINT16(code) / 2;
+	code += 2;
+	debugC(4, kDebugLevelScript, "read global word variable %d as argument", index);
+	return new GlobalWordVariable(index, _resources);
 }
 
 // 
@@ -258,8 +276,8 @@ Value *Interpreter::getArgument(byte *&code) {
 	switch (argument_type) {
 		case kArgumentImmediate:
 			return readArgument<Constant>(code);
-/*		case kArgumentMainWord:
-			return readMainWordArg(code); */
+		case kArgumentMainWord:
+			return readArgument<GlobalWordVariable>(code);
 		case kArgumentMainByte:
 			return readArgument<GlobalByteVariable>(code);
 /*		case kArgumentString:

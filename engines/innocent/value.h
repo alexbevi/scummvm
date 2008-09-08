@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "common/endian.h"
 #include "config.h"
 
 #include "innocent/debug.h"
@@ -43,6 +44,14 @@ class ByteVariable : public Value {
 public:
 	ByteVariable(byte *ptr) : _ptr(ptr) {}
 	virtual Value &operator=(byte value) { *_ptr = value; return *this; }
+private:
+	byte *_ptr;
+};
+
+class WordVariable : public Value {
+public:
+	WordVariable(byte *ptr) : _ptr(ptr) {}
+	virtual Value &operator=(uint16 value) { WRITE_LE_UINT16(_ptr, value); return *this; }
 private:
 	byte *_ptr;
 };
