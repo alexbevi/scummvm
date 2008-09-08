@@ -131,11 +131,14 @@ enum ArgumentTypes {
 	kArgumentLocal = 9
 };
 
-// Argument *Interpreter::readImmediateArg(byte *&code) {
-// 	byte *ptr = code;
-// 	code += 2;
-// 	return new Uint16Argument(ptr);
-// }
+template<>
+Constant Interpreter::readArgument<Constant>(byte *&code) {
+	uint16 value = READ_LE_UINT16(code);
+	code += 2;
+	debugC(4, kDebugLevelScript, "read constant value %d as argument", value);
+	return Constant(value);
+}
+
 // 
 // Argument *Interpreter::readMainByteArg(byte *&code) {
 // 	uint16 index = READ_LE_UINT16(code);
@@ -234,9 +237,9 @@ Value Interpreter::getArgument(byte *&code) {
 	code += 2;
 
 	switch (argument_type) {
-/*		case kArgumentImmediate:
-			return readImmediateArg(code);
-		case kArgumentMainWord:
+		case kArgumentImmediate:
+			return readArgument<Constant>(code);
+/*		case kArgumentMainWord:
 			return readMainWordArg(code);
 		case kArgumentMainByte:
 			return readMainByteArg(code);

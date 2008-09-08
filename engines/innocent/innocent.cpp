@@ -44,8 +44,8 @@ int Engine::init() {
 
 int Engine::go() {
 	while(!quit()) {
-		_graphics->paintBackdrop();
-		_logic->tick();
+//		_graphics->paintBackdrop();
+//		_logic->tick();
 		_debugger->onFrame();
 		_system->updateScreen();
 		_system->delayMillis(1000/20);

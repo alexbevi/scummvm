@@ -89,6 +89,9 @@ public:
 	Logic *_logic;
 
 private:
+	template<class T>
+	T readArgument(byte *&code);
+
 	byte *_base;
 	uint16 _mode;
 
