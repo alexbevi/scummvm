@@ -109,13 +109,15 @@ OPCODE(0xc8) {
 
 OPCODE(0xc9) {
 	// set backdrop
+	// does it set the default one?
 	debugC(3, kDebugLevelScript, "opcode 0xc9: set backdrop(%s)", +a[0]);
 	_graphics->setBackdrop(a[0]);
 }
 
-// OPCODE(0xcc) {
-// 	// go fullscreen
-// }
+OPCODE(0xcc) {
+	// go fullscreen
+	debugC(1, kDebugLevelScript, "opcode 0xcc: go fullscreen STUB");
+}
 
 OPCODE(0xd6) {
 	// change room
