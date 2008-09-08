@@ -10,6 +10,8 @@
 
 namespace Innocent {
 
+class Engine;
+
 class Surface : public ::Graphics::Surface { // this surface autodestructs properly
 public:
 	~Surface() { free(); }
@@ -41,7 +43,7 @@ class Program;
 
 class Resources {
 public:
-	Resources();
+	Resources(Engine *vm);
 	~Resources();
 	void load();
 	void init() { load(); }
@@ -79,11 +81,11 @@ public:
 	friend class GraphicsMap;
 	friend class ProgDat;
 
+	SpriteInfo getSpriteInfo(uint16 id) const;
 	Sprite *getGlyph(byte character) const;
 	Sprite *loadSprite(uint16 id) const;
 
 private:
-	std::auto_ptr<MainDat> _main;
 	MainDat *mainDat() const { return _main.get(); }
 	GraphicsMap *graphicsMap() const { return _graphicsMap.get(); }
 	ProgDat *progDat() const { return _progDat.get(); }
@@ -94,6 +96,9 @@ private:
 
 	static void decodeImage(Common::ReadStream *stream, byte *target, uint16 size);
 
+	Engine *_vm;
+
+	std::auto_ptr<MainDat> _main;
 	std::auto_ptr<GraphicsMap> _graphicsMap;
 	std::auto_ptr<ProgDat> _progDat;
 

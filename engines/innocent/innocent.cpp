@@ -17,7 +17,7 @@ namespace Innocent {
 
 Engine::Engine(OSystem *syst) :
 		::Engine(syst) {
-	_resources.reset(new Resources);
+	_resources.reset(new Resources(this));
 	_graphics.reset(new Graphics(this));
 	_logic.reset(new Logic(this));
 

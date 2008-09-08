@@ -3,6 +3,8 @@
 
 #include "common/stream.h"
 
+#include "innocent/resources.h"
+
 namespace Innocent {
 
 class Program {
@@ -14,6 +16,8 @@ public:
 	byte *localVariable(uint16 offset);
 	uint16 roomHandler(uint16 room);
 	byte *base() const { return _code; }
+
+	SpriteInfo getSpriteInfo(uint16 index) const;
 
 private:
 	Program() { /* can only be created from a file */ }

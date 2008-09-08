@@ -8,6 +8,7 @@
 namespace Innocent {
 
 enum FooterOffsets {
+	kSpriteMap = 0x0C,
 	kEntryPointOffset = 0x0E
 };
 
@@ -52,6 +53,12 @@ uint16 Program::roomHandler(uint16 room) {
 		}
 
 	return 0;
+}
+
+SpriteInfo Program::getSpriteInfo(uint16 index) const {
+	byte *spritemap = _code + READ_LE_UINT16(_footer + kSpriteMap);
+
+	return SpriteInfo(spritemap, index);
 }
 
 } // End of namespace Innocent

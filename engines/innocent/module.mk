@@ -14,7 +14,8 @@ MODULE_OBJS = \
 	program.o \
 	debugger.o \
 	animation.o \
-	value.o
+	value.o \
+	sprite.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_MADE), DYNAMIC_PLUGIN)

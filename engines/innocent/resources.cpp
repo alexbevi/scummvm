@@ -8,20 +8,25 @@
 #include "common/util.h"
 #include "graphics/surface.h"
 
+#include "innocent/innocent.h"
+#include "innocent/logic.h"
 #include "innocent/main_dat.h"
 #include "innocent/graph_dat.h"
 #include "innocent/prog_dat.h"
+#include "innocent/program.h"
+#include "innocent/sprite.h"
 
 using namespace Common;
 using namespace std;
 
 namespace Innocent {
 
-Resources::Resources() :
+Resources::Resources(Engine *vm) :
 	_main(new MainDat(this)),
 	_graphicsMap(new GraphicsMap(this)),
 	_progDat(new ProgDat(this)),
-	_graphicFiles(0) {}
+	_graphicFiles(0),
+	_vm(vm) {}
 
 Resources::~Resources() {
 	if (_graphicFiles)
@@ -171,12 +176,19 @@ Sprite *Resources::getGlyph(byte ch) const {
 }
 
 Sprite *Resources::loadSprite(uint16 id) const {
-	SpriteInfo info = _main->getSpriteInfo(id);
+	SpriteInfo info = getSpriteInfo(id);
 	Image *image = loadImage(info.image);
 	Sprite *sprite = image->cut(Common::Rect(info.left, info.top, info.left + info.width-1, info.top + info.height-1));
 	sprite->_hotPoint = Common::Point(info.hotLeft, info.hotTop);
 	delete image;
 	return sprite;
+}
+
+SpriteInfo Resources::getSpriteInfo(uint16 id) const {
+	if (id < _main->spriteCount())
+		return _main->getSpriteInfo(id);
+	else
+		return _vm->logic()->blockProgram()->getSpriteInfo(id - _main->spriteCount());
 }
 
 Sprite *Image::cut(Common::Rect rect) const {

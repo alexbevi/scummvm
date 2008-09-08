@@ -134,34 +134,16 @@ uint16 MainDat::getGlyphSpriteId(byte character) const {
 	return id;
 }
 
-enum SpriteMap {
-	kSpriteMapImage = 0,
-	kSpriteMapLeft = 2,
-	kSpriteMapTop = 4,
-	kSpriteMapWidth = 6,
-	kSpriteMapHeight,
-	kSpriteMapHotLeft,
-	kSpriteMapHotTop,
-	kSpriteMapSize
-};
+uint16 MainDat::spriteCount() const {
+	return READ_LE_UINT16(_footer + kSpriteCount);
+}
 
 SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
-	SpriteInfo si;
 	byte *spritemap = _data + READ_LE_UINT16(_footer + kSpriteMap);
-	uint16 nsprites = READ_LE_UINT16(_footer + kSpriteCount);
-	if (index >= nsprites)
-		error("local sprites not handled yet (index: 0x%04x)", index);
+	if (index >= spriteCount())
+		error("local sprite index given (index: 0x%04x)", index);
 
-	spritemap += index * kSpriteMapSize;
-	si.top = READ_LE_UINT16(spritemap + kSpriteMapTop);
-	si.left = READ_LE_UINT16(spritemap + kSpriteMapLeft);
-	si.width = spritemap[kSpriteMapWidth];
-	si.height = spritemap[kSpriteMapHeight];
-	si.image = READ_LE_UINT16(spritemap + kSpriteMapImage);
-	si.hotLeft = *reinterpret_cast<int8 *>(spritemap + kSpriteMapHotLeft);
-	si.hotTop = *reinterpret_cast<int8 *>(spritemap + kSpriteMapHotTop);
-
-	return si;
+	return SpriteInfo(spritemap, index);
 }
 
 } // End of namespace Innocent

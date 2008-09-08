@@ -38,6 +38,7 @@ public:
 	void setRoomLoop(const CodePointer &code);
 
 	const Common::List<Animation *> animations() const { return _animations; }
+	Program *blockProgram() const { return _blockProgram.get(); }
 
 private:
 	Engine *_engine;

@@ -7,13 +7,9 @@
 #include "common/str.h"
 
 #include "innocent/datafile.h"
+#include "innocent/sprite.h"
 
 namespace Innocent {
-
-struct SpriteInfo {
-	uint16 left, top, width, height, image;
-	int8 hotLeft, hotTop;
-};
 
 class MainDat : public Datafile {
 public:
@@ -54,6 +50,7 @@ public:
 	uint16 getGlyphSpriteId(byte character) const;
 
 	SpriteInfo getSpriteInfo(uint16 index) const;
+	uint16 spriteCount() const;
 
 private:
 	enum {
