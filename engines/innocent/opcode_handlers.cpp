@@ -114,12 +114,13 @@ OPCODE(0xc9) {
 // OPCODE(0xcc) {
 // 	// go fullscreen
 // }
-// 
-// OPCODE(0xd6) {
-// 	// change room
-// 	_logic->changeRoom(*args[0]);
-// }
-// 
+
+OPCODE(0xd6) {
+	// change room
+	debugC(3, kDebugLevelScript, "opcode 0xd6: change room(%s)", +a[0]);
+	_logic->changeRoom(a[0]);
+}
+
 // OPCODE(0xe6) {
 // 	// set room loop code
 // 	setRoomLoop(args[0]->_ptr);
