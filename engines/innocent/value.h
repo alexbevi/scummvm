@@ -54,6 +54,7 @@ private:
 class WordVariable : public Value {
 public:
 	WordVariable(byte *ptr) : _ptr(ptr) {}
+	virtual operator uint16() const { return READ_LE_UINT16(_ptr); }
 	virtual Value &operator=(uint16 value) { WRITE_LE_UINT16(_ptr, value); return *this; }
 private:
 	byte *_ptr;
@@ -77,6 +78,7 @@ public:
 	CodePointer(uint16 offset, Interpreter *interpreter);
 	virtual const char *operator+() const { return _inspect; }
 	virtual void run() const;
+	uint16 offset() const { return _offset; }
 private:
 	char _inspect[40];
 	uint16 _offset;

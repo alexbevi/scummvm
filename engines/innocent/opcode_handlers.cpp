@@ -45,34 +45,39 @@ OPCODE(0x3d) {
 // 	// args: left, top, colour, text
 // 	_graphics->paintText(*args[0], *args[1], *args[2], static_cast<StringArgument *>(args[3])->translated());
 // }
-// 
-// OPCODE(0x60) {
-// 	// lookup locally
-// 	// takes a list (1st)
-// 	// a value (2nd)
-// 	// a field (as offset from structure start) (3rd)
-// 	// first word on the list is entry length in words (minus one for index)
-// 	// then are entries, first word being index
-// 	// finds entry matching index == value in the list and
-// 	// saves value of specified field in 4th argument
-// 	byte *pos = args[0]->_ptr;
-// 	uint16 width = READ_LE_UINT16(pos);
-// 	pos += 2;
-// 	while(true) {
-// 		uint16 index = READ_LE_UINT16(pos);
-// 		if (index == 0xffff) {
-// 			*args[3] = index;
-// 			break;
-// 		}
-// 		pos += 2;
-// 		if (index == uint16(*args[1])) {
-// 			*args[3] = READ_LE_UINT16(pos + uint16(*args[2]));
-// 			break;
-// 		}
-// 		pos += width * 2;
-// 	}
-// 
-// }
+
+OPCODE(0x60) {
+	// lookup locally
+	// takes a list (1st)
+	// a value (2nd)
+	// a field (as offset from structure start) (3rd)
+	// first word on the list is entry length in words (minus one for index)
+	// then are entries, first word being index
+	// finds entry matching index == value in the list and
+	// saves value of specified field in 4th argument
+	uint16 offset = static_cast<CodePointer &>(a[0]).offset();
+
+	uint16 value;
+	byte *pos = _base + offset;
+	uint16 width = READ_LE_UINT16(pos);
+	pos += 2;
+	while(true) {
+		uint16 index = READ_LE_UINT16(pos);
+		if (index == 0xffff) {
+			value = index;
+			break;
+		}
+		pos += 2;
+		if (index == a[1]) {
+			value = READ_LE_UINT16(pos + a[2]);
+			break;
+		}
+		pos += width * 2;
+	}
+
+	debugC(3, kDebugLevelScript, "opcode 0x60: %s = %d == search list %s for %s and return field %s", +a[3], value, +a[0], +a[1], +a[2]);
+	a[3] = value;
+}
 
 OPCODE(0x70) {
 	// assign
