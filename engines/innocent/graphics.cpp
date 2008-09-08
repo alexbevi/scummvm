@@ -66,6 +66,10 @@ void Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string) {
 			current_colour = *(string++);
 			break;
 		default:
+			if (current_left > 310) {
+				current_left = left;
+				top += kLineHeight;
+			}
 			current_left += paintChar(current_left, top, current_colour, ch);
 		}
 	}
