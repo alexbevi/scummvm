@@ -95,7 +95,8 @@ OPCODE(0x9d) {
 }
 
 OPCODE(0xc2) {
-	addPeriodiCall(args[0]->_ptr);
+	// add animation
+	addAnimation(args[0]->_ptr);
 }
 
 OPCODE(0xc8) {
@@ -110,8 +111,8 @@ OPCODE(0xc9) {
 }
 
 OPCODE(0xcc) {
-	// start cutscene -- allow fade, fullscreen, etc.
-	debug(1, "start cutscene opcode 0xcc stub");
+	// go fullscreen
+	debug(1, "go fullscreen opcode 0xcc stub");
 }
 
 OPCODE(0xd6) {
@@ -130,9 +131,9 @@ OPCODE(0xef) {
 	debug(2, "%p = %d (random, max %d)", args[1]->_ptr, uint16(*args[1]), uint16(*args[0]));
 }
 
-#define PCCODE(n) template<> void PeriodiCall::handle<n>()
+#define ANIMCODE(n) template<> void Animation::handle<n>()
 
-PCCODE(26) {
+ANIMCODE(26) {
 	// set z index
 	setZIndex(_code[1]);
 	// TODO set field 16 to 0

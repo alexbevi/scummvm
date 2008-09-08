@@ -67,8 +67,8 @@ void Interpreter::setRoomLoop(byte *code) {
 }
 
 void Interpreter::tick() {
- 	for (Common::List<PeriodiCall>::iterator it = _periodiCalls.begin(); it != _periodiCalls.end(); ++it)
- 		it->call();
+ 	for (Common::List<Animation>::iterator it = _animations.begin(); it != _animations.end(); ++it)
+ 		it->tick();
 
 	if (_roomLoop)
 		run(_roomLoop - _base, kCodeRoomLoop);
@@ -281,19 +281,19 @@ void Interpreter::goBack() {
 	_return = true;
 }
 
-void Interpreter::addPeriodiCall(byte *code) {
-	debug(2, "added periodicall 0x%04x", code - _base);
-	_periodiCalls.push_back(PeriodiCall(code));
+void Interpreter::addAnimation(byte *code) {
+	debug(2, "added animation 0x%04x", code - _base);
+	_animations.push_back(Animation(code));
 }
 
-PeriodiCall::PeriodiCall(byte *code) : _code(code), _zIndex(-1) {
+Animation::Animation(byte *code) : _code(code), _zIndex(-1) {
 	initializeHandlers<kCodesNumber-1>();
 }
 
-void PeriodiCall::call() {
+void Animation::tick() {
 	byte opcode = *_code;
 
-	debug(3, "running periodicall opcode 0x%02x", opcode);
+	debug(3, "running animation opcode 0x%02x", opcode);
 	if (!(opcode & 0x80)) {
 		debug(3, "mask fail!");
 		return;
@@ -309,22 +309,22 @@ void PeriodiCall::call() {
 }
 
 template<int N>
-void PeriodiCall::initializeHandlers() {
-	_handlers[N] = &PeriodiCall::handle<N>;
+void Animation::initializeHandlers() {
+	_handlers[N] = &Animation::handle<N>;
 	initializeHandlers<N-1>();
 }
 
-void PeriodiCall::setZIndex(int8 index) {
+void Animation::setZIndex(int8 index) {
 	debug(3, "setting z index to %d", index);
 	_zIndex = index;
 }
 
 template<>
-void PeriodiCall::initializeHandlers<-1>() {}
+void Animation::initializeHandlers<-1>() {}
 
 template<int N>
-void PeriodiCall::handle() {
-	error("unhandled periodicall code %d", N);
+void Animation::handle() {
+	error("unhandled animation code %d", N);
 }
 
 } // End of namespace Innocent

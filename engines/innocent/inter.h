@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "common/list.h"
+#include "common/rect.h"
 #include "common/util.h"
 #include "config.h"
 
@@ -40,15 +41,15 @@ public:
 	byte *_ptr; // for debug
 };
 
-class PeriodiCall {
+class Animation {
 public:
-	PeriodiCall(byte *code);
-	void call();
+	Animation(byte *code);
+	void tick();
 
 private:
 	byte *_code;
 	static const int kCodesNumber = 38;
-	void (PeriodiCall::*_handlers[kCodesNumber])();
+	void (Animation::*_handlers[kCodesNumber])();
 
 	template<int N>
 	void initializeHandlers();
@@ -57,6 +58,7 @@ private:
 	void handle();
 
 	void setZIndex(int8 index);
+	void setPosition(Common::Point position);
 	int8 _zIndex;
 };
 
@@ -114,12 +116,12 @@ private:
 	void failedCondition();
 	void endIf();
 	void goBack();
-	void addPeriodiCall(byte *code);
+	void addAnimation(byte *code);
 	void setRoomLoop(byte *code);
 
 	uint16 _failedCondition;
 	bool _return;
-	Common::List<PeriodiCall> _periodiCalls;
+	Common::List<Animation> _animations;
 	byte *_roomLoop;
 	
 	Engine *_engine;
