@@ -3,11 +3,15 @@
 #include "common/endian.h"
 #include "common/util.h"
 
+#include "innocent/actor.h"
 #include "innocent/resources.h"
+#include "innocent/value.h"
 
 namespace Innocent {
 
 enum FooterOffsets {
+	kActorsCount = 4,
+	kActors = 0xA,
 	kSpriteMap = 0x0C,
 	kEntryPointOffset = 0x0E
 };
@@ -23,6 +27,16 @@ Program::Program(Common::ReadStream &file) {
 	Resources::descramble(_code + 2, length - 2);
 
 	file.read(_footer, 0x10);
+}
+
+void Program::loadActors(Interpreter *in) {
+	uint16 nactors = READ_LE_UINT16(_footer + kActorsCount);
+	debugC(3, kDebugLevelFiles, "loading %d actors from the program file", nactors);
+	uint16 actors = READ_LE_UINT16(_footer + kActors);
+	for (int i = 0; i < nactors; ++i) {
+		_actors.push_back(new Actor(CodePointer(actors, in)));
+		actors += Actor::Size;
+	}
 }
 
 Program::~Program() {

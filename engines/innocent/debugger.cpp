@@ -1,12 +1,15 @@
 #include "innocent/debugger.h"
 #include "innocent/innocent.h"
+#include "innocent/logic.h"
 #include "innocent/graphics.h"
 
 namespace Innocent {
 
 Debugger::Debugger(Engine *vm) : _vm(vm) {
-	DCmd_Register("set_backdrop", WRAP_METHOD(Debugger, cmd_setBackdrop));
-	DCmd_Register("paint_text", WRAP_METHOD(Debugger, cmd_paintText));
+	DCmd_Register("setBackdrop", WRAP_METHOD(Debugger, cmd_setBackdrop));
+	DCmd_Register("paintText", WRAP_METHOD(Debugger, cmd_paintText));
+
+	DVar_Register("currentRoom", &(vm->logic()->_currentRoom), DVAR_INT);
 }
 
 bool Debugger::cmd_setBackdrop(int argc, const char **argv) {

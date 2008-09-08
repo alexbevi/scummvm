@@ -63,6 +63,7 @@ void Logic::changeRoom(uint16 newRoom) {
 		char buf[100];
 		snprintf(buf, 100, "block %d code", newBlock);
 		_blockInterpreter.reset(new Interpreter(this, _blockProgram->base(), buf));
+		_blockProgram->loadActors(_blockInterpreter.get());
 
 		debugC(2, kDebugLevelScript, ">>>running block entry code for block %d", newBlock);
 		_blockInterpreter->run(_blockProgram->begin(), kCodeNewBlock);

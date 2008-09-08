@@ -13,6 +13,7 @@ namespace Innocent {
 //
 
 class Animation;
+class Debugger;
 class Engine;
 class Resources;
 class Interpreter;
@@ -41,12 +42,13 @@ public:
 	Program *blockProgram() const { return _blockProgram.get(); }
 	Interpreter *mainInterpreter() const { return _toplevelInterpreter.get(); }
 
+	friend class Debugger;
 private:
 	Engine *_engine;
 	Resources *_resources;
 	std::auto_ptr<Interpreter> _toplevelInterpreter, _blockInterpreter;
 	uint16 _protagonist;
-	uint16 _currentRoom;
+	uint32 _currentRoom;
 	uint16 _currentBlock;
 	std::auto_ptr<Program> _blockProgram;
 	Common::List<Animation *> _animations;
