@@ -91,11 +91,12 @@ OPCODE(0x72) {
 	a[0] = 1;
 }
 
-// OPCODE(0x73) {
-// 	// assign 0
-// 	*args[0] = byte(1);
-// }
-// 
+OPCODE(0x73) {
+	// assign 0
+	debugC(3, kDebugLevelScript, "opcode 0x73: %s = 0", +a[0]);
+	a[0] = 0;
+}
+
 OPCODE(0x9d) {
 	// set protagonist
 	debugC(3, kDebugLevelScript, "opcode 0x9d: set protagonist(%s)", +a[0]);
