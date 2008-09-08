@@ -27,11 +27,13 @@ public:
 	void loadInterface();
 
 	void init();
+	void paint();
 
 	/**
 	 * Paint the interface to proper portion of the screen.
 	 */
 	void paintInterface();
+	void paintAnimations();
 
 	void setBackdrop(uint16 id);
 	void paintBackdrop();
@@ -39,7 +41,9 @@ public:
 	void paintText(uint16 left, uint16 top, byte colour, byte *string);
 
 	Common::Point cursorPosition() const;
-private:
+	void paint(const Sprite *sprite, Common::Point pos) const;
+
+	private:
 	enum {
 		kLineHeight = 12
 	};
@@ -49,7 +53,6 @@ private:
 	 * @returns char width
 	 */
 	uint16 paintChar(uint16 left, uint16 top, byte colour, byte character) const;
-	void paint(Sprite *sprite, Common::Point pos) const;
 	byte _interface[0x3c00];
 	Engine *_engine;
 	Resources *_resources;

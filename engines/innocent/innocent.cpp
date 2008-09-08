@@ -50,6 +50,7 @@ int Engine::go() {
 	while(!quit()) {
 //		_graphics->paintBackdrop();
 		_logic->tick();
+		_graphics->paint();
 		_debugger->onFrame();
 		_system->updateScreen();
 		_system->delayMillis(1000/20);

@@ -2,8 +2,10 @@
 
 #include "common/system.h"
 
+#include "innocent/animation.h"
 #include "innocent/debug.h"
 #include "innocent/innocent.h"
+#include "innocent/logic.h"
 #include "innocent/resources.h"
 
 namespace Innocent {
@@ -18,6 +20,15 @@ void Graphics::init() {
 	 _resources = _engine->resources();
 	 _system = _engine->_system;
 	 loadInterface();
+}
+
+void Graphics::paint() {
+	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, ">>>start paint procedure");
+
+	paintBackdrop();
+	paintAnimations();
+
+	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, "<<<end paint procedure");
 }
 
 void Graphics::loadInterface() {
@@ -41,7 +52,15 @@ void Graphics::setBackdrop(uint16 id) {
 
 void Graphics::paintBackdrop() {
 	// TODO cropping
+	debugC(3, kDebugLevelGraphics, "painting backdrop");
 	_system->copyRectToScreen(reinterpret_cast<byte *>(_backdrop->pixels), 320, 0, 0, 320, 200);
+}
+
+void Graphics::paintAnimations() {
+	debugC(3, kDebugLevelGraphics, "painting animations");
+	Common::List<Animation *> animations = _engine->logic()->animations();
+	for (Common::List<Animation *>::iterator it = animations.begin(); it != animations.end(); ++it)
+		(*it)->paint(this);
 }
 
 void Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string) {
@@ -95,7 +114,7 @@ uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch) const 
 	return w;
 }
 
-void Graphics::paint(Sprite *sprite, Common::Point pos) const {
+void Graphics::paint(const Sprite *sprite, Common::Point pos) const {
 	pos += sprite->_hotPoint;
 	_system->copyRectToScreen(reinterpret_cast<byte *>(sprite->pixels), sprite->pitch,
 							   pos.x, pos.y, sprite->w, sprite->h);

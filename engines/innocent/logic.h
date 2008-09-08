@@ -37,6 +37,8 @@ public:
 	void addAnimation(Animation *anim);
 	void setRoomLoop(const CodePointer &code);
 
+	const Common::List<Animation *> animations() const { return _animations; }
+
 private:
 	Engine *_engine;
 	Resources *_resources;
