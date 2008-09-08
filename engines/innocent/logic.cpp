@@ -14,8 +14,8 @@ Logic::Logic(Engine *e) :
 		_engine(e),
 		_resources(e->resources()),
 		_currentRoom(0xffff),
-		_currentBlock(0xffff)
-	{}
+		_currentBlock(0xffff) {
+}
 
 Logic::~Logic() {
 	for (Common::List<Animation *>::iterator it = _animations.begin(); it != _animations.end(); ++it)
@@ -30,7 +30,11 @@ void Logic::init() {
 }
 
 void Logic::tick() {
-	_blockInterpreter->tick();
+	if (_roomLoop.get()) {
+		debugC(2, kDebugLevelScript, ">>>running room loop code");
+		_roomLoop->run(kCodeRoomLoop);
+		debugC(2, kDebugLevelScript, "<<<finished room loop code");
+	}
 }
 
 void Logic::setProtagonist(uint16 actor) {

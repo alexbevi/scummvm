@@ -11,6 +11,13 @@
 namespace Innocent {
 //
 
+enum OpcodeMode {
+	kCodeInitial = 0,
+	kCodeNewRoom = 1,
+	kCodeRoomLoop = 2,
+	kCodeNewBlock = 8
+};
+
 class Interpreter;
 
 enum ValueType {
@@ -76,13 +83,15 @@ private:
 
 class CodePointer : public Value {
 public:
-	CodePointer(const CodePointer &code) : Value() { CodePointer(code._offset, code._interpreter); }
+	CodePointer(const CodePointer &code) : Value(), _offset(code._offset), _interpreter(code._interpreter) { init(); }
 	CodePointer(uint16 offset, Interpreter *interpreter);
 	virtual const char *operator+() const { return _inspect; }
 	virtual void run() const;
+	virtual void run(OpcodeMode mode) const;
 	uint16 offset() const { return _offset; }
 	virtual bool holdsCode() const { return true; }
 private:
+	void init();
 	char _inspect[40];
 	uint16 _offset;
 	Interpreter *_interpreter;

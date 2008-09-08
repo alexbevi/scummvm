@@ -20,13 +20,6 @@ class Graphics;
 
 #define UNIMPLEMENTED { error("type conversion unimplemented"); }
 
-enum OpcodeMode {
-	kCodeInitial = 0,
-	kCodeNewRoom = 1,
-	kCodeRoomLoop = 2,
-	kCodeNewBlock = 8
-};
-
 enum Status {
 	kReturned = 0,
 	kInvalidOpcode = 1
