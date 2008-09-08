@@ -74,7 +74,7 @@ Animation::Status Animation::tick() {
 			error("invalid animation opcode 0x%02x while handling %s", *_code, _debugInfo);
 		_code += 2;
 
-		status = (this->*_handlers[opcode])();
+		status = (this->*_handlers[opcode-1])();
 	}
 
 	if (status == kRemove)
