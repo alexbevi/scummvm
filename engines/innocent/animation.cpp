@@ -107,6 +107,12 @@ uint16 Animation::shift() {
 	return value;
 }
 
+int8 Animation::shiftByte() {
+	byte value = *_code;
+	_code += 1;
+	return value;
+}
+
 int8 Animation::embeddedByte() const {
 	return reinterpret_cast<int8 *>(_code)[-1];
 }
@@ -118,13 +124,24 @@ OPCODE(0x00) {
 	return kRemove;
 }
 
-OPCODE(0x08) {
+OPCODE(0x02) {
 	uint16 left = shift();
 	uint16 top = shift();
 
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x08: move to %d:%d", left, top);
+	debugC(4, kDebugLevelAnimation, "anim opcode 0x02: move to %d:%d", left, top);
 
 	_position = Common::Point(left, top);
+
+	return kOk;
+}
+
+OPCODE(0x08) {
+	int8 left = shiftByte();
+	int8 top = shiftByte();
+
+	debugC(4, kDebugLevelAnimation, "anim opcode 0x08: move by %d:%d", left, top);
+
+	_position += Common::Point(left, top);
 
 	return kOk;
 }

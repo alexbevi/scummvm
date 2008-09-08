@@ -10,7 +10,7 @@
 
 namespace Innocent {
 
-Common::Point operator+=(Common::Point &p1, const Common::Point &p2) { return p1 = Common::Point(p1.x + p2.x, p1.y + p2.y); }
+Common::Point &operator+=(Common::Point &p1, const Common::Point &p2) { return p1 = Common::Point(p1.x + p2.x, p1.y + p2.y); }
 
 Graphics::Graphics(Engine *engine)
 	 : _engine(engine) {

@@ -29,6 +29,7 @@ private:
 	class Sprite;
 
 	uint16 shift();
+	int8 shiftByte();
 	int8 embeddedByte() const;
 	void clearSprites();
 
