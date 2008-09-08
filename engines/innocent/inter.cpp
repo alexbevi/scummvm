@@ -35,22 +35,6 @@ void Interpreter::init_opcodes() {
 template<>
 void Interpreter::init_opcodes<-1>() {}
 
-// class Uint16Argument : public Argument {
-// public:
-// 	Uint16Argument(byte *ptr) : Argument(ptr) {}
-// 	operator uint16() const { return READ_LE_UINT16(_ptr); }
-// 	Argument operator=(uint16 value) { WRITE_LE_UINT16(_ptr, value); return *this; }
-// 	operator byte() const { return READ_LE_UINT16(_ptr); }
-// 	Argument operator=(byte value) { WRITE_LE_UINT16(_ptr, value); return *this; }
-// };
-// 
-// class ByteArgument : public Argument {
-// public:
-// 	ByteArgument(byte *ptr) : Argument(ptr) {}
-// 	operator byte() const { return *_ptr; }
-// 	Argument operator=(byte b) { *_ptr = b; return *this; }
-// };
-
 Interpreter::Interpreter(Logic *l, byte *base, const char *n) :
 		_logic(l),
 		_engine(l->engine()),
@@ -182,82 +166,63 @@ CodePointer *Interpreter::readArgument<CodePointer>(byte *&code) {
 	return new CodePointer(offset, this);
 }
 
-// Argument *Interpreter::readLocalArg(byte *&code) {
-// 	uint16 offset = READ_LE_UINT16(code);
-// 	code += 2;
-// 	Argument *arg = new Uint16Argument(_base + offset);
-// 	return arg;
-// }
-// 
-// Interpreter::StringArgument::StringArgument(byte *code, Resources *res) : Argument(code) {
-// 	byte ch;
-// 	byte *str = _translateBuf;
-// 	uint16 offset, value;
-// 	while ((ch = *(code++))) {
-// 		switch (ch) {
-// 		case kStringGlobalWord:
-// 			offset = READ_LE_UINT16(code);
-// 			code += 2;
-// 			value = READ_LE_UINT16(res->getGlobalWordVariable(offset/2));
-// 			str += snprintf(reinterpret_cast<char *>(str), _translateBuf - str, "%d", value);
-// 			break;
-// 		case kStringSetColour:
-// 			*(str++) = ch;
-// 			*(str++) = *(code++);
-// 			break;
-// 		case kStringCountSpacesIf0:
-// 		case kStringCountSpacesIf1:
-// 			error("unhandled string special 0x%02x", ch);
-// 			break;
-// 		case kStringCountSpacesTerminate:
-// 			break;
-// 		default:
-// 			*(str++) = ch;
-// 		}
-// 	}
-// 	*str = 0;
-// }
-// 
-// Argument *Interpreter::readStringArg(byte *&code) {
-// 	Argument *arg = new StringArgument(code, _resources);
-// 
-// 	// skip the string
-// 	byte ch;
-// 
-// 
-// 	bool displayed = false;
-// 
-// 	do {
-// 		ch = *(code++);
-// 		// try string args len
-// 		switch (ch) {
-// 		case 9:
-// 		case 7:
-// 			code ++;
-// 		case 6:
-// 		case 10:
-// 		case 11:
-// 			code ++;
-// 		case 14:
-// 		case 3:
-// 			code += 2;
-// 			displayed = false;
-// 		}
-// 
-// 		if (ch == 5) {
-// 			while (*(code++) != 0);
-// 			code += 2;
-// 			displayed = false;
-// 			continue;
-// 		}
-// 
-// 		if (!displayed) {
-// 			displayed = true;
-// 		}
-// 	} while (ch != 0);
-// 
-// 	return arg;
-// }
+class ParametrizedString : public Value {
+public:
+	ParametrizedString(byte *translated) {
+		memcpy(_translateBuf, translated, 500);
+	}
+	virtual const char *operator+() const {
+		return reinterpret_cast<const char *>(_translateBuf);
+	}
+private:
+	byte _translateBuf[500];
+};
+
+template<>
+ParametrizedString *Interpreter::readArgument<ParametrizedString>(byte *&code) {
+	byte translateBuf[500];
+	byte ch;
+	byte *str = translateBuf;
+	uint16 offset, value;
+	while ((ch = *(code++))) {
+		switch (ch) {
+		case 14:
+		case 3:
+			code += 4;
+			break;
+		case 9:
+			code ++;
+			break;
+		case kStringGlobalWord:
+			offset = READ_LE_UINT16(code);
+			code += 2;
+			value = READ_LE_UINT16(_resources->getGlobalWordVariable(offset/2));
+			str += snprintf(reinterpret_cast<char *>(str), 10, "%d", value);
+			break;
+		case kStringSetColour:
+			*(str++) = ch;
+			*(str++) = *(code++);
+			break;
+		case kStringCountSpacesIf0:
+		case kStringCountSpacesIf1:
+			error("unhandled string special 0x%02x", ch);
+			break;
+		case kStringCountSpacesTerminate:
+			break;
+		default:
+			if (ch == 5) {
+				while (*(code++) != 0);
+				code += 2;
+			} else
+				*(str++) = ch;
+		}
+	}
+	*str = 0;
+
+	debugC(4, kDebugLevelScript, "read parametrized string '%s' as argument", translateBuf);
+
+	return new ParametrizedString(translateBuf);
+}
 
 Value *Interpreter::getArgument(byte *&code) {
 	uint8 argument_type = code[1];
@@ -270,8 +235,8 @@ Value *Interpreter::getArgument(byte *&code) {
 			return readArgument<GlobalWordVariable>(code);
 		case kArgumentMainByte:
 			return readArgument<GlobalByteVariable>(code);
-/*		case kArgumentString:
-			return readStringArg(code);*/
+		case kArgumentString:
+			return readArgument<ParametrizedString>(code);
 		case kArgumentCode:
 			return readArgument<CodePointer>(code);
 		default:
