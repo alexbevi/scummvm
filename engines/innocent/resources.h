@@ -27,6 +27,7 @@ enum StringSpecial {
 class Sprite : public Surface {
 public:
 	void recolour(byte colour);
+	Common::Point _hotPoint;
 };
 
 class Image : public Surface {

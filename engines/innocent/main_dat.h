@@ -11,7 +11,8 @@
 namespace Innocent {
 
 struct SpriteInfo {
-	uint16 left, top, width, height, image, hot_left, hot_top;
+	uint16 left, top, width, height, image;
+	int8 hotLeft, hotTop;
 	static char _debugBuf[100];
 	const char *inspect() const;
 };

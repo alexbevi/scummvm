@@ -7,6 +7,8 @@
 
 namespace Innocent {
 
+Common::Point operator+=(Common::Point &p1, const Common::Point &p2) { return p1 = Common::Point(p1.x + p2.x, p1.y + p2.y); }
+
 Graphics::Graphics(Engine *engine)
 	 : _engine(engine) {
 }
@@ -94,12 +96,18 @@ uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch) const 
 		return 4; // space has no glyph, just width 4
 	Sprite *glyph = _resources->getGlyph(ch);
 	glyph->recolour(colour);
-	debug(2, "copying rect to screen, %d %d %d %d %d", glyph->pitch, left, top, glyph->w, glyph->h);
-	_system->copyRectToScreen(reinterpret_cast<byte *>(glyph->pixels), glyph->pitch,
-							   left, top, glyph->w, glyph->h);
+	paint(glyph, Common::Point(left, top));
 	uint16 w = glyph->w;
 	delete glyph;
 	return w;
 }
+
+void Graphics::paint(Sprite *sprite, Common::Point pos) const {
+	pos += sprite->_hotPoint;
+	debug(4, "copying rect to screen, %d %d %d %d %d", sprite->pitch, pos.x, pos.y, sprite->w, sprite->h);
+	_system->copyRectToScreen(reinterpret_cast<byte *>(sprite->pixels), sprite->pitch,
+							   pos.x, pos.y, sprite->w, sprite->h);
+}
+
 
 } // End of namespace Innocent

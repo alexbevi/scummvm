@@ -186,6 +186,7 @@ Sprite *Resources::loadSprite(uint16 id) const {
 	SpriteInfo info = _main->getSpriteInfo(id);
 	Image *image = loadImage(info.image);
 	Sprite *sprite = image->cut(Common::Rect(info.left, info.top, info.left + info.width, info.top + info.height));
+	sprite->_hotPoint = Common::Point(info.hotLeft, info.hotTop);
 	delete image;
 	return sprite;
 }
@@ -197,8 +198,6 @@ Sprite *Image::cut(Common::Rect rect) const {
 	const byte *src = reinterpret_cast<const byte *>(getBasePtr(rect.left, rect.top));
 	byte *dest = reinterpret_cast<byte *>(sprite->pixels);
 	for (uint16 y = 0; y < rect.height(); y++) {
-		// TODO make it portable across compilers (probably replacing with std::copy is ok)
-		debug(1, "copying sprite, row %d", y);
 		std::copy(src, src + rect.width(), dest);
 		src += pitch;
 		dest += sprite->pitch;

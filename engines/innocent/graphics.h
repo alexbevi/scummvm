@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "common/rect.h"
 #include "config.h"
 
 class OSystem;
@@ -12,6 +13,9 @@ namespace Innocent {
 class Engine;
 class Resources;
 class Surface;
+class Sprite;
+
+Common::Point operator+=(const Common::Point &p1, const Common::Point &p2);
 
 class Graphics {
 public:
@@ -44,6 +48,7 @@ private:
 	 * @returns char width
 	 */
 	uint16 paintChar(uint16 left, uint16 top, byte colour, byte character) const;
+	void paint(Sprite *sprite, Common::Point pos) const;
 	byte _interface[0x3c00];
 	Engine *_engine;
 	Resources *_resources;

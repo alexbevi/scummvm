@@ -166,8 +166,8 @@ SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
 	si.width = spritemap[kSpriteMapWidth];
 	si.height = spritemap[kSpriteMapHeight];
 	si.image = READ_LE_UINT16(spritemap + kSpriteMapImage);
-	si.hot_left = spritemap[kSpriteMapHotLeft];
-	si.hot_top = spritemap[kSpriteMapHotTop];
+	si.hotLeft = *reinterpret_cast<int8 *>(spritemap + kSpriteMapHotLeft);
+	si.hotTop = *reinterpret_cast<int8 *>(spritemap + kSpriteMapHotTop);
 	debug(3, "found sprite info at 0x%04x for %d: %s", spritemap - _data, index, si.inspect());
 
 	return si;
@@ -176,7 +176,7 @@ SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
 char SpriteInfo::_debugBuf[100];
 
 const char *SpriteInfo::inspect() const {
-	snprintf(_debugBuf, 100, "%d#%d:%d:%dx%d (%d:%d)", image, left, top, width, height, hot_left, hot_top);
+	snprintf(_debugBuf, 100, "%d#%d:%d:%dx%d (%d:%d)", image, left, top, width, height, hotLeft, hotTop);
 	return _debugBuf;
 }
 
