@@ -103,12 +103,13 @@ OPCODE(0x9d) {
 // 	// (not sure what's the difference to c9)
 // 	_graphics->setBackdrop(*args[0]);
 // }
-// 
-// OPCODE(0xc9) {
-// 	// set backdrop
-// 	_graphics->setBackdrop(*args[0]);
-// }
-// 
+
+OPCODE(0xc9) {
+	// set backdrop
+	debugC(3, kDebugLevelScript, "opcode 0xc9: set backdrop(%s)", +a[0]);
+	_graphics->setBackdrop(a[0]);
+}
+
 // OPCODE(0xcc) {
 // 	// go fullscreen
 // }
