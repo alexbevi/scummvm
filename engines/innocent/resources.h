@@ -10,6 +10,11 @@
 
 namespace Innocent {
 
+class Surface : public ::Graphics::Surface { // this surface autodestructs properly
+public:
+	~Surface() { free(); }
+};
+
 enum StringSpecial {
 	kStringCountSpacesTerminate = 2,
 	kStringGlobalWord = 6,
@@ -19,12 +24,12 @@ enum StringSpecial {
 	kStringCountSpacesIf1 = 0x0b
 };
 
-class Sprite : public ::Graphics::Surface {
+class Sprite : public Surface {
 public:
 	void recolour(byte colour);
 };
 
-class Image : public ::Graphics::Surface {
+class Image : public Surface {
 public:
 	Sprite *cut(Common::Rect rect) const;
 };
@@ -63,7 +68,7 @@ public:
 	byte *getGlobalByteVariable(uint16 var) const;
 	byte *getGlobalWordVariable(uint16 var) const;
 
-	::Graphics::Surface *loadBackdrop(uint16 index, byte *palette);
+	Surface *loadBackdrop(uint16 index, byte *palette);
 
 	/* pointer to the base of the main code */
 	byte *mainBase() const;

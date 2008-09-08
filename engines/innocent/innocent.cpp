@@ -47,7 +47,8 @@ int Engine::init() {
 int Engine::go() {
 	printf("Innocent::Engine: Hello, world!\n");
 	debugC(1, kDebug, "example debug call");
-	while(1) {
+	int ticks = 1000;
+	while(ticks--) {
 		_graphics->paintBackdrop();
 		_logic->tick();
 		_system->updateScreen();

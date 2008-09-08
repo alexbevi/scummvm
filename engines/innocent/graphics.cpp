@@ -1,7 +1,6 @@
 #include "innocent/graphics.h"
 
 #include "common/system.h"
-#include "graphics/surface.h"
 
 #include "innocent/innocent.h"
 #include "innocent/resources.h"
@@ -49,10 +48,11 @@ void Graphics::paintBackdrop() {
 }
 
 void Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string) {
-	byte ch;
+	byte ch = 0;
 	uint16 current_left = left;
 	byte current_colour = colour;
 
+	debug(1, "painting string %s", string);
 	while ((ch = *(string++))) {
 		switch(ch) {
 		case '\r':

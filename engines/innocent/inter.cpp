@@ -195,6 +195,7 @@ Interpreter::StringArgument::StringArgument(byte *code, Resources *res) : Argume
 			*(str++) = ch;
 		}
 	}
+	*str = 0;
 	debug(2, "string parameter: %s", _translateBuf);
 }
 

@@ -7,14 +7,11 @@
 
 class OSystem;
 
-namespace Graphics {
-class Surface;
-}
-
 namespace Innocent {
 
 class Engine;
 class Resources;
+class Surface;
 
 class Graphics {
 public:
@@ -51,7 +48,7 @@ private:
 	Engine *_engine;
 	Resources *_resources;
 	OSystem *_system;
-	std::auto_ptr< ::Graphics::Surface> _backdrop;
+	std::auto_ptr<Surface> _backdrop;
 };
 
 } // End of namespace Innocent

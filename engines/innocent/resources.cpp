@@ -148,7 +148,7 @@ uint16 Resources::mainEntryPoint() const {
 	return _main->getEntryPoint() - mainBase();
 }
 
-::Graphics::Surface *Resources::loadBackdrop(uint16 index, byte *palette) {
+Surface *Resources::loadBackdrop(uint16 index, byte *palette) {
 	Common::ReadStream *stream = imageStream(index);
 
 	uint16 width = stream->readUint16LE();
@@ -156,7 +156,7 @@ uint16 Resources::mainEntryPoint() const {
 
 	debug(2, "loading backdrop of size %dx%d", width, height);
 
-	Graphics::Surface *backdrop = new Graphics::Surface;
+	Surface *backdrop = new Surface;
 	backdrop->create(width, height, 8);
 	debug(3, "surface created");
 
