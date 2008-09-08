@@ -115,6 +115,7 @@ Status Interpreter::run(uint16 offset) {
 		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_failedCondition)
 			(this->*handler)(args);
 		else {
+			debugC(3, kDebugLevelScript, "opcode 0x%02x skipped", opcode);
 			if (opcode != 0 && opcode < 0x26)
 				_failedCondition++;
 		}

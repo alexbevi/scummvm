@@ -20,12 +20,13 @@ OPCODE(0x12) {
 	debugC(1, kDebugLevelScript, "opcode 0x12: if sound is on then STUB");
  	failedCondition();
 }
-// 
-// OPCODE(0x2d) {
-// 	// else
-// 	endIf();
-// }
-// 
+
+OPCODE(0x2d) {
+	// else
+	debugC(3, kDebugLevelScript, "opcode 0x2d: else");
+	endIf();
+}
+
 // OPCODE(0x36) {
 // 	// call
 // 	uint16 offset = args[0]->_ptr - _base;
