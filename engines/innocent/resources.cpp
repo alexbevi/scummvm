@@ -173,7 +173,7 @@ Sprite *Resources::getGlyph(byte ch) const {
 Sprite *Resources::loadSprite(uint16 id) const {
 	SpriteInfo info = _main->getSpriteInfo(id);
 	Image *image = loadImage(info.image);
-	Sprite *sprite = image->cut(Common::Rect(info.left, info.top, info.left + info.width, info.top + info.height));
+	Sprite *sprite = image->cut(Common::Rect(info.left, info.top, info.left + info.width-1, info.top + info.height-1));
 	sprite->_hotPoint = Common::Point(info.hotLeft, info.hotTop);
 	delete image;
 	return sprite;
