@@ -98,9 +98,9 @@ void Resources::loadImage(uint16 index, byte *target, uint16 size, byte *palette
 
 Image *Resources::loadImage(uint16 index) const {
 	Image * img = new Image;
-	img->create(320, 200, 8);
-	debug(4, "image pitch is %d", img->pitch/8);
-	assert(img->pitch == 320*8);
+	img->create(320, 200, 1);
+	debug(4, "image pitch is %d", img->pitch);
+	assert(img->pitch == 320);
 	loadImage(index, reinterpret_cast<byte *>(img->pixels), 320*200);
 	return img;
 }
@@ -157,7 +157,7 @@ Surface *Resources::loadBackdrop(uint16 index, byte *palette) {
 	debug(2, "loading backdrop of size %dx%d", width, height);
 
 	Surface *backdrop = new Surface;
-	backdrop->create(width, height, 8);
+	backdrop->create(width, height, 1);
 	debug(3, "surface created");
 
 	decodeImage(stream, reinterpret_cast<byte *>(backdrop->pixels), width * height);
@@ -192,7 +192,7 @@ Sprite *Resources::loadSprite(uint16 id) const {
 
 Sprite *Image::cut(Common::Rect rect) const {
 	Sprite *sprite = new Sprite;
-	sprite->create(rect.width(), rect.height(), 8);
+	sprite->create(rect.width(), rect.height(), 1);
 
 	const byte *src = reinterpret_cast<const byte *>(getBasePtr(rect.left, rect.top));
 	byte *dest = reinterpret_cast<byte *>(sprite->pixels);
@@ -200,8 +200,8 @@ Sprite *Image::cut(Common::Rect rect) const {
 		// TODO make it portable across compilers (probably replacing with std::copy is ok)
 		debug(1, "copying sprite, row %d", y);
 		std::copy(src, src + rect.width(), dest);
-		src += pitch / 8;
-		dest += sprite->pitch / 8;
+		src += pitch;
+		dest += sprite->pitch;
 	}
 	return sprite;
 }
@@ -212,7 +212,7 @@ enum {
 
 void Sprite::recolour(byte colour) {
 	byte *data = reinterpret_cast<byte *>(pixels);
-	std::replace(data, data + h * pitch/8, byte(kChangeableColour), colour);
+	std::replace(data, data + h * pitch, byte(kChangeableColour), colour);
 }
 
 } // End of namespace Innocent
