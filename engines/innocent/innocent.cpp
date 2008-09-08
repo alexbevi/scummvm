@@ -31,7 +31,7 @@ Engine::~Engine() {
 int Engine::init() {
 	_resources->init();
 	GFX_TRANSACTION {
-		initCommonGFX(true);
+		initCommonGFX(false);
 		_system->initSize(320, 200);
 	}
 	_graphics->init();
