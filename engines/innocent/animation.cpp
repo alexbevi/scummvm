@@ -107,6 +107,10 @@ uint16 Animation::shift() {
 	return value;
 }
 
+int8 Animation::embeddedByte() const {
+	return reinterpret_cast<int8 *>(_code)[-1];
+}
+
 #define OPCODE(n) template<> Animation::Status Animation::opcodeHandler<n>()
 
 OPCODE(0x00) {
@@ -121,6 +125,16 @@ OPCODE(0x08) {
 	debugC(4, kDebugLevelAnimation, "anim opcode 0x08: move to %d:%d", left, top);
 
 	_position = Common::Point(left, top);
+
+	return kOk;
+}
+
+OPCODE(0x1a) {
+	int8 index = embeddedByte();
+
+	debugC(4, kDebugLevelAnimation, "anim opcode 0x1a: set z index to %d", index);
+
+	_zIndex = index;
 
 	return kOk;
 }

@@ -29,6 +29,7 @@ private:
 	class Sprite;
 
 	uint16 shift();
+	int8 embeddedByte() const;
 	void clearSprites();
 
 	template <int opcode>
@@ -42,6 +43,7 @@ private:
 	typedef Status (Animation::*OpcodeHandler)();
 	OpcodeHandler _handlers[38];
 
+	int8 _zIndex;
 	Common::Point _position;
 	byte *_code;
 	char _debugInfo[50];
