@@ -24,17 +24,21 @@ Logic::~Logic() {
 
 void Logic::init() {
 	_toplevelInterpreter.reset(new Interpreter(this, _resources->mainBase(), "main code"));
-	debugC(2, kDebugLevelScript, ">>>running initial code");
+	debugC(2, kDebugLevelScript | kDebugLevelFlow, ">>>running initial code");
 	_toplevelInterpreter->run(_resources->mainEntryPoint(), kCodeInitial);
-	debugC(2, kDebugLevelScript, "<<<finished initial code");
+	debugC(2, kDebugLevelScript | kDebugLevelFlow, "<<<finished initial code");
 }
 
 void Logic::tick() {
 	if (_roomLoop.get()) {
-		debugC(2, kDebugLevelScript, ">>>running room loop code");
+		debugC(2, kDebugLevelScript | kDebugLevelFlow, ">>>running room loop code");
 		_roomLoop->run(kCodeRoomLoop);
-		debugC(2, kDebugLevelScript, "<<<finished room loop code");
+		debugC(2, kDebugLevelScript | kDebugLevelFlow, "<<<finished room loop code");
 	}
+	
+	debugC(2, kDebugLevelFlow | kDebugLevelAnimation, "running animations");
+	for (Common::List<Animation *>::iterator it = _animations.begin(); it != _animations.end(); ++it)
+		(*it)->tick();
 }
 
 void Logic::setProtagonist(uint16 actor) {

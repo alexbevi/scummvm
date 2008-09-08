@@ -40,6 +40,14 @@ private:
 	mutable char _inspectBuffer[9];
 };
 
+
+enum DebugLevel {
+	kDebugLevelScript    = 1,
+	kDebugLevelGraphics  = 2,
+	kDebugLevelFlow		 = 4,
+	kDebugLevelAnimation = 8
+};
+
 }
 
 #endif

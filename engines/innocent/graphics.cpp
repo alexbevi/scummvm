@@ -2,6 +2,7 @@
 
 #include "common/system.h"
 
+#include "innocent/debug.h"
 #include "innocent/innocent.h"
 #include "innocent/resources.h"
 

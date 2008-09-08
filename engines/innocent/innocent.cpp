@@ -22,7 +22,9 @@ Engine::Engine(OSystem *syst) :
 	_logic.reset(new Logic(this));
 
 	Common::addSpecialDebugLevel(kDebugLevelScript, "script", "bytecode scripts");
-	Common::addSpecialDebugLevel(kDebugLevelScript, "graphics", "graphics handling");
+	Common::addSpecialDebugLevel(kDebugLevelGraphics, "graphics", "graphics handling");
+	Common::addSpecialDebugLevel(kDebugLevelFlow, "flow", "game code flow status");
+	Common::addSpecialDebugLevel(kDebugLevelAnimation, "animations", "animations");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
 }

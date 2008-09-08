@@ -58,6 +58,8 @@ public:
 
 	const char *name() const { return _name; }
 
+	byte *rawCode(uint16 offset) const { return _base + offset; }
+
 	friend class CodePointer;
 
 private:

@@ -85,13 +85,14 @@ private:
 
 class CodePointer : public Value {
 public:
-	CodePointer(const CodePointer &code) : Value(), _offset(code._offset), _interpreter(code._interpreter) { init(); }
+	CodePointer(const CodePointer &c) : Value(), _offset(c._offset), _interpreter(c._interpreter) { init(); }
 	CodePointer(uint16 offset, Interpreter *interpreter);
 	virtual const char *operator+() const { return _inspect; }
 	virtual void run() const;
 	virtual void run(OpcodeMode mode) const;
 	uint16 offset() const { return _offset; }
 	virtual bool holdsCode() const { return true; }
+	virtual byte *code() const;
 private:
 	void init();
 	char _inspect[40];
