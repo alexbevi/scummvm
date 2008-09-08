@@ -51,7 +51,7 @@ void Interpreter::init_opcodes<-1>() {}
 // 	Argument operator=(byte b) { *_ptr = b; return *this; }
 // };
 
-Interpreter::Interpreter(Logic *l, byte *base) :
+Interpreter::Interpreter(Logic *l, byte *base, const char *n) :
 		_logic(l),
 		_engine(l->engine()),
 		_resources(_engine->resources()),
@@ -59,6 +59,7 @@ Interpreter::Interpreter(Logic *l, byte *base) :
 		_roomLoop(0)
 		{
 	init_opcodes<255>();
+	strncpy(_name, n, 100);
 	init();
 }
 
@@ -163,11 +164,11 @@ private:
 class CodePointer : public Value {
 public:
 	CodePointer(uint16 offset, Interpreter *interpreter) : _offset(offset), _interpreter(interpreter) {
-		snprintf(_inspect, 27, "code offset 0x%04x", offset);
+		snprintf(_inspect, 40, "code offset 0x%04x of %s", offset, _interpreter->name());
 	}
 	virtual const char *operator+() const { return _inspect; }
 private:
-	char _inspect[27];
+	char _inspect[40];
 	uint16 _offset;
 	Interpreter *_interpreter;
 };
@@ -192,7 +193,7 @@ template<>
 CodePointer *Interpreter::readArgument<CodePointer>(byte *&code) {
 	uint16 offset = READ_LE_UINT16(code);
 	code += 2;
-	debugC(4, kDebugLevelScript, "read code offset 0x%04x as argument", offset);
+	debugC(4, kDebugLevelScript, "read local code offset 0x%04x as argument", offset);
 	return new CodePointer(offset, this);
 }
 

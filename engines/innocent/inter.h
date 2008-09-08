@@ -59,7 +59,7 @@ private:
 
 class Interpreter {
 public:
-	Interpreter(Logic *l, byte *base);
+	Interpreter(Logic *l, byte *base, const char *name);
 
 	void init();
 
@@ -88,7 +88,10 @@ public:
 
 	Logic *_logic;
 
+	const char *name() const { return _name; }
+
 private:
+	char _name[100];
 	template<class T>
 	T *readArgument(byte *&code);
 

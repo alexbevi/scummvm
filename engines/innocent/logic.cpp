@@ -17,7 +17,7 @@ Logic::Logic(Engine *e) :
 	{}
 
 void Logic::init() {
-	_toplevelInterpreter.reset(new Interpreter(this, _resources->mainBase()));
+	_toplevelInterpreter.reset(new Interpreter(this, _resources->mainBase(), "main code"));
 	debugC(2, kDebugLevelScript, ">>>running initial code");
 	_toplevelInterpreter->run(_resources->mainEntryPoint(), kCodeInitial);
 	debugC(2, kDebugLevelScript, "<<<finished initial code");
@@ -39,7 +39,9 @@ void Logic::changeRoom(uint16 newRoom) {
 	if (newBlock != _currentBlock) {
 		_currentBlock = newBlock;
 		_blockProgram.reset(_resources->loadCodeBlock(newBlock));
-		_blockInterpreter.reset(new Interpreter(this, _blockProgram->base()));
+		char buf[100];
+		snprintf(buf, 100, "block %d code", newBlock);
+		_blockInterpreter.reset(new Interpreter(this, _blockProgram->base(), buf));
 
 		debugC(2, kDebugLevelScript, ">>>running block entry code for block %d", newBlock);
 		_blockInterpreter->run(_blockProgram->begin(), kCodeNewBlock);
