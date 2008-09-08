@@ -99,12 +99,13 @@ OPCODE(0x9d) {
 // 	// add animation
 // 	addAnimation(args[0]->_ptr);
 // }
-// 
-// OPCODE(0xc8) {
-// 	// set backdrop
-// 	// (not sure what's the difference to c9)
-// 	_graphics->setBackdrop(*args[0]);
-// }
+
+OPCODE(0xc8) {
+	// set backdrop
+	// (not sure what's the difference to c9)
+	debugC(3, kDebugLevelScript, "opcode 0xc8: set backdrop(%s)", +a[0]);
+	_graphics->setBackdrop(a[0]);
+}
 
 OPCODE(0xc9) {
 	// set backdrop
