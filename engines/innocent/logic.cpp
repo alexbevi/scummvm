@@ -18,6 +18,7 @@ Logic::Logic(Engine *e) :
 
 void Logic::init() {
 	_toplevelInterpreter.reset(new Interpreter(this, _resources->mainBase()));
+	debugC(2, kDebugLevelScript, "running initial code");
 	_toplevelInterpreter->run(_resources->mainEntryPoint(), kCodeInitial);
 }
 

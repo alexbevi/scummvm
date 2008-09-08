@@ -8,6 +8,8 @@
 #include "common/util.h"
 #include "config.h"
 
+#include "innocent/value.h"
+
 namespace Innocent {
 
 class Logic;
@@ -28,17 +30,6 @@ enum OpcodeMode {
 enum Status {
 	kReturned = 0,
 	kInvalidOpcode = 1
-};
-
-class Argument {
-public:
-	Argument(byte *ptr) : _ptr(ptr) {}
-	virtual ~Argument() {}
-	virtual operator uint16() const UNIMPLEMENTED
-	virtual operator byte() const UNIMPLEMENTED
-	virtual Argument operator=(byte b) UNIMPLEMENTED
-	virtual Argument operator=(uint16 b) UNIMPLEMENTED
-	byte *_ptr;
 };
 
 class Animation {
@@ -81,39 +72,25 @@ public:
 	void tick();
 	void executeRestricted(byte *code);
 
-	Argument *getArgument(byte *&code);
+	Value getArgument(byte *&code);
 
 	friend class Opcode;
 
 	template <int opcode>
-	void opcodeHandler(Argument *args[]);
+	void opcodeHandler(Value args[]);
 
 	template <int N>
 	void init_opcodes();
 
-	typedef void (Interpreter::*OpcodeHandler)(Argument *args[]);
+	typedef void (Interpreter::*OpcodeHandler)(Value args[]);
 	OpcodeHandler _handlers[256];
 	static const uint8 _argumentsCounts[];
 
 	Logic *_logic;
 
 private:
-	class StringArgument : public Argument {
-	public:
-		StringArgument(byte *code, Resources *res);
-		byte *translated() { return _translateBuf; }
-	private:
-		byte _translateBuf[100];
-	};
-
 	byte *_base;
 	uint16 _mode;
-
-	Argument *readImmediateArg(byte *&code);
-	Argument *readMainWordArg(byte *&code);
-	Argument *readMainByteArg(byte *&code);
-	Argument *readStringArg(byte *&code);
-	Argument *readLocalArg(byte *&code);
 
 	Status run(uint16 offset);
 
@@ -127,7 +104,7 @@ private:
 	bool _return;
 	Common::List<Animation> _animations;
 	byte *_roomLoop;
-	
+
 	Engine *_engine;
 	Resources *_resources;
 	Graphics *_graphics;

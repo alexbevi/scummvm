@@ -21,7 +21,7 @@ enum {
 };
 
 template <int opcode>
-void Interpreter::opcodeHandler(Argument *args[]){
+void Interpreter::opcodeHandler(Value args[]){
 	error("unhandled opcode %d [=0x%02x]", opcode, opcode);
 }
 
@@ -35,21 +35,21 @@ void Interpreter::init_opcodes() {
 template<>
 void Interpreter::init_opcodes<-1>() {}
 
-class Uint16Argument : public Argument {
-public:
-	Uint16Argument(byte *ptr) : Argument(ptr) {}
-	operator uint16() const { return READ_LE_UINT16(_ptr); }
-	Argument operator=(uint16 value) { WRITE_LE_UINT16(_ptr, value); return *this; }
-	operator byte() const { return READ_LE_UINT16(_ptr); }
-	Argument operator=(byte value) { WRITE_LE_UINT16(_ptr, value); return *this; }
-};
-
-class ByteArgument : public Argument {
-public:
-	ByteArgument(byte *ptr) : Argument(ptr) {}
-	operator byte() const { return *_ptr; }
-	Argument operator=(byte b) { *_ptr = b; return *this; }
-};
+// class Uint16Argument : public Argument {
+// public:
+// 	Uint16Argument(byte *ptr) : Argument(ptr) {}
+// 	operator uint16() const { return READ_LE_UINT16(_ptr); }
+// 	Argument operator=(uint16 value) { WRITE_LE_UINT16(_ptr, value); return *this; }
+// 	operator byte() const { return READ_LE_UINT16(_ptr); }
+// 	Argument operator=(byte value) { WRITE_LE_UINT16(_ptr, value); return *this; }
+// };
+// 
+// class ByteArgument : public Argument {
+// public:
+// 	ByteArgument(byte *ptr) : Argument(ptr) {}
+// 	operator byte() const { return *_ptr; }
+// 	Argument operator=(byte b) { *_ptr = b; return *this; }
+// };
 
 Interpreter::Interpreter(Logic *l, byte *base) :
 		_logic(l),
@@ -104,7 +104,7 @@ Status Interpreter::run(uint16 offset) {
 
 		OpcodeHandler handler = _handlers[opcode];
 
-		Argument *args[6];
+		Value args[6];
 
 		for (uint i = 0; i < nargs; i++)
 			args[i] = getArgument(code);
@@ -118,9 +118,6 @@ Status Interpreter::run(uint16 offset) {
 			if (opcode != 0 && opcode < 0x26)
 				_failedCondition++;
 		}
-
-		for (int i = 0; i < nargs; i++)
-			delete args[i];
 	}
 
 	return kReturned;
@@ -134,110 +131,110 @@ enum ArgumentTypes {
 	kArgumentLocal = 9
 };
 
-Argument *Interpreter::readImmediateArg(byte *&code) {
-	byte *ptr = code;
-	code += 2;
-	return new Uint16Argument(ptr);
-}
+// Argument *Interpreter::readImmediateArg(byte *&code) {
+// 	byte *ptr = code;
+// 	code += 2;
+// 	return new Uint16Argument(ptr);
+// }
+// 
+// Argument *Interpreter::readMainByteArg(byte *&code) {
+// 	uint16 index = READ_LE_UINT16(code);
+// 	code += 2;
+// 	Argument *arg = new ByteArgument(_resources->getGlobalByteVariable(index));
+// 	return arg;
+// }
+// 
+// Argument *Interpreter::readMainWordArg(byte *&code) {
+// 	uint16 offset = READ_LE_UINT16(code);
+// 	code += 2;
+// 	Argument *arg = new Uint16Argument(_resources->getGlobalWordVariable(offset/2));
+// 	return arg;
+// }
+// 
+// 
+// Argument *Interpreter::readLocalArg(byte *&code) {
+// 	uint16 offset = READ_LE_UINT16(code);
+// 	code += 2;
+// 	Argument *arg = new Uint16Argument(_base + offset);
+// 	return arg;
+// }
+// 
+// Interpreter::StringArgument::StringArgument(byte *code, Resources *res) : Argument(code) {
+// 	byte ch;
+// 	byte *str = _translateBuf;
+// 	uint16 offset, value;
+// 	while ((ch = *(code++))) {
+// 		switch (ch) {
+// 		case kStringGlobalWord:
+// 			offset = READ_LE_UINT16(code);
+// 			code += 2;
+// 			value = READ_LE_UINT16(res->getGlobalWordVariable(offset/2));
+// 			str += snprintf(reinterpret_cast<char *>(str), _translateBuf - str, "%d", value);
+// 			break;
+// 		case kStringSetColour:
+// 			*(str++) = ch;
+// 			*(str++) = *(code++);
+// 			break;
+// 		case kStringCountSpacesIf0:
+// 		case kStringCountSpacesIf1:
+// 			error("unhandled string special 0x%02x", ch);
+// 			break;
+// 		case kStringCountSpacesTerminate:
+// 			break;
+// 		default:
+// 			*(str++) = ch;
+// 		}
+// 	}
+// 	*str = 0;
+// }
+// 
+// Argument *Interpreter::readStringArg(byte *&code) {
+// 	Argument *arg = new StringArgument(code, _resources);
+// 
+// 	// skip the string
+// 	byte ch;
+// 
+// 
+// 	bool displayed = false;
+// 
+// 	do {
+// 		ch = *(code++);
+// 		// try string args len
+// 		switch (ch) {
+// 		case 9:
+// 		case 7:
+// 			code ++;
+// 		case 6:
+// 		case 10:
+// 		case 11:
+// 			code ++;
+// 		case 14:
+// 		case 3:
+// 			code += 2;
+// 			displayed = false;
+// 		}
+// 
+// 		if (ch == 5) {
+// 			while (*(code++) != 0);
+// 			code += 2;
+// 			displayed = false;
+// 			continue;
+// 		}
+// 
+// 		if (!displayed) {
+// 			displayed = true;
+// 		}
+// 	} while (ch != 0);
+// 
+// 	return arg;
+// }
 
-Argument *Interpreter::readMainByteArg(byte *&code) {
-	uint16 index = READ_LE_UINT16(code);
-	code += 2;
-	Argument *arg = new ByteArgument(_resources->getGlobalByteVariable(index));
-	return arg;
-}
-
-Argument *Interpreter::readMainWordArg(byte *&code) {
-	uint16 offset = READ_LE_UINT16(code);
-	code += 2;
-	Argument *arg = new Uint16Argument(_resources->getGlobalWordVariable(offset/2));
-	return arg;
-}
-
-
-Argument *Interpreter::readLocalArg(byte *&code) {
-	uint16 offset = READ_LE_UINT16(code);
-	code += 2;
-	Argument *arg = new Uint16Argument(_base + offset);
-	return arg;
-}
-
-Interpreter::StringArgument::StringArgument(byte *code, Resources *res) : Argument(code) {
-	byte ch;
-	byte *str = _translateBuf;
-	uint16 offset, value;
-	while ((ch = *(code++))) {
-		switch (ch) {
-		case kStringGlobalWord:
-			offset = READ_LE_UINT16(code);
-			code += 2;
-			value = READ_LE_UINT16(res->getGlobalWordVariable(offset/2));
-			str += snprintf(reinterpret_cast<char *>(str), _translateBuf - str, "%d", value);
-			break;
-		case kStringSetColour:
-			*(str++) = ch;
-			*(str++) = *(code++);
-			break;
-		case kStringCountSpacesIf0:
-		case kStringCountSpacesIf1:
-			error("unhandled string special 0x%02x", ch);
-			break;
-		case kStringCountSpacesTerminate:
-			break;
-		default:
-			*(str++) = ch;
-		}
-	}
-	*str = 0;
-}
-
-Argument *Interpreter::readStringArg(byte *&code) {
-	Argument *arg = new StringArgument(code, _resources);
-
-	// skip the string
-	byte ch;
-
-
-	bool displayed = false;
-
-	do {
-		ch = *(code++);
-		// try string args len
-		switch (ch) {
-		case 9:
-		case 7:
-			code ++;
-		case 6:
-		case 10:
-		case 11:
-			code ++;
-		case 14:
-		case 3:
-			code += 2;
-			displayed = false;
-		}
-
-		if (ch == 5) {
-			while (*(code++) != 0);
-			code += 2;
-			displayed = false;
-			continue;
-		}
-
-		if (!displayed) {
-			displayed = true;
-		}
-	} while (ch != 0);
-
-	return arg;
-}
-
-Argument *Interpreter::getArgument(byte *&code) {
+Value Interpreter::getArgument(byte *&code) {
 	uint8 argument_type = code[1];
 	code += 2;
 
 	switch (argument_type) {
-		case kArgumentImmediate:
+/*		case kArgumentImmediate:
 			return readImmediateArg(code);
 		case kArgumentMainWord:
 			return readMainWordArg(code);
@@ -246,7 +243,7 @@ Argument *Interpreter::getArgument(byte *&code) {
 		case kArgumentString:
 			return readStringArg(code);
 		case kArgumentLocal:
-			return readLocalArg(code);
+			return readLocalArg(code);*/
 		default:
 			error("don't know how to handle argument type 0x%02x", argument_type);
 	}
