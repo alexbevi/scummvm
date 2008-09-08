@@ -198,7 +198,8 @@ Sprite *Image::cut(Common::Rect rect) const {
 	byte *dest = reinterpret_cast<byte *>(sprite->pixels);
 	for (uint16 y = 0; y < rect.height(); y++) {
 		// TODO make it portable across compilers (probably replacing with std::copy is ok)
-		__gnu_cxx::copy_n(src, rect.width(), dest);
+		debug(1, "copying sprite, row %d", y);
+		std::copy(src, src + rect.width(), dest);
 		src += pitch / 8;
 		dest += sprite->pitch / 8;
 	}
