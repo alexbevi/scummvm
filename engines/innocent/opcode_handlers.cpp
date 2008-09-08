@@ -7,12 +7,12 @@
 namespace Innocent {
 #define OPCODE(num) template<> void Interpreter::opcodeHandler<num>(ValueVector a)
 
-// OPCODE(0x01) {
-// 	// return (to caller or toplevel)
-// 	// TODO how does it play with 0x36?
-// 	goBack();
-// }
-//
+OPCODE(0x01) {
+	// return (to caller or toplevel)
+	debugC(1, kDebugLevelScript, "opcode 0x01: return (partial STUB)");
+	// TODO: when it's not toplevel
+	goBack();
+}
 
 OPCODE(0x12) {
  	// if sound is on then

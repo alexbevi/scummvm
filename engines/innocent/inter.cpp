@@ -129,7 +129,7 @@ enum ArgumentTypes {
 	kArgumentMainWord = 2,
 	kArgumentMainByte = 3,
 	kArgumentString = 7,
-	kArgumentLocal = 9
+	kArgumentCode = 9
 };
 
 template<>
@@ -160,6 +160,18 @@ private:
 	char _inspect[27];
 };
 
+class CodePointer : public Value {
+public:
+	CodePointer(uint16 offset, Interpreter *interpreter) : _offset(offset), _interpreter(interpreter) {
+		snprintf(_inspect, 27, "code offset 0x%04x", offset);
+	}
+	virtual const char *operator+() const { return _inspect; }
+private:
+	char _inspect[27];
+	uint16 _offset;
+	Interpreter *_interpreter;
+};
+
 template<>
 GlobalByteVariable *Interpreter::readArgument<GlobalByteVariable>(byte *&code) {
 	uint16 index = READ_LE_UINT16(code);
@@ -176,22 +188,14 @@ GlobalWordVariable *Interpreter::readArgument<GlobalWordVariable>(byte *&code) {
 	return new GlobalWordVariable(index, _resources);
 }
 
-// 
-// Argument *Interpreter::readMainByteArg(byte *&code) {
-// 	uint16 index = READ_LE_UINT16(code);
-// 	code += 2;
-// 	Argument *arg = new ByteArgument(_resources->getGlobalByteVariable(index));
-// 	return arg;
-// }
-// 
-// Argument *Interpreter::readMainWordArg(byte *&code) {
-// 	uint16 offset = READ_LE_UINT16(code);
-// 	code += 2;
-// 	Argument *arg = new Uint16Argument(_resources->getGlobalWordVariable(offset/2));
-// 	return arg;
-// }
-// 
-// 
+template<>
+CodePointer *Interpreter::readArgument<CodePointer>(byte *&code) {
+	uint16 offset = READ_LE_UINT16(code);
+	code += 2;
+	debugC(4, kDebugLevelScript, "read code offset 0x%04x as argument", offset);
+	return new CodePointer(offset, this);
+}
+
 // Argument *Interpreter::readLocalArg(byte *&code) {
 // 	uint16 offset = READ_LE_UINT16(code);
 // 	code += 2;
@@ -281,9 +285,9 @@ Value *Interpreter::getArgument(byte *&code) {
 		case kArgumentMainByte:
 			return readArgument<GlobalByteVariable>(code);
 /*		case kArgumentString:
-			return readStringArg(code);
-		case kArgumentLocal:
-			return readLocalArg(code);*/
+			return readStringArg(code);*/
+		case kArgumentCode:
+			return readArgument<CodePointer>(code);
 		default:
 			error("don't know how to handle argument type 0x%02x", argument_type);
 	}
