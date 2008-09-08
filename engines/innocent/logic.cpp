@@ -39,10 +39,12 @@ void Logic::changeRoom(uint16 newRoom) {
 		_currentBlock = newBlock;
 		_blockProgram.reset(_resources->loadCodeBlock(newBlock));
 		_blockInterpreter.reset(new Interpreter(this, _blockProgram->base()));
+		debugC(2, kDebugLevelScript, "running block entry code for block %d", newBlock);
 
 		_blockInterpreter->run(_blockProgram->begin(), kCodeNewBlock);
 	}
 
+	debugC(2, kDebugLevelScript, "running room entry code for block %d", newRoom);
 	_blockInterpreter->run(_blockProgram->roomHandler(newRoom), kCodeNewRoom);
 }
 
