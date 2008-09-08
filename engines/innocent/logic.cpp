@@ -35,8 +35,9 @@ void Logic::tick() {
 		_roomLoop->run(kCodeRoomLoop);
 		debugC(2, kDebugLevelScript | kDebugLevelFlow, "<<<finished room loop code");
 	}
-	
-	debugC(2, kDebugLevelFlow | kDebugLevelAnimation, "running animations");
+
+	if (!_animations.empty())
+		debugC(2, kDebugLevelFlow | kDebugLevelAnimation, "running animations");
 	for (Common::List<Animation *>::iterator it = _animations.begin(); it != _animations.end(); ++it) {
 		Animation::Status ret = (*it)->tick();
 		if (ret == Animation::kRemove) {
