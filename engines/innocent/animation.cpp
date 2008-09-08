@@ -49,9 +49,9 @@ template<>
 void Animation::init_opcodes<-1>() {}
 
 Animation::Animation(const CodePointer &code, Common::Point position) :
-		_position(position)
+		_position(position), _offset(0), _interval(1), _ticksLeft(0)
 {
-	_code = code.code();
+	_base = code.code();
 	_resources = code.interpreter()->resources();
 	init_opcodes<37>();
 	snprintf(_debugInfo, 50, "animation at %s", +code);
@@ -63,16 +63,21 @@ Animation::~Animation() {
 }
 
 Animation::Status Animation::tick() {
-	debugC(3, kDebugLevelAnimation, "ticking animation %s", _debugInfo);
+	debugC(3, kDebugLevelAnimation, "ticking animation %s (ticks left: %d)", _debugInfo, _ticksLeft);
+
+	if (_ticksLeft) {
+		_ticksLeft--;
+		return kOk;
+	}
 
 	clearSprites();
 
 	Status status = kOk;
 	while (status == kOk) {
-		int8 opcode = -*_code;
+		int8 opcode = -*(_base + _offset);
 		if (opcode < 0 || opcode >= 0x27)
-			error("invalid animation opcode 0x%02x while handling %s", *_code, _debugInfo);
-		_code += 2;
+			error("invalid animation opcode 0x%02x while handling %s", *(_base + _offset), _debugInfo);
+		_offset += 2;
 
 		status = (this->*_handlers[opcode-1])();
 	}
@@ -108,19 +113,19 @@ void Animation::Sprite::paint(Graphics *g) const {
 }
 
 uint16 Animation::shift() {
-	uint16 value = READ_LE_UINT16(_code);
-	_code += 2;
+	uint16 value = READ_LE_UINT16((_base + _offset));
+	_offset += 2;
 	return value;
 }
 
 int8 Animation::shiftByte() {
-	byte value = *_code;
-	_code += 1;
+	byte value = *(_base + _offset);
+	_offset += 1;
 	return value;
 }
 
 int8 Animation::embeddedByte() const {
-	return reinterpret_cast<int8 *>(_code)[-1];
+	return reinterpret_cast<int8 *>((_base + _offset))[-1];
 }
 
 #define OPCODE(n) template<> Animation::Status Animation::opcodeHandler<n>()
@@ -147,9 +152,11 @@ OPCODE(0x07) {
 
 	setMainSprite(sprite);
 
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x07: set main sprite to %d (from global word 0x%04x)", sprite, var/2);
+	debugC(4, kDebugLevelAnimation, "anim opcode 0x07: set main sprite to %d (from global word 0x%04x), frame done", sprite, var/2);
 
-	return kOk;
+	_ticksLeft = _interval;
+
+	return kFrameDone;
 }
 
 OPCODE(0x08) {
@@ -159,6 +166,16 @@ OPCODE(0x08) {
 	debugC(4, kDebugLevelAnimation, "anim opcode 0x08: move by %d:%d", left, top);
 
 	_position += Common::Point(left, top);
+
+	return kOk;
+}
+
+OPCODE(0x0f) {
+	uint16 offset = shift();
+
+	debugC(4, kDebugLevelAnimation, "anim opcode 0x0f: jump to 0x%04x", offset);
+
+	_offset = offset;
 
 	return kOk;
 }

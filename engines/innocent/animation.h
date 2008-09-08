@@ -19,7 +19,8 @@ class Animation {
 public:
 	enum Status {
 		kOk,
-		kRemove
+		kRemove,
+		kFrameDone
 	};
 
 	Animation(const CodePointer &code, Common::Point position);
@@ -48,9 +49,12 @@ private:
 	typedef Status (Animation::*OpcodeHandler)();
 	OpcodeHandler _handlers[38];
 
+	int8 _interval;
+	int16 _ticksLeft;
 	int8 _zIndex;
 	Common::Point _position;
-	byte *_code;
+	byte *_base;
+	uint16 _offset;
 	char _debugInfo[50];
 	Common::List<Sprite *> _sprites;
 	std::auto_ptr<Innocent::Sprite> _mainSprite;
