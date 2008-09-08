@@ -41,6 +41,7 @@ void Logic::changeRoom(uint16 newRoom) {
 	if (newRoom == _currentRoom)
 		return;
 	_currentRoom = newRoom;
+	_roomLoop.reset(0);
 	uint16 newBlock = _resources->blockOfRoom(_currentRoom);
 	if (newBlock != _currentBlock) {
 		_currentBlock = newBlock;
@@ -61,6 +62,10 @@ void Logic::changeRoom(uint16 newRoom) {
 
 void Logic::addAnimation(Animation *anim) {
 	_animations.push_back(anim);
+}
+
+void Logic::setRoomLoop(const CodePointer &code) {
+	_roomLoop.reset(new CodePointer(code));
 }
 
 } // End of namespace Innocent

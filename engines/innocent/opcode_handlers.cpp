@@ -133,10 +133,12 @@ OPCODE(0xd6) {
 	_logic->changeRoom(a[0]);
 }
 
-// OPCODE(0xe6) {
-// 	// set room loop code
-// 	setRoomLoop(args[0]->_ptr);
-// }
+OPCODE(0xe6) {
+	// set room loop code
+	debugC(3, kDebugLevelScript, "opcode 0xe6: set room loop to %s", +a[0]);
+	assert(a[0].holdsCode());
+	_logic->setRoomLoop(static_cast<CodePointer &>(a[0]));
+}
 
 OPCODE(0xef) {
 	// random

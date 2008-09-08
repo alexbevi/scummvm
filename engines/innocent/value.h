@@ -26,6 +26,8 @@ public:
 	virtual operator uint16() const { assert(false); }
 	virtual Value &operator=(uint16 value) { assert(false); }
 
+	virtual bool holdsCode() const { return false; }
+
 	Value() {}
 
 private:
@@ -79,6 +81,7 @@ public:
 	virtual const char *operator+() const { return _inspect; }
 	virtual void run() const;
 	uint16 offset() const { return _offset; }
+	virtual bool holdsCode() const { return true; }
 private:
 	char _inspect[40];
 	uint16 _offset;

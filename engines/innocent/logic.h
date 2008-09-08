@@ -7,6 +7,8 @@
 
 #include "common/list.h"
 
+#include "innocent/value.h"
+
 namespace Innocent {
 //
 
@@ -33,6 +35,7 @@ public:
 	void tick();
 
 	void addAnimation(Animation *anim);
+	void setRoomLoop(const CodePointer &code);
 
 private:
 	Engine *_engine;
@@ -43,6 +46,7 @@ private:
 	uint16 _currentBlock;
 	std::auto_ptr<Program> _blockProgram;
 	Common::List<Animation *> _animations;
+	std::auto_ptr<CodePointer> _roomLoop;
 };
 
 } // End of namespace Innocent
