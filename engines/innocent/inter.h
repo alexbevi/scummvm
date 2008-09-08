@@ -62,6 +62,8 @@ public:
 
 	friend class CodePointer;
 
+	Resources *resources() const { return _resources; }
+
 private:
 	char _name[100];
 	template<class T>

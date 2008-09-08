@@ -93,6 +93,7 @@ public:
 	uint16 offset() const { return _offset; }
 	virtual bool holdsCode() const { return true; }
 	virtual byte *code() const;
+	Interpreter *interpreter() const { return _interpreter; }
 private:
 	void init();
 	char _inspect[40];

@@ -80,9 +80,9 @@ public:
 	friend class ProgDat;
 
 	Sprite *getGlyph(byte character) const;
+	Sprite *loadSprite(uint16 id) const;
 
 private:
-	Sprite *loadSprite(uint16 id) const;
 	std::auto_ptr<MainDat> _main;
 	MainDat *mainDat() const { return _main.get(); }
 	GraphicsMap *graphicsMap() const { return _graphicsMap.get(); }
