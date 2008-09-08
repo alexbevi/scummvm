@@ -15,7 +15,8 @@ class Logic;
 class Debugger;
 
 enum {
-	kDebugLevelScript = 1 << 0
+	kDebugLevelScript =   1,
+	kDebugLevelGraphics = 2
 };
 
 class Engine : public ::Engine {

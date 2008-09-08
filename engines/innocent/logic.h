@@ -5,8 +5,12 @@
 
 #include "config.h"
 
-namespace Innocent {
+#include "common/list.h"
 
+namespace Innocent {
+//
+
+class Animation;
 class Engine;
 class Resources;
 class Interpreter;
@@ -15,6 +19,7 @@ class Program;
 class Logic {
 public:
 	Logic(Engine *e);
+	~Logic();
 
 	void init();
 
@@ -27,6 +32,8 @@ public:
 
 	void tick();
 
+	void addAnimation(Animation *anim);
+
 private:
 	Engine *_engine;
 	Resources *_resources;
@@ -35,6 +42,7 @@ private:
 	uint16 _currentRoom;
 	uint16 _currentBlock;
 	std::auto_ptr<Program> _blockProgram;
+	Common::List<Animation *> _animations;
 };
 
 } // End of namespace Innocent

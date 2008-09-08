@@ -9,6 +9,9 @@
 #include "innocent/debug.h"
 
 namespace Innocent {
+//
+
+class Interpreter;
 
 enum ValueType {
 	kValueVoid,
@@ -66,6 +69,17 @@ public:
 	Value &operator[](uint8 idx) { return *_values[idx]; }
 private:
 	std::vector<Value *> _values;
+};
+
+class CodePointer : public Value {
+public:
+	CodePointer(const CodePointer &code) : Value() { CodePointer(code._offset, code._interpreter); }
+	CodePointer(uint16 offset, Interpreter *interpreter);
+	virtual const char *operator+() const { return _inspect; }
+private:
+	char _inspect[40];
+	uint16 _offset;
+	Interpreter *_interpreter;
 };
 
 }

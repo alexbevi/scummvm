@@ -68,9 +68,6 @@ void Interpreter::setRoomLoop(byte *code) {
 }
 
 void Interpreter::tick() {
- 	for (Common::List<Animation>::iterator it = _animations.begin(); it != _animations.end(); ++it)
- 		it->tick();
-
 	if (_roomLoop)
 		run(_roomLoop - _base, kCodeRoomLoop);
 }
@@ -159,18 +156,6 @@ public:
 	virtual const char *operator+() const { return _inspect; }
 private:
 	char _inspect[27];
-};
-
-class CodePointer : public Value {
-public:
-	CodePointer(uint16 offset, Interpreter *interpreter) : _offset(offset), _interpreter(interpreter) {
-		snprintf(_inspect, 40, "code offset 0x%04x of %s", offset, _interpreter->name());
-	}
-	virtual const char *operator+() const { return _inspect; }
-private:
-	char _inspect[40];
-	uint16 _offset;
-	Interpreter *_interpreter;
 };
 
 template<>
@@ -308,54 +293,6 @@ void Interpreter::endIf() {
 
 void Interpreter::goBack() {
 	_return = true;
-}
-
-void Interpreter::addAnimation(byte *code) {
-	_animations.push_back(Animation(code, _resources));
-}
-
-Animation::Animation(byte *code, Resources *resources) : _code(code), _zIndex(-1), _sprite(0), _resources(resources) {
-	initializeHandlers<kCodesNumber-1>();
-}
-
-void Animation::tick() {
-	byte opcode = *_code;
-
-	if (!(opcode & 0x80)) {
-		return;
-	}
-	opcode = ~opcode;
-	if (opcode >= 0x27) {
-		return;
-	}
-
-	(this->*_handlers[opcode])();
-}
-
-template<int N>
-void Animation::initializeHandlers() {
-	_handlers[N] = &Animation::handle<N>;
-	initializeHandlers<N-1>();
-}
-
-void Animation::setZIndex(int8 index) {
-	_zIndex = index;
-}
-
-void Animation::setPosition(Common::Point newPosition) {
-	_position = newPosition;
-}
-
-void Animation::setSprite(uint16 sprite) {
-	_sprite = sprite;
-}
-
-template<>
-void Animation::initializeHandlers<-1>() {}
-
-template<int N>
-void Animation::handle() {
-	error("unhandled animation code %d", N);
 }
 
 } // End of namespace Innocent

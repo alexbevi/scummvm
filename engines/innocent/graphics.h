@@ -38,6 +38,7 @@ public:
 
 	void paintText(uint16 left, uint16 top, byte colour, byte *string);
 
+	Common::Point cursorPosition() const;
 private:
 	enum {
 		kLineHeight = 12

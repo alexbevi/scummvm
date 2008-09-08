@@ -1,6 +1,7 @@
 #include "innocent/inter.h"
 
 #include "innocent/graphics.h"
+#include "innocent/animation.h"
 
 #include "common/util.h"
 
@@ -94,11 +95,12 @@ OPCODE(0x9d) {
 	debugC(3, kDebugLevelScript, "opcode 0x9d: set protagonist(%s)", +a[0]);
 	_logic->setProtagonist(a[0]);
 }
-// 
-// OPCODE(0xc2) {
-// 	// add animation
-// 	addAnimation(args[0]->_ptr);
-// }
+
+OPCODE(0xc2) {
+	// add animation at cursor
+	debugC(3, kDebugLevelScript, "opcode 0xc2: add animation %s at cursor partial STUB", +a[0]);
+	_logic->addAnimation(new Animation(static_cast<CodePointer &>(a[0]), _graphics->cursorPosition()));
+}
 
 OPCODE(0xc8) {
 	// set backdrop
@@ -135,29 +137,29 @@ OPCODE(0xd6) {
 // 	*args[1] = uint16(_engine->getRandom(*args[0]));
 // }
 
-#define ANIMCODE(n) template<> void Animation::handle<n>()
-
-ANIMCODE(2) {
-	// set position
-	uint16 left = READ_LE_UINT16(_code + 2);
-	uint16 top = READ_LE_UINT16(_code + 4);
-	setPosition(Common::Point(left, top));
-	_code += 6;
-}
-
-ANIMCODE(7) {
-	// get sprite id from main variable
-	const uint16 offset = READ_LE_UINT16(_code + 2);
-	const byte *var = _resources->getGlobalWordVariable(offset/2);
-	const uint16 sprite = READ_LE_UINT16(var);
-	setSprite(sprite);
-}
-
-ANIMCODE(26) {
-	// set z index
-	setZIndex(_code[1]);
-	// TODO set field 16 to 0
-	_code += 2;
-}
+// #define ANIMCODE(n) template<> void Animation::handle<n>()
+// 
+// ANIMCODE(2) {
+// 	// set position
+// 	uint16 left = READ_LE_UINT16(_code + 2);
+// 	uint16 top = READ_LE_UINT16(_code + 4);
+// 	setPosition(Common::Point(left, top));
+// 	_code += 6;
+// }
+// 
+// ANIMCODE(7) {
+// 	// get sprite id from main variable
+// 	const uint16 offset = READ_LE_UINT16(_code + 2);
+// 	const byte *var = _resources->getGlobalWordVariable(offset/2);
+// 	const uint16 sprite = READ_LE_UINT16(var);
+// 	setSprite(sprite);
+// }
+// 
+// ANIMCODE(26) {
+// 	// set z index
+// 	setZIndex(_code[1]);
+// 	// TODO set field 16 to 0
+// 	_code += 2;
+// }
 
 } // End of namespace Innocent

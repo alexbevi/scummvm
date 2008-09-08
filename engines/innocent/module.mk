@@ -12,7 +12,9 @@ MODULE_OBJS = \
 	logic.o \
 	inter.o \
 	program.o \
-	debugger.o
+	debugger.o \
+	animation.o \
+	value.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_MADE), DYNAMIC_PLUGIN)

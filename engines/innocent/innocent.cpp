@@ -22,6 +22,7 @@ Engine::Engine(OSystem *syst) :
 	_logic.reset(new Logic(this));
 
 	Common::addSpecialDebugLevel(kDebugLevelScript, "script", "bytecode scripts");
+	Common::addSpecialDebugLevel(kDebugLevelScript, "graphics", "graphics handling");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
 }

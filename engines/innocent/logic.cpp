@@ -6,6 +6,7 @@
 #include "innocent/inter.h"
 #include "innocent/resources.h"
 #include "innocent/program.h"
+#include "innocent/animation.h"
 
 namespace Innocent {
 
@@ -15,6 +16,11 @@ Logic::Logic(Engine *e) :
 		_currentRoom(0xffff),
 		_currentBlock(0xffff)
 	{}
+
+Logic::~Logic() {
+	for (Common::List<Animation *>::iterator it = _animations.begin(); it != _animations.end(); ++it)
+		delete *it;
+}
 
 void Logic::init() {
 	_toplevelInterpreter.reset(new Interpreter(this, _resources->mainBase(), "main code"));
@@ -51,6 +57,10 @@ void Logic::changeRoom(uint16 newRoom) {
 	debugC(2, kDebugLevelScript, ">>>running room entry code for block %d", newRoom);
 	_blockInterpreter->run(_blockProgram->roomHandler(newRoom), kCodeNewRoom);
 	debugC(2, kDebugLevelScript, "<<<finished room entry code for block %d", newRoom);
+}
+
+void Logic::addAnimation(Animation *anim) {
+	_animations.push_back(anim);
 }
 
 } // End of namespace Innocent

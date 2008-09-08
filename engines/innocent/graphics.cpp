@@ -100,5 +100,9 @@ void Graphics::paint(Sprite *sprite, Common::Point pos) const {
 							   pos.x, pos.y, sprite->w, sprite->h);
 }
 
+Common::Point Graphics::cursorPosition() const {
+	debugC(1, kDebugLevelGraphics, "cursor position STUB");
+	return Common::Point(160, 100);
+}
 
 } // End of namespace Innocent

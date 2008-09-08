@@ -32,31 +32,6 @@ enum Status {
 	kInvalidOpcode = 1
 };
 
-class Animation {
-public:
-	Animation(byte *code, Resources *resources);
-	void tick();
-
-private:
-	byte *_code;
-	static const int kCodesNumber = 38;
-	void (Animation::*_handlers[kCodesNumber])();
-
-	template<int N>
-	void initializeHandlers();
-
-	template<int N>
-	void handle();
-
-	void setZIndex(int8 index);
-	void setPosition(Common::Point position);
-	void setSprite(uint16 index);
-	int8 _zIndex;
-	Common::Point _position;
-	uint16 _sprite;
-	Resources *_resources;
-};
-
 class Interpreter {
 public:
 	Interpreter(Logic *l, byte *base, const char *name);
@@ -103,12 +78,10 @@ private:
 	void failedCondition();
 	void endIf();
 	void goBack();
-	void addAnimation(byte *code);
 	void setRoomLoop(byte *code);
 
 	uint16 _failedCondition;
 	bool _return;
-	Common::List<Animation> _animations;
 	byte *_roomLoop;
 
 	Engine *_engine;
