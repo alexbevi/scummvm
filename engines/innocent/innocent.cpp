@@ -48,7 +48,7 @@ int Engine::init() {
 
 int Engine::go() {
 	while(!quit()) {
-//		_graphics->paintBackdrop();
+		_graphics->paintBackdrop();
 		_logic->tick();
 		_graphics->paint();
 		_debugger->onFrame();
