@@ -43,7 +43,7 @@ public:
 
 class Animation {
 public:
-	Animation(byte *code);
+	Animation(byte *code, Resources *resources);
 	void tick();
 
 private:
@@ -59,7 +59,11 @@ private:
 
 	void setZIndex(int8 index);
 	void setPosition(Common::Point position);
+	void setSprite(uint16 index);
 	int8 _zIndex;
+	Common::Point _position;
+	uint16 _sprite;
+	Resources *_resources;
 };
 
 class Interpreter {

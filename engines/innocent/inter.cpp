@@ -283,10 +283,10 @@ void Interpreter::goBack() {
 
 void Interpreter::addAnimation(byte *code) {
 	debug(2, "added animation 0x%04x", code - _base);
-	_animations.push_back(Animation(code));
+	_animations.push_back(Animation(code, _resources));
 }
 
-Animation::Animation(byte *code) : _code(code), _zIndex(-1) {
+Animation::Animation(byte *code, Resources *resources) : _code(code), _zIndex(-1), _sprite(0), _resources(resources) {
 	initializeHandlers<kCodesNumber-1>();
 }
 
@@ -317,6 +317,14 @@ void Animation::initializeHandlers() {
 void Animation::setZIndex(int8 index) {
 	debug(3, "setting z index to %d", index);
 	_zIndex = index;
+}
+
+void Animation::setPosition(Common::Point newPosition) {
+	_position = newPosition;
+}
+
+void Animation::setSprite(uint16 sprite) {
+	_sprite = sprite;
 }
 
 template<>

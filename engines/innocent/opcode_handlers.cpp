@@ -133,6 +133,22 @@ OPCODE(0xef) {
 
 #define ANIMCODE(n) template<> void Animation::handle<n>()
 
+ANIMCODE(2) {
+	// set position
+	uint16 left = READ_LE_UINT16(_code + 2);
+	uint16 top = READ_LE_UINT16(_code + 4);
+	setPosition(Common::Point(left, top));
+	_code += 6;
+}
+
+ANIMCODE(7) {
+	// get sprite id from main variable
+	const uint16 offset = READ_LE_UINT16(_code + 2);
+	const byte *var = _resources->getGlobalWordVariable(offset/2);
+	const uint16 sprite = READ_LE_UINT16(var);
+	setSprite(sprite);
+}
+
 ANIMCODE(26) {
 	// set z index
 	setZIndex(_code[1]);
