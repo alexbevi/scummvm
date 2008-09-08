@@ -32,11 +32,12 @@ OPCODE(0x2d) {
 // 	uint16 offset = args[0]->_ptr - _base;
 // 	run(offset);
 // }
-// 
-// OPCODE(0x3d) {
-// 	// save first arg -- instruction pointer -- for after skipping animation
-// }
-// 
+
+OPCODE(0x3d) {
+	// save first arg -- instruction pointer -- for after skipping animation
+	debugC(1, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped to %s STUB", +a[0]);
+}
+
 // OPCODE(0x55) {
 // 	// paint text
 // 	// args: left, top, colour, text
