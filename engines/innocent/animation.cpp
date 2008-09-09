@@ -63,7 +63,7 @@ Animation::~Animation() {
 }
 
 Animation::Status Animation::tick() {
-	debugC(3, kDebugLevelAnimation, "ticking animation %s (ticks left: %d)", _debugInfo, _ticksLeft);
+	debugC(5, kDebugLevelAnimation, "ticking animation %s (ticks left: %d)", _debugInfo, _ticksLeft);
 
 	if (_ticksLeft) {
 		_ticksLeft--;
@@ -100,7 +100,7 @@ void Animation::setMainSprite(uint16 sprite) {
 }
 
 void Animation::paint(Graphics *g) {
-	debugC(4, kDebugLevelAnimation | kDebugLevelGraphics, "painting sprites for animation %s", _debugInfo);
+	debugC(5, kDebugLevelAnimation | kDebugLevelGraphics, "painting sprites for animation %s", _debugInfo);
 	g->paint(_mainSprite.get(), _position);
 
 	for (Common::List<Sprite *>::iterator it = _sprites.begin(); it != _sprites.end(); ++it)
@@ -166,6 +166,16 @@ OPCODE(0x08) {
 	debugC(4, kDebugLevelAnimation, "anim opcode 0x08: move by %d:%d", left, top);
 
 	_position += Common::Point(left, top);
+
+	return kOk;
+}
+
+OPCODE(0x0d) {
+	// no idea what this does, sets some two vars
+	int8 field_11 = embeddedByte();
+	// uint16 field_E = _offset;
+
+	debugC(1, kDebugLevelAnimation, "anim opcode 0x0d(%d) STUB", field_11);
 
 	return kOk;
 }
