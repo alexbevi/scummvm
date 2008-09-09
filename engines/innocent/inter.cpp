@@ -124,22 +124,24 @@ Constant *Interpreter::readArgument<Constant>(byte *&code) {
 
 class GlobalByteVariable : public ByteVariable {
 public:
-	GlobalByteVariable(uint16 index, Resources *res) : ByteVariable(res->getGlobalByteVariable(index)) {
-		snprintf(_inspect, 27, "global byte variable %d", index);
+	GlobalByteVariable(uint16 index, Resources *res) : ByteVariable(res->getGlobalByteVariable(index)), _index(index)  {}
+	virtual const char *operator+() const {
+		snprintf(_inspect, 27, "global byte variable %d [%d]", _index, byte(*this)); return _inspect;
 	}
-	virtual const char *operator+() const { return _inspect; }
 private:
-	char _inspect[27];
+	mutable char _inspect[27];
+	const uint16 _index;
 };
 
 class GlobalWordVariable : public WordVariable {
 public:
-	GlobalWordVariable(uint16 index, Resources *res) : WordVariable(res->getGlobalWordVariable(index)) {
-		snprintf(_inspect, 27, "global word variable %d", index);
+	GlobalWordVariable(uint16 index, Resources *res) : WordVariable(res->getGlobalWordVariable(index)), _index(index) {}
+	virtual const char *operator+() const {
+		snprintf(_inspect, 33, "global word variable %d [%d]", _index, uint16(*this)); return _inspect;
 	}
-	virtual const char *operator+() const { return _inspect; }
 private:
-	char _inspect[27];
+	mutable char _inspect[33];
+	const uint16 _index;
 };
 
 template<>

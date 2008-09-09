@@ -35,6 +35,7 @@ public:
 	virtual Value &operator=(uint16 value) { assert(false); }
 	virtual Value &operator=(const Value &) { assert(false); }
 	virtual bool operator==(const Value &other) { return uint16(*this) == other; }
+	virtual bool operator<(const Value &other) { return uint16(*this) < other; }
 
 	virtual bool holdsCode() const { assert(false); }
 
@@ -61,6 +62,7 @@ class ByteVariable : public Value {
 public:
 	ByteVariable(byte *ptr) : _ptr(ptr) {}
 	virtual Value &operator=(uint16 value) { assert(value < 256); *_ptr = value; return *this; }
+	virtual operator uint16() const { return *_ptr; }
 private:
 	byte *_ptr;
 };
