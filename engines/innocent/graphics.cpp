@@ -41,6 +41,15 @@ void Graphics::paint() {
 	foreach (Paintable *, _paintables)
 		(*it)->paint(this);
 
+	updateScreen();
+
+	unless (_afterRepaintHooks.empty()) {
+		debugC(3, kDebugLevelGraphics | kDebugLevelScript, "running hooks");
+		foreach (CodePointer, _afterRepaintHooks)
+			it->run();
+		_afterRepaintHooks.clear();
+	}
+
 	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, "<<<end paint procedure");
 }
 
@@ -207,7 +216,7 @@ uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch, Surfac
 }
 
 void Graphics::paint(const Sprite *sprite, Common::Point pos, Surface *dest) const {
-	debugC(3, kDebugLevelGraphics, "painting sprite at %d:%d (+%d:%d) [%dx%d]", pos.x, pos.y, sprite->_hotPoint.x, sprite->_hotPoint.y, sprite->w, sprite->h);
+	debugC(4, kDebugLevelGraphics, "painting sprite at %d:%d (+%d:%d) [%dx%d]", pos.x, pos.y, sprite->_hotPoint.x, sprite->_hotPoint.y, sprite->w, sprite->h);
 	pos += sprite->_hotPoint;
 
 	Common::Rect r(sprite->w, sprite->h);
@@ -251,6 +260,10 @@ void Graphics::push(Paintable *p) {
 void Graphics::pop(Paintable *p) {
 	debugC(3, kDebugLevelGraphics, "popping from paintables");
 	_paintables.remove(p);
+}
+
+void Graphics::hookAfterRepaint(CodePointer &p) {
+	_afterRepaintHooks.push_back(p);
 }
 
 const char Graphics::_charwidths[] = {

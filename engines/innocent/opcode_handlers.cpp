@@ -177,7 +177,7 @@ OPCODE(0xc2) {
 }
 
 OPCODE(0xc6) {
-	// suspend execution until an animation is ready to paint another frame
+	// suspend execution until an animation's ip points to 0xff
 	debugC(3, kDebugLevelScript, "opcode 0xc6: wait on animation %s", +a[0]);
 	_logic->animation(a[0])->runOnNextFrame(CodePointer(_code - _base, this));
 	goBack();

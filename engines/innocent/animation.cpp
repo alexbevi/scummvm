@@ -73,13 +73,6 @@ Animation::Status Animation::tick() {
 		return kOk;
 	}
 
-	unless (_frameTrigger.isEmpty()) {
-		debugC(3, kDebugLevelAnimation | kDebugLevelScript, "animation frame trigger found, invoking");
-		_frameTrigger.run();
-		_frameTrigger.reset();
-		debugC(3, kDebugLevelAnimation | kDebugLevelScript, "done with animation trigger");
-	}
-
 	clearSprites();
 
 	Status status = kOk;
@@ -96,6 +89,12 @@ Animation::Status Animation::tick() {
 		return status;
 
 	return kOk;
+}
+
+void Animation::handleTrigger() {
+	unless (_frameTrigger.isEmpty())
+		Graphics::instance().hookAfterRepaint(_frameTrigger);
+	_frameTrigger.reset();
 }
 
 void Animation::runOnNextFrame(const CodePointer &cp) {
@@ -146,7 +145,9 @@ int8 Animation::embeddedByte() const {
 #define OPCODE(n) template<> Animation::Status Animation::opcodeHandler<n>()
 
 OPCODE(0x00) {
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x00: remove animation");
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x00: remove animation");
+	handleTrigger();
+
 	return kRemove;
 }
 
@@ -154,7 +155,7 @@ OPCODE(0x02) {
 	uint16 left = shift();
 	uint16 top = shift();
 
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x02: move to %d:%d", left, top);
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x02: move to %d:%d", left, top);
 
 	_position = Common::Point(left, top);
 
@@ -166,7 +167,7 @@ OPCODE(0x06) {
 
 	setMainSprite(sprite);
 
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x06: set main sprite to %d, frame done", sprite);
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x06: set main sprite to %d, frame done", sprite);
 
 	_ticksLeft = _interval;
 
@@ -179,7 +180,7 @@ OPCODE(0x07) {
 
 	setMainSprite(sprite);
 
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x07: set main sprite to %d (from global word 0x%04x), frame done", sprite, var/2);
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x07: set main sprite to %d (from global word 0x%04x), frame done", sprite, var/2);
 
 	_ticksLeft = _interval;
 
@@ -190,7 +191,7 @@ OPCODE(0x08) {
 	int8 left = shiftByte();
 	int8 top = shiftByte();
 
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x08: move by %d:%d", left, top);
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x08: move by %d:%d", left, top);
 
 	_position += Common::Point(left, top);
 
@@ -201,7 +202,7 @@ OPCODE(0x0d) {
 	_counter = embeddedByte();
 	_loopStart = _offset;
 
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x0d: %d times do", _counter);
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x0d: %d times do", _counter);
 
 	return kOk;
 }
@@ -213,7 +214,7 @@ OPCODE(0x0e) {
 	if (_counter)
 		_offset = _loopStart;
 
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x0e: done (%d times left)", _counter);
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x0e: done (%d times left)", _counter);
 
 	return kOk;
 }
@@ -221,7 +222,7 @@ OPCODE(0x0e) {
 OPCODE(0x0f) {
 	uint16 offset = shift();
 
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x0f: jump to 0x%04x", offset);
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x0f: jump to 0x%04x", offset);
 
 	_offset = offset;
 
@@ -231,7 +232,7 @@ OPCODE(0x0f) {
 OPCODE(0x1a) {
 	int8 index = embeddedByte();
 
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x1a: set z index to %d", index);
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x1a: set z index to %d", index);
 
 	_zIndex = index;
 
@@ -243,7 +244,7 @@ OPCODE(0x1b) {
 	uint16 top = shift();
 	uint16 sprite = shift();
 
-	debugC(4, kDebugLevelAnimation, "anim opcode 0x1b: add absolute sprite %d: %d:%d", sprite, left, top);
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x1b: add absolute sprite %d: %d:%d", sprite, left, top);
 
 	Sprite *s = new Sprite(_resources->loadSprite(sprite));
 	s->setPosition(Common::Point(left, top));

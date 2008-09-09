@@ -8,6 +8,7 @@
 #include "config.h"
 
 #include "innocent/types.h"
+#include "innocent/value.h"
 
 class OSystem;
 
@@ -43,6 +44,7 @@ public:
 
 	void push(Paintable *p);
 	void pop(Paintable *p);
+	void hookAfterRepaint(CodePointer &p);
 
 	void setBackdrop(uint16 id);
 	void paintBackdrop();
@@ -87,6 +89,7 @@ public:
 
 private:
 	Common::List<Paintable *> _paintables;
+	Common::List<CodePointer> _afterRepaintHooks;
 };
 
 } // End of namespace Innocent

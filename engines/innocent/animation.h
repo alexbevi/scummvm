@@ -41,6 +41,7 @@ protected:
 	int8 embeddedByte() const;
 	void clearSprites();
 	void setMainSprite(uint16 sprite);
+	void handleTrigger();
 
 	template <int opcode>
 	Status opcodeHandler();
