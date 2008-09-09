@@ -146,6 +146,18 @@ OPCODE(0x02) {
 	return kOk;
 }
 
+OPCODE(0x06) {
+	uint16 sprite = shift();
+
+	setMainSprite(sprite);
+
+	debugC(4, kDebugLevelAnimation, "anim opcode 0x06: set main sprite to %d, frame done", sprite);
+
+	_ticksLeft = _interval;
+
+	return kFrameDone;
+}
+
 OPCODE(0x07) {
 	uint16 var = shift();
 	uint16 sprite = READ_LE_UINT16(_resources->getGlobalWordVariable(var/2));
