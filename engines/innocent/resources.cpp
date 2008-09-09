@@ -1,10 +1,12 @@
 #include "resources.h"
 
+#include <vector>
 #include <algorithm>
 #include <ext/algorithm>
 
 #include "common/endian.h"
 #include "common/file.h"
+#include "common/hashmap.h"
 #include "common/util.h"
 #include "graphics/surface.h"
 
@@ -122,10 +124,17 @@ void Resources::loadImage(uint16 index, byte *target, uint16 size, byte *palette
 }
 
 Image *Resources::loadImage(uint16 index) const {
-	Image * img = new Image;
+	Image * img;
+	static Common::HashMap<uint16, Image *> cache;
+
+	if ((img = cache[index]))
+		return img;
+
+	img = new Image;
 	img->create(320, 200, 1);
 	assert(img->pitch == 320);
 	loadImage(index, reinterpret_cast<byte *>(img->pixels), 320*200);
+	cache[index] = img;
 	return img;
 }
 
@@ -205,7 +214,6 @@ Sprite *Resources::loadSprite(uint16 id) const {
 	Image *image = loadImage(info.image);
 	Sprite *sprite = image->cut(Common::Rect(info.left, info.top, info.left + info.width, info.top + info.height));
 	sprite->_hotPoint = Common::Point(info.hotLeft, info.hotTop);
-	delete image;
 	return sprite;
 }
 

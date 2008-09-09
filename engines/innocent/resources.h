@@ -64,6 +64,11 @@ public:
 	 * @param palette optional buffer to read the palette to (size 0x400).
 	 */
 	void loadImage(uint16 index, byte *target, uint16 size, byte *palette = 0) const;
+
+	/**
+	 * Loads an image given index.
+	 * @returns pointer to the image. Please don't delete it, Resources owns it.
+	 */
 	Image *loadImage(uint16 index) const;
 
 	void loadInterfaceImage(byte *target, byte *palette = 0) {
