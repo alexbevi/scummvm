@@ -74,6 +74,12 @@ OPCODE(0x2d) {
 	endIf();
 }
 
+OPCODE(0x35) {
+	// jump
+	debugC(3, kDebugLevelScript, "opcode 0x35: jump to %s", +a[0]);
+	_code = static_cast<CodePointer &>(a[0]).code();
+}
+
 OPCODE(0x36) {
 	// call
 	debugC(3, kDebugLevelScript, ">>>opcode 0x36: call procedure %s", +a[0]);
