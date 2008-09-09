@@ -16,6 +16,13 @@ class Engine;
 class Surface : public ::Graphics::Surface { // this surface autodestructs properly
 public:
 	~Surface() { free(); }
+	void blit(const Surface *s, int transparent = -1) {
+		blit(s, Common::Point(0, 0), transparent);
+	}
+	void blit(const Surface *s, Common::Point p, int transparent = -1) {
+		blit(s, Common::Rect(p.x, p.y, s->w, s->h), transparent);
+	}
+	void blit(const Surface *s, Common::Rect r, int transparent = -1);
 };
 
 enum StringSpecial {

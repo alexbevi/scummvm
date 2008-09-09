@@ -22,6 +22,20 @@ using namespace std;
 
 namespace Innocent {
 
+void Surface::blit(const Surface *s, Common::Rect r, int transparent) {
+	const byte *src = reinterpret_cast<byte *>(s->pixels);
+	byte *dest = reinterpret_cast<byte *>(getBasePtr(r.left, r.top));
+
+	for (int y = 0; y < r.height(); ++y) {
+		for (int x = 0; x < r.width(); ++x) {
+			if (src[x] != transparent)
+				dest[x] = src[x];
+		}
+		src += s->pitch;
+		dest += pitch;
+	}
+}
+
 Resources::Resources(Engine *vm) :
 		_main(new MainDat(this)),
 		_graphicsMap(new GraphicsMap(this)),

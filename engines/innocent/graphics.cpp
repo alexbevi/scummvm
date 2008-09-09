@@ -16,7 +16,8 @@ namespace Innocent {
 Common::Point &operator+=(Common::Point &p1, const Common::Point &p2) { return p1 = Common::Point(p1.x + p2.x, p1.y + p2.y); }
 
 Graphics::Graphics(Engine *engine)
-	 : _engine(engine) {
+	 : _engine(engine), _framebuffer(new Surface) {
+	_framebuffer->create(320, 200, 1);
 }
 
 void Graphics::init() {
@@ -49,7 +50,7 @@ void Graphics::loadInterface() {
 }
 
 void Graphics::paintInterface() {
-	_engine->_system->copyRectToScreen(_interface, 320, 0, 152, 320, 48);
+//	_framebuffer->blit(_interface, Common::Point(152, 48));
 }
 
 void Graphics::setBackdrop(uint16 id) {
@@ -62,7 +63,7 @@ void Graphics::setBackdrop(uint16 id) {
 void Graphics::paintBackdrop() {
 	// TODO cropping
 	debugC(3, kDebugLevelGraphics, "painting backdrop");
-	_system->copyRectToScreen(reinterpret_cast<byte *>(_backdrop->pixels), 320, 0, 0, 320, 200);
+	_framebuffer->blit(_backdrop.get());
 }
 
 void Graphics::paintAnimations() {
@@ -118,8 +119,9 @@ uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch) const 
 	Sprite *glyph = _resources->getGlyph(ch);
 	glyph->recolour(colour);
 	paint(glyph, Common::Point(left, top+glyph->h));
+	int w = glyph->w - 1;
 	delete glyph;
-	return _charwidths[ch - ' '];
+	return w;
 }
 
 void Graphics::paint(const Sprite *sprite, Common::Point pos) const {
@@ -134,13 +136,17 @@ void Graphics::paint(const Sprite *sprite, Common::Point pos) const {
 	r.clip(319, 199);
 	debugC(4, kDebugLevelGraphics, "transformed rect: %d:%d %d:%d", r.left, r.top, r.right, r.bottom);
 
-	_system->copyRectToScreen(reinterpret_cast<byte *>(sprite->pixels), sprite->pitch,
-							   r.left, r.top, r.width(), r.height());
+	_framebuffer->blit(sprite, r, 0);
 }
 
 Common::Point Graphics::cursorPosition() const {
 	debugC(1, kDebugLevelGraphics, "cursor position STUB");
 	return Common::Point(160, 100);
+}
+
+void Graphics::updateScreen() const {
+	_system->copyRectToScreen(reinterpret_cast<byte *>(_framebuffer->pixels), _framebuffer->pitch, 0, 0, 320, 200);
+	_system->updateScreen();
 }
 
 const char Graphics::_charwidths[] = {

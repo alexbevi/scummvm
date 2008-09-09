@@ -54,8 +54,8 @@ int Engine::go() {
 		_graphics->paintBackdrop();
 		_logic->tick();
 		_graphics->paint();
+		_graphics->updateScreen();
 		_debugger->onFrame();
-		_system->updateScreen();
 		_system->delayMillis(1000/20);
 		handleEvents();
 	}

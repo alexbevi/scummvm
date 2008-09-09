@@ -44,6 +44,8 @@ public:
 	Common::Point cursorPosition() const;
 	void paint(const Sprite *sprite, Common::Point pos) const;
 
+	void updateScreen() const;
+
 	private:
 	enum {
 		kLineHeight = 12
@@ -58,7 +60,7 @@ public:
 	Engine *_engine;
 	Resources *_resources;
 	OSystem *_system;
-	std::auto_ptr<Surface> _backdrop;
+	std::auto_ptr<Surface> _backdrop, _framebuffer;
 
 	static const char _charwidths[];
 };
