@@ -7,6 +7,7 @@
 
 #include "innocent/debug.h"
 #include "innocent/debugger.h"
+#include "innocent/eventmanager.h"
 #include "innocent/graphics.h"
 #include "innocent/logic.h"
 #include "innocent/resources.h"
@@ -27,6 +28,7 @@ Engine::Engine(OSystem *syst) :
 	Common::addSpecialDebugLevel(kDebugLevelAnimation, "animation", "animations");
 	Common::addSpecialDebugLevel(kDebugLevelValues, "values", "really low-level debugging of value manipulation");
 	Common::addSpecialDebugLevel(kDebugLevelFiles, "files", "file input and output");
+	Common::addSpecialDebugLevel(kDebugLevelEvents, "events", "event handling");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
 }
@@ -67,9 +69,19 @@ int Engine::go() {
 void Engine::handleEvents() {
 	Common::Event event;
 	while (_eventMan->pollEvent(event)) {
-		if (event.type == Common::EVENT_KEYUP)
+		switch(event.type) {
+
+		case Common::EVENT_KEYUP:
 			if (event.kbd.keycode == Common::KEYCODE_BACKQUOTE)
 				_debugger->attach();
+			break;
+
+		case Common::EVENT_LBUTTONUP:
+			EventManager::instance().clicked(event.mouse);
+
+		default:
+			break;
+		}
 	}
 }
 

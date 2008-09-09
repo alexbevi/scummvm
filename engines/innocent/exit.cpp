@@ -1,5 +1,7 @@
 #include "innocent/exit.h"
+
 #include "innocent/graphics.h"
+#include "innocent/resources.h"
 
 namespace Innocent {
 //
@@ -32,4 +34,21 @@ void Exit::paint(Graphics *g) {
 		g->paint(sprite(), _position);
 }
 
+byte Exit::zIndex() const {
+	return _zIndex;
 }
+
+Common::Rect Exit::area() const {
+	if (_sprite.get()) {
+		Common::Rect r(_sprite->w, _sprite->h);
+		r.moveTo(_position.x, _position.y - _sprite->h);
+		return r;
+	} else
+		return Common::Rect();
+}
+
+void Exit::clicked() {
+	debugC(3, kDebugLevelEvents, "%s got clicked!", +*this);
+}
+
+} // end of namespace

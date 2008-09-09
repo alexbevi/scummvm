@@ -44,7 +44,8 @@ enum DebugLevel {
 	kDebugLevelFlow		 = 4,
 	kDebugLevelAnimation = 8,
 	kDebugLevelValues    = 16,
-	kDebugLevelFiles	 = 32
+	kDebugLevelFiles	 = 32,
+	kDebugLevelEvents	 = 64
 };
 
 }

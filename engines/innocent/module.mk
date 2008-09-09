@@ -18,7 +18,8 @@ MODULE_OBJS = \
 	sprite.o \
 	actor.o \
 	exit.o \
-	room.o
+	room.o \
+	eventmanager.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_MADE), DYNAMIC_PLUGIN)
