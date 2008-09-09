@@ -88,6 +88,7 @@ void Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string) {
 
 	while ((ch = *(string++))) {
 		switch(ch) {
+		case '\n':
 		case '\r':
 			current_left = left;
 			top += kLineHeight;

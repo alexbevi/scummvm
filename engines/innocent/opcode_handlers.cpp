@@ -86,6 +86,10 @@ OPCODE(0x3d) {
 	debugC(1, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped to %s STUB", +a[0]);
 }
 
+OPCODE(0x54) {
+	debugC(3, kDebugLevelScript, "opcode 0x54: ask about '%s' STUB", +a[4]);
+}
+
 OPCODE(0x55) {
 	// paint text
 	// args: left, top, colour, text

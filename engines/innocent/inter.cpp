@@ -212,6 +212,9 @@ ParametrizedString *Interpreter::readArgument<ParametrizedString>(byte *&code) {
 			break;
 		case kStringCountSpacesTerminate:
 			break;
+		case '\r':
+			*(str++) = '\n';
+			break;
 		default:
 			if (ch == 5) {
 				while (*(code++) != 0);
