@@ -34,6 +34,7 @@ public:
 	virtual operator uint16() const { assert(false); }
 	virtual Value &operator=(uint16 value) { assert(false); }
 	virtual Value &operator=(const Value &) { assert(false); }
+	virtual bool operator==(const Value &other) { return uint16(*this) == other; }
 
 	virtual bool holdsCode() const { assert(false); }
 

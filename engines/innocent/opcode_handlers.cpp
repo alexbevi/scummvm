@@ -16,6 +16,13 @@ OPCODE(0x01) {
 	goBack();
 }
 
+OPCODE(0x02) {
+	// check equality
+	debugC(3, kDebugLevelScript, "opcode 0x02: if %s == %s", +a[0], +a[1]);
+	unless (a[0] == a[1])
+		failedCondition();
+}
+
 OPCODE(0x12) {
  	// if sound is on then
 	// (argument is a set of flags, 1 - adlib, 2 - sb, 4 - roland)

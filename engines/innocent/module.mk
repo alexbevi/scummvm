@@ -1,6 +1,7 @@
 MODULE := engines/innocent
 
 MODULE_OBJS = \
+	inter.o \
 	detection.o \
 	innocent.o \
 	resources.o \
@@ -10,7 +11,6 @@ MODULE_OBJS = \
 	prog_dat.o \
 	graphics.o \
 	logic.o \
-	inter.o \
 	program.o \
 	debugger.o \
 	animation.o \
