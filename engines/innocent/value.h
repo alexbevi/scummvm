@@ -15,6 +15,7 @@ enum OpcodeMode {
 	kCodeInitial = 0,
 	kCodeNewRoom = 1,
 	kCodeRoomLoop = 2,
+	kCodeItem = 4,
 	kCodeNewBlock = 8
 };
 
@@ -87,8 +88,12 @@ private:
 
 class CodePointer : public Value {
 public:
+	CodePointer() : _interpreter(0) {}
 	CodePointer(const CodePointer &c) : Value(), _offset(c._offset), _interpreter(c._interpreter) { init(); }
 	CodePointer(uint16 offset, Interpreter *interpreter);
+
+	CodePointer &operator=(const CodePointer &cp) { _offset = cp._offset; _interpreter = cp._interpreter; return *this; }
+
 	virtual const char *operator+() const { return _inspect; }
 	virtual void run() const;
 	virtual void run(OpcodeMode mode) const;

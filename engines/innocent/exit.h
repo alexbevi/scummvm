@@ -39,6 +39,7 @@ private:
 	Common::Point _position;
 	Common::Rect _rect;
 	uint16 _room;
+	CodePointer _clickHandler;
 };
 
 }

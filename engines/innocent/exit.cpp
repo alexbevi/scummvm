@@ -12,6 +12,7 @@ enum Offsets {
 	kOffsetSprite = 6,
 	kOffsetWidth = 6,
 	kOffsetHeight = 7,
+	kOffsetClickHandler = 8,
 	kOffsetNoSprite = 0xa,
 	kOffsetZIndex = 0xb
 };
@@ -41,6 +42,10 @@ Exit::Exit(const CodePointer &c) {
 	c.field(_room, kOffsetRoom);
 	c.field(_zIndex, kOffsetZIndex);
 
+	uint16 offset;
+	c.field(offset, kOffsetClickHandler);
+	_clickHandler = CodePointer(offset, c.interpreter());
+
 	snprintf(_debugInfo, 100, "exit %s%s r%d z%d %s", nosprite ? "n" : "s" , +_rect, _room, _zIndex, +c);
 }
 
@@ -59,6 +64,7 @@ Common::Rect Exit::area() const {
 
 void Exit::clicked() {
 	debugC(3, kDebugLevelEvents, "%s got clicked!", +*this);
+	_clickHandler.run(kCodeItem);
 }
 
 } // end of namespace
