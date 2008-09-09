@@ -38,7 +38,8 @@ enum Offsets {
 	kByteVars			= 0x3E,
 	kEntryPoint			= 0x42,
 	kCharacterMap		= 0x48,
-	kCursors			= 0x54,
+//	kCursors			= 0x54, another set
+	kCursors			= 0x58,
 	kInterfaceImgIdx	= 0xB4,
 
 	kFrameTopLeftOffset = 0x76,
@@ -174,8 +175,8 @@ SpriteInfo MainDat::getSpriteInfo(uint16 index) const {
 }
 
 uint16 MainDat::getCursorSpriteId() const {
-	uint16 offset = READ_LE_UINT16(_footer + kCursors);
-	uint16 sprite = READ_LE_UINT16(_data + offset + 2);
+//	uint16 offset = READ_LE_UINT16(_footer + kCursors);
+	uint16 sprite = 0x6c;
 	debugC(1, kDebugLevelGraphics | kDebugLevelFiles, "loading cursor STUB, sprite %d", sprite);
 	return sprite;
 }

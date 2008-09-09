@@ -169,7 +169,7 @@ OPCODE(0x06) {
 
 	debugC(3, kDebugLevelAnimation, "anim opcode 0x06: set main sprite to %d, frame done", sprite);
 
-	_ticksLeft = _interval;
+	_ticksLeft = _interval - 1;
 
 	return kFrameDone;
 }
