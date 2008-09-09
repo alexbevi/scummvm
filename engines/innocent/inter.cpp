@@ -252,7 +252,7 @@ const uint8 Interpreter::_argumentsCounts[] = {
 };
 
 void Interpreter::failedCondition() {
-	_failedCondition++;
+	_failedCondition = 1;
 }
 
 void Interpreter::endIf() {
