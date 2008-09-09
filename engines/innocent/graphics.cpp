@@ -117,7 +117,7 @@ uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch) const 
 		return 4; // space has no glyph, just width 4
 	Sprite *glyph = _resources->getGlyph(ch);
 	glyph->recolour(colour);
-	paint(glyph, Common::Point(left, top));
+	paint(glyph, Common::Point(left, top+glyph->h));
 	delete glyph;
 	return _charwidths[ch - ' '];
 }
