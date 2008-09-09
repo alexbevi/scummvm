@@ -12,6 +12,11 @@
 namespace Innocent {
 #define OPCODE(num) template<> void Interpreter::opcodeHandler<num>(ValueVector a)
 
+OPCODE(0x00) {
+	// nop
+	debugC(3, kDebugLevelScript, "opcode 0x00: nop");
+}
+
 OPCODE(0x01) {
 	// return (to caller or toplevel)
 	debugC(1, kDebugLevelScript, "opcode 0x01: return (partial STUB)");
@@ -231,7 +236,7 @@ OPCODE(0xfc) {
 	if (a[0] == 0)
 		error("asking for quitting not implemented");
 
-	_engine->quit();
+	_engine->quitGame();
 }
 
 // #define ANIMCODE(n) template<> void Animation::handle<n>()
