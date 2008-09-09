@@ -58,6 +58,8 @@ protected:
 	char _debugInfo[50];
 	Common::List<Sprite *> _sprites;
 	std::auto_ptr<Innocent::Sprite> _mainSprite;
+	int8 _counter;
+	uint16 _loopStart;
 };
 
 }

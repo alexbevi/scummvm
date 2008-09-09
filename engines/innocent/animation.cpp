@@ -49,7 +49,7 @@ template<>
 void Animation::init_opcodes<-1>() {}
 
 Animation::Animation(const CodePointer &code, Common::Point position) :
-		_position(position), _offset(0), _interval(1), _ticksLeft(0)
+		_position(position), _offset(0), _interval(1), _ticksLeft(0), _counter(0)
 {
 	_base = code.code();
 	_resources = code.interpreter()->resources();
@@ -183,11 +183,22 @@ OPCODE(0x08) {
 }
 
 OPCODE(0x0d) {
-	// no idea what this does, sets some two vars
-	int8 field_11 = embeddedByte();
-	// uint16 field_E = _offset;
+	_counter = embeddedByte();
+	_loopStart = _offset;
 
-	debugC(1, kDebugLevelAnimation, "anim opcode 0x0d(%d) STUB", field_11);
+	debugC(4, kDebugLevelAnimation, "anim opcode 0x0d: %d times do", _counter);
+
+	return kOk;
+}
+
+OPCODE(0x0e) {
+	if (_counter)
+		_counter--;
+
+	if (_counter)
+		_offset = _loopStart;
+
+	debugC(4, kDebugLevelAnimation, "anim opcode 0x0e: done (%d times left)", _counter);
 
 	return kOk;
 }
