@@ -59,8 +59,17 @@ OPCODE(0x24) {
 		failedCondition();
 }
 
-OPCODE(0x2d) {
+OPCODE(0x2c) {
 	// else
+	debugC(3, kDebugLevelScript, "opcode 0x2c: else");
+
+	// this won't work for nested ifs, but that's how it is in the original code
+	if (_failedCondition < 2)
+		_failedCondition ^= 1;
+}
+
+OPCODE(0x2d) {
+	// end if
 	debugC(3, kDebugLevelScript, "opcode 0x2d: end if");
 	endIf();
 }
