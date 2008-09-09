@@ -4,6 +4,7 @@
 namespace Innocent {
 //
 #define foreach(T, L) for (Common::List<T>::iterator it = L.begin(); it != L.end(); ++it)
+#define unless(x) if (!(x))
 
 }
 

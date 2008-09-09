@@ -9,6 +9,7 @@
 namespace Innocent {
 
 class Console;
+class Interpreter;
 class Resources;
 class Graphics;
 class Logic;
@@ -28,6 +29,7 @@ public:
 
 	uint16 getRandom(uint16 max) const;
 
+	friend class Interpreter;
 private:
 	std::auto_ptr<Logic> _logic;
 	std::auto_ptr<Resources> _resources;

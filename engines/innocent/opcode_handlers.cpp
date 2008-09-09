@@ -1,7 +1,8 @@
 #include "innocent/inter.h"
 
-#include "innocent/graphics.h"
 #include "innocent/animation.h"
+#include "innocent/graphics.h"
+#include "innocent/util.h"
 
 #include "common/util.h"
 
@@ -22,9 +23,17 @@ OPCODE(0x12) {
  	failedCondition();
 }
 
+OPCODE(0x13) {
+	// if left button is up
+	// and current mode isn't null
+	debugC(1, kDebugLevelScript, "opcode 0x13: if 1st button is up and mode isn't null partial STUB");
+	if (_engine->_eventMan->getButtonState() & Common::EventManager::LBUTTON)
+		failedCondition();
+}
+
 OPCODE(0x2d) {
 	// else
-	debugC(3, kDebugLevelScript, "opcode 0x2d: else");
+	debugC(3, kDebugLevelScript, "opcode 0x2d: end if");
 	endIf();
 }
 
