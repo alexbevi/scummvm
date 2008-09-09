@@ -128,11 +128,14 @@ void Graphics::paint(const Sprite *sprite, Common::Point pos) const {
 
 	Common::Rect r(sprite->w, sprite->h);
 	r.moveTo(pos);
+	// this is actually bottom
+	r.translate(0, -sprite->h);
 
 	r.clip(319, 199);
+	debugC(4, kDebugLevelGraphics, "transformed rect: %d:%d %d:%d", r.left, r.top, r.right, r.bottom);
 
 	_system->copyRectToScreen(reinterpret_cast<byte *>(sprite->pixels), sprite->pitch,
-							   pos.x, pos.y, r.width(), r.height());
+							   r.left, r.top, r.width(), r.height());
 }
 
 Common::Point Graphics::cursorPosition() const {
