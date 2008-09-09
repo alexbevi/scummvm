@@ -91,52 +91,53 @@ int8 Graphics::ask(uint16 left, uint16 top, byte width, byte height, byte *strin
 	};
 
 	Surface frame;
-	frame.create(width * kFrameTileWidth, height * kFrameTileHeight, 1);
+	frame.create(width * kFrameTileWidth, height * kFrameTileHeight+4, 1);
 
 	Sprite **frames = _resources->frames();
 
-	Common::Rect tile(kFrameTileWidth, kFrameTileHeight);
+	Common::Point tile(0, 0);
 
-	frame.blit(frames[kFrameTopLeft], tile);
-	tile.translate(kFrameTileWidth, 0);
+	paint(frames[kFrameTopLeft], tile, &frame);
+	tile.x += kFrameTileWidth;
 	for (int x = 1; x < width - 1; x++) {
-		frame.blit(frames[kFrameTop], tile);
-		tile.translate(kFrameTileWidth, 0);
+		paint(frames[kFrameTop], tile, &frame);
+		tile.x += kFrameTileWidth;
 	}
-	frame.blit(frames[kFrameTopRight], tile);
+	paint(frames[kFrameTopRight], tile, &frame);
 
-	tile.translate(0, kFrameTileHeight);
-	tile.moveTo(0, tile.top);
+	tile.y += kFrameTileHeight;
+	tile.x = 0;
 
 	for (int y = 1; y < height - 1; y++) {
-		frame.blit(frames[kFrameLeft], tile);
-		tile.translate(kFrameTileWidth, 0);
+		paint(frames[kFrameLeft], tile, &frame);
+		tile.x += kFrameTileWidth;
 		for (int x = 1; x < width - 1; x++) {
-			frame.blit(frames[kFrameFill], tile);
-			tile.translate(kFrameTileWidth, 0);
+			paint(frames[kFrameFill], tile, &frame);
+			tile.x += kFrameTileWidth;
 		}
-		frame.blit(frames[kFrameTopRight], tile);
-		tile.translate(0, kFrameTileHeight);
-		tile.moveTo(0, tile.top);
+		paint(frames[kFrameRight], tile, &frame);
+		tile.y += kFrameTileHeight;
+		tile.x = 0;
 	}
 
-	frame.blit(frames[kFrameBottomLeft], tile);
-	tile.translate(kFrameTileWidth, 0);
+	paint(frames[kFrameBottomLeft], tile, &frame);
+	tile.x += kFrameTileWidth;
 	for (int x = 1; x < width - 1; x++) {
-		frame.blit(frames[kFrameBottom], tile);
-		tile.translate(kFrameTileWidth, 0);
+		paint(frames[kFrameBottom], tile, &frame);
+		tile.x += kFrameTileWidth;
 	}
-	frame.blit(frames[kFrameBottomRight], tile);
+	paint(frames[kFrameBottomRight], tile, &frame);
 
+	// TODO this should use the interpreter's built-in font
+	// (but it does look nicer this way)
 	paintText(10, 16, 254, string, &frame);
 
-	_system->copyRectToScreen(reinterpret_cast<byte *>(frame.pixels), frame.pitch, top, left, width * kFrameTileWidth, height * kFrameTileHeight);
-	_system->updateScreen();
+	_system->copyRectToScreen(reinterpret_cast<byte *>(frame.pixels), frame.pitch, left, top, width * kFrameTileWidth, height * kFrameTileHeight+4);
 
 	bool show = true;
 	while (show) {
+		_system->updateScreen();
 		_engine->debugger()->onFrame();
-		_system->delayMillis(1000/60);
 		Common::Event event;
 		while (_engine->eventMan()->pollEvent(event)) {
 			switch(event.type) {
@@ -147,6 +148,7 @@ int8 Graphics::ask(uint16 left, uint16 top, byte width, byte height, byte *strin
 				break;
 			}
 		}
+		_system->delayMillis(1000/60);
 	}
 
 	return -1;

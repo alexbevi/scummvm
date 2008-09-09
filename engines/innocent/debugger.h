@@ -19,6 +19,7 @@ private:
 
 	bool cmd_setBackdrop(int argc, const char **argv);
 	bool cmd_paintText(int argc, const char **argv);
+	bool cmd_paintSprite(int argc, const char **argv);
 	bool cmd_listExits(int argc, const char **argv);
 	bool cmd_showClickable(int argc, const char **argv);
 };

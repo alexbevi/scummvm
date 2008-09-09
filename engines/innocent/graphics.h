@@ -57,6 +57,9 @@ public:
 	void paint(const Sprite *sprite, Common::Point pos) const {
 		paint(sprite, pos, _framebuffer.get());
 	}
+	void paint(const Sprite *sprite, uint16 left, uint16 top, Surface *dest) const {
+		paint(sprite, Common::Point(left, top), dest);
+	}
 	void paint(const Sprite *sprite, Common::Point pos, Surface *s) const;
 
 	Common::Point cursorPosition() const;

@@ -42,13 +42,13 @@ enum Offsets {
 	kInterfaceImgIdx	= 0xB4,
 
 	kFrameTopLeftOffset = 0x76,
-	kFrameTopOffset = 0x82,
+	kFrameTopOffset = 0x7e,
 	kFrameTopRightOffset = 0x84,
 	kFrameLeftOffset = 0x7a,
 	kFrameFillOffset = 0x80,
 	kFrameRightOffset = 0x88,
 	kFrameBottomLeftOffset = 0x7c,
-	kFrameBottomOffset = 0x7e,
+	kFrameBottomOffset = 0x82,
 	kFrameBottomRightOffset = 0x8a
 };
 

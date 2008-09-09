@@ -1,10 +1,13 @@
 #include "innocent/debugger.h"
 
+#include "common/rect.h"
+
 #include "innocent/exit.h"
 #include "innocent/eventmanager.h"
 #include "innocent/graphics.h"
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
+#include "innocent/resources.h"
 #include "innocent/room.h"
 #include "innocent/util.h"
 
@@ -15,6 +18,7 @@ Debugger::Debugger(Engine *vm) : _vm(vm) {
 	DCmd_Register("paintText", WRAP_METHOD(Debugger, cmd_paintText));
 	DCmd_Register("listExits", WRAP_METHOD(Debugger, cmd_listExits));
 	DCmd_Register("showClickable", WRAP_METHOD(Debugger, cmd_showClickable));
+	DCmd_Register("paintSprite", WRAP_METHOD(Debugger, cmd_paintSprite));
 
 	DVar_Register("currentRoom", &(vm->logic()->_currentRoom), DVAR_INT);
 }
@@ -62,6 +66,24 @@ bool Debugger::cmd_paintText(int argc, const char **argv) {
 		_vm->graphics()->paintText(left, top, colour, const_cast<byte *>(reinterpret_cast<const byte *>(argv[1])));
 	} else
 		DebugPrintf("Syntax: paint_text <text> [<left> <top> [<colour>]]\n");
+
+	return true;
+}
+
+bool Debugger::cmd_paintSprite(int argc, const char **argv) {
+	if (argc >= 2) {
+		int sprite = atoi(argv[1]);
+		int left = 10;
+		int top = 10;
+		if (argc >= 4) {
+			left = atoi(argv[2]);
+			top = atoi(argv[3]);
+		}
+		Sprite *s = _vm->resources()->loadSprite(sprite);
+		_vm->graphics()->paint(s, Common::Point(left, top));
+		_vm->graphics()->updateScreen();
+	} else
+		DebugPrintf("Syntax: paintSprite <text> [<left> <top>]\n");
 
 	return true;
 }
