@@ -4,7 +4,10 @@
 #include <memory>
 
 #include "common/rect.h"
+#include "common/singleton.h"
 #include "config.h"
+
+#include "innocent/types.h"
 
 class OSystem;
 
@@ -17,9 +20,11 @@ class Sprite;
 
 Common::Point &operator+=(Common::Point &p1, const Common::Point &p2);
 
-class Graphics {
+class Graphics : public Common::Singleton<Graphics> {
 public:
-	Graphics(Engine *engine);
+	Graphics() {}
+	
+	void setEngine(Engine *engine);
 
 	/**
 	 * Load interface image and palette; sets the palette.
@@ -36,10 +41,14 @@ public:
 	void paintAnimations();
 	void paintExits();
 
+	void push(Paintable *p);
+	void pop(Paintable *p);
+
 	void setBackdrop(uint16 id);
 	void paintBackdrop();
 
 	void paintText(uint16 left, uint16 top, byte colour, byte *string);
+	void paintRect(const Common::Rect &r, byte colour = 235);
 
 	Common::Point cursorPosition() const;
 	void paint(const Sprite *sprite, Common::Point pos) const;
@@ -65,6 +74,9 @@ public:
 	std::auto_ptr<Surface> _backdrop, _framebuffer;
 
 	static const char _charwidths[];
+
+private:
+	Common::List<Paintable *> _paintables;
 };
 
 } // End of namespace Innocent

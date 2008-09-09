@@ -33,7 +33,11 @@ Exit::Exit(const CodePointer &c) {
 	}
 
 	c.field(_position, kOffsetPosition);
-	_rect.moveTo(_position.x, _position.y - _rect.height() + 1);
+	_rect.moveTo(_position.x, _position.y);
+
+	if (!nosprite) // these have bottom for some reason
+		_rect.translate(0, -(_rect.height() - 1));
+	
 	c.field(_room, kOffsetRoom);
 	c.field(_zIndex, kOffsetZIndex);
 

@@ -24,14 +24,14 @@ public:
 
 	Logic *logic() { return _logic.get(); }
 	Resources *resources() { return _resources.get(); }
-	Graphics *graphics() { return _graphics.get(); }
+	Graphics *graphics() { return _graphics; }
 
 	uint16 getRandom(uint16 max) const;
 
 private:
 	std::auto_ptr<Logic> _logic;
 	std::auto_ptr<Resources> _resources;
-	std::auto_ptr<Graphics> _graphics;
+	Graphics *_graphics;
 	std::auto_ptr<Debugger> _debugger;
 
 	mutable Common::RandomSource _rnd;

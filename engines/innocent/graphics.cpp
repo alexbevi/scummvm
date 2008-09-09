@@ -14,17 +14,20 @@
 
 namespace Innocent {
 
+DECLARE_SINGLETON(Graphics);
+
 Common::Point &operator+=(Common::Point &p1, const Common::Point &p2) { return p1 = Common::Point(p1.x + p2.x, p1.y + p2.y); }
 
-Graphics::Graphics(Engine *engine)
-	 : _engine(engine), _framebuffer(new Surface) {
+void Graphics::setEngine(Engine *engine) {
+	_engine = engine;
+	_framebuffer.reset(new Surface);
 	_framebuffer->create(320, 200, 1);
 }
 
 void Graphics::init() {
-	 _resources = _engine->resources();
-	 _system = _engine->_system;
-	 loadInterface();
+	_resources = _engine->resources();
+	_system = _engine->_system;
+	loadInterface();
 }
 
 void Graphics::paint() {
@@ -32,6 +35,10 @@ void Graphics::paint() {
 
 	paintExits();
 	paintAnimations();
+
+	debugC(3, kDebugLevelGraphics, "painting paintables");
+	foreach (Paintable *, _paintables)
+		(*it)->paint(this);
 
 	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, "<<<end paint procedure");
 }
@@ -156,6 +163,20 @@ void Graphics::showCursor() const {
 	::Graphics::CursorManager &m = ::Graphics::CursorManager::instance();
 	m.replaceCursor(reinterpret_cast<byte *>(cursor->pixels), cursor->w, cursor->h, cursor->_hotPoint.x, cursor->_hotPoint.y, 0);
 	m.showMouse(true);
+}
+
+void Graphics::paintRect(const Common::Rect &r, byte colour) {
+	_framebuffer->frameRect(r, colour);
+}
+
+void Graphics::push(Paintable *p) {
+	debugC(3, kDebugLevelGraphics, "pushing to paintables");
+	_paintables.push_back(p);
+}
+
+void Graphics::pop(Paintable *p) {
+	debugC(3, kDebugLevelGraphics, "popping from paintables");
+	_paintables.remove(p);
 }
 
 const char Graphics::_charwidths[] = {

@@ -1,6 +1,7 @@
 #include "innocent/debugger.h"
 
 #include "innocent/exit.h"
+#include "innocent/eventmanager.h"
 #include "innocent/graphics.h"
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
@@ -13,6 +14,7 @@ Debugger::Debugger(Engine *vm) : _vm(vm) {
 	DCmd_Register("setBackdrop", WRAP_METHOD(Debugger, cmd_setBackdrop));
 	DCmd_Register("paintText", WRAP_METHOD(Debugger, cmd_paintText));
 	DCmd_Register("listExits", WRAP_METHOD(Debugger, cmd_listExits));
+	DCmd_Register("showClickable", WRAP_METHOD(Debugger, cmd_showClickable));
 
 	DVar_Register("currentRoom", &(vm->logic()->_currentRoom), DVAR_INT);
 }
@@ -22,6 +24,11 @@ Logic *Debugger::logic() const {
 }
 
 #define CMD(x) bool Debugger::cmd_##x(int argc, const char **argv)
+
+CMD(showClickable) {
+	EventManager::instance().toggleDebug();
+	return true;
+}
 
 CMD(listExits) {
 	DebugPrintf("Room exits:\n");

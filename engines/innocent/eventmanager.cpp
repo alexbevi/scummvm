@@ -1,5 +1,7 @@
 #include "innocent/eventmanager.h"
 
+#include "innocent/debug.h"
+#include "innocent/graphics.h"
 #include "innocent/util.h"
 
 using namespace std;
@@ -35,6 +37,26 @@ void EventManager::push(Clickable *c) {
 
 void EventManager::pop(Clickable *c) {
 	_handlers.remove(c);
+}
+
+void EventManager::paint(Graphics *g) const {
+	debugC(3, kDebugLevelEvents | kDebugLevelGraphics, "EventManager got paint event");
+	if (!_debug)
+		return;
+	debugC(3, kDebugLevelEvents | kDebugLevelGraphics, "EventManager paints clickable areas");
+
+	foreach(Clickable *, _handlers)
+		g->paintRect((*it)->area());
+}
+
+void EventManager::toggleDebug() {
+	_debug = !_debug;
+	debugC(3, kDebugLevelEvents, "EventManager toggled debug mode to %s", _debug ? "on" : "off");
+
+	if (_debug)
+		Graphics::instance().push(this);
+	else
+		Graphics::instance().pop(this);
 }
 
 }
