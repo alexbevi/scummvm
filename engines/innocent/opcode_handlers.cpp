@@ -23,6 +23,13 @@ OPCODE(0x02) {
 		failedCondition();
 }
 
+OPCODE(0x03) {
+	// check inequality
+	debugC(3, kDebugLevelScript, "opcode 0x03: if %s != %s", +a[0], +a[1]);
+	if (a[0] == a[1])
+		failedCondition();
+}
+
 OPCODE(0x04) {
 	// less than
 	debugC(3, kDebugLevelScript, "opcode 0x04: if %s < %s", +a[0], +a[1]);
