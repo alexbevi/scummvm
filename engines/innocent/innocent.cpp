@@ -60,7 +60,7 @@ int Engine::go() {
 		_graphics->paint();
 		_graphics->updateScreen();
 		_debugger->onFrame();
-		_system->delayMillis(1000/10);
+		_system->delayMillis(1000/60);
 		handleEvents();
 	}
 

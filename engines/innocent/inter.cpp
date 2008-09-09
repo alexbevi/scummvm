@@ -72,12 +72,12 @@ Status Interpreter::run(uint16 offset, OpcodeMode mode) {
 }
 
 Status Interpreter::run(uint16 offset) {
-	byte *code = _base + offset;
+	_code = _base + offset;
 	_failedCondition = 0;
 	_return = false;
 
 	while (!_return) {
-		byte opcode = *code;
+		byte opcode = *_code;
 		if (opcode > kOpcodeMax) {
 			return kInvalidOpcode;
 		}
@@ -89,10 +89,10 @@ Status Interpreter::run(uint16 offset) {
 		ValueVector args;
 
 		for (uint i = 0; i < nargs; i++)
-			args.push_back(getArgument(code));
+			args.push_back(getArgument(_code));
 
 		if (nargs == 0)
-			code += 2;
+			_code += 2;
 
 		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_failedCondition)
 			(this->*handler)(args);

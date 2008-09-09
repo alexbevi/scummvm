@@ -139,6 +139,13 @@ OPCODE(0xc2) {
 	_logic->addAnimation(new Animation(static_cast<CodePointer &>(a[0]), _graphics->cursorPosition()));
 }
 
+OPCODE(0xc6) {
+	// suspend execution until an animation is ready to paint another frame
+	debugC(3, kDebugLevelScript, "opcode 0xc6: wait on animation %s", +a[0]);
+	_logic->animation(a[0])->runOnNextFrame(CodePointer(_code - _base, this));
+	goBack();
+}
+
 OPCODE(0xc8) {
 	// set backdrop
 	// (not sure what's the difference to c9)

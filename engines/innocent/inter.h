@@ -70,6 +70,7 @@ private:
 	T *readArgument(byte *&code);
 
 	byte *_base;
+	byte *_code;
 	uint16 _mode;
 
 	Status run(uint16 offset);

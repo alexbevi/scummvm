@@ -103,9 +103,12 @@ public:
 	virtual void run() const;
 	virtual void run(OpcodeMode mode) const;
 	uint16 offset() const { return _offset; }
+	virtual operator uint16() const { return _offset; }
 	virtual bool holdsCode() const { return true; }
 	virtual byte *code() const;
 	Interpreter *interpreter() const { return _interpreter; }
+	bool isEmpty() const { return _interpreter == 0; }
+	void reset() { _interpreter = 0; }
 
 	template<typename T> T &field(T &, int) const;
 

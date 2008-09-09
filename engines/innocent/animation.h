@@ -25,9 +25,13 @@ public:
 
 	Animation(const CodePointer &code, Common::Point position);
 	~Animation();
-	Status tick();
+
+	uint16 baseOffset() const { return _baseOffset; }
 
 	void paint(Graphics *g);
+	Status tick();
+
+	void runOnNextFrame(const CodePointer &cp);
 
 protected:
 	class Sprite;
@@ -60,6 +64,8 @@ protected:
 	std::auto_ptr<Innocent::Sprite> _mainSprite;
 	int8 _counter;
 	uint16 _loopStart;
+	uint16 _baseOffset;
+	CodePointer _frameTrigger;
 };
 
 }

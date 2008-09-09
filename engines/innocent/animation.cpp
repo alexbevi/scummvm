@@ -1,8 +1,10 @@
 #include "innocent/animation.h"
+
 #include "innocent/debug.h"
 #include "innocent/graphics.h"
 #include "innocent/inter.h"
 #include "innocent/resources.h"
+#include "innocent/util.h"
 
 namespace Innocent {
 //
@@ -52,6 +54,7 @@ Animation::Animation(const CodePointer &code, Common::Point position) :
 		_position(position), _offset(0), _interval(1), _ticksLeft(0), _counter(0)
 {
 	_base = code.code();
+	_baseOffset = code.offset();
 	_resources = code.interpreter()->resources();
 	init_opcodes<37>();
 	snprintf(_debugInfo, 50, "animation at %s", +code);
@@ -68,6 +71,13 @@ Animation::Status Animation::tick() {
 	if (_ticksLeft) {
 		_ticksLeft--;
 		return kOk;
+	}
+
+	unless (_frameTrigger.isEmpty()) {
+		debugC(3, kDebugLevelAnimation | kDebugLevelScript, "animation frame trigger found, invoking");
+		_frameTrigger.run();
+		_frameTrigger.reset();
+		debugC(3, kDebugLevelAnimation | kDebugLevelScript, "done with animation trigger");
 	}
 
 	clearSprites();
@@ -87,6 +97,11 @@ Animation::Status Animation::tick() {
 
 	return kOk;
 }
+
+void Animation::runOnNextFrame(const CodePointer &cp) {
+	_frameTrigger = cp;
+}
+
 
 void Animation::clearSprites() {
 	debugC(5, kDebugLevelAnimation, "clearing sprite list");

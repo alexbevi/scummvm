@@ -46,6 +46,8 @@ public:
 	Program *blockProgram() const { return _blockProgram.get(); }
 	Interpreter *mainInterpreter() const { return _toplevelInterpreter.get(); }
 
+	Animation *animation(uint16 offset) const;
+
 	friend class Debugger;
 private:
 	Engine *_engine;

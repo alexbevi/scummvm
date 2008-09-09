@@ -1,13 +1,16 @@
 #include "innocent/logic.h"
 
+#include <algorithm>
+
 #include "common/util.h"
 
 #include "innocent/innocent.h"
 #include "innocent/inter.h"
 #include "innocent/program.h"
-#include "innocent/resources.h"
 #include "innocent/animation.h"
+#include "innocent/resources.h"
 #include "innocent/room.h"
+#include "innocent/util.h"
 
 namespace Innocent {
 
@@ -87,5 +90,14 @@ void Logic::addAnimation(Animation *anim) {
 void Logic::setRoomLoop(const CodePointer &code) {
 	_roomLoop.reset(new CodePointer(code));
 }
+
+Animation *Logic::animation(uint16 offset) const {
+	foreach (Animation *, _animations)
+		if ((*it)->baseOffset() == offset)
+			return (*it);
+
+	return 0;
+}
+
 
 } // End of namespace Innocent
