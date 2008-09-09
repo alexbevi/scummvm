@@ -50,12 +50,9 @@ KomEngine::KomEngine(OSystem *system)
 	_game = 0;
 	_gameLoopState = GAMELOOP_RUNNING;
 	_playingMusicId = _playingMusicVolume = 0;
-
-	_fsNode = new Common::FilesystemNode(_gameDataPath);
 }
 
 KomEngine::~KomEngine() {
-	delete _fsNode;
 	delete _screen;
 	delete _database;
 	delete _actorMan;
@@ -78,7 +75,7 @@ int KomEngine::init() {
 	_input = new Input(this, _system);
 	_sound = new Sound(this, _mixer);
 	_debugger = new Debugger(this);
-	_panel = new Panel(this, _fsNode->getChild("kom").getChild("oneoffs").getChild("pan1.img"));
+	_panel = new Panel(this, _gameDataDir.getChild("kom").getChild("oneoffs").getChild("pan1.img"));
 	_game = new Game(this, _system);
 
 	// Init the following:
@@ -109,12 +106,12 @@ int KomEngine::go() {
 	 */
 
 	// Load sound effects
-	Common::FilesystemNode samplesDir(_fsNode->getChild("kom").getChild("samples"));
+	Common::FilesystemNode samplesDir(_gameDataDir.getChild("kom").getChild("samples"));
 	_hotspotSample.loadFile(samplesDir, String("hotspot"));
 	_doorsSample.loadFile(samplesDir, String("doors"));
 	_clickSample.loadFile(samplesDir, String("mouse_l"));
 
-	Common::FilesystemNode installDir(_fsNode->getChild("install"));
+	Common::FilesystemNode installDir(_gameDataDir.getChild("install"));
 	if (_game->player()->selectedChar == 0) {
 		File::addDefaultDirectory(installDir.getChild("db0"));
 		_database->init("thid");
@@ -123,7 +120,7 @@ int KomEngine::go() {
 		_database->init("shar");
 	}
 
-	_actorMan->loadExtras(_fsNode->getChild("kom"));
+	_actorMan->loadExtras(_gameDataDir.getChild("kom"));
 
 	_screen->showMouseCursor(true);
 
@@ -306,7 +303,7 @@ void KomEngine::ambientStart(int locId) {
 	int16 musicId, musicVolume;
 
 	static Common::FilesystemNode musicNode =
-		_fsNode->getChild("kom").getChild("music");
+		_gameDataDir.getChild("kom").getChild("music");
 
 	// Special handling for the honeymoon suite
    	if (locId == 21 && _database->getLoc(locId)->xtend == 2) {

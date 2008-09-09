@@ -76,7 +76,7 @@ public:
 	Game *game() const { return _game; }
 	Sound *sound() const { return _sound; }
 
-	Common::FilesystemNode *dataDir() const { return _fsNode; }
+	const Common::FilesystemNode *dataDir() const { return &_gameDataDir; }
 
 	int gameLoopTimer() { return _gameLoopTimer; }
 	void endGame() { _gameLoopState = GAMELOOP_DEATH; }
@@ -110,7 +110,6 @@ private:
 	Game *_game;
 	Font *_font;
 
-	Common::FilesystemNode *_fsNode;
 	int _gameLoopState;
 	int _gameLoopTimer;
 };
