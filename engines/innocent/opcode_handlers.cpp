@@ -52,6 +52,13 @@ OPCODE(0x13) {
 		failedCondition();
 }
 
+OPCODE(0x24) {
+	// check nonzeroness
+	debugC(3, kDebugLevelScript, "opcode 0x24: if (%s)", +a[0]);
+	if (a[0] == 0)
+		failedCondition();
+}
+
 OPCODE(0x2d) {
 	// else
 	debugC(3, kDebugLevelScript, "opcode 0x2d: end if");
