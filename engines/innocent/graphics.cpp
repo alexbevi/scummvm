@@ -5,6 +5,7 @@
 
 #include "innocent/animation.h"
 #include "innocent/debug.h"
+#include "innocent/debugger.h"
 #include "innocent/exit.h"
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
@@ -81,7 +82,77 @@ void Graphics::paintAnimations() {
 		(*it)->paint(this);
 }
 
-void Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string) {
+int8 Graphics::ask(uint16 left, uint16 top, byte width, byte height, byte *string) {
+	width += 2;
+	height += 2;
+	enum {
+		kFrameTileHeight = 12,
+		kFrameTileWidth = 16
+	};
+
+	Surface frame;
+	frame.create(width * kFrameTileWidth, height * kFrameTileHeight, 1);
+
+	Sprite **frames = _resources->frames();
+
+	Common::Rect tile(kFrameTileWidth, kFrameTileHeight);
+
+	frame.blit(frames[kFrameTopLeft], tile);
+	tile.translate(kFrameTileWidth, 0);
+	for (int x = 1; x < width - 1; x++) {
+		frame.blit(frames[kFrameTop], tile);
+		tile.translate(kFrameTileWidth, 0);
+	}
+	frame.blit(frames[kFrameTopRight], tile);
+
+	tile.translate(0, kFrameTileHeight);
+	tile.moveTo(0, tile.top);
+
+	for (int y = 1; y < height - 1; y++) {
+		frame.blit(frames[kFrameLeft], tile);
+		tile.translate(kFrameTileWidth, 0);
+		for (int x = 1; x < width - 1; x++) {
+			frame.blit(frames[kFrameFill], tile);
+			tile.translate(kFrameTileWidth, 0);
+		}
+		frame.blit(frames[kFrameTopRight], tile);
+		tile.translate(0, kFrameTileHeight);
+		tile.moveTo(0, tile.top);
+	}
+
+	frame.blit(frames[kFrameBottomLeft], tile);
+	tile.translate(kFrameTileWidth, 0);
+	for (int x = 1; x < width - 1; x++) {
+		frame.blit(frames[kFrameBottom], tile);
+		tile.translate(kFrameTileWidth, 0);
+	}
+	frame.blit(frames[kFrameBottomRight], tile);
+
+	paintText(10, 16, 254, string, &frame);
+
+	_system->copyRectToScreen(reinterpret_cast<byte *>(frame.pixels), frame.pitch, top, left, width * kFrameTileWidth, height * kFrameTileHeight);
+	_system->updateScreen();
+
+	bool show = true;
+	while (show) {
+		_engine->debugger()->onFrame();
+		_system->delayMillis(1000/60);
+		Common::Event event;
+		while (_engine->eventMan()->pollEvent(event)) {
+			switch(event.type) {
+			case Common::EVENT_LBUTTONUP:
+				show = false;
+
+			default:
+				break;
+			}
+		}
+	}
+
+	return -1;
+}
+
+void Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string, Surface *dest) {
 	byte ch = 0;
 	uint16 current_left = left;
 	byte current_colour = colour;
@@ -104,7 +175,7 @@ void Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string) {
 				current_left = left;
 				top += kLineHeight;
 			}
-			current_left += paintChar(current_left, top, current_colour, ch);
+			current_left += paintChar(current_left, top, current_colour, ch, dest);
 		}
 	}
 }
@@ -120,20 +191,20 @@ byte Graphics::clampChar(byte ch) {
 /**
  * @returns char width
  */
-uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch) const {
+uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch, Surface *dest) const {
 	// TODO perhaps cache or sth
 	ch = clampChar(ch);
 	if (ch == ' ')
 		return 4; // space has no glyph, just width 4
 	Sprite *glyph = _resources->getGlyph(ch);
 	glyph->recolour(colour);
-	paint(glyph, Common::Point(left, top+glyph->h));
+	paint(glyph, Common::Point(left, top+glyph->h), dest);
 	int w = glyph->w - 1;
 	delete glyph;
 	return w;
 }
 
-void Graphics::paint(const Sprite *sprite, Common::Point pos) const {
+void Graphics::paint(const Sprite *sprite, Common::Point pos, Surface *dest) const {
 	debugC(3, kDebugLevelGraphics, "painting sprite at %d:%d (+%d:%d) [%dx%d]", pos.x, pos.y, sprite->_hotPoint.x, sprite->_hotPoint.y, sprite->w, sprite->h);
 	pos += sprite->_hotPoint;
 
@@ -145,7 +216,7 @@ void Graphics::paint(const Sprite *sprite, Common::Point pos) const {
 	r.clip(319, 199);
 	debugC(4, kDebugLevelGraphics, "transformed rect: %d:%d %d:%d", r.left, r.top, r.right, r.bottom);
 
-	_framebuffer->blit(sprite, r, 0);
+	dest->blit(sprite, r, 0);
 }
 
 Common::Point Graphics::cursorPosition() const {
@@ -183,5 +254,6 @@ void Graphics::pop(Paintable *p) {
 const char Graphics::_charwidths[] = {
 	#include "charwidths.data"
 };
+
 
 } // End of namespace Innocent

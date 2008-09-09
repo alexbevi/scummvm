@@ -39,7 +39,17 @@ enum Offsets {
 	kEntryPoint			= 0x42,
 	kCharacterMap		= 0x48,
 	kCursors			= 0x54,
-	kInterfaceImgIdx	= 0xB4
+	kInterfaceImgIdx	= 0xB4,
+
+	kFrameTopLeftOffset = 0x76,
+	kFrameTopOffset = 0x82,
+	kFrameTopRightOffset = 0x84,
+	kFrameLeftOffset = 0x7a,
+	kFrameFillOffset = 0x80,
+	kFrameRightOffset = 0x88,
+	kFrameBottomLeftOffset = 0x7c,
+	kFrameBottomOffset = 0x7e,
+	kFrameBottomRightOffset = 0x8a
 };
 
 void MainDat::readFile(SeekableReadStream &stream) {
@@ -169,5 +179,24 @@ uint16 MainDat::getCursorSpriteId() const {
 	debugC(1, kDebugLevelGraphics | kDebugLevelFiles, "loading cursor STUB, sprite %d", sprite);
 	return sprite;
 }
+
+
+uint16 MainDat::getFrameId(FramePart part) const {
+	switch (part) {
+	#define PART(p) case p: return READ_LE_UINT16(_footer + p##Offset)
+	PART(kFrameBottom);
+	PART(kFrameBottomLeft);
+	PART(kFrameBottomRight);
+	PART(kFrameFill);
+	PART(kFrameLeft);
+	PART(kFrameRight);
+	PART(kFrameTop);
+	PART(kFrameTopLeft);
+	PART(kFrameTopRight);
+	#undef PART
+	default: assert(false);
+	}
+}
+
 
 } // End of namespace Innocent

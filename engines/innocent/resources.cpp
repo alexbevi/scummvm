@@ -47,8 +47,12 @@ Resources::Resources(Engine *vm) :
 }
 
 Resources::~Resources() {
-	if (_graphicFiles)
+	if (_graphicFiles) {
 		delete[] _graphicFiles;
+
+		for (int i = 0; i < kFrameNum; i++)
+			delete _frames[i];
+	}
 }
 
 void Resources::load() {
@@ -58,6 +62,22 @@ void Resources::load() {
 	loadGraphicFiles();
 
 	_progDat->load();
+
+	loadFrames();
+}
+
+void Resources::loadFrames() {
+	#define FRAME(p) _frames[p] = loadSprite(_main->getFrameId(p))
+	FRAME(kFrameTopLeft);
+	FRAME(kFrameTop);
+	FRAME(kFrameTopRight);
+	FRAME(kFrameLeft);
+	FRAME(kFrameFill);
+	FRAME(kFrameRight);
+	FRAME(kFrameBottomLeft);
+	FRAME(kFrameBottom);
+	FRAME(kFrameBottomRight);
+	#undef FRAME
 }
 
 void Resources::init() {

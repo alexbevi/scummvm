@@ -9,6 +9,7 @@
 
 #include "innocent/datafile.h"
 #include "innocent/sprite.h"
+#include "innocent/types.h"
 
 namespace Innocent {
 //
@@ -58,6 +59,7 @@ public:
 	uint16 spriteCount() const;
 
 	uint16 getCursorSpriteId() const;
+	uint16 getFrameId(FramePart part) const;
 
 	friend class Resources;
 private:

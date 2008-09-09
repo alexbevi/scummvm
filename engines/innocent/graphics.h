@@ -47,12 +47,19 @@ public:
 	void setBackdrop(uint16 id);
 	void paintBackdrop();
 
-	void paintText(uint16 left, uint16 top, byte colour, byte *string);
+	int8 ask(uint16 left, uint16 top, byte width, byte height, byte *string);
+	void paintText(uint16 left, uint16 top, byte colour, byte *string) {
+		paintText(left, top, colour, string, _framebuffer.get());
+	}
+	void paintText(uint16 left, uint16 top, byte colour, byte *string, Surface *s);
 	void paintRect(const Common::Rect &r, byte colour = 235);
 
-	Common::Point cursorPosition() const;
-	void paint(const Sprite *sprite, Common::Point pos) const;
+	void paint(const Sprite *sprite, Common::Point pos) const {
+		paint(sprite, pos, _framebuffer.get());
+	}
+	void paint(const Sprite *sprite, Common::Point pos, Surface *s) const;
 
+	Common::Point cursorPosition() const;
 	void showCursor() const;
 
 	void updateScreen() const;
@@ -66,7 +73,7 @@ public:
 	 * paint a character on screen
 	 * @returns char width
 	 */
-	uint16 paintChar(uint16 left, uint16 top, byte colour, byte character) const;
+	uint16 paintChar(uint16 left, uint16 top, byte colour, byte character, Surface *s) const;
 	byte _interface[0x3c00];
 	Engine *_engine;
 	Resources *_resources;

@@ -12,6 +12,18 @@ public:
 	virtual byte zIndex() const = 0;
 };
 
+enum FramePart {
+	kFrameTopLeft,
+	kFrameTop,
+	kFrameTopRight,
+	kFrameLeft,
+	kFrameFill,
+	kFrameRight,
+	kFrameBottomLeft,
+	kFrameBottom,
+	kFrameBottomRight,
+	kFrameNum
+};
 
 }
 

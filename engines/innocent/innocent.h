@@ -6,6 +6,12 @@
 #include "common/ptr.h"
 #include "engines/engine.h"
 
+namespace Common {
+//
+class EventManager;
+
+}
+
 namespace Innocent {
 
 class Console;
@@ -26,6 +32,8 @@ public:
 	Logic *logic() { return _logic.get(); }
 	Resources *resources() { return _resources.get(); }
 	Graphics *graphics() { return _graphics; }
+	Debugger *debugger() { return _debugger.get(); }
+	Common::EventManager *eventMan() { return _eventMan; }
 
 	uint16 getRandom(uint16 max) const;
 

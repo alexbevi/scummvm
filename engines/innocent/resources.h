@@ -7,6 +7,7 @@
 #include "graphics/surface.h"
 
 #include "innocent/main_dat.h"
+#include "innocent/types.h"
 
 namespace Innocent {
 //
@@ -98,8 +99,10 @@ public:
 	Sprite *getGlyph(byte character) const;
 	Sprite *loadSprite(uint16 id) const;
 	Sprite *getCursor() const;
+	Sprite **frames() { return _frames; }
 
 	void loadActors();
+	void loadFrames();
 
 private:
 	MainDat *mainDat() const { return _main.get(); }
@@ -119,6 +122,8 @@ private:
 	std::auto_ptr<ProgDat> _progDat;
 
 	std::auto_ptr<Common::SeekableReadStream> *_graphicFiles;
+
+	Sprite *_frames[9];
 };
 
 } // End of namespace Innocent
