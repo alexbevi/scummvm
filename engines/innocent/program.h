@@ -4,16 +4,19 @@
 #include "common/list.h"
 #include "common/stream.h"
 
+#include "innocent/debug.h"
 #include "innocent/resources.h"
 
 namespace Innocent {
 //
 
+class Exit;
 class Actor;
 
-class Program {
+class Program : public StaticInspectable {
+	DEBUG_INFO
 public:
-	Program(Common::ReadStream &file);
+	Program(Common::ReadStream &file, uint16 id);
 	~Program();
 
 	uint16 begin();
@@ -24,6 +27,9 @@ public:
 	SpriteInfo getSpriteInfo(uint16 index) const;
 
 	void loadActors(Interpreter *i);
+	void loadExits(Interpreter *i);
+
+	Common::List<Exit *> exitsForRoom(uint16 room) const;
 
 private:
 	Program() { /* can only be created from a file */ }
@@ -33,6 +39,7 @@ private:
 	byte *_code;
 	byte _footer[0x10];
 	Common::List<Actor *> _actors;
+	Common::List<Exit *> _exits;
 };
 
 } // End of namespace Innocent

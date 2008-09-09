@@ -25,7 +25,7 @@ enum ValueType {
 	kValueConstant
 };
 
-class Value : public Inspectable<uint16> {
+class Value : public NumericInspectable<uint16> {
 public:
 	virtual ~Value() {}
 	virtual ValueType type() const { return kValueVoid; }
@@ -41,7 +41,7 @@ public:
 	Value() {}
 
 private:
-	explicit Value(Value &) : Inspectable<uint16>() { assert(false); } // no copying
+	explicit Value(Value &) : NumericInspectable<uint16>() { assert(false); } // no copying
 };
 
 class Constant : public Value {
@@ -96,6 +96,9 @@ public:
 	virtual bool holdsCode() const { return true; }
 	virtual byte *code() const;
 	Interpreter *interpreter() const { return _interpreter; }
+
+	template<typename T> T &field(T &, int) const;
+
 private:
 	void init();
 	char _inspect[40];

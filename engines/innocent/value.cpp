@@ -1,5 +1,7 @@
 #include "innocent/value.h"
 
+#include "common/rect.h"
+
 #include "innocent/inter.h"
 
 namespace Innocent {
@@ -30,4 +32,38 @@ byte *CodePointer::code() const {
 	return _interpreter->rawCode(_offset);
 }
 
+template<>
+uint16 &CodePointer::field<uint16>(uint16 &p, int off) const {
+	p = READ_LE_UINT16(code() + off);
+	return p;
 }
+
+template<>
+int16 &CodePointer::field<int16>(int16 &p, int off) const {
+	uint16 z;
+	field(z, off);
+	p = *reinterpret_cast<int16*>(&z);
+	return p;
+}
+
+template<>
+Common::Point &CodePointer::field<Common::Point>(Common::Point &p, int off) const {
+	field(p.x, off);
+	field(p.y, off + 2);
+	return p;
+}
+
+template<>
+byte &CodePointer::field<byte>(byte &p, int off) const {
+	p = *(code() + off);
+	return p;
+}
+
+template<>
+bool &CodePointer::field<bool>(bool &p, int off) const {
+	byte b;
+	field(b, off);
+	return p = b;
+}
+
+} // of namespace Innocent

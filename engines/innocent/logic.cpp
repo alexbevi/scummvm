@@ -4,9 +4,10 @@
 
 #include "innocent/innocent.h"
 #include "innocent/inter.h"
-#include "innocent/resources.h"
 #include "innocent/program.h"
+#include "innocent/resources.h"
 #include "innocent/animation.h"
+#include "innocent/room.h"
 
 namespace Innocent {
 
@@ -60,16 +61,20 @@ void Logic::changeRoom(uint16 newRoom) {
 	if (newBlock != _currentBlock) {
 		_currentBlock = newBlock;
 		_blockProgram.reset(_resources->loadCodeBlock(newBlock));
+
 		char buf[100];
 		snprintf(buf, 100, "block %d code", newBlock);
+
 		_blockInterpreter.reset(new Interpreter(this, _blockProgram->base(), buf));
 		_blockProgram->loadActors(_blockInterpreter.get());
+		_blockProgram->loadExits(_blockInterpreter.get());
 
 		debugC(2, kDebugLevelScript, ">>>running block entry code for block %d", newBlock);
 		_blockInterpreter->run(_blockProgram->begin(), kCodeNewBlock);
 		debugC(2, kDebugLevelScript, "<<<finished block entry code for block %d", newBlock);
 	}
 
+	_room.reset(new Room(this));
 	debugC(2, kDebugLevelScript, ">>>running room entry code for block %d", newRoom);
 	_blockInterpreter->run(_blockProgram->roomHandler(newRoom), kCodeNewRoom);
 	debugC(2, kDebugLevelScript, "<<<finished room entry code for block %d", newRoom);

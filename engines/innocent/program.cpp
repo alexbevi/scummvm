@@ -4,19 +4,23 @@
 #include "common/util.h"
 
 #include "innocent/actor.h"
+#include "innocent/exit.h"
 #include "innocent/resources.h"
+#include "innocent/util.h"
 #include "innocent/value.h"
 
 namespace Innocent {
 
 enum FooterOffsets {
+	kExitsCount = 2,
 	kActorsCount = 4,
+	kExits = 8,
 	kActors = 0xA,
 	kSpriteMap = 0x0C,
 	kEntryPointOffset = 0x0E
 };
 
-Program::Program(Common::ReadStream &file) {
+Program::Program(Common::ReadStream &file, uint16 id) {
 	uint16 length = file.readUint16LE(); // for this length
 	if (length > 25000)
 		error("too large a program (%d)", length);
@@ -27,6 +31,7 @@ Program::Program(Common::ReadStream &file) {
 	Resources::descramble(_code + 2, length - 2);
 
 	file.read(_footer, 0x10);
+	snprintf(_debugInfo, 50, "block %d", id);
 }
 
 void Program::loadActors(Interpreter *in) {
@@ -73,6 +78,25 @@ SpriteInfo Program::getSpriteInfo(uint16 index) const {
 	byte *spritemap = _code + READ_LE_UINT16(_footer + kSpriteMap);
 
 	return SpriteInfo(spritemap, index);
+}
+
+void Program::loadExits(Interpreter *in) {
+	uint16 nexits = READ_LE_UINT16(_footer + kExitsCount);
+	debugC(3, kDebugLevelFiles, "loading %d exits from the program file", nexits);
+	uint16 exits = READ_LE_UINT16(_footer + kExits);
+	for (int i = 0; i < nexits; ++i) {
+		_exits.push_back(new Exit(CodePointer(exits, in)));
+		exits += Exit::Size;
+	}
+}
+
+Common::List<Exit *> Program::exitsForRoom(uint16 room) const {
+	Common::List<Exit *> room_exits;
+	foreach(Exit *, _exits)
+		if ((*it)->room() == room)
+			room_exits.push_back(*it);
+
+	return room_exits;
 }
 
 } // End of namespace Innocent

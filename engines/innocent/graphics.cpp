@@ -4,9 +4,12 @@
 
 #include "innocent/animation.h"
 #include "innocent/debug.h"
+#include "innocent/exit.h"
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
 #include "innocent/resources.h"
+#include "innocent/room.h"
+#include "innocent/util.h"
 
 namespace Innocent {
 
@@ -25,9 +28,16 @@ void Graphics::init() {
 void Graphics::paint() {
 	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, ">>>start paint procedure");
 
+	paintExits();
 	paintAnimations();
 
 	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, "<<<end paint procedure");
+}
+
+void Graphics::paintExits() {
+	debugC(3, kDebugLevelFlow | kDebugLevelGraphics, "painting exits");
+	foreach(Exit *, _engine->logic()->room()->exits())
+		(*it)->paint(this);
 }
 
 void Graphics::loadInterface() {
@@ -115,8 +125,14 @@ uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch) const 
 void Graphics::paint(const Sprite *sprite, Common::Point pos) const {
 	debugC(3, kDebugLevelGraphics, "painting sprite at %d:%d (+%d:%d) [%dx%d]", pos.x, pos.y, sprite->_hotPoint.x, sprite->_hotPoint.y, sprite->w, sprite->h);
 	pos += sprite->_hotPoint;
+
+	Common::Rect r(sprite->w, sprite->h);
+	r.moveTo(pos);
+
+	r.clip(319, 199);
+
 	_system->copyRectToScreen(reinterpret_cast<byte *>(sprite->pixels), sprite->pitch,
-							   pos.x, pos.y, sprite->w, sprite->h);
+							   pos.x, pos.y, r.width(), r.height());
 }
 
 Common::Point Graphics::cursorPosition() const {

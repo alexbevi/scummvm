@@ -34,6 +34,7 @@ public:
 	 */
 	void paintInterface();
 	void paintAnimations();
+	void paintExits();
 
 	void setBackdrop(uint16 id);
 	void paintBackdrop();

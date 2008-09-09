@@ -18,6 +18,7 @@ class Engine;
 class Resources;
 class Interpreter;
 class Program;
+class Room;
 
 class Logic {
 public:
@@ -39,6 +40,9 @@ public:
 	void setRoomLoop(const CodePointer &code);
 
 	const Common::List<Animation *> animations() const { return _animations; }
+	Room *room() const { return _room.get(); }
+	uint16 roomNumber() const { return _currentRoom; }
+
 	Program *blockProgram() const { return _blockProgram.get(); }
 	Interpreter *mainInterpreter() const { return _toplevelInterpreter.get(); }
 
@@ -53,6 +57,7 @@ private:
 	std::auto_ptr<Program> _blockProgram;
 	Common::List<Animation *> _animations;
 	std::auto_ptr<CodePointer> _roomLoop;
+	std::auto_ptr<Room> _room;
 };
 
 } // End of namespace Innocent

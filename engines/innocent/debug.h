@@ -6,40 +6,37 @@
 
 namespace Innocent {
 
-template <typename T>
 class Inspectable {
 public:
-	virtual ~Inspectable() {}
-	virtual const char *operator+() const { return T(*this); }
+	virtual ~Inspectable() {};
+	virtual const char *operator+() const = 0;
+};
+
+class StaticInspectable : public Inspectable {
+public:
+	virtual ~StaticInspectable() {}
+
+	virtual const char *operator+() const { return _debugInfo; }
+
+protected:
+	/** just to remember to fill the debug info; use macro DEBUG_INFO to confirm */
+	virtual void initDebugInfo() = 0;
+	#define DEBUG_INFO protected: void initDebugInfo() {}
+	char _debugInfo[50];
+};
+
+template <typename T>
+class NumericInspectable : public Inspectable {
+public:
+	virtual ~NumericInspectable() {}
+	virtual const char *operator+() const {
+		snprintf(_debugInfo, 10, "%d", T(*this));
+		return _debugInfo;
+	}
 	virtual operator T() const = 0;
-};
-
-template <>
-class Inspectable<uint16> {
-public:
-	virtual ~Inspectable() {}
-	virtual const char *operator+() const {
-		snprintf(_inspectBuffer, 6, "%d", uint16(*this));
-		return _inspectBuffer;
-	}
-	virtual operator uint16() const = 0;
 private:
-	mutable char _inspectBuffer[6];
+	mutable char _debugInfo[10];
 };
-
-template <>
-class Inspectable<uint32> {
-public:
-	virtual ~Inspectable() {}
-	virtual const char *operator+() const {
-		snprintf(_inspectBuffer, 9, "%d", uint32(*this));
-		return _inspectBuffer;
-	}
-	virtual operator uint32() const = 0;
-private:
-	mutable char _inspectBuffer[9];
-};
-
 
 enum DebugLevel {
 	kDebugLevelScript    = 1,

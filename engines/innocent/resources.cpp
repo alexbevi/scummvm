@@ -9,6 +9,7 @@
 #include "graphics/surface.h"
 
 #include "innocent/innocent.h"
+#include "innocent/inter.h"
 #include "innocent/logic.h"
 #include "innocent/main_dat.h"
 #include "innocent/graph_dat.h"
@@ -185,6 +186,7 @@ Sprite *Resources::getGlyph(byte ch) const {
 }
 
 Sprite *Resources::loadSprite(uint16 id) const {
+	debugC(4, kDebugLevelFiles, "loading sprite %d", id);
 	SpriteInfo info = getSpriteInfo(id);
 	Image *image = loadImage(info.image);
 	Sprite *sprite = image->cut(Common::Rect(info.left, info.top, info.left + info.width, info.top + info.height));
@@ -222,5 +224,14 @@ void Sprite::recolour(byte colour) {
 	byte *data = reinterpret_cast<byte *>(pixels);
 	std::replace(data, data + h * pitch, byte(kChangeableColour), colour);
 }
+
+template<>
+std::auto_ptr<Sprite> &CodePointer::field<std::auto_ptr<Sprite> >(std::auto_ptr<Sprite> &p, int off) const {
+	uint16 sprite;
+	field(sprite, off);
+	p.reset(_interpreter->resources()->loadSprite(sprite));
+	return p;
+}
+
 
 } // End of namespace Innocent

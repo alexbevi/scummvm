@@ -44,7 +44,7 @@ Program *ProgDat::getScript(uint16 id) {
 	uint32 offset = READ_LE_UINT32(_data + (id - 1) * 4);
 	_file->seek(offset);
 
-	return new Program(*_file);
+	return new Program(*_file, id);
 }
 
 } // End of namespace Innocent

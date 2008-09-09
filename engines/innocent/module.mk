@@ -16,7 +16,9 @@ MODULE_OBJS = \
 	animation.o \
 	value.o \
 	sprite.o \
-	actor.o
+	actor.o \
+	exit.o \
+	room.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_MADE), DYNAMIC_PLUGIN)
