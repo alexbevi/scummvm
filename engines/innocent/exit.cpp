@@ -10,23 +10,34 @@ enum Offsets {
 	kOffsetRoom = 0,
 	kOffsetPosition = 2,
 	kOffsetSprite = 6,
+	kOffsetWidth = 6,
+	kOffsetHeight = 7,
 	kOffsetNoSprite = 0xa,
 	kOffsetZIndex = 0xb
 };
 
 Exit::Exit(const CodePointer &c) {
 	debugC(4, kDebugLevelFiles, "loading exit from %s", +c);
+
 	bool nosprite;
 	c.field(nosprite, kOffsetNoSprite);
-	if (!nosprite)
+	if (!nosprite) {
 		c.field(_sprite, kOffsetSprite);
-	else
+		_rect = Common::Rect(_sprite->w, _sprite->h);
+	} else {
+		byte w, h;
+		c.field(w, kOffsetWidth);
+		c.field(h, kOffsetHeight);
+		_rect = Common::Rect(w, h);
 		debugC(5, kDebugLevelFiles, "exit has no sprite");
+	}
+
 	c.field(_position, kOffsetPosition);
+	_rect.moveTo(_position.x, _position.y - _rect.height() + 1);
 	c.field(_room, kOffsetRoom);
 	c.field(_zIndex, kOffsetZIndex);
 
-	snprintf(_debugInfo, 100, "exit %s%d:%d r%d z%d %s", nosprite ? "n" : "s" , _position.x, _position.y, _room, _zIndex, +c);
+	snprintf(_debugInfo, 100, "exit %s%s r%d z%d %s", nosprite ? "n" : "s" , +_rect, _room, _zIndex, +c);
 }
 
 void Exit::paint(Graphics *g) {
@@ -39,12 +50,7 @@ byte Exit::zIndex() const {
 }
 
 Common::Rect Exit::area() const {
-	if (_sprite.get()) {
-		Common::Rect r(_sprite->w, _sprite->h);
-		r.moveTo(_position.x, _position.y - _sprite->h);
-		return r;
-	} else
-		return Common::Rect();
+	return _rect;
 }
 
 void Exit::clicked() {

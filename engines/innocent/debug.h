@@ -2,6 +2,8 @@
 #define INNOCENT_DEBUG_H
 
 #include "config.h"
+
+#include "common/rect.h"
 #include "common/scummsys.h"
 
 namespace Innocent {
@@ -47,6 +49,8 @@ enum DebugLevel {
 	kDebugLevelFiles	 = 32,
 	kDebugLevelEvents	 = 64
 };
+
+const char *operator+(const Common::Rect &r);
 
 }
 

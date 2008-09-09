@@ -37,6 +37,7 @@ private:
 	byte _zIndex;
 	std::auto_ptr<Sprite> _sprite;
 	Common::Point _position;
+	Common::Rect _rect;
 	uint16 _room;
 };
 
