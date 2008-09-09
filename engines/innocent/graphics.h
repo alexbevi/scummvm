@@ -58,6 +58,8 @@ public:
 	Resources *_resources;
 	OSystem *_system;
 	std::auto_ptr<Surface> _backdrop;
+
+	static const char _charwidths[];
 };
 
 } // End of namespace Innocent

@@ -108,9 +108,8 @@ uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch) const 
 	Sprite *glyph = _resources->getGlyph(ch);
 	glyph->recolour(colour);
 	paint(glyph, Common::Point(left, top));
-	uint16 w = glyph->w;
 	delete glyph;
-	return w;
+	return _charwidths[ch - ' '];
 }
 
 void Graphics::paint(const Sprite *sprite, Common::Point pos) const {
@@ -124,5 +123,9 @@ Common::Point Graphics::cursorPosition() const {
 	debugC(1, kDebugLevelGraphics, "cursor position STUB");
 	return Common::Point(160, 100);
 }
+
+const char Graphics::_charwidths[] = {
+	#include "charwidths.data"
+};
 
 } // End of namespace Innocent

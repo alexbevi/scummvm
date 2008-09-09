@@ -9,6 +9,7 @@
 #include "innocent/main_dat.h"
 
 namespace Innocent {
+//
 
 class Engine;
 
