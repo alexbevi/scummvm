@@ -2,8 +2,11 @@
 
 #include "innocent/animation.h"
 #include "innocent/graphics.h"
+#include "innocent/innocent.h"
+#include "innocent/logic.h"
 #include "innocent/util.h"
 
+#include "common/events.h"
 #include "common/util.h"
 
 namespace Innocent {
@@ -220,6 +223,15 @@ OPCODE(0xef) {
 	uint16 value = _engine->getRandom(a[0]);
 	debugC(3, kDebugLevelScript, "opcode 0xef: %s = %d == random(%s)", +a[1], value, +a[0]);
 	a[1] = value;
+}
+
+OPCODE(0xfc) {
+	// quit
+	debugC(3, kDebugLevelScript, "opcode 0xfc: quit%s", a[0] == 0 ? "" : " unconditionally");
+	if (a[0] == 0)
+		error("asking for quitting not implemented");
+
+	_engine->quit();
 }
 
 // #define ANIMCODE(n) template<> void Animation::handle<n>()

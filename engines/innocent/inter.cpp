@@ -8,6 +8,8 @@
 #include "innocent/program.h"
 #include "innocent/resources.h"
 
+// this has to be included here or else templates
+// would get instantiated to the generic handler
 #include "innocent/opcode_handlers.cpp"
 
 namespace Innocent {

@@ -22,6 +22,8 @@ MODULE_OBJS = \
 	eventmanager.o \
 	debug.o
 
+inter.o: opcode_handlers.cpp
+
 # This module can be built as a plugin
 ifeq ($(ENABLE_MADE), DYNAMIC_PLUGIN)
 PLUGIN := 1
