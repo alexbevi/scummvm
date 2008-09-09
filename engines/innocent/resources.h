@@ -92,6 +92,7 @@ public:
 	SpriteInfo getSpriteInfo(uint16 id) const;
 	Sprite *getGlyph(byte character) const;
 	Sprite *loadSprite(uint16 id) const;
+	Sprite *getCursor() const;
 
 	void loadActors();
 

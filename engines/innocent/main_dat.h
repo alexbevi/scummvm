@@ -57,6 +57,8 @@ public:
 	SpriteInfo getSpriteInfo(uint16 index) const;
 	uint16 spriteCount() const;
 
+	uint16 getCursorSpriteId() const;
+
 	friend class Resources;
 private:
 	void loadActors(Interpreter *);

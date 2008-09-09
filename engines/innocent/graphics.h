@@ -44,6 +44,8 @@ public:
 	Common::Point cursorPosition() const;
 	void paint(const Sprite *sprite, Common::Point pos) const;
 
+	void showCursor() const;
+
 	void updateScreen() const;
 
 	private:

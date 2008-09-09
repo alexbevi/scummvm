@@ -1,6 +1,7 @@
 #include "innocent/graphics.h"
 
 #include "common/system.h"
+#include "graphics/cursorman.h"
 
 #include "innocent/animation.h"
 #include "innocent/debug.h"
@@ -147,6 +148,14 @@ Common::Point Graphics::cursorPosition() const {
 void Graphics::updateScreen() const {
 	_system->copyRectToScreen(reinterpret_cast<byte *>(_framebuffer->pixels), _framebuffer->pitch, 0, 0, 320, 200);
 	_system->updateScreen();
+}
+
+void Graphics::showCursor() const {
+	Sprite *cursor = _resources->getCursor();
+	assert(cursor->pitch == cursor->w);
+	::Graphics::CursorManager &m = ::Graphics::CursorManager::instance();
+	m.replaceCursor(reinterpret_cast<byte *>(cursor->pixels), cursor->w, cursor->h, cursor->_hotPoint.x, cursor->_hotPoint.y, 0);
+	m.showMouse(true);
 }
 
 const char Graphics::_charwidths[] = {

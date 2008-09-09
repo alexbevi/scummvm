@@ -50,13 +50,14 @@ int Engine::init() {
 
 int Engine::go() {
 	_resources->loadActors();
+	_graphics->showCursor();
 	while(!quit()) {
 		_graphics->paintBackdrop();
 		_logic->tick();
 		_graphics->paint();
 		_graphics->updateScreen();
 		_debugger->onFrame();
-		_system->delayMillis(1000/20);
+		_system->delayMillis(1000/40);
 		handleEvents();
 	}
 

@@ -247,5 +247,8 @@ std::auto_ptr<Sprite> &CodePointer::field<std::auto_ptr<Sprite> >(std::auto_ptr<
 	return p;
 }
 
+Sprite *Resources::getCursor() const {
+	return loadSprite(_main->getCursorSpriteId());
+}
 
 } // End of namespace Innocent
