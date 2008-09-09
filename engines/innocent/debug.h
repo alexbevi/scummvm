@@ -22,7 +22,7 @@ protected:
 	/** just to remember to fill the debug info; use macro DEBUG_INFO to confirm */
 	virtual void initDebugInfo() = 0;
 	#define DEBUG_INFO protected: void initDebugInfo() {}
-	char _debugInfo[50];
+	char _debugInfo[100];
 };
 
 template <typename T>
