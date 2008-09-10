@@ -50,6 +50,9 @@ public:
 	
 	byte *_data;
 
+	Actor *actor(uint16 index) const;
+	uint16 actorsCount() const { return _actorsCount; }
+
 	byte *getByteVariable(uint16 index);
 	byte *getWordVariable(uint16 index);
 	uint16 getRoomScriptId(uint16 room) const;
@@ -73,7 +76,8 @@ private:
 	byte *_imageDirectory;
 	uint16 _programsCount;
 	byte *_programsMap;
-	Common::List<Actor *> _actors;
+	Actor **_actors;
+	uint16 _actorsCount;
 };
 
 } // End of namespace Innocent

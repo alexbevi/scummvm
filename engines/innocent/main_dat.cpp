@@ -12,14 +12,17 @@ using namespace std;
 
 namespace Innocent {
 
-MainDat::MainDat(Resources *res) : Datafile(res), _data(0) {}
+MainDat::MainDat(Resources *res) : Datafile(res), _data(0), _actors(0) {}
 
 MainDat::~MainDat() {
 	if (_data)
 		delete[] _data;
 
-	foreach(Actor *, _actors)
-		delete (*it);
+	if (_actors) {
+		for (int i = 0; i < _actorsCount; i++)
+			delete _actors[i];
+		delete[] _actors;
+	}
 }
 
 enum Offsets {
@@ -71,10 +74,12 @@ void MainDat::readFile(SeekableReadStream &stream) {
 }
 
 void MainDat::loadActors(Interpreter *in) {
-	uint16 nactors = READ_LE_UINT16(_footer + kActorsCount);
+	uint16 nactors = _actorsCount = READ_LE_UINT16(_footer + kActorsCount);
 	uint16 actors = READ_LE_UINT16(_footer + kActors);
+	assert(!_actors);
+	_actors = new Actor *[nactors];
 	for (int i = 0; i < nactors; ++i) {
-		_actors.push_back(new Actor(CodePointer(actors, in)));
+		_actors[i] = new Actor(CodePointer(actors, in));
 		actors += Actor::Size;
 	}
 }
@@ -135,6 +140,10 @@ uint16 MainDat::interfaceImageIndex() const {
 
 byte *MainDat::getEntryPoint() const {
 	return _data + READ_LE_UINT16(_footer + kEntryPoint);
+}
+
+Actor *MainDat::actor(uint16 index) const {
+	return _actors[index];
 }
 
 uint16 MainDat::getRoomScriptId(uint16 room) const {

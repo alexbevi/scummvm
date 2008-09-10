@@ -12,17 +12,6 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 	readHeader(header);
 }
 
-enum ActorOffsets {
-	kOffsetOffset = 2,
-	kOffsetLeft = 4,
-	kOffsetTop = 6,
-	kOffsetMainSprite = 8,
-	kOffsetTicksLeft = 0xa,
-	kOffsetCode = 0xc,
-	kOffsetInterval = 0x10,
-	kOffsetRoom = 0x59
-};
-
 void Actor::readHeader(const byte *code) {
 	_interval = code[kOffsetInterval];
 	_ticksLeft = READ_LE_UINT16(code + kOffsetTicksLeft);

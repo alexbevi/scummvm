@@ -105,8 +105,8 @@ public:
 	void loadActors();
 	void loadFrames();
 
-private:
 	MainDat *mainDat() const { return _main.get(); }
+private:
 	GraphicsMap *graphicsMap() const { return _graphicsMap.get(); }
 	ProgDat *progDat() const { return _progDat.get(); }
 

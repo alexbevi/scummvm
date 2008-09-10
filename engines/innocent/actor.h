@@ -18,6 +18,18 @@ public:
 		Size = 0x71
 	};
 
+	enum ActorOffsets {
+		kOffsetOffset = 2,
+		kOffsetLeft = 4,
+		kOffsetTop = 6,
+		kOffsetMainSprite = 8,
+		kOffsetTicksLeft = 0xa,
+		kOffsetCode = 0xc,
+		kOffsetInterval = 0x10,
+		kOffsetRoom = 0x59
+	};
+
+
 	uint16 room() const { return _room; }
 private:
 	Actor(const CodePointer &code);

@@ -112,6 +112,17 @@ void Logic::setRoomLoop(const CodePointer &code) {
 	_roomLoop.reset(new CodePointer(code));
 }
 
+/* counting starts with 1 */
+Actor *Logic::getActor(uint16 id) const {
+	id--;
+	if (id < _resources->mainDat()->actorsCount())
+		return _resources->mainDat()->actor(id);
+	else
+		error("local actors not handled yet");
+//		return _blockProgram->actor(id - _main->actorsCount());
+}
+
+
 Animation *Logic::animation(uint16 offset) const {
 	foreach (Animation *, _animations)
 		if ((*it)->baseOffset() == offset)

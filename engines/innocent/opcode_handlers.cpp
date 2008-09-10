@@ -1,5 +1,6 @@
 #include "innocent/inter.h"
 
+#include "innocent/actor.h"
 #include "innocent/animation.h"
 #include "innocent/exit.h"
 #include "innocent/graphics.h"
@@ -165,6 +166,51 @@ OPCODE(0x60) {
 
 	debugC(3, kDebugLevelScript, "opcode 0x60: %s = %d == search list %s for %s and return field %s", +a[3], value, +a[0], +a[1], +a[2]);
 	a[3] = value;
+}
+
+OPCODE(0x63) {
+	// get actor property
+	Actor *actor = _logic->getActor(a[0]);
+	const char *desc;
+
+	switch (uint16(a[1]) & 0xff) {
+	case Actor::kOffsetRoom:
+		desc = "Room";
+		a[2] = actor->room();
+		break;
+/*	case Actor::kOffsetOffset:
+		desc = "Offset";
+		a[2] = actor->offset();
+		break;
+	case Actor::kOffsetLeft:
+		desc = "Left";
+		a[2] = actor->left();
+		break;
+	case Actor::kOffsetTop:
+		desc = "Top";
+		a[2] = actor->top();
+		break;
+	case Actor::kOffsetMainSprite:
+		desc = "MainSprite";
+		a[2] = actor->mainSprite();
+		break;
+	case Actor::kOffsetTicksLeft:
+		desc = "TicksLeft";
+		a[2] = actor->ticksLeft();
+		break;
+	case Actor::kOffsetCode:
+		desc = "Code";
+		a[2] = actor->code();
+		break;
+	case Actor::kOffsetInterval:
+		desc = "Interval";
+		a[2] = actor->interval();
+		break;*/
+	default:
+		error("unhandled actor property %s", +a[1]);
+	}
+
+	debugC(3, kDebugLevelScript, "opcode 0x63: %s = get %s of actor %s", +a[2], desc, +a[0]);
 }
 
 OPCODE(0x6d) {
