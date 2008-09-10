@@ -411,6 +411,11 @@ OPCODE(0xef) {
 	a[1] = value;
 }
 
+OPCODE(0xf7) {
+	// stop music
+	debugC(1, kDebugLevelScript, "opcode 0xf7: stop music STUB");
+}
+
 OPCODE(0xfc) {
 	// quit
 	debugC(3, kDebugLevelScript, "opcode 0xfc: quit%s", a[0] == 0 ? "" : " unconditionally");
