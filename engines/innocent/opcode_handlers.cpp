@@ -330,8 +330,8 @@ OPCODE(0xc2) {
 
 OPCODE(0xd2) {
 	// prepare interface palette
-	debugC(3, kDebugLevelScript, "opcode 0xd2: prepare interface palette");
-	Graf.prepareInterfacePalette();
+	debugC(3, kDebugLevelScript, "opcode 0xd2: will fadein partially");
+	Graf.willFadein(Graphics::kPartialFade);
 }
 
 OPCODE(0xc6) {
@@ -373,7 +373,7 @@ OPCODE(0xcf) {
 
 OPCODE(0xd0) {
 	debugC(1, kDebugLevelScript, "opcode 0xd0: partial fadeout");
-	Graf.fadeOut(Graphics::kPartialFadeOut);
+	Graf.fadeOut(Graphics::kPartialFade);
 }
 
 OPCODE(0xd1) {

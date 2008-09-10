@@ -51,12 +51,12 @@ public:
 	void setBackdrop(uint16 id);
 	void paintBackdrop();
 
-	enum FadeOutFlags {
-		kFullFadeOut = 0,
-		kPartialFadeOut = 1
+	enum FadeFlags {
+		kFullFade = 0,
+		kPartialFade = 1
 	};
-	void willFadein();
-	void fadeOut(FadeOutFlags f = kFullFadeOut);
+	void willFadein(FadeFlags f = kFullFade);
+	void fadeOut(FadeFlags f = kFullFade);
 
 	void say(const byte *text, uint16 frames = 50);
 	void runWhenSaid(const CodePointer &p);
@@ -104,7 +104,7 @@ public:
 	static const char _charwidths[];
 
 private:
-	void clearPalette();
+	void clearPalette(int start = 0, int count = 256);
 	void setPalette(const byte *colours, uint start, uint num);
 	void fadeIn(const byte *colours, uint start, uint num);
 
@@ -112,6 +112,7 @@ private:
 	Common::List<CodePointer> _afterRepaintHooks;
 
 	bool _willFadein;
+	FadeFlags _fadeFlags;
 	byte _interfacePalette[0x400];
 
 	byte *_speech;

@@ -63,6 +63,12 @@ void Graphics::paint() {
 	}
 
 	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, "<<<end paint procedure");
+
+	if (_willFadein && (_fadeFlags & kPartialFade)) {
+		debugC(3, kDebugLevelGraphics, "performing partial fade in");
+		_willFadein = false;
+		fadeIn(_interfacePalette + 160*4, 160, 96);
+	}
 }
 
 void Graphics::paintExits() {
@@ -89,9 +95,13 @@ void Graphics::setBackdrop(uint16 id) {
 	setPalette(palette, 0, 256);
 }
 
-void Graphics::willFadein() {
+void Graphics::willFadein(FadeFlags f) {
 	_willFadein = true;
-	clearPalette();
+	_fadeFlags = f;
+	if (f & kPartialFade)
+		clearPalette(160, 96);
+	else
+		clearPalette();
 	updateScreen();
 }
 
@@ -371,18 +381,18 @@ const char Graphics::_charwidths[] = {
 	#include "charwidths.data"
 };
 
-void Graphics::clearPalette() {
+void Graphics::clearPalette(int offset, int count) {
 	byte pal[0x400];
 	fill(pal, pal+0x400, 0);
-	_system->setPalette(pal, 0, 256);
+	_system->setPalette(pal, offset, count);
 }
 
 void Graphics::setPalette(const byte *colours, uint start, uint num) {
-	if (_willFadein)
+	if (_willFadein && !(_fadeFlags & kPartialFade)) {
 		fadeIn(colours, start, num);
-	else
+		_willFadein = false;
+	} else
 		_system->setPalette(colours, start, num);
-	_willFadein = false;
 }
 
 struct Tr : public unary_function<byte, byte> {
@@ -391,6 +401,7 @@ struct Tr : public unary_function<byte, byte> {
 
 void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 	paint();
+
 	const int bytes = num * 4;
 	byte current[0x400];
 
@@ -407,13 +418,13 @@ void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 	}
 }
 
-void Graphics::fadeOut(FadeOutFlags f) {
+void Graphics::fadeOut(FadeFlags f) {
 	int bytes = 0x400;
 	int offset = 0;
 	int colours = 256;
 	byte current[0x400];
 
-	if (f == kPartialFadeOut) {
+	if (f == kPartialFade) {
 		bytes = 96 * 4;
 		offset = 160;
 		colours = 96;
