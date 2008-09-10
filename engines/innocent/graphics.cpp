@@ -408,8 +408,6 @@ void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 }
 
 void Graphics::fadeOut(FadeOutFlags f) {
-	paint();
-
 	int bytes = 0x400;
 	int offset = 0;
 	int colours = 256;
