@@ -242,6 +242,7 @@ Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, byte *str
 			string += 2;
 			current_top = READ_LE_UINT16(string);
 			string += 2;
+			debugC(3, kDebugLevelGraphics, "string move to %d:%d", current_left, current_top);
 			break;
 		case kStringSetColour:
 			current_colour = *(string++);
@@ -441,11 +442,12 @@ void Graphics::fadeOut(FadeFlags f) {
 	}
 }
 
-void Graphics::say(const byte *text, uint16 frames) {
+void Graphics::say(const byte *text, uint16 length, uint16 frames) {
 	if (_speech) // TODO
 		error("queuing speech not supported yet.");
 
-	_speech = reinterpret_cast<byte *>(strdup(reinterpret_cast<const char *>(text)));
+	_speech = new byte[length];
+	memcpy(_speech, text, length);
 	_speechFramesLeft = frames;
 }
 

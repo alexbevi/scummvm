@@ -154,7 +154,7 @@ OPCODE(0x55) {
 OPCODE(0x56) {
 	// say text
 	debugC(3, kDebugLevelScript, "opcode 0x86: say %s for %s frames", +a[1], +a[0]);
-	Graf.say(a[1], a[0]);
+	Graf.say(a[1], a[1], a[0]);
 }
 
 OPCODE(0x57) {

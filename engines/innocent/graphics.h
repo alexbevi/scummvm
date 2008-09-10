@@ -58,7 +58,7 @@ public:
 	void willFadein(FadeFlags f = kFullFade);
 	void fadeOut(FadeFlags f = kFullFade);
 
-	void say(const byte *text, uint16 frames = 50);
+	void say(const byte *text, uint16, uint16 frames = 50);
 	void runWhenSaid(const CodePointer &p);
 
 	uint16 ask(uint16 left, uint16 top, byte width, byte height, byte *string);

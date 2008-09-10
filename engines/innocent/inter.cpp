@@ -176,15 +176,18 @@ CodePointer *Interpreter::readArgument<CodePointer>(byte *&code) {
 
 class ParametrizedString : public Value {
 public:
-	ParametrizedString(byte *translated) {
-		memcpy(_translateBuf, translated, 500);
+	ParametrizedString(byte *translated, uint16 len) {
+		memcpy(_translateBuf, translated, len);
+		_length = len;
 	}
 	virtual const char *operator+() const {
 		return reinterpret_cast<const char *>(_translateBuf);
 	}
 	virtual operator byte *() { return _translateBuf; }
+	virtual operator uint16() const { return _length; }
 private:
 	byte _translateBuf[500];
+	uint16 _length;
 };
 
 template<>
@@ -196,11 +199,16 @@ ParametrizedString *Interpreter::readArgument<ParametrizedString>(byte *&code) {
 	while ((ch = *(code++))) {
 		switch (ch) {
 		case 14:
-		case 3:
-			code += 4;
+		case kStringMove:
+			*(str++) = ch;
+			*(str++) = *(code++);
+			*(str++) = *(code++);
+			*(str++) = *(code++);
+			*(str++) = *(code++);
 			break;
-		case 9:
-			code ++;
+		case kStringAdvance:
+			*(str++) = ch;
+			*(str++) = *(code++);
 			break;
 		case kStringGlobalWord:
 			offset = READ_LE_UINT16(code);
@@ -231,11 +239,11 @@ ParametrizedString *Interpreter::readArgument<ParametrizedString>(byte *&code) {
 				*(str++) = ch;
 		}
 	}
-	*str = 0;
+	*str++ = 0;
 
 	debugC(4, kDebugLevelScript, "read parametrized string '%s' as argument", translateBuf);
 
-	return new ParametrizedString(translateBuf);
+	return new ParametrizedString(translateBuf, str - translateBuf);
 }
 
 Value *Interpreter::getArgument(byte *&code) {
