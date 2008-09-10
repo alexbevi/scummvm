@@ -247,6 +247,11 @@ OPCODE(0xcc) {
 	debugC(1, kDebugLevelScript, "opcode 0xcc: go fullscreen STUB");
 }
 
+OPCODE(0xce) {
+	// start cutscene
+	debugC(1, kDebugLevelScript, "opcode 0xce: start cutscene STUB");
+}
+
 OPCODE(0xd1) {
 	debugC(1, kDebugLevelScript, "opcode 0xd1: freeze default palette partial STUB");
 	_graphics->freezePalette();
