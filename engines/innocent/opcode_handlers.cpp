@@ -256,6 +256,13 @@ OPCODE(0x7c) {
 	exit->setEnabled(!exit->isEnabled());
 }
 
+OPCODE(0x9a) {
+	// if actor in current room then whatever
+	debugC(1, kDebugLevelScript, "opcode 0x9a: if actor %s in current room then STUB", +a[0]);
+	if (_logic->getActor(a[0])->room() == _logic->currentRoom())
+		error("case with condition true unhandled");
+}
+
 OPCODE(0x9b) {
 	// delay
 	debugC(3, kDebugLevelScript, "opcode 0x9b: delay %s frames", +a[0]);

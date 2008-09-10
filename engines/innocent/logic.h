@@ -45,6 +45,7 @@ public:
 	const Common::List<Animation *> animations() const { return _animations; }
 	Room *room() const { return _room.get(); }
 	uint16 roomNumber() const { return _currentRoom; }
+	uint16 currentRoom() const { return _currentRoom; }
 	Actor *getActor(uint16 id) const;
 
 	Program *blockProgram() const { return _blockProgram.get(); }
