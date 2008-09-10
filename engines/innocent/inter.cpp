@@ -164,7 +164,7 @@ template<>
 CodePointer *Interpreter::readArgument<CodePointer>(byte *&code) {
 	uint16 offset = READ_LE_UINT16(code);
 	code += 2;
-	debugC(4, kDebugLevelScript, "read local code offset 0x%04x as argument", offset);
+	debugC(4, kDebugLevelScript, "read code offset 0x%04x as argument", offset);
 	return new CodePointer(offset, this);
 }
 

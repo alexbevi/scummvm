@@ -34,6 +34,8 @@ void Logic::init() {
 }
 
 void Logic::tick() {
+	runQueued();
+
 	if (_roomLoop.get()) {
 		gDebugLevel--; // room loops aren't that interesting
 		debugC(3, kDebugLevelScript | kDebugLevelFlow, ">>>running room loop code");
@@ -83,6 +85,18 @@ void Logic::changeRoom(uint16 newRoom) {
 	debugC(2, kDebugLevelScript, ">>>running room entry code for room %d", newRoom);
 	_blockInterpreter->run(_blockProgram->roomHandler(newRoom), kCodeNewRoom);
 	debugC(2, kDebugLevelScript, "<<<finished room entry code for room %d", newRoom);
+}
+
+void Logic::runLater(const CodePointer &p) {
+	_queued.push(p);
+}
+
+void Logic::runQueued() {
+	if (_queued.empty()) return;
+	
+	debugC(2, kDebugLevelFlow | kDebugLevelScript, "running queued code");
+	while (!_queued.empty())
+		_queued.pop().run();
 }
 
 void Logic::addAnimation(Animation *anim) {

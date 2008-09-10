@@ -3,9 +3,10 @@
 
 #include <memory>
 
+#include "common/list.h"
+#include "common/queue.h"
 #include "config.h"
 
-#include "common/list.h"
 
 #include "innocent/value.h"
 
@@ -45,11 +46,16 @@ public:
 
 	Program *blockProgram() const { return _blockProgram.get(); }
 	Interpreter *mainInterpreter() const { return _toplevelInterpreter.get(); }
+	void runLater(const CodePointer &);
 
 	Animation *animation(uint16 offset) const;
 
 	friend class Debugger;
 private:
+
+	void runQueued();
+
+
 	Engine *_engine;
 	Resources *_resources;
 	std::auto_ptr<Interpreter> _toplevelInterpreter, _blockInterpreter;
@@ -60,6 +66,7 @@ private:
 	Common::List<Animation *> _animations;
 	std::auto_ptr<CodePointer> _roomLoop;
 	std::auto_ptr<Room> _room;
+	Common::Queue<CodePointer> _queued;
 };
 
 } // End of namespace Innocent

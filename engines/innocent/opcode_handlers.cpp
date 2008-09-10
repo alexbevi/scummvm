@@ -107,6 +107,13 @@ OPCODE(0x36) {
 	debugC(3, kDebugLevelScript, "<<<opcode 0x36: called procedure %s", +a[0]);
 }
 
+OPCODE(0x39) {
+	// run later
+	debugC(3, kDebugLevelScript, "opcode 0x57: execute main %s later", +a[0]);
+	_logic->runLater(CodePointer(static_cast<CodePointer &>(a[0]).offset(),
+								  _logic->mainInterpreter()));
+}
+
 OPCODE(0x3d) {
 	// save first arg -- instruction pointer -- for after skipping animation
 	debugC(1, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped to %s STUB", +a[0]);
@@ -188,6 +195,11 @@ OPCODE(0x73) {
 	// assign 0
 	debugC(3, kDebugLevelScript, "opcode 0x73: %s = 0", +a[0]);
 	a[0] = 0;
+}
+
+OPCODE(0x79) {
+	// move actor to another room
+	debugC(3, kDebugLevelScript, "opcode 0x79 STUB: move actor %s to room %s and set current animation frame to %s", +a[0], +a[1], +a[2]);
 }
 
 OPCODE(0x7c) {
