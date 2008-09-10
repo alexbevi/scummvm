@@ -35,9 +35,11 @@ void Logic::init() {
 
 void Logic::tick() {
 	if (_roomLoop.get()) {
-		debugC(2, kDebugLevelScript | kDebugLevelFlow, ">>>running room loop code");
+		gDebugLevel--; // room loops aren't that interesting
+		debugC(3, kDebugLevelScript | kDebugLevelFlow, ">>>running room loop code");
 		_roomLoop->run(kCodeRoomLoop);
-		debugC(2, kDebugLevelScript | kDebugLevelFlow, "<<<finished room loop code");
+		debugC(3, kDebugLevelScript | kDebugLevelFlow, "<<<finished room loop code");
+		gDebugLevel++;
 	}
 
 	if (!_animations.empty())

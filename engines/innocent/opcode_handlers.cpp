@@ -19,7 +19,7 @@ OPCODE(0x00) {
 
 OPCODE(0x01) {
 	// return (to caller or toplevel)
-	debugC(1, kDebugLevelScript, "opcode 0x01: return (partial STUB)");
+	debugC(3, kDebugLevelScript, "opcode 0x01: return (partial STUB)");
 	// TODO: when it's not toplevel
 	goBack();
 }
@@ -93,6 +93,7 @@ OPCODE(0x36) {
 	debugC(3, kDebugLevelScript, ">>>opcode 0x36: call procedure %s", +a[0]);
 	static_cast<CodePointer &>(a[0]).run();
 	debugC(3, kDebugLevelScript, "<<<opcode 0x36: called procedure %s", +a[0]);
+	_return = false;
 }
 
 OPCODE(0x3d) {
