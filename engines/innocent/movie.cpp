@@ -2,6 +2,7 @@
 
 #include "common/file.h"
 
+#include "innocent/debug.h"
 #include "innocent/graphics.h"
 #include "innocent/innocent.h"
 #include "innocent/resources.h"
@@ -28,6 +29,7 @@ void Movie::setFrameDelay(uint jiffies) {
 void Movie::play() {
 	_s.create(320, 200, 1);
 
+	debugC(4, kDebugLevelGraphics, "creating movie");
 	while (findKeyFrame()) {
 		loadKeyFrame();
 
@@ -35,6 +37,7 @@ void Movie::play() {
 		showFrame();
 
 		while (_iFrames) {
+			debugC(3, kDebugLevelGraphics, "got %d iframes", _iFrames);
 			loadIFrame();
 			showFrame();
 			delay();
@@ -45,7 +48,7 @@ void Movie::play() {
 bool Movie::findKeyFrame() {
 	(void) _f->readUint32LE(); // size of block, we don't want that
 	_iFrames = _f->readUint16LE();
-	return _f->eos();
+	return !_f->eos();
 }
 
 void Movie::loadKeyFrame() {
@@ -92,11 +95,15 @@ void Movie::loadIFrame() {
 		*dest++ = b;
 		left--;
 	}
+
+	_iFrames--;
 }
 
 void Movie::showFrame() {
 	Engine::instance()._system->copyRectToScreen(
 		reinterpret_cast<byte *>(_s.pixels), _s.pitch, 0, 0, _s.w, _s.h);
+
+	Engine::instance()._system->updateScreen();
 }
 
 void Movie::setPalette() {
@@ -104,7 +111,7 @@ void Movie::setPalette() {
 }
 
 void Movie::delay() {
-	Engine::instance().delay(20 * _delay);
+	Engine::instance().delay(20 * (_delay + 1));
 }
 
 } // end of namespace Innocent
