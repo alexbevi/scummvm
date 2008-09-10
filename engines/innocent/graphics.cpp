@@ -107,7 +107,7 @@ void Graphics::paintSpeech() {
 	if (!_speechFramesLeft) {
 		delete _speech;
 		_speech = 0;
-		CodePointer &cb = _speechDoneCallback;
+		CodePointer cb = _speechDoneCallback;
 		_speechDoneCallback.reset();
 		cb.run();
 		return;
