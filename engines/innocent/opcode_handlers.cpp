@@ -110,7 +110,7 @@ OPCODE(0x36) {
 
 OPCODE(0x39) {
 	// run later
-	debugC(3, kDebugLevelScript, "opcode 0x57: execute main %s later", +a[0]);
+	debugC(3, kDebugLevelScript, "opcode 0x39: execute main %s later", +a[0]);
 	_logic->runLater(CodePointer(static_cast<CodePointer &>(a[0]).offset(),
 								  _logic->mainInterpreter()));
 }
@@ -267,6 +267,11 @@ OPCODE(0x9d) {
 	// set protagonist
 	debugC(3, kDebugLevelScript, "opcode 0x9d: set protagonist(%s)", +a[0]);
 	_logic->setProtagonist(a[0]);
+}
+
+OPCODE(0xad) {
+	// turn actor
+	debugC(1, kDebugLevelScript, "opcode 0xad: turn actor %s to %s STUB", +a[0], +a[1]);
 }
 
 OPCODE(0xc2) {
