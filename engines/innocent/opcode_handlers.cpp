@@ -54,6 +54,13 @@ OPCODE(0x05) {
 		failedCondition();
 }
 
+OPCODE(0x0f) {
+	// check room
+	debugC(3, kDebugLevelScript, "opcode 0x0f: if current room == %s then", +a[0]);
+	unless (a[0] == _logic->currentRoom())
+		failedCondition();
+}
+
 OPCODE(0x12) {
  	// if sound is on then
 	// (argument is a set of flags, 1 - adlib, 2 - sb, 4 - roland)
