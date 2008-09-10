@@ -301,7 +301,7 @@ uint16 Graphics::getGlyphWidth(byte ch) const {
 	if (ch == ' ')
 		return 4;
 	else
-		return getGlyph(ch)->w;
+		return getGlyph(ch)->w-1;
 }
 
 Sprite *Graphics::getGlyph(byte ch) const {
