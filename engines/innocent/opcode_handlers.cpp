@@ -78,8 +78,8 @@ OPCODE(0x13) {
 
 OPCODE(0x1f) {
 	// if actor in current room then whatever
-	debugC(1, kDebugLevelScript, "opcode 0x1f: if actor %s in current room and STUB then", +a[0]);
-	if (_logic->getActor(a[0])->room() == _logic->currentRoom())
+	debugC(1, kDebugLevelScript, "opcode 0x1f: if actor %s in current room and STUB then", +a[1]);
+	if (_logic->getActor(a[1])->room() == _logic->currentRoom())
 		error("case with condition true unhandled");
 	else
 		failedCondition();
