@@ -66,12 +66,13 @@ uint16 Program::roomHandler(uint16 room) {
 	byte *index = _code + 2;
 
 	uint16 r;
-	while ((r = READ_LE_UINT16(index)) != 0xffff)
+	while ((r = READ_LE_UINT16(index)) != 0xffff) {
+		index += 2;
 		if (r == room) {
-			index += 2;
 			uint16 offset = READ_LE_UINT16(index);
 			return offset;
 		}
+	}
 
 	return 0;
 }
