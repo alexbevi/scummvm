@@ -28,6 +28,7 @@ public:
 
 enum StringSpecial {
 	kStringCountSpacesTerminate = 2,
+	kStringMenuOption = 5,
 	kStringGlobalWord = 6,
 	kStringSetColour = 7,
 	kStringDefaultColour = 8,

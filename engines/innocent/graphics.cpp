@@ -91,7 +91,12 @@ void Graphics::paintAnimations() {
 		(*it)->paint(this);
 }
 
-int8 Graphics::ask(uint16 left, uint16 top, byte width, byte height, byte *string) {
+// it's modal anyway
+static int _mOption = 0;
+static Common::Rect _optionRects[10];
+static uint16 _optionValues[10];
+
+uint16 Graphics::ask(uint16 left, uint16 top, byte width, byte height, byte *string) {
 	width += 2;
 	height += 2;
 	enum {
@@ -137,6 +142,8 @@ int8 Graphics::ask(uint16 left, uint16 top, byte width, byte height, byte *strin
 	}
 	paint(frames[kFrameBottomRight], tile, &frame);
 
+	_mOption = 0;
+
 	// TODO this should use the interpreter's built-in font
 	// (but it does look nicer this way)
 	paintText(10, 16, 254, string, &frame);
@@ -151,8 +158,16 @@ int8 Graphics::ask(uint16 left, uint16 top, byte width, byte height, byte *strin
 		while (_engine->eventMan()->pollEvent(event)) {
 			switch(event.type) {
 			case Common::EVENT_LBUTTONUP:
-				show = false;
-
+				if (_mOption == 0)
+					return 0xffff;
+				else
+					for (int i = 0; i < _mOption; i++) {
+						Common::Point p = event.mouse;
+						p.x -= left;
+						p.y -= top;
+						if (_optionRects[i].contains(p))
+							return _optionValues[i];
+					}
 			default:
 				break;
 			}
@@ -160,20 +175,28 @@ int8 Graphics::ask(uint16 left, uint16 top, byte width, byte height, byte *strin
 		_system->delayMillis(1000/60);
 	}
 
-	return -1;
+	return 0xffff;
 }
 
-void Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string, Surface *dest) {
+enum {
+	kOptionColour = 254,
+	kSelectedOptionColour = 227
+};
+
+Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string, Surface *dest) {
 	byte ch = 0;
 	uint16 current_left = left;
+	uint16 current_top = top;
+	uint16 max_left = left;
 	byte current_colour = colour;
 
+	int opt;
 	while ((ch = *(string++))) {
 		switch(ch) {
 		case '\n':
 		case '\r':
 			current_left = left;
-			top += kLineHeight;
+			current_top += kLineHeight;
 			break;
 		case kStringDefaultColour:
 			current_colour = colour;
@@ -181,14 +204,21 @@ void Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string, Sur
 		case kStringSetColour:
 			current_colour = *(string++);
 			break;
+		case kStringMenuOption:
+			opt = _mOption++;
+			_optionRects[opt] = paintText(current_left, current_top, kOptionColour, string, dest);
+			while (*(string++));
+			_optionValues[opt] = READ_LE_UINT16(string);
+			string += 2;
+			break;
 		default:
-			if (current_left > 310) {
-				current_left = left;
-				top += kLineHeight;
-			}
-			current_left += paintChar(current_left, top, current_colour, ch, dest);
+			current_left += paintChar(current_left, current_top, current_colour, ch, dest);
+			if (current_left > max_left)
+				max_left = current_left;
 		}
 	}
+
+	return Common::Rect(left, top, max_left, current_top + kLineHeight);
 }
 
 byte Graphics::clampChar(byte ch) {

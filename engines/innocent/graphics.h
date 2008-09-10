@@ -49,11 +49,11 @@ public:
 	void setBackdrop(uint16 id);
 	void paintBackdrop();
 
-	int8 ask(uint16 left, uint16 top, byte width, byte height, byte *string);
-	void paintText(uint16 left, uint16 top, byte colour, byte *string) {
-		paintText(left, top, colour, string, _framebuffer.get());
+	uint16 ask(uint16 left, uint16 top, byte width, byte height, byte *string);
+	Common::Rect paintText(uint16 left, uint16 top, byte colour, byte *string) {
+		return paintText(left, top, colour, string, _framebuffer.get());
 	}
-	void paintText(uint16 left, uint16 top, byte colour, byte *string, Surface *s);
+	Common::Rect paintText(uint16 left, uint16 top, byte colour, byte *string, Surface *s);
 	void paintRect(const Common::Rect &r, byte colour = 235);
 
 	void paint(const Sprite *sprite, Common::Point pos) const {

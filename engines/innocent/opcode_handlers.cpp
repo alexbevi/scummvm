@@ -114,9 +114,9 @@ OPCODE(0x3d) {
 OPCODE(0x54) {
 	debugC(3, kDebugLevelScript, "opcode 0x54: ask about '%s' at %s:%s %sx%s", +a[4], +a[0], +a[1], +a[2], +a[3]);
 
-	int8 result;
-	unless ((result = _graphics->ask(a[0], a[1], a[2], a[3], a[4])) == -1)
-		error("asking user not implemented yet!");
+	uint16 result;
+	unless ((result = _graphics->ask(a[0], a[1], a[2], a[3], a[4])) == 0xffff)
+		_code = _base + result;
 }
 
 OPCODE(0x55) {
