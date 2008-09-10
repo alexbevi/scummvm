@@ -49,6 +49,8 @@ public:
 	void setBackdrop(uint16 id);
 	void paintBackdrop();
 
+	void freezePalette();
+
 	uint16 ask(uint16 left, uint16 top, byte width, byte height, byte *string);
 	Common::Rect paintText(uint16 left, uint16 top, byte colour, byte *string) {
 		return paintText(left, top, colour, string, _framebuffer.get());
@@ -90,6 +92,8 @@ public:
 private:
 	Common::List<Paintable *> _paintables;
 	Common::List<CodePointer> _afterRepaintHooks;
+
+	bool _paletteFrozen;
 };
 
 } // End of namespace Innocent

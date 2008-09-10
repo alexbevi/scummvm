@@ -23,6 +23,7 @@ void Graphics::setEngine(Engine *engine) {
 	_engine = engine;
 	_framebuffer.reset(new Surface);
 	_framebuffer->create(320, 200, 1);
+	_paletteFrozen = false;
 }
 
 void Graphics::init() {
@@ -72,10 +73,14 @@ void Graphics::paintInterface() {
 }
 
 void Graphics::setBackdrop(uint16 id) {
-
 	byte palette[0x400];
 	_backdrop.reset(_resources->loadBackdrop(id, palette));
-	_system->setPalette(palette, 0, 256);
+	unless (_paletteFrozen)
+		_system->setPalette(palette, 0, 256);
+}
+
+void Graphics::freezePalette() {
+	_paletteFrozen = true;
 }
 
 void Graphics::paintBackdrop() {
