@@ -30,6 +30,9 @@ void Graphics::setEngine(Engine *engine) {
 	_framebuffer.reset(new Surface);
 	_framebuffer->create(320, 200, 1);
 	_willFadein = false;
+
+	_speech = 0;
+	_speechFramesLeft = 0;
 }
 
 void Graphics::init() {
@@ -44,6 +47,7 @@ void Graphics::paint() {
 	paintBackdrop();
 	paintExits();
 	paintAnimations();
+	paintSpeech();
 
 	debugC(3, kDebugLevelGraphics, "painting paintables");
 	foreach (Paintable *, _paintables)
@@ -95,6 +99,20 @@ void Graphics::paintBackdrop() {
 	// TODO cropping
 	debugC(3, kDebugLevelGraphics, "painting backdrop");
 	_framebuffer->blit(_backdrop.get());
+}
+
+void Graphics::paintSpeech() {
+	if (!_speech) return;
+
+	if (!_speechFramesLeft) {
+		delete _speech;
+		_speech = 0;
+		return;
+	}
+
+	paintText(0, 0, 235, _speech);
+
+	_speechFramesLeft--;
 }
 
 void Graphics::paintAnimations() {
@@ -206,16 +224,28 @@ Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, byte *str
 	int opt;
 	while ((ch = *(string++))) {
 		switch(ch) {
-		case '\n':
-		case '\r':
-			current_left = left;
-			current_top += kLineHeight;
+		case kStringMove:
+			current_left = READ_LE_UINT16(string);
+			string += 2;
+			current_top = READ_LE_UINT16(string);
+			string += 2;
+			break;
+		case kStringSetColour:
+			current_colour = *(string++);
 			break;
 		case kStringDefaultColour:
 			current_colour = colour;
 			break;
-		case kStringSetColour:
-			current_colour = *(string++);
+		case kStringAdvance:
+			current_left += *(string++);
+			break;
+		case kStringCenter:
+			current_left = (320 - calculateLineWidth(string))/2;
+			break;
+		case '\n':
+		case '\r':
+			current_left = left;
+			current_top += kLineHeight;
 			break;
 		case kStringMenuOption:
 			opt = _mOption++;
@@ -242,15 +272,37 @@ byte Graphics::clampChar(byte ch) {
 	return ch;
 }
 
+uint16 Graphics::calculateLineWidth(byte *string) const {
+	byte ch;
+	uint16 total = 0;
+	while ((ch = *(string++))) {
+		if (ch == '\n' || ch == '\r')
+			break;
+		total += getGlyph(ch)->w;
+	}
+	return total;
+}
+
+uint16 Graphics::getGlyphWidth(byte ch) const {
+	if (ch == ' ')
+		return 4;
+	else
+		return getGlyph(ch)->w;
+}
+
+Sprite *Graphics::getGlyph(byte ch) const {
+	// TODO perhaps cache or sth
+	ch = clampChar(ch);
+	if (ch == ' ')
+		return 0; // space has no glyph, just width 4
+	return _resources->getGlyph(ch);
+}
+
 /**
  * @returns char width
  */
 uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch, Surface *dest) const {
-	// TODO perhaps cache or sth
-	ch = clampChar(ch);
-	if (ch == ' ')
-		return 4; // space has no glyph, just width 4
-	Sprite *glyph = _resources->getGlyph(ch);
+	Sprite *glyph = getGlyph(ch);
 	glyph->recolour(colour);
 	paint(glyph, Common::Point(left, top+glyph->h), dest);
 	int w = glyph->w - 1;
@@ -363,6 +415,14 @@ void Graphics::fadeOut() {
 		_system->updateScreen();
 		Engine::instance().delay(20);
 	}
+}
+
+void Graphics::say(const byte *text, uint16 frames) {
+	if (_speech) // TODO
+		error("queuing speech not supported yet.");
+
+	_speech = reinterpret_cast<byte *>(strdup(reinterpret_cast<const char *>(text)));
+	_speechFramesLeft = frames;
 }
 
 } // End of namespace Innocent

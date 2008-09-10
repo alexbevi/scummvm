@@ -41,6 +41,7 @@ public:
 	void paintInterface();
 	void paintAnimations();
 	void paintExits();
+	void paintSpeech();
 	void prepareInterfacePalette();
 
 	void push(Paintable *p);
@@ -52,6 +53,8 @@ public:
 
 	void willFadein();
 	void fadeOut();
+
+	void say(const byte *text, uint16 frames = 50);
 
 	uint16 ask(uint16 left, uint16 top, byte width, byte height, byte *string);
 	Common::Rect paintText(uint16 left, uint16 top, byte colour, byte *string) {
@@ -78,6 +81,10 @@ public:
 		kLineHeight = 12
 	};
 	static byte clampChar(byte ch);
+	uint16 calculateLineWidth(byte *string) const;
+	uint16 getGlyphWidth(byte ch) const;
+	Sprite *getGlyph(byte ch) const;
+
 	/**
 	 * paint a character on screen
 	 * @returns char width
@@ -101,6 +108,9 @@ private:
 
 	bool _willFadein;
 	byte _interfacePalette[0x400];
+
+	byte *_speech;
+	uint16 _speechFramesLeft;
 };
 
 #define Graf Graphics::instance()

@@ -151,6 +151,12 @@ OPCODE(0x55) {
 	_graphics->paintText(a[0], a[1], a[2], a[3]);
 }
 
+OPCODE(0x56) {
+	// say text
+	debugC(3, kDebugLevelScript, "opcode 0x86: say %s for %s frames", +a[1], +a[0]);
+	Graf.say(a[1], a[0]);
+}
+
 OPCODE(0x60) {
 	// lookup locally
 	// takes a list (1st)

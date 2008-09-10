@@ -26,16 +26,6 @@ public:
 	void blit(const Surface *s, Common::Rect r, int transparent = -1);
 };
 
-enum StringSpecial {
-	kStringCountSpacesTerminate = 2,
-	kStringMenuOption = 5,
-	kStringGlobalWord = 6,
-	kStringSetColour = 7,
-	kStringDefaultColour = 8,
-	kStringCountSpacesIf0 = 0x0a,
-	kStringCountSpacesIf1 = 0x0b
-};
-
 class Sprite : public Surface {
 public:
 	void recolour(byte colour);
