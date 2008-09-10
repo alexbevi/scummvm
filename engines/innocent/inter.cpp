@@ -216,9 +216,11 @@ ParametrizedString *Interpreter::readArgument<ParametrizedString>(byte *&code) {
 			*(str++) = '\n';
 			break;
 		default:
-			if (ch == 5) {
-				while (*(code++) != 0);
-				code += 2;
+			if (ch == 5) { // menu option
+				*(str++) = ch;
+				while ((*(str++) = *(code++)) != 0);
+				*(str++) = *(code++);
+				*(str++) = *(code++);
 			} else
 				*(str++) = ch;
 		}
