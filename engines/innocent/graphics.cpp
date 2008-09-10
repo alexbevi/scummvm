@@ -407,17 +407,26 @@ void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 	}
 }
 
-void Graphics::fadeOut() {
+void Graphics::fadeOut(FadeOutFlags f) {
 	paint();
-	const int bytes = 0x400;
+
+	int bytes = 0x400;
+	int offset = 0;
+	int colours = 256;
 	byte current[0x400];
 
-	_system->grabPalette(current, 0, 256);
+	if (f == kPartialFadeOut) {
+		bytes = 96 * 4;
+		offset = 160;
+		colours = 96;
+	}
+
+	_system->grabPalette(current, offset, colours);
 
 	for (int j = 0; j < 63; j++) {
 		for (int i = 0; i < bytes; i++)
 			current[i] -= MIN<byte>(4, current[i]);
-		_system->setPalette((current), 0, 256);
+		_system->setPalette((current), offset, colours);
 		_system->updateScreen();
 		Engine::instance().delay(20);
 	}

@@ -371,6 +371,11 @@ OPCODE(0xcf) {
 	_graphics->fadeOut();
 }
 
+OPCODE(0xd0) {
+	debugC(1, kDebugLevelScript, "opcode 0xd0: partial fadeout");
+	Graf.fadeOut(Graphics::kPartialFadeOut);
+}
+
 OPCODE(0xd1) {
 	debugC(1, kDebugLevelScript, "opcode 0xd1: fadein next palette change");
 	_graphics->willFadein();

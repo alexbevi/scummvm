@@ -51,8 +51,12 @@ public:
 	void setBackdrop(uint16 id);
 	void paintBackdrop();
 
+	enum FadeOutFlags {
+		kFullFadeOut = 0,
+		kPartialFadeOut = 1
+	};
 	void willFadein();
-	void fadeOut();
+	void fadeOut(FadeOutFlags f = kFullFadeOut);
 
 	void say(const byte *text, uint16 frames = 50);
 	void runWhenSaid(const CodePointer &p);
