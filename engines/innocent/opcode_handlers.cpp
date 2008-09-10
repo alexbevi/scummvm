@@ -1,6 +1,7 @@
 #include "innocent/inter.h"
 
 #include "innocent/animation.h"
+#include "innocent/exit.h"
 #include "innocent/graphics.h"
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
@@ -189,6 +190,13 @@ OPCODE(0x73) {
 	a[0] = 0;
 }
 
+OPCODE(0x7c) {
+	// toggle exit state
+	Exit *exit = _logic->blockProgram()->getExit(a[0]);
+	debugC(3, kDebugLevelScript, "opcode 0x7c: toggling exit %s to %s", +a[0], exit->isEnabled() ? "disabled" : "enabled");
+	exit->setEnabled(!exit->isEnabled());
+}
+
 OPCODE(0x9d) {
 	// set protagonist
 	debugC(3, kDebugLevelScript, "opcode 0x9d: set protagonist(%s)", +a[0]);
@@ -230,10 +238,10 @@ OPCODE(0xcc) {
 OPCODE(0xd6) {
 	// change room
 	debugC(3, kDebugLevelScript, "opcode 0xd6: change room(%s)", +a[0]);
-	if (a[0] == 81 && !_engine->_copyProtection)
+	if (a[0] == 81 && !_engine->_copyProtection) {
 		debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
 		_logic->changeRoom(65);
-	else
+	} else
 		_logic->changeRoom(a[0]);
 }
 

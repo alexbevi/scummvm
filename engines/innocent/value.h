@@ -41,6 +41,8 @@ public:
 	virtual uint16 operator++(int) { uint16 old = *this; ++*this; return old; }
 	virtual Value &operator--() { return *this = uint16(*this) - 1; }
 	virtual uint16 operator--(int) { uint16 old = *this; --*this; return old; }
+	template<typename T>
+	T operator-(T she) { T me = *this; return me - she; }
 
 	virtual bool holdsCode() const { assert(false); }
 

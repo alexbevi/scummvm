@@ -28,6 +28,9 @@ public:
 	virtual Common::Rect area() const;
 	virtual byte zIndex() const;
 
+	bool isEnabled() const { return _enabled; }
+	void setEnabled(bool en) { _enabled = en; }
+
 	friend class Program;
 private:
 	Exit(const CodePointer &code);
@@ -40,6 +43,7 @@ private:
 	Common::Rect _rect;
 	uint16 _room;
 	CodePointer _clickHandler;
+	bool _enabled;
 };
 
 }

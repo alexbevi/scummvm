@@ -18,7 +18,8 @@ enum Offsets {
 	kOffsetZIndex = 0xb
 };
 
-Exit::Exit(const CodePointer &c) {
+Exit::Exit(const CodePointer &c)
+  :	_enabled(false) {
 	debugC(4, kDebugLevelFiles, "loading exit from %s", +c);
 
 	bool nosprite;

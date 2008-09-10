@@ -29,17 +29,21 @@ public:
 	void loadActors(Interpreter *i);
 	void loadExits(Interpreter *i);
 
+	Exit *getExit(uint16 index) const;
 	Common::List<Exit *> exitsForRoom(uint16 room) const;
 
 private:
 	Program() { /* can only be created from a file */ }
+
+	void clearExits();
 
 	uint16 entryPointOffset();
 
 	byte *_code;
 	byte _footer[0x10];
 	Common::List<Actor *> _actors;
-	Common::List<Exit *> _exits;
+	Exit **_exits;
+	uint16 _exitsCount;
 };
 
 } // End of namespace Innocent

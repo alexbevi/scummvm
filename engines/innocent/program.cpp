@@ -20,7 +20,8 @@ enum FooterOffsets {
 	kEntryPointOffset = 0x0E
 };
 
-Program::Program(Common::ReadStream &file, uint16 id) {
+Program::Program(Common::ReadStream &file, uint16 id)
+  :	_exits(0) {
 	uint16 length = file.readUint16LE(); // for this length
 	if (length > 25000)
 		error("too large a program (%d)", length);
@@ -46,6 +47,7 @@ void Program::loadActors(Interpreter *in) {
 
 Program::~Program() {
 	delete[] _code;
+	clearExits();
 }
 
 uint16 Program::begin() {
@@ -80,21 +82,41 @@ SpriteInfo Program::getSpriteInfo(uint16 index) const {
 	return SpriteInfo(spritemap, index);
 }
 
+void Program::clearExits() {
+	if (_exits) {
+		for (int i = 0; i < _exitsCount; i++)
+			delete _exits[i];
+		delete[] _exits;
+		_exits = 0;
+	}
+}
+
 void Program::loadExits(Interpreter *in) {
 	uint16 nexits = READ_LE_UINT16(_footer + kExitsCount);
 	debugC(3, kDebugLevelFiles, "loading %d exits from the program file", nexits);
 	uint16 exits = READ_LE_UINT16(_footer + kExits);
+
+	clearExits();
+
+	_exits = new Exit*[nexits];
+
 	for (int i = 0; i < nexits; ++i) {
-		_exits.push_back(new Exit(CodePointer(exits, in)));
+		_exits[i] = new Exit(CodePointer(exits, in));
 		exits += Exit::Size;
 	}
+
+	_exitsCount = nexits;
+}
+
+Exit *Program::getExit(uint16 index) const {
+	return _exits[index];
 }
 
 Common::List<Exit *> Program::exitsForRoom(uint16 room) const {
 	Common::List<Exit *> room_exits;
-	foreach(Exit *, _exits)
-		if ((*it)->room() == room)
-			room_exits.push_back(*it);
+	for (int i = 0; i < _exitsCount; i++)
+		if (_exits[i]->room() == room)
+			room_exits.push_back(_exits[i]);
 
 	return room_exits;
 }
