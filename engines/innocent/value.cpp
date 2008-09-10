@@ -25,7 +25,7 @@ void CodePointer::init() {
 }
 
 void CodePointer::run() const {
-	if (_offset)
+	if (_offset && _interpreter)
 		_interpreter->run(_offset);
 }
 

@@ -157,6 +157,13 @@ OPCODE(0x56) {
 	Graf.say(a[1], a[0]);
 }
 
+OPCODE(0x57) {
+	// wait until said
+	debugC(3, kDebugLevelScript, "opcode 0x57: wait until text is said");
+	Graf.runWhenSaid(nextInstruction());
+	_return = true;
+}
+
 OPCODE(0x60) {
 	// lookup locally
 	// takes a list (1st)
@@ -374,7 +381,8 @@ OPCODE(0xd6) {
 	debugC(3, kDebugLevelScript, "opcode 0xd6: change room(%s)", +a[0]);
 	if (a[0] == 81 && !_engine->_copyProtection) {
 		debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
-		_logic->changeRoom(65);
+//		_logic->changeRoom(65);
+		_logic->changeRoom(66); // for debugging
 	} else
 		_logic->changeRoom(a[0]);
 }

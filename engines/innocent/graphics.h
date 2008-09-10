@@ -55,6 +55,7 @@ public:
 	void fadeOut();
 
 	void say(const byte *text, uint16 frames = 50);
+	void runWhenSaid(const CodePointer &p);
 
 	uint16 ask(uint16 left, uint16 top, byte width, byte height, byte *string);
 	Common::Rect paintText(uint16 left, uint16 top, byte colour, byte *string) {
@@ -111,6 +112,7 @@ private:
 
 	byte *_speech;
 	uint16 _speechFramesLeft;
+	CodePointer _speechDoneCallback;
 };
 
 #define Graf Graphics::instance()

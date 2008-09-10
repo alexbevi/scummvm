@@ -46,13 +46,17 @@ Interpreter::Interpreter(Logic *l, byte *base, const char *n) :
 	init();
 }
 
+void Interpreter::tick() {
+	if (_roomLoop)
+		run(_roomLoop - _base, kCodeRoomLoop);
+}
+
 void Interpreter::setRoomLoop(byte *code) {
 	_roomLoop = code;
 }
 
-void Interpreter::tick() {
-	if (_roomLoop)
-		run(_roomLoop - _base, kCodeRoomLoop);
+CodePointer Interpreter::nextInstruction() {
+	return CodePointer(_code - _base, this);
 }
 
 /* mode:

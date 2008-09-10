@@ -79,6 +79,7 @@ private:
 	void endIf();
 	void goBack();
 	void setRoomLoop(byte *code);
+	CodePointer nextInstruction();
 
 	uint16 _failedCondition;
 	bool _return;

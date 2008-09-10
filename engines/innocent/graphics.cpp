@@ -107,6 +107,9 @@ void Graphics::paintSpeech() {
 	if (!_speechFramesLeft) {
 		delete _speech;
 		_speech = 0;
+		CodePointer &cb = _speechDoneCallback;
+		_speechDoneCallback.reset();
+		cb.run();
 		return;
 	}
 
@@ -278,7 +281,7 @@ uint16 Graphics::calculateLineWidth(byte *string) const {
 	while ((ch = *(string++))) {
 		if (ch == '\n' || ch == '\r')
 			break;
-		total += getGlyph(ch)->w;
+		total += getGlyphWidth(ch);
 	}
 	return total;
 }
@@ -303,10 +306,13 @@ Sprite *Graphics::getGlyph(byte ch) const {
  */
 uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch, Surface *dest) const {
 	Sprite *glyph = getGlyph(ch);
-	glyph->recolour(colour);
-	paint(glyph, Common::Point(left, top+glyph->h), dest);
-	int w = glyph->w - 1;
-	delete glyph;
+	int w;
+	if (glyph) {
+		glyph->recolour(colour);
+		paint(glyph, Common::Point(left, top+glyph->h), dest);
+		w = glyph->w - 1;
+		delete glyph;
+	} else return 4;
 	return w;
 }
 
@@ -423,6 +429,13 @@ void Graphics::say(const byte *text, uint16 frames) {
 
 	_speech = reinterpret_cast<byte *>(strdup(reinterpret_cast<const char *>(text)));
 	_speechFramesLeft = frames;
+}
+
+void Graphics::runWhenSaid(const CodePointer &cb) {
+	unless (_speechDoneCallback.isEmpty())
+		error("queuing events on speech complete not supported yet");
+
+	_speechDoneCallback = cb;
 }
 
 } // End of namespace Innocent
