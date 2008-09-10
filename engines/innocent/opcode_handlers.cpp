@@ -315,6 +315,12 @@ OPCODE(0xc2) {
 	_logic->addAnimation(new Animation(static_cast<CodePointer &>(a[0]), _graphics->cursorPosition()));
 }
 
+OPCODE(0xd2) {
+	// prepare interface palette
+	debugC(3, kDebugLevelScript, "opcode 0xd2: prepare interface palette");
+	Graf.prepareInterfacePalette();
+}
+
 OPCODE(0xc6) {
 	// suspend execution until an animation's ip points to 0xff
 	debugC(3, kDebugLevelScript, "opcode 0xc6: wait on animation %s", +a[0]);

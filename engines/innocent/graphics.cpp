@@ -68,11 +68,11 @@ void Graphics::paintExits() {
 }
 
 void Graphics::loadInterface() {
-	byte palette[0x400];
+	_resources->loadInterfaceImage(_interface, _interfacePalette);
+}
 
-	_resources->loadInterfaceImage(_interface, palette);
-
-	_engine->_system->setPalette(palette + 160 * 4, 160, 96);
+void Graphics::prepareInterfacePalette() {
+	_engine->_system->setPalette(_interfacePalette + 160 * 4, 160, 96);
 }
 
 void Graphics::paintInterface() {

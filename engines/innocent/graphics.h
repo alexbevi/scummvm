@@ -41,6 +41,7 @@ public:
 	void paintInterface();
 	void paintAnimations();
 	void paintExits();
+	void prepareInterfacePalette();
 
 	void push(Paintable *p);
 	void pop(Paintable *p);
@@ -99,7 +100,10 @@ private:
 	Common::List<CodePointer> _afterRepaintHooks;
 
 	bool _willFadein;
+	byte _interfacePalette[0x400];
 };
+
+#define Graf Graphics::instance()
 
 } // End of namespace Innocent
 
