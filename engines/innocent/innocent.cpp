@@ -1,6 +1,7 @@
 #include "innocent/innocent.h"
 
 
+#include "common/config-manager.h"
 #include "common/scummsys.h"
 
 #include "common/events.h"
@@ -22,6 +23,7 @@ Engine::Engine(OSystem *syst) :
 	_graphics = &Graphics::instance();
 	_graphics->setEngine(this);
 	_logic.reset(new Logic(this));
+	_copyProtection = false;
 
 	Common::addSpecialDebugLevel(kDebugLevelScript, "script", "bytecode scripts");
 	Common::addSpecialDebugLevel(kDebugLevelGraphics, "graphics", "graphics handling");
@@ -43,6 +45,7 @@ int Engine::init() {
 		initCommonGFX(false);
 		_system->initSize(320, 200);
 	}
+	_copyProtection = ConfMan.getBool("copy_protection");
 	_debugger = &Debug;
 	Debug.setEngine(this);
 	_resources->init();

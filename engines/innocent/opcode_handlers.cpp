@@ -34,7 +34,7 @@ OPCODE(0x02) {
 OPCODE(0x03) {
 	// check inequality
 	debugC(3, kDebugLevelScript, "opcode 0x03: if %s != %s", +a[0], +a[1]);
-//	if (a[0] == a[1])
+	if (a[0] == a[1])
 		failedCondition();
 }
 
@@ -230,7 +230,11 @@ OPCODE(0xcc) {
 OPCODE(0xd6) {
 	// change room
 	debugC(3, kDebugLevelScript, "opcode 0xd6: change room(%s)", +a[0]);
-	_logic->changeRoom(a[0]);
+	if (a[0] == 81 && !_engine->_copyProtection)
+		debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
+		_logic->changeRoom(65);
+	else
+		_logic->changeRoom(a[0]);
 }
 
 OPCODE(0xe5) {

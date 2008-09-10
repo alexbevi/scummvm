@@ -38,6 +38,8 @@ public:
 	uint16 getRandom(uint16 max) const;
 
 	friend class Interpreter;
+	bool _copyProtection;
+
 private:
 	std::auto_ptr<Logic> _logic;
 	std::auto_ptr<Resources> _resources;
