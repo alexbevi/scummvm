@@ -43,10 +43,11 @@ int Engine::init() {
 		initCommonGFX(false);
 		_system->initSize(320, 200);
 	}
+	_debugger = &Debug;
+	Debug.setEngine(this);
 	_resources->init();
 	_graphics->init();
 	_logic->init();
-	_debugger.reset(new Debugger(this));
 
 	return 0;
 }

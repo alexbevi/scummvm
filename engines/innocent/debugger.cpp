@@ -1,5 +1,6 @@
 #include "innocent/debugger.h"
 
+#include "common/endian.h"
 #include "common/rect.h"
 
 #include "innocent/exit.h"
@@ -12,15 +13,27 @@
 #include "innocent/util.h"
 
 namespace Innocent {
+//
 
-Debugger::Debugger(Engine *vm) : _vm(vm) {
+DECLARE_SINGLETON(Debugger);
+
+Debugger::Debugger()
+  :	_stepOpcodes(false),
+	_breakOnClickHandler(false),
+	_vm(0) {
 	DCmd_Register("setBackdrop", WRAP_METHOD(Debugger, cmd_setBackdrop));
 	DCmd_Register("paintText", WRAP_METHOD(Debugger, cmd_paintText));
 	DCmd_Register("listExits", WRAP_METHOD(Debugger, cmd_listExits));
 	DCmd_Register("showClickable", WRAP_METHOD(Debugger, cmd_showClickable));
 	DCmd_Register("paintSprite", WRAP_METHOD(Debugger, cmd_paintSprite));
+	DCmd_Register("break", WRAP_METHOD(Debugger, cmd_break));
+	DCmd_Register("step", WRAP_METHOD(Debugger, cmd_step));
+	DCmd_Register("setVar", WRAP_METHOD(Debugger, cmd_setVar));
+}
 
-	DVar_Register("currentRoom", &(vm->logic()->_currentRoom), DVAR_INT);
+void Debugger::setEngine(Engine *vm) {
+	_vm = vm;
+	DVar_Register("currentRoom", &(_vm->logic()->_currentRoom), DVAR_INT);
 }
 
 Logic *Debugger::logic() const {
@@ -28,6 +41,43 @@ Logic *Debugger::logic() const {
 }
 
 #define CMD(x) bool Debugger::cmd_##x(int argc, const char **argv)
+
+CMD(break) {
+	if (argc == 2) {
+		if (!strcmp(argv[1], "click")) {
+			DebugPrintf("Will break execution on click handler.\n");
+			_breakOnClickHandler = true;
+		}
+	} else
+		DebugPrintf("Syntax: break <event>     (events are: click)\n");
+	return true;
+}
+
+void Debugger::clickHandler() {
+	if (_breakOnClickHandler) {
+		attach();
+		onFrame();
+	}
+}
+
+CMD(step) {
+	_stepOpcodes = true;
+	_detach_now = true;
+	return false;
+}
+
+CMD(setVar) {
+	if (argc == 4) {
+		if (!strcmp(argv[1], "word")) {
+			int var = atoi(argv[2]);
+			int val = atoi(argv[3]);
+			DebugPrintf("word[%d] = %d\n", var, val);
+			WRITE_LE_UINT16(_vm->resources()->getGlobalWordVariable(var), val);
+		}
+	} else
+		DebugPrintf("Syntax: break <event>     (events are: click)\n");
+	return true;
+}
 
 CMD(showClickable) {
 	EventManager::instance().toggleDebug();

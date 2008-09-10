@@ -3,6 +3,7 @@
 #include "common/endian.h"
 #include "common/util.h"
 
+#include "innocent/debugger.h"
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
 #include "innocent/program.h"
@@ -13,10 +14,6 @@
 #include "innocent/opcode_handlers.cpp"
 
 namespace Innocent {
-
-enum Debug {
-	kOpcodeDetails = 3
-};
 
 enum {
 	kOpcodeMax = 0xfd
@@ -96,9 +93,10 @@ Status Interpreter::run(uint16 offset) {
 		if (nargs == 0)
 			_code += 2;
 
-		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_failedCondition)
+		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_failedCondition) {
+			Debug.opcodeStep();
 			(this->*handler)(args);
-		else {
+		} else {
 			debugC(3, kDebugLevelScript, "opcode 0x%02x skipped", opcode);
 			if (opcode > 1 && opcode < 0x26)
 				_failedCondition++;

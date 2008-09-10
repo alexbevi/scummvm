@@ -1,5 +1,6 @@
 #include "innocent/exit.h"
 
+#include "innocent/debugger.h"
 #include "innocent/graphics.h"
 #include "innocent/resources.h"
 
@@ -64,6 +65,7 @@ Common::Rect Exit::area() const {
 
 void Exit::clicked() {
 	debugC(3, kDebugLevelEvents, "%s got clicked!", +*this);
+	Debug.clickHandler();
 	_clickHandler.run(kCodeItem);
 }
 

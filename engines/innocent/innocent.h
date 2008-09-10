@@ -32,7 +32,7 @@ public:
 	Logic *logic() { return _logic.get(); }
 	Resources *resources() { return _resources.get(); }
 	Graphics *graphics() { return _graphics; }
-	Debugger *debugger() { return _debugger.get(); }
+	Debugger *debugger() { return _debugger; }
 	Common::EventManager *eventMan() { return _eventMan; }
 
 	uint16 getRandom(uint16 max) const;
@@ -42,7 +42,7 @@ private:
 	std::auto_ptr<Logic> _logic;
 	std::auto_ptr<Resources> _resources;
 	Graphics *_graphics;
-	std::auto_ptr<Debugger> _debugger;
+	Debugger *_debugger;
 
 	mutable Common::RandomSource _rnd;
 

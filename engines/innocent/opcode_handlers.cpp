@@ -34,7 +34,7 @@ OPCODE(0x02) {
 OPCODE(0x03) {
 	// check inequality
 	debugC(3, kDebugLevelScript, "opcode 0x03: if %s != %s", +a[0], +a[1]);
-	if (a[0] == a[1])
+//	if (a[0] == a[1])
 		failedCondition();
 }
 
@@ -98,7 +98,11 @@ OPCODE(0x35) {
 OPCODE(0x36) {
 	// call
 	debugC(3, kDebugLevelScript, ">>>opcode 0x36: call procedure %s", +a[0]);
-	static_cast<CodePointer &>(a[0]).run();
+	CodePointer &p = static_cast<CodePointer &>(a[0]);
+/*	if (p.offset() == 0x3100)
+		_code = _base + 0x335c;
+	else*/
+		p.run();
 	debugC(3, kDebugLevelScript, "<<<opcode 0x36: called procedure %s", +a[0]);
 }
 

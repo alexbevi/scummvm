@@ -21,9 +21,7 @@ public:
 	virtual const char *operator+() const { return _debugInfo; }
 
 protected:
-	/** just to remember to fill the debug info; use macro DEBUG_INFO to confirm */
-	virtual void initDebugInfo() = 0;
-	#define DEBUG_INFO protected: void initDebugInfo() {}
+	#define DEBUG_INFO
 	char _debugInfo[100];
 };
 

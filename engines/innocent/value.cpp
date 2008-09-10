@@ -17,15 +17,21 @@ CodePointer::CodePointer(uint16 off, Interpreter *i) : _offset(off), _interprete
 }
 
 void CodePointer::init() {
-	snprintf(_inspect, 40, "code offset 0x%04x of %s", _offset, _interpreter->name());
+	if (_offset)
+		snprintf(_inspect, 40, "code offset 0x%04x of %s", _offset, _interpreter->name());
+	else
+		snprintf(_inspect, 40, "null pointer");
+
 }
 
 void CodePointer::run() const {
-	_interpreter->run(_offset);
+	if (_offset)
+		_interpreter->run(_offset);
 }
 
 void CodePointer::run(OpcodeMode mode) const {
-	_interpreter->run(_offset, mode);
+	if (_offset)
+		_interpreter->run(_offset, mode);
 }
 
 byte *CodePointer::code() const {
