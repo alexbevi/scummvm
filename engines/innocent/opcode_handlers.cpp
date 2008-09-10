@@ -209,6 +209,13 @@ OPCODE(0x7c) {
 	exit->setEnabled(!exit->isEnabled());
 }
 
+OPCODE(0x9b) {
+	// delay
+	debugC(3, kDebugLevelScript, "opcode 0x9b: delay %s frames", +a[0]);
+	_logic->runLater(CodePointer(_code - _base, this), a[0]);
+	_return = true;
+}
+
 OPCODE(0x9d) {
 	// set protagonist
 	debugC(3, kDebugLevelScript, "opcode 0x9d: set protagonist(%s)", +a[0]);

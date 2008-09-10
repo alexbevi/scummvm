@@ -87,16 +87,21 @@ void Logic::changeRoom(uint16 newRoom) {
 	debugC(2, kDebugLevelScript, "<<<finished room entry code for room %d", newRoom);
 }
 
-void Logic::runLater(const CodePointer &p) {
-	_queued.push(p);
+void Logic::runLater(const CodePointer &p, uint16 delay) {
+	_queued.push_back(DelayedRun(p, delay));
 }
 
 void Logic::runQueued() {
 	if (_queued.empty()) return;
 	
 	debugC(2, kDebugLevelFlow | kDebugLevelScript, "running queued code");
-	while (!_queued.empty())
-		_queued.pop().run();
+	foreach (DelayedRun, _queued)
+		if (it->delay)
+			it->delay--;
+		else {
+			it->code.run();
+			_queued.erase(it);
+		}
 }
 
 void Logic::addAnimation(Animation *anim) {

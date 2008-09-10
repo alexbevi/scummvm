@@ -2,11 +2,11 @@
 #define INNOCENT_LOGIC_H
 
 #include <memory>
+#include <utility>
 
 #include "common/list.h"
 #include "common/queue.h"
 #include "config.h"
-
 
 #include "innocent/value.h"
 
@@ -46,7 +46,7 @@ public:
 
 	Program *blockProgram() const { return _blockProgram.get(); }
 	Interpreter *mainInterpreter() const { return _toplevelInterpreter.get(); }
-	void runLater(const CodePointer &);
+	void runLater(const CodePointer &, uint16 delay = 0);
 
 	Animation *animation(uint16 offset) const;
 
@@ -66,7 +66,13 @@ private:
 	Common::List<Animation *> _animations;
 	std::auto_ptr<CodePointer> _roomLoop;
 	std::auto_ptr<Room> _room;
-	Common::Queue<CodePointer> _queued;
+
+	struct DelayedRun {
+		DelayedRun(const CodePointer &c, uint16 d) : code(c), delay(d) {}
+		CodePointer code;
+		uint16 delay;
+	};
+	Common::List<DelayedRun> _queued;
 };
 
 } // End of namespace Innocent
