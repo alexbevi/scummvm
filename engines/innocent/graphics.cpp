@@ -338,9 +338,11 @@ void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 
 	fill(current, current + bytes, 0);
 
+	byte off = 255;
 	for (int j = 0; j < 63; j++) {
+		off -= 4;
 		for (int i = 0; i < bytes; i++)
-			current[i] += MIN<byte>(4, colours[i] - current[i]);
+			current[i] = colours[i] - MIN(off, colours[i]);
 		_system->setPalette((current), start, num);
 		_system->updateScreen();
 		_system->delayMillis(1000/50);
@@ -359,7 +361,7 @@ void Graphics::fadeOut() {
 			current[i] -= MIN<byte>(4, current[i]);
 		_system->setPalette((current), 0, 256);
 		_system->updateScreen();
-		_system->delayMillis(1000/50);
+		Engine::instance().delay(20);
 	}
 }
 

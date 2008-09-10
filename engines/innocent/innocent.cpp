@@ -17,6 +17,8 @@
 
 namespace Innocent {
 
+Engine *Engine::me;
+
 Engine::Engine(OSystem *syst) :
 		::Engine(syst) {
 	_resources.reset(new Resources(this));
@@ -24,6 +26,8 @@ Engine::Engine(OSystem *syst) :
 	_graphics->setEngine(this);
 	_logic.reset(new Logic(this));
 	_copyProtection = false;
+	me = this;
+	_lastTicks = 0;
 
 	Common::addSpecialDebugLevel(kDebugLevelScript, "script", "bytecode scripts");
 	Common::addSpecialDebugLevel(kDebugLevelGraphics, "graphics", "graphics handling");
@@ -64,7 +68,7 @@ int Engine::go() {
 		_graphics->paint();
 		_graphics->updateScreen();
 		_debugger->onFrame();
-		_system->delayMillis(1000/50);
+		delay(20);
 		handleEvents();
 	}
 
@@ -92,6 +96,13 @@ void Engine::handleEvents() {
 
 uint16 Engine::getRandom(uint16 max) const {
 	return _rnd.getRandomNumber(max);
+}
+
+void Engine::delay(int millis) const {
+	int target = _lastTicks + millis;
+	while ((_lastTicks = _system->getMillis()) < target) {
+		_system->delayMillis(target - _lastTicks);
+	}
 }
 
 } // End of namespace Innocent

@@ -28,6 +28,7 @@ public:
 
 	virtual int init();
 	virtual int go();
+	void delay(int millis) const;
 
 	Logic *logic() { return _logic.get(); }
 	Resources *resources() { return _resources.get(); }
@@ -40,6 +41,8 @@ public:
 	friend class Interpreter;
 	bool _copyProtection;
 
+	static Engine &instance() { return *me; }
+
 private:
 	std::auto_ptr<Logic> _logic;
 	std::auto_ptr<Resources> _resources;
@@ -47,8 +50,10 @@ private:
 	Debugger *_debugger;
 
 	mutable Common::RandomSource _rnd;
+	mutable int _lastTicks;
 
 	void handleEvents();
+	static Engine *me;
 };
 
 } // End of namespace Innocent
