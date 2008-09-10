@@ -96,15 +96,16 @@ public:
 	void loadFrames();
 
 	MainDat *mainDat() const { return _main.get(); }
+
+	static void decodeImage(Common::ReadStream *stream, byte *target, uint16 size);
+	static void readPalette(Common::ReadStream *stream, byte *palette);
+
 private:
 	GraphicsMap *graphicsMap() const { return _graphicsMap.get(); }
 	ProgDat *progDat() const { return _progDat.get(); }
 
-	static void readPalette(Common::ReadStream *stream, byte *palette);
 	Common::ReadStream *imageStream(uint16 index) const;
 	void loadGraphicFiles();
-
-	static void decodeImage(Common::ReadStream *stream, byte *target, uint16 size);
 
 	Engine *_vm;
 

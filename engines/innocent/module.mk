@@ -20,7 +20,8 @@ MODULE_OBJS = \
 	exit.o \
 	room.o \
 	eventmanager.o \
-	debug.o
+	debug.o \
+	movie.o
 
 inter.o: opcode_handlers.cpp
 

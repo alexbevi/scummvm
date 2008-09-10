@@ -80,8 +80,9 @@ public:
 	void showCursor() const;
 
 	void updateScreen() const;
+	void setPalette(const byte *colours, uint start, uint num);
 
-	private:
+private:
 	enum {
 		kLineHeight = 12
 	};
@@ -105,7 +106,6 @@ public:
 
 private:
 	void clearPalette(int start = 0, int count = 256);
-	void setPalette(const byte *colours, uint start, uint num);
 	void fadeIn(const byte *colours, uint start, uint num);
 
 	Common::List<Paintable *> _paintables;

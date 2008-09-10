@@ -6,6 +6,7 @@
 #include "innocent/graphics.h"
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
+#include "innocent/movie.h"
 #include "innocent/util.h"
 
 #include "common/events.h"
@@ -341,6 +342,14 @@ OPCODE(0xc6) {
 	goBack();
 }
 
+OPCODE(0xc7) {
+	// play movie
+	debugC(3, kDebugLevelScript, "opcode 0xc7: play movie %s with slowness %s", +a[0], +a[1]);
+	Movie *m = Movie::fromFile(reinterpret_cast<char *>((byte *)(a[0])));
+	m->setFrameDelay(a[1]);
+	m->play();
+}
+
 OPCODE(0xc8) {
 	// set backdrop
 	// (not sure what's the difference to c9)
@@ -387,7 +396,7 @@ OPCODE(0xd6) {
 	if (a[0] == 81 && !_engine->_copyProtection) {
 		debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
 //		_logic->changeRoom(65);
-		_logic->changeRoom(66); // for debugging
+		_logic->changeRoom(84); // for debugging
 	} else
 		_logic->changeRoom(a[0]);
 }
