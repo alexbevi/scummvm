@@ -50,6 +50,7 @@ public:
 	void paintBackdrop();
 
 	void willFadein();
+	void fadeOut();
 
 	uint16 ask(uint16 left, uint16 top, byte width, byte height, byte *string);
 	Common::Rect paintText(uint16 left, uint16 top, byte colour, byte *string) {

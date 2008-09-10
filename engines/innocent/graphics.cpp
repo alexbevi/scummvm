@@ -334,14 +334,30 @@ struct Tr : public unary_function<byte, byte> {
 void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 	paint();
 	const int bytes = num * 4;
-	byte *current = new byte[bytes];
+	byte current[0x400];
 
 	fill(current, current + bytes, 0);
 
 	for (int j = 0; j < 63; j++) {
 		for (int i = 0; i < bytes; i++)
-			current[i] = MIN<byte>(current[i] + 4, colours[i]);
+			current[i] += MIN<byte>(4, colours[i] - current[i]);
 		_system->setPalette((current), start, num);
+		_system->updateScreen();
+		_system->delayMillis(1000/50);
+	}
+}
+
+void Graphics::fadeOut() {
+	paint();
+	const int bytes = 0x400;
+	byte current[0x400];
+
+	_system->grabPalette(current, 0, 256);
+
+	for (int j = 0; j < 63; j++) {
+		for (int i = 0; i < bytes; i++)
+			current[i] -= MIN<byte>(4, current[i]);
+		_system->setPalette((current), 0, 256);
 		_system->updateScreen();
 		_system->delayMillis(1000/50);
 	}

@@ -346,6 +346,12 @@ OPCODE(0xce) {
 	debugC(1, kDebugLevelScript, "opcode 0xce: start cutscene STUB");
 }
 
+OPCODE(0xcf) {
+	// fade out
+	debugC(1, kDebugLevelScript, "opcode 0xcf: fadeout");
+	_graphics->fadeOut();
+}
+
 OPCODE(0xd1) {
 	debugC(1, kDebugLevelScript, "opcode 0xd1: fadein next palette change");
 	_graphics->willFadein();
