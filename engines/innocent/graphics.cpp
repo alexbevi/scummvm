@@ -1,6 +1,10 @@
 #include "innocent/graphics.h"
 
+#include <algorithm>
+#include <functional>
+
 #include "common/system.h"
+#include "common/util.h"
 #include "graphics/cursorman.h"
 
 #include "innocent/animation.h"
@@ -13,6 +17,8 @@
 #include "innocent/room.h"
 #include "innocent/util.h"
 
+using namespace std;
+
 namespace Innocent {
 
 DECLARE_SINGLETON(Graphics);
@@ -23,7 +29,7 @@ void Graphics::setEngine(Engine *engine) {
 	_engine = engine;
 	_framebuffer.reset(new Surface);
 	_framebuffer->create(320, 200, 1);
-	_paletteFrozen = false;
+	_willFadein = false;
 }
 
 void Graphics::init() {
@@ -35,6 +41,7 @@ void Graphics::init() {
 void Graphics::paint() {
 	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, ">>>start paint procedure");
 
+	paintBackdrop();
 	paintExits();
 	paintAnimations();
 
@@ -75,12 +82,13 @@ void Graphics::paintInterface() {
 void Graphics::setBackdrop(uint16 id) {
 	byte palette[0x400];
 	_backdrop.reset(_resources->loadBackdrop(id, palette));
-	unless (_paletteFrozen)
-		_system->setPalette(palette, 0, 256);
+	setPalette(palette, 0, 256);
 }
 
-void Graphics::freezePalette() {
-	_paletteFrozen = true;
+void Graphics::willFadein() {
+	_willFadein = true;
+	clearPalette();
+	updateScreen();
 }
 
 void Graphics::paintBackdrop() {
@@ -305,5 +313,38 @@ const char Graphics::_charwidths[] = {
 	#include "charwidths.data"
 };
 
+void Graphics::clearPalette() {
+	byte pal[0x400];
+	fill(pal, pal+0x400, 0);
+	_system->setPalette(pal, 0, 256);
+}
+
+void Graphics::setPalette(const byte *colours, uint start, uint num) {
+	if (_willFadein)
+		fadeIn(colours, start, num);
+	else
+		_system->setPalette(colours, start, num);
+	_willFadein = false;
+}
+
+struct Tr : public unary_function<byte, byte> {
+	byte operator()(const byte &b) const { return 0xff & ((b << 1) - 63); }
+};
+
+void Graphics::fadeIn(const byte *colours, uint start, uint num) {
+	paint();
+	const int bytes = num * 4;
+	byte *current = new byte[bytes];
+
+	fill(current, current + bytes, 0);
+
+	for (int j = 0; j < 63; j++) {
+		for (int i = 0; i < bytes; i++)
+			current[i] = MIN<byte>(current[i] + 4, colours[i]);
+		_system->setPalette((current), start, num);
+		_system->updateScreen();
+		_system->delayMillis(1000/50);
+	}
+}
 
 } // End of namespace Innocent

@@ -60,7 +60,6 @@ int Engine::go() {
 	_logic->initCode();
 	_graphics->showCursor();
 	while(!quit()) {
-		_graphics->paintBackdrop();
 		_logic->tick();
 		_graphics->paint();
 		_graphics->updateScreen();

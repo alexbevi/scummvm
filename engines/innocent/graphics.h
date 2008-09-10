@@ -49,7 +49,7 @@ public:
 	void setBackdrop(uint16 id);
 	void paintBackdrop();
 
-	void freezePalette();
+	void willFadein();
 
 	uint16 ask(uint16 left, uint16 top, byte width, byte height, byte *string);
 	Common::Rect paintText(uint16 left, uint16 top, byte colour, byte *string) {
@@ -90,10 +90,14 @@ public:
 	static const char _charwidths[];
 
 private:
+	void clearPalette();
+	void setPalette(const byte *colours, uint start, uint num);
+	void fadeIn(const byte *colours, uint start, uint num);
+
 	Common::List<Paintable *> _paintables;
 	Common::List<CodePointer> _afterRepaintHooks;
 
-	bool _paletteFrozen;
+	bool _willFadein;
 };
 
 } // End of namespace Innocent

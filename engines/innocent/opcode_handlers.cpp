@@ -347,8 +347,8 @@ OPCODE(0xce) {
 }
 
 OPCODE(0xd1) {
-	debugC(1, kDebugLevelScript, "opcode 0xd1: freeze default palette partial STUB");
-	_graphics->freezePalette();
+	debugC(1, kDebugLevelScript, "opcode 0xd1: fadein next palette change");
+	_graphics->willFadein();
 }
 
 OPCODE(0xd6) {
