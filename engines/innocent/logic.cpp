@@ -80,9 +80,9 @@ void Logic::changeRoom(uint16 newRoom) {
 	}
 
 	_room.reset(new Room(this));
-	debugC(2, kDebugLevelScript, ">>>running room entry code for block %d", newRoom);
+	debugC(2, kDebugLevelScript, ">>>running room entry code for room %d", newRoom);
 	_blockInterpreter->run(_blockProgram->roomHandler(newRoom), kCodeNewRoom);
-	debugC(2, kDebugLevelScript, "<<<finished room entry code for block %d", newRoom);
+	debugC(2, kDebugLevelScript, "<<<finished room entry code for room %d", newRoom);
 }
 
 void Logic::addAnimation(Animation *anim) {
