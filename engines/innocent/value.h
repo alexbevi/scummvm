@@ -38,7 +38,9 @@ public:
 	virtual bool operator<(const Value &other) { return uint16(*this) < other; }
 	virtual bool operator>(const Value &other) { return other < *this; }
 	virtual Value &operator++() { return *this = uint16(*this) + 1; }
-	virtual uint16 operator++(int) { uint16 old = *this; *this = old + 1; return old; }
+	virtual uint16 operator++(int) { uint16 old = *this; ++*this; return old; }
+	virtual Value &operator--() { return *this = uint16(*this) - 1; }
+	virtual uint16 operator--(int) { uint16 old = *this; --*this; return old; }
 
 	virtual bool holdsCode() const { assert(false); }
 

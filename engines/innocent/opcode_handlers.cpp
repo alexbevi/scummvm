@@ -161,6 +161,12 @@ OPCODE(0x6d) {
 	a[0]++;
 }
 
+OPCODE(0x6f) {
+	// decrement
+	debugC(3, kDebugLevelScript, "opcode 0x6d: %s--", +a[0]);
+	a[0]--;
+}
+
 OPCODE(0x70) {
 	// assign
 	debugC(3, kDebugLevelScript, "opcode 0x70: %s = %s", +a[0], +a[1]);
