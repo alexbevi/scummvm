@@ -245,7 +245,8 @@ OPCODE(0x73) {
 
 OPCODE(0x79) {
 	// move actor to another room
-	debugC(3, kDebugLevelScript, "opcode 0x79 STUB: move actor %s to room %s and set current animation frame to %s", +a[0], +a[1], +a[2]);
+	debugC(3, kDebugLevelScript, "opcode 0x79: move actor %s to room %s (and set current animation frame to %s STUB)", +a[0], +a[1], +a[2]);
+	_logic->getActor(a[0])->setRoom(a[1]);
 }
 
 OPCODE(0x7c) {

@@ -15,7 +15,7 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 void Actor::readHeader(const byte *code) {
 	_interval = code[kOffsetInterval];
 	_ticksLeft = READ_LE_UINT16(code + kOffsetTicksLeft);
-	_zIndex = code[kOffsetTicksLeft];
+	_zIndex = 0;
 	_position = Common::Point(READ_LE_UINT16(code + kOffsetLeft), READ_LE_UINT16(code + kOffsetTop));
 	uint16 baseOff = READ_LE_UINT16(code + kOffsetCode);
 	_base += baseOff;
@@ -27,6 +27,10 @@ void Actor::readHeader(const byte *code) {
 
 	if (sprite != 0xffff)
 		setMainSprite(sprite);
+}
+
+void Actor::setRoom(uint16 r) {
+	_room = r;
 }
 
 }

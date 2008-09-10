@@ -28,6 +28,7 @@ public:
 	~Logic();
 
 	void init();
+	void initCode();
 
 	// set actor# of the protagonist
 	void setProtagonist(uint16);

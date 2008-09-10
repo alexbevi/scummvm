@@ -28,6 +28,9 @@ Logic::~Logic() {
 
 void Logic::init() {
 	_toplevelInterpreter.reset(new Interpreter(this, _resources->mainBase(), "main code"));
+}
+
+void Logic::initCode() {
 	debugC(2, kDebugLevelScript | kDebugLevelFlow, ">>>running initial code");
 	_toplevelInterpreter->run(_resources->mainEntryPoint(), kCodeInitial);
 	debugC(2, kDebugLevelScript | kDebugLevelFlow, "<<<finished initial code");

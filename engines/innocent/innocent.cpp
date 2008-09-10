@@ -57,6 +57,7 @@ int Engine::init() {
 
 int Engine::go() {
 	_resources->loadActors();
+	_logic->initCode();
 	_graphics->showCursor();
 	while(!quit()) {
 		_graphics->paintBackdrop();

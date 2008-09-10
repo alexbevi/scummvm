@@ -31,6 +31,7 @@ public:
 
 
 	uint16 room() const { return _room; }
+	void setRoom(uint16);
 private:
 	Actor(const CodePointer &code);
 
