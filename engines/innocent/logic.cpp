@@ -40,11 +40,11 @@ void Logic::tick() {
 	runQueued();
 
 	if (_roomLoop.get()) {
-		gDebugLevel--; // room loops aren't that interesting
+//		gDebugLevel--; // room loops aren't that interesting
 		debugC(3, kDebugLevelScript | kDebugLevelFlow, ">>>running room loop code");
 		_roomLoop->run(kCodeRoomLoop);
 		debugC(3, kDebugLevelScript | kDebugLevelFlow, "<<<finished room loop code");
-		gDebugLevel++;
+//		gDebugLevel++;
 	}
 
 	if (!_animations.empty())
@@ -96,15 +96,24 @@ void Logic::runLater(const CodePointer &p, uint16 delay) {
 
 void Logic::runQueued() {
 	if (_queued.empty()) return;
-	
-	debugC(2, kDebugLevelFlow | kDebugLevelScript, "running queued code");
+
+	Common::Queue<Common::List<DelayedRun>::iterator> toRemove;
+	debugC(2, kDebugLevelFlow | kDebugLevelScript, ">>>running queued code");
 	foreach (DelayedRun, _queued)
-		if (it->delay)
+		if (it->delay) {
+			debugC(3, kDebugLevelScript, "delayed %s, delay now %d", +it->code,
+					it->delay);
 			it->delay--;
-		else {
+		} else {
+			debugC(2, kDebugLevelFlow | kDebugLevelScript, ">>>running %s", +it->code);
 			it->code.run();
-			_queued.erase(it);
+			debugC(2, kDebugLevelFlow | kDebugLevelScript, "<<<finished %s", +it->code);
+			toRemove.push(it);
 		}
+	debugC(2, kDebugLevelFlow | kDebugLevelScript, "<<<finished queued code");
+
+	while (!toRemove.empty())
+		_queued.erase(toRemove.pop());
 }
 
 void Logic::addAnimation(Animation *anim) {

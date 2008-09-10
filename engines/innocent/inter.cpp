@@ -77,6 +77,7 @@ Status Interpreter::run(uint16 offset) {
 
 	while (!_return) {
 		byte opcode = *_code;
+//		uint16 off = _code - _base;
 		if (opcode > kOpcodeMax) {
 			return kInvalidOpcode;
 		}
@@ -95,6 +96,7 @@ Status Interpreter::run(uint16 offset) {
 
 		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_failedCondition) {
 			Debug.opcodeStep();
+//			printf("[%04x]", off);
 			(this->*handler)(args);
 		} else {
 			debugC(3, kDebugLevelScript, "opcode 0x%02x skipped", opcode);

@@ -301,7 +301,12 @@ OPCODE(0x9d) {
 
 OPCODE(0xad) {
 	// turn actor
-	debugC(1, kDebugLevelScript, "opcode 0xad: turn actor %s to %s STUB", +a[0], +a[1]);
+	debugC(1, kDebugLevelScript, "opcode 0xad: turn actor %s to %s or wait on actor STUB", +a[0], +a[1]);
+	if (_logic->getActor(a[0])->room() != _logic->currentRoom()) {
+		// stash further code for when actor shows up
+		_return = true;
+	} else
+		error("case with condition true unhandled");
 }
 
 OPCODE(0xc2) {
