@@ -2,6 +2,9 @@
 
 #include "common/rect.h"
 
+#include "innocent/innocent.h"
+#include "innocent/logic.h"
+
 namespace Innocent {
 //
 
@@ -10,6 +13,17 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 	_base = header - code.offset();
 	snprintf(_debugInfo, 50, "actor at %s", +code);
 	readHeader(header);
+
+	Engine::instance().logic()->addAnimation(this);
+}
+
+void Actor::setAnimation(const CodePointer &anim) {
+	_base = anim.base();
+	_baseOffset = anim.offset();
+}
+
+void Actor::setRoom(uint16 r) {
+	_room = r;
 }
 
 void Actor::readHeader(const byte *code) {
@@ -27,10 +41,6 @@ void Actor::readHeader(const byte *code) {
 
 	if (sprite != 0xffff)
 		setMainSprite(sprite);
-}
-
-void Actor::setRoom(uint16 r) {
-	_room = r;
 }
 
 }

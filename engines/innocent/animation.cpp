@@ -78,15 +78,17 @@ Animation::Status Animation::tick() {
 	Status status = kOk;
 	while (status == kOk) {
 		int8 opcode = -*(_base + _offset);
-		if (opcode < 0 || opcode >= 0x27)
-			error("invalid animation opcode 0x%02x while handling %s", *(_base + _offset), _debugInfo);
+		if (opcode < 0 || opcode >= 0x27) {
+			warning("invalid animation opcode 0x%02x while handling %s", *(_base + _offset), _debugInfo);
+			return kOk;
+		}
 		_offset += 2;
 
 		status = (this->*_handlers[opcode-1])();
 	}
 
 	if (status == kFrameDone && !_ticksLeft)
-		_ticksLeft = _interval - 1;
+		_ticksLeft = _interval;
 
 	if (status == kRemove)
 		return status;
@@ -265,7 +267,7 @@ OPCODE(0x19) {
 	debugC(3, kDebugLevelAnimation, "anim opcode 0x19: hide for %d frames", delay);
 
 	clearMainSprite();
-	_ticksLeft = delay - 1;
+	_ticksLeft = delay;
 
 	return kFrameDone;
 }

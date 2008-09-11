@@ -349,7 +349,9 @@ OPCODE(0xbc) {
 
 OPCODE(0xbd) {
 	// show actor
-	debugC(1, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s STUB", +a[0]);
+	debugC(1, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s partial STUB", +a[0]);
+
+	_logic->protagonist()->setAnimation(static_cast<CodePointer &>(a[0]));
 	// wait for him if not active
 }
 

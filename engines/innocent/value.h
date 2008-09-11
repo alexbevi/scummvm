@@ -108,6 +108,7 @@ public:
 	virtual void run() const;
 	virtual void run(OpcodeMode mode) const;
 	uint16 offset() const { return _offset; }
+	byte *base() const;
 	virtual operator uint16() const { return _offset; }
 	virtual bool holdsCode() const { return true; }
 	virtual byte *code() const;

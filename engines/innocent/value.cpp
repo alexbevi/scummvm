@@ -38,6 +38,10 @@ byte *CodePointer::code() const {
 	return _interpreter->rawCode(_offset);
 }
 
+byte *CodePointer::base() const {
+	return _interpreter->rawCode(0);
+}
+
 template<>
 uint16 &CodePointer::field<uint16>(uint16 &p, int off) const {
 	p = READ_LE_UINT16(code() + off);

@@ -32,6 +32,9 @@ public:
 
 	uint16 room() const { return _room; }
 	void setRoom(uint16);
+
+	void setAnimation(const CodePointer &anim);
+
 private:
 	Actor(const CodePointer &code);
 
