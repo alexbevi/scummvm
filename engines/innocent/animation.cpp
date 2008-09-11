@@ -85,7 +85,7 @@ Animation::Status Animation::tick() {
 		status = (this->*_handlers[opcode-1])();
 	}
 
-	if (status == kFrameDone)
+	if (status == kFrameDone && !_ticksLeft)
 		_ticksLeft = _interval - 1;
 
 	if (status == kRemove)
@@ -105,6 +105,14 @@ void Animation::runOnNextFrame(const CodePointer &cp) {
 }
 
 
+void Animation::setMainSprite(uint16 sprite) {
+	_mainSprite.reset(_resources->loadSprite(sprite));
+}
+
+void Animation::clearMainSprite() {
+	_mainSprite.reset(0);
+}
+
 void Animation::clearSprites() {
 	debugC(5, kDebugLevelAnimation, "clearing sprite list");
 	for (Common::List<Sprite *>::iterator it = _sprites.begin(); it != _sprites.end(); ++it)
@@ -112,12 +120,11 @@ void Animation::clearSprites() {
 	_sprites.clear();
 }
 
-void Animation::setMainSprite(uint16 sprite) {
-	_mainSprite.reset(_resources->loadSprite(sprite));
-}
-
 void Animation::paint(Graphics *g) {
 	debugC(5, kDebugLevelAnimation | kDebugLevelGraphics, "painting sprites for animation %s", _debugInfo);
+
+	if (!_mainSprite.get())
+		return;
 	g->paint(_mainSprite.get(), _position);
 
 	for (Common::List<Sprite *>::iterator it = _sprites.begin(); it != _sprites.end(); ++it)
@@ -250,6 +257,17 @@ OPCODE(0x0f) {
 	_offset = offset;
 
 	return kOk;
+}
+
+OPCODE(0x19) {
+	uint16 delay = shift();
+
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x19: hide for %d frames", delay);
+
+	clearMainSprite();
+	_ticksLeft = delay - 1;
+
+	return kFrameDone;
 }
 
 OPCODE(0x1a) {

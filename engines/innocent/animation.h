@@ -39,8 +39,11 @@ protected:
 	uint16 shift();
 	int8 shiftByte();
 	int8 embeddedByte() const;
-	void clearSprites();
+
 	void setMainSprite(uint16 sprite);
+	void clearMainSprite();
+	void clearSprites();
+
 	void handleTrigger();
 
 	template <int opcode>
