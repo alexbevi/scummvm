@@ -85,6 +85,9 @@ Animation::Status Animation::tick() {
 		status = (this->*_handlers[opcode-1])();
 	}
 
+	if (status == kFrameDone)
+		_ticksLeft = _interval - 1;
+
 	if (status == kRemove)
 		return status;
 
@@ -179,8 +182,6 @@ OPCODE(0x06) {
 
 	debugC(3, kDebugLevelAnimation, "anim opcode 0x06: set main sprite to %d, frame done", sprite);
 
-	_ticksLeft = _interval - 1;
-
 	return kFrameDone;
 }
 
@@ -191,8 +192,6 @@ OPCODE(0x07) {
 	setMainSprite(sprite);
 
 	debugC(3, kDebugLevelAnimation, "anim opcode 0x07: set main sprite to %d (from global word 0x%04x), frame done", sprite, var/2);
-
-	_ticksLeft = _interval;
 
 	return kFrameDone;
 }
@@ -206,6 +205,20 @@ OPCODE(0x08) {
 	_position += Common::Point(left, top);
 
 	return kOk;
+}
+
+OPCODE(0x0a) {
+	uint16 left, top, sprite;
+	left = shift();
+	top = shift();
+	sprite = shift();
+
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x0a: run sprite %d at %d:%d", sprite, left, top);
+
+	_position = Common::Point(left, top);
+	setMainSprite(sprite);
+
+	return kFrameDone;
 }
 
 OPCODE(0x0d) {
