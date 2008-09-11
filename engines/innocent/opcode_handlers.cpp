@@ -298,6 +298,12 @@ OPCODE(0x96) {
 	debugC(1, kDebugLevelScript, "opcode 0x96: lock control STUB");
 }
 
+OPCODE(0x99) {
+	// wait until protagonist active
+	debugC(1, kDebugLevelScript, "opcode 0x99: wait for protagonist STUB");
+	_return = true;
+}
+
 OPCODE(0x9a) {
 	// if actor in current room then whatever
 	debugC(1, kDebugLevelScript, "opcode 0x9a: if actor %s in current room then STUB", +a[0]);
@@ -325,14 +331,14 @@ OPCODE(0x9d) {
 	_logic->setProtagonist(a[0]);
 }
 
+OPCODE(0xab) {
+	// turn protagonist
+	debugC(1, kDebugLevelScript, "opcode 0xax: turn protagonist to %s STUB", +a[0]);
+}
+
 OPCODE(0xad) {
 	// turn actor
 	debugC(1, kDebugLevelScript, "opcode 0xad: turn actor %s to %s or wait on actor STUB", +a[0], +a[1]);
-	if (_logic->getActor(a[0])->room() != _logic->currentRoom()) {
-		// stash further code for when actor shows up
-		_return = true;
-	} else
-		error("case with condition true unhandled");
 }
 
 OPCODE(0xbc) {
