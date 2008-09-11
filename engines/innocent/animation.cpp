@@ -1,5 +1,6 @@
 #include "innocent/animation.h"
 
+#include "innocent/actor.h"
 #include "innocent/debug.h"
 #include "innocent/graphics.h"
 #include "innocent/inter.h"
@@ -265,6 +266,25 @@ OPCODE(0x0f) {
 	debugC(3, kDebugLevelAnimation, "anim opcode 0x0f: jump to 0x%04x", offset);
 
 	_offset = offset;
+
+	return kOk;
+}
+
+OPCODE(0x17) {
+	assert(kind() == Actor::Kind);
+	byte val = embeddedByte();
+	uint16 off = shift();
+
+	debugC(1, kDebugLevelAnimation, "anim opcode 0x17: if dir 63 is %d then change actor code to 0x%04x", val, off);
+
+	return kOk;
+}
+
+OPCODE(0x18) {
+	assert(kind() == Actor::Kind);
+	uint16 val = shift();
+
+	debugC(1, kDebugLevelAnimation, "anim opcode 0x18: set actor paint flag 6d to %d STUB", val);
 
 	return kOk;
 }

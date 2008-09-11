@@ -23,6 +23,10 @@ public:
 		kFrameDone
 	};
 
+	enum {
+		Kind = 0
+	};
+
 	Animation(const CodePointer &code, Common::Point position);
 	virtual ~Animation();
 
@@ -30,6 +34,8 @@ public:
 
 	virtual void paint(Graphics *g);
 	virtual Status tick();
+
+	virtual int kind() const { return Kind; }
 
 	void runOnNextFrame(const CodePointer &cp);
 

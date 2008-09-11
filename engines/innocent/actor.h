@@ -17,6 +17,9 @@ public:
 	enum {
 		Size = 0x71
 	};
+	enum {
+		Kind = 1
+	};
 
 	enum ActorOffsets {
 		kOffsetOffset = 2,
@@ -36,6 +39,8 @@ public:
 	bool isVisible() const;
 
 	Animation::Status tick();
+
+	int kind() const { return Kind; }
 
 	void setAnimation(const CodePointer &anim);
 

@@ -333,7 +333,7 @@ OPCODE(0x9d) {
 
 OPCODE(0xab) {
 	// turn protagonist
-	debugC(1, kDebugLevelScript, "opcode 0xax: turn protagonist to %s STUB", +a[0]);
+	debugC(1, kDebugLevelScript, "opcode 0xab: turn protagonist to %s STUB", +a[0]);
 }
 
 OPCODE(0xad) {
