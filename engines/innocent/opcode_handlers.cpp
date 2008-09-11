@@ -341,6 +341,12 @@ OPCODE(0xbc) {
 	// only if not on status screen
 }
 
+OPCODE(0xbd) {
+	// show actor
+	debugC(1, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s STUB", +a[0]);
+	// wait for him if not active
+}
+
 OPCODE(0xc2) {
 	// add animation at cursor
 	debugC(3, kDebugLevelScript, "opcode 0xc2: add animation %s at cursor partial STUB", +a[0]);
