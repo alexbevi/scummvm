@@ -59,7 +59,11 @@ void Logic::tick() {
 }
 
 void Logic::setProtagonist(uint16 actor) {
-	_protagonist = actor;
+	_protagonist = getActor(actor);
+}
+
+Actor *Logic::protagonist() const {
+	return _protagonist;
 }
 
 void Logic::changeRoom(uint16 newRoom) {

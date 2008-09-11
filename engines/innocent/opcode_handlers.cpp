@@ -273,6 +273,13 @@ OPCODE(0x73) {
 	a[0] = 0;
 }
 
+OPCODE(0x77) {
+	// initialize protagonist
+	debugC(1, kDebugLevelScript, "opcode 0x77: go to room %s facing %s partial STUB", +a[0], +a[1]);
+	_logic->protagonist()->setRoom(a[0]);
+	_logic->changeRoom(a[0]);
+}
+
 OPCODE(0x79) {
 	// move actor to another room
 	debugC(3, kDebugLevelScript, "opcode 0x79: move actor %s to room %s (and set current animation frame to %s STUB)", +a[0], +a[1], +a[2]);

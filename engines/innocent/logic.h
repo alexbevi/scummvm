@@ -32,6 +32,7 @@ public:
 
 	// set actor# of the protagonist
 	void setProtagonist(uint16);
+	Actor *protagonist() const;
 
 	void changeRoom(uint16);
 
@@ -63,7 +64,7 @@ private:
 	Engine *_engine;
 	Resources *_resources;
 	std::auto_ptr<Interpreter> _toplevelInterpreter, _blockInterpreter;
-	uint16 _protagonist;
+	Actor *_protagonist;
 	uint32 _currentRoom;
 	uint16 _currentBlock;
 	std::auto_ptr<Program> _blockProgram;
