@@ -162,6 +162,16 @@ OPCODE(0x02) {
 	return kOk;
 }
 
+OPCODE(0x03) {
+	uint16 interval = shift();
+
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x03: set interval to %d", interval);
+
+	_interval = interval;
+
+	return kOk;
+}
+
 OPCODE(0x06) {
 	uint16 sprite = shift();
 
