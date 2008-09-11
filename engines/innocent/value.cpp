@@ -3,6 +3,7 @@
 #include "common/rect.h"
 
 #include "innocent/inter.h"
+#include "innocent/util.h"
 
 namespace Innocent {
 //
@@ -75,5 +76,17 @@ bool &CodePointer::field<bool>(bool &p, int off) const {
 	field(b, off);
 	return p = b;
 }
+
+enum Foo_ {
+	Bar
+};
+
+#define ENAME(en, v, s) template<> const char *EnumName<en, v>::name() { return s; } enum {}
+
+ENAME(Foo_, Bar, "baz");
+
+typedef EnumPack<Foo_> Foo;
+
+Foo baz(Bar);
 
 } // of namespace Innocent

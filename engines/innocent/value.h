@@ -125,6 +125,43 @@ private:
 	Interpreter *_interpreter;
 };
 
+template<typename Enum, int N>
+struct EnumName {
+static const char *name() {
+	assert(false);
+	return 0;
+}
+
+static const char *findName(Enum a){
+	if (N == a)
+		return name();
+	else
+		return EnumName<Enum, N-1>::findName(a);
+}
+};
+
+template<typename Enum>
+struct EnumName<Enum, -1> {
+static const char *findName(Enum a) {
+	assert(false);
+	return 0;
+}
+};
+
+
+template<typename Enum>
+class EnumPack : public Inspectable {
+public:
+	EnumPack() {}
+	EnumPack(Enum a) : _a(a) {  }
+	const char *operator+() const { return EnumName<Enum,40>::findName(Enum(_a)); }
+	operator Enum() const { return _a; }
+private:
+	Enum _a;
+};
+
+#define ENAME(en, v, s) template<> const char *EnumName<en, v>::name() { return s; } enum {}
+
 }
 
 #endif

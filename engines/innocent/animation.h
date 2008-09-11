@@ -17,11 +17,13 @@ class Sprite;
 
 class Animation {
 public:
-	enum Status {
+	enum Status_ {
 		kOk,
 		kRemove,
 		kFrameDone
 	};
+
+	typedef EnumPack<Status_> Status;
 
 	Animation(const CodePointer &code, Common::Point position);
 	virtual ~Animation();
