@@ -15,6 +15,8 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 	readHeader(header);
 
 	Engine::instance().logic()->addAnimation(this);
+
+	init_opcodes<38>();
 }
 
 void Actor::setAnimation(const CodePointer &anim) {
@@ -56,5 +58,43 @@ void Actor::readHeader(const byte *code) {
 	if (sprite != 0xffff)
 		setMainSprite(sprite);
 }
+
+template <int opcode>
+Animation::Status Actor::opcodeHandler(){
+	return Animation::op(opcode);
+}
+
+template<int N>
+void Actor::init_opcodes() {
+	_handlers[N] = &Innocent::Actor::opcodeHandler<N>;
+	init_opcodes<N-1>();
+}
+
+template<>
+void Actor::init_opcodes<-1>() {}
+
+Animation::Status Actor::op(byte opcode) {
+	return (this->*_handlers[opcode])();
+}
+
+#define OPCODE(n) template<> Animation::Status Actor::opcodeHandler<n>()
+
+OPCODE(0x17) {
+	byte val = embeddedByte();
+	uint16 off = shift();
+
+	debugC(1, kDebugLevelAnimation, "actor opcode 0x17: if dir 63 is %d then change code to 0x%04x", val, off);
+
+	return kOk;
+}
+
+OPCODE(0x18) {
+	uint16 val = shift();
+
+	debugC(1, kDebugLevelAnimation, "actor opcode 0x18: set paint flag 6d to %d STUB", val);
+
+	return kOk;
+}
+
 
 }

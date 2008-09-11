@@ -1,6 +1,5 @@
 #include "innocent/animation.h"
 
-#include "innocent/actor.h"
 #include "innocent/debug.h"
 #include "innocent/graphics.h"
 #include "innocent/inter.h"
@@ -93,7 +92,7 @@ Animation::Status Animation::tick() {
 		_offset += 2;
 
 		_debugInvalid = false;
-		status = (this->*_handlers[opcode-1])();
+		status = op(opcode - 1);
 	}
 
 	if (status == kFrameDone && !_ticksLeft)
@@ -161,6 +160,10 @@ int8 Animation::shiftByte() {
 
 int8 Animation::embeddedByte() const {
 	return reinterpret_cast<int8 *>((_base + _offset))[-1];
+}
+
+Animation::Status Animation::op(byte opcode) {
+	return (this->*_handlers[opcode])();
 }
 
 #define OPCODE(n) template<> Animation::Status Animation::opcodeHandler<n>()
@@ -266,25 +269,6 @@ OPCODE(0x0f) {
 	debugC(3, kDebugLevelAnimation, "anim opcode 0x0f: jump to 0x%04x", offset);
 
 	_offset = offset;
-
-	return kOk;
-}
-
-OPCODE(0x17) {
-	assert(kind() == Actor::Kind);
-	byte val = embeddedByte();
-	uint16 off = shift();
-
-	debugC(1, kDebugLevelAnimation, "anim opcode 0x17: if dir 63 is %d then change actor code to 0x%04x", val, off);
-
-	return kOk;
-}
-
-OPCODE(0x18) {
-	assert(kind() == Actor::Kind);
-	uint16 val = shift();
-
-	debugC(1, kDebugLevelAnimation, "anim opcode 0x18: set actor paint flag 6d to %d STUB", val);
 
 	return kOk;
 }

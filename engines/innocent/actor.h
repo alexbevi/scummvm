@@ -17,9 +17,6 @@ public:
 	enum {
 		Size = 0x71
 	};
-	enum {
-		Kind = 1
-	};
 
 	enum ActorOffsets {
 		kOffsetOffset = 2,
@@ -40,8 +37,6 @@ public:
 
 	Animation::Status tick();
 
-	int kind() const { return Kind; }
-
 	void setAnimation(const CodePointer &anim);
 
 private:
@@ -55,6 +50,17 @@ private:
 	void readHeader(const byte *code);
 
 	uint16 _room;
+
+	template <int opcode>
+	Animation::Status opcodeHandler();
+
+	template <int N>
+	void init_opcodes();
+
+	virtual Animation::Status op(byte code);
+
+	typedef Animation::Status (Actor::*OpcodeHandler)();
+	OpcodeHandler _handlers[38];
 };
 
 }

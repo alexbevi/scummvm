@@ -23,10 +23,6 @@ public:
 		kFrameDone
 	};
 
-	enum {
-		Kind = 0
-	};
-
 	Animation(const CodePointer &code, Common::Point position);
 	virtual ~Animation();
 
@@ -34,8 +30,6 @@ public:
 
 	virtual void paint(Graphics *g);
 	virtual Status tick();
-
-	virtual int kind() const { return Kind; }
 
 	void runOnNextFrame(const CodePointer &cp);
 
@@ -58,11 +52,9 @@ protected:
 	template <int N>
 	void init_opcodes();
 
+	virtual Status op(byte code);
+
 	Resources *_resources;
-
-	typedef Status (Animation::*OpcodeHandler)();
-	OpcodeHandler _handlers[38];
-
 	int8 _interval;
 	int16 _ticksLeft;
 	int8 _zIndex;
@@ -78,6 +70,10 @@ protected:
 	CodePointer _frameTrigger;
 
 	bool _debugInvalid;
+
+private:
+	typedef Status (Animation::*OpcodeHandler)();
+	OpcodeHandler _handlers[38];
 };
 
 }
