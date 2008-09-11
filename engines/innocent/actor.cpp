@@ -84,7 +84,7 @@ OPCODE(0x17) {
 	byte val = embeddedByte();
 	uint16 off = shift();
 
-	debugC(1, kDebugLevelAnimation, "actor opcode 0x17: if dir63 (currently %d) is %d then change code to 0x%04x", _dir63, val, off);
+	debugC(3, kDebugLevelAnimation, "actor opcode 0x17: if dir63 (currently %d) is %d then change code to 0x%04x", _dir63, val, off);
 
 	if (val == _dir63) {
 		_base = _base - _baseOffset + off;
@@ -109,6 +109,14 @@ OPCODE(0x23) {
 	debugC(3, kDebugLevelAnimation, "actor opcode 0x23: set dir63 to %d", dir);
 
 	_dir63 = dir;
+
+	return kOk;
+}
+
+OPCODE(0x24) {
+	byte dir = embeddedByte();
+
+	debugC(1, kDebugLevelAnimation, "actor opcode 0x23: set dir65 to %d STUB", dir);
 
 	return kOk;
 }
