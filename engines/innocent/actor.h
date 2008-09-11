@@ -33,6 +33,10 @@ public:
 	uint16 room() const { return _room; }
 	void setRoom(uint16);
 
+	bool isVisible() const;
+
+	Animation::Status tick();
+
 	void setAnimation(const CodePointer &anim);
 
 private:

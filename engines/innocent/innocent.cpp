@@ -24,7 +24,8 @@ Engine::Engine(OSystem *syst) :
 	_resources.reset(new Resources(this));
 	_graphics = &Graphics::instance();
 	_graphics->setEngine(this);
-	_logic.reset(new Logic(this));
+	_logic = &Logic::instance();
+	_logic->setEngine(this);
 	_copyProtection = false;
 	me = this;
 	_lastTicks = 0;

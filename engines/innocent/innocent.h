@@ -30,7 +30,7 @@ public:
 	virtual int go();
 	void delay(int millis) const;
 
-	Logic *logic() { return _logic.get(); }
+	Logic *logic() { return _logic; }
 	Resources *resources() { return _resources.get(); }
 	Graphics *graphics() { return _graphics; }
 	Debugger *debugger() { return _debugger; }
@@ -44,7 +44,7 @@ public:
 	static Engine &instance() { return *me; }
 
 private:
-	std::auto_ptr<Logic> _logic;
+	Logic *_logic;
 	std::auto_ptr<Resources> _resources;
 	Graphics *_graphics;
 	Debugger *_debugger;

@@ -18,12 +18,26 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 }
 
 void Actor::setAnimation(const CodePointer &anim) {
-	_base = anim.base();
+	debugC(3, kDebugLevelScript, "setting animation code of %s to %s", _debugInfo, +anim);
+	_base = anim.code();
 	_baseOffset = anim.offset();
+	_offset = 0;
+	_debugInvalid = false;
 }
 
 void Actor::setRoom(uint16 r) {
 	_room = r;
+}
+
+bool Actor::isVisible() const {
+	return _room == Log.currentRoom();
+}
+
+Animation::Status Actor::tick() {
+	if (isVisible())
+		return Animation::tick();
+	else
+		return kOk;
 }
 
 void Actor::readHeader(const byte *code) {

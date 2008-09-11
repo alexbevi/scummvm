@@ -24,12 +24,12 @@ public:
 	};
 
 	Animation(const CodePointer &code, Common::Point position);
-	~Animation();
+	virtual ~Animation();
 
 	uint16 baseOffset() const { return _baseOffset; }
 
-	void paint(Graphics *g);
-	Status tick();
+	virtual void paint(Graphics *g);
+	virtual Status tick();
 
 	void runOnNextFrame(const CodePointer &cp);
 
@@ -70,6 +70,8 @@ protected:
 	uint16 _loopStart;
 	uint16 _baseOffset;
 	CodePointer _frameTrigger;
+
+	bool _debugInvalid;
 };
 
 }

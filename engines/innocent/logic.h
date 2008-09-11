@@ -6,6 +6,7 @@
 
 #include "common/list.h"
 #include "common/queue.h"
+#include "common/singleton.h"
 #include "config.h"
 
 #include "innocent/value.h"
@@ -22,10 +23,12 @@ class Interpreter;
 class Program;
 class Room;
 
-class Logic {
+class Logic : public Common::Singleton<Logic> {
 public:
-	Logic(Engine *e);
+	Logic() {}
 	~Logic();
+
+	void setEngine(Engine *e);
 
 	void init();
 	void initCode();
@@ -79,6 +82,8 @@ private:
 	};
 	Common::List<DelayedRun> _queued;
 };
+
+#define Log Logic::instance()
 
 } // End of namespace Innocent
 

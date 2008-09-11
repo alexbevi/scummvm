@@ -51,8 +51,12 @@ template<>
 void Animation::init_opcodes<-1>() {}
 
 Animation::Animation(const CodePointer &code, Common::Point position) :
-		_position(position), _offset(0), _interval(1), _ticksLeft(0), _counter(0)
-{
+	_position(position),
+	_offset(0),
+	_interval(1),
+	_ticksLeft(0),
+	_counter(0),
+	_debugInvalid(false) {
 	_base = code.code();
 	_baseOffset = code.offset();
 	_resources = code.interpreter()->resources();
@@ -79,11 +83,15 @@ Animation::Status Animation::tick() {
 	while (status == kOk) {
 		int8 opcode = -*(_base + _offset);
 		if (opcode < 0 || opcode >= 0x27) {
-			warning("invalid animation opcode 0x%02x while handling %s", *(_base + _offset), _debugInfo);
+			if (!_debugInvalid) {
+				warning("invalid animation opcode 0x%02x while handling %s", *(_base + _offset), _debugInfo);
+				_debugInvalid = true; // suppress further messages
+			}
 			return kOk;
 		}
 		_offset += 2;
 
+		_debugInvalid = false;
 		status = (this->*_handlers[opcode-1])();
 	}
 

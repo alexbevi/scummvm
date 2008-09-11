@@ -349,9 +349,13 @@ OPCODE(0xbc) {
 
 OPCODE(0xbd) {
 	// show actor
-	debugC(1, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s partial STUB", +a[0]);
 
-	_logic->protagonist()->setAnimation(static_cast<CodePointer &>(a[0]));
+	// this is really an offset on the main code
+	CodePointer p(static_cast<CodePointer &>(a[0]).offset(), Log.mainInterpreter());
+
+	debugC(1, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s partial STUB", +p);
+
+	_logic->protagonist()->setAnimation(p);
 	// wait for him if not active
 }
 
@@ -431,8 +435,10 @@ OPCODE(0xd6) {
 	// change room
 	debugC(3, kDebugLevelScript, "opcode 0xd6: change room(%s)", +a[0]);
 	if (a[0] == 81) {
-		if (_engine->_startRoom)
+		if (_engine->_startRoom) {
 			_logic->changeRoom(_engine->_startRoom);
+			Log.protagonist()->setRoom(_engine->_startRoom);
+		}
 		else if (!_engine->_copyProtection) {
 			debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
 			_logic->changeRoom(65);

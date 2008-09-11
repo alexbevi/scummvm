@@ -14,17 +14,20 @@
 
 namespace Innocent {
 
-Logic::Logic(Engine *e) :
-		_engine(e),
-		_resources(e->resources()),
-		_currentRoom(0xffff),
-		_currentBlock(0xffff) {
-}
+DECLARE_SINGLETON(Logic);
 
 Logic::~Logic() {
 	for (Common::List<Animation *>::iterator it = _animations.begin(); it != _animations.end(); ++it)
 		delete *it;
 }
+
+void Logic::setEngine(Engine *e) {
+	_engine = e;
+	_resources = e->resources();
+	_currentRoom = 0xffff;
+	_currentBlock = 0xffff;
+}
+
 
 void Logic::init() {
 	_toplevelInterpreter.reset(new Interpreter(this, _resources->mainBase(), "main code"));
@@ -48,7 +51,7 @@ void Logic::tick() {
 	}
 
 	if (!_animations.empty())
-		debugC(2, kDebugLevelFlow | kDebugLevelAnimation, "running animations");
+		debugC(4, kDebugLevelFlow | kDebugLevelAnimation, "running animations");
 	for (Common::List<Animation *>::iterator it = _animations.begin(); it != _animations.end(); ++it) {
 		Animation::Status ret = (*it)->tick();
 		if (ret == Animation::kRemove) {
