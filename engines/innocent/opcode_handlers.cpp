@@ -342,6 +342,11 @@ OPCODE(0xd2) {
 	Graf.willFadein(Graphics::kPartialFade);
 }
 
+OPCODE(0xdb) {
+	// add active rect
+	debugC(1, kDebugLevelScript, "opcode 0xdb: add rect %s at %s %s %s %s partial STUB", +a[0], +a[1], +a[2], +a[3], +a[4]);
+}
+
 OPCODE(0xc6) {
 	// suspend execution until an animation's ip points to 0xff
 	debugC(3, kDebugLevelScript, "opcode 0xc6: wait on animation %s", +a[0]);
@@ -403,7 +408,7 @@ OPCODE(0xd6) {
 	if (a[0] == 81 && !_engine->_copyProtection) {
 		debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
 //		_logic->changeRoom(65);
-		_logic->changeRoom(84); // for debugging
+		_logic->changeRoom(1); // for debugging
 	} else
 		_logic->changeRoom(a[0]);
 }
