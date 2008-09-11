@@ -90,6 +90,21 @@ OPCODE(0x14) {
 	return kOk;
 }
 
+OPCODE(0x15) {
+	debugC(1, kDebugLevelAnimation, "actor opcode 0x15: turn dir68 a step to cursor direction if its mode is 'See' STUB");
+
+	return kOk;
+}
+
+OPCODE(0x16) {
+	byte val = embeddedByte();
+	uint16 off = shift();
+
+	debugC(1, kDebugLevelAnimation, "actor opcode 0x16: if dir68 == %d then jump to 0x%04x STUB", val, off);
+
+	return kOk;
+}
+
 OPCODE(0x17) {
 	byte val = embeddedByte();
 	uint16 off = shift();
