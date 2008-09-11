@@ -15,6 +15,7 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 	readHeader(header);
 	_dir63 = 0;
 	_room = 0xffff;
+	_debug = false;
 
 	Engine::instance().logic()->addAnimation(this);
 
@@ -38,9 +39,13 @@ bool Actor::isVisible() const {
 }
 
 Animation::Status Actor::tick() {
-	if (isVisible())
-		return Animation::tick();
-	else
+	if (isVisible()) {
+		Animation::Status s;
+		if (_debug) gDebugLevel += 3;
+			s = Animation::tick();
+		if (_debug) gDebugLevel -= 3;
+		return s;
+	} else
 		return kOk;
 }
 
@@ -59,6 +64,10 @@ void Actor::readHeader(const byte *code) {
 
 	if (sprite != 0xffff)
 		setMainSprite(sprite);
+}
+
+void Actor::toggleDebug() {
+	_debug = !_debug;
 }
 
 template <int opcode>
@@ -92,7 +101,7 @@ OPCODE(0x14) {
 }
 
 OPCODE(0x15) {
-	debugC(1, kDebugLevelAnimation, "actor opcode 0x15: turn dir68 a step to cursor direction if its mode is 'See' STUB");
+	debugC(1, kDebugLevelAnimation, "actor opcode 0x15: look at cursor direction if its mode is 'See' STUB");
 
 	return kOk;
 }
@@ -101,7 +110,7 @@ OPCODE(0x16) {
 	byte val = embeddedByte();
 	uint16 off = shift();
 
-	debugC(1, kDebugLevelAnimation, "actor opcode 0x16: if dir68 == %d then jump to 0x%04x STUB", val, off);
+	debugC(1, kDebugLevelAnimation, "actor opcode 0x16: if look direction is %d then jump to 0x%04x STUB", val, off);
 
 	return kOk;
 }
@@ -110,7 +119,7 @@ OPCODE(0x17) {
 	byte val = embeddedByte();
 	uint16 off = shift();
 
-	debugC(3, kDebugLevelAnimation, "actor opcode 0x17: if dir63 (currently %d) is %d then change code to 0x%04x", _dir63, val, off);
+	debugC(3, kDebugLevelAnimation, "actor opcode 0x17: if facing (currently %d) is %d then change code to 0x%04x", _dir63, val, off);
 
 	if (val == _dir63) {
 		_base = _base - _baseOffset + off;
@@ -124,7 +133,7 @@ OPCODE(0x17) {
 OPCODE(0x18) {
 	uint16 val = shift();
 
-	debugC(1, kDebugLevelAnimation, "actor opcode 0x18: set paint flag 6d to %d STUB", val);
+	debugC(1, kDebugLevelAnimation, "actor opcode 0x18: set next animator to %d STUB", val);
 
 	return kOk;
 }
@@ -132,7 +141,7 @@ OPCODE(0x18) {
 OPCODE(0x23) {
 	byte dir = embeddedByte();
 
-	debugC(3, kDebugLevelAnimation, "actor opcode 0x23: set dir63 to %d", dir);
+	debugC(3, kDebugLevelAnimation, "actor opcode 0x23: face %d", dir);
 
 	_dir63 = dir;
 

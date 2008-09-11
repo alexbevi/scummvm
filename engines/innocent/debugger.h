@@ -22,15 +22,16 @@ private:
 
 	Engine *_vm;
 
-	#define CMD(name) bool cmd_##name(int argc, const char **argv);
+	#define CMD(name) bool cmd_##name(int argc, const char **argv)
 	bool cmd_setBackdrop(int argc, const char **argv);
 	bool cmd_paintText(int argc, const char **argv);
 	bool cmd_paintSprite(int argc, const char **argv);
 	bool cmd_listExits(int argc, const char **argv);
 	bool cmd_showClickable(int argc, const char **argv);
 	bool cmd_break(int argc, const char **argv);
-	CMD(step)
-	CMD(setVar)
+	CMD(step);
+	CMD(setVar);
+	CMD(debugActor);
 	#undef CMD
 
 	bool _stepOpcodes;

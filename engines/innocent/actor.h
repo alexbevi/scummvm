@@ -39,6 +39,7 @@ public:
 
 	void setAnimation(const CodePointer &anim);
 
+	void toggleDebug();
 private:
 	Actor(const CodePointer &code);
 
@@ -51,6 +52,8 @@ private:
 
 	uint16 _room;
 	byte _dir63;
+
+	bool _debug;
 
 	template <int opcode>
 	Animation::Status opcodeHandler();

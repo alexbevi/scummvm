@@ -3,6 +3,7 @@
 #include "common/endian.h"
 #include "common/rect.h"
 
+#include "innocent/actor.h"
 #include "innocent/exit.h"
 #include "innocent/eventmanager.h"
 #include "innocent/graphics.h"
@@ -29,6 +30,9 @@ Debugger::Debugger()
 	DCmd_Register("break", WRAP_METHOD(Debugger, cmd_break));
 	DCmd_Register("step", WRAP_METHOD(Debugger, cmd_step));
 	DCmd_Register("setVar", WRAP_METHOD(Debugger, cmd_setVar));
+#define CMD(x) DCmd_Register(#x, WRAP_METHOD(Debugger, cmd_##x));
+	CMD(debugActor);
+#undef CMD
 }
 
 void Debugger::setEngine(Engine *vm) {
@@ -41,6 +45,15 @@ Logic *Debugger::logic() const {
 }
 
 #define CMD(x) bool Debugger::cmd_##x(int argc, const char **argv)
+
+CMD(debugActor) {
+	if (argc == 2) {
+		Log.getActor(atoi(argv[1]))->toggleDebug();
+		DebugPrintf("Toggled debugging on actor %d. Remember to toggle proper levels, too!\n");
+	} else
+		DebugPrintf("Syntax: debugActor <id>\n");
+	return true;
+}
 
 CMD(break) {
 	if (argc == 2) {
