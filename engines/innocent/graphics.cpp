@@ -450,6 +450,7 @@ void Graphics::fadeOut(FadeFlags f) {
 
 		if (Eng.escapePressed()) {
 			Log.skipAnimation();
+			return;
 		}
 
 	}

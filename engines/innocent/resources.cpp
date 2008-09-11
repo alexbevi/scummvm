@@ -28,8 +28,9 @@ void Surface::blit(const Surface *s, Common::Rect r, int transparent) {
 	const byte *src = reinterpret_cast<byte *>(s->pixels);
 	byte *dest = reinterpret_cast<byte *>(getBasePtr(r.left, r.top));
 
-	for (int y = 0; y < r.height(); ++y) {
-		for (int x = 0; x < r.width(); ++x) {
+	int rw = r.width(), rh = r.height();
+	for (int y = 0; y < rh; ++y) {
+		for (int x = 0; x < rw; ++x) {
 			if (src[x] != transparent)
 				dest[x] = src[x];
 		}

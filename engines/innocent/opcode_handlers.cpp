@@ -438,7 +438,6 @@ OPCODE(0xd6) {
 	if (a[0] == 81) {
 		if (_engine->_startRoom) {
 			_logic->changeRoom(_engine->_startRoom);
-			Log.protagonist()->setRoom(_engine->_startRoom);
 		}
 		else if (!_engine->_copyProtection) {
 			debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
