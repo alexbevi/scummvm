@@ -16,7 +16,7 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 
 	Engine::instance().logic()->addAnimation(this);
 
-	init_opcodes<38>();
+	init_opcodes<37>();
 }
 
 void Actor::setAnimation(const CodePointer &anim) {
@@ -61,7 +61,7 @@ void Actor::readHeader(const byte *code) {
 
 template <int opcode>
 Animation::Status Actor::opcodeHandler(){
-	return Animation::op(opcode);
+	return Animation::opcodeHandler<opcode>();
 }
 
 template<int N>
