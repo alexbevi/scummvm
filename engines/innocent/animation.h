@@ -59,13 +59,16 @@ protected:
 	int16 _ticksLeft;
 	int8 _zIndex;
 	Common::Point _position;
+	/** start of the animation code */
 	byte *_base;
+	/** current position  in the animation */
 	uint16 _offset;
 	char _debugInfo[50];
 	Common::List<Sprite *> _sprites;
 	std::auto_ptr<Innocent::Sprite> _mainSprite;
 	int8 _counter;
 	uint16 _loopStart;
+	/** offset of the animation from the start of its codeblock */
 	uint16 _baseOffset;
 	CodePointer _frameTrigger;
 

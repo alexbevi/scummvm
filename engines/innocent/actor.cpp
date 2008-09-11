@@ -13,6 +13,7 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 	_base = header - code.offset();
 	snprintf(_debugInfo, 50, "actor at %s", +code);
 	readHeader(header);
+	_dir63 = 0;
 
 	Engine::instance().logic()->addAnimation(this);
 
@@ -83,7 +84,13 @@ OPCODE(0x17) {
 	byte val = embeddedByte();
 	uint16 off = shift();
 
-	debugC(1, kDebugLevelAnimation, "actor opcode 0x17: if dir 63 is %d then change code to 0x%04x", val, off);
+	debugC(1, kDebugLevelAnimation, "actor opcode 0x17: if dir63 (currently %d) is %d then change code to 0x%04x", _dir63, val, off);
+
+	if (val == _dir63) {
+		_base = _base - _baseOffset + off;
+		_baseOffset = off;
+		_offset = 0;
+	}
 
 	return kOk;
 }
@@ -96,5 +103,14 @@ OPCODE(0x18) {
 	return kOk;
 }
 
+OPCODE(0x23) {
+	byte dir = embeddedByte();
 
+	debugC(3, kDebugLevelAnimation, "actor opcode 0x23: set dir63 to %d", dir);
+
+	_dir63 = dir;
+
+	return kOk;
 }
+
+} // end of namespace

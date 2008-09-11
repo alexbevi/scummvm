@@ -50,6 +50,7 @@ private:
 	void readHeader(const byte *code);
 
 	uint16 _room;
+	byte _dir63;
 
 	template <int opcode>
 	Animation::Status opcodeHandler();
