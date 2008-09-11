@@ -141,6 +141,14 @@ Actor *Logic::getActor(uint16 id) const {
 //		return _blockProgram->actor(id - _main->actorsCount());
 }
 
+void Logic::setSkipPoint(const CodePointer &p) {
+	_skipPoint = p;
+}
+
+void Logic::skipAnimation() {
+	_skipPoint.run();
+	_skipPoint.reset();
+}
 
 Animation *Logic::animation(uint16 offset) const {
 	foreach (Animation *, _animations)

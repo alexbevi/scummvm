@@ -55,6 +55,8 @@ public:
 	Program *blockProgram() const { return _blockProgram.get(); }
 	Interpreter *mainInterpreter() const { return _toplevelInterpreter.get(); }
 	void runLater(const CodePointer &, uint16 delay = 0);
+	void setSkipPoint(const CodePointer &);
+	void skipAnimation();
 
 	Animation *animation(uint16 offset) const;
 
@@ -81,6 +83,8 @@ private:
 		uint16 delay;
 	};
 	Common::List<DelayedRun> _queued;
+
+	CodePointer _skipPoint;
 };
 
 #define Log Logic::instance()

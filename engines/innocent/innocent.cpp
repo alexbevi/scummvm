@@ -96,6 +96,24 @@ void Engine::handleEvents() {
 	}
 }
 
+bool Engine::escapePressed() const {
+	Common::Event event;
+	while (_eventMan->pollEvent(event)) {
+		switch(event.type) {
+
+		case Common::EVENT_KEYUP:
+			if (event.kbd.keycode == Common::KEYCODE_BACKQUOTE)
+				_debugger->attach();
+			if (event.kbd.keycode == Common::KEYCODE_ESCAPE)
+				return true;
+			break;
+		default:
+			break;
+		}
+	}
+	return false;
+}
+
 uint16 Engine::getRandom(uint16 max) const {
 	return _rnd.getRandomNumber(max);
 }

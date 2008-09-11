@@ -42,6 +42,7 @@ public:
 	bool _copyProtection;
 
 	static Engine &instance() { return *me; }
+	bool escapePressed() const;
 
 private:
 	Logic *_logic;
@@ -55,6 +56,8 @@ private:
 	void handleEvents();
 	static Engine *me;
 };
+
+#define Eng Engine::instance()
 
 } // End of namespace Innocent
 

@@ -413,9 +413,16 @@ void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 		off -= 4;
 		for (int i = 0; i < bytes; i++)
 			current[i] = colours[i] - MIN(off, colours[i]);
+
 		_system->setPalette((current), start, num);
 		_system->updateScreen();
 		_system->delayMillis(1000/50);
+
+		if (Eng.escapePressed()) {
+			_system->setPalette(colours, start, num);
+			_system->updateScreen();
+			return;
+		}
 	}
 }
 
@@ -436,9 +443,15 @@ void Graphics::fadeOut(FadeFlags f) {
 	for (int j = 0; j < 63; j++) {
 		for (int i = 0; i < bytes; i++)
 			current[i] -= MIN<byte>(4, current[i]);
+
 		_system->setPalette((current), offset, colours);
 		_system->updateScreen();
-		Engine::instance().delay(20);
+		Eng.delay(20);
+
+		if (Eng.escapePressed()) {
+			Log.skipAnimation();
+		}
+
 	}
 }
 

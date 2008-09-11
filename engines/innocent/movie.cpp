@@ -41,6 +41,8 @@ void Movie::play() {
 			loadIFrame();
 			showFrame();
 			delay();
+			if (Eng.escapePressed())
+				return;
 		}
 	}
 }

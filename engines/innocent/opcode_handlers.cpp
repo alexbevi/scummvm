@@ -134,7 +134,8 @@ OPCODE(0x39) {
 
 OPCODE(0x3d) {
 	// save first arg -- instruction pointer -- for after skipping animation
-	debugC(1, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped to %s STUB", +a[0]);
+	debugC(3, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped as %s", +a[0]);
+	Log.setSkipPoint(static_cast<CodePointer &>(a[0]));
 }
 
 OPCODE(0x54) {
@@ -418,7 +419,7 @@ OPCODE(0xce) {
 OPCODE(0xcf) {
 	// fade out
 	debugC(1, kDebugLevelScript, "opcode 0xcf: fadeout");
-	_graphics->fadeOut();
+	Graf.fadeOut();
 }
 
 OPCODE(0xd0) {
