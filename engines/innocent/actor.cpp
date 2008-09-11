@@ -80,6 +80,16 @@ Animation::Status Actor::op(byte opcode) {
 
 #define OPCODE(n) template<> Animation::Status Actor::opcodeHandler<n>()
 
+OPCODE(0x14) {
+	uint16 off = shift();
+
+	debugC(3, kDebugLevelAnimation, "actor opcode 0x14: jump to 0x%04x if I'm speaking STUB", off);
+
+	// also, some check for non-protagonists
+
+	return kOk;
+}
+
 OPCODE(0x17) {
 	byte val = embeddedByte();
 	uint16 off = shift();
