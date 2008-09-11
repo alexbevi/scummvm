@@ -310,6 +310,7 @@ OPCODE(0x9a) {
 	debugC(1, kDebugLevelScript, "opcode 0x9a: if actor %s in current room then STUB", +a[0]);
 	if (_logic->getActor(a[0])->room() == _logic->currentRoom())
 		error("case with condition true unhandled");
+	_return = true;
 }
 
 OPCODE(0x9b) {
@@ -435,14 +436,11 @@ OPCODE(0xd1) {
 OPCODE(0xd6) {
 	// change room
 	debugC(3, kDebugLevelScript, "opcode 0xd6: change room(%s)", +a[0]);
-	if (a[0] == 81) {
-		if (_engine->_startRoom) {
-			_logic->changeRoom(_engine->_startRoom);
-		}
-		else if (!_engine->_copyProtection) {
-			debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
-			_logic->changeRoom(65);
-		}
+	if (_engine->_startRoom) {
+		_logic->changeRoom(_engine->_startRoom);
+	} else if (a[0] == 81 && !_engine->_copyProtection) {
+		debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
+		_logic->changeRoom(65);
 	} else
 		_logic->changeRoom(a[0]);
 }

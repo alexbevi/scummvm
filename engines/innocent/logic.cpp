@@ -70,6 +70,7 @@ Actor *Logic::protagonist() const {
 }
 
 void Logic::changeRoom(uint16 newRoom) {
+	debugC(2, kDebugLevelScript, "changing room to %d", newRoom);
 	if (newRoom == _currentRoom)
 		return;
 	_currentRoom = newRoom;
