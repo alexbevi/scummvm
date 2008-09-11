@@ -293,6 +293,11 @@ OPCODE(0x7c) {
 	exit->setEnabled(!exit->isEnabled());
 }
 
+OPCODE(0x96) {
+	// disallow user interaction
+	debugC(1, kDebugLevelScript, "opcode 0x96: lock control STUB");
+}
+
 OPCODE(0x9a) {
 	// if actor in current room then whatever
 	debugC(1, kDebugLevelScript, "opcode 0x9a: if actor %s in current room then STUB", +a[0]);
@@ -414,6 +419,11 @@ OPCODE(0xd6) {
 		}
 	} else
 		_logic->changeRoom(a[0]);
+}
+
+OPCODE(0xdf) {
+	// add actor animation
+	debugC(1, kDebugLevelScript, "opcode 0xdf: add actor animation %s %s %s %s %s %s STUB", +a[0], +a[1], +a[2], +a[3], +a[4], +a[5]);
 }
 
 OPCODE(0xe5) {
