@@ -50,7 +50,7 @@ private:
 	Debugger *_debugger;
 
 	mutable Common::RandomSource _rnd;
-	mutable int _lastTicks;
+	mutable int _lastTicks, _startRoom;
 
 	void handleEvents();
 	static Engine *me;

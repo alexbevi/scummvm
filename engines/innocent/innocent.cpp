@@ -50,6 +50,7 @@ int Engine::init() {
 		_system->initSize(320, 200);
 	}
 	_copyProtection = ConfMan.getBool("copy_protection");
+	_startRoom = ConfMan.getInt("start_room");
 	_debugger = &Debug;
 	Debug.setEngine(this);
 	_resources->init();

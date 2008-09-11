@@ -405,10 +405,13 @@ OPCODE(0xd1) {
 OPCODE(0xd6) {
 	// change room
 	debugC(3, kDebugLevelScript, "opcode 0xd6: change room(%s)", +a[0]);
-	if (a[0] == 81 && !_engine->_copyProtection) {
-		debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
-//		_logic->changeRoom(65);
-		_logic->changeRoom(1); // for debugging
+	if (a[0] == 81) {
+		if (_engine->_startRoom)
+			_logic->changeRoom(_engine->_startRoom);
+		else if (!_engine->_copyProtection) {
+			debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
+			_logic->changeRoom(65);
+		}
 	} else
 		_logic->changeRoom(a[0]);
 }
