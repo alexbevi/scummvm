@@ -335,6 +335,12 @@ OPCODE(0xad) {
 		error("case with condition true unhandled");
 }
 
+OPCODE(0xbc) {
+	// hide actor
+	debugC(1, kDebugLevelScript, "opcode 0xbc: hide actor %s STUB", +a[0]);
+	// only if not on status screen
+}
+
 OPCODE(0xc2) {
 	// add animation at cursor
 	debugC(3, kDebugLevelScript, "opcode 0xc2: add animation %s at cursor partial STUB", +a[0]);
