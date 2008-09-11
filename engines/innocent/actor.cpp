@@ -14,6 +14,7 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 	snprintf(_debugInfo, 50, "actor at %s", +code);
 	readHeader(header);
 	_dir63 = 0;
+	_room = 0xffff;
 
 	Engine::instance().logic()->addAnimation(this);
 
