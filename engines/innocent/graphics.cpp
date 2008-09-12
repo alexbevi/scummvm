@@ -53,8 +53,6 @@ void Graphics::paint() {
 	foreach (Paintable *, _paintables)
 		(*it)->paint(this);
 
-	updateScreen();
-
 	unless (_afterRepaintHooks.empty()) {
 		debugC(3, kDebugLevelGraphics | kDebugLevelScript, "running hooks");
 		foreach (CodePointer, _afterRepaintHooks)
@@ -63,12 +61,6 @@ void Graphics::paint() {
 	}
 
 	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, "<<<end paint procedure");
-
-	if (_willFadein && (_fadeFlags & kPartialFade)) {
-		debugC(3, kDebugLevelGraphics, "performing partial fade in");
-		_willFadein = false;
-		fadeIn(_interfacePalette + 160*4, 160, 96);
-	}
 }
 
 void Graphics::paintExits() {
@@ -93,6 +85,7 @@ void Graphics::setBackdrop(uint16 id) {
 	byte palette[0x400];
 	_backdrop.reset(_resources->loadBackdrop(id, palette));
 	setPalette(palette, 0, 256);
+	paintBackdrop();
 }
 
 void Graphics::willFadein(FadeFlags f) {
@@ -102,7 +95,6 @@ void Graphics::willFadein(FadeFlags f) {
 		clearPalette(160, 96);
 	else
 		clearPalette();
-	updateScreen();
 }
 
 void Graphics::paintBackdrop() {
@@ -347,8 +339,18 @@ Common::Point Graphics::cursorPosition() const {
 	return Common::Point(160, 100);
 }
 
-void Graphics::updateScreen() const {
+void Graphics::updateScreen() {
 	_system->copyRectToScreen(reinterpret_cast<byte *>(_framebuffer->pixels), _framebuffer->pitch, 0, 0, 320, 200);
+
+	if (_willFadein && (_fadeFlags & kPartialFade)) {
+		debugC(3, kDebugLevelGraphics, "performing partial fade in");
+		_willFadein = false;
+		fadeIn(_interfacePalette + 160*4, 160, 96);
+	} else if (_willFadein && !(_fadeFlags & kPartialFade)) {
+		fadeIn();
+		_willFadein = false;
+	}
+
 	_system->updateScreen();
 }
 
@@ -389,11 +391,7 @@ void Graphics::clearPalette(int offset, int count) {
 }
 
 void Graphics::setPalette(const byte *colours, uint start, uint num) {
-	if (_willFadein && !(_fadeFlags & kPartialFade)) {
-		fadeIn(colours, start, num);
-		_willFadein = false;
-	} else
-		_system->setPalette(colours, start, num);
+	_system->setPalette(colours, start, num);
 }
 
 struct Tr : public unary_function<byte, byte> {
@@ -401,7 +399,11 @@ struct Tr : public unary_function<byte, byte> {
 };
 
 void Graphics::fadeIn(const byte *colours, uint start, uint num) {
-	paint();
+	byte buf[0x400];
+	if (!colours) {
+		_system->grabPalette(buf, start, num);
+		colours = buf;
+	}
 
 	const int bytes = num * 4;
 	byte current[0x400];
@@ -463,6 +465,7 @@ void Graphics::say(const byte *text, uint16 length, uint16 frames) {
 	_speech = new byte[length];
 	memcpy(_speech, text, length);
 	_speechFramesLeft = frames;
+	paintSpeech();
 }
 
 void Graphics::runWhenSaid(const CodePointer &cb) {

@@ -3,6 +3,7 @@
 #include "innocent/debug.h"
 #include "innocent/graphics.h"
 #include "innocent/inter.h"
+#include "innocent/logic.h"
 #include "innocent/resources.h"
 #include "innocent/util.h"
 
@@ -108,8 +109,10 @@ Animation::Status Animation::tick() {
 }
 
 void Animation::handleTrigger() {
-	unless (_frameTrigger.isEmpty())
-		Graphics::instance().hookAfterRepaint(_frameTrigger);
+	unless (_frameTrigger.isEmpty()) {
+//		Graf.updateScreen();
+		Log.runLater(_frameTrigger);
+	}
 	_frameTrigger.reset();
 }
 

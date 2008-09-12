@@ -66,8 +66,10 @@ int Engine::go() {
 	_logic->initCode();
 	_graphics->showCursor();
 	while(!quit()) {
-		_logic->tick();
+		_logic->callAnimations();
 		_graphics->paint();
+		_logic->tick();
+//		_graphics->paintAnimations();
 		_graphics->updateScreen();
 		_debugger->onFrame();
 		delay(20);

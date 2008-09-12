@@ -40,8 +40,6 @@ void Logic::initCode() {
 }
 
 void Logic::tick() {
-	runQueued();
-
 	if (_roomLoop.get()) {
 //		gDebugLevel--; // room loops aren't that interesting
 		debugC(3, kDebugLevelScript | kDebugLevelFlow, ">>>running room loop code");
@@ -50,6 +48,10 @@ void Logic::tick() {
 //		gDebugLevel++;
 	}
 
+	runQueued();
+}
+
+void Logic::callAnimations() {
 	if (!_animations.empty())
 		debugC(4, kDebugLevelFlow | kDebugLevelAnimation, "running animations");
 	for (Common::List<Animation *>::iterator it = _animations.begin(); it != _animations.end(); ++it) {

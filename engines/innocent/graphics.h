@@ -79,7 +79,7 @@ public:
 	Common::Point cursorPosition() const;
 	void showCursor() const;
 
-	void updateScreen() const;
+	void updateScreen();
 	void setPalette(const byte *colours, uint start, uint num);
 
 private:
@@ -106,7 +106,7 @@ private:
 
 private:
 	void clearPalette(int start = 0, int count = 256);
-	void fadeIn(const byte *colours, uint start, uint num);
+	void fadeIn(const byte *colours = 0, uint start = 0, uint num = 256);
 
 	Common::List<Paintable *> _paintables;
 	Common::List<CodePointer> _afterRepaintHooks;

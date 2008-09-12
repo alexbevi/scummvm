@@ -42,6 +42,7 @@ public:
 	Engine *engine() { return _engine; }
 
 	void tick();
+	void callAnimations();
 
 	void addAnimation(Animation *anim);
 	void setRoomLoop(const CodePointer &code);
