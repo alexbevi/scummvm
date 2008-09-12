@@ -65,8 +65,10 @@ OPCODE(0x0f) {
 OPCODE(0x12) {
  	// if sound is on then
 	// (argument is a set of flags, 1 - adlib, 2 - sb, 4 - roland)
-	debugC(1, kDebugLevelScript, "opcode 0x12: if sound is on then STUB");
- 	failedCondition();
+	debugC(2, kDebugLevelScript, "opcode 0x12: if sound is on then partial STUB");
+	// just say roland+sb for now
+	unless (a[0] & 6)
+		failedCondition();
 }
 
 OPCODE(0x13) {
@@ -134,8 +136,7 @@ OPCODE(0x39) {
 
 OPCODE(0x3d) {
 	// save first arg -- instruction pointer -- for after skipping animation
-	debugC(3, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped as %s", +a[0]);
-	Log.setSkipPoint(static_cast<CodePointer &>(a[0]));
+	debugC(1, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped to %s STUB", +a[0]);
 }
 
 OPCODE(0x54) {
@@ -299,18 +300,11 @@ OPCODE(0x96) {
 	debugC(1, kDebugLevelScript, "opcode 0x96: lock control STUB");
 }
 
-OPCODE(0x99) {
-	// wait until protagonist active
-	debugC(1, kDebugLevelScript, "opcode 0x99: wait for protagonist STUB");
-	_return = true;
-}
-
 OPCODE(0x9a) {
 	// if actor in current room then whatever
 	debugC(1, kDebugLevelScript, "opcode 0x9a: if actor %s in current room then STUB", +a[0]);
 	if (_logic->getActor(a[0])->room() == _logic->currentRoom())
 		error("case with condition true unhandled");
-	_return = true;
 }
 
 OPCODE(0x9b) {
@@ -333,32 +327,14 @@ OPCODE(0x9d) {
 	_logic->setProtagonist(a[0]);
 }
 
-OPCODE(0xab) {
-	// turn protagonist
-	debugC(1, kDebugLevelScript, "opcode 0xab: turn protagonist to %s STUB", +a[0]);
-}
-
 OPCODE(0xad) {
 	// turn actor
 	debugC(1, kDebugLevelScript, "opcode 0xad: turn actor %s to %s or wait on actor STUB", +a[0], +a[1]);
-}
-
-OPCODE(0xbc) {
-	// hide actor
-	debugC(1, kDebugLevelScript, "opcode 0xbc: hide actor %s STUB", +a[0]);
-	// only if not on status screen
-}
-
-OPCODE(0xbd) {
-	// show actor
-
-	// this is really an offset on the main code
-	CodePointer p(static_cast<CodePointer &>(a[0]).offset(), Log.mainInterpreter());
-
-	debugC(1, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s partial STUB", +p);
-
-	_logic->protagonist()->setAnimation(p);
-	// wait for him if not active
+	if (_logic->getActor(a[0])->room() != _logic->currentRoom()) {
+		// stash further code for when actor shows up
+		_return = true;
+	} else
+		error("case with condition true unhandled");
 }
 
 OPCODE(0xc2) {
@@ -420,7 +396,7 @@ OPCODE(0xce) {
 OPCODE(0xcf) {
 	// fade out
 	debugC(1, kDebugLevelScript, "opcode 0xcf: fadeout");
-	Graf.fadeOut();
+	_graphics->fadeOut();
 }
 
 OPCODE(0xd0) {
@@ -436,11 +412,13 @@ OPCODE(0xd1) {
 OPCODE(0xd6) {
 	// change room
 	debugC(3, kDebugLevelScript, "opcode 0xd6: change room(%s)", +a[0]);
-	if (_engine->_startRoom) {
-		_logic->changeRoom(_engine->_startRoom);
-	} else if (a[0] == 81 && !_engine->_copyProtection) {
-		debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
-		_logic->changeRoom(65);
+	if (a[0] == 81) {
+		if (_engine->_startRoom)
+			_logic->changeRoom(_engine->_startRoom);
+		else if (!_engine->_copyProtection) {
+			debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
+			_logic->changeRoom(65);
+		}
 	} else
 		_logic->changeRoom(a[0]);
 }
