@@ -452,6 +452,12 @@ OPCODE(0xf7) {
 	debugC(1, kDebugLevelScript, "opcode 0xf7: stop music STUB");
 }
 
+OPCODE(0xf9) {
+	// set sound on
+	
+	debugC(1, kDebugLevelScript, "opcode 0xf9: set %s to %s STUB", a[0] == 1 ? "music" : "sfx", +a[1]);
+}
+
 OPCODE(0xfc) {
 	// quit
 	debugC(3, kDebugLevelScript, "opcode 0xfc: quit%s", a[0] == 0 ? "" : " unconditionally");
