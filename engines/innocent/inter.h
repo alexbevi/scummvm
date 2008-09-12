@@ -26,6 +26,15 @@ enum Status {
 };
 
 class Interpreter {
+private:
+	enum OpResult {
+		kOk,
+		kReturn,
+		kFail,
+		kElse,
+		kEndIf
+	};
+
 public:
 	Interpreter(Logic *l, byte *base, const char *name);
 
@@ -45,12 +54,12 @@ public:
 	friend class Opcode;
 
 	template <int opcode>
-	void opcodeHandler(ValueVector args);
+	OpResult opcodeHandler(ValueVector args);
 
 	template <int N>
 	void init_opcodes();
 
-	typedef void (Interpreter::*OpcodeHandler)(ValueVector args);
+	typedef OpResult (Interpreter::*OpcodeHandler)(ValueVector args);
 	OpcodeHandler _handlers[256];
 	static const uint8 _argumentsCounts[];
 
@@ -71,18 +80,15 @@ private:
 
 	byte *_base;
 	byte *_code;
+	byte *_last;
 	uint16 _mode;
 
 	Status run(uint16 offset);
 
-	void failedCondition();
-	void endIf();
-	void goBack();
 	void setRoomLoop(byte *code);
+	CodePointer currentCode();
 	CodePointer nextInstruction();
 
-	uint16 _failedCondition;
-	bool _return;
 	byte *_roomLoop;
 
 	Engine *_engine;

@@ -5,6 +5,7 @@ namespace Innocent {
 //
 #define foreach(T, L) for (Common::List<T>::iterator it = L.begin(); it != L.end(); ++it)
 #define unless(x) if (!(x))
+#define forever for(;;)
 
 template<typename F1, typename F2>
 class Composite {

@@ -1,7 +1,10 @@
 #ifndef INNOCENT_ACTOR_H
 #define INNOCENT_ACTOR_H
 
+#include "common/queue.h"
+
 #include "innocent/animation.h"
+#include "innocent/value.h"
 
 namespace Innocent {
 //
@@ -29,15 +32,18 @@ public:
 		kOffsetRoom = 0x59
 	};
 
+	void setFrame(uint16 f) { _frame = f; }
 
 	uint16 room() const { return _room; }
 	void setRoom(uint16);
 
 	bool isVisible() const;
 
-	Animation::Status tick();
-
 	void setAnimation(const CodePointer &anim);
+
+	void whenYouShowUpCall(const CodePointer &cp);
+
+	Animation::Status tick();
 
 	void toggleDebug();
 private:
@@ -50,8 +56,12 @@ private:
 
 	void readHeader(const byte *code);
 
+	uint16 _frame;
 	uint16 _room;
 	byte _dir63;
+
+	Common::Queue<CodePointer> _callBacks;
+	void callBacks();
 
 	bool _debug;
 

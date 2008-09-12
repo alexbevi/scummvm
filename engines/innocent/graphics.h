@@ -77,7 +77,8 @@ public:
 	void paint(const Sprite *sprite, Common::Point pos, Surface *s) const;
 
 	Common::Point cursorPosition() const;
-	void showCursor() const;
+	void showCursor();
+	void hideCursor();
 
 	void updateScreen();
 	void setPalette(const byte *colours, uint start, uint num);

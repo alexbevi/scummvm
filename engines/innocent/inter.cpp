@@ -20,7 +20,7 @@ enum {
 };
 
 template <int opcode>
-void Interpreter::opcodeHandler(ValueVector args){
+Interpreter::OpResult Interpreter::opcodeHandler(ValueVector args){
 	error("unhandled opcode %d [=0x%02x]", opcode, opcode);
 }
 
@@ -55,6 +55,10 @@ void Interpreter::setRoomLoop(byte *code) {
 	_roomLoop = code;
 }
 
+CodePointer Interpreter::currentCode() {
+	return CodePointer(_last - _base, this);
+}
+
 CodePointer Interpreter::nextInstruction() {
 	return CodePointer(_code - _base, this);
 }
@@ -75,13 +79,13 @@ Status Interpreter::run(uint16 offset, OpcodeMode mode) {
 }
 
 Status Interpreter::run(uint16 offset) {
-	_code = _base + offset;
-	_failedCondition = 0;
-	_return = false;
+	// TODO: make completely stateless
+	_last = _code = _base + offset;
 
-	while (!_return) {
+	int if_depth = 0;
+	forever {
 		byte opcode = *_code;
-//		uint16 off = _code - _base;
+
 		if (opcode > kOpcodeMax) {
 			return kInvalidOpcode;
 		}
@@ -98,14 +102,33 @@ Status Interpreter::run(uint16 offset) {
 		if (nargs == 0)
 			_code += 2;
 
-		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || !_failedCondition) {
+		OpResult result;
+
+		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || if_depth == 0) {
 			Debug.opcodeStep();
-//			printf("[%04x]", off);
-			(this->*handler)(args);
+			result = (this->*handler)(args);
 		} else {
 			debugC(3, kDebugLevelScript, "opcode 0x%02x skipped", opcode);
 			if (opcode > 1 && opcode < 0x26)
-				_failedCondition++;
+				result = kFail;
+		}
+
+		switch (result) {
+		case kReturn:
+			return kReturned;
+		case kFail:
+			if_depth++;
+			break;
+		case kElse:
+			if (if_depth == 1)
+				if_depth = 0;
+			break;
+		case kEndIf:
+			if_depth = MAX(if_depth - 1, 0);
+			break;
+		case kOk:
+			// ok
+			;
 		}
 	}
 
@@ -269,17 +292,5 @@ Value *Interpreter::getArgument(byte *&code) {
 const uint8 Interpreter::_argumentsCounts[] = {
 	#include "opcodes_nargs.data"
 };
-
-void Interpreter::failedCondition() {
-	_failedCondition = 1;
-}
-
-void Interpreter::endIf() {
-	if (_failedCondition) _failedCondition--;
-}
-
-void Interpreter::goBack() {
-	_return = true;
-}
 
 } // End of namespace Innocent

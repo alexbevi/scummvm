@@ -30,12 +30,17 @@ void Actor::setAnimation(const CodePointer &anim) {
 	_debugInvalid = false;
 }
 
-void Actor::setRoom(uint16 r) {
-	_room = r;
+void Actor::whenYouShowUpCall(const CodePointer &code) {
+	_callBacks.push(code);
 }
 
 bool Actor::isVisible() const {
 	return _room == Log.currentRoom();
+}
+
+void Actor::setRoom(uint16 r) {
+	_room = r;
+	callBacks();
 }
 
 Animation::Status Actor::tick() {
@@ -47,6 +52,10 @@ Animation::Status Actor::tick() {
 		return s;
 	} else
 		return kOk;
+}
+
+void Actor::toggleDebug() {
+	_debug = !_debug;
 }
 
 void Actor::readHeader(const byte *code) {
@@ -66,8 +75,10 @@ void Actor::readHeader(const byte *code) {
 		setMainSprite(sprite);
 }
 
-void Actor::toggleDebug() {
-	_debug = !_debug;
+void Actor::callBacks() {
+	if (isVisible())
+		while (!_callBacks.empty())
+			_callBacks.pop().run();
 }
 
 template <int opcode>

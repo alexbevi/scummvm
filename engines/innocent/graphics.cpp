@@ -354,12 +354,16 @@ void Graphics::updateScreen() {
 	_system->updateScreen();
 }
 
-void Graphics::showCursor() const {
+void Graphics::showCursor() {
 	Sprite *cursor = _resources->getCursor();
 	assert(cursor->pitch == cursor->w);
 	::Graphics::CursorManager &m = ::Graphics::CursorManager::instance();
 	m.replaceCursor(reinterpret_cast<byte *>(cursor->pixels), cursor->w, cursor->h, cursor->_hotPoint.x, cursor->_hotPoint.y, 0);
 	m.showMouse(true);
+}
+
+void Graphics::hideCursor() {
+	::Graphics::CursorManager::instance().showMouse(false);
 }
 
 void Graphics::paintRect(const Common::Rect &r, byte colour) {
