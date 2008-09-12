@@ -149,7 +149,11 @@ void Logic::setSkipPoint(const CodePointer &p) {
 }
 
 void Logic::skipAnimation() {
+	if (_skipPoint.isEmpty()) return;
+
+	debugC(2, kDebugLevelScript, ">>>running animation skip code");
 	_skipPoint.run();
+	debugC(2, kDebugLevelScript, "<<<finished animation skip code");
 	_skipPoint.reset();
 }
 

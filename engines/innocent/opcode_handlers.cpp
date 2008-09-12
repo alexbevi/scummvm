@@ -143,7 +143,8 @@ OPCODE(0x39) {
 
 OPCODE(0x3d) {
 	// save first arg -- instruction pointer -- for after skipping animation
-	debugC(1, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped to %s STUB", +a[0]);
+	debugC(3, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped to %s", +a[0]);
+	Log.setSkipPoint(static_cast<CodePointer &>(a[0]));
 	return kOk;
 }
 
