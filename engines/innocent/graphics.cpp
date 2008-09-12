@@ -463,7 +463,7 @@ void Graphics::fadeOut(FadeFlags f) {
 }
 
 void Graphics::say(const byte *text, uint16 length, uint16 frames) {
-	if (_speech) // TODO
+	if (_speech)
 		error("queuing speech not supported yet.");
 
 	_speech = new byte[length];

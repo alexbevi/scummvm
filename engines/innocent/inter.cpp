@@ -20,8 +20,8 @@ enum {
 };
 
 template <int opcode>
-Interpreter::OpResult Interpreter::opcodeHandler(ValueVector args){
-	error("unhandled opcode %d [=0x%02x]", opcode, opcode);
+Interpreter::OpResult Interpreter::opcodeHandler(ValueVector args, CodePointer current, CodePointer next){
+	error("unhandled opcode %d [=0x%02x] at %s", opcode, opcode, +current);
 }
 
 
@@ -55,14 +55,6 @@ void Interpreter::setRoomLoop(byte *code) {
 	_roomLoop = code;
 }
 
-CodePointer Interpreter::currentCode() {
-	return CodePointer(_last - _base, this);
-}
-
-CodePointer Interpreter::nextInstruction() {
-	return CodePointer(_code - _base, this);
-}
-
 /* mode:
 0 - initialization,
 1 - room handler,
@@ -79,12 +71,12 @@ Status Interpreter::run(uint16 offset, OpcodeMode mode) {
 }
 
 Status Interpreter::run(uint16 offset) {
-	// TODO: make completely stateless
-	_last = _code = _base + offset;
+	byte *last, *code;
+	last = code = _base + offset;
 
 	int if_depth = 0;
 	forever {
-		byte opcode = *_code;
+		byte opcode = *code;
 
 		if (opcode > kOpcodeMax) {
 			return kInvalidOpcode;
@@ -97,23 +89,23 @@ Status Interpreter::run(uint16 offset) {
 		ValueVector args;
 
 		for (uint i = 0; i < nargs; i++)
-			args.push_back(getArgument(_code));
+			args.push_back(getArgument(code));
 
 		if (nargs == 0)
-			_code += 2;
+			code += 2;
 
-		OpResult result;
+		OpResult result(kOk);
 
 		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || if_depth == 0) {
 			Debug.opcodeStep();
-			result = (this->*handler)(args);
+			result = (this->*handler)(args, CodePointer(last - _base, this), CodePointer(code - _base, this));
 		} else {
 			debugC(3, kDebugLevelScript, "opcode 0x%02x skipped", opcode);
 			if (opcode > 1 && opcode < 0x26)
 				result = kFail;
 		}
 
-		switch (result) {
+		switch (result.code) {
 		case kReturn:
 			return kReturned;
 		case kFail:
@@ -126,6 +118,8 @@ Status Interpreter::run(uint16 offset) {
 		case kEndIf:
 			if_depth = MAX(if_depth - 1, 0);
 			break;
+		case kJump:
+			code = _base + result.address;
 		case kOk:
 			// ok
 			;

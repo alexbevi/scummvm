@@ -27,12 +27,19 @@ enum Status {
 
 class Interpreter {
 private:
-	enum OpResult {
+	enum OpResultCode {
 		kOk,
 		kReturn,
 		kFail,
 		kElse,
-		kEndIf
+		kEndIf,
+		kJump
+	};
+	struct OpResult {
+		OpResult(OpResultCode c) : code(c) {}
+		OpResult(const CodePointer &p) : code(kJump), address(p) {}
+		OpResultCode code;
+		CodePointer address;
 	};
 
 public:
@@ -54,12 +61,12 @@ public:
 	friend class Opcode;
 
 	template <int opcode>
-	OpResult opcodeHandler(ValueVector args);
+	OpResult opcodeHandler(ValueVector args, CodePointer current, CodePointer next);
 
 	template <int N>
 	void init_opcodes();
 
-	typedef OpResult (Interpreter::*OpcodeHandler)(ValueVector args);
+	typedef OpResult (Interpreter::*OpcodeHandler)(ValueVector args, CodePointer current, CodePointer next);
 	OpcodeHandler _handlers[256];
 	static const uint8 _argumentsCounts[];
 
@@ -79,15 +86,11 @@ private:
 	T *readArgument(byte *&code);
 
 	byte *_base;
-	byte *_code;
-	byte *_last;
 	uint16 _mode;
 
 	Status run(uint16 offset);
 
 	void setRoomLoop(byte *code);
-	CodePointer currentCode();
-	CodePointer nextInstruction();
 
 	byte *_roomLoop;
 

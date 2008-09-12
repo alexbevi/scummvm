@@ -13,7 +13,7 @@
 #include "common/util.h"
 
 namespace Innocent {
-#define OPCODE(num) template<> Interpreter::OpResult Interpreter::opcodeHandler<num>(ValueVector a)
+#define OPCODE(num) template<> Interpreter::OpResult Interpreter::opcodeHandler<num>(ValueVector a, CodePointer current, CodePointer next)
 
 OPCODE(0x00) {
 	// nop
@@ -122,18 +122,14 @@ OPCODE(0x2d) {
 OPCODE(0x35) {
 	// jump
 	debugC(3, kDebugLevelScript, "opcode 0x35: jump to %s", +a[0]);
-	_code = static_cast<CodePointer &>(a[0]).code();
-	return kOk;
+	return static_cast<CodePointer &>(a[0]);
 }
 
 OPCODE(0x36) {
 	// call
 	debugC(3, kDebugLevelScript, ">>>opcode 0x36: call procedure %s", +a[0]);
 	CodePointer &p = static_cast<CodePointer &>(a[0]);
-/*	if (p.offset() == 0x3100)
-		_code = _base + 0x335c;
-	else*/
-		p.run();
+	p.run();
 	debugC(3, kDebugLevelScript, "<<<opcode 0x36: called procedure %s", +a[0]);
 	return kOk;
 }
@@ -141,8 +137,7 @@ OPCODE(0x36) {
 OPCODE(0x39) {
 	// run later
 	debugC(3, kDebugLevelScript, "opcode 0x39: execute main %s later", +a[0]);
-	_logic->runLater(CodePointer(static_cast<CodePointer &>(a[0]).offset(),
-								  _logic->mainInterpreter()));
+	_logic->runLater(CodePointer(static_cast<CodePointer &>(a[0]).offset(), _logic->mainInterpreter()));
 	return kOk;
 }
 
@@ -157,7 +152,7 @@ OPCODE(0x54) {
 
 	uint16 result;
 	unless ((result = _graphics->ask(a[0], a[1], a[2], a[3], a[4])) == 0xffff)
-		_code = _base + result;
+		return CodePointer(result, this);
 	return kOk;
 }
 
@@ -179,7 +174,7 @@ OPCODE(0x56) {
 OPCODE(0x57) {
 	// wait until said
 	debugC(3, kDebugLevelScript, "opcode 0x57: wait until text is said");
-	Graf.runWhenSaid(nextInstruction());
+	Graf.runWhenSaid(next);
 	return kReturn;
 }
 
@@ -338,7 +333,7 @@ OPCODE(0x9a) {
 OPCODE(0x9b) {
 	// delay
 	debugC(3, kDebugLevelScript, "opcode 0x9b: delay %s frames", +a[0]);
-	_logic->runLater(CodePointer(_code - _base, this), a[0]);
+	_logic->runLater(next, a[0]);
 	return kReturn;
 }
 
@@ -365,7 +360,7 @@ OPCODE(0xad) {
 	if (ac->isVisible())
 		ac->setFrame(a[1]);
 	else {
-		ac->whenYouShowUpCall(currentCode());
+		ac->whenYouShowUpCall(current);
 		return kReturn;
 	}
 	return kOk;
@@ -394,7 +389,7 @@ OPCODE(0xdb) {
 OPCODE(0xc6) {
 	// suspend execution until an animation's ip points to 0xff
 	debugC(3, kDebugLevelScript, "opcode 0xc6: wait on animation %s", +a[0]);
-	_logic->animation(a[0])->runOnNextFrame(CodePointer(_code - _base, this));
+	_logic->animation(a[0])->runOnNextFrame(next);
 	return kReturn;
 }
 
