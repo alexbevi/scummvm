@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "common/singleton.h"
 #include "common/stream.h"
 #include "graphics/surface.h"
 
@@ -37,11 +38,11 @@ public:
 	Sprite *cut(Common::Rect rect) const;
 };
 
-class GraphicsMap;
+class MapFile;
 class ProgDat;
 class Program;
 
-class Resources {
+class Resources : public Common::Singleton<Resources> {
 public:
 	Resources(Engine *vm);
 	~Resources();
@@ -63,6 +64,8 @@ public:
 	 */
 	Image *loadImage(uint16 index) const;
 
+//	Tune *loadTune(uint16 index) const;
+
 	void loadInterfaceImage(byte *target, byte *palette = 0) {
 		loadImage(_main->interfaceImageIndex(), target, 0x3c00, palette);
 	}
@@ -83,7 +86,6 @@ public:
 	/* initial entry point offset */
 	uint16 mainEntryPoint() const;
 
-	friend class GraphicsMap;
 	friend class ProgDat;
 
 	SpriteInfo getSpriteInfo(uint16 id) const;
@@ -101,7 +103,8 @@ public:
 	static void readPalette(Common::ReadStream *stream, byte *palette);
 
 private:
-	GraphicsMap *graphicsMap() const { return _graphicsMap.get(); }
+	MapFile *graphicsMap() const { return _graphicsMap.get(); }
+	MapFile *tuneMap() const { return _tuneMap.get(); }
 	ProgDat *progDat() const { return _progDat.get(); }
 
 	Common::ReadStream *imageStream(uint16 index) const;
@@ -110,13 +113,16 @@ private:
 	Engine *_vm;
 
 	std::auto_ptr<MainDat> _main;
-	std::auto_ptr<GraphicsMap> _graphicsMap;
+	std::auto_ptr<MapFile> _graphicsMap;
+	std::auto_ptr<MapFile> _tuneMap;
 	std::auto_ptr<ProgDat> _progDat;
 
 	std::auto_ptr<Common::SeekableReadStream> *_graphicFiles;
 
 	Sprite *_frames[9];
 };
+
+#define Res Resources::instance()
 
 } // End of namespace Innocent
 

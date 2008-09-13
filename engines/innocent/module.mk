@@ -7,7 +7,7 @@ MODULE_OBJS = \
 	resources.o \
 	datafile.o \
 	main_dat.o \
-	graph_dat.o \
+	mapfile.o \
 	prog_dat.o \
 	graphics.o \
 	logic.o \

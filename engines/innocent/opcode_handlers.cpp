@@ -7,6 +7,7 @@
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
 #include "innocent/movie.h"
+//#include "innocent/music.h"
 #include "innocent/util.h"
 
 #include "common/events.h"
@@ -18,7 +19,7 @@ namespace Innocent {
 OPCODE(0x00) {
 	// nop
 	debugC(3, kDebugLevelScript, "opcode 0x00: nop");
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x01) {
@@ -33,7 +34,7 @@ OPCODE(0x02) {
 	debugC(3, kDebugLevelScript, "opcode 0x02: if %s == %s", +a[0], +a[1]);
 	unless (a[0] == a[1])
 		return kFail;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x03) {
@@ -41,7 +42,7 @@ OPCODE(0x03) {
 	debugC(3, kDebugLevelScript, "opcode 0x03: if %s != %s", +a[0], +a[1]);
 	if (a[0] == a[1])
 		return kFail;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x04) {
@@ -49,7 +50,7 @@ OPCODE(0x04) {
 	debugC(3, kDebugLevelScript, "opcode 0x04: if %s < %s", +a[0], +a[1]);
 	unless (a[0] < a[1])
 		return kFail;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x05) {
@@ -57,7 +58,7 @@ OPCODE(0x05) {
 	debugC(3, kDebugLevelScript, "opcode 0x05: if %s > %s", +a[0], +a[1]);
 	unless (a[0] > a[1])
 		return kFail;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x0f) {
@@ -65,7 +66,7 @@ OPCODE(0x0f) {
 	debugC(3, kDebugLevelScript, "opcode 0x0f: if current room == %s then", +a[0]);
 	unless (a[0] == _logic->currentRoom())
 		return kFail;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x12) {
@@ -75,7 +76,7 @@ OPCODE(0x12) {
 	// just say roland+sb for now
 	unless (a[0] & 6)
 		return kFail;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x13) {
@@ -84,7 +85,7 @@ OPCODE(0x13) {
 	debugC(1, kDebugLevelScript, "opcode 0x13: if 1st button is up and mode isn't null partial STUB");
 	if (_engine->_eventMan->getButtonState() & Common::EventManager::LBUTTON)
 		return kFail;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x1f) {
@@ -94,7 +95,7 @@ OPCODE(0x1f) {
 		error("case with condition true unhandled");
 	else
 		return kFail;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x24) {
@@ -102,7 +103,7 @@ OPCODE(0x24) {
 	debugC(3, kDebugLevelScript, "opcode 0x24: if (%s)", +a[0]);
 	if (a[0] == 0)
 		return kFail;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x2c) {
@@ -131,21 +132,21 @@ OPCODE(0x36) {
 	CodePointer &p = static_cast<CodePointer &>(a[0]);
 	p.run();
 	debugC(3, kDebugLevelScript, "<<<opcode 0x36: called procedure %s", +a[0]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x39) {
 	// run later
 	debugC(3, kDebugLevelScript, "opcode 0x39: execute main %s later", +a[0]);
 	_logic->runLater(CodePointer(static_cast<CodePointer &>(a[0]).offset(), _logic->mainInterpreter()));
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x3d) {
 	// save first arg -- instruction pointer -- for after skipping animation
 	debugC(3, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped to %s", +a[0]);
 	Log.setSkipPoint(static_cast<CodePointer &>(a[0]));
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x54) {
@@ -154,7 +155,7 @@ OPCODE(0x54) {
 	uint16 result;
 	unless ((result = _graphics->ask(a[0], a[1], a[2], a[3], a[4])) == 0xffff)
 		return CodePointer(result, this);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x55) {
@@ -162,14 +163,14 @@ OPCODE(0x55) {
 	// args: left, top, colour, text
 	debugC(3, kDebugLevelScript, "opcode 0x55: paint '%s' with colour %s at %s:%s", +a[3], +a[2], +a[0], +a[1]);
 	_graphics->paintText(a[0], a[1], a[2], a[3]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x56) {
 	// say text
 	debugC(3, kDebugLevelScript, "opcode 0x86: say %s for %s frames", +a[1], +a[0]);
 	Graf.say(a[1], a[1], a[0]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x57) {
@@ -210,7 +211,7 @@ OPCODE(0x60) {
 
 	debugC(3, kDebugLevelScript, "opcode 0x60: %s = %d == search list %s for %s and return field %s", +a[3], value, +a[0], +a[1], +a[2]);
 	a[3] = value;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x63) {
@@ -256,42 +257,42 @@ OPCODE(0x63) {
 	}
 
 	debugC(3, kDebugLevelScript, "opcode 0x63: %s = get %s of actor %s", +a[2], desc, +a[0]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x6d) {
 	// increment
 	debugC(3, kDebugLevelScript, "opcode 0x6d: %s++", +a[0]);
 	a[0]++;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x6f) {
 	// decrement
 	debugC(3, kDebugLevelScript, "opcode 0x6d: %s--", +a[0]);
 	a[0]--;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x70) {
 	// assign
 	debugC(3, kDebugLevelScript, "opcode 0x70: %s = %s", +a[0], +a[1]);
 	a[0] = a[1];
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x72) {
 	// assign 1
 	debugC(3, kDebugLevelScript, "opcode 0x72: %s = 1", +a[0]);
 	a[0] = 1;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x73) {
 	// assign 0
 	debugC(3, kDebugLevelScript, "opcode 0x73: %s = 0", +a[0]);
 	a[0] = 0;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x77) {
@@ -299,14 +300,14 @@ OPCODE(0x77) {
 	debugC(1, kDebugLevelScript, "opcode 0x77: go to room %s facing %s partial STUB", +a[0], +a[1]);
 	_logic->protagonist()->setRoom(a[0]);
 	_logic->changeRoom(a[0]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x79) {
 	// move actor to another room
 	debugC(3, kDebugLevelScript, "opcode 0x79: move actor %s to room %s (and set current animation frame to %s STUB)", +a[0], +a[1], +a[2]);
 	_logic->getActor(a[0])->setRoom(a[1]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x7c) {
@@ -314,13 +315,13 @@ OPCODE(0x7c) {
 	Exit *exit = _logic->blockProgram()->getExit(a[0]);
 	debugC(3, kDebugLevelScript, "opcode 0x7c: toggling exit %s to %s", +a[0], exit->isEnabled() ? "disabled" : "enabled");
 	exit->setEnabled(!exit->isEnabled());
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x96) {
 	// disallow user interaction
 	debugC(1, kDebugLevelScript, "opcode 0x96: lock control STUB");
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x9a) {
@@ -328,7 +329,7 @@ OPCODE(0x9a) {
 	debugC(1, kDebugLevelScript, "opcode 0x9a: if actor %s in current room then STUB", +a[0]);
 	if (_logic->getActor(a[0])->room() == _logic->currentRoom())
 		error("case with condition true unhandled");
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x9b) {
@@ -343,14 +344,14 @@ OPCODE(0x9c) {
 	debugC(1, kDebugLevelScript, "opcode 0x9c: if actor %s in current room then STUB", +a[0]);
 	if (_logic->getActor(a[0])->room() == _logic->currentRoom())
 		error("case with condition true unhandled");
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0x9d) {
 	// set protagonist
 	debugC(3, kDebugLevelScript, "opcode 0x9d: set protagonist(%s)", +a[0]);
 	_logic->setProtagonist(a[0]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xad) {
@@ -364,27 +365,27 @@ OPCODE(0xad) {
 		ac->whenYouShowUpCall(current);
 		return kReturn;
 	}
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xc2) {
 	// add animation at cursor
 	debugC(3, kDebugLevelScript, "opcode 0xc2: add animation %s at cursor partial STUB", +a[0]);
 	_logic->addAnimation(new Animation(static_cast<CodePointer &>(a[0]), _graphics->cursorPosition()));
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xd2) {
 	// prepare interface palette
 	debugC(3, kDebugLevelScript, "opcode 0xd2: will fadein partially");
 	Graf.willFadein(Graphics::kPartialFade);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xdb) {
 	// add active rect
 	debugC(1, kDebugLevelScript, "opcode 0xdb: add rect %s at %s %s %s %s partial STUB", +a[0], +a[1], +a[2], +a[3], +a[4]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xc6) {
@@ -400,7 +401,7 @@ OPCODE(0xc7) {
 	Movie *m = Movie::fromFile(reinterpret_cast<char *>((byte *)(a[0])));
 	m->setFrameDelay(a[1]);
 	m->play();
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xc8) {
@@ -408,7 +409,7 @@ OPCODE(0xc8) {
 	// (not sure what's the difference to c9)
 	debugC(3, kDebugLevelScript, "opcode 0xc8: set backdrop(%s)", +a[0]);
 	_graphics->setBackdrop(a[0]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xc9) {
@@ -416,13 +417,13 @@ OPCODE(0xc9) {
 	// does it set the default one?
 	debugC(3, kDebugLevelScript, "opcode 0xc9: set backdrop(%s)", +a[0]);
 	_graphics->setBackdrop(a[0]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xcc) {
 	// go fullscreen
 	debugC(1, kDebugLevelScript, "opcode 0xcc: go fullscreen STUB");
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xce) {
@@ -431,26 +432,26 @@ OPCODE(0xce) {
 	Graf.hideCursor();
 	// hide objects
 	// set game area height to 200
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xcf) {
 	// fade out
 	debugC(1, kDebugLevelScript, "opcode 0xcf: fadeout");
 	_graphics->fadeOut();
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xd0) {
 	debugC(1, kDebugLevelScript, "opcode 0xd0: partial fadeout");
 	Graf.fadeOut(Graphics::kPartialFade);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xd1) {
 	debugC(3, kDebugLevelScript, "opcode 0xd1: fadein next paint");
 	_graphics->willFadein();
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xd6) {
@@ -465,19 +466,19 @@ OPCODE(0xd6) {
 		}
 	} else
 		_logic->changeRoom(a[0]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xdf) {
 	// add actor animation
 	debugC(1, kDebugLevelScript, "opcode 0xdf: add actor animation %s %s %s %s %s %s STUB", +a[0], +a[1], +a[2], +a[3], +a[4], +a[5]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xe5) {
 	// hide all exits from the map
 	debugC(1, kDebugLevelScript, "opcode 0xe5: hide exits from map STUB");
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xe6) {
@@ -485,7 +486,7 @@ OPCODE(0xe6) {
 	debugC(3, kDebugLevelScript, "opcode 0xe6: set room loop to %s", +a[0]);
 	assert(a[0].holdsCode());
 	_logic->setRoomLoop(static_cast<CodePointer &>(a[0]));
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xef) {
@@ -493,26 +494,37 @@ OPCODE(0xef) {
 	uint16 value = _engine->getRandom(a[0]);
 	debugC(3, kDebugLevelScript, "opcode 0xef: %s = %d == random(%s)", +a[1], value, +a[0]);
 	a[1] = value;
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xf0) {
 	// load sfx set
 	debugC(1, kDebugLevelScript, "opcode 0xf0: load sfx set %s STUB", +a[0]);
-	return kOk;
+	return kThxBye;
+}
+
+OPCODE(0xf4) {
+	// play music
+	debugC(1, kDebugLevelScript, "opcode 0xf4: play music script at %s", +a[0]);
+/*	Music *m = Log.music();
+	if (m)
+		m->whenYoureDoneCall(current);
+	else
+		Log.setMusic(new Music(a[0]));*/
+	return kThxBye;
 }
 
 OPCODE(0xf7) {
 	// stop music
 	debugC(1, kDebugLevelScript, "opcode 0xf7: stop music STUB");
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xf9) {
 	// set sound on
 	
 	debugC(1, kDebugLevelScript, "opcode 0xf9: set %s to %s STUB", a[0] == 1 ? "music" : "sfx", +a[1]);
-	return kOk;
+	return kThxBye;
 }
 
 OPCODE(0xfc) {
@@ -522,7 +534,7 @@ OPCODE(0xfc) {
 		error("asking for quitting not implemented");
 
 	_engine->quitGame();
-	return kOk;
+	return kThxBye;
 }
 
 // #define ANIMCODE(n) template<> void Animation::handle<n>()

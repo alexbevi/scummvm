@@ -18,9 +18,10 @@ class Actor;
 class Animation;
 class Debugger;
 class Engine;
-class Resources;
+class Music;
 class Interpreter;
 class Program;
+class Resources;
 class Room;
 
 class Logic : public Common::Singleton<Logic> {
@@ -61,6 +62,9 @@ public:
 
 	Animation *animation(uint16 offset) const;
 
+	Music *music() const { return _music; }
+	void setMusic(Music *m) { _music = m; }
+
 	friend class Debugger;
 private:
 
@@ -77,6 +81,7 @@ private:
 	Common::List<Animation *> _animations;
 	std::auto_ptr<CodePointer> _roomLoop;
 	std::auto_ptr<Room> _room;
+	Music *_music;
 
 	struct DelayedRun {
 		DelayedRun(const CodePointer &c, uint16 d) : code(c), delay(d) {}

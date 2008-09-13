@@ -28,7 +28,7 @@ enum Status {
 class Interpreter {
 private:
 	enum OpResultCode {
-		kOk,
+		kThxBye,
 		kReturn,
 		kFail,
 		kElse,

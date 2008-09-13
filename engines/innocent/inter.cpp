@@ -94,7 +94,7 @@ Status Interpreter::run(uint16 offset) {
 		if (nargs == 0)
 			code += 2;
 
-		OpResult result(kOk);
+		OpResult result(kThxBye);
 
 		if (opcode == 0x2c || opcode == 0x2d || opcode == 1 || if_depth == 0) {
 			Debug.opcodeStep();
@@ -120,7 +120,7 @@ Status Interpreter::run(uint16 offset) {
 			break;
 		case kJump:
 			code = _base + result.address;
-		case kOk:
+		case kThxBye:
 			// ok
 			;
 		}

@@ -1,20 +1,20 @@
-#include "resources.h"
+#include "common/hashmap.h"
+#include "innocent/resources.h"
 
 #include <vector>
 #include <algorithm>
 #include <ext/algorithm>
 
-#include "common/endian.h"
+//#include "common/endian.h"
 #include "common/file.h"
-#include "common/hashmap.h"
-#include "common/util.h"
+//#include "common/util.h"
 #include "graphics/surface.h"
 
 #include "innocent/innocent.h"
 #include "innocent/inter.h"
 #include "innocent/logic.h"
 #include "innocent/main_dat.h"
-#include "innocent/graph_dat.h"
+#include "innocent/mapfile.h"
 #include "innocent/prog_dat.h"
 #include "innocent/program.h"
 #include "innocent/sprite.h"
@@ -23,6 +23,9 @@ using namespace Common;
 using namespace std;
 
 namespace Innocent {
+//
+
+DECLARE_SINGLETON(Resources);
 
 void Surface::blit(const Surface *s, Common::Rect r, int transparent) {
 	const byte *src = reinterpret_cast<byte *>(s->pixels);
@@ -41,7 +44,8 @@ void Surface::blit(const Surface *s, Common::Rect r, int transparent) {
 
 Resources::Resources(Engine *vm) :
 		_main(new MainDat(this)),
-		_graphicsMap(new GraphicsMap(this)),
+		_graphicsMap(new MapFile("iuc_graf.dat")),
+		_tuneMap(new MapFile("iuc_tune.dat")),
 		_progDat(new ProgDat(this)),
 		_graphicFiles(0),
 		_vm(vm) {
@@ -113,7 +117,7 @@ void Resources::loadGraphicFiles() {
 
 Common::ReadStream *Resources::imageStream(uint16 index) const {
 	uint16 file_index = _main->fileIndexOfImage(index);
-	uint32 offset = _graphicsMap->offsetOfImage(index);
+	uint32 offset = _graphicsMap->offsetOfEntry(index);
 
 	SeekableReadStream *file = _graphicFiles[file_index].get();
 	file->seek(offset);
