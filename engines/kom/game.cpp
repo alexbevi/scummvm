@@ -965,8 +965,9 @@ void Game::loopTimeouts() {
 			}
 		}
 
+		// Idle animations don't count as "control freezing"
 		if (chr->_lastLocation == _vm->database()->getChar(0)->_lastLocation &&
-			chr->_spriteTimer > 0 && chr->_scopeInUse == 12)
+			chr->_spriteTimer > 0 && chr->_scopeInUse != 12)
 				_player.spriteCutNum++;
 	}
 }
