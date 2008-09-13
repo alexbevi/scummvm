@@ -27,7 +27,7 @@ private:
 	byte *_script;
 	uint16 _scriptOffset;
 
-	byte _tune[6000];
+	byte _tune[6666];
 	uint16 _num_beats;
 	byte *_beats;
 	uint16 _current_beat;

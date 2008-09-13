@@ -42,7 +42,7 @@ enum {
 void MusicParser::loadTune() {
 	const uint16 tune_index = READ_LE_UINT16(_script);
 	debugC(1, kDebugLevelMusic, "loading tune %d", tune_index);
-//	Res.loadTune(tune_index, _tune);
+	Res.loadTune(tune_index, _tune);
 
 	_num_tracks = 1;
 	_tracks[0] = _tune + kBeatTableOffset;

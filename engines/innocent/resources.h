@@ -64,6 +64,8 @@ public:
 	 * @returns pointer to the image. Please don't delete it, Resources owns it.
 	 */
 	Image *loadImage(uint16 index) const;
+	void loadTune(uint16 index, byte *target) const;
+
 	Common::ReadStream *tuneStream(uint16 index) const;
 
 	void loadInterfaceImage(byte *target, byte *palette = 0) {

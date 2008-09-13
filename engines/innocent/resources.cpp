@@ -192,6 +192,11 @@ Image *Resources::loadImage(uint16 index) const {
 	return img;
 }
 
+void Resources::loadTune(uint16 index, byte *target) const {
+	Common::ReadStream *file = tuneStream(index);
+	file->read(target, 6000);
+}
+
 void Resources::decodeImage(Common::ReadStream *stream, byte *target, uint16 size) {
 	enum {
 		kRunFlag = 0xc0
