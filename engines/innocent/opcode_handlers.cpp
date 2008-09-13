@@ -506,7 +506,7 @@ OPCODE(0xf0) {
 OPCODE(0xf4) {
 	// play music
 	debugC(1, kDebugLevelScript, "opcode 0xf4: play music script at %s", +a[0]);
-	Music.loadMusic(a[0]);
+	Music.loadMusic(static_cast<CodePointer &>(a[0]).offset() + Log.mainInterpreter()->_base);
 	return kThxBye;
 }
 
