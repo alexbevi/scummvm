@@ -139,18 +139,20 @@ list<MainDat::GraphicFile> MainDat::graphicFiles() const {
 }
 
 list<Common::String> MainDat::musicFiles() const {
-	uint16 file_count = READ_LE_UINT16(_footer + kGraphicFileCount);
-	uint16 names_offset = READ_LE_UINT16(_footer + kGraphicFileNames);
+	uint16 file_count = READ_LE_UINT16(_footer + kMusicFileCount);
+	uint16 names_offset = READ_LE_UINT16(_footer + kMusicFileNames);
 
 	byte *data = _data + names_offset;
 	list<Common::String> files;
 	for (; file_count > 0; file_count--) {
+		data += 2; // data set id
+		data++; // music type (1 - adlib, 4 - roland)
 		Common::String file(reinterpret_cast<char *>(data));
 		files.push_back(file);
 		while (*data)
 			data++;
-		while (!*data)
-			data++;
+//		while (!*data)
+		data++;
 	}
 
 	return files;

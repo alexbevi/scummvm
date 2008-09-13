@@ -109,6 +109,7 @@ private:
 
 	Common::ReadStream *imageStream(uint16 index) const;
 	void loadGraphicFiles();
+	void loadMusicFiles();
 
 	Engine *_vm;
 

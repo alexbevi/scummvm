@@ -58,13 +58,17 @@ Resources::~Resources() {
 		for (int i = 0; i < kFrameNum; i++)
 			delete _frames[i];
 	}
+	if (_musicFiles)
+		delete[] _musicFiles;
 }
 
 void Resources::load() {
 	_main->load();
 	_graphicsMap->load();
+	_tuneMap->load();
 
 	loadGraphicFiles();
+	loadMusicFiles();
 
 	_progDat->load();
 
@@ -110,6 +114,21 @@ void Resources::loadGraphicFiles() {
 	for (list<MainDat::GraphicFile>::const_iterator it = files.begin(); it != files.end(); ++it) {
 		File *file = new File();
 		file->open(String(it->filename));
+		auto_ptr<SeekableReadStream> pointer(file);
+		*(ptr++) = pointer;
+	}
+}
+
+void Resources::loadMusicFiles() {
+	const list<Common::String> files(_main->musicFiles());
+
+	_musicFiles = new auto_ptr<SeekableReadStream>[files.size()];
+
+	auto_ptr<SeekableReadStream> *ptr = _musicFiles;
+	for (list<Common::String>::const_iterator it = files.begin(); it != files.end(); ++it) {
+		debugC(1, kDebugLevelFiles | kDebugLevelMusic, "opening music file %s", it->c_str());
+		File *file = new File();
+		file->open(*it);
 		auto_ptr<SeekableReadStream> pointer(file);
 		*(ptr++) = pointer;
 	}
