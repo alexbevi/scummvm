@@ -45,7 +45,8 @@ enum DebugLevel {
 	kDebugLevelAnimation = 8,
 	kDebugLevelValues    = 16,
 	kDebugLevelFiles	 = 32,
-	kDebugLevelEvents	 = 64
+	kDebugLevelEvents	 = 64,
+	kDebugLevelMusic	 = 128
 };
 
 const char *operator+(const Common::Rect &r);

@@ -21,7 +21,8 @@ MODULE_OBJS = \
 	room.o \
 	eventmanager.o \
 	debug.o \
-	movie.o
+	movie.o \
+	musicparser.o
 
 inter.o: opcode_handlers.cpp
 

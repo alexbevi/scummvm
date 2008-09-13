@@ -42,13 +42,13 @@ void Surface::blit(const Surface *s, Common::Rect r, int transparent) {
 	}
 }
 
-Resources::Resources(Engine *vm) :
-		_main(new MainDat(this)),
-		_graphicsMap(new MapFile("iuc_graf.dat")),
-		_tuneMap(new MapFile("iuc_tune.dat")),
-		_progDat(new ProgDat(this)),
-		_graphicFiles(0),
-		_vm(vm) {
+void Resources::setEngine(Engine *vm) {
+	_main.reset(new MainDat(this));
+	_graphicsMap.reset(new MapFile("iuc_graf.dat"));
+	_tuneMap.reset(new MapFile("iuc_tune.dat"));
+	_progDat.reset(new ProgDat(this));
+	_graphicFiles = 0;
+	_vm = vm;
 }
 
 Resources::~Resources() {

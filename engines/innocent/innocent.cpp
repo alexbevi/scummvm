@@ -21,7 +21,8 @@ Engine *Engine::me;
 
 Engine::Engine(OSystem *syst) :
 		::Engine(syst) {
-	_resources.reset(new Resources(this));
+	_resources = &Res;
+	_resources->setEngine(this);
 	_graphics = &Graphics::instance();
 	_graphics->setEngine(this);
 	_logic = &Logic::instance();
@@ -37,6 +38,7 @@ Engine::Engine(OSystem *syst) :
 	Common::addSpecialDebugLevel(kDebugLevelValues, "values", "really low-level debugging of value manipulation");
 	Common::addSpecialDebugLevel(kDebugLevelFiles, "files", "file input and output");
 	Common::addSpecialDebugLevel(kDebugLevelEvents, "events", "event handling");
+	Common::addSpecialDebugLevel(kDebugLevelMusic, "music", "music loading and playing");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
 }

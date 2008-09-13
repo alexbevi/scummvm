@@ -31,7 +31,7 @@ public:
 	void delay(int millis) const;
 
 	Logic *logic() { return _logic; }
-	Resources *resources() { return _resources.get(); }
+	Resources *resources() { return _resources; }
 	Graphics *graphics() { return _graphics; }
 	Debugger *debugger() { return _debugger; }
 	Common::EventManager *eventMan() { return _eventMan; }
@@ -46,7 +46,7 @@ public:
 
 private:
 	Logic *_logic;
-	std::auto_ptr<Resources> _resources;
+	Resources *_resources;
 	Graphics *_graphics;
 	Debugger *_debugger;
 

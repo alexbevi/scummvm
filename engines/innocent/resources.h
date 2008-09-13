@@ -44,8 +44,9 @@ class Program;
 
 class Resources : public Common::Singleton<Resources> {
 public:
-	Resources(Engine *vm);
+	Resources() {}
 	~Resources();
+	void setEngine(Engine *e);
 	void load();
 	void init();
 
