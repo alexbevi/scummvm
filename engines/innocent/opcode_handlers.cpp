@@ -7,7 +7,7 @@
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
 #include "innocent/movie.h"
-//#include "innocent/music.h"
+#include "innocent/musicparser.h"
 #include "innocent/util.h"
 
 #include "common/events.h"
@@ -506,11 +506,7 @@ OPCODE(0xf0) {
 OPCODE(0xf4) {
 	// play music
 	debugC(1, kDebugLevelScript, "opcode 0xf4: play music script at %s", +a[0]);
-/*	Music *m = Log.music();
-	if (m)
-		m->whenYoureDoneCall(current);
-	else
-		Log.setMusic(new Music(a[0]));*/
+	Music.loadMusic(a[0]);
 	return kThxBye;
 }
 

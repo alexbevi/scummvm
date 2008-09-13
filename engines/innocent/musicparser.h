@@ -1,6 +1,7 @@
 #ifndef INNOCENT_MUSIC_H
 #define INNOCENT_MUSIC_H
 
+#include "common/singleton.h"
 #include "sound/midiparser.h"
 
 #include "innocent/value.h"
@@ -8,7 +9,7 @@
 namespace Innocent {
 //
 
-class MusicParser : public MidiParser {
+class MusicParser : public MidiParser, public Common::Singleton<MusicParser> {
 public:
 	MusicParser() : MidiParser() {}
 	virtual ~MusicParser() {}
@@ -31,6 +32,8 @@ private:
 	byte *_beats;
 	uint16 _current_beat;
 };
+
+#define Music MusicParser::instance()
 
 }
 

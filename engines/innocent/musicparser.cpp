@@ -20,6 +20,8 @@ four commands, two bytes each.
 namespace Innocent {
 //
 
+DECLARE_SINGLETON(MusicParser);
+
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_script = data;
 	_scriptOffset = 2;

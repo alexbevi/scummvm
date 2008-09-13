@@ -151,7 +151,6 @@ list<Common::String> MainDat::musicFiles() const {
 		files.push_back(file);
 		while (*data)
 			data++;
-//		while (!*data)
 		data++;
 	}
 
