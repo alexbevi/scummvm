@@ -37,6 +37,10 @@ enum Offsets {
 	kImageDirectory		= 0x1E,
 	kGraphicFileCount	= 0x20,
 	kGraphicFileNames	= 0x22,
+	kTunesCount			= 0x2A,
+	kTunesDirectory		= 0x2C,
+	kMusicFileCount		= 0x2E,
+	kMusicFileNames		= 0x30,
 	kWordVars			= 0x3A,
 	kByteVars			= 0x3E,
 	kEntryPoint			= 0x42,
@@ -67,6 +71,7 @@ void MainDat::readFile(SeekableReadStream &stream) {
 	stream.read(_footer, kFooterLen);
 
 	_imageDirectory = _data + READ_LE_UINT16(_footer + kImageDirectory);
+	_tunesDirectory = _data + READ_LE_UINT16(_footer + kTunesDirectory);
 
 	_programsCount = READ_LE_UINT16(_footer + kProgEntriesCount1);
 
@@ -88,6 +93,10 @@ uint16 MainDat::imagesCount() const {
 	return READ_LE_UINT16(_footer + kImagesCount);
 }
 
+uint16 MainDat::tunesCount() const {
+	return READ_LE_UINT16(_footer + kTunesCount);
+}
+
 uint16 MainDat::progEntriesCount0() const {
 	return READ_LE_UINT16(_footer + kProgEntriesCount0);
 }
@@ -103,6 +112,11 @@ uint16 MainDat::fileIndexOfImage(uint16 index) const {
 	return snd;
 }
 
+uint16 MainDat::fileIndexOfTune(uint16 index) const {
+	uint32 offset = (index - 1) * 2;
+	return READ_LE_UINT16(_tunesDirectory + offset);
+}
+
 list<MainDat::GraphicFile> MainDat::graphicFiles() const {
 	uint16 file_count = READ_LE_UINT16(_footer + kGraphicFileCount);
 	uint16 names_offset = READ_LE_UINT16(_footer + kGraphicFileNames);
@@ -114,6 +128,24 @@ list<MainDat::GraphicFile> MainDat::graphicFiles() const {
 		file.data_set = READ_LE_UINT16(data);
 		data += 2;
 		file.filename = reinterpret_cast<char *>(data);
+		files.push_back(file);
+		while (*data)
+			data++;
+		while (!*data)
+			data++;
+	}
+
+	return files;
+}
+
+list<Common::String> MainDat::musicFiles() const {
+	uint16 file_count = READ_LE_UINT16(_footer + kGraphicFileCount);
+	uint16 names_offset = READ_LE_UINT16(_footer + kGraphicFileNames);
+
+	byte *data = _data + names_offset;
+	list<Common::String> files;
+	for (; file_count > 0; file_count--) {
+		Common::String file(reinterpret_cast<char *>(data));
 		files.push_back(file);
 		while (*data)
 			data++;

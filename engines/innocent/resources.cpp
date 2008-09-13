@@ -125,6 +125,16 @@ Common::ReadStream *Resources::imageStream(uint16 index) const {
 	return file;
 }
 
+Common::ReadStream *Resources::tuneStream(uint16 index) const {
+	uint16 file_index = _main->fileIndexOfTune(index);
+	uint32 offset = _tuneMap->offsetOfEntry(index);
+
+	SeekableReadStream *file = _musicFiles[file_index].get();
+	file->seek(offset);
+
+	return file;
+}
+
 void Resources::readPalette(Common::ReadStream *stream, byte *palette) {
 	for(int i = 256; i; i--) { // convert to rgba
 		stream->read(palette, 3);

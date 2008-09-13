@@ -26,6 +26,7 @@ public:
 	void readFile(Common::SeekableReadStream &stream);
 
 	uint16 imagesCount() const;
+	uint16 tunesCount() const;
 
 	struct GraphicFile {
 		uint16 data_set;
@@ -33,6 +34,7 @@ public:
 	};
 
 	std::list<struct GraphicFile> graphicFiles() const;
+	std::list<Common::String> musicFiles() const;
 
 	uint16 progEntriesCount0() const;
 	uint16 progEntriesCount1() const;
@@ -43,6 +45,7 @@ public:
 	 * @returns index of graphics data file containing the image.
 	 */
 	uint16 fileIndexOfImage(uint16 index) const;
+	uint16 fileIndexOfTune(uint16 index) const;
 
 	uint16 interfaceImageIndex() const;
 
@@ -74,6 +77,7 @@ private:
 	uint16 _dataLen;
 	byte _footer[kFooterLen];
 	byte *_imageDirectory;
+	byte *_tunesDirectory;
 	uint16 _programsCount;
 	byte *_programsMap;
 	Actor **_actors;

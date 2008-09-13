@@ -64,8 +64,7 @@ public:
 	 * @returns pointer to the image. Please don't delete it, Resources owns it.
 	 */
 	Image *loadImage(uint16 index) const;
-
-//	Tune *loadTune(uint16 index) const;
+	Common::ReadStream *tuneStream(uint16 index) const;
 
 	void loadInterfaceImage(byte *target, byte *palette = 0) {
 		loadImage(_main->interfaceImageIndex(), target, 0x3c00, palette);
@@ -119,6 +118,7 @@ private:
 	std::auto_ptr<ProgDat> _progDat;
 
 	std::auto_ptr<Common::SeekableReadStream> *_graphicFiles;
+	std::auto_ptr<Common::SeekableReadStream> *_musicFiles;
 
 	Sprite *_frames[9];
 };
