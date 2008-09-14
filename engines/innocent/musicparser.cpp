@@ -11,293 +11,83 @@ namespace Innocent {
 
 DECLARE_SINGLETON(MusicParser);
 
+MusicParser::MusicParser() : MidiParser() {}
+
+MusicParser::~MusicParser() {}
+
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
-	_script = data;
-	_scriptOffset = 2;
-
-	loadTune();
-
-	_driver->open();
-	setTimerRate(_driver->getBaseTempo());
-
-	_ppqn = 64;
-	setTempo(500000);
-	setTrack(0);
-
-	_driver->setTimerCallback(this, &MidiParser::timerCallback);
-
+	_script = MusicScript(data);
 	return true;
-}
-
-enum {
-	kNumBeatsOffset = 0x21,
-	kBeatTableOffset = 0x25
-};
-
-#define DATASTART(num_beats) _tune + kBeatTableOffset + (num_beats) * kChannelCount
-
-void MusicParser::loadTune() {
-	const uint16 tune_index = 1; //READ_LE_UINT16(_script);
-	debugC(1, kDebugLevelMusic, "loading tune %d", tune_index);
-	Res.loadTune(tune_index, _tune);
-
-	_num_tracks = 1;
-	_tracks[0] = _tune + kBeatTableOffset;
-
-	_nbeats = READ_LE_UINT16(_tune + kNumBeatsOffset);
-	_data = _tracks[0] + _nbeats * 8;
-
-	_beat = _tracks[0];
-	_thisbeat = 0;
-	_nextbeat = 1;
-	debugC(3, kDebugLevelMusic, "beat at offset 0x%x", _beat - _tune);
-	_channel = 0;
-	_nextcommand = 0;
-
-	_beatinitialized = false;
 }
 
 void MusicParser::parseNextEvent(EventInfo &info) {
-	// delta to next full tick (nearest multiple of 64)
-	uint32 tickdelta = 64 - (_position._last_event_tick % 64);
-	uint32 basedelta = 0;
-
-	while (true) {
-		while (_beatinitialized) {
-			debugC(4, kDebugLevelMusic, "beat initialized, executing notes, tick %d", getTick());
-			uint32 bestdelta = 0xffffffff;
-			byte **bestnote = 0;
-			uint32 *besttimes = 0;
-			for (int chan = 0; chan < 8; chan++) {
-				for (int note = 0; note < 4; note++) {
-					unless (_notes[chan][note])
-						continue;
-
-					uint32 delta = _times[chan][note] - _position._last_event_tick;
-					debugC(4, kDebugLevelMusic, "trying note for %d %d at offset 0x%x", chan, note, _notes[chan][note] - _tune);
-					if (_times[chan][note] == 0) {  // instant note
-						byte code = *_notes[chan][note];
-						if (code == 0xFE) {
-							delta = _times[chan][note] = _notes[chan][note][1];
-							_times[chan][note] += getTick();
-							_notes[chan][note] += 2;
-						} else {
-							info.delta = 0;
-							info.event = chan + 2;
-							info.basic.param1 = note;
-							if (doCommand(_notes[chan][note][0], _notes[chan][note][1], info)) {
-								_notes[chan][note] += 2;
-								goto done;
-							} else continue;
-						}
-					}
-
-					if (delta < bestdelta) {
-						info.event = chan + 2;
-						info.basic.param1 = note;
-						bestdelta = delta;
-						bestnote = &_notes[chan][note];
-						besttimes = &_times[chan][note];
-					}
-					debugC(5, kDebugLevelMusic, "best delta: %d", bestdelta);
-				}
-			}
-
-			assert(bestnote);
-
-			debugC(5, kDebugLevelMusic, "best delta: %d [%x], tickdelta: %d", bestdelta, **bestnote, tickdelta);
-			if (tickdelta <= bestdelta)
-				_beatinitialized = false;
-			else {
-				info.delta = bestdelta;
-				bool ok = doCommand((*bestnote)[0], (*bestnote)[1], info);
-				*bestnote += 2;
-				*besttimes = 0;
-				if (ok)
-					goto done;
-			}
-		}
-
-		unless (_beatinitialized) {
-			info.delta = basedelta;
-			if (nextChannelInit(info))
-				break;
-			else {
-				_channel = 0;
-				_thisbeat = _nextbeat;
-				_nextbeat++;
-				_beat = _tracks[0] + 8 * _thisbeat;
-				_beatinitialized = true;
-				basedelta = tickdelta;
-				tickdelta += 64;
-			}
-		}
-	}
-
-done:
-	assert (_beat < _data);
-
-//	info.delta += basedelta;
-	debugC(3, kDebugLevelMusic, "event 0x%02x delta %d", info.event, info.delta);
 }
 
-bool MusicParser::nextChannelInit(EventInfo &info) {
-	unless (_channel) {
-		_nextcommand = 0;
-		_channel = _beat;
-		_beatchannel = _data + 16 * (*_channel - 1);
-		for (int i = 0; i < 4; i++) {
-			_notes[_channel - _beat][i] = 0;
-			_times[_channel - _beat][i] = 0;
-			unless (*_channel) continue;
-			uint16 offset = READ_LE_UINT16(_beatchannel + 2*i);
-			if (offset) {
-				debugC(3, kDebugLevelMusic, "note %d %d at offset 0x%x", _channel - _beat, i, offset);
-				_notes[_channel - _beat][i] = _tune + offset;
-			}
-		}
-	}
-	info.event = _channel - _beat + 2;
+MusicScript::MusicScript() : _code(0) {}
 
-	debugC(3, kDebugLevelMusic, "channel at offset 0x%x", _channel - _tune);
-	while (_channel < _beat + 8 && !(*_channel && nextInitCommand(info))) {
-		_nextcommand = 0;
-		_channel++;
-		_beatchannel = _data + 16 * (*_channel - 1);
-		info.event = _channel - _beat + 2;
-		for (int i = 0; i < 4; i++) {
-			_notes[_channel - _beat][i] = 0;
-			_times[_channel - _beat][i] = 0;
-			unless (*_channel) continue;
-			uint16 offset = READ_LE_UINT16(_beatchannel + 2*i);
-			if (offset) {
-				debugC(3, kDebugLevelMusic, "note %d %d at offset 0x%x", _channel - _beat, i, offset);
-				_notes[_channel - _beat][i] = _tune + offset;
-			}
-		}
-		debugC(3, kDebugLevelMusic, "channel at offset 0x%x", _channel - _tune);
-	}
+MusicScript::MusicScript(const byte *data) :
+	_code(data),
+	_tune(READ_LE_UINT16(data)),
+	_offset(2) {}
 
-	if (_channel == _beat + 8) {
-		_channel = 0;
-		return false;
-	}
+Tune::Tune() : _currentBeat(-1) {}
 
-	return true;
-}
-
-bool MusicParser::nextInitCommand(EventInfo &info) {
-	unless (_nextcommand)
-		_nextcommand = _beatchannel + 8;
-
-	debugC(3, kDebugLevelMusic, "command at offset 0x%x", _nextcommand - _tune);
-	while (_nextcommand < _beatchannel + 16 && !doCommand(_nextcommand[0], _nextcommand[1], info)) {
-		_nextcommand += 2;
-		debugC(3, kDebugLevelMusic, "command at offset 0x%x", _nextcommand - _tune);
-	}
-
-	if (_nextcommand == _beatchannel + 16) {
-		_nextcommand = 0;
-		return false;
-	}
-
-	_nextcommand += 2;
-
-	return true;
-}
-
-enum Command {
-	kSetTerminator = 0x81,
-	kSetProgram = 	 0x82,
-	kSetExpression = 0x89,
-	kNoteOff =		 0x8b,
-	kCallScript =	 0x8c
+enum {
+	kTuneBeatCountOffset = 0x21,
+	kTuneHeaderSize =	   0x25
 };
 
-enum MidiCommand {
-	kMidiNoteOff =		  0x80,
-	kMidiChannelControl = 0xb0,
-	kMidiSetProgram =	  0xc0
-};
+Tune::Tune(uint16 index) {
+	index = 1;
+	Res.loadTune(index, _data);
 
-enum MidiChannelControl {
-	kMidiChanExpression = 0xb
-};
+	uint16 nbeats = READ_LE_UINT16(_data + kTuneBeatCountOffset);
+	_beats.resize(nbeats);
 
-bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
-	debugC(4, kDebugLevelMusic, "trying command %x, parameter %x", command, parameter);
-	switch (command) {
+	const byte *beat = _data + kTuneHeaderSize;
+	const byte *channels = beat + 8 * nbeats;
 
-	case kSetProgram:
-		debugC(4, kDebugLevelMusic, "setting channel %d program to 0x%02x", info.event, parameter);
-		info.event |= kMidiSetProgram;
-		info.basic.param1 = parameter;
-		return true;
+	for (uint i = 0; i < _beats.size(); i++) {
+		_beats[i] = Beat(beat, channels, _data);
+		beat += 8;
+	}
 
-	case kSetExpression:
-		debugC(4, kDebugLevelMusic, "setting channel %d expression to 0x%02x", info.event, parameter);
-		info.event |= kMidiChannelControl;
-		info.basic.param1 = kMidiChanExpression;
-		info.basic.param2 = parameter;
-		return true;
+	_currentBeat = 0;
+}
 
-	case kSetTerminator:
-		debugC(1, kDebugLevelMusic, "set terminator for channel %d to 0x%02x STUB", info.event, parameter);
-		return false;
+Beat::Beat() {}
 
-	case kNoteOff:
-		debugC(4, kDebugLevelMusic, "note on %d off", info.event);
-		info.basic.param1 = _note[info.event - 2][info.basic.param1];
-		_note[info.event - 2][info.basic.param1] = 0;
-		info.event |= kMidiNoteOff;
+Beat::Beat(const byte *def, const byte *channels, const byte *tune) {
+	for (int i = 0; i < 8; i++)
+		if (def[i])
+			_channels[i] = Channel(channels + 16 * (def[i] - 1), tune);
+}
 
-	case kCallScript:
-		debugC(1, kDebugLevelMusic, "call script");
-		callScript();
-		return false;
+Channel::Channel() {}
 
-	case 0:
-		return false;
+Channel::Channel(const byte *def, const byte *tune) {
+	for (int i = 0; i < 4; i++) {
+		const uint16 off = READ_LE_UINT16(def);
+		def += 2;
+		if (off)
+			_notes[i] = Note(tune + off);
+	}
 
-	default:
-		if (command < 0x80) { // note
-			info.event |= 0x90;
-			info.basic.param1 = command - 1;
-			info.basic.param2 = parameter;
-			return true;
-		} else error("unhandled music command 0x%02x", command);
+	for (int i = 0; i < 4; i++) {
+		_init[i] = MusicCommand(def);
+		def += 2;
 	}
 }
 
-enum MusicScriptCodes {
-	kJump = 0x96,
-	kChangeBeat = 0x9a
-};
+Note::Note() {}
 
-void MusicParser::callScript() {
-	while (true) {
-		byte opcode = _script[_scriptOffset];
-		debugC(3, kDebugLevelMusic, "music script code 0x%x", opcode);
+Note::Note(const byte *data) :
+	_data(data) {}
 
-		switch (opcode) {
-		case kChangeBeat:
-			_nextbeat = _script[_scriptOffset + 1];
-			debugC(3, kDebugLevelMusic, "jump to beat %d", _nextbeat);
-			_channel = 0;
-			_beatinitialized = 0;
-			_scriptOffset += 2;
-			jumpToTick(getTick() & ~0x3f + 64, false);
-			return;
+MusicCommand::MusicCommand() {}
 
-		case kJump:
-			_scriptOffset = READ_LE_UINT16(_script + _scriptOffset + 2);
-			debugC(3, kDebugLevelMusic, "jump to %x", _scriptOffset);
-			break;
-
-		default:
-			error("unhandled music script code 0x%x", opcode);
-		}
-	}
-}
+MusicCommand::MusicCommand(const byte *def) :
+	_command(def[0]),
+	_parameter(def[1]) {}
 
 } // End of namespace
