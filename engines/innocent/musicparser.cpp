@@ -62,9 +62,10 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 
 	while (true) {
 		while (_beatinitialized) {
-			debugC(4, kDebugLevelMusic, "beat initialized, executing notes");
+			debugC(4, kDebugLevelMusic, "beat initialized, executing notes, tick %d", getTick());
 			uint32 bestdelta = 0xffffffff;
 			byte **bestnote = 0;
+			uint32 *besttimes = 0;
 			for (int chan = 0; chan < 8; chan++) {
 				for (int note = 0; note < 4; note++) {
 					unless (_notes[chan][note])
@@ -77,16 +78,21 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 							delta = _times[chan][note] = _notes[chan][note][1];
 							_times[chan][note] += getTick();
 							_notes[chan][note] += 2;
-						} else if (doCommand(_notes[chan][note][0], _notes[chan][note][1], info)) {
-						_notes[chan][note] += 2;
-						goto done;
-						} else continue;
+						} else {
+							info.delta = 0;
+							info.event = chan + 2;
+							if (doCommand(_notes[chan][note][0], _notes[chan][note][1], info)) {
+								_notes[chan][note] += 2;
+								goto done;
+							} else continue;
+						}
 					}
 
 					if (delta < bestdelta) {
 						info.event = chan + 2;
 						bestdelta = delta;
 						bestnote = &_notes[chan][note];
+						besttimes = &_times[chan][note];
 					}
 					debugC(5, kDebugLevelMusic, "best delta: %d", bestdelta);
 				}
@@ -101,6 +107,7 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 				info.delta = bestdelta;
 				bool ok = doCommand((*bestnote)[0], (*bestnote)[1], info);
 				*bestnote += 2;
+				*besttimes = 0;
 				if (ok)
 					goto done;
 			}
@@ -122,7 +129,7 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 done:
 	assert (_beat < _data);
 
-	info.delta += basedelta;
+//	info.delta += basedelta;
 	debugC(3, kDebugLevelMusic, "event 0x%02x delta %d", info.event, info.delta);
 }
 
