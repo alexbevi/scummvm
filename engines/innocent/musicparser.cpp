@@ -171,12 +171,14 @@ void Channel::parseNextEvent(EventInfo &info) {
 }
 
 
-Note::Note() {}
+Note::Note() : _data(0) {}
 
 Note::Note(const byte *data) :
 	_data(data), _tick(0), _note(0) {}
 
 uint32 Note::delta() const {
+	unless (_data)
+		return 0xffffffff;
 	if (_tick <= Music.getTick())
 		return 0;
 	else
