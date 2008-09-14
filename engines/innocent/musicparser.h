@@ -10,6 +10,12 @@
 namespace Innocent {
 //
 
+class EventQueue : public Common::List<EventInfo> {
+public:
+	void push(const EventInfo &info);
+	EventInfo pop();
+};
+
 class MusicParser : public MidiParser, public Common::Singleton<MusicParser> {
 public:
 	MusicParser() : MidiParser() {}
@@ -39,7 +45,7 @@ private:
 	byte *_beats;
 	byte *_current_beat;
 	uint16 _current_beat_id;
-	Common::Queue<EventInfo> _eventQueue;
+	EventQueue _eventQueue;
 };
 
 #define Music MusicParser::instance()

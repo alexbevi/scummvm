@@ -11,6 +11,21 @@ namespace Innocent {
 
 DECLARE_SINGLETON(MusicParser);
 
+void EventQueue::push(const EventInfo &info) {
+	EventQueue::iterator it = begin();
+	while (it != end() && it->delta < info.delta)
+		it++;
+
+	debugC(4, kDebugLevelMusic, "inserted event 0x%02x at %d", info.event, info.delta);
+	insert(it, info);
+}
+
+EventInfo EventQueue::pop() {
+	EventInfo info = *begin();
+	pop_front();
+	return info;
+}
+
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_script = data;
 	_scriptOffset = 2;
@@ -63,11 +78,13 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 		fillEventQueue();
 
 	info = _eventQueue.pop();
+	info.delta -= _position._last_event_tick;
 	debugC(4, kDebugLevelMusic, "got event 0x%02x, delta %d from the queue, pushing", info.event, info.delta);
 }
 
 void MusicParser::fillEventQueue() {
 	while (_eventQueue.empty()) {
+		debugC(4, kDebugLevelMusic, "current tick: %d", getTick());
 		loadActiveNotes();
 		setBeat(_current_beat_id + 1);
 	}
@@ -77,7 +94,7 @@ void MusicParser::fillEventQueue() {
 void MusicParser::loadActiveNotes() {
 	byte *note = _current_beat;
 
-	uint32 delta = _ppqn;
+	uint32 delta = _current_beat_id * _ppqn;
 	for (byte channel = 2; channel < 10; channel++) {
 		debugC(3, kDebugLevelMusic, "active note for channel %d, index %d", channel + 1, *note);
 
@@ -92,10 +109,8 @@ void MusicParser::loadActiveNotes() {
 			info.delta = delta;
 			info.event = channel;
 
-			if (doCommand(command, parameter, info)) {
+			if (doCommand(command, parameter, info))
 				_eventQueue.push(info);
-				delta = 0;
-			}
 		}
 	}
 }
