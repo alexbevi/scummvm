@@ -34,6 +34,7 @@ private:
 	void setBeat(uint16 beat);
 
 	void loadActiveNotes();
+	void loadHangingNotes();
 	bool doCommand(byte command, byte parameter, EventInfo &info);
 	void fillEventQueue();
 

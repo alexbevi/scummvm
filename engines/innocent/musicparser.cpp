@@ -50,7 +50,7 @@ enum {
 };
 
 void MusicParser::loadTune() {
-	const uint16 tune_index = READ_LE_UINT16(_script);
+	const uint16 tune_index = 1; //READ_LE_UINT16(_script);
 	debugC(1, kDebugLevelMusic, "loading tune %d", tune_index);
 	Res.loadTune(tune_index, _tune);
 
@@ -86,6 +86,7 @@ void MusicParser::fillEventQueue() {
 	while (_eventQueue.empty()) {
 		debugC(4, kDebugLevelMusic, "current tick: %d", getTick());
 		loadActiveNotes();
+		loadHangingNotes();
 		setBeat(_current_beat_id + 1);
 	}
 	// TODO hanging notes not supported yet
@@ -98,7 +99,37 @@ void MusicParser::loadActiveNotes() {
 	for (byte channel = 2; channel < 10; channel++) {
 		debugC(3, kDebugLevelMusic, "active note for channel %d, index %d", channel + 1, *note);
 
-		byte *beat = _beats + *(note++) * 16 + 8;
+		if (!*note) {
+			++note;
+			continue;
+		}
+
+		byte *beat = _beats + *(note++) * 16 - 8;
+		for (byte i = 0; i < 4; i++) {
+			byte command = *(beat++);
+			byte parameter = *(beat++);
+			debugC(4, kDebugLevelMusic, "command 0x%02x, parameter 0x%02x", command, parameter);
+
+			EventInfo info;
+			info.start = _current_beat;
+			info.delta = delta;
+			info.event = channel;
+
+			if (doCommand(command, parameter, info))
+				_eventQueue.push(info);
+		}
+	}
+}
+
+void MusicParser::loadHangingNotes() {
+	byte *note = _current_beat;
+
+	uint32 delta = _current_beat_id * _ppqn;
+	for (byte channel = 2; channel < 10; channel++) {
+		debugC(3, kDebugLevelMusic, "hanging note for channel %d, index %d", channel + 1, *note);
+
+		byte *beat = _beats + *(note++) * 16;
+		beat = _beats + *beat - 1;
 		for (byte i = 0; i < 4; i++) {
 			byte command = *(beat++);
 			byte parameter = *(beat++);
@@ -151,11 +182,19 @@ bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
 		return false;
 
 	case 0:
+	case 0x80:
+	case 0x8d:
 	case 0x97:
+	case 0x99:
 		return false;
 
 	default:
-		error("unhandled music command 0x%02x", command);
+		if (command < 0x80) { // note
+			info.event |= 0x90;
+			info.basic.param1 = command - 1;
+			info.basic.param2 = parameter;
+			return true;
+		} else error("unhandled music command 0x%02x", command);
 	}
 }
 

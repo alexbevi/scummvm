@@ -145,8 +145,10 @@ Common::ReadStream *Resources::imageStream(uint16 index) const {
 }
 
 Common::ReadStream *Resources::tuneStream(uint16 index) const {
-	uint16 file_index = _main->fileIndexOfTune(index);
+	uint16 file_index = _main->fileIndexOfTune(index) + 1;
 	uint32 offset = _tuneMap->offsetOfEntry(index);
+
+	debugC(2, kDebugLevelFiles | kDebugLevelMusic, "loading tune %d from file %d at offset %d", index, file_index, offset);
 
 	SeekableReadStream *file = _musicFiles[file_index].get();
 	file->seek(offset);
