@@ -184,8 +184,9 @@ uint32 Note::delta() const {
 }
 
 enum {
-	kSetProgram = 0x82,
-	kHangNote =   0xfe
+	kSetProgram = 	 0x82,
+	kSetExpression = 0x89,
+	kHangNote = 	 0xfe
 };
 
 void Note::parseNextEvent(EventInfo &info) {
@@ -215,7 +216,12 @@ MusicCommand::MusicCommand(const byte *def) :
 	_parameter(def[1]) {}
 
 enum {
-	kMidiSetProgram = 0xc0
+	kMidiChannelControl = 0xb0,
+	kMidiSetProgram = 	  0xc0
+};
+
+enum {
+	kMidiCtrlExpression = 0xb
 };
 
 void MusicCommand::parseNextEvent(EventInfo &info) {
@@ -223,6 +229,13 @@ void MusicCommand::parseNextEvent(EventInfo &info) {
 	case kSetProgram:
 		debugC(2, kDebugLevelMusic, "will set program on channel %d to %d in %d ticks", info.event, _parameter, info.delta);
 		info.event |= kMidiSetProgram;
+		info.basic.param1 = _parameter;
+		break;
+	case kSetExpression:
+		debugC(2, kDebugLevelMusic, "will set expression on channel %d to %d in %d ticks", info.event, _parameter, info.delta);
+		info.event |= kMidiChannelControl;
+		info.basic.param1 = kMidiCtrlExpression;
+		info.basic.param2 = _parameter;
 		break;
 	default:
 		error("unhandled music command %x", _command);
