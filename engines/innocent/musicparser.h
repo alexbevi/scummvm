@@ -43,6 +43,10 @@ private:
 
 	uint16 _nbeats;
 	byte *_data, *_beat, *_channel, *_nextcommand, *_beatchannel;
+
+	bool _beatinitialized;
+	byte *_notes[8][4];
+	uint32 _times[8][4];
 };
 
 #define Music MusicParser::instance()

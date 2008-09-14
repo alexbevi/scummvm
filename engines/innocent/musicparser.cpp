@@ -51,17 +51,71 @@ void MusicParser::loadTune() {
 	debugC(3, kDebugLevelMusic, "beat at offset 0x%x", _beat - _tune);
 	_channel = 0;
 	_nextcommand = 0;
+
+	_beatinitialized = false;
 }
 
 void MusicParser::parseNextEvent(EventInfo &info) {
-	info.delta = 0;
-	while (_beat < _tracks[0] + _nbeats * 8 && !nextChannelInit(info)) {
-		_beat += 8;
-		info.delta += 64;
+	// delta to next full tick (nearest multiple of 64)
+	uint32 tickdelta = (_position._last_event_tick + 63) & ~0x3f;
+	uint32 basedelta = 0;
+
+	while (true) {
+		while (_beatinitialized) {
+			uint32 bestdelta = 0xffffffff;
+			byte **bestnote = 0;
+			for (int chan = 0; chan < 8; chan++) {
+				for (int note = 0; note < 4; note++) {
+					unless (_notes[chan][note])
+						continue;
+
+					uint32 delta = _times[chan][note] - _position._last_event_tick;
+					if (delta == 0 && doCommand(_notes[chan][note][0], _notes[chan][note][1], info)) {
+						_notes[chan][note] += 2;
+						goto done;
+					}
+
+					if (delta < bestdelta) {
+						bestdelta = delta;
+						bestnote = &_notes[chan][note];
+					}
+				}
+			}
+
+			assert(bestnote);
+
+			if (tickdelta < bestdelta)
+				_beatinitialized = false;
+			else {
+				bool ok = doCommand((*bestnote)[0], (*bestnote)[1], info);
+				*bestnote += 2;
+				if (ok)
+					goto done;
+			}
+		}
+
+		unless (_beatinitialized) {
+			for (int i = 0; i < 8; i++)
+				for (int j = 0; j < 4; j++) {
+					_notes[i][j] = 0;
+					_times[i][j] = 0;
+				}
+			info.delta = tickdelta;
+			if (nextChannelInit(info))
+				break;
+			else {
+				_beat += 8;
+				_beatinitialized = true;
+				basedelta = tickdelta;
+				tickdelta += 64;
+			}
+		}
 	}
 
+done:
 	assert (_beat < _data);
 
+	info.delta += basedelta;
 	debugC(3, kDebugLevelMusic, "event 0x%02x delta %d", info.event, info.delta);
 }
 
@@ -70,6 +124,13 @@ bool MusicParser::nextChannelInit(EventInfo &info) {
 		_nextcommand = 0;
 		_channel = _beat;
 		_beatchannel = _data + 16 * (*_channel - 1);
+		for (int i = 0; i < 4; i++) {
+			uint16 offset = READ_LE_UINT16(_beatchannel + 2*i);
+			if (offset) {
+				debugC(3, kDebugLevelMusic, "note %d %d at offset 0x%x", _channel - _beat, i, offset);
+				_notes[_channel - _beat][i] = _tune + offset;
+			}
+		}
 	}
 	info.event = _channel - _beat + 2;
 
@@ -79,6 +140,11 @@ bool MusicParser::nextChannelInit(EventInfo &info) {
 		_channel++;
 		_beatchannel = _data + 16 * (*_channel - 1);
 		info.event = _channel - _beat + 2;
+		for (int i = 0; i < 4; i++) {
+			uint16 offset = READ_LE_UINT16(_beatchannel + 2*i);
+			if (offset)
+				_notes[_channel - _beat][i] = _data + offset;
+		}
 		debugC(3, kDebugLevelMusic, "channel at offset 0x%x", _channel - _tune);
 	}
 
