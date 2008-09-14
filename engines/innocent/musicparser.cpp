@@ -268,6 +268,7 @@ bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
 }
 
 enum MusicScriptCodes {
+	kJump = 0x96,
 	kChangeBeat = 0x9a
 };
 
@@ -285,6 +286,11 @@ void MusicParser::callScript() {
 			_scriptOffset += 2;
 			jumpToTick(getTick() & ~0x3f + 64, false);
 			return;
+
+		case kJump:
+			_scriptOffset = READ_LE_UINT16(_script + _scriptOffset + 2);
+			debugC(3, kDebugLevelMusic, "jump to %x", _scriptOffset);
+			break;
 
 		default:
 			error("unhandled music script code 0x%x", opcode);
