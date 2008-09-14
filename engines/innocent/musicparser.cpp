@@ -204,7 +204,8 @@ enum Command {
 	kSetTerminator = 0x81,
 	kSetProgram = 	 0x82,
 	kSetExpression = 0x89,
-	kNoteOff =		 0x8b
+	kNoteOff =		 0x8b,
+	kCallScript =	 0x8c
 };
 
 enum MidiCommand {
@@ -244,6 +245,11 @@ bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
 		_note[info.event - 2][info.basic.param1] = 0;
 		info.event |= kMidiNoteOff;
 
+	case kCallScript:
+		debugC(1, kDebugLevelMusic, "call script");
+		callScript();
+		return false;
+
 	case 0:
 		return false;
 
@@ -254,6 +260,17 @@ bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
 			info.basic.param2 = parameter;
 			return true;
 		} else error("unhandled music command 0x%02x", command);
+	}
+}
+
+void MusicParser::callScript() {
+	while (true) {
+		byte opcode = _script[_scriptOffset];
+		debugC(3, kDebugLevelMusic, "music script code 0x%x", opcode);
+		switch (opcode) {
+		default:
+			error("unhandled music script code 0x%x", opcode);
+		}
 	}
 }
 

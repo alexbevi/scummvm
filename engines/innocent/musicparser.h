@@ -35,6 +35,7 @@ private:
 	bool nextChannelInit(EventInfo &info);
 	bool nextInitCommand(EventInfo &info);
 	bool doCommand(byte command, byte parameter, EventInfo &info);
+	void callScript();
 
 	byte *_script;
 	uint16 _scriptOffset;
