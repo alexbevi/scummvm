@@ -33,6 +33,7 @@ public:
 private:
 	const byte *_data;
 	uint32 _tick;
+	byte _note;
 };
 
 class Channel {

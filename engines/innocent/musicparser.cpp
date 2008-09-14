@@ -174,7 +174,7 @@ void Channel::parseNextEvent(EventInfo &info) {
 Note::Note() {}
 
 Note::Note(const byte *data) :
-	_data(data), _tick(0) {}
+	_data(data), _tick(0), _note(0) {}
 
 uint32 Note::delta() const {
 	if (_tick <= Music.getTick())
@@ -189,12 +189,30 @@ enum {
 	kHangNote = 	 0xfe
 };
 
+enum {
+	kMidiNoteOff = 		  0x80,
+	kMidiNoteOn = 		  0x90,
+	kMidiChannelControl = 0xb0,
+	kMidiSetProgram = 	  0xc0
+};
+
 void Note::parseNextEvent(EventInfo &info) {
+	if (_note) {
+		info.delta = 0;
+		info.event = kMidiNoteOff;
+		info.basic.param1 = _note;
+		_note = 0;
+		return;
+	}
+
 	MusicCommand cmd(_data);
 
 	info.delta = delta();
 	cmd.parseNextEvent(info);
 	_data += 2;
+
+	if (info.event & 0xf0 == kMidiNoteOn)
+		_note = info.basic.param1;
 
 	if (_data[0] == kHangNote) {
 		byte d = _data[1];
@@ -216,11 +234,6 @@ MusicCommand::MusicCommand(const byte *def) :
 	_parameter(def[1]) {}
 
 enum {
-	kMidiChannelControl = 0xb0,
-	kMidiSetProgram = 	  0xc0
-};
-
-enum {
 	kMidiCtrlExpression = 0xb
 };
 
@@ -238,6 +251,14 @@ void MusicCommand::parseNextEvent(EventInfo &info) {
 		info.basic.param2 = _parameter;
 		break;
 	default:
+		if (_command < 0x80) {
+			debugC(2, kDebugLevelMusic, "will play note %d at volume %d on %d in %d ticks", _command, _parameter, info.event, info.delta);
+			info.event |= kMidiNoteOn;
+			info.basic.param1 = _command;
+			info.basic.param2 = _parameter;
+			break;
+		}
+
 		error("unhandled music command %x", _command);
 	}
 }
