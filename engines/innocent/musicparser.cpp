@@ -72,20 +72,41 @@ void MusicParser::fillEventQueue() {
 
 void MusicParser::loadActiveNotes(uint32 tick_num) {
 	byte *note = _current_beat;
-	for (int channel = 2; channel < 10; channel++) {
+	for (byte channel = 2; channel < 10; channel++) {
 		debugC(3, kDebugLevelMusic, "active note for channel %d, index %d", channel + 1, *note);
 		byte *beat = _beats + *(note++) * 16 + 8;
-		for (int i = 0; i < 4; i++) {
+		for (byte i = 0; i < 4; i++) {
 			byte command = *(beat++);
 			byte parameter = *(beat++);
-			debugC(4, kDebugLevelMusic, "command %02x, parameter %d", command, parameter);
-			switch (command) {
-			case 0:
-				break;
-			default:
-				error("unhandled music command %d", command);
-			}
+			debugC(4, kDebugLevelMusic, "command 0x%02x, parameter 0x%02x", command, parameter);
+			doCommand(command, parameter, channel, tick_num);
 		}
+	}
+}
+
+enum Command {
+	kSetProgram = 0x82
+};
+
+void MusicParser::doCommand(byte command, byte parameter, byte channel, uint32 tick) {
+	EventInfo info;
+	info.start = _current_beat;
+	info.delta = tick - getTick();
+
+	switch (command) {
+
+	case kSetProgram:
+		debugC(4, kDebugLevelMusic, "setting channel %d program to 0x%02x", channel, parameter);
+		info.event = 0xc0 | channel;
+		info.basic.param1 = parameter;
+		_eventQueue.push(info);
+		break;
+
+	case 0:
+		break;
+
+	default:
+		error("unhandled music command 0x%02x", command);
 	}
 }
 

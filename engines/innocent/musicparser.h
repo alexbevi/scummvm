@@ -28,6 +28,7 @@ private:
 	void setBeat(uint16 beat);
 
 	void loadActiveNotes(uint32 tick_num);
+	void doCommand(byte command, byte parameter, byte channel, uint32 tick);
 	void fillEventQueue();
 
 	byte *_script;
