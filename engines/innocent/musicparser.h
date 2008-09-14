@@ -42,7 +42,7 @@ private:
 
 	byte _tune[6666];
 
-	uint16 _nbeats;
+	uint16 _nbeats, _thisbeat, _nextbeat;
 	byte *_data, *_beat, *_channel, *_nextcommand, *_beatchannel;
 
 	bool _beatinitialized;

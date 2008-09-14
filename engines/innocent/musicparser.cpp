@@ -48,6 +48,8 @@ void MusicParser::loadTune() {
 	_data = _tracks[0] + _nbeats * 8;
 
 	_beat = _tracks[0];
+	_thisbeat = 0;
+	_nextbeat = 1;
 	debugC(3, kDebugLevelMusic, "beat at offset 0x%x", _beat - _tune);
 	_channel = 0;
 	_nextcommand = 0;
@@ -120,7 +122,9 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 			if (nextChannelInit(info))
 				break;
 			else {
-				_beat += 8;
+				_thisbeat = _nextbeat;
+				_nextbeat++;
+				_beat = _tracks[0] + 8 * _thisbeat;
 				_beatinitialized = true;
 				basedelta = tickdelta;
 				tickdelta += 64;
@@ -263,11 +267,25 @@ bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
 	}
 }
 
+enum MusicScriptCodes {
+	kChangeBeat = 0x9a
+};
+
 void MusicParser::callScript() {
 	while (true) {
 		byte opcode = _script[_scriptOffset];
 		debugC(3, kDebugLevelMusic, "music script code 0x%x", opcode);
+
 		switch (opcode) {
+		case kChangeBeat:
+			_nextbeat = _script[_scriptOffset + 1];
+			debugC(3, kDebugLevelMusic, "jump to beat %d", _nextbeat);
+			_channel = 0;
+			_beatinitialized = 0;
+			_scriptOffset += 2;
+			jumpToTick(getTick() & ~0x3f + 64, false);
+			return;
+
 		default:
 			error("unhandled music script code 0x%x", opcode);
 		}
