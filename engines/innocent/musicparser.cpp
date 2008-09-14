@@ -97,12 +97,12 @@ void MusicParser::loadActiveNotes() {
 
 	uint32 delta = _current_beat_id * _ppqn;
 	for (byte channel = 2; channel < 10; channel++) {
-		debugC(3, kDebugLevelMusic, "active note for channel %d, index %d", channel + 1, *note);
-
 		if (!*note) {
 			++note;
 			continue;
 		}
+
+		debugC(3, kDebugLevelMusic, "active note for channel %d, index %d", channel + 1, *note);
 
 		byte *beat = _beats + *(note++) * 16 - 8;
 		for (byte i = 0; i < 4; i++) {
@@ -126,13 +126,18 @@ void MusicParser::loadHangingNotes() {
 
 	uint32 delta = _current_beat_id * _ppqn;
 	for (byte channel = 2; channel < 10; channel++) {
-		debugC(3, kDebugLevelMusic, "hanging note for channel %d, index %d", channel + 1, *note);
+		if (!*note) {
+			++note;
+			continue;
+		}
 
-		byte *beat = _beats + *(note++) * 16;
-		beat = _beats + *beat - 1;
+		debugC(3, kDebugLevelMusic, "hanging note for channel %d, index %d", channel + 1, *note);
+		byte *beat = _beats + *(note++) * 16 - 16;
+		debugC(4, kDebugLevelMusic, "offset 0x%x", beat - _tune);
 		for (byte i = 0; i < 4; i++) {
-			byte command = *(beat++);
-			byte parameter = *(beat++);
+			byte *atbeat = _tune + READ_LE_UINT16(beat);
+			byte command = *(atbeat++);
+			byte parameter = *(atbeat++);
 			debugC(4, kDebugLevelMusic, "command 0x%02x, parameter 0x%02x", command, parameter);
 
 			EventInfo info;
@@ -142,6 +147,8 @@ void MusicParser::loadHangingNotes() {
 
 			if (doCommand(command, parameter, info))
 				_eventQueue.push(info);
+
+			beat += 2;
 		}
 	}
 }
