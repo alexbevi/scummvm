@@ -1,6 +1,7 @@
 #ifndef INNOCENT_MUSIC_H
 #define INNOCENT_MUSIC_H
 
+#include "common/queue.h"
 #include "common/singleton.h"
 #include "sound/midiparser.h"
 
@@ -24,13 +25,19 @@ protected:
 
 private:
 	void loadTune();
+	void setBeat(uint16 beat);
+
+	void loadActiveNotes();
+	void fillEventQueue();
+
 	byte *_script;
 	uint16 _scriptOffset;
 
 	byte _tune[6666];
 	uint16 _num_beats;
 	byte *_beats;
-	uint16 _current_beat;
+	byte *_current_beat;
+	Common::Queue<EventInfo> _eventQueue;
 };
 
 #define Music MusicParser::instance()
