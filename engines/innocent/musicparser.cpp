@@ -19,10 +19,13 @@ bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_script = MusicScript(data);
 
 	_ppqn = 64;
+
+	_driver->open();
 	setTimerRate(_driver->getBaseTempo());
 	_driver->setTimerCallback(this, &MidiParser::timerCallback);
 
 	setTempo(500000);
+	_num_tracks = 1;
 	setTrack(0);
 	return true;
 }
