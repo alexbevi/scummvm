@@ -62,6 +62,7 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 
 	while (true) {
 		while (_beatinitialized) {
+			debugC(4, kDebugLevelMusic, "beat initialized, executing notes");
 			uint32 bestdelta = 0xffffffff;
 			byte **bestnote = 0;
 			for (int chan = 0; chan < 8; chan++) {
@@ -70,6 +71,7 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 						continue;
 
 					uint32 delta = _times[chan][note] - _position._last_event_tick;
+					debugC(4, kDebugLevelMusic, "trying note for %d %d at offset 0x%x", chan, note, _notes[chan][note] - _tune);
 					if (delta == 0 && doCommand(_notes[chan][note][0], _notes[chan][note][1], info)) {
 						_notes[chan][note] += 2;
 						goto done;
@@ -95,11 +97,6 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 		}
 
 		unless (_beatinitialized) {
-			for (int i = 0; i < 8; i++)
-				for (int j = 0; j < 4; j++) {
-					_notes[i][j] = 0;
-					_times[i][j] = 0;
-				}
 			info.delta = tickdelta;
 			if (nextChannelInit(info))
 				break;
@@ -125,6 +122,9 @@ bool MusicParser::nextChannelInit(EventInfo &info) {
 		_channel = _beat;
 		_beatchannel = _data + 16 * (*_channel - 1);
 		for (int i = 0; i < 4; i++) {
+			_notes[_channel - _beat][i] = 0;
+			_times[_channel - _beat][i] = 0;
+			unless (*_channel) continue;
 			uint16 offset = READ_LE_UINT16(_beatchannel + 2*i);
 			if (offset) {
 				debugC(3, kDebugLevelMusic, "note %d %d at offset 0x%x", _channel - _beat, i, offset);
@@ -140,10 +140,15 @@ bool MusicParser::nextChannelInit(EventInfo &info) {
 		_channel++;
 		_beatchannel = _data + 16 * (*_channel - 1);
 		info.event = _channel - _beat + 2;
-		for (int i = 0; i < 4; i++) {
+		if (*_channel) for (int i = 0; i < 4; i++) {
+			_notes[_channel - _beat][i] = 0;
+			_times[_channel - _beat][i] = 0;
+			unless (*_channel) continue;
 			uint16 offset = READ_LE_UINT16(_beatchannel + 2*i);
-			if (offset)
-				_notes[_channel - _beat][i] = _data + offset;
+			if (offset) {
+				debugC(3, kDebugLevelMusic, "note %d %d at offset 0x%x", _channel - _beat, i, offset);
+				_notes[_channel - _beat][i] = _tune + offset;
+			}
 		}
 		debugC(3, kDebugLevelMusic, "channel at offset 0x%x", _channel - _tune);
 	}
