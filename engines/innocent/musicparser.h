@@ -14,9 +14,14 @@ namespace Innocent {
 
 class MusicCommand {
 public:
+	enum Status {
+		kThxBye,
+		kCallMe
+	};
+
 	MusicCommand();
 	MusicCommand(const byte *code);
-	void parseNextEvent(EventInfo &info);
+	MusicCommand::Status parseNextEvent(EventInfo &info);
 	bool empty() const;
 
 private:
@@ -27,7 +32,7 @@ class Note {
 public:
 	Note();
 	Note(const byte *data);
-	void parseNextEvent(EventInfo &info);
+	MusicCommand::Status parseNextEvent(EventInfo &info);
 	uint32 delta() const;
 
 private:
@@ -40,7 +45,7 @@ class Channel {
 public:
 	Channel();
 	Channel(const byte *def, const byte *tune, byte chanidx);
-	void parseNextEvent(EventInfo &info);
+	MusicCommand::Status parseNextEvent(EventInfo &info);
 	uint32 delta() const;
 
 private:
@@ -54,7 +59,7 @@ class Beat {
 public:
 	Beat();
 	Beat(const byte *def, const byte *channels, const byte *tune);
-	void parseNextEvent(EventInfo &info);
+	MusicCommand::Status parseNextEvent(EventInfo &info);
 
 private:
 	Channel _channels[8];
@@ -64,7 +69,7 @@ class Tune {
 public:
 	Tune();
 	Tune(uint16 index);
-	void parseNextEvent(EventInfo &info);
+	MusicCommand::Status parseNextEvent(EventInfo &info);
 
 private:
 	std::vector<Beat> _beats;

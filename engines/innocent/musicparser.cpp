@@ -42,7 +42,16 @@ MusicScript::MusicScript(const byte *data) :
 	_offset(2) {}
 
 void MusicScript::parseNextEvent(EventInfo &info) {
-	_tune.parseNextEvent(info);
+	MusicCommand::Status ret = _tune.parseNextEvent(info);
+
+	while (ret != MusicCommand::kThxBye)
+		if (ret == MusicCommand::kCallMe) {
+			switch (_code[_offset]) {
+			default:
+				error("unhandled music script call %x", _code[_offset]);
+			}
+		} else
+			assert(false);
 }
 
 Tune::Tune() : _currentBeat(-1) {}
@@ -70,8 +79,8 @@ Tune::Tune(uint16 index) {
 	_currentBeat = 0;
 }
 
-void Tune::parseNextEvent(EventInfo &info) {
-	_beats[_currentBeat].parseNextEvent(info);
+MusicCommand::Status Tune::parseNextEvent(EventInfo &info) {
+	return _beats[_currentBeat].parseNextEvent(info);
 }
 
 Beat::Beat() {}
@@ -82,7 +91,7 @@ Beat::Beat(const byte *def, const byte *channels, const byte *tune) {
 			_channels[i] = Channel(channels + 16 * (def[i] - 1), tune, i + 2);
 }
 
-void Beat::parseNextEvent(EventInfo &info) {
+MusicCommand::Status Beat::parseNextEvent(EventInfo &info) {
 	Channel *best = 0;
 	uint32 bestdelta = 0xffffffff;
 	for (int i = 0; i < 8; i++) {
@@ -93,7 +102,7 @@ void Beat::parseNextEvent(EventInfo &info) {
 		}
 	}
 
-	best->parseNextEvent(info);
+	return best->parseNextEvent(info);
 }
 
 Channel::Channel() : _active(false) {}
@@ -134,13 +143,14 @@ uint32 Channel::delta() const {
 	return bestdelta;
 }
 
-void Channel::parseNextEvent(EventInfo &info) {
+MusicCommand::Status Channel::parseNextEvent(EventInfo &info) {
+	MusicCommand::Status ret;
 	info.event = _chanidx;
 	info.delta = 0;
 	if (_not_initialized) {
 		while (_initnote < 4) {
 			unless (_init[_initnote].empty()) {
-				_init[_initnote++].parseNextEvent(info);
+				ret = _init[_initnote++].parseNextEvent(info);
 				break;
 			} else
 				_initnote++;
@@ -150,7 +160,7 @@ void Channel::parseNextEvent(EventInfo &info) {
 		int i = _initnote;
 		while (i < 4)
 			unless (_init[i++].empty())
-				return;
+				return ret;
 
 		_not_initialized = false;
 	} else {
@@ -166,8 +176,9 @@ void Channel::parseNextEvent(EventInfo &info) {
 		}
 
 		info.event = _chanidx;
-		best->parseNextEvent(info);
+		ret = best->parseNextEvent(info);
 	}
+	return ret;
 }
 
 
@@ -189,6 +200,7 @@ enum {
 	kSetProgram = 	 0x82,
 	kSetExpression = 0x89,
 	kCmdNoteOff =	 0x8b,
+	kCmdCallScript = 0x8c,
 	kHangNote = 	 0xfe
 };
 
@@ -199,18 +211,18 @@ enum {
 	kMidiSetProgram = 	  0xc0
 };
 
-void Note::parseNextEvent(EventInfo &info) {
+MusicCommand::Status Note::parseNextEvent(EventInfo &info) {
 	MusicCommand cmd(_data);
 
 	info.delta = delta();
 	info.basic.param1 = _note;
-	cmd.parseNextEvent(info);
+	MusicCommand::Status ret = cmd.parseNextEvent(info);
 	if (info.event & 0xf0 == kMidiNoteOn) {
 		if (_note) {
 			info.event = kMidiNoteOff | (info.event & 0xf);
 			info.basic.param1 = _note;
 			_note = 0;
-			return;
+			return MusicCommand::kThxBye;
 		}
 		_note = info.basic.param1;
 	}
@@ -225,6 +237,7 @@ void Note::parseNextEvent(EventInfo &info) {
 			_tick = Music.getTick();
 		_tick += d;
 	}
+	return ret;
 }
 
 MusicCommand::MusicCommand() : _command(0) {}
@@ -241,23 +254,31 @@ enum {
 	kMidiCtrlExpression = 0xb
 };
 
-void MusicCommand::parseNextEvent(EventInfo &info) {
+MusicCommand::Status MusicCommand::parseNextEvent(EventInfo &info) {
 	switch (_command) {
+
 	case kSetProgram:
 		debugC(2, kDebugLevelMusic, "will set program on channel %d to %d in %d ticks", info.event, _parameter, info.delta);
 		info.event |= kMidiSetProgram;
 		info.basic.param1 = _parameter;
 		break;
+
 	case kSetExpression:
 		debugC(2, kDebugLevelMusic, "will set expression on channel %d to %d in %d ticks", info.event, _parameter, info.delta);
 		info.event |= kMidiChannelControl;
 		info.basic.param1 = kMidiCtrlExpression;
 		info.basic.param2 = _parameter;
 		break;
+
 	case kCmdNoteOff:
 		debugC(2, kDebugLevelMusic, "will turn off note %d on channel %d in %d ticks", info.basic.param1, info.event, info.delta);
 		info.event |= kMidiNoteOff;
 		break;
+
+	case kCmdCallScript:
+		debugC(2, kDebugLevelMusic, "will call script");
+		return kCallMe;
+
 	default:
 		if (_command < 0x80) {
 			debugC(2, kDebugLevelMusic, "will play note %d at volume %d on %d in %d ticks", _command, _parameter, info.event, info.delta);
@@ -269,6 +290,8 @@ void MusicCommand::parseNextEvent(EventInfo &info) {
 
 		error("unhandled music command %x", _command);
 	}
+
+	return kThxBye;
 }
 
 } // End of namespace
