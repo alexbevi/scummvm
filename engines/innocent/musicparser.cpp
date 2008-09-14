@@ -11,21 +11,6 @@ namespace Innocent {
 
 DECLARE_SINGLETON(MusicParser);
 
-void EventQueue::push(const EventInfo &info) {
-	EventQueue::iterator it = begin();
-	while (it != end() && it->delta < info.delta)
-		it++;
-
-	debugC(4, kDebugLevelMusic, "inserted event 0x%02x at %d", info.event, info.delta);
-	insert(it, info);
-}
-
-EventInfo EventQueue::pop() {
-	EventInfo info = *begin();
-	pop_front();
-	return info;
-}
-
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_script = data;
 	_scriptOffset = 2;
@@ -49,6 +34,8 @@ enum {
 	kBeatTableOffset = 0x25
 };
 
+#define DATASTART(num_beats) _tune + kBeatTableOffset + (num_beats) * kChannelCount
+
 void MusicParser::loadTune() {
 	const uint16 tune_index = 1; //READ_LE_UINT16(_script);
 	debugC(1, kDebugLevelMusic, "loading tune %d", tune_index);
@@ -57,100 +44,70 @@ void MusicParser::loadTune() {
 	_num_tracks = 1;
 	_tracks[0] = _tune + kBeatTableOffset;
 
-	_num_beats = READ_LE_UINT16(_tune + kNumBeatsOffset);
-	debugC(1, kDebugLevelMusic, "%d beats found", _num_beats);
+	_nbeats = READ_LE_UINT16(_tune + kNumBeatsOffset);
+	_data = _tracks[0] + _nbeats * 8;
 
-	_beats = _tune + kBeatTableOffset + _num_beats * 8;
-	setBeat(0);
-}
-
-void MusicParser::setBeat(uint16 beat) {
-	assert(beat < _num_beats);
-
-	_current_beat_id = beat;
-	_current_beat = _tune + kBeatTableOffset + beat * 8;
-
-	debugC(2, kDebugLevelMusic, "beat %d, offsets: %d %d %d %d %d %d %d %d", beat, _current_beat[0], _current_beat[1], _current_beat[2], _current_beat[3], _current_beat[4], _current_beat[5], _current_beat[6], _current_beat[7]);
+	_beat = _tracks[0];
+	debugC(3, kDebugLevelMusic, "beat at offset 0x%x", _beat - _tune);
+	_channel = 0;
+	_nextcommand = 0;
 }
 
 void MusicParser::parseNextEvent(EventInfo &info) {
-	if (_eventQueue.empty())
-		fillEventQueue();
+	info.delta = 0;
+	while (_beat < _tracks[0] + _nbeats * 8 && !nextChannelInit(info)) {
+		_beat += 8;
+		info.delta += 64;
+	}
 
-	info = _eventQueue.pop();
-	info.delta -= _position._last_event_tick;
-	debugC(4, kDebugLevelMusic, "got event 0x%02x, delta %d from the queue, pushing", info.event, info.delta);
+	assert (_beat < _data);
+
+	debugC(3, kDebugLevelMusic, "event 0x%02x delta %d", info.event, info.delta);
 }
 
-void MusicParser::fillEventQueue() {
-	while (_eventQueue.empty()) {
-		debugC(4, kDebugLevelMusic, "current tick: %d", getTick());
-		loadActiveNotes();
-		loadHangingNotes();
-		setBeat(_current_beat_id + 1);
+bool MusicParser::nextChannelInit(EventInfo &info) {
+	unless (_channel) {
+		_nextcommand = 0;
+		_channel = _beat;
+		_beatchannel = _data + 16 * (*_channel - 1);
 	}
-	// TODO hanging notes not supported yet
+	info.event = _channel - _beat + 2;
+
+	debugC(3, kDebugLevelMusic, "channel at offset 0x%x", _channel - _tune);
+	while (_channel < _beat + 8 && !(*_channel && nextInitCommand(info))) {
+		_nextcommand = 0;
+		_channel++;
+		_beatchannel = _data + 16 * (*_channel - 1);
+		info.event = _channel - _beat + 2;
+		debugC(3, kDebugLevelMusic, "channel at offset 0x%x", _channel - _tune);
+	}
+
+	if (_channel == _beat + 8) {
+		_channel = 0;
+		return false;
+	}
+
+	return true;
 }
 
-void MusicParser::loadActiveNotes() {
-	byte *note = _current_beat;
+bool MusicParser::nextInitCommand(EventInfo &info) {
+	unless (_nextcommand)
+		_nextcommand = _beatchannel + 8;
 
-	uint32 delta = _current_beat_id * _ppqn;
-	for (byte channel = 2; channel < 10; channel++) {
-		if (!*note) {
-			++note;
-			continue;
-		}
-
-		debugC(3, kDebugLevelMusic, "active note for channel %d, index %d", channel + 1, *note);
-
-		byte *beat = _beats + *(note++) * 16 - 8;
-		for (byte i = 0; i < 4; i++) {
-			byte command = *(beat++);
-			byte parameter = *(beat++);
-			debugC(4, kDebugLevelMusic, "command 0x%02x, parameter 0x%02x", command, parameter);
-
-			EventInfo info;
-			info.start = _current_beat;
-			info.delta = delta;
-			info.event = channel;
-
-			if (doCommand(command, parameter, info))
-				_eventQueue.push(info);
-		}
+	debugC(3, kDebugLevelMusic, "command at offset 0x%x", _nextcommand - _tune);
+	while (_nextcommand < _beatchannel + 16 && !doCommand(_nextcommand[0], _nextcommand[1], info)) {
+		_nextcommand += 2;
+		debugC(3, kDebugLevelMusic, "command at offset 0x%x", _nextcommand - _tune);
 	}
-}
 
-void MusicParser::loadHangingNotes() {
-	byte *note = _current_beat;
-
-	uint32 delta = _current_beat_id * _ppqn;
-	for (byte channel = 2; channel < 10; channel++) {
-		if (!*note) {
-			++note;
-			continue;
-		}
-
-		debugC(3, kDebugLevelMusic, "hanging note for channel %d, index %d", channel + 1, *note);
-		byte *beat = _beats + *(note++) * 16 - 16;
-		debugC(4, kDebugLevelMusic, "offset 0x%x", beat - _tune);
-		for (byte i = 0; i < 4; i++) {
-			byte *atbeat = _tune + READ_LE_UINT16(beat);
-			byte command = *(atbeat++);
-			byte parameter = *(atbeat++);
-			debugC(4, kDebugLevelMusic, "command 0x%02x, parameter 0x%02x", command, parameter);
-
-			EventInfo info;
-			info.start = _current_beat;
-			info.delta = delta;
-			info.event = channel;
-
-			if (doCommand(command, parameter, info))
-				_eventQueue.push(info);
-
-			beat += 2;
-		}
+	if (_nextcommand == _beatchannel + 16) {
+		_nextcommand = 0;
+		return false;
 	}
+
+	_nextcommand += 2;
+
+	return true;
 }
 
 enum Command {
@@ -189,10 +146,6 @@ bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
 		return false;
 
 	case 0:
-	case 0x80:
-	case 0x8d:
-	case 0x97:
-	case 0x99:
 		return false;
 
 	default:

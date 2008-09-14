@@ -31,22 +31,18 @@ protected:
 
 private:
 	void loadTune();
-	void setBeat(uint16 beat);
 
-	void loadActiveNotes();
-	void loadHangingNotes();
+	bool nextChannelInit(EventInfo &info);
+	bool nextInitCommand(EventInfo &info);
 	bool doCommand(byte command, byte parameter, EventInfo &info);
-	void fillEventQueue();
 
 	byte *_script;
 	uint16 _scriptOffset;
 
 	byte _tune[6666];
-	uint16 _num_beats;
-	byte *_beats;
-	byte *_current_beat;
-	uint16 _current_beat_id;
-	EventQueue _eventQueue;
+
+	uint16 _nbeats;
+	byte *_data, *_beat, *_channel, *_nextcommand, *_beatchannel;
 };
 
 #define Music MusicParser::instance()
