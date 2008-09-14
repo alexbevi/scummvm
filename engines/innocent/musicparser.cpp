@@ -188,6 +188,7 @@ uint32 Note::delta() const {
 enum {
 	kSetProgram = 	 0x82,
 	kSetExpression = 0x89,
+	kCmdNoteOff =	 0x8b,
 	kHangNote = 	 0xfe
 };
 
@@ -199,22 +200,23 @@ enum {
 };
 
 void Note::parseNextEvent(EventInfo &info) {
-	if (_note) {
-		info.delta = 0;
-		info.event = kMidiNoteOff;
-		info.basic.param1 = _note;
-		_note = 0;
-		return;
-	}
-
 	MusicCommand cmd(_data);
 
 	info.delta = delta();
+	info.basic.param1 = _note;
 	cmd.parseNextEvent(info);
+	if (info.event & 0xf0 == kMidiNoteOn) {
+		if (_note) {
+			info.event = kMidiNoteOff | (info.event & 0xf);
+			info.basic.param1 = _note;
+			_note = 0;
+			return;
+		}
+		_note = info.basic.param1;
+	}
+
 	_data += 2;
 
-	if (info.event & 0xf0 == kMidiNoteOn)
-		_note = info.basic.param1;
 
 	if (_data[0] == kHangNote) {
 		byte d = _data[1];
@@ -251,6 +253,10 @@ void MusicCommand::parseNextEvent(EventInfo &info) {
 		info.event |= kMidiChannelControl;
 		info.basic.param1 = kMidiCtrlExpression;
 		info.basic.param2 = _parameter;
+		break;
+	case kCmdNoteOff:
+		debugC(2, kDebugLevelMusic, "will turn off note %d on channel %d in %d ticks", info.basic.param1, info.event, info.delta);
+		info.event |= kMidiNoteOff;
 		break;
 	default:
 		if (_command < 0x80) {
