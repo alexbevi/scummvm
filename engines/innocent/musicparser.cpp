@@ -97,6 +97,7 @@ void MusicParser::loadActiveNotes(uint32 tick_num) {
 }
 
 enum Command {
+	kSetTerminator = 0x81,
 	kSetProgram = 	 0x82,
 	kSetExpression = 0x89
 };
@@ -125,6 +126,10 @@ bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
 		info.basic.param1 = kMidiChanExpression;
 		info.basic.param2 = parameter;
 		return true;
+
+	case kSetTerminator:
+		debugC(1, kDebugLevelMusic, "set terminator for channel %d to 0x%02x STUB", info.event, parameter);
+		return false;
 
 	case 0:
 		return false;
