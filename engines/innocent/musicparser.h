@@ -27,7 +27,7 @@ private:
 	void loadTune();
 	void setBeat(uint16 beat);
 
-	void loadActiveNotes();
+	void loadActiveNotes(uint32 tick_num);
 	void fillEventQueue();
 
 	byte *_script;
@@ -37,6 +37,7 @@ private:
 	uint16 _num_beats;
 	byte *_beats;
 	byte *_current_beat;
+	uint16 _current_beat_id;
 	Common::Queue<EventInfo> _eventQueue;
 };
 

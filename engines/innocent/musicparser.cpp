@@ -46,6 +46,7 @@ void MusicParser::loadTune() {
 void MusicParser::setBeat(uint16 beat) {
 	assert(beat < _num_beats);
 
+	_current_beat_id = beat;
 	_current_beat = _tune + kBeatTableOffset + beat * 8;
 
 	debugC(2, kDebugLevelMusic, "beat %d, offsets: %d %d %d %d %d %d %d %d", beat, _current_beat[0], _current_beat[1], _current_beat[2], _current_beat[3], _current_beat[4], _current_beat[5], _current_beat[6], _current_beat[7]);
@@ -59,13 +60,17 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 }
 
 void MusicParser::fillEventQueue() {
-	unless (getTick() % _ppqn)
-		loadActiveNotes();
-
+	uint32 planTick = _position._last_event_tick;
+	while (_eventQueue.empty()) {
+		planTick += _ppqn;
+		unless (planTick % _ppqn)
+			loadActiveNotes(planTick);
+		setBeat(_current_beat_id + 1);
+	}
 	// TODO hanging notes not supported yet
 }
 
-void MusicParser::loadActiveNotes() {
+void MusicParser::loadActiveNotes(uint32 tick_num) {
 	byte *note = _current_beat;
 	for (int channel = 2; channel < 10; channel++) {
 		debugC(3, kDebugLevelMusic, "active note for channel %d, index %d", channel + 1, *note);
@@ -73,8 +78,10 @@ void MusicParser::loadActiveNotes() {
 		for (int i = 0; i < 4; i++) {
 			byte command = *(beat++);
 			byte parameter = *(beat++);
-			debugC(4, kDebugLevelMusic, "command %d, parameter %d", command, parameter);
+			debugC(4, kDebugLevelMusic, "command %02x, parameter %d", command, parameter);
 			switch (command) {
+			case 0:
+				break;
 			default:
 				error("unhandled music command %d", command);
 			}
