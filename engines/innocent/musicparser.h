@@ -27,7 +27,7 @@ private:
 	void loadTune();
 	void setBeat(uint16 beat);
 
-	void loadActiveNotes(uint32 tick_num);
+	void loadActiveNotes();
 	bool doCommand(byte command, byte parameter, EventInfo &info);
 	void fillEventQueue();
 

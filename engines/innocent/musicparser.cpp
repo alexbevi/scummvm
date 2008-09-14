@@ -63,23 +63,21 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 		fillEventQueue();
 
 	info = _eventQueue.pop();
+	debugC(4, kDebugLevelMusic, "got event 0x%02x, delta %d from the queue, pushing", info.event, info.delta);
 }
 
 void MusicParser::fillEventQueue() {
-	uint32 planTick = _position._last_event_tick;
 	while (_eventQueue.empty()) {
-		planTick += _ppqn;
-		unless (planTick % _ppqn)
-			loadActiveNotes(planTick);
+		loadActiveNotes();
 		setBeat(_current_beat_id + 1);
 	}
 	// TODO hanging notes not supported yet
 }
 
-void MusicParser::loadActiveNotes(uint32 tick_num) {
+void MusicParser::loadActiveNotes() {
 	byte *note = _current_beat;
 
-	uint32 delta = tick_num - getTick();
+	uint32 delta = _ppqn;
 	for (byte channel = 2; channel < 10; channel++) {
 		debugC(3, kDebugLevelMusic, "active note for channel %d, index %d", channel + 1, *note);
 
@@ -138,6 +136,7 @@ bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
 		return false;
 
 	case 0:
+	case 0x97:
 		return false;
 
 	default:
