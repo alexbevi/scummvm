@@ -72,38 +72,62 @@ void MusicParser::fillEventQueue() {
 
 void MusicParser::loadActiveNotes(uint32 tick_num) {
 	byte *note = _current_beat;
+
+	uint32 delta = tick_num - getTick();
 	for (byte channel = 2; channel < 10; channel++) {
 		debugC(3, kDebugLevelMusic, "active note for channel %d, index %d", channel + 1, *note);
+
 		byte *beat = _beats + *(note++) * 16 + 8;
 		for (byte i = 0; i < 4; i++) {
 			byte command = *(beat++);
 			byte parameter = *(beat++);
 			debugC(4, kDebugLevelMusic, "command 0x%02x, parameter 0x%02x", command, parameter);
-			doCommand(command, parameter, channel, tick_num);
+
+			EventInfo info;
+			info.start = _current_beat;
+			info.delta = delta;
+			info.event = channel;
+
+			if (doCommand(command, parameter, info)) {
+				_eventQueue.push(info);
+				delta = 0;
+			}
 		}
 	}
 }
 
 enum Command {
-	kSetProgram = 0x82
+	kSetProgram = 	 0x82,
+	kSetExpression = 0x89
 };
 
-void MusicParser::doCommand(byte command, byte parameter, byte channel, uint32 tick) {
-	EventInfo info;
-	info.start = _current_beat;
-	info.delta = tick - getTick();
+enum MidiCommand {
+	kMidiChannelControl = 0xb0,
+	kMidiSetProgram =	  0xc0
+};
 
+enum MidiChannelControl {
+	kMidiChanExpression = 0xb
+};
+
+bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
 	switch (command) {
 
 	case kSetProgram:
-		debugC(4, kDebugLevelMusic, "setting channel %d program to 0x%02x", channel, parameter);
-		info.event = 0xc0 | channel;
+		debugC(4, kDebugLevelMusic, "setting channel %d program to 0x%02x", info.event, parameter);
+		info.event |= kMidiSetProgram;
 		info.basic.param1 = parameter;
-		_eventQueue.push(info);
-		break;
+		return true;
+
+	case kSetExpression:
+		debugC(4, kDebugLevelMusic, "setting channel %d expression to 0x%02x", info.event, parameter);
+		info.event |= kMidiChannelControl;
+		info.basic.param1 = kMidiChanExpression;
+		info.basic.param2 = parameter;
+		return true;
 
 	case 0:
-		break;
+		return false;
 
 	default:
 		error("unhandled music command 0x%02x", command);
