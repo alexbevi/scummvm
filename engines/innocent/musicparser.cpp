@@ -57,7 +57,7 @@ void MusicParser::loadTune() {
 
 void MusicParser::parseNextEvent(EventInfo &info) {
 	// delta to next full tick (nearest multiple of 64)
-	uint32 tickdelta = (_position._last_event_tick + 63) & ~0x3f;
+	uint32 tickdelta = 64 - (_position._last_event_tick % 64);
 	uint32 basedelta = 0;
 
 	while (true) {
@@ -72,28 +72,33 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 
 					uint32 delta = _times[chan][note] - _position._last_event_tick;
 					debugC(4, kDebugLevelMusic, "trying note for %d %d at offset 0x%x", chan, note, _notes[chan][note] - _tune);
-					if (delta == 0) {
+					if (_times[chan][note] == 0) {  // instant note
 						if (_notes[chan][note][0] == 0xFE) {
 							delta = _times[chan][note] = _notes[chan][note][1];
+							_times[chan][note] += getTick();
 							_notes[chan][note] += 2;
 						} else if (doCommand(_notes[chan][note][0], _notes[chan][note][1], info)) {
 						_notes[chan][note] += 2;
 						goto done;
-						}
+						} else continue;
 					}
 
 					if (delta < bestdelta) {
+						info.event = chan + 2;
 						bestdelta = delta;
 						bestnote = &_notes[chan][note];
 					}
+					debugC(5, kDebugLevelMusic, "best delta: %d", bestdelta);
 				}
 			}
 
 			assert(bestnote);
 
-			if (tickdelta < bestdelta)
+			debugC(5, kDebugLevelMusic, "best delta: %d [%x], tickdelta: %d", bestdelta, **bestnote, tickdelta);
+			if (tickdelta <= bestdelta)
 				_beatinitialized = false;
 			else {
+				info.delta = bestdelta;
 				bool ok = doCommand((*bestnote)[0], (*bestnote)[1], info);
 				*bestnote += 2;
 				if (ok)
@@ -102,7 +107,7 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 		}
 
 		unless (_beatinitialized) {
-			info.delta = tickdelta;
+			info.delta = basedelta;
 			if (nextChannelInit(info))
 				break;
 			else {
@@ -202,6 +207,7 @@ enum MidiChannelControl {
 };
 
 bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
+	debugC(4, kDebugLevelMusic, "trying command %x, parameter %x", command, parameter);
 	switch (command) {
 
 	case kSetProgram:
