@@ -46,6 +46,7 @@ private:
 
 	bool _beatinitialized;
 	byte *_notes[8][4];
+	byte _note[8][4];
 	uint32 _times[8][4];
 };
 

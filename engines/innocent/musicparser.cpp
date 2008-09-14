@@ -81,6 +81,7 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 						} else {
 							info.delta = 0;
 							info.event = chan + 2;
+							info.basic.param1 = note;
 							if (doCommand(_notes[chan][note][0], _notes[chan][note][1], info)) {
 								_notes[chan][note] += 2;
 								goto done;
@@ -90,6 +91,7 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 
 					if (delta < bestdelta) {
 						info.event = chan + 2;
+						info.basic.param1 = note;
 						bestdelta = delta;
 						bestnote = &_notes[chan][note];
 						besttimes = &_times[chan][note];
@@ -201,10 +203,12 @@ bool MusicParser::nextInitCommand(EventInfo &info) {
 enum Command {
 	kSetTerminator = 0x81,
 	kSetProgram = 	 0x82,
-	kSetExpression = 0x89
+	kSetExpression = 0x89,
+	kNoteOff =		 0x8b
 };
 
 enum MidiCommand {
+	kMidiNoteOff =		  0x80,
 	kMidiChannelControl = 0xb0,
 	kMidiSetProgram =	  0xc0
 };
@@ -233,6 +237,12 @@ bool MusicParser::doCommand(byte command, byte parameter, EventInfo &info) {
 	case kSetTerminator:
 		debugC(1, kDebugLevelMusic, "set terminator for channel %d to 0x%02x STUB", info.event, parameter);
 		return false;
+
+	case kNoteOff:
+		debugC(4, kDebugLevelMusic, "note on %d off", info.event);
+		info.basic.param1 = _note[info.event - 2][info.basic.param1];
+		_note[info.event - 2][info.basic.param1] = 0;
+		info.event |= kMidiNoteOff;
 
 	case 0:
 		return false;
