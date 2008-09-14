@@ -34,11 +34,13 @@ public:
 	Note(const byte *data);
 	MusicCommand::Status parseNextEvent(EventInfo &info);
 	uint32 delta() const;
+	void reset();
 
 private:
 	const byte *_data;
 	uint32 _tick;
 	byte _note;
+	const byte *_begin;
 };
 
 class Channel {
@@ -47,6 +49,7 @@ public:
 	Channel(const byte *def, const byte *tune, byte chanidx);
 	MusicCommand::Status parseNextEvent(EventInfo &info);
 	uint32 delta() const;
+	void reset();
 
 private:
 	Note _notes[4];
@@ -60,6 +63,7 @@ public:
 	Beat();
 	Beat(const byte *def, const byte *channels, const byte *tune);
 	MusicCommand::Status parseNextEvent(EventInfo &info);
+	void reset();
 
 private:
 	Channel _channels[8];
@@ -70,6 +74,7 @@ public:
 	Tune();
 	Tune(uint16 index);
 	MusicCommand::Status parseNextEvent(EventInfo &info);
+	void setBeat(uint16);
 
 private:
 	std::vector<Beat> _beats;

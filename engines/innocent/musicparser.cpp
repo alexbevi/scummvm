@@ -31,6 +31,7 @@ bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 }
 
 void MusicParser::parseNextEvent(EventInfo &info) {
+	info.length = 0;
 	_script.parseNextEvent(info);
 }
 
@@ -41,17 +42,30 @@ MusicScript::MusicScript(const byte *data) :
 	_tune(READ_LE_UINT16(data)),
 	_offset(2) {}
 
+enum {
+	kSetBeat = 0x9a
+};
+
 void MusicScript::parseNextEvent(EventInfo &info) {
 	MusicCommand::Status ret = _tune.parseNextEvent(info);
 
-	while (ret != MusicCommand::kThxBye)
-		if (ret == MusicCommand::kCallMe) {
+	while (ret != MusicCommand::kThxBye) {
+		while (ret == MusicCommand::kCallMe) {
 			switch (_code[_offset]) {
+
+			case kSetBeat:
+				debugC(2, kDebugLevelMusic, "will set beat to %d", _code[_offset + 1]);
+				_tune.setBeat(_code[_offset + 1]);
+				_offset += 2;
+				ret = MusicCommand::kThxBye;
+				break;
+
 			default:
 				error("unhandled music script call %x", _code[_offset]);
 			}
-		} else
-			assert(false);
+		}
+		ret = _tune.parseNextEvent(info);
+	}
 }
 
 Tune::Tune() : _currentBeat(-1) {}
@@ -79,6 +93,11 @@ Tune::Tune(uint16 index) {
 	_currentBeat = 0;
 }
 
+void Tune::setBeat(uint16 index) {
+	_currentBeat = index;
+	_beats[_currentBeat].reset();
+}
+
 MusicCommand::Status Tune::parseNextEvent(EventInfo &info) {
 	return _beats[_currentBeat].parseNextEvent(info);
 }
@@ -89,6 +108,11 @@ Beat::Beat(const byte *def, const byte *channels, const byte *tune) {
 	for (int i = 0; i < 8; i++)
 		if (def[i])
 			_channels[i] = Channel(channels + 16 * (def[i] - 1), tune, i + 2);
+}
+
+void Beat::reset() {
+	for (int i = 0; i < 8; i++)
+		_channels[i].reset();
 }
 
 MusicCommand::Status Beat::parseNextEvent(EventInfo &info) {
@@ -123,6 +147,17 @@ Channel::Channel(const byte *def, const byte *tune, byte chanidx) {
 	_not_initialized = true;
 	_initnote = 0;
 	_chanidx = chanidx;
+}
+
+void Channel::reset() {
+	unless (_active)
+		return;
+
+	_not_initialized = true;
+	_initnote = 0;
+
+	for (int i = 0; i < 4; i++)
+		_notes[i].reset();
 }
 
 uint32 Channel::delta() const {
@@ -185,7 +220,16 @@ MusicCommand::Status Channel::parseNextEvent(EventInfo &info) {
 Note::Note() : _data(0) {}
 
 Note::Note(const byte *data) :
-	_data(data), _tick(0), _note(0) {}
+	_data(data), _tick(0), _note(0), _begin(data) {}
+
+void Note::reset() {
+	unless (_data)
+		return;
+
+	_tick = 0;
+	_note = 0;
+	_data = _begin;
+}
 
 uint32 Note::delta() const {
 	unless (_data)
