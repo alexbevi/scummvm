@@ -135,10 +135,11 @@ uint32 Channel::delta() const {
 }
 
 void Channel::parseNextEvent(EventInfo &info) {
+	info.event = _chanidx;
+	info.delta = 0;
 	if (_not_initialized) {
 		while (_initnote < 4) {
 			unless (_init[_initnote].empty()) {
-				info.event = _chanidx;
 				_init[_initnote++].parseNextEvent(info);
 				break;
 			} else
@@ -183,14 +184,15 @@ uint32 Note::delta() const {
 }
 
 enum {
-	kHangNote = 0xfe
+	kSetProgram = 0x82,
+	kHangNote =   0xfe
 };
 
 void Note::parseNextEvent(EventInfo &info) {
 	MusicCommand cmd(_data);
 
-	cmd.parseNextEvent(info);
 	info.delta = delta();
+	cmd.parseNextEvent(info);
 	_data += 2;
 
 	if (_data[0] == kHangNote) {
@@ -212,8 +214,16 @@ MusicCommand::MusicCommand(const byte *def) :
 	_command(def[0]),
 	_parameter(def[1]) {}
 
+enum {
+	kMidiSetProgram = 0xc0
+};
+
 void MusicCommand::parseNextEvent(EventInfo &info) {
 	switch (_command) {
+	case kSetProgram:
+		debugC(2, kDebugLevelMusic, "will set program on channel %d to %d in %d ticks", info.event, _parameter, info.delta);
+		info.event |= kMidiSetProgram;
+		break;
 	default:
 		error("unhandled music command %x", _command);
 	}
