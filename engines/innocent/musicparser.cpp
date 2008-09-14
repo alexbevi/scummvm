@@ -1,6 +1,7 @@
 #include "innocent/musicparser.h"
 
 #include "common/endian.h"
+#include "sound/mididrv.h"
 
 #include "innocent/resources.h"
 #include "innocent/util.h"
@@ -15,6 +16,8 @@ bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_scriptOffset = 2;
 
 	loadTune();
+
+	_driver->open();
 
 	_ppqn = 64;
 	setTempo(500000);

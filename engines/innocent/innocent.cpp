@@ -3,14 +3,15 @@
 
 #include "common/config-manager.h"
 #include "common/scummsys.h"
-
 #include "common/events.h"
+#include "sound/mididrv.h"
 
 #include "innocent/debug.h"
 #include "innocent/debugger.h"
 #include "innocent/eventmanager.h"
 #include "innocent/graphics.h"
 #include "innocent/logic.h"
+#include "innocent/musicparser.h"
 #include "innocent/resources.h"
 
 #define GFX_TRANSACTION for (int ___i = 1; ___i && (_system->beginGFXTransaction(), true); ___i--, _system->endGFXTransaction() )
@@ -58,6 +59,15 @@ int Engine::init() {
 	Debug.setEngine(this);
 	_resources->init();
 	_graphics->init();
+
+/*	int midiDriver = MidiDriver::detectMusicDriver(MDT_MIDI);
+*/
+	MidiDriver *driver = MidiDriver::createMidi(MD_MT32);
+
+	_musicDriver.reset(driver);
+	Music.setMidiDriver(driver);
+
+
 	_logic->init();
 
 	return 0;

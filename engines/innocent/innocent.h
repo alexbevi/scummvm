@@ -6,6 +6,8 @@
 #include "common/ptr.h"
 #include "engines/engine.h"
 
+class MidiDriver;
+
 namespace Common {
 //
 class EventManager;
@@ -35,6 +37,7 @@ public:
 	Graphics *graphics() { return _graphics; }
 	Debugger *debugger() { return _debugger; }
 	Common::EventManager *eventMan() { return _eventMan; }
+	MidiDriver *musicDriver() const { return _musicDriver.get(); }
 
 	uint16 getRandom(uint16 max) const;
 
@@ -49,6 +52,7 @@ private:
 	Resources *_resources;
 	Graphics *_graphics;
 	Debugger *_debugger;
+	std::auto_ptr<MidiDriver> _musicDriver;
 
 	mutable Common::RandomSource _rnd;
 	mutable int _lastTicks, _startRoom;
