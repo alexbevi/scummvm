@@ -76,7 +76,8 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 					uint32 delta = _times[chan][note] - _position._last_event_tick;
 					debugC(4, kDebugLevelMusic, "trying note for %d %d at offset 0x%x", chan, note, _notes[chan][note] - _tune);
 					if (_times[chan][note] == 0) {  // instant note
-						if (_notes[chan][note][0] == 0xFE) {
+						byte code = *_notes[chan][note];
+						if (code == 0xFE) {
 							delta = _times[chan][note] = _notes[chan][note][1];
 							_times[chan][note] += getTick();
 							_notes[chan][note] += 2;
@@ -122,6 +123,7 @@ void MusicParser::parseNextEvent(EventInfo &info) {
 			if (nextChannelInit(info))
 				break;
 			else {
+				_channel = 0;
 				_thisbeat = _nextbeat;
 				_nextbeat++;
 				_beat = _tracks[0] + 8 * _thisbeat;
