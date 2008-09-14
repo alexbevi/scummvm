@@ -60,9 +60,9 @@ int Engine::init() {
 	_resources->init();
 	_graphics->init();
 
-/*	int midiDriver = MidiDriver::detectMusicDriver(MDT_MIDI);
-*/
-	MidiDriver *driver = MidiDriver::createMidi(MD_MT32);
+	int midiDriver = MidiDriver::detectMusicDriver(MDT_MIDI);
+
+	MidiDriver *driver = MidiDriver::createMidi(midiDriver);
 
 	_musicDriver.reset(driver);
 	Music.setMidiDriver(driver);

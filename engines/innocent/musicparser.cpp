@@ -24,7 +24,7 @@ bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	setTimerRate(_driver->getBaseTempo());
 	_driver->setTimerCallback(this, &MidiParser::timerCallback);
 
-	setTempo(500000);
+	setTempo(5000000);
 	_num_tracks = 1;
 	setTrack(0);
 	return true;
@@ -76,7 +76,6 @@ enum {
 };
 
 Tune::Tune(uint16 index) {
-	index = 1;
 	Res.loadTune(index, _data);
 
 	uint16 nbeats = READ_LE_UINT16(_data + kTuneBeatCountOffset);
@@ -261,8 +260,9 @@ MusicCommand::Status Note::parseNextEvent(EventInfo &info) {
 	info.delta = delta();
 	info.basic.param1 = _note;
 	MusicCommand::Status ret = cmd.parseNextEvent(info);
-	if (info.event & 0xf0 == kMidiNoteOn) {
+	if ((info.event & 0xf0) == kMidiNoteOn) {
 		if (_note) {
+			debugC(2, kDebugLevelMusic, "my note still playing, stopping it first");
 			info.event = kMidiNoteOff | (info.event & 0xf);
 			info.basic.param1 = _note;
 			_note = 0;

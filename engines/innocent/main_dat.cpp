@@ -146,9 +146,10 @@ list<Common::String> MainDat::musicFiles() const {
 	list<Common::String> files;
 	for (; file_count > 0; file_count--) {
 		data += 2; // data set id
-		data++; // music type (1 - adlib, 4 - roland)
+		byte type = *data++; // music type (1 - adlib, 4 - roland)
+		debugC(2, kDebugLevelFiles | kDebugLevelMusic, "found music file %s type %d", data, type);
 		Common::String file(reinterpret_cast<char *>(data));
-		files.push_back(file);
+		if (type == 4) files.push_back(file);
 		while (*data)
 			data++;
 		data++;
