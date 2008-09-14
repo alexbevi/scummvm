@@ -16,7 +16,8 @@ class MusicCommand {
 public:
 	enum Status {
 		kThxBye,
-		kCallMe
+		kCallMe,
+		kNvm
 	};
 
 	MusicCommand();

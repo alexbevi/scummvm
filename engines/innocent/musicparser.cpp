@@ -15,6 +15,10 @@ MusicParser::MusicParser() : MidiParser() {}
 
 MusicParser::~MusicParser() {}
 
+enum {
+	kBaseTempo = 4000000
+};
+
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_script = MusicScript(data);
 
@@ -24,7 +28,7 @@ bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	setTimerRate(_driver->getBaseTempo());
 	_driver->setTimerCallback(this, &MidiParser::timerCallback);
 
-	setTempo(5000000);
+	setTempo(kBaseTempo);
 	_num_tracks = 1;
 	setTrack(0);
 	return true;
@@ -322,6 +326,11 @@ MusicCommand::Status MusicCommand::parseNextEvent(EventInfo &info) {
 	case kCmdCallScript:
 		debugC(2, kDebugLevelMusic, "will call script");
 		return kCallMe;
+
+	case 0x81:
+		warning("unhandled code 0x81, param = 0x%x", _parameter);
+		Music.setTempo(0x19 * kBaseTempo / _parameter);
+		return kNvm;
 
 	default:
 		if (_command < 0x80) {
