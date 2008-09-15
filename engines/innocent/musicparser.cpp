@@ -13,7 +13,7 @@ DECLARE_SINGLETON(MusicParser);
 
 MusicParser::MusicParser() : MidiParser(), _time(0), _lasttick(0), _tick(0) {}
 
-MusicParser::~MusicParser() {}
+MusicParser::~MusicParser() { unloadMusic(); _driver->close();}
 
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_script.reset(new MusicScript(data));
@@ -24,9 +24,9 @@ bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_driver->setTimerCallback(this, &MusicParser::timerCallback);
 
 	_num_tracks = 1;
-	_ppqn = 144;
+	_ppqn = 120;
 //	_clocks_per_tick = 0x19;
-	setTempo(500000);
+	setTempo(600000 * 0x19);
 	setTrack(0);
 	return true;
 }
@@ -282,7 +282,7 @@ void MusicCommand::exec(byte channel, Note *note) {
 
 	case kSetTempo:
 		debugC(2, kDebugLevelMusic, "setting tempo to %d", _parameter);
-		Music.setTempo(500000 * _parameter);
+		Music.setTempo(600000 * _parameter);
 		break;
 
 	case kCmdSetBeat:

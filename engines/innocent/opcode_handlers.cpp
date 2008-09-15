@@ -460,7 +460,7 @@ enum {
 
 OPCODE(0xd6) {
 	// change room
-	debugC(3, kDebugLevelScript, "opcode 0xd6: change room(%s)", +a[0]);
+	debugC(1, kDebugLevelScript, "opcode 0xd6: change room(%s)", +a[0]);
 	uint16 room = a[0];
 	if (room == kCopyProtectionRoom) {
 		if (_engine->_startRoom)
