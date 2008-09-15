@@ -214,6 +214,7 @@ void Note::reset() {
 enum {
 	kSetTempo =		 0x81,
 	kSetProgram = 	 0x82,
+	kCmdSetBeat =	 0x85,
 	kSetExpression = 0x89,
 	kCmdNoteOff =	 0x8b,
 	kCmdCallScript = 0x8c,
@@ -281,6 +282,11 @@ void MusicCommand::exec(byte channel, Note *note) {
 	case kSetTempo:
 		debugC(2, kDebugLevelMusic, "setting tempo to %d", _parameter);
 		Music.setTempo(400000 * _parameter);
+		break;
+
+	case kCmdSetBeat:
+		debugC(2, kDebugLevelMusic, "setting beat to %d", _parameter);
+		Music.setBeat(_parameter);
 		break;
 
 	default:
