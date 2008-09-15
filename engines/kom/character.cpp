@@ -466,9 +466,9 @@ void Character::setScopeX(int16 scope) {
 			act = _vm->actorMan()->get(_actorId);
 			act->enable(1);
 			act->defineScope(0, 0, act->getFramesNum() - 1, 0);
-			act->setScope(0, 2);
+			act->setScope(0, _animSpeed);
 
-			_spriteTimer = act->getFramesNum() * 2 - 1;
+			_spriteTimer = act->getFramesNum() * _animSpeed - 1;
 			_spriteScope = scope;
 			_scopeInUse = scope;
 			_loadedScopeXtend = -8888;
