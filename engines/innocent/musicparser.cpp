@@ -16,7 +16,7 @@ MusicParser::MusicParser() : MidiParser() {}
 MusicParser::~MusicParser() {}
 
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
-	_script = MusicScript(data);
+	_script.reset(new MusicScript(data));
 
 	_driver->open();
 	setTimerRate(_driver->getBaseTempo());
@@ -30,7 +30,7 @@ bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 
 void MusicParser::parseNextEvent(EventInfo &info) {
 	info.length = 0;
-	_script.parseNextEvent(info);
+	_script->parseNextEvent(info);
 }
 
 MusicScript::MusicScript() : _code(0) {}
@@ -83,6 +83,7 @@ Tune::Tune(uint16 index) {
 	const byte *channels = beat + 8 * nbeats;
 
 	for (uint i = 0; i < _beats.size(); i++) {
+		debugC(2, kDebugLevelMusic, "found beat at offset 0x%x", beat - _data);
 		_beats[i] = Beat(beat, channels, _data);
 		beat += 8;
 	}
@@ -132,8 +133,10 @@ Channel::Channel(const byte *def, const byte *tune, byte chanidx) {
 	for (int i = 0; i < 4; i++) {
 		const uint16 off = READ_LE_UINT16(def);
 		def += 2;
-		if (off)
+		if (off) {
+			debugC(2, kDebugLevelMusic, "found note at offset 0x%x", off);
 			_notes[i] = Note(tune + off);
+		}
 	}
 
 	for (int i = 0; i < 4; i++) {
@@ -168,8 +171,10 @@ uint32 Channel::delta() const {
 
 	for (int i = 0; i < 4; i++) {
 		uint32 d = _notes[i].delta();
-		if (d < bestdelta)
+		if (d < bestdelta) {
+			debugC(4, kDebugLevelMusic, "best note at %d is %d", _chanidx, i);
 			bestdelta = d;
+		}
 	}
 
 	return bestdelta;
@@ -214,7 +219,7 @@ MusicCommand::Status Channel::parseNextEvent(EventInfo &info) {
 }
 
 
-Note::Note() : _data(0) {}
+Note::Note() : _data(0), _begin(0) {}
 
 Note::Note(const byte *data) :
 	_data(data), _tick(0), _note(0), _begin(data) {}
@@ -231,6 +236,9 @@ void Note::reset() {
 uint32 Note::delta() const {
 	unless (_data)
 		return 0xffffffff;
+
+	checkDelta();
+
 	if (_tick <= Music.getTick())
 		return 0;
 	else
@@ -254,7 +262,13 @@ enum {
 };
 
 MusicCommand::Status Note::parseNextEvent(EventInfo &info) {
+	assert (_data);
+
+	checkDelta();
+
 	MusicCommand cmd(_data);
+
+	debugC(4, kDebugLevelMusic, "playing note code at 0x%x", _data - Music._script->_tune._data);
 
 	info.delta = delta();
 	info.basic.param1 = _note;
@@ -271,8 +285,11 @@ MusicCommand::Status Note::parseNextEvent(EventInfo &info) {
 	}
 
 	_data += 2;
+	checkDelta();
+	return ret;
+}
 
-
+void Note::checkDelta() const {
 	if (_data[0] == kHangNote) {
 		byte d = _data[1];
 		_data += 2;
@@ -280,7 +297,6 @@ MusicCommand::Status Note::parseNextEvent(EventInfo &info) {
 			_tick = Music.getTick();
 		_tick += d * Music.clocksPerTick();
 	}
-	return ret;
 }
 
 MusicCommand::MusicCommand() : _command(0) {}

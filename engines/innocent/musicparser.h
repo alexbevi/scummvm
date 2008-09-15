@@ -1,8 +1,10 @@
 #ifndef INNOCENT_MUSIC_H
 #define INNOCENT_MUSIC_H
 
+#include <memory>
 #include <vector>
 
+#include "common/noncopyable.h"
 #include "common/queue.h"
 #include "common/singleton.h"
 #include "sound/midiparser.h"
@@ -38,8 +40,9 @@ public:
 	void reset();
 
 private:
-	const byte *_data;
-	uint32 _tick;
+	void checkDelta() const;
+	mutable const byte *_data;
+	mutable uint32 _tick;
 	byte _note;
 	const byte *_begin;
 };
@@ -77,6 +80,7 @@ public:
 	MusicCommand::Status parseNextEvent(EventInfo &info);
 	void setBeat(uint16);
 
+	friend class Note;
 private:
 	std::vector<Beat> _beats;
 
@@ -84,12 +88,13 @@ private:
 	int32 _currentBeat;
 };
 
-class MusicScript {
+class MusicScript : public Common::NonCopyable {
 public:
 	MusicScript();
 	MusicScript(const byte *data);
 	void parseNextEvent(EventInfo &info);
 
+	friend class Note;
 private:
 	Tune _tune;
 	const byte *_code;
@@ -110,7 +115,7 @@ protected:
 	void parseNextEvent(EventInfo &info);
 
 private:
-	MusicScript _script;
+	std::auto_ptr<MusicScript> _script;
 
 	uint16 _clocks_per_tick;
 };
