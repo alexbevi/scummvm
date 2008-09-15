@@ -46,6 +46,7 @@ Engine::Engine(OSystem *syst) :
 
 Engine::~Engine() {
 	Common::clearAllSpecialDebugLevels();
+	MusicParser::destroy();
 }
 
 int Engine::init() {
