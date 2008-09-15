@@ -41,7 +41,8 @@ MusicScript::MusicScript(const byte *data) :
 	_offset(2) {}
 
 enum {
-	kSetBeat = 0x9a
+	kSetBeat = 0x9a,
+	kStop =	   0x9b
 };
 
 void MusicScript::parseNextEvent(EventInfo &info) {
@@ -58,6 +59,11 @@ void MusicScript::parseNextEvent(EventInfo &info) {
 				_offset += 2;
 				ret = MusicCommand::kThxBye;
 				break;
+
+			case kStop:
+				debugC(2, kDebugLevelMusic, "will stop playing");
+				Music.unloadMusic();
+				return;
 
 			default:
 				error("unhandled music script call %x", _code[_offset]);
