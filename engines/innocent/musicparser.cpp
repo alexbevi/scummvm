@@ -24,8 +24,9 @@ bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_driver->setTimerCallback(this, &MusicParser::timerCallback);
 
 	_num_tracks = 1;
+	_ppqn = 144;
 //	_clocks_per_tick = 0x19;
-	setTempo(500000 * 0x19);
+	setTempo(500000);
 	setTrack(0);
 	return true;
 }
@@ -281,7 +282,7 @@ void MusicCommand::exec(byte channel, Note *note) {
 
 	case kSetTempo:
 		debugC(2, kDebugLevelMusic, "setting tempo to %d", _parameter);
-		Music.setTempo(400000 * _parameter);
+		Music.setTempo(500000 * _parameter);
 		break;
 
 	case kCmdSetBeat:
