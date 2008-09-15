@@ -84,7 +84,7 @@ int Engine::go() {
 //		_graphics->paintAnimations();
 		_graphics->updateScreen();
 		_debugger->onFrame();
-		delay(20);
+		delay(40);
 		handleEvents();
 	}
 

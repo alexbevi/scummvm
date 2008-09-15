@@ -113,7 +113,7 @@ void Movie::setPalette() {
 }
 
 void Movie::delay() {
-	Engine::instance().delay(40 * (_delay));
+	Engine::instance().delay(40 * (1+_delay));
 }
 
 } // end of namespace Innocent

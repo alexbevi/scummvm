@@ -423,7 +423,7 @@ void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 
 		_system->setPalette((current), start, num);
 		_system->updateScreen();
-		_system->delayMillis(1000/50);
+		Eng.delay(1000/25);
 
 		if (Eng.escapePressed()) {
 			_system->setPalette(colours, start, num);
@@ -453,7 +453,7 @@ void Graphics::fadeOut(FadeFlags f) {
 
 		_system->setPalette((current), offset, colours);
 		_system->updateScreen();
-		Eng.delay(20);
+		Eng.delay(1000/25);
 
 		if (Eng.escapePressed()) {
 			Log.skipAnimation();
