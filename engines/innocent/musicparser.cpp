@@ -11,16 +11,17 @@ namespace Innocent {
 
 DECLARE_SINGLETON(MusicParser);
 
-MusicParser::MusicParser() : MidiParser() {}
+MusicParser::MusicParser() : MidiParser(), _time(0), _lasttick(0), _tick(0) {}
 
 MusicParser::~MusicParser() {}
 
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_script.reset(new MusicScript(data));
+	_tune.reset(new Tune(_script->getTune()));
 
 	_driver->open();
 	setTimerRate(_driver->getBaseTempo());
-	_driver->setTimerCallback(this, &MidiParser::timerCallback);
+	_driver->setTimerCallback(this, &MusicParser::timerCallback);
 
 	_num_tracks = 1;
 //	_clocks_per_tick = 0x19;
@@ -29,16 +30,21 @@ bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	return true;
 }
 
-void MusicParser::parseNextEvent(EventInfo &info) {
-	info.length = 0;
-	_script->parseNextEvent(info);
+void MusicParser::tick() {
+	_time += _timer_rate;
+	if (_lasttick && _time < _lasttick + _psec_per_tick)
+		return;
+
+	_lasttick = _time;
+
+	_tune->tick();
+	_tick++;
 }
 
 MusicScript::MusicScript() : _code(0) {}
 
 MusicScript::MusicScript(const byte *data) :
 	_code(data),
-	_tune(READ_LE_UINT16(data)),
 	_offset(2) {}
 
 enum {
@@ -46,36 +52,22 @@ enum {
 	kStop =	   0x9b
 };
 
-void MusicScript::parseNextEvent(EventInfo &info) {
-	MusicCommand::Status ret = _tune.parseNextEvent(info);
+void MusicScript::tick() {
+	switch (_code[_offset]) {
 
-	while (ret != MusicCommand::kThxBye) {
-		while (ret == MusicCommand::kCallMe) {
-			switch (_code[_offset]) {
+	case kSetBeat:
+		debugC(2, kDebugLevelMusic, "will set beat to %d", _code[_offset + 1]);
+		Music.setBeat(_code[_offset + 1]);
+		_offset += 2;
+		break;
 
-			case kSetBeat:
-				debugC(2, kDebugLevelMusic, "will set beat to %d", _code[_offset + 1]);
-				_tune.setBeat(_code[_offset + 1], Music.getTick());
-				_offset += 2;
-				ret = MusicCommand::kThxBye;
-				break;
+	case kStop:
+		debugC(2, kDebugLevelMusic, "will stop playing");
+		Music.unloadMusic();
+		return;
 
-			case kStop:
-				debugC(2, kDebugLevelMusic, "will stop playing");
-				Music.unloadMusic();
-				return;
-
-			default:
-				error("unhandled music script call %x", _code[_offset]);
-			}
-		}
-
-		while (ret == MusicCommand::kNextBeat) {
-			debugC(3, kDebugLevelMusic, "===== next beat at tick %d", info.delta);
-			_tune.setBeat(_tune.beatId() + 1, info.delta);
-			break;
-		}
-		ret = _tune.parseNextEvent(info);
+	default:
+		error("unhandled music script call %x", _code[_offset]);
 	}
 }
 
@@ -102,18 +94,24 @@ Tune::Tune(uint16 index) {
 	}
 
 	_currentBeat = 0;
+	_beatticks = 0;
 }
 
-void Tune::setBeat(uint16 index, uint32 start) {
+void Tune::setBeat(uint16 index) {
 	_currentBeat = index;
-	_beats[_currentBeat].reset(start);
+	_beats[_currentBeat].reset();
+	_beatticks = 0;
 }
 
-MusicCommand::Status Tune::parseNextEvent(EventInfo &info) {
-	return _beats[_currentBeat].parseNextEvent(info);
+void Tune::tick() {
+	_beats[_currentBeat].tick();
+	_beatticks++;
+	if (_beatticks == 64)
+		setBeat(_currentBeat + 1);
+	_beatticks %= 64;
 }
 
-Beat::Beat() : _start(0) {}
+Beat::Beat() {}
 
 Beat::Beat(const byte *def, const byte *channels, const byte *tune) {
 	for (int i = 0; i < 8; i++)
@@ -127,33 +125,11 @@ Beat::Beat(const byte *def, const byte *channels, const byte *tune) {
 void Beat::reset(uint32 start) {
 	for (int i = 0; i < 8; i++)
 		_channels[i].reset();
-	_start = start;
 }
 
-MusicCommand::Status Beat::parseNextEvent(EventInfo &info) {
-	Channel *best = 0;
-	uint32 bestdelta = 0xffffffff;
-	for (int i = 0; i < 8; i++) {
-		uint32 delta = _channels[i].delta();
-		if (delta < bestdelta) {
-			bestdelta = delta;
-			best = &_channels[i];
-		}
-		debugC(5, kDebugLevelMusic, "channel %d delta: %d", i+2, delta);
-	}
-
-	if (!best) {
-		info.delta = _start + 64;
-		return MusicCommand::kNextBeat;
-	}
-	debugC(5, kDebugLevelMusic, "best delta: %d, channel %d", bestdelta, best->index());
-
-	if (bestdelta + Music.getTick() > _start + 64) {
-		info.delta = _start + 64;
-		return MusicCommand::kNextBeat;
-	}
-
-	return best->parseNextEvent(info);
+void Beat::tick() {
+	for (int i = 0; i < 8; i++)
+		_channels[i].tick();
 }
 
 Channel::Channel() : _active(false) {}
@@ -164,7 +140,7 @@ Channel::Channel(const byte *def, const byte *tune, byte chanidx) {
 		def += 2;
 		if (off) {
 			debugC(2, kDebugLevelMusic, "found note at offset 0x%x", off);
-			_notes[i] = Note(tune + off);
+			_notes[i] = Note(tune + off, i);
 		}
 	}
 
@@ -189,89 +165,50 @@ void Channel::reset() {
 		_notes[i].reset();
 }
 
-uint32 Channel::delta() const {
-	unless (_active)
-		return 0xffffffff;
+enum {
+	kMidiNoteOff = 		  0x80,
+	kMidiNoteOn = 		  0x90,
+	kMidiChannelControl = 0xb0,
+	kMidiSetProgram = 	  0xc0
+};
 
-	if (_not_initialized)
-		return 0;
+enum {
+	kMidiCtrlExpression = 	0xb,
+	kMidiCtrlAllNotesOff = 0x7b
+};
 
-	uint32 bestdelta = 0xffffffff;
-
-	for (int i = 0; i < 4; i++) {
-		uint32 d = _notes[i].delta();
-		if (d < bestdelta) {
-			debugC(4, kDebugLevelMusic, "best note at %d is %d", _chanidx, i);
-			bestdelta = d;
-		}
-	}
-
-	return bestdelta;
-}
-
-MusicCommand::Status Channel::parseNextEvent(EventInfo &info) {
-	MusicCommand::Status ret;
-	info.event = _chanidx;
-	info.delta = 0;
+void Channel::tick() {
 	if (_not_initialized) {
-		while (_initnote < 4) {
-			unless (_init[_initnote].empty()) {
-				ret = _init[_initnote++].parseNextEvent(info);
-				break;
-			} else
-				_initnote++;
-		}
-
-		// let's see if we're finished with initialization
-		int i = _initnote;
-		while (i < 4)
-			unless (_init[i++].empty())
-				return ret;
-
+		for (byte i = 0; i < 4; i++)
+			_init[i].exec(_chanidx);
 		_not_initialized = false;
-	} else {
-		uint32 bestdelta = 0xffffffff;
-		Note *best = 0;
-
-		for (int i = 0; i < 4; i++) {
-			uint32 d = _notes[i].delta();
-			if (d < bestdelta) {
-				bestdelta = d;
-				best = &_notes[i];
-			}
-		}
-
-		assert(best);
-		info.event = _chanidx;
-		ret = best->parseNextEvent(info);
 	}
-	return ret;
+
+	for (byte i = 0; i < 4; i++)
+		_notes[i].tick(_chanidx);
 }
 
+static byte notes[8][4];
 
 Note::Note() : _data(0), _begin(0) {}
 
-Note::Note(const byte *data) :
-	_data(data), _tick(0), _note(0), _begin(data) {}
+Note::Note(const byte *data, byte index) :
+	_data(data), _tick(0), _begin(data), _index(index) {}
+
+void Note::setNote(byte n) {
+	notes[_channel - 2][_index] = n;
+}
+
+byte Note::note() const {
+	return notes[_channel - 2][_index];
+}
 
 void Note::reset() {
 	unless (_data)
 		return;
 
-	_tick = 0;
-	_note = 0;
+	_tick = Music.getTick() + 1;
 	_data = _begin;
-}
-
-uint32 Note::delta() const {
-	unless (_data)
-		return 0xffffffff;
-
-	checkDelta();
-
-	debugC(5, kDebugLevelMusic, "calculating delta, tick = %d, last tick = %d", _tick, Music._position._last_event_tick);
-	assert (_tick >= Music._position._last_event_tick);
-	return (_tick - Music._position._last_event_tick);
 }
 
 enum {
@@ -283,52 +220,24 @@ enum {
 	kHangNote = 	 0xfe
 };
 
-enum {
-	kMidiNoteOff = 		  0x80,
-	kMidiNoteOn = 		  0x90,
-	kMidiChannelControl = 0xb0,
-	kMidiSetProgram = 	  0xc0
-};
+void Note::tick(byte channel) {
+	_channel = channel;
+	unless (_data && Music.getTick() == _tick)
+		return;
 
-MusicCommand::Status Note::parseNextEvent(EventInfo &info) {
-	assert (_data);
-
-	checkDelta();
+	if (_data[0] == kHangNote) {
+		_tick += _data[1];
+		_data += 2;
+		return;
+	}
 
 	MusicCommand cmd(_data);
-
-	debugC(4, kDebugLevelMusic, "playing note code at 0x%x", _data - Music._script->_tune._data);
-
-	info.delta = delta();
-	info.basic.param1 = _note;
-	MusicCommand::Status ret = cmd.parseNextEvent(info);
-	if ((info.event & 0xf0) == kMidiNoteOn) {
-		if (_note) {
-			debugC(2, kDebugLevelMusic, "my note still playing, stopping it first");
-			info.event = kMidiNoteOff | (info.event & 0xf);
-			info.basic.param1 = _note;
-			_note = 0;
-			return MusicCommand::kThxBye;
-		}
-		_note = info.basic.param1;
-	}
+	cmd.exec(channel, this);
 
 	_data += 2;
-	if (info.delta == 0)
-		_tick ++;
-	checkDelta();
-	return ret;
+	_tick++;
 }
 
-void Note::checkDelta() const {
-	unless (_tick)
-		_tick = Music._position._last_event_tick;
-	if (_data[0] == kHangNote) {
-		byte d = _data[1];
-		_data += 2;
-		_tick += d;
-	}
-}
 
 MusicCommand::MusicCommand() : _command(0) {}
 
@@ -340,53 +249,58 @@ MusicCommand::MusicCommand(const byte *def) :
 	_command(def[0]),
 	_parameter(def[1]) {}
 
-enum {
-	kMidiCtrlExpression = 0xb
-};
+void MusicCommand::exec(byte channel, Note *note) {
+	unless (_command)
+		return;
 
-MusicCommand::Status MusicCommand::parseNextEvent(EventInfo &info) {
 	switch (_command) {
 
 	case kSetProgram:
-		debugC(2, kDebugLevelMusic, "will set program on channel %d to %d in %d ticks", info.event, _parameter, info.delta);
-		info.event |= kMidiSetProgram;
-		info.basic.param1 = _parameter;
+		debugC(2, kDebugLevelMusic, "set program on channel %d to %d", channel, _parameter);
+		Music._driver->send(channel | kMidiSetProgram, _parameter, 0);
 		break;
 
 	case kSetExpression:
-		debugC(2, kDebugLevelMusic, "will set expression on channel %d to %d in %d ticks", info.event, _parameter, info.delta);
-		info.event |= kMidiChannelControl;
-		info.basic.param1 = kMidiCtrlExpression;
-		info.basic.param2 = _parameter;
+		debugC(2, kDebugLevelMusic, "set expression on channel %d to %d", channel, _parameter);
+		Music._driver->send(channel | kMidiChannelControl, kMidiCtrlExpression, _parameter);
 		break;
 
 	case kCmdNoteOff:
-		debugC(2, kDebugLevelMusic, "will turn off note %d on channel %d in %d ticks", info.basic.param1, info.event, info.delta);
-		info.event |= kMidiNoteOff;
+		debugC(2, kDebugLevelMusic, "turn off note %d on channel %d", _parameter, channel);
+
+		assert(note);
+		Music._driver->send(channel | kMidiNoteOff, note->note(), 0);
+		note->setNote(0);
 		break;
 
 	case kCmdCallScript:
 		debugC(2, kDebugLevelMusic, "will call script");
-		return kCallMe;
+		Music._script->tick();
+		break;
 
 	case kSetTempo:
 		debugC(2, kDebugLevelMusic, "setting tempo to %d", _parameter);
-		Music.setTempo(500000 * _parameter);
-		return kNvm;
+		Music.setTempo(400000 * _parameter);
+		break;
 
 	default:
 		if (_command < 0x80) {
-			debugC(2, kDebugLevelMusic, "will play note %d at volume %d on %d in %d ticks", _command, _parameter, info.event, info.delta);
-			info.event |= kMidiNoteOn;
-			info.basic.param1 = _command;
-			info.basic.param2 = _parameter;
+			assert (note);
+			debugC(2, kDebugLevelMusic, "play note %d at volume %d on %d", _command, _parameter, channel);
+
+			if (note->note()) {
+				debugC(2, kDebugLevelMusic, "[first turn off note %d]", note->note());
+
+				Music._driver->send(channel | kMidiNoteOff, note->note(), 0);
+			}
+
+			Music._driver->send(channel | kMidiNoteOn, _command, _parameter);
+			note->setNote(_command);
 			break;
 		}
 
 		error("unhandled music command %x", _command);
 	}
-
-	return kThxBye;
 }
 
 } // End of namespace
