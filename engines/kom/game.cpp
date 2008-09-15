@@ -700,12 +700,22 @@ bool Game::doStat(const Command *cmd) {
 void Game::doCommand(int command, int type, int id, int thingy) {
 	Common::List<EventLink> events;
 	switch (command) {
+
+	// Talk
 	case 2:
 		break;
+
+	// Use
 	case 3:
 		break;
+
+	// Pick up
 	case 4:
+		if (_vm->database()->giveObject(id, 0, false))
+			doProc(id, 1, 315, -1);
 		break;
+
+	// Look
 	case 5:
 		break;
 	case 6:
@@ -721,9 +731,14 @@ void Game::doCommand(int command, int type, int id, int thingy) {
 			}
 		}
 		break;
+
+	// Collide
 	case 9:
+		doProc(id, 2, 323, -1);
 		break;
+
 	case 10:
+		doProc(id, 2, 324, -1);
 		break;
 	}
 }
@@ -943,7 +958,7 @@ void Game::loopTimeouts() {
 	if (_vm->_flicLoaded != 0)
 		return;
 
-	// TODO: something with spriteCutNum
+	_player.spriteCutNum = 0;
 
 	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
 		Character *chr = _vm->database()->getChar(i);
@@ -1152,14 +1167,14 @@ void Game::loopInterfaceCollide() {
 					_settings.collideBox, _settings.collideBoxY * 256);
 	}
 
-	// TODO: handle inventory
-	if (_vm->_flicLoaded != 0)
-		return;
-
 	_settings.oldOverType = _settings.overType;
 	_settings.oldOverNum = _settings.overNum;
 	_settings.overType = 0;
 	_settings.overNum = -1;
+
+	// TODO: handle inventory
+	if (_vm->_flicLoaded != 0 || _settings.mouseMode != 0)
+		return;
 
 	// FIXME - some code duplication in this horrible tree
 	if (_settings.objectNum < 0) {
@@ -1309,7 +1324,7 @@ void Game::doActionSpriteScene(const char *name, int charId, int loc, int box) {
 	_player.spriteCutMoving = false;
 
 	// Check if it's a moving sprite
-	if (charId == 0 && name != 0) {
+	if (charId == 0 && name[0] != '\0') {
 
 		_player.command = CMD_WALK;
 
@@ -1352,11 +1367,11 @@ void Game::doActionSpriteScene(const char *name, int charId, int loc, int box) {
  * 	* 2 - in store.
  * @param param passed to the inventory function
  *
- * @return whether a valid verb was chosen
+ * @return whether a valid verb was chosen (0) or not (-1)
  *
  * FIXME: handle mouse key-up events like the original
  */
-bool Game::doDonut(int type, int param) {
+int8 Game::doDonut(int type, int param) {
 	uint16 hotspotX, hotspotY;
 	Actor *mouse = _vm->actorMan()->getMouse();
 	Actor *donut = _vm->actorMan()->getDonut();
@@ -1616,13 +1631,16 @@ bool Game::doDonut(int type, int param) {
 
 	// TODO - wait for mouse clicks to finish...?
 
+	// Refresh the panel in case the donut was on it
+	_vm->panel()->update();
+
 	if (overVerb) {
 		_player.command = overCommand;
-		return true;
+		return 0;
 	} else {
 		_vm->panel()->setActionDesc("");
 		_vm->panel()->setHotspotDesc("");
-		return false;
+		return -1;
 	}
 }
 
@@ -1669,6 +1687,48 @@ int Game::getDonutSegment(int xPos, int yPos) {
 		return 7 - segment;
 	else
 		return segment + 8;
+}
+
+void Game::exePickup() {
+	Character *playerChar = _vm->database()->getChar(0);
+	int distance;
+	switch (_player.commandState) {
+	case 1:
+		playerChar->_isBusy = false;
+		_cb.data2 = -1;
+		doCommand(4, 1, _player.collideNum, -1);
+
+		if (_cb.data2 >= 0) {
+			_player.commandState = 2;
+			playerChar->_lastDirection = 3;
+			doActionSpriteScene("", 0, -1, -1);
+		} else {
+			_player.commandState = 0;
+		}
+		break;
+	case 2:
+		if (playerChar->_spriteCutState == 0)
+			_player.commandState = 3;
+
+		distance = playerChar->_screenY -
+			_vm->database()->getMidY(playerChar->_lastLocation,
+			                        _vm->database()->getObj(_player.collideNum)->box);
+		if (distance < 50)
+			playerChar->_sprite8c = 1;
+		else if (distance <= 120)
+			playerChar->_sprite8c = 2;
+		else
+			playerChar->_sprite8c = 3;
+		break;
+	case 3:
+		_player.command = CMD_NOTHING;
+		_player.commandState = 0;
+		_player.collideType = 0;
+		_player.collideNum = -1;
+		break;
+	default:
+		break;
+	}
 }
 
 } // End of namespace Kom

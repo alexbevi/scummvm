@@ -183,9 +183,10 @@ void KomEngine::gameLoop() {
 
 		_game->loopMove();
 		_game->loopCollide();
-		// if in a fight, do something
-		// collision stuff
-		if (_game->player()->commandState != 0) {
+
+		// TODO: if in a fight, do something
+
+		if (_game->player()->commandState != 0 && _database->getChar(0)->_stopped) {
 			switch (_game->player()->command) {
 			case CMD_WALK:
 				_game->player()->command = CMD_WALK;
@@ -200,6 +201,7 @@ void KomEngine::gameLoop() {
 			case CMD_TALK_TO:
 				break;
 			case CMD_PICKUP:
+				_game->exePickup();
 				break;
 			case CMD_LOOK_AT:
 				break;
@@ -207,6 +209,8 @@ void KomEngine::gameLoop() {
 				break;
 			case CMD_CAST_SPELL:
 				break;
+
+			// Unused
 			case 0x6C:
 				break;
 
@@ -215,8 +219,7 @@ void KomEngine::gameLoop() {
 				error("Illegal player mode");
 			}
 		}
-		// if player stopped:
-		//     do command (walk, use, talk, pickup, look, fight, exit, magic)
+
 		_game->loopSpriteCut();
 		// loopSpells
 		_game->loopTimeouts();

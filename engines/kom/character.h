@@ -153,6 +153,7 @@ public:
 
 private:
 	void setScopeX(int16 scope);
+	void setAnimation(int16 anim, int16 scope);
 
 protected:
 	static KomEngine *_vm;

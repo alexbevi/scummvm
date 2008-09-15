@@ -196,9 +196,24 @@ void Screen::processGraphics(int mode) {
 	// TODO - handle snow
 	// TODO - handle fight bars
 	// TODO - handle mouse
+	// TODO - check hitpoints
+	// TODO - check narrator
 
 	// FIXME - add more checks for cursor display
-	if (_vm->database()->getChar(0)->_spriteCutState == 0) {
+	if (_vm->database()->getChar(0)->_spriteCutState == 0 &&
+		(_vm->game()->player()->commandState == 0 ||
+		 _vm->game()->player()->command == CMD_WALK ||
+		 _vm->game()->player()->command == CMD_NOTHING) &&
+		_vm->game()->player()->spriteCutNum == 0) {
+
+		if (_vm->game()->settings()->mouseMode > 0)
+			_vm->game()->settings()->mouseMode--;
+
+	} else
+		_vm->game()->settings()->mouseMode = 3;
+
+	// TODO - Check menu request
+	if (_vm->game()->settings()->mouseMode == 0) {
 		updateCursor();
 		displayMouse();
 	} else {
@@ -615,7 +630,7 @@ void Screen::updateCursor() {
 				break;
 			case CMD_WALK:
 			case CMD_NOTHING:
-				error("Illegal commands in updateCursor");
+				break;
 			}
 		}
 
@@ -666,7 +681,7 @@ void Screen::updateCursor() {
 	_vm->panel()->setHotspotDesc(panelText);
 
 	// TODO - inventory strings
-	if (settings->mouseY >= INVENTORY_OFFSET /* TODO: && not inside inventory */) {
+	if (settings->mouseY >= INVENTORY_OFFSET && settings->mouseMode == 0) {
 		_vm->panel()->setActionDesc("");
 		_vm->panel()->setHotspotDesc("Inventory...");
 	}

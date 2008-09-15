@@ -47,6 +47,7 @@ Input::~Input() {
 }
 
 void Input::loopInput() {
+	// TODO - more checks
 	if (_vm->_flicLoaded == 0) {
 		handleMouse();
 	}
@@ -57,9 +58,9 @@ void Input::handleMouse() {
 	static Player *player = _vm->game()->player();
 	Character *playerChar = _vm->database()->getChar(0);
 	uint16 gotoX, gotoY = 0;
-	int donutState;
+	int8 donutState;
 
-	if (1 && _leftClick) { // FIXME - check "invisible"?
+	if (settings->mouseMode == 0 && _leftClick) {
 		if (settings->mouseY >= INVENTORY_OFFSET) {
 			// TODO - inventory
 			printf("Inventory click!\n");
@@ -90,7 +91,7 @@ void Input::handleMouse() {
 
 			if (settings->collideType == 2 || settings->collideType == 3) {
 				if (settings->objectNum < 0) {
-					_vm->game()->doDonut(0, false);
+					donutState = _vm->game()->doDonut(0, false);
 				} else {
 					donutState = 0;
 					// TODO
@@ -123,6 +124,7 @@ void Input::handleMouse() {
 					break;
 
 				case CMD_TALK_TO:
+					break; // TODO
 					if (settings->collideType == 0)
 						break;
 					playerChar->_gotoX = gotoX;
@@ -145,6 +147,7 @@ void Input::handleMouse() {
 					break;
 
 				case CMD_LOOK_AT:
+					break; // TODO
 					if (settings->collideType == 0)
 						break;
 					playerChar->_gotoX = gotoX;

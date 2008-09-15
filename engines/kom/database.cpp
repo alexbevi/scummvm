@@ -1081,6 +1081,7 @@ bool Database::giveObject(int obj, int charId, bool something) {
 
 	if (charId == 0 && !something) {
 		warning("TODO: actionGotObject");
+		_vm->game()->cb()->data2 = obj;
 	}
 
 	switch (oldOwnerType) {

@@ -63,6 +63,7 @@ struct Settings {
 	int16 oldOverType;
 	int16 overNum;
 	int16 oldOverNum;
+	int16 mouseMode;
 	uint16 collideType;
 	int16 collideBox;
 	uint16 collideBoxX;
@@ -115,6 +116,11 @@ struct Player {
 	int16 spriteCutNum;
 };
 
+struct Cb {
+	int16 data1;
+	int16 data2;
+};
+
 class Game {
 public:
 	Game(KomEngine *vm, OSystem *system);
@@ -133,6 +139,7 @@ public:
 
 	Settings* settings() { return &_settings; }
 	Player* player() { return &_player; }
+	Cb* cb() { return &_cb; }
 
 	void setDay();
 	void setNight();
@@ -140,7 +147,9 @@ public:
 	void doActionMoveChar(uint16 charId, int16 loc, int16 box);
 	void doActionSpriteScene(const char *name, int charId, int loc, int box);
 
-	bool doDonut(int type, int param);
+	int8 doDonut(int type, int param);
+
+	void exePickup();
 
 	Common::Array<RoomObject> *getObjects() { return &_roomObjects; }
 	Common::Array<RoomDoor> *getDoors() { return &_roomDoors; }
@@ -158,6 +167,7 @@ private:
     // Settings
     Settings _settings;
     Player _player;
+	Cb _cb;
 
 	void processChars();
 	void processChar(int proc);

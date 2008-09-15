@@ -475,16 +475,16 @@ void Character::setScopeX(int16 scope) {
 
 			break;
 		case 1:
-			printf("TODO: character animation 1\n");
+			setAnimation(13, scope);
 			break;
 		case 2:
-			printf("TODO: character animation 2\n");
+			setAnimation(14, scope);
 			break;
 		case 3:
-			printf("TODO: character animation 3\n");
+			setAnimation(15, scope);
 			break;
 		case 4:
-			printf("TODO: character animation 4\n");
+			setAnimation(16, scope);
 			break;
 		default:
 			error("Illegal sprite type");
@@ -546,6 +546,15 @@ void Character::setScopeX(int16 scope) {
 			_isBusy = true;
 		}
 	}
+}
+
+void Character::setAnimation(int16 anim, int16 scope) {
+	Actor *act = _vm->actorMan()->get(_actorId);
+	act->defineScope(0, _scopes[anim].minFrame, _scopes[anim].maxFrame,
+		_scopes[anim].startFrame);
+	act->setScope(0, _animSpeed);
+	_spriteTimer = (_scopes[anim].maxFrame - _scopes[anim].minFrame) * _animSpeed - 1;
+	_spriteScope = _scopeInUse = scope;
 }
 
 void Character::unsetSpell() {
