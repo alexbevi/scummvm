@@ -258,6 +258,7 @@ Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, byte *str
 			_optionRects[opt] = paintText(current_left, current_top, kOptionColour, string, dest);
 			while (*(string++));
 			_optionValues[opt] = READ_LE_UINT16(string);
+			debugC(2, kDebugLevelGraphics | kDebugLevelScript, "option value %d: 0x%x", opt, _optionValues[opt]);
 			string += 2;
 			break;
 		default:

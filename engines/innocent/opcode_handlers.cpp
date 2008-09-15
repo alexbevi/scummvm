@@ -110,7 +110,6 @@ OPCODE(0x2c) {
 	// else
 	debugC(3, kDebugLevelScript, "opcode 0x2c: else");
 
-	// this won't work for nested ifs, but that's how it is in the original code
 	return kElse;
 }
 
@@ -132,7 +131,7 @@ OPCODE(0x36) {
 	CodePointer &p = static_cast<CodePointer &>(a[0]);
 	p.run();
 	debugC(3, kDebugLevelScript, "<<<opcode 0x36: called procedure %s", +a[0]);
-	return kThxBye;
+	return kReturn;
 }
 
 OPCODE(0x39) {
@@ -454,18 +453,24 @@ OPCODE(0xd1) {
 	return kThxBye;
 }
 
+enum {
+	kCopyProtectionRoom = 81,
+	kIntroOffset	    = 0x33a3
+};
+
 OPCODE(0xd6) {
 	// change room
 	debugC(3, kDebugLevelScript, "opcode 0xd6: change room(%s)", +a[0]);
-	if (a[0] == 81) {
+	uint16 room = a[0];
+	if (room == kCopyProtectionRoom) {
 		if (_engine->_startRoom)
-			_logic->changeRoom(_engine->_startRoom);
-		else if (!_engine->_copyProtection) {
-			debugC(3, kDebugLevelScript, "copy protection not active, going to room 65 instead");
-			_logic->changeRoom(65);
-		}
-	} else
-		_logic->changeRoom(a[0]);
+			room = Eng._startRoom;
+	}
+	_logic->changeRoom(room);
+	if (room == kCopyProtectionRoom && !Eng._copyProtection) {
+		Log.runLater(CodePointer(kIntroOffset, Log.blockInterpreter()));
+		return kReturn;
+	}
 	return kThxBye;
 }
 

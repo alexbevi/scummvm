@@ -55,6 +55,7 @@ public:
 	Actor *getActor(uint16 id) const;
 
 	Program *blockProgram() const { return _blockProgram.get(); }
+	Interpreter *blockInterpreter() const { return _blockInterpreter.get(); }
 	Interpreter *mainInterpreter() const { return _toplevelInterpreter.get(); }
 	void runLater(const CodePointer &, uint16 delay = 0);
 	void setSkipPoint(const CodePointer &);
