@@ -15,21 +15,15 @@ MusicParser::MusicParser() : MidiParser() {}
 
 MusicParser::~MusicParser() {}
 
-enum {
-	kBaseTempo = 4000000
-};
-
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_script = MusicScript(data);
-
-	_ppqn = 64;
 
 	_driver->open();
 	setTimerRate(_driver->getBaseTempo());
 	_driver->setTimerCallback(this, &MidiParser::timerCallback);
 
-	setTempo(kBaseTempo);
 	_num_tracks = 1;
+	_clocks_per_tick = 0x19;
 	setTrack(0);
 	return true;
 }
@@ -244,6 +238,7 @@ uint32 Note::delta() const {
 }
 
 enum {
+	kSetTempo =		 0x81,
 	kSetProgram = 	 0x82,
 	kSetExpression = 0x89,
 	kCmdNoteOff =	 0x8b,
@@ -283,7 +278,7 @@ MusicCommand::Status Note::parseNextEvent(EventInfo &info) {
 		_data += 2;
 		unless (_tick)
 			_tick = Music.getTick();
-		_tick += d;
+		_tick += d * Music.clocksPerTick();
 	}
 	return ret;
 }
@@ -327,9 +322,9 @@ MusicCommand::Status MusicCommand::parseNextEvent(EventInfo &info) {
 		debugC(2, kDebugLevelMusic, "will call script");
 		return kCallMe;
 
-	case 0x81:
-		warning("unhandled code 0x81, param = 0x%x", _parameter);
-		Music.setTempo(0x19 * kBaseTempo / _parameter);
+	case kSetTempo:
+		debugC(2, kDebugLevelMusic, "setting tempo to %d", _parameter);
+		Music.setClocksPerTick(_parameter);
 		return kNvm;
 
 	default:

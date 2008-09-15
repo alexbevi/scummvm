@@ -102,6 +102,8 @@ public:
 	~MusicParser();
 
 	bool loadMusic(byte *data, uint32 size = 0);
+	uint16 clocksPerTick() const { return _clocks_per_tick; }
+	void setClocksPerTick(uint16 v) { _clocks_per_tick = v; }
 
 	friend class Note;
 protected:
@@ -109,6 +111,8 @@ protected:
 
 private:
 	MusicScript _script;
+
+	uint16 _clocks_per_tick;
 };
 
 #define Music MusicParser::instance()
