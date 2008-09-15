@@ -47,6 +47,7 @@ enum {
 void MusicScript::parseNextEvent(EventInfo &info) {
 	MusicCommand::Status ret = _tune.parseNextEvent(info);
 
+	uint32 delta = 0;
 	while (ret != MusicCommand::kThxBye) {
 		while (ret == MusicCommand::kCallMe) {
 			switch (_code[_offset]) {
@@ -62,8 +63,15 @@ void MusicScript::parseNextEvent(EventInfo &info) {
 				error("unhandled music script call %x", _code[_offset]);
 			}
 		}
+
+		while (ret == MusicCommand::kNextBeat) {
+			_tune.setBeat(_tune.beatId() + 1);
+			delta += 64 * Music.clocksPerTick();
+			break;
+		}
 		ret = _tune.parseNextEvent(info);
 	}
+	info.delta += delta;
 }
 
 Tune::Tune() : _currentBeat(-1) {}
@@ -104,8 +112,11 @@ Beat::Beat() {}
 
 Beat::Beat(const byte *def, const byte *channels, const byte *tune) {
 	for (int i = 0; i < 8; i++)
-		if (def[i])
-			_channels[i] = Channel(channels + 16 * (def[i] - 1), tune, i + 2);
+		if (def[i]) {
+			uint16 off = 16 * def[i];
+			debugC(2, kDebugLevelMusic, "found channel at offset 0x%x", off + channels - tune);
+			_channels[i] = Channel(channels + off, tune, i + 2);
+		}
 }
 
 void Beat::reset() {
@@ -123,6 +134,9 @@ MusicCommand::Status Beat::parseNextEvent(EventInfo &info) {
 			best = &_channels[i];
 		}
 	}
+
+	if (!best)
+		return MusicCommand::kNextBeat;
 
 	return best->parseNextEvent(info);
 }
@@ -202,7 +216,7 @@ MusicCommand::Status Channel::parseNextEvent(EventInfo &info) {
 		_not_initialized = false;
 	} else {
 		uint32 bestdelta = 0xffffffff;
-		Note *best;
+		Note *best = 0;
 
 		for (int i = 0; i < 4; i++) {
 			uint32 d = _notes[i].delta();
@@ -212,6 +226,7 @@ MusicCommand::Status Channel::parseNextEvent(EventInfo &info) {
 			}
 		}
 
+		assert(best);
 		info.event = _chanidx;
 		ret = best->parseNextEvent(info);
 	}

@@ -19,7 +19,8 @@ public:
 	enum Status {
 		kThxBye,
 		kCallMe,
-		kNvm
+		kNvm,
+		kNextBeat
 	};
 
 	MusicCommand();
@@ -79,6 +80,7 @@ public:
 	Tune(uint16 index);
 	MusicCommand::Status parseNextEvent(EventInfo &info);
 	void setBeat(uint16);
+	uint16 beatId() const { return _currentBeat; }
 
 	friend class Note;
 private:
