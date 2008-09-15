@@ -23,7 +23,8 @@ bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_driver->setTimerCallback(this, &MidiParser::timerCallback);
 
 	_num_tracks = 1;
-	_clocks_per_tick = 0x19;
+//	_clocks_per_tick = 0x19;
+	setTempo(500000 * 0x19);
 	setTrack(0);
 	return true;
 }
@@ -48,14 +49,13 @@ enum {
 void MusicScript::parseNextEvent(EventInfo &info) {
 	MusicCommand::Status ret = _tune.parseNextEvent(info);
 
-	uint32 delta = 0;
 	while (ret != MusicCommand::kThxBye) {
 		while (ret == MusicCommand::kCallMe) {
 			switch (_code[_offset]) {
 
 			case kSetBeat:
 				debugC(2, kDebugLevelMusic, "will set beat to %d", _code[_offset + 1]);
-				_tune.setBeat(_code[_offset + 1]);
+				_tune.setBeat(_code[_offset + 1], Music.getTick());
 				_offset += 2;
 				ret = MusicCommand::kThxBye;
 				break;
@@ -71,13 +71,12 @@ void MusicScript::parseNextEvent(EventInfo &info) {
 		}
 
 		while (ret == MusicCommand::kNextBeat) {
-			_tune.setBeat(_tune.beatId() + 1);
-			delta += 64 * Music.clocksPerTick();
+			debugC(3, kDebugLevelMusic, "===== next beat at tick %d", info.delta);
+			_tune.setBeat(_tune.beatId() + 1, info.delta);
 			break;
 		}
 		ret = _tune.parseNextEvent(info);
 	}
-	info.delta += delta;
 }
 
 Tune::Tune() : _currentBeat(-1) {}
@@ -105,16 +104,16 @@ Tune::Tune(uint16 index) {
 	_currentBeat = 0;
 }
 
-void Tune::setBeat(uint16 index) {
+void Tune::setBeat(uint16 index, uint32 start) {
 	_currentBeat = index;
-	_beats[_currentBeat].reset();
+	_beats[_currentBeat].reset(start);
 }
 
 MusicCommand::Status Tune::parseNextEvent(EventInfo &info) {
 	return _beats[_currentBeat].parseNextEvent(info);
 }
 
-Beat::Beat() {}
+Beat::Beat() : _start(0) {}
 
 Beat::Beat(const byte *def, const byte *channels, const byte *tune) {
 	for (int i = 0; i < 8; i++)
@@ -125,9 +124,10 @@ Beat::Beat(const byte *def, const byte *channels, const byte *tune) {
 		}
 }
 
-void Beat::reset() {
+void Beat::reset(uint32 start) {
 	for (int i = 0; i < 8; i++)
 		_channels[i].reset();
+	_start = start;
 }
 
 MusicCommand::Status Beat::parseNextEvent(EventInfo &info) {
@@ -139,10 +139,19 @@ MusicCommand::Status Beat::parseNextEvent(EventInfo &info) {
 			bestdelta = delta;
 			best = &_channels[i];
 		}
+		debugC(5, kDebugLevelMusic, "channel %d delta: %d", i+2, delta);
 	}
 
-	if (!best)
+	if (!best) {
+		info.delta = _start + 64;
 		return MusicCommand::kNextBeat;
+	}
+	debugC(5, kDebugLevelMusic, "best delta: %d, channel %d", bestdelta, best->index());
+
+	if (bestdelta + Music.getTick() > _start + 64) {
+		info.delta = _start + 64;
+		return MusicCommand::kNextBeat;
+	}
 
 	return best->parseNextEvent(info);
 }
@@ -260,10 +269,9 @@ uint32 Note::delta() const {
 
 	checkDelta();
 
-	if (_tick <= Music.getTick())
-		return 0;
-	else
-		return _tick - Music._position._last_event_tick;
+	debugC(5, kDebugLevelMusic, "calculating delta, tick = %d, last tick = %d", _tick, Music._position._last_event_tick);
+	assert (_tick >= Music._position._last_event_tick);
+	return (_tick - Music._position._last_event_tick);
 }
 
 enum {
@@ -306,17 +314,19 @@ MusicCommand::Status Note::parseNextEvent(EventInfo &info) {
 	}
 
 	_data += 2;
+	if (info.delta == 0)
+		_tick ++;
 	checkDelta();
 	return ret;
 }
 
 void Note::checkDelta() const {
+	unless (_tick)
+		_tick = Music._position._last_event_tick;
 	if (_data[0] == kHangNote) {
 		byte d = _data[1];
 		_data += 2;
-		unless (_tick)
-			_tick = Music.getTick();
-		_tick += d * Music.clocksPerTick();
+		_tick += d;
 	}
 }
 
@@ -361,7 +371,7 @@ MusicCommand::Status MusicCommand::parseNextEvent(EventInfo &info) {
 
 	case kSetTempo:
 		debugC(2, kDebugLevelMusic, "setting tempo to %d", _parameter);
-		Music.setClocksPerTick(_parameter);
+		Music.setTempo(500000 * _parameter);
 		return kNvm;
 
 	default:

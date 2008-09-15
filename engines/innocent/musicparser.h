@@ -55,6 +55,7 @@ public:
 	MusicCommand::Status parseNextEvent(EventInfo &info);
 	uint32 delta() const;
 	void reset();
+	byte index() const { return _chanidx; }
 
 private:
 	Note _notes[4];
@@ -68,10 +69,11 @@ public:
 	Beat();
 	Beat(const byte *def, const byte *channels, const byte *tune);
 	MusicCommand::Status parseNextEvent(EventInfo &info);
-	void reset();
+	void reset(uint32 start = 0);
 
 private:
 	Channel _channels[8];
+	uint32 _start;
 };
 
 class Tune {
@@ -79,7 +81,7 @@ public:
 	Tune();
 	Tune(uint16 index);
 	MusicCommand::Status parseNextEvent(EventInfo &info);
-	void setBeat(uint16);
+	void setBeat(uint16, uint32 start = 0);
 	uint16 beatId() const { return _currentBeat; }
 
 	friend class Note;
