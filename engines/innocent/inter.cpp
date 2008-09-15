@@ -1,6 +1,7 @@
 #include "innocent/inter.h"
 
 #include "common/endian.h"
+#include "common/list.h"
 #include "common/util.h"
 
 #include "innocent/debugger.h"
@@ -14,6 +15,8 @@
 #include "innocent/opcode_handlers.cpp"
 
 namespace Innocent {
+
+class Animation;
 
 enum {
 	kOpcodeMax = 0xfd
@@ -44,6 +47,11 @@ Interpreter::Interpreter(Logic *l, byte *base, const char *n) :
 	init_opcodes<255>();
 	strncpy(_name, n, 100);
 	init();
+}
+
+Interpreter::~Interpreter() {
+	foreach (Animation *, _animations)
+		delete *it;
 }
 
 void Interpreter::tick() {

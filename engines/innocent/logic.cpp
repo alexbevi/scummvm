@@ -26,6 +26,7 @@ void Logic::setEngine(Engine *e) {
 	_resources = e->resources();
 	_currentRoom = 0xffff;
 	_currentBlock = 0xffff;
+	_nextRoom = 0;
 }
 
 
@@ -40,6 +41,9 @@ void Logic::initCode() {
 }
 
 void Logic::tick() {
+	if (_nextRoom)
+		doChangeRoom();
+
 	if (_roomLoop.get()) {
 //		gDebugLevel--; // room loops aren't that interesting
 		debugC(3, kDebugLevelScript | kDebugLevelFlow, ">>>running room loop code");
@@ -57,7 +61,7 @@ void Logic::callAnimations() {
 	for (Common::List<Animation *>::iterator it = _animations.begin(); it != _animations.end(); ++it) {
 		Animation::Status ret = (*it)->tick();
 		if (ret == Animation::kRemove) {
-			delete (*it);
+			// it will be deleted by its owner block
 			_animations.erase(it);
 		}
 	}
@@ -72,12 +76,24 @@ Actor *Logic::protagonist() const {
 }
 
 void Logic::changeRoom(uint16 newRoom) {
-	debugC(2, kDebugLevelScript, "changing room to %d", newRoom);
-	if (newRoom == _currentRoom)
+	// just schedule it, we'll execute on next tick
+	_nextRoom = newRoom;
+
+	if (_currentRoom == 0xffff)
+		doChangeRoom(); // except if it's the first one
+}
+
+void Logic::doChangeRoom() {
+	assert (_nextRoom);
+
+	debugC(2, kDebugLevelScript, "changing room to %d", _nextRoom);
+	if (_nextRoom == _currentRoom)
 		return;
-	_currentRoom = newRoom;
+	_currentRoom = _nextRoom;
+	_nextRoom = 0;
 	_roomLoop.reset(0);
 	uint16 newBlock = _resources->blockOfRoom(_currentRoom);
+
 	if (newBlock != _currentBlock) {
 		_currentBlock = newBlock;
 		_blockProgram.reset(_resources->loadCodeBlock(newBlock));
@@ -95,9 +111,9 @@ void Logic::changeRoom(uint16 newRoom) {
 	}
 
 	_room.reset(new Room(this));
-	debugC(2, kDebugLevelScript, ">>>running room entry code for room %d", newRoom);
-	_blockInterpreter->run(_blockProgram->roomHandler(newRoom), kCodeNewRoom);
-	debugC(2, kDebugLevelScript, "<<<finished room entry code for room %d", newRoom);
+	debugC(2, kDebugLevelScript, ">>>running room entry code for room %d", _currentRoom);
+	_blockInterpreter->run(_blockProgram->roomHandler(_currentRoom), kCodeNewRoom);
+	debugC(2, kDebugLevelScript, "<<<finished room entry code for room %d", _currentRoom);
 }
 
 void Logic::runLater(const CodePointer &p, uint16 delay) {
@@ -128,6 +144,10 @@ void Logic::runQueued() {
 
 void Logic::addAnimation(Animation *anim) {
 	_animations.push_back(anim);
+}
+
+void Logic::removeAnimation(Animation *anim) {
+	_animations.remove(anim);
 }
 
 void Logic::setRoomLoop(const CodePointer &code) {

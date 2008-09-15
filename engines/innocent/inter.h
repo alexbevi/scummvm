@@ -12,6 +12,7 @@
 
 namespace Innocent {
 
+class Animation;
 class Logic;
 class Opcode;
 class Engine;
@@ -44,6 +45,7 @@ private:
 
 public:
 	Interpreter(Logic *l, byte *base, const char *name);
+	~Interpreter();
 
 	void init();
 
@@ -79,6 +81,7 @@ public:
 	friend class CodePointer;
 
 	Resources *resources() const { return _resources; }
+	void rememberAnimation(Animation *anim) { _animations.push_back(anim); }
 
 private:
 	char _name[100];
@@ -93,6 +96,8 @@ private:
 	void setRoomLoop(byte *code);
 
 	byte *_roomLoop;
+
+	Common::List<Animation *> _animations;
 
 	Engine *_engine;
 	Resources *_resources;

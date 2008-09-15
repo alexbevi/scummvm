@@ -66,11 +66,13 @@ Animation::Animation(const CodePointer &code, Common::Point position) :
 	_resources = code.interpreter()->resources();
 	init_opcodes<37>();
 	snprintf(_debugInfo, 50, "animation at %s", +code);
+	code.interpreter()->rememberAnimation(this);
 }
 
 Animation::~Animation() {
 	for (Common::List<Sprite *>::iterator it = _sprites.begin(); it != _sprites.end(); ++it)
 		delete *it;
+	Log.removeAnimation(this);
 }
 
 Animation::Status Animation::tick() {

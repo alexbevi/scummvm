@@ -46,6 +46,7 @@ public:
 	void callAnimations();
 
 	void addAnimation(Animation *anim);
+	void removeAnimation(Animation *anim);
 	void setRoomLoop(const CodePointer &code);
 
 	const Common::List<Animation *> animations() const { return _animations; }
@@ -69,6 +70,7 @@ public:
 	friend class Debugger;
 private:
 
+	void doChangeRoom();
 	void runQueued();
 
 
@@ -76,6 +78,7 @@ private:
 	Resources *_resources;
 	std::auto_ptr<Interpreter> _toplevelInterpreter, _blockInterpreter;
 	Actor *_protagonist;
+	uint32 _nextRoom;
 	uint32 _currentRoom;
 	uint16 _currentBlock;
 	std::auto_ptr<Program> _blockProgram;
