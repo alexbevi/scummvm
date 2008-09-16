@@ -183,6 +183,14 @@ OPCODE(0x00) {
 	return kRemove;
 }
 
+OPCODE(0x01) {
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x01: hide");
+	_base = 0;
+	_offset = _baseOffset = 0;
+
+	return kFrameDone;
+}
+
 OPCODE(0x02) {
 	uint16 left = shift();
 	uint16 top = shift();
