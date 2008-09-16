@@ -326,6 +326,18 @@ OPCODE(0x96) {
 	return kThxBye;
 }
 
+OPCODE(0x9a) {
+	// wait for actor to exit
+	debugC(3, kDebugLevelScript, "opcode 0x9a: wait for actor %s to exit", +a[0]);
+
+	Actor *ac = _logic->getActor(a[0]);
+	if (ac->room() != _logic->currentRoom())
+		return kThxBye;
+
+	ac->callMe(next);
+	return kReturn;
+}
+
 OPCODE(0x9b) {
 	// delay
 	debugC(3, kDebugLevelScript, "opcode 0x9b: delay %s frames", +a[0]);
