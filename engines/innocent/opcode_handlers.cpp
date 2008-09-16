@@ -401,20 +401,20 @@ OPCODE(0xbc) {
 	return kThxBye;
 }
 
-// OPCODE(0xbd) {
-// 	// set protagonist animation
-// 	debugC(3, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s", +a[0]);
-// 
-// 	Actor *ac = Log.protagonist();
-// 	if (!ac->isVisible()) {
-// 		ac->whenYouHideUpCall(current);
-// 		return kReturn;
-// 	}
-// 
-// 	CodePointer p(static_cast<CodePointer &>(a[0]).offset(), Log.mainInterpreter());
-// 	ac->setAnimation(p);
-// 	return kThxBye;
-// }
+OPCODE(0xbd) {
+	// set protagonist animation
+	debugC(3, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s", +a[0]);
+
+	Actor *ac = Log.protagonist();
+	if (ac->isFine()) {
+		ac->callMe(current);
+		return kReturn;
+	}
+
+	CodePointer p(static_cast<CodePointer &>(a[0]).offset(), Log.mainInterpreter());
+	ac->setAnimation(p);
+	return kThxBye;
+}
 
 OPCODE(0xc2) {
 	// add animation at cursor

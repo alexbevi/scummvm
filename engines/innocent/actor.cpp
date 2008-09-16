@@ -33,6 +33,9 @@ void Actor::setAnimation(const CodePointer &anim) {
 	_offset = 0;
 	_debugInvalid = false;
 	_attentionNeeded = false;
+	clearMainSprite();
+	_interval = 1;
+	_counter = _ticksLeft = 0;
 }
 
 void Actor::hide() {
@@ -67,7 +70,7 @@ void Actor::setRoom(uint16 r, uint16 frame, uint16 next_frame) {
 	_nextFrame = next_frame;
 	setFrame(frame);
 
-	_offset = _puppeteer.mainCodeOffset();
+	setAnimation(CodePointer(_puppeteer.mainCodeOffset(), Log.mainInterpreter()));
 }
 
 Animation::Status Actor::tick() {
