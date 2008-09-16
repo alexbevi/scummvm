@@ -35,7 +35,7 @@ public:
 	void setFrame(uint16 f) { _frame = f; }
 
 	uint16 room() const { return _room; }
-	void setRoom(uint16);
+	void setRoom(uint16, uint16 frame = 0, uint16 nextFrame = 0);
 
 	bool isVisible() const;
 
@@ -57,6 +57,7 @@ private:
 	void readHeader(const byte *code);
 
 	uint16 _frame;
+	uint16 _nextFrame;
 	uint16 _room;
 	byte _dir63;
 

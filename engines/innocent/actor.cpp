@@ -4,6 +4,7 @@
 
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
+#include "innocent/util.h"
 
 namespace Innocent {
 //
@@ -38,8 +39,12 @@ bool Actor::isVisible() const {
 	return _room == Log.currentRoom();
 }
 
-void Actor::setRoom(uint16 r) {
+void Actor::setRoom(uint16 r, uint16 frame, uint16 next_frame) {
 	_room = r;
+	_frame = frame;
+	unless (next_frame)
+		next_frame = frame;
+	_nextFrame = next_frame;
 	callBacks();
 }
 
