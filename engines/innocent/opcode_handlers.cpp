@@ -326,17 +326,18 @@ OPCODE(0x96) {
 	return kThxBye;
 }
 
-/*OPCODE(0x9a) {
-	// if actor in current room then whatever
-	debugC(3, kDebugLevelScript, "opcode 0x9a: if actor %s in current room then retry", +a[0]);
+OPCODE(0x9a) {
+	// wait until another room
+	debugC(3, kDebugLevelScript, "opcode 0x9a: wait until actor %s exits", +a[0]);
+
 	Actor *ac = _logic->getActor(a[0]);
 	if (ac->room() == _logic->currentRoom()) {
-		ac->whenYouHideUpCall(current);
+		ac->callMe(next);
 		return kReturn;
 	}
 	return kThxBye;
 }
-*/
+
 OPCODE(0x9b) {
 	// delay
 	debugC(3, kDebugLevelScript, "opcode 0x9b: delay %s frames", +a[0]);
