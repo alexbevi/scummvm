@@ -373,19 +373,21 @@ OPCODE(0x9d) {
 // 	return kThxBye;
 // }
 
-// OPCODE(0xad) {
-// 	// turn actor
-// 	debugC(1, kDebugLevelScript, "opcode 0xad: if actor %s not visible, move to frame %s else wait", +a[0], +a[1]);
-// 
-// 	Actor *ac = _logic->getActor(a[0]);
-// 	if (ac->isVisible())
-// 		ac->setFrame(a[1]);
-// 	else {
-// 		ac->whenYouHideUpCall(current);
-// 		return kReturn;
-// 	}
-// 	return kThxBye;
-// }
+OPCODE(0xad) {
+	// turn actor
+	debugC(3, kDebugLevelScript, "opcode 0xad: move actor %s to frame %s next", +a[0], +a[1]);
+
+	Actor *ac = _logic->getActor(a[0]);
+	if (ac->isFine()) {
+		ac->callMe(current);
+		return kReturn;
+	}
+
+	// TODO: special handling for protagonist
+	ac->setFrame(a[1]);
+
+	return kThxBye;
+}
 
 // OPCODE(0xbc) {
 // 	// hide actor
