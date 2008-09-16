@@ -86,6 +86,7 @@ Status Interpreter::run(uint16 offset) {
 	int if_depth = 0;
 	forever {
 		byte opcode = *code;
+		last = code;
 
 		if (opcode > kOpcodeMax) {
 			return kInvalidOpcode;

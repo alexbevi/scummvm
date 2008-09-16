@@ -117,6 +117,7 @@ void Logic::doChangeRoom() {
 }
 
 void Logic::runLater(const CodePointer &p, uint16 delay) {
+	debugC(3, kDebugLevelScript, "will call %s after %d ticks", +p, delay);
 	_queued.push_back(DelayedRun(p, delay));
 }
 

@@ -44,6 +44,7 @@ void Actor::hide() {
 }
 
 void Actor::callMe(const CodePointer &code) {
+	debugC(3, kDebugLevelScript, "actor will call %s when needed", +code);
 	_callBacks.push(code);
 }
 
@@ -203,7 +204,7 @@ OPCODE(0x23) {
 OPCODE(0x24) {
 	byte dir = embeddedByte();
 
-	debugC(3, kDebugLevelAnimation, "actor opcode 0x23: set attention needed flag to %d", dir);
+	debugC(3, kDebugLevelAnimation, "actor opcode 0x24: set attention needed flag to %d", dir);
 	_attentionNeeded = true;
 
 	return kOk;
