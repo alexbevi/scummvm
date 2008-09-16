@@ -204,6 +204,17 @@ OPCODE(0x03) {
 	return kOk;
 }
 
+OPCODE(0x04) {
+	uint16 offset = shift();
+	uint16 interval = READ_LE_UINT16(_resources->getGlobalWordVariable(offset/2));
+
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x04: set interval to %d (from var %d)", interval, offset / 2);
+
+	_interval = interval;
+
+	return kOk;
+}
+
 OPCODE(0x06) {
 	uint16 sprite = shift();
 
