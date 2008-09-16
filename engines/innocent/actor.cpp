@@ -32,12 +32,19 @@ void Actor::setAnimation(const CodePointer &anim) {
 	_debugInvalid = false;
 }
 
+void Actor::hide() {
+	_base = 0;
+	_baseOffset = _offset = 0;
+	callBacks();
+}
+
 void Actor::whenYouHideUpCall(const CodePointer &code) {
 	_callBacks.push(code);
 }
 
 bool Actor::isVisible() const {
-	return _room == Log.currentRoom();
+	return 	_room == Log.currentRoom() &&
+			_base;
 }
 
 void Actor::setRoom(uint16 r, uint16 frame, uint16 next_frame) {

@@ -373,6 +373,13 @@ OPCODE(0xad) {
 	return kThxBye;
 }
 
+OPCODE(0xbc) {
+	// hide actor
+	debugC(3, kDebugLevelScript, "opcode 0xbc: hide actor %s", +a[0]);
+	_logic->getActor(a[0])->hide();
+	return kThxBye;
+}
+
 OPCODE(0xc2) {
 	// add animation at cursor
 	debugC(3, kDebugLevelScript, "opcode 0xc2: add animation %s at cursor partial STUB", +a[0]);
