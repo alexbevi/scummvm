@@ -377,19 +377,6 @@ OPCODE(0xc2) {
 	return kThxBye;
 }
 
-OPCODE(0xd2) {
-	// prepare interface palette
-	debugC(3, kDebugLevelScript, "opcode 0xd2: will fadein partially");
-	Graf.willFadein(Graphics::kPartialFade);
-	return kThxBye;
-}
-
-OPCODE(0xdb) {
-	// add active rect
-	debugC(1, kDebugLevelScript, "opcode 0xdb: add rect %s at %s %s %s %s partial STUB", +a[0], +a[1], +a[2], +a[3], +a[4]);
-	return kThxBye;
-}
-
 OPCODE(0xc6) {
 	// suspend execution until an animation's ip points to 0xff
 	debugC(3, kDebugLevelScript, "opcode 0xc6: wait on animation %s", +a[0]);
@@ -456,6 +443,13 @@ OPCODE(0xd1) {
 	return kThxBye;
 }
 
+OPCODE(0xd2) {
+	// prepare interface palette
+	debugC(3, kDebugLevelScript, "opcode 0xd2: will fadein partially");
+	Graf.willFadein(Graphics::kPartialFade);
+	return kThxBye;
+}
+
 enum {
 	kCopyProtectionRoom = 81,
 	kIntroOffset	    = 0x33a3
@@ -477,9 +471,24 @@ OPCODE(0xd6) {
 	return kThxBye;
 }
 
+OPCODE(0xdb) {
+	// add active rect
+	debugC(1, kDebugLevelScript, "opcode 0xdb: add rect %s at %s %s %s %s partial STUB", +a[0], +a[1], +a[2], +a[3], +a[4]);
+	return kThxBye;
+}
+
 OPCODE(0xdf) {
-	// add actor animation
-	debugC(1, kDebugLevelScript, "opcode 0xdf: add actor animation %s %s %s %s %s %s STUB", +a[0], +a[1], +a[2], +a[3], +a[4], +a[5]);
+	// add actor frame
+	byte nexts[8];
+	for (int i = 0; i < 4; i++) {
+		uint16 val = a[i+2];
+		nexts[2*i] = val & 0xff;
+		nexts[2*i+1] = val >> 8;
+	}
+	const int16 left = a[0].signd();
+	const int16 top = a[1].signd();
+	debugC(3, kDebugLevelScript, "opcode 0xdf: add actor frame %d %d %d %d %d %d %d %d %d %d", left, top, nexts[0], nexts[1], nexts[2], nexts[3], nexts[4], nexts[5], nexts[6], nexts[7]);
+//	Log.room()->addActorFrame(Actor::Frame(a[0], a[1], a[2], a[3], a[4], a[5], a[6]));
 	return kThxBye;
 }
 

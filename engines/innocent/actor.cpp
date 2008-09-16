@@ -110,7 +110,7 @@ Animation::Status Actor::op(byte opcode) {
 OPCODE(0x14) {
 	uint16 off = shift();
 
-	debugC(3, kDebugLevelAnimation, "actor opcode 0x14: jump to 0x%04x if I'm speaking STUB", off);
+	debugC(1, kDebugLevelAnimation, "actor opcode 0x14: jump to 0x%04x if I'm speaking STUB", off);
 
 	// also, some check for non-protagonists
 
@@ -128,6 +128,7 @@ OPCODE(0x16) {
 	uint16 off = shift();
 
 	debugC(1, kDebugLevelAnimation, "actor opcode 0x16: if look direction is %d then jump to 0x%04x STUB", val, off);
+	error("stub");
 
 	return kOk;
 }

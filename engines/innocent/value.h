@@ -32,6 +32,7 @@ public:
 	virtual ValueType type() const { return kValueVoid; }
 
 	virtual operator uint16() const { assert(false); }
+	virtual int16 signd() const { const uint16 v = *this; return *reinterpret_cast<const int16 *>(&v); }
 	virtual Value &operator=(uint16 value) { assert(false); }
 	virtual Value &operator=(const Value &) { assert(false); }
 	virtual bool operator==(const Value &other) { return uint16(*this) == other; }
