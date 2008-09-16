@@ -87,7 +87,7 @@ void MainDat::loadActors(Interpreter *in) {
 	_actors = new Actor *[nactors];
 	for (int i = 0; i < nactors; ++i) {
 		_actors[i] = new Actor(CodePointer(actors, in));
-		_actors[i]->setPuppeteer(getPuppeteer(i));
+		_actors[i]->setPuppeteer(getPuppeteer(i+1));
 		actors += Actor::Size;
 	}
 }

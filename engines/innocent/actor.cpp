@@ -20,6 +20,7 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 	_room = 0xffff;
 	_debug = false;
 	_attentionNeeded = false;
+	_nextDirection = kDirNone;
 
 	Engine::instance().logic()->addAnimation(this);
 
@@ -27,8 +28,8 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 }
 
 bool Actor::isFine() const {
-	return 	_room == Log.currentRoom() &&
-			_base && !_attentionNeeded;
+	return (_room == Log.currentRoom() &&
+			_base && !_attentionNeeded);
 }
 
 void Actor::setAnimation(uint16 offset) {
@@ -45,6 +46,7 @@ void Actor::setAnimation(const CodePointer &anim) {
 	clearMainSprite();
 	_interval = 1;
 	_counter = _ticksLeft = 0;
+	_nextDirection = kDirNone;
 }
 
 void Actor::hide() {
@@ -134,6 +136,7 @@ void Actor::animate() {
 	unless (_attentionNeeded/* || _timedOut*/)
 		return;
 
+	debugC(4, kDebugLevelActor, "attention needed");
 	if (_nextAnimator) {
 		setAnimation(_nextAnimator);
 		_nextAnimator = 0;
@@ -268,7 +271,8 @@ Direction Actor::Frame::operator-(const Actor::Frame &other) const {
 }
 
 Direction operator>>(Direction _a, Direction _b) {
-	int8 a(_a), b(_b);
+	assert(sizeof(Direction) == sizeof(int32));
+	int32 a(_a), b(_b);
 
 	b -= a;
 

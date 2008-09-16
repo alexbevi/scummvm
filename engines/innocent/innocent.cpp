@@ -40,6 +40,7 @@ Engine::Engine(OSystem *syst) :
 	Common::addSpecialDebugLevel(kDebugLevelFiles, "files", "file input and output");
 	Common::addSpecialDebugLevel(kDebugLevelEvents, "events", "event handling");
 	Common::addSpecialDebugLevel(kDebugLevelMusic, "music", "music loading and playing");
+	Common::addSpecialDebugLevel(kDebugLevelActor, "actor", "actor animation and behaviour");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
 }
