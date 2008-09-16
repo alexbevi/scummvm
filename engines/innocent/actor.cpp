@@ -19,6 +19,7 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 	_frame = 0;
 	_room = 0xffff;
 	_debug = false;
+	_attentionNeeded = false;
 
 	Engine::instance().logic()->addAnimation(this);
 
@@ -31,21 +32,21 @@ void Actor::setAnimation(const CodePointer &anim) {
 	_baseOffset = anim.offset();
 	_offset = 0;
 	_debugInvalid = false;
+	_attentionNeeded = false;
 }
 
 void Actor::hide() {
 	_base = 0;
 	_baseOffset = _offset = 0;
-	callBacks();
 }
 
-void Actor::whenYouHideUpCall(const CodePointer &code) {
+void Actor::callMe(const CodePointer &code) {
 	_callBacks.push(code);
 }
 
-bool Actor::isVisible() const {
+bool Actor::isFine() const {
 	return 	_room == Log.currentRoom() &&
-			_base;
+			_base && !_attentionNeeded;
 }
 
 void Actor::setFrame(uint16 frame) {
@@ -57,15 +58,17 @@ void Actor::setFrame(uint16 frame) {
 
 void Actor::setRoom(uint16 r, uint16 frame, uint16 next_frame) {
 	_room = r;
-	_frame = frame;
 	unless (next_frame)
 		next_frame = frame;
 	_nextFrame = next_frame;
-	callBacks();
+	setFrame(frame);
+
+	_offset = _puppeteer.mainCodeOffset();
 }
 
 Animation::Status Actor::tick() {
-	if (isVisible()) {
+	callBacks();
+	if (isFine()) {
 		Animation::Status s;
 		if (_debug) gDebugLevel += 3;
 			s = Animation::tick();
@@ -97,9 +100,9 @@ void Actor::readHeader(const byte *code) {
 }
 
 void Actor::callBacks() {
-	if (!isVisible())
+	unless (isFine())
 		while (!_callBacks.empty())
-			_callBacks.pop().run();
+			Log.runLater(_callBacks.pop());
 }
 
 template <int opcode>
@@ -166,7 +169,8 @@ OPCODE(0x17) {
 OPCODE(0x18) {
 	uint16 val = shift();
 
-	debugC(1, kDebugLevelAnimation, "actor opcode 0x18: set next animator to %d STUB", val);
+	debugC(3, kDebugLevelAnimation, "actor opcode 0x18: set next animator to %x", val);
+	_nextAnimator = val;
 
 	return kOk;
 }
@@ -184,7 +188,8 @@ OPCODE(0x23) {
 OPCODE(0x24) {
 	byte dir = embeddedByte();
 
-	debugC(1, kDebugLevelAnimation, "actor opcode 0x23: set dir65 to %d STUB", dir);
+	debugC(3, kDebugLevelAnimation, "actor opcode 0x23: set attention needed flag to %d", dir);
+	_attentionNeeded = true;
 
 	return kOk;
 }

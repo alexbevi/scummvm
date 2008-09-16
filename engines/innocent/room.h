@@ -31,7 +31,12 @@ public:
 	const Common::List<Exit *> &exits() const { return _exits; }
 
 	void addActorFrame(const Actor::Frame &f) { _actorFrames.push_back(f); }
-	const Actor::Frame &getFrame(uint16 index) const { assert(index); return _actorFrames[index-1]; }
+	Actor::Frame getFrame(uint16 index) const {
+		if (index >= _actorFrames.size() || index == 0)
+			return Actor::Frame();
+		else
+			return _actorFrames[index-1];
+	}
 
 	void addRect(const Room::Rect &f) { _rects.push_back(f); }
 

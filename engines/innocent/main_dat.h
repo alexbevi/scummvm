@@ -4,9 +4,11 @@
 #include <list>
 
 #include "common/endian.h"
+#include "common/hashmap.h"
 #include "common/list.h"
 #include "common/str.h"
 
+#include "innocent/actor.h"
 #include "innocent/datafile.h"
 #include "innocent/sprite.h"
 #include "innocent/types.h"
@@ -67,6 +69,8 @@ public:
 	uint16 getCursorSpriteId() const;
 	uint16 getFrameId(FramePart part) const;
 
+	Puppeteer getPuppeteer(uint16 actorId) const;
+
 	friend class Resources;
 private:
 	void loadActors(Interpreter *);
@@ -82,6 +86,9 @@ private:
 	byte *_programsMap;
 	Actor **_actors;
 	uint16 _actorsCount;
+
+	void parsePuppeteers() const;
+	mutable Common::HashMap<uint16, Puppeteer> _puppeteers;
 };
 
 } // End of namespace Innocent

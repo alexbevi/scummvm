@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "common/endian.h"
 #include "common/queue.h"
 
 #include "innocent/animation.h"
@@ -13,6 +14,29 @@ namespace Innocent {
 
 class MainDat;
 class Program;
+
+class Puppeteer {
+public:
+	enum Offsets {
+		kActorId =     0,
+		kMainCode =    2,
+		kSize = 	0x24
+	};
+	Puppeteer() : _offset(0), _actorId(0) {}
+	Puppeteer(const byte *data) { parse(data); }
+
+	uint16 mainCodeOffset() const { return _offset; }
+	uint16 actorId() const { return _actorId; }
+
+private:
+	void parse(const byte *data) {
+		_actorId = READ_LE_UINT16(data + kActorId);
+		_offset = READ_LE_UINT16(data + kMainCode);
+	}
+
+	uint16 _actorId;
+	uint16 _offset;
+};
 
 class Actor : public Animation {
 //
@@ -53,16 +77,18 @@ public:
 	uint16 room() const { return _room; }
 	void setRoom(uint16, uint16 frame = 0, uint16 nextFrame = 0);
 
-	bool isVisible() const;
+	bool isFine() const;
 
 	void setAnimation(const CodePointer &anim);
 
 	void hide();
-	void whenYouHideUpCall(const CodePointer &cp);
+	void callMe(const CodePointer &cp);
 
 	Animation::Status tick();
 
 	void toggleDebug();
+
+	void setPuppeteer(const Puppeteer &p) { _puppeteer = p; }
 private:
 	Actor(const CodePointer &code);
 
@@ -77,6 +103,9 @@ private:
 	uint16 _nextFrame;
 	uint16 _room;
 	byte _dir63;
+	uint16 _nextAnimator; // to change to whenever possible
+	bool _attentionNeeded;
+	Puppeteer _puppeteer;
 
 	Common::Queue<CodePointer> _callBacks;
 	void callBacks();

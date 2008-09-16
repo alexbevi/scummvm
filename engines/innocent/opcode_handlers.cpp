@@ -91,7 +91,7 @@ OPCODE(0x13) {
 	return kThxBye;
 }
 
-OPCODE(0x1f) {
+/*OPCODE(0x1f) {
 	// if actor in current room then whatever
 	debugC(1, kDebugLevelScript, "opcode 0x1f: if actor %s in current room and STUB then", +a[1]);
 	if (_logic->getActor(a[1])->room() == _logic->currentRoom())
@@ -100,7 +100,7 @@ OPCODE(0x1f) {
 		return kFail;
 	return kThxBye;
 }
-
+*/
 OPCODE(0x24) {
 	// check nonzeroness
 	debugC(3, kDebugLevelScript, "opcode 0x24: if (%s)", +a[0]);
@@ -326,7 +326,7 @@ OPCODE(0x96) {
 	return kThxBye;
 }
 
-OPCODE(0x9a) {
+/*OPCODE(0x9a) {
 	// if actor in current room then whatever
 	debugC(3, kDebugLevelScript, "opcode 0x9a: if actor %s in current room then retry", +a[0]);
 	Actor *ac = _logic->getActor(a[0]);
@@ -336,7 +336,7 @@ OPCODE(0x9a) {
 	}
 	return kThxBye;
 }
-
+*/
 OPCODE(0x9b) {
 	// delay
 	debugC(3, kDebugLevelScript, "opcode 0x9b: delay %s frames", +a[0]);
@@ -344,13 +344,13 @@ OPCODE(0x9b) {
 	return kReturn;
 }
 
-OPCODE(0x9c) {
-	// if actor in current room then whatever
-	debugC(1, kDebugLevelScript, "opcode 0x9c: if actor %s in current room then STUB", +a[0]);
-	if (_logic->getActor(a[0])->room() == _logic->currentRoom())
-		error("case with condition true unhandled");
-	return kThxBye;
-}
+// OPCODE(0x9c) {
+// 	// if actor in current room then whatever
+// 	debugC(1, kDebugLevelScript, "opcode 0x9c: if actor %s in current room then STUB", +a[0]);
+// 	if (_logic->getActor(a[0])->room() == _logic->currentRoom())
+// 		error("case with condition true unhandled");
+// 	return kThxBye;
+// }
 
 OPCODE(0x9d) {
 	// set protagonist
@@ -359,55 +359,55 @@ OPCODE(0x9d) {
 	return kThxBye;
 }
 
-OPCODE(0xab) {
-	// set protagonist frame
-	debugC(3, kDebugLevelScript, "opcode 0xab: set protagonist frame to %s", +a[0]);
+// OPCODE(0xab) {
+// 	// set protagonist frame
+// 	debugC(3, kDebugLevelScript, "opcode 0xab: set protagonist frame to %s", +a[0]);
+// 
+// 	Actor *ac = Log.protagonist();
+// 	if (!ac->isVisible()) {
+// 		ac->whenYouHideUpCall(current);
+// 		return kReturn;
+// 	}
+// 
+// 	ac->setFrame(a[0]);
+// 	return kThxBye;
+// }
 
-	Actor *ac = Log.protagonist();
-	if (ac->isVisible()) {
-		ac->whenYouHideUpCall(current);
-		return kReturn;
-	}
+// OPCODE(0xad) {
+// 	// turn actor
+// 	debugC(1, kDebugLevelScript, "opcode 0xad: if actor %s not visible, move to frame %s else wait", +a[0], +a[1]);
+// 
+// 	Actor *ac = _logic->getActor(a[0]);
+// 	if (ac->isVisible())
+// 		ac->setFrame(a[1]);
+// 	else {
+// 		ac->whenYouHideUpCall(current);
+// 		return kReturn;
+// 	}
+// 	return kThxBye;
+// }
 
-	ac->setFrame(a[0]);
-	return kThxBye;
-}
+// OPCODE(0xbc) {
+// 	// hide actor
+// 	debugC(3, kDebugLevelScript, "opcode 0xbc: hide actor %s", +a[0]);
+// 	_logic->getActor(a[0])->hide();
+// 	return kThxBye;
+// }
 
-OPCODE(0xad) {
-	// turn actor
-	debugC(1, kDebugLevelScript, "opcode 0xad: if actor %s not visible, move to frame %s else wait", +a[0], +a[1]);
-
-	Actor *ac = _logic->getActor(a[0]);
-	if (!ac->isVisible())
-		ac->setFrame(a[1]);
-	else {
-		ac->whenYouHideUpCall(current);
-		return kReturn;
-	}
-	return kThxBye;
-}
-
-OPCODE(0xbc) {
-	// hide actor
-	debugC(3, kDebugLevelScript, "opcode 0xbc: hide actor %s", +a[0]);
-	_logic->getActor(a[0])->hide();
-	return kThxBye;
-}
-
-OPCODE(0xbd) {
-	// set protagonist animation
-	debugC(3, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s", +a[0]);
-
-	Actor *ac = Log.protagonist();
-	if (ac->isVisible()) {
-		ac->whenYouHideUpCall(current);
-		return kReturn;
-	}
-
-	CodePointer p(static_cast<CodePointer &>(a[0]).offset(), Log.mainInterpreter());
-	ac->setAnimation(p);
-	return kThxBye;
-}
+// OPCODE(0xbd) {
+// 	// set protagonist animation
+// 	debugC(3, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s", +a[0]);
+// 
+// 	Actor *ac = Log.protagonist();
+// 	if (!ac->isVisible()) {
+// 		ac->whenYouHideUpCall(current);
+// 		return kReturn;
+// 	}
+// 
+// 	CodePointer p(static_cast<CodePointer &>(a[0]).offset(), Log.mainInterpreter());
+// 	ac->setAnimation(p);
+// 	return kThxBye;
+// }
 
 OPCODE(0xc2) {
 	// add animation at cursor

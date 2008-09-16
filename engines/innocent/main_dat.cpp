@@ -31,6 +31,8 @@ enum Offsets {
 	kProgramsMap		= 0x0A,
 	kActorsCount		= 0x10,
 	kActors 			= 0x12,
+	kPuppeteersCount    = 0x14,
+	kPuppeteers         = 0x16,
 	kSpriteCount		= 0x18,
 	kSpriteMap			= 0x1A,
 	kImagesCount		= 0x1C,
@@ -85,7 +87,27 @@ void MainDat::loadActors(Interpreter *in) {
 	_actors = new Actor *[nactors];
 	for (int i = 0; i < nactors; ++i) {
 		_actors[i] = new Actor(CodePointer(actors, in));
+		_actors[i]->setPuppeteer(getPuppeteer(i));
 		actors += Actor::Size;
+	}
+}
+
+Puppeteer MainDat::getPuppeteer(uint16 i) const {
+	if (_puppeteers.empty())
+		parsePuppeteers();
+
+	return _puppeteers[i];
+}
+
+void MainDat::parsePuppeteers() const {
+	assert (_puppeteers.empty());
+	uint16 count = READ_LE_UINT16(_footer + kPuppeteersCount);
+
+	byte *data = _data + READ_LE_UINT16(_footer + kPuppeteers);
+	for (int i = 0; i < count; i++) {
+		Puppeteer p(data);
+		_puppeteers[p.actorId()] = p;
+		data += Puppeteer::kSize;
 	}
 }
 
