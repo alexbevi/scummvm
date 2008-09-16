@@ -122,4 +122,15 @@ Common::List<Exit *> Program::exitsForRoom(uint16 room) const {
 	return room_exits;
 }
 
+Actor *Program::actor(uint16 index) const {
+	Common::List<Actor *>::iterator it = _actors.begin();
+
+	while (index) {
+		it++;
+		index--;
+	}
+
+	return *it;
+}
+
 } // End of namespace Innocent

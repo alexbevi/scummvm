@@ -32,6 +32,8 @@ public:
 	Exit *getExit(uint16 index) const;
 	Common::List<Exit *> exitsForRoom(uint16 room) const;
 
+	Actor *actor(uint16 index) const;
+
 private:
 	Program() { /* can only be created from a file */ }
 

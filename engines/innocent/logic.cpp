@@ -159,9 +159,10 @@ Actor *Logic::getActor(uint16 id) const {
 	id--;
 	if (id < _resources->mainDat()->actorsCount())
 		return _resources->mainDat()->actor(id);
-	else
-		error("local actors not handled yet");
-//		return _blockProgram->actor(id - _main->actorsCount());
+	else {
+		id -= _resources->mainDat()->actorsCount();
+		return _blockProgram->actor(id);
+	}
 }
 
 void Logic::setSkipPoint(const CodePointer &p) {
