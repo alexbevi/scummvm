@@ -20,7 +20,10 @@ public:
 	class Frame {
 	public:
 		Frame() : _left(999), _top(999), _nexts(8) {}
-		Frame(int16 left, int16 top, std::vector<byte> nexts) : _left(left), _top(top), _nexts(nexts) {}
+		Frame(int16 l, int16 t, std::vector<byte> nexts) : _left(l), _top(t), _nexts(nexts) {}
+
+		int16 left() const { return _left; }
+		int16 top() const { return _top; }
 
 	private:
 		int16 _left;
@@ -45,7 +48,7 @@ public:
 		kOffsetRoom = 0x59
 	};
 
-	void setFrame(uint16 f) { _frame = f; }
+	void setFrame(uint16 f);
 
 	uint16 room() const { return _room; }
 	void setRoom(uint16, uint16 frame = 0, uint16 nextFrame = 0);

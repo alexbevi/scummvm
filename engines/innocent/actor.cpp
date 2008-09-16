@@ -4,6 +4,7 @@
 
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
+#include "innocent/room.h"
 #include "innocent/util.h"
 
 namespace Innocent {
@@ -45,6 +46,13 @@ void Actor::whenYouHideUpCall(const CodePointer &code) {
 bool Actor::isVisible() const {
 	return 	_room == Log.currentRoom() &&
 			_base;
+}
+
+void Actor::setFrame(uint16 frame) {
+	_frame = frame;
+	Frame f(Log.room()->getFrame(frame));
+	_position.x = f.left();
+	_position.y = f.top();
 }
 
 void Actor::setRoom(uint16 r, uint16 frame, uint16 next_frame) {

@@ -359,6 +359,20 @@ OPCODE(0x9d) {
 	return kThxBye;
 }
 
+OPCODE(0xab) {
+	// set protagonist frame
+	debugC(3, kDebugLevelScript, "opcode 0xab: set protagonist frame to %s", +a[0]);
+
+	Actor *ac = Log.protagonist();
+	if (ac->isVisible()) {
+		ac->whenYouHideUpCall(current);
+		return kReturn;
+	}
+
+	ac->setFrame(a[0]);
+	return kThxBye;
+}
+
 OPCODE(0xad) {
 	// turn actor
 	debugC(1, kDebugLevelScript, "opcode 0xad: if actor %s not visible, move to frame %s else wait", +a[0], +a[1]);

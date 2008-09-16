@@ -1,6 +1,8 @@
 #ifndef INNOCENT_ROOM_H
 #define INNOCENT_ROOM_H
 
+#include <vector>
+
 #include "common/list.h"
 #include "common/rect.h"
 
@@ -29,6 +31,8 @@ public:
 	const Common::List<Exit *> &exits() const { return _exits; }
 
 	void addActorFrame(const Actor::Frame &f) { _actorFrames.push_back(f); }
+	const Actor::Frame &getFrame(uint16 index) const { assert(index); return _actorFrames[index-1]; }
+
 	void addRect(const Room::Rect &f) { _rects.push_back(f); }
 
 	friend class Logic;
@@ -44,7 +48,7 @@ private:
 	Common::List<Exit *> _exits;
 	Logic *_logic;
 
-	Common::List<Actor::Frame> _actorFrames;
+	std::vector<Actor::Frame> _actorFrames;
 	Common::List<Rect> _rects;
 
 	DEBUG_INFO
