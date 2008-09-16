@@ -325,9 +325,12 @@ OPCODE(0x96) {
 
 OPCODE(0x9a) {
 	// if actor in current room then whatever
-	debugC(1, kDebugLevelScript, "opcode 0x9a: if actor %s in current room then STUB", +a[0]);
-	if (_logic->getActor(a[0])->room() == _logic->currentRoom())
-		error("case with condition true unhandled");
+	debugC(3, kDebugLevelScript, "opcode 0x9a: if actor %s in current room then retry", +a[0]);
+	Actor *ac = _logic->getActor(a[0]);
+	if (ac->room() == _logic->currentRoom()) {
+		ac->whenYouHideUpCall(current);
+		return kReturn;
+	}
 	return kThxBye;
 }
 
@@ -355,13 +358,13 @@ OPCODE(0x9d) {
 
 OPCODE(0xad) {
 	// turn actor
-	debugC(1, kDebugLevelScript, "opcode 0xad: actor %s to frame %s or wait on actor STUB", +a[0], +a[1]);
+	debugC(1, kDebugLevelScript, "opcode 0xad: if actor %s not visible, move to frame %s else wait", +a[0], +a[1]);
 
 	Actor *ac = _logic->getActor(a[0]);
-	if (ac->isVisible())
+	if (!ac->isVisible())
 		ac->setFrame(a[1]);
 	else {
-		ac->whenYouShowUpCall(current);
+		ac->whenYouHideUpCall(current);
 		return kReturn;
 	}
 	return kThxBye;

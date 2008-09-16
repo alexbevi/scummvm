@@ -15,6 +15,7 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 	snprintf(_debugInfo, 50, "actor at %s", +code);
 	readHeader(header);
 	_dir63 = 0;
+	_frame = 0;
 	_room = 0xffff;
 	_debug = false;
 
@@ -31,7 +32,7 @@ void Actor::setAnimation(const CodePointer &anim) {
 	_debugInvalid = false;
 }
 
-void Actor::whenYouShowUpCall(const CodePointer &code) {
+void Actor::whenYouHideUpCall(const CodePointer &code) {
 	_callBacks.push(code);
 }
 
@@ -81,7 +82,7 @@ void Actor::readHeader(const byte *code) {
 }
 
 void Actor::callBacks() {
-	if (isVisible())
+	if (!isVisible())
 		while (!_callBacks.empty())
 			_callBacks.pop().run();
 }

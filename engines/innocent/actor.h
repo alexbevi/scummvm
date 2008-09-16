@@ -41,7 +41,7 @@ public:
 
 	void setAnimation(const CodePointer &anim);
 
-	void whenYouShowUpCall(const CodePointer &cp);
+	void whenYouHideUpCall(const CodePointer &cp);
 
 	Animation::Status tick();
 
