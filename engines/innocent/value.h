@@ -48,6 +48,10 @@ public:
 	virtual bool holdsCode() const { assert(false); }
 
 	virtual operator byte *() { assert(false); }
+	virtual operator const Common::String() {
+		byte *b(*this);
+		return Common::String(reinterpret_cast<const char *>(b));
+	}
 
 	Value() {}
 

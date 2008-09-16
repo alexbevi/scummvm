@@ -151,6 +151,24 @@ OPCODE(0x3d) {
 	return kThxBye;
 }
 
+OPCODE(0x41) {
+	// say (protagonist)
+	debugC(3, kDebugLevelScript, "opcode 0x41: say %s", +a[0]);
+
+	if (Log.protagonist()->isSpeaking()) {
+		Log.protagonist()->callMeWhenSilent(current);
+		return kReturn;
+	}
+
+	if (Log.protagonist()->isMoving()) {
+		Log.protagonist()->callMeWhenStill(current);
+		return kReturn;
+	}
+
+	Log.protagonist()->say(a[0]);
+	return kThxBye;
+}
+
 OPCODE(0x54) {
 	debugC(3, kDebugLevelScript, "opcode 0x54: ask about '%s' at %s:%s %sx%s", +a[4], +a[0], +a[1], +a[2], +a[3]);
 
