@@ -83,6 +83,7 @@ public:
 
 	void hide();
 	void callMe(const CodePointer &cp);
+	void tellMe(const CodePointer &cp, uint16 timeout);
 
 	Animation::Status tick();
 
@@ -109,6 +110,13 @@ private:
 
 	Common::Queue<CodePointer> _callBacks;
 	void callBacks();
+
+	struct RoomCallback {
+		uint16 timeout;
+		CodePointer callback;
+		RoomCallback(uint16 t, const CodePointer &p) : timeout(t), callback(p) {}
+	};
+	Common::List<RoomCallback> _roomCallbacks;
 
 	bool _debug;
 

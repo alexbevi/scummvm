@@ -44,6 +44,10 @@ void Actor::callMe(const CodePointer &code) {
 	_callBacks.push(code);
 }
 
+void Actor::tellMe(const CodePointer &code, uint16 timeout) {
+	_roomCallbacks.push_back(RoomCallback(timeout, code));
+}
+
 bool Actor::isFine() const {
 	return 	_room == Log.currentRoom() &&
 			_base && !_attentionNeeded;
@@ -103,6 +107,14 @@ void Actor::callBacks() {
 	unless (isFine())
 		while (!_callBacks.empty())
 			Log.runLater(_callBacks.pop());
+
+	foreach (RoomCallback, _roomCallbacks) {
+		if (_room == Log.currentRoom() || !it->timeout) {
+			Log.runLater(it->callback);
+			_roomCallbacks.erase(it);
+		} else
+			it->timeout--;
+	}
 }
 
 template <int opcode>

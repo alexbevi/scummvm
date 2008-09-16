@@ -326,18 +326,6 @@ OPCODE(0x96) {
 	return kThxBye;
 }
 
-OPCODE(0x9a) {
-	// wait until another room
-	debugC(3, kDebugLevelScript, "opcode 0x9a: wait until actor %s exits", +a[0]);
-
-	Actor *ac = _logic->getActor(a[0]);
-	if (ac->room() == _logic->currentRoom()) {
-		ac->callMe(next);
-		return kReturn;
-	}
-	return kThxBye;
-}
-
 OPCODE(0x9b) {
 	// delay
 	debugC(3, kDebugLevelScript, "opcode 0x9b: delay %s frames", +a[0]);
@@ -345,13 +333,17 @@ OPCODE(0x9b) {
 	return kReturn;
 }
 
-// OPCODE(0x9c) {
-// 	// if actor in current room then whatever
-// 	debugC(1, kDebugLevelScript, "opcode 0x9c: if actor %s in current room then STUB", +a[0]);
-// 	if (_logic->getActor(a[0])->room() == _logic->currentRoom())
-// 		error("case with condition true unhandled");
-// 	return kThxBye;
-// }
+OPCODE(0x9c) {
+	// wait until another room
+	debugC(3, kDebugLevelScript, "opcode 0x9a: wait until actor %s enters or %s ticks", +a[0], +a[1]);
+
+	Actor *ac = _logic->getActor(a[0]);
+	if (ac->room() != _logic->currentRoom()) {
+		ac->tellMe(next, a[1]);
+		return kReturn;
+	}
+	return kThxBye;
+}
 
 OPCODE(0x9d) {
 	// set protagonist
