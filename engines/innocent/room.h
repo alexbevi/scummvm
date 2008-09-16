@@ -3,6 +3,7 @@
 
 #include "common/list.h"
 
+#include "innocent/actor.h"
 #include "innocent/debug.h"
 
 namespace Innocent {
@@ -16,6 +17,8 @@ class Room : public StaticInspectable {
 public:
 	const Common::List<Exit *> &exits() const { return _exits; }
 
+	void addActorFrame(const Actor::Frame &f) { _actorFrames.push_back(f); }
+
 	friend class Logic;
 
 private:
@@ -28,6 +31,8 @@ private:
 
 	Common::List<Exit *> _exits;
 	Logic *_logic;
+
+	Common::List<Actor::Frame> _actorFrames;
 
 	DEBUG_INFO
 };

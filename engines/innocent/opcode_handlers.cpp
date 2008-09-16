@@ -1,5 +1,7 @@
 #include "innocent/inter.h"
 
+#include <vector>
+
 #include "innocent/actor.h"
 #include "innocent/animation.h"
 #include "innocent/exit.h"
@@ -8,6 +10,7 @@
 #include "innocent/logic.h"
 #include "innocent/movie.h"
 #include "innocent/musicparser.h"
+#include "innocent/room.h"
 #include "innocent/util.h"
 
 #include "common/events.h"
@@ -479,7 +482,7 @@ OPCODE(0xdb) {
 
 OPCODE(0xdf) {
 	// add actor frame
-	byte nexts[8];
+	std::vector<byte> nexts(8);
 	for (int i = 0; i < 4; i++) {
 		uint16 val = a[i+2];
 		nexts[2*i] = val & 0xff;
@@ -488,7 +491,7 @@ OPCODE(0xdf) {
 	const int16 left = a[0].signd();
 	const int16 top = a[1].signd();
 	debugC(3, kDebugLevelScript, "opcode 0xdf: add actor frame %d %d %d %d %d %d %d %d %d %d", left, top, nexts[0], nexts[1], nexts[2], nexts[3], nexts[4], nexts[5], nexts[6], nexts[7]);
-//	Log.room()->addActorFrame(Actor::Frame(a[0], a[1], a[2], a[3], a[4], a[5], a[6]));
+	Log.room()->addActorFrame(Actor::Frame(left, top, nexts));
 	return kThxBye;
 }
 

@@ -1,6 +1,8 @@
 #ifndef INNOCENT_ACTOR_H
 #define INNOCENT_ACTOR_H
 
+#include <vector>
+
 #include "common/queue.h"
 
 #include "innocent/animation.h"
@@ -15,6 +17,17 @@ class Program;
 class Actor : public Animation {
 //
 public:
+	class Frame {
+	public:
+		Frame() : _left(999), _top(999), _nexts(8) {}
+		Frame(int16 left, int16 top, std::vector<byte> nexts) : _left(left), _top(top), _nexts(nexts) {}
+
+	private:
+		int16 _left;
+		int16 _top;
+		std::vector<byte> _nexts;
+	};
+
 	friend class MainDat;
 	friend class Program;
 	enum {
