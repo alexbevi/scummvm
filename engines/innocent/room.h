@@ -30,7 +30,7 @@ public:
 
 	const Common::List<Exit *> &exits() const { return _exits; }
 
-	void addActorFrame(const Actor::Frame &f) { _actorFrames.push_back(f); }
+	void addActorFrame(Common::Point p, std::vector<byte> nexts);
 	Actor::Frame getFrame(uint16 index) const {
 		if (index >= _actorFrames.size() || index == 0)
 			return Actor::Frame();

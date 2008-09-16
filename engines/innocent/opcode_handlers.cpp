@@ -565,7 +565,7 @@ OPCODE(0xdf) {
 	const int16 left = a[0].signd();
 	const int16 top = a[1].signd();
 	debugC(3, kDebugLevelScript, "opcode 0xdf: add actor frame %d %d %d %d %d %d %d %d %d %d", left, top, nexts[0], nexts[1], nexts[2], nexts[3], nexts[4], nexts[5], nexts[6], nexts[7]);
-	Log.room()->addActorFrame(Actor::Frame(left, top, nexts));
+	Log.room()->addActorFrame(Common::Point(left, top), nexts);
 	return kThxBye;
 }
 
