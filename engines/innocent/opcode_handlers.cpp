@@ -169,6 +169,14 @@ OPCODE(0x41) {
 	return kThxBye;
 }
 
+OPCODE(0x4a) {
+	// wait until silent (protagonist)
+	debugC(3, kDebugLevelScript, "opcode 0x4a: wait until protagonist is silent");
+
+	Log.protagonist()->callMeWhenSilent(next);
+	return kReturn;
+}
+
 OPCODE(0x54) {
 	debugC(3, kDebugLevelScript, "opcode 0x54: ask about '%s' at %s:%s %sx%s", +a[4], +a[0], +a[1], +a[2], +a[3]);
 
