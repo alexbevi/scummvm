@@ -36,7 +36,8 @@
 namespace Kom {
 
 struct RoomObject {
-	uint16 objectId;
+	int16 objectId;
+	int16 disappearTimer;
 	int16 actorId;
 	int16 z2;
 	int16 priority;
@@ -148,6 +149,9 @@ public:
 	void doActionSpriteScene(const char *name, int charId, int loc, int box);
 
 	int8 doDonut(int type, int param);
+
+	void doActionGotObject(uint16 obj);
+	void doActionLostObject(uint16 obj);
 
 	void exePickup();
 

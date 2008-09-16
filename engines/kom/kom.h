@@ -92,6 +92,9 @@ public:
 	SoundSample _hotspotSample;
 	SoundSample _doorsSample;
 	SoundSample _clickSample;
+	SoundSample _swipeSample;
+	SoundSample _cashSample;
+	SoundSample _loseItemSample;
 	SoundSample _ambientSample;
 
 	// music

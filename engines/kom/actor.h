@@ -136,6 +136,7 @@ public:
 	Actor *get(int idx) { return _actors[idx]; }
 	Actor *getMouse() { return _mouseActor; }
 	Actor *getDonut() { return _donutActor; }
+	Actor *getObjects() { return _objectsActor; }
 	void unload(int idx) { if (idx >= 0) { delete _actors[idx]; _actors[idx] = 0; } }
 	void unloadAll() { _actors.clear(); }
 	void displayAll();
@@ -147,6 +148,7 @@ private:
 	Common::Array<Actor *> _actors;
 	Actor *_mouseActor;
 	Actor *_donutActor;
+	Actor *_objectsActor;
 
 	Actor *getFarthestActor();
 };

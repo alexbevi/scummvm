@@ -150,8 +150,6 @@ public:
 	int8 loc2loc(int from, int to) { return (int8)(_routes[(int8)(_routes[0]) * to + from + 1]); }
 	int8 box2box(int loc, int fromBox, int toBox);
 
-	Object *object(int obj) const { return &(_objects[obj]); }
-
 	Box *getBox(int locId, int boxId) const { return &(_locRoutes[locId].boxes[boxId]); }
 	Exit *getExits(int locId) const { return _locRoutes[locId].exits; }
 

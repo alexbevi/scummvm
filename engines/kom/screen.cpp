@@ -88,23 +88,31 @@ bool Screen::init() {
 }
 
 void Screen::processGraphics(int mode) {
-	//memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 	int scale;
 
 	// handle screen objects
 	Common::Array<RoomObject> *roomObjects = _vm->game()->getObjects();
 
 	for (uint i = 0; i < roomObjects->size(); i++) {
-		if ((*roomObjects)[i].actorId >= 0) {
+
+		// Remove disappeared objects
+		if ((*roomObjects)[i].disappearTimer > 0) {
+			if (--(*roomObjects)[i].disappearTimer == 0)
+				(*roomObjects)[i].objectId = -1;
+		}
+
+		// Set object visibility
+		if (mode >= 0 && (*roomObjects)[i].actorId >= 0) {
 			Actor *act =
 				_vm->actorMan()->get((*roomObjects)[i].actorId);
-			Object *obj =
-				_vm->database()->object((*roomObjects)[i].objectId);
 
-			// TODO - handle disappear delay
+			if ((*roomObjects)[i].objectId >= 0) {
+				Object *obj =
+					_vm->database()->getObj((*roomObjects)[i].objectId);
 
-			if (mode >= 0)
-				act->enable(obj->isVisible);
+				act->enable(obj->isVisible ? 1 : 0);
+			} else
+				act->enable(0);
 		}
 	}
 

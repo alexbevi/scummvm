@@ -28,6 +28,7 @@
 
 #include "common/system.h"
 #include "common/fs.h"
+#include "common/list.h"
 
 #include "kom/kom.h"
 
@@ -48,6 +49,8 @@ public:
 	void enable(bool state) { _isEnabled = state; }
 	void clear();
 
+	void addObject(int obj) { _gotObjects.push_back(obj); }
+
 private:
 
 	KomEngine *_vm;
@@ -63,6 +66,9 @@ private:
 	char *_locationDesc;
 	char *_actionDesc;
 	char *_hotspotDesc;
+
+	Common::List<int> _gotObjects;
+	int _gotObjTime;
 
 };
 } // End of namespace Kom

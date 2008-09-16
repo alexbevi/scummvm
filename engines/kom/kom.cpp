@@ -110,6 +110,10 @@ int KomEngine::go() {
 	_hotspotSample.loadFile(samplesDir, String("hotspot"));
 	_doorsSample.loadFile(samplesDir, String("doors"));
 	_clickSample.loadFile(samplesDir, String("mouse_l"));
+	_swipeSample.loadFile(samplesDir, String("swipe"));
+	_cashSample.loadFile(samplesDir, String("cash"));
+	_loseItemSample.loadFile(samplesDir, String("loseitem"));
+
 
 	Common::FilesystemNode installDir(_gameDataDir.getChild("install"));
 	if (_game->player()->selectedChar == 0) {

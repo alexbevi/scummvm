@@ -55,7 +55,8 @@ void Game::enterLocation(uint16 locId) {
 
 	// Unload last room elements
 	for (uint i = 0; i < _roomObjects.size(); i++) {
-		_vm->actorMan()->unload(_roomObjects[i].actorId);
+		if (_roomObjects[i].actorId > -1)
+			_vm->actorMan()->unload(_roomObjects[i].actorId);
 	}
 	_roomObjects.clear();
 
@@ -96,9 +97,10 @@ void Game::enterLocation(uint16 locId) {
 	// Load room objects
 	Common::List<int> objList = loc->objects;
 	for (Common::List<int>::iterator objId = objList.begin(); objId != objList.end(); ++objId) {
-		Object *obj = db->object(*objId);
+		Object *obj = db->getObj(*objId);
 		RoomObject roomObj;
 		roomObj.actorId = -1;
+		roomObj.disappearTimer = 0;
 		roomObj.objectId = *objId;
 
 		if (obj->isSprite) {
@@ -134,7 +136,7 @@ void Game::enterLocation(uint16 locId) {
 			RoomDoor roomDoor;
 			roomDoor.actorId = _vm->actorMan()->load(locNode, String(filename));
 			Actor *act = _vm->actorMan()->get(roomDoor.actorId);
-			act->enable(true);
+			act->enable(1);
 			act->setEffect(4);
 			act->setPos(0, SCREEN_H - 1);
 			act->setMaskDepth(0, 32766);
@@ -1068,7 +1070,10 @@ void Game::loopInterfaceCollide() {
 	Common::Array<RoomObject> *roomObjects = _vm->game()->getObjects();
 
 	for (uint i = 0; i < roomObjects->size(); i++) {
-		Object *obj = _vm->database()->object((*roomObjects)[i].objectId);
+		if ((*roomObjects)[i].objectId < 0)
+			continue;
+
+		Object *obj = _vm->database()->getObj((*roomObjects)[i].objectId);
 		int32 z = 0;
 		int16 x, y;
 
@@ -1607,13 +1612,13 @@ int8 Game::doDonut(int type, int param) {
 		// TODO - do snow
 
 		// Display the donut verbs
-		donut->enable(true);
+		donut->enable(1);
 		donut->setPos(hotspotX / 2, hotspotY / 2);
 		for (int i = 0; i < 6; ++i) {
 			donut->setFrame(verbs[i] + i);
 			donut->display();
 		}
-		donut->enable(false);
+		donut->enable(0);
 
 		_vm->screen()->gfxUpdate();
 	}
@@ -1687,6 +1692,21 @@ int Game::getDonutSegment(int xPos, int yPos) {
 		return 7 - segment;
 	else
 		return segment + 8;
+}
+
+void Game::doActionGotObject(uint16 obj) {
+	_cb.data2 = obj;
+	_vm->panel()->addObject(obj);
+
+	// Remove object from list
+	for (uint i = 0; i < _roomObjects.size(); i++) {
+		if (_roomObjects[i].objectId == obj) {
+			_roomObjects[i].disappearTimer = 10;
+			break;
+		}
+	}
+}
+void Game::doActionLostObject(uint16 obj) {
 }
 
 void Game::exePickup() {

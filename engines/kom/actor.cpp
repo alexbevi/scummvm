@@ -48,6 +48,7 @@ ActorManager::~ActorManager() {
 	unloadAll();
 	delete _mouseActor;
 	delete _donutActor;
+	delete _objectsActor;
 }
 
 int ActorManager::load(Common::FilesystemNode dirNode, String name) {
@@ -88,9 +89,15 @@ void ActorManager::loadExtras(Common::FilesystemNode dirNode) {
 
 	_donutActor = new Actor(_vm, dirNode.getChild("oneoffs"),
 			String("donut"), false);
-	_donutActor->enable(false);
+	_donutActor->enable(0);
 	_donutActor->setEffect(4);
 	_donutActor->setMaskDepth(0, 2);
+
+	_objectsActor = new Actor(_vm, dirNode.getChild("oneoffs"),
+			String("inv_obj"), false);
+	_objectsActor->enable(0);
+	_objectsActor->setEffect(4);
+	_objectsActor->setMaskDepth(0, 1);
 }
 
 void ActorManager::displayAll() {

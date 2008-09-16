@@ -35,7 +35,7 @@ namespace Kom {
 
 Panel::Panel(KomEngine *vm, Common::FilesystemNode fileNode) : _vm(vm),
 	_isEnabled(true), _isLoading(false), _noLoading(0),
-	_locationDesc(0), _actionDesc(0), _hotspotDesc(0) {
+	_locationDesc(0), _actionDesc(0), _hotspotDesc(0), _gotObjTime(0) {
 	File f;
 	f.open(fileNode);
 
@@ -79,10 +79,122 @@ void Panel::update() {
 	if (_hotspotDesc)
 		_vm->screen()->writeText(_panelBuf, _hotspotDesc, 22, 10, 31, true);
 
-	// TODO: lose/get items
-	//
+	// FIXME: check loading in the middle of object animation
+	if (_isLoading)
+		return;
 
 	_vm->screen()->drawPanel(_panelBuf);
+
+	// Draw got and lost objects
+
+	if (_gotObjTime == 0) {
+		if (!_gotObjects.empty())
+			_gotObjTime = 24;
+
+	} else {
+		// TODO - check narrator status
+
+		Actor *objects = _vm->actorMan()->getObjects();
+		uint16 xRatio, yRatio;
+		uint8 frame;
+		int currObj = *_gotObjects.begin();
+
+		_gotObjTime--;
+
+		// Got object
+		if (currObj > 0) {
+
+			// Regular object
+			if (currObj < 1000) {
+				frame = currObj + 1;
+				if (_gotObjTime == 16)
+					_vm->sound()->playSampleSFX(_vm->_swipeSample, false);
+
+			// Money
+			} else {
+				currObj -= 1000;
+				frame = currObj;
+				if (_gotObjTime == 16)
+					_vm->sound()->playSampleSFX(_vm->_cashSample, false);
+			}
+
+			objects->enable(1);
+
+			// Zoom into screen
+			if (_gotObjTime > 16) {
+				xRatio = yRatio = 0x600 - 0x600 / (24 - _gotObjTime);
+				objects->setEffect(0);
+				objects->setPos(303, 185);
+				objects->setRatio(xRatio, yRatio);
+				objects->setFrame(frame);
+
+			// Stay on screen
+			} else if (_gotObjTime > 8) {
+				objects->setEffect(4);
+				objects->setPos(303, 185);
+				objects->setRatio(1024, 1024);
+				objects->setFrame(frame);
+
+			// Move below screen
+			} else {
+				objects->setEffect(4);
+				objects->setPos(303, 185 + (8 - _gotObjTime)*(8 - _gotObjTime));
+				objects->setRatio(1024, 1024);
+				objects->setFrame(frame);
+			}
+
+		// Lost object
+		} else {
+
+			currObj = -currObj;
+
+			if (_gotObjTime == 12)
+				_vm->sound()->playSampleSFX(_vm->_loseItemSample, false);
+
+			// Regular object
+			if (currObj < 1000) {
+				frame = currObj + 1;
+				if (_gotObjTime == 12)
+					_vm->sound()->playSampleSFX(_vm->_swipeSample, false);
+
+			// Money
+			} else {
+				currObj -= 1000;
+				frame = currObj;
+			}
+
+			objects->enable(1);
+
+			// Move from below screen
+			if (_gotObjTime > 16) {
+				objects->setEffect(4);
+				objects->setPos(303, 185 + (_gotObjTime - 16)*(_gotObjTime - 16));
+				objects->setRatio(1024, 1024);
+				objects->setFrame(frame);
+
+			// Stay on screen
+			} else if (_gotObjTime > 8) {
+				objects->setEffect(4);
+				objects->setPos(303, 185);
+				objects->setRatio(1024, 1024);
+				objects->setFrame(frame);
+
+			// Zoom out of screen
+			} else {
+				xRatio = yRatio = 0x2710 / (24 - _gotObjTime);
+				objects->setEffect(0);
+				objects->setPos(303, 185);
+				objects->setRatio(xRatio, yRatio);
+				objects->setFrame(frame);
+			}
+		}
+
+		// Display object
+		objects->display();
+		objects->enable(0);
+		if (_gotObjTime == 0)
+			_gotObjects.pop_front();
+	}
 }
 
 void Panel::showLoading(bool isLoading) {
