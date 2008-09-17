@@ -169,6 +169,25 @@ OPCODE(0x41) {
 	return kThxBye;
 }
 
+OPCODE(0x43) {
+	// say
+	debugC(3, kDebugLevelScript, "opcode 0x43: %s says %s", +a[0], +a[1]);
+
+	Actor *ac = Log.getActor(a[0]);
+	if (ac->isSpeaking()) {
+		ac->callMeWhenSilent(current);
+		return kReturn;
+	}
+
+	if (ac->isMoving()) {
+		ac->callMeWhenStill(current);
+		return kReturn;
+	}
+
+	ac->say(a[1]);
+	return kThxBye;
+}
+
 OPCODE(0x4a) {
 	// wait until silent (protagonist)
 	debugC(3, kDebugLevelScript, "opcode 0x4a: wait until protagonist is silent");
