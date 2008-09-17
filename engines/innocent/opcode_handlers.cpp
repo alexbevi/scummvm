@@ -346,6 +346,12 @@ OPCODE(0x7c) {
 	return kThxBye;
 }
 
+OPCODE(0x95) {
+	// unlock control
+	debugC(1, kDebugLevelScript, "opcode 0x95: unlock control STUB");
+	return kThxBye;
+}
+
 OPCODE(0x96) {
 	// disallow user interaction
 	debugC(1, kDebugLevelScript, "opcode 0x96: lock control STUB");
