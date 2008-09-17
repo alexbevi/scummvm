@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "common/file.h"
 #include "common/util.h"
@@ -38,7 +39,7 @@ using Common::File;
 namespace Kom {
 
 const int Database::_locRoutesSize = 111;
-char line[100];
+Common::String line;
 
 Database::Database(KomEngine *vm, OSystem *system)
 	: _system(system), _vm(vm) {
@@ -112,16 +113,17 @@ void Database::initLocations() {
 		int index;
 
 		do {
-			f.readLine_OLD(line, 100);
-		} while (line[0] == '\0');
-		sscanf(line, "%d", &index);
+			line = f.readLine();
+		} while (line.empty());
+		sscanf(line.c_str(), "%d", &index);
 
-		sscanf(line, "%*d %s %d %d",
+		sscanf(line.c_str(), "%*d %s %d %d",
 			_locations[index].name,
 			&(_locations[index].xtend),
 			&(_locations[index].allowedTime));
 
-		f.readLine_OLD(_locations[index].desc, 50);
+		line = f.readLine();
+		strcpy(_locations[index].desc, line.c_str());
 		stripUndies(_locations[index].desc);
 
 		readLineScanf(f, "-1");
@@ -154,18 +156,19 @@ void Database::initCharacters() {
 		int index;
 
 		do {
-			f.readLine_OLD(line, 100);
-		} while (line[0] == '\0');
-		sscanf(line, "%d", &index);
+			line = f.readLine();
+		} while (line.empty());
+		sscanf(line.c_str(), "%d", &index);
 
 		_characters[index]._id = index;
 
-		sscanf(line, "%*d %s %d %d",
+		sscanf(line.c_str(), "%*d %s %d %d",
 			_characters[index]._name,
 			&(_characters[index]._xtend),
 			&(_characters[index]._data2));
 
-		f.readLine_OLD(_characters[index]._desc, 50);
+		line = f.readLine();
+		strcpy(_characters[index]._desc, line.c_str());
 		stripUndies(_characters[index]._desc);
 
 		readLineScanf(f, "%d",
@@ -243,18 +246,19 @@ void Database::initObjects() {
 		int index;
 
 		do {
-			f.readLine_OLD(line, 100);
-		} while (line[0] == '\0');
-		sscanf(line, "%d", &index);
+			line = f.readLine();
+		} while (line.empty());
+		sscanf(line.c_str(), "%d", &index);
 
 		// Object indices in .pro are smaller than in .obs - adjusting
 		index--;
 
-		sscanf(line, "%*d %s %d",
+		sscanf(line.c_str(), "%*d %s %d",
 			_objects[index].name,
 			&(_objects[index].data1));
 
-		f.readLine_OLD(_objects[index].desc, 50);
+		line = f.readLine();
+		strcpy(_objects[index].desc, line.c_str());
 		stripUndies(_objects[index].desc);
 
 		readLineScanf(f, "%d %d %d",
@@ -277,14 +281,14 @@ void Database::initObjects() {
 			&(_objects[index].data12),
 			&(_objects[index].data13));
 
-		f.readLine_OLD(line, 100);
-		sscanf(line, "%d %d",
+		line = f.readLine();
+		sscanf(line.c_str(), "%d %d",
 			&(_objects[index].ownerType),
 			&(_objects[index].ownerId));
 
 
 		if (_objects[index].ownerType == 1) {
-			sscanf(line, "%*d %*d %d %d %d %d",
+			sscanf(line.c_str(), "%*d %*d %d %d %d %d",
 				&(_objects[index].box),
 				&(_objects[index].data16),
 				&(_objects[index].data17),
@@ -340,7 +344,7 @@ void Database::initEvents() {
 
 		readLineScanf(f, "%d %d %d", &loc, &(ev.exitBox), &(ev.proc));
 		// Skip line
-		f.readLine_OLD(line, 100);
+		line = f.readLine();
 
 		_locations[loc].events.push_back(ev);
 	}
@@ -393,12 +397,13 @@ void Database::initProcs() {
 
 		readLineScanf(f, "%d", &index);
 
-		f.readLine_OLD(_processes[index].name, 50);
+		line = f.readLine();
+		strcpy(_processes[index].name, line.c_str());
 
 		do {
-			f.readLine_OLD(line, 100);
-		} while (line[0] == '\0');
-		sscanf(line, "%d", &cmd);
+			line = f.readLine();
+		} while (line.empty());
+		sscanf(line.c_str(), "%d", &cmd);
 
 		// Read commands
 		while (cmd != -1) {
@@ -407,14 +412,14 @@ void Database::initProcs() {
 
 			// Read special cmd with value
 			if (cmd == 319 || cmd == 320 || cmd == 321) {
-				sscanf(line, "%*d %hu", &(cmdObject.value));
+				sscanf(line.c_str(), "%*d %hu", &(cmdObject.value));
 			}
 
 			// Read opcodes
 			do {
-				f.readLine_OLD(line, 100);
-			} while (line[0] == '\0');
-			sscanf(line, "%d", &opcode);
+				line = f.readLine();
+			} while (line.empty());
+			sscanf(line.c_str(), "%d", &opcode);
 
 			while (opcode != -1) {
 				OpCode opObject;
@@ -424,22 +429,25 @@ void Database::initProcs() {
 
 				// string + int/short
 				case 474:
-					f.readLine_OLD(opObject.arg1, 30);
+					line = f.readLine();
+					strcpy(opObject.arg1, line.c_str());
 					readLineScanf(f, "%d", &(opObject.arg2));
 					break;
 
 				// string
 				case 467:
 				case 469:
-					f.readLine_OLD(opObject.arg1, 30);
+					line = f.readLine();
+					strcpy(opObject.arg1, line.c_str());
 
 					// Skip empty line
-					f.readLine_OLD(line, 100);
+					line = f.readLine();
 					break;
 
 				// string + int + int + int
 				case 468:
-					f.readLine_OLD(opObject.arg1, 30);
+					line = f.readLine();
+					strcpy(opObject.arg1, line.c_str());
 					readLineScanf(f, "%d %d %d", &(opObject.arg2),
 						   &(opObject.arg3), &(opObject.arg4));
 					break;
@@ -477,7 +485,7 @@ void Database::initProcs() {
 				case 446:
 				case 448:
 				case 491:
-					sscanf(line, "%*d %d", &(opObject.arg2));
+					sscanf(line.c_str(), "%*d %d", &(opObject.arg2));
 					break;
 
 				// int + int
@@ -531,7 +539,7 @@ void Database::initProcs() {
 				case 489:
 				case 490:
 				case 492:
-					sscanf(line, "%*d %d %d", &(opObject.arg2), &(opObject.arg3));
+					sscanf(line.c_str(), "%*d %d %d", &(opObject.arg2), &(opObject.arg3));
 					break;
 
 				// int + int + int
@@ -543,12 +551,12 @@ void Database::initProcs() {
 				case 478:
 				case 479:
 				case 488:
-					sscanf(line, "%*d %d %d %d", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4));
+					sscanf(line.c_str(), "%*d %d %d %d", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4));
 					break;
 
 				// int + int + int + int + int
 				case 438:
-					sscanf(line, "%*d %d %d %d %d %d", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4),
+					sscanf(line.c_str(), "%*d %d %d %d %d %d", &(opObject.arg2), &(opObject.arg3), &(opObject.arg4),
 						   &(opObject.arg5), &(opObject.arg6));
 					break;
 
@@ -576,17 +584,17 @@ void Database::initProcs() {
 				cmdObject.opcodes.push_back(opObject);
 
 				do {
-					f.readLine_OLD(line, 100);
-				} while (line[0] == '\0');
-				sscanf(line, "%d", &opcode);
+					line = f.readLine();
+				} while (line.empty());
+				sscanf(line.c_str(), "%d", &opcode);
 			}
 
 			_processes[index].commands.push_back(cmdObject);
 
 			do {
-				f.readLine_OLD(line, 100);
-			} while (line[0] == '\0');
-			sscanf(line, "%d", &cmd);
+				line = f.readLine();
+			} while (line.empty());
+			sscanf(line.c_str(), "%d", &cmd);
 		}
 	}
 
@@ -616,83 +624,83 @@ void Database::initRoutes() {
 	f.open("test0r.ked");
 
 	do {
-		f.readLine_OLD(line, 100);
-	} while (line[0] == '\0');
+		line = f.readLine();
+	} while (line.empty());
 
 	while (!f.eos()) {
-		sscanf(line, "%s", keyword);
+		sscanf(line.c_str(), "%s", keyword);
 
 		if (strcmp(keyword, "LOC") == 0) {
-			sscanf(line, "%*s %hd", &locIndex);
+			sscanf(line.c_str(), "%*s %hd", &locIndex);
 
 		} else if (strcmp(keyword, "exits") == 0) {
-			sscanf(line, "%*s %d %d", &parmIndex, &parmData);
+			sscanf(line.c_str(), "%*s %d %d", &parmIndex, &parmData);
 
 			_locRoutes[locIndex].exits[parmIndex].exit = parmData;
 
 		} else if (strcmp(keyword, "exit_locs") == 0) {
-			sscanf(line, "%*s %d %d", &parmIndex, &parmData);
+			sscanf(line.c_str(), "%*s %d %d", &parmIndex, &parmData);
 
 			_locRoutes[locIndex].exits[parmIndex].exitLoc = parmData;
 
 		} else if (strcmp(keyword, "exit_boxs") == 0) {
-			sscanf(line, "%*s %d %d", &parmIndex, &parmData);
+			sscanf(line.c_str(), "%*s %d %d", &parmIndex, &parmData);
 
 			_locRoutes[locIndex].exits[parmIndex].exitBox = parmData;
 
 		} else if (strcmp(keyword, "BOX") == 0) {
-			sscanf(line, "%*s %hd", &boxIndex);
+			sscanf(line.c_str(), "%*s %hd", &boxIndex);
 			_locRoutes[locIndex].boxes[boxIndex].enabled = true;
 
 		} else if (strcmp(keyword, "x1") == 0) {
-			sscanf(line, "%*s %d", &parmData);
+			sscanf(line.c_str(), "%*s %d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].x1 = parmData;
 
 		} else if (strcmp(keyword, "y1") == 0) {
-			sscanf(line, "%*s %d", &parmData);
+			sscanf(line.c_str(), "%*s %d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].y1 = parmData;
 
 		} else if (strcmp(keyword, "x2") == 0) {
-			sscanf(line, "%*s %d", &parmData);
+			sscanf(line.c_str(), "%*s %d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].x2 = parmData;
 
 		} else if (strcmp(keyword, "y2") == 0) {
-			sscanf(line, "%*s %d", &parmData);
+			sscanf(line.c_str(), "%*s %d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].y2 = parmData;
 
 		} else if (strcmp(keyword, "priority") == 0) {
-			sscanf(line, "%*s %d", &parmData);
+			sscanf(line.c_str(), "%*s %d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].priority = parmData;
 
 		} else if (strcmp(keyword, "z1") == 0) {
-			sscanf(line, "%*s %d", &parmData);
+			sscanf(line.c_str(), "%*s %d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].z1 = parmData;
 
 		} else if (strcmp(keyword, "z2") == 0) {
-			sscanf(line, "%*s %d", &parmData);
+			sscanf(line.c_str(), "%*s %d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].z2 = parmData;
 
 		} else if (strcmp(keyword, "attrib") == 0) {
-			sscanf(line, "%*s %d", &parmData);
+			sscanf(line.c_str(), "%*s %d", &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].attrib = parmData;
 
 		} else if (strcmp(keyword, "joins") == 0) {
-			sscanf(line, "%*s %d %d", &parmIndex, &parmData);
+			sscanf(line.c_str(), "%*s %d %d", &parmIndex, &parmData);
 
 			_locRoutes[locIndex].boxes[boxIndex].joins[parmIndex] = parmData;
 		}
 
 		do {
-			f.readLine_OLD(line, 100);
-		} while (line[0] == '\0');
+			line = f.readLine();
+		} while (line.empty() && !f.eos());
 	}
 
 	f.close();
@@ -709,24 +717,24 @@ void Database::initScopes() {
 
 	f.open(_databasePrefix + ".scp");
 	do {
-		f.readLine_OLD(line, 100);
-	} while (line[0] == '\0');
+		line = f.readLine();
+	} while (line.empty());
 
 	while (!f.eos()) {
 		Character *charScope;
 
-		sscanf(line, "%s", keyword);
+		sscanf(line.c_str(), "%s", keyword);
 
 		if (strcmp(keyword, "ACTOR") == 0) {
-			sscanf(line, "%*s %hu", &tmp1);
+			sscanf(line.c_str(), "%*s %hu", &tmp1);
 			actorIndex = tmp1;
 			charScope = getChar(actorIndex);
 
 		} else if (strcmp(keyword, "SCOPE") == 0) {
-			sscanf(line, "%*s %hu", &tmp1);
+			sscanf(line.c_str(), "%*s %hu", &tmp1);
 			scopeIndex = tmp1;
 
-			sscanf(line, "%*s %*u %hu %hu %hu",
+			sscanf(line.c_str(), "%*s %*u %hu %hu %hu",
 				&(tmp1), &(tmp2), &(tmp3));
 
 			charScope->_scopes[scopeIndex].minFrame = tmp1;
@@ -734,7 +742,7 @@ void Database::initScopes() {
 			charScope->_scopes[scopeIndex].startFrame = tmp3;
 
 		} else if (strcmp(keyword, "SPEED") == 0) {
-			sscanf(line, "%*s %hu %hu",
+			sscanf(line.c_str(), "%*s %hu %hu",
 				&(charScope->_walkSpeed),
 				&(charScope->_animSpeed));
 
@@ -749,12 +757,12 @@ void Database::initScopes() {
 			}
 
 		} else if (strcmp(keyword, "TIMEOUT") == 0) {
-			sscanf(line, "%*s %hu",
+			sscanf(line.c_str(), "%*s %hu",
 				&(charScope->_timeout));
 			charScope->_timeout *= 24;
 
 		} else if (strcmp(keyword, "START") == 0) {
-			sscanf(line, "%*s %d %d %d %d %d",
+			sscanf(line.c_str(), "%*s %d %d %d %d %d",
 				&(charScope->_lastLocation),
 				&(charScope->_lastBox),
 				&(charScope->_start3),
@@ -771,8 +779,8 @@ void Database::initScopes() {
 		}
 
 		do {
-			f.readLine_OLD(line, 100);
-		} while (line[0] == '\0' && !f.eos());
+			line = f.readLine();
+		} while (line.empty() && !f.eos());
 	}
 
 	f.close();
@@ -1124,14 +1132,14 @@ int CDECL Database::readLineScanf(File &f, const char *format, ...) {
 	int done;
 
 	do {
-		f.readLine_OLD(line, 100);
-	} while (line[0] == '\0');
+		line = f.readLine();
+	} while (line.empty());
 
 	if (f.eos())
 		return EOF;
 
 	va_start(arg, format);
-	done = vsscanf(line, format, arg);
+	done = vsscanf(line.c_str(), format, arg);
 	va_end(arg);
 
 	return done;
