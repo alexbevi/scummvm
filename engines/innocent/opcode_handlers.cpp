@@ -195,6 +195,13 @@ OPCODE(0x43) {
 	return kThxBye;
 }
 
+OPCODE(0x47) {
+	// say (no actor)
+	debugC(1, kDebugLevelScript, "opcode 0x47: say at [%s:%s] with colour %s in max %s lines text %s STUB", +a[0], +a[1], +a[2], +a[3], +a[4]);
+
+	return kThxBye;
+}
+
 OPCODE(0x4a) {
 	// wait until silent (protagonist)
 	debugC(3, kDebugLevelScript, "opcode 0x4a: wait until protagonist is silent");
