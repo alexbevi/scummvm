@@ -1,5 +1,7 @@
 #include "innocent/actor.h"
 
+#include <sstream>
+
 #include "common/rect.h"
 
 #include "innocent/innocent.h"
@@ -92,6 +94,74 @@ void Actor::setFrame(uint16 frame) {
 	_position = f.position();
 }
 
+Common::List<Actor::Frame> Actor::findPath(Actor::Frame from, uint16 to) {
+	Common::List<Common::List<Frame> > reachable;
+
+	Common::List<Frame> zero;
+	zero.push_back(from);
+	reachable.push_back(zero);
+
+	bool found = false;
+	while (!found) {
+		Common::List<Common::List<Frame> >::iterator back = reachable.end();
+		back--;
+		Common::List<Frame>::iterator current = back->begin();
+		Common::List<Frame> next;
+		while (!found && current != back->end()) {
+			std::vector<byte> nexts = current->nexts();
+			for (int i = 0; i < 8; i++)
+				if (nexts[i]) {
+					next.push_back(Log.room()->getFrame(nexts[i]));
+					if (nexts[i] == to) {
+						found = true;
+						break;
+					}
+				}
+			current++;
+		}
+		reachable.push_back(next);
+	}
+
+	Common::List<Frame> path;
+
+	Common::List<Common::List<Frame> >::iterator level = reachable.end();
+	level--;
+	Common::List<Frame>::iterator current = level->end();
+	current--;
+	uint16 index = level->size() - 1;
+
+	forever {
+		path.push_front(*current);
+		if (*current == from)
+			break;
+		level--;
+		current = level->begin();
+		uint16 new_index = 0;
+		while (index >= current->nextCount()) {
+			index -= current->nextCount();
+			new_index++;
+			current++;
+		}
+		index = new_index;
+	}
+
+	return path;
+}
+
+void Actor::moveTo(uint16 frame) {
+	Frame cur = Log.room()->getFrame(_frame);
+	Common::List<Frame> path = findPath(cur, frame);
+
+	std::string pathspec;
+	std::ostringstream s(pathspec);
+	foreach(Frame, path) {
+		_framequeue.push(*it);
+		s << " " << it->index();
+	}
+
+	debugC(3, kDebugLevelActor, "found path: %s", pathspec.c_str());
+}
+
 void Actor::setRoom(uint16 r, uint16 frame, uint16 next_frame) {
 	_room = r;
 	unless (next_frame)
@@ -172,7 +242,6 @@ void Actor::animate() {
 
 Animation::Status Actor::tick() {
 	animate();
-
 	callBacks();
 
 	if (isFine()) {

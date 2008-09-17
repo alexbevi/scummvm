@@ -63,19 +63,34 @@ class Actor : public Animation {
 public:
 	class Frame {
 	public:
-		Frame() : _position(999, 999), _nexts(8) {}
-		Frame(Common::Point pos, std::vector<byte> n, uint16 i) : _position(pos), _nexts(n), _index(i) {}
+		Frame() : _position(999, 999), _nexts(8), _nextCount(0xff) {}
+		Frame(Common::Point pos, std::vector<byte> n, uint16 i) : _position(pos), _nexts(n), _index(i), _nextCount(0xff) {}
 
 		Common::Point position() const { return _position; }
 		const std::vector<byte> &nexts() const { return _nexts; }
 		const uint16 index() const { return _index; }
 
 		Direction operator-(const Frame &other) const;
+		bool operator==(const Frame &other) const {
+			return _index == other._index;
+		}
+		byte nextCount() const {
+			if (_nextCount == 0xff) {
+				byte ct = 0;
+				for (int i = 0; i < 8; i++)
+					if (_nexts[i])
+						ct++;
+				_nextCount = ct;
+			}
+
+			return _nextCount;
+		}
 
 	private:
 		uint16 _index;
 		Common::Point _position;
 		std::vector<byte> _nexts;
+		mutable byte _nextCount;
 	};
 
 	class Speech {
@@ -109,6 +124,8 @@ public:
 	};
 
 	void setFrame(uint16 f);
+	void moveTo(uint16 f);
+	static Common::List<Frame> findPath(Frame from, uint16 to);
 
 	uint16 room() const { return _room; }
 	void setRoom(uint16, uint16 frame = 0, uint16 nextFrame = 0);
