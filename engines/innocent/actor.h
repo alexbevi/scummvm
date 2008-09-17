@@ -97,13 +97,16 @@ public:
 	public:
 		Speech() {}
 		~Speech();
-		Speech(Common::String text) : _text(text) {}
+		Speech(Common::String text) : _text(text), _ticksLeft(200) {}
 		bool active() const { return !_text.empty(); }
 		void callWhenDone(const CodePointer &cp) { _cb.push(cp); }
+		void paint(Graphics *g, Common::Point p);
+		void tick();
 
 	private:
 		Common::String _text;
 		Common::Queue<CodePointer> _cb;
+		uint16 _ticksLeft;
 	};
 
 	friend class MainDat;
@@ -147,6 +150,7 @@ public:
 	void callMeWhenStill(const CodePointer &cp);
 
 	Animation::Status tick();
+	void paint(Graphics *g);
 
 	void toggleDebug();
 

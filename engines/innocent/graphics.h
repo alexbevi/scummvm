@@ -62,10 +62,10 @@ public:
 	void runWhenSaid(const CodePointer &p);
 
 	uint16 ask(uint16 left, uint16 top, byte width, byte height, byte *string);
-	Common::Rect paintText(uint16 left, uint16 top, byte colour, byte *string) {
+	Common::Rect paintText(uint16 left, uint16 top, byte colour, const byte *string) {
 		return paintText(left, top, colour, string, _framebuffer.get());
 	}
-	Common::Rect paintText(uint16 left, uint16 top, byte colour, byte *string, Surface *s);
+	Common::Rect paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *s);
 	void paintRect(const Common::Rect &r, byte colour = 235);
 
 	void paint(const Sprite *sprite, Common::Point pos) const {
@@ -88,7 +88,7 @@ private:
 		kLineHeight = 12
 	};
 	static byte clampChar(byte ch);
-	uint16 calculateLineWidth(byte *string) const;
+	uint16 calculateLineWidth(const byte *string) const;
 	uint16 getGlyphWidth(byte ch) const;
 	Sprite *getGlyph(byte ch) const;
 

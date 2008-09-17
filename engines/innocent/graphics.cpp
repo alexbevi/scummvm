@@ -219,7 +219,7 @@ enum {
 	kSelectedOptionColour = 227
 };
 
-Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, byte *string, Surface *dest) {
+Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *dest) {
 	byte ch = 0;
 	uint16 current_left = left;
 	uint16 current_top = top;
@@ -279,7 +279,7 @@ byte Graphics::clampChar(byte ch) {
 	return ch;
 }
 
-uint16 Graphics::calculateLineWidth(byte *string) const {
+uint16 Graphics::calculateLineWidth(const byte *string) const {
 	byte ch;
 	uint16 total = 0;
 	while ((ch = *(string++))) {

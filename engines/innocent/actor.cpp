@@ -4,6 +4,7 @@
 
 #include "common/rect.h"
 
+#include "innocent/graphics.h"
 #include "innocent/innocent.h"
 #include "innocent/logic.h"
 #include "innocent/room.h"
@@ -271,6 +272,7 @@ void Actor::animate() {
 }
 
 Animation::Status Actor::tick() {
+	_speech.tick();
 	animate();
 	callBacks();
 
@@ -355,6 +357,26 @@ CodePointer Puppeteer::turnAnimator(Direction d) {
 	}
 
 	return CodePointer(off, Log.mainInterpreter());
+}
+
+void Actor::Speech::tick() {
+	unless (_ticksLeft--) {
+		_text.clear();
+		while (!_cb.empty())
+			Log.runLater(_cb.pop());
+	}
+}
+
+void Actor::paint(Graphics *g) {
+	Animation::paint(g);
+	_speech.paint(g, _position);
+}
+
+void Actor::Speech::paint(Graphics *g, Common::Point p) {
+	if (_text.empty())
+		return;
+
+	g->paintText(p.x, p.y, 235, reinterpret_cast<const byte *>(_text.c_str()));
 }
 
 Direction Actor::Frame::operator-(const Actor::Frame &other) const {
