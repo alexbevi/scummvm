@@ -144,6 +144,13 @@ OPCODE(0x39) {
 	return kThxBye;
 }
 
+OPCODE(0x3b) {
+	// run local code later
+	debugC(3, kDebugLevelScript, "opcode 0x3b: execute %s later", +a[0]);
+	_logic->runLater(CodePointer(static_cast<CodePointer &>(a[0]).offset(), _logic->blockInterpreter()));
+	return kThxBye;
+}
+
 OPCODE(0x3d) {
 	// save first arg -- instruction pointer -- for after skipping animation
 	debugC(3, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped to %s", +a[0]);
