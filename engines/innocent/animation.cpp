@@ -223,6 +223,22 @@ OPCODE(0x04) {
 	return kOk;
 }
 
+OPCODE(0x05) {
+	byte x = shiftByte();
+	int8 xoff = *reinterpret_cast<int8 *>(&x);
+	byte y = shiftByte();
+	int8 yoff = *reinterpret_cast<int8 *>(&y);
+	uint16 sprite = shift();
+
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x05: move by %d:%d, set main sprite to %d, frame done", xoff, yoff, sprite);
+
+	_position.x += xoff;
+	_position.y += yoff;
+	setMainSprite(sprite);
+
+	return kFrameDone;
+}
+
 OPCODE(0x06) {
 	uint16 sprite = shift();
 
