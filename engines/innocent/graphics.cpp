@@ -322,12 +322,12 @@ uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch, Surfac
 
 void Graphics::paint(const Sprite *sprite, Common::Point pos, Surface *dest) const {
 	debugC(4, kDebugLevelGraphics, "painting sprite at %d:%d (+%d:%d) [%dx%d]", pos.x, pos.y, sprite->_hotPoint.x, sprite->_hotPoint.y, sprite->w, sprite->h);
-	pos += sprite->_hotPoint;
 
 	Common::Rect r(sprite->w, sprite->h);
 	r.moveTo(pos);
 	// this is actually bottom
 	r.translate(0, -sprite->h);
+	r.translate(-sprite->_hotPoint.x, sprite->_hotPoint.y);
 
 	r.clip(319, 199);
 	debugC(4, kDebugLevelGraphics, "transformed rect: %d:%d %d:%d", r.left, r.top, r.right, r.bottom);
