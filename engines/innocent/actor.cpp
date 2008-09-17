@@ -196,10 +196,11 @@ bool Actor::nextFrame() {
 
 	Direction direction = next - current;
 
+	debugC(4, kDebugLevelActor, "switching frames %d -> %d", current.index(), next.index());
 	if (turnTo(direction))
 		return true;
 
-	setFrame(_framequeue.front().index());
+//	setFrame(_framequeue.front().index());
 	setAnimation(_puppeteer.moveAnimator(direction));
 	return true;
 }
@@ -209,8 +210,8 @@ bool Actor::turnTo(Direction dir) {
 		return false;
 
 	Direction d = _direction>>dir;
+	debugC(4, kDebugLevelActor, "turning %d -> %d >> %d", _direction, d, dir);
 	setAnimation(_puppeteer.turnAnimator(d));
-	_direction = d;
 	return true;
 }
 
@@ -259,7 +260,7 @@ Animation::Status Actor::tick() {
 	animate();
 	callBacks();
 
-	if (isFine()) {
+	if (_room == Log.currentRoom()) {
 		Animation::Status s;
 		if (_debug) gDebugLevel += 3;
 			s = Animation::tick();
@@ -316,10 +317,13 @@ void Puppeteer::parse(const byte *data) {
 	}
 }
 
+static const Direction mixeddirs[] = {kDirUp, kDirRight, kDirDown, kDirLeft,
+									kDirUpRight, kDirDownRight, kDirDownLeft, kDirUpLeft};
+
 CodePointer Puppeteer::moveAnimator(Direction d) {
 	uint16 off = mainCodeOffset();
 	for (int i = 0; i < 8; i++) {
-		if (i + 1 == d)
+		if (mixeddirs[i] == d)
 			off = _animators[i];
 	}
 
@@ -329,7 +333,7 @@ CodePointer Puppeteer::moveAnimator(Direction d) {
 CodePointer Puppeteer::turnAnimator(Direction d) {
 	uint16 off = mainCodeOffset();
 	for (int i = 0; i < 8; i++) {
-		if (i + 1 == d)
+		if (mixeddirs[i] == d)
 			off = _animators[i + 8];
 	}
 
@@ -337,21 +341,11 @@ CodePointer Puppeteer::turnAnimator(Direction d) {
 }
 
 Direction Actor::Frame::operator-(const Actor::Frame &other) const {
-	if (other._nexts[0] == _index)
-		return kDirUp;
-	if (other._nexts[1] == _index)
-		return kDirUpRight;
-	if (other._nexts[2] == _index)
-		return kDirRight;
-	if (other._nexts[3] == _index)
-		return kDirDownRight;
-	if (other._nexts[4] == _index)
-		return kDirDown;
-	if (other._nexts[5] == _index)
-		return kDirDownLeft;
-	if (other._nexts[6] == _index)
-		return kDirLeft;
-	return kDirUpLeft;
+	for (int i = 0; i < 8; i++)
+		if (other._nexts[i] == _index)
+			return mixeddirs[i];
+
+	return kDirNone;
 }
 
 Direction operator>>(Direction _a, Direction _b) {
@@ -372,6 +366,8 @@ Direction operator>>(Direction _a, Direction _b) {
 
 	if (a < 1)
 		a += 8;
+	if (a > 8)
+		a -= 8;
 	return *reinterpret_cast<Direction *>(&a);
 }
 
@@ -428,9 +424,7 @@ OPCODE(0x17) {
 	debugC(3, kDebugLevelAnimation, "actor opcode 0x17: if facing (currently %d) is %d then change code to 0x%04x", _direction, val, off);
 
 	if (val == _direction) {
-		_base = _base - _baseOffset + off;
-		_baseOffset = off;
-		_offset = 0;
+		setAnimation(off);
 	}
 
 	return kOk;

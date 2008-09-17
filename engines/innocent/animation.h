@@ -35,6 +35,8 @@ public:
 
 	void runOnNextFrame(const CodePointer &cp);
 
+	virtual void setAnimation(uint16 anim) { _offset = anim; }
+
 protected:
 	class Sprite;
 
