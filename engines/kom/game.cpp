@@ -592,6 +592,9 @@ bool Game::doStat(const Command *cmd) {
 			db->getChar(j->arg2)->_damageMin = j->arg5;
 			db->getChar(j->arg2)->_damageMax = j->arg6;
 			break;
+		case 439:
+			db->getChar(j->arg2)->_relativeSpeed = j->arg3;
+			break;
 		case 441:
 			keepProcessing = db->giveObject(j->arg2, j->arg3, j->arg4);
 			break;
