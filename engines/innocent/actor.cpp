@@ -92,6 +92,7 @@ void Actor::setFrame(uint16 frame) {
 	_frame = frame;
 	Frame f(Log.room()->getFrame(frame));
 	_position = f.position();
+	debugC(5, kDebugLevelActor, "actor set to frame %d, position %d:%d", f.index(), _position.x, _position.y);
 }
 
 Common::List<Actor::Frame> Actor::findPath(Actor::Frame from, uint16 to) {
@@ -153,6 +154,9 @@ Common::List<Actor::Frame> Actor::findPath(Actor::Frame from, uint16 to) {
 
 void Actor::moveTo(uint16 frame) {
 	Frame cur = Log.room()->getFrame(_frame);
+	if (_position.x == 999 || _position.y == 999)
+		_position = cur.position();
+
 	Common::List<Frame> path = findPath(cur, frame);
 
 	Common::List<Frame>::iterator it = path.end();
@@ -216,17 +220,18 @@ bool Actor::turnTo(Direction dir) {
 }
 
 void Actor::animate() {
+	unless (_puppeteer.valid())
+		return;
+
+	unless (_attentionNeeded || !_base/* || _timedOut*/)
+		return;
+
+	debugC(4, kDebugLevelActor, "attention needed");
+
 	if (nextFrame()) {
 		return;
 	}
 
-	unless (_puppeteer.valid())
-		return;
-
-	unless (_attentionNeeded/* || _timedOut*/)
-		return;
-
-	debugC(4, kDebugLevelActor, "attention needed");
 	if (_nextAnimator) {
 		setAnimation(_nextAnimator);
 		_nextAnimator = 0;
@@ -248,12 +253,13 @@ void Actor::animate() {
 		_nextPuppeteer = 0;
 		if (ax)
 			goto set_anim;*/
-	} else {
+	}
+/*	} else {
 		if (turnTo(kDirUp))
 			return;
 		_direction = kDirUp;
 		setAnimation(_puppeteer.offset());
-	}
+	}*/
 }
 
 Animation::Status Actor::tick() {

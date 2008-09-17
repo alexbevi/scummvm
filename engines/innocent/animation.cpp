@@ -139,10 +139,10 @@ void Animation::clearSprites() {
 }
 
 void Animation::paint(Graphics *g) {
-	debugC(5, kDebugLevelAnimation | kDebugLevelGraphics, "painting sprites for animation %s", _debugInfo);
-
 	if (!_mainSprite.get())
 		return;
+	debugC(5, kDebugLevelAnimation | kDebugLevelGraphics, "painting sprites for animation %s", _debugInfo);
+
 	g->paint(_mainSprite.get(), _position);
 
 	for (Common::List<Sprite *>::iterator it = _sprites.begin(); it != _sprites.end(); ++it)
@@ -321,6 +321,15 @@ OPCODE(0x10) {
 
 	debugC(3, kDebugLevelAnimation, "anim opcode 0x10: set bvar %d", var);
 	*_resources->getGlobalByteVariable(var) = 1;
+
+	return kOk;
+}
+
+OPCODE(0x11) {
+	uint16 var = shift();
+
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x11: reset flag %d", var);
+	*_resources->getGlobalByteVariable(var) = 0;
 
 	return kOk;
 }
