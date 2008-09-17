@@ -432,6 +432,20 @@ OPCODE(0xad) {
 	return kThxBye;
 }
 
+OPCODE(0xb9) {
+	// set local animation
+	debugC(3, kDebugLevelScript, "opcode 0xb9: set actor %s animation to %s", +a[0], +a[1]);
+
+	Actor *ac = Log.getActor(a[0]);
+	if (ac->isFine()) {
+		ac->callMe(current);
+		return kReturn;
+	}
+
+	ac->setAnimation(static_cast<CodePointer &>(a[1]));
+	return kThxBye;
+}
+
 OPCODE(0xbc) {
 	// hide actor
 	debugC(3, kDebugLevelScript, "opcode 0xbc: hide actor %s", +a[0]);
