@@ -86,7 +86,7 @@ Animation::Status Animation::tick() {
 	clearSprites();
 
 	Status status = kOk;
-	while (status == kOk) {
+	while (status == kOk && _base) {
 		int8 opcode = -*(_base + _offset);
 		if (opcode < 0 || opcode >= 0x27) {
 			if (!_debugInvalid) {

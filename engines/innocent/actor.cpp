@@ -30,8 +30,8 @@ Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 }
 
 bool Actor::isFine() const {
-	return (_room == Log.currentRoom() &&
-			_base && !_attentionNeeded);
+	return _room == Log.currentRoom() && _base && !_attentionNeeded &&
+			(!_framequeue.empty() || !_confused || _nextDirection);
 }
 
 void Actor::setAnimation(uint16 offset) {
@@ -44,7 +44,7 @@ void Actor::setAnimation(const CodePointer &anim) {
 	_baseOffset = anim.offset();
 	_offset = 0;
 	_debugInvalid = false;
-	_attentionNeeded = false;
+	_confused = _attentionNeeded = false;
 	clearMainSprite();
 	_interval = 1;
 	_counter = _ticksLeft = 0;
@@ -225,7 +225,7 @@ void Actor::animate() {
 	unless (_puppeteer.valid())
 		return;
 
-	unless (_attentionNeeded || !_base/* || _timedOut*/)
+	unless (_attentionNeeded || _confused/* || _timedOut*/)
 		return;
 
 	debugC(4, kDebugLevelActor, "attention needed");
@@ -255,6 +255,12 @@ void Actor::animate() {
 		_nextPuppeteer = 0;
 		if (ax)
 			goto set_anim;*/
+	}
+
+	if (_confused) {
+		if (turnTo(kDirDown))
+			return;
+		_direction = kDirDown;
 	}
 /*	} else {
 		if (turnTo(kDirUp))
@@ -398,6 +404,18 @@ Animation::Status Actor::op(byte opcode) {
 }
 
 #define OPCODE(n) template<> Animation::Status Actor::opcodeHandler<n>()
+
+OPCODE(0x01) {
+	debugC(1, kDebugLevelActor, "actor opcode 0x01: I don't know what to do");
+
+	if (_confused) {
+		_offset = 0;
+		_base = 0;
+		return kFrameDone;
+	} else
+		_confused = true;
+	return kOk;
+}
 
 OPCODE(0x14) {
 	uint16 off = shift();

@@ -171,7 +171,7 @@ private:
 	uint16 _room;
 	Direction _direction, _nextDirection;
 	uint16 _nextAnimator; // to change to whenever possible
-	bool _attentionNeeded;
+	bool _attentionNeeded, _confused;
 	Puppeteer _puppeteer;
 
 	Common::Queue<CodePointer> _callBacks;
