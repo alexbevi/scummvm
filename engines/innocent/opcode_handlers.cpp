@@ -196,6 +196,14 @@ OPCODE(0x4a) {
 	return kReturn;
 }
 
+OPCODE(0x4b) {
+	// wait until silent
+	debugC(3, kDebugLevelScript, "opcode 0x4b: wait %s is silent", +a[0]);
+
+	Log.getActor(a[0])->callMeWhenSilent(next);
+	return kReturn;
+}
+
 OPCODE(0x54) {
 	debugC(3, kDebugLevelScript, "opcode 0x54: ask about '%s' at %s:%s %sx%s", +a[4], +a[0], +a[1], +a[2], +a[3]);
 
