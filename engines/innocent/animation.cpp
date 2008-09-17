@@ -300,10 +300,19 @@ OPCODE(0x0f) {
 	return kOk;
 }
 
+OPCODE(0x10) {
+	uint16 var = shift();
+
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x10: set bvar %d", var);
+	*_resources->getGlobalByteVariable(var) = 1;
+
+	return kOk;
+}
+
 OPCODE(0x12) {
 	uint16 var = shift();
 	uint16 off = shift();
-	uint16 ok = READ_LE_UINT16(_resources->getGlobalByteVariable(var));
+	byte ok = *_resources->getGlobalByteVariable(var);
 
 	debugC(3, kDebugLevelAnimation, "anim opcode 0x12: jump to 0x%x if byte var %d (%s)", off, var, ok ? "yes" : "not");
 
