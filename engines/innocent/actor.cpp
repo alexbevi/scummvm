@@ -306,13 +306,16 @@ void Actor::readHeader(const byte *code) {
 }
 
 void Actor::callBacks() {
-	unless (isFine())
-		while (!_callBacks.empty())
-			Log.runLater(_callBacks.pop());
+	unless (isFine()) {
+		Common::Queue<CodePointer> cb = _callBacks;
+		_callBacks.clear();
+		while (!cb.empty())
+			cb.pop().run();
+	}
 
 	foreach (RoomCallback, _roomCallbacks) {
 		if (_room == Log.currentRoom() || !it->timeout) {
-			Log.runLater(it->callback);
+			it->callback.run();
 			_roomCallbacks.erase(it);
 		} else
 			it->timeout--;
@@ -408,13 +411,10 @@ Animation::Status Actor::op(byte opcode) {
 OPCODE(0x01) {
 	debugC(1, kDebugLevelActor, "actor opcode 0x01: I don't know what to do");
 
-	if (_confused) {
-		_offset = 0;
-		_base = 0;
-		return kFrameDone;
-	} else
-		_confused = true;
-	return kOk;
+	_offset = 0;
+	_base = 0;
+	_confused = true;
+	return kFrameDone;
 }
 
 OPCODE(0x14) {

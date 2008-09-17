@@ -2,6 +2,7 @@
 
 #include "innocent/debug.h"
 #include "innocent/graphics.h"
+#include "innocent/innocent.h"
 #include "innocent/inter.h"
 #include "innocent/logic.h"
 #include "innocent/resources.h"
@@ -342,6 +343,18 @@ OPCODE(0x12) {
 	debugC(3, kDebugLevelAnimation, "anim opcode 0x12: jump to 0x%x if byte var %d (%s)", off, var, ok ? "yes" : "not");
 
 	if (ok)
+		_offset = off;
+	return kOk;
+}
+
+OPCODE(0x13) {
+	uint16 max = shift();
+	uint16 off = shift();
+	uint16 res = Eng.getRandom(max);
+
+	debugC(3, kDebugLevelAnimation, "anim opcode 0x13: jump to 0x%x 1 in %d times (%s)", off, max, res == max ? "do now" : "not now");
+
+	if (res == max)
 		_offset = off;
 	return kOk;
 }
