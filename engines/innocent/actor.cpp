@@ -482,7 +482,6 @@ OPCODE(0x16) {
 	uint16 off = shift();
 
 	debugC(1, kDebugLevelAnimation, "actor opcode 0x16: if look direction is %d then jump to 0x%04x STUB", val, off);
-	error("stub");
 
 	return kOk;
 }

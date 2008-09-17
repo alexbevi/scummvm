@@ -326,8 +326,8 @@ OPCODE(0x73) {
 OPCODE(0x77) {
 	// initialize protagonist
 	debugC(3, kDebugLevelScript, "opcode 0x77: go to room %s facing %s", +a[0], +a[1]);
-	_logic->protagonist()->setRoom(a[0], a[1]);
 	_logic->changeRoom(a[0]);
+	_logic->protagonist()->setRoom(a[0], a[1]);
 	return kThxBye;
 }
 
