@@ -563,6 +563,12 @@ OPCODE(0xc9) {
 	return kThxBye;
 }
 
+OPCODE(0xcb) {
+	// load graphic
+	debugC(1, kDebugLevelScript, "opcode 0xcb: load graphic %s STUB", +a[0]);
+	return kThxBye;
+}
+
 OPCODE(0xcc) {
 	// go fullscreen
 	debugC(1, kDebugLevelScript, "opcode 0xcc: go fullscreen STUB");
