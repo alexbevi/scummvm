@@ -91,6 +91,8 @@ void Actor::callMeWhenStill(const CodePointer &cp) {
 void Actor::setFrame(uint16 frame) {
 	_frame = frame;
 	Frame f(Log.room()->getFrame(frame));
+	if (f.position().x == 999)
+		return;
 	_position = f.position();
 	debugC(5, kDebugLevelActor, "actor set to frame %d, position %d:%d", f.index(), _position.x, _position.y);
 }
@@ -154,8 +156,6 @@ Common::List<Actor::Frame> Actor::findPath(Actor::Frame from, uint16 to) {
 
 void Actor::moveTo(uint16 frame) {
 	Frame cur = Log.room()->getFrame(_frame);
-	if (_position.x == 999 || _position.y == 999)
-		_position = cur.position();
 
 	Common::List<Frame> path = findPath(cur, frame);
 
@@ -206,6 +206,8 @@ bool Actor::nextFrame() {
 
 //	setFrame(_framequeue.front().index());
 	setAnimation(_puppeteer.moveAnimator(direction));
+	_frame = next.index();
+	_framequeue.pop();
 	return true;
 }
 
