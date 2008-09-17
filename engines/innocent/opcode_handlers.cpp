@@ -435,6 +435,15 @@ OPCODE(0x9d) {
 	return kThxBye;
 }
 
+OPCODE(0x9e) {
+	// warp protagonist to frame
+	debugC(3, kDebugLevelScript, "opcode 0x9e: warp protagonist to frame %s", +a[0]);
+
+//	Log.protagonist()->warpTo(a[0]);
+	Log.protagonist()->setFrame(a[0]);
+	return kThxBye;
+}
+
 OPCODE(0xab) {
 	// set protagonist frame
 	debugC(3, kDebugLevelScript, "opcode 0xab: set protagonist frame to %s", +a[0]);
