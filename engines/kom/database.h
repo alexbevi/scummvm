@@ -34,12 +34,6 @@
 #include "kom/character.h"
 #include "kom/actor.h"
 
-#if defined(__GNUC__)
-	#define KOM_GCC_SCANF(x,y) __attribute__((format(scanf, x, y)))
-#else
-	#define KOM_GCC_SCANF(x,y)
-#endif
-
 namespace Kom {
 
 class KomEngine;
@@ -145,7 +139,6 @@ public:
 	void init(Common::String databasePrefix);
 
 	static void stripUndies(char *s);
-	int CDECL readLineScanf(Common::File &f, const char *format, ...) KOM_GCC_SCANF(3, 4);
 
 	int8 loc2loc(int from, int to) { return (int8)(_routes[(int8)(_routes[0]) * to + from + 1]); }
 	int8 box2box(int loc, int fromBox, int toBox);

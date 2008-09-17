@@ -24,7 +24,6 @@
  */
 
 #include <stdio.h>
-#include <stdarg.h>
 #include <string.h>
 
 #include "common/file.h"
@@ -105,16 +104,18 @@ void Database::initLocations() {
 	f.open(_databasePrefix + ".loc");
 
 	// Get number of entries in file
-	readLineScanf(f, "%d", &_locationsNum);
+	line = f.readLine();
+	sscanf(line.c_str(), "%d", &_locationsNum);
 
 	_locations = new Location[_locationsNum];
 
 	for (int i = 0; i < _locationsNum; ++i) {
 		int index;
 
-		do {
-			line = f.readLine();
-		} while (line.empty());
+		// Skip empty line
+		f.readLine();
+
+		line = f.readLine();
 		sscanf(line.c_str(), "%d", &index);
 
 		sscanf(line.c_str(), "%*d %s %d %d",
@@ -126,7 +127,8 @@ void Database::initLocations() {
 		strcpy(_locations[index].desc, line.c_str());
 		stripUndies(_locations[index].desc);
 
-		readLineScanf(f, "-1");
+		// Skip line containing "-1"
+		f.readLine();
 	}
 
 	f.close();
@@ -147,7 +149,8 @@ void Database::initCharacters() {
 	f.open(_databasePrefix + ".chr");
 
 	// Get number of entries in file
-	readLineScanf(f, "%d", &_charactersNum);
+	line = f.readLine();
+	sscanf(line.c_str(), "%d", &_charactersNum);
 
 	_characters = new Character[_charactersNum];
 	Character::_vm = _vm;
@@ -171,24 +174,29 @@ void Database::initCharacters() {
 		strcpy(_characters[index]._desc, line.c_str());
 		stripUndies(_characters[index]._desc);
 
-		readLineScanf(f, "%d",
+		line = f.readLine();
+		sscanf(line.c_str(), "%d",
 			&(_characters[index]._proc));
-		readLineScanf(f, "%d %d %d %d %d",
+		line = f.readLine();
+		sscanf(line.c_str(), "%d %d %d %d %d",
 			&(_characters[index]._locationId),
 			&(_characters[index]._box),
 			&(_characters[index]._data5),
 			&(_characters[index]._data6),
 			&(_characters[index]._data7));
-		readLineScanf(f, "%d %d %d",
+		line = f.readLine();
+		sscanf(line.c_str(), "%d %d %d",
 			&(_characters[index]._data8),
 			&(_characters[index]._data9),
 			&(_characters[index]._hitPoints));
-		readLineScanf(f, "%d %d %d %d",
+		line = f.readLine();
+		sscanf(line.c_str(), "%d %d %d %d",
 			&(_characters[index]._strength),
 			&(_characters[index]._defense),
 			&(_characters[index]._damageMin),
 			&(_characters[index]._damageMax));
-		readLineScanf(f, "%d %d %d %d",
+		line = f.readLine();
+		sscanf(line.c_str(), "%d %d %d %d",
 			&(_characters[index]._data14),
 			&(_characters[index]._data15),
 			&(_characters[index]._data16),
@@ -237,17 +245,19 @@ void Database::initObjects() {
 	f.open(_databasePrefix + ".obs");
 
 	// Get number of entries in file
-	readLineScanf(f, "%d", &_objectsNum);
+	line = f.readLine();
+	sscanf(line.c_str(), "%d", &_objectsNum);
 
 	_objects = new Object[_objectsNum];
 
-	// There are less objects than reported
+	// There are less objects than the maximum object id
 	for (int i = 0; i < 327; ++i) {
 		int index;
 
-		do {
-			line = f.readLine();
-		} while (line.empty());
+		// Skip empty line
+		f.readLine();
+
+		line = f.readLine();
 		sscanf(line.c_str(), "%d", &index);
 
 		// Object indices in .pro are smaller than in .obs - adjusting
@@ -261,11 +271,13 @@ void Database::initObjects() {
 		strcpy(_objects[index].desc, line.c_str());
 		stripUndies(_objects[index].desc);
 
-		readLineScanf(f, "%d %d %d",
+		line = f.readLine();
+		sscanf(line.c_str(), "%d %d %d",
 			&(_objects[index].type),
 			&(_objects[index].data2),
 			&(_objects[index].proc));
-		readLineScanf(f, "%d %d %d %d %d %d %d %d",
+		line = f.readLine();
+		sscanf(line.c_str(), "%d %d %d %d %d %d %d %d",
 			&(_objects[index].data4),
 			&(_objects[index].isCarryable),
 			&(_objects[index].isContainer),
@@ -274,7 +286,8 @@ void Database::initObjects() {
 			&(_objects[index].isUseImmediate),
 			&(_objects[index].isPickable),
 			&(_objects[index].isUsable));
-		readLineScanf(f, "%d %d %d %d %d",
+		line = f.readLine();
+		sscanf(line.c_str(), "%d %d %d %d %d",
 			&(_objects[index].price),
 			&(_objects[index].data11),
 			&(_objects[index].spellCost),
@@ -336,15 +349,18 @@ void Database::initEvents() {
 	f.open(_databasePrefix + ".box");
 
 	// Get number of entries in file
-	readLineScanf(f, "%d", &entries);
+	line = f.readLine();
+	sscanf(line.c_str(), "%d", &entries);
 
 	for (int i = 0; i < entries; ++i) {
 		int loc;
 		EventLink ev;
 
-		readLineScanf(f, "%d %d %d", &loc, &(ev.exitBox), &(ev.proc));
-		// Skip line
 		line = f.readLine();
+		sscanf(line.c_str(), "%d %d %d", &loc, &(ev.exitBox), &(ev.proc));
+
+		// Skip line
+		f.readLine();
 
 		_locations[loc].events.push_back(ev);
 	}
@@ -383,11 +399,13 @@ void Database::initProcs() {
 	f.open(_databasePrefix + ".pro");
 
 	// Get number of entries in file
-	readLineScanf(f, "%d", &_varSize);
+	line = f.readLine();
+	sscanf(line.c_str(), "%d", &_varSize);
 
 	_variables = (int16 *)calloc(_varSize, sizeof(_variables[0]));
 
-	readLineScanf(f, "%d", &_procsNum);
+	line = f.readLine();
+	sscanf(line.c_str(), "%d", &_procsNum);
 
 	_processes = new Process[_procsNum];
 
@@ -395,7 +413,10 @@ void Database::initProcs() {
 		int index;
 		int cmd, opcode;
 
-		readLineScanf(f, "%d", &index);
+		do {
+			line = f.readLine();
+		} while (line.empty());
+		sscanf(line.c_str(), "%d", &index);
 
 		line = f.readLine();
 		strcpy(_processes[index].name, line.c_str());
@@ -431,7 +452,8 @@ void Database::initProcs() {
 				case 474:
 					line = f.readLine();
 					strcpy(opObject.arg1, line.c_str());
-					readLineScanf(f, "%d", &(opObject.arg2));
+					line = f.readLine();
+					sscanf(line.c_str(), "%d", &(opObject.arg2));
 					break;
 
 				// string
@@ -441,14 +463,15 @@ void Database::initProcs() {
 					strcpy(opObject.arg1, line.c_str());
 
 					// Skip empty line
-					line = f.readLine();
+					f.readLine();
 					break;
 
 				// string + int + int + int
 				case 468:
 					line = f.readLine();
 					strcpy(opObject.arg1, line.c_str());
-					readLineScanf(f, "%d %d %d", &(opObject.arg2),
+					line = f.readLine();
+					sscanf(line.c_str(), "%d %d %d", &(opObject.arg2),
 						   &(opObject.arg3), &(opObject.arg4));
 					break;
 
@@ -1127,21 +1150,4 @@ void Database::stripUndies(char *s) {
 			s[i] = ' ';
 }
 
-int CDECL Database::readLineScanf(File &f, const char *format, ...) {
-	va_list arg;
-	int done;
-
-	do {
-		line = f.readLine();
-	} while (line.empty());
-
-	if (f.eos())
-		return EOF;
-
-	va_start(arg, format);
-	done = vsscanf(line.c_str(), format, arg);
-	va_end(arg);
-
-	return done;
-}
 } // End of namespace Kom
