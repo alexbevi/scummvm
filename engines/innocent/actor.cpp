@@ -107,10 +107,12 @@ Common::List<Actor::Frame> Actor::findPath(Actor::Frame from, uint16 to) {
 		back--;
 		Common::List<Frame>::iterator current = back->begin();
 		Common::List<Frame> next;
+		std::ostringstream s;
 		while (!found && current != back->end()) {
 			std::vector<byte> nexts = current->nexts();
 			for (int i = 0; i < 8; i++)
 				if (nexts[i]) {
+					s << ", " << int(nexts[i]);
 					next.push_back(Log.room()->getFrame(nexts[i]));
 					if (nexts[i] == to) {
 						found = true;
@@ -120,6 +122,7 @@ Common::List<Actor::Frame> Actor::findPath(Actor::Frame from, uint16 to) {
 			current++;
 		}
 		reachable.push_back(next);
+		debugC(4, kDebugLevelActor, "reachable on this level:%s", s.str().c_str());
 	}
 
 	Common::List<Frame> path;
@@ -152,14 +155,26 @@ void Actor::moveTo(uint16 frame) {
 	Frame cur = Log.room()->getFrame(_frame);
 	Common::List<Frame> path = findPath(cur, frame);
 
-	std::string pathspec;
-	std::ostringstream s(pathspec);
-	foreach(Frame, path) {
-		_framequeue.push(*it);
-		s << " " << it->index();
+	Common::List<Frame>::iterator it = path.end();
+	it--;
+	if (it->index() != frame) {
+		Common::List<Frame> p;
+		p.push_back(Log.room()->getFrame(frame));
+		path = p;
 	}
 
-	debugC(3, kDebugLevelActor, "found path: %s", pathspec.c_str());
+	std::ostringstream s;
+	it = path.begin();
+	it++;
+	while (it != path.end()) {
+		_framequeue.push(*it);
+		s << " " << int(it->index());
+		it++;
+	}
+
+	debugC(3, kDebugLevelActor, "found path: %s", s.str().c_str());
+	if (!_base)
+		nextFrame();
 }
 
 void Actor::setRoom(uint16 r, uint16 frame, uint16 next_frame) {
@@ -176,7 +191,7 @@ bool Actor::nextFrame() {
 	if (_framequeue.empty())
 		return false;
 
-	Frame next = _framequeue.pop();
+	Frame next = _framequeue.front();
 	Frame current = Log.room()->getFrame(_frame);
 
 	Direction direction = next - current;
@@ -184,8 +199,8 @@ bool Actor::nextFrame() {
 	if (turnTo(direction))
 		return true;
 
+	setFrame(_framequeue.front().index());
 	setAnimation(_puppeteer.moveAnimator(direction));
-	setFrame(next.index());
 	return true;
 }
 
@@ -200,6 +215,10 @@ bool Actor::turnTo(Direction dir) {
 }
 
 void Actor::animate() {
+	if (nextFrame()) {
+		return;
+	}
+
 	unless (_puppeteer.valid())
 		return;
 
@@ -210,10 +229,6 @@ void Actor::animate() {
 	if (_nextAnimator) {
 		setAnimation(_nextAnimator);
 		_nextAnimator = 0;
-		return;
-	}
-
-	if (nextFrame()) {
 		return;
 	}
 
