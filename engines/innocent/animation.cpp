@@ -90,11 +90,7 @@ Animation::Status Animation::tick() {
 	while (status == kOk && _base) {
 		int8 opcode = -*(_base + _offset);
 		if (opcode < 0 || opcode >= 0x27) {
-			if (!_debugInvalid) {
-				warning("invalid animation opcode 0x%02x while handling %s", *(_base + _offset), _debugInfo);
-				_debugInvalid = true; // suppress further messages
-			}
-			return kOk;
+			error("invalid animation opcode 0x%02x while handling %s", *(_base + _offset), _debugInfo);
 		}
 		_offset += 2;
 

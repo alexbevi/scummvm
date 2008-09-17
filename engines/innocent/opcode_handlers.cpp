@@ -77,7 +77,7 @@ OPCODE(0x12) {
 	// (argument is a set of flags, 1 - adlib, 2 - sb, 4 - roland)
 	debugC(2, kDebugLevelScript, "opcode 0x12: if sound is on then partial STUB");
 	// just say roland+sb for now
-	unless (a[0] & 6)
+//	unless (a[0] & 6)
 		return kFail;
 	return kThxBye;
 }
@@ -455,7 +455,8 @@ OPCODE(0xbc) {
 
 OPCODE(0xbd) {
 	// set protagonist animation
-	debugC(3, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s", +a[0]);
+	CodePointer p(static_cast<CodePointer &>(a[0]).offset(), Log.mainInterpreter());
+	debugC(3, kDebugLevelScript, "opcode 0xbd: set protagonist animation to %s", +p);
 
 	Actor *ac = Log.protagonist();
 	if (ac->isFine()) {
@@ -463,8 +464,21 @@ OPCODE(0xbd) {
 		return kReturn;
 	}
 
-	CodePointer p(static_cast<CodePointer &>(a[0]).offset(), Log.mainInterpreter());
 	ac->setAnimation(p);
+	return kThxBye;
+}
+
+OPCODE(0xbe) {
+	// set protagonist animation
+	debugC(3, kDebugLevelScript, "opcode 0xbe: set protagonist animation to %s", +a[0]);
+
+	Actor *ac = Log.protagonist();
+	if (ac->isFine()) {
+		ac->callMe(current);
+		return kReturn;
+	}
+
+	ac->setAnimation(static_cast<CodePointer &>(a[0]));
 	return kThxBye;
 }
 

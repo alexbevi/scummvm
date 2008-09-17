@@ -6,6 +6,7 @@
 
 #include "innocent/graphics.h"
 #include "innocent/innocent.h"
+#include "innocent/inter.h"
 #include "innocent/logic.h"
 #include "innocent/room.h"
 #include "innocent/util.h"
@@ -16,11 +17,10 @@ namespace Innocent {
 Actor::Actor(const CodePointer &code) : Animation(code, Common::Point()) {
 	byte *header = code.code();
 	_base = header - code.offset();
-	snprintf(_debugInfo, 50, "actor at %s", +code);
 	readHeader(header);
+	snprintf(_debugInfo, 50, "actor at %s", +code);
 	_direction = kDirNone;
 	_frame = 0;
-	_room = 0xffff;
 	_debug = false;
 	_attentionNeeded = false;
 	_nextDirection = kDirNone;
@@ -36,7 +36,15 @@ bool Actor::isFine() const {
 }
 
 void Actor::setAnimation(uint16 offset) {
-	setAnimation(CodePointer(offset, Log.mainInterpreter()));
+	_base = _base - _baseOffset + offset;
+	_baseOffset = offset;
+	_offset = 0;
+	_debugInvalid = false;
+	_confused = _attentionNeeded = false;
+	clearMainSprite();
+	_interval = 1;
+	_counter = _ticksLeft = 0;
+	_nextDirection = kDirNone;
 }
 
 void Actor::setAnimation(const CodePointer &anim) {
@@ -291,13 +299,25 @@ void Actor::toggleDebug() {
 }
 
 void Actor::readHeader(const byte *code) {
+//	uint16 segment = READ_LE_UINT16(code + kOffsetCode);
+/*	if (segment == 0)
+		_base = Log.mainInterpreter()->rawCode(0);
+	else if (segment == 1)
+		_base = Log.blockInterpreter()->rawCode(0);
+	else error("segment %x", segment);*/
 	_interval = code[kOffsetInterval];
 	_ticksLeft = READ_LE_UINT16(code + kOffsetTicksLeft);
 	_zIndex = 0;
 	_position = Common::Point(READ_LE_UINT16(code + kOffsetLeft), READ_LE_UINT16(code + kOffsetTop));
 	uint16 baseOff = READ_LE_UINT16(code + kOffsetCode);
-	_base += baseOff;
 	_offset = READ_LE_UINT16(code + kOffsetOffset);
+	if (_offset || baseOff) {
+		_base += baseOff;
+		_baseOffset = baseOff;
+	} else {
+		_base = 0;
+		_baseOffset = _offset = 0;
+	}
 	uint16 sprite = READ_LE_UINT16(code + kOffsetMainSprite);
 	_room = READ_LE_UINT16(code + kOffsetRoom);
 
@@ -358,6 +378,8 @@ CodePointer Puppeteer::turnAnimator(Direction d) {
 
 	return CodePointer(off, Log.mainInterpreter());
 }
+
+Actor::Speech::Speech(Common::String text) : _text(text), _ticksLeft(20) {}
 
 void Actor::Speech::tick() {
 	unless (_ticksLeft--) {

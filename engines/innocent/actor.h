@@ -97,7 +97,7 @@ public:
 	public:
 		Speech() {}
 		~Speech();
-		Speech(Common::String text) : _text(text), _ticksLeft(200) {}
+		Speech(Common::String text);
 		bool active() const { return !_text.empty(); }
 		void callWhenDone(const CodePointer &cp) { _cb.push(cp); }
 		void paint(Graphics *g, Common::Point p);
@@ -116,6 +116,7 @@ public:
 	};
 
 	enum ActorOffsets {
+		kOffsetSegment = 0,
 		kOffsetOffset = 2,
 		kOffsetLeft = 4,
 		kOffsetTop = 6,
