@@ -118,7 +118,7 @@ OPCODE(0x13) {
 
 OPCODE(0x1f) {
 	// if actor in current room then whatever
-	debugC(1, kDebugLevelScript, "opcode 0x1f: if actor %s is in current room but not at %s then", +a[1], +a[2]);
+	debugC(1, kDebugLevelScript, "opcode 0x1f: if actor %s is in current room but not at %s then", +a[1], +a[0]);
 
 	Actor *ac = Log.getActor(a[1]);
 	if (ac->room() == Log.currentRoom()) {
