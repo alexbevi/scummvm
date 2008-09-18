@@ -346,12 +346,13 @@ bool Game::doProc(int id, int type, int cmd, int value) {
 			i != p->commands.end() && !stop; ++i) {
 		if (i->cmd == cmd) {
 			switch (cmd) {
-			case 318:
+			case 315: // Pick up
+			case 318: // Enter room
 				if(doStat(&(*i)))
 					return true;
 				break;
 			default:
-				warning("Unhandled proc type: %d\n", type);
+				warning("Unhandled proc cmd: %d", cmd);
 				return true;
 			}
 		}
@@ -716,7 +717,7 @@ void Game::doCommand(int command, int type, int id, int thingy) {
 
 	// Pick up
 	case 4:
-		if (_vm->database()->giveObject(id, 0, false))
+		if (!_vm->database()->giveObject(id, 0, false))
 			doProc(id, 1, 315, -1);
 		break;
 
