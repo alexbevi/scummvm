@@ -153,6 +153,7 @@ public:
 	};
 
 	void setFrame(uint16 f);
+	uint16 frameId() const { return _frame; }
 	void moveTo(uint16 f);
 	static Common::List<Frame> findPath(Frame from, uint16 to);
 

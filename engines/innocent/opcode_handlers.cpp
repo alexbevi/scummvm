@@ -116,16 +116,19 @@ OPCODE(0x13) {
 	return kThxBye;
 }
 
-/*OPCODE(0x1f) {
+OPCODE(0x1f) {
 	// if actor in current room then whatever
-	debugC(1, kDebugLevelScript, "opcode 0x1f: if actor %s in current room and STUB then", +a[1]);
-	if (_logic->getActor(a[1])->room() == _logic->currentRoom())
-		error("case with condition true unhandled");
-	else
+	debugC(1, kDebugLevelScript, "opcode 0x1f: if actor %s is in current room but not at %s then", +a[1], +a[2]);
+
+	Actor *ac = Log.getActor(a[1]);
+	if (ac->room() == Log.currentRoom()) {
+		if (ac->frameId() == a[0])
+			return kFail;
+	} else
 		return kFail;
 	return kThxBye;
 }
-*/
+
 OPCODE(0x24) {
 	// check nonzeroness
 	debugC(3, kDebugLevelScript, "opcode 0x24: if (%s)", +a[0]);
