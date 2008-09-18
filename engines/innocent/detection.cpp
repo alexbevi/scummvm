@@ -26,7 +26,7 @@
 #include "innocent/innocent.h"
 
 #include "common/fs.h"
-#include "base/game.h"
+#include "engines/game.h"
 #include "base/plugins.h"
 #include "engines/metaengine.h"
 #include "common/config-manager.h"
