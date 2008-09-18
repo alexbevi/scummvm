@@ -363,7 +363,9 @@ void Actor::callBacks() {
 	foreach (RoomCallback, _roomCallbacks) {
 		if (_room == Log.currentRoom() || !it->timeout) {
 			it->callback.run();
-			_roomCallbacks.erase(it);
+			Common::List<RoomCallback>::iterator done = it;
+			it++;
+			_roomCallbacks.erase(done);
 		} else
 			it->timeout--;
 	}

@@ -87,7 +87,9 @@ void Logic::callAnimations() {
 		Animation::Status ret = (*it)->tick();
 		if (ret == Animation::kRemove) {
 			// it will be deleted by its owner block
-			_animations.erase(it);
+			Common::List<Animation *>::iterator _i = it;
+			it++;
+			_animations.erase(_i);
 		}
 	}
 }
