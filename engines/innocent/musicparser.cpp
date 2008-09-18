@@ -51,7 +51,7 @@ bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_num_tracks = 1;
 	_ppqn = 120;
 //	_clocks_per_tick = 0x19;
-	setTempo(600000 * 0x19);
+	setTempo(500000 * 0x19);
 	setTrack(0);
 	return true;
 }
@@ -284,7 +284,7 @@ void MusicCommand::exec(byte channel, Note *note) {
 
 	case kSetProgram:
 		debugC(2, kDebugLevelMusic, "set program on channel %d to %d", channel, _parameter);
-		Music._driver->send(channel | kMidiSetProgram, _parameter, 0);
+		Music._driver->send(channel | kMidiSetProgram, MidiDriver::_mt32ToGm[_parameter], 0);
 		break;
 
 	case kSetExpression:
@@ -307,7 +307,7 @@ void MusicCommand::exec(byte channel, Note *note) {
 
 	case kSetTempo:
 		debugC(2, kDebugLevelMusic, "setting tempo to %d", _parameter);
-		Music.setTempo(600000 * _parameter);
+		Music.setTempo(500000 * _parameter);
 		break;
 
 	case kCmdSetBeat:

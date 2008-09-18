@@ -97,12 +97,18 @@ OPCODE(0x0f) {
 	return kThxBye;
 }
 
+enum {
+	kSoundAdlib =  1,
+	kSoundSB =     2,
+	kSoundRoland = 4
+};
+
 OPCODE(0x12) {
  	// if sound is on then
 	// (argument is a set of flags, 1 - adlib, 2 - sb, 4 - roland)
 	debugC(2, kDebugLevelScript, "opcode 0x12: if sound is on then partial STUB");
 	// just say roland+sb for now
-//	unless (a[0] & 6)
+	unless (a[0] & (kSoundRoland | kSoundSB))
 		return kFail;
 	return kThxBye;
 }
