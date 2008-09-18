@@ -1733,9 +1733,12 @@ void Game::exePickup() {
 		if (playerChar->_spriteCutState == 0)
 			_player.commandState = 3;
 
-		distance = playerChar->_screenY -
-			_vm->database()->getMidY(playerChar->_lastLocation,
-			                        _vm->database()->getObj(_player.collideNum)->box);
+		distance = (playerChar->_screenY -
+			_vm->database()->getMidY(
+				playerChar->_lastLocation,
+				_vm->database()->getObj(_player.collideNum)->box)
+			) * playerChar->_start5 / 256;
+
 		if (distance < 50)
 			playerChar->_sprite8c = 1;
 		else if (distance <= 120)
