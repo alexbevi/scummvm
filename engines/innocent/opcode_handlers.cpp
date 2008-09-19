@@ -186,8 +186,8 @@ OPCODE(0x3b) {
 }
 
 OPCODE(0x3d) {
-	// save first arg -- instruction pointer -- for after skipping animation
-	debugC(3, kDebugLevelScript, "opcode 0x3d: store position to continue if animation skipped to %s", +a[0]);
+	// save first arg -- instruction pointer -- for after skipping cutscene
+	debugC(3, kDebugLevelScript, "opcode 0x3d: store position to continue if cutscene skipped to %s", +a[0]);
 	Log.setSkipPoint(static_cast<CodePointer &>(a[0]));
 	return kThxBye;
 }
@@ -635,8 +635,9 @@ OPCODE(0xce) {
 OPCODE(0xcf) {
 	// fade out
 	debugC(1, kDebugLevelScript, "opcode 0xcf: fadeout");
-	_graphics->fadeOut();
-	return kThxBye;
+	if (_graphics->fadeOut())
+		return kThxBye;
+	else return kReturn;
 }
 
 OPCODE(0xd0) {

@@ -81,7 +81,7 @@ public:
 		kPartialFade = 1
 	};
 	void willFadein(FadeFlags f = kFullFade);
-	void fadeOut(FadeFlags f = kFullFade);
+	bool fadeOut(FadeFlags f = kFullFade);
 
 	void say(const byte *text, uint16, uint16 frames = 50);
 	void runWhenSaid(const CodePointer &p);

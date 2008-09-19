@@ -197,7 +197,7 @@ void Logic::setSkipPoint(const CodePointer &p) {
 	_skipPoint = p;
 }
 
-void Logic::skipAnimation() {
+void Logic::skipCutscene() {
 	if (_skipPoint.isEmpty()) return;
 
 	debugC(2, kDebugLevelScript, ">>>running animation skip code");

@@ -450,7 +450,7 @@ void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 		_system->updateScreen();
 		Eng.delay(1000/25);
 
-		if (Eng.escapePressed()) {
+		if (Log.canSkipCutscene() && Eng.escapePressed()) {
 			_system->setPalette(colours, start, num);
 			_system->updateScreen();
 			return;
@@ -458,7 +458,7 @@ void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 	}
 }
 
-void Graphics::fadeOut(FadeFlags f) {
+bool Graphics::fadeOut(FadeFlags f) {
 	int bytes = 0x400;
 	int offset = 0;
 	int colours = 256;
@@ -480,12 +480,13 @@ void Graphics::fadeOut(FadeFlags f) {
 		_system->updateScreen();
 		Eng.delay(1000/25);
 
-		if (Eng.escapePressed()) {
-			Log.skipAnimation();
-			return;
+		if (Log.canSkipCutscene() && Eng.escapePressed()) {
+			Log.skipCutscene();
+			return false;
 		}
 
 	}
+	return true;
 }
 
 void Graphics::say(const byte *text, uint16 length, uint16 frames) {

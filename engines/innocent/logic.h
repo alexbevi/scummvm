@@ -84,8 +84,10 @@ public:
 	Interpreter *blockInterpreter() const { return _blockInterpreter.get(); }
 	Interpreter *mainInterpreter() const { return _toplevelInterpreter.get(); }
 	void runLater(const CodePointer &, uint16 delay = 0);
+
+	bool canSkipCutscene() const { return !_skipPoint.isEmpty(); }
 	void setSkipPoint(const CodePointer &);
-	void skipAnimation();
+	void skipCutscene();
 
 	Animation *animation(uint16 offset) const;
 
