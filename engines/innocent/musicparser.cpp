@@ -38,13 +38,14 @@ DECLARE_SINGLETON(MusicParser);
 
 MusicParser::MusicParser() : MidiParser(), _time(0), _lasttick(0), _tick(0) {}
 
-MusicParser::~MusicParser() { unloadMusic(); _driver->close();}
+MusicParser::~MusicParser() { silence(); unloadMusic(); _driver->close();}
 
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	_script.reset(new MusicScript(data));
 	_tune.reset(new Tune(_script->getTune()));
 
 	_driver->open();
+	silence();
 	setTimerRate(_driver->getBaseTempo());
 	_driver->setTimerCallback(this, &MusicParser::timerCallback);
 
@@ -65,6 +66,26 @@ void MusicParser::tick() {
 
 	_tune->tick();
 	_tick++;
+}
+
+static byte notes[8][4];
+
+enum {
+	kMidiNoteOff = 		  0x80,
+	kMidiNoteOn = 		  0x90,
+	kMidiChannelControl = 0xb0,
+	kMidiSetProgram = 	  0xc0
+};
+
+void MusicParser::silence() {
+	debugC(2, kDebugLevelMusic, "turning off all notes");
+
+	for (int channel = 2; channel < 10; channel++)
+		for (int i = 0; i < 4; i++)
+			if (notes[channel][i])
+				Music._driver->send(channel | kMidiNoteOff, notes[channel][i], 0);
+
+	memset(notes, 0, sizeof(notes));
 }
 
 MusicScript::MusicScript() : _code(0) {}
@@ -89,6 +110,7 @@ void MusicScript::tick() {
 
 	case kStop:
 		debugC(2, kDebugLevelMusic, "will stop playing");
+		Music.silence();
 		Music.unloadMusic();
 		return;
 
@@ -192,13 +214,6 @@ void Channel::reset() {
 }
 
 enum {
-	kMidiNoteOff = 		  0x80,
-	kMidiNoteOn = 		  0x90,
-	kMidiChannelControl = 0xb0,
-	kMidiSetProgram = 	  0xc0
-};
-
-enum {
 	kMidiCtrlExpression = 	0xb,
 	kMidiCtrlAllNotesOff = 0x7b
 };
@@ -213,8 +228,6 @@ void Channel::tick() {
 	for (byte i = 0; i < 4; i++)
 		_notes[i].tick(_chanidx);
 }
-
-static byte notes[8][4];
 
 Note::Note() : _data(0), _begin(0) {}
 

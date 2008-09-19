@@ -152,6 +152,7 @@ public:
 	void tick();
 	virtual uint32 getTick() { return _tick; }
 	void setBeat(uint16 beat) { _tune->setBeat(beat); }
+	void silence();
 
 	friend class Note;
 	friend class MusicCommand;
