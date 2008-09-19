@@ -93,6 +93,7 @@ int Engine::init() {
 
 	_musicDriver.reset(driver);
 	Music.setMidiDriver(driver);
+	driver->open();
 
 
 	_logic->init();

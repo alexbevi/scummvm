@@ -37,7 +37,7 @@ public:
 	virtual ~Movie();
 	static Movie *fromFile(const char *name);
 	void setFrameDelay(uint delay);
-	void play();
+	bool play();
 
 protected:
 	virtual void showFrame();

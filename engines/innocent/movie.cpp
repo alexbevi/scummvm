@@ -29,6 +29,7 @@
 
 #include "innocent/debug.h"
 #include "innocent/graphics.h"
+#include "innocent/logic.h"
 #include "innocent/innocent.h"
 #include "innocent/resources.h"
 
@@ -51,7 +52,7 @@ void Movie::setFrameDelay(uint jiffies) {
 	_delay = jiffies;
 }
 
-void Movie::play() {
+bool Movie::play() {
 	_s.create(320, 200, 1);
 
 	debugC(4, kDebugLevelGraphics, "creating movie");
@@ -66,10 +67,13 @@ void Movie::play() {
 			loadIFrame();
 			showFrame();
 			delay();
-			if (Eng.escapePressed())
-				return;
+			if (Log.canSkipCutscene() && Eng.escapePressed()) {
+				Log.skipCutscene();
+				return false;
+			}
 		}
 	}
+	return true;
 }
 
 bool Movie::findKeyFrame() {

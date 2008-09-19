@@ -41,11 +41,11 @@ MusicParser::MusicParser() : MidiParser(), _time(0), _lasttick(0), _tick(0) {}
 MusicParser::~MusicParser() { silence(); unloadMusic(); _driver->close();}
 
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
+	unloadMusic();
+	silence();
 	_script.reset(new MusicScript(data));
 	_tune.reset(new Tune(_script->getTune()));
 
-	_driver->open();
-	silence();
 	setTimerRate(_driver->getBaseTempo());
 	_driver->setTimerCallback(this, &MusicParser::timerCallback);
 

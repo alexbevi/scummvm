@@ -591,8 +591,10 @@ OPCODE(0xc7) {
 	debugC(3, kDebugLevelScript, "opcode 0xc7: play movie %s with slowness %s", +a[0], +a[1]);
 	Movie *m = Movie::fromFile(reinterpret_cast<char *>((byte *)(a[0])));
 	m->setFrameDelay(a[1]);
-	m->play();
-	return kThxBye;
+	if (m->play())
+		return kThxBye;
+	else
+		return kReturn;
 }
 
 OPCODE(0xc8) {
@@ -637,13 +639,16 @@ OPCODE(0xcf) {
 	debugC(1, kDebugLevelScript, "opcode 0xcf: fadeout");
 	if (_graphics->fadeOut())
 		return kThxBye;
-	else return kReturn;
+	else
+		return kReturn;
 }
 
 OPCODE(0xd0) {
 	debugC(1, kDebugLevelScript, "opcode 0xd0: partial fadeout");
-	Graf.fadeOut(Graphics::kPartialFade);
-	return kThxBye;
+	if (Graf.fadeOut(Graphics::kPartialFade))
+		return kThxBye;
+	else
+		return kReturn;
 }
 
 OPCODE(0xd1) {
@@ -739,7 +744,9 @@ OPCODE(0xf4) {
 
 OPCODE(0xf7) {
 	// stop music
-	debugC(1, kDebugLevelScript, "opcode 0xf7: stop music STUB");
+	debugC(3, kDebugLevelScript, "opcode 0xf7: stop music");
+	Music.unloadMusic();
+	Music.silence();
 	return kThxBye;
 }
 
