@@ -54,7 +54,7 @@ struct RoomDoor {
 };
 
 struct Settings {
-	Settings() : gameCycles(6000), dayMode(1) {}
+	Settings() : gameCycles(6000), dayMode(1), mouseState(0) {}
 	uint16 mouseState;
 	bool mouseOverExit;
 	uint16 mouseX;
