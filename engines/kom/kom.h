@@ -39,8 +39,6 @@
 #include "kom/game.h"
 #include "kom/font.h"
 
-class Common::FilesystemNode;
-
 namespace Kom {
 
 class Screen;

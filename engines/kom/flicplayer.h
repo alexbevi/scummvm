@@ -35,7 +35,7 @@
 
 namespace Kom {
 
-typedef struct FlicHeader {
+struct FlicHeader {
 	uint32 size;
 	uint16 type;
 	uint16 numFrames;
@@ -46,12 +46,12 @@ typedef struct FlicHeader {
 	uint16 offsetFrame2;
 };
 
-typedef struct ChunkHeader {
+struct ChunkHeader {
 	uint32 size;
 	uint16 type;
 };
 
-typedef struct FrameTypeChunkHeader {
+struct FrameTypeChunkHeader {
 	ChunkHeader header;
 	uint16 numChunks;
 	uint16 delay;

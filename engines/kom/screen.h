@@ -35,7 +35,6 @@
 #include "kom/font.h"
 
 class OSystem;
-class Common::FilesystemNode;
 class FlicPlayer;
 
 namespace Kom {
