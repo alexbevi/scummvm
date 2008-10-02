@@ -147,7 +147,6 @@ void Input::handleMouse() {
 					break;
 
 				case CMD_LOOK_AT:
-					break; // TODO
 					if (settings->collideType == 0)
 						break;
 					playerChar->_gotoX = gotoX;

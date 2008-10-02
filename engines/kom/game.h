@@ -154,6 +154,7 @@ public:
 	void doActionLostObject(uint16 obj);
 
 	void exePickup();
+	void exeLookAt();
 
 	Common::Array<RoomObject> *getObjects() { return &_roomObjects; }
 	Common::Array<RoomDoor> *getDoors() { return &_roomDoors; }

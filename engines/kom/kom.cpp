@@ -208,6 +208,7 @@ void KomEngine::gameLoop() {
 				_game->exePickup();
 				break;
 			case CMD_LOOK_AT:
+				_game->exeLookAt();
 				break;
 			case CMD_FIGHT:
 				break;

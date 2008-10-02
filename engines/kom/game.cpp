@@ -324,7 +324,9 @@ void Game::processChar(int proc) {
 bool Game::doProc(int id, int type, int cmd, int value) {
 	int proc;
 	Process *p;
-	bool stop;
+	bool var_8 = true;
+	bool lookAt = false;
+	bool fight = false;
 
 	switch (type) {
 	case 1: // Object
@@ -342,10 +344,21 @@ bool Game::doProc(int id, int type, int cmd, int value) {
 
 	p = _vm->database()->getProc(proc);
 
-	for (Common::List<Command>::iterator i = p->commands.begin();
-			i != p->commands.end() && !stop; ++i) {
+	if (p == NULL)
+		return false;
+
+	if (cmd == 319 || cmd == 320 || cmd == 321)
+		var_8 = false;
+
+	Common::List<Command>::iterator i;
+	for (i = p->commands.begin(); i != p->commands.end(); ++i) {
 		if (i->cmd == cmd) {
 			switch (cmd) {
+			case 316: // Look at
+				lookAt = true;
+				if(doStat(&(*i)))
+					return true;
+				break;
 			case 315: // Pick up
 			case 318: // Enter room
 				if(doStat(&(*i)))
@@ -358,7 +371,20 @@ bool Game::doProc(int id, int type, int cmd, int value) {
 		}
 	}
 
-	return false;
+	if (cmd == 317) {
+		return fight;
+	} else if (cmd == 316) {
+		return lookAt;
+	} else if (i == p->commands.end() && !var_8) {
+		return false;
+	} else if (i == p->commands.end() && cmd == 319) {
+		if (_vm->database()->getObj(value)->type == 2)
+			return false;
+		else
+			return true;
+	} else {
+		return true;
+	}
 }
 
 bool Game::doStat(const Command *cmd) {
@@ -705,6 +731,9 @@ bool Game::doStat(const Command *cmd) {
 
 void Game::doCommand(int command, int type, int id, int thingy) {
 	Common::List<EventLink> events;
+
+	Character *chr;
+
 	switch (command) {
 
 	// Talk
@@ -721,8 +750,24 @@ void Game::doCommand(int command, int type, int id, int thingy) {
 			doProc(id, 1, 315, -1);
 		break;
 
-	// Look
+	// Look at
 	case 5:
+		switch (type) {
+		case 1: // Object
+			doProc(id, 1, 316, -1);
+			break;
+		case 2: // Character
+			chr = _vm->database()->getChar(id);
+			if (chr->_isAlive) {
+				doProc(id, 2, 316, -1);
+				warning("TODO: doActionLookAt");
+			} else {
+				warning("TODO: look at dead char");
+			}
+			break;
+		case 3:
+			break;
+		}
 		break;
 	case 6:
 		break;
@@ -1756,6 +1801,26 @@ void Game::exePickup() {
 	default:
 		break;
 	}
+}
+
+void Game::exeLookAt() {
+	assert(_player.collideType != 1);
+
+	switch (_player.collideType) {
+	case 2: // Char
+		doCommand(5, 2, _player.collideNum, -1);
+		break;
+	case 3: // Object
+		doCommand(5, 1, _player.collideNum, -1);
+		break;
+	default:
+		break;
+	}
+
+	_player.command = CMD_NOTHING;
+	_player.commandState = 0;
+	_player.collideType = 0;
+	_player.collideNum = -1;
 }
 
 } // End of namespace Kom
