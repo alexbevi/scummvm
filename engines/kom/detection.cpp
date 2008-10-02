@@ -100,7 +100,7 @@ GameList KomMetaEngine::detectGames(const Common::FSList &fslist) const {
 }
 
 PluginError KomMetaEngine::createInstance(OSystem *syst, Engine **engine) const {
-	Common::FilesystemNode dir(ConfMan.get("path"));
+	Common::FSNode dir(ConfMan.get("path"));
 
 	// Unable to locate game data
 	if (!(dir.getChild("thidney.dsk").exists() || dir.getChild("shahron.dsk").exists())) {

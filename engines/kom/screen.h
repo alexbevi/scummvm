@@ -74,7 +74,7 @@ public:
 	void drawPanel(const byte *panelData);
 	void updatePanelOnScreen();
 
-	void loadBackground(Common::FilesystemNode node);
+	void loadBackground(Common::FSNode node);
 	void updateBackground();
 	void drawBackground();
 	void pauseBackground(bool pause) { _backgroundPaused = pause; }
@@ -90,7 +90,7 @@ private:
 	void copyRectListToScreen(const Common::List<Common::Rect> *);
 
 	void drawActorFrameLine(byte *outBuffer, const int8 *rowData, uint16 length);
-	byte *loadColorSet(Common::FilesystemNode fsNode);
+	byte *loadColorSet(Common::FSNode fsNode);
 
 	uint16 getTextWidth(const char *text);
 	void writeTextStyle(byte *buf, const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isBackground);

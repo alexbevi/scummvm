@@ -62,7 +62,7 @@ struct FrameTypeChunkHeader {
 
 class FlicPlayer {
 public:
-	FlicPlayer(Common::FilesystemNode flicNode);
+	FlicPlayer(Common::FSNode flicNode);
 	~FlicPlayer();
 
 	bool decodeFrame();

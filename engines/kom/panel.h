@@ -36,7 +36,7 @@ namespace Kom {
 
 class Panel {
 public:
-	Panel(KomEngine *vm, Common::FilesystemNode fileNode);
+	Panel(KomEngine *vm, Common::FSNode fileNode);
 	~Panel();
 
 	void update();

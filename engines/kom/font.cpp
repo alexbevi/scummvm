@@ -30,7 +30,7 @@
 
 namespace Kom {
 
-Font::Font(Common::FilesystemNode fileNode) : _data(0) {
+Font::Font(Common::FSNode fileNode) : _data(0) {
 	Common::File f;
 	f.open(fileNode);
 	_data = new byte[f.size()];

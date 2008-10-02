@@ -33,7 +33,7 @@ using Common::File;
 
 namespace Kom {
 
-Panel::Panel(KomEngine *vm, Common::FilesystemNode fileNode) : _vm(vm),
+Panel::Panel(KomEngine *vm, Common::FSNode fileNode) : _vm(vm),
 	_isEnabled(true), _isLoading(false), _noLoading(0),
 	_locationDesc(0), _actionDesc(0), _hotspotDesc(0), _gotObjTime(0) {
 	File f;

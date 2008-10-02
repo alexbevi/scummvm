@@ -35,7 +35,7 @@ namespace Kom {
 using Common::File;
 using Common::Rect;
 
-FlicPlayer::FlicPlayer(Common::FilesystemNode flicNode) : _paletteDirty(false), _offscreen(0), _currFrame(0) {
+FlicPlayer::FlicPlayer(Common::FSNode flicNode) : _paletteDirty(false), _offscreen(0), _currFrame(0) {
 	File f;
 	f.open(flicNode);
 	_flicData = _flicDataStart = new uint8[f.size()];
