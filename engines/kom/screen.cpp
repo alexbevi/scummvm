@@ -78,7 +78,7 @@ Screen::~Screen() {
 
 bool Screen::init() {
 	_system->beginGFXTransaction();
-		_vm->initCommonGFX(false);
+		initCommonGFX(false);
 		_system->initSize(SCREEN_W, SCREEN_H);
 	_system->endGFXTransaction();
 
