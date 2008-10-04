@@ -1122,7 +1122,7 @@ bool Database::giveObject(int obj, int charId, bool something) {
 		break;
 	case 3:
 		if (oldOwner == 0 && !something) {
-			warning("TODO: actionLostObject");
+			_vm->game()->doActionLostObject(obj);
 		}
 
 		switch (type) {

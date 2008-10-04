@@ -1755,7 +1755,12 @@ void Game::doActionGotObject(uint16 obj) {
 		}
 	}
 }
+
 void Game::doActionLostObject(uint16 obj) {
+	_vm->panel()->addObject(-obj);
+
+	if (_settings.objectNum == obj)
+		_settings.objectNum = _settings.objectType = -1;
 }
 
 void Game::exePickup() {

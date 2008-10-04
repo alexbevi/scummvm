@@ -79,7 +79,9 @@ struct Settings {
 	uint16 collideCharY;
 	int32 collideCharZ;
 	int16 objectNum;
+	int16 objectType;
 	int16 object2Num;
+	int16 object2Type;
 	uint8 dayMode; // 0 - day. 1 - night. 2 - dawn. 3 - dusk
 	uint8 currLocation;
 	uint16 gameCycles;
