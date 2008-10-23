@@ -50,6 +50,14 @@ enum {
 
 class KomEngine;
 
+struct ColorSet {
+	ColorSet(Common::FSNode fsNode);
+	~ColorSet();
+
+	uint size;
+	byte *data;
+};
+
 class Screen {
 public:
 
@@ -60,7 +68,9 @@ public:
 	bool init();
 
 	void processGraphics(int mode);
+	void drawDirtyRects();
 	void gfxUpdate();
+	void clearScreen();
 	void drawActorFrame0(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart,
 			uint16 xEnd, uint16 yEnd, int maskDepth);
 	void drawActorFrame4(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart);
@@ -80,6 +90,13 @@ public:
 	void pauseBackground(bool pause) { _backgroundPaused = pause; }
 	void setMask(const uint8 *data);
 
+	void useColorSet(ColorSet *cs, uint start);
+	void createSepia(bool shop);
+	void freeSepia();
+	void copySepia();
+
+	void setBrightness(uint16 brightness) { _newBrightness = brightness; }
+
 	void displayDoors();
 
 	void writeTextCentered(byte *buf, const char *text, uint8 row, uint8 color, bool isEmbossed);
@@ -90,10 +107,11 @@ private:
 	void copyRectListToScreen(const Common::List<Common::Rect> *);
 
 	void drawActorFrameLine(byte *outBuffer, const int8 *rowData, uint16 length);
-	byte *loadColorSet(Common::FSNode fsNode);
 
 	uint16 getTextWidth(const char *text);
 	void writeTextStyle(byte *buf, const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isBackground);
+
+	void setPaletteBrightness();
 
 	OSystem *_system;
 	KomEngine *_vm;
@@ -107,7 +125,18 @@ private:
 	uint32 _roomBackgroundTime;
 	bool _backgroundPaused;
 
-	byte *_c0ColorSet;
+	bool _freshScreen;
+
+	byte *_sepiaScreen;
+	byte _backupPalette[256 * 4];
+
+	ColorSet *_c0ColorSet;
+	ColorSet *_orangeColorSet;
+	ColorSet *_greenColorSet;
+	bool _paletteChanged;
+
+	uint16 _currBrightness;
+	uint16 _newBrightness;
 
 	uint32 _lastFrameTime;
 

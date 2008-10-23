@@ -30,6 +30,7 @@
 #include "common/list.h"
 #include "common/rect.h"
 #include "graphics/cursorman.h"
+#include "graphics/surface.h"
 
 #include "kom/screen.h"
 #include "kom/kom.h"
@@ -43,8 +44,32 @@ using Common::Rect;
 
 namespace Kom {
 
+ColorSet::ColorSet(Common::FSNode fsNode) {
+	File f;
+
+	f.open(fsNode);
+
+	size = f.size() / 3;
+
+	data = new byte[size * 4];
+
+	for (uint i = 0; i < size; ++i) {
+		data[4 * i + 0] = f.readByte();
+		data[4 * i + 1] = f.readByte();
+		data[4 * i + 2] = f.readByte();
+		data[4 * i + 3] = 0;
+	}
+
+	f.close();
+}
+
+ColorSet::~ColorSet() {
+	delete[] data;
+}
+
 Screen::Screen(KomEngine *vm, OSystem *system)
-	: _system(system), _vm(vm), _roomBackground(0) {
+	: _system(system), _vm(vm), _roomBackground(0), _sepiaScreen(0),
+	  _freshScreen(false), _paletteChanged(false), _newBrightness(256) {
 
 	_lastFrameTime = 0;
 
@@ -54,7 +79,9 @@ Screen::Screen(KomEngine *vm, OSystem *system)
 	_mouseBuf = new uint8[MOUSE_W * MOUSE_H];
 	memset(_mouseBuf, 0, MOUSE_W * MOUSE_H);
 
-	_c0ColorSet = loadColorSet(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("c0_127.cl"));
+	_c0ColorSet = new ColorSet(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("c0_127.cl"));
+	_orangeColorSet = new ColorSet(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("sepia_or.cl"));
+	_greenColorSet = new ColorSet(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("sepia_gr.cl"));
 
 	_mask = new uint8[SCREEN_W * (SCREEN_H - PANEL_H)];
 	memset(_mask, 0, SCREEN_W * (SCREEN_H - PANEL_H));
@@ -68,7 +95,10 @@ Screen::Screen(KomEngine *vm, OSystem *system)
 Screen::~Screen() {
 	delete[] _screenBuf;
 	delete[] _mouseBuf;
-	delete[] _c0ColorSet;
+	delete _c0ColorSet;
+	delete _orangeColorSet;
+	delete _greenColorSet;
+	delete[] _sepiaScreen;
 	delete[] _mask;
 	delete _roomBackground;
 	delete _font;
@@ -82,7 +112,7 @@ bool Screen::init() {
 		_system->initSize(SCREEN_W, SCREEN_H);
 	_system->endGFXTransaction();
 
-	_system->setPalette(_c0ColorSet, 0, 128);
+	useColorSet(_c0ColorSet, 0);
 
 	return true;
 }
@@ -247,23 +277,42 @@ void Screen::copyRectListToScreen(const Common::List<Common::Rect> *list) {
 	}
 }
 
-void Screen::gfxUpdate() {
+void Screen::drawDirtyRects() {
 
-	// Copy dirty rects to screen
-	copyRectListToScreen(_prevDirtyRects);
-	copyRectListToScreen(_dirtyRects);
-	delete _prevDirtyRects;
-	_prevDirtyRects = _dirtyRects;
-	_dirtyRects = new List<Rect>();
+	// Copy everything
+	if (_freshScreen) {
+		_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H);
 
-	// No need to save a prev, since the background reports
-	// all changes
-	if (_roomBackground) {
-		copyRectListToScreen(_roomBackground->getDirtyRects());
-		_roomBackground->clearDirtyRects();
+	} else {
+		// No need to save a prev, since the background reports
+		// all changes
+		if (_roomBackground) {
+			copyRectListToScreen(_roomBackground->getDirtyRects());
+			_roomBackground->clearDirtyRects();
+		}
+
+		// Copy dirty rects to screen
+		copyRectListToScreen(_prevDirtyRects);
+		copyRectListToScreen(_dirtyRects);
+		delete _prevDirtyRects;
+		_prevDirtyRects = _dirtyRects;
+		_dirtyRects = new List<Rect>();
 	}
 
+	_freshScreen = false;
+}
+
+void Screen::gfxUpdate() {
+
+	// TODO: set palette brightness
+
+	drawDirtyRects();
+
 	_vm->input()->resetInput();
+
+	if (_paletteChanged) {
+		_paletteChanged = false;
+	}
 
 	while (_system->getMillis() < _lastFrameTime + 41 /* 24 fps */) {
 		_vm->input()->checkKeys();
@@ -271,6 +320,15 @@ void Screen::gfxUpdate() {
 	}
 	_system->updateScreen();
 	_lastFrameTime = _system->getMillis();
+}
+
+void Screen::clearScreen() {
+	_dirtyRects->clear();
+	_prevDirtyRects->clear();
+	if (_roomBackground)
+		_roomBackground->clearDirtyRects();
+	_system->clearScreen();
+	_freshScreen = true;
 }
 
 static byte lineBuffer[SCREEN_W];
@@ -482,22 +540,76 @@ void Screen::drawActorFrameLine(byte *outBuffer, const int8 *rowData, uint16 len
 	}
 }
 
-byte *Screen::loadColorSet(Common::FSNode fsNode) {
-	File f;
+void Screen::useColorSet(ColorSet *cs, uint start) {
+	static const byte black[4] = { 0, 0, 0, 0 };
 
-	f.open(fsNode);
+	_system->setPalette(cs->data, start, cs->size);
 
-	byte *pal = new byte[128 * 4];
+	// Index 0 is always black
+	_system->setPalette(black, 0, 1);
 
-	for (int i = 0; i < 128; ++i) {
-		pal[4 * i + 0] = f.readByte();
-		pal[4 * i + 1] = f.readByte();
-		pal[4 * i + 2] = f.readByte();
-		pal[4 * i + 3] = 0;
+	_paletteChanged = true;
+}
+
+void Screen::setPaletteBrightness() {
+	byte newPalette[256 * 4];
+
+	_system->grabPalette(newPalette, 0, 256);
+
+	if (_currBrightness < 256) {
+
+		for (uint i = 0; i < 256 * 4; (i%4==2)?i+=2:i++) {
+			newPalette[i] = newPalette[i] * _currBrightness / 256;
+		}
+
+		_system->setPalette(newPalette, 0, 256);
+		_paletteChanged = true;
+		_newBrightness = 9999;
+	} else {
+		warning("TODO: setPaletteBrightness");
+	}
+}
+
+void Screen::createSepia(bool shop) {
+	_sepiaScreen = new byte[SCREEN_W * (SCREEN_H - PANEL_H)];
+	ColorSet *cs = shop ? _greenColorSet : _orangeColorSet;
+
+	drawDirtyRects();
+
+	Graphics::Surface *screen = _system->lockScreen();
+	assert(screen);
+
+	_system->grabPalette(_backupPalette, 0, 256);
+
+	for (uint y = 0; y < SCREEN_H - PANEL_H; ++y) {
+		for (uint x = 0; x < SCREEN_W; ++x) {
+			byte *color = &_backupPalette[((uint8*)screen->pixels)[y * SCREEN_W + x] * 4];
+
+			// FIXME: this does not produce the same shade as the original
+			_sepiaScreen[y * SCREEN_W + x] = ((color[0] + color[1] + color[2]) / 3 * 23 + 255 / 2) / 255 + 232;
+			//_sepiaScreen[y * SCREEN_W + x] = (color[0] + color[1] + color[2]) / 12 + 232;
+		}
 	}
 
-	f.close();
-	return pal;
+	_system->unlockScreen();
+
+	useColorSet(cs, 224);
+}
+
+void Screen::freeSepia() {
+	if (!_sepiaScreen)
+		return;
+
+	delete[] _sepiaScreen;
+	_system->setPalette(_backupPalette, 0, 256);
+}
+
+void Screen::copySepia() {
+	if (!_sepiaScreen)
+		return;
+
+	memcpy(_screenBuf, _sepiaScreen, SCREEN_W * (SCREEN_H - PANEL_H));
+	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H - PANEL_H);
 }
 
 void Screen::setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int hotspotY) {
@@ -727,8 +839,8 @@ void Screen::updateBackground() {
 				_roomBackground->decodeFrame();
 
 			if (_roomBackground->paletteDirty()) {
-				_system->setPalette(_roomBackground->getPalette(), 0, 1);
 				_system->setPalette(_roomBackground->getPalette() + 4 * 128, 128, 128);
+				_paletteChanged = true;
 			}
 		}
 	}
