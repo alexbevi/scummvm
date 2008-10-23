@@ -150,7 +150,7 @@ void KomEngine::errorString(const char *buf1, char *buf2) {
 void KomEngine::gameLoop() {
 	// TODO:
 	// setFrameRate(24)
-	// setBrightness(256)
+	_screen->setBrightness(256);
 	// clearWorkScreen
 	// init some global vars, Player settings
 	_game->player()->command = CMD_NOTHING;
