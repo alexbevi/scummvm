@@ -378,11 +378,22 @@ void Database::initEvents() {
 
 void Database::initObjectLocs() {
 	for (int i = 0; i < _objectsNum; ++i) {
-		if (_objects[i].type != 0) {
-			if (_objects[i].ownerType == 1)
-				_locations[_objects[i].ownerId].objects.push_back(i);
-			else
-				_characters[_objects[i].ownerId]._inventory.push_back(i);
+		if (_objects[i].type == 0)
+			continue;
+
+		if (_objects[i].ownerType == 1)
+			_locations[_objects[i].ownerId].objects.push_back(i);
+		else switch (_objects[i].type) {
+		case 1:
+		case 5:
+			_characters[_objects[i].ownerId]._inventory.push_back(i);
+			break;
+		case 2:
+			_characters[_objects[i].ownerId]._weapons.push_back(i);
+			break;
+		case 3:
+			_characters[_objects[i].ownerId]._spells.push_back(i);
+			break;
 		}
 	}
 }
