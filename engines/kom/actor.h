@@ -137,6 +137,7 @@ public:
 	Actor *getMouse() { return _mouseActor; }
 	Actor *getDonut() { return _donutActor; }
 	Actor *getObjects() { return _objectsActor; }
+	Actor *getCharIcon() { return _charIconActor; }
 	void unload(int idx) { if (idx >= 0) { delete _actors[idx]; _actors[idx] = 0; } }
 	void unloadAll() { _actors.clear(); }
 	void displayAll();
@@ -149,6 +150,7 @@ private:
 	Actor *_mouseActor;
 	Actor *_donutActor;
 	Actor *_objectsActor;
+	Actor *_charIconActor;
 
 	Actor *getFarthestActor();
 };

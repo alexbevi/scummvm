@@ -68,10 +68,15 @@ FlicPlayer::FlicPlayer(Common::FSNode flicNode) : _paletteDirty(false), _offscre
 	_dirtyRects = new Common::List<Rect>;
 }
 
-FlicPlayer::~FlicPlayer() { 
+FlicPlayer::~FlicPlayer() {
 	delete[] _flicDataStart;
 	delete[] _offscreen;
 	delete _dirtyRects;
+}
+
+void FlicPlayer::redraw() const {
+	_dirtyRects->clear();
+	_dirtyRects->push_back(Rect(0, 0, _flicInfo.width, _flicInfo.height));
 }
 
 ChunkHeader FlicPlayer::readChunkHeader() {
@@ -80,20 +85,20 @@ ChunkHeader FlicPlayer::readChunkHeader() {
 	head.type = READ_LE_UINT16(_flicData); _flicData += 2;;
 
 	/* XXX: You'll want to read the rest of the chunk here as well! */
-	
+
 	return head;
 }
 
 FrameTypeChunkHeader FlicPlayer::readFrameTypeChunkHeader(ChunkHeader chunkHead) {
 	FrameTypeChunkHeader head;
-	
+
 	head.header = chunkHead;
 	head.numChunks = READ_LE_UINT16(_flicData); _flicData += 2;;
 	head.delay = READ_LE_UINT16(_flicData); _flicData += 2;;
 	head.reserved = READ_LE_UINT16(_flicData); _flicData += 2;;
 	head.widthOverride = READ_LE_UINT16(_flicData); _flicData += 2;;
 	head.heightOverride = READ_LE_UINT16(_flicData); _flicData += 2;;
-	
+
 	return head;
 }
 
@@ -105,7 +110,7 @@ void FlicPlayer::decodeByteRun(uint8 *data) {
 			int8 count = *data++;
 			if (count > 0) {
 				while (count--) {
-					*ptr++ = *data;	
+					*ptr++ = *data;
 				}
 				data++;
 			} else {
@@ -116,8 +121,8 @@ void FlicPlayer::decodeByteRun(uint8 *data) {
 			}
 		}
 	}
-	_dirtyRects->clear();
-	_dirtyRects->push_back(Rect(0, 0, _flicInfo.width, _flicInfo.height));
+
+	redraw();
 }
 
 #define OP_PACKETCOUNT   0
@@ -131,7 +136,7 @@ void FlicPlayer::decodeDeltaFLC(uint8 *data) {
 	uint16 packetCount = 0;
 
 	while (linesInChunk--) {
-		uint16 opcode; 
+		uint16 opcode;
 
 		// First process all the opcodes.
 		do {
@@ -167,7 +172,7 @@ void FlicPlayer::decodeDeltaFLC(uint8 *data) {
 				column += rleCount * 2;
 			} else if (rleCount < 0) {
 				uint16 dataWord = *(uint16 *)data; data += 2;
-				for (int i = 0; i < -(int16)rleCount; ++i) { 
+				for (int i = 0; i < -(int16)rleCount; ++i) {
 					*(uint16 *)(_offscreen + (currentLine * _flicInfo.width) + column + (i * 2)) = dataWord;
 				}
 				_dirtyRects->push_back(Rect(column, currentLine, column + (-(int16)rleCount * 2), currentLine + 1));

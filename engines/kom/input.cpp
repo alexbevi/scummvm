@@ -62,8 +62,30 @@ void Input::handleMouse() {
 
 	if (settings->mouseMode == 0 && _leftClick) {
 		if (settings->mouseY >= INVENTORY_OFFSET) {
-			// TODO - inventory
-			printf("Inventory click!\n");
+
+			if (settings->objectNum >= 0 && settings->objectType != 2)
+				settings->objectNum = settings->objectType = -1;
+
+			if (settings->objectNum >= 0) {
+				_vm->game()->doInventory(&settings->object2Num, &settings->object2Type, false, 7);
+				warning("TODO: after inventory");
+			} else {
+				settings->object2Num = settings->object2Type = -1;
+				_vm->game()->doInventory(&settings->objectNum, &settings->objectType, false, 7);
+				warning("TODO: check use immediate");
+				player->commandState = 0;
+
+				switch (settings->objectType) {
+				case 0:
+					player->command = CMD_CAST_SPELL;
+					break;
+				case 1:
+					player->command = CMD_FIGHT;
+					break;
+				case 2:
+					player->command = CMD_USE;
+				}
+			}
 
 		// "Exit to"
 		} else {
@@ -91,7 +113,7 @@ void Input::handleMouse() {
 
 			if (settings->collideType == 2 || settings->collideType == 3) {
 				if (settings->objectNum < 0) {
-					donutState = _vm->game()->doDonut(0, false);
+					donutState = _vm->game()->doDonut(0, 0);
 				} else {
 					donutState = 0;
 					// TODO

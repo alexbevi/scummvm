@@ -147,7 +147,7 @@ void Screen::processGraphics(int mode) {
 	}
 
 	// handle dust clouds
-	
+
 	// unload actors in other rooms
 	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
 		Character *chr = _vm->database()->getChar(i);
@@ -326,8 +326,8 @@ void Screen::clearScreen() {
 	_dirtyRects->clear();
 	_prevDirtyRects->clear();
 	if (_roomBackground)
-		_roomBackground->clearDirtyRects();
-	_system->clearScreen();
+		_roomBackground->redraw();
+	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 	_freshScreen = true;
 }
 
@@ -602,6 +602,9 @@ void Screen::freeSepia() {
 
 	delete[] _sepiaScreen;
 	_system->setPalette(_backupPalette, 0, 256);
+
+	if (_roomBackground)
+		_roomBackground->redraw();
 }
 
 void Screen::copySepia() {
@@ -609,7 +612,8 @@ void Screen::copySepia() {
 		return;
 
 	memcpy(_screenBuf, _sepiaScreen, SCREEN_W * (SCREEN_H - PANEL_H));
-	_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H - PANEL_H);
+	// FIXME: behavior is good but a bit hackish. the room background reports
+	//        the full screen after a redraw, even when it's not actually drawn.
 }
 
 void Screen::setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int hotspotY) {
@@ -856,6 +860,284 @@ void Screen::setMask(const uint8 *data) {
 	memcpy(_mask, data, SCREEN_W * (SCREEN_H - PANEL_H));
 }
 
+void Screen::drawInventory(Inventory *inv) {
+	Common::List<int> *invList;
+	Common::List<int>::iterator invId;
+	int invCounter;
+	int selectedIndex;
+	Settings *settings = _vm->game()->settings();
+
+	_vm->screen()->copySepia();
+
+	inv->selectedInvObj = inv->selectedWeapObj = inv->selectedSpellObj = -1;
+	inv->offset_0C = 0;
+
+	// Draw lines
+	drawBoxScreen(76, 13, 1, 152, 0);
+	drawBoxScreen(132, 13, 1, 152, 0);
+
+	// Look for selected item
+	if (inv->selectedBox2 % 5 < 2) {
+		selectedIndex = -1;
+	} else {
+		selectedIndex = inv->selectedBox2 / 5 * 3 + (inv->selectedBox2 % 5) - 3;
+		if (selectedIndex == -1)
+			selectedIndex = inv->selectedInvObj = 9999;
+	}
+
+	inv->iconX = 160;
+	inv->iconY = inv->scrollY;
+
+	if (selectedIndex == 9999) {
+		printIcon(inv, 3, 1);
+	} else {
+		printIcon(inv, 2, 1);
+	}
+
+	inv->iconX += 56;
+
+	// Inventory objects
+	invList = &_vm->database()->getChar(0)->_inventory;
+	for (invId = invList->begin(), invCounter = 0;
+		 invId != invList->end(); ++invId, ++invCounter) {
+
+		if (invCounter == selectedIndex) {
+			inv->offset_0C = 1;
+			inv->selectedInvObj = *invId;
+			printIcon(inv, 1, *invId + 1);
+		} else {
+			printIcon(inv, 0, *invId + 1);
+		}
+
+		inv->iconX += 56;
+
+		// Move to the next line
+		if (inv->iconX > 272) {
+			inv->iconX = 160;
+			inv->iconY += 40;
+		}
+	}
+
+	// Look for selected item
+	if (inv->selectedBox2 % 5 != 1) {
+		selectedIndex = -1;
+	} else {
+		selectedIndex = (inv->selectedBox2 - 1) / 5;
+	}
+
+	inv->iconX = 104;
+	inv->iconY = inv->scrollY;
+
+	// Inventory weapons
+	invList = &_vm->database()->getChar(0)->_weapons;
+	for (invId = invList->begin(), invCounter = 0;
+		 invId != invList->end(); ++invId, ++invCounter) {
+
+		if (invCounter == selectedIndex) {
+			inv->offset_0C = 1;
+			inv->selectedWeapObj = *invId;
+			printIcon(inv, 1, *invId + 1);
+		} else {
+			printIcon(inv, 0, *invId + 1);
+		}
+
+		// Move to the next line
+		inv->iconY += 40;
+	}
+
+	// Look for selected item
+	if (inv->selectedBox2 % 5 != 0) {
+		selectedIndex = -1;
+	} else {
+		selectedIndex = inv->selectedBox2 / 5;
+	}
+
+	inv->iconX = 48;
+	inv->iconY = inv->scrollY;
+
+	// Inventory spells
+	invList = &_vm->database()->getChar(0)->_spells;
+	for (invId = invList->begin(), invCounter = 0;
+		 invId != invList->end(); ++invId, ++invCounter) {
+
+		if (invCounter == selectedIndex) {
+			inv->offset_0C = 1;
+			inv->selectedSpellObj = *invId;
+			printIcon(inv, 1, *invId + 1);
+		} else {
+			printIcon(inv, 0, *invId + 1);
+		}
+
+		// Move to the next line
+		inv->iconY += 40;
+	}
+
+	// Draw "dragged" item
+	if (settings->objectNum >= 0) {
+		Actor *act = _vm->actorMan()->getObjects();
+		act->enable(1);
+		act->setEffect(4);
+		act->setMaskDepth(0, 1);
+		act->setPos(inv->mouseX, inv->mouseY);
+		act->setRatio(1024, 1024);
+		act->setFrame(settings->objectNum); // FIXME: off by 1?
+		act->display();
+		act->enable(0);
+	}
+
+	// Draw headlines
+	if (inv->shop) {
+		writeText(_screenBuf, "Choose an item to Purchase...", 3, 29, 0, false);
+		writeText(_screenBuf, "Choose an item to Purchase...", 2, 28, 31, false);
+	} else {
+		if (inv->mode & 4) {
+			writeText(_screenBuf, "Spells", 3, 29, 0, false);
+			writeText(_screenBuf, "Spells", 2, 28, 31, false);
+		}
+		if (inv->mode & 2) {
+			writeText(_screenBuf, "Weapons", 3, 81, 0, false);
+			writeText(_screenBuf, "Weapons", 2, 80, 31, false);
+		}
+		if (inv->mode & 1) {
+			writeText(_screenBuf, "Inventory", 3, 191, 0, false);
+			writeText(_screenBuf, "Inventory", 2, 190, 31, false);
+		}
+	}
+
+	inv->selectedObj = inv->selectedInvObj & inv->selectedWeapObj & inv->selectedSpellObj;
+
+	if (inv->selectedObj == settings->objectNum) {
+		inv->selectedObj = inv->selectedInvObj = inv->selectedWeapObj = inv->selectedSpellObj = -1;
+		inv->offset_0C = 0;
+	}
+
+	if (0 <= inv->selectedObj & inv->selectedObj > 9999) {
+		bool useImmediate = _vm->database()->getObj(inv->selectedObj)->isUseImmediate;
+
+		if (useImmediate && (inv->mode & 1) == 0) {
+			inv->selectedObj = inv->selectedInvObj = inv->selectedWeapObj = inv->selectedSpellObj = -1;
+			inv->offset_0C = 0;
+		} else {
+			switch (inv->action) {
+			case 0:
+				if (inv->shop) {
+					warning("TODO: shop");
+				} else {
+					if (!useImmediate) {
+						inv->blinkLight = 4;
+					} else {
+						// Blink "Use" text
+						if ((++inv->blinkLight & 4) == 0)
+							_vm->panel()->setActionDesc("Use");
+					}
+				}
+				break;
+			case 1:
+				inv->blinkLight = 4;
+				_vm->panel()->setActionDesc("Look at");
+				break;
+			case 2:
+				inv->blinkLight = 4;
+				break;
+			}
+		}
+	}
+
+	if (inv->shop) {
+		warning("TODO: Print gold info");
+	}
+
+	if (inv->mouseY * 2 > 344) {
+		_vm->panel()->setHotspotDesc(inv->shop ? "No sale" : "Exit");
+		_vm->panel()->update();
+		return;
+	}
+
+	const char *descString;
+	char panelText[200];
+
+	if (inv->selectedObj < 0 || inv->selectedObj >= 9999) {
+		descString = "";
+	} else {
+		descString = _vm->database()->getObj(inv->selectedObj)->desc;
+	}
+
+	if (settings->objectNum > 0) {
+		warning("Use item with item");
+	} else {
+		if (inv->selectedSpellObj >= 0) {
+			sprintf(panelText, "%s (%dpts)", descString,
+					_vm->database()->getObj(inv->selectedObj)->spellCost);
+			_vm->panel()->setHotspotDesc(panelText);
+		} else {
+			_vm->panel()->setHotspotDesc(descString);
+		}
+	}
+
+	_vm->panel()->update();
+}
+
+void Screen::printIcon(Inventory *inv, int a, int b) {
+	Actor *act;
+
+	if (a >= 2)
+		act = _vm->actorMan()->getCharIcon();
+	else
+		act = _vm->actorMan()->getObjects();
+
+	if ((inv->mode & 1) == 0 && b >= 0) {
+		warning("TODO: missing code in printIcon");
+	} else {
+		act->setEffect(4);
+		act->setMaskDepth(0, 2);
+		act->setPos(inv->iconX, inv->iconY);
+		act->setRatio(1024, 1024);
+
+		if (b < 0 || _vm->game()->settings()->objectNum == b) return;
+
+		if (a % 2 == 0) {
+			act->setFrame(b);
+		} else switch (inv->mouseState) {
+		case 0:
+		case 4:
+		case 5:
+		case 6:
+			act->setFrame(b);
+			break;
+		case 1:
+		case 3:
+			if (inv->blinkLight & 4)
+				act->setFrame(0);
+			else
+				act->setFrame(1);
+			act->display();
+			act->setFrame(b);
+			break;
+		case 2:
+			if (inv->selectedBox == inv->selectedBox2) {
+				act->setEffect(0);
+				act->setRatio(768, 768);
+				if (inv->blinkLight & 4)
+					act->setFrame(0);
+				else
+					act->setFrame(1);
+				act->display();
+				act->setFrame(b);
+			} else {
+				if (inv->blinkLight & 4)
+					act->setFrame(0);
+				else
+					act->setFrame(1);
+				act->display();
+				act->setFrame(b);
+			}
+			break;
+		}
+	}
+
+	act->display();
+}
+
 uint16 Screen::getTextWidth(const char *text) {
 	uint16 w = 0;
 	for (int i = 0; text[i] != '\0'; ++i) {
@@ -937,6 +1219,16 @@ void Screen::writeTextStyle(byte *buf, const char *text, uint8 startRow, uint16 
 
 		col += 1;
 	}
+}
+
+void Screen::drawBoxScreen(int x, int y, int width, int height, byte color) {
+	drawBox(_screenBuf, x, y, width, height, color);
+	_dirtyRects->push_back(Rect(x, y, x + width, y + height));
+}
+void Screen::drawBox(byte *surface, int x, int y, int width, int height, byte color) {
+	byte *dest = surface + y * SCREEN_W + x;
+	for (int i = 0; i < height; i++)
+		memset(dest + i * SCREEN_W, color, width);
 }
 
 } // End of namespace Kom

@@ -124,6 +124,32 @@ struct Cb {
 	int16 data2;
 };
 
+struct Inventory {
+	bool shop;
+	uint8 mode;
+	int16 mouseState;
+	int16 selectedBox;
+	int16 selectedBox2; // Box pressed?
+	int16 offset_0C;
+	int16 scrollY;
+	int16 iconX;
+	int16 iconY;
+	int16 mouseX;
+	int16 mouseY;
+	int16 mouseRow;
+	int16 mouseCol;
+	int selectedInvObj;
+	int selectedWeapObj;
+	int16 selectedSpellObj;
+	int16 bottomEdge;
+	int16 topEdge;
+	int totalRows;
+	int16 offset_3E;
+	int16 blinkLight;
+	int selectedObj;
+	int action;
+};
+
 class Game {
 public:
 	Game(KomEngine *vm, OSystem *system);
@@ -150,7 +176,8 @@ public:
 	void doActionMoveChar(uint16 charId, int16 loc, int16 box);
 	void doActionSpriteScene(const char *name, int charId, int loc, int box);
 
-	int8 doDonut(int type, int param);
+	int8 doDonut(int type, Inventory *inv);
+	void doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 num);
 
 	void doActionGotObject(uint16 obj);
 	void doActionLostObject(uint16 obj);

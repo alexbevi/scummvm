@@ -33,6 +33,7 @@
 
 #include "kom/flicplayer.h"
 #include "kom/font.h"
+#include "kom/game.h"
 
 class OSystem;
 class FlicPlayer;
@@ -90,6 +91,8 @@ public:
 	void pauseBackground(bool pause) { _backgroundPaused = pause; }
 	void setMask(const uint8 *data);
 
+	void drawInventory(Inventory *inv);
+
 	void useColorSet(ColorSet *cs, uint start);
 	void createSepia(bool shop);
 	void freeSepia();
@@ -102,6 +105,9 @@ public:
 	void writeTextCentered(byte *buf, const char *text, uint8 row, uint8 color, bool isEmbossed);
 	void writeText(byte *buf, const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed);
 
+	void drawBoxScreen(int x, int y, int width, int height, byte color);
+	void drawBox(byte *surface, int x, int y, int width, int height, byte color);
+
 private:
 
 	void copyRectListToScreen(const Common::List<Common::Rect> *);
@@ -112,6 +118,8 @@ private:
 	void writeTextStyle(byte *buf, const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isBackground);
 
 	void setPaletteBrightness();
+
+	void printIcon(Inventory *inv, int a, int b);
 
 	OSystem *_system;
 	KomEngine *_vm;

@@ -1425,7 +1425,7 @@ void Game::doActionSpriteScene(const char *name, int charId, int loc, int box) {
  *
  * FIXME: handle mouse key-up events like the original
  */
-int8 Game::doDonut(int type, int param) {
+int8 Game::doDonut(int type, Inventory *inv) {
 	uint16 hotspotX, hotspotY;
 	Actor *mouse = _vm->actorMan()->getMouse();
 	Actor *donut = _vm->actorMan()->getDonut();
@@ -1630,7 +1630,7 @@ int8 Game::doDonut(int type, int param) {
 		mouse->switchScope(1, 2);
 
 		if (type != 0) {
-			// TODO - draw inventory
+			_vm->screen()->drawInventory(inv);
 		} else {
 			_vm->screen()->drawBackground();
 			_vm->screen()->displayDoors();
@@ -1741,6 +1741,258 @@ int Game::getDonutSegment(int xPos, int yPos) {
 		return 7 - segment;
 	else
 		return segment + 8;
+}
+
+void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mode) {
+	bool inInventory = false;
+	bool inLoop;
+	int objRows, weapSpellRows;
+	Character *playerChar = _vm->database()->getChar(0);
+	bool leftClick;
+	Inventory inv;
+
+	printf("Inventory!\n");
+
+	do {
+		int objCount;
+		int weapCount;
+		int spellCount;
+
+		// BEGIN DODO
+
+		inv.shop = shop;
+		inv.mode = mode;
+		inLoop = true;
+		inv.offset_0C = 0;
+		inv.selectedInvObj = -1;
+		inv.selectedWeapObj = -1;
+		inv.selectedSpellObj = -1;
+		_vm->panel()->setLocationDesc("");
+
+		_vm->screen()->showMouseCursor(false);
+
+		_vm->screen()->clearScreen();
+		_vm->panel()->update();
+		_vm->screen()->gfxUpdate();
+
+		// FIXME - why twice?
+		_vm->panel()->update();
+		_vm->screen()->pauseBackground(true);
+		_vm->screen()->drawBackground();
+		_vm->screen()->displayDoors();
+		_vm->actorMan()->displayAll();
+		// TODO - fight bars
+		_vm->screen()->createSepia(shop);
+		_vm->screen()->clearScreen();
+		_vm->panel()->update();
+		_vm->screen()->gfxUpdate();
+
+		_vm->actorMan()->getMouse()->switchScope(1, 2);
+		_vm->actorMan()->getMouse()->display();
+		_vm->screen()->showMouseCursor(true);
+
+		_vm->actorMan()->getObjects()->enable(1);
+		inv.offset_0C = 0;
+		inv.action = 0;
+
+		objCount = 0;
+		if ((mode & 1)) {
+			objCount = playerChar->_inventory.size();
+		}
+
+		weapCount = 0;
+		if ((mode & 2)) {
+			weapCount = playerChar->_weapons.size();
+		}
+
+		spellCount = 0;
+		if ((mode & 4)) {
+			spellCount = playerChar->_spells.size();
+		}
+
+		inv.mouseState = 0;
+		inv.bottomEdge = 83;
+
+		objRows = (objCount + 2) / 3;
+		if (objRows < 1) objRows = 1;
+		weapSpellRows = MAX(weapCount, spellCount);
+
+		inv.totalRows = MAX(objRows, weapSpellRows);
+
+		inv.topEdge =
+			inv.bottomEdge - (inv.totalRows - 1) * 40;
+
+		inv.scrollY = 40;
+
+		while (inLoop) {
+
+			// TODO - handle right click
+
+			leftClick = _vm->input()->getLeftClick();
+			inv.mouseX = _vm->input()->getMouseX();
+			inv.mouseY = _vm->input()->getMouseY();
+
+			_settings.mouseX = inv.mouseX * 2;
+			_settings.mouseY = inv.mouseY * 2;
+
+			inv.scrollY += 83 - inv.mouseY;
+
+			// Set cursor position
+			if (inv.scrollY > inv.bottomEdge) {
+				inv.scrollY = inv.bottomEdge;
+			} else if (inv.scrollY < inv.topEdge) {
+				inv.scrollY = inv.topEdge;
+			} else {
+				_vm->input()->setMousePos(inv.mouseX, 83);
+			}
+
+			inv.mouseRow = (inv.mouseY - inv.scrollY + 20) / 40;
+			inv.mouseCol = (inv.mouseX - 20) / 56;
+
+			if (inv.mouseCol >= 5)
+				inv.mouseCol = 4;
+
+			if (inv.mouseRow < 0 || inv.mouseCol < 0) {
+				inv.selectedBox = -1;
+			} else {
+				inv.selectedBox = inv.mouseRow * 5 + inv.mouseCol;
+			}
+
+			switch (inv.mouseState) {
+			case 0:
+				if (!leftClick)
+					inv.mouseState = 1;
+				break;
+			case 1:
+				inv.selectedBox2 = inv.selectedBox;
+				if (leftClick) {
+					inv.mouseState = 2;
+					inv.offset_3E = 0;
+				}
+				break;
+			case 2:
+				if (!leftClick) {
+					if (inv.mouseY * 2 > 344)
+						inv.mouseState = 4;
+					else {
+						if (inv.offset_0C != 0) {
+							inv.mouseState = 3;
+						} else {
+							if (inv.selectedInvObj == 9999) {
+								warning("TODO: look at char");
+							}
+							inv.mouseState = 0;
+						}
+					}
+				}
+
+				if (inv.offset_0C != 0 && inv.offset_3E == 0) {
+					CommandType cmdBackup;
+					bool foo;
+					int8 donutState;
+
+					_vm->sound()->playSampleSFX(_vm->_clickSample, false);
+					cmdBackup = _player.command;
+
+					if (_settings.objectNum < 0 && (mode & 1) && !shop) {
+						donutState = doDonut(shop ? 2 : 1, &inv);
+						_vm->input()->setMousePos(_vm->input()->getMouseX(), 83);
+					} else {
+						_player.command = CMD_USE;
+						foo = false;
+					}
+
+					if (donutState != 0) {
+						inv.mouseState = 0;
+					} else {
+						switch (_player.command) {
+						case CMD_USE:
+							inv.action = 0;
+							break;
+						case CMD_LOOK_AT:
+							inv.action = 1;
+						default:
+							break;
+						}
+						inv.mouseState = 3;
+					}
+
+					_player.command = cmdBackup;
+				}
+
+				inv.offset_3E = 1;
+				break;
+			case 3:
+				inLoop = false;
+				break;
+			case 4:
+				inv.mouseState = 6;
+				_vm->panel()->setActionDesc("");
+				_vm->panel()->setHotspotDesc("");
+				break;
+			case 5:
+				_settings.objectNum = -1;
+				inv.mouseState = 1;
+				break;
+			case 6:
+				inLoop = false;
+				inv.selectedBox = -1;
+			}
+
+			_vm->screen()->drawInventory(&inv);
+			_vm->screen()->gfxUpdate();
+			_vm->panel()->setActionDesc("");
+			_vm->panel()->setHotspotDesc("");
+		}
+
+		_vm->panel()->setLocationDesc(
+				_vm->database()->getLoc(playerChar->_lastLocation)->desc);
+		_vm->panel()->setActionDesc("");
+		_vm->panel()->setHotspotDesc("");
+		_vm->screen()->freeSepia();
+		_vm->actorMan()->getObjects()->enable(0);
+		_vm->screen()->pauseBackground(false);
+
+		// TODO - something with input
+
+		*objectType = -1;
+		*objectNum = -1;
+
+		inInventory = inv.action;
+
+		if (inv.mouseState == 3 && _settings.objectNum == inv.selectedInvObj) {
+			if (inv.selectedInvObj >= 0) {
+				*objectType = 2;
+				*objectNum = inv.selectedInvObj;
+			} else if (inv.selectedWeapObj >= 0) {
+				*objectType = 1;
+				*objectNum = inv.selectedWeapObj;
+			} else if (inv.selectedSpellObj >= 0) {
+				*objectType = 0;
+				*objectNum = inv.selectedSpellObj;
+			}
+		}
+
+		if ((mode & 1) == 0 && *objectNum >= 0 &&
+		    _vm->database()->getObj(*objectNum)->isUseImmediate)
+			*objectNum = *objectType = -1;
+
+		// END DODO
+
+		if (*objectNum == -1 && inInventory) {
+			inInventory = false;
+		}
+
+		if (*objectNum >= 0 && inInventory) {
+			warning("TODO: stop narrator");
+			// Look at
+			doCommand(5, 1, *objectNum, -1);
+			*objectNum = *objectType = -1;
+		}
+
+	} while (inInventory);
+
+	warning("TODO: stop narrator");
 }
 
 void Game::doActionGotObject(uint16 obj) {

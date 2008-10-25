@@ -49,6 +49,7 @@ ActorManager::~ActorManager() {
 	delete _mouseActor;
 	delete _donutActor;
 	delete _objectsActor;
+	delete _charIconActor;
 }
 
 int ActorManager::load(Common::FSNode dirNode, String name) {
@@ -98,6 +99,12 @@ void ActorManager::loadExtras(Common::FSNode dirNode) {
 	_objectsActor->enable(0);
 	_objectsActor->setEffect(4);
 	_objectsActor->setMaskDepth(0, 1);
+
+	_charIconActor = new Actor(_vm, dirNode.getChild("oneoffs"),
+			String("charicon"), false);
+	_charIconActor->enable(0);
+	_charIconActor->setEffect(4);
+	_charIconActor->setMaskDepth(0, 1);
 }
 
 void ActorManager::displayAll() {

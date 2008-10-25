@@ -75,6 +75,7 @@ public:
 	const uint8 *getOffscreen() const { return _offscreen; }
 	const Common::List<Common::Rect> *getDirtyRects() const { return _dirtyRects; }
 	void clearDirtyRects() const { _dirtyRects->clear(); }
+	void redraw() const;
 
 protected:
 	ChunkHeader readChunkHeader();
