@@ -1827,8 +1827,6 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 	bool leftClick;
 	Inventory inv;
 
-	printf("Inventory!\n");
-
 	do {
 		int objCount;
 		int weapCount;
