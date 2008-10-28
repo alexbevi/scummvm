@@ -1839,6 +1839,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 		inv.selectedInvObj = -1;
 		inv.selectedWeapObj = -1;
 		inv.selectedSpellObj = -1;
+		inv.blinkLight = 4;
 		_vm->panel()->setLocationDesc("");
 
 		_vm->screen()->showMouseCursor(false);
