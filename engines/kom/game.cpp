@@ -1832,12 +1832,10 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 		int weapCount;
 		int spellCount;
 
-		// BEGIN DODO
-
 		inv.shop = shop;
 		inv.mode = mode;
 		inLoop = true;
-		inv.offset_0C = 0;
+		inv.isSelected = false;
 		inv.selectedInvObj = -1;
 		inv.selectedWeapObj = -1;
 		inv.selectedSpellObj = -1;
@@ -1866,7 +1864,6 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 		_vm->screen()->showMouseCursor(true);
 
 		_vm->actorMan()->getObjects()->enable(1);
-		inv.offset_0C = 0;
 		inv.action = 0;
 
 		objCount = 0;
@@ -1949,7 +1946,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 					if (inv.mouseY * 2 > 344)
 						inv.mouseState = 4;
 					else {
-						if (inv.offset_0C != 0) {
+						if (inv.isSelected) {
 							inv.mouseState = 3;
 						} else {
 							if (inv.selectedInvObj == 9999) {
@@ -1960,7 +1957,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 					}
 				}
 
-				if (inv.offset_0C != 0 && inv.offset_3E == 0) {
+				if (inv.isSelected && inv.offset_3E == 0) {
 					CommandType cmdBackup;
 					bool foo;
 					int8 donutState;
@@ -2050,8 +2047,6 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 		if ((mode & 1) == 0 && *objectNum >= 0 &&
 		    _vm->database()->getObj(*objectNum)->isUseImmediate)
 			*objectNum = *objectType = -1;
-
-		// END DODO
 
 		if (*objectNum == -1 && inInventory) {
 			inInventory = false;

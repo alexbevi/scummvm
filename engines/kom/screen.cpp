@@ -875,7 +875,7 @@ void Screen::drawInventory(Inventory *inv) {
 	_vm->screen()->copySepia();
 
 	inv->selectedInvObj = inv->selectedWeapObj = inv->selectedSpellObj = -1;
-	inv->offset_0C = 0;
+	inv->isSelected = false;
 
 	// Draw lines
 	drawBoxScreen(76, 13, 1, 152, 0);
@@ -907,7 +907,7 @@ void Screen::drawInventory(Inventory *inv) {
 		 invId != invList->end(); ++invId, ++invCounter) {
 
 		if (invCounter == selectedIndex) {
-			inv->offset_0C = 1;
+			inv->isSelected = true;
 			inv->selectedInvObj = *invId;
 			printIcon(inv, 1, *invId + 1);
 		} else {
@@ -939,7 +939,7 @@ void Screen::drawInventory(Inventory *inv) {
 		 invId != invList->end(); ++invId, ++invCounter) {
 
 		if (invCounter == selectedIndex) {
-			inv->offset_0C = 1;
+			inv->isSelected = true;
 			inv->selectedWeapObj = *invId;
 			printIcon(inv, 1, *invId + 1);
 		} else {
@@ -966,7 +966,7 @@ void Screen::drawInventory(Inventory *inv) {
 		 invId != invList->end(); ++invId, ++invCounter) {
 
 		if (invCounter == selectedIndex) {
-			inv->offset_0C = 1;
+			inv->isSelected = true;
 			inv->selectedSpellObj = *invId;
 			printIcon(inv, 1, *invId + 1);
 		} else {
@@ -1013,7 +1013,7 @@ void Screen::drawInventory(Inventory *inv) {
 
 	if (inv->selectedObj == settings->objectNum) {
 		inv->selectedObj = inv->selectedInvObj = inv->selectedWeapObj = inv->selectedSpellObj = -1;
-		inv->offset_0C = 0;
+		inv->isSelected = false;
 	}
 
 	if (0 <= inv->selectedObj & inv->selectedObj < 9999) {
@@ -1021,7 +1021,7 @@ void Screen::drawInventory(Inventory *inv) {
 
 		if (useImmediate && (inv->mode & 1) == 0) {
 			inv->selectedObj = inv->selectedInvObj = inv->selectedWeapObj = inv->selectedSpellObj = -1;
-			inv->offset_0C = 0;
+			inv->isSelected = false;
 		} else {
 			switch (inv->action) {
 			case 0:

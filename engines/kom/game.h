@@ -134,7 +134,7 @@ struct Inventory {
 	int16 mouseState;
 	int16 selectedBox;
 	int16 selectedBox2;
-	int16 offset_0C;
+	bool isSelected;
 	int16 scrollY;
 	int16 iconX;
 	int16 iconY;
