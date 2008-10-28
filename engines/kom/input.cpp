@@ -142,7 +142,26 @@ void Input::handleMouse() {
 					break;
 
 				case CMD_USE:
-					// TODO
+					if (settings->collideType == 0)
+						break;
+					playerChar->_gotoX = gotoX;
+					playerChar->_gotoY = gotoY;
+					player->commandState = 1;
+
+					switch (settings->collideType) {
+					case 2:
+						player->collideType = 2;
+						player->collideNum = settings->collideChar;
+						break;
+					case 3:
+						player->collideType = 3;
+						player->collideNum = settings->collideObj;
+						break;
+					default:
+						error("Error in USE");
+					}
+
+					playerChar->_isBusy = true;
 					break;
 
 				case CMD_TALK_TO:

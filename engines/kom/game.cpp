@@ -321,12 +321,12 @@ void Game::processChar(int proc) {
 	}
 }
 
-bool Game::doProc(int id, int type, int cmd, int value) {
+bool Game::doProc(int command, int type, int id, int type2, int id2) {
 	int proc;
 	Process *p;
-	bool var_8 = true;
-	bool lookAt = false;
-	bool fight = false;
+	bool foundUse = true;
+	bool foundLook = false;
+	bool foundFight = false;
 
 	switch (type) {
 	case 1: // Object
@@ -347,15 +347,15 @@ bool Game::doProc(int id, int type, int cmd, int value) {
 	if (p == NULL)
 		return false;
 
-	if (cmd == 319 || cmd == 320 || cmd == 321)
-		var_8 = false;
+	if (command == 319 || command == 320 || command == 321)
+		foundUse = false;
 
 	Common::List<Command>::iterator i;
 	for (i = p->commands.begin(); i != p->commands.end(); ++i) {
-		if (i->cmd == cmd) {
-			switch (cmd) {
+		if (i->cmd == command) {
+			switch (command) {
 			case 316: // Look at
-				lookAt = true;
+				foundLook = true;
 				if(doStat(&(*i)))
 					return true;
 				break;
@@ -364,21 +364,34 @@ bool Game::doProc(int id, int type, int cmd, int value) {
 				if(doStat(&(*i)))
 					return true;
 				break;
+			case 319: // Use
+				foundUse = true;
+				if(doStat(&(*i)))
+					return true;
+				break;
+			case 320: // Use item
+			case 321:
+				if (id2 == i->value) {
+					foundUse = true;
+					if(doStat(&(*i)))
+						return true;
+				}
+				break;
 			default:
-				warning("Unhandled proc cmd: %d", cmd);
+				warning("Unhandled proc command: %d", command);
 				return true;
 			}
 		}
 	}
 
-	if (cmd == 317) {
-		return fight;
-	} else if (cmd == 316) {
-		return lookAt;
-	} else if (i == p->commands.end() && !var_8) {
+	if (command == 317) {
+		return foundFight;
+	} else if (command == 316) {
+		return foundLook;
+	} else if (i == p->commands.end() && !foundUse) {
 		return false;
-	} else if (i == p->commands.end() && cmd == 319) {
-		if (_vm->database()->getObj(value)->type == 2)
+	} else if (i == p->commands.end() && command == 319) {
+		if (_vm->database()->getObj(id2)->type == 2)
 			return false;
 		else
 			return true;
@@ -729,9 +742,8 @@ bool Game::doStat(const Command *cmd) {
 	return rc;
 }
 
-void Game::doCommand(int command, int type, int id, int thingy) {
+void Game::doCommand(int command, int type, int id, int type2, int id2) {
 	Common::List<EventLink> events;
-
 	Character *chr;
 
 	switch (command) {
@@ -742,24 +754,72 @@ void Game::doCommand(int command, int type, int id, int thingy) {
 
 	// Use
 	case 3:
+		if (type2 == -1) {
+			if (_settings.lastItemUsed != id) {
+				_settings.narratorPatience = 0;
+				_settings.lastItemUsed = id;
+			}
+
+			if (doProc(319, 1, id, -1, -1))
+				return;
+
+			if (++_settings.narratorPatience > 4)
+				_settings.narratorPatience = 4;
+			doNoUse();
+
+		} else {
+			bool result;
+
+			if (type2 == 2 && id2 != 0) {
+				if (_settings.lastItemUsed != id2) {
+					_settings.narratorPatience = 0;
+					_settings.lastItemUsed = id2;
+				}
+			}
+
+			switch (type2) {
+			case 1:
+				if (doProc(320, 1, id, 1, id2))
+					return;
+
+				if (++_settings.narratorPatience > 4)
+					_settings.narratorPatience = 4;
+				doNoUse();
+				break;
+			case 2:
+				warning("TODO: unset spell(id2)");
+				if (!(result = doProc(321, 1, id, 2, id2)))
+					result = doProc(320, 2, id2, 1, id);
+
+				if (result)
+					return;
+
+				if (++_settings.narratorPatience > 4)
+					_settings.narratorPatience = 4;
+				doNoUse();
+				break;
+			default:
+				break;
+			}
+		}
 		break;
 
 	// Pick up
 	case 4:
 		if (!_vm->database()->giveObject(id, 0, false))
-			doProc(id, 1, 315, -1);
+			doProc(315, 1, id, -1, -1);
 		break;
 
 	// Look at
 	case 5:
 		switch (type) {
 		case 1: // Object
-			doProc(id, 1, 316, -1);
+			doProc(316, 1, id, -1, -1);
 			break;
 		case 2: // Character
 			chr = _vm->database()->getChar(id);
 			if (chr->_isAlive) {
-				doProc(id, 2, 316, -1);
+				doProc(316, 2, id, -1, -1);
 				warning("TODO: doActionLookAt");
 			} else {
 				warning("TODO: look at dead char");
@@ -777,7 +837,7 @@ void Game::doCommand(int command, int type, int id, int thingy) {
 		events = _vm->database()->getLoc(_settings.currLocation)->events;
 		for (Common::List<EventLink>::iterator j = events.begin(); j != events.end(); ++j) {
 			if (j->exitBox == id) {
-				doProc(j->proc, 3, 318, -1);
+				doProc(318, 3, j->proc, -1, -1);
 				break;
 			}
 		}
@@ -785,12 +845,28 @@ void Game::doCommand(int command, int type, int id, int thingy) {
 
 	// Collide
 	case 9:
-		doProc(id, 2, 323, -1);
+		doProc(323, 2, id, -1, -1);
 		break;
 
 	case 10:
-		doProc(id, 2, 324, -1);
+		doProc(324, 2, id, -1, -1);
 		break;
+	}
+}
+
+void Game::doNoUse() {
+	switch (_settings.narratorPatience) {
+	case 1:
+		warning("TODO: PlaySample(nmess003)");
+		break;
+	case 2:
+		warning("TODO: PlaySample(nmess004)");
+		break;
+	case 3:
+		warning("TODO: PlaySample(nmess005)");
+		break;
+	case 4:
+		warning("TODO: PlaySample(nmess006)");
 	}
 }
 
@@ -813,7 +889,7 @@ void Game::loopMove() {
 		_vm->database()->setCharPos(0, chr->_lastLocation, chr->_lastBox);
 
 		// Run "enter room" script
-		doCommand(7, -1, chr->_lastBox, -1);
+		doCommand(7, -1, chr->_lastBox, -1, -1);
 	}
 
 	for (uint16 i = 1; i < _vm->database()->charactersNum(); ++i) {
@@ -1298,7 +1374,7 @@ int16 Game::doExternalAction(const char *action) {
 	if (strcmp(action, "getquest") == 0) {
 		return _player.selectedQuest;
 	} else {
-		// TODO - warning("Unknown external action: %s", action);
+		warning("TODO: Unknown external action: %s", action);
 		return 0;
 	}
 }
@@ -1986,7 +2062,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 		if (*objectNum >= 0 && inInventory) {
 			warning("TODO: stop narrator");
 			// Look at
-			doCommand(5, 1, *objectNum, -1);
+			doCommand(5, 1, *objectNum, -1, -1);
 			*objectNum = *objectType = -1;
 		}
 
@@ -2015,6 +2091,43 @@ void Game::doActionLostObject(uint16 obj) {
 		_settings.objectNum = _settings.objectType = -1;
 }
 
+void Game::exeUse() {
+	Character *playerChar = _vm->database()->getChar(0);
+	playerChar->_isBusy = false;
+
+	if (_settings.objectNum >= 0) {
+
+		if (_settings.object2Num >= 0) {
+			doCommand(3, 1, _settings.objectNum, 1, _settings.object2Num);
+		} else switch (_settings.collideType) {
+		case 2:
+			doCommand(3, 1, _settings.objectNum, 2, _player.collideNum);
+			break;
+		case 3:
+			doCommand(3, 1, _settings.objectNum, 1, _player.collideNum);
+			break;
+		default:
+			error("Illegal type in exeUse");
+		}
+
+	} else switch (_settings.collideType) {
+	case 2:
+		doCommand(3, 1, _player.collideNum, -1, -1);
+		break;
+	case 3:
+		doCommand(3, 1, _player.collideNum, -1, -1);
+		break;
+	default:
+		error("Illegal type in exeUse");
+	}
+
+	_settings.objectNum = _settings.object2Num = -1;
+	_player.command = CMD_NOTHING;
+	_player.commandState = 0;
+	_player.collideType = 0;
+	_player.collideNum = -1;
+}
+
 void Game::exePickup() {
 	Character *playerChar = _vm->database()->getChar(0);
 	int distance;
@@ -2022,7 +2135,7 @@ void Game::exePickup() {
 	case 1:
 		playerChar->_isBusy = false;
 		_cb.data2 = -1;
-		doCommand(4, 1, _player.collideNum, -1);
+		doCommand(4, 1, _player.collideNum, -1, -1);
 
 		if (_cb.data2 >= 0) {
 			_player.commandState = 2;
@@ -2065,10 +2178,10 @@ void Game::exeLookAt() {
 
 	switch (_player.collideType) {
 	case 2: // Char
-		doCommand(5, 2, _player.collideNum, -1);
+		doCommand(5, 2, _player.collideNum, -1, -1);
 		break;
 	case 3: // Object
-		doCommand(5, 1, _player.collideNum, -1);
+		doCommand(5, 1, _player.collideNum, -1, -1);
 		break;
 	default:
 		break;

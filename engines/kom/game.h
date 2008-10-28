@@ -54,7 +54,8 @@ struct RoomDoor {
 };
 
 struct Settings {
-	Settings() : gameCycles(6000), dayMode(1), mouseState(0) {}
+	Settings() : gameCycles(6000), dayMode(1), mouseState(0),
+		narratorPatience(0), lastItemUsed(-1) {}
 	uint16 mouseState;
 	bool mouseOverExit;
 	uint16 mouseX;
@@ -82,10 +83,13 @@ struct Settings {
 	int16 objectType;
 	int16 object2Num;
 	int16 object2Type;
+
 	uint8 dayMode; // 0 - day. 1 - night. 2 - dawn. 3 - dusk
 	uint8 currLocation;
 	uint16 gameCycles;
 	bool fightEnabled;
+	uint16 narratorPatience;
+	int16 lastItemUsed;
 };
 
 typedef enum {
@@ -129,7 +133,7 @@ struct Inventory {
 	uint8 mode;
 	int16 mouseState;
 	int16 selectedBox;
-	int16 selectedBox2; // Box pressed?
+	int16 selectedBox2;
 	int16 offset_0C;
 	int16 scrollY;
 	int16 iconX;
@@ -159,7 +163,7 @@ public:
 	void hitExit(uint16 charId, bool something);
 	void processTime();
 	bool doStat(const Command *cmd);
-	void doCommand(int command, int type, int id, int thingy);
+	void doCommand(int command, int type, int id, int type2, int id2);
 	void loopMove();
 	void loopCollide();
 	void loopSpriteCut();
@@ -182,6 +186,7 @@ public:
 	void doActionGotObject(uint16 obj);
 	void doActionLostObject(uint16 obj);
 
+	void exeUse();
 	void exePickup();
 	void exeLookAt();
 
@@ -205,7 +210,8 @@ private:
 
 	void processChars();
 	void processChar(int proc);
-	bool doProc(int id, int type, int cmd, int value);
+	bool doProc(int command, int type, int id, int type2, int id2);
+	void doNoUse();
 	void changeMode(int value, int mode);
 	int16 doExternalAction(const char *action);
 

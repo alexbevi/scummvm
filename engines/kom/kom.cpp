@@ -200,6 +200,7 @@ void KomEngine::gameLoop() {
 				break;
 
 			case CMD_USE:
+				_game->exeUse();
 				break;
 
 			case CMD_TALK_TO:
