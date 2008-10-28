@@ -121,6 +121,8 @@ private:
 
 	void printIcon(Inventory *inv, int a, int b);
 
+	void updateActionStrings();
+
 	OSystem *_system;
 	KomEngine *_vm;
 

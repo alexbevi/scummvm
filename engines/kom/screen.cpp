@@ -258,6 +258,8 @@ void Screen::processGraphics(int mode) {
 		showMouseCursor(false);
 	}
 
+	updateActionStrings();
+
 	if (mode > 0 && _vm->panel()->isDirty())
 		_vm->panel()->update();
 
@@ -633,13 +635,6 @@ void Screen::updateCursor() {
 	Actor *mouse = _vm->actorMan()->getMouse();
 	Settings *settings = _vm->game()->settings();
 
-	int hoverId = -1;
-	int hoverType;
-	const char *text1, *text2, *text3, *text4, *space1, *space2, *textRIP;
-	char panelText[200];
-
-	text1 = text2 = text3 = text4 = space1 = space2 = textRIP = "";
-
 	if (settings->mouseY >= INVENTORY_OFFSET) {
 		mouse->switchScope(5, 2);
 	} else {
@@ -671,6 +666,16 @@ void Screen::updateCursor() {
 			_vm->sound()->playSampleSFX(_vm->_hotspotSample, false);
 		}
 	}
+}
+
+void Screen::updateActionStrings() {
+	Settings *settings = _vm->game()->settings();
+	int hoverId = -1;
+	int hoverType;
+	const char *text1, *text2, *text3, *text4, *space1, *space2, *textRIP;
+	char panelText[200];
+
+	text1 = text2 = text3 = text4 = space1 = space2 = textRIP = "";
 
 	if (_vm->_flicLoaded != 0)
 		return;
