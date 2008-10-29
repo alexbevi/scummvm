@@ -391,7 +391,7 @@ bool Game::doProc(int command, int type, int id, int type2, int id2) {
 	} else if (i == p->commands.end() && !foundUse) {
 		return false;
 	} else if (i == p->commands.end() && command == 319) {
-		if (_vm->database()->getObj(id2)->type == 2)
+		if (_vm->database()->getObj(id)->type == 2)
 			return false;
 		else
 			return true;
