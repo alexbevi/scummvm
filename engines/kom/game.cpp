@@ -2032,7 +2032,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 
 		inInventory = inv.action;
 
-		if (inv.mouseState == 3 && _settings.objectNum == inv.selectedInvObj) {
+		if (inv.mouseState == 3 && _settings.objectNum != inv.selectedObj) {
 			if (inv.selectedInvObj >= 0) {
 				*objectType = 2;
 				*objectNum = inv.selectedInvObj;
