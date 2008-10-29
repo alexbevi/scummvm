@@ -1087,7 +1087,7 @@ void Database::setCharPos(int charId, int loc, int box) {
 	}
 }
 
-bool Database::giveObject(int obj, int charId, bool something) {
+bool Database::giveObject(int obj, int charId, bool noAnimation) {
 	int type;
 	int oldOwner, oldOwnerType;
 
@@ -1121,7 +1121,7 @@ bool Database::giveObject(int obj, int charId, bool something) {
 		}
 	}
 
-	if (charId == 0 && !something)
+	if (charId == 0 && !noAnimation)
 		_vm->game()->doActionGotObject(obj);
 
 	switch (oldOwnerType) {
@@ -1132,7 +1132,7 @@ bool Database::giveObject(int obj, int charId, bool something) {
 		_objects[oldOwner].contents.remove(obj);
 		break;
 	case 3:
-		if (oldOwner == 0 && !something) {
+		if (oldOwner == 0 && !noAnimation) {
 			_vm->game()->doActionLostObject(obj);
 		}
 
