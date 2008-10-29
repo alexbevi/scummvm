@@ -1139,13 +1139,13 @@ bool Database::giveObject(int obj, int charId, bool something) {
 		switch (type) {
 		case 0:
 		case 4:
-			_characters[charId]._inventory.remove(obj);
+			_characters[oldOwner]._inventory.remove(obj);
 			break;
 		case 1:
-			_characters[charId]._weapons.remove(obj);
+			_characters[oldOwner]._weapons.remove(obj);
 			break;
 		case 2:
-			_characters[charId]._spells.remove(obj);
+			_characters[oldOwner]._spells.remove(obj);
 			break;
 		}
 
