@@ -34,6 +34,7 @@ namespace Kom {
 Debugger::Debugger(KomEngine *vm) : GUI::Debugger(), _vm(vm) {
 
 	DCmd_Register("room", WRAP_METHOD(Debugger, Cmd_Room));
+	DCmd_Register("give", WRAP_METHOD(Debugger, Cmd_Give));
 	DCmd_Register("proc", WRAP_METHOD(Debugger, Cmd_Proc));
 	DCmd_Register("day", WRAP_METHOD(Debugger, Cmd_Day));
 	DCmd_Register("night", WRAP_METHOD(Debugger, Cmd_Night));
@@ -51,6 +52,29 @@ bool Debugger::Cmd_Room(int argc, const char **argv) {
 
 		_vm->game()->enterLocation(roomNum);
 		return false;
+	}
+	return true;
+}
+
+bool Debugger::Cmd_Give(int argc, const char **argv) {
+	if (argc == 2) {
+		uint16 objId = atoi(argv[1]);
+		if (objId <= 1) {
+			DebugPrintf("No such object\n");
+			return true;
+		}
+
+		objId--;
+		Object *obj = _vm->database()->getObj(objId);
+		if (obj == NULL) {
+			DebugPrintf("No such object\n");
+			return true;
+		} else {
+			if (_vm->database()->giveObject(objId, 0, false))
+				DebugPrintf("Got %s\n", obj->desc);
+			else
+				DebugPrintf("Could not get %s\n", obj->desc);
+		}
 	}
 	return true;
 }
