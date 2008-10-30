@@ -3,3 +3,4 @@
 * In the first room, thidney appears before the teleport animation (maybe having the welcoming screens can fix that
 * Some actions (e.g. the donut) distinguish between a click and a "held" click. Maybe it should be implemented
 * Right click doesn't work in the inventory
+* Looking at the coal box in room 66 sets a var which should be immediately checked by a script in init_KOM. Check why it doesn't run
