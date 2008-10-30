@@ -49,7 +49,7 @@ public:
 	SoundSample() { _data = 0; }
 	~SoundSample() { delete _data; }
 
-	void loadFile(Common::FSNode dirNode, Common::String name);
+	bool loadFile(Common::FSNode dirNode, Common::String name);
 	void unload();
 	bool isLoaded() { return _data != 0; }
 

@@ -42,18 +42,24 @@ using Common::String;
 
 namespace Kom {
 
-void SoundSample::loadFile(Common::FSNode dirNode, String name) {
+bool SoundSample::loadFile(Common::FSNode dirNode, String name) {
 	File f;
+	Common::FSNode filename = dirNode.getChild(name + ".raw");
 
 	unload();
 
 	_handle.index = -1;
 
-	f.open(dirNode.getChild(name + ".raw"));
+	if (!filename.exists())
+		return false;
+
+	f.open(filename);
 	_size = f.size();
 	_data = new byte[_size];
 	f.read(_data, f.size());
 	f.close();
+
+	return true;
 }
 
 void SoundSample::unload() {
@@ -82,6 +88,9 @@ void Sound::playSampleMusic(SoundSample &sample) {
 
 void Sound::playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume) {
 	byte flags;
+
+	if (!sample.isLoaded())
+		return;
 
 	uint8 i;
 

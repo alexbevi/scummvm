@@ -450,6 +450,7 @@ void Character::setScopeX(int16 scope) {
 					_vm->game()->player()->isNight);
 
 			_vm->panel()->showLoading(true);
+
 			_actorId =
 				_vm->actorMan()->load(spritesDir.getChild(prefix), filename);
 
@@ -457,8 +458,9 @@ void Character::setScopeX(int16 scope) {
 				// TODO: stop greeting
 
 				// play sample
-				_vm->game()->player()->spriteSample.loadFile(spritesDir.getChild(prefix), name + '0');
-				_vm->sound()->playSampleSFX(_vm->game()->player()->spriteSample, false);
+				if (_vm->game()->player()->spriteSample.
+						loadFile(spritesDir.getChild(prefix), name + '0'))
+					_vm->sound()->playSampleSFX(_vm->game()->player()->spriteSample, false);
 			}
 
 			_vm->panel()->showLoading(false);
