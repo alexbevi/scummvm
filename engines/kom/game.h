@@ -164,6 +164,7 @@ public:
 	void processTime();
 	bool doStat(const Command *cmd);
 	void doCommand(int command, int type, int id, int type2, int id2);
+	void checkUseImmediate(int16 type, int16 id);
 	void loopMove();
 	void loopCollide();
 	void loopSpriteCut();
@@ -189,6 +190,7 @@ public:
 	void exeUse();
 	void exePickup();
 	void exeLookAt();
+	void exeMagic();
 
 	Common::Array<RoomObject> *getObjects() { return &_roomObjects; }
 	Common::Array<RoomDoor> *getDoors() { return &_roomDoors; }

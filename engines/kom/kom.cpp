@@ -214,6 +214,7 @@ void KomEngine::gameLoop() {
 			case CMD_FIGHT:
 				break;
 			case CMD_CAST_SPELL:
+				_game->exeMagic();
 				break;
 
 			// Unused

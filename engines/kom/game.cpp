@@ -870,6 +870,27 @@ void Game::doNoUse() {
 	}
 }
 
+void Game::checkUseImmediate(int16 type, int16 id) {
+	if (id < 0)
+		return;
+
+	if (!_vm->database()->getObj(id)->isUseImmediate)
+		return;
+
+	if (type != 0) {
+		doCommand(3, 1, id, -1, -1);
+	} else {
+		_player.commandState = 0;
+		_player.collideNum = 0;
+		_settings.objectType = type;
+		_settings.objectNum = id;
+		exeMagic();
+	}
+
+	_settings.objectType = _settings.objectNum =
+		_settings.object2Type = _settings.object2Num = -1;
+}
+
 void Game::loopMove() {
 	Character *chr = _vm->database()->getChar(0);
 
@@ -1868,19 +1889,16 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 		inv.action = 0;
 
 		objCount = 0;
-		if ((mode & 1)) {
+		if (mode & 1)
 			objCount = playerChar->_inventory.size();
-		}
 
 		weapCount = 0;
-		if ((mode & 2)) {
+		if (mode & 2)
 			weapCount = playerChar->_weapons.size();
-		}
 
 		spellCount = 0;
-		if ((mode & 4)) {
+		if (mode & 4)
 			spellCount = playerChar->_spells.size();
-		}
 
 		inv.mouseState = 0;
 		inv.bottomEdge = 83;
@@ -2185,6 +2203,10 @@ void Game::exeLookAt() {
 	_player.commandState = 0;
 	_player.collideType = 0;
 	_player.collideNum = -1;
+}
+
+void Game::exeMagic() {
+	warning("TODO: exeMagic");
 }
 
 } // End of namespace Kom

@@ -68,23 +68,39 @@ void Input::handleMouse() {
 
 			if (settings->objectNum >= 0) {
 				_vm->game()->doInventory(&settings->object2Num, &settings->object2Type, false, 7);
-				warning("TODO: after inventory");
+
+				if (settings->objectNum < 0) {
+					settings->objectType = settings->object2Type;
+					settings->objectNum = settings->object2Num;
+					settings->object2Type = settings->object2Num = -1;
+					player->commandState = 0;
+				}
+
+				if (settings->object2Num >= 0) {
+					playerChar->stopChar();
+					player->command = CMD_USE;
+					player->commandState = 1;
+				} else {
+					_vm->game()->checkUseImmediate(settings->object2Type, settings->object2Num);
+					_vm->game()->checkUseImmediate(settings->objectType, settings->objectNum);
+				}
+
 			} else {
 				settings->object2Num = settings->object2Type = -1;
 				_vm->game()->doInventory(&settings->objectNum, &settings->objectType, false, 7);
-				warning("TODO: check use immediate");
+				_vm->game()->checkUseImmediate(settings->objectType, settings->objectNum);
 				player->commandState = 0;
+			}
 
-				switch (settings->objectType) {
-				case 0:
-					player->command = CMD_CAST_SPELL;
-					break;
-				case 1:
-					player->command = CMD_FIGHT;
-					break;
-				case 2:
-					player->command = CMD_USE;
-				}
+			switch (settings->objectType) {
+			case 0:
+				player->command = CMD_CAST_SPELL;
+				break;
+			case 1:
+				player->command = CMD_FIGHT;
+				break;
+			case 2:
+				player->command = CMD_USE;
 			}
 
 		// "Exit to"
@@ -230,6 +246,20 @@ void Input::handleMouse() {
 	}
 
 	// TODO - handle right click, menu request
+	if (_rightClick) {
+		// TODO - handle menu, stop narrator
+
+		if (player->commandState < 2 /* TODO - menu check */) {
+
+			// Discard held object
+			if (settings->objectNum >= 0)
+				settings->objectNum = settings->objectType = -1;
+
+			player->command = CMD_NOTHING;
+			player->commandState = 0;
+			playerChar->stopChar();
+		}
+	}
 }
 
 // TODO: hack

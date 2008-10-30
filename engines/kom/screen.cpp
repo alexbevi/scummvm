@@ -638,8 +638,18 @@ void Screen::updateCursor() {
 	if (settings->mouseY >= INVENTORY_OFFSET) {
 		mouse->switchScope(5, 2);
 	} else {
+
+		// Draw item below cursor
 		if (settings->objectNum >= 0) {
-			// TODO - holding item?
+			Actor *act = _vm->actorMan()->getObjects();
+			act->enable(1);
+			act->setEffect(4);
+			act->setMaskDepth(0, 1);
+			act->setPos(settings->mouseX / 2, settings->mouseY / 2);
+			act->setRatio(1024, 1024);
+			act->setFrame(settings->objectNum + 1);
+			act->display();
+			act->enable(0);
 		}
 
 		switch (settings->mouseState) {
@@ -977,7 +987,8 @@ void Screen::drawInventory(Inventory *inv) {
 		inv->iconY += 40;
 	}
 
-	// Draw "dragged" item
+	// Draw item below cursor
+	// TODO - is this ever called?
 	if (settings->objectNum >= 0) {
 		Actor *act = _vm->actorMan()->getObjects();
 		act->enable(1);
@@ -985,7 +996,7 @@ void Screen::drawInventory(Inventory *inv) {
 		act->setMaskDepth(0, 1);
 		act->setPos(inv->mouseX, inv->mouseY);
 		act->setRatio(1024, 1024);
-		act->setFrame(settings->objectNum); // FIXME: off by 1?
+		act->setFrame(settings->objectNum + 1);
 		act->display();
 		act->enable(0);
 	}
