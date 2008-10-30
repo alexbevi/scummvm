@@ -2188,6 +2188,8 @@ void Game::exePickup() {
 void Game::exeLookAt() {
 	assert(_player.collideType != 1);
 
+	_vm->database()->getChar(0)->_isBusy = false;
+
 	switch (_player.collideType) {
 	case 2: // Char
 		doCommand(5, 2, _player.collideNum, -1, -1);
