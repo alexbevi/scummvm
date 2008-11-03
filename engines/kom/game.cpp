@@ -1845,7 +1845,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 	bool inLoop;
 	int objRows, weapSpellRows;
 	Character *playerChar = _vm->database()->getChar(0);
-	bool leftClick;
+	bool leftClick, rightClick;
 	Inventory inv;
 
 	do {
@@ -1919,6 +1919,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 			// TODO - handle right click
 
 			leftClick = _vm->input()->getLeftClick();
+			rightClick = _vm->input()->getRightClick();
 			inv.mouseX = _vm->input()->getMouseX();
 			inv.mouseY = _vm->input()->getMouseY();
 
@@ -1950,7 +1951,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 
 			switch (inv.mouseState) {
 			case 0:
-				if (!leftClick)
+				if (!leftClick && !rightClick)
 					inv.mouseState = 1;
 				break;
 			case 1:
@@ -1959,6 +1960,12 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 					inv.mouseState = 2;
 					inv.offset_3E = 0;
 				}
+
+				if (rightClick)
+					if (_settings.objectNum >= 0)
+						inv.mouseState = 5;
+					else
+						inv.mouseState = 4;
 				break;
 			case 2:
 				if (!leftClick) {
@@ -1975,6 +1982,9 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 						}
 					}
 				}
+
+				if (rightClick)
+					inv.mouseState = 0;
 
 				if (inv.isSelected && inv.offset_3E == 0) {
 					CommandType cmdBackup;
@@ -2016,13 +2026,15 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 				inLoop = false;
 				break;
 			case 4:
-				inv.mouseState = 6;
+				if (!rightClick)
+					inv.mouseState = 6;
 				_vm->panel()->setActionDesc("");
 				_vm->panel()->setHotspotDesc("");
 				break;
 			case 5:
 				_settings.objectNum = -1;
-				inv.mouseState = 1;
+				if (!rightClick)
+					inv.mouseState = 1;
 				break;
 			case 6:
 				inLoop = false;
