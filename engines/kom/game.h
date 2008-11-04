@@ -126,6 +126,7 @@ struct Player {
 struct Cb {
 	int16 data1;
 	int16 data2;
+	bool talkInitialized;
 };
 
 struct Inventory {
