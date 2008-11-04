@@ -1201,6 +1201,9 @@ void Screen::writeTextStyle(byte *buf, const char *text, uint8 startRow, uint16 
 	uint8 charWidth;
 	const byte *data;
 
+	// The "Nunchukas" description string in room 64 overflows over the right edge of the screen.
+	// This happens in the original as well.
+
 	for (int i = 0; text[i] != '\0'; ++i) {
 		switch (text[i]) {
 		case ' ':

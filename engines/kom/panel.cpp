@@ -69,15 +69,17 @@ void Panel::update() {
 
 	// Draw texts
 	// FIXME - the location desc is fully centered, while the original prints it
-	//         4 pixels to the right
+	//         4 pixels to the right.
+	// Actually, the original prints all text 4 pixels to the right, so we're using
+	// 6 as the column instead of 10 for the two bottom lines.
 	if (_locationDesc)
 		_vm->screen()->writeTextCentered(_panelBuf, _locationDesc, 3, 31, true);
 
 	if (_actionDesc)
-		_vm->screen()->writeText(_panelBuf, _actionDesc, 12, 10, 31, true);
+		_vm->screen()->writeText(_panelBuf, _actionDesc, 12, 6, 31, true);
 
 	if (_hotspotDesc)
-		_vm->screen()->writeText(_panelBuf, _hotspotDesc, 22, 10, 31, true);
+		_vm->screen()->writeText(_panelBuf, _hotspotDesc, 22, 6, 31, true);
 
 	// FIXME: check loading in the middle of object animation
 	if (_isLoading)
