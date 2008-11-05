@@ -50,7 +50,7 @@ public:
 	virtual GameDescriptor findGame(const char *gameid) const;
 	virtual GameList detectGames(const Common::FSList &fslist) const;
 
-	virtual PluginError createInstance(OSystem *syst, Engine **engine) const;
+	virtual Common::Error createInstance(OSystem *syst, Engine **engine) const;
 };
 
 const char *KomMetaEngine::getName() const {
@@ -99,21 +99,21 @@ GameList KomMetaEngine::detectGames(const Common::FSList &fslist) const {
 	return detectedGames;
 }
 
-PluginError KomMetaEngine::createInstance(OSystem *syst, Engine **engine) const {
+Common::Error KomMetaEngine::createInstance(OSystem *syst, Engine **engine) const {
 	Common::FSNode dir(ConfMan.get("path"));
 
 	// Unable to locate game data
 	if (!(dir.getChild("thidney.dsk").exists() || dir.getChild("shahron.dsk").exists())) {
 		warning("KOM: unable to locate game data at path '%s'", dir.getPath().c_str());
-		return kNoGameDataFoundError;
+		return Common::kNoGameDataFoundError;
 	}
 
 	if (engine == NULL) {
-		return kUnknownError;
+		return Common::kUnknownError;
 	}
 
 	*engine = new KomEngine(syst);
-	return kNoError;
+	return Common::kNoError;
 }
 
 } // End of namespace Kom
