@@ -27,6 +27,7 @@
 
 #include "common/util.h"
 #include "common/file.h"
+#include "common/error.h"
 
 #include "kom/kom.h"
 #include "kom/actor.h"
@@ -63,7 +64,7 @@ KomEngine::~KomEngine() {
 	delete _game;
 }
 
-int KomEngine::init() {
+Common::Error KomEngine::init() {
 	_actorMan = new ActorManager(this);
 
 	_screen = new Screen(this, _system);
@@ -90,10 +91,10 @@ int KomEngine::init() {
 	 */
 
 
-	return 0;
+	return Common::kNoError;
 }
 
-int KomEngine::go() {
+Common::Error KomEngine::go() {
 	// Stuff to do here
 	/*
 	 * Play sci logo movie
@@ -140,7 +141,7 @@ int KomEngine::go() {
 		_panel->setHotspotDesc("");
 	}
 
-	return 0;
+	return Common::kNoError;
 }
 
 void KomEngine::errorString(const char *buf1, char *buf2) {

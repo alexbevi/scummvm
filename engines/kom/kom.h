@@ -28,6 +28,7 @@
 
 #include "engines/engine.h"
 #include "common/fs.h"
+#include "common/error.h"
 
 #include "kom/screen.h"
 #include "kom/database.h"
@@ -60,8 +61,8 @@ public:
 	KomEngine(OSystem *system);
 	~KomEngine();
 	
-	int init();
-	int go();
+	Common::Error init();
+	Common::Error go();
 
 	::GUI::Debugger *getDebugger() { return _debugger; }
 	void errorString(const char *buf1, char *buf2);
