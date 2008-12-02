@@ -25,6 +25,7 @@
 
 #include "common/str.h"
 #include "common/fs.h"
+#include "common/file.h"
 
 #include "kom/kom.h"
 #include "kom/character.h"
@@ -396,9 +397,8 @@ void Character::setScope(int16 scope) {
 }
 
 void Character::setScopeX(int16 scope) {
-	static Common::FSNode spritesDir =
-		_vm->dataDir()->getChild("kom").getChild("cutsprit");
-	char filename[50];
+	static String spritesDir("kom/cutsprit/");
+	char filename[100];
 	String charName(_name);
 	charName.toLowercase();
 	Actor *act;
@@ -443,23 +443,25 @@ void Character::setScopeX(int16 scope) {
 			strncpy(prefix, name.c_str(), 4);
 			prefix[4] = '\0';
 
-			if (!(spritesDir.getChild(prefix).exists()))
-				prefix[3] = '\0';
+			sprintf(filename, "%s%s/%s%d.act", spritesDir.c_str(), prefix,
+					name.c_str(), _vm->game()->player()->isNight);
 
-			sprintf(filename, "%s%d", name.c_str(),
-					_vm->game()->player()->isNight);
+			if (!Common::File::exists(filename)) {
+				prefix[3] = '\0';
+				sprintf(filename, "%s%s/%s%d.act", spritesDir.c_str(), prefix,
+						name.c_str(), _vm->game()->player()->isNight);
+			}
 
 			_vm->panel()->showLoading(true);
 
-			_actorId =
-				_vm->actorMan()->load(spritesDir.getChild(prefix), filename);
+			_actorId = _vm->actorMan()->load(filename);
 
 			if (_lastLocation == _vm->database()->getChar(0)->_lastLocation) {
 				// TODO: stop greeting
 
 				// play sample
 				if (_vm->game()->player()->spriteSample.
-						loadFile(spritesDir.getChild(prefix), name + '0'))
+						loadFile(spritesDir + prefix + "/" + name + '0'))
 					_vm->sound()->playSampleSFX(_vm->game()->player()->spriteSample, false);
 			}
 
@@ -516,14 +518,12 @@ void Character::setScopeX(int16 scope) {
 				_actorId = -1;
 			}
 
-			sprintf(filename, "%s%c", charName.c_str(),
+			sprintf(filename, "kom/actors/%s%c.act", charName.c_str(),
 					xtend + (xtend < 10 ? '0' : '7'));
 			_loadedScopeXtend = xtend;
 
 			_vm->panel()->showLoading(true);
-			_actorId =
-				_vm->actorMan()->load(_vm->dataDir()->getChild("kom").
-						getChild("actors"), filename);
+			_actorId = _vm->actorMan()->load(filename);
 			_vm->actorMan()->get(_actorId)->enable(1);
 			_vm->panel()->showLoading(false);
 		}

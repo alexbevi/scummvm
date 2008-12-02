@@ -28,12 +28,12 @@
 
 #include "common/fs.h"
 #include "common/str.h"
+#include "graphics/flic_player.h"
 
 #include "kom/kom.h"
 #include "kom/game.h"
 #include "kom/panel.h"
 #include "kom/database.h"
-#include "kom/flicplayer.h"
 
 namespace Kom {
 
@@ -49,7 +49,7 @@ Game::~Game() {
 }
 
 void Game::enterLocation(uint16 locId) {
-	char filename[50];
+	char filename[100];
 
 	_vm->panel()->showLoading(true);
 
@@ -73,7 +73,7 @@ void Game::enterLocation(uint16 locId) {
 	Location *loc = _vm->database()->getLoc(locId);
 	String locName(loc->name);
 	locName.toLowercase();
-	Common::FSNode locNode(_vm->dataDir()->getChild("kom").getChild("locs").getChild(String(locName.c_str(), 2)).getChild(locName));
+	String locDir("kom/locs/" + String(locName.c_str(), 2) + "/" + locName + "/");
 
 	// Load room background and mask
 
@@ -81,14 +81,15 @@ void Game::enterLocation(uint16 locId) {
 		_vm->ambientStart(locId);
 
 	sprintf(filename, "%s%db.flc", locName.c_str(), loc->xtend + _player.isNight);
-	_vm->screen()->loadBackground(locNode.getChild(filename));
+	_vm->screen()->loadBackground((locDir + filename).c_str());
 
 	// TODO - init some other flic var
 	_vm->_flicLoaded = 2;
 
 	filename[strlen(filename) - 6] = '0';
 	filename[strlen(filename) - 5] = 'm';
-	FlicPlayer mask(locNode.getChild(filename));
+	Graphics::FlicPlayer mask;
+	mask.loadFile((locDir + filename).c_str());
 	mask.decodeFrame();
 	_vm->screen()->setMask(mask.getOffscreen());
 
@@ -104,8 +105,8 @@ void Game::enterLocation(uint16 locId) {
 		roomObj.objectId = *objId;
 
 		if (obj->isSprite) {
-			sprintf(filename, "%s%d", obj->name, _player.isNight);
-			roomObj.actorId = _vm->actorMan()->load(locNode, String(filename));
+			sprintf(filename, "%s%s%d.act", locDir.c_str(), obj->name, _player.isNight);
+			roomObj.actorId = _vm->actorMan()->load(filename);
 			roomObj.priority = db->getBox(locId, obj->box)->priority;
 			Actor *act = _vm->actorMan()->get(roomObj.actorId);
 			act->defineScope(0, 0, act->getFramesNum() - 1, 0);
@@ -127,14 +128,15 @@ void Game::enterLocation(uint16 locId) {
 			String exitName(db->getLoc(exits[i].exitLoc)->name);
 			exitName.toLowercase();
 
-			sprintf(filename, "%s%dd", exitName.c_str(), loc->xtend + _player.isNight);
+			sprintf(filename, "%s%s%dd.act", locDir.c_str(), exitName.c_str(),
+					loc->xtend + _player.isNight);
 
 			// The exit can have no door
-			if (!(locNode.getChild(filename + String(".act")).exists()))
+			if (!Common::File::exists(filename))
 				continue;
 
 			RoomDoor roomDoor;
-			roomDoor.actorId = _vm->actorMan()->load(locNode, String(filename));
+			roomDoor.actorId = _vm->actorMan()->load(filename);
 			Actor *act = _vm->actorMan()->get(roomDoor.actorId);
 			act->enable(1);
 			act->setEffect(4);

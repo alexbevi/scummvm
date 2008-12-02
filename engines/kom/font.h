@@ -33,7 +33,7 @@ namespace Kom {
 class Font {
 public:
 
-	Font(Common::FSNode fileNode);
+	Font(const char *filename);
 	~Font();
 
 	const byte *getCharData(char c);

@@ -29,8 +29,10 @@
 #include "common/endian.h"
 #include "common/list.h"
 #include "common/rect.h"
+#include "common/str.h"
 #include "graphics/cursorman.h"
 #include "graphics/surface.h"
+#include "graphics/flic_player.h"
 
 #include "kom/screen.h"
 #include "kom/kom.h"
@@ -44,10 +46,10 @@ using Common::Rect;
 
 namespace Kom {
 
-ColorSet::ColorSet(Common::FSNode fsNode) {
+ColorSet::ColorSet(const char *filename) {
 	File f;
 
-	f.open(fsNode);
+	f.open(filename);
 
 	size = f.size() / 3;
 
@@ -68,7 +70,7 @@ ColorSet::~ColorSet() {
 }
 
 Screen::Screen(KomEngine *vm, OSystem *system)
-	: _system(system), _vm(vm), _roomBackground(0), _sepiaScreen(0),
+	: _system(system), _vm(vm), _sepiaScreen(0),
 	  _freshScreen(false), _paletteChanged(false), _newBrightness(256) {
 
 	_lastFrameTime = 0;
@@ -79,14 +81,14 @@ Screen::Screen(KomEngine *vm, OSystem *system)
 	_mouseBuf = new uint8[MOUSE_W * MOUSE_H];
 	memset(_mouseBuf, 0, MOUSE_W * MOUSE_H);
 
-	_c0ColorSet = new ColorSet(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("c0_127.cl"));
-	_orangeColorSet = new ColorSet(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("sepia_or.cl"));
-	_greenColorSet = new ColorSet(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("sepia_gr.cl"));
+	_c0ColorSet = new ColorSet("kom/oneoffs/c0_127.cl");
+	_orangeColorSet = new ColorSet("kom/oneoffs/sepia_or.cl");
+	_greenColorSet = new ColorSet("kom/oneoffs/sepia_gr.cl");
 
 	_mask = new uint8[SCREEN_W * (SCREEN_H - PANEL_H)];
 	memset(_mask, 0, SCREEN_W * (SCREEN_H - PANEL_H));
 
-	_font = new Font(_vm->dataDir()->getChild("kom").getChild("oneoffs").getChild("packfont.fnt"));
+	_font = new Font("kom/oneoffs/packfont.fnt");
 
 	_dirtyRects = new List<Rect>();
 	_prevDirtyRects = new List<Rect>();
@@ -100,7 +102,6 @@ Screen::~Screen() {
 	delete _greenColorSet;
 	delete[] _sepiaScreen;
 	delete[] _mask;
-	delete _roomBackground;
 	delete _font;
 	delete _dirtyRects;
 	delete _prevDirtyRects;
@@ -288,9 +289,11 @@ void Screen::drawDirtyRects() {
 	} else {
 		// No need to save a prev, since the background reports
 		// all changes
-		if (_roomBackground) {
-			copyRectListToScreen(_roomBackground->getDirtyRects());
-			_roomBackground->clearDirtyRects();
+
+		// FIXME - add isLoaded to flic player?
+		if (_roomBackground.getOffscreen()) {
+			copyRectListToScreen(_roomBackground.getDirtyRects());
+			_roomBackground.clearDirtyRects();
 		}
 
 		// Copy dirty rects to screen
@@ -327,8 +330,9 @@ void Screen::gfxUpdate() {
 void Screen::clearScreen() {
 	_dirtyRects->clear();
 	_prevDirtyRects->clear();
-	if (_roomBackground)
-		_roomBackground->redraw();
+	// FIXME - add isLoaded to flic player?
+	if (_roomBackground.getOffscreen())
+		_roomBackground.redraw();
 	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 	_freshScreen = true;
 }
@@ -605,8 +609,9 @@ void Screen::freeSepia() {
 	delete[] _sepiaScreen;
 	_system->setPalette(_backupPalette, 0, 256);
 
-	if (_roomBackground)
-		_roomBackground->redraw();
+	// FIXME - add isLoaded to flic player?
+	if (_roomBackground.getOffscreen())
+		_roomBackground.redraw();
 }
 
 void Screen::copySepia() {
@@ -837,9 +842,9 @@ void Screen::updatePanelOnScreen() {
 	_system->updateScreen();
 }
 
-void Screen::loadBackground(Common::FSNode node) {
-	delete _roomBackground;
-	_roomBackground = new FlicPlayer(node);
+void Screen::loadBackground(const char *filename) {
+	_roomBackground.closeFile();
+	_roomBackground.loadFile(filename);
 	_roomBackgroundTime = 0;
 	_backgroundPaused = false;
 
@@ -850,15 +855,16 @@ void Screen::loadBackground(Common::FSNode node) {
 }
 
 void Screen::updateBackground() {
-	if (_roomBackground != 0) {
+	// FIXME - add isLoaded to flic player?
+	if (_roomBackground.getOffscreen()) {
 		if (_system->getMillis() >= _roomBackgroundTime) {
-			_roomBackgroundTime = _system->getMillis() + _roomBackground->speed();
+			_roomBackgroundTime = _system->getMillis() + _roomBackground.getSpeed();
 
 			if (!_backgroundPaused)
-				_roomBackground->decodeFrame();
+				_roomBackground.decodeFrame();
 
-			if (_roomBackground->paletteDirty()) {
-				_system->setPalette(_roomBackground->getPalette() + 4 * 128, 128, 128);
+			if (_roomBackground.isPaletteDirty()) {
+				_system->setPalette(_roomBackground.getPalette() + 4 * 128, 128, 128);
 				_paletteChanged = true;
 			}
 		}
@@ -866,8 +872,9 @@ void Screen::updateBackground() {
 }
 
 void Screen::drawBackground() {
-	if (_roomBackground) {
-		memcpy(_screenBuf, _roomBackground->getOffscreen(), SCREEN_W * (SCREEN_H - PANEL_H));
+	// FIXME - add isLoaded to flic player?
+	if (_roomBackground.getOffscreen()) {
+		memcpy(_screenBuf, _roomBackground.getOffscreen(), SCREEN_W * (SCREEN_H - PANEL_H));
 	}
 }
 

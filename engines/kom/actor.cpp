@@ -52,9 +52,9 @@ ActorManager::~ActorManager() {
 	delete _charIconActor;
 }
 
-int ActorManager::load(Common::FSNode dirNode, String name) {
+int ActorManager::load(const char *filename) {
 
-	Actor *act = new Actor(_vm, dirNode, name, false);
+	Actor *act = new Actor(_vm, filename, false);
 
 	// find an empty place in the array. if none exist, create a new cell
 	for (uint i = 0; i < _actors.size(); ++i)
@@ -67,12 +67,11 @@ int ActorManager::load(Common::FSNode dirNode, String name) {
 	return _actors.size() - 1;
 }
 
-void ActorManager::loadExtras(Common::FSNode dirNode) {
+void ActorManager::loadExtras() {
 
 	// TODO: this should be changed to allow different mouse actors
 
-	_mouseActor = new Actor(_vm, dirNode.getChild("oneoffs"),
-			String("m_icons"), true);
+	_mouseActor = new Actor(_vm, "kom/oneoffs/m_icons.act", true);
 	_mouseActor->defineScope(0, 0, 3, 0);
 	_mouseActor->defineScope(1, 4, 4, 4);
 	_mouseActor->defineScopeAlias(2, Actor::_exitCursorAnimation, 16);
@@ -88,20 +87,17 @@ void ActorManager::loadExtras(Common::FSNode dirNode) {
 	// Init CursorMan
 	_vm->screen()->displayMouse();
 
-	_donutActor = new Actor(_vm, dirNode.getChild("oneoffs"),
-			String("donut"), false);
+	_donutActor = new Actor(_vm, "kom/oneoffs/donut.act", false);
 	_donutActor->enable(0);
 	_donutActor->setEffect(4);
 	_donutActor->setMaskDepth(0, 2);
 
-	_objectsActor = new Actor(_vm, dirNode.getChild("oneoffs"),
-			String("inv_obj"), false);
+	_objectsActor = new Actor(_vm, "kom/oneoffs/inv_obj.act", false);
 	_objectsActor->enable(0);
 	_objectsActor->setEffect(4);
 	_objectsActor->setMaskDepth(0, 1);
 
-	_charIconActor = new Actor(_vm, dirNode.getChild("oneoffs"),
-			String("charicon"), false);
+	_charIconActor = new Actor(_vm, "kom/oneoffs/charicon.act", false);
 	_charIconActor->enable(0);
 	_charIconActor->setEffect(4);
 	_charIconActor->setMaskDepth(0, 1);
@@ -164,7 +160,7 @@ Actor *ActorManager::getFarthestActor() {
 	return maxActor;
 }
 
-Actor::Actor(KomEngine *vm, Common::FSNode dirNode, String name, bool isMouse) : _vm(vm) {
+Actor::Actor(KomEngine *vm, const char *filename, bool isMouse) : _vm(vm) {
 	File f;
 	char magicName[8];
 
@@ -179,14 +175,12 @@ Actor::Actor(KomEngine *vm, Common::FSNode dirNode, String name, bool isMouse) :
 	_maskDepth = 0;
 	_effect = 0;
 
-	name.toLowercase();
-	f.open(dirNode.getChild(name + ".act"));
+	f.open(filename);
 
 	f.read(magicName, 7);
 	magicName[7] = '\0';
 	assert(strcmp(magicName, "DCB_ACT") == 0);
 
-	_name = name;
 	_isMouse = isMouse;
 	_isPlayerControlled = !f.readByte();
 	_framesNum = f.readByte();

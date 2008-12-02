@@ -38,19 +38,17 @@
 #include "sound/audiostream.h"
 
 using Common::File;
-using Common::String;
 
 namespace Kom {
 
-bool SoundSample::loadFile(Common::FSNode dirNode, String name) {
+bool SoundSample::loadFile(Common::String filename) {
 	File f;
-	Common::FSNode filename = dirNode.getChild(name + ".raw");
 
 	unload();
 
 	_handle.index = -1;
 
-	if (!filename.exists())
+	if (!File::exists(filename))
 		return false;
 
 	f.open(filename);

@@ -30,13 +30,13 @@
 #include "common/fs.h"
 #include "common/list.h"
 #include "common/rect.h"
+#include "graphics/flic_player.h"
 
-#include "kom/flicplayer.h"
+#include "kom/kom.h"
 #include "kom/font.h"
 #include "kom/game.h"
 
 class OSystem;
-class FlicPlayer;
 
 namespace Kom {
 
@@ -49,10 +49,8 @@ enum {
 	INVENTORY_OFFSET = 344
 };
 
-class KomEngine;
-
 struct ColorSet {
-	ColorSet(Common::FSNode fsNode);
+	ColorSet(const char *filename);
 	~ColorSet();
 
 	uint size;
@@ -85,7 +83,7 @@ public:
 	void drawPanel(const byte *panelData);
 	void updatePanelOnScreen();
 
-	void loadBackground(Common::FSNode node);
+	void loadBackground(const char *filename);
 	void updateBackground();
 	void drawBackground();
 	void pauseBackground(bool pause) { _backgroundPaused = pause; }
@@ -130,7 +128,7 @@ private:
 	uint8 *_panelBuf;
 	uint8 *_mouseBuf;
 	uint8 *_mask;
-	FlicPlayer *_roomBackground;
+	Graphics::FlicPlayer _roomBackground;
 	Font *_font;
 	uint32 _roomBackgroundTime;
 	bool _backgroundPaused;

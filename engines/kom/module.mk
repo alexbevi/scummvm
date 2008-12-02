@@ -9,7 +9,6 @@ MODULE_OBJS := \
 	input.o \
 	sound.o \
 	panel.o \
-	flicplayer.o \
 	game.o \
 	font.o \
 	debugger.o \

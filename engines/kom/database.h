@@ -194,6 +194,7 @@ private:
 	KomEngine *_vm;
 
 	Common::String _databasePrefix;
+	Common::String _pathPrefix;
 
 	Location *_locations;
 	int _locationsNum;

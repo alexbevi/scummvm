@@ -28,6 +28,7 @@
 #include "common/util.h"
 #include "common/file.h"
 #include "common/error.h"
+#include "common/archive.h"
 
 #include "kom/kom.h"
 #include "kom/actor.h"
@@ -65,6 +66,11 @@ KomEngine::~KomEngine() {
 }
 
 Common::Error KomEngine::init() {
+	// Add the game path to the directory search list.
+	// ScummVM defaults to 4, KoM needs 5
+	SearchMan.remove(_gameDataDir.getPath());
+	SearchMan.addDirectory(_gameDataDir.getPath(), _gameDataDir, 0, 5);
+
 	_actorMan = new ActorManager(this);
 
 	_screen = new Screen(this, _system);
@@ -76,7 +82,7 @@ Common::Error KomEngine::init() {
 	_input = new Input(this, _system);
 	_sound = new Sound(this, _mixer);
 	_debugger = new Debugger(this);
-	_panel = new Panel(this, _gameDataDir.getChild("kom").getChild("oneoffs").getChild("pan1.img"));
+	_panel = new Panel(this, "kom/oneoffs/pan1.img");
 	_game = new Game(this, _system);
 
 	// Init the following:
@@ -107,25 +113,21 @@ Common::Error KomEngine::go() {
 	 */
 
 	// Load sound effects
-	Common::FSNode samplesDir(_gameDataDir.getChild("kom").getChild("samples"));
-	_hotspotSample.loadFile(samplesDir, String("hotspot"));
-	_doorsSample.loadFile(samplesDir, String("doors"));
-	_clickSample.loadFile(samplesDir, String("mouse_l"));
-	_swipeSample.loadFile(samplesDir, String("swipe"));
-	_cashSample.loadFile(samplesDir, String("cash"));
-	_loseItemSample.loadFile(samplesDir, String("loseitem"));
+	static String samplesDir("kom/samples/");
+	_hotspotSample.loadFile(samplesDir + "hotspot.raw");
+	_doorsSample.loadFile(samplesDir + "doors.raw");
+	_clickSample.loadFile(samplesDir + "mouse_l.raw");
+	_swipeSample.loadFile(samplesDir + "swipe.raw");
+	_cashSample.loadFile(samplesDir + "cash.raw");
+	_loseItemSample.loadFile(samplesDir + "loseitem.raw");
 
-
-	Common::FSNode installDir(_gameDataDir.getChild("install"));
 	if (_game->player()->selectedChar == 0) {
-		File::addDefaultDirectory(installDir.getChild("db0"));
 		_database->init("thid");
 	} else {
-		File::addDefaultDirectory(installDir.getChild("db1"));
 		_database->init("shar");
 	}
 
-	_actorMan->loadExtras(_gameDataDir.getChild("kom"));
+	_actorMan->loadExtras();
 
 	_screen->showMouseCursor(true);
 
@@ -275,7 +277,7 @@ void KomEngine::gameLoop() {
 
 void KomEngine::ambientStart(int locId) {
 
-	char musicIdStr[7];
+	char musicIdStr[11];
 
 	// Each loc has 3 values:
 	// 1) Night music
@@ -314,8 +316,7 @@ void KomEngine::ambientStart(int locId) {
 
 	int16 musicId, musicVolume;
 
-	static Common::FSNode musicNode =
-		_gameDataDir.getChild("kom").getChild("music");
+	static String musicDir("kom/music/");
 
 	// Special handling for the honeymoon suite
    	if (locId == 21 && _database->getLoc(locId)->xtend == 2) {
@@ -339,8 +340,8 @@ void KomEngine::ambientStart(int locId) {
 
 	} else if (musicId != _playingMusicId) {
 
-		sprintf(musicIdStr, "amb%d", musicId);
-		_ambientSample.loadFile(musicNode, musicIdStr);
+		sprintf(musicIdStr, "amb%d.raw", musicId);
+		_ambientSample.loadFile(musicDir + musicIdStr);
 		_sound->playSampleMusic(_ambientSample);
 
 		_playingMusicId = musicId;

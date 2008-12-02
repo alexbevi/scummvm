@@ -83,9 +83,8 @@ public:
 
 
 protected:
-	Actor(KomEngine *vm, Common::FSNode dirNode, Common::String name, bool isMouse);
+	Actor(KomEngine *vm, const char *filename, bool isMouse);
 
-	Common::String _name;
 	uint8 _framesNum;
 	byte _isPlayerControlled;
 	uint8 _currentFrame;
@@ -131,8 +130,8 @@ public:
 
 	ActorManager(KomEngine *vm);
 	~ActorManager();
-	int load(Common::FSNode dirNode, Common::String name);
-	void loadExtras(Common::FSNode dirNode);
+	int load(const char *filename);
+	void loadExtras();
 	Actor *get(int idx) { return _actors[idx]; }
 	Actor *getMouse() { return _mouseActor; }
 	Actor *getDonut() { return _donutActor; }

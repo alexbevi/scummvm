@@ -75,8 +75,6 @@ public:
 	Game *game() const { return _game; }
 	Sound *sound() const { return _sound; }
 
-	const Common::FSNode *dataDir() const { return &_gameDataDir; }
-
 	int gameLoopTimer() { return _gameLoopTimer; }
 	void endGame() { _gameLoopState = GAMELOOP_DEATH; }
 
