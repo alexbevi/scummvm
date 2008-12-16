@@ -461,7 +461,7 @@ void Character::setScopeX(int16 scope) {
 
 				// play sample
 				if (_vm->game()->player()->spriteSample.
-						loadFile(spritesDir + prefix + "/" + name + '0'))
+						loadFile(spritesDir + prefix + "/" + name + '0' + ".raw"))
 					_vm->sound()->playSampleSFX(_vm->game()->player()->spriteSample, false);
 			}
 
