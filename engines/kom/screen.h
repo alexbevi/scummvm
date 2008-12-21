@@ -30,7 +30,7 @@
 #include "common/fs.h"
 #include "common/list.h"
 #include "common/rect.h"
-#include "graphics/flic_player.h"
+#include "graphics/video/flic_player.h"
 
 #include "kom/kom.h"
 #include "kom/font.h"

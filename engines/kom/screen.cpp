@@ -32,7 +32,7 @@
 #include "common/str.h"
 #include "graphics/cursorman.h"
 #include "graphics/surface.h"
-#include "graphics/flic_player.h"
+#include "graphics/video/flic_player.h"
 
 #include "kom/screen.h"
 #include "kom/kom.h"
