@@ -28,7 +28,7 @@
 #include "common/util.h"
 #include "common/file.h"
 #include "common/error.h"
-#include "common/archive.h"
+#include "common/fs.h"
 
 #include "kom/kom.h"
 #include "kom/actor.h"
