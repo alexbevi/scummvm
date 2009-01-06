@@ -861,7 +861,7 @@ void Screen::updateBackground() {
 			_roomBackgroundTime = _system->getMillis() + _roomBackground.getSpeed();
 
 			if (!_backgroundPaused)
-				_roomBackground.decodeFrame();
+				_roomBackground.decodeNextFrame();
 
 			if (_roomBackground.isPaletteDirty()) {
 				_system->setPalette(_roomBackground.getPalette() + 4 * 128, 128, 128);

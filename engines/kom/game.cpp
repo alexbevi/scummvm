@@ -90,7 +90,7 @@ void Game::enterLocation(uint16 locId) {
 	filename[strlen(filename) - 5] = 'm';
 	Graphics::FlicPlayer mask;
 	mask.loadFile((locDir + filename).c_str());
-	mask.decodeFrame();
+	mask.decodeNextFrame();
 	_vm->screen()->setMask(mask.getOffscreen());
 
 	Database *db = _vm->database();
