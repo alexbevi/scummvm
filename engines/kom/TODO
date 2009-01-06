@@ -1,5 +1,13 @@
+BUGS
+====
 * When leaving the treehouse, there's a glitch in the graphics
 * Character scaling doesn't work like the original
 * In the first room, thidney appears before the teleport animation (maybe having the welcoming screens can fix that
 * Some actions (e.g. the donut) distinguish between a click and a "held" click. Maybe it should be implemented
 * Clicking on items in the inventory does a "button press" effect that depends on how long the left click is pressed. The original behaves differently if it's a short or long click. The current implementation only has a "short click" which doesn't show the effect nicely.
+* Switching between night and day doesn't update the standing characters' actors. example: spiders in room 95
+
+MISSING FEATURES
+================
+* Pause support, GMM - <http://wiki.scummvm.org/index.php/Advanced_Engine_Features#Improved_pause_support>
+* Graphics transaction extension - <http://article.gmane.org/gmane.games.devel.scummvm/4619>
