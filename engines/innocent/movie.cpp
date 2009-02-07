@@ -68,7 +68,7 @@ bool Movie::play() {
 			loadIFrame();
 			showFrame();
 			delay();
-			if (Log.canSkipCutscene() && Eng.escapePressed()) {
+			if ((Log.canSkipCutscene() && Eng.escapePressed()) || Eng.shouldQuit()) {
 				Log.skipCutscene();
 				return false;
 			}
