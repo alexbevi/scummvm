@@ -62,6 +62,8 @@ public:
 
 	virtual void setAnimation(uint16 anim) { _offset = anim; }
 
+	virtual bool isActor() const { return false; }
+
 protected:
 	class Sprite;
 

@@ -152,6 +152,8 @@ public:
 		kOffsetRoom = 0x59
 	};
 
+	virtual bool isActor() const { return true; }
+
 	void setFrame(uint16 f);
 	uint16 frameId() const { return _frame; }
 	void moveTo(uint16 f);

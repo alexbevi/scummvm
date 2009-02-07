@@ -141,6 +141,12 @@ void Logic::doChangeRoom() {
 	debugC(2, kDebugLevelScript, ">>>running room entry code for room %d", _currentRoom);
 	_blockInterpreter->run(_blockProgram->roomHandler(_currentRoom), kCodeNewRoom);
 	debugC(2, kDebugLevelScript, "<<<finished room entry code for room %d", _currentRoom);
+
+	foreach(Animation *, _animations)
+		if ((*it)->isActor()) {
+			Actor * const ac = static_cast<Actor *>(*it);
+			ac->setFrame(ac->frameId());
+		}
 }
 
 void Logic::runLater(const CodePointer &p, uint16 delay) {
