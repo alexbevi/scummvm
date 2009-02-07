@@ -302,7 +302,7 @@ void MusicCommand::exec(byte channel, Note *note) {
 
 	case kSetExpression:
 		debugC(2, kDebugLevelMusic, "set expression on channel %d to %d", channel, _parameter);
-		Music._driver->send(channel | kMidiChannelControl, kMidiCtrlExpression, _parameter);
+		Music._driver->send(channel | kMidiChannelControl, kMidiCtrlExpression, _parameter / 2);
 		break;
 
 	case kCmdNoteOff:
