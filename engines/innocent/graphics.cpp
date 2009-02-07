@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <functional>
 
+#include "common/events.h"
 #include "common/system.h"
 #include "common/util.h"
 #include "graphics/cursorman.h"

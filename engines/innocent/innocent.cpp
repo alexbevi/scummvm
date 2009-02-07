@@ -25,9 +25,10 @@
 
 #include "innocent/innocent.h"
 
-
 #include "common/config-manager.h"
+#include "common/error.h"
 #include "common/scummsys.h"
+#include "common/system.h"
 #include "common/events.h"
 #include "sound/mididrv.h"
 
@@ -40,6 +41,8 @@
 #include "innocent/resources.h"
 
 #define GFX_TRANSACTION for (int ___i = 1; ___i && (_system->beginGFXTransaction(), true); ___i--, _system->endGFXTransaction() )
+
+using namespace Common;
 
 namespace Innocent {
 
@@ -57,25 +60,25 @@ Engine::Engine(OSystem *syst) :
 	me = this;
 	_lastTicks = 0;
 
-	Common::addSpecialDebugLevel(kDebugLevelScript, "script", "bytecode scripts");
-	Common::addSpecialDebugLevel(kDebugLevelGraphics, "graphics", "graphics handling");
-	Common::addSpecialDebugLevel(kDebugLevelFlow, "flow", "game code flow status");
-	Common::addSpecialDebugLevel(kDebugLevelAnimation, "animation", "animations");
-	Common::addSpecialDebugLevel(kDebugLevelValues, "values", "really low-level debugging of value manipulation");
-	Common::addSpecialDebugLevel(kDebugLevelFiles, "files", "file input and output");
-	Common::addSpecialDebugLevel(kDebugLevelEvents, "events", "event handling");
-	Common::addSpecialDebugLevel(kDebugLevelMusic, "music", "music loading and playing");
-	Common::addSpecialDebugLevel(kDebugLevelActor, "actor", "actor animation and behaviour");
+	Common::addDebugChannel(kDebugLevelScript, "script", "bytecode scripts");
+	Common::addDebugChannel(kDebugLevelGraphics, "graphics", "graphics handling");
+	Common::addDebugChannel(kDebugLevelFlow, "flow", "game code flow status");
+	Common::addDebugChannel(kDebugLevelAnimation, "animation", "animations");
+	Common::addDebugChannel(kDebugLevelValues, "values", "really low-level debugging of value manipulation");
+	Common::addDebugChannel(kDebugLevelFiles, "files", "file input and output");
+	Common::addDebugChannel(kDebugLevelEvents, "events", "event handling");
+	Common::addDebugChannel(kDebugLevelMusic, "music", "music loading and playing");
+	Common::addDebugChannel(kDebugLevelActor, "actor", "actor animation and behaviour");
 
 	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
 }
 
 Engine::~Engine() {
-	Common::clearAllSpecialDebugLevels();
+	Common::clearAllDebugChannels();
 	MusicParser::destroy();
 }
 
-int Engine::init() {
+Common::Error Engine::init() {
 	GFX_TRANSACTION {
 		initCommonGFX(false);
 		_system->initSize(320, 200);
@@ -98,14 +101,14 @@ int Engine::init() {
 
 	_logic->init();
 
-	return 0;
+	return kNoError;
 }
 
-int Engine::go() {
+Common::Error Engine::go() {
 	_resources->loadActors();
 	_logic->initCode();
 	_graphics->showCursor();
-	while(!quit()) {
+	while(!shouldQuit()) {
 		_logic->callAnimations();
 		_graphics->paint();
 		_logic->tick();
@@ -116,7 +119,7 @@ int Engine::go() {
 		handleEvents();
 	}
 
-	return 0;
+	return kNoError;
 }
 
 void Engine::handleEvents() {

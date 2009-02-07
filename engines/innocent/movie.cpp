@@ -26,6 +26,7 @@
 #include "innocent/movie.h"
 
 #include "common/file.h"
+#include "common/system.h"
 
 #include "innocent/debug.h"
 #include "innocent/graphics.h"

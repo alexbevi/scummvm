@@ -25,6 +25,7 @@
 
 #include "innocent/innocent.h"
 
+#include "common/error.h"
 #include "common/fs.h"
 #include "engines/game.h"
 #include "base/plugins.h"
@@ -85,13 +86,13 @@ public:
 		return detectedGames;
 	}
 
-	virtual PluginError createInstance(OSystem *syst, Engine **engine) const {
+	virtual Common::Error createInstance(OSystem *syst, Engine **engine) const {
 		assert(syst);
 		assert(engine);
 
 		FSList fslist;
-		FilesystemNode dir(ConfMan.get("path"));
-		if (!dir.getChildren(fslist, FilesystemNode::kListAll)) {
+		FSNode dir(ConfMan.get("path"));
+		if (!dir.getChildren(fslist, FSNode::kListAll)) {
 			return kInvalidPathError;
 		}
 
