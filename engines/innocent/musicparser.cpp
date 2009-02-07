@@ -38,7 +38,11 @@ DECLARE_SINGLETON(MusicParser);
 
 MusicParser::MusicParser() : MidiParser(), _time(0), _lasttick(0), _tick(0) {}
 
-MusicParser::~MusicParser() { silence(); unloadMusic(); _driver->close();}
+MusicParser::~MusicParser() {
+	silence();
+	unloadMusic();
+//	_driver->close(); // XXX segfaults
+}
 
 bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
 	unloadMusic();
