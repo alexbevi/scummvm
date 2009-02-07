@@ -34,6 +34,11 @@
 #include "common/singleton.h"
 #include "config.h"
 
+#include "innocent/inter.h"
+#include "innocent/mapfile.h"
+#include "innocent/prog_dat.h"
+#include "innocent/program.h"
+#include "innocent/room.h"
 #include "innocent/value.h"
 
 namespace Innocent {
@@ -44,10 +49,7 @@ class Animation;
 class Debugger;
 class Engine;
 class Music;
-class Interpreter;
-class Program;
 class Resources;
-class Room;
 
 class Logic : public Common::Singleton<Logic> {
 public:
