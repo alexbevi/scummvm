@@ -299,7 +299,7 @@ Common::Rect Graphics::paintSpeechInBubble(Common::Point pos, byte colour, const
 	if (height > 5)
 		vertical_tiles += (height - 58) / 6;
 
-	uint8 horizontal_tiles = textSize.width() / 4;
+	uint8 horizontal_tiles = (textSize.width() - 39) / 4;
 	if (horizontal_tiles == 0)
 		horizontal_tiles = 1;
 
@@ -310,7 +310,7 @@ Common::Rect Graphics::paintSpeechInBubble(Common::Point pos, byte colour, const
 	position.x -= wadj;
 	paint(bubbles[bubble_indices[kBubbleBottomLeft]], position, bubble, kPaintPositionIsTop);
 
-	position.x += 33;
+	position.x += 33 + wadj;
 	for (int i = 0; i < horizontal_tiles; i++) {
 		position.y = 0;
 		paintSpeechBubbleColumn(bubbles[bubble_indices[kBubbleTop]], bubbles[bubble_indices[kBubbleFill]], position, vertical_tiles, bubble);
