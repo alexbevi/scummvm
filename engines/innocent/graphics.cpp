@@ -246,7 +246,12 @@ enum {
 };
 
 void Graphics::paintSpeechBubbleColumn(Sprite *top, Sprite *fill, Common::Point &point, uint8 fill_tiles, Surface *dest) {
-	paint(top, point, dest, kPaintSemitransparent);
+	paint(top, point, dest);
+	point.y += 24;
+	for (int i = 0; i < fill_tiles; i++) {
+		paint(fill, point, dest);
+		point.y += 12;
+	}
 }
 
 Common::Rect Graphics::paintSpeechInBubble(uint16 left, uint16 top, byte colour, const byte *string) {
@@ -295,22 +300,25 @@ Common::Rect Graphics::paintSpeechInBubble(uint16 left, uint16 top, byte colour,
 	Common::Point position(wadj, 0);
 	paintSpeechBubbleColumn(bubbles[bubble_indices[7]], bubbles[bubble_indices[4]], position, vertical_tiles, &bubble);
 	position.x -= wadj;
-	paint(bubbles[bubble_indices[1]], position, &bubble, kPaintSemitransparent);
+	paint(bubbles[bubble_indices[1]], position, &bubble);
 
 	position.x += 33;
 	for (int i = 0; i < horizontal_tiles; i++) {
 		position.y = 0;
 		paintSpeechBubbleColumn(bubbles[bubble_indices[8]], bubbles[bubble_indices[5]], position, vertical_tiles, &bubble);
-		paint(bubbles[bubble_indices[2]], position, &bubble, kPaintSemitransparent);
+		paint(bubbles[bubble_indices[2]], position, &bubble);
 		position.x += 4;
 	}
 
 	position.y = 0;
 	paintSpeechBubbleColumn(bubbles[bubble_indices[9]], bubbles[bubble_indices[6]], position, vertical_tiles, &bubble);
-	paint(bubbles[bubble_indices[3]], position, &bubble, kPaintSemitransparent);
+	paint(bubbles[bubble_indices[3]], position, &bubble);
 
-	_system->copyRectToScreen(reinterpret_cast<byte *>(bubble.pixels), bubble.pitch, left, top, bubble.w, bubble.h);
-	return Common::Rect(left, top, left + bubble.w, top + bubble.h);
+	paintText(0, 0, colour, string, &bubble);
+
+	Common::Rect rect(left, top, left + bubble.w, top + bubble.h);
+	_framebuffer->blit(&bubble, rect, 0, &_tintedPalette);
+	return rect;
 }
 
 Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *dest, uint16 *_lines) {
