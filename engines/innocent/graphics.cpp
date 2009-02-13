@@ -71,6 +71,7 @@ void Graphics::paint() {
 	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, ">>>start paint procedure");
 
 	paintBackdrop();
+	paintInterface();
 	paintExits();
 	paintAnimations();
 	paintSpeech();
@@ -96,15 +97,20 @@ void Graphics::paintExits() {
 }
 
 void Graphics::loadInterface() {
-	_resources->loadInterfaceImage(_interface, _interfacePalette);
+	debugC(1, kDebugLevelGraphics, "loading interface");
+	_interface = new Surface;
+	_interface->create(320, 50, 1);
+	_resources->loadInterfaceImage(reinterpret_cast<byte *>(_interface->pixels), _interfacePalette);
 }
 
 void Graphics::prepareInterfacePalette() {
+	debugC(1, kDebugLevelGraphics, "preparing interface palette");
 	_engine->_system->setPalette(_interfacePalette + 160 * 4, 160, 96);
 }
 
 void Graphics::paintInterface() {
-//	_framebuffer->blit(_interface, Common::Point(152, 48));
+	debugC(3, kDebugLevelGraphics, "painting interface");
+	_framebuffer->blit(_interface, Common::Rect(0, 152, 320, 200), 0);
 }
 
 void Graphics::setBackdrop(uint16 id) {
@@ -512,6 +518,7 @@ void Graphics::clearPalette(int offset, int count) {
 
 void Graphics::setPalette(const byte *colours, uint start, uint num) {
 	_system->setPalette(colours, start, num);
+	prepareInterfacePalette();
 
 	// calculate tinted palette
 	for (int i = 0; i < 256; ++i) {
@@ -524,7 +531,7 @@ void Graphics::setPalette(const byte *colours, uint start, uint num) {
 
 		for (int j = 0; j < 4; j++) {
 			for (int k = 0; k < 2; k++) {
-				int16 diff = colours[(curr + k) * 4] - luma;
+				int16 diff = _interfacePalette[(curr + k) * 4] - luma;
 				if (diff < 0)
 					diff = -diff;
 				if (diff < best_diff) {
@@ -532,7 +539,7 @@ void Graphics::setPalette(const byte *colours, uint start, uint num) {
 					best_color = curr + k;
 				}
 			}
-			curr += 15;
+			curr += 16;
 		}
 
 		_tintedPalette[i] = best_color;

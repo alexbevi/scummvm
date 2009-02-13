@@ -135,7 +135,7 @@ private:
 	 * @returns char width
 	 */
 	uint16 paintChar(uint16 left, uint16 top, byte colour, byte character, Surface *s) const;
-	byte _interface[0x3c00];
+	Surface *_interface;
 	Engine *_engine;
 	Resources *_resources;
 	OSystem *_system;

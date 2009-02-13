@@ -658,7 +658,6 @@ OPCODE(0xd1) {
 }
 
 OPCODE(0xd2) {
-	// prepare interface palette
 	debugC(3, kDebugLevelScript, "opcode 0xd2: will fadein partially");
 	Graf.willFadein(Graphics::kPartialFade);
 	return kThxBye;
