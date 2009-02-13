@@ -424,7 +424,7 @@ Common::Point Actor::getSpeechPosition() const {
 	Common::Point speechPosition(_position);
 	if (_mainSprite.get()) {
 		speechPosition.y -= _mainSprite.get()->h;
-		speechPosition += _mainSprite.get()->_hotPoint;
+		speechPosition -= _mainSprite.get()->_hotPoint;
 	}
 	return speechPosition;
 }

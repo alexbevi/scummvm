@@ -51,6 +51,8 @@ DECLARE_SINGLETON(Graphics);
 
 Common::Point &operator+=(Common::Point &p1, const Common::Point &p2) { return p1 = Common::Point(p1.x + p2.x, p1.y + p2.y); }
 
+Common::Point &operator-=(Common::Point &p1, const Common::Point &p2) { return p1 = Common::Point(p1.x - p2.x, p1.y - p2.y); }
+
 void Graphics::setEngine(Engine *engine) {
 	_engine = engine;
 	_framebuffer.reset(new Surface);
@@ -326,8 +328,8 @@ Common::Rect Graphics::paintSpeechInBubble(Common::Point pos, byte colour, const
 		kSpeechTwoLinesShift = 8,
 		kSpeechVMargin = 8,
 		kSpeechOneLineShift = 0xc,
-		kSpeechLeftIndent = 15,
-		kSpeechFirstLineExtraIndent = 9
+		kSpeechLeftIndent = 16,
+		kSpeechFirstLineExtraIndent = 7
 	};
 
 	int shift = 0;
@@ -376,7 +378,7 @@ Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, const byt
 			current_left += *(string++);
 			break;
 		case kStringCenter:
-			current_left = (320 - calculateLineWidth(string))/2;
+//			current_left = (320 - calculateLineWidth(string))/2;
 			break;
 		case '\n':
 		case '\r':
