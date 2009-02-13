@@ -255,6 +255,7 @@ void Graphics::paintSpeechBubbleColumn(Sprite *top, Sprite *fill, Common::Point 
 }
 
 Common::Rect Graphics::paintSpeechInBubble(uint16 left, uint16 top, byte colour, const byte *string) {
+	debugC(1, kDebugLevelGraphics, "painting speech bubble \"%s\" at %d:%d", string, left, top);
 	top += 4;
 
 	bool pointsLeft = left < 160;
@@ -284,6 +285,7 @@ Common::Rect Graphics::paintSpeechInBubble(uint16 left, uint16 top, byte colour,
 		left += 4;
 	} else
 		error("can't paint speech bubble pointing %s %s yet", pointsUp ? "up" : "down", pointsLeft ? "left" : "right");
+	debugC(2, kDebugLevelGraphics, "painting speech bubble \"%s\" at (adjusted) %d:%d", string, left, top);
 
 	uint8 vertical_tiles = 1;
 	int16 height = lines * 12 - 42;
@@ -315,6 +317,12 @@ Common::Rect Graphics::paintSpeechInBubble(uint16 left, uint16 top, byte colour,
 	paint(bubbles[bubble_indices[kBubbleBottomRight]], position, &bubble, kPaintPositionIsTop);
 
 	paintText(0, 0, colour, string, &bubble);
+
+	if (left + bubble.w >= 320)
+		left = 320 - bubble.w;
+
+	if (top + bubble.h >= 200)
+		top = 200 - bubble.h;
 
 	Common::Rect rect(left, top, left + bubble.w, top + bubble.h);
 	_framebuffer->blit(&bubble, rect, 0, &_tintedPalette);

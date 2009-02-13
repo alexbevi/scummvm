@@ -418,7 +418,10 @@ void Actor::Speech::tick() {
 
 void Actor::paint(Graphics *g) {
 	Animation::paint(g);
-	_speech.paint(g, _position);
+	Common::Point speechPosition(_position);
+	if (_mainSprite.get())
+		speechPosition.y -= _mainSprite.get()->h;
+	_speech.paint(g, speechPosition);
 }
 
 void Actor::Speech::paint(Graphics *g, Common::Point p) {
