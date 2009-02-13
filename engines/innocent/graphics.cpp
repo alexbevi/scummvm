@@ -518,8 +518,7 @@ void Graphics::setPalette(const byte *colours, uint start, uint num) {
 	for (int i = 0; i < 256; ++i) {
 		const byte *colour = colours + i*4;
 		const byte luma = (30 * colour[0] + 60 * colour[1] + 10 * colour[2])/100;
-		// XXX perhaps it'd be better to inspect all colours?
-		// this is how it's done in the original:
+
 		byte curr = 174;
 		byte best_diff = 255;
 		byte best_color = curr;
