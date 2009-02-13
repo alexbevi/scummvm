@@ -246,11 +246,11 @@ enum {
 };
 
 void Graphics::paintSpeechBubbleColumn(Sprite *top, Sprite *fill, Common::Point &point, uint8 fill_tiles, Surface *dest) {
-	paint(top, point, dest);
+	paint(top, point, dest, kPaintPositionIsTop);
 	point.y += 24;
 	for (int i = 0; i < fill_tiles; i++) {
-		paint(fill, point, dest);
-		point.y += 12;
+		paint(fill, point, dest, kPaintPositionIsTop);
+		point.y += 6;
 	}
 }
 
@@ -295,24 +295,24 @@ Common::Rect Graphics::paintSpeechInBubble(uint16 left, uint16 top, byte colour,
 		horizontal_tiles = 1;
 
 	Surface bubble;
-	bubble.create(69 + wadj + 4 * horizontal_tiles, 40 + 12 * vertical_tiles, 1);
+	bubble.create(65 + wadj + 4 * horizontal_tiles, 54 + 6 * vertical_tiles, 1);
 
 	Common::Point position(wadj, 0);
-	paintSpeechBubbleColumn(bubbles[bubble_indices[7]], bubbles[bubble_indices[4]], position, vertical_tiles, &bubble);
+	paintSpeechBubbleColumn(bubbles[bubble_indices[kBubbleTopLeft]], bubbles[bubble_indices[kBubbleLeft]], position, vertical_tiles, &bubble);
 	position.x -= wadj;
-	paint(bubbles[bubble_indices[1]], position, &bubble);
+	paint(bubbles[bubble_indices[kBubbleBottomLeft]], position, &bubble, kPaintPositionIsTop);
 
 	position.x += 33;
 	for (int i = 0; i < horizontal_tiles; i++) {
 		position.y = 0;
-		paintSpeechBubbleColumn(bubbles[bubble_indices[8]], bubbles[bubble_indices[5]], position, vertical_tiles, &bubble);
-		paint(bubbles[bubble_indices[2]], position, &bubble);
+		paintSpeechBubbleColumn(bubbles[bubble_indices[kBubbleTop]], bubbles[bubble_indices[kBubbleFill]], position, vertical_tiles, &bubble);
+		paint(bubbles[bubble_indices[kBubbleBottom]], position, &bubble, kPaintPositionIsTop);
 		position.x += 4;
 	}
 
 	position.y = 0;
-	paintSpeechBubbleColumn(bubbles[bubble_indices[9]], bubbles[bubble_indices[6]], position, vertical_tiles, &bubble);
-	paint(bubbles[bubble_indices[3]], position, &bubble);
+	paintSpeechBubbleColumn(bubbles[bubble_indices[kBubbleTopRight]], bubbles[bubble_indices[kBubbleRight]], position, vertical_tiles, &bubble);
+	paint(bubbles[bubble_indices[kBubbleBottomRight]], position, &bubble, kPaintPositionIsTop);
 
 	paintText(0, 0, colour, string, &bubble);
 
@@ -433,14 +433,14 @@ void Graphics::paint(const Sprite *sprite, Common::Point pos, Surface *dest, Pai
 
 	Common::Rect r(sprite->w, sprite->h);
 	r.moveTo(pos);
-	// this is actually bottom
-	r.translate(0, -sprite->h);
+	if (!(flags & kPaintPositionIsTop))
+		r.translate(0, -sprite->h); // this is actually bottom
 	r.translate(-sprite->_hotPoint.x, sprite->_hotPoint.y);
 
 	r.clip(319, 199);
 	debugC(4, kDebugLevelGraphics, "transformed rect: %d:%d %d:%d", r.left, r.top, r.right, r.bottom);
 
-	dest->blit(sprite, r, 0, (flags & kPaintSemitransparent) ? &_tintedPalette : 0);
+	dest->blit(sprite, r, 0);
 }
 
 Common::Point Graphics::cursorPosition() const {

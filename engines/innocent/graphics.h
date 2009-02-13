@@ -103,7 +103,7 @@ public:
 
 	enum PaintFlags {
 		kPaintNormal = 0,
-		kPaintSemitransparent = 1
+		kPaintPositionIsTop = 1
 	};
 	void paint(const Sprite *sprite, Common::Point pos, PaintFlags flags = kPaintNormal) const {
 		paint(sprite, pos, _framebuffer.get(), flags);
