@@ -94,7 +94,7 @@ public:
 	Common::Rect textMetrics(const byte *string, uint16 *lines = 0, uint16 left = 0, uint16 top = 0) {
 		return paintText(left, top, 235, string, 0, lines);
 	}
-	Common::Rect paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *s, uint16 *lines = 0);
+	Common::Rect paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *s, uint16 *lines = 0, uint8 firstLineExtraIndent = 0);
 
 	void paintSpeechBubbleColumn(Sprite *top, Sprite *fill, Common::Point &point, uint8 fill_tiles, Surface *dest);
 	Common::Rect paintSpeechInBubble(Common::Point pos, byte colour, const byte *string, Surface *dest);

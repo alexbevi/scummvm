@@ -249,6 +249,7 @@ ParametrizedString *Interpreter::readArgument<ParametrizedString>(byte *&code) {
 	byte *str = translateBuf;
 	uint16 offset, value;
 	while ((ch = *(code++))) {
+		assert(str - translateBuf < 500);
 		switch (ch) {
 		case 14:
 		case kStringMove:

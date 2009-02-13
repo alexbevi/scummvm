@@ -322,7 +322,21 @@ Common::Rect Graphics::paintSpeechInBubble(Common::Point pos, byte colour, const
 	paintSpeechBubbleColumn(bubbles[bubble_indices[kBubbleTopRight]], bubbles[bubble_indices[kBubbleRight]], position, vertical_tiles, bubble);
 	paint(bubbles[bubble_indices[kBubbleBottomRight]], position, bubble, kPaintPositionIsTop);
 
-	paintText(0, 0, colour, string, bubble);
+	enum {
+		kSpeechTwoLinesShift = 8,
+		kSpeechVMargin = 8,
+		kSpeechOneLineShift = 0xc,
+		kSpeechLeftIndent = 15,
+		kSpeechFirstLineExtraIndent = 9
+	};
+
+	int shift = 0;
+	if (lines == 1)
+		shift = kSpeechOneLineShift;
+	if (lines == 2)
+		shift = kSpeechTwoLinesShift;
+
+	paintText(kSpeechLeftIndent, kSpeechVMargin + shift, colour, string, bubble, 0, kSpeechFirstLineExtraIndent);
 
 	if (left + bubble->w >= 320)
 		left = 320 - bubble->w;
@@ -334,9 +348,9 @@ Common::Rect Graphics::paintSpeechInBubble(Common::Point pos, byte colour, const
 	return rect;
 }
 
-Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *dest, uint16 *_lines) {
+Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *dest, uint16 *_lines, uint8 firstLineExtraIndent) {
 	byte ch = 0;
-	uint16 current_left = left;
+	uint16 current_left = left + firstLineExtraIndent;
 	uint16 current_top = top;
 	uint16 max_left = left;
 	byte current_colour = colour;
