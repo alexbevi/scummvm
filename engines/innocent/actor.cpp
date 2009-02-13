@@ -33,6 +33,7 @@
 #include "innocent/innocent.h"
 #include "innocent/inter.h"
 #include "innocent/logic.h"
+#include "innocent/resources.h"
 #include "innocent/room.h"
 #include "innocent/util.h"
 
@@ -108,7 +109,7 @@ void Actor::callMeWhenSilent(const CodePointer &cp) {
 }
 
 void Actor::say(const Common::String &text) {
-	_speech = Speech(text);
+	_speech = Speech(this, text);
 }
 
 Actor::Speech::~Speech() { while (!_cb.empty()) Log.runLater(_cb.pop()); }
@@ -406,7 +407,10 @@ CodePointer Puppeteer::turnAnimator(Direction d) {
 	return CodePointer(off, Log.mainInterpreter());
 }
 
-Actor::Speech::Speech(Common::String text) : _text(text), _ticksLeft(20) {}
+Actor::Speech::Speech(Actor *parent, const Common::String &text) : _text(text), _ticksLeft(20), _actor(parent) {
+	_image = new Innocent::Sprite;
+	_rect = Graf.paintSpeechInBubble(parent->getSpeechPosition(), 235, reinterpret_cast<const byte *>(text.c_str()), _image);
+}
 
 void Actor::Speech::tick() {
 	unless (_ticksLeft--) {
@@ -416,19 +420,25 @@ void Actor::Speech::tick() {
 	}
 }
 
-void Actor::paint(Graphics *g) {
-	Animation::paint(g);
+Common::Point Actor::getSpeechPosition() const {
 	Common::Point speechPosition(_position);
-	if (_mainSprite.get())
+	if (_mainSprite.get()) {
 		speechPosition.y -= _mainSprite.get()->h;
-	_speech.paint(g, speechPosition);
+		speechPosition += _mainSprite.get()->_hotPoint;
+	}
+	return speechPosition;
 }
 
-void Actor::Speech::paint(Graphics *g, Common::Point p) {
+void Actor::paint(Graphics *g) {
+	Animation::paint(g);
+	_speech.paint(g);
+}
+
+void Actor::Speech::paint(Graphics *g) {
 	if (_text.empty())
 		return;
 
-	g->paintSpeechInBubble(p.x, p.y, 235, reinterpret_cast<const byte *>(_text.c_str()));
+	g->paint(_image, Common::Point(_rect.left, _rect.top), Graphics::kPaintSemiTransparent | Graphics::kPaintPositionIsTop);
 }
 
 Direction Actor::Frame::operator-(const Actor::Frame &other) const {

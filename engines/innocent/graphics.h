@@ -97,21 +97,22 @@ public:
 	Common::Rect paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *s, uint16 *lines = 0);
 
 	void paintSpeechBubbleColumn(Sprite *top, Sprite *fill, Common::Point &point, uint8 fill_tiles, Surface *dest);
-	Common::Rect paintSpeechInBubble(uint16 left, uint16 top, byte colour, const byte *string);
+	Common::Rect paintSpeechInBubble(Common::Point pos, byte colour, const byte *string, Surface *dest);
 
 	void paintRect(const Common::Rect &r, byte colour = 235);
 
 	enum PaintFlags {
 		kPaintNormal = 0,
-		kPaintPositionIsTop = 1
+		kPaintPositionIsTop = 1,
+		kPaintSemiTransparent = 2
 	};
-	void paint(const Sprite *sprite, Common::Point pos, PaintFlags flags = kPaintNormal) const {
+	void paint(const Sprite *sprite, Common::Point pos, int flags = kPaintNormal) const {
 		paint(sprite, pos, _framebuffer.get(), flags);
 	}
-	void paint(const Sprite *sprite, uint16 left, uint16 top, Surface *dest, PaintFlags flags = kPaintNormal) const {
+	void paint(const Sprite *sprite, uint16 left, uint16 top, Surface *dest, int flags = kPaintNormal) const {
 		paint(sprite, Common::Point(left, top), dest, flags);
 	}
-	void paint(const Sprite *sprite, Common::Point pos, Surface *s, PaintFlags flags = kPaintNormal) const;
+	void paint(const Sprite *sprite, Common::Point pos, Surface *s, int flags = kPaintNormal) const;
 
 	Common::Point cursorPosition() const;
 	void showCursor();

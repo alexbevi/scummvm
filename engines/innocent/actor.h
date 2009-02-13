@@ -40,6 +40,7 @@ namespace Innocent {
 
 class MainDat;
 class Program;
+class Sprite;
 
 enum Direction {
 	kDirNone = 0,
@@ -120,18 +121,21 @@ public:
 
 	class Speech {
 	public:
-		Speech() {}
+		Speech() : _actor(0) {}
 		~Speech();
-		Speech(Common::String text);
+		Speech(Actor *parent, const Common::String &text);
 		bool active() const { return !_text.empty(); }
 		void callWhenDone(const CodePointer &cp) { _cb.push(cp); }
-		void paint(Graphics *g, Common::Point p);
+		void paint(Graphics *g);
 		void tick();
 
 	private:
 		Common::String _text;
 		Common::Queue<CodePointer> _cb;
 		uint16 _ticksLeft;
+		Actor *_actor;
+		Common::Rect _rect;
+		Innocent::Sprite *_image;
 	};
 
 	friend class MainDat;
@@ -193,6 +197,15 @@ private:
 	Actor &operator=(const Actor &);
 
 	void readHeader(const byte *code);
+
+	/**
+	 * Get position to put the speech bubble in.
+	 * It should be saved and stay still for the entire
+	 * duration of a sentence (as it may move because
+	 * of the actor animating).
+	 * @returns position of the tip of the bubble
+	 */
+	Common::Point getSpeechPosition() const;
 
 	void animate();
 	bool turnTo(Direction);
