@@ -64,6 +64,23 @@ enum FramePart {
 	kFrameNum
 };
 
-}
+enum SpeechBubblePart {
+	kBubbleTopLeft,
+	kBubbleLeft,
+	kBubbleBottomLeft,
+	kBubbleTop,
+	kBubbleFill,
+	kBubbleBottom,
+	kBubbleTopRight,
+	kBubbleRight,
+	kBubbleBottomRight,
+
+	kBubbleBottomLeftPoint,
+	kBubbleBottomRightPoint,
+	kBubbleTopLeftPoint,
+	kBubbleTopRightPoint
+};
+
+} // end of namespace Innocent
 
 #endif

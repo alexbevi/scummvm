@@ -425,7 +425,7 @@ void Actor::Speech::paint(Graphics *g, Common::Point p) {
 	if (_text.empty())
 		return;
 
-	g->paintText(p.x, p.y, 235, reinterpret_cast<const byte *>(_text.c_str()));
+	g->paintSpeechInBubble(p.x, p.y, 235, reinterpret_cast<const byte *>(_text.c_str()));
 }
 
 Direction Actor::Frame::operator-(const Actor::Frame &other) const {

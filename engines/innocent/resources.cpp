@@ -52,14 +52,20 @@ namespace Innocent {
 
 DECLARE_SINGLETON(Resources);
 
-void Surface::blit(const Surface *s, Common::Rect r, int transparent) {
+void Surface::blit(const Surface *s, Common::Rect r, int transparent, const byte (*tinted)[256]) {
+	enum {
+		kSemitransparent = 0xbe
+	};
+
 	const byte *src = reinterpret_cast<byte *>(s->pixels);
 	byte *dest = reinterpret_cast<byte *>(getBasePtr(r.left, r.top));
 
 	int rw = r.width(), rh = r.height();
 	for (int y = 0; y < rh; ++y) {
 		for (int x = 0; x < rw; ++x) {
-			if (src[x] != transparent)
+			if (tinted && src[x] == kSemitransparent)
+				dest[x] = (*tinted)[dest[x]];
+			else if (src[x] != transparent)
 				dest[x] = src[x];
 		}
 		src += s->pitch;
@@ -98,6 +104,7 @@ void Resources::load() {
 	_progDat->load();
 
 	loadFrames();
+	loadSpeechBubbles();
 }
 
 void Resources::loadFrames() {
@@ -112,6 +119,25 @@ void Resources::loadFrames() {
 	FRAME(kFrameBottom);
 	FRAME(kFrameBottomRight);
 	#undef FRAME
+}
+
+void Resources::loadSpeechBubbles() {
+	#define BUBBLE(p) _bubbles[p] = loadSprite(_main->getBubbleId(p))
+	BUBBLE(kBubbleTopLeft);
+	BUBBLE(kBubbleLeft);
+	BUBBLE(kBubbleBottomLeft);
+	BUBBLE(kBubbleTop);
+	BUBBLE(kBubbleFill);
+	BUBBLE(kBubbleBottom);
+	BUBBLE(kBubbleTopRight);
+	BUBBLE(kBubbleRight);
+	BUBBLE(kBubbleBottomRight);
+
+	BUBBLE(kBubbleBottomLeftPoint);
+	BUBBLE(kBubbleBottomRightPoint);
+	BUBBLE(kBubbleTopLeftPoint);
+	BUBBLE(kBubbleTopRightPoint);
+	#undef BUBBLE
 }
 
 void Resources::init() {

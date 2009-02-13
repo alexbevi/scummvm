@@ -93,6 +93,7 @@ public:
 
 	uint16 getCursorSpriteId() const;
 	uint16 getFrameId(FramePart part) const;
+	uint16 getBubbleId(SpeechBubblePart part) const;
 
 	Puppeteer getPuppeteer(uint16 actorId) const;
 

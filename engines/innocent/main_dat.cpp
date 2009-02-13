@@ -84,7 +84,22 @@ enum Offsets {
 	kFrameRightOffset = 0x88,
 	kFrameBottomLeftOffset = 0x7c,
 	kFrameBottomOffset = 0x82,
-	kFrameBottomRightOffset = 0x8a
+	kFrameBottomRightOffset = 0x8a,
+
+	kBubbleTopLeftOffset = 0x8e,
+	kBubbleLeftOffset = 0x90,
+	kBubbleBottomLeftOffset = 0x92,
+	kBubbleTopOffset = 0x94,
+	kBubbleFillOffset = 0x96,
+	kBubbleBottomOffset = 0x98,
+	kBubbleTopRightOffset = 0x9a,
+	kBubbleRightOffset = 0x9c,
+	kBubbleBottomRightOffset = 0x9e,
+
+	kBubbleBottomLeftPointOffset = 0xa0,
+	kBubbleBottomRightPointOffset = 0xa2,
+	kBubbleTopLeftPointOffset = 0xa4,
+	kBubbleTopRightPointOffset = 0xa6
 };
 
 void MainDat::readFile(SeekableReadStream &stream) {
@@ -289,5 +304,26 @@ uint16 MainDat::getFrameId(FramePart part) const {
 	}
 }
 
+uint16 MainDat::getBubbleId(SpeechBubblePart part) const {
+	switch (part) {
+	#define PART(p) case p: return READ_LE_UINT16(_footer + p##Offset)
+	PART(kBubbleTopLeft);
+	PART(kBubbleLeft);
+	PART(kBubbleBottomLeft);
+	PART(kBubbleTop);
+	PART(kBubbleFill);
+	PART(kBubbleBottom);
+	PART(kBubbleTopRight);
+	PART(kBubbleRight);
+	PART(kBubbleBottomRight);
+
+	PART(kBubbleBottomLeftPoint);
+	PART(kBubbleBottomRightPoint);
+	PART(kBubbleTopLeftPoint);
+	PART(kBubbleTopRightPoint);
+	#undef PART
+	default: assert(false);
+	}
+}
 
 } // End of namespace Innocent

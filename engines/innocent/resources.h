@@ -43,13 +43,13 @@ class Engine;
 class Surface : public ::Graphics::Surface { // this surface autodestructs properly
 public:
 	~Surface() { free(); }
-	void blit(const Surface *s, int transparent = -1) {
-		blit(s, Common::Point(0, 0), transparent);
+	void blit(const Surface *s, int transparent = -1, const byte (*tinted)[256] = 0) {
+		blit(s, Common::Point(0, 0), transparent, tinted);
 	}
-	void blit(const Surface *s, Common::Point p, int transparent = -1) {
-		blit(s, Common::Rect(p.x, p.y, s->w, s->h), transparent);
+	void blit(const Surface *s, Common::Point p, int transparent = -1, const byte (*tinted)[256] = 0) {
+		blit(s, Common::Rect(p.x, p.y, s->w, s->h), transparent, tinted);
 	}
-	void blit(const Surface *s, Common::Rect r, int transparent = -1);
+	void blit(const Surface *s, Common::Rect r, int transparent = -1, const byte (*tinted)[256] = 0);
 };
 
 class Sprite : public Surface {
@@ -120,9 +120,11 @@ public:
 	Sprite *loadSprite(uint16 id) const;
 	Sprite *getCursor() const;
 	Sprite **frames() { return _frames; }
+	Sprite * const *bubbles() const { return _bubbles; }
 
 	void loadActors();
 	void loadFrames();
+	void loadSpeechBubbles();
 
 	MainDat *mainDat() const { return _main.get(); }
 
@@ -149,6 +151,7 @@ private:
 	std::auto_ptr<Common::SeekableReadStream> *_musicFiles;
 
 	Sprite *_frames[9];
+	Sprite *_bubbles[13];
 };
 
 #define Res Resources::instance()

@@ -245,12 +245,81 @@ enum {
 	kSelectedOptionColour = 227
 };
 
-Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *dest) {
+void Graphics::paintSpeechBubbleColumn(Sprite *top, Sprite *fill, Common::Point &point, uint8 fill_tiles, Surface *dest) {
+	paint(top, point, dest, kPaintSemitransparent);
+}
+
+Common::Rect Graphics::paintSpeechInBubble(uint16 left, uint16 top, byte colour, const byte *string) {
+	top += 4;
+
+	bool pointsLeft = left < 160;
+	bool pointsUp = top < 53;
+
+	if (pointsLeft)
+		left += 18;
+
+	uint16 lines;
+	Common::Rect textSize = textMetrics(string, &lines);
+
+	Sprite * const *bubbles = _resources->bubbles();
+
+	uint8 bubble_indices[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+
+	uint8 wadj = 0;
+	if (pointsLeft && !pointsUp) {
+		uint16 height = 60;
+		if (lines >= 3)
+			height = lines * 12 + 16;
+		if (top < height)
+			top = 0;
+		else
+			top -= height;
+		bubble_indices[kBubbleBottomLeft] = kBubbleBottomLeftPoint;
+		wadj = 4;
+		left += 4;
+	} else
+		error("can't paint speech bubble pointing %s %s yet", pointsUp ? "up" : "down", pointsLeft ? "left" : "right");
+
+	uint8 vertical_tiles = 1;
+	int16 height = lines * 12 - 42;
+	if (height > 5)
+		vertical_tiles += (height - 58) / 6;
+
+	uint8 horizontal_tiles = textSize.width() / 4;
+	if (horizontal_tiles == 0)
+		horizontal_tiles = 1;
+
+	Surface bubble;
+	bubble.create(69 + wadj + 4 * horizontal_tiles, 40 + 12 * vertical_tiles, 1);
+
+	Common::Point position(wadj, 0);
+	paintSpeechBubbleColumn(bubbles[bubble_indices[7]], bubbles[bubble_indices[4]], position, vertical_tiles, &bubble);
+	position.x -= wadj;
+	paint(bubbles[bubble_indices[1]], position, &bubble, kPaintSemitransparent);
+
+	position.x += 33;
+	for (int i = 0; i < horizontal_tiles; i++) {
+		position.y = 0;
+		paintSpeechBubbleColumn(bubbles[bubble_indices[8]], bubbles[bubble_indices[5]], position, vertical_tiles, &bubble);
+		paint(bubbles[bubble_indices[2]], position, &bubble, kPaintSemitransparent);
+		position.x += 4;
+	}
+
+	position.y = 0;
+	paintSpeechBubbleColumn(bubbles[bubble_indices[9]], bubbles[bubble_indices[6]], position, vertical_tiles, &bubble);
+	paint(bubbles[bubble_indices[3]], position, &bubble, kPaintSemitransparent);
+
+	_system->copyRectToScreen(reinterpret_cast<byte *>(bubble.pixels), bubble.pitch, left, top, bubble.w, bubble.h);
+	return Common::Rect(left, top, left + bubble.w, top + bubble.h);
+}
+
+Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *dest, uint16 *_lines) {
 	byte ch = 0;
 	uint16 current_left = left;
 	uint16 current_top = top;
 	uint16 max_left = left;
 	byte current_colour = colour;
+	uint16 lines = 1;
 
 	int opt;
 	while ((ch = *(string++))) {
@@ -278,6 +347,7 @@ Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, const byt
 		case '\r':
 			current_left = left;
 			current_top += kLineHeight;
+			lines++;
 			break;
 		case kStringMenuOption:
 			opt = _mOption++;
@@ -293,6 +363,9 @@ Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, const byt
 				max_left = current_left;
 		}
 	}
+
+	if (_lines)
+		*_lines = lines;
 
 	return Common::Rect(left, top, max_left, current_top + kLineHeight);
 }
@@ -339,14 +412,15 @@ uint16 Graphics::paintChar(uint16 left, uint16 top, byte colour, byte ch, Surfac
 	int w;
 	if (glyph) {
 		glyph->recolour(colour);
-		paint(glyph, Common::Point(left, top+glyph->h), dest);
+		if (dest)
+			paint(glyph, Common::Point(left, top+glyph->h), dest);
 		w = glyph->w - 1;
 		delete glyph;
 	} else return 4;
 	return w;
 }
 
-void Graphics::paint(const Sprite *sprite, Common::Point pos, Surface *dest) const {
+void Graphics::paint(const Sprite *sprite, Common::Point pos, Surface *dest, PaintFlags flags) const {
 	debugC(4, kDebugLevelGraphics, "painting sprite at %d:%d (+%d:%d) [%dx%d]", pos.x, pos.y, sprite->_hotPoint.x, sprite->_hotPoint.y, sprite->w, sprite->h);
 
 	Common::Rect r(sprite->w, sprite->h);
@@ -358,7 +432,7 @@ void Graphics::paint(const Sprite *sprite, Common::Point pos, Surface *dest) con
 	r.clip(319, 199);
 	debugC(4, kDebugLevelGraphics, "transformed rect: %d:%d %d:%d", r.left, r.top, r.right, r.bottom);
 
-	dest->blit(sprite, r, 0);
+	dest->blit(sprite, r, 0, (flags & kPaintSemitransparent) ? &_tintedPalette : 0);
 }
 
 Common::Point Graphics::cursorPosition() const {
@@ -423,6 +497,32 @@ void Graphics::clearPalette(int offset, int count) {
 
 void Graphics::setPalette(const byte *colours, uint start, uint num) {
 	_system->setPalette(colours, start, num);
+
+	// calculate tinted palette
+	for (int i = 0; i < 256; ++i) {
+		const byte *colour = colours + i*4;
+		const byte luma = (30 * colour[0] + 60 * colour[1] + 10 * colour[2])/100;
+		// XXX perhaps it'd be better to inspect all colours?
+		// this is how it's done in the original:
+		byte curr = 174;
+		byte best_diff = 255;
+		byte best_color = curr;
+
+		for (int j = 0; j < 4; j++) {
+			for (int k = 0; k < 2; k++) {
+				int16 diff = colours[(curr + k) * 4] - luma;
+				if (diff < 0)
+					diff = -diff;
+				if (diff < best_diff) {
+					best_diff = diff;
+					best_color = curr + k;
+				}
+			}
+			curr += 15;
+		}
+
+		_tintedPalette[i] = best_color;
+	}
 }
 
 struct Tr : public unary_function<byte, byte> {

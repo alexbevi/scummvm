@@ -90,16 +90,28 @@ public:
 	Common::Rect paintText(uint16 left, uint16 top, byte colour, const byte *string) {
 		return paintText(left, top, colour, string, _framebuffer.get());
 	}
-	Common::Rect paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *s);
+
+	Common::Rect textMetrics(const byte *string, uint16 *lines = 0, uint16 left = 0, uint16 top = 0) {
+		return paintText(left, top, 235, string, 0, lines);
+	}
+	Common::Rect paintText(uint16 left, uint16 top, byte colour, const byte *string, Surface *s, uint16 *lines = 0);
+
+	void paintSpeechBubbleColumn(Sprite *top, Sprite *fill, Common::Point &point, uint8 fill_tiles, Surface *dest);
+	Common::Rect paintSpeechInBubble(uint16 left, uint16 top, byte colour, const byte *string);
+
 	void paintRect(const Common::Rect &r, byte colour = 235);
 
-	void paint(const Sprite *sprite, Common::Point pos) const {
-		paint(sprite, pos, _framebuffer.get());
+	enum PaintFlags {
+		kPaintNormal = 0,
+		kPaintSemitransparent = 1
+	};
+	void paint(const Sprite *sprite, Common::Point pos, PaintFlags flags = kPaintNormal) const {
+		paint(sprite, pos, _framebuffer.get(), flags);
 	}
-	void paint(const Sprite *sprite, uint16 left, uint16 top, Surface *dest) const {
-		paint(sprite, Common::Point(left, top), dest);
+	void paint(const Sprite *sprite, uint16 left, uint16 top, Surface *dest, PaintFlags flags = kPaintNormal) const {
+		paint(sprite, Common::Point(left, top), dest, flags);
 	}
-	void paint(const Sprite *sprite, Common::Point pos, Surface *s) const;
+	void paint(const Sprite *sprite, Common::Point pos, Surface *s, PaintFlags flags = kPaintNormal) const;
 
 	Common::Point cursorPosition() const;
 	void showCursor();
@@ -140,6 +152,7 @@ private:
 	bool _willFadein;
 	FadeFlags _fadeFlags;
 	byte _interfacePalette[0x400];
+	byte _tintedPalette[256];
 
 	byte *_speech;
 	uint16 _speechFramesLeft;
