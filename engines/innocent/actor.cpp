@@ -408,8 +408,10 @@ CodePointer Puppeteer::turnAnimator(Direction d) {
 }
 
 Actor::Speech::Speech(Actor *parent, const Common::String &text) : _text(text), _ticksLeft(20), _actor(parent) {
+	const Common::Point &position = parent->getSpeechPosition();
+	debugC(1, kDebugLevelActor, "adding speech \"%s\" for %s at %d:%d", text.c_str(), parent->_debugInfo, position.x, position.y);
 	_image = new Innocent::Sprite;
-	_rect = Graf.paintSpeechInBubble(parent->getSpeechPosition(), 235, reinterpret_cast<const byte *>(text.c_str()), _image);
+	_rect = Graf.paintSpeechInBubble(position, 235, reinterpret_cast<const byte *>(text.c_str()), _image);
 }
 
 void Actor::Speech::tick() {
@@ -423,8 +425,8 @@ void Actor::Speech::tick() {
 Common::Point Actor::getSpeechPosition() const {
 	Common::Point speechPosition(_position);
 	if (_mainSprite.get()) {
-		speechPosition.y -= _mainSprite.get()->h;
-		speechPosition -= _mainSprite.get()->_hotPoint;
+		speechPosition.y -= _mainSprite.get()->h - _mainSprite.get()->_hotPoint.y;
+		speechPosition.x -= _mainSprite.get()->_hotPoint.x;
 	}
 	return speechPosition;
 }
