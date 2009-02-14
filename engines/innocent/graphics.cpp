@@ -75,8 +75,8 @@ void Graphics::paint() {
 
 	paintBackdrop();
 	paintInterface();
-	paintExits();
 	paintAnimations();
+	paintExits();
 	paintSpeech();
 
 	debugC(3, kDebugLevelGraphics, "painting paintables");
