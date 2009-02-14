@@ -575,7 +575,7 @@ OPCODE(0xbe) {
 OPCODE(0xc2) {
 	// add animation at cursor
 	debugC(3, kDebugLevelScript, "opcode 0xc2: add animation %s at cursor partial STUB", +a[0]);
-//	_logic->addAnimation(new Animation(static_cast<CodePointer &>(a[0]), _graphics->cursorPosition()));
+	_logic->addAnimation(new Animation(static_cast<CodePointer &>(a[0]), _graphics->cursorPosition()));
 	return kThxBye;
 }
 
