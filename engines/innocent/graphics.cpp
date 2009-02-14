@@ -71,7 +71,7 @@ void Graphics::init() {
 }
 
 void Graphics::paint() {
-	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, ">>>start paint procedure");
+	debugC(3, kDebugLevelFlow | kDebugLevelGraphics, ">>>start paint procedure");
 
 	paintBackdrop();
 	paintInterface();
@@ -90,7 +90,7 @@ void Graphics::paint() {
 		_afterRepaintHooks.clear();
 	}
 
-	debugC(2, kDebugLevelFlow | kDebugLevelGraphics, "<<<end paint procedure");
+	debugC(3, kDebugLevelFlow | kDebugLevelGraphics, "<<<end paint procedure");
 }
 
 void Graphics::paintExits() {
