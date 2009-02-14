@@ -381,7 +381,7 @@ Common::Rect Graphics::paintText(uint16 left, uint16 top, byte colour, const byt
 			current_left += *(string++);
 			break;
 		case kStringCenter:
-//			current_left = (320 - calculateLineWidth(string))/2;
+			current_left = (320 - calculateLineWidth(string))/2;
 			break;
 		case '\n':
 		case '\r':
