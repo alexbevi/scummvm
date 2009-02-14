@@ -687,8 +687,8 @@ OPCODE(0xd6) {
 
 OPCODE(0xdb) {
 	// add active rect
-	debugC(3, kDebugLevelScript, "opcode 0xdb: add rect %s at %s %s %s %s", +a[0], +a[1], +a[2], +a[3], +a[4]);
-	Log.room()->addRect(Room::Rect(a[0].signd(), Common::Rect(a[1].signd(), a[4].signd(), a[2].signd(), a[3].signd())));
+	debugC(1, kDebugLevelScript, "opcode 0xdb: add rect %s:%s-%s:%s::%s", +a[0], +a[1], +a[2], +a[3], +a[4]);
+	Log.room()->addRect(Room::Rect(a[4].signd(), Common::Rect(a[0].signd(), a[1].signd(), a[2].signd(), a[3].signd())));
 	return kThxBye;
 }
 
