@@ -621,7 +621,8 @@ OPCODE(0xcb) {
 
 OPCODE(0xcc) {
 	// go fullscreen
-	debugC(1, kDebugLevelScript, "opcode 0xcc: go fullscreen STUB");
+	debugC(1, kDebugLevelScript, "opcode 0xcc: go fullscreen");
+	Graf.goFullscreen();
 	return kThxBye;
 }
 

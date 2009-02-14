@@ -61,6 +61,7 @@ void Graphics::setEngine(Engine *engine) {
 
 	_speech = 0;
 	_speechFramesLeft = 0;
+	_fullscreen = false;
 }
 
 void Graphics::init() {
@@ -111,6 +112,7 @@ void Graphics::prepareInterfacePalette() {
 }
 
 void Graphics::paintInterface() {
+	if (_fullscreen) return;
 	debugC(3, kDebugLevelGraphics, "painting interface");
 	_framebuffer->blit(_interface, Common::Rect(0, 152, 320, 200), 0);
 }
@@ -560,6 +562,10 @@ void Graphics::setPalette(const byte *colours, uint start, uint num) {
 
 		_tintedPalette[i] = best_color;
 	}
+}
+
+void Graphics::goFullscreen() {
+	_fullscreen = true;
 }
 
 struct Tr : public unary_function<byte, byte> {

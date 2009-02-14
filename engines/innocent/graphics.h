@@ -122,6 +122,9 @@ public:
 	void updateScreen();
 	void setPalette(const byte *colours, uint start, uint num);
 
+	/** Go fullscreen. This will hide the interface. */
+	void goFullscreen();
+
 private:
 	enum {
 		kLineHeight = 12
@@ -159,6 +162,7 @@ private:
 	byte *_speech;
 	uint16 _speechFramesLeft;
 	CodePointer _speechDoneCallback;
+	bool _fullscreen;
 };
 
 #define Graf Graphics::instance()
