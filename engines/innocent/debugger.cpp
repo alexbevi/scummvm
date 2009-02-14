@@ -125,7 +125,7 @@ CMD(showClickable) {
 CMD(listExits) {
 	DebugPrintf("Room exits:\n");
 	foreach (Exit *, logic()->room()->exits())
-		DebugPrintf("\t%s\n", +(**it));
+		DebugPrintf("  %s\n", +(**it));
 	DebugPrintf("\n");
 	return true;
 }
