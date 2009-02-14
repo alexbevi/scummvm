@@ -119,6 +119,7 @@ void Graphics::setBackdrop(uint16 id) {
 	byte palette[0x400];
 	_backdrop.reset(_resources->loadBackdrop(id, palette));
 	setPalette(palette, 0, 256);
+	prepareInterfacePalette();
 	paintBackdrop();
 }
 
@@ -534,7 +535,6 @@ void Graphics::clearPalette(int offset, int count) {
 
 void Graphics::setPalette(const byte *colours, uint start, uint num) {
 	_system->setPalette(colours, start, num);
-	prepareInterfacePalette();
 
 	// calculate tinted palette
 	for (int i = 0; i < 256; ++i) {
