@@ -99,27 +99,37 @@ MusicScript::MusicScript(const byte *data) :
 	_offset(2) {}
 
 enum {
+	kJump = 0x96,
 	kSetBeat = 0x9a,
 	kStop =	   0x9b
 };
 
 void MusicScript::tick() {
-	switch (_code[_offset]) {
+	while (true) {
+		switch (_code[_offset]) {
 
-	case kSetBeat:
-		debugC(2, kDebugLevelMusic, "will set beat to %d", _code[_offset + 1]);
-		Music.setBeat(_code[_offset + 1]);
-		_offset += 2;
-		break;
+		case kJump: {
+			uint16 target = READ_LE_UINT16(_code + _offset + 2);
+			debugC(2, kDebugLevelMusic, "will jump to music script at 0x%x", target);
+			_offset = target;
+			break;
+		}
 
-	case kStop:
-		debugC(2, kDebugLevelMusic, "will stop playing");
-		Music.silence();
-		Music.unloadMusic();
-		return;
+		case kSetBeat:
+			debugC(2, kDebugLevelMusic, "will set beat to %d", _code[_offset + 1]);
+			Music.setBeat(_code[_offset + 1]);
+			_offset += 2;
+			return;
 
-	default:
-		error("unhandled music script call %x", _code[_offset]);
+		case kStop:
+			debugC(2, kDebugLevelMusic, "will stop playing");
+			Music.silence();
+			Music.unloadMusic();
+			return;
+
+		default:
+			error("unhandled music script call %x", _code[_offset]);
+		}
 	}
 }
 
