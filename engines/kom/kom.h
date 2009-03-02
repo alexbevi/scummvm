@@ -61,8 +61,7 @@ public:
 	KomEngine(OSystem *system);
 	~KomEngine();
 	
-	Common::Error init();
-	Common::Error go();
+	Common::Error run();
 
 	::GUI::Debugger *getDebugger() { return _debugger; }
 	void errorString(const char *buf1, char *buf2);

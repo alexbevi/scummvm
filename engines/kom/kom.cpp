@@ -65,7 +65,7 @@ KomEngine::~KomEngine() {
 	delete _game;
 }
 
-Common::Error KomEngine::init() {
+Common::Error KomEngine::run() {
 	// Add the game path to the directory search list.
 	// ScummVM defaults to 4, KoM needs 5
 	SearchMan.remove(_gameDataDir.getPath());
@@ -97,10 +97,6 @@ Common::Error KomEngine::init() {
 	 */
 
 
-	return Common::kNoError;
-}
-
-Common::Error KomEngine::go() {
 	// Stuff to do here
 	/*
 	 * Play sci logo movie
