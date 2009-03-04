@@ -1,8 +1,8 @@
 Index: base/plugins.cpp
 ===================================================================
---- base/plugins.cpp	(revision 31898)
+--- base/plugins.cpp	(revision 39101)
 +++ base/plugins.cpp	(working copy)
-@@ -123,6 +123,9 @@
+@@ -115,6 +115,9 @@
  		#if PLUGIN_ENABLED_STATIC(IGOR)
  		LINK_PLUGIN(IGOR)
  		#endif
@@ -14,21 +14,21 @@ Index: base/plugins.cpp
  		#endif
 Index: configure
 ===================================================================
---- configure	(revision 31898)
+--- configure	(revision 39101)
 +++ configure	(working copy)
-@@ -90,6 +90,7 @@
- add_engine drascula "Drascula: The Vampire Strikes Back" yes
+@@ -94,6 +94,7 @@
  add_engine gob "Gobli*ns" yes
+ add_engine groovie "Groovie" yes
  add_engine igor "Igor: Objective Uikokahonia" no
 +add_engine kom "Kingdom O' Magic" no
- add_engine kyra "Legend of Kyrandia" yes
+ add_engine kyra "Legend of Kyrandia" yes "lol"
+ add_engine lol "Lands of Lore" no
  add_engine lure "Lure of the Temptress" yes
- add_engine m4 "M4/MADS" no
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 31898)
+--- engines/engines.mk	(revision 39101)
 +++ engines/engines.mk	(working copy)
-@@ -47,6 +47,11 @@
+@@ -52,6 +52,11 @@
  MODULES += engines/igor
  endif
  
