@@ -44,7 +44,7 @@ static const PlainGameDescriptor kom_list[] = {
 class KomMetaEngine : public MetaEngine {
 public:
 	virtual const char *getName() const;
-	virtual const char *getCopyright() const;
+	virtual const char *getOriginalCopyright() const;
 
 	virtual GameList getSupportedGames() const;
 	virtual GameDescriptor findGame(const char *gameid) const;
@@ -57,7 +57,7 @@ const char *KomMetaEngine::getName() const {
 	return "Kingdom O\' Magic";
 }
 
-const char *KomMetaEngine::getCopyright() const {
+const char *KomMetaEngine::getOriginalCopyright() const {
 	return "Kingdom O' Magic (C) 1996 SCi (Sales Curve Interactive) Ltd.";
 }
 
