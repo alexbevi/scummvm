@@ -36,8 +36,7 @@
 namespace Kom {
 
 struct Scope {
-	Scope() : aliasData(NULL), minFrame(0), maxFrame(0), startFrame(-1) {}
-	~Scope() { delete[] aliasData; }
+	Scope() : aliasData(0), minFrame(0), maxFrame(0), startFrame(-1) {}
 	int8 minFrame;
 	int8 maxFrame;
 	int8 startFrame;
