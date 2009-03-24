@@ -278,7 +278,7 @@ void Input::checkKeys() {
 				_inKey = event.kbd.keycode;
 				switch (_inKey) {
 					case Common::KEYCODE_ESCAPE:
-						_system->quit();
+						_vm->quitGame();
 						break;
 					default:
 						break;
@@ -300,7 +300,7 @@ void Input::checkKeys() {
 			break;
 
 		case Common::EVENT_QUIT:
-			_system->quit();
+			_vm->quitGame();
 			break;
 
 		default:
