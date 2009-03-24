@@ -47,7 +47,7 @@ class SoundSample {
 	friend class Sound;
 public:
 	SoundSample() { _data = 0; }
-	~SoundSample() { delete _data; }
+	~SoundSample() { delete[] _data; }
 
 	bool loadFile(Common::String filename);
 	void unload();
