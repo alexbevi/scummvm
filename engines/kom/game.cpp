@@ -1858,6 +1858,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 		inv.shop = shop;
 		inv.mode = mode;
 		inLoop = true;
+		inv.selectedBox2 = -1;
 		inv.isSelected = false;
 		inv.selectedInvObj = -1;
 		inv.selectedWeapObj = -1;
