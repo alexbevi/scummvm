@@ -607,6 +607,7 @@ void Screen::freeSepia() {
 		return;
 
 	delete[] _sepiaScreen;
+	_sepiaScreen = 0;
 	_system->setPalette(_backupPalette, 0, 256);
 
 	// FIXME - add isLoaded to flic player?
