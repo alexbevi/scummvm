@@ -1035,7 +1035,7 @@ void Screen::drawInventory(Inventory *inv) {
 		inv->isSelected = false;
 	}
 
-	if (0 <= inv->selectedObj & inv->selectedObj < 9999) {
+	if (0 <= inv->selectedObj && inv->selectedObj < 9999) {
 		bool useImmediate = _vm->database()->getObj(inv->selectedObj)->isUseImmediate;
 
 		if (useImmediate && (inv->mode & 1) == 0) {
