@@ -218,8 +218,8 @@ void KomEngine::gameLoop() {
 				break;
 
 			// Unused
-			case 0x6C:
-				break;
+			/* case 0x6C:
+				break; */
 
 			case CMD_NOTHING:
 			default:
