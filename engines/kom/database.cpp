@@ -970,7 +970,7 @@ bool Database::getExitInfo(int loc, int box, int *exitLoc, int *exitBox) {
 bool Database::isInLine(int loc, int box, int x, int y) {
 	Box *b = (&_locRoutes[loc].boxes[box]);
 
-	return (x > b->x1 && x < b->x2 || y > b->y1 && y < b->y2);
+	return ((x > b->x1 && x < b->x2) || (y > b->y1 && y < b->y2));
 }
 
 

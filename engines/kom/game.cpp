@@ -1009,11 +1009,12 @@ void Game::loopCollide() {
 			continue;
 
 		for (uint j = 0; j < _roomDoors.size(); j++) {
-			if (_roomDoors[j].boxHit < 2)
+			if (_roomDoors[j].boxHit < 2) {
 				if (chr->_lastBox == _roomDoors[j].boxOpenSlow)
 					_roomDoors[j].boxHit = 1;
 				else if (chr->_lastBox == _roomDoors[j].boxOpenFast)
 					_roomDoors[j].boxHit = 2;
+			}
 		}
 	}
 
@@ -1964,11 +1965,12 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 					inv.offset_3E = 0;
 				}
 
-				if (rightClick)
+				if (rightClick) {
 					if (_settings.objectNum >= 0)
 						inv.mouseState = 5;
 					else
 						inv.mouseState = 4;
+				}
 				break;
 			case 2:
 				if (!leftClick) {
