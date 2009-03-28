@@ -503,7 +503,6 @@ void Character::setScopeX(int16 scope) {
 
 		char xtend = _xtend;
 
-
 		if (_walkSpeed == 0) {
 			xtend += _vm->game()->player()->isNight;
 

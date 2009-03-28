@@ -117,6 +117,12 @@ void Sound::stopSample(SoundSample &sample) {
 	}
 }
 
+void Sound::pauseSample(SoundSample &sample, bool paused) {
+	if (_mixer->isSoundHandleActive(sample._handle.handle)) {
+		_mixer->pauseHandle(sample._handle.handle, paused);
+	}
+}
+
 uint8 Sound::getFreeHandle() {
 	for (int i = 0; i < SOUND_HANDLES; i++) {
 		if (_handles[i] == 0)

@@ -32,6 +32,7 @@
 
 #include "kom/database.h"
 #include "kom/sound.h"
+#include "kom/video_player.h"
 
 namespace Kom {
 
@@ -110,6 +111,7 @@ struct Player {
 	int16 commandState;
 	int16 collideType;
 	int16 collideNum;
+	bool narratorTalking;
 	SoundSample spriteSample;
 	uint8 selectedChar; // 0 - thidney. 1 - shahron
 	uint8 selectedQuest;
@@ -181,6 +183,10 @@ public:
 
 	void doActionMoveChar(uint16 charId, int16 loc, int16 box);
 	void doActionSpriteScene(const char *name, int charId, int loc, int box);
+	void doActionPlayVideo(const char *name);
+
+	void doActionPlaySample(const char *filename);
+	void stopNarrator();
 
 	int8 doDonut(int type, Inventory *inv);
 	void doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 num);
@@ -210,6 +216,8 @@ private:
     Settings _settings;
     Player _player;
 	Cb _cb;
+
+	VideoPlayer *_videoPlayer;
 
 	void processChars();
 	void processChar(int proc);

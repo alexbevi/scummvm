@@ -71,6 +71,7 @@ public:
 	void playSampleMusic(SoundSample &sample);
 	void playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume);
 	void stopSample(SoundSample &sample);
+	void pauseSample(SoundSample &sample, bool paused);
 
 private:
 

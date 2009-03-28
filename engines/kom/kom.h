@@ -60,7 +60,7 @@ class KomEngine : public Engine {
 public:
 	KomEngine(OSystem *system);
 	~KomEngine();
-	
+
 	Common::Error run();
 
 	::GUI::Debugger *getDebugger() { return _debugger; }
@@ -82,6 +82,7 @@ public:
 
 	// TODO - original deletes the data. check if there's a benefit
 	void ambientStop() { _sound->stopSample(_ambientSample); }
+	void ambientPause(bool paused) { _sound->pauseSample(_ambientSample, paused); }
 
 	uint8 _flicLoaded;
 

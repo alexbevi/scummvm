@@ -34,6 +34,7 @@
 #include "kom/game.h"
 #include "kom/panel.h"
 #include "kom/database.h"
+#include "kom/video_player.h"
 
 namespace Kom {
 
@@ -43,9 +44,12 @@ Game::Game(KomEngine *vm, OSystem *system) : _system(system), _vm(vm) {
 
 	// FIXME: Temporary
     _player.selectedChar = _player.selectedQuest = 0;
+
+	_videoPlayer = new VideoPlayer(_vm);
 }
 
 Game::~Game() {
+	delete _videoPlayer;
 }
 
 void Game::enterLocation(uint16 locId) {
@@ -685,13 +689,13 @@ bool Game::doStat(const Command *cmd) {
 			db->setVar(j->arg2, db->getLoc(j->arg3)->xtend);
 			break;
 		case 467:
-			warning("TODO: PlayVideo(%s)", j->arg1);
+			doActionPlayVideo(j->arg1);
 			break;
 		case 468:
 			doActionSpriteScene(j->arg1, j->arg2, j->arg3, j->arg4);
 			break;
 		case 469:
-			warning("TODO: PlaySample(%s)", j->arg1);
+			doActionPlaySample(j->arg1);
 			break;
 		case 473:
 			db->getChar(0)->_start3 = db->getChar(0)->_start3PrevPrev;
@@ -859,16 +863,16 @@ void Game::doCommand(int command, int type, int id, int type2, int id2) {
 void Game::doNoUse() {
 	switch (_settings.narratorPatience) {
 	case 1:
-		warning("TODO: PlaySample(nmess003)");
+		doActionPlaySample("nmess003");
 		break;
 	case 2:
-		warning("TODO: PlaySample(nmess004)");
+		doActionPlaySample("nmess004");
 		break;
 	case 3:
-		warning("TODO: PlaySample(nmess005)");
+		doActionPlaySample("nmess005");
 		break;
 	case 4:
-		warning("TODO: PlaySample(nmess006)");
+		doActionPlaySample("nmess006");
 	}
 }
 
@@ -1511,6 +1515,171 @@ void Game::doActionSpriteScene(const char *name, int charId, int loc, int box) {
 	chr->_isBusy = true;
 }
 
+void Game::doActionPlayVideo(const char *name) {
+	Character *chr = _vm->database()->getChar(0);
+	const char *dir = "";
+	char filename[100];
+	bool pauseAmbient = true;
+	bool noModifier = false;
+	char prefix[5] = "";
+
+	static const char *convPrefix[] = {
+		"afro", "bak", "bke", "bst",
+		"dgn", "dis", "dld", "el1",
+		"el2", "evs", "fry", "gd1",
+		"gd2", "gd4", "ggn", "gin",
+		"gnt", "grn", "in1", "in2",
+		"in3", "in4", "jack", "kng",
+		"krys", "man", "msh", "pxe",
+		"rnd", "sman", "stw", "sty",
+		"ter", "trl1", "trl2", "trl3",
+		"wig"
+	};
+
+	if (_player.narratorTalking) {
+		warning("TODO: stopNarrator");
+		chr->_isBusy = false;
+		_player.narratorTalking = false;
+	}
+
+	if (_player.spriteSample.isLoaded()) {
+		_vm->sound()->stopSample(_player.spriteSample);
+		_player.spriteSample.unload();
+		// TODO: another initialization
+	}
+
+	String videoName(name);
+	videoName.toLowercase();
+
+	if (_vm->game()->player()->selectedChar == 0) {
+		if (videoName.lastChar() == 's')
+			videoName.setChar('t', videoName.size() - 1);
+		// SHAR -> SMAN
+		if (videoName.hasPrefix("shar")) {
+			videoName.setChar('m', 1);
+			videoName.setChar('n', 3);
+		}
+	}
+
+	if (videoName[1] == '_' || videoName[1] == '-') {
+		switch (videoName[0]) {
+		case 'a':
+			pauseAmbient = false;
+			break;
+		case 'e':
+			dir = "cutsend";
+			noModifier = true;
+			break;
+		case 's':
+			dir = "cutsigns";
+			break;
+		}
+
+		videoName = videoName.c_str() + 2;
+	}
+
+	// No match yet
+	if (*dir == '\0') {
+		// try to match the file against a cutsconv prefix.
+		// if one doesn't exist, it's a game cutscene.
+		if (videoName[0] == 'j' || videoName[2] != 'c') {
+			for (uint i = 0; i < sizeof(convPrefix) / sizeof(convPrefix[0]); i++) {
+				if (videoName.hasPrefix(convPrefix[i])) {
+					dir = "cutsconv";
+					strcpy(prefix, convPrefix[i]);
+					break;
+				}
+			}
+		}
+	}
+
+	// Must be a game cutscene
+	if (*dir == '\0') {
+		dir = "cutsgame";
+		prefix[0] = videoName[0];
+		prefix[1] = videoName[1];
+		prefix[2] = '\0';
+	}
+
+	if (noModifier)
+		sprintf(filename, "kom/%s/%s%s%s.smk",
+			dir, prefix, prefix[0] ? "/" : "", videoName.c_str());
+	else {
+		sprintf(filename, "kom/%s/%s%s%s%d.smk",
+			dir, prefix, prefix[0] ? "/" : "", videoName.c_str(),
+			_vm->game()->player()->isNight);
+
+		// If the file doesn't exist, try the other day mode
+		if (!Common::File::exists(filename))
+			sprintf(filename, "kom/%s/%s%s%s%d.smk",
+				dir, prefix, prefix[0] ? "/" : "", videoName.c_str(),
+				1 - _vm->game()->player()->isNight);
+	}
+
+	_vm->screen()->clearScreen();
+
+	if (pauseAmbient)
+		_vm->ambientPause(true);
+
+	_vm->screen()->showMouseCursor(false);
+	_videoPlayer->playVideo(filename);
+	_vm->screen()->showMouseCursor(true);
+
+	if (pauseAmbient)
+		_vm->ambientPause(false);
+}
+
+void Game::doActionPlaySample(const char *filename) {
+	String sampleName(filename);
+	int thing = 0;
+
+	warning("TODO: doActionPlaySample(%s)", filename);
+
+	stopNarrator();
+
+	if (_player.spriteSample.isLoaded()) {
+		_vm->sound()->stopSample(_player.spriteSample);
+		_player.spriteSample.unload();
+		// TODO: another initialization
+	}
+
+	sampleName = filename;
+
+	if (filename[1] == '_' || filename[1] == '-') {
+		switch (filename[0]) {
+		case 'P':
+		case 'p':
+			thing |= 3;
+			break;
+		case 'V':
+		case 'v':
+			thing |= 5;
+			break;
+		default:
+			break;
+		}
+
+		sampleName = filename + 2;
+	}
+
+	sampleName.toLowercase();
+
+	if (sampleName.hasPrefix("nmess")) {
+		// TODO: kom/nar/nmess..
+	} else {
+	}
+
+
+}
+
+void Game::stopNarrator() {
+	if (_player.narratorTalking) {
+		warning("TODO: stopNarrator");
+		_vm->database()->getChar(0)->_isBusy = false;
+		_player.narratorTalking = false;
+	}
+}
+
 /**
  * Displays the verb 'donut' on the screen. Sets a variable to the
  * selected verb.
@@ -2089,7 +2258,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 		}
 
 		if (*objectNum >= 0 && inInventory) {
-			warning("TODO: stop narrator");
+			stopNarrator();
 			// Look at
 			doCommand(5, 1, *objectNum, -1, -1);
 			*objectNum = *objectType = -1;
@@ -2097,7 +2266,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 
 	} while (inInventory);
 
-	warning("TODO: stop narrator");
+	stopNarrator();
 }
 
 void Game::doActionGotObject(uint16 obj) {

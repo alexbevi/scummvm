@@ -60,7 +60,6 @@ struct ColorSet {
 class Screen {
 public:
 
-	
 	Screen(KomEngine *vm, OSystem *system);
 	~Screen();
 

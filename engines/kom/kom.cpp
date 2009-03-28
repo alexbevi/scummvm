@@ -154,6 +154,7 @@ void KomEngine::gameLoop() {
 	// init some global vars, Player settings
 	_game->player()->command = CMD_NOTHING;
 	_game->player()->commandState = 0;
+	_game->player()->narratorTalking = false;
 	_database->getChar(0)->_isBusy = false;
 	_game->settings()->objectNum = _game->settings()->object2Num = -1;
 	_game->settings()->overType = _game->settings()->oldOverType = 0;
@@ -214,7 +215,7 @@ void KomEngine::gameLoop() {
 			case CMD_FIGHT:
 				break;
 			case CMD_CAST_SPELL:
-				_game->exeMagic();
+				//_game->exeMagic();
 				break;
 
 			// Unused

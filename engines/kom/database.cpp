@@ -1104,7 +1104,6 @@ bool Database::giveObject(int obj, int charId, bool noAnimation) {
 	type = _objects[obj].type - 1;
 	oldOwnerType = _objects[obj].ownerType;
 	oldOwner = _objects[obj].ownerId;
- 
 
 	if (type <= 4) {
 
