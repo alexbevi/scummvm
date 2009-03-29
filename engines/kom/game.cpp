@@ -1583,7 +1583,7 @@ void Game::doActionPlayVideo(const char *name) {
 		// try to match the file against a cutsconv prefix.
 		// if one doesn't exist, it's a game cutscene.
 		if (videoName[0] == 'j' || videoName[2] != 'c') {
-			for (uint i = 0; i < sizeof(convPrefix) / sizeof(convPrefix[0]); i++) {
+			for (uint i = 0; i < ARRAYSIZE(convPrefix); i++) {
 				if (videoName.hasPrefix(convPrefix[i])) {
 					dir = "cutsconv";
 					strcpy(prefix, convPrefix[i]);
