@@ -85,7 +85,7 @@ void Game::enterLocation(uint16 locId) {
 			chr->_actorId = -1;
 		}
 	}
-	
+
 	Location *loc = _vm->database()->getLoc(locId);
 	String locName(loc->name);
 	locName.toLowercase();
