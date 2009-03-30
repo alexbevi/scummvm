@@ -10,8 +10,6 @@ BUGS
   on how long the left click is pressed. The original behaves differently if
   it's a short or long click. The current implementation only has a "short
   click" which doesn't show the effect nicely.
-* Switching between night and day doesn't update the standing characters'
-  actors. example: spiders in room 95
 * Executing donut actions while walking will move thidney to the old position
   and make the cursor disappear (until right-click)
 

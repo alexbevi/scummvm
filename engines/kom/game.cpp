@@ -74,6 +74,18 @@ void Game::enterLocation(uint16 locId) {
 		return;
 	}
 
+	// Unload actors
+	for (int i = 1; i < _vm->database()->charactersNum(); ++i) {
+		Character *chr = _vm->database()->getChar(i);
+
+		chr->_loadedScopeXtend = chr->_scopeInUse = -1;
+
+		if (chr->_actorId >= 0) {
+			_vm->actorMan()->unload(chr->_actorId);
+			chr->_actorId = -1;
+		}
+	}
+	
 	Location *loc = _vm->database()->getLoc(locId);
 	String locName(loc->name);
 	locName.toLowercase();
