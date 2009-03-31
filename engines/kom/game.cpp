@@ -1641,11 +1641,13 @@ void Game::doActionPlayVideo(const char *name) {
 		_vm->ambientPause(false);
 }
 
-void Game::doActionPlaySample(const char *filename) {
-	String sampleName(filename);
+void Game::doActionPlaySample(const char *name) {
+	String sampleName(name);
+	char filename[100];
+	char prefix[10];
 	int thing = 0;
 
-	warning("TODO: doActionPlaySample(%s)", filename);
+	warning("TODO: doActionPlaySample(%s)", name);
 
 	stopNarrator();
 
@@ -1655,33 +1657,63 @@ void Game::doActionPlaySample(const char *filename) {
 		// TODO: another initialization
 	}
 
-	sampleName = filename;
+	sampleName.toLowercase();
 
-	if (filename[1] == '_' || filename[1] == '-') {
-		switch (filename[0]) {
-		case 'P':
+	if (name[1] == '_' || name[1] == '-') {
+		switch (name[0]) {
 		case 'p':
 			thing |= 3;
 			break;
-		case 'V':
 		case 'v':
 			thing |= 5;
-			break;
-		default:
-			break;
 		}
 
-		sampleName = filename + 2;
+		sampleName = name + 2;
 	}
-
-	sampleName.toLowercase();
 
 	if (sampleName.hasPrefix("nmess")) {
-		// TODO: kom/nar/nmess..
+		sprintf(filename, "kom/nar/%s.raw", sampleName.c_str());
+
+	} else if (sampleName.lastChar() == 'l' || sampleName.lastChar() == 'u' ||
+	           sampleName.lastChar() == 'g') {
+
+		strncpy(prefix, sampleName.c_str(), sampleName.size()-2);
+		prefix[sampleName.size()-2] = '\0';
+		sprintf(filename, "kom/locs/%c%c/%s/%s.raw",
+				sampleName[0], sampleName[1], prefix, sampleName.c_str());
+
 	} else {
+		sprintf(filename, "kom/obj/%s.raw", sampleName.c_str());
 	}
 
+	if (thing & 4)
+		_vm->panel()->showLoading(true);
 
+	// Load sample
+
+	if (thing & 4)
+		_vm->panel()->showLoading(false);
+
+
+	// Play sample. input loop
+	_vm->actorMan()->pauseAnimAll(true);
+
+	while (0 /* narrator not done*/) {
+		if (thing & 2) {
+
+		}
+
+		_cb.samplePlaying = true;
+		_vm->screen()->processGraphics(1);
+		_cb.samplePlaying = false;
+
+		if (_vm->input()->getRightClick())
+			break;
+
+		// TODO: break on space and esc as well
+	}
+
+	_vm->actorMan()->pauseAnimAll(false);
 }
 
 void Game::stopNarrator() {

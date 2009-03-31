@@ -166,6 +166,7 @@ void KomEngine::gameLoop() {
 	_game->player()->isNight = (_game->settings()->dayMode == 1 || _game->settings()->dayMode == 3) ? 1 : 0;
 	// fadeTo(target = 256, speed = 16)
 	_game->cb()->talkInitialized = false;
+	_game->cb()->samplePlaying = false;
 	// TODO: loop actually starts with the menu, and then switches to RUNNING
 	_gameLoopTimer = 0;
 	_gameLoopState = GAMELOOP_RUNNING;

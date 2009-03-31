@@ -129,6 +129,7 @@ struct Cb {
 	int16 data1;
 	int16 data2;
 	bool talkInitialized;
+	bool samplePlaying;
 };
 
 struct Inventory {
@@ -185,7 +186,7 @@ public:
 	void doActionSpriteScene(const char *name, int charId, int loc, int box);
 	void doActionPlayVideo(const char *name);
 
-	void doActionPlaySample(const char *filename);
+	void doActionPlaySample(const char *name);
 	void stopNarrator();
 
 	int8 doDonut(int type, Inventory *inv);
