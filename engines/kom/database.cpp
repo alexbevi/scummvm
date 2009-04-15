@@ -416,12 +416,12 @@ void Database::initProcs() {
 
 	f.open(_pathPrefix + _databasePrefix + ".pro");
 
-	// Get number of entries in file
 	line = f.readLine();
 	sscanf(line.c_str(), "%d", &_varSize);
 
 	_variables = (int16 *)calloc(_varSize, sizeof(_variables[0]));
 
+	// Get number of entries in file
 	line = f.readLine();
 	sscanf(line.c_str(), "%d", &_procsNum);
 
