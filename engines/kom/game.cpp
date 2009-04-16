@@ -1528,7 +1528,6 @@ void Game::doActionSpriteScene(const char *name, int charId, int loc, int box) {
 }
 
 void Game::doActionPlayVideo(const char *name) {
-	Character *chr = _vm->database()->getChar(0);
 	const char *dir = "";
 	char filename[100];
 	bool pauseAmbient = true;
@@ -1548,11 +1547,7 @@ void Game::doActionPlayVideo(const char *name) {
 		"wig"
 	};
 
-	if (_player.narratorTalking) {
-		warning("TODO: stopNarrator");
-		chr->_isBusy = false;
-		_player.narratorTalking = false;
-	}
+	stopNarrator();
 
 	if (_player.spriteSample.isLoaded()) {
 		_vm->sound()->stopSample(_player.spriteSample);
