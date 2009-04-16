@@ -59,6 +59,8 @@ Database::~Database() {
 	free(_variables);
 	delete[] _processes;
 	delete[] _convIndex;
+	delete[] _narrIndex;
+	_narrData.close();
 	delete[] _routes;
 	delete[] _map;
 	delete[] _locRoutes;
@@ -74,6 +76,7 @@ void Database::init(Common::String databasePrefix) {
 
 
 	loadConvIndex();
+	loadNarratorIndex();
 	initLocations();
 	initCharacters();
 	initObjects();
@@ -103,6 +106,44 @@ void Database::loadConvIndex() {
 	_convIndex = new byte[_convIndexSize];
 	f.read(_convIndex, _convIndexSize);
 	f.close();
+}
+
+void Database::loadNarratorIndex() {
+	File f;
+
+	f.open("kom/conv/narr.idx");
+	_narrIndexSize = f.size();
+	_narrIndex = new byte[_narrIndexSize];
+	f.read(_narrIndex, _narrIndexSize);
+	f.close();
+
+	_narrData.open("kom/conv/narr.bin");
+}
+
+/**
+ * Allocates a new string to use.
+ * Caller should delete it
+ */
+char *Database::getNarratorText(const char *entry) {
+	int entrySize = strlen(entry);
+	char *result;
+
+	for (int i = 0; i < _narrIndexSize; i+=16) {
+
+		if (strncmp(entry, (const char *)_narrIndex + i, entrySize) == 0) {
+			uint32 offset = READ_LE_UINT32(_narrIndex + i + 8);
+			uint32 size = READ_LE_UINT32(_narrIndex + i + 12);
+
+			result = new char[size + 1];
+			_narrData.seek(offset);
+			_narrData.read(result, size);
+			result[size] = '\0';
+
+			return result;
+		}
+	}
+
+	return 0;
 }
 
 void Database::initLocations() {

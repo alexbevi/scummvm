@@ -178,8 +178,11 @@ public:
 	int16 getVar(uint16 index) { assert(index < _varSize); return _variables[index]; }
 	void setVar(uint16 index, int16 value) { assert(index < _varSize); _variables[index] = value; }
 
+	char *getNarratorText(const char *entry);
+
 private:
 	void loadConvIndex();
+	void loadNarratorIndex();
 	void initLocations();
 	void initCharacters();
 	void initObjects();
@@ -213,6 +216,10 @@ private:
 
 	int _convIndexSize;
 	byte *_convIndex;
+
+	int _narrIndexSize;
+	byte *_narrIndex;
+	Common::File _narrData;
 
 	int _mapSize;
 	byte *_map;
