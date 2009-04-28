@@ -1229,14 +1229,14 @@ void Screen::writeTextStyle(byte *buf, const char *text, uint8 startRow, uint16 
 				for (uint8 h = 0; h < 8; ++h) {
 					if (*data != 0) {
 						if (isBackground) {
-							buf[SCREEN_W * (startRow + h) + col + w - 1] = 3;
-							buf[SCREEN_W * (startRow + h - 1) + col + w] = 3;
-							buf[SCREEN_W * (startRow + h - 1) + col + w - 1] = 3;
-							buf[SCREEN_W * (startRow + h) + col + w + 1] = 53;
-							buf[SCREEN_W * (startRow + h + 1) + col + w] = 53;
-							buf[SCREEN_W * (startRow + h + 1) + col + w + 1] = 53;
+							*(buf + SCREEN_W * (startRow + h) + col + w - 1) = 3;
+							*(buf + SCREEN_W * (startRow + h - 1) + col + w) = 3;
+							*(buf + SCREEN_W * (startRow + h - 1) + col + w - 1) = 3;
+							*(buf + SCREEN_W * (startRow + h) + col + w + 1) = 53;
+							*(buf + SCREEN_W * (startRow + h + 1) + col + w) = 53;
+							*(buf + SCREEN_W * (startRow + h + 1) + col + w + 1) = 53;
 						} else {
-							buf[SCREEN_W * (startRow + h) + col + w] = color;
+							*(buf + SCREEN_W * (startRow + h) + col + w) = color;
 						}
 					}
 					++data;
