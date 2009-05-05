@@ -99,6 +99,11 @@ public:
 
 	void displayDoors();
 
+	void narratorScrollInit(char *text);
+	void narratorScrollUpdate();
+	void narratorScrollDelete();
+	void narratorWriteLine(byte *buf);
+
 	void writeTextCentered(byte *buf, const char *text, uint8 row, uint8 color, bool isEmbossed);
 	void writeText(byte *buf, const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed);
 
@@ -149,6 +154,11 @@ private:
 
 	Common::List<Common::Rect> *_dirtyRects;
 	Common::List<Common::Rect> *_prevDirtyRects;
+
+	char *_narratorScrollText;
+	char *_narratorWord;
+	byte *_narratorTextSurface;
+	uint8 _narratorScrollStatus;
 };
 
 } // End of namespace Kom

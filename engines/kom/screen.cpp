@@ -71,7 +71,9 @@ ColorSet::~ColorSet() {
 
 Screen::Screen(KomEngine *vm, OSystem *system)
 	: _system(system), _vm(vm), _sepiaScreen(0),
-	  _freshScreen(false), _paletteChanged(false), _newBrightness(256) {
+	  _freshScreen(false), _paletteChanged(false), _newBrightness(256),
+	  _narratorScrollText(0), _narratorWord(0), _narratorTextSurface(0),
+	  _narratorScrollStatus(0) {
 
 	_lastFrameTime = 0;
 
@@ -235,11 +237,10 @@ void Screen::processGraphics(int mode) {
 	// TODO - handle snow
 	// TODO - handle fight bars
 	// TODO - handle mouse
-	// TODO - check hitpoints
-	// TODO - check narrator
 
-	// FIXME - add more checks for cursor display
-	if (_vm->database()->getChar(0)->_spriteCutState == 0 &&
+	// FIXME - add more checks for cursor display, like hit points
+	if (!_vm->game()->player()->narratorTalking &&
+	    _vm->database()->getChar(0)->_spriteCutState == 0 &&
 		(_vm->game()->player()->commandState == 0 ||
 		 _vm->game()->player()->command == CMD_WALK ||
 		 _vm->game()->player()->command == CMD_NOTHING) &&
@@ -309,10 +310,13 @@ void Screen::drawDirtyRects() {
 
 void Screen::gfxUpdate() {
 
+	narratorScrollUpdate();
+
 	// TODO: set palette brightness
 
 	drawDirtyRects();
 
+	// FIXME: this shouldn't be called. doesn't allow long key presses
 	_vm->input()->resetInput();
 
 	if (_paletteChanged) {
@@ -1190,6 +1194,106 @@ void Screen::displayDoors() {
 		Actor *act = _vm->actorMan()->get((*roomDoors)[i].actorId);
 
 		act->setFrame((*roomDoors)[i].frame);
+	}
+}
+
+void Screen::narratorScrollInit(char *text) {
+	_narratorScrollText = text;
+	_narratorTextSurface = new byte[SCREEN_W * 40];
+	memset(_narratorTextSurface, 0, SCREEN_W * 40);
+	_narratorScrollStatus = 1;
+
+	_narratorWord = strtok(_narratorScrollText, " ");
+}
+
+void Screen::narratorScrollUpdate() {
+	static int scrollSpeed, scrollTimer, scrollPos;
+
+	if (!_vm->game()->isNarratorPlaying()) {
+		// TODO - hack
+		return;
+	}
+
+	// TODO - another hack
+	if (_narratorScrollText == 0)
+		return;
+
+	switch (_narratorScrollStatus) {
+	case 1:
+		scrollSpeed = 40;
+		scrollTimer = 0;
+		scrollPos = 0;
+		_narratorScrollStatus = 2;
+		narratorWriteLine(_narratorTextSurface + 20 * SCREEN_W);
+		break;
+	case 2:
+		if (_narratorWord == 0) {
+			_narratorScrollStatus = 5;
+		} else {
+			narratorWriteLine(_narratorTextSurface + 30 * SCREEN_W);
+			_narratorScrollStatus = 3;
+		}
+		break;
+	case 3:
+		scrollTimer += scrollSpeed;
+
+		// Left click speeds up the scrolling
+		// FIXME: doesn't work beyond one frame due to resetInput
+		if (_vm->input()->getLeftClick())
+			scrollTimer += 2 * scrollSpeed;
+
+		if (scrollTimer >= 256) {
+			scrollTimer -= 256;
+			scrollPos++;
+			if (scrollPos == 10) {
+				scrollPos = 0;
+				memmove(_narratorTextSurface, _narratorTextSurface + 10 * SCREEN_W, 30 * SCREEN_W);
+				memset(_narratorTextSurface + 30 * SCREEN_W, 0, 10 * SCREEN_W);
+				_narratorScrollStatus = 2;
+			}
+		}
+		break;
+	}
+
+	drawPanel(_vm->panel()->getPanelBackground());
+
+	byte *from = _narratorTextSurface + (scrollPos + 3) * SCREEN_W;
+	byte *to = _screenBuf + 172 * SCREEN_W;
+	for (int i = 0; i < 27 * SCREEN_W; ++i) {
+		if (from[i] != 0)
+			to[i] = from[i];
+	}
+}
+
+void Screen::narratorScrollDelete() {
+	delete[] _narratorScrollText;
+	_narratorScrollText = 0;
+	delete[] _narratorTextSurface;
+	_narratorTextSurface = 0;
+	_narratorScrollStatus = 0;
+}
+
+void Screen::narratorWriteLine(byte *buf) {
+	int width;
+	int col = 6;
+	char word[140];
+
+	buf += col;
+
+	while (_narratorWord) {
+		// Calculate the width + space char
+		width = getTextWidth(_narratorWord) + 4 + 1;
+
+		if (col + width > 308)
+			return;
+
+		strcpy(word, _narratorWord);
+		strcat(word, " ");
+
+		writeText(buf, word, 0, col, 25, true);
+		col += width;
+
+		_narratorWord = strtok(NULL, " ");
 	}
 }
 

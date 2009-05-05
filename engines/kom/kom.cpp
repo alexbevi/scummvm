@@ -233,6 +233,9 @@ void KomEngine::gameLoop() {
 		// loopSpells
 		_game->loopTimeouts();
 		// lose/get gold
+		if (_game->player()->narratorTalking &&
+		    !_game->isNarratorPlaying())
+			_game->narratorStop();
 		// stop narrator if needed
 		// handle angry mob
 		// handle greetings
@@ -262,7 +265,7 @@ void KomEngine::gameLoop() {
 		}
 	}
 
-	// stopNarrator()
+	// narratorStop()
 	// stopGreeting()
 	// ambientStop()
 	if (_gameLoopState == GAMELOOP_DEATH) {

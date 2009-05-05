@@ -84,6 +84,10 @@ void Sound::playSampleMusic(SoundSample &sample) {
 	playSample(sample, true, Audio::Mixer::kMusicSoundType, 100);
 }
 
+void Sound::playSampleSpeech(SoundSample &sample) {
+	playSample(sample, false, Audio::Mixer::kSpeechSoundType, 255);
+}
+
 void Sound::playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume) {
 	byte flags;
 

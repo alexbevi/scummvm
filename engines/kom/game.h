@@ -30,6 +30,7 @@
 #include "common/array.h"
 #include "common/util.h"
 
+#include "kom/kom.h"
 #include "kom/database.h"
 #include "kom/sound.h"
 #include "kom/video_player.h"
@@ -113,6 +114,7 @@ struct Player {
 	int16 collideNum;
 	bool narratorTalking;
 	SoundSample spriteSample;
+	SoundSample narratorSample; // Original doesn't store this here
 	uint8 selectedChar; // 0 - thidney. 1 - shahron
 	uint8 selectedQuest;
 	uint8 isNight;
@@ -187,7 +189,9 @@ public:
 	void doActionPlayVideo(const char *name);
 
 	void doActionPlaySample(const char *name);
-	void stopNarrator();
+	void narratorStart(const char *filename, const char *codename);
+	void narratorStop();
+	bool isNarratorPlaying();
 
 	int8 doDonut(int type, Inventory *inv);
 	void doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 num);

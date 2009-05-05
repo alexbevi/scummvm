@@ -1547,7 +1547,7 @@ void Game::doActionPlayVideo(const char *name) {
 		"wig"
 	};
 
-	stopNarrator();
+	narratorStop();
 
 	if (_player.spriteSample.isLoaded()) {
 		_vm->sound()->stopSample(_player.spriteSample);
@@ -1640,11 +1640,11 @@ void Game::doActionPlaySample(const char *name) {
 	String sampleName(name);
 	char filename[100];
 	char prefix[10];
-	int thing = 0;
+	int mode = 0;
 
 	warning("TODO: doActionPlaySample(%s)", name);
 
-	stopNarrator();
+	narratorStop();
 
 	if (_player.spriteSample.isLoaded()) {
 		_vm->sound()->stopSample(_player.spriteSample);
@@ -1657,10 +1657,12 @@ void Game::doActionPlaySample(const char *name) {
 	if (name[1] == '_' || name[1] == '-') {
 		switch (name[0]) {
 		case 'p':
-			thing |= 3;
+			printf("got p\n");
+			mode |= 3;
 			break;
 		case 'v':
-			thing |= 5;
+			printf("got v\n");
+			mode |= 5;
 		}
 
 		sampleName = name + 2;
@@ -1681,42 +1683,78 @@ void Game::doActionPlaySample(const char *name) {
 		sprintf(filename, "kom/obj/%s.raw", sampleName.c_str());
 	}
 
-	if (thing & 4)
+	if ((mode & 4) == 0)
 		_vm->panel()->showLoading(true);
 
-	// Load sample
+	_player.narratorTalking = true;
 
-	if (thing & 4)
+	// Load sample
+	// TODO - support pitch-altering cheat code?
+	sampleName.toUppercase();
+	narratorStart(filename, sampleName.c_str());
+	_vm->database()->getChar(0)->_isBusy = true;
+
+	if ((mode & 4) == 0)
 		_vm->panel()->showLoading(false);
 
+	if ((mode & 1) == 0)
+		return;
 
 	// Play sample. input loop
 	_vm->actorMan()->pauseAnimAll(true);
 
-	while (0 /* narrator not done*/) {
-		if (thing & 2) {
-
+	printf("start\n");
+	while (isNarratorPlaying()) {
+		//printf("loop\n");
+		if (mode & 2) {
+			//printf("cond\n");
+			_cb.samplePlaying = true;
+			_vm->screen()->processGraphics(1);
+			_cb.samplePlaying = false;
 		}
 
-		_cb.samplePlaying = true;
-		_vm->screen()->processGraphics(1);
-		_cb.samplePlaying = false;
-
+		// TODO: break on space and esc as well
 		if (_vm->input()->getRightClick())
 			break;
-
-		// TODO: break on space and esc as well
 	}
+	printf("end\n");
 
+	narratorStop();
+	_vm->database()->getChar(0)->_isBusy = false;
 	_vm->actorMan()->pauseAnimAll(false);
 }
 
-void Game::stopNarrator() {
+void Game::narratorStart(const char *filename, const char *codename) {
+
+	char *text;
+
+	if (_player.narratorSample.isLoaded()) {
+		_vm->sound()->stopSample(_player.narratorSample);
+		_player.narratorSample.unload();
+		_vm->screen()->narratorScrollDelete();
+	}
+
+	text = _vm->database()->getNarratorText(codename);
+	if (text) {
+		_vm->screen()->narratorScrollInit(text);
+	}
+
+	_player.narratorSample.loadFile(filename);
+	_vm->sound()->playSampleSpeech(_player.narratorSample);
+}
+
+void Game::narratorStop() {
 	if (_player.narratorTalking) {
-		warning("TODO: stopNarrator");
+		warning("TODO: narratorStop");
+		_vm->sound()->stopSample(_player.narratorSample);
+		_vm->screen()->narratorScrollDelete();
 		_vm->database()->getChar(0)->_isBusy = false;
 		_player.narratorTalking = false;
 	}
+}
+
+bool Game::isNarratorPlaying() {
+	return _vm->sound()->isPlaying(_player.narratorSample);
 }
 
 /**
@@ -2297,7 +2335,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 		}
 
 		if (*objectNum >= 0 && inInventory) {
-			stopNarrator();
+			narratorStop();
 			// Look at
 			doCommand(5, 1, *objectNum, -1, -1);
 			*objectNum = *objectType = -1;
@@ -2305,7 +2343,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 
 	} while (inInventory);
 
-	stopNarrator();
+	narratorStop();
 }
 
 void Game::doActionGotObject(uint16 obj) {

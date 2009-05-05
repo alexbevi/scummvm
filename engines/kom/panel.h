@@ -49,6 +49,8 @@ public:
 	void enable(bool state) { _isEnabled = state; }
 	void clear();
 
+	const byte *getPanelBackground() { return _panelData; }
+
 	void addObject(int obj) { _gotObjects.push_back(obj); }
 
 private:

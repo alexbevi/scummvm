@@ -69,9 +69,11 @@ public:
 
 	void playSampleSFX(SoundSample &sample, bool loop);
 	void playSampleMusic(SoundSample &sample);
+	void playSampleSpeech(SoundSample &sample);
 	void playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume);
 	void stopSample(SoundSample &sample);
 	void pauseSample(SoundSample &sample, bool paused);
+	bool isPlaying(SoundSample &sample) { return _mixer->isSoundHandleActive(sample._handle.handle); }
 
 private:
 

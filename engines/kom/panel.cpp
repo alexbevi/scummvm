@@ -94,7 +94,9 @@ void Panel::update() {
 			_gotObjTime = 24;
 
 	} else {
-		// TODO - check narrator status
+		// Don't animate if narrator is talking
+		if (_vm->game()->isNarratorPlaying())
+			_gotObjTime = 24;
 
 		Actor *objects = _vm->actorMan()->getObjects();
 		uint16 xRatio, yRatio;

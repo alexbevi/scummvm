@@ -11,7 +11,9 @@ BUGS
   it's a short or long click. The current implementation only has a "short
   click" which doesn't show the effect nicely.
 * Executing donut actions while walking will move thidney to the old position
-  and make the cursor disappear (until right-click)
+  and make the cursor disappear (until right-click).
+* don't try showing "loading" icon while narrator subtitles are on.
+* narrator subtitles disappear when the audio stops, even before they finish scrolling.
 
 MISSING FEATURES
 ================
@@ -20,4 +22,4 @@ MISSING FEATURES
 
 
 
-* hide the room loading in blank screen at the end of smk playback?
+* hide the room loading in blank screen at the end of smk playback? (related to playerStruct+5Eh?)

@@ -249,7 +249,7 @@ void Input::handleMouse() {
 	if (_rightClick) {
 		// TODO - handle menu
 
-		_vm->game()->stopNarrator();
+		_vm->game()->narratorStop();
 
 		if (player->commandState < 2 /* TODO - menu check */) {
 
