@@ -531,7 +531,7 @@ void Database::initProcs() {
 					strcpy(opObject.arg1, line.c_str());
 					line = f.readLine();
 					sscanf(line.c_str(), "%d %d %d", &(opObject.arg2),
-						   &(opObject.arg3), &(opObject.arg4));
+					       &(opObject.arg3), &(opObject.arg4));
 					break;
 
 				// short + string - never reached
