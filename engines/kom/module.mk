@@ -10,6 +10,7 @@ MODULE_OBJS := \
 	sound.o \
 	panel.o \
 	game.o \
+	conv.o \
 	font.o \
 	debugger.o \
 	video_player.o \

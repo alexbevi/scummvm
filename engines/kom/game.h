@@ -193,6 +193,9 @@ public:
 	void narratorStop();
 	bool isNarratorPlaying();
 
+	void doGreet(int charId, int response);
+	void doResponse(int charId, int response);
+
 	int8 doDonut(int type, Inventory *inv);
 	void doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 num);
 
@@ -200,8 +203,10 @@ public:
 	void doActionLostObject(uint16 obj);
 
 	void exeUse();
+	void exeTalk();
 	void exePickup();
 	void exeLookAt();
+	void exeFight();
 	void exeMagic();
 
 	Common::Array<RoomObject> *getObjects() { return &_roomObjects; }

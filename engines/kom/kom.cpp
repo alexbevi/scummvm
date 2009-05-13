@@ -204,8 +204,8 @@ void KomEngine::gameLoop() {
 			case CMD_USE:
 				_game->exeUse();
 				break;
-
 			case CMD_TALK_TO:
+				_game->exeTalk();
 				break;
 			case CMD_PICKUP:
 				_game->exePickup();
@@ -214,9 +214,10 @@ void KomEngine::gameLoop() {
 				_game->exeLookAt();
 				break;
 			case CMD_FIGHT:
+				_game->exeFight();
 				break;
 			case CMD_CAST_SPELL:
-				//_game->exeMagic();
+				_game->exeMagic();
 				break;
 
 			// Unused

@@ -39,7 +39,8 @@ using Common::File;
 namespace Kom {
 
 const int Database::_locRoutesSize = 111;
-Common::String line;
+
+static Common::String line;
 
 Database::Database(KomEngine *vm, OSystem *system)
 	: _system(system), _vm(vm) {
@@ -50,6 +51,8 @@ Database::Database(KomEngine *vm, OSystem *system)
 	_routes = 0;
 	_map = 0;
 	_locRoutes = 0;
+
+	_convData = 0;
 }
 
 Database::~Database() {
@@ -61,6 +64,8 @@ Database::~Database() {
 	delete[] _convIndex;
 	delete[] _narrIndex;
 	_narrData.close();
+	_convData->close();
+	delete _convData;
 	delete[] _routes;
 	delete[] _map;
 	delete[] _locRoutes;
@@ -74,6 +79,8 @@ void Database::init(Common::String databasePrefix) {
 	else
 		_pathPrefix = "install/db1/";
 
+	_convData = new File();
+	_convData->open(_pathPrefix + "conv.bin");
 
 	loadConvIndex();
 	loadNarratorIndex();
@@ -102,9 +109,9 @@ void Database::loadConvIndex() {
 	File f;
 
 	f.open(_pathPrefix + "conv.idx");
-	_convIndexSize = f.size();
-	_convIndex = new byte[_convIndexSize];
-	f.read(_convIndex, _convIndexSize);
+	_convIndexLen = f.readUint32LE();
+	_convIndex = new byte[_convIndexLen * 24];
+	f.read(_convIndex, _convIndexLen * 24);
 	f.close();
 }
 
@@ -118,6 +125,16 @@ void Database::loadNarratorIndex() {
 	f.close();
 
 	_narrData.open("kom/conv/narr.bin");
+}
+
+byte *Database::getConvIndex(const char *entry) {
+	int entrySize = strlen(entry);
+
+	for (uint i = 0; i < _convIndexLen; i++)
+		if (strncmp(entry, (const char *)_convIndex + i * 24, entrySize) == 0)
+			return _convIndex + i * 24;
+
+	return 0;
 }
 
 /**

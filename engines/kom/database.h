@@ -180,6 +180,9 @@ public:
 
 	char *getNarratorText(const char *entry);
 
+	byte *getConvIndex(const char *entry);
+	Common::File *getConvData() { return _convData; }
+
 private:
 	void loadConvIndex();
 	void loadNarratorIndex();
@@ -214,8 +217,9 @@ private:
 	int _varSize;
 	int16 *_variables;
 
-	int _convIndexSize;
+	uint32 _convIndexLen;
 	byte *_convIndex;
+	Common::File *_convData;
 
 	int _narrIndexSize;
 	byte *_narrIndex;

@@ -49,6 +49,7 @@ bool Debugger::Cmd_Room(int argc, const char **argv) {
 		_vm->game()->settings()->currLocation = roomNum;
 		_vm->database()->getChar(0)->_locationId = roomNum;
 		_vm->database()->getChar(0)->_lastLocation = roomNum;
+		_vm->database()->getChar(0)->_lastBox = 0;
 
 		_vm->game()->enterLocation(roomNum);
 		return false;

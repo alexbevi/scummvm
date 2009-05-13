@@ -35,6 +35,7 @@
 #include "kom/panel.h"
 #include "kom/database.h"
 #include "kom/video_player.h"
+#include "kom/conv.h"
 
 namespace Kom {
 
@@ -377,8 +378,10 @@ bool Game::doProc(int command, int type, int id, int type2, int id2) {
 				if(doStat(&(*i)))
 					return true;
 				break;
+			case 314: // Talk to
 			case 315: // Pick up
 			case 318: // Enter room
+			case 323: // Collide
 				if(doStat(&(*i)))
 					return true;
 				break;
@@ -422,6 +425,7 @@ bool Game::doStat(const Command *cmd) {
 	bool keepProcessing = true;
 	bool rc = false;
 	Database *db = _vm->database();
+	Conv *conv;
 
 	debug(5, "Trying to execute Command %d - value %hd", cmd->cmd, cmd->value);
 
@@ -735,6 +739,39 @@ bool Game::doStat(const Command *cmd) {
 			keepProcessing = false;
 			rc = true;
 			break;
+		case 476:
+			doResponse(j->arg2, j->arg3);
+			break;
+		case 477:
+			doResponse(j->arg2, db->getVar(j->arg3));
+			break;
+		case 478:
+			if (db->getChar(j->arg2)->_spellMode == 1 ||
+			    db->getChar(j->arg2)->_spellMode == 4)
+				warning("TODO: unset spell");
+
+			conv = new Conv(_vm, j->arg2);
+			if (!conv->doTalk(j->arg3, j->arg4)) {
+			    rc = 1;
+			    keepProcessing = false;
+			}
+			delete conv;
+			break;
+		case 479:
+			if (db->getChar(j->arg2)->_spellMode == 1 ||
+			    db->getChar(j->arg2)->_spellMode == 4)
+				warning("TODO: unset spell");
+
+			conv = new Conv(_vm, j->arg2);
+			if (!conv->doTalk(db->getVar(j->arg3), j->arg4)) {
+			    rc = 1;
+			    keepProcessing = false;
+			}
+			delete conv;
+			break;
+		case 481:
+			doGreet(j->arg2, j->arg3);
+			break;
 		case 485:
 			_settings.fightEnabled = true;
 			break;
@@ -747,6 +784,12 @@ bool Game::doStat(const Command *cmd) {
 			break;
 		case 488:
 			warning("TODO: castSpell(%d, %d, %d)", j->arg2, j->arg3, j->arg4);
+			break;
+		case 489:
+			db->getChar(j->arg2)->_spellMode = j->arg3;
+			break;
+		case 492:
+			printf("TODO: give weapons\n");
 			break;
 		case 494:
 			_vm->endGame();
@@ -768,6 +811,26 @@ void Game::doCommand(int command, int type, int id, int type2, int id2) {
 
 	// Talk
 	case 2:
+		chr = _vm->database()->getChar(id);
+		if (!chr->_isAlive) {
+			doActionPlaySample("nmess081");
+			break;
+		}
+
+		switch (chr->_spellMode) {
+		case 1:
+			doActionPlaySample("nmess078");
+			break;
+		case 4:
+			doActionPlaySample("nmess079");
+			break;
+		case 6:
+			doActionPlaySample("nmess080");
+			break;
+		default:
+			doProc(314, 2, id, -1, -1);
+		}
+
 		break;
 
 	// Use
@@ -988,7 +1051,7 @@ void Game::loopMove() {
 }
 
 void Game::loopCollide() {
-	// FIXME: start from 0 because "room" debug command fails. re-add later
+
 	for (uint16 i = 0; i < _vm->database()->charactersNum(); ++i) {
 		Character *chr = _vm->database()->getChar(i);
 
@@ -1000,17 +1063,17 @@ void Game::loopCollide() {
 			// If in the same room as the player
 			if (chr->_lastLocation == _vm->database()->getChar(0)->_lastLocation) {
 
-				int counter = 0;
-				//for (uint16 j = 1; j < _vm->database()->charactersNum(); ++j) {
-				//	Character *chr2 = _vm->database()->getChar(j);
+				int found = 0;
+				for (uint16 j = 1; j < _vm->database()->charactersNum() && !found; ++j) {
+					Character *chr2 = _vm->database()->getChar(j);
 
-				//	if (chr2->_isAlive && chr2->_isVisible)
-				//		if (_vm->database()->getChar(0)->_lastLocation == chr2->_lastLocation)
-				//			++counter;
-				//}
+					if (chr2->_isAlive && chr2->_isVisible)
+						if (_vm->database()->getChar(0)->_lastLocation == chr2->_lastLocation)
+							found = true;
+				}
 
-				if (counter > 1) {
-					// TODO: komdbDoCommand(9, ...) -- call the character's "collide" script
+				if (found) {
+					doCommand(9, 2, chr->_id, -1, -1);
 				}
 			}
 		}
@@ -1757,6 +1820,14 @@ bool Game::isNarratorPlaying() {
 	return _vm->sound()->isPlaying(_player.narratorSample);
 }
 
+void Game::doGreet(int charId, int greeting) {
+	printf("TODO: doGreet(%d, %d)\n", charId, greeting);
+}
+
+void Game::doResponse(int charId, int response) {
+	printf("TODO: doResponse(%d, %d)\n", charId, response);
+}
+
 /**
  * Displays the verb 'donut' on the screen. Sets a variable to the
  * selected verb.
@@ -2403,6 +2474,15 @@ void Game::exeUse() {
 	_player.collideNum = -1;
 }
 
+void Game::exeTalk() {
+	_vm->database()->getChar(0)->_isBusy = false;
+	doCommand(2, 2, _player.collideNum, -1, -1);
+	_player.command = CMD_TALK_TO;
+	_player.commandState = 0;
+	_player.collideType = 0;
+	_player.collideNum = -1;
+}
+
 void Game::exePickup() {
 	Character *playerChar = _vm->database()->getChar(0);
 	int distance;
@@ -2468,6 +2548,10 @@ void Game::exeLookAt() {
 	_player.commandState = 0;
 	_player.collideType = 0;
 	_player.collideNum = -1;
+}
+
+void Game::exeFight() {
+	warning("TODO: exeFight");
 }
 
 void Game::exeMagic() {
