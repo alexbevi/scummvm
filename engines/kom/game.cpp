@@ -1717,18 +1717,17 @@ void Game::doActionPlaySample(const char *name) {
 
 	sampleName.toLowercase();
 
-	if (name[1] == '_' || name[1] == '-') {
-		switch (name[0]) {
+	if (sampleName[1] == '_' || sampleName[1] == '-') {
+		switch (sampleName[0]) {
 		case 'p':
-			printf("got p\n");
 			mode |= 3;
 			break;
 		case 'v':
-			printf("got v\n");
 			mode |= 5;
 		}
 
-		sampleName = name + 2;
+		sampleName.deleteChar(0);
+		sampleName.deleteChar(0);
 	}
 
 	if (sampleName.hasPrefix("nmess")) {
@@ -1766,7 +1765,6 @@ void Game::doActionPlaySample(const char *name) {
 	// Play sample. input loop
 	_vm->actorMan()->pauseAnimAll(true);
 
-	printf("start\n");
 	while (isNarratorPlaying()) {
 		//printf("loop\n");
 		if (mode & 2) {
@@ -1780,7 +1778,6 @@ void Game::doActionPlaySample(const char *name) {
 		if (_vm->input()->getRightClick())
 			break;
 	}
-	printf("end\n");
 
 	narratorStop();
 	_vm->database()->getChar(0)->_isBusy = false;
