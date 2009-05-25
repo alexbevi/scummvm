@@ -421,8 +421,10 @@ void Screen::drawActorFrame0(const int8 *data, uint16 width, uint16 height, int1
 		int16 colThing = scaledWidth - colSkip;
 
 		for (int j = 0; j < visibleWidth; ++j) {
-			if (lineBuffer[sourcePixel] != 0 && _mask[targetPixel] >= maskDepth)
-				_screenBuf[targetPixel] = lineBuffer[sourcePixel];
+			if (lineBuffer[sourcePixel] != 0
+			    && (targetLine >= SCREEN_H - PANEL_H || _mask.getPixel(targetPixel) >= maskDepth)) {
+					_screenBuf[targetPixel] = lineBuffer[sourcePixel];
+			}
 
 			sourcePixel += widthRatio.quot;
 			colThing -= widthRatio.rem;
