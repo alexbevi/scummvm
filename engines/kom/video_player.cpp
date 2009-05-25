@@ -24,9 +24,8 @@
  */
 
 #include "graphics/surface.h"
-#include "graphics/video/video_player.h"
-#include "graphics/video/flic_player.h"
-#include "graphics/video/smk_player.h"
+#include "graphics/video/flic_decoder.h"
+#include "graphics/video/smk_decoder.h"
 
 #include "kom/screen.h"
 #include "kom/video_player.h"
@@ -34,7 +33,7 @@
 namespace Kom {
 
 VideoPlayer::VideoPlayer(KomEngine *vm) : _vm(vm), 
-	_smk(vm->_mixer) {
+	_smk(vm->_mixer), _background(0) {
 	_eventMan = _vm->_system->getEventManager();
 }
 
@@ -58,22 +57,44 @@ void VideoPlayer::processEvents() {
 	}
 }
 
-bool VideoPlayer::playVideo(const char *filename) {
+bool VideoPlayer::playVideo(char *filename) {
 	_skipVideo = false;
 	byte backupPalette[256 * 4];
 
 	// Figure out which player to use, based on extension
 	_player = &_smk;
 
-	if (!_player->loadFile(filename)) {
-		warning("TODO: Could not play video %s. Try flc", filename);
-		return false;
-	}
-
 	// Backup the palette
 	_vm->_system->grabPalette(backupPalette, 0, 256);
 
+	if (!_player->loadFile(filename)) {
+		ColorSet *cs;
+		int length = strlen(filename);
+		filename[length - 5] = '0';
+		filename[length - 3] = 'f';
+		filename[length - 2] = 'l';
+		filename[length - 1] = 'c';
+		_player = &_flic;
+		if (!_player->loadFile(filename))
+			error("Could not load flic file: %s\n", filename);
+
+		filename[length - 3] = 'c';
+		filename[length - 2] = 'l';
+		filename[length - 1] = '\0';
+		cs = new ColorSet(filename);
+		_vm->screen()->useColorSet(cs, 0);
+		delete cs;
+
+		filename[length - 3] = 'r';
+		filename[length - 2] = 'a';
+		filename[length - 1] = 'w';
+		_sample.loadFile(filename);
+	}
+
 	_vm->_system->fillScreen(0);
+
+	// Sample should continue playing after player is done
+	_vm->sound()->playSampleSFX(_sample, false);
 
 	while (_player->getCurFrame() < _player->getFrameCount() && !_skipVideo && !_vm->shouldQuit()) {
 		processEvents();
@@ -81,6 +102,11 @@ bool VideoPlayer::playVideo(const char *filename) {
 	}
 
 	_player->closeFile();
+
+	if (_background) {
+		delete[] _background;
+		_background = 0;
+	}
 
 	_vm->_system->fillScreen(0);
 	_vm->_system->updateScreen();
@@ -95,7 +121,18 @@ void VideoPlayer::processFrame() {
 	_player->decodeNextFrame();
 
 	Graphics::Surface *screen = _vm->_system->lockScreen();
-	_player->copyFrameToBuffer((byte *)screen->pixels, 0, 0, SCREEN_W);
+
+	if (!_background) {
+		_player->copyFrameToBuffer((byte *)screen->pixels, 0, 0, SCREEN_W);
+	} else {
+		memcpy((byte *)screen->pixels, _background, SCREEN_W * (SCREEN_H - PANEL_H));
+		for (int i = 0; i < SCREEN_W * (SCREEN_H - PANEL_H); i++) {
+			byte color = _player->getPixel(i);
+			if (color != 0)
+				((byte *)screen->pixels)[i] = color;
+		}
+	}
+
 	_vm->_system->unlockScreen();
 
 	uint32 waitTime = _player->getFrameWaitTime();

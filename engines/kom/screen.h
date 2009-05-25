@@ -30,11 +30,11 @@
 #include "common/fs.h"
 #include "common/list.h"
 #include "common/rect.h"
-#include "graphics/video/flic_player.h"
 
 #include "kom/kom.h"
 #include "kom/font.h"
 #include "kom/game.h"
+#include "kom/video_player.h"
 
 class OSystem;
 
@@ -86,7 +86,7 @@ public:
 	void updateBackground();
 	void drawBackground();
 	void pauseBackground(bool pause) { _backgroundPaused = pause; }
-	void setMask(const uint8 *data);
+	void loadMask(const char *filename);
 
 	void drawInventory(Inventory *inv);
 
@@ -110,6 +110,8 @@ public:
 	void drawBoxScreen(int x, int y, int width, int height, byte color);
 	void drawBox(byte *surface, int x, int y, int width, int height, byte color);
 
+	byte *createZoomBlur(int x, int y);
+
 private:
 
 	void copyRectListToScreen(const Common::List<Common::Rect> *);
@@ -131,11 +133,12 @@ private:
 	uint8 *_screenBuf;
 	uint8 *_panelBuf;
 	uint8 *_mouseBuf;
-	uint8 *_mask;
-	Graphics::FlicPlayer _roomBackground;
+	FlicDecoder _roomBackground;
+	FlicDecoder _mask;
 	Font *_font;
 	uint32 _roomBackgroundTime;
 	bool _backgroundPaused;
+	bool _backgroundRedraw;
 
 	bool _freshScreen;
 

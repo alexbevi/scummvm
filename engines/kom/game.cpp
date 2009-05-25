@@ -28,7 +28,6 @@
 
 #include "common/fs.h"
 #include "common/str.h"
-#include "graphics/video/flic_player.h"
 
 #include "kom/kom.h"
 #include "kom/game.h"
@@ -105,10 +104,8 @@ void Game::enterLocation(uint16 locId) {
 
 	filename[strlen(filename) - 6] = '0';
 	filename[strlen(filename) - 5] = 'm';
-	Graphics::FlicPlayer mask;
-	mask.loadFile((locDir + filename).c_str());
-	mask.decodeNextFrame();
-	_vm->screen()->setMask(mask.getOffscreen());
+	Graphics::FlicDecoder mask;
+	_vm->screen()->loadMask((locDir + filename).c_str());
 
 	Database *db = _vm->database();
 

@@ -28,20 +28,26 @@
 
 #include "common/events.h"
 #include "graphics/video/video_player.h"
-#include "graphics/video/smk_player.h"
+#include "graphics/video/smk_decoder.h"
+#include "graphics/video/flic_decoder.h"
 
 #include "kom/kom.h"
+#include "kom/sound.h"
 
 namespace Kom {
 
 class KomEngine;
+
+class FlicDecoder : public Graphics::FlicDecoder {
+	void setPalette(byte *pal) {}
+};
 
 class VideoPlayer {
 public:
 	VideoPlayer(KomEngine *vm);
 	~VideoPlayer() { }
 
-	bool playVideo(const char *filename);
+	bool playVideo(char *filename);
 private:
 	void processFrame();
 	void processEvents();
@@ -49,7 +55,10 @@ private:
 	KomEngine *_vm;
 	Common::EventManager *_eventMan;
 	Graphics::SmackerDecoder _smk;
+	FlicDecoder _flic;
 	Graphics::VideoDecoder *_player;
+	byte *_background;
+	SoundSample _sample;
 };
 
 } // End of namespace Kom

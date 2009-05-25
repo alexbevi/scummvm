@@ -30,15 +30,16 @@
 #include "common/list.h"
 #include "common/rect.h"
 #include "common/str.h"
+#include "common/util.h"
 #include "graphics/cursorman.h"
 #include "graphics/surface.h"
-#include "graphics/video/flic_player.h"
 
 #include "kom/screen.h"
 #include "kom/kom.h"
 #include "kom/panel.h"
 #include "kom/actor.h"
 #include "kom/game.h"
+#include "kom/video_player.h"
 
 using Common::File;
 using Common::List;
@@ -49,7 +50,8 @@ namespace Kom {
 ColorSet::ColorSet(const char *filename) {
 	File f;
 
-	f.open(filename);
+	if (!f.open(filename))
+		return;
 
 	size = f.size() / 3;
 
@@ -87,9 +89,6 @@ Screen::Screen(KomEngine *vm, OSystem *system)
 	_orangeColorSet = new ColorSet("kom/oneoffs/sepia_or.cl");
 	_greenColorSet = new ColorSet("kom/oneoffs/sepia_gr.cl");
 
-	_mask = new uint8[SCREEN_W * (SCREEN_H - PANEL_H)];
-	memset(_mask, 0, SCREEN_W * (SCREEN_H - PANEL_H));
-
 	_font = new Font("kom/oneoffs/packfont.fnt");
 
 	_dirtyRects = new List<Rect>();
@@ -103,7 +102,6 @@ Screen::~Screen() {
 	delete _orangeColorSet;
 	delete _greenColorSet;
 	delete[] _sepiaScreen;
-	delete[] _mask;
 	delete _font;
 	delete _dirtyRects;
 	delete _prevDirtyRects;
@@ -284,15 +282,14 @@ void Screen::copyRectListToScreen(const Common::List<Common::Rect> *list) {
 void Screen::drawDirtyRects() {
 
 	// Copy everything
-	if (_freshScreen) {
+	if (_freshScreen || _backgroundRedraw) {
 		_system->copyRectToScreen(_screenBuf, SCREEN_W, 0, 0, SCREEN_W, SCREEN_H);
 
 	} else {
 		// No need to save a prev, since the background reports
 		// all changes
 
-		// FIXME - add isLoaded to flic player?
-		if (_roomBackground.getOffscreen()) {
+		if (_roomBackground.isVideoLoaded()) {
 			copyRectListToScreen(_roomBackground.getDirtyRects());
 			_roomBackground.clearDirtyRects();
 		}
@@ -306,6 +303,7 @@ void Screen::drawDirtyRects() {
 	}
 
 	_freshScreen = false;
+	_backgroundRedraw = false;
 }
 
 void Screen::gfxUpdate() {
@@ -334,9 +332,8 @@ void Screen::gfxUpdate() {
 void Screen::clearScreen() {
 	_dirtyRects->clear();
 	_prevDirtyRects->clear();
-	// FIXME - add isLoaded to flic player?
-	if (_roomBackground.getOffscreen())
-		_roomBackground.redraw();
+
+	_backgroundRedraw = true;
 	memset(_screenBuf, 0, SCREEN_W * SCREEN_H);
 	_freshScreen = true;
 }
@@ -586,6 +583,7 @@ void Screen::createSepia(bool shop) {
 	_sepiaScreen = new byte[SCREEN_W * (SCREEN_H - PANEL_H)];
 	ColorSet *cs = shop ? _greenColorSet : _orangeColorSet;
 
+	_backgroundRedraw = true;
 	drawDirtyRects();
 
 	Graphics::Surface *screen = _system->lockScreen();
@@ -616,9 +614,7 @@ void Screen::freeSepia() {
 	_sepiaScreen = 0;
 	_system->setPalette(_backupPalette, 0, 256);
 
-	// FIXME - add isLoaded to flic player?
-	if (_roomBackground.getOffscreen())
-		_roomBackground.redraw();
+	_backgroundRedraw = true;
 }
 
 void Screen::copySepia() {
@@ -626,8 +622,7 @@ void Screen::copySepia() {
 		return;
 
 	memcpy(_screenBuf, _sepiaScreen, SCREEN_W * (SCREEN_H - PANEL_H));
-	// FIXME: behavior is good but a bit hackish. the room background reports
-	//        the full screen after a redraw, even when it's not actually drawn.
+	_dirtyRects->push_back(Rect(0, 0, SCREEN_W, SCREEN_H));
 }
 
 void Screen::setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int hotspotY) {
@@ -854,6 +849,7 @@ void Screen::loadBackground(const char *filename) {
 	_roomBackground.loadFile(filename);
 	_roomBackgroundTime = 0;
 	_backgroundPaused = false;
+	_backgroundRedraw = false;
 
 	// Redraw everything
 	_dirtyRects->clear();
@@ -862,16 +858,24 @@ void Screen::loadBackground(const char *filename) {
 }
 
 void Screen::updateBackground() {
-	// FIXME - add isLoaded to flic player?
-	if (_roomBackground.getOffscreen()) {
+	if (_roomBackground.isVideoLoaded()) {
 		if (_system->getMillis() >= _roomBackgroundTime) {
-			_roomBackgroundTime = _system->getMillis() + _roomBackground.getSpeed();
+			_roomBackgroundTime = _system->getMillis() + _roomBackground.getFrameDelay() / 100;
 
 			if (!_backgroundPaused)
 				_roomBackground.decodeNextFrame();
 
-			if (_roomBackground.isPaletteDirty()) {
-				_system->setPalette(_roomBackground.getPalette() + 4 * 128, 128, 128);
+			if (_roomBackground.paletteChanged()) {
+				byte rgbaPalette[4 * 128];
+				const byte *rgbPalette = _roomBackground.getPalette();
+				for (int i = 0; i < 128; i++) {
+					rgbaPalette[i * 4 + 0] = rgbPalette[(i + 128) * 3 + 0];
+					rgbaPalette[i * 4 + 1] = rgbPalette[(i + 128) * 3 + 1];
+					rgbaPalette[i * 4 + 2] = rgbPalette[(i + 128) * 3 + 2];
+					rgbaPalette[i * 4 + 3] = 0;
+				}
+
+				_system->setPalette(rgbaPalette, 128, 128);
 				_paletteChanged = true;
 			}
 		}
@@ -879,14 +883,14 @@ void Screen::updateBackground() {
 }
 
 void Screen::drawBackground() {
-	// FIXME - add isLoaded to flic player?
-	if (_roomBackground.getOffscreen()) {
-		memcpy(_screenBuf, _roomBackground.getOffscreen(), SCREEN_W * (SCREEN_H - PANEL_H));
+	if (_roomBackground.isVideoLoaded()) {
+		_roomBackground.copyFrameToBuffer(_screenBuf, 0, 0, SCREEN_W);
 	}
 }
 
-void Screen::setMask(const uint8 *data) {
-	memcpy(_mask, data, SCREEN_W * (SCREEN_H - PANEL_H));
+void Screen::loadMask(const char *filename) {
+	_mask.loadFile(filename);
+	_mask.decodeNextFrame();
 }
 
 void Screen::drawInventory(Inventory *inv) {
@@ -896,7 +900,7 @@ void Screen::drawInventory(Inventory *inv) {
 	int selectedIndex;
 	Settings *settings = _vm->game()->settings();
 
-	_vm->screen()->copySepia();
+	copySepia();
 
 	inv->selectedInvObj = inv->selectedWeapObj = inv->selectedSpellObj = -1;
 	inv->isSelected = false;
@@ -1359,10 +1363,66 @@ void Screen::drawBoxScreen(int x, int y, int width, int height, byte color) {
 	drawBox(_screenBuf, x, y, width, height, color);
 	_dirtyRects->push_back(Rect(x, y, x + width, y + height));
 }
+
 void Screen::drawBox(byte *surface, int x, int y, int width, int height, byte color) {
 	byte *dest = surface + y * SCREEN_W + x;
 	for (int i = 0; i < height; i++)
 		memset(dest + i * SCREEN_W, color, width);
+}
+
+byte *Screen::createZoomBlur(int x, int y) {
+	byte *to, *to2, *result;
+	int sourceOffset = 0;
+	int tempOffset;
+
+	byte *surface = new byte[SCREEN_W * 179 + 120];
+	result = surface;
+
+	CLIP(x, 54, 260);
+	CLIP(y, 28, 136);
+
+	x -= 53;
+	y -= 28;
+
+	sourceOffset += y * SCREEN_W + x;
+
+	tempOffset = sourceOffset;
+	to = surface;
+	surface += 2*SCREEN_W + 18;
+	to2 = surface;
+
+	for (int i = 0; i < 57; i++) {
+		surface = to2;
+		sourceOffset = tempOffset;
+
+		for (int j = 0; j < 108; j++) {
+			byte color = _roomBackground.getPixel(sourceOffset);
+			sourceOffset++;
+
+			*surface = color;
+			*(surface-2) = color;
+			*(surface+2) = color;
+			*(surface-2*SCREEN_W-16) = color;
+			*(surface+2*SCREEN_W+16) = color;
+			*(surface-SCREEN_W-7) = color;
+			*(surface+SCREEN_W+7) = color;
+			*(surface-SCREEN_W-9) = color;
+			*(surface+SCREEN_W+9) = color;
+
+			surface += 3;
+		}
+
+		tempOffset += SCREEN_W;
+		to2 += SCREEN_W*3 + 24;
+	}
+
+	for (int i = 0; i < 168; i++) {
+		memcpy(to + i*SCREEN_W,
+			   to + 2*SCREEN_W + 18 + i*(SCREEN_W +8),
+			   SCREEN_W);
+	}
+
+	return result;
 }
 
 } // End of namespace Kom
