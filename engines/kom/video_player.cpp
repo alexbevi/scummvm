@@ -89,6 +89,8 @@ bool VideoPlayer::playVideo(char *filename) {
 		filename[length - 2] = 'a';
 		filename[length - 1] = 'w';
 		_sample.loadFile(filename);
+
+		_background = _vm->screen()->createZoomBlur(160, 100);
 	}
 
 	_vm->_system->fillScreen(0);
