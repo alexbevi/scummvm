@@ -689,11 +689,14 @@ bool Game::doStat(const Command *cmd) {
 			break;
 		case 458:
 			db->getChar(j->arg2)->_xtend = j->arg3;
-			changeMode(j->arg2, 2);
+			db->getChar(j->arg2)->_scopeInUse = -1;
+			db->getChar(j->arg2)->_loadedScopeXtend = -1;
+			_vm->actorMan()->unload(db->getChar(j->arg2)->_actorId);
 			break;
 		case 459:
 			db->getLoc(j->arg2)->xtend = j->arg3;
-			changeMode(j->arg2, 3);
+			if (db->getChar(0)->_lastLocation == j->arg2)
+				enterLocation(_vm->database()->getChar(0)->_lastLocation);
 			break;
 		case 465:
 			db->setVar(j->arg2, db->getChar(j->arg3)->_xtend);
@@ -1466,10 +1469,6 @@ void Game::loopInterfaceCollide() {
 	}
 }
 
-void Game::changeMode(int value, int mode) {
-	warning("TODO: changeMode - unsupported mode");
-}
-
 int16 Game::doExternalAction(const char *action) {
 	if (strcmp(action, "getquest") == 0) {
 		return _player.selectedQuest;
@@ -1478,6 +1477,7 @@ int16 Game::doExternalAction(const char *action) {
 		return 0;
 	}
 }
+
 void Game::doActionDusk() {
 	_player.isNight = 1;
 	enterLocation(_vm->database()->getChar(0)->_locationId);

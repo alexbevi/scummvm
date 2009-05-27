@@ -233,7 +233,6 @@ private:
 	void processChar(int proc);
 	bool doProc(int command, int type, int id, int type2, int id2);
 	void doNoUse();
-	void changeMode(int value, int mode);
 	int16 doExternalAction(const char *action);
 
 	void doActionDusk();
