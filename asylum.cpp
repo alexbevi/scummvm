@@ -17,10 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * $URL: https://scummvm.svn.sourceforge.net/svnroot/scummvm/scummvm/trunk/engines/touche/touche.cpp $
- * $Id: touche.cpp 39003 2009-03-01 04:42:46Z fingolfin $
- *
  */
 
 #include "common/config-manager.h"
@@ -29,6 +25,7 @@
 #include "common/file.h"
 
 #include "asylum/asylum.h"
+#include "asylum/graphics.cpp"
 
 namespace Asylum {
 
@@ -47,6 +44,12 @@ AsylumEngine::~AsylumEngine() {
 
 Common::Error AsylumEngine::run() {
 	initGraphics(640, 480, true);
+	
+	GraphicResource* g = new GraphicResource;
+	
+	g->loadResource("res.001");
+	
+	delete g;
 	
 	return Common::kNoError;
 }

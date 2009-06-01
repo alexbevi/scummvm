@@ -17,10 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * $URL: https://scummvm.svn.sourceforge.net/svnroot/scummvm/scummvm/trunk/engines/touche/touche.h $
- * $Id: touche.h 39003 2009-03-01 04:42:46Z fingolfin $
- *
  */
 
 #ifndef ASYLUM_ENGINE_H

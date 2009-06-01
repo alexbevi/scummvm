@@ -17,10 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * $URL: https://scummvm.svn.sourceforge.net/svnroot/scummvm/scummvm/trunk/engines/touche/detection.cpp $
- * $Id: detection.cpp 41000 2009-05-29 14:38:22Z fingolfin $
- *
  */
 
 #include "common/config-manager.h"
@@ -32,7 +28,7 @@
 
 #include "asylum/asylum.h"
 
-static const PlainGameDescriptor toucheGames[] = {
+static const PlainGameDescriptor asylumGames[] = {
 	{ "asylum", "Sanitarium" },
 	{ 0, 0 }
 };
@@ -42,7 +38,7 @@ namespace Asylum {
 static const ADGameDescription gameDescriptions[] = {
 	{ 
 		"asylum",
-		"",
+		0,
 		AD_ENTRY1s("SNTRM.DAT", "280b4a72f70f3073e9dbc9a9cfa25518", 8930),
 		Common::EN_ANY,
 		Common::kPlatformPC,
@@ -62,9 +58,9 @@ static const ADParams detectionParams = {
 	(const byte *)Asylum::gameDescriptions,
 	sizeof(ADGameDescription),
 	4096, // number of md5 bytes
-	toucheGames,
+	asylumGames,
 	0, // no obsolete targets data
-	"touche",
+	"asylum",
 	Asylum::fileBasedFallback, // file-based detection data to enable not yet known versions to start
 	kADFlagPrintWarningOnFileBasedFallback
 };
