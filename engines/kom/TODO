@@ -19,8 +19,10 @@ BUGS
 MISSING FEATURES
 ================
 * Pause support, GMM - <http://wiki.scummvm.org/index.php/Advanced_Engine_Features#Improved_pause_support>
+* Switch to AdvancedDetector
 * Graphics transaction extension - <http://article.gmane.org/gmane.games.devel.scummvm/4619>
 
-
-
+TODO?
+=====
+* Rewrite the video player to not use getPixel(), by inheriting and using performPostProcessing
 * hide the room loading in blank screen at the end of smk playback? (related to playerStruct+5Eh?)
