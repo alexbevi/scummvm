@@ -95,7 +95,7 @@ void Graphics::paint() {
 
 void Graphics::paintExits() {
 	debugC(3, kDebugLevelFlow | kDebugLevelGraphics, "painting exits");
-	foreach (Exit *, _engine->logic()->room()->exits())
+	foreach_const (Exit *, _engine->logic()->room()->exits())
 		(*it)->paint(this);
 }
 

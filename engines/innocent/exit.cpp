@@ -44,7 +44,7 @@ enum Offsets {
 };
 
 Exit::Exit(const CodePointer &c)
-  :	_enabled(false) {
+  :	_enabled(false), _sprite(0) {
 	debugC(4, kDebugLevelFiles, "loading exit from %s", +c);
 
 	bool nosprite;

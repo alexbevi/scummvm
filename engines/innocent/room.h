@@ -53,7 +53,7 @@ public:
 		Common::Rect _rect;
 	};
 
-	Common::List<Exit *> exits() const { return _exits; }
+	const Common::List<Exit *> &exits() const { return _exits; }
 
 	void addActorFrame(Common::Point p, std::vector<byte> nexts);
 	Actor::Frame getFrame(uint16 index) const {
