@@ -70,7 +70,8 @@ Engine::Engine(OSystem *syst) :
 	Common::addDebugChannel(kDebugLevelMusic, "music", "music loading and playing");
 	Common::addDebugChannel(kDebugLevelActor, "actor", "actor animation and behaviour");
 
-	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
+	/* XXX how to integrate this with EventRecorder? */
+//	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
 }
 
 Engine::~Engine() {
@@ -78,7 +79,7 @@ Engine::~Engine() {
 	MusicParser::destroy();
 }
 
-Common::Error Engine::init() {
+Common::Error Engine::run() {
 	GFX_TRANSACTION {
 		initCommonGFX(false);
 		_system->initSize(320, 200);
@@ -101,10 +102,6 @@ Common::Error Engine::init() {
 
 	_logic->init();
 
-	return kNoError;
-}
-
-Common::Error Engine::go() {
 	_resources->loadActors();
 	_logic->initCode();
 	_graphics->showCursor();

@@ -29,6 +29,7 @@
 namespace Innocent {
 //
 #define foreach(T, L) for (Common::List<T>::iterator it = L.begin(); it != L.end(); ++it)
+#define foreach_const(T, L) for (Common::List<T>::const_iterator it = L.begin(); it != L.end(); ++it)
 #define unless(x) if (!(x))
 #define forever for(;;)
 

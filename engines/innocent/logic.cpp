@@ -213,7 +213,7 @@ void Logic::skipCutscene() {
 }
 
 Animation *Logic::animation(uint16 offset) const {
-	foreach (Animation *, _animations)
+	foreach_const (Animation *, _animations)
 		if ((*it)->baseOffset() == offset)
 			return (*it);
 

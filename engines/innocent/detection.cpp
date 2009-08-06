@@ -45,7 +45,7 @@ public:
 		return "Innocent Until Caught";
 	}
 
-	virtual const char *getCopyright() const {
+	virtual const char *getOriginalCopyright() const {
 		return "Copyright (c) 1993 Divide by Zero";
 	}
 

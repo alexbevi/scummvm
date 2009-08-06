@@ -53,8 +53,7 @@ public:
 	Engine(OSystem *syst);
 	~Engine();
 
-	virtual Common::Error init();
-	virtual Common::Error go();
+	virtual Common::Error run();
 	void delay(int millis) const;
 
 	Logic *logic() { return _logic; }

@@ -70,7 +70,7 @@ void EventManager::paint(Graphics *g) const {
 		return;
 	debugC(3, kDebugLevelEvents | kDebugLevelGraphics, "EventManager paints clickable areas");
 
-	foreach(Clickable *, _handlers)
+	foreach_const(Clickable *, _handlers)
 		g->paintRect((*it)->area());
 }
 

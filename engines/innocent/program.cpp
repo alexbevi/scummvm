@@ -148,7 +148,7 @@ Common::List<Exit *> Program::exitsForRoom(uint16 room) const {
 }
 
 Actor *Program::actor(uint16 index) const {
-	Common::List<Actor *>::iterator it = _actors.begin();
+	Common::List<Actor *>::const_iterator it = _actors.begin();
 
 	while (index) {
 		it++;
