@@ -12,14 +12,12 @@ salty-horse @ irc://freenode.net/scummvm
 
 ------------------------------------------------------------
 
-The code is hosted on a Darcs repository.
-Darcs is a version control system. It allows you to easily fetch the latest
-changes, make changes of your own, and send them as patches via email.
+The code is hosted in a Git repository.
 
 To check-out the repository, run:
-$ darcs get http://ori.avtalion.name/repos/kom/
+$ git clone git://github.com/salty-horse/kom.git
 
 To get the latest changes, run:
-$ darcs pull
+$ git pull
 
-For more information about Darcs, visit http://darcs.net
+For more information about Git, visit http://git-scm.com
