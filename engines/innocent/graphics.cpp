@@ -284,17 +284,27 @@ Common::Rect Graphics::paintSpeechInBubble(Common::Point pos, byte colour, const
 	uint8 bubble_indices[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
 	uint8 wadj = 0;
-	if (pointsLeft && !pointsUp) {
-		uint16 height = 60;
-		if (lines >= 3)
-			height = lines * 12 + 16;
+	{
+		const uint16 height = (lines >= 3) ? (lines * 12 + 16) : 60;
 		if (top < height)
 			top = 0;
 		else
 			top -= height;
+	}
+	if (pointsLeft && !pointsUp) {
 		bubble_indices[kBubbleBottomLeft] = kBubbleBottomLeftPoint;
 		wadj = 4;
 		left += 4;
+	} else if (!pointsLeft && !pointsUp) {
+		if (left >= 320)
+			left = 320;
+		const int bubbleWidth = textSize.width() + 69;
+		if (bubbleWidth > left)
+			left = 0;
+		else
+			left -= bubbleWidth;
+		bubble_indices[kBubbleBottomRight] = kBubbleBottomRightPoint;
+		wadj = 0;
 	} else
 		error("can't paint speech bubble pointing %s %s yet", pointsUp ? "up" : "down", pointsLeft ? "left" : "right");
 	debugC(2, kDebugLevelGraphics, "painting speech bubble \"%s\" at (adjusted) %d:%d", string, left, top);
