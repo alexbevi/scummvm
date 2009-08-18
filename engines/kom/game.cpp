@@ -1030,7 +1030,12 @@ void Game::loopMove() {
 				}
 			}
 
-			// TODO - collision
+			// Stop characters on collision (when an action is executed on them)
+			if (_player.collideType == 2 && _player.collideNum == chr->_id) {
+				chr->stopChar();
+				chr->_lastDirection = 4;
+			}
+
 			// TODO - fight-related thing
 
 			if (chr->_mode == 1)
