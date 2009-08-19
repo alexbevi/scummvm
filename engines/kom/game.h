@@ -107,7 +107,7 @@ typedef enum {
 
 /** Player settings */
 struct Player {
-	Player() : isNight(0), sleepTimer(0) {}
+	Player() : isNight(0), sleepTimer(0), collideType(0), collideNum(0) {}
 	CommandType command;
 	int16 commandState;
 	int16 collideType;
