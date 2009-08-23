@@ -642,8 +642,7 @@ bool Game::doStat(const Command *cmd) {
 			db->getChar(j->arg2)->_isVisible = false;
 			break;
 		case 434:
-			//warning("TODO: doActionCollide(%d, %d)", j->arg2, j->arg3);
-			keepProcessing = false;
+			keepProcessing = doActionCollide(j->arg2, j->arg3);
 			break;
 		case 438:
 			db->getChar(j->arg2)->_strength = j->arg3;
@@ -1545,6 +1544,15 @@ void Game::doActionMoveChar(uint16 charId, int16 loc, int16 box) {
 	chr->_start5 = _vm->database()->getZValue(loc, box, chr->_start4);
 	chr->stopChar();
 	chr->_lastDirection = 4;
+}
+
+bool Game::doActionCollide(uint16 char1, int16 char2) {
+	Character *chr1 = _vm->database()->getChar(char1);
+	Character *chr2 = _vm->database()->getChar(char2);
+
+	return (chr1->_lastLocation == chr2->_lastLocation &&
+	        abs(chr1->_start3 - chr2->_start3) < 10240 &&
+	        abs(chr1->_start5 - chr2->_start5) < 40);
 }
 
 void Game::doActionSpriteScene(const char *name, int charId, int loc, int box) {
