@@ -271,7 +271,9 @@ int Conv::showOptions() {
 
 	// Add a bullet at the beginning
 	for (int i = 0; i < 3; i++) {
-		if (_options[i].offset != 0) {
+		if (_options[i].offset == 0) {
+			_options[i].text = 0;
+		} else {
 			if (_options[i].offset) {
 				_options[i].text = new char[strlen(_options[i].offset) + 3];
 				strcpy(_options[i].text, "\x08 ");
