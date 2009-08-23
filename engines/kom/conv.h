@@ -28,12 +28,13 @@
 
 #include "common/file.h"
 #include "common/list.h"
+#include "common/str.h"
 
 namespace Kom {
 
 struct Statement {
 	Statement() : command(0), charId(0), emotion(0), textOffset(0),
-		          optNum(0), address(0), wVal(0) { filename[0] = '\0'; }
+		          optNum(0), address(0), val(0) { filename[0] = '\0'; }
 	int16 command;
 	int16 charId;
 	int16 emotion;
@@ -41,7 +42,7 @@ struct Statement {
 	uint32 optNum;
 	char filename[11];
 	uint16 address;
-	int16 wVal;
+	int16 val;
 };
 
 struct Option {
@@ -61,12 +62,21 @@ public:
 	Conv(KomEngine *vm, uint16 charId);
 	~Conv();
 
-	bool doTalk(int a, int b);
+	bool doTalk(int16 convNum, int32 optNum);
 
 private:
 
 	void initConvs(uint32 offset);
 	void initText(uint32 offset);
+
+	void talkInit();
+	void talkDeInit();
+
+	int showOptions();
+	void freeOptions();
+	int getOption();
+	void displayMenuOptions();
+	int doStat(int selection);
 
 	KomEngine *_vm;
 
@@ -74,8 +84,26 @@ private:
 	const char *_codename;
 	Common::File *_convData;
 
+
+	byte _backupPalette[256 * 4];
+
 	byte *_convs;
-	byte *_text;
+	char *_text;
+
+	int _selectedOption;
+	int _scrollPos;
+	int _surfaceHeight;
+
+	struct {
+		char *offset;
+		char *text;
+		int16 b;
+		Common::List<Statement>* statements;
+		int16 d;
+		Common::String lines[24];
+		int pixelTop;
+		int pixelBottom;
+	} _options[3];
 
 	Common::List<Conversation> _conversations;
 };

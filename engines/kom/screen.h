@@ -91,6 +91,7 @@ public:
 	void drawInventory(Inventory *inv);
 
 	void useColorSet(ColorSet *cs, uint start);
+	void setPaletteColor(int index, const byte color[4]);
 	void createSepia(bool shop);
 	void freeSepia();
 	void copySepia();
@@ -107,6 +108,8 @@ public:
 	void writeTextCentered(byte *buf, const char *text, uint8 row, uint8 color, bool isEmbossed);
 	void writeText(byte *buf, const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed);
 
+	uint16 getTextWidth(const char *text);
+
 	void drawBoxScreen(int x, int y, int width, int height, byte color);
 	void drawBox(byte *surface, int x, int y, int width, int height, byte color);
 
@@ -118,7 +121,6 @@ private:
 
 	void drawActorFrameLine(byte *outBuffer, const int8 *rowData, uint16 length);
 
-	uint16 getTextWidth(const char *text);
 	void writeTextStyle(byte *buf, const char *text, uint8 startRow, uint16 startCol, uint8 color, bool isBackground);
 
 	void setPaletteBrightness();

@@ -560,6 +560,12 @@ void Screen::useColorSet(ColorSet *cs, uint start) {
 	_paletteChanged = true;
 }
 
+void Screen::setPaletteColor(int index, const byte color[4]) {
+	_system->setPalette(color, index, index + 1);
+
+	_paletteChanged = true;
+}
+
 void Screen::setPaletteBrightness() {
 	byte newPalette[256 * 4];
 
