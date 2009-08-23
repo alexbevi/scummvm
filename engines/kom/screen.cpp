@@ -1378,8 +1378,8 @@ byte *Screen::createZoomBlur(int x, int y) {
 	byte *surface = new byte[SCREEN_W * 179 + 120];
 	result = surface;
 
-	CLIP(x, 54, 260);
-	CLIP(y, 28, 136);
+	x = CLIP(x, 54, 260);
+	y = CLIP(y, 28, 136);
 
 	x -= 53;
 	y -= 28;
