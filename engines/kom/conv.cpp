@@ -43,10 +43,7 @@ Conv::Conv(KomEngine *vm, uint16 charId)
 	_charId = charId;
 	_codename = _vm->database()->getChar(charId)->_name;
 	_convData = _vm->database()->getConvData();
-	byte *entry = _vm->database()->getConvIndex(_codename);
-
-	initConvs(READ_LE_UINT32(entry + 20));
-	initText(READ_LE_UINT32(entry + 8));
+	_convEntry = _vm->database()->getConvIndex(_codename);
 
 	// Backup the palette
 	_vm->_system->grabPalette(_backupPalette, 0, 256);
@@ -180,6 +177,10 @@ void Conv::initText(uint32 offset) {
 }
 
 bool Conv::doTalk(int16 convNum, int32 optNum) {
+
+	initConvs(READ_LE_UINT32(_convEntry + 20));
+	initText(READ_LE_UINT32(_convEntry + 8));
+
 	talkInit();
 
 	while (1) {
@@ -225,6 +226,31 @@ bool Conv::doTalk(int16 convNum, int32 optNum) {
 
 		if (optNum == 0)
 			return true;
+	}
+}
+
+void Conv::doResponse(int responseNum) {
+	int count;
+	int num = -1;
+	int charId, offset;
+
+	initText(READ_LE_UINT32(_convEntry + 12));
+
+	_convData->seek(READ_LE_UINT32(_convEntry + 16));
+	lineBuffer = _convData->readLine();
+	sscanf(lineBuffer.c_str(), "%d", &count);
+
+	for (int i = 0; i < count && num != responseNum; i++) {
+		do {
+			lineBuffer = _convData->readLine();
+		} while (lineBuffer.empty());
+		sscanf(lineBuffer.c_str(), "%d %d %d", &num, &charId, &offset);
+	}
+
+	if (num == responseNum) {
+		warning("TODO talk: %hd - %s", charId, _text + offset);
+	} else {
+		error("Could not find response %d of %s", responseNum, _codename);
 	}
 }
 
@@ -411,7 +437,7 @@ int Conv::doStat(int selection) {
 			// i->emotion
 			// i->textOffset
 			// i->filename
-			warning("TODO talk: actually talk %hd - %s", i->charId, _text + i->textOffset);
+			warning("TODO talk: %hd - %s", i->charId, _text + i->textOffset);
 			break;
 
 		case 307:

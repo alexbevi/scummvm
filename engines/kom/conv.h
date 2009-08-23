@@ -63,6 +63,7 @@ public:
 	~Conv();
 
 	bool doTalk(int16 convNum, int32 optNum);
+	void doResponse(int responseNum);
 
 private:
 
@@ -82,6 +83,7 @@ private:
 
 	uint16 _charId;
 	const char *_codename;
+	byte *_convEntry;
 	Common::File *_convData;
 
 

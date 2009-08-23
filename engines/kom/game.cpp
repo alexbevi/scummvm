@@ -740,10 +740,14 @@ bool Game::doStat(const Command *cmd) {
 			rc = true;
 			break;
 		case 476:
-			doResponse(j->arg2, j->arg3);
+			conv = new Conv(_vm, j->arg2);
+			conv->doResponse(j->arg3);
+			delete conv;
 			break;
 		case 477:
-			doResponse(j->arg2, db->getVar(j->arg3));
+			conv = new Conv(_vm, j->arg2);
+			conv->doResponse(db->getVar(j->arg3));
+			delete conv;
 			break;
 		case 478:
 			if (db->getChar(j->arg2)->_spellMode == 1 ||
@@ -1831,10 +1835,6 @@ bool Game::isNarratorPlaying() {
 
 void Game::doGreet(int charId, int greeting) {
 	printf("TODO: doGreet(%d, %d)\n", charId, greeting);
-}
-
-void Game::doResponse(int charId, int response) {
-	printf("TODO: doResponse(%d, %d)\n", charId, response);
 }
 
 /**

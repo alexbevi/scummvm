@@ -194,7 +194,6 @@ public:
 	bool isNarratorPlaying();
 
 	void doGreet(int charId, int response);
-	void doResponse(int charId, int response);
 
 	int8 doDonut(int type, Inventory *inv);
 	void doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 num);
