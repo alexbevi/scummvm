@@ -1477,10 +1477,20 @@ void Game::loopInterfaceCollide() {
 int16 Game::doExternalAction(const char *action) {
 	if (strcmp(action, "getquest") == 0) {
 		return _player.selectedQuest;
+
+	} else if (strcmp(action, "sleepon") == 0) {
+		setNight();
+		_vm->ambientPause(true);
+		_player.sleepTimer = 300;
+
+	} else if (strcmp(action, "sleepoff") == 0) {
+		_player.sleepTimer = 0;
+
 	} else {
 		warning("TODO: Unknown external action: %s", action);
-		return 0;
 	}
+
+	return 0;
 }
 
 void Game::doActionDusk() {
