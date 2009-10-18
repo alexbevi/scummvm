@@ -65,7 +65,7 @@ Common::SeekableReadStream *decodeLZSS(Common::SeekableReadStream *indata, uint3
 	}
 
 	delete[] histbuff;	
-	return new Common::MemoryReadStream(outLzssBufData, uncompressedSize, true);
+	return new Common::MemoryReadStream(outLzssBufData, uncompressedSize, Common::DisposeAfterUse::YES);
 }
 
 }
