@@ -47,9 +47,13 @@ void VideoPlayer::processEvents() {
 				_skipVideo = true;
 			break;
 		case Common::EVENT_RBUTTONDOWN:
+			_skipVideo = true;
+			break;
+
 		case Common::EVENT_RTL:
 		case Common::EVENT_QUIT:
 			_skipVideo = true;
+			_vm->quitGame();
 			break;
 		default:
 			break;
