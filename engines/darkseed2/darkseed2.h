@@ -32,6 +32,10 @@
 
 namespace DarkSeed2 {
 
+enum {
+	kDebugResources = 1 <<  0
+};
+
 struct DS2GameDescription;
 
 class Resources;

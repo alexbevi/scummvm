@@ -39,6 +39,8 @@
 namespace DarkSeed2 {
 
 DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
+	Common::addDebugChannel(kDebugResources, "Resources", "Resource handling debug level");
+
 	// Setup mixer
 	_mixer->setVolumeForSoundType(Audio::Mixer::kSFXSoundType, ConfMan.getInt("sfx_volume"));
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));
