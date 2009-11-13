@@ -201,4 +201,13 @@ bool Resources::readGlueContents(Common::File &glueFile, const Common::String &f
 	return true;
 }
 
+bool Resources::hasResource(const Common::String &resource) const {
+	if (!_resources.contains(resource))
+		return false;
+
+	const Resource &res = _resources.getVal(resource);
+
+	return res.exists;
+}
+
 } // End of namespace DarkSeed2

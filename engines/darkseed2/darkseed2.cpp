@@ -60,6 +60,9 @@ Common::Error DarkSeed2Engine::run() {
 		return Common::kUnknownError;
 	}
 
+	warning("-> %d", _resources->hasResource("Foobar"));
+	warning("-> %d", _resources->hasResource("002BTN01.BMP"));
+	warning("-> %d", _resources->hasResource("DJG001.WAV"));
 	return Common::kNoError;
 }
 
