@@ -207,7 +207,36 @@ bool Resources::hasResource(const Common::String &resource) const {
 
 	const Resource &res = _resources.getVal(resource);
 
-	return res.exists;
+	return res.exists && (res.size != 0);
+}
+
+byte *Resources::getResource(const Common::String &resource) const {
+	if (!_resources.contains(resource))
+		error("Resource \"%s\" does not exist", resource.c_str());
+
+	const Resource &res = _resources.getVal(resource);
+
+	if (!res.exists || (res.size == 0))
+		error("Resource \"%s\" not available", resource.c_str());
+
+	Common::File glueFile;
+
+	if (!glueFile.open(res.glue->fileName))
+		error("Couldn't open glue file \"%s\"", res.glue->fileName.c_str());
+
+	if (!glueFile.seek(res.offset))
+		error("Couldn't seek glue file \"%s\" to offset %d",
+				res.glue->fileName.c_str(), res.offset);
+
+	byte *resData = new byte[res.size];
+
+	if (glueFile.read(resData, res.size) != res.size) {
+		delete[] resData;
+		error("Couldn't read resource \"%s\" out of glue file \"%s\"",
+				resource.c_str(), res.glue->fileName.c_str());
+	}
+
+	return resData;
 }
 
 } // End of namespace DarkSeed2

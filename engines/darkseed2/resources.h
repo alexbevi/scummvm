@@ -52,6 +52,8 @@ public:
 
 	bool hasResource(const Common::String &resource) const;
 
+	byte *getResource(const Common::String &resource) const;
+
 private:
 	struct Glue {
 		Common::String fileName;

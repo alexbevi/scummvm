@@ -63,6 +63,13 @@ Common::Error DarkSeed2Engine::run() {
 	warning("-> %d", _resources->hasResource("Foobar"));
 	warning("-> %d", _resources->hasResource("002BTN01.BMP"));
 	warning("-> %d", _resources->hasResource("DJG001.WAV"));
+
+	byte *R = _resources->getResource("DJG001.WAV");
+
+	warning("%c, %c, %c, %c", R[0], R[1], R[2], R[3]);
+
+	delete[] R;
+
 	return Common::kNoError;
 }
 
