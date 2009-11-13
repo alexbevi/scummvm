@@ -50,8 +50,10 @@ public:
 	/** Clear all resource information. */
 	void clear();
 
+	/** Does a specific resource exist? */
 	bool hasResource(const Common::String &resource) const;
 
+	/** Get a specific resource. */
 	byte *getResource(const Common::String &resource) const;
 
 private:
