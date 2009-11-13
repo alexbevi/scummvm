@@ -32,6 +32,10 @@
 #include "common/array.h"
 #include "common/hashmap.h"
 
+namespace Common {
+	class File;
+}
+
 namespace DarkSeed2 {
 
 class Resources {
@@ -62,6 +66,10 @@ private:
 
 	Common::Array<Glue> _glues;
 	Common::HashMap<Common::String, Resource> _resources;
+
+	bool readIndexHeader(Common::File &indexFile);
+	bool readIndexGlues(Common::File &indexFile);
+	bool readIndexResources(Common::File &indexFile);
 };
 
 } // End of namespace DarkSeed2

@@ -45,18 +45,42 @@ bool Resources::index(const char *fileName) {
 
 	Common::File indexFile;
 
+	debugC(1, kDebugResources, "Resource index file \"%s\"", fileName);
+
 	if (!indexFile.open(fileName))
 		return false;
 
+	if (!readIndexHeader(indexFile))
+		return false;
+	if (!readIndexGlues(indexFile))
+		return false;
+	if (!readIndexResources(indexFile))
+		return false;
+
+	return true;
+}
+
+void Resources::clear() {
+	_resources.clear();
+	_glues.clear();
+
+	_glueCount = 0;
+	_resCount  = 0;
+}
+
+bool Resources::readIndexHeader(Common::File &indexFile) {
 	_glueCount = indexFile.readUint16LE();
 	_resCount  = indexFile.readUint16LE();
 
 	_glues.resize(_glueCount);
 
-	byte buffer[33];
+	debugC(1, kDebugResources, "Found %d glues and %d resources", _glueCount, _resCount);
 
-	debugC(1, kDebugResources, "Resource index file \"%s\": %d glues, %d resources",
-			fileName, _glueCount, _resCount);
+	return true;
+}
+
+bool Resources::readIndexGlues(Common::File &indexFile) {
+	byte buffer[33];
 
 	for (int i = 0; i < _glueCount; i++) {
 		indexFile.read(buffer, 32);
@@ -68,6 +92,12 @@ bool Resources::index(const char *fileName) {
 
 		debugC(2, kDebugResources, "Glue file \"%s\"", _glues[i].fileName.c_str());
 	}
+
+	return true;
+}
+
+bool Resources::readIndexResources(Common::File &indexFile) {
+	byte buffer[13];
 
 	for (int i = 0; i < _resCount; i++) {
 		uint16 glue = indexFile.readUint16LE();
@@ -96,14 +126,6 @@ bool Resources::index(const char *fileName) {
 	}
 
 	return true;
-}
-
-void Resources::clear() {
-	_resources.clear();
-	_glues.clear();
-
-	_glueCount = 0;
-	_resCount  = 0;
 }
 
 } // End of namespace DarkSeed2
