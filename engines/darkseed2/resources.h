@@ -52,7 +52,7 @@ private:
 		Glue *glue;
 		uint32 offset;
 		uint32 size;
-		byte unknown[10];
+		byte unknown[8];
 
 		Resource();
 	};

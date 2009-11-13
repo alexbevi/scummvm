@@ -64,8 +64,29 @@ bool Resources::index(const char *fileName) {
 		buffer[32] = '\0';
 
 		_glues[i].fileName = (const char *) buffer;
+	}
 
-		warning("Glue file: \"%s\"", _glues[i].fileName.c_str());
+	for (int i = 0; i < _resCount; i++) {
+		uint16 glue = indexFile.readUint16LE();
+
+		indexFile.read(buffer, 12);
+		buffer[12] = '\0';
+
+		Common::String resFile = (const char *) buffer;
+
+		if (glue >= _glueCount) {
+			warning("Glue number out of range for resource \"%s\" (%d vs. %d)",
+					resFile.c_str(), glue, _glueCount);
+			return false;
+		}
+
+		Resource resource;
+
+		indexFile.read(resource.unknown, 8);
+
+		resource.glue = &_glues[glue];
+
+		_resources.setVal(resFile, resource);
 	}
 
 	return true;

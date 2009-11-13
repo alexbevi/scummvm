@@ -53,7 +53,10 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 Common::Error DarkSeed2Engine::run() {
 	_resources = new Resources();
 
-	_resources->index("gfile.hdr");
+	if (!_resources->index("gfile.hdr")) {
+		warning("Couldn't not index resources");
+		return Common::kUnknownError;
+	}
 
 	return Common::kNoError;
 }
