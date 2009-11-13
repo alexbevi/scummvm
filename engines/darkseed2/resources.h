@@ -38,13 +38,16 @@ namespace Common {
 
 namespace DarkSeed2 {
 
+/** The resource manager. */
 class Resources {
 public:
 	Resources();
 	~Resources();
 
+	/** Index all resources, based on a resource index file. */
 	bool index(const char *fileName);
 
+	/** Clear all resource information. */
 	void clear();
 
 private:
@@ -52,24 +55,38 @@ private:
 		Common::String fileName;
 	};
 
+	/** Information about a resource. */
 	struct Resource {
-		Glue *glue;
-		uint32 offset;
-		uint32 size;
+		Glue *glue;      ///< Pointer to its glue file.
+		uint32 offset;   ///< Offset within the glue file.
+		uint32 size;     ///< Size in bytes.
 		byte unknown[8];
+
+		bool exists; ///< Have we found it while indexing its glue file?
 
 		Resource();
 	};
 
-	uint16 _glueCount;
-	uint16 _resCount;
+	uint16 _glueCount; ///< Number of indexed glue files.
+	uint16 _resCount;  ///< Number of indexed resources.
 
+	/** All indexed glues. */
 	Common::Array<Glue> _glues;
+	/** All indexed resources. */
 	Common::HashMap<Common::String, Resource> _resources;
 
+	/** Read the index file's header. */
 	bool readIndexHeader(Common::File &indexFile);
+	/** Read the glue file section of the index file. */
 	bool readIndexGlues(Common::File &indexFile);
+	/** Read the resources section of the index file. */
 	bool readIndexResources(Common::File &indexFile);
+
+	/** Index all resources in all indexed glue files. */
+	bool indexGluesContents();
+
+	/** Index all resources in the specified glue file. */
+	bool readGlueContents(Common::File &glueFile, const Common::String &fileName);
 };
 
 } // End of namespace DarkSeed2

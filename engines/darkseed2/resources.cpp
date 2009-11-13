@@ -29,7 +29,7 @@
 
 namespace DarkSeed2 {
 
-Resources::Resource::Resource() : glue(0), offset(0), size(0) {
+Resources::Resource::Resource() : glue(0), offset(0), size(0), exists(false) {
 }
 
 Resources::Resources() {
@@ -50,11 +50,18 @@ bool Resources::index(const char *fileName) {
 	if (!indexFile.open(fileName))
 		return false;
 
+	// Read the different sections of the index file
 	if (!readIndexHeader(indexFile))
 		return false;
 	if (!readIndexGlues(indexFile))
 		return false;
 	if (!readIndexResources(indexFile))
+		return false;
+
+	indexFile.close();
+
+	// Index all glues
+	if (!indexGluesContents())
 		return false;
 
 	return true;
@@ -82,6 +89,7 @@ bool Resources::readIndexHeader(Common::File &indexFile) {
 bool Resources::readIndexGlues(Common::File &indexFile) {
 	byte buffer[33];
 
+	// Read the names of all available glues
 	for (int i = 0; i < _glueCount; i++) {
 		indexFile.read(buffer, 32);
 		indexFile.skip(32);
@@ -99,12 +107,14 @@ bool Resources::readIndexGlues(Common::File &indexFile) {
 bool Resources::readIndexResources(Common::File &indexFile) {
 	byte buffer[13];
 
+	// Read information about all avaiable resources
 	for (int i = 0; i < _resCount; i++) {
+		// In which glue is it found?
 		uint16 glue = indexFile.readUint16LE();
 
+		// File name
 		indexFile.read(buffer, 12);
 		buffer[12] = '\0';
-
 		Common::String resFile = (const char *) buffer;
 
 		if (glue >= _glueCount) {
@@ -115,6 +125,7 @@ bool Resources::readIndexResources(Common::File &indexFile) {
 
 		Resource resource;
 
+		// Unknown
 		indexFile.read(resource.unknown, 8);
 
 		resource.glue = &_glues[glue];
@@ -123,6 +134,68 @@ bool Resources::readIndexResources(Common::File &indexFile) {
 
 		debugC(3, kDebugResources, "Resource \"%s\", in glue \"%s\"",
 				resFile.c_str(), resource.glue->fileName.c_str());
+	}
+
+	return true;
+}
+
+bool Resources::indexGluesContents() {
+	for (int i = 0; i < _glueCount; i++) {
+		Common::File glueFile;
+
+		if (!glueFile.open(_glues[i].fileName)) {
+			warning("Can't open glue file \"%s\"", _glues[i].fileName.c_str());
+			return false;
+		}
+
+		if (!readGlueContents(glueFile, _glues[i].fileName))
+			return false;
+	}
+
+	return true;
+}
+
+bool Resources::readGlueContents(Common::File &glueFile, const Common::String &fileName) {
+	debugC(3, kDebugResources, "Reading contents of glue file \"%s\"", fileName.c_str());
+
+	// Compression marker
+	if (glueFile.readByte() == 0xFF) {
+		warning("Compressed glue files not yet supported");
+		return true;
+	}
+
+	glueFile.seek(0);
+
+	uint16 glueResCount = glueFile.readUint16LE();
+
+	debugC(4, kDebugResources, "Has %d resources", glueResCount);
+
+	byte buffer[13];
+
+	for (int i = 0; i < glueResCount; i++) {
+		// Resource's file name
+		glueFile.read(buffer, 12);
+		buffer[12] = '\0';
+		Common::String resFile = (const char *) buffer;
+
+		// Was the resource also listed in the index file?
+		if (!_resources.contains(resFile)) {
+			warning("Unindexed resource \"%s\" found", resFile.c_str());
+			glueFile.skip(8);
+			continue;
+		}
+
+		Resource &resource = _resources.getVal(resFile);
+
+		// Just to make sure that the resource is the really in the glue file it should be
+		assert(!strcmp(fileName.c_str(), resource.glue->fileName.c_str()));
+
+		resource.exists = true;
+		resource.size   = glueFile.readUint32LE();
+		resource.offset = glueFile.readUint32LE();
+
+		debugC(5, kDebugResources, "Resource \"%s\", offset %d, size %d",
+				resFile.c_str(), resource.offset, resource.size);
 	}
 
 	return true;
