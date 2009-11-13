@@ -23,47 +23,47 @@
  *
  */
 
-#include "common/endian.h"
-#include "common/md5.h"
+#ifndef DARKSEED2_RESOURCES_H
+#define DARKSEED2_RESOURCES_H
 
-#include "base/plugins.h"
+#include "engines/darkseed2/darkseed2.h"
 
-#include "common/config-manager.h"
-
-#include "sound/mixer.h"
-#include "sound/mididrv.h"
-
-#include "darkseed2/darkseed2.h"
-#include "darkseed2/resources.h"
+#include "common/str.h"
+#include "common/array.h"
+#include "common/hashmap.h"
 
 namespace DarkSeed2 {
 
-DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
-	// Setup mixer
-	_mixer->setVolumeForSoundType(Audio::Mixer::kSFXSoundType, ConfMan.getInt("sfx_volume"));
-	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));
+class Resources {
+public:
+	Resources();
+	~Resources();
 
-	_resources = 0;
-}
+	bool index(const char *fileName);
 
-DarkSeed2Engine::~DarkSeed2Engine() {
-	delete _resources;
-}
+	void clear();
 
-Common::Error DarkSeed2Engine::run() {
-	_resources = new Resources();
+private:
+	struct Glue {
+		Common::String fileName;
+	};
 
-	_resources->index("gfile.hdr");
+	struct Resource {
+		Glue *glue;
+		uint32 offset;
+		uint32 size;
+		byte unknown[10];
 
-	return Common::kNoError;
-}
+		Resource();
+	};
 
-void DarkSeed2Engine::pauseEngineIntern(bool pause) {
-	_mixer->pauseAll(pause);
-}
+	uint16 _glueCount;
+	uint16 _resCount;
 
-void DarkSeed2Engine::syncSoundSettings() {
-	Engine::syncSoundSettings();
-}
+	Common::Array<Glue> _glues;
+	Common::HashMap<Common::String, Resource> _resources;
+};
 
 } // End of namespace DarkSeed2
+
+#endif // DARKSEED2_RESOURCES_H

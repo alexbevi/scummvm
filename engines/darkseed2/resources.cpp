@@ -23,47 +23,60 @@
  *
  */
 
-#include "common/endian.h"
-#include "common/md5.h"
+#include "common/file.h"
 
-#include "base/plugins.h"
-
-#include "common/config-manager.h"
-
-#include "sound/mixer.h"
-#include "sound/mididrv.h"
-
-#include "darkseed2/darkseed2.h"
-#include "darkseed2/resources.h"
+#include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {
 
-DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
-	// Setup mixer
-	_mixer->setVolumeForSoundType(Audio::Mixer::kSFXSoundType, ConfMan.getInt("sfx_volume"));
-	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));
-
-	_resources = 0;
+Resources::Resource::Resource() : glue(0), offset(0), size(0) {
 }
 
-DarkSeed2Engine::~DarkSeed2Engine() {
-	delete _resources;
+Resources::Resources() {
+	clear();
 }
 
-Common::Error DarkSeed2Engine::run() {
-	_resources = new Resources();
-
-	_resources->index("gfile.hdr");
-
-	return Common::kNoError;
+Resources::~Resources() {
+	clear();
 }
 
-void DarkSeed2Engine::pauseEngineIntern(bool pause) {
-	_mixer->pauseAll(pause);
+bool Resources::index(const char *fileName) {
+	clear();
+
+	Common::File indexFile;
+
+	if (!indexFile.open(fileName))
+		return false;
+
+	_glueCount = indexFile.readUint16LE();
+	_resCount  = indexFile.readUint16LE();
+
+	_glues.resize(_glueCount);
+
+	byte buffer[33];
+
+	warning("Number of glues: %d, number of resources: %d", _glueCount, _resCount);
+
+	for (int i = 0; i < _glueCount; i++) {
+		indexFile.read(buffer, 32);
+		indexFile.skip(32);
+
+		buffer[32] = '\0';
+
+		_glues[i].fileName = (const char *) buffer;
+
+		warning("Glue file: \"%s\"", _glues[i].fileName.c_str());
+	}
+
+	return true;
 }
 
-void DarkSeed2Engine::syncSoundSettings() {
-	Engine::syncSoundSettings();
+void Resources::clear() {
+	_resources.clear();
+	_glues.clear();
+
+	_glueCount = 0;
+	_resCount  = 0;
 }
 
 } // End of namespace DarkSeed2

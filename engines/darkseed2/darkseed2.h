@@ -34,6 +34,8 @@ namespace DarkSeed2 {
 
 struct DS2GameDescription;
 
+class Resources;
+
 class DarkSeed2Engine : public Engine {
 private:
 	// Engine APIs
@@ -43,6 +45,8 @@ private:
 	virtual void syncSoundSettings();
 
 public:
+	Resources *_resources;
+
 	void pauseGame();
 
 	DarkSeed2Engine(OSystem *syst);
