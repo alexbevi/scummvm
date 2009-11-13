@@ -211,6 +211,8 @@ bool Resources::hasResource(const Common::String &resource) const {
 }
 
 byte *Resources::getResource(const Common::String &resource) const {
+	debugC(3, kDebugResources, "Getting resource \"%s\"", resource.c_str());
+
 	if (!_resources.contains(resource))
 		error("Resource \"%s\" does not exist", resource.c_str());
 
