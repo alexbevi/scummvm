@@ -55,7 +55,8 @@ bool Resources::index(const char *fileName) {
 
 	byte buffer[33];
 
-	warning("Number of glues: %d, number of resources: %d", _glueCount, _resCount);
+	debugC(1, kDebugResources, "Resource index file \"%s\": %d glues, %d resources",
+			fileName, _glueCount, _resCount);
 
 	for (int i = 0; i < _glueCount; i++) {
 		indexFile.read(buffer, 32);
@@ -64,6 +65,8 @@ bool Resources::index(const char *fileName) {
 		buffer[32] = '\0';
 
 		_glues[i].fileName = (const char *) buffer;
+
+		debugC(2, kDebugResources, "Glue file \"%s\"", _glues[i].fileName.c_str());
 	}
 
 	for (int i = 0; i < _resCount; i++) {
@@ -87,6 +90,9 @@ bool Resources::index(const char *fileName) {
 		resource.glue = &_glues[glue];
 
 		_resources.setVal(resFile, resource);
+
+		debugC(3, kDebugResources, "Resource \"%s\", in glue \"%s\"",
+				resFile.c_str(), resource.glue->fileName.c_str());
 	}
 
 	return true;
