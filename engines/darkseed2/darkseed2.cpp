@@ -56,7 +56,7 @@ Common::Error DarkSeed2Engine::run() {
 	_resources = new Resources();
 
 	if (!_resources->index("gfile.hdr")) {
-		warning("Couldn't not index resources");
+		warning("Couldn't index resources");
 		return Common::kUnknownError;
 	}
 
