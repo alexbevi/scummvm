@@ -34,6 +34,8 @@
 
 namespace Common {
 	class File;
+	class SeekableReadStream;
+	class MemoryReadStream;
 }
 
 namespace DarkSeed2 {
@@ -59,6 +61,12 @@ public:
 private:
 	struct Glue {
 		Common::String fileName;
+
+		byte *data;
+		Common::MemoryReadStream *stream;
+
+		Glue();
+		~Glue();
 	};
 
 	/** Information about a resource. */
@@ -92,7 +100,12 @@ private:
 	bool indexGluesContents();
 
 	/** Index all resources in the specified glue file. */
-	bool readGlueContents(Common::File &glueFile, const Common::String &fileName);
+	bool readGlueContents(Common::SeekableReadStream &glueFile, const Common::String &fileName);
+
+	byte *decompressGlue(Common::File &file, uint32 &size) const;
+	uint32 decompressGlueChunk(byte *outBuf, const byte *inBuf, int n) const;
+
+	static bool isCompressedGlue(Common::SeekableReadStream &stream);
 };
 
 } // End of namespace DarkSeed2

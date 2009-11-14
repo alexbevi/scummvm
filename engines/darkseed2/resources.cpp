@@ -23,11 +23,20 @@
  *
  */
 
+#include "common/stream.h"
 #include "common/file.h"
 
 #include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {
+
+Resources::Glue::Glue() : data(0), stream(0) {
+}
+
+Resources::Glue::~Glue() {
+	delete stream;
+	delete[] data;
+}
 
 Resources::Resource::Resource() : glue(0), offset(0), size(0), exists(false) {
 }
@@ -148,21 +157,25 @@ bool Resources::indexGluesContents() {
 			return false;
 		}
 
-		if (!readGlueContents(glueFile, _glues[i].fileName))
-			return false;
+		if (isCompressedGlue(glueFile)) {
+			uint32 dataSize;
+
+			_glues[i].data   = decompressGlue(glueFile, dataSize);
+			_glues[i].stream = new Common::MemoryReadStream(_glues[i].data, dataSize);
+
+			if (!readGlueContents(*_glues[i].stream, _glues[i].fileName))
+				return false;
+
+		} else
+			if (!readGlueContents(glueFile, _glues[i].fileName))
+				return false;
 	}
 
 	return true;
 }
 
-bool Resources::readGlueContents(Common::File &glueFile, const Common::String &fileName) {
+bool Resources::readGlueContents(Common::SeekableReadStream &glueFile, const Common::String &fileName) {
 	debugC(3, kDebugResources, "Reading contents of glue file \"%s\"", fileName.c_str());
-
-	// Compression marker
-	if (glueFile.readByte() == 0xFF) {
-		warning("Compressed glue files not yet supported");
-		return true;
-	}
 
 	glueFile.seek(0);
 
@@ -222,23 +235,163 @@ byte *Resources::getResource(const Common::String &resource) const {
 		error("Resource \"%s\" not available", resource.c_str());
 
 	Common::File glueFile;
+	Common::SeekableReadStream *stream;
 
-	if (!glueFile.open(res.glue->fileName))
-		error("Couldn't open glue file \"%s\"", res.glue->fileName.c_str());
+	if (res.glue->stream) {
+		// Was a compressed glue, now held in memory
 
-	if (!glueFile.seek(res.offset))
+		stream = res.glue->stream;
+	} else {
+		// Uncompressed glue, reading from file
+
+		if (!glueFile.open(res.glue->fileName))
+			error("Couldn't open glue file \"%s\"", res.glue->fileName.c_str());
+
+		stream = &glueFile;
+	}
+
+	if (!stream->seek(res.offset))
 		error("Couldn't seek glue file \"%s\" to offset %d",
 				res.glue->fileName.c_str(), res.offset);
 
 	byte *resData = new byte[res.size];
 
-	if (glueFile.read(resData, res.size) != res.size) {
+	if (stream->read(resData, res.size) != res.size) {
 		delete[] resData;
 		error("Couldn't read resource \"%s\" out of glue file \"%s\"",
 				resource.c_str(), res.glue->fileName.c_str());
 	}
 
+	glueFile.close();
+
 	return resData;
+}
+
+byte *Resources::decompressGlue(Common::File &file, uint32 &size) const {
+	if (!file.seek(0))
+		error("Can't seek glue file");
+
+	byte inBuf[2048];
+	int nRead;
+
+	memset(inBuf, 0, 2048);
+
+	nRead = file.read(inBuf, 2048);
+
+	if (nRead != 2048)
+		error("Can't uncompress glue file: Need at least 2048 bytes");
+
+	size = READ_LE_UINT32(inBuf + 2044) + 128;
+
+	// Sanity check
+	assert(size < (10*1024*1024));
+
+	warning("realSize: %d", size);
+
+	byte *outBuf = new byte[size];
+
+	memset(outBuf, 0, size);
+
+	byte *oBuf = outBuf;
+	while (nRead != 0) {
+		int decompSize;
+
+		if (nRead == 2048)
+			decompSize = 2040;
+		else
+			decompSize = ((nRead + 16) / 17) * 17;
+
+		uint32 decomped = decompressGlueChunk(oBuf, inBuf, decompSize);
+
+		oBuf += decomped;
+
+		memset(inBuf, 0, 2048);
+		nRead = file.read(inBuf, 2048);
+	}
+
+	return outBuf;
+}
+
+uint32 Resources::decompressGlueChunk(byte *outBuf, const byte *inBuf, int n) const {
+	byte *origOutBuf = outBuf;
+	int decomped = 0;
+
+	uint16 dx;
+	uint32 ecx;
+	int32 eax;
+
+	dx = 0xFF00 | *inBuf++;
+
+	while (1) {
+		if (dx & 1) {
+			dx >>= 1;
+
+			*outBuf++ = *inBuf++;
+			*outBuf++ = *inBuf++;
+
+		} else {
+			dx >>= 1;
+
+			ecx = READ_LE_UINT16(inBuf);
+			inBuf += 2;
+
+			eax = ecx;
+			ecx &= 0xF;
+			eax >>= 4;
+
+			ecx += 3;
+			eax += 1;
+
+			memmove(outBuf, outBuf - eax, 8);
+
+			if (ecx > 8)
+				memmove(outBuf + 8, outBuf - eax + 8, 10);
+
+			outBuf += ecx;
+
+		}
+
+		if ((dx & 0xFF00) == 0) {
+			decomped += 17;
+			if (decomped >= n)
+				break;
+
+			dx = 0xFF00 | *inBuf++;
+		}
+	}
+
+	return (uint32) (outBuf - origOutBuf);
+}
+
+bool Resources::isCompressedGlue(Common::SeekableReadStream &stream) {
+	stream.seek(0);
+
+	uint32 fSize = stream.size();
+
+	uint16 numRes = stream.readUint16LE();
+
+	// The resource list has to fit
+	if (fSize <= (numRes * 22))
+		return true;
+
+	byte buffer[12];
+	while (numRes-- > 0) {
+		stream.read(buffer, 12);
+
+		// Only these character are allowed in a resource file name
+		for (int i = 0; (i < 12) && (buffer[i] != 0); i++)
+			if (!isalnum(buffer[i]) && (buffer[i] != '.') && (buffer[i] != '_'))
+				return true;
+
+		uint32 size   = stream.readUint32LE();
+		uint32 offset = stream.readUint32LE();
+
+		// The resources have to fit
+		if ((size + offset) > fSize)
+			return true;
+	}
+
+	return false;
 }
 
 } // End of namespace DarkSeed2

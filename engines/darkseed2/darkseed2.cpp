@@ -70,6 +70,12 @@ Common::Error DarkSeed2Engine::run() {
 
 	delete[] R;
 
+	R = _resources->getResource("002BTN01.BMP");
+
+	warning("%c, %c, %c, %c", R[0], R[1], R[2], R[3]);
+
+	delete[] R;
+
 	return Common::kNoError;
 }
 
