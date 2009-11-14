@@ -88,21 +88,6 @@ Resources::Res::Res() : glue(0), offset(0), size(0), exists(false) {
 
 Resources::Resources() {
 	clear();
-
-	Common::File a;
-	Common::DumpFile b;
-	uint32 s;
-
-	a.open("gl00_txt.000");
-
-	byte *d = uncompressGlue(a, s);
-
-	b.open("gl00_txt.000");
-
-	b.write(d, s);
-
-	b.flush();
-	b.close();
 }
 
 Resources::~Resources() {
