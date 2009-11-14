@@ -41,6 +41,28 @@ namespace Common {
 
 namespace DarkSeed2 {
 
+/** A resource. */
+class Resource {
+public:
+	/** Use that foreign data as resource memory. */
+	Resource(const byte *data, uint32 size);
+	/** Read resource data from stream. */
+	Resource(Common::ReadStream &stream, uint32 size);
+	~Resource();
+
+	uint32 getSize() const;
+
+	const byte *getData() const;
+	Common::SeekableReadStream &getStream() const;
+
+private:
+	const byte *_foreignData;
+	byte *_ownData;
+
+	uint32 _size;
+	Common::MemoryReadStream *_stream;
+};
+
 /** The resource manager. */
 class Resources {
 public:
@@ -57,7 +79,7 @@ public:
 	bool hasResource(const Common::String &resource) const;
 
 	/** Get a specific resource. */
-	byte *getResource(const Common::String &resource) const;
+	Resource *getResource(const Common::String &resource) const;
 
 private:
 	struct Glue {
@@ -65,13 +87,14 @@ private:
 
 		byte *data;
 		Common::MemoryReadStream *stream;
+		uint32 size;
 
 		Glue();
 		~Glue();
 	};
 
 	/** Information about a resource. */
-	struct Resource {
+	struct Res {
 		Glue *glue;      ///< Pointer to its glue file.
 		uint32 offset;   ///< Offset within the glue file.
 		uint32 size;     ///< Size in bytes.
@@ -79,7 +102,7 @@ private:
 
 		bool exists; ///< Have we found it while indexing its glue file?
 
-		Resource();
+		Res();
 	};
 
 	uint16 _glueCount; ///< Number of indexed glue files.
@@ -88,7 +111,7 @@ private:
 	/** All indexed glues. */
 	Common::Array<Glue> _glues;
 	/** All indexed resources. */
-	Common::HashMap<Common::String, Resource> _resources;
+	Common::HashMap<Common::String, Res> _resources;
 
 	/** Read the index file's header. */
 	bool readIndexHeader(Common::File &indexFile);

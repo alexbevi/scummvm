@@ -30,7 +30,50 @@
 
 namespace DarkSeed2 {
 
-Resources::Glue::Glue() : data(0), stream(0) {
+Resource::Resource(const byte *data, uint32 size) {
+	_ownData     = 0;
+	_foreignData = data;
+	_size        = size;
+
+	_stream = new Common::MemoryReadStream(_foreignData, size);
+}
+
+Resource::Resource(Common::ReadStream &stream, uint32 size) {
+	_foreignData = 0;
+	_ownData     = new byte[size];
+	_size        = size;
+
+	uint32 nRead;
+
+	nRead = stream.read(_ownData, size);
+
+	assert(nRead == size);
+
+	_stream = new Common::MemoryReadStream(_ownData, size);
+}
+
+Resource::~Resource() {
+	delete[] _ownData;
+	delete _stream;
+}
+
+uint32 Resource::getSize() const {
+	return _size;
+}
+
+const byte *Resource::getData() const {
+	if (_ownData)
+		return _ownData;
+
+	return _foreignData;
+}
+
+Common::SeekableReadStream &Resource::getStream() const {
+	return *_stream;
+}
+
+
+Resources::Glue::Glue() : data(0), stream(0), size(0) {
 }
 
 Resources::Glue::~Glue() {
@@ -38,8 +81,10 @@ Resources::Glue::~Glue() {
 	delete[] data;
 }
 
-Resources::Resource::Resource() : glue(0), offset(0), size(0), exists(false) {
+
+Resources::Res::Res() : glue(0), offset(0), size(0), exists(false) {
 }
+
 
 Resources::Resources() {
 	clear();
@@ -147,7 +192,7 @@ bool Resources::readIndexResources(Common::File &indexFile) {
 			return false;
 		}
 
-		Resource resource;
+		Res resource;
 
 		// Unknown
 		indexFile.read(resource.unknown, 8);
@@ -175,10 +220,8 @@ bool Resources::indexGluesContents() {
 		if (isCompressedGlue(glueFile)) {
 			// If the glue is compress, uncompress it and keep it in memory
 
-			uint32 dataSize;
-
-			_glues[i].data   = uncompressGlue(glueFile, dataSize);
-			_glues[i].stream = new Common::MemoryReadStream(_glues[i].data, dataSize);
+			_glues[i].data   = uncompressGlue(glueFile, _glues[i].size);
+			_glues[i].stream = new Common::MemoryReadStream(_glues[i].data, _glues[i].size);
 
 			if (!readGlueContents(*_glues[i].stream, _glues[i].fileName))
 				return false;
@@ -215,7 +258,7 @@ bool Resources::readGlueContents(Common::SeekableReadStream &glueFile, const Com
 			continue;
 		}
 
-		Resource &resource = _resources.getVal(resFile);
+		Res &resource = _resources.getVal(resFile);
 
 		// Just to make sure that the resource is the really in the glue file it should be
 		assert(!strcmp(fileName.c_str(), resource.glue->fileName.c_str()));
@@ -235,53 +278,43 @@ bool Resources::hasResource(const Common::String &resource) const {
 	if (!_resources.contains(resource))
 		return false;
 
-	const Resource &res = _resources.getVal(resource);
+	const Res &res = _resources.getVal(resource);
 
 	return res.exists && (res.size != 0);
 }
 
-byte *Resources::getResource(const Common::String &resource) const {
+Resource *Resources::getResource(const Common::String &resource) const {
 	debugC(3, kDebugResources, "Getting resource \"%s\"", resource.c_str());
 
 	if (!_resources.contains(resource))
 		error("Resource \"%s\" does not exist", resource.c_str());
 
-	const Resource &res = _resources.getVal(resource);
+	const Res &res = _resources.getVal(resource);
 
 	if (!res.exists || (res.size == 0))
 		error("Resource \"%s\" not available", resource.c_str());
 
-	Common::File glueFile;
-	Common::SeekableReadStream *stream;
+	if (res.glue->data) {
+		// Compressed glue, constructing new resource with direct data held in memory
 
-	if (res.glue->stream) {
-		// Was a compressed glue, now held in memory
+		if ((res.offset + res.size) > res.glue->size)
+			error("Resource \"%s\" offset %d out of bounds", resource.c_str(), res.offset);
 
-		stream = res.glue->stream;
-	} else {
-		// Uncompressed glue, reading from file
-
-		if (!glueFile.open(res.glue->fileName))
-			error("Couldn't open glue file \"%s\"", res.glue->fileName.c_str());
-
-		stream = &glueFile;
+		return new Resource(res.glue->data + res.offset, res.glue->size);
 	}
 
-	if (!stream->seek(res.offset))
+	// Uncompressed glue, constructing new resource with data from file
+
+	Common::File glueFile;
+
+	if (!glueFile.open(res.glue->fileName))
+		error("Couldn't open glue file \"%s\"", res.glue->fileName.c_str());
+
+	if (!glueFile.seek(res.offset))
 		error("Couldn't seek glue file \"%s\" to offset %d",
 				res.glue->fileName.c_str(), res.offset);
 
-	byte *resData = new byte[res.size];
-
-	if (stream->read(resData, res.size) != res.size) {
-		delete[] resData;
-		error("Couldn't read resource \"%s\" out of glue file \"%s\"",
-				resource.c_str(), res.glue->fileName.c_str());
-	}
-
-	glueFile.close();
-
-	return resData;
+	return new Resource(glueFile, res.size);
 }
 
 byte *Resources::uncompressGlue(Common::File &file, uint32 &size) const {

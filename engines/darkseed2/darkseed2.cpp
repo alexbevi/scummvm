@@ -64,17 +64,19 @@ Common::Error DarkSeed2Engine::run() {
 	warning("-> %d", _resources->hasResource("002BTN01.BMP"));
 	warning("-> %d", _resources->hasResource("DJG001.WAV"));
 
-	byte *R = _resources->getResource("DJG001.WAV");
+	Resource *r = _resources->getResource("DJG001.WAV");
+	const byte *R = r->getData();
 
 	warning("%c, %c, %c, %c", R[0], R[1], R[2], R[3]);
 
-	delete[] R;
+	delete r;
 
-	R = _resources->getResource("002BTN01.BMP");
+	r = _resources->getResource("002BTN01.BMP");
+	R = r->getData();
 
 	warning("%c, %c, %c, %c", R[0], R[1], R[2], R[3]);
 
-	delete[] R;
+	delete r;
 
 	return Common::kNoError;
 }
