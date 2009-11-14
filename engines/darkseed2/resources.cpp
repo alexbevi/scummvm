@@ -43,6 +43,21 @@ Resources::Resource::Resource() : glue(0), offset(0), size(0), exists(false) {
 
 Resources::Resources() {
 	clear();
+
+	Common::File a;
+	Common::DumpFile b;
+	uint32 s;
+
+	a.open("gl00_txt.000");
+
+	byte *d = uncompressGlue(a, s);
+
+	b.open("gl00_txt.000");
+
+	b.write(d, s);
+
+	b.flush();
+	b.close();
 }
 
 Resources::~Resources() {
@@ -158,9 +173,11 @@ bool Resources::indexGluesContents() {
 		}
 
 		if (isCompressedGlue(glueFile)) {
+			// If the glue is compress, uncompress it and keep it in memory
+
 			uint32 dataSize;
 
-			_glues[i].data   = decompressGlue(glueFile, dataSize);
+			_glues[i].data   = uncompressGlue(glueFile, dataSize);
 			_glues[i].stream = new Common::MemoryReadStream(_glues[i].data, dataSize);
 
 			if (!readGlueContents(*_glues[i].stream, _glues[i].fileName))
@@ -267,7 +284,7 @@ byte *Resources::getResource(const Common::String &resource) const {
 	return resData;
 }
 
-byte *Resources::decompressGlue(Common::File &file, uint32 &size) const {
+byte *Resources::uncompressGlue(Common::File &file, uint32 &size) const {
 	if (!file.seek(0))
 		error("Can't seek glue file");
 
@@ -286,24 +303,23 @@ byte *Resources::decompressGlue(Common::File &file, uint32 &size) const {
 	// Sanity check
 	assert(size < (10*1024*1024));
 
-	warning("realSize: %d", size);
-
 	byte *outBuf = new byte[size];
 
 	memset(outBuf, 0, size);
 
 	byte *oBuf = outBuf;
 	while (nRead != 0) {
-		int decompSize;
+		uint32 toRead = 2040;
+		uint32 written;
 
-		if (nRead == 2048)
-			decompSize = 2040;
-		else
-			decompSize = ((nRead + 16) / 17) * 17;
+		if (nRead != 2048)
+			// Round up to the next 17 byte block
+			toRead = ((nRead + 16) / 17) * 17;
 
-		uint32 decomped = decompressGlueChunk(oBuf, inBuf, decompSize);
+		// Decompress that chunk
+		written = uncompressGlueChunk(oBuf, inBuf, toRead);
 
-		oBuf += decomped;
+		oBuf += written;
 
 		memset(inBuf, 0, 2048);
 		nRead = file.read(inBuf, 2048);
@@ -312,55 +328,57 @@ byte *Resources::decompressGlue(Common::File &file, uint32 &size) const {
 	return outBuf;
 }
 
-uint32 Resources::decompressGlueChunk(byte *outBuf, const byte *inBuf, int n) const {
-	byte *origOutBuf = outBuf;
-	int decomped = 0;
+uint32 Resources::uncompressGlueChunk(byte *outBuf, const byte *inBuf, int n) const {
+	int countRead    = 0;
+	int countWritten = 0;
 
-	uint16 dx;
-	uint32 ecx;
-	int32 eax;
+	uint16 mask;
+	int32 offset;
+	uint32 count;
 
-	dx = 0xFF00 | *inBuf++;
+	mask = 0xFF00 | *inBuf++;
 
 	while (1) {
-		if (dx & 1) {
-			dx >>= 1;
+		if (mask & 1) {
+			// Direct copy
+
+			mask >>= 1;
 
 			*outBuf++ = *inBuf++;
 			*outBuf++ = *inBuf++;
+
+			countWritten += 2;
 
 		} else {
-			dx >>= 1;
+			// Copy from previous output
 
-			ecx = READ_LE_UINT16(inBuf);
+			mask >>= 1;
+
+			count = READ_LE_UINT16(inBuf);
 			inBuf += 2;
 
-			eax = ecx;
-			ecx &= 0xF;
-			eax >>= 4;
+			offset = (count >> 4)  + 1;
+			count  = (count & 0xF) + 3;
 
-			ecx += 3;
-			eax += 1;
+			memmove(outBuf, outBuf - offset, 8);
 
-			memmove(outBuf, outBuf - eax, 8);
+			if (count > 8)
+				memmove(outBuf + 8, outBuf - offset + 8, 10);
 
-			if (ecx > 8)
-				memmove(outBuf + 8, outBuf - eax + 8, 10);
-
-			outBuf += ecx;
-
+			outBuf += count;
+			countWritten += count;
 		}
 
-		if ((dx & 0xFF00) == 0) {
-			decomped += 17;
-			if (decomped >= n)
+		if ((mask & 0xFF00) == 0) {
+			countRead += 17;
+			if (countRead >= n)
 				break;
 
-			dx = 0xFF00 | *inBuf++;
+			mask = 0xFF00 | *inBuf++;
 		}
 	}
 
-	return (uint32) (outBuf - origOutBuf);
+	return countWritten;
 }
 
 bool Resources::isCompressedGlue(Common::SeekableReadStream &stream) {

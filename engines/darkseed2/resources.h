@@ -34,6 +34,7 @@
 
 namespace Common {
 	class File;
+	class ReadStream;
 	class SeekableReadStream;
 	class MemoryReadStream;
 }
@@ -102,9 +103,12 @@ private:
 	/** Index all resources in the specified glue file. */
 	bool readGlueContents(Common::SeekableReadStream &glueFile, const Common::String &fileName);
 
-	byte *decompressGlue(Common::File &file, uint32 &size) const;
-	uint32 decompressGlueChunk(byte *outBuf, const byte *inBuf, int n) const;
+	/** Uncompress a glue file. */
+	byte *uncompressGlue(Common::File &file, uint32 &size) const;
+	/** Uncompress a compress glue file chunk. */
+	uint32 uncompressGlueChunk(byte *outBuf, const byte *inBuf, int n) const;
 
+	/** Simple heuristic to guess whether a glue file is compressed. */
 	static bool isCompressedGlue(Common::SeekableReadStream &stream);
 };
 
