@@ -31,6 +31,8 @@ Graphics::Graphics() {
 	clearPalette();
 
 	_screen.create(_screenWidth, _screenHeight);
+
+	_dirtyAll = false;
 }
 
 Graphics::~Graphics() {
@@ -73,16 +75,66 @@ void Graphics::blitToScreen(const Sprite &from,
 		uint32 x, uint32 y, bool transp) {
 
 	_screen.blit(from, left, top, right, bottom, x, y, transp);
+
+	dirtyRectsAdd(x, y, x + (right - left), y + (bottom - right));
 }
 
 void Graphics::blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp) {
 	_screen.blit(from, x, y, transp);
+
+	dirtyRectsAdd(x, y, x + from.getWidth() - 1, y + from.getHeight() - 1);
 }
 
 void Graphics::retrace() {
-	g_system->copyRectToScreen(_screen.getData(), _screen.getWidth(),
-			0, 0, _screen.getWidth(), _screen.getHeight());
-	g_system->updateScreen();
+	if (dirtyRectsApply())
+		g_system->updateScreen();
+}
+
+void Graphics::dirtyRectsAdd(uint32 left, uint32 top, uint32 right, uint32 bottom) {
+	if (_dirtyAll)
+		return;
+
+	if (_dirtyRects.size() >= 30) {
+		_dirtyAll = true;
+		_dirtyRects.clear();
+	}
+
+	_dirtyRects.push_back(Common::Rect(left, top, right + 1, bottom + 1));
+}
+
+bool Graphics::dirtyRectsApply() {
+	if (_dirtyAll) {
+			g_system->copyRectToScreen(_screen.getData(), _screen.getWidth(),
+					0, 0, _screen.getWidth(), _screen.getHeight());
+		_dirtyAll = false;
+		return true;
+	}
+
+	if (_dirtyRects.empty())
+		return false;
+
+	int screenWidth  = _screen.getWidth();
+	int screenHeight = _screen.getHeight();
+
+	Common::List<Common::Rect>::const_iterator it;
+	for (it = _dirtyRects.begin(); it != _dirtyRects.end(); ++it) {
+		int left   = MAX<int>(0, it->left);
+		int top    = MAX<int>(0, it->top);
+		int right  = MIN<int>(screenWidth , it->right);
+		int bottom = MIN<int>(screenHeight, it->bottom);
+		int width  = right  - left;
+		int height = bottom - top;
+
+		if ((width <= 0) || (height <= 0))
+			continue;
+
+		const byte *data = _screen.getData() + top * screenWidth + left;
+
+		g_system->copyRectToScreen(data, screenWidth, 0, 0, width, height);
+	}
+
+	_dirtyRects.clear();
+	return true;
 }
 
 } // End of namespace DarkSeed2

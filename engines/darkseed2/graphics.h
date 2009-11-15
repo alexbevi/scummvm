@@ -29,6 +29,8 @@
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/sprite.h"
 
+#include "common/rect.h"
+
 namespace DarkSeed2 {
 
 class Graphics {
@@ -53,8 +55,13 @@ private:
 	byte _gamePalette[768];
 	Sprite _screen;
 
+	bool _dirtyAll;
+	Common::List<Common::Rect> _dirtyRects;
+
 	void applyGamePalette();
 
+	void dirtyRectsAdd(uint32 left, uint32 top, uint32 right, uint32 bottom);
+	bool dirtyRectsApply();
 };
 
 } // End of namespace DarkSeed2
