@@ -285,7 +285,7 @@ Resource *Resources::getResource(const Common::String &resource) const {
 		if ((res.offset + res.size) > res.glue->size)
 			error("Resource \"%s\" offset %d out of bounds", resource.c_str(), res.offset);
 
-		return new Resource(res.glue->data + res.offset, res.glue->size);
+		return new Resource(res.glue->data + res.offset, res.size);
 	}
 
 	// Uncompressed glue, constructing new resource with data from file
@@ -404,7 +404,7 @@ bool Resources::isCompressedGlue(Common::SeekableReadStream &stream) {
 
 	uint32 fSize = stream.size();
 
-	uint16 numRes = stream.readUint16LE();
+	uint32 numRes = stream.readUint16LE();
 
 	// The resource list has to fit
 	if (fSize <= (numRes * 22))
