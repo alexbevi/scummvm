@@ -54,12 +54,12 @@ public:
 	void syncSettings();
 
 private:
-	static const int channelCount = 8;
+	static const int _channelCount = 8;
 
 	bool _muteSFX;
 	bool _muteSpeech;
 
-	Audio::SoundHandle _handles[channelCount];
+	Audio::SoundHandle _handles[_channelCount];
 
 	Audio::Mixer *_mixer;
 };

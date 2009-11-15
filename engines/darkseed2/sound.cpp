@@ -53,7 +53,7 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 
 	// Try to find an unoccupied channel
 	Audio::SoundHandle *handle = 0;
-	for (int i = 0 ; i < channelCount; i++)
+	for (int i = 0 ; i < _channelCount; i++)
 		if (!_mixer->isSoundHandleActive(_handles[i])) {
 			handle = &_handles[i];
 			break;
@@ -111,7 +111,7 @@ void Sound::syncSettings() {
 
 void Sound::stopAll() {
 	// Stopping all channels
-	for (int i = 0; i < channelCount; i++)
+	for (int i = 0; i < _channelCount; i++)
 		_mixer->stopHandle(_handles[i]);
 }
 
