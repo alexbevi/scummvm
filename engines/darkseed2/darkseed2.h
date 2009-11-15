@@ -30,6 +30,8 @@
 
 #include "engines/engine.h"
 
+class MidiDriver;
+
 namespace DarkSeed2 {
 
 enum {
@@ -44,16 +46,6 @@ class Sound;
 class Music;
 
 class DarkSeed2Engine : public Engine {
-private:
-	// Engine APIs
-	virtual Common::Error run();
-	virtual bool hasFeature(EngineFeature f) const;
-	virtual void pauseEngineIntern(bool pause);
-	virtual void syncSoundSettings();
-
-	bool init();
-	bool initGraphics();
-
 public:
 	Resources *_resources;
 	Graphics  *_graphics;
@@ -66,6 +58,18 @@ public:
 	virtual ~DarkSeed2Engine();
 
 	void initGame(const DS2GameDescription *gd);
+
+private:
+	MidiDriver *_midiDriver;
+
+	// Engine APIs
+	virtual Common::Error run();
+	virtual bool hasFeature(EngineFeature f) const;
+	virtual void pauseEngineIntern(bool pause);
+	virtual void syncSoundSettings();
+
+	bool init();
+	bool initGraphics();
 };
 
 } // End of namespace DarkSeed2

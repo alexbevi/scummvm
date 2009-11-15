@@ -94,6 +94,14 @@ Common::Error DarkSeed2Engine::run() {
 	} else
 		warning("No WAV resource");
 
+	Resource *mid = _resources->getResource("sndtrack/mm001gm.mid");
+
+	if (mid) {
+		if (!_music->playMID(*mid))
+			warning("MID playing failed");
+	} else
+		warning("No MID resource");
+
 	while (!shouldQuit()) {
 		Common::Event event;
 		while (g_system->getEventManager()->pollEvent(event)) {
@@ -112,13 +120,22 @@ void DarkSeed2Engine::syncSoundSettings() {
 	Engine::syncSoundSettings();
 
 	_sound->syncSettings();
+	_music->syncSettings();
 }
 
 bool DarkSeed2Engine::init() {
+	int midiDriver = MidiDriver::detectMusicDriver(MDT_MIDI | MDT_ADLIB | MDT_PREFER_MIDI);
+	bool native_mt32 = ((midiDriver == MD_MT32) || ConfMan.getBool("native_mt32"));
+
+	_midiDriver = MidiDriver::createMidi(midiDriver);
+
+	if (native_mt32)
+		_midiDriver->property(MidiDriver::PROP_CHANNEL_MASK, 0x03FE);
+
 	_resources = new Resources();
 	_graphics  = new Graphics();
 	_sound     = new Sound(*_mixer);
-	_music     = new Music(*_mixer);
+	_music     = new Music(*_mixer, *_midiDriver);
 
 	if (!_resources->index("gfile.hdr")) {
 		warning("Couldn't index resources");
