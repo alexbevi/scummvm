@@ -1,0 +1,190 @@
+/* ScummVM - Graphic Adventure Engine
+ *
+ * ScummVM is the legal property of its developers, whose names
+ * are too numerous to list here. Please refer to the COPYRIGHT
+ * file distributed with this source distribution.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * $URL$
+ * $Id$
+ *
+ */
+
+#include "common/stream.h"
+
+#include "engines/darkseed2/sprite.h"
+#include "engines/darkseed2/resources.h"
+
+namespace DarkSeed2 {
+
+Sprite::Sprite() {
+	_width  = 0;
+	_height = 0;
+	_data   = 0;
+
+	memset(_palette, 0, 768);
+}
+
+Sprite::~Sprite() {
+	clear();
+}
+
+bool Sprite::isEmpty() const {
+	return _data == 0;
+}
+
+uint32 Sprite::getWidth() const {
+	return _width;
+}
+
+uint32 Sprite::getHeight() const {
+	return _height;
+}
+
+const byte *Sprite::getData() const {
+	return _data;
+}
+
+const byte *Sprite::getPalette() const {
+	return _palette;
+}
+
+void Sprite::clear() {
+	delete[] _data;
+
+	_width  = 0;
+	_height = 0;
+	_data   = 0;
+
+	memset(_palette, 0, 768);
+}
+
+bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
+	clear();
+
+	if (!bmp.seek(0))
+		return false;
+
+	uint32 fSize = bmp.size();
+
+	//                         'BM'
+	if (bmp.readUint16BE() != 0x424D)
+		return false;
+
+	// Size of image + reserved + reserved
+	bmp.skip(8);
+
+	uint32 bmpDataOffset = bmp.readUint32LE();
+	if (bmpDataOffset >= fSize)
+		return false;
+
+	// Header size
+	if (bmp.readUint32LE() != 40)
+		return false;
+
+	_width  = bmp.readUint32LE();
+	_height = bmp.readUint32LE();
+
+	// Number of color planes
+	if (bmp.readUint16LE() != 1)
+		return false;
+
+	// Bits per pixel
+	if (bmp.readUint16LE() != 8)
+		return false;
+
+	uint32 compression = bmp.readUint32LE();
+
+	if (compression == 2) {
+		// Thanks to clone2727 for finding that out, while I was raking the disasm for a "decompression" :P
+		_width++;
+	} else if (compression != 0)
+		return false;
+
+	uint32 bmpDataSize = bmp.readUint32LE();
+	if ((bmpDataSize > fSize) || (fSize < (_width * _height + 0x36)))
+		return false;
+
+	// Horizontal + vertical image resolution
+	bmp.skip(8);
+
+	uint32 numPalColors = bmp.readUint32LE();
+	if (numPalColors == 0)
+		numPalColors = 256;
+	if (numPalColors > 256)
+		numPalColors = 256;
+
+	// Important colors
+	bmp.skip(4);
+
+	for (uint32 i = 0; i < numPalColors; i++) {
+		_palette[i * 3 + 2] = bmp.readByte();
+		_palette[i * 3 + 1] = bmp.readByte();
+		_palette[i * 3 + 0] = bmp.readByte();
+
+		// NOTE: Just for testing purposes :P
+		if (_palette[i * 3 + 0] == 0 && _palette[i * 3 + 1] == 0 && _palette[i * 3 + 2] == 255)
+			memset(_palette + i * 3, 0, 3);
+
+		bmp.readByte();
+	}
+
+	_data = new byte[_width * _height];
+
+	if (!bmp.seek(bmpDataOffset))
+		return false;
+
+	byte *data = _data + ((_height - 1) * _width);
+
+	int extraDataLength = (_width % 4) ? 4 - (_width % 4) : 0;
+	for (uint32 i = 0; i < _height; i++) {
+		byte *rowData = data;
+
+		for (uint32 j = 0; j < _width; j++)
+			*rowData++ = bmp.readByte();
+
+		bmp.skip(extraDataLength);
+		data -= _width;
+	}
+
+	return true;
+}
+
+bool Sprite::loadFromBMP(const Resource &resource) {
+	return loadFromBMP(resource.getStream());
+}
+
+void Sprite::blitToScreen(uint32 left, uint32 top, uint32 right, uint32 bottom, uint32 x, uint32 y) {
+	if (!_data)
+		return;
+
+	if ((left > right)  || (top > bottom))
+		return;
+	if ((left > _width) || (top > _height))
+		return;
+
+	right  = MIN<uint32>(right,  _width  - 1);
+	bottom = MIN<uint32>(bottom, _height - 1);
+
+	g_system->copyRectToScreen(_data + top * _width + left, _width, x, y, right - left + 1, bottom - top + 1);
+	g_system->updateScreen();
+}
+
+void Sprite::blitToScreen(uint32 x, uint32 y) {
+	blitToScreen(0, 0, _width - 1, _height - 1, x, y);
+}
+
+} // End of namespace DarkSeed2
