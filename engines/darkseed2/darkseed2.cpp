@@ -38,6 +38,7 @@
 #include "darkseed2/resources.h"
 #include "darkseed2/sprite.h"
 #include "darkseed2/graphics.h"
+#include "darkseed2/sound.h"
 
 namespace DarkSeed2 {
 
@@ -45,16 +46,19 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	Common::addDebugChannel(kDebugResources, "Resources", "Resource handling debug level");
 
 	// Setup mixer
-	_mixer->setVolumeForSoundType(Audio::Mixer::kSFXSoundType, ConfMan.getInt("sfx_volume"));
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));
 
 	_resources = 0;
 	_graphics  = 0;
+	_sound     = 0;
 }
 
 DarkSeed2Engine::~DarkSeed2Engine() {
+	_mixer->stopAll();
+
 	delete _resources;
 	delete _graphics;
+	delete _sound;
 }
 
 Common::Error DarkSeed2Engine::run() {
@@ -64,7 +68,7 @@ Common::Error DarkSeed2Engine::run() {
 	if (!initGraphics())
 		return Common::kUnknownError;
 
-	Resource *r = _resources->getResource("002TIT01.BMP");
+	Resource *r = _resources->getResource("002BTN01.BMP");
 
 	if (r) {
 		Sprite sprite;
@@ -77,7 +81,7 @@ Common::Error DarkSeed2Engine::run() {
 
 		delete r;
 	} else
-		warning("No ressource");
+		warning("No resource");
 
 	while (!shouldQuit()) {
 		Common::Event event;
@@ -95,11 +99,14 @@ void DarkSeed2Engine::pauseEngineIntern(bool pause) {
 
 void DarkSeed2Engine::syncSoundSettings() {
 	Engine::syncSoundSettings();
+
+	_sound->syncSettings();
 }
 
 bool DarkSeed2Engine::init() {
 	_resources = new Resources();
 	_graphics  = new Graphics();
+	_sound     = new Sound(*_mixer);
 
 	if (!_resources->index("gfile.hdr")) {
 		warning("Couldn't index resources");
