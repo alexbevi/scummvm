@@ -68,20 +68,28 @@ Common::Error DarkSeed2Engine::run() {
 	if (!initGraphics())
 		return Common::kUnknownError;
 
-	Resource *r = _resources->getResource("002BTN01.BMP");
+	Resource *bmp = _resources->getResource("RM0101.BMP");
 
-	if (r) {
+	if (bmp) {
 		Sprite sprite;
 
-		if (sprite.loadFromBMP(*r)) {
+		if (sprite.loadFromBMP(*bmp)) {
 			_graphics->setPalette(sprite.getPalette());
 			sprite.blitToScreen(0, 0);
 		} else
 			warning("BMP loading failed");
 
-		delete r;
+		delete bmp;
 	} else
-		warning("No resource");
+		warning("No BMP resource");
+
+	Resource *wav = _resources->getResource("DNA006.WAV");
+
+	if (wav) {
+		if (!_sound->playWAV(*wav))
+			warning("WAV playing failed");
+	} else
+		warning("No WAV resource");
 
 	while (!shouldQuit()) {
 		Common::Event event;

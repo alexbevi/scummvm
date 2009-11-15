@@ -27,6 +27,8 @@
 
 #include "common/config-manager.h"
 
+#include "sound/wave.h"
+
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/resources.h"
 
@@ -37,15 +39,38 @@ Sound::Sound(Audio::Mixer &mixer) : _mixer(&mixer) {
 }
 
 Sound::~Sound() {
+	stopAll();
 }
 
 bool Sound::playWAV(Common::SeekableReadStream &wav,
 		Audio::Mixer::SoundType type) {
 
+	// Is the type want to play muted?
 	if (_muteSFX    && (type == Audio::Mixer::kSFXSoundType))
 		return true;
 	if (_muteSpeech && (type == Audio::Mixer::kSpeechSoundType))
 		return true;
+
+	// Try to find an unoccupied channel
+	Audio::SoundHandle *handle = 0;
+	for (int i = 0 ; i < channelCount; i++)
+		if (!_mixer->isSoundHandleActive(_handles[i])) {
+			handle = &_handles[i];
+			break;
+		}
+
+	if (!handle) {
+		warning("Sound::playWAV(): All channels occupied");
+		return false;
+	}
+
+	// Load WAV
+	Audio::AudioStream *wavStream = Audio::makeWAVStream(&wav);
+	if (!wavStream)
+		return false;
+
+	// Play it
+	_mixer->playInputStream(type, handle, wavStream);
 
 	return true;
 }
@@ -57,11 +82,17 @@ bool Sound::playWAV(const Resource &resource,
 }
 
 void Sound::syncSettings() {
+	// Getting conf values
 	int volumeSFX    = ConfMan.getInt("sfx_volume");
 	int volumeSpeech = ConfMan.getInt("speech_volume");
 	bool muteSFX     = ConfMan.getBool("speech_mute");
 	bool muteSpeech  = ConfMan.getBool("sfx_mute");
 	bool mute        = ConfMan.getBool("mute");
+
+	// Looking for muted types
+
+	_muteSFX    = false;
+	_muteSpeech = false;
 
 	if (muteSFX || mute)
 		volumeSFX = 0;
@@ -73,8 +104,15 @@ void Sound::syncSettings() {
 	if (muteSpeech == 0)
 		_muteSpeech = true;
 
+	// Setting values
 	_mixer->setVolumeForSoundType(Audio::Mixer::kSFXSoundType   , volumeSFX);
 	_mixer->setVolumeForSoundType(Audio::Mixer::kSpeechSoundType, volumeSpeech);
+}
+
+void Sound::stopAll() {
+	// Stopping all channels
+	for (int i = 0; i < channelCount; i++)
+		_mixer->stopHandle(_handles[i]);
 }
 
 } // End of namespace DarkSeed2

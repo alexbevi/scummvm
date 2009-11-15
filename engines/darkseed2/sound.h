@@ -48,11 +48,18 @@ public:
 	bool playWAV(const Resource &resource,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 
+	void stopAll();
+
+	/** Apply volume settings. */
 	void syncSettings();
 
 private:
+	static const int channelCount = 8;
+
 	bool _muteSFX;
 	bool _muteSpeech;
+
+	Audio::SoundHandle _handles[channelCount];
 
 	Audio::Mixer *_mixer;
 };
