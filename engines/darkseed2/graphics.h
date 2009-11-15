@@ -23,47 +23,21 @@
  *
  */
 
-#ifndef DARKSEED2_DARKSEED2_H
-#define DARKSEED2_DARKSEED2_H
+#ifndef DARKSEED2_GRAPHICS_H
+#define DARKSEED2_GRAPHICS_H
 
-#include "common/system.h"
-
-#include "engines/engine.h"
+#include "engines/darkseed2/darkseed2.h"
 
 namespace DarkSeed2 {
 
-enum {
-	kDebugResources = 1 << 0
-};
-
-struct DS2GameDescription;
-
-class Resources;
-class Graphics;
-
-class DarkSeed2Engine : public Engine {
-private:
-	// Engine APIs
-	virtual Common::Error run();
-	virtual bool hasFeature(EngineFeature f) const;
-	virtual void pauseEngineIntern(bool pause);
-	virtual void syncSoundSettings();
-
-	bool init();
-	bool initGraphics();
-
+class Graphics {
 public:
-	Resources *_resources;
-	Graphics  *_graphics;
+	Graphics();
+	~Graphics();
 
-	void pauseGame();
-
-	DarkSeed2Engine(OSystem *syst);
-	virtual ~DarkSeed2Engine();
-
-	void initGame(const DS2GameDescription *gd);
+	void setPalette(const byte *pal);
 };
 
 } // End of namespace DarkSeed2
 
-#endif // DARKSEED2_DARKSEED2_H
+#endif // DARKSEED2_GRAPHICS_H

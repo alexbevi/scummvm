@@ -29,12 +29,15 @@
 #include "base/plugins.h"
 
 #include "common/config-manager.h"
+#include "common/events.h"
 
 #include "sound/mixer.h"
 #include "sound/mididrv.h"
 
 #include "darkseed2/darkseed2.h"
 #include "darkseed2/resources.h"
+#include "darkseed2/sprite.h"
+#include "darkseed2/graphics.h"
 
 namespace DarkSeed2 {
 
@@ -46,37 +49,42 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));
 
 	_resources = 0;
+	_graphics  = 0;
 }
 
 DarkSeed2Engine::~DarkSeed2Engine() {
 	delete _resources;
+	delete _graphics;
 }
 
 Common::Error DarkSeed2Engine::run() {
-	_resources = new Resources();
-
-	if (!_resources->index("gfile.hdr")) {
-		warning("Couldn't index resources");
+	if (!init())
 		return Common::kUnknownError;
+
+	if (!initGraphics())
+		return Common::kUnknownError;
+
+	Resource *r = _resources->getResource("002TIT01.BMP");
+
+	if (r) {
+		Sprite sprite;
+
+		if (sprite.loadFromBMP(*r)) {
+			_graphics->setPalette(sprite.getPalette());
+			sprite.blitToScreen(0, 0);
+		} else
+			warning("BMP loading failed");
+
+		delete r;
+	} else
+		warning("No ressource");
+
+	while (!shouldQuit()) {
+		Common::Event event;
+		while (g_system->getEventManager()->pollEvent(event)) {
+		}
+		g_system->delayMillis(50);
 	}
-
-	warning("-> %d", _resources->hasResource("Foobar"));
-	warning("-> %d", _resources->hasResource("002BTN01.BMP"));
-	warning("-> %d", _resources->hasResource("DJG001.WAV"));
-
-	Resource *r = _resources->getResource("DJG001.WAV");
-	const byte *R = r->getData();
-
-	warning("%c, %c, %c, %c", R[0], R[1], R[2], R[3]);
-
-	delete r;
-
-	r = _resources->getResource("002BTN01.BMP");
-	R = r->getData();
-
-	warning("%c, %c, %c, %c", R[0], R[1], R[2], R[3]);
-
-	delete r;
 
 	return Common::kNoError;
 }
@@ -87,6 +95,23 @@ void DarkSeed2Engine::pauseEngineIntern(bool pause) {
 
 void DarkSeed2Engine::syncSoundSettings() {
 	Engine::syncSoundSettings();
+}
+
+bool DarkSeed2Engine::init() {
+	_resources = new Resources();
+	_graphics  = new Graphics();
+
+	if (!_resources->index("gfile.hdr")) {
+		warning("Couldn't index resources");
+		return false;
+	}
+
+	return true;
+}
+
+bool DarkSeed2Engine::initGraphics() {
+	::initGraphics(640, 480, true);
+	return true;
 }
 
 } // End of namespace DarkSeed2

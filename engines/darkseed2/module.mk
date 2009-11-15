@@ -3,7 +3,9 @@ MODULE := engines/darkseed2
 MODULE_OBJS := \
 	darkseed2.o \
 	detection.o \
-	resources.o
+	resources.o \
+	sprite.o \
+	graphics.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_DARKSEED2), DYNAMIC_PLUGIN)
