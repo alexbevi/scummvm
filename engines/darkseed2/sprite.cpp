@@ -39,10 +39,10 @@ Sprite::Sprite() {
 }
 
 Sprite::~Sprite() {
-	clear();
+	discard();
 }
 
-bool Sprite::isEmpty() const {
+bool Sprite::exists() const {
 	return _data == 0;
 }
 
@@ -62,7 +62,18 @@ const byte *Sprite::getPalette() const {
 	return _palette;
 }
 
-void Sprite::clear() {
+void Sprite::create(uint32 width, uint32 height) {
+	discard();
+
+	_width  = width;
+	_height = height;
+
+	_data = new byte[_width * _height];
+
+	clear();
+}
+
+void Sprite::discard() {
 	delete[] _data;
 
 	_width  = 0;
@@ -73,7 +84,7 @@ void Sprite::clear() {
 }
 
 bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
-	clear();
+	discard();
 
 	if (!bmp.seek(0))
 		return false;
@@ -135,10 +146,6 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 		_palette[i * 3 + 1] = bmp.readByte();
 		_palette[i * 3 + 0] = bmp.readByte();
 
-		// NOTE: Just for testing purposes :P
-		if (_palette[i * 3 + 0] == 0 && _palette[i * 3 + 1] == 0 && _palette[i * 3 + 2] == 255)
-			memset(_palette + i * 3, 0, 3);
-
 		bmp.readByte();
 	}
 
@@ -165,6 +172,52 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 
 bool Sprite::loadFromBMP(const Resource &resource) {
 	return loadFromBMP(resource.getStream());
+}
+
+void Sprite::blit(const Sprite &from,
+		uint32 left, uint32 top, uint32 right, uint32 bottom,
+		uint32 x, uint32 y, bool transp) {
+
+	if (exists() || from.exists())
+		return;
+
+	if ((left > right)  || (top > bottom))
+		return;
+	if ((left > _width) || (top > _height))
+		return;
+
+	right  = MIN<uint32>(MIN<uint32>(_width  - 1, from.getWidth()  - 1), right);
+	bottom = MIN<uint32>(MIN<uint32>(_height - 1, from.getHeight() - 1), bottom);
+
+	uint32 w = right  - left + 1;
+	uint32 h = bottom - top  + 1;
+
+	const byte *src = from.getData() + top * from.getWidth() + left;
+	byte *dst = _data + y * _width + x;
+
+	if (transp) {
+		while (h-- > 0) {
+			const byte *srcRow = src;
+			byte *dstRow = dst;
+
+			for (uint32 i = 0; i < w; i++, srcRow++, dstRow++)
+				if (*srcRow != 0)
+					*dstRow = *srcRow;
+
+			src += from.getWidth();
+			dst += _width;
+		}
+	} else
+		for (; h > 0; h--, src += _width, dst += from.getWidth())
+			memcpy(dst, src, w);
+}
+
+void Sprite::blit(const Sprite &from, uint32 x, uint32 y, bool transp) {
+	blit(from, 0, 0, from.getWidth() - 1, from.getHeight() - 1, x, y, transp);
+}
+
+void Sprite::clear() {
+	memset(_data, 0, _width * _height);
 }
 
 void Sprite::blitToScreen(uint32 left, uint32 top, uint32 right, uint32 bottom, uint32 x, uint32 y) {

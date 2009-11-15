@@ -78,7 +78,8 @@ Common::Error DarkSeed2Engine::run() {
 
 		if (sprite.loadFromBMP(*bmp)) {
 			_graphics->setPalette(sprite.getPalette());
-			sprite.blitToScreen(0, 0);
+			_graphics->blitToScreen(sprite, 0, 0, true);
+			_graphics->retrace();
 		} else
 			warning("BMP loading failed");
 
@@ -146,7 +147,7 @@ bool DarkSeed2Engine::init() {
 }
 
 bool DarkSeed2Engine::initGraphics() {
-	::initGraphics(640, 480, true);
+	::initGraphics(_graphics->_screenWidth, _graphics->_screenHeight, true);
 	return true;
 }
 

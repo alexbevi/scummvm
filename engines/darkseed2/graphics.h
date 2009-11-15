@@ -27,15 +27,34 @@
 #define DARKSEED2_GRAPHICS_H
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
 
 class Graphics {
 public:
+	static const int _screenWidth  = 640;
+	static const int _screenHeight = 480;
+
 	Graphics();
 	~Graphics();
 
+	void clearPalette();
 	void setPalette(const byte *pal);
+
+	void blitToScreen(const Sprite &from,
+			uint32 left, uint32 top, uint32 right, uint32 bottom,
+			uint32 x, uint32 y, bool transp = false);
+	void blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp = false);
+
+	void retrace();
+
+private:
+	byte _gamePalette[768];
+	Sprite _screen;
+
+	void applyGamePalette();
+
 };
 
 } // End of namespace DarkSeed2
