@@ -271,6 +271,13 @@ bool Resources::hasResource(const Common::String &resource) const {
 Resource *Resources::getResource(const Common::String &resource) const {
 	debugC(3, kDebugResources, "Getting resource \"%s\"", resource.c_str());
 
+	Common::File plainFile;
+	if (plainFile.open(resource)) {
+		// Loading directly from file
+
+		return new Resource(plainFile, plainFile.size());
+	}
+
 	if (!_resources.contains(resource))
 		error("Resource \"%s\" does not exist", resource.c_str());
 
