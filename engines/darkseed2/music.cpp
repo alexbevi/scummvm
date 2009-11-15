@@ -23,51 +23,52 @@
  *
  */
 
-#ifndef DARKSEED2_DARKSEED2_H
-#define DARKSEED2_DARKSEED2_H
+#include "common/stream.h"
 
-#include "common/system.h"
+#include "common/config-manager.h"
 
-#include "engines/engine.h"
+#include "engines/darkseed2/music.h"
+#include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {
 
-enum {
-	kDebugResources = 1 << 0
-};
+Music::Music(Audio::Mixer &mixer) : _mixer(&mixer) {
+	syncSettings();
+}
 
-struct DS2GameDescription;
+Music::~Music() {
+	stop();
+}
 
-class Resources;
-class Graphics;
-class Sound;
-class Music;
+bool Music::playMID(Common::SeekableReadStream &wav) {
+	if (_mute)
+		return true;
 
-class DarkSeed2Engine : public Engine {
-private:
-	// Engine APIs
-	virtual Common::Error run();
-	virtual bool hasFeature(EngineFeature f) const;
-	virtual void pauseEngineIntern(bool pause);
-	virtual void syncSoundSettings();
+	return true;
+}
 
-	bool init();
-	bool initGraphics();
+bool Music::playMID(const Resource &resource) {
+	return playMID(resource.getStream());
+}
 
-public:
-	Resources *_resources;
-	Graphics  *_graphics;
-	Sound     *_sound;
-	Music     *_music;
+void Music::syncSettings() {
+	// Getting conf values
+	int volumeMusic = ConfMan.getInt("music_volume");
+	bool muteMusic  = ConfMan.getBool("music_mute");
+	bool mute       = ConfMan.getBool("mute");
 
-	void pauseGame();
+	// Looking for muted music
+	_mute = false;
+	if (muteMusic || mute)
+		volumeMusic = 0;
+	if (volumeMusic == 0)
+		_mute = true;
 
-	DarkSeed2Engine(OSystem *syst);
-	virtual ~DarkSeed2Engine();
+	// Setting values
+	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, volumeMusic);
+}
 
-	void initGame(const DS2GameDescription *gd);
-};
+void Music::stop() {
+}
 
 } // End of namespace DarkSeed2
-
-#endif // DARKSEED2_DARKSEED2_H

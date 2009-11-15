@@ -23,51 +23,40 @@
  *
  */
 
-#ifndef DARKSEED2_DARKSEED2_H
-#define DARKSEED2_DARKSEED2_H
+#ifndef DARKSEED2_MUSIC_H
+#define DARKSEED2_MUSIC_H
 
-#include "common/system.h"
+#include "engines/darkseed2/darkseed2.h"
 
-#include "engines/engine.h"
+#include "sound/mixer.h"
+
+namespace Common {
+	class SeekableReadStream;
+}
 
 namespace DarkSeed2 {
 
-enum {
-	kDebugResources = 1 << 0
-};
+class Resource;
 
-struct DS2GameDescription;
-
-class Resources;
-class Graphics;
-class Sound;
-class Music;
-
-class DarkSeed2Engine : public Engine {
-private:
-	// Engine APIs
-	virtual Common::Error run();
-	virtual bool hasFeature(EngineFeature f) const;
-	virtual void pauseEngineIntern(bool pause);
-	virtual void syncSoundSettings();
-
-	bool init();
-	bool initGraphics();
-
+class Music {
 public:
-	Resources *_resources;
-	Graphics  *_graphics;
-	Sound     *_sound;
-	Music     *_music;
+	Music(Audio::Mixer &mixer);
+	~Music();
 
-	void pauseGame();
+	bool playMID(Common::SeekableReadStream &mid);
+	bool playMID(const Resource &resource);
 
-	DarkSeed2Engine(OSystem *syst);
-	virtual ~DarkSeed2Engine();
+	void stop();
 
-	void initGame(const DS2GameDescription *gd);
+	/** Apply volume settings. */
+	void syncSettings();
+
+private:
+	bool _mute;
+
+	Audio::Mixer *_mixer;
 };
 
 } // End of namespace DarkSeed2
 
-#endif // DARKSEED2_DARKSEED2_H
+#endif // DARKSEED2_MUSIC_H

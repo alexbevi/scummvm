@@ -39,6 +39,7 @@
 #include "darkseed2/sprite.h"
 #include "darkseed2/graphics.h"
 #include "darkseed2/sound.h"
+#include "darkseed2/music.h"
 
 namespace DarkSeed2 {
 
@@ -51,14 +52,16 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	_resources = 0;
 	_graphics  = 0;
 	_sound     = 0;
+	_music     = 0;
 }
 
 DarkSeed2Engine::~DarkSeed2Engine() {
 	_mixer->stopAll();
 
-	delete _resources;
-	delete _graphics;
+	delete _music;
 	delete _sound;
+	delete _graphics;
+	delete _resources;
 }
 
 Common::Error DarkSeed2Engine::run() {
@@ -115,6 +118,7 @@ bool DarkSeed2Engine::init() {
 	_resources = new Resources();
 	_graphics  = new Graphics();
 	_sound     = new Sound(*_mixer);
+	_music     = new Music(*_mixer);
 
 	if (!_resources->index("gfile.hdr")) {
 		warning("Couldn't index resources");
