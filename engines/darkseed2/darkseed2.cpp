@@ -41,6 +41,7 @@
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/music.h"
 #include "engines/darkseed2/variables.h"
+#include "engines/darkseed2/datfile.h"
 
 namespace DarkSeed2 {
 
@@ -107,6 +108,19 @@ Common::Error DarkSeed2Engine::run() {
 	warning("%d %d", _variables->get("Foobar01"), _variables->get("Foobar02"));
 	_variables->evalChange("=Foobar01,23 =Foobar02,42");
 	warning("%d %d", _variables->get("Foobar01"), _variables->get("Foobar02"));
+
+	Resource *dat = _resources->getResource("OBJ_0102.DAT");
+
+	DATFile datParser(*dat);
+
+	while (!datParser.atEnd()) {
+		const Common::List<Common::String> *line = datParser.getNextLine();
+
+		for (Common::List<Common::String>::const_iterator it = line->begin(); it != line->end(); ++it) {
+			printf("%s ", it->c_str());
+		}
+		printf("\n");
+	}
 
 	while (!shouldQuit()) {
 		Common::Event event;
