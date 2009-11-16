@@ -106,4 +106,30 @@ bool Variables::evalCondition(const Common::String &condition) {
 	return result;
 }
 
+void Variables::evalChange(const Common::String &change) {
+	Common::StringTokenizer tokenizer(change, " ");
+
+	while (!tokenizer.empty()) {
+		Common::String changePart = tokenizer.nextToken();
+
+		if (changePart[0] == '*')
+			warning("Meaning of '*' not yet understood in change part \"%s\"", changePart.c_str());
+		else if (changePart[0] == '+')
+			warning("Meaning of '+' not yet understood in change part \"%s\"", changePart.c_str());
+		else if (changePart[0] == '@')
+			warning("Meaning of '@' not yet understood in change part \"%s\"", changePart.c_str());
+		else if (changePart[0] == '!')
+			_variables.setVal(changePart.c_str() + 1, 0);
+		else if (changePart[0] == '=') {
+			Common::StringTokenizer tokenizerPart(changePart.c_str() + 1, ",");
+
+			Common::String varName = tokenizerPart.nextToken();
+			Common::String value   = tokenizerPart.nextToken();
+
+			_variables.setVal(varName, atoi(value.c_str()));
+		} else
+			_variables.setVal(changePart, 1);
+	}
+}
+
 } // End of namespace DarkSeed2

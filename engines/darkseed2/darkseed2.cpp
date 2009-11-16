@@ -97,6 +97,17 @@ Common::Error DarkSeed2Engine::run() {
 
 	warning("%d", _variables->evalCondition("!FALSE TRUE TRUE TRUE !FALSE TRUE =TRUE,1 =FALSE,0"));
 
+	_variables->set("Foobar01", 0);
+	_variables->set("Foobar02", 1);
+
+	warning("%d %d", _variables->get("Foobar01"), _variables->get("Foobar02"));
+	_variables->evalChange("!Foobar01 !Foobar02");
+	warning("%d %d", _variables->get("Foobar01"), _variables->get("Foobar02"));
+	_variables->evalChange("Foobar01 Foobar02");
+	warning("%d %d", _variables->get("Foobar01"), _variables->get("Foobar02"));
+	_variables->evalChange("=Foobar01,23 =Foobar02,42");
+	warning("%d %d", _variables->get("Foobar01"), _variables->get("Foobar02"));
+
 	while (!shouldQuit()) {
 		Common::Event event;
 		while (g_system->getEventManager()->pollEvent(event)) {

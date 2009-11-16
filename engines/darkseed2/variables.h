@@ -58,6 +58,9 @@ public:
 	/** Evaluates a condition string, like they are found in the game scripts. */
 	bool evalCondition(const Common::String &condition);
 
+	/** Evaluate a change string, like they are found in the game scripts. */
+	void evalChange(const Common::String &change);
+
 private:
 	typedef Common::HashMap<Common::String, uint8, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> VarMap;
 
