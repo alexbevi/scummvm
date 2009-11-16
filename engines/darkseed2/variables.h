@@ -55,6 +55,9 @@ public:
 	/*** Load initial variable values from an IDX file. */
 	bool loadFromIDX(const Resource &idx);
 
+	/** Evaluates a condition string, like they are found in the game scripts. */
+	bool evalCondition(const Common::String &condition);
+
 private:
 	typedef Common::HashMap<Common::String, uint8, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> VarMap;
 

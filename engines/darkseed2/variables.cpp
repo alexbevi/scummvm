@@ -76,4 +76,34 @@ bool Variables::loadFromIDX(const Resource &idx) {
 	return loadFromIDX(idx.getStream());
 }
 
+bool Variables::evalCondition(const Common::String &condition) {
+	bool result = true;
+
+	Common::StringTokenizer tokenizer(condition, " ");
+
+	while (!tokenizer.empty()) {
+		Common::String condPart = tokenizer.nextToken();
+
+		if (condPart[0] == '*')
+			warning("Meaning of '*' not yet understood in condition part \"%s\"", condPart.c_str());
+		else if (condPart[0] == '+')
+			warning("Meaning of '+' not yet understood in condition part \"%s\"", condPart.c_str());
+		else if (condPart[0] == '@')
+			warning("Meaning of '@' not yet understood in condition part \"%s\"", condPart.c_str());
+		else if (condPart[0] == '!')
+			result = result && (_variables.getVal(condPart.c_str() + 1, 0) == 0);
+		else if (condPart[0] == '=') {
+			Common::StringTokenizer tokenizerPart(condPart.c_str() + 1, ",");
+
+			Common::String varName = tokenizerPart.nextToken();
+			Common::String value   = tokenizerPart.nextToken();
+
+			result = result && (_variables.getVal(varName, 0) == atoi(value.c_str()));
+		} else
+			result = result && (_variables.getVal(condPart, 0) != 0);
+	}
+
+	return result;
+}
+
 } // End of namespace DarkSeed2

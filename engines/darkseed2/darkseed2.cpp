@@ -95,6 +95,8 @@ Common::Error DarkSeed2Engine::run() {
 	if (!_music->playMID(*mid))
 		warning("MID playing failed");
 
+	warning("%d", _variables->evalCondition("!FALSE TRUE TRUE TRUE !FALSE TRUE =TRUE,1 =FALSE,0"));
+
 	while (!shouldQuit()) {
 		Common::Event event;
 		while (g_system->getEventManager()->pollEvent(event)) {
