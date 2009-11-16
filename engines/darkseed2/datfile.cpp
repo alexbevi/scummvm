@@ -85,11 +85,21 @@ void DATFile::load(Common::SeekableReadStream &dat) {
 	_pos = _lines.begin();
 }
 
-const Common::List<Common::String> *DATFile::getNextLine() {
+const Common::List<Common::String> *DATFile::nextLine() {
 	if (_pos == _lines.end())
 		return 0;
 
 	return &*_pos++;
+}
+
+void DATFile::next() {
+	if (_pos != _lines.end())
+		++_pos;
+}
+
+void DATFile::previous() {
+	if (_pos != _lines.begin())
+		--_pos;
 }
 
 void DATFile::rewind() {

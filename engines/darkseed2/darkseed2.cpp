@@ -114,7 +114,7 @@ Common::Error DarkSeed2Engine::run() {
 	DATFile datParser(*dat);
 
 	while (!datParser.atEnd()) {
-		const Common::List<Common::String> *line = datParser.getNextLine();
+		const Common::List<Common::String> *line = datParser.nextLine();
 
 		for (Common::List<Common::String>::const_iterator it = line->begin(); it != line->end(); ++it) {
 			printf("%s ", it->c_str());

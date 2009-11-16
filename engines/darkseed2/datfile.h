@@ -47,8 +47,10 @@ public:
 
 	bool atEnd() const;
 
-	const Common::List<Common::String> *getNextLine();
+	const Common::List<Common::String> *nextLine();
 
+	void next();
+	void previous();
 	void rewind();
 
 private:
