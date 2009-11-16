@@ -35,6 +35,7 @@
 
 namespace Common {
 	class SeekableReadStream;
+	class String;
 }
 
 class MidiParser;

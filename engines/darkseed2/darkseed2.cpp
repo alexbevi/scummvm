@@ -40,6 +40,7 @@
 #include "darkseed2/graphics.h"
 #include "darkseed2/sound.h"
 #include "darkseed2/music.h"
+#include "darkseed2/variables.h"
 
 namespace DarkSeed2 {
 
@@ -53,11 +54,13 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	_graphics  = 0;
 	_sound     = 0;
 	_music     = 0;
+	_variables = 0;
 }
 
 DarkSeed2Engine::~DarkSeed2Engine() {
 	_mixer->stopAll();
 
+	delete _variables;
 	delete _music;
 	delete _sound;
 	delete _graphics;
@@ -126,9 +129,16 @@ bool DarkSeed2Engine::init() {
 	_graphics  = new Graphics();
 	_sound     = new Sound(*_mixer);
 	_music     = new Music(*_mixer, *_midiDriver);
+	_variables = new Variables();
 
 	if (!_resources->index("gfile.hdr")) {
 		warning("Couldn't index resources");
+		return false;
+	}
+
+	Resource *idx = _resources->getResource("GAMEVAR.IDX");
+	if (!_variables->loadFromIDX(*idx)) {
+		warning("Couldn't load initial variables values");
 		return false;
 	}
 

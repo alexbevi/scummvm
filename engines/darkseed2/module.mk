@@ -7,7 +7,8 @@ MODULE_OBJS := \
 	sprite.o \
 	graphics.o \
 	sound.o \
-	music.o
+	music.o \
+	variables.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_DARKSEED2), DYNAMIC_PLUGIN)

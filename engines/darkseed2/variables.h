@@ -23,57 +23,44 @@
  *
  */
 
-#ifndef DARKSEED2_DARKSEED2_H
-#define DARKSEED2_DARKSEED2_H
+#ifndef DARKSEED2_VARIABLES_H
+#define DARKSEED2_VARIABLES_H
 
-#include "common/system.h"
+#include "engines/darkseed2/darkseed2.h"
 
-#include "engines/engine.h"
+#include "common/hashmap.h"
+#include "common/hash-str.h"
 
-class MidiDriver;
+namespace Common {
+	class SeekableReadStream;
+	class String;
+}
 
 namespace DarkSeed2 {
 
-enum {
-	kDebugResources = 1 << 0
-};
+class Resource;
 
-struct DS2GameDescription;
-
-class Resources;
-class Graphics;
-class Sound;
-class Music;
-class Variables;
-
-class DarkSeed2Engine : public Engine {
+class Variables {
 public:
-	Resources *_resources;
-	Graphics  *_graphics;
-	Sound     *_sound;
-	Music     *_music;
-	Variables *_variables;
+	Variables();
+	~Variables();
 
-	void pauseGame();
+	void clear();
 
-	DarkSeed2Engine(OSystem *syst);
-	virtual ~DarkSeed2Engine();
+	void set(const Common::String &var, uint8 value);
+	uint8 get(const Common::String &var) const;
 
-	void initGame(const DS2GameDescription *gd);
+	/*** Load initial variable values from an IDX file. */
+	bool loadFromIDX(Common::SeekableReadStream &idx);
+	/*** Load initial variable values from an IDX file. */
+	bool loadFromIDX(const Resource &idx);
 
 private:
-	MidiDriver *_midiDriver;
+	typedef Common::HashMap<Common::String, uint8, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> VarMap;
 
-	// Engine APIs
-	virtual Common::Error run();
-	virtual bool hasFeature(EngineFeature f) const;
-	virtual void pauseEngineIntern(bool pause);
-	virtual void syncSoundSettings();
-
-	bool init();
-	bool initGraphics();
+	VarMap _variables;
 };
 
 } // End of namespace DarkSeed2
 
-#endif // DARKSEED2_DARKSEED2_H
+#endif // DARKSEED2_VARIABLES_H
