@@ -9,7 +9,8 @@ MODULE_OBJS := \
 	sound.o \
 	music.o \
 	variables.o \
-	datfile.o
+	datfile.o \
+	script.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_DARKSEED2), DYNAMIC_PLUGIN)

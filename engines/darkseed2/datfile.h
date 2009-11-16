@@ -47,15 +47,23 @@ public:
 
 	bool atEnd() const;
 
-	const Common::List<Common::String> *nextLine();
+	bool nextLine(const Common::String *&command, const Common::String *&arguments);
 
 	void next();
 	void previous();
 	void rewind();
 
 private:
-	Common::List< Common::List<Common::String> > _lines;
-	Common::List< Common::List<Common::String> >::const_iterator _pos;
+	struct Line {
+		Common::String command;
+		Common::String arguments;
+
+		Line();
+		Line(const char *cmd, int cmdLen, const char *args);
+	};
+
+	Common::List<Line> _lines;
+	Common::List<Line>::const_iterator _pos;
 
 	void load(Common::SeekableReadStream &dat);
 };

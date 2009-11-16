@@ -31,6 +31,14 @@
 
 namespace DarkSeed2 {
 
+DATFile::Line::Line() {
+}
+
+DATFile::Line::Line(const char *cmd, int cmdLen, const char *args) {
+	command   = Common::String(cmd, cmdLen);
+	arguments = Common::String(args);
+}
+
 DATFile::DATFile(Common::SeekableReadStream &dat) {
 	load(dat);
 }
@@ -54,42 +62,37 @@ void DATFile::load(Common::SeekableReadStream &dat) {
 		if (line.empty())
 			continue;
 
-		// Pure comment line, ignore
-		if (line[0] == ';')
+		const char *semicolon = strchr(line.c_str(), ';');
+		if (semicolon)
+			line = Common::String(line.c_str(), line.size() - strlen(semicolon));
+
+		line.trim();
+		if (line.empty())
 			continue;
 
-		// Rip out comments
-		Common::StringTokenizer uncommentor(line, ";");
-		Common::String lineData = uncommentor.nextToken();
-		if (lineData.empty())
+		const char *equals = strchr(line.c_str(), '=');
+		if (!equals)
 			continue;
 
-		// Separate by ' ' and '='
-		Common::StringTokenizer parter(lineData, " =");
-		Common::String firstItem = parter.nextToken();
-		// Lines without any real information
-		if (firstItem.empty() || (firstItem[0] == '-'))
-			continue;
-
-		parter.reset();
-
-		Common::List<Common::String> items;
-		while(!parter.empty()) {
-			Common::String item = parter.nextToken();
-			items.push_back(item);
-		}
-		_lines.push_back(items);
-
+		_lines.push_back(Line(line.c_str(), line.size() - strlen(equals), equals + 1));
 	}
 
 	_pos = _lines.begin();
 }
 
-const Common::List<Common::String> *DATFile::nextLine() {
-	if (_pos == _lines.end())
-		return 0;
+bool DATFile::nextLine(const Common::String *&command, const Common::String *&arguments) {
+	command   = 0;
+	arguments = 0;
 
-	return &*_pos++;
+	if (_pos == _lines.end())
+		return false;
+
+	command   = &_pos->command;
+	arguments = &_pos->arguments;
+
+	++_pos;
+
+	return true;
 }
 
 void DATFile::next() {
