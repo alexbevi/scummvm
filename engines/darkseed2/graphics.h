@@ -26,10 +26,10 @@
 #ifndef DARKSEED2_GRAPHICS_H
 #define DARKSEED2_GRAPHICS_H
 
+#include "common/rect.h"
+
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/sprite.h"
-
-#include "common/rect.h"
 
 namespace Common {
 	class SeekableReadStream;

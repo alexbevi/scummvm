@@ -26,11 +26,11 @@
 #ifndef DARKSEED2_RESOURCES_H
 #define DARKSEED2_RESOURCES_H
 
-#include "engines/darkseed2/darkseed2.h"
-
 #include "common/str.h"
 #include "common/array.h"
 #include "common/hashmap.h"
+
+#include "engines/darkseed2/darkseed2.h"
 
 namespace Common {
 	class File;

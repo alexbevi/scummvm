@@ -26,9 +26,9 @@
 #ifndef DARKSEED2_SOUND_H
 #define DARKSEED2_SOUND_H
 
-#include "engines/darkseed2/darkseed2.h"
-
 #include "sound/mixer.h"
+
+#include "engines/darkseed2/darkseed2.h"
 
 namespace Common {
 	class SeekableReadStream;

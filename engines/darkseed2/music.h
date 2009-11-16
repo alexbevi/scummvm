@@ -26,12 +26,12 @@
 #ifndef DARKSEED2_MUSIC_H
 #define DARKSEED2_MUSIC_H
 
-#include "engines/darkseed2/darkseed2.h"
-
 #include "common/mutex.h"
 
 #include "sound/mixer.h"
 #include "sound/mididrv.h"
+
+#include "engines/darkseed2/darkseed2.h"
 
 namespace Common {
 	class SeekableReadStream;

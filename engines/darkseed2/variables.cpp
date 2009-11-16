@@ -23,12 +23,12 @@
  *
  */
 
-#include "engines/darkseed2/variables.h"
-#include "engines/darkseed2/resources.h"
-
 #include "common/str.h"
 #include "common/stream.h"
 #include "common/util.h"
+
+#include "engines/darkseed2/variables.h"
+#include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {
 

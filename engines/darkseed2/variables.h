@@ -26,10 +26,10 @@
 #ifndef DARKSEED2_VARIABLES_H
 #define DARKSEED2_VARIABLES_H
 
-#include "engines/darkseed2/darkseed2.h"
-
 #include "common/hashmap.h"
 #include "common/hash-str.h"
+
+#include "engines/darkseed2/darkseed2.h"
 
 namespace Common {
 	class SeekableReadStream;

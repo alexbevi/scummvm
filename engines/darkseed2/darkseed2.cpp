@@ -34,13 +34,13 @@
 #include "sound/mixer.h"
 #include "sound/mididrv.h"
 
-#include "darkseed2/darkseed2.h"
-#include "darkseed2/resources.h"
-#include "darkseed2/sprite.h"
-#include "darkseed2/graphics.h"
-#include "darkseed2/sound.h"
-#include "darkseed2/music.h"
-#include "darkseed2/variables.h"
+#include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/sprite.h"
+#include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/sound.h"
+#include "engines/darkseed2/music.h"
+#include "engines/darkseed2/variables.h"
 
 namespace DarkSeed2 {
 
