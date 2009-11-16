@@ -26,6 +26,8 @@
 #ifndef DARKSEED2_VARIABLES_H
 #define DARKSEED2_VARIABLES_H
 
+#include "common/str.h"
+#include "common/list.h"
 #include "common/hashmap.h"
 #include "common/hash-str.h"
 
@@ -56,15 +58,22 @@ public:
 	bool loadFromIDX(const Resource &idx);
 
 	/** Evaluates a condition string, like they are found in the game scripts. */
-	bool evalCondition(const Common::String &condition);
+	bool evalCondition(const Common::String &condition) const;
+	/** Evaluates a condition string, like they are found in the game scripts. */
+	bool evalCondition(const Common::List<Common::String> &condition) const;
 
 	/** Evaluate a change string, like they are found in the game scripts. */
 	void evalChange(const Common::String &change);
+	/** Evaluate a change string, like they are found in the game scripts. */
+	void evalChange(const Common::List<Common::String> &change);
 
 private:
 	typedef Common::HashMap<Common::String, uint8, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> VarMap;
 
 	VarMap _variables;
+
+	bool evalConditionPart(const Common::String &conditionPart) const;
+	void evalChangePart(const Common::String &changePart);
 };
 
 } // End of namespace DarkSeed2

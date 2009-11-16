@@ -23,7 +23,6 @@
  *
  */
 
-#include "common/str.h"
 #include "common/stream.h"
 #include "common/util.h"
 
@@ -76,7 +75,7 @@ bool Variables::loadFromIDX(const Resource &idx) {
 	return loadFromIDX(idx.getStream());
 }
 
-bool Variables::evalCondition(const Common::String &condition) {
+bool Variables::evalCondition(const Common::String &condition) const {
 	bool result = true;
 
 	Common::StringTokenizer tokenizer(condition, " ");
@@ -84,26 +83,41 @@ bool Variables::evalCondition(const Common::String &condition) {
 	while (!tokenizer.empty()) {
 		Common::String condPart = tokenizer.nextToken();
 
-		if (condPart[0] == '*')
-			warning("Meaning of '*' not yet understood in condition part \"%s\"", condPart.c_str());
-		else if (condPart[0] == '+')
-			warning("Meaning of '+' not yet understood in condition part \"%s\"", condPart.c_str());
-		else if (condPart[0] == '@')
-			warning("Meaning of '@' not yet understood in condition part \"%s\"", condPart.c_str());
-		else if (condPart[0] == '!')
-			result = result && (_variables.getVal(condPart.c_str() + 1, 0) == 0);
-		else if (condPart[0] == '=') {
-			Common::StringTokenizer tokenizerPart(condPart.c_str() + 1, ",");
-
-			Common::String varName = tokenizerPart.nextToken();
-			Common::String value   = tokenizerPart.nextToken();
-
-			result = result && (_variables.getVal(varName, 0) == atoi(value.c_str()));
-		} else
-			result = result && (_variables.getVal(condPart, 0) != 0);
+		result = result && evalConditionPart(condPart);
 	}
 
 	return result;
+}
+
+bool Variables::evalCondition(const Common::List<Common::String> &condition) const {
+	bool result = true;
+
+	for (Common::List<Common::String>::const_iterator it = condition.begin(); it != condition.end(); ++it)
+		result = result && evalConditionPart(*it);
+
+	return result;
+}
+
+bool Variables::evalConditionPart(const Common::String &conditionPart) const {
+	if (conditionPart[0] == '*')
+		warning("Meaning of '*' not yet understood in condition part \"%s\"", conditionPart.c_str());
+	else if (conditionPart[0] == '+')
+		warning("Meaning of '+' not yet understood in condition part \"%s\"", conditionPart.c_str());
+	else if (conditionPart[0] == '@')
+		warning("Meaning of '@' not yet understood in condition part \"%s\"", conditionPart.c_str());
+	else if (conditionPart[0] == '!')
+		return _variables.getVal(conditionPart.c_str() + 1, 0) == 0;
+	else if (conditionPart[0] == '=') {
+		Common::StringTokenizer tokenizerPart(conditionPart.c_str() + 1, ",");
+
+		Common::String varName = tokenizerPart.nextToken();
+		Common::String value   = tokenizerPart.nextToken();
+
+		return _variables.getVal(varName, 0) == atoi(value.c_str());
+	} else
+		return _variables.getVal(conditionPart, 0) != 0;
+
+	return false;
 }
 
 void Variables::evalChange(const Common::String &change) {
@@ -112,24 +126,33 @@ void Variables::evalChange(const Common::String &change) {
 	while (!tokenizer.empty()) {
 		Common::String changePart = tokenizer.nextToken();
 
-		if (changePart[0] == '*')
-			warning("Meaning of '*' not yet understood in change part \"%s\"", changePart.c_str());
-		else if (changePart[0] == '+')
-			warning("Meaning of '+' not yet understood in change part \"%s\"", changePart.c_str());
-		else if (changePart[0] == '@')
-			warning("Meaning of '@' not yet understood in change part \"%s\"", changePart.c_str());
-		else if (changePart[0] == '!')
-			_variables.setVal(changePart.c_str() + 1, 0);
-		else if (changePart[0] == '=') {
-			Common::StringTokenizer tokenizerPart(changePart.c_str() + 1, ",");
-
-			Common::String varName = tokenizerPart.nextToken();
-			Common::String value   = tokenizerPart.nextToken();
-
-			_variables.setVal(varName, atoi(value.c_str()));
-		} else
-			_variables.setVal(changePart, 1);
+		evalChangePart(changePart);
 	}
+}
+
+void Variables::evalChange(const Common::List<Common::String> &change) {
+	for (Common::List<Common::String>::const_iterator it = change.begin(); it != change.end(); ++it)
+		evalChangePart(*it);
+}
+
+void Variables::evalChangePart(const Common::String &changePart) {
+	if (changePart[0] == '*')
+		warning("Meaning of '*' not yet understood in change part \"%s\"", changePart.c_str());
+	else if (changePart[0] == '+')
+		warning("Meaning of '+' not yet understood in change part \"%s\"", changePart.c_str());
+	else if (changePart[0] == '@')
+		warning("Meaning of '@' not yet understood in change part \"%s\"", changePart.c_str());
+	else if (changePart[0] == '!')
+		_variables.setVal(changePart.c_str() + 1, 0);
+	else if (changePart[0] == '=') {
+		Common::StringTokenizer tokenizerPart(changePart.c_str() + 1, ",");
+
+		Common::String varName = tokenizerPart.nextToken();
+		Common::String value   = tokenizerPart.nextToken();
+
+		_variables.setVal(varName, atoi(value.c_str()));
+	} else
+		_variables.setVal(changePart, 1);
 }
 
 } // End of namespace DarkSeed2
