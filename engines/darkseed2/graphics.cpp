@@ -23,7 +23,10 @@
  *
  */
 
+#include "common/stream.h"
+
 #include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {
 
@@ -88,6 +91,37 @@ void Graphics::blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp)
 void Graphics::retrace() {
 	if (dirtyRectsApply())
 		g_system->updateScreen();
+}
+
+bool Graphics::loadPAL(Common::SeekableReadStream &pal,
+		int fromStart, int toStart, int count) {
+
+	if (pal.size() < ((fromStart + count) * 4))
+		return false;
+
+	if (!pal.seek(fromStart * 4))
+		return false;
+
+	byte *palette = _gamePalette + toStart * 3;
+
+
+	for (int i = 0; i < count; i++, palette += 3) {
+		palette[2] = pal.readByte();
+		palette[1] = pal.readByte();
+		palette[0] = pal.readByte();
+
+		pal.readByte();
+	}
+
+	applyGamePalette();
+
+	return true;
+}
+
+bool Graphics::loadPAL(const Resource &resource,
+		int fromStart, int toStart, int count) {
+
+	return loadPAL(resource.getStream(), fromStart, toStart, count);
 }
 
 void Graphics::dirtyRectsAdd(uint32 left, uint32 top, uint32 right, uint32 bottom) {

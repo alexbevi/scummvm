@@ -73,35 +73,24 @@ Common::Error DarkSeed2Engine::run() {
 
 	Resource *bmp = _resources->getResource("RM0101.BMP");
 
-	if (bmp) {
-		Sprite sprite;
+	Sprite sprite;
 
-		if (sprite.loadFromBMP(*bmp)) {
-			_graphics->setPalette(sprite.getPalette());
-			_graphics->blitToScreen(sprite, 0, 0, true);
-			_graphics->retrace();
-		} else
-			warning("BMP loading failed");
-
-		delete bmp;
+	if (sprite.loadFromBMP(*bmp)) {
+		_graphics->setPalette(sprite.getPalette());
+		_graphics->blitToScreen(sprite, 0, 0, true);
+		_graphics->retrace();
 	} else
-		warning("No BMP resource");
+		warning("BMP loading failed");
+
+	delete bmp;
 
 	Resource *wav = _resources->getResource("DNA006.WAV");
-
-	if (wav) {
-		if (!_sound->playWAV(*wav))
-			warning("WAV playing failed");
-	} else
-		warning("No WAV resource");
+	if (!_sound->playWAV(*wav))
+		warning("WAV playing failed");
 
 	Resource *mid = _resources->getResource("sndtrack/mm001gm.mid");
-
-	if (mid) {
-		if (!_music->playMID(*mid))
-			warning("MID playing failed");
-	} else
-		warning("No MID resource");
+	if (!_music->playMID(*mid))
+		warning("MID playing failed");
 
 	while (!shouldQuit()) {
 		Common::Event event;
