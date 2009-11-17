@@ -28,6 +28,7 @@
 
 #include "common/str.h"
 #include "common/list.h"
+#include "common/array.h"
 
 #include "engines/darkseed2/darkseed2.h"
 
@@ -56,6 +57,10 @@ public:
 	void previous();
 	/** Seek to the beginning. */
 	void rewind();
+
+	static int argCount(const Common::String &arguments);
+	static Common::String argGet(const Common::String &arguments, int n);
+	static Common::Array<Common::String> argGet(const Common::String &arguments);
 
 private:
 	struct Line {

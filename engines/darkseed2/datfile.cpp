@@ -113,4 +113,54 @@ void DATFile::rewind() {
 	_pos = _lines.begin();
 }
 
+int DATFile::argCount(const Common::String &arguments) {
+	const char *args = arguments.c_str();
+
+	int count = 1;
+	while (*args)
+		if (*args++ == ' ')
+			count++;
+
+	return count;
+}
+
+Common::String DATFile::argGet(const Common::String &arguments, int n) {
+	const char *start = arguments.c_str();
+	for (int i = 0; i < n; i++) {
+		start = strchr(start, ' ');
+		if (!start)
+			return "";
+
+		start++;
+	}
+
+	const char *end = strchr(start, ' ');
+	if (!end)
+		return Common::String(start);
+
+	return Common::String(start, end - start);
+}
+
+Common::Array<Common::String> DATFile::argGet(const Common::String &arguments) {
+	const char *start = arguments.c_str();
+	const char *end   = strchr(start, ' ');
+
+	int count = argCount(arguments);
+
+	Common::Array<Common::String> list;
+
+	list.resize(count);
+
+	while (end) {
+		list.push_back(Common::String(start, end - start));
+
+		start = end + 1;
+		end   = strchr(start, ' ');
+	}
+
+	list.push_back(Common::String(start));
+
+	return list;
+}
+
 } // End of namespace DarkSeed2
