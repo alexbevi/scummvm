@@ -149,7 +149,7 @@ Common::Array<Common::String> DATFile::argGet(const Common::String &arguments) {
 
 	Common::Array<Common::String> list;
 
-	list.resize(count);
+	list.reserve(count);
 
 	while (end) {
 		list.push_back(Common::String(start, end - start));
