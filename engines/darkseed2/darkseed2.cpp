@@ -42,6 +42,7 @@
 #include "engines/darkseed2/music.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
+#include "engines/darkseed2/objects.h"
 
 namespace DarkSeed2 {
 
@@ -109,13 +110,13 @@ Common::Error DarkSeed2Engine::run() {
 	_variables->evalChange("=Foobar01,23 =Foobar02,42");
 	warning("%d %d", _variables->get("Foobar01"), _variables->get("Foobar02"));
 
-	Resource *dat = _resources->getResource("OBJ_0102.DAT");
+	Resource *dat = _resources->getResource("OBJ_0806.DAT");
 
 	DATFile datParser(*dat);
+	ObjectContainer objects(*_variables);
 
-	const Common::String *cmd, *args;
-	while (datParser.nextLine(cmd, args))
-		warning("%s %s", cmd->c_str(), args->c_str());
+	if (!objects.parse(datParser))
+		warning("Failed parsing objects");
 
 	while (!shouldQuit()) {
 		Common::Event event;
