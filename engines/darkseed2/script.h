@@ -84,7 +84,7 @@ public:
 	/** Reset the chunk to its empty factory state. */
 	void clear();
 	/** Parse a chunk out of a suitably positioned DAT file. */
-	void parse(DATFile &dat);
+	bool parse(DATFile &dat);
 
 	/** Are all conditions for this chunk met? */
 	bool conditionsMet() const;

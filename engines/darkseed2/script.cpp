@@ -57,7 +57,7 @@ void ScriptChunk::clear() {
 	_actions.clear();
 }
 
-void ScriptChunk::parse(DATFile &dat) {
+bool ScriptChunk::parse(DATFile &dat) {
 	clear();
 
 	const Common::String *cmd, *arg;
@@ -87,7 +87,7 @@ void ScriptChunk::parse(DATFile &dat) {
 			if (!hasCond) {
 				// We do need a condition first
 				warning("Script sync error, first line must be a condition");
-				break;
+				return false;
 			}
 
 			// Is this a known action?
@@ -95,13 +95,15 @@ void ScriptChunk::parse(DATFile &dat) {
 			if (action == kScriptActionNone) {
 				// No, die
 				warning("Unknown script action \"%s\" (\"%s\")", cmd->c_str(), arg->c_str());
-				continue;
+				return false;
 			}
 
 			// Put the action into our list
 			_actions.push_back(Action(action, *arg));
 		}
 	}
+
+	return true;
 }
 
 bool ScriptChunk::conditionsMet() const {
