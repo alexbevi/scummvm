@@ -172,7 +172,8 @@ bool Resources::readIndexResources(Common::File &indexFile) {
 		Common::String resFile = (const char *) buffer;
 
 		if (glue >= _glueCount) {
-			warning("Glue number out of range for resource \"%s\" (%d vs. %d)",
+			warning("Resources::readIndexResources(): Glue number out "
+					"of range for resource \"%s\" (%d vs. %d)",
 					resFile.c_str(), glue, _glueCount);
 			return false;
 		}
@@ -198,7 +199,8 @@ bool Resources::indexGluesContents() {
 		Common::File glueFile;
 
 		if (!glueFile.open(_glues[i].fileName)) {
-			warning("Can't open glue file \"%s\"", _glues[i].fileName.c_str());
+			warning("Resources::indexGluesContents(): "
+					"Can't open glue file \"%s\"", _glues[i].fileName.c_str());
 			return false;
 		}
 
@@ -238,7 +240,8 @@ bool Resources::readGlueContents(Common::SeekableReadStream &glueFile, const Com
 
 		// Was the resource also listed in the index file?
 		if (!_resources.contains(resFile)) {
-			warning("Unindexed resource \"%s\" found", resFile.c_str());
+			warning("Resources::readGlueContents(): "
+					"Unindexed resource \"%s\" found", resFile.c_str());
 			glueFile.skip(8);
 			continue;
 		}
@@ -279,18 +282,21 @@ Resource *Resources::getResource(const Common::String &resource) const {
 	}
 
 	if (!_resources.contains(resource))
-		error("Resource \"%s\" does not exist", resource.c_str());
+		error("Resources::getResource(): Resource \"%s\" does not exist",
+				resource.c_str());
 
 	const Res &res = _resources.getVal(resource);
 
 	if (!res.exists || (res.size == 0))
-		error("Resource \"%s\" not available", resource.c_str());
+		error("Resources::getResource(): Resource \"%s\" not available",
+				resource.c_str());
 
 	if (res.glue->data) {
 		// Compressed glue, constructing new resource with direct data held in memory
 
 		if ((res.offset + res.size) > res.glue->size)
-			error("Resource \"%s\" offset %d out of bounds", resource.c_str(), res.offset);
+			error("Resources::getResource(): Resource \"%s\" offset %d out of bounds",
+					resource.c_str(), res.offset);
 
 		return new Resource(res.glue->data + res.offset, res.size);
 	}
@@ -300,10 +306,11 @@ Resource *Resources::getResource(const Common::String &resource) const {
 	Common::File glueFile;
 
 	if (!glueFile.open(res.glue->fileName))
-		error("Couldn't open glue file \"%s\"", res.glue->fileName.c_str());
+		error("Resources::getResource(): Couldn't open glue file \"%s\"",
+				res.glue->fileName.c_str());
 
 	if (!glueFile.seek(res.offset))
-		error("Couldn't seek glue file \"%s\" to offset %d",
+		error("Resources::getResource(): Couldn't seek glue file \"%s\" to offset %d",
 				res.glue->fileName.c_str(), res.offset);
 
 	return new Resource(glueFile, res.size);
@@ -311,7 +318,7 @@ Resource *Resources::getResource(const Common::String &resource) const {
 
 byte *Resources::uncompressGlue(Common::File &file, uint32 &size) const {
 	if (!file.seek(0))
-		error("Can't seek glue file");
+		error("Resources::uncompressGlue(): Can't seek glue file");
 
 	byte inBuf[2048];
 	int nRead;
@@ -321,7 +328,8 @@ byte *Resources::uncompressGlue(Common::File &file, uint32 &size) const {
 	nRead = file.read(inBuf, 2048);
 
 	if (nRead != 2048)
-		error("Can't uncompress glue file: Need at least 2048 bytes");
+		error("Resources::uncompressGlue(): "
+				"Can't uncompress glue file: Need at least 2048 bytes");
 
 	size = READ_LE_UINT32(inBuf + 2044) + 128;
 

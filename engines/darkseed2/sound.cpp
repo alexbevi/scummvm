@@ -60,7 +60,7 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 		}
 
 	if (!handle) {
-		warning("Sound::playWAV(): All channels occupied");
+		warning("Sound::playWAV(): Sound::playWAV(): All channels occupied");
 		return false;
 	}
 

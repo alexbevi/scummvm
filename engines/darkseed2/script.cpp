@@ -86,7 +86,7 @@ bool ScriptChunk::parse(DATFile &dat) {
 
 			if (!hasCond) {
 				// We do need a condition first
-				warning("Script sync error, first line must be a condition");
+				warning("ScriptChunk::parse(Script sync error, first line must be a condition");
 				return false;
 			}
 
@@ -94,7 +94,7 @@ bool ScriptChunk::parse(DATFile &dat) {
 			ScriptAction action = parseScriptAction(*cmd);
 			if (action == kScriptActionNone) {
 				// No, die
-				warning("Unknown script action \"%s\" (\"%s\")", cmd->c_str(), arg->c_str());
+				warning("ScriptChunk::parse(): Unknown script action \"%s\" (\"%s\")", cmd->c_str(), arg->c_str());
 				return false;
 			}
 

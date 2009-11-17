@@ -100,11 +100,17 @@ bool Variables::evalCondition(const Common::List<Common::String> &condition) con
 
 bool Variables::evalConditionPart(const Common::String &conditionPart) const {
 	if (conditionPart[0] == '*')
-		warning("Meaning of '*' not yet understood in condition part \"%s\"", conditionPart.c_str());
+		warning("Variables::evalConditionPart(): "
+				"Meaning of '*' not yet understood in condition part \"%s\"",
+				conditionPart.c_str());
 	else if (conditionPart[0] == '+')
-		warning("Meaning of '+' not yet understood in condition part \"%s\"", conditionPart.c_str());
+		warning("Variables::evalConditionPart(): "
+				"Meaning of '+' not yet understood in condition part \"%s\"",
+				conditionPart.c_str());
 	else if (conditionPart[0] == '@')
-		warning("Meaning of '@' not yet understood in condition part \"%s\"", conditionPart.c_str());
+		warning("Variables::evalConditionPart(): "
+				"Meaning of '@' not yet understood in condition part \"%s\"",
+				conditionPart.c_str());
 	else if (conditionPart[0] == '!')
 		return _variables.getVal(conditionPart.c_str() + 1, 0) == 0;
 	else if (conditionPart[0] == '=') {
@@ -137,11 +143,17 @@ void Variables::evalChange(const Common::List<Common::String> &change) {
 
 void Variables::evalChangePart(const Common::String &changePart) {
 	if (changePart[0] == '*')
-		warning("Meaning of '*' not yet understood in change part \"%s\"", changePart.c_str());
+		warning("Variables::evalChangePart(): "
+				"Meaning of '*' not yet understood in change part \"%s\"",
+				changePart.c_str());
 	else if (changePart[0] == '+')
-		warning("Meaning of '+' not yet understood in change part \"%s\"", changePart.c_str());
+		warning("Variables::evalChangePart(): "
+				"Meaning of '+' not yet understood in change part \"%s\"",
+				changePart.c_str());
 	else if (changePart[0] == '@')
-		warning("Meaning of '@' not yet understood in change part \"%s\"", changePart.c_str());
+		warning("Variables::evalChangePart(): "
+				"Meaning of '@' not yet understood in change part \"%s\"",
+				changePart.c_str());
 	else if (changePart[0] == '!')
 		_variables.setVal(changePart.c_str() + 1, 0);
 	else if (changePart[0] == '=') {
