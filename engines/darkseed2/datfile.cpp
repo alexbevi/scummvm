@@ -62,14 +62,17 @@ void DATFile::load(Common::SeekableReadStream &dat) {
 		if (line.empty())
 			continue;
 
+		// Remove comments
 		const char *semicolon = strchr(line.c_str(), ';');
 		if (semicolon)
 			line = Common::String(line.c_str(), line.size() - strlen(semicolon));
 
+		// Remove white space
 		line.trim();
 		if (line.empty())
 			continue;
 
+		// Find the command-argument separator
 		const char *equals = strchr(line.c_str(), '=');
 		if (!equals)
 			continue;
@@ -84,6 +87,7 @@ bool DATFile::nextLine(const Common::String *&command, const Common::String *&ar
 	command   = 0;
 	arguments = 0;
 
+	// Reached the end?
 	if (_pos == _lines.end())
 		return false;
 

@@ -45,12 +45,16 @@ public:
 	DATFile(const Resource &dat);
 	~DATFile();
 
+	/** Reached the end? */
 	bool atEnd() const;
 
 	bool nextLine(const Common::String *&command, const Common::String *&arguments);
 
+	/** Skip the current line. */
 	void next();
+	/** Back off one line. */
 	void previous();
+	/** Seek to the beginning. */
 	void rewind();
 
 private:
