@@ -24,6 +24,7 @@
  */
 
 #include "engines/darkseed2/objects.h"
+#include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/script.h"
 
@@ -138,6 +139,7 @@ ObjectContainer::ObjectContainer(const Variables &variables) : _variables(&varia
 }
 
 ObjectContainer::~ObjectContainer() {
+	clear();
 }
 
 void ObjectContainer::clear() {
