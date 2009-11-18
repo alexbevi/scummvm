@@ -37,6 +37,9 @@ DATFile::Line::Line() {
 DATFile::Line::Line(const char *cmd, int cmdLen, const char *args) {
 	command   = Common::String(cmd, cmdLen);
 	arguments = Common::String(args);
+
+	command.trim();
+	arguments.trim();
 }
 
 DATFile::DATFile(Common::SeekableReadStream &dat) {
