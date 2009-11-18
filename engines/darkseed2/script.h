@@ -54,7 +54,6 @@ enum ScriptAction {
 	kScriptActionClipXY,
 	kScriptActionPosX,
 	kScriptActionPosY,
-	kScriptActionScaleFactor,
 	kScriptActionScaleVal,
 	kScriptActionFrom,
 	kScriptActionPaletteChange,
@@ -65,6 +64,7 @@ enum ScriptAction {
 	kScriptActionSpeech,
 	kScriptActionSpeechVar,
 	kScriptActionWaitUntil,
+	kScriptActionEffect,
 	kScriptActionNone
 };
 
