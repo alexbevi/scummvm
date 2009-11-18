@@ -35,6 +35,7 @@
 #include "sound/mididrv.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/options.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/sprite.h"
 #include "engines/darkseed2/graphics.h"
@@ -53,6 +54,7 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	// Setup mixer
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));
 
+	_options   = 0;
 	_resources = 0;
 	_graphics  = 0;
 	_sound     = 0;
@@ -68,6 +70,7 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 	delete _sound;
 	delete _graphics;
 	delete _resources;
+	delete _options;
 }
 
 Common::Error DarkSeed2Engine::run() {
@@ -144,8 +147,10 @@ void DarkSeed2Engine::pauseEngineIntern(bool pause) {
 void DarkSeed2Engine::syncSoundSettings() {
 	Engine::syncSoundSettings();
 
-	_sound->syncSettings();
-	_music->syncSettings();
+	_options->syncSettings();
+
+	_sound->syncSettings(*_options);
+	_music->syncSettings(*_options);
 }
 
 bool DarkSeed2Engine::init() {
@@ -157,11 +162,14 @@ bool DarkSeed2Engine::init() {
 	if (native_mt32)
 		_midiDriver->property(MidiDriver::PROP_CHANNEL_MASK, 0x03FE);
 
+	_options   = new Options();
 	_resources = new Resources();
 	_graphics  = new Graphics();
 	_sound     = new Sound(*_mixer);
 	_music     = new Music(*_mixer, *_midiDriver);
 	_variables = new Variables();
+
+	syncSoundSettings();
 
 	if (!_resources->index("gfile.hdr")) {
 		warning("Couldn't index resources");

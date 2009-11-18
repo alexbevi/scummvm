@@ -36,6 +36,7 @@ namespace Common {
 
 namespace DarkSeed2 {
 
+class Options;
 class Resource;
 
 class Sound {
@@ -58,7 +59,7 @@ public:
 	void stopAll();
 
 	/** Apply volume settings. */
-	void syncSettings();
+	void syncSettings(const Options &options);
 
 private:
 	static const int _channelCount = 8;

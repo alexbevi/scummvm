@@ -23,59 +23,30 @@
  *
  */
 
-#ifndef DARKSEED2_DARKSEED2_H
-#define DARKSEED2_DARKSEED2_H
+#ifndef DARKSEED2_OPTIONS_H
+#define DARKSEED2_OPTIONS_H
 
-#include "common/system.h"
-
-#include "engines/engine.h"
-
-class MidiDriver;
+#include "engines/darkseed2/darkseed2.h"
 
 namespace DarkSeed2 {
 
-enum {
-	kDebugResources = 1 << 0
-};
-
-struct DS2GameDescription;
-
-class Options;
-class Resources;
-class Graphics;
-class Sound;
-class Music;
-class Variables;
-
-class DarkSeed2Engine : public Engine {
+class Options {
 public:
-	Options   *_options;
-	Resources *_resources;
-	Graphics  *_graphics;
-	Sound     *_sound;
-	Music     *_music;
-	Variables *_variables;
+	Options();
+	~Options();
 
-	void pauseGame();
+	void syncSettings();
 
-	DarkSeed2Engine(OSystem *syst);
-	virtual ~DarkSeed2Engine();
-
-	void initGame(const DS2GameDescription *gd);
+	int getVolumeSFX() const;
+	int getVolumeSpeech() const;
+	int getVolumeMusic() const;
 
 private:
-	MidiDriver *_midiDriver;
-
-	// Engine APIs
-	virtual Common::Error run();
-	virtual bool hasFeature(EngineFeature f) const;
-	virtual void pauseEngineIntern(bool pause);
-	virtual void syncSoundSettings();
-
-	bool init();
-	bool initGraphics();
+	int _volumeSFX;
+	int _volumeSpeech;
+	int _volumeMusic;
 };
 
 } // End of namespace DarkSeed2
 
-#endif // DARKSEED2_DARKSEED2_H
+#endif // DARKSEED2_OPTIONS_H

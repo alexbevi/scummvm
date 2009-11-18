@@ -25,18 +25,16 @@
 
 #include "common/stream.h"
 
-#include "common/config-manager.h"
-
 #include "sound/wave.h"
 
 #include "engines/darkseed2/sound.h"
+#include "engines/darkseed2/options.h"
 #include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {
 
 Sound::Sound(Audio::Mixer &mixer) : _mixer(&mixer) {
 	_id = 0;
-	syncSettings();
 }
 
 Sound::~Sound() {
@@ -100,28 +98,12 @@ bool Sound::isIDPlaying(int id) {
 	return _mixer->isSoundIDActive(id);
 }
 
-void Sound::syncSettings() {
-	// Getting conf values
-	int volumeSFX    = ConfMan.getInt("sfx_volume");
-	int volumeSpeech = ConfMan.getInt("speech_volume");
-	bool muteSFX     = ConfMan.getBool("speech_mute");
-	bool muteSpeech  = ConfMan.getBool("sfx_mute");
-	bool mute        = ConfMan.getBool("mute");
+void Sound::syncSettings(const Options &options) {
+	int volumeSFX    = options.getVolumeSFX();
+	int volumeSpeech = options.getVolumeSpeech();
 
-	// Looking for muted types
-
-	_muteSFX    = false;
-	_muteSpeech = false;
-
-	if (muteSFX || mute)
-		volumeSFX = 0;
-	if (volumeSFX == 0)
-		_muteSFX = true;
-
-	if (muteSpeech || mute)
-		volumeSpeech = 0;
-	if (muteSpeech == 0)
-		_muteSpeech = true;
+	_muteSFX    = (volumeSFX    == 0) ? true : false;
+	_muteSpeech = (volumeSpeech == 0) ? true : false;
 
 	// Setting values
 	_mixer->setVolumeForSoundType(Audio::Mixer::kSFXSoundType   , volumeSFX);

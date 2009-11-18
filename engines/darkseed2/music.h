@@ -56,7 +56,7 @@ public:
 	void stop();
 
 	/** Apply volume settings. */
-	void syncSettings();
+	void syncSettings(const Options &options);
 
 private:
 	bool _mute;

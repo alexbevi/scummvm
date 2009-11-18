@@ -31,14 +31,13 @@
 #include "sound/midiparser.h"
 
 #include "engines/darkseed2/music.h"
+#include "engines/darkseed2/options.h"
 #include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {
 
 Music::Music(Audio::Mixer &mixer, MidiDriver &driver) : _mixer(&mixer) {
 	_midiPlayer = new MidiPlayer(&driver, 0);
-
-	syncSettings();
 }
 
 Music::~Music() {
@@ -57,18 +56,11 @@ bool Music::playMID(const Resource &resource) {
 	return playMID(resource.getStream());
 }
 
-void Music::syncSettings() {
+void Music::syncSettings(const Options &options) {
 	// Getting conf values
-	int volumeMusic = ConfMan.getInt("music_volume");
-	bool muteMusic  = ConfMan.getBool("music_mute");
-	bool mute       = ConfMan.getBool("mute");
+	int volumeMusic = options.getVolumeMusic();
 
-	// Looking for muted music
-	_mute = false;
-	if (muteMusic || mute)
-		volumeMusic = 0;
-	if (volumeMusic == 0)
-		_mute = true;
+	_mute = (volumeMusic == 0) ? true : false;
 
 	// Setting values
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, volumeMusic);

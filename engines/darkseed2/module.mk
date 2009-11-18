@@ -3,6 +3,7 @@ MODULE := engines/darkseed2
 MODULE_OBJS := \
 	darkseed2.o \
 	detection.o \
+	options.o \
 	resources.o \
 	sprite.o \
 	graphics.o \

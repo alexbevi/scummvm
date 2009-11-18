@@ -23,59 +23,47 @@
  *
  */
 
-#ifndef DARKSEED2_DARKSEED2_H
-#define DARKSEED2_DARKSEED2_H
+#include "common/config-manager.h"
 
-#include "common/system.h"
-
-#include "engines/engine.h"
-
-class MidiDriver;
+#include "engines/darkseed2/options.h"
 
 namespace DarkSeed2 {
 
-enum {
-	kDebugResources = 1 << 0
-};
+Options::Options() {
+	syncSettings();
+}
 
-struct DS2GameDescription;
+Options::~Options() {
+}
 
-class Options;
-class Resources;
-class Graphics;
-class Sound;
-class Music;
-class Variables;
+void Options::syncSettings() {
+	_volumeSFX    = ConfMan.getInt("sfx_volume");
+	_volumeSpeech = ConfMan.getInt("speech_volume");
+	_volumeMusic  = ConfMan.getInt("music_volume");
 
-class DarkSeed2Engine : public Engine {
-public:
-	Options   *_options;
-	Resources *_resources;
-	Graphics  *_graphics;
-	Sound     *_sound;
-	Music     *_music;
-	Variables *_variables;
+	bool muteSFX    = ConfMan.getBool("speech_mute");
+	bool muteSpeech = ConfMan.getBool("sfx_mute");
+	bool muteMusic  = ConfMan.getBool("music_mute");
+	bool mute       = ConfMan.getBool("mute");
 
-	void pauseGame();
+	if (muteSFX    || mute)
+		_volumeSFX    = 0;
+	if (muteSpeech || mute)
+		_volumeSpeech = 0;
+	if (muteMusic  || mute)
+		_volumeMusic  = 0;
+}
 
-	DarkSeed2Engine(OSystem *syst);
-	virtual ~DarkSeed2Engine();
+int Options::getVolumeSFX() const {
+	return _volumeSFX;
+}
 
-	void initGame(const DS2GameDescription *gd);
+int Options::getVolumeSpeech() const {
+	return _volumeSpeech;
+}
 
-private:
-	MidiDriver *_midiDriver;
-
-	// Engine APIs
-	virtual Common::Error run();
-	virtual bool hasFeature(EngineFeature f) const;
-	virtual void pauseEngineIntern(bool pause);
-	virtual void syncSoundSettings();
-
-	bool init();
-	bool initGraphics();
-};
+int Options::getVolumeMusic() const {
+	return _volumeMusic;
+}
 
 } // End of namespace DarkSeed2
-
-#endif // DARKSEED2_DARKSEED2_H
