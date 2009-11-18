@@ -48,6 +48,9 @@ public:
 	~Variables();
 
 	void clear();
+	void clearLocal();
+
+	void addLocal(const Common::String &var);
 
 	void set(const Common::String &var, uint8 value);
 	uint8 get(const Common::String &var) const;
@@ -71,9 +74,12 @@ private:
 	typedef Common::HashMap<Common::String, uint8, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> VarMap;
 
 	VarMap _variables;
+	VarMap _localVariables;
 
 	bool evalConditionPart(const Common::String &conditionPart) const;
 	void evalChangePart(const Common::String &changePart);
+
+	uint8 get(const Common::String &var, uint8 def) const;
 };
 
 } // End of namespace DarkSeed2
