@@ -43,6 +43,7 @@
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/room.h"
+#include "engines/darkseed2/talkline.h"
 
 namespace DarkSeed2 {
 
@@ -89,9 +90,14 @@ Common::Error DarkSeed2Engine::run() {
 
 	delete bmp;
 
-	Resource *wav = _resources->getResource("DNA006.WAV");
-	if (!_sound->playWAV(*wav))
-		warning("WAV playing failed");
+	TalkLine talkLine(*_resources, "DNA006");
+	if (talkLine.hasWAV()) {
+		if (!_sound->playWAV(talkLine.getWAV()))
+			warning("WAV playing failed");
+
+		warning("TEXT: %s", talkLine.getTXT().c_str());
+	} else
+		warning("No WAV");
 
 	Resource *mid = _resources->getResource("sndtrack/mm001gm.mid");
 	if (!_music->playMID(*mid))

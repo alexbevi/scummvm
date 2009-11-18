@@ -12,7 +12,8 @@ MODULE_OBJS := \
 	datfile.o \
 	script.o \
 	objects.o \
-	room.o
+	room.o \
+	talkline.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_DARKSEED2), DYNAMIC_PLUGIN)
