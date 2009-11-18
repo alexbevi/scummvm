@@ -48,6 +48,13 @@ public:
 	bool playWAV(const Resource &resource,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 
+	bool playWAV(Common::SeekableReadStream &wav, int &id,
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+	bool playWAV(const Resource &resource, int &id,
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+
+	bool isIDPlaying(int id);
+
 	void stopAll();
 
 	/** Apply volume settings. */
@@ -55,6 +62,8 @@ public:
 
 private:
 	static const int _channelCount = 8;
+
+	int _id;
 
 	bool _muteSFX;
 	bool _muteSpeech;

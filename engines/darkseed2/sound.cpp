@@ -35,6 +35,7 @@
 namespace DarkSeed2 {
 
 Sound::Sound(Audio::Mixer &mixer) : _mixer(&mixer) {
+	_id = 0;
 	syncSettings();
 }
 
@@ -70,7 +71,7 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 		return false;
 
 	// Play it
-	_mixer->playInputStream(type, handle, wavStream);
+	_mixer->playInputStream(type, handle, wavStream, _id++);
 
 	return true;
 }
@@ -79,6 +80,24 @@ bool Sound::playWAV(const Resource &resource,
 		Audio::Mixer::SoundType type) {
 
 	return playWAV(resource.getStream(), type);
+}
+
+bool Sound::playWAV(Common::SeekableReadStream &wav, int &id,
+		Audio::Mixer::SoundType type) {
+
+	id = _id;
+	return playWAV(wav, type);
+}
+
+bool Sound::playWAV(const Resource &resource, int &id,
+		Audio::Mixer::SoundType type) {
+
+	id = _id;
+	return playWAV(resource, type);
+}
+
+bool Sound::isIDPlaying(int id) {
+	return _mixer->isSoundIDActive(id);
 }
 
 void Sound::syncSettings() {
