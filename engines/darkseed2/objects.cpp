@@ -84,7 +84,7 @@ bool Object::parse(DATFile &dat) {
 			_bottom = atoi(lArgs[3].c_str()) - 1;
 
 		} else if (cmd->matchString("*Start")) {
-			// Found a verb
+			// Start of a verb section
 
 			curVerb = parseObjectVerb(*cmd);
 			if (curVerb == kObjectVerbNone) {
