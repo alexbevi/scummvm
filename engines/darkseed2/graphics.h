@@ -52,6 +52,9 @@ public:
 
 	void drawString(const Common::String &string, int x, int y, byte color);
 
+	void talk(const Common::String &string);
+	void talkEnd();
+
 	void blitToScreen(const Sprite &from,
 			uint32 left, uint32 top, uint32 right, uint32 bottom,
 			uint32 x, uint32 y, bool transp = false);
@@ -64,6 +67,9 @@ public:
 	bool loadPAL(const Resource &resource,
 			int fromStart = 0, int toStart = 0, int count = 256);
 
+	void registerBackground(Sprite &background);
+	void unregisterBackground();
+
 private:
 	byte _gamePalette[768];
 	Sprite _screen;
@@ -71,9 +77,19 @@ private:
 	bool _dirtyAll;
 	Common::List<Common::Rect> _dirtyRects;
 
+	Sprite *_background;
+
+	bool _hasTalk;
+	Sprite _talkLine;
+	Common::Rect _talkLineDim;
+
 	void applyGamePalette();
 
+	void redrawScreen(const Common::Rect &rect);
+	void redrawScreen(uint32 left, uint32 top, uint32 right, uint32 bottom);
+
 	void dirtyAll();
+	void dirtyRectsAdd(const Common::Rect &rect);
 	void dirtyRectsAdd(uint32 left, uint32 top, uint32 right, uint32 bottom);
 	bool dirtyRectsApply();
 };

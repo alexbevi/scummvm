@@ -36,6 +36,11 @@ Graphics::Graphics() {
 	_screen.create(_screenWidth, _screenHeight);
 
 	_dirtyAll = false;
+
+	_background = 0;
+	_talkLine.create(_screenWidth, _screenHeight);
+
+	_hasTalk = false;
 }
 
 Graphics::~Graphics() {
@@ -78,7 +83,23 @@ void Graphics::drawString(const Common::String &string, int x, int y, byte color
 
 	_screen.drawString(string, x, y, color, &coords);
 
-	dirtyRectsAdd(coords.left, coords.top, coords.right - 1, coords.bottom - 1);
+	dirtyRectsAdd(coords);
+}
+
+void Graphics::talk(const Common::String &string) {
+	talkEnd();
+
+	_talkLine.drawString(string, 5, 0, 7, &_talkLineDim);
+
+	_hasTalk = true;
+	redrawScreen(_talkLineDim);
+}
+
+void Graphics::talkEnd() {
+	_talkLine.clear();
+
+	_hasTalk = false;
+	redrawScreen(_talkLineDim);
 }
 
 void Graphics::blitToScreen(const Sprite &from,
@@ -87,7 +108,7 @@ void Graphics::blitToScreen(const Sprite &from,
 
 	_screen.blit(from, left, top, right, bottom, x, y, transp);
 
-	dirtyRectsAdd(x, y, x + (right - left), y + (bottom - right));
+	dirtyRectsAdd(x, y, x + (right - left), y + (bottom - top));
 }
 
 void Graphics::blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp) {
@@ -137,14 +158,18 @@ void Graphics::dirtyAll() {
 	_dirtyRects.clear();
 }
 
-void Graphics::dirtyRectsAdd(uint32 left, uint32 top, uint32 right, uint32 bottom) {
+void Graphics::dirtyRectsAdd(const Common::Rect &rect) {
 	if (_dirtyAll)
 		return;
 
 	if (_dirtyRects.size() >= 30)
 		dirtyAll();
 
-	_dirtyRects.push_back(Common::Rect(left, top, right + 1, bottom + 1));
+	_dirtyRects.push_back(rect);
+}
+
+void Graphics::dirtyRectsAdd(uint32 left, uint32 top, uint32 right, uint32 bottom) {
+	dirtyRectsAdd(Common::Rect(left, top, right + 1, bottom + 1));
 }
 
 bool Graphics::dirtyRectsApply() {
@@ -180,6 +205,29 @@ bool Graphics::dirtyRectsApply() {
 
 	_dirtyRects.clear();
 	return true;
+}
+
+void Graphics::registerBackground(Sprite &background) {
+	_background = &background;
+
+	redrawScreen(0, 0, _background->getWidth() - 1, _background->getHeight() - 1);
+}
+
+void Graphics::unregisterBackground() {
+	_background = 0;
+}
+
+void Graphics::redrawScreen(const Common::Rect &rect) {
+	redrawScreen(rect.left, rect.top, rect.right - 1, rect.bottom - 1);
+}
+
+void Graphics::redrawScreen(uint32 left, uint32 top, uint32 right, uint32 bottom) {
+	blitToScreen(*_background, left, top, right, bottom, left, top, false);
+
+	if (_hasTalk)
+		blitToScreen(_talkLine, left, top, right, bottom, left, top, true);
+
+	dirtyRectsAdd(left, top, right, bottom);
 }
 
 } // End of namespace DarkSeed2

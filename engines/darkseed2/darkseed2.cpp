@@ -96,21 +96,24 @@ Common::Error DarkSeed2Engine::run() {
 
 	if (sprite.loadFromBMP(*bmp)) {
 		_graphics->setPalette(sprite.getPalette());
-		_graphics->blitToScreen(sprite, 0, 0, true);
+		//_graphics->blitToScreen(sprite, 0, 0, true);
+		_graphics->registerBackground(sprite);
 		_graphics->retrace();
 	} else
 		warning("BMP loading failed");
 
 	delete bmp;
 
+	int talkID = -1;
+
 	TalkLine talkLine(*_resources, "DNA006");
 	if (talkLine.hasWAV()) {
-		if (!_sound->playWAV(talkLine.getWAV()))
+		if (!_sound->playWAV(talkLine.getWAV(), talkID, Audio::Mixer::kSpeechSoundType))
 			warning("WAV playing failed");
 
 		warning("Playing WAV to text line: %s", talkLine.getTXT().c_str());
 
-		_graphics->drawString(talkLine.getTXT(), 5, 0, 7);
+		_graphics->talk(talkLine.getTXT());
 		_graphics->retrace();
 	} else
 		warning("No WAV");
@@ -148,6 +151,15 @@ Common::Error DarkSeed2Engine::run() {
 		while (g_system->getEventManager()->pollEvent(event)) {
 		}
 		g_system->delayMillis(10);
+
+		if (talkID != -1) {
+			if (!_sound->isIDPlaying(talkID)) {
+				_graphics->talkEnd();
+				_graphics->retrace();
+				talkID = -1;
+			}
+		}
+
 		g_system->updateScreen();
 	}
 
