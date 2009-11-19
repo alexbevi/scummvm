@@ -61,6 +61,17 @@ static const DS2GameDescription gameDescriptions[] = {
 			GUIO_NONE
 		},
 	},
+	{ // English version
+		{
+			"darkseed2",
+			"",
+			AD_ENTRY1s("gfile.hdr", "a7092ebd44d4bd70acd6dd14e111576f", 211230),
+			EN_ANY,
+			kPlatformPC,
+			ADGF_NO_FLAGS,
+			GUIO_NONE
+		},
+	},
 	{ AD_TABLE_END_MARKER }
 };
 
