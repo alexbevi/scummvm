@@ -117,6 +117,7 @@ bool TalkManager::talk(const TalkLine &talkLine) {
 }
 
 void TalkManager::endTalk() {
+	_sound->stopID(_curTalk);
 	_graphics->talkEnd();
 	_curTalk = -1;
 }

@@ -56,6 +56,7 @@ public:
 
 	bool isIDPlaying(int id);
 
+	void stopID(int id);
 	void stopAll();
 
 	/** Apply volume settings. */
