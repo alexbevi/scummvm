@@ -44,7 +44,7 @@ public:
 	bool isVisible() const;
 	void setVisible(bool visible);
 
-	bool setCursor(const Common::String &cursor);
+	bool setCursor(const Common::String &cursor = "");
 
 private:
 	struct Cursor {
@@ -55,10 +55,13 @@ private:
 
 	typedef Common::HashMap<Common::String, Cursor, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> CursorMap;
 
+	Cursor _default;
 	CursorMap _cursors;
 
 	bool loadFromStatics();
-	void setPalette(const byte *palette);
+
+	bool setCursor(const Cursor &cursor);
+	bool setPalette(const byte *palette);
 };
 
 struct StaticCursor {

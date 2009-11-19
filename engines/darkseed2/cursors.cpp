@@ -61,6 +61,15 @@ bool Cursors::loadFromStatics() {
 		_cursors.setVal(staticCursorNames[i], cursor);
 	}
 
+	_default.hotspotX = 0;
+	_default.hotspotY = 0;
+	_default.sprite = new Sprite;
+
+	if (!_default.sprite->loadFromStaticCursor(staticCursorPointer)) {
+		delete _default.sprite;
+		return false;
+	}
+
 	return true;
 }
 
@@ -73,18 +82,23 @@ void Cursors::setVisible(bool visible) {
 }
 
 bool Cursors::setCursor(const Common::String &cursor) {
+	if (cursor.empty())
+		return setCursor(_default);
+
 	if (!_cursors.contains(cursor))
 		return false;
 
-	const Cursor &curs = _cursors.getVal(cursor);
-
-	CursorMan.replaceCursor(curs.sprite->getData(), _cursorWidth, _cursorHeight, curs.hotspotX, curs.hotspotY, 0);
-	setPalette(curs.sprite->getPalette());
-
-	return true;
+	return setCursor(_cursors.getVal(cursor));
 }
 
-void Cursors::setPalette(const byte *palette) {
+bool Cursors::setCursor(const Cursors::Cursor &cursor) {
+	CursorMan.replaceCursor(cursor.sprite->getData(), _cursorWidth, _cursorHeight,
+			cursor.hotspotX, cursor.hotspotY, 0);
+
+	return setPalette(cursor.sprite->getPalette());
+}
+
+bool Cursors::setPalette(const byte *palette) {
 	byte newPal[12];
 
 	newPal[ 0] = palette[0];
@@ -101,6 +115,8 @@ void Cursors::setPalette(const byte *palette) {
 	newPal[11] = 0;
 
 	CursorMan.replaceCursorPalette(newPal, 0, 3);
+
+	return true;
 }
 
 } // End of namespace DarkSeed2

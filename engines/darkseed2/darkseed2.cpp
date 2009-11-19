@@ -88,9 +88,6 @@ Common::Error DarkSeed2Engine::run() {
 	if (!initGraphics())
 		return Common::kUnknownError;
 
-	warning("-> %d", _cursors->setCursor("c4ways"));
-	_cursors->setVisible(true);
-
 	Resource *bmp = _resources->getResource("RM0101.BMP");
 
 	Sprite sprite;
@@ -188,6 +185,10 @@ bool DarkSeed2Engine::init() {
 	_variables = new Variables();
 
 	syncSoundSettings();
+
+	// Set the default (pointer) cursor
+	_cursors->setCursor();
+	_cursors->setVisible(true);
 
 	if (!_resources->index("gfile.hdr")) {
 		warning("Couldn't index resources");
