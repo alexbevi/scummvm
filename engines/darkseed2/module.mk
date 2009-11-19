@@ -15,7 +15,7 @@ MODULE_OBJS := \
 	script.o \
 	objects.o \
 	room.o \
-	talkline.o \
+	talk.o \
 	events.o
 
 # This module can be built as a plugin

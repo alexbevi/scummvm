@@ -25,7 +25,7 @@
 
 #include "common/stream.h"
 
-#include "engines/darkseed2/talkline.h"
+#include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {

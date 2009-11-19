@@ -44,7 +44,7 @@
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/room.h"
-#include "engines/darkseed2/talkline.h"
+#include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/events.h"
 
 namespace DarkSeed2 {
