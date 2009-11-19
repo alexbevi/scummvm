@@ -54,6 +54,17 @@ void Events::handleInput() {
 	Common::Event event;
 
 	while (g_system->getEventManager()->pollEvent(event)) {
+		switch (event.type) {
+		case Common::EVENT_LBUTTONDOWN:
+			{
+				TalkLine talkLine(*_vm->_resources, "DNA006");
+				_vm->_talkMan->talk(talkLine);
+			}
+			break;
+		default:
+			break;
+
+		}
 	}
 }
 
