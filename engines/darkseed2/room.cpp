@@ -63,6 +63,10 @@ void Room::clear() {
 	_scaleFactor2 = 0;
 	_scaleFactor3 = 0;
 
+	for (uint i = 0; i < _scripts.size(); i++)
+		for (Common::List<ScriptChunk *>::iterator it = _scripts[i].begin(); it != _scripts[i].end(); ++it)
+			delete *it;
+
 	_scripts.clear();
 	_scripts.resize(kRoomVerbNone);
 }

@@ -58,6 +58,7 @@ TalkLine::TalkLine(const Resources &resources, const Common::String &talkName) {
 			_txt += line;
 		}
 
+		delete txt;
 	}
 }
 

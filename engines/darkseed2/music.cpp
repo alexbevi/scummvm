@@ -42,6 +42,8 @@ Music::Music(Audio::Mixer &mixer, MidiDriver &driver) : _mixer(&mixer) {
 
 Music::~Music() {
 	stop();
+
+	delete _midiPlayer;
 }
 
 bool Music::playMID(Common::SeekableReadStream &mid) {
