@@ -63,6 +63,8 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 		return false;
 	}
 
+	wav.seek(0);
+
 	// Load WAV
 	Audio::AudioStream *wavStream = Audio::makeWAVStream(&wav);
 	if (!wavStream)
