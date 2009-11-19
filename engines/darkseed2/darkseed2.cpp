@@ -62,6 +62,7 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	_sound     = 0;
 	_music     = 0;
 	_variables = 0;
+	_talkMan   = 0;
 	_events    = 0;
 }
 
@@ -72,6 +73,7 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 	_mixer->stopAll();
 
 	delete _events;
+	delete _talkMan;
 	delete _variables;
 	delete _music;
 	delete _sound;
@@ -106,19 +108,9 @@ Common::Error DarkSeed2Engine::run() {
 
 	delete bmp;
 
-	int talkID = -1;
-
 	TalkLine talkLine(*_resources, "DNA006");
-	if (talkLine.hasWAV()) {
-		if (!_sound->playWAV(talkLine.getWAV(), talkID, Audio::Mixer::kSpeechSoundType))
-			warning("WAV playing failed");
 
-		warning("Playing WAV to text line: %s", talkLine.getTXT().c_str());
-
-		_graphics->talk(talkLine.getTXT());
-		_graphics->retrace();
-	} else
-		warning("No WAV");
+	_talkMan->talk(talkLine);
 
 	Resource *mid = _resources->getResource("sndtrack/mm001gm.mid");
 	if (!_music->playMID(*mid))
@@ -184,6 +176,7 @@ bool DarkSeed2Engine::init() {
 	_sound     = new Sound(*_mixer);
 	_music     = new Music(*_mixer, *_midiDriver);
 	_variables = new Variables();
+	_talkMan   = new TalkManager(*_sound, *_graphics);
 	_events    = new Events(*this);
 
 	syncSoundSettings();

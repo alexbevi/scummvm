@@ -27,6 +27,8 @@
 
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/sound.h"
+#include "engines/darkseed2/graphics.h"
 
 namespace DarkSeed2 {
 
@@ -83,6 +85,48 @@ const Resource &TalkLine::getWAV() const {
 
 const Common::String &TalkLine::getTXT() const {
 	return _txt;
+}
+
+
+TalkManager::TalkManager(Sound &sound, Graphics &graphics) {
+	_sound    = &sound;
+	_graphics = &graphics;
+
+	_curTalk = -1;
+}
+
+TalkManager::~TalkManager() {
+}
+
+bool TalkManager::talk(const TalkLine &talkLine) {
+	endTalk();
+
+	if (talkLine.hasWAV()) {
+		if (!_sound->playWAV(talkLine.getWAV(), _curTalk, Audio::Mixer::kSpeechSoundType)) {
+			warning("TalkManager::talk(): WAV playing failed");
+			return false;
+		}
+
+		_graphics->talk(talkLine.getTXT());
+	} else {
+		warning("TalkManager::talk(): Talk line has no WAV");
+		return false;
+	}
+
+	return true;
+}
+
+void TalkManager::endTalk() {
+	_graphics->talkEnd();
+	_curTalk = -1;
+}
+
+void TalkManager::updateStatus() {
+	if (_curTalk == -1)
+		return;
+
+	if (!_sound->isIDPlaying(_curTalk))
+		endTalk();
 }
 
 } // End of namespace DarkSeed2

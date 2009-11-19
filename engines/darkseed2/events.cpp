@@ -26,6 +26,8 @@
 #include "common/events.h"
 
 #include "engines/darkseed2/events.h"
+#include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/talk.h"
 
 namespace DarkSeed2 {
 
@@ -41,14 +43,9 @@ void Events::mainLoop() {
 
 		g_system->delayMillis(10);
 
-/*		if (talkID != -1) {
-			if (!_sound->isIDPlaying(talkID)) {
-				_graphics->talkEnd();
-				_graphics->retrace();
-				talkID = -1;
-			}
-		}*/
+		_vm->_talkMan->updateStatus();
 
+		_vm->_graphics->retrace();
 		g_system->updateScreen();
 	}
 }

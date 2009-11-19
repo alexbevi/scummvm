@@ -96,6 +96,9 @@ void Graphics::talk(const Common::String &string) {
 }
 
 void Graphics::talkEnd() {
+	if (!_hasTalk)
+		return;
+
 	_talkLine.clear();
 
 	_hasTalk = false;

@@ -34,6 +34,8 @@ namespace DarkSeed2 {
 
 class Resource;
 class Resources;
+class Sound;
+class Graphics;
 
 class TalkLine {
 public:
@@ -53,6 +55,23 @@ private:
 
 	Resource *_wav;
 	Common::String _txt;
+};
+
+class TalkManager {
+public:
+	TalkManager(Sound &sound, Graphics &graphics);
+	~TalkManager();
+
+	bool talk(const TalkLine &talkLine);
+	void endTalk();
+
+	void updateStatus();
+
+private:
+	Sound *_sound;
+	Graphics *_graphics;
+
+	int _curTalk;
 };
 
 } // End of namespace DarkSeed2
