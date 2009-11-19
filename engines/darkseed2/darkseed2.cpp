@@ -29,7 +29,6 @@
 #include "base/plugins.h"
 
 #include "common/config-manager.h"
-#include "common/events.h"
 
 #include "sound/mixer.h"
 #include "sound/mididrv.h"
@@ -46,6 +45,7 @@
 #include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/talkline.h"
+#include "engines/darkseed2/events.h"
 
 namespace DarkSeed2 {
 
@@ -62,6 +62,7 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	_sound     = 0;
 	_music     = 0;
 	_variables = 0;
+	_events    = 0;
 }
 
 DarkSeed2Engine::~DarkSeed2Engine() {
@@ -70,6 +71,7 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 
 	_mixer->stopAll();
 
+	delete _events;
 	delete _variables;
 	delete _music;
 	delete _sound;
@@ -146,22 +148,7 @@ Common::Error DarkSeed2Engine::run() {
 	delete roomDat;
 	delete objDat;
 
-	while (!shouldQuit()) {
-		Common::Event event;
-		while (g_system->getEventManager()->pollEvent(event)) {
-		}
-		g_system->delayMillis(10);
-
-		if (talkID != -1) {
-			if (!_sound->isIDPlaying(talkID)) {
-				_graphics->talkEnd();
-				_graphics->retrace();
-				talkID = -1;
-			}
-		}
-
-		g_system->updateScreen();
-	}
+	_events->mainLoop();
 
 	return Common::kNoError;
 }
@@ -197,6 +184,7 @@ bool DarkSeed2Engine::init() {
 	_sound     = new Sound(*_mixer);
 	_music     = new Music(*_mixer, *_midiDriver);
 	_variables = new Variables();
+	_events    = new Events(*this);
 
 	syncSoundSettings();
 
