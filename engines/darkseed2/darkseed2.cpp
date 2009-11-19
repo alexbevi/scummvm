@@ -88,6 +88,8 @@ Common::Error DarkSeed2Engine::run() {
 	if (!initGraphics())
 		return Common::kUnknownError;
 
+	warning("Done initializing");
+
 	Resource *bmp = _resources->getResource("RM0101.BMP");
 
 	Sprite sprite;
@@ -106,7 +108,7 @@ Common::Error DarkSeed2Engine::run() {
 		if (!_sound->playWAV(talkLine.getWAV()))
 			warning("WAV playing failed");
 
-		warning("TEXT: %s", talkLine.getTXT().c_str());
+		warning("Playing WAV to text line: %s", talkLine.getTXT().c_str());
 	} else
 		warning("No WAV");
 
@@ -116,18 +118,11 @@ Common::Error DarkSeed2Engine::run() {
 
 	delete mid;
 
-	warning("%d", _variables->evalCondition("!FALSE TRUE TRUE TRUE !FALSE TRUE =TRUE,1 =FALSE,0"));
+	warning("Evaluating condition: %d",
+			_variables->evalCondition("!FALSE TRUE TRUE TRUE !FALSE TRUE =TRUE,1 =FALSE,0") == 1);
 
 	_variables->set("Foobar01", 0);
 	_variables->set("Foobar02", 1);
-
-	warning("%d %d", _variables->get("Foobar01"), _variables->get("Foobar02"));
-	_variables->evalChange("!Foobar01 !Foobar02");
-	warning("%d %d", _variables->get("Foobar01"), _variables->get("Foobar02"));
-	_variables->evalChange("Foobar01 Foobar02");
-	warning("%d %d", _variables->get("Foobar01"), _variables->get("Foobar02"));
-	_variables->evalChange("=Foobar01,23 =Foobar02,42");
-	warning("%d %d", _variables->get("Foobar01"), _variables->get("Foobar02"));
 
 	Resource *roomDat = _resources->getResource("ROOM0806.DAT");
 	Resource *objDat  = _resources->getResource("OBJ_0806.DAT");
@@ -139,6 +134,8 @@ Common::Error DarkSeed2Engine::run() {
 
 	if (!room.parse(roomParser, objParser))
 		warning("Failed parsing room");
+	else
+		warning("Successfully parsed a room");
 
 	delete roomDat;
 	delete objDat;
@@ -176,6 +173,8 @@ bool DarkSeed2Engine::init() {
 	if (native_mt32)
 		_midiDriver->property(MidiDriver::PROP_CHANNEL_MASK, 0x03FE);
 
+	warning("Creating subclasses...");
+
 	_options   = new Options();
 	_cursors   = new Cursors();
 	_resources = new Resources();
@@ -190,10 +189,14 @@ bool DarkSeed2Engine::init() {
 	_cursors->setCursor();
 	_cursors->setVisible(true);
 
+	warning("Indexing resources...");
+
 	if (!_resources->index("gfile.hdr")) {
 		warning("Couldn't index resources");
 		return false;
 	}
+
+	warning("Initializing game variables...");
 
 	Resource *idx = _resources->getResource("GAMEVAR.IDX");
 	if (!_variables->loadFromIDX(*idx)) {
@@ -207,6 +210,8 @@ bool DarkSeed2Engine::init() {
 }
 
 bool DarkSeed2Engine::initGraphics() {
+	warning("Setting up graphics");
+
 	::initGraphics(_graphics->_screenWidth, _graphics->_screenHeight, true);
 	return true;
 }
