@@ -36,6 +36,7 @@
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/options.h"
+#include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/sprite.h"
 #include "engines/darkseed2/graphics.h"
@@ -55,6 +56,7 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));
 
 	_options   = 0;
+	_cursors   = 0;
 	_resources = 0;
 	_graphics  = 0;
 	_sound     = 0;
@@ -63,6 +65,9 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 }
 
 DarkSeed2Engine::~DarkSeed2Engine() {
+	_music->stop();
+	_sound->stopAll();
+
 	_mixer->stopAll();
 
 	delete _variables;
@@ -70,7 +75,10 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 	delete _sound;
 	delete _graphics;
 	delete _resources;
+	delete _cursors;
 	delete _options;
+
+	delete _midiDriver;
 }
 
 Common::Error DarkSeed2Engine::run() {
@@ -79,6 +87,9 @@ Common::Error DarkSeed2Engine::run() {
 
 	if (!initGraphics())
 		return Common::kUnknownError;
+
+	warning("-> %d", _cursors->setCursor("c4ways"));
+	_cursors->setVisible(true);
 
 	Resource *bmp = _resources->getResource("RM0101.BMP");
 
@@ -106,6 +117,8 @@ Common::Error DarkSeed2Engine::run() {
 	if (!_music->playMID(*mid))
 		warning("MID playing failed");
 
+	delete mid;
+
 	warning("%d", _variables->evalCondition("!FALSE TRUE TRUE TRUE !FALSE TRUE =TRUE,1 =FALSE,0"));
 
 	_variables->set("Foobar01", 0);
@@ -130,11 +143,15 @@ Common::Error DarkSeed2Engine::run() {
 	if (!room.parse(roomParser, objParser))
 		warning("Failed parsing room");
 
+	delete roomDat;
+	delete objDat;
+
 	while (!shouldQuit()) {
 		Common::Event event;
 		while (g_system->getEventManager()->pollEvent(event)) {
 		}
-		g_system->delayMillis(50);
+		g_system->delayMillis(10);
+		g_system->updateScreen();
 	}
 
 	return Common::kNoError;
@@ -163,6 +180,7 @@ bool DarkSeed2Engine::init() {
 		_midiDriver->property(MidiDriver::PROP_CHANNEL_MASK, 0x03FE);
 
 	_options   = new Options();
+	_cursors   = new Cursors();
 	_resources = new Resources();
 	_graphics  = new Graphics();
 	_sound     = new Sound(*_mixer);
@@ -181,6 +199,8 @@ bool DarkSeed2Engine::init() {
 		warning("Couldn't load initial variables values");
 		return false;
 	}
+
+	delete idx;
 
 	return true;
 }

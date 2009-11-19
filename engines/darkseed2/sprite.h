@@ -35,6 +35,7 @@ namespace Common {
 namespace DarkSeed2 {
 
 class Resource;
+class StaticCursor;
 
 class Sprite {
 public:
@@ -57,6 +58,9 @@ public:
 
 	bool loadFromBMP(Common::SeekableReadStream &bmp);
 	bool loadFromBMP(const Resource &resource);
+
+	/** Load from a cursor embedded in an EXE file. */
+	bool loadFromStaticCursor(const StaticCursor &staticCursor);
 
 	void blit(const Sprite &from,
 			uint32 left, uint32 top, uint32 right, uint32 bottom,

@@ -27,6 +27,7 @@
 
 #include "engines/darkseed2/sprite.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/cursors.h"
 
 namespace DarkSeed2 {
 
@@ -172,6 +173,32 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 
 bool Sprite::loadFromBMP(const Resource &resource) {
 	return loadFromBMP(resource.getStream());
+}
+
+bool Sprite::loadFromStaticCursor(const StaticCursor &staticCursor) {
+	create(Cursors::_cursorWidth, Cursors::_cursorHeight);
+
+	_palette[2 * 3 + 0] = 255;
+	_palette[2 * 3 + 1] = 255;
+	_palette[2 * 3 + 2] = 255;
+
+	byte *data = _data;
+	for (int i = 0; i < (Cursors::_cursorWidth * Cursors::_cursorHeight / 8); i++) {
+		byte p = staticCursor.pixels[i];
+		byte m = staticCursor.mask[i];
+
+		for (int j = 0; j < 8; j++, data++, p <<= 1, m <<= 1) {
+			if ((m & 0x80) == 0x80) {
+				if ((p & 0x80) == 0x80)
+					*data = 2;
+				else
+					*data = 1;
+			} else
+				*data = 0;
+		}
+	}
+
+	return true;
 }
 
 void Sprite::blit(const Sprite &from,

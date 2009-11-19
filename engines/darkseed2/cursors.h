@@ -23,61 +23,51 @@
  *
  */
 
-#ifndef DARKSEED2_DARKSEED2_H
-#define DARKSEED2_DARKSEED2_H
+#ifndef DARKSEED2_CURSORS_H
+#define DARKSEED2_CURSORS_H
 
-#include "common/system.h"
+#include "common/str.h"
 
-#include "engines/engine.h"
-
-class MidiDriver;
+#include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
 
-enum {
-	kDebugResources = 1 << 0
-};
-
-struct DS2GameDescription;
-
-class Options;
-class Cursors;
-class Resources;
-class Graphics;
-class Sound;
-class Music;
-class Variables;
-
-class DarkSeed2Engine : public Engine {
+class Cursors {
 public:
-	Options   *_options;
-	Cursors   *_cursors;
-	Resources *_resources;
-	Graphics  *_graphics;
-	Sound     *_sound;
-	Music     *_music;
-	Variables *_variables;
+	static const int _cursorWidth  = 32;
+	static const int _cursorHeight = 32;
 
-	void pauseGame();
+	Cursors();
+	~Cursors();
 
-	DarkSeed2Engine(OSystem *syst);
-	virtual ~DarkSeed2Engine();
+	bool isVisible() const;
+	void setVisible(bool visible);
 
-	void initGame(const DS2GameDescription *gd);
+	bool setCursor(const Common::String &cursor);
 
 private:
-	MidiDriver *_midiDriver;
+	struct Cursor {
+		uint16 hotspotX;
+		uint16 hotspotY;
+		Sprite *sprite;
+	};
 
-	// Engine APIs
-	virtual Common::Error run();
-	virtual bool hasFeature(EngineFeature f) const;
-	virtual void pauseEngineIntern(bool pause);
-	virtual void syncSoundSettings();
+	typedef Common::HashMap<Common::String, Cursor, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> CursorMap;
 
-	bool init();
-	bool initGraphics();
+	CursorMap _cursors;
+
+	bool loadFromStatics();
+	void setPalette(const byte *palette);
+};
+
+struct StaticCursor {
+	uint16 hotspotX;
+	uint16 hotspotY;
+	byte pixels[Cursors::_cursorWidth * Cursors::_cursorHeight / 8];
+	byte mask  [Cursors::_cursorWidth * Cursors::_cursorHeight / 8];
 };
 
 } // End of namespace DarkSeed2
 
-#endif // DARKSEED2_DARKSEED2_H
+#endif // DARKSEED2_CURSORS_H
