@@ -109,6 +109,9 @@ Common::Error DarkSeed2Engine::run() {
 			warning("WAV playing failed");
 
 		warning("Playing WAV to text line: %s", talkLine.getTXT().c_str());
+
+		_graphics->drawString(talkLine.getTXT(), 5, 0, 7);
+		_graphics->retrace();
 	} else
 		warning("No WAV");
 

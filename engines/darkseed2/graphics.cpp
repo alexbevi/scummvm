@@ -73,6 +73,14 @@ void Graphics::applyGamePalette() {
 	g_system->setPalette(pal, 0, 256);
 }
 
+void Graphics::drawString(const Common::String &string, int x, int y, byte color) {
+	Common::Rect coords;
+
+	_screen.drawString(string, x, y, color, &coords);
+
+	dirtyRectsAdd(coords.left, coords.top, coords.right - 1, coords.bottom - 1);
+}
+
 void Graphics::blitToScreen(const Sprite &from,
 		uint32 left, uint32 top, uint32 right, uint32 bottom,
 		uint32 x, uint32 y, bool transp) {
@@ -124,14 +132,17 @@ bool Graphics::loadPAL(const Resource &resource,
 	return loadPAL(resource.getStream(), fromStart, toStart, count);
 }
 
+void Graphics::dirtyAll() {
+	_dirtyAll = true;
+	_dirtyRects.clear();
+}
+
 void Graphics::dirtyRectsAdd(uint32 left, uint32 top, uint32 right, uint32 bottom) {
 	if (_dirtyAll)
 		return;
 
-	if (_dirtyRects.size() >= 30) {
-		_dirtyAll = true;
-		_dirtyRects.clear();
-	}
+	if (_dirtyRects.size() >= 30)
+		dirtyAll();
 
 	_dirtyRects.push_back(Common::Rect(left, top, right + 1, bottom + 1));
 }
@@ -164,7 +175,7 @@ bool Graphics::dirtyRectsApply() {
 
 		const byte *data = _screen.getData() + top * screenWidth + left;
 
-		g_system->copyRectToScreen(data, screenWidth, 0, 0, width, height);
+		g_system->copyRectToScreen(data, screenWidth, left, top, width, height);
 	}
 
 	_dirtyRects.clear();

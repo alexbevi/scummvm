@@ -50,6 +50,8 @@ public:
 	void clearPalette();
 	void setPalette(const byte *pal);
 
+	void drawString(const Common::String &string, int x, int y, byte color);
+
 	void blitToScreen(const Sprite &from,
 			uint32 left, uint32 top, uint32 right, uint32 bottom,
 			uint32 x, uint32 y, bool transp = false);
@@ -71,6 +73,7 @@ private:
 
 	void applyGamePalette();
 
+	void dirtyAll();
 	void dirtyRectsAdd(uint32 left, uint32 top, uint32 right, uint32 bottom);
 	bool dirtyRectsApply();
 };

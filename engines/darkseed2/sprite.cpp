@@ -25,6 +25,10 @@
 
 #include "common/stream.h"
 
+#include "graphics/surface.h"
+#include "graphics/fontman.h"
+#include "graphics/font.h"
+
 #include "engines/darkseed2/sprite.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/cursors.h"
@@ -265,6 +269,52 @@ void Sprite::blitToScreen(uint32 left, uint32 top, uint32 right, uint32 bottom, 
 
 void Sprite::blitToScreen(uint32 x, uint32 y) {
 	blitToScreen(0, 0, _width - 1, _height - 1, x, y);
+}
+
+::Graphics::Surface *Sprite::wrapInSurface() const {
+	::Graphics::Surface *surface = new ::Graphics::Surface;
+
+	surface->w = _width;
+	surface->h = _height;
+
+	surface->pitch = _width;
+
+	surface->bytesPerPixel = 1;
+
+	surface->pixels = (void *) _data;
+
+	return surface;
+}
+
+void Sprite::drawString(const Common::String &string, int x, int y,
+		byte color, Common::Rect *coords) {
+
+	::Graphics::Surface *surface = wrapInSurface();
+
+	::Graphics::FontManager::FontUsage fontUsage = ::Graphics::FontManager::kBigGUIFont;
+
+	const ::Graphics::Font *font =
+		::Graphics::FontManager::instance().getFontByUsage(fontUsage);
+
+	Common::StringList lines;
+
+	int width = font->wordWrapText(string, MIN<int>(400, 640 - x), lines);
+
+	if (coords) {
+		coords->left = x;
+		coords->top  = y;
+		coords->setWidth(width);
+		coords->setHeight(lines.size() * font->getFontHeight());
+	}
+
+	for (Common::StringList::const_iterator it = lines.begin(); it != lines.end(); ++it) {
+		font->drawString(surface, *it, x, y, width, color,
+				::Graphics::kTextAlignCenter, 0, false);
+
+		y += font->getFontHeight();
+	}
+
+	delete surface;
 }
 
 } // End of namespace DarkSeed2

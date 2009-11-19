@@ -26,10 +26,16 @@
 #ifndef DARKSEED2_SPRITE_H
 #define DARKSEED2_SPRITE_H
 
+#include "common/rect.h"
+
 #include "engines/darkseed2/darkseed2.h"
 
 namespace Common {
 	class SeekableReadStream;
+}
+
+namespace Graphics {
+	struct Surface;
 }
 
 namespace DarkSeed2 {
@@ -73,12 +79,17 @@ public:
 	void blitToScreen(uint32 left, uint32 top, uint32 right, uint32 bottom, uint32 x, uint32 y);
 	void blitToScreen(uint32 x, uint32 y);
 
+	void drawString(const Common::String &string, int x, int y,
+			byte color, Common::Rect *coord = 0);
+
 private:
 	uint32 _width;
 	uint32 _height;
 	byte *_data;
 
 	byte _palette[768];
+
+	::Graphics::Surface *wrapInSurface() const;
 };
 
 } // End of namespace DarkSeed2
