@@ -41,6 +41,8 @@ Cursors::~Cursors() {
 	for (CursorMap::iterator it = _cursors.begin(); it != _cursors.end(); ++it)
 		delete it->_value.sprite;
 
+	delete _default.sprite;
+
 	_cursors.clear();
 }
 
