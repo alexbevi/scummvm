@@ -59,8 +59,6 @@ public:
 	void syncSettings(const Options &options);
 
 private:
-	bool _mute;
-
 	Audio::Mixer *_mixer;
 
 	MidiPlayer *_midiPlayer;

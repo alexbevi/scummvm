@@ -47,9 +47,6 @@ Music::~Music() {
 }
 
 bool Music::playMID(Common::SeekableReadStream &mid) {
-	if (_mute)
-		return true;
-
 	_midiPlayer->playSMF(mid, true);
 	return true;
 }
@@ -61,8 +58,6 @@ bool Music::playMID(const Resource &resource) {
 void Music::syncSettings(const Options &options) {
 	// Getting conf values
 	int volumeMusic = options.getVolumeMusic();
-
-	_mute = (volumeMusic == 0) ? true : false;
 
 	// Setting values
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, volumeMusic);
