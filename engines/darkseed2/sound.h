@@ -67,9 +67,6 @@ private:
 
 	int _id;
 
-	bool _muteSFX;
-	bool _muteSpeech;
-
 	Audio::SoundHandle _handles[_channelCount];
 
 	Audio::Mixer *_mixer;

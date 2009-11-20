@@ -44,12 +44,6 @@ Sound::~Sound() {
 bool Sound::playWAV(Common::SeekableReadStream &wav,
 		Audio::Mixer::SoundType type) {
 
-	// Is the type want to play muted?
-	if (_muteSFX    && (type == Audio::Mixer::kSFXSoundType))
-		return true;
-	if (_muteSpeech && (type == Audio::Mixer::kSpeechSoundType))
-		return true;
-
 	// Try to find an unoccupied channel
 	Audio::SoundHandle *handle = 0;
 	for (int i = 0 ; i < _channelCount; i++)
@@ -107,9 +101,6 @@ bool Sound::isIDPlaying(int id) {
 void Sound::syncSettings(const Options &options) {
 	int volumeSFX    = options.getVolumeSFX();
 	int volumeSpeech = options.getVolumeSpeech();
-
-	_muteSFX    = (volumeSFX    == 0) ? true : false;
-	_muteSpeech = (volumeSpeech == 0) ? true : false;
 
 	// Setting values
 	_mixer->setVolumeForSoundType(Audio::Mixer::kSFXSoundType   , volumeSFX);
