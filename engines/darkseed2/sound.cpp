@@ -91,7 +91,10 @@ bool Sound::playWAV(const Resource &resource, int &id,
 }
 
 void Sound::stopID(int id) {
-	return _mixer->stopID(id);
+	if (id == -1)
+		return;
+
+	_mixer->stopID(id);
 }
 
 bool Sound::isIDPlaying(int id) {
