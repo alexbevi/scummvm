@@ -139,9 +139,13 @@ Common::String DATFile::argGet(const Common::String &arguments, int n) {
 
 	const char *end = strchr(start, ' ');
 	if (!end)
-		return Common::String(start);
+		end = start + strlen(start) - 1;
 
-	return Common::String(start, end - start);
+	Common::String string(start, end - start);
+	if (string.lastChar() == ',')
+		string.deleteLastChar();
+
+	return string;
 }
 
 Common::Array<Common::String> DATFile::argGet(const Common::String &arguments) {
@@ -155,13 +159,20 @@ Common::Array<Common::String> DATFile::argGet(const Common::String &arguments) {
 	list.reserve(count);
 
 	while (end) {
-		list.push_back(Common::String(start, end - start));
+		Common::String string(start, end - start);
+		if (string.lastChar() == ',')
+			string.deleteLastChar();
+
+		list.push_back(string);
 
 		start = end + 1;
 		end   = strchr(start, ' ');
 	}
 
-	list.push_back(Common::String(start));
+	Common::String string(start);
+	if (string.lastChar() == ',')
+		string.deleteLastChar();
+	list.push_back(string);
 
 	return list;
 }
