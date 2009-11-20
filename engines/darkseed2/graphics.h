@@ -38,6 +38,7 @@ namespace Common {
 namespace DarkSeed2 {
 
 class Resource;
+class TextObject;
 
 class Graphics {
 public:
@@ -50,9 +51,7 @@ public:
 	void clearPalette();
 	void setPalette(const byte *pal);
 
-	void drawString(const Common::String &string, int x, int y, byte color);
-
-	void talk(const Common::String &string);
+	void talk(TextObject *talkObject);
 	void talkEnd();
 
 	void blitToScreen(const Sprite &from,
@@ -79,9 +78,7 @@ private:
 
 	Sprite *_background;
 
-	bool _hasTalk;
-	Sprite _talkLine;
-	Common::Rect _talkLineDim;
+	TextObject *_talk;
 
 	void applyGamePalette();
 

@@ -27,6 +27,7 @@
 
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/graphicalobject.h"
 
 namespace DarkSeed2 {
 
@@ -38,12 +39,12 @@ Graphics::Graphics() {
 	_dirtyAll = false;
 
 	_background = 0;
-	_talkLine.create(_screenWidth, _screenHeight);
 
-	_hasTalk = false;
+	_talk = 0;
 }
 
 Graphics::~Graphics() {
+	delete _talk;
 }
 
 void Graphics::clearPalette() {
@@ -78,31 +79,22 @@ void Graphics::applyGamePalette() {
 	g_system->setPalette(pal, 0, 256);
 }
 
-void Graphics::drawString(const Common::String &string, int x, int y, byte color) {
-	Common::Rect coords;
-
-	_screen.drawString(string, x, y, color, &coords);
-
-	dirtyRectsAdd(coords);
-}
-
-void Graphics::talk(const Common::String &string) {
+void Graphics::talk(TextObject *talkObject) {
 	talkEnd();
 
-	_talkLine.drawString(string, 5, 0, 7, &_talkLineDim);
-
-	_hasTalk = true;
-	redrawScreen(_talkLineDim);
+	_talk = talkObject;
+	redrawScreen(_talk->getArea());
 }
 
 void Graphics::talkEnd() {
-	if (!_hasTalk)
+	if (!_talk)
 		return;
 
-	_talkLine.clear();
+	Common::Rect talkArea = _talk->getArea();
 
-	_hasTalk = false;
-	redrawScreen(_talkLineDim);
+	delete _talk;
+	_talk = 0;
+	redrawScreen(talkArea);
 }
 
 void Graphics::blitToScreen(const Sprite &from,
@@ -227,8 +219,8 @@ void Graphics::redrawScreen(const Common::Rect &rect) {
 void Graphics::redrawScreen(uint32 left, uint32 top, uint32 right, uint32 bottom) {
 	blitToScreen(*_background, left, top, right, bottom, left, top, false);
 
-	if (_hasTalk)
-		blitToScreen(_talkLine, left, top, right, bottom, left, top, true);
+	if (_talk)
+		_talk->redraw(_screen, Common::Rect(left, top, right + 1, bottom + 1));
 
 	dirtyRectsAdd(left, top, right, bottom);
 }

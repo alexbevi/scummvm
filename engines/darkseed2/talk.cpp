@@ -29,6 +29,7 @@
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/graphicalobject.h"
 
 namespace DarkSeed2 {
 
@@ -107,7 +108,10 @@ bool TalkManager::talk(const TalkLine &talkLine) {
 			return false;
 		}
 
-		_graphics->talk(talkLine.getTXT());
+		TextObject *talkObject = new TextObject(talkLine.getTXT(), 5, 0, 7, 300);
+
+		_graphics->talk(talkObject);
+
 	} else {
 		warning("TalkManager::talk(): Talk line has no WAV");
 		return false;

@@ -251,26 +251,6 @@ void Sprite::clear() {
 	memset(_data, 0, _width * _height);
 }
 
-void Sprite::blitToScreen(uint32 left, uint32 top, uint32 right, uint32 bottom, uint32 x, uint32 y) {
-	if (!_data)
-		return;
-
-	if ((left > right)  || (top > bottom))
-		return;
-	if ((left > _width) || (top > _height))
-		return;
-
-	right  = MIN<uint32>(right,  _width  - 1);
-	bottom = MIN<uint32>(bottom, _height - 1);
-
-	g_system->copyRectToScreen(_data + top * _width + left, _width, x, y, right - left + 1, bottom - top + 1);
-	g_system->updateScreen();
-}
-
-void Sprite::blitToScreen(uint32 x, uint32 y) {
-	blitToScreen(0, 0, _width - 1, _height - 1, x, y);
-}
-
 ::Graphics::Surface *Sprite::wrapInSurface() const {
 	::Graphics::Surface *surface = new ::Graphics::Surface;
 
@@ -286,35 +266,20 @@ void Sprite::blitToScreen(uint32 x, uint32 y) {
 	return surface;
 }
 
-void Sprite::drawString(const Common::String &string, int x, int y,
-		byte color, Common::Rect *coords) {
+void Sprite::drawStrings(const Common::StringList &strings, const ::Graphics::Font &font,
+		int x, int y, byte color) {
 
 	::Graphics::Surface *surface = wrapInSurface();
 
-	::Graphics::FontManager::FontUsage fontUsage = ::Graphics::FontManager::kBigGUIFont;
-
-	const ::Graphics::Font *font =
-		::Graphics::FontManager::instance().getFontByUsage(fontUsage);
-
-	Common::StringList lines;
-
-	int width = font->wordWrapText(string, MIN<int>(400, 640 - x), lines);
-
-	if (coords) {
-		coords->left = x;
-		coords->top  = y;
-		coords->setWidth(width);
-		coords->setHeight(lines.size() * font->getFontHeight());
-	}
-
-	for (Common::StringList::const_iterator it = lines.begin(); it != lines.end(); ++it) {
-		font->drawString(surface, *it, x, y, width, color,
+	for (Common::StringList::const_iterator it = strings.begin(); it != strings.end(); ++it) {
+		font.drawString(surface, *it, x, y, _width, color,
 				::Graphics::kTextAlignCenter, 0, false);
 
-		y += font->getFontHeight();
+		y += font.getFontHeight();
 	}
 
 	delete surface;
+
 }
 
 } // End of namespace DarkSeed2

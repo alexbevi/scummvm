@@ -27,6 +27,9 @@
 #define DARKSEED2_SPRITE_H
 
 #include "common/rect.h"
+#include "common/str.h"
+
+#include "graphics/font.h"
 
 #include "engines/darkseed2/darkseed2.h"
 
@@ -76,11 +79,8 @@ public:
 	/** Fill the whole data with palette entry 0. */
 	void clear();
 
-	void blitToScreen(uint32 left, uint32 top, uint32 right, uint32 bottom, uint32 x, uint32 y);
-	void blitToScreen(uint32 x, uint32 y);
-
-	void drawString(const Common::String &string, int x, int y,
-			byte color, Common::Rect *coord = 0);
+	void drawStrings(const Common::StringList &strings, const ::Graphics::Font &font,
+			int x, int y, byte color);
 
 private:
 	uint32 _width;
