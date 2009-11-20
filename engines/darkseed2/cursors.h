@@ -35,6 +35,12 @@ namespace DarkSeed2 {
 
 class Cursors {
 public:
+	struct Cursor {
+		uint16 hotspotX;
+		uint16 hotspotY;
+		Sprite *sprite;
+	};
+
 	static const int _cursorWidth  = 32;
 	static const int _cursorHeight = 32;
 
@@ -44,14 +50,12 @@ public:
 	bool isVisible() const;
 	void setVisible(bool visible);
 
+	const Cursor *getCursor(const Common::String &cursor = "") const;
+
+	bool setCursor(const Cursor &cursor);
 	bool setCursor(const Common::String &cursor = "");
 
 private:
-	struct Cursor {
-		uint16 hotspotX;
-		uint16 hotspotY;
-		Sprite *sprite;
-	};
 
 	typedef Common::HashMap<Common::String, Cursor, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> CursorMap;
 
@@ -60,7 +64,6 @@ private:
 
 	bool loadFromStatics();
 
-	bool setCursor(const Cursor &cursor);
 	bool setPalette(const byte *palette);
 };
 

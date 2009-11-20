@@ -27,8 +27,16 @@
 #define DARKSEED2_EVENTS_H
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/cursors.h"
 
 namespace DarkSeed2 {
+
+enum CursorMode {
+	kCursorModeWalk = 0,
+	kCursorModeLook,
+	kCursorModeUse,
+	kCursorModeNone
+};
 
 class Events {
 public:
@@ -40,7 +48,11 @@ public:
 private:
 	DarkSeed2Engine *_vm;
 
+	const Cursors::Cursor ***_cursors;
+	int _cursorMode;
+
 	void handleInput();
+	void cycleCursorMode();
 };
 
 } // End of namespace DarkSeed2

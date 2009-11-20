@@ -83,14 +83,23 @@ void Cursors::setVisible(bool visible) {
 	CursorMan.showMouse(visible);
 }
 
-bool Cursors::setCursor(const Common::String &cursor) {
+const Cursors::Cursor *Cursors::getCursor(const Common::String &cursor) const {
 	if (cursor.empty())
-		return setCursor(_default);
+		return &_default;
 
 	if (!_cursors.contains(cursor))
+		return 0;
+
+	return &_cursors.getVal(cursor);
+}
+
+bool Cursors::setCursor(const Common::String &cursor) {
+	const Cursor *cur = getCursor(cursor);
+
+	if (!cur)
 		return false;
 
-	return setCursor(_cursors.getVal(cursor));
+	return setCursor(*cur);
 }
 
 bool Cursors::setCursor(const Cursors::Cursor &cursor) {

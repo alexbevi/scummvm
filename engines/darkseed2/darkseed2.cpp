@@ -181,10 +181,6 @@ bool DarkSeed2Engine::init() {
 
 	syncSoundSettings();
 
-	// Set the default (pointer) cursor
-	_cursors->setCursor();
-	_cursors->setVisible(true);
-
 	warning("Indexing resources...");
 
 	if (!_resources->index("gfile.hdr")) {

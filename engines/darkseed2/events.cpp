@@ -32,9 +32,28 @@
 namespace DarkSeed2 {
 
 Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
+	_cursors = new const Cursors::Cursor**[kCursorModeNone];
+	for (int i = 0; i < kCursorModeNone; i++)
+		_cursors[i] = new const Cursors::Cursor*[2];
+
+	// Getting cursors
+	_cursors[kCursorModeWalk][0] = _vm->_cursors->getCursor();
+	_cursors[kCursorModeWalk][1] = _vm->_cursors->getCursor("c4Ways");
+	_cursors[kCursorModeLook][0] = _vm->_cursors->getCursor("cLook");
+	_cursors[kCursorModeLook][1] = _vm->_cursors->getCursor("cLookAt");
+	_cursors[kCursorModeUse] [0] = _vm->_cursors->getCursor("cHand");
+	_cursors[kCursorModeUse] [1] = _vm->_cursors->getCursor("cUseIt");
+
+	// Set the default (pointer) cursor
+	_cursorMode = kCursorModeWalk;
+	_vm->_cursors->setCursor(*_cursors[_cursorMode][0]);
+	_vm->_cursors->setVisible(true);
 }
 
 Events::~Events() {
+	for (int i = 0; i < kCursorModeNone; i++)
+		delete[] _cursors[i];
+	delete _cursors;
 }
 
 void Events::mainLoop() {
@@ -61,11 +80,19 @@ void Events::handleInput() {
 				_vm->_talkMan->talk(talkLine);
 			}
 			break;
+		case Common::EVENT_RBUTTONDOWN:
+			cycleCursorMode();
+			break;
 		default:
 			break;
 
 		}
 	}
+}
+
+void Events::cycleCursorMode() {
+	_cursorMode = (_cursorMode + 1) % kCursorModeNone;
+	_vm->_cursors->setCursor(*_cursors[_cursorMode][0]);
 }
 
 } // End of namespace DarkSeed2
