@@ -45,6 +45,7 @@
 #include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/talk.h"
+#include "engines/darkseed2/conversation.h"
 #include "engines/darkseed2/events.h"
 
 namespace DarkSeed2 {
@@ -121,6 +122,12 @@ Common::Error DarkSeed2Engine::run() {
 		warning("Failed parsing room 0806");
 	else
 		warning("Successfully parsed room 0806");
+
+	Conversation conversation(*_variables);
+	if (!conversation.parse(*_resources, "CONV0001"))
+		warning("Failed parsing conversation CONV0001");
+	else
+		warning("Successfully parsed conversation CONV0001");
 
 	_events->mainLoop();
 

@@ -259,7 +259,7 @@ bool Room::addScriptChunk(const Common::String &cmd, DATFile &room, RoomVerb cur
 	// Add it to our list
 	_scripts[(int) curVerb].push_back(script);
 
-	return false;
+	return true;
 }
 
 } // End of namespace DarkSeed2

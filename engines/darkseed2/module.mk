@@ -17,6 +17,7 @@ MODULE_OBJS := \
 	objects.o \
 	room.o \
 	talk.o \
+	conversation.o \
 	events.o
 
 # This module can be built as a plugin
