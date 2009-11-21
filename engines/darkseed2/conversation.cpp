@@ -27,6 +27,7 @@
 #include "engines/darkseed2/conversation.h"
 #include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/talk.h"
 
 namespace DarkSeed2 {
 
@@ -39,6 +40,7 @@ Conversation::Entry::Entry(Node &pa) {
 
 Conversation::Conversation(Variables &variables) : _variables(&variables) {
 	_startNode = 0;
+	_currentNode = 0;
 }
 
 Conversation::~Conversation() {
@@ -115,6 +117,8 @@ void Conversation::reset() {
 		}
 
 	}
+
+	_currentNode = _startNode;
 }
 
 bool Conversation::addSpeaker(const Common::String &args) {
@@ -253,7 +257,8 @@ bool Conversation::addEntry(Node &node, const Common::String &args, DATFile &con
 		entry->initial = true;
 	}
 
-	node.entries.setVal(lArgs[0], entry);
+	entry->name = lArgs[0];
+	node.entries.setVal(entry->name, entry);
 
 	return true;
 }
@@ -317,6 +322,42 @@ bool Conversation::parseNode(const Common::String &args, DATFile &conversation) 
 		_startNode = node;
 
 	return true;
+}
+
+Common::Array<Conversation::Entry *> Conversation::getVisibleEntries(Node &node) {
+	Common::Array<Entry *> entries;
+
+	for (EntryMap::iterator it = node.entries.begin(); it != node.entries.end(); ++it)
+		if (it->_value->visible)
+			entries.push_back(it->_value);
+
+	return entries;
+}
+
+Common::Array<const Conversation::Entry *> Conversation::getVisibleEntries(Node &node) const {
+	Common::Array<const Entry *> entries;
+
+	for (EntryMap::const_iterator it = node.entries.begin(); it != node.entries.end(); ++it)
+		if (it->_value->visible)
+			entries.push_back(it->_value);
+
+	return entries;
+}
+
+Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) const {
+	Common::Array<TalkLine *> lines;
+
+	if (!_currentNode)
+		return lines;
+
+	Common::Array<const Entry *> entries = getVisibleEntries(*_currentNode);
+	for (Common::Array<const Entry *>::iterator it = entries.begin(); it != entries.end(); ++it) {
+		TalkLine *line = new TalkLine(resources, (*it)->text);
+
+		lines.push_back(line);
+	}
+
+	return lines;
 }
 
 } // End of namespace DarkSeed2

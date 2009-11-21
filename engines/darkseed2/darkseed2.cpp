@@ -124,10 +124,25 @@ Common::Error DarkSeed2Engine::run() {
 		warning("Successfully parsed room 0806");
 
 	Conversation conversation(*_variables);
-	if (!conversation.parse(*_resources, "CONV0001"))
-		warning("Failed parsing conversation CONV0001");
-	else
+	if (conversation.parse(*_resources, "CONV0001")) {
 		warning("Successfully parsed conversation CONV0001");
+
+		Common::Array<TalkLine *> lines = conversation.getCurrentLines(*_resources);
+
+		_sound->stopAll();
+		for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
+			warning("Line: \"%s\"", (*it)->getTXT().c_str());
+
+			int id;
+			_sound->playWAV((*it)->getWAV(), id);
+
+			while (_sound->isIDPlaying(id))
+				g_system->delayMillis(10);
+		}
+
+	}
+	else
+		warning("Failed parsing conversation CONV0001");
 
 	_events->mainLoop();
 

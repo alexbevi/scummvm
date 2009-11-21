@@ -36,7 +36,7 @@ namespace DarkSeed2 {
 TalkLine::TalkLine(const Resources &resources, const Common::String &talkName) {
 	_resources = &resources;
 
-	_talkName = talkName;
+	_resource = talkName;
 
 	_wav = 0;
 
@@ -79,13 +79,21 @@ bool TalkLine::hasTXT() const {
 
 const Resource &TalkLine::getWAV() const {
 	if (!_wav)
-		error("Resource %s.WAV does not exist", _talkName.c_str());
+		error("Resource %s.WAV does not exist", _resource.c_str());
 
 	return *_wav;
 }
 
 const Common::String &TalkLine::getTXT() const {
 	return _txt;
+}
+
+const Common::String &TalkLine::getName() const {
+	return _name;
+}
+
+void TalkLine::setName(const Common::String &name) {
+	_name = name;
 }
 
 

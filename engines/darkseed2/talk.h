@@ -42,6 +42,9 @@ public:
 	TalkLine(const Resources &resources, const Common::String &talkName);
 	~TalkLine();
 
+	const Common::String &getName() const;
+	void setName(const Common::String &name);
+
 	bool hasWAV() const;
 	bool hasTXT() const;
 
@@ -51,7 +54,8 @@ public:
 private:
 	const Resources *_resources;
 
-	Common::String _talkName;
+	Common::String _resource;
+	Common::String _name;
 
 	Resource *_wav;
 	Common::String _txt;

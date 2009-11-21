@@ -36,6 +36,8 @@ namespace DarkSeed2 {
 
 class Variables;
 class DATFile;
+class Resources;
+class TalkLine;
 
 class Conversation {
 public:
@@ -51,6 +53,8 @@ public:
 
 	void reset();
 
+	Common::Array<TalkLine *> getCurrentLines(Resources &resources) const;
+
 private:
 	struct Node;
 
@@ -58,6 +62,7 @@ private:
 		bool visible;
 		bool initial;
 
+		Common::String name;
 		Common::String text;
 		Common::String message;
 		Common::String goTo;
@@ -83,8 +88,12 @@ private:
 
 	NodeMap _nodes;
 	Node *_startNode;
+	Node *_currentNode;
 
 	Common::Array<Common::String> _speakers;
+
+	Common::Array<Entry *> getVisibleEntries(Node &node);
+	Common::Array<const Entry *> getVisibleEntries(Node &node) const;
 
 	// Parsing helpers
 	bool addSpeaker(const Common::String &args);
