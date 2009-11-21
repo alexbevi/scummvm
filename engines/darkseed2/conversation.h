@@ -55,10 +55,14 @@ public:
 
 	Common::Array<TalkLine *> getCurrentLines(Resources &resources) const;
 
+	bool hasEnded() const;
+
 	void hide(const Common::String &entry);
 	void hide(const Common::Array<Common::String> &entries);
 	void unhide(const Common::String &entry);
 	void unhide(const Common::Array<Common::String> &entries);
+
+	void goTo(const Common::String &node);
 
 private:
 	struct Node;

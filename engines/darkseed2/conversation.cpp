@@ -400,4 +400,17 @@ void Conversation::unhide(const Common::Array<Common::String> &entries) {
 		unhide(*it);
 }
 
+bool Conversation::hasEnded() const {
+	return _currentNode == 0;
+}
+
+void Conversation::goTo(const Common::String &node) {
+	if (node.equalsIgnoreCase("exit") || !_nodes.contains(node)) {
+		_currentNode = 0;
+		return;
+	}
+
+	_currentNode = _nodes.getVal(node);
+}
+
 } // End of namespace DarkSeed2
