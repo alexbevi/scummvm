@@ -362,8 +362,17 @@ Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) co
 	return lines;
 }
 
+TalkLine *Conversation::getReply(Resources &resources, const Common::String &entry) const {
+	if (!_currentNode || !_currentNode->entries.contains(entry))
+		return 0;
+
+	Entry *e = _currentNode->entries.getVal(entry);
+
+	return new TalkLine(resources, e->message);
+}
+
 void Conversation::hide(const Common::String &entry) {
-	if (_currentNode)
+	if (!_currentNode)
 		return;
 
 	if (!_currentNode->entries.contains(entry))
@@ -375,7 +384,7 @@ void Conversation::hide(const Common::String &entry) {
 }
 
 void Conversation::hide(const Common::Array<Common::String> &entries) {
-	if (_currentNode)
+	if (!_currentNode)
 		return;
 
 	for (Common::Array<Common::String>::const_iterator it = entries.begin(); it != entries.end(); ++it)
@@ -383,7 +392,7 @@ void Conversation::hide(const Common::Array<Common::String> &entries) {
 }
 
 void Conversation::unhide(const Common::String &entry) {
-	if (_currentNode)
+	if (!_currentNode)
 		return;
 
 	if (!_currentNode->entries.contains(entry))
@@ -395,7 +404,7 @@ void Conversation::unhide(const Common::String &entry) {
 }
 
 void Conversation::unhide(const Common::Array<Common::String> &entries) {
-	if (_currentNode)
+	if (!_currentNode)
 		return;
 
 	for (Common::Array<Common::String>::const_iterator it = entries.begin(); it != entries.end(); ++it)
@@ -434,6 +443,18 @@ void Conversation::pick(const Common::String &entry) {
 	hide(e->hide);
 	unhide(e->unhide);
 	goTo(e->goTo);
+}
+
+void Conversation::discardLines(Common::Array<TalkLine *> &lines) {
+	for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it)
+		delete *it;
+
+	lines.clear();
+}
+
+void Conversation::discardLines(TalkLine *&lines) {
+	delete lines;
+	lines = 0;
 }
 
 } // End of namespace DarkSeed2

@@ -127,21 +127,50 @@ Common::Error DarkSeed2Engine::run() {
 	if (conversation.parse(*_resources, "CONV0001")) {
 		warning("Successfully parsed conversation CONV0001");
 
+		_sound->stopAll();
+
 		Common::Array<TalkLine *> lines = conversation.getCurrentLines(*_resources);
 
-		_sound->stopAll();
+		int id;
+
 		for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
 			warning("Line: \"%s\"", (*it)->getTXT().c_str());
 
-			int id;
 			_sound->playWAV((*it)->getWAV(), id);
 
 			while (_sound->isIDPlaying(id))
 				g_system->delayMillis(10);
 		}
 
-	}
-	else
+		TalkLine *reply = conversation.getReply(*_resources, lines[0]->getName());
+
+		warning("Reply: \"%s\"", reply->getTXT().c_str());
+
+		_sound->playWAV(reply->getWAV(), id);
+
+		while (_sound->isIDPlaying(id))
+			g_system->delayMillis(10);
+
+		conversation.discardLines(reply);
+
+		conversation.pick(lines[0]->getName());
+
+		conversation.discardLines(lines);
+
+		lines = conversation.getCurrentLines(*_resources);
+
+		for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
+			warning("Line: \"%s\"", (*it)->getTXT().c_str());
+
+			_sound->playWAV((*it)->getWAV(), id);
+
+			while (_sound->isIDPlaying(id))
+				g_system->delayMillis(10);
+		}
+
+		conversation.discardLines(lines);
+
+	} else
 		warning("Failed parsing conversation CONV0001");
 
 	_events->mainLoop();

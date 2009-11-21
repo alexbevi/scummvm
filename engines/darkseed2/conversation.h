@@ -57,12 +57,17 @@ public:
 
 	/** Get all currently available lines. */
 	Common::Array<TalkLine *> getCurrentLines(Resources &resources) const;
+	/** Get the reply to a certain line. */
+	TalkLine *getReply(Resources &resources, const Common::String &entry) const;
 
 	/** Has the conversation ended? */
 	bool hasEnded() const;
 
 	/** The user has picked a certain entry. */
 	void pick(const Common::String &entry);
+
+	void discardLines(Common::Array<TalkLine *> &lines);
+	void discardLines(TalkLine *&lines);
 
 private:
 	struct Node;
