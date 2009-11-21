@@ -71,6 +71,14 @@ private:
 
 	Common::Array< Common::List<ScriptChunk *> > _scripts;
 
+	// Parsing helpers
+	bool setBackground(const Common::String &args);
+	bool setWalkMap(const Common::String &args);
+	bool setScaleFactor(const Common::String &args);
+	bool setDimensions(const Common::String &args);
+	bool setVerb(const Common::String &cmd, RoomVerb &curVerb);
+	bool addScriptChunk(const Common::String &cmd, DATFile &room, RoomVerb curVerb);
+
 	static RoomVerb parseRoomVerb(const Common::String &verb);
 };
 
