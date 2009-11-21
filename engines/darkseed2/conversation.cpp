@@ -360,4 +360,44 @@ Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) co
 	return lines;
 }
 
+void Conversation::hide(const Common::String &entry) {
+	if (_currentNode)
+		return;
+
+	if (!_currentNode->entries.contains(entry))
+		return;
+
+	Entry *e = _currentNode->entries.getVal(entry);
+
+	e->visible = false;
+}
+
+void Conversation::hide(const Common::Array<Common::String> &entries) {
+	if (_currentNode)
+		return;
+
+	for (Common::Array<Common::String>::const_iterator it = entries.begin(); it != entries.end(); ++it)
+		hide(*it);
+}
+
+void Conversation::unhide(const Common::String &entry) {
+	if (_currentNode)
+		return;
+
+	if (!_currentNode->entries.contains(entry))
+		return;
+
+	Entry *e = _currentNode->entries.getVal(entry);
+
+	e->visible = true;
+}
+
+void Conversation::unhide(const Common::Array<Common::String> &entries) {
+	if (_currentNode)
+		return;
+
+	for (Common::Array<Common::String>::const_iterator it = entries.begin(); it != entries.end(); ++it)
+		unhide(*it);
+}
+
 } // End of namespace DarkSeed2
