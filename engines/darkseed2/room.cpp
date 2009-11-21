@@ -28,6 +28,7 @@
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
+#include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/script.h"
 
 namespace DarkSeed2 {
@@ -165,6 +166,38 @@ bool Room::parse(DATFile &room, DATFile &objects) {
 	}
 
 	return ObjectContainer::parse(objects);
+}
+
+bool Room::parse(const Resources &resources,
+		const Common::String &room, const Common::String &objects) {
+
+	if (!resources.hasResource(room) || !resources.hasResource(objects))
+		return false;
+
+	Resource *resRoom    = resources.getResource(room);
+	Resource *resObjects = resources.getResource(objects);
+
+	DATFile roomParser(*resRoom);
+	DATFile objectsParser(*resObjects);
+
+	bool result = parse(roomParser, objectsParser);
+
+	delete resRoom;
+	delete resObjects;
+
+	return result;
+}
+
+bool Room::parse(const Resources &resources,
+		const Common::String &base) {
+
+	Common::String room    = "ROOM";
+	Common::String objects = "OBJ_";
+
+	room    += base + ".DAT";
+	objects += base + ".DAT";
+
+	return parse(resources, room, objects);
 }
 
 RoomVerb Room::parseRoomVerb(const Common::String &verb) {

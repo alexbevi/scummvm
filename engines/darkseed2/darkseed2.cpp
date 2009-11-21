@@ -124,21 +124,11 @@ Common::Error DarkSeed2Engine::run() {
 	_variables->set("Foobar01", 0);
 	_variables->set("Foobar02", 1);
 
-	Resource *roomDat = _resources->getResource("ROOM0806.DAT");
-	Resource *objDat  = _resources->getResource("OBJ_0806.DAT");
-
-	DATFile roomParser(*roomDat);
-	DATFile objParser(*objDat);
-
 	Room room(*_variables);
-
-	if (!room.parse(roomParser, objParser))
-		warning("Failed parsing room");
+	if (!room.parse(*_resources, "0806"))
+		warning("Failed parsing room 0806");
 	else
-		warning("Successfully parsed a room");
-
-	delete roomDat;
-	delete objDat;
+		warning("Successfully parsed room 0806");
 
 	_events->mainLoop();
 

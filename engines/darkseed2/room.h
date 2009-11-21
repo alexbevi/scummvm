@@ -34,6 +34,7 @@ namespace DarkSeed2 {
 class Variables;
 class DATFile;
 class ScriptChunk;
+class Resources;
 
 enum RoomVerb {
 	kRoomVerbEntry = 0,
@@ -53,6 +54,8 @@ public:
 	void clear();
 
 	bool parse(DATFile &room, DATFile &objects);
+	bool parse(const Resources &resources, const Common::String &room, const Common::String &objects);
+	bool parse(const Resources &resources, const Common::String &base);
 
 private:
 	Variables *_variables;
