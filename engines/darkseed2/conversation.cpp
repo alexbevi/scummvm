@@ -354,6 +354,8 @@ Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) co
 	for (Common::Array<const Entry *>::iterator it = entries.begin(); it != entries.end(); ++it) {
 		TalkLine *line = new TalkLine(resources, (*it)->text);
 
+		line->setName((*it)->name);
+
 		lines.push_back(line);
 	}
 
