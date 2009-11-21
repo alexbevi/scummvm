@@ -57,6 +57,66 @@ Object::~Object() {
 			delete *it;
 }
 
+bool Object::setName(const Common::String &args) {
+	if (DATFile::argCount(args) != 1) {
+		warning("Object::setName: Broken arguments");
+		return false;
+	}
+
+	_name= args;
+
+	return true;
+}
+
+bool Object::setDimensions(const Common::String &args) {
+	Common::Array<Common::String> lArgs = DATFile::argGet(args);
+
+	if (lArgs.size() != 4) {
+		warning("Object::setDimensions(): Broken arguments");
+		return false;
+	}
+
+	_left   = atoi(lArgs[0].c_str());
+	_top    = atoi(lArgs[1].c_str());
+	_right  = atoi(lArgs[2].c_str()) - 1;
+	_bottom = atoi(lArgs[3].c_str()) - 1;
+
+	return true;
+}
+
+bool Object::setVerb(const Common::String &cmd, ObjectVerb &curVerb) {
+	curVerb = parseObjectVerb(cmd);
+	if (curVerb == kObjectVerbNone) {
+		warning("Object::setVerb(): Unknown script verb \"%s\"", cmd.c_str());
+		return false;
+	}
+
+	return true;
+}
+
+bool Object::addScriptChunk(const Common::String &cmd, DATFile &dat, ObjectVerb curVerb) {
+	// Need to be in a verb section
+	if (curVerb == kObjectVerbNone) {
+		warning("Object::addScriptChunk(): Action without a verb \"%s\"", cmd.c_str());
+		return false;
+	}
+
+	// Rewind past the line we've just read
+	dat.previous();
+
+	// Parse the script chunk
+	ScriptChunk *script = new ScriptChunk(*_variables);
+	if (!script->parse(dat)) {
+		delete script;
+		return false;
+	}
+
+	// Add it to our list
+	_scripts[(int) curVerb].push_back(script);
+
+	return true;
+}
+
 bool Object::parse(DATFile &dat) {
 	assert(_variables);
 
@@ -66,51 +126,34 @@ bool Object::parse(DATFile &dat) {
 	while (dat.nextLine(cmd, args)) {
 		if (cmd->equalsIgnoreCase("ObjDesc")) {
 			// Object description / name
-			_name = *args;
+
+			if (!_name.empty()) {
+				// Already got a name, so this is already the next object
+				dat.previous();
+				break;
+			}
+
+			if (!setName(*args))
+				return false;
+
 		} else if (cmd->equalsIgnoreCase("ObjXY")) {
 			// Object coordinates
 
-			Common::Array<Common::String> lArgs = DATFile::argGet(*args);
-
-			// Need to be 4
-			if (lArgs.size() != 4) {
-				warning("Object::parse(): ObjXY arguments broken");
+			if (!setDimensions(*args))
 				return false;
-			}
-
-			_left   = atoi(lArgs[0].c_str());
-			_top    = atoi(lArgs[1].c_str());
-			_right  = atoi(lArgs[2].c_str()) - 1;
-			_bottom = atoi(lArgs[3].c_str()) - 1;
 
 		} else if (cmd->matchString("*Start")) {
 			// Start of a verb section
 
-			curVerb = parseObjectVerb(*cmd);
-			if (curVerb == kObjectVerbNone) {
-				warning("Object::parse(): Unknown script verb \"%s\" (\"%s\")", cmd->c_str(), args->c_str());
+			if (!setVerb(*cmd, curVerb))
 				return false;
-			}
 
 		} else {
-			// Need to be in a verb section
-			if (curVerb == kObjectVerbNone) {
-				warning("Object::parse(): Action without a verb \"%s\" (\"%s\")", cmd->c_str(), args->c_str());
+			// Script chunk
+
+			if (!addScriptChunk(*cmd, dat, curVerb))
 				return false;
-			}
 
-			// Rewind past the line we've just read
-			dat.previous();
-
-			// Parse the script chunk
-			ScriptChunk *script = new ScriptChunk(*_variables);
-			if (!script->parse(dat)) {
-				delete script;
-				return false;
-			}
-
-			// Add it to our list
-			_scripts[(int) curVerb].push_back(script);
 		}
 	}
 
@@ -152,6 +195,7 @@ bool ObjectContainer::parse(DATFile &dat) {
 	const Common::String *cmd, *args;
 	int32 objCount = -1;
 
+	// Looking for the object count
 	for (int i = 0; i < 2; i++) {
 		if (!dat.nextLine(cmd, args)) {
 			warning("ObjectContainer::parse(): unexpected EOF");
@@ -167,6 +211,7 @@ bool ObjectContainer::parse(DATFile &dat) {
 		return false;
 	}
 
+	// Reading all objects
 	_objects.reserve(objCount);
 	for (int i = 0; i < objCount; i++) {
 		_objects.push_back(Object(*_variables));

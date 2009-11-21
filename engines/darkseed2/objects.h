@@ -65,6 +65,12 @@ private:
 
 	Common::Array< Common::List<ScriptChunk *> > _scripts;
 
+	// Parsing helpers
+	bool setName(const Common::String &args);
+	bool setDimensions(const Common::String &args);
+	bool setVerb(const Common::String &cmd, ObjectVerb &curVerb);
+	bool addScriptChunk(const Common::String &cmd, DATFile &dat, ObjectVerb curVerb);
+
 	static ObjectVerb parseObjectVerb(const Common::String &verb);
 };
 
