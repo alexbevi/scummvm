@@ -413,4 +413,25 @@ void Conversation::goTo(const Common::String &node) {
 	_currentNode = _nodes.getVal(node);
 }
 
+void Conversation::pick(const Common::String &entry) {
+	if (!_currentNode)
+		return;
+
+	if (!_currentNode->entries.contains(entry))
+		return;
+
+	Entry *e = _currentNode->entries.getVal(entry);
+
+	if (!e->visible) {
+		// O_o
+		warning("Conversation::pick(): An invisible entry picked?!?");
+		return;
+	}
+
+	// Evaluate changes brought in by the entry
+	hide(e->hide);
+	unhide(e->unhide);
+	goTo(e->goTo);
+}
+
 } // End of namespace DarkSeed2

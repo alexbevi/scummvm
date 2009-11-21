@@ -44,6 +44,7 @@ public:
 	Conversation(Variables &variables);
 	~Conversation();
 
+	/** Discard the conversation. */
 	void clear();
 
 	/** Parse a conversation out of a DAT file. */
@@ -51,18 +52,17 @@ public:
 	/** Parse a conversation out of a resource. */
 	bool parse(const Resources &resources, const Common::String &convName);
 
+	/** Reset the conversation to the loading defaults. */
 	void reset();
 
+	/** Get all currently available lines. */
 	Common::Array<TalkLine *> getCurrentLines(Resources &resources) const;
 
+	/** Has the conversation ended? */
 	bool hasEnded() const;
 
-	void hide(const Common::String &entry);
-	void hide(const Common::Array<Common::String> &entries);
-	void unhide(const Common::String &entry);
-	void unhide(const Common::Array<Common::String> &entries);
-
-	void goTo(const Common::String &node);
+	/** The user has picked a certain entry. */
+	void pick(const Common::String &entry);
 
 private:
 	struct Node;
@@ -103,6 +103,13 @@ private:
 
 	Common::Array<Entry *> getVisibleEntries(Node &node);
 	Common::Array<const Entry *> getVisibleEntries(Node &node) const;
+
+	// Conversation execution helpers
+	void hide(const Common::String &entry);
+	void hide(const Common::Array<Common::String> &entries);
+	void unhide(const Common::String &entry);
+	void unhide(const Common::Array<Common::String> &entries);
+	void goTo(const Common::String &node);
 
 	// Parsing helpers
 	bool addSpeaker(const Common::String &args);
