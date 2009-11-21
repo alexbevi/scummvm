@@ -263,6 +263,9 @@ bool Resources::readGlueContents(Common::SeekableReadStream &glueFile, const Com
 }
 
 bool Resources::hasResource(const Common::String &resource) const {
+	if (Common::File::exists(resource))
+		return true;
+
 	if (!_resources.contains(resource))
 		return false;
 
