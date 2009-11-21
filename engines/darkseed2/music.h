@@ -42,6 +42,7 @@ class MidiParser;
 
 namespace DarkSeed2 {
 
+class Resources;
 class Resource;
 class MidiPlayer;
 
@@ -52,6 +53,7 @@ public:
 
 	bool playMID(Common::SeekableReadStream &mid);
 	bool playMID(const Resource &resource);
+	bool playMID(const Resources &resources, const Common::String &mid);
 
 	void stop();
 

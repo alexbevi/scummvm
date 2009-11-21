@@ -179,6 +179,19 @@ bool Sprite::loadFromBMP(const Resource &resource) {
 	return loadFromBMP(resource.getStream());
 }
 
+bool Sprite::loadFromBMP(const Resources &resources, const Common::String &bmp) {
+	if (!resources.hasResource(bmp + ".BMP"))
+		return false;
+
+	Resource *resBMP = resources.getResource(bmp + ".BMP");
+
+	bool result = loadFromBMP(*resBMP);
+
+	delete resBMP;
+
+	return result;
+}
+
 bool Sprite::loadFromStaticCursor(const StaticCursor &staticCursor) {
 	create(Cursors::_cursorWidth, Cursors::_cursorHeight);
 

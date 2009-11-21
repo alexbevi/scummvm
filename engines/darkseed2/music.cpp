@@ -55,6 +55,23 @@ bool Music::playMID(const Resource &resource) {
 	return playMID(resource.getStream());
 }
 
+bool Music::playMID(const Resources &resources, const Common::String &mid) {
+	Common::String midFile = "sndtrack/";
+
+	midFile += mid + ".mid";
+
+	if (!resources.hasResource(midFile))
+		return false;
+
+	Resource *resMID = resources.getResource(midFile);
+
+	bool result = playMID(*resMID);
+
+	delete resMID;
+
+	return result;
+}
+
 void Music::syncSettings(const Options &options) {
 	// Getting conf values
 	int volumeMusic = options.getVolumeMusic();

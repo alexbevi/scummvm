@@ -43,6 +43,7 @@ namespace Graphics {
 
 namespace DarkSeed2 {
 
+class Resources;
 class Resource;
 class StaticCursor;
 
@@ -67,6 +68,7 @@ public:
 
 	bool loadFromBMP(Common::SeekableReadStream &bmp);
 	bool loadFromBMP(const Resource &resource);
+	bool loadFromBMP(const Resources &resources, const Common::String &bmp);
 
 	/** Load from a cursor embedded in an EXE file. */
 	bool loadFromStaticCursor(const StaticCursor &staticCursor);

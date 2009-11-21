@@ -94,29 +94,21 @@ Common::Error DarkSeed2Engine::run() {
 
 	warning("Done initializing");
 
-	Resource *bmp = _resources->getResource("RM0101.BMP");
-
 	Sprite sprite;
 
-	if (sprite.loadFromBMP(*bmp)) {
+	if (sprite.loadFromBMP(*_resources, "RM0101")) {
 		_graphics->setPalette(sprite.getPalette());
-		//_graphics->blitToScreen(sprite, 0, 0, true);
 		_graphics->registerBackground(sprite);
 		_graphics->retrace();
 	} else
 		warning("BMP loading failed");
 
-	delete bmp;
-
 	TalkLine talkLine(*_resources, "DNA006");
 
 	_talkMan->talk(talkLine);
 
-	Resource *mid = _resources->getResource("sndtrack/mm001gm.mid");
-	if (!_music->playMID(*mid))
+	if (!_music->playMID(*_resources, "mm001gm"))
 		warning("MID playing failed");
-
-	delete mid;
 
 	warning("Evaluating condition: %d",
 			_variables->evalCondition("!FALSE TRUE TRUE TRUE !FALSE TRUE =TRUE,1 =FALSE,0") == 1);
