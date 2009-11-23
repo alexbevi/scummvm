@@ -52,7 +52,10 @@ class StaticCursor;
 class Sprite {
 public:
 	Sprite();
+	Sprite(const Sprite &sprite);
 	~Sprite();
+
+	Sprite &operator=(const Sprite &sprite);
 
 	/** Does the sprite have any data? */
 	bool exists() const;
@@ -67,6 +70,8 @@ public:
 	void create(uint32 width, uint32 height);
 	/** Discard the sprite data. */
 	void discard();
+
+	void copyFrom(const Sprite &sprite);
 
 	bool loadFromBMP(Common::SeekableReadStream &bmp);
 	bool loadFromBMP(const Resource &resource);

@@ -41,8 +41,25 @@ Sprite::Sprite() {
 	_data   = 0;
 }
 
+Sprite::Sprite(const Sprite &sprite) {
+	copyFrom(sprite);
+}
+
 Sprite::~Sprite() {
 	discard();
+}
+
+Sprite &Sprite::operator=(const Sprite &sprite) {
+	copyFrom(sprite);
+	return *this;
+}
+
+void Sprite::copyFrom(const Sprite &sprite) {
+	create(sprite._width, sprite._height);
+
+	memcpy(_data, sprite._data, _width * _height);
+
+	_palette = sprite._palette;
 }
 
 bool Sprite::exists() const {
