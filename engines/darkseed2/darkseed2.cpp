@@ -107,8 +107,10 @@ Common::Error DarkSeed2Engine::run() {
 	Sprite sprite2;
 
 	sprite.loadFromBMP(*_resources, "INVNTRY1");
+	_graphics->mergePalette(sprite);
 	_graphics->blitToScreen(sprite, 0, 100, true);
 	sprite.loadFromBMP(*_resources, "DIALOG1");
+	_graphics->mergePalette(sprite);
 	_graphics->blitToScreen(sprite, 0, 100, true);
 
 //	TalkLine talkLine(*_resources, "DNA006");

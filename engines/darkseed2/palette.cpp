@@ -52,6 +52,7 @@ void Palette::copyFrom(const Palette &palette) {
 void Palette::copyFrom(const byte *palette, int size) {
 	clear();
 
+	_size = size;
 	memcpy(_palette, palette, 3 * size);
 }
 
@@ -82,14 +83,14 @@ void Palette::makeSystemCompatible(byte *pal) const {
 
 #define SQR(x) ((x) * (x))
 int Palette::findColor(byte c1, byte c2, byte c3) const {
-	const byte *pal = _palette;
+	const byte *pal = _palette + 3;
 	uint32 d = 0xFFFFFFFF;
 	byte n = 0;
 
 	for (int i = 1; i < 256; i++, pal += 3) {
 		uint32 di = SQR(c1 - pal[0]) + SQR(c2 - pal[1]) + SQR(c3 - pal[2]);
 
-		if (di < di) {
+		if (di < d) {
 			d = di;
 			n = i;
 			if (d == 0)
@@ -106,6 +107,47 @@ int Palette::findWhite() const {
 
 int Palette::findBlack() const {
 	return findColor(0, 0, 0);
+}
+
+Common::Array<byte> Palette::merge(const Palette &palette) {
+	Common::Array<byte> changeSet;
+
+	changeSet.resize(256);
+	for (int i = 0; i < 256; i++)
+		changeSet[i] = i;
+
+	if ((256 - _size) >= palette._size) {
+		// Enough space for the whole palette
+
+		// Shift every index
+		for (int i = 0; i < palette._size; i++)
+			changeSet[i] = i + _size;
+
+		// Keep transparency
+		changeSet[0] = 0;
+
+		// Add the palette to our current palette
+		addPalette(palette);
+
+		return changeSet;
+	}
+
+	// Go through all colors and find a best match
+	for (int i = 0; i < palette._size; i++)
+		changeSet[i] = findColor(palette[i * 3 + 0], palette[i * 3 + 1], palette[i * 3 + 2]);
+
+	// Keep transparency
+	changeSet[0] = 0;
+
+	return changeSet;
+}
+
+void Palette::addPalette(const Palette &palette) {
+	memcpy(_palette + _size, palette._palette, palette._size * 3);
+
+	_size += palette._size;
+
+	assert(_size <= 256);
 }
 
 } // End of namespace DarkSeed2

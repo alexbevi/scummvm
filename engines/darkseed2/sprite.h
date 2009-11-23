@@ -28,6 +28,7 @@
 
 #include "common/rect.h"
 #include "common/str.h"
+#include "common/array.h"
 
 #include "graphics/font.h"
 
@@ -81,6 +82,8 @@ public:
 
 	/** Fill the whole data with palette entry 0. */
 	void clear();
+
+	void applyChangeSet(const Common::Array<byte> &changeSet);
 
 	void drawStrings(const Common::StringList &strings, const ::Graphics::Font &font,
 			int x, int y, byte color);

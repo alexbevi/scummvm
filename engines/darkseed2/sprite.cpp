@@ -296,4 +296,9 @@ void Sprite::drawStrings(const Common::StringList &strings, const ::Graphics::Fo
 
 }
 
+void Sprite::applyChangeSet(const Common::Array<byte> &changeSet) {
+	for (uint32 i = 0; i < _width * _height; i++)
+		_data[i] = changeSet[_data[i]];
+}
+
 } // End of namespace DarkSeed2

@@ -60,12 +60,10 @@ public:
 			uint32 x, uint32 y, bool transp = false);
 	void blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp = false);
 
-	void retrace();
+	/** Merge the sprite's palette into the current game palette. */
+	void mergePalette(Sprite &sprite);
 
-/*	bool loadPAL(Common::SeekableReadStream &pal,
-			int fromStart = 0, int toStart = 0, int count = 256);
-	bool loadPAL(const Resource &resource,
-			int fromStart = 0, int toStart = 0, int count = 256);*/
+	void retrace();
 
 	void registerBackground(Sprite &background);
 	void unregisterBackground();

@@ -26,6 +26,8 @@
 #ifndef DARKSEED2_PALETTE_H
 #define DARKSEED2_PALETTE_H
 
+#include "common/array.h"
+
 #include "engines/darkseed2/darkseed2.h"
 
 namespace DarkSeed2 {
@@ -48,15 +50,22 @@ public:
 
 	void clear();
 
+	/** Create a palette that's compatible with ScummVM's O_System. */
 	void makeSystemCompatible(byte *pal) const;
 
+	/** Find the color that's nearest to the specified color. */
 	int findColor(byte c1, byte c2, byte c3) const;
 	int findWhite() const;
 	int findBlack() const;
 
+	/** Merge with the current palette, returning a change set for images using the other palette. */
+	Common::Array<byte> merge(const Palette &palette);
+
 private:
 	int _size;
 	byte _palette[768];
+
+	void addPalette(const Palette &palette);
 };
 
 } // End of namespace DarkSeed2
