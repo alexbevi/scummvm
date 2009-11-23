@@ -84,7 +84,7 @@ void ConversationBox::resetSprites() {
 	}
 
 	_sprites[0].create(512, 50);
-	_sprites[0].fill(_graphics->getPalette().findBlack());
+	_sprites[0].shade(_graphics->getPalette().findBlack());
 
 	_box.create(640, 70);
 }

@@ -286,6 +286,24 @@ void Sprite::clear() {
 	fill(0);
 }
 
+void Sprite::shade(byte c) {
+	byte *data = _data;
+	bool solid = true;
+	bool rowSolid;
+
+	for (uint32 i = 0; i < _height; i++) {
+		rowSolid = solid;
+
+		for (uint32 j = 0; j < _width; j++) {
+			*data = rowSolid ? c : 0;
+			data++;
+			rowSolid = !rowSolid;
+		}
+
+		solid = !solid;
+	}
+}
+
 ::Graphics::Surface *Sprite::wrapInSurface() const {
 	::Graphics::Surface *surface = new ::Graphics::Surface;
 
