@@ -85,6 +85,8 @@ public:
 			uint32 x, uint32 y, bool transp = false);
 	void blit(const Sprite &from, uint32 x, uint32 y, bool transp = false);
 
+	/** Fill the whole data with one palette entry. */
+	void fill(byte c);
 	/** Fill the whole data with palette entry 0. */
 	void clear();
 

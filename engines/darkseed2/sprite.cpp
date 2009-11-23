@@ -278,8 +278,12 @@ void Sprite::blit(const Sprite &from, uint32 x, uint32 y, bool transp) {
 	blit(from, 0, 0, from.getWidth() - 1, from.getHeight() - 1, x, y, transp);
 }
 
+void Sprite::fill(byte c) {
+	memset(_data, c, _width * _height);
+}
+
 void Sprite::clear() {
-	memset(_data, 0, _width * _height);
+	fill(0);
 }
 
 ::Graphics::Surface *Sprite::wrapInSurface() const {

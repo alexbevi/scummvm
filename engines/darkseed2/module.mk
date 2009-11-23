@@ -19,6 +19,7 @@ MODULE_OBJS := \
 	room.o \
 	talk.o \
 	conversation.o \
+	conversationbox.o \
 	events.o
 
 # This module can be built as a plugin

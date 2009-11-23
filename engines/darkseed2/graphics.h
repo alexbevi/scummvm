@@ -63,6 +63,8 @@ public:
 	/** Merge the sprite's palette into the current game palette. */
 	void mergePalette(Sprite &sprite);
 
+	const Palette &getPalette() const;
+
 	void retrace();
 
 	void registerBackground(Sprite &background);

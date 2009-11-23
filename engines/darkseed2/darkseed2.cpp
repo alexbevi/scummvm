@@ -46,6 +46,7 @@
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/conversation.h"
+#include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/events.h"
 
 namespace DarkSeed2 {
@@ -104,14 +105,11 @@ Common::Error DarkSeed2Engine::run() {
 	} else
 		warning("BMP loading failed");
 
-	Sprite sprite2;
+	ConversationBox convBox(*_resources, *_graphics);
 
-	sprite.loadFromBMP(*_resources, "INVNTRY1");
-	_graphics->mergePalette(sprite);
-	_graphics->blitToScreen(sprite, 0, 100, true);
-	sprite.loadFromBMP(*_resources, "DIALOG1");
-	_graphics->mergePalette(sprite);
-	_graphics->blitToScreen(sprite, 0, 100, true);
+
+	convBox.build();
+	_graphics->blitToScreen(convBox.getSprite(), 0, 410, true);
 
 //	TalkLine talkLine(*_resources, "DNA006");
 

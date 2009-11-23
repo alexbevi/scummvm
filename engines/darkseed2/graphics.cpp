@@ -113,6 +113,10 @@ void Graphics::mergePalette(Sprite &from) {
 	dirtyAll();
 }
 
+const Palette &Graphics::getPalette() const {
+	return _gamePalette;
+}
+
 void Graphics::retrace() {
 	if (dirtyRectsApply())
 		g_system->updateScreen();
