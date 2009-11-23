@@ -53,7 +53,7 @@ Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
 Events::~Events() {
 	for (int i = 0; i < kCursorModeNone; i++)
 		delete[] _cursors[i];
-	delete _cursors;
+	delete[] _cursors;
 }
 
 void Events::mainLoop() {
