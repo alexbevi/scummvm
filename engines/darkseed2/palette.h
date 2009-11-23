@@ -59,7 +59,7 @@ public:
 	byte findBlack() const;
 
 	/** Merge with the current palette, returning a change set for images using the other palette. */
-	Common::Array<byte> merge(const Palette &palette);
+	Common::Array<byte> merge(const Palette &palette, bool average = false);
 
 private:
 	struct Match {

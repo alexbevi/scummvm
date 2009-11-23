@@ -105,7 +105,7 @@ void Graphics::blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp)
 }
 
 void Graphics::mergePalette(Sprite &from) {
-	Common::Array<byte> changeSet = _gamePalette.merge(from.getPalette());
+	Common::Array<byte> changeSet = _gamePalette.merge(from.getPalette(), true);
 
 	from.applyChangeSet(changeSet);
 	applyGamePalette();

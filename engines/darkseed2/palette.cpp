@@ -119,7 +119,7 @@ byte Palette::findBlack() const {
 	return findColor(0, 0, 0);
 }
 
-Common::Array<byte> Palette::merge(const Palette &palette) {
+Common::Array<byte> Palette::merge(const Palette &palette, bool average) {
 	Common::Array<byte> changeSet;
 
 	changeSet.resize(256);
@@ -172,8 +172,19 @@ Common::Array<byte> Palette::merge(const Palette &palette) {
 	}
 
 	// Converting the matches into a change set
-	for (int i = 0; i < 256; i++)
-		changeSet[matches[i].index1] = matches[i].index2;
+	for (int i = 0; i < 256; i++) {
+		byte t = matches[i].index2;
+		byte f = matches[i].index1;
+
+		changeSet[f] = t;
+
+		// Average the two colors
+		if (average && i > 0) {
+			_palette[t * 3 + 0] = (_palette[t * 3 + 0] + palette[f * 3 + 0]) / 2;
+			_palette[t * 3 + 1] = (_palette[t * 3 + 1] + palette[f * 3 + 1]) / 2;
+			_palette[t * 3 + 2] = (_palette[t * 3 + 2] + palette[f * 3 + 2]) / 2;
+		}
+	}
 
 	// Keep transparency
 	changeSet[0] = 0;
