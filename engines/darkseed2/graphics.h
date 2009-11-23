@@ -29,6 +29,7 @@
 #include "common/rect.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/palette.h"
 #include "engines/darkseed2/sprite.h"
 
 namespace Common {
@@ -49,7 +50,7 @@ public:
 	~Graphics();
 
 	void clearPalette();
-	void setPalette(const byte *pal);
+	void setPalette(const Palette &pal);
 
 	void talk(TextObject *talkObject);
 	void talkEnd();
@@ -61,16 +62,16 @@ public:
 
 	void retrace();
 
-	bool loadPAL(Common::SeekableReadStream &pal,
+/*	bool loadPAL(Common::SeekableReadStream &pal,
 			int fromStart = 0, int toStart = 0, int count = 256);
 	bool loadPAL(const Resource &resource,
-			int fromStart = 0, int toStart = 0, int count = 256);
+			int fromStart = 0, int toStart = 0, int count = 256);*/
 
 	void registerBackground(Sprite &background);
 	void unregisterBackground();
 
 private:
-	byte _gamePalette[768];
+	Palette _gamePalette;
 	Sprite _screen;
 
 	bool _dirtyAll;

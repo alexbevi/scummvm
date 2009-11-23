@@ -23,59 +23,42 @@
  *
  */
 
-#ifndef DARKSEED2_CURSORS_H
-#define DARKSEED2_CURSORS_H
-
-#include "common/str.h"
+#ifndef DARKSEED2_PALETTE_H
+#define DARKSEED2_PALETTE_H
 
 #include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
 
-class Palette;
-
-class Cursors {
+class Palette {
 public:
-	struct Cursor {
-		uint16 hotspotX;
-		uint16 hotspotY;
-		Sprite *sprite;
-	};
+	Palette();
+	Palette(const Palette &palette);
+	~Palette();
 
-	static const int _cursorWidth  = 32;
-	static const int _cursorHeight = 32;
+	Palette &operator=(const Palette &palette);
 
-	Cursors();
-	~Cursors();
+	void copyFrom(const Palette &palette);
+	void copyFrom(const byte *palette, int size);
 
-	bool isVisible() const;
-	void setVisible(bool visible);
+	int getSize() const;
 
-	const Cursor *getCursor(const Common::String &cursor = "") const;
+	byte &operator[](int n);
+	const byte &operator[](int n) const;
 
-	bool setCursor(const Cursor &cursor);
-	bool setCursor(const Common::String &cursor = "");
+	void clear();
+
+	void makeSystemCompatible(byte *pal) const;
+
+	int findColor(byte c1, byte c2, byte c3) const;
+	int findWhite() const;
+	int findBlack() const;
 
 private:
-
-	typedef Common::HashMap<Common::String, Cursor, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> CursorMap;
-
-	Cursor _default;
-	CursorMap _cursors;
-
-	bool loadFromStatics();
-
-	bool setPalette(const Palette &palette);
-};
-
-struct StaticCursor {
-	uint16 hotspotX;
-	uint16 hotspotY;
-	byte pixels[Cursors::_cursorWidth * Cursors::_cursorHeight / 8];
-	byte mask  [Cursors::_cursorWidth * Cursors::_cursorHeight / 8];
+	int _size;
+	byte _palette[768];
 };
 
 } // End of namespace DarkSeed2
 
-#endif // DARKSEED2_CURSORS_H
+#endif // DARKSEED2_PALETTE_H

@@ -104,9 +104,16 @@ Common::Error DarkSeed2Engine::run() {
 	} else
 		warning("BMP loading failed");
 
-	TalkLine talkLine(*_resources, "DNA006");
+	Sprite sprite2;
 
-	_talkMan->talk(talkLine);
+	sprite.loadFromBMP(*_resources, "INVNTRY1");
+	_graphics->blitToScreen(sprite, 0, 100, true);
+	sprite.loadFromBMP(*_resources, "DIALOG1");
+	_graphics->blitToScreen(sprite, 0, 100, true);
+
+//	TalkLine talkLine(*_resources, "DNA006");
+
+//	_talkMan->talk(talkLine);
 
 	if (!_music->playMID(*_resources, "mm001gm"))
 		warning("MID playing failed");
@@ -124,7 +131,7 @@ Common::Error DarkSeed2Engine::run() {
 		warning("Successfully parsed room 0806");
 
 	Conversation conversation(*_variables);
-	if (conversation.parse(*_resources, "CONV0001")) {
+	if (conversation.parse(*_resources, "CONV000")) {
 		warning("Successfully parsed conversation CONV0001");
 
 		_sound->stopAll();

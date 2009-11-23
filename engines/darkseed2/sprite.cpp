@@ -39,8 +39,6 @@ Sprite::Sprite() {
 	_width  = 0;
 	_height = 0;
 	_data   = 0;
-
-	memset(_palette, 0, 768);
 }
 
 Sprite::~Sprite() {
@@ -63,7 +61,7 @@ const byte *Sprite::getData() const {
 	return _data;
 }
 
-const byte *Sprite::getPalette() const {
+const Palette &Sprite::getPalette() const {
 	return _palette;
 }
 
@@ -85,7 +83,7 @@ void Sprite::discard() {
 	_height = 0;
 	_data   = 0;
 
-	memset(_palette, 0, 768);
+	_palette.clear();
 }
 
 bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
@@ -146,13 +144,16 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 	// Important colors
 	bmp.skip(4);
 
+	byte *palette = new byte[numPalColors * 3];
 	for (uint32 i = 0; i < numPalColors; i++) {
-		_palette[i * 3 + 2] = bmp.readByte();
-		_palette[i * 3 + 1] = bmp.readByte();
-		_palette[i * 3 + 0] = bmp.readByte();
+		palette[i * 3 + 2] = bmp.readByte();
+		palette[i * 3 + 1] = bmp.readByte();
+		palette[i * 3 + 0] = bmp.readByte();
 
 		bmp.readByte();
 	}
+	_palette.copyFrom(palette, numPalColors);
+	delete[] palette;
 
 	_data = new byte[_width * _height];
 

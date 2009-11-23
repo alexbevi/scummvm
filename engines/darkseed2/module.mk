@@ -5,6 +5,7 @@ MODULE_OBJS := \
 	detection.o \
 	options.o \
 	resources.o \
+	palette.o \
 	sprite.o \
 	graphics.o \
 	graphicalobject.o \

@@ -26,6 +26,7 @@
 #include "graphics/cursorman.h"
 
 #include "engines/darkseed2/cursors.h"
+#include "engines/darkseed2/palette.h"
 
 namespace DarkSeed2 {
 
@@ -109,21 +110,21 @@ bool Cursors::setCursor(const Cursors::Cursor &cursor) {
 	return setPalette(cursor.sprite->getPalette());
 }
 
-bool Cursors::setPalette(const byte *palette) {
+bool Cursors::setPalette(const Palette &palette) {
 	byte newPal[12];
 
 	newPal[ 0] = palette[0];
 	newPal[ 1] = palette[1];
 	newPal[ 2] = palette[2];
-	newPal[ 3] = 0;
+	newPal[ 3] = 255;
 	newPal[ 4] = palette[3];
 	newPal[ 5] = palette[4];
 	newPal[ 6] = palette[5];
-	newPal[ 7] = 0;
+	newPal[ 7] = 255;
 	newPal[ 8] = palette[6];
 	newPal[ 9] = palette[7];
 	newPal[10] = palette[8];
-	newPal[11] = 0;
+	newPal[11] = 255;
 
 	CursorMan.replaceCursorPalette(newPal, 0, 3);
 

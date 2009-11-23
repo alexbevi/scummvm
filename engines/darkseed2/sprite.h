@@ -32,6 +32,7 @@
 #include "graphics/font.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/palette.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -59,7 +60,7 @@ public:
 	uint32 getHeight() const;
 
 	const byte *getData() const;
-	const byte *getPalette() const;
+	const Palette &getPalette() const;
 
 	/** Create a new sprite with the specified dimensions. */
 	void create(uint32 width, uint32 height);
@@ -89,7 +90,7 @@ private:
 	uint32 _height;
 	byte *_data;
 
-	byte _palette[768];
+	Palette _palette;
 
 	::Graphics::Surface *wrapInSurface() const;
 };

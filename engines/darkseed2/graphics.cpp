@@ -48,12 +48,12 @@ Graphics::~Graphics() {
 }
 
 void Graphics::clearPalette() {
-	memset(_gamePalette, 0, 768);
+	_gamePalette.clear();
 	applyGamePalette();
 }
 
-void Graphics::setPalette(const byte *pal) {
-	memcpy(_gamePalette, pal, 768);
+void Graphics::setPalette(const Palette &pal) {
+	_gamePalette = pal;
 
 	// Palette entry 0 is transparent
 	_gamePalette[0] = 0;
@@ -66,15 +66,7 @@ void Graphics::setPalette(const byte *pal) {
 void Graphics::applyGamePalette() {
 	byte pal[1024];
 
-	const byte *gPal = _gamePalette;
-	byte *sPal = pal;
-
-	for (int i = 0 ; i < 256; i++, gPal += 3, sPal += 4) {
-		sPal[0] = gPal[0];
-		sPal[1] = gPal[1];
-		sPal[2] = gPal[2];
-		sPal[3] = 255;
-	}
+	_gamePalette.makeSystemCompatible(pal);
 
 	g_system->setPalette(pal, 0, 256);
 }
@@ -117,7 +109,7 @@ void Graphics::retrace() {
 		g_system->updateScreen();
 }
 
-bool Graphics::loadPAL(Common::SeekableReadStream &pal,
+/*bool Graphics::loadPAL(Common::SeekableReadStream &pal,
 		int fromStart, int toStart, int count) {
 
 	if (pal.size() < ((fromStart + count) * 4))
@@ -146,7 +138,7 @@ bool Graphics::loadPAL(const Resource &resource,
 		int fromStart, int toStart, int count) {
 
 	return loadPAL(resource.getStream(), fromStart, toStart, count);
-}
+}*/
 
 void Graphics::dirtyAll() {
 	_dirtyAll = true;
