@@ -24,9 +24,16 @@
  */
 
 
+#include "common/algorithm.h"
+
 #include "engines/darkseed2/palette.h"
 
 namespace DarkSeed2 {
+
+bool Palette::Match::operator<(const Match &match) const {
+	return diff < match.diff;
+}
+
 
 Palette::Palette() {
 	clear();
@@ -82,7 +89,7 @@ void Palette::makeSystemCompatible(byte *pal) const {
 }
 
 #define SQR(x) ((x) * (x))
-int Palette::findColor(byte c1, byte c2, byte c3) const {
+byte Palette::findColor(byte c1, byte c2, byte c3, uint32 *diff) const {
 	const byte *pal = _palette + 3;
 	uint32 d = 0xFFFFFFFF;
 	byte n = 0;
@@ -98,14 +105,17 @@ int Palette::findColor(byte c1, byte c2, byte c3) const {
 		}
 	}
 
+	if (diff)
+		*diff = d;
+
 	return n;
 }
 
-int Palette::findWhite() const {
+byte Palette::findWhite() const {
 	return findColor(255, 255, 255);
 }
 
-int Palette::findBlack() const {
+byte Palette::findBlack() const {
 	return findColor(0, 0, 0);
 }
 
@@ -119,12 +129,9 @@ Common::Array<byte> Palette::merge(const Palette &palette) {
 	if ((256 - _size) >= palette._size) {
 		// Enough space for the whole palette
 
-		// Shift every index
-		for (int i = 0; i < palette._size; i++)
+		// Shift every index, ignoring tranparency
+		for (int i = 1; i < palette._size; i++)
 			changeSet[i] = i + _size;
-
-		// Keep transparency
-		changeSet[0] = 0;
 
 		// Add the palette to our current palette
 		addPalette(palette);
@@ -132,9 +139,41 @@ Common::Array<byte> Palette::merge(const Palette &palette) {
 		return changeSet;
 	}
 
-	// Go through all colors and find a best match
-	for (int i = 0; i < palette._size; i++)
-		changeSet[i] = findColor(palette[i * 3 + 0], palette[i * 3 + 1], palette[i * 3 + 2]);
+	Common::Array<Match> matches;
+	matches.resize(256);
+	for (int i = 0; i < 256; i++) {
+		matches[i].index1 = i;
+		matches[i].index2 = i;
+		matches[i].diff   = 0;
+	}
+
+	// Go through all colors and find a best match (ignoring transparency)
+	for (int i = 1; i < palette._size; i++)
+		matches[i].index2 = findColor(palette[i * 3 + 0], palette[i * 3 + 1], palette[i * 3 + 2], &matches[i].diff);
+
+	if (_size < 256) {
+		// Still room in the palette, so taking the worst n matches completely over
+
+		Common::sort(matches.begin(), matches.end());
+
+		for (int i = 255; _size < 256; i--, _size++) {
+			if (matches[i].diff < 9000)
+				// Ignore difference smaller than that
+				break;
+
+			int n = matches[i].index1;
+
+			_palette[_size * 3 + 0] = palette[n * 3 + 0];
+			_palette[_size * 3 + 1] = palette[n * 3 + 1];
+			_palette[_size * 3 + 2] = palette[n * 3 + 2];
+
+			matches[i].index2 = _size;
+		}
+	}
+
+	// Converting the matches into a change set
+	for (int i = 0; i < 256; i++)
+		changeSet[matches[i].index1] = matches[i].index2;
 
 	// Keep transparency
 	changeSet[0] = 0;

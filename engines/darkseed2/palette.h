@@ -54,14 +54,22 @@ public:
 	void makeSystemCompatible(byte *pal) const;
 
 	/** Find the color that's nearest to the specified color. */
-	int findColor(byte c1, byte c2, byte c3) const;
-	int findWhite() const;
-	int findBlack() const;
+	byte findColor(byte c1, byte c2, byte c3, uint32 *diff = 0) const;
+	byte findWhite() const;
+	byte findBlack() const;
 
 	/** Merge with the current palette, returning a change set for images using the other palette. */
 	Common::Array<byte> merge(const Palette &palette);
 
 private:
+	struct Match {
+		byte index1;
+		byte index2;
+		uint32 diff;
+
+		bool operator<(const Match &match) const;
+	};
+
 	int _size;
 	byte _palette[768];
 
