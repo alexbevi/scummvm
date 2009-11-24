@@ -45,6 +45,8 @@ public:
 
 	Common::Rect getArea() const;
 
+	virtual void move(uint32 x, uint32 y);
+
 	virtual void redraw(Sprite &sprite, Common::Rect area) = 0;
 
 protected:

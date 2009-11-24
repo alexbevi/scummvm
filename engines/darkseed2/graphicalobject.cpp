@@ -44,6 +44,10 @@ Common::Rect GraphicalObject::getArea() const {
 	return _area;
 }
 
+void GraphicalObject::move(uint32 x, uint32 y) {
+	_area.moveTo(x, y);
+}
+
 
 TextObject::TextObject(const Common::String &text, uint32 x, uint32 y,
 		byte color, uint32 maxWidth) {
