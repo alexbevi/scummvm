@@ -57,6 +57,8 @@ private:
 	Sprite *_origSprites;
 	Sprite *_sprites;
 
+	TextObject *_markerSelect;
+	TextObject *_markerUnselect;
 	TextObject **_texts;
 	Common::String *_lines;
 

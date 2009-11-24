@@ -47,15 +47,23 @@ ConversationBox::ConversationBox(Resources &resources, Graphics &graphics) {
 
 	_selected = 1;
 
-	_lines[0] = "- Am I a suspect, Sheriff?";
-	_lines[1] = "- Didn't we go all over this before?";
-	_lines[2] = "- Rita and I weren't that close, Sheriff.";
+	_lines[0] = "Am I a suspect, Sheriff?";
+	_lines[1] = "Didn't we go all over this before?";
+	_lines[2] = "Rita and I weren't that close, Sheriff.";
+
+	byte white = _graphics->getPalette().findWhite();
+
+	_markerSelect   = new TextObject(">", 84, 0, white);
+	_markerUnselect = new TextObject("-", 85, 0, white);
 
 	loadSprites();
 	resetSprites();
 }
 
 ConversationBox::~ConversationBox() {
+	delete _markerSelect;
+	delete _markerUnselect;
+
 	delete[] _lines;
 	for (int i = 0; i < 3; i++)
 		delete _texts[i];
@@ -98,9 +106,23 @@ void ConversationBox::build() {
 
 	createTexts();
 
-	for (int i = 0; i < 3; i++)
-		if (_texts[i])
-			_texts[i]->redraw(_box, _texts[i]->getArea());
+	for (int i = 0; i < 3; i++) {
+		if (!_texts[i])
+			continue;
+
+		Common::Rect area = _texts[i]->getArea();
+
+		TextObject *marker;
+		if (i == _selected)
+			marker = _markerSelect;
+		else
+			marker = _markerUnselect;
+
+		marker->move(marker->getArea().left, area.top);
+
+		marker->redraw(_box, marker->getArea());
+		_texts[i]->redraw(_box, area);
+	}
 }
 
 const Sprite &ConversationBox::getSprite() const {
@@ -114,7 +136,7 @@ void ConversationBox::createTexts() {
 	for (int i = 0; i < 3; i++) {
 		delete _texts[i];
 
-		_texts[i] = new TextObject(_lines[i], 85, y, white);
+		_texts[i] = new TextObject(_lines[i], 95, y, white);
 		y += 14;
 	}
 }
