@@ -53,8 +53,10 @@ enum ScreenPart {
 
 class Graphics {
 public:
-	static const int _screenWidth  = 640;
-	static const int _screenHeight = 480;
+	static const uint32 _screenWidth  = 640;
+	static const uint32 _screenHeight = 480;
+	static const uint32 _conversationX = 0;
+	static const uint32 _conversationY = 410;
 
 	Graphics(Resources &resources, Variables &variables);
 	~Graphics();

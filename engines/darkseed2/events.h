@@ -52,6 +52,11 @@ private:
 	int _cursorMode;
 
 	void handleInput();
+
+	void mouseMoved(uint32 x, uint32 y);
+	void mouseClickedLeft(uint32 x, uint32 y);
+	void mouseClickedRight(uint32 x, uint32 y);
+
 	void cycleCursorMode();
 };
 

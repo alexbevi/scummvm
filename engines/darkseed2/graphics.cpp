@@ -142,7 +142,9 @@ void Graphics::redraw(ScreenPart part) {
 		break;
 
 	case kScreenPartConversation:
-		redrawScreen(Common::Rect(0, 410, 640, 480));
+		redrawScreen(Common::Rect(_conversationX, _conversationY,
+		                          _conversationX + ConversationBox::_width,
+		                          _conversationY + ConversationBox::_height));
 		break;
 	}
 }
@@ -224,7 +226,7 @@ void Graphics::redrawScreen(const Common::Rect &rect) {
 		_talk->redraw(_screen, rect);
 
 	if (_conversationBox->isActive())
-		_conversationBox->redraw(_screen, 0, 410, rect);
+		_conversationBox->redraw(_screen, _conversationX, _conversationY, rect);
 
 	dirtyRectsAdd(rect);
 }

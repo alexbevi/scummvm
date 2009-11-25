@@ -26,6 +26,7 @@
 #ifndef DARKSEED2_CONVERSATIONBOX_H
 #define DARKSEED2_CONVERSATIONBOX_H
 
+#include "common/rect.h"
 #include "common/str.h"
 #include "common/array.h"
 
@@ -46,6 +47,9 @@ class TalkLine;
 
 class ConversationBox {
 public:
+	static const uint32 _width  = 640;
+	static const uint32 _height = 70;
+
 	ConversationBox(Resources &resources, Variables &variables, Graphics &graphics);
 	~ConversationBox();
 
@@ -56,7 +60,14 @@ public:
 
 	void redraw(Sprite &sprite, uint32 x, uint32 y, const Common::Rect &area);
 
+	void notifyMouseMove(uint32 x, uint32 y);
+
 private:
+	static const uint32 _textAreaWidth  = 512;
+	static const uint32 _textAreaHeight = 50;
+	static const uint32 _textHeight = 14;
+	static const uint32 _textMargin = 90;
+
 	struct Line {
 		TalkLine *talk;
 		Common::StringList texts;
@@ -94,7 +105,9 @@ private:
 	TextObject *_markerSelect;
 	TextObject *_markerUnselect;
 
-	Common::Array<Line *> _lines2;
+	Common::Array<Line *> _lines;
+
+	Common::Rect _textAreas[3];
 
 	uint32 _physLineCount;
 	uint32 _physLineTop;
@@ -112,10 +125,13 @@ private:
 	void updateLines();
 	void updateScroll();
 	void drawLines();
+	void redrawLines();
 
 	bool findPhysLine(uint32 n, PhysLineRef &ref) const;
 	bool nextPhysLine(PhysLineRef &ref) const;
 	bool nextPhysRealLine(PhysLineRef &ref) const;
+
+	int getTextArea(uint32 x, uint32 y);
 };
 
 } // End of namespace DarkSeed2

@@ -28,6 +28,7 @@
 #include "engines/darkseed2/events.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/talk.h"
+#include "engines/darkseed2/conversationbox.h"
 
 namespace DarkSeed2 {
 
@@ -72,17 +73,35 @@ void Events::mainLoop() {
 void Events::handleInput() {
 	Common::Event event;
 
+	bool hasMove = false;
+	uint32 mouseX, mouseY;
+
 	while (g_system->getEventManager()->pollEvent(event)) {
 		switch (event.type) {
+		case Common::EVENT_MOUSEMOVE:
+			hasMove = true;
+			mouseX = event.mouse.x;
+			mouseY = event.mouse.y;
+			break;
+
 		case Common::EVENT_LBUTTONDOWN:
-			{
-				TalkLine talkLine(*_vm->_resources, "DNA006");
-				_vm->_talkMan->talk(talkLine);
-			}
+			// If the mouse was moved, handle that beforehand
+			if (hasMove)
+				mouseMoved(mouseX, mouseY);
+			hasMove = false;
+
+			mouseClickedLeft(event.mouse.x, event.mouse.y);
 			break;
+
 		case Common::EVENT_RBUTTONDOWN:
-			cycleCursorMode();
+			// If the mouse was moved, handle that beforehand
+			if (hasMove)
+				mouseMoved(mouseX, mouseY);
+			hasMove = false;
+
+			mouseClickedRight(event.mouse.x, event.mouse.y);
 			break;
+
 		case Common::EVENT_KEYDOWN:
 			if (event.kbd.keycode == Common::KEYCODE_F5)
 				// Options, handled by the GMM
@@ -94,6 +113,20 @@ void Events::handleInput() {
 
 		}
 	}
+
+	if (hasMove)
+		mouseMoved(mouseX, mouseY);
+}
+
+void Events::mouseMoved(uint32 x, uint32 y) {
+	_vm->_graphics->getConversationBox().notifyMouseMove(x - Graphics::_conversationX, y - Graphics::_conversationY);
+}
+
+void Events::mouseClickedLeft(uint32 x, uint32 y) {
+}
+
+void Events::mouseClickedRight(uint32 x, uint32 y) {
+	cycleCursorMode();
 }
 
 void Events::cycleCursorMode() {
