@@ -41,6 +41,8 @@ namespace DarkSeed2 {
 class Resources;
 class Variables;
 
+class ConversationBox;
+
 class Resource;
 class TextObject;
 
@@ -51,6 +53,10 @@ public:
 
 	Graphics(Resources &resources, Variables &variables);
 	~Graphics();
+
+	void init();
+
+	ConversationBox &getConversationBox();
 
 	void clearPalette();
 	void setPalette(const Palette &pal);
@@ -77,6 +83,8 @@ private:
 	Resources *_resources;
 	Variables *_variables;
 
+	ConversationBox *_conversationBox;
+
 	Palette _gamePalette;
 	Sprite _screen;
 
@@ -91,6 +99,8 @@ private:
 
 	void redrawScreen(const Common::Rect &rect);
 	void redrawScreen(uint32 left, uint32 top, uint32 right, uint32 bottom);
+
+	void redrawConversationBox(Common::Rect rect);
 
 	void dirtyAll();
 	void dirtyRectsAdd(const Common::Rect &rect);

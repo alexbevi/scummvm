@@ -28,6 +28,7 @@
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/graphicalobject.h"
+#include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
 
@@ -38,7 +39,7 @@ ConversationBox::ConversationBox(Resources &resources, Graphics &graphics) {
 	_box.create(640, 70);
 
 	_origSprites = new Sprite[4];
-	_sprites     = new Sprite[5];
+	_sprites     = new Sprite[6];
 
 	_lines = new Common::String[3];
 	_texts = new TextObject*[3];
@@ -51,10 +52,8 @@ ConversationBox::ConversationBox(Resources &resources, Graphics &graphics) {
 	_lines[1] = "Didn't we go all over this before?";
 	_lines[2] = "Rita and I weren't that close, Sheriff.";
 
-	byte white = _graphics->getPalette().findWhite();
-
-	_markerSelect   = new TextObject(">", 84, 0, white);
-	_markerUnselect = new TextObject("-", 85, 0, white);
+	_markerSelect   = 0;
+	_markerUnselect = 0;
 
 	loadSprites();
 	resetSprites();
@@ -73,6 +72,20 @@ ConversationBox::~ConversationBox() {
 	delete[] _origSprites;
 }
 
+void ConversationBox::newPalette() {
+	resetSprites();
+	rebuild();
+}
+
+void ConversationBox::start(const Common::String &conversation) {
+	// TODO
+}
+
+bool ConversationBox::isActive() const {
+	// TODO
+	return true;
+}
+
 void ConversationBox::loadSprites() {
 	bool loaded0, loaded1, loaded2, loaded3;
 
@@ -82,27 +95,39 @@ void ConversationBox::loadSprites() {
 	loaded3 = _origSprites[3].loadFromBMP(*_resources, "DIALOG3");
 
 	assert(loaded0 && loaded1 && loaded2 && loaded3);
+
+	_sprites[0].create(640, 70);
+	_box.create(640, 70);
 }
 
 void ConversationBox::resetSprites() {
 	for (int i = 0; i < 4; i++) {
-		_sprites[i + 1] = _origSprites[i];
+		_sprites[i + 2] = _origSprites[i];
 
 		_graphics->mergePalette(_sprites[i + 1]);
 	}
 
-	_sprites[0].create(512, 50);
-	_sprites[0].shade(_graphics->getPalette().findBlack());
+	_sprites[1].create(512, 50);
+	_sprites[1].shade(_graphics->getPalette().findBlack());
 
-	_box.create(640, 70);
+	delete _markerSelect;
+	delete _markerUnselect;
+
+	byte white = _graphics->getPalette().findWhite();
+
+	_markerSelect   = new TextObject(">", 84, 0, white);
+	_markerUnselect = new TextObject("-", 85, 0, white);
 }
 
-void ConversationBox::build() {
+void ConversationBox::rebuild() {
 	_box.clear();
+	_sprites[0].clear();
 
-	_box.blit(_sprites[0], 64, 10, true);
-	_box.blit(_sprites[1], 0, 0, true);
-	_box.blit(_sprites[3], 0, 0, true);
+	_sprites[0].blit(_sprites[1], 64, 10, true);
+	_sprites[0].blit(_sprites[2], 0, 0, true);
+	_sprites[0].blit(_sprites[4], 0, 0, true);
+
+	_box.blit(_sprites[0], 0, 0, true);
 
 	createTexts();
 
@@ -125,10 +150,6 @@ void ConversationBox::build() {
 	}
 }
 
-const Sprite &ConversationBox::getSprite() const {
-	return _box;
-}
-
 void ConversationBox::createTexts() {
 	int y = 14;
 	byte white = _graphics->getPalette().findWhite();
@@ -139,6 +160,21 @@ void ConversationBox::createTexts() {
 		_texts[i] = new TextObject(_lines[i], 95, y, white);
 		y += 14;
 	}
+}
+
+void ConversationBox::redraw(Sprite &sprite, uint32 x, uint32 y, const Common::Rect &area) {
+	Common::Rect boxArea(_box.getWidth(), _box.getHeight());
+
+	boxArea.moveTo(x, y);
+
+	if (!boxArea.intersects(area))
+		return;
+
+	boxArea.clip(area);
+
+	boxArea.moveTo(0, 0);
+
+	sprite.blit(_box, boxArea.left, boxArea.top, boxArea.right - 1, boxArea.bottom - 1, x, y, true);
 }
 
 } // End of namespace DarkSeed2

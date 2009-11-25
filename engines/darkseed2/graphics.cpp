@@ -28,6 +28,7 @@
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/graphicalobject.h"
 
 namespace DarkSeed2 {
@@ -45,10 +46,21 @@ Graphics::Graphics(Resources &resources, Variables &variables) {
 	_background = 0;
 
 	_talk = 0;
+
+	_conversationBox = 0;
 }
 
 Graphics::~Graphics() {
+	delete _conversationBox;
 	delete _talk;
+}
+
+void Graphics::init() {
+	_conversationBox = new ConversationBox(*_resources, *this);
+}
+
+ConversationBox &Graphics::getConversationBox() {
+	return *_conversationBox;
 }
 
 void Graphics::clearPalette() {
@@ -181,7 +193,13 @@ bool Graphics::dirtyRectsApply() {
 }
 
 void Graphics::registerBackground(Sprite &background) {
+	assert(_conversationBox);
+
 	_background = &background;
+
+	setPalette(_background->getPalette());
+
+	_conversationBox->newPalette();
 
 	redrawScreen(0, 0, _background->getWidth() - 1, _background->getHeight() - 1);
 }
@@ -195,12 +213,20 @@ void Graphics::redrawScreen(const Common::Rect &rect) {
 }
 
 void Graphics::redrawScreen(uint32 left, uint32 top, uint32 right, uint32 bottom) {
+	assert(_conversationBox);
+
 	blitToScreen(*_background, left, top, right, bottom, left, top, false);
 
 	if (_talk)
 		_talk->redraw(_screen, Common::Rect(left, top, right + 1, bottom + 1));
 
+	if (_conversationBox->isActive())
+		_conversationBox->redraw(_screen, 0, 410, Common::Rect(left, top, right + 1, bottom + 1));
+
 	dirtyRectsAdd(left, top, right, bottom);
+}
+
+void Graphics::redrawConversationBox(Common::Rect rect) {
 }
 
 } // End of namespace DarkSeed2

@@ -100,21 +100,10 @@ Common::Error DarkSeed2Engine::run() {
 	Sprite sprite;
 
 	if (sprite.loadFromBMP(*_resources, "RM0101")) {
-		_graphics->setPalette(sprite.getPalette());
 		_graphics->registerBackground(sprite);
 		_graphics->retrace();
 	} else
 		warning("BMP loading failed");
-
-	ConversationBox convBox(*_resources, *_graphics);
-
-
-	convBox.build();
-	_graphics->blitToScreen(convBox.getSprite(), 0, 410, true);
-
-//	TalkLine talkLine(*_resources, "DNA006");
-
-//	_talkMan->talk(talkLine);
 
 	if (!_music->playMID(*_resources, "mm001gm"))
 		warning("MID playing failed");
@@ -130,56 +119,6 @@ Common::Error DarkSeed2Engine::run() {
 		warning("Failed parsing room 0806");
 	else
 		warning("Successfully parsed room 0806");
-
-	Conversation conversation(*_variables);
-	if (conversation.parse(*_resources, "CONV000")) {
-		warning("Successfully parsed conversation CONV0001");
-
-		_sound->stopAll();
-
-		Common::Array<TalkLine *> lines = conversation.getCurrentLines(*_resources);
-
-		int id;
-
-		for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
-			warning("Line: \"%s\"", (*it)->getTXT().c_str());
-
-			_sound->playWAV((*it)->getWAV(), id);
-
-			while (_sound->isIDPlaying(id))
-				g_system->delayMillis(10);
-		}
-
-		TalkLine *reply = conversation.getReply(*_resources, lines[0]->getName());
-
-		warning("Reply: \"%s\"", reply->getTXT().c_str());
-
-		_sound->playWAV(reply->getWAV(), id);
-
-		while (_sound->isIDPlaying(id))
-			g_system->delayMillis(10);
-
-		conversation.discardLines(reply);
-
-		conversation.pick(lines[0]->getName());
-
-		conversation.discardLines(lines);
-
-		lines = conversation.getCurrentLines(*_resources);
-
-		for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
-			warning("Line: \"%s\"", (*it)->getTXT().c_str());
-
-			_sound->playWAV((*it)->getWAV(), id);
-
-			while (_sound->isIDPlaying(id))
-				g_system->delayMillis(10);
-		}
-
-		conversation.discardLines(lines);
-
-	} else
-		warning("Failed parsing conversation CONV0001");
 
 	_events->mainLoop();
 
@@ -237,7 +176,6 @@ bool DarkSeed2Engine::init() {
 		warning("Couldn't load initial variables values");
 		return false;
 	}
-
 	delete idx;
 
 	return true;
@@ -245,6 +183,8 @@ bool DarkSeed2Engine::init() {
 
 bool DarkSeed2Engine::initGraphics() {
 	warning("Setting up graphics");
+
+	_graphics->init();
 
 	::initGraphics(_graphics->_screenWidth, _graphics->_screenHeight, true);
 	return true;

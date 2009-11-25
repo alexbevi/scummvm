@@ -38,18 +38,19 @@ namespace DarkSeed2 {
 class Graphics;
 
 class TextObject;
+class Sprite;
 
 class ConversationBox {
 public:
 	ConversationBox(Resources &resources, Graphics &graphics);
 	~ConversationBox();
 
-	void loadSprites();
-	void resetSprites();
+	void newPalette();
+	void start(const Common::String &conversation);
 
-	void build();
+	bool isActive() const;
 
-	const Sprite &getSprite() const;
+	void redraw(Sprite &sprite, uint32 x, uint32 y, const Common::Rect &area);
 
 private:
 	Resources *_resources;
@@ -66,6 +67,11 @@ private:
 	int _selected;
 
 	Sprite _box;
+
+	void loadSprites();
+	void resetSprites();
+
+	void rebuild();
 
 	void createTexts();
 };
