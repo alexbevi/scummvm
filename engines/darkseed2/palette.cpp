@@ -192,6 +192,26 @@ Common::Array<byte> Palette::merge(const Palette &palette, bool average) {
 	return changeSet;
 }
 
+byte Palette::addColor(byte c1, byte c2, byte c3, bool average) {
+	if (_size < 256) {
+		_palette[_size * 3 + 0] = c1;
+		_palette[_size * 3 + 1] = c1;
+		_palette[_size * 3 + 2] = c1;
+
+		return _size++;
+	}
+
+	byte index = findColor(c1, c2, c3);
+
+	if (average) {
+		_palette[index * 3 + 0] = (_palette[index * 3 + 0] + c1) / 2;
+		_palette[index * 3 + 1] = (_palette[index * 3 + 1] + c2) / 2;
+		_palette[index * 3 + 2] = (_palette[index * 3 + 2] + c3) / 2;
+	}
+
+	return index;
+}
+
 void Palette::addPalette(const Palette &palette) {
 	memcpy(_palette + _size, palette._palette, palette._size * 3);
 

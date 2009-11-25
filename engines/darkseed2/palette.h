@@ -61,6 +61,8 @@ public:
 	/** Merge with the current palette, returning a change set for images using the other palette. */
 	Common::Array<byte> merge(const Palette &palette, bool average = false);
 
+	byte addColor(byte c1, byte c2, byte c3, bool average = false);
+
 private:
 	struct Match {
 		byte index1;
