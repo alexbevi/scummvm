@@ -83,6 +83,12 @@ void Events::handleInput() {
 		case Common::EVENT_RBUTTONDOWN:
 			cycleCursorMode();
 			break;
+		case Common::EVENT_KEYDOWN:
+			if (event.kbd.keycode == Common::KEYCODE_F5)
+				// Options, handled by the GMM
+				_vm->openMainMenuDialog();
+			break;
+
 		default:
 			break;
 
