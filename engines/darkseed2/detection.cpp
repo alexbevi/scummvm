@@ -141,6 +141,7 @@ bool DarkSeed2::DarkSeed2Engine::hasFeature(EngineFeature f) const {
 	return (f == kSupportsRTL) ||
 	       (f == kSupportsSubtitleOptions);
 }
+
 bool DarkSeed2MetaEngine::createInstance(OSystem *syst, Engine **engine, const ADGameDescription *desc) const {
 	const DarkSeed2::DS2GameDescription *gd = (const DarkSeed2::DS2GameDescription *)desc;
 	if (gd) {
