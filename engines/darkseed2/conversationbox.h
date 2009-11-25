@@ -26,12 +26,11 @@
 #ifndef DARKSEED2_CONVERSATIONBOX_H
 #define DARKSEED2_CONVERSATIONBOX_H
 
+#include "common/str.h"
+#include "common/array.h"
+
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/sprite.h"
-
-namespace Common {
-	class String;
-}
 
 namespace DarkSeed2 {
 
@@ -43,6 +42,7 @@ class Conversation;
 
 class TextObject;
 class Sprite;
+class TalkLine;
 
 class ConversationBox {
 public:
@@ -57,6 +57,31 @@ public:
 	void redraw(Sprite &sprite, uint32 x, uint32 y, const Common::Rect &area);
 
 private:
+	struct Line {
+		TalkLine *talk;
+		Common::StringList texts;
+		Common::Array<TextObject *> textObjects;
+
+		Line(TalkLine *line = 0, byte color = 0);
+		~Line();
+
+		const Common::String &getName() const;
+	};
+
+	struct PhysLineRef {
+		uint32 n;
+		Common::Array<Line *>::const_iterator it1;
+		Common::StringList::const_iterator it2;
+		Common::Array<TextObject *>::iterator it3;
+
+		const Common::String &getName() const;
+		const Common::String &getString() const;
+		TextObject &getTextObject();
+
+		uint32 getLineNum() const;
+		bool isTop() const;
+	};
+
 	Resources *_resources;
 	Variables *_variables;
 	Graphics  *_graphics;
@@ -68,10 +93,13 @@ private:
 
 	TextObject *_markerSelect;
 	TextObject *_markerUnselect;
-	TextObject **_texts;
-	Common::String *_lines;
 
-	int _selected;
+	Common::Array<Line *> _lines2;
+
+	uint32 _physLineCount;
+	uint32 _physLineTop;
+
+	uint32 _selected;
 
 	Sprite _box;
 
@@ -80,7 +108,14 @@ private:
 
 	void rebuild();
 
-	void createTexts();
+	void clearLines();
+	void updateLines();
+	void updateScroll();
+	void drawLines();
+
+	bool findPhysLine(uint32 n, PhysLineRef &ref) const;
+	bool nextPhysLine(PhysLineRef &ref) const;
+	bool nextPhysRealLine(PhysLineRef &ref) const;
 };
 
 } // End of namespace DarkSeed2

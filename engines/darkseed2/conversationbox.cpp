@@ -23,8 +23,6 @@
  *
  */
 
-#include "common/str.h"
-
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/variables.h"
@@ -32,8 +30,52 @@
 #include "engines/darkseed2/conversation.h"
 #include "engines/darkseed2/graphicalobject.h"
 #include "engines/darkseed2/sprite.h"
+#include "engines/darkseed2/talk.h"
 
 namespace DarkSeed2 {
+
+ConversationBox::Line::Line(TalkLine *line, byte color) {
+	talk = line;
+	if (talk) {
+		uint32 width = TextObject::wrap(talk->getTXT(), texts, 460);
+
+		for (Common::StringList::iterator it = texts.begin(); it != texts.end(); ++it)
+			textObjects.push_back(new TextObject(*it, 90, 0, color, width));
+	}
+}
+
+ConversationBox::Line::~Line() {
+	for (Common::Array<TextObject *>::iterator it = textObjects.begin(); it != textObjects.end(); ++it)
+		delete *it;
+
+	delete talk;
+}
+
+const Common::String &ConversationBox::Line::getName() const {
+	return talk->getName();
+}
+
+
+const Common::String &ConversationBox::PhysLineRef::getName() const {
+	return (*it1)->getName();
+}
+
+const Common::String &ConversationBox::PhysLineRef::getString() const {
+	return *it2;
+}
+
+TextObject &ConversationBox::PhysLineRef::getTextObject() {
+	return **it3;
+}
+
+uint32 ConversationBox::PhysLineRef::getLineNum() const {
+	return n;
+}
+
+bool ConversationBox::PhysLineRef::isTop() const {
+	return it2 == (*it1)->texts.begin();
+}
+
 
 ConversationBox::ConversationBox(Resources &resources, Variables &variables, Graphics &graphics) {
 	_resources = &resources;
@@ -47,16 +89,10 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables, Gra
 	_origSprites = new Sprite[4];
 	_sprites     = new Sprite[6];
 
-	_lines = new Common::String[3];
-	_texts = new TextObject*[3];
-	for (int i = 0; i < 3; i++)
-		_texts[i] = 0;
+	_physLineCount = 0;
+	_physLineTop   = 0;
 
-	_selected = 1;
-
-	_lines[0] = "Am I a suspect, Sheriff?";
-	_lines[1] = "Didn't we go all over this before?";
-	_lines[2] = "Rita and I weren't that close, Sheriff.";
+	_selected = 0;
 
 	_markerSelect   = 0;
 	_markerUnselect = 0;
@@ -66,15 +102,12 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables, Gra
 }
 
 ConversationBox::~ConversationBox() {
+	clearLines();
+
 	delete _conversation;
 
 	delete _markerSelect;
 	delete _markerUnselect;
-
-	delete[] _lines;
-	for (int i = 0; i < 3; i++)
-		delete _texts[i];
-	delete[] _texts;
 
 	delete[] _sprites;
 	delete[] _origSprites;
@@ -89,7 +122,8 @@ bool ConversationBox::start(const Common::String &conversation) {
 	if (!_conversation->parse(*_resources, conversation))
 		return false;
 
-	_graphics->redraw(kScreenPartConversation);
+	updateLines();
+	drawLines();
 
 	return true;
 }
@@ -116,7 +150,7 @@ void ConversationBox::resetSprites() {
 	for (int i = 0; i < 4; i++) {
 		_sprites[i + 2] = _origSprites[i];
 
-		_graphics->mergePalette(_sprites[i + 1]);
+		_graphics->mergePalette(_sprites[i + 2]);
 	}
 
 	_sprites[1].create(512, 50);
@@ -127,8 +161,8 @@ void ConversationBox::resetSprites() {
 
 	byte white = _graphics->getPalette().findWhite();
 
-	_markerSelect   = new TextObject(">", 84, 0, white);
-	_markerUnselect = new TextObject("-", 85, 0, white);
+	_markerSelect   = new TextObject(">", 81, 0, white);
+	_markerUnselect = new TextObject("-", 82, 0, white);
 }
 
 void ConversationBox::rebuild() {
@@ -137,41 +171,8 @@ void ConversationBox::rebuild() {
 
 	_sprites[0].blit(_sprites[1], 64, 10, true);
 	_sprites[0].blit(_sprites[2], 0, 0, true);
-	_sprites[0].blit(_sprites[4], 0, 0, true);
 
-	_box.blit(_sprites[0], 0, 0, true);
-
-	createTexts();
-
-	for (int i = 0; i < 3; i++) {
-		if (!_texts[i])
-			continue;
-
-		Common::Rect area = _texts[i]->getArea();
-
-		TextObject *marker;
-		if (i == _selected)
-			marker = _markerSelect;
-		else
-			marker = _markerUnselect;
-
-		marker->move(marker->getArea().left, area.top);
-
-		marker->redraw(_box, marker->getArea());
-		_texts[i]->redraw(_box, area);
-	}
-}
-
-void ConversationBox::createTexts() {
-	int y = 14;
-	byte white = _graphics->getPalette().findWhite();
-
-	for (int i = 0; i < 3; i++) {
-		delete _texts[i];
-
-		_texts[i] = new TextObject(_lines[i], 95, y, white);
-		y += 14;
-	}
+	_box.blit(_sprites[0], 0, 0, false);
 }
 
 void ConversationBox::redraw(Sprite &sprite, uint32 x, uint32 y, const Common::Rect &area) {
@@ -187,6 +188,126 @@ void ConversationBox::redraw(Sprite &sprite, uint32 x, uint32 y, const Common::R
 	boxArea.moveTo(0, 0);
 
 	sprite.blit(_box, boxArea, x, y, true);
+}
+
+void ConversationBox::clearLines() {
+	for (Common::Array<Line *>::iterator it = _lines2.begin(); it != _lines2.end(); ++it)
+		delete *it;
+	_lines2.clear();
+
+	_physLineCount = 0;
+	_physLineTop   = 0;
+}
+
+void ConversationBox::updateLines() {
+	clearLines();
+
+	if (_conversation->hasEnded())
+		return;
+
+	byte white = _graphics->getPalette().findWhite();
+
+	Common::Array<TalkLine *> lines = _conversation->getCurrentLines(*_resources);
+	for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
+		Line *line = new Line(*it, white);
+
+		_lines2.push_back(line);
+		_physLineCount += line->texts.size();
+	}
+}
+
+void ConversationBox::updateScroll() {
+	Common::Rect scrollArea = _sprites[3].getArea();
+
+	if (_physLineCount <= 3)
+		// Can't scroll
+		_sprites[0].blit(_sprites[2], scrollArea, 0, 0, true);
+	else if ((_physLineTop > 0) && ((_physLineTop + 3) > (_physLineCount - 1)))
+		// Can scroll up and down
+		_sprites[0].blit(_sprites[3], 0, 0, true);
+	else if (_physLineTop > 0)
+		// Can scroll up
+		_sprites[0].blit(_sprites[5], 0, 0, true);
+	else
+		// Can scroll down
+		_sprites[0].blit(_sprites[4], 0, 0, true);
+
+	_box.blit(_sprites[0], 0, 0, false);
+}
+
+void ConversationBox::drawLines() {
+	updateScroll();
+
+	PhysLineRef curLine;
+
+	if (findPhysLine(_physLineTop, curLine)) {
+		for (int i = 0; i < 3; i++) {
+			TextObject &text = curLine.getTextObject();
+
+			text.move(text.getArea().left, (i + 1) * 14);
+			text.redraw(_box, text.getArea());
+
+			if (curLine.isTop()) {
+				TextObject *marker;
+				if ((curLine.getLineNum() + 1) == _selected)
+					marker = _markerSelect;
+				else
+					marker = _markerUnselect;
+
+				marker->move(marker->getArea().left, text.getArea().top);
+				marker->redraw(_box, marker->getArea());
+			}
+
+			if (!nextPhysLine(curLine))
+				break;
+		}
+	}
+
+	_graphics->redraw(kScreenPartConversation);
+}
+
+bool ConversationBox::findPhysLine(uint32 n, PhysLineRef &ref) const {
+	ref.it1 = _lines2.begin();
+	if (ref.it1 == _lines2.end())
+		return false;
+
+	ref.it2 = (*ref.it1)->texts.begin();
+	ref.it3 = (*ref.it1)->textObjects.begin();
+	ref.n = 0;
+
+	if (!nextPhysRealLine(ref))
+		return false;
+
+	while (n-- > 0)
+		if (!nextPhysLine(ref))
+			return false;
+
+	return true;
+}
+
+bool ConversationBox::nextPhysLine(PhysLineRef &ref) const {
+	++ref.it2;
+	++ref.it3;
+
+	return nextPhysRealLine(ref);
+}
+
+bool ConversationBox::nextPhysRealLine(PhysLineRef &ref) const {
+	if (ref.it1 == _lines2.end())
+		return false;
+
+	while (ref.it2 == (*ref.it1)->texts.end()) {
+		++ref.it1;
+		++ref.n;
+
+		if (ref.it1 == _lines2.end())
+			return false;
+
+		ref.it2 = (*ref.it1)->texts.begin();
+		ref.it3 = (*ref.it1)->textObjects.begin();
+	}
+
+	return true;
 }
 
 } // End of namespace DarkSeed2

@@ -93,4 +93,13 @@ void TextObject::redraw(Sprite &sprite, Common::Rect area) {
 	sprite.blit(*_sprite, area, x, y, true);
 }
 
+uint32 TextObject::wrap(const Common::String &string, Common::StringList &list, uint32 maxWidth) {
+	::Graphics::FontManager::FontUsage fontUsage = ::Graphics::FontManager::kBigGUIFont;
+
+	const ::Graphics::Font *font =
+		::Graphics::FontManager::instance().getFontByUsage(fontUsage);
+
+	return font->wordWrapText(string, maxWidth, list);
+}
+
 } // End of namespace DarkSeed2

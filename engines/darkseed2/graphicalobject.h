@@ -61,6 +61,8 @@ public:
 
 	void redraw(Sprite &sprite, Common::Rect area);
 
+	static uint32 wrap(const Common::String &string, Common::StringList &list, uint32 maxWidth);
+
 private:
 	Sprite *_sprite;
 };
