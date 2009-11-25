@@ -38,6 +38,8 @@ namespace DarkSeed2 {
 
 Music::Music(Audio::Mixer &mixer, MidiDriver &driver) : _mixer(&mixer) {
 	_midiPlayer = new MidiPlayer(&driver, 0);
+
+	_mute = false;
 }
 
 Music::~Music() {
@@ -47,7 +49,11 @@ Music::~Music() {
 }
 
 bool Music::playMID(Common::SeekableReadStream &mid) {
-	_midiPlayer->playSMF(mid, true);
+	_midiPlayer->loadSMF(mid);
+
+	if (!_mute)
+		_midiPlayer->play(true);
+
 	return true;
 }
 
@@ -76,10 +82,17 @@ void Music::syncSettings(const Options &options) {
 	// Getting conf values
 	int volumeMusic = options.getVolumeMusic();
 
+	_mute = (volumeMusic == 0);
+
 	// Setting values
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, volumeMusic);
 
 	_midiPlayer->syncVolume();
+
+	if (_mute)
+		_midiPlayer->stop(false);
+	else
+		_midiPlayer->play(true);
 }
 
 void Music::stop() {
@@ -109,6 +122,14 @@ MidiPlayer::~MidiPlayer() {
 	delete[] _midiMusicData;
 }
 
+bool MidiPlayer::isPlaying() {
+	return _isPlaying;
+}
+
+void MidiPlayer::setPlaying(bool playing) {
+	_isPlaying = playing;
+}
+
 void MidiPlayer::setChannelVolume(int channel) {
 	int newVolume = _channelVolume[channel] * _masterVolume / 255;
 	_channel[channel]->volume(newVolume);
@@ -127,6 +148,18 @@ void MidiPlayer::setVolume(int volume) {
 			setChannelVolume(i);
 		}
 	}
+}
+
+int MidiPlayer::getVolume() {
+	return _masterVolume;
+}
+
+void MidiPlayer::setNativeMT32(bool b) {
+	_nativeMT32 = b;
+}
+
+bool MidiPlayer::hasNativeMT32() {
+	return _nativeMT32;
 }
 
 int MidiPlayer::open() {
@@ -198,6 +231,23 @@ void MidiPlayer::metaEvent(byte type, byte *data, uint16 length) {
 	}
 }
 
+void MidiPlayer::setTimerCallback(void *timerParam, void (*timerProc)(void *)) {
+	if (_driver)
+		_driver->setTimerCallback(timerParam, timerProc);
+}
+
+uint32 MidiPlayer::getBaseTempo() {
+	return _driver ? _driver->getBaseTempo() : 0;
+}
+
+MidiChannel *MidiPlayer::allocateChannel() {
+	return _driver ? _driver->allocateChannel() : 0;
+}
+
+MidiChannel *MidiPlayer::getPercussionChannel() {
+	return _driver ? _driver->getPercussionChannel() : 0;
+}
+
 void MidiPlayer::onTimer(void *refCon) {
 	MidiPlayer *music = (MidiPlayer *)refCon;
 	Common::StackLock lock(music->_mutex);
@@ -206,20 +256,24 @@ void MidiPlayer::onTimer(void *refCon) {
 		music->_parser->onTimer();
 }
 
-void MidiPlayer::playSMF(Common::SeekableReadStream &stream, bool loop) {
+void MidiPlayer::loadSMF(Common::SeekableReadStream &stream) {
 	stop();
-
-	_isGM = true;
-
 
 	stream.seek(0);
 
-	int midiMusicSize = stream.size();
-	delete[] _midiMusicData;
-	_midiMusicData = new byte[midiMusicSize];
-	stream.read(_midiMusicData, midiMusicSize);
+	_midiMusicSize = stream.size();
+	_midiMusicData = new byte[_midiMusicSize];
+	stream.read(_midiMusicData, _midiMusicSize);
+}
 
-	if (_smfParser->loadMusic(_midiMusicData, midiMusicSize)) {
+void MidiPlayer::play(bool loop) {
+	if (_isPlaying)
+		return;
+
+	if (!_midiMusicData)
+		return;
+
+	if (_smfParser->loadMusic(_midiMusicData, _midiMusicSize)) {
 		MidiParser *parser = _smfParser;
 		parser->setTrack(0);
 		parser->setMidiDriver(this);
@@ -235,7 +289,7 @@ void MidiPlayer::playSMF(Common::SeekableReadStream &stream, bool loop) {
 	}
 }
 
-void MidiPlayer::stop() {
+void MidiPlayer::stop(bool unload) {
 	Common::StackLock lock(_mutex);
 
 	if (!_isPlaying)
@@ -247,6 +301,12 @@ void MidiPlayer::stop() {
 		_parser->unloadMusic();
 		_parser = NULL;
 	}
+
+	if (unload) {
+		delete[] _midiMusicData;
+		_midiMusicData = 0;
+		_midiMusicSize = 0;
+	}
 }
 
 void MidiPlayer::pause() {
@@ -257,6 +317,18 @@ void MidiPlayer::pause() {
 void MidiPlayer::resume() {
 	syncVolume();
 	_isPlaying = true;
+}
+
+void MidiPlayer::setLoop(bool loop) {
+	_looping = loop;
+}
+
+void MidiPlayer::setPassThrough(bool b) {
+	_passThrough = b;
+}
+
+void MidiPlayer::setGM(bool isGM) {
+	_isGM = isGM;
 }
 
 void MidiPlayer::syncVolume() {

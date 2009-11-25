@@ -65,6 +65,8 @@ private:
 	Audio::Mixer *_mixer;
 
 	MidiPlayer *_midiPlayer;
+
+	bool _mute;
 };
 
 // Taken from Draci, which took it from MADE, which took it from SAGA.
@@ -74,23 +76,26 @@ public:
 	MidiPlayer(MidiDriver *driver, const char *pathMask);
 	~MidiPlayer();
 
-	bool isPlaying() { return _isPlaying; }
-	void setPlaying(bool playing) { _isPlaying = playing; }
+	bool isPlaying();
+	void setPlaying(bool playing);
 
 	void setVolume(int volume);
-	int getVolume() { return _masterVolume; }
+	int getVolume();
 	void syncVolume();
 
-	void setNativeMT32(bool b) { _nativeMT32 = b; }
-	bool hasNativeMT32() { return _nativeMT32; }
-	void playSMF(Common::SeekableReadStream &stream, bool loop);
-	void stop();
+	void setNativeMT32(bool b);
+	bool hasNativeMT32();
+
+	void loadSMF(Common::SeekableReadStream &stream);
+
+	void play(bool loop);
+	void stop(bool unload = true);
 	void pause();
 	void resume();
-	void setLoop(bool loop) { _looping = loop; }
-	void setPassThrough(bool b) { _passThrough = b; }
+	void setLoop(bool loop);
+	void setPassThrough(bool b);
 
-	void setGM(bool isGM) { _isGM = isGM; }
+	void setGM(bool isGM);
 
 	// MidiDriver interface implementation
 	int open();
@@ -99,12 +104,12 @@ public:
 
 	void metaEvent(byte type, byte *data, uint16 length);
 
-	void setTimerCallback(void *timerParam, void (*timerProc)(void *)) { }
-	uint32 getBaseTempo() { return _driver ? _driver->getBaseTempo() : 0; }
+	void setTimerCallback(void *timerParam, void (*timerProc)(void *));
+	uint32 getBaseTempo();
 
 	//Channel allocation functions
-	MidiChannel *allocateChannel() { return 0; }
-	MidiChannel *getPercussionChannel() { return 0; }
+	MidiChannel *allocateChannel();
+	MidiChannel *getPercussionChannel();
 
 	MidiParser *_parser;
 	Common::Mutex _mutex;
@@ -128,6 +133,7 @@ protected:
 	byte _masterVolume;
 	int _track;
 
+	int _midiMusicSize;
 	byte *_midiMusicData;
 };
 
