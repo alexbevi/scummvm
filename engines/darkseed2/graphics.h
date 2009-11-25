@@ -69,8 +69,7 @@ public:
 	void talk(TextObject *talkObject);
 	void talkEnd();
 
-	void blitToScreen(const Sprite &from,
-			uint32 left, uint32 top, uint32 right, uint32 bottom,
+	void blitToScreen(const Sprite &from, Common::Rect area,
 			uint32 x, uint32 y, bool transp = false);
 	void blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp = false);
 
@@ -105,13 +104,9 @@ private:
 	void applyGamePalette();
 
 	void redrawScreen(const Common::Rect &rect);
-	void redrawScreen(uint32 left, uint32 top, uint32 right, uint32 bottom);
-
-	void redrawConversationBox(Common::Rect rect);
 
 	void dirtyAll();
 	void dirtyRectsAdd(const Common::Rect &rect);
-	void dirtyRectsAdd(uint32 left, uint32 top, uint32 right, uint32 bottom);
 	bool dirtyRectsApply();
 };
 

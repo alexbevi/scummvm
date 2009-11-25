@@ -186,7 +186,7 @@ void ConversationBox::redraw(Sprite &sprite, uint32 x, uint32 y, const Common::R
 
 	boxArea.moveTo(0, 0);
 
-	sprite.blit(_box, boxArea.left, boxArea.top, boxArea.right - 1, boxArea.bottom - 1, x, y, true);
+	sprite.blit(_box, boxArea, x, y, true);
 }
 
 } // End of namespace DarkSeed2

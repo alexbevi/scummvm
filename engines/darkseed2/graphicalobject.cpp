@@ -90,7 +90,7 @@ void TextObject::redraw(Sprite &sprite, Common::Rect area) {
 
 	area.moveTo(0, 0);
 
-	sprite.blit(*_sprite, area.left, area.top, area.right - 1, area.bottom - 1, x, y, true);
+	sprite.blit(*_sprite, area, x, y, true);
 }
 
 } // End of namespace DarkSeed2

@@ -64,6 +64,8 @@ public:
 	uint32 getWidth() const;
 	uint32 getHeight() const;
 
+	Common::Rect getArea() const;
+
 	const byte *getData() const;
 	const Palette &getPalette() const;
 
@@ -81,8 +83,7 @@ public:
 	/** Load from a cursor embedded in an EXE file. */
 	bool loadFromStaticCursor(const StaticCursor &staticCursor);
 
-	void blit(const Sprite &from,
-			uint32 left, uint32 top, uint32 right, uint32 bottom,
+	void blit(const Sprite &from, const Common::Rect &area,
 			uint32 x, uint32 y, bool transp = false);
 	void blit(const Sprite &from, uint32 x, uint32 y, bool transp = false);
 

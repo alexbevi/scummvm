@@ -74,6 +74,10 @@ uint32 Sprite::getHeight() const {
 	return _height;
 }
 
+Common::Rect Sprite::getArea() const {
+	return Common::Rect(_width, _height);
+}
+
 const byte *Sprite::getData() const {
 	return _data;
 }
@@ -236,25 +240,31 @@ bool Sprite::loadFromStaticCursor(const StaticCursor &staticCursor) {
 	return true;
 }
 
-void Sprite::blit(const Sprite &from,
-		uint32 left, uint32 top, uint32 right, uint32 bottom,
+void Sprite::blit(const Sprite &from, const Common::Rect &area,
 		uint32 x, uint32 y, bool transp) {
 
 	if (exists() || from.exists())
 		return;
 
-	if ((left > right)  || (top > bottom))
+	Common::Rect toArea = getArea();
+
+	toArea.left = x;
+	toArea.top  = y;
+	if (toArea.isEmpty())
 		return;
-	if ((left > _width) || (top > _height))
+
+	Common::Rect fromArea = from.getArea();
+
+	fromArea.clip(area);
+	fromArea.setWidth (MIN(fromArea.width() , toArea.width()));
+	fromArea.setHeight(MIN(fromArea.height(), toArea.height()));
+	if (fromArea.isEmpty())
 		return;
 
-	right  = MIN<uint32>(MIN<uint32>(_width  - 1, from.getWidth()  - 1), right);
-	bottom = MIN<uint32>(MIN<uint32>(_height - 1, from.getHeight() - 1), bottom);
+	uint32 w = fromArea.width();
+	uint32 h = fromArea.height();
 
-	uint32 w = right  - left + 1;
-	uint32 h = bottom - top  + 1;
-
-	const byte *src = from.getData() + top * from.getWidth() + left;
+	const byte *src = from.getData() + fromArea.top * from.getWidth() + fromArea.left;
 	byte *dst = _data + y * _width + x;
 
 	if (transp) {
@@ -275,7 +285,7 @@ void Sprite::blit(const Sprite &from,
 }
 
 void Sprite::blit(const Sprite &from, uint32 x, uint32 y, bool transp) {
-	blit(from, 0, 0, from.getWidth() - 1, from.getHeight() - 1, x, y, transp);
+	blit(from, from.getArea(), x, y, transp);
 }
 
 void Sprite::fill(byte c) {
