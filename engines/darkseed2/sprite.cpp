@@ -314,6 +314,18 @@ void Sprite::shade(byte c) {
 	}
 }
 
+void Sprite::recolor(byte oldColor, byte newColor) {
+	uint32 n = _width * _height;
+	byte *data = _data;
+
+	while (n-- > 0) {
+		if (*data == oldColor)
+			*data = newColor;
+
+		data++;
+	}
+}
+
 ::Graphics::Surface *Sprite::wrapInSurface() const {
 	::Graphics::Surface *surface = new ::Graphics::Surface;
 

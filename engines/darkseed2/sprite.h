@@ -95,6 +95,9 @@ public:
 	/** Fill the sprite with a "shading" grid. */
 	void shade(byte c);
 
+	/** Change pixels of color oldColor to newColor. */
+	void recolor(byte oldColor, byte newColor);
+
 	void applyChangeSet(const Common::Array<byte> &changeSet);
 
 	void drawStrings(const Common::StringList &strings, const ::Graphics::Font &font,
