@@ -76,6 +76,11 @@ void Graphics::setPalette(const Palette &pal) {
 	_gamePalette[1] = 0;
 	_gamePalette[2] = 0;
 
+	// Some standard colors
+	_gamePalette.addColor(255, 255, 255, true);
+	_gamePalette.addColor(  0,   0,   0, true);
+	_gamePalette.addColor(239, 167, 127, true);
+
 	applyGamePalette();
 }
 

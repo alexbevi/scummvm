@@ -116,10 +116,16 @@ private:
 
 	Sprite _box;
 
+	byte _colorSelected;
+	byte _colorUnselected;
+	byte _colorBlack;
+
 	void loadSprites();
 	void resetSprites();
 
 	void rebuild();
+
+	void updateColors();
 
 	void clearLines();
 	void updateLines();

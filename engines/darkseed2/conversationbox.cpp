@@ -97,6 +97,8 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables, Gra
 	_markerSelect   = 0;
 	_markerUnselect = 0;
 
+	updateColors();
+
 	_textAreas[0] = Common::Rect(_textMargin, _textHeight * 1,
 			_width - 2 * _textMargin, _textHeight * 2);
 	_textAreas[1] = Common::Rect(_textMargin, _textHeight * 2,
@@ -120,7 +122,14 @@ ConversationBox::~ConversationBox() {
 	delete[] _origSprites;
 }
 
+void ConversationBox::updateColors() {
+	_colorSelected   = _graphics->getPalette().findWhite();
+	_colorUnselected = _graphics->getPalette().findColor(239, 167, 127);
+	_colorBlack      = _graphics->getPalette().findBlack();
+}
+
 void ConversationBox::newPalette() {
+	updateColors();
 	resetSprites();
 	rebuild();
 }
@@ -161,15 +170,13 @@ void ConversationBox::resetSprites() {
 	}
 
 	_sprites[1].create(_textAreaWidth, _textAreaHeight);
-	_sprites[1].shade(_graphics->getPalette().findBlack());
+	_sprites[1].shade(_colorBlack);
 
 	delete _markerSelect;
 	delete _markerUnselect;
 
-	byte white = _graphics->getPalette().findWhite();
-
-	_markerSelect   = new TextObject(">", _textMargin - 9, 0, white);
-	_markerUnselect = new TextObject("-", _textMargin - 8, 0, white);
+	_markerSelect   = new TextObject(">", _textMargin - 9, 0, _colorSelected);
+	_markerUnselect = new TextObject("-", _textMargin - 8, 0, _colorUnselected);
 }
 
 void ConversationBox::rebuild() {
@@ -213,11 +220,9 @@ void ConversationBox::updateLines() {
 	if (_conversation->hasEnded())
 		return;
 
-	byte white = _graphics->getPalette().findWhite();
-
 	Common::Array<TalkLine *> lines = _conversation->getCurrentLines(*_resources);
 	for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
-		Line *line = new Line(*it, white);
+		Line *line = new Line(*it, _colorUnselected);
 
 		_lines.push_back(line);
 		_physLineCount += line->texts.size();
@@ -251,6 +256,11 @@ void ConversationBox::drawLines() {
 	if (findPhysLine(_physLineTop, curLine)) {
 		for (int i = 0; i < 3; i++) {
 			TextObject &text = curLine.getTextObject();
+
+			if ((curLine.getLineNum() + 1) == _selected)
+				text.recolor(_colorSelected);
+			else
+				text.recolor(_colorUnselected);
 
 			text.move(_textAreas[i].left, _textAreas[i].top);
 			text.redraw(_box, text.getArea());
