@@ -61,6 +61,7 @@ public:
 	void redraw(Sprite &sprite, uint32 x, uint32 y, const Common::Rect &area);
 
 	void notifyMouseMove(uint32 x, uint32 y);
+	void notifyClicked(uint32 x, uint32 y);
 
 private:
 	static const uint32 _textAreaWidth  = 512;
@@ -138,6 +139,7 @@ private:
 	bool nextPhysRealLine(PhysLineRef &ref) const;
 
 	int getTextArea(uint32 x, uint32 y);
+	Line *getSelectedLine();
 };
 
 } // End of namespace DarkSeed2

@@ -343,12 +343,31 @@ void ConversationBox::notifyMouseMove(uint32 x, uint32 y) {
 	}
 }
 
+void ConversationBox::notifyClicked(uint32 x, uint32 y) {
+	notifyMouseMove(x, y);
+
+	Line *selLine = getSelectedLine();
+	if (!selLine)
+		return;
+
+	_conversation->pick(selLine->talk->getName());
+	updateLines();
+	drawLines();
+}
+
 int ConversationBox::getTextArea(uint32 x, uint32 y) {
 	for (int i = 0; i < 3; i++)
 		if (_textAreas[i].contains(x, y))
 			return i + 1;
 
 	return 0;
+}
+
+ConversationBox::Line *ConversationBox::getSelectedLine() {
+	if ((_selected == 0) || (_selected > _lines.size()))
+		return 0;
+
+	return _lines[_selected - 1];
 }
 
 } // End of namespace DarkSeed2

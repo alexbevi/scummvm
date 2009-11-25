@@ -119,10 +119,17 @@ void Events::handleInput() {
 }
 
 void Events::mouseMoved(uint32 x, uint32 y) {
-	_vm->_graphics->getConversationBox().notifyMouseMove(x - Graphics::_conversationX, y - Graphics::_conversationY);
+	uint32 convX = x - Graphics::_conversationX;
+	uint32 convY = y - Graphics::_conversationY;
+
+	_vm->_graphics->getConversationBox().notifyMouseMove(convX, convY);
 }
 
 void Events::mouseClickedLeft(uint32 x, uint32 y) {
+	uint32 convX = x - Graphics::_conversationX;
+	uint32 convY = y - Graphics::_conversationY;
+
+	_vm->_graphics->getConversationBox().notifyClicked(convX, convY);
 }
 
 void Events::mouseClickedRight(uint32 x, uint32 y) {
