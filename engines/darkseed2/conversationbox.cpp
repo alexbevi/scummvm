@@ -26,15 +26,21 @@
 #include "common/str.h"
 
 #include "engines/darkseed2/conversationbox.h"
+#include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/conversation.h"
 #include "engines/darkseed2/graphicalobject.h"
 #include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
 
-ConversationBox::ConversationBox(Resources &resources, Graphics &graphics) {
+ConversationBox::ConversationBox(Resources &resources, Variables &variables, Graphics &graphics) {
 	_resources = &resources;
+	_variables = &variables;
 	_graphics  = &graphics;
+
+	_conversation = new Conversation(*_variables);
 
 	_box.create(640, 70);
 
@@ -60,6 +66,8 @@ ConversationBox::ConversationBox(Resources &resources, Graphics &graphics) {
 }
 
 ConversationBox::~ConversationBox() {
+	delete _conversation;
+
 	delete _markerSelect;
 	delete _markerUnselect;
 
@@ -77,13 +85,17 @@ void ConversationBox::newPalette() {
 	rebuild();
 }
 
-void ConversationBox::start(const Common::String &conversation) {
-	// TODO
+bool ConversationBox::start(const Common::String &conversation) {
+	if (!_conversation->parse(*_resources, conversation))
+		return false;
+
+	_graphics->redraw(kScreenPartConversation);
+
+	return true;
 }
 
 bool ConversationBox::isActive() const {
-	// TODO
-	return true;
+	return !_conversation->hasEnded();
 }
 
 void ConversationBox::loadSprites() {

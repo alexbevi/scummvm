@@ -46,6 +46,11 @@ class ConversationBox;
 class Resource;
 class TextObject;
 
+enum ScreenPart {
+	kScreenPartPlayArea,
+	kScreenPartConversation
+};
+
 class Graphics {
 public:
 	static const int _screenWidth  = 640;
@@ -73,6 +78,8 @@ public:
 	void mergePalette(Sprite &sprite);
 
 	const Palette &getPalette() const;
+
+	void redraw(ScreenPart part);
 
 	void retrace();
 

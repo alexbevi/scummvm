@@ -120,6 +120,9 @@ Common::Error DarkSeed2Engine::run() {
 	else
 		warning("Successfully parsed room 0806");
 
+	warning("Loading conversation CONV0001: %d",
+			_graphics->getConversationBox().start("CONV0001"));
+
 	_events->mainLoop();
 
 	return Common::kNoError;

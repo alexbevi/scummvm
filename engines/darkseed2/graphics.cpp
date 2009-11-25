@@ -56,7 +56,7 @@ Graphics::~Graphics() {
 }
 
 void Graphics::init() {
-	_conversationBox = new ConversationBox(*_resources, *this);
+	_conversationBox = new ConversationBox(*_resources, *_variables, *this);
 }
 
 ConversationBox &Graphics::getConversationBox() {
@@ -131,6 +131,17 @@ void Graphics::mergePalette(Sprite &from) {
 
 const Palette &Graphics::getPalette() const {
 	return _gamePalette;
+}
+
+void Graphics::redraw(ScreenPart part) {
+	switch (part) {
+	case kScreenPartPlayArea:
+		break;
+
+	case kScreenPartConversation:
+		redrawScreen(0, 410, 639, 479);
+		break;
+	}
 }
 
 void Graphics::retrace() {

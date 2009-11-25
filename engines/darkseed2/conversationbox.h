@@ -35,18 +35,22 @@ namespace Common {
 
 namespace DarkSeed2 {
 
+class Resources;
+class Variables;
 class Graphics;
+
+class Conversation;
 
 class TextObject;
 class Sprite;
 
 class ConversationBox {
 public:
-	ConversationBox(Resources &resources, Graphics &graphics);
+	ConversationBox(Resources &resources, Variables &variables, Graphics &graphics);
 	~ConversationBox();
 
 	void newPalette();
-	void start(const Common::String &conversation);
+	bool start(const Common::String &conversation);
 
 	bool isActive() const;
 
@@ -54,7 +58,10 @@ public:
 
 private:
 	Resources *_resources;
+	Variables *_variables;
 	Graphics  *_graphics;
+
+	Conversation *_conversation;
 
 	Sprite *_origSprites;
 	Sprite *_sprites;
