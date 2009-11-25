@@ -61,10 +61,14 @@ public:
 
 	void redraw(Sprite &sprite, Common::Rect area);
 
+	void recolor(byte color);
+
 	static uint32 wrap(const Common::String &string, Common::StringList &list, uint32 maxWidth);
 
 private:
 	Sprite *_sprite;
+
+	byte _color;
 };
 
 } // End of namespace DarkSeed2

@@ -52,6 +52,8 @@ void GraphicalObject::move(uint32 x, uint32 y) {
 TextObject::TextObject(const Common::String &text, uint32 x, uint32 y,
 		byte color, uint32 maxWidth) {
 
+	_color = color;
+
 	if (maxWidth == 0)
 		maxWidth = Graphics::_screenWidth;
 
@@ -91,6 +93,14 @@ void TextObject::redraw(Sprite &sprite, Common::Rect area) {
 	area.moveTo(0, 0);
 
 	sprite.blit(*_sprite, area, x, y, true);
+}
+
+void TextObject::recolor(byte color) {
+	if (_color == color)
+		return;
+
+	_sprite->recolor(_color, color);
+	_color = color;
 }
 
 uint32 TextObject::wrap(const Common::String &string, Common::StringList &list, uint32 maxWidth) {
