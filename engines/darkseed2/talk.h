@@ -32,10 +32,11 @@
 
 namespace DarkSeed2 {
 
-class Resource;
 class Resources;
-class Sound;
 class Graphics;
+
+class Resource;
+class Sound;
 
 class TalkLine {
 public:

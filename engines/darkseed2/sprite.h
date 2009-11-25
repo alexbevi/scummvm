@@ -46,6 +46,7 @@ namespace Graphics {
 namespace DarkSeed2 {
 
 class Resources;
+
 class Resource;
 class StaticCursor;
 

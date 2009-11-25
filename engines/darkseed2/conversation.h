@@ -34,9 +34,10 @@
 
 namespace DarkSeed2 {
 
-class Variables;
-class DATFile;
 class Resources;
+class Variables;
+
+class DATFile;
 class TalkLine;
 
 class Conversation {

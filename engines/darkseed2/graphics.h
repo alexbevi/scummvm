@@ -38,6 +38,9 @@ namespace Common {
 
 namespace DarkSeed2 {
 
+class Resources;
+class Variables;
+
 class Resource;
 class TextObject;
 
@@ -46,7 +49,7 @@ public:
 	static const int _screenWidth  = 640;
 	static const int _screenHeight = 480;
 
-	Graphics();
+	Graphics(Resources &resources, Variables &variables);
 	~Graphics();
 
 	void clearPalette();
@@ -71,6 +74,9 @@ public:
 	void unregisterBackground();
 
 private:
+	Resources *_resources;
+	Variables *_variables;
+
 	Palette _gamePalette;
 	Sprite _screen;
 

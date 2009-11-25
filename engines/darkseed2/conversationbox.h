@@ -36,6 +36,7 @@ namespace Common {
 namespace DarkSeed2 {
 
 class Graphics;
+
 class TextObject;
 
 class ConversationBox {

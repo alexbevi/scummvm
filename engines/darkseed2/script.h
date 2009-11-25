@@ -38,6 +38,7 @@ namespace Common {
 namespace DarkSeed2 {
 
 class Variables;
+
 class DATFile;
 
 /** All possible actions a script can perform. */

@@ -31,10 +31,11 @@
 
 namespace DarkSeed2 {
 
+class Resources;
 class Variables;
+
 class DATFile;
 class ScriptChunk;
-class Resources;
 
 enum RoomVerb {
 	kRoomVerbEntry = 0,

@@ -43,10 +43,10 @@ struct DS2GameDescription;
 class Options;
 class Cursors;
 class Resources;
-class Graphics;
 class Sound;
 class Music;
 class Variables;
+class Graphics;
 class TalkManager;
 class Events;
 
@@ -55,10 +55,10 @@ public:
 	Options     *_options;
 	Cursors     *_cursors;
 	Resources   *_resources;
-	Graphics    *_graphics;
 	Sound       *_sound;
 	Music       *_music;
 	Variables   *_variables;
+	Graphics    *_graphics;
 	TalkManager *_talkMan;
 	Events      *_events;
 

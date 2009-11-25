@@ -26,12 +26,16 @@
 #include "common/stream.h"
 
 #include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/graphicalobject.h"
 
 namespace DarkSeed2 {
 
-Graphics::Graphics() {
+Graphics::Graphics(Resources &resources, Variables &variables) {
+	_resources = &resources;
+	_variables = &variables;
+
 	clearPalette();
 
 	_screen.create(_screenWidth, _screenHeight);

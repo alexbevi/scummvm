@@ -34,6 +34,7 @@
 namespace DarkSeed2 {
 
 class Variables;
+
 class DATFile;
 class ScriptChunk;
 

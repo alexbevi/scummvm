@@ -60,10 +60,10 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	_options   = 0;
 	_cursors   = 0;
 	_resources = 0;
-	_graphics  = 0;
 	_sound     = 0;
 	_music     = 0;
 	_variables = 0;
+	_graphics  = 0;
 	_talkMan   = 0;
 	_events    = 0;
 }
@@ -76,10 +76,11 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 
 	delete _events;
 	delete _talkMan;
+	delete _graphics;
+
 	delete _variables;
 	delete _music;
 	delete _sound;
-	delete _graphics;
 	delete _resources;
 	delete _cursors;
 	delete _options;
@@ -211,12 +212,13 @@ bool DarkSeed2Engine::init() {
 
 	_options   = new Options();
 	_cursors   = new Cursors();
+	_variables = new Variables();
 	_resources = new Resources();
-	_graphics  = new Graphics();
 	_sound     = new Sound(*_mixer);
 	_music     = new Music(*_mixer, *_midiDriver);
-	_variables = new Variables();
+	_graphics  = new Graphics(*_resources, *_variables);
 	_talkMan   = new TalkManager(*_sound, *_graphics);
+
 	_events    = new Events(*this);
 
 	syncSoundSettings();

@@ -37,7 +37,9 @@ static const char *roomVerb[] = {
 	"EntryStart", "MirrorStart", "MusicStart", "PaletteStart", "SpriteStart"
 };
 
-Room::Room(Variables &variables) : ObjectContainer(variables), _variables(&variables) {
+Room::Room(Variables &variables) : ObjectContainer(variables) {
+	_variables = &variables;
+
 	clear();
 }
 
