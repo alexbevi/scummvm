@@ -101,6 +101,19 @@ bool Variables::loadFromIDX(const Resource &idx) {
 	return loadFromIDX(idx.getStream());
 }
 
+bool Variables::loadFromIDX(const Resources &resources, const Common::String &idx) {
+	if (!resources.hasResource(idx + ".IDX"))
+		return false;
+
+	Resource *resIDX = resources.getResource(idx + ".IDX");
+
+	bool result = loadFromIDX(*resIDX);
+
+	delete resIDX;
+
+	return result;
+}
+
 bool Variables::evalCondition(const Common::String &condition) const {
 	bool result = true;
 

@@ -40,6 +40,8 @@ namespace Common {
 
 namespace DarkSeed2 {
 
+class Resources;
+
 class Resource;
 
 class Variables {
@@ -59,6 +61,8 @@ public:
 	bool loadFromIDX(Common::SeekableReadStream &idx);
 	/*** Load initial variable values from an IDX file. */
 	bool loadFromIDX(const Resource &idx);
+	/*** Load initial variable values from an IDX file. */
+	bool loadFromIDX(const Resources &resources, const Common::String &idx);
 
 	/** Evaluates a condition string, like they are found in the game scripts. */
 	bool evalCondition(const Common::String &condition) const;

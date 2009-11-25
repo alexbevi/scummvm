@@ -171,12 +171,10 @@ bool DarkSeed2Engine::init() {
 
 	warning("Initializing game variables...");
 
-	Resource *idx = _resources->getResource("GAMEVAR.IDX");
-	if (!_variables->loadFromIDX(*idx)) {
+	if (!_variables->loadFromIDX(*_resources, "GAMEVAR")) {
 		warning("Couldn't load initial variables values");
 		return false;
 	}
-	delete idx;
 
 	return true;
 }
