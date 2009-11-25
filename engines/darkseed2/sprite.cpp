@@ -280,7 +280,7 @@ void Sprite::blit(const Sprite &from, const Common::Rect &area,
 			dst += _width;
 		}
 	} else
-		for (; h > 0; h--, src += _width, dst += from.getWidth())
+		for (; h > 0; h--, src += from.getWidth(), dst += _width)
 			memcpy(dst, src, w);
 }
 
