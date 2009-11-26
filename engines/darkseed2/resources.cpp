@@ -396,10 +396,12 @@ uint32 Resources::uncompressGlueChunk(byte *outBuf, const byte *inBuf, int n) co
 			offset = (count >> 4)  + 1;
 			count  = (count & 0xF) + 3;
 
-			memmove(outBuf, outBuf - offset, 8);
+			for (int i = 0; i < 8; i++)
+				outBuf[i] = outBuf[-offset + i];
 
 			if (count > 8)
-				memmove(outBuf + 8, outBuf - offset + 8, 10);
+				for (int i = 0; i < 10; i++)
+					outBuf[i + 8] = outBuf[-offset + 8 + i];
 
 			outBuf += count;
 			countWritten += count;
