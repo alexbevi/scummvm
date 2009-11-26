@@ -305,13 +305,8 @@ bool Conversation::addEntry(Entry &entry, DATFile &conversation) {
 bool Conversation::addEntry(Node &node, const Common::String &args, DATFile &conversation) {
 	Common::Array<Common::String> lArgs = DATFile::argGet(args);
 
-	if ((lArgs.size() != 1) && (lArgs.size() != 2)) {
+	if (lArgs.size() < 1) {
 		warning("Conversation::addEntry(): Broken arguments");
-		return false;
-	}
-
-	if ((lArgs.size() == 2) && !lArgs[1].equalsIgnoreCase("initial")) {
-		warning("Conversation::addEntry(): Unknown modifier \"%s\"", lArgs[1].c_str());
 		return false;
 	}
 
@@ -322,8 +317,17 @@ bool Conversation::addEntry(Node &node, const Common::String &args, DATFile &con
 		return false;
 	}
 
-	if ((lArgs.size() == 2)) {
-		entry->initial = true;
+	for (uint i = 1; i < lArgs.size(); i++) {
+		if (lArgs[i].empty())
+			continue;
+
+		if (lArgs[i].equalsIgnoreCase("initial")) {
+			// Shown at startup
+			entry->initial = true;
+		} else {
+			warning("Conversation::addEntry(): Unknown modifier \"%s\"", lArgs[i].c_str());
+			return false;
+		}
 	}
 
 	entry->name = lArgs[0];
