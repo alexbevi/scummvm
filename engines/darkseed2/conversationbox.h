@@ -38,6 +38,7 @@ namespace DarkSeed2 {
 class Resources;
 class Variables;
 class Graphics;
+class TalkManager;
 
 class Conversation;
 
@@ -50,7 +51,8 @@ public:
 	static const uint32 _width  = 640;
 	static const uint32 _height = 70;
 
-	ConversationBox(Resources &resources, Variables &variables, Graphics &graphics);
+	ConversationBox(Resources &resources, Variables &variables,
+			Graphics &graphics, TalkManager &talkManager);
 	~ConversationBox();
 
 	void newPalette();
@@ -63,6 +65,8 @@ public:
 	void notifyMouseMove(uint32 x, uint32 y);
 	void notifyClicked(uint32 x, uint32 y);
 
+	void updateStatus();
+
 private:
 	static const uint32 _textAreaWidth  = 512;
 	static const uint32 _textAreaHeight = 50;
@@ -73,6 +77,12 @@ private:
 		kScrollActionUp,
 		kScrollActionDown,
 		kScrollActionNone
+	};
+
+	enum State {
+		kStateWaitUserAction,
+		kStatePlayingLine,
+		kStatePlayingReply
 	};
 
 	struct Line {
@@ -101,9 +111,10 @@ private:
 		bool isTop() const;
 	};
 
-	Resources *_resources;
-	Variables *_variables;
-	Graphics  *_graphics;
+	Resources   *_resources;
+	Variables   *_variables;
+	Graphics    *_graphics;
+	TalkManager *_talkMan;
 
 	Conversation *_conversation;
 
@@ -129,6 +140,13 @@ private:
 	byte _colorUnselected;
 	byte _colorBlack;
 
+	State _state;
+
+	uint32 _mouseX;
+	uint32 _mouseY;
+
+	TalkLine *_nextReply;
+
 	void loadSprites();
 	void resetSprites();
 
@@ -143,6 +161,7 @@ private:
 	void redrawLines();
 
 	void doScroll(ScrollAction scroll);
+	void pickLine(Line *line);
 
 	uint32 physLineNumToRealLineNum(uint32 physLineNum) const;
 
@@ -158,6 +177,8 @@ private:
 	bool canScroll() const;
 	bool canScrollUp() const;
 	bool canScrollDown() const;
+
+	void speakLine(TalkLine &line);
 };
 
 } // End of namespace DarkSeed2

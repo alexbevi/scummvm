@@ -28,6 +28,7 @@
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/graphicalobject.h"
 
@@ -55,12 +56,18 @@ Graphics::~Graphics() {
 	delete _talk;
 }
 
-void Graphics::init() {
-	_conversationBox = new ConversationBox(*_resources, *_variables, *this);
+void Graphics::init(TalkManager &talkManager) {
+	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager);
 }
 
 ConversationBox &Graphics::getConversationBox() {
 	return *_conversationBox;
+}
+
+void Graphics::updateStatus() {
+	assert(_conversationBox);
+
+	_conversationBox->updateStatus();
 }
 
 void Graphics::clearPalette() {

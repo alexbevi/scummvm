@@ -185,7 +185,7 @@ bool DarkSeed2Engine::init() {
 bool DarkSeed2Engine::initGraphics() {
 	warning("Setting up graphics");
 
-	_graphics->init();
+	_graphics->init(*_talkMan);
 
 	::initGraphics(_graphics->_screenWidth, _graphics->_screenHeight, true);
 	return true;

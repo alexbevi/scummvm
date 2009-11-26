@@ -46,6 +46,9 @@ public:
 	const Common::String &getName() const;
 	void setName(const Common::String &name);
 
+	uint8 getSpeaker() const;
+	void setSpeaker(uint8 speaker);
+
 	bool hasWAV() const;
 	bool hasTXT() const;
 
@@ -58,6 +61,8 @@ private:
 	Common::String _resource;
 	Common::String _name;
 
+	uint8 _speaker;
+
 	Resource *_wav;
 	Common::String _txt;
 };
@@ -69,6 +74,8 @@ public:
 
 	bool talk(const TalkLine &talkLine);
 	void endTalk();
+
+	bool isTalking() const;
 
 	void updateStatus();
 

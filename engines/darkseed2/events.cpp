@@ -64,6 +64,7 @@ void Events::mainLoop() {
 		g_system->delayMillis(10);
 
 		_vm->_talkMan->updateStatus();
+		_vm->_graphics->updateStatus();
 
 		_vm->_graphics->retrace();
 		g_system->updateScreen();

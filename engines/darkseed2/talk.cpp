@@ -38,6 +38,8 @@ TalkLine::TalkLine(const Resources &resources, const Common::String &talkName) {
 
 	_resource = talkName;
 
+	_speaker = 0;
+
 	_wav = 0;
 
 	// Reading the sound
@@ -96,6 +98,14 @@ void TalkLine::setName(const Common::String &name) {
 	_name = name;
 }
 
+uint8 TalkLine::getSpeaker() const {
+	return _speaker;
+}
+
+void TalkLine::setSpeaker(uint8 speaker) {
+	_speaker = speaker;
+}
+
 
 TalkManager::TalkManager(Sound &sound, Graphics &graphics) {
 	_sound    = &sound;
@@ -116,7 +126,13 @@ bool TalkManager::talk(const TalkLine &talkLine) {
 			return false;
 		}
 
-		TextObject *talkObject = new TextObject(talkLine.getTXT(), 5, 0, 7, 300);
+		byte color;
+		if (talkLine.getSpeaker() == 0)
+			color = _graphics->getPalette().findWhite();
+		else
+			color = _graphics->getPalette().findColor(239, 167, 127);
+
+		TextObject *talkObject = new TextObject(talkLine.getTXT(), 5, 0, color, 300);
 
 		_graphics->talk(talkObject);
 
@@ -132,6 +148,10 @@ void TalkManager::endTalk() {
 	_sound->stopID(_curTalk);
 	_graphics->talkEnd();
 	_curTalk = -1;
+}
+
+bool TalkManager::isTalking() const {
+	return _curTalk != -1;
 }
 
 void TalkManager::updateStatus() {

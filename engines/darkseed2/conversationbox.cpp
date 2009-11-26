@@ -27,10 +27,10 @@
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/conversation.h"
 #include "engines/darkseed2/graphicalobject.h"
 #include "engines/darkseed2/sprite.h"
-#include "engines/darkseed2/talk.h"
 
 namespace DarkSeed2 {
 
@@ -81,10 +81,13 @@ bool ConversationBox::PhysLineRef::isTop() const {
 }
 
 
-ConversationBox::ConversationBox(Resources &resources, Variables &variables, Graphics &graphics) {
+ConversationBox::ConversationBox(Resources &resources, Variables &variables,
+		Graphics &graphics, TalkManager &talkManager) {
+
 	_resources = &resources;
 	_variables = &variables;
 	_graphics  = &graphics;
+	_talkMan   = &talkManager;
 
 	_conversation = new Conversation(*_variables);
 
@@ -100,6 +103,9 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables, Gra
 
 	_markerSelect   = 0;
 	_markerUnselect = 0;
+
+	_state = kStateWaitUserAction;
+	_nextReply = 0;
 
 	updateColors();
 
@@ -213,12 +219,17 @@ void ConversationBox::redraw(Sprite &sprite, uint32 x, uint32 y, const Common::R
 }
 
 void ConversationBox::clearLines() {
+	delete _nextReply;
+	_nextReply = 0;
+
 	for (Common::Array<Line *>::iterator it = _lines.begin(); it != _lines.end(); ++it)
 		delete *it;
 	_lines.clear();
 
 	_physLineCount = 0;
 	_physLineTop   = 0;
+
+	_state = kStateWaitUserAction;
 }
 
 void ConversationBox::updateLines() {
@@ -344,6 +355,12 @@ void ConversationBox::notifyMouseMove(uint32 x, uint32 y) {
 	if (!isActive())
 		return;
 
+	_mouseX = x;
+	_mouseY = y;
+
+	if (_state != kStateWaitUserAction)
+		return;
+
 	uint32 selected = getTextArea(x, y);
 
 	if (selected != _selected) {
@@ -358,14 +375,58 @@ void ConversationBox::notifyClicked(uint32 x, uint32 y) {
 
 	notifyMouseMove(x, y);
 
-	doScroll(getScrollAction(x, y));
+	if (_state != kStateWaitUserAction)
+		return;
 
-	Line *selLine = getSelectedLine();
-	if (selLine) {
-		_conversation->pick(selLine->talk->getName());
+	doScroll(getScrollAction(x, y));
+	pickLine(getSelectedLine());
+}
+
+void ConversationBox::updateStatus() {
+	if (_state == kStateWaitUserAction)
+		return;
+
+	if (_state == kStatePlayingLine) {
+		if (_talkMan->isTalking())
+			// Still talking, we'll continue waiting
+			return;
+
+		// Playing the reply
+		if (_nextReply)
+			speakLine(*_nextReply);
+
+		_state = kStatePlayingReply;
+		return;
+	}
+
+	if (_state == kStatePlayingReply) {
+		if (_talkMan->isTalking())
+			// Still talking, we'll continue waiting
+			return;
+
+		delete _nextReply;
+		_nextReply = 0;
+
+		// Done playing, show the next lines
 		updateLines();
 		drawLines();
+
+		_state = kStateWaitUserAction;
+		return;
 	}
+}
+
+void ConversationBox::pickLine(Line *line) {
+	if (!line)
+		return;
+
+	_nextReply = _conversation->getReply(*_resources, line->talk->getName());
+
+	speakLine(*line->talk);
+
+	_state = kStatePlayingLine;
+
+	_conversation->pick(line->talk->getName());
 }
 
 int ConversationBox::getTextArea(uint32 x, uint32 y) {
@@ -446,6 +507,10 @@ uint32 ConversationBox::physLineNumToRealLineNum(uint32 physLineNum) const {
 	}
 
 	return 0;
+}
+
+void ConversationBox::speakLine(TalkLine &line) {
+	_talkMan->talk(line);
 }
 
 } // End of namespace DarkSeed2

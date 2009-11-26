@@ -40,6 +40,7 @@ namespace DarkSeed2 {
 
 class Resources;
 class Variables;
+class TalkManager;
 
 class ConversationBox;
 
@@ -61,9 +62,11 @@ public:
 	Graphics(Resources &resources, Variables &variables);
 	~Graphics();
 
-	void init();
+	void init(TalkManager &talkManager);
 
 	ConversationBox &getConversationBox();
+
+	void updateStatus();
 
 	void clearPalette();
 	void setPalette(const Palette &pal);

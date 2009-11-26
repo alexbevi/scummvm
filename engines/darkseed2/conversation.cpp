@@ -355,6 +355,7 @@ Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) co
 		TalkLine *line = new TalkLine(resources, (*it)->text);
 
 		line->setName((*it)->name);
+		line->setSpeaker(0);
 
 		lines.push_back(line);
 	}
@@ -368,7 +369,11 @@ TalkLine *Conversation::getReply(Resources &resources, const Common::String &ent
 
 	Entry *e = _currentNode->entries.getVal(entry);
 
-	return new TalkLine(resources, e->message);
+	TalkLine *line = new TalkLine(resources, e->message);
+
+	line->setSpeaker(1);
+
+	return line;
 }
 
 void Conversation::hide(const Common::String &entry) {
