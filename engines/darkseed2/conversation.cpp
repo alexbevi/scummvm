@@ -180,7 +180,7 @@ bool Conversation::handleAssign(Entry &entry, const Common::String &args, uint8 
 	Common::Array<Common::String> lArgs = DATFile::argGet(args);
 
 	if (lArgs.size() != 2) {
-		warning("Conversation::handleAssign(): Broken arguments");
+		warning("Conversation::handleAssign(): Broken arguments: %s", args.c_str());
 		return false;
 	}
 
@@ -307,7 +307,10 @@ bool Conversation::addEntry(Entry &entry, DATFile &conversation) {
 		} else if (cmd->equalsIgnoreCase("assign")) {
 			// Assigning a value to a variable
 
-			if (!handleAssign(entry, *args, curSpeaker))
+			Common::String sArgs = *args;
+			stripComma(sArgs);
+
+			if (!handleAssign(entry, sArgs, curSpeaker))
 				return false;
 
 		} else {
@@ -441,6 +444,22 @@ bool Conversation::parseNode(const Common::String &args, DATFile &conversation) 
 		_startNode = node;
 
 	return true;
+}
+
+void Conversation::stripComma(Common::String &str) {
+	const char *c;
+	while ((c = strchr(str.c_str(), ',')) != 0) {
+		if (c == str.c_str())
+			str.deleteChar(0);
+		else if ((c[1] == ' ') || (c[-1] == ' '))
+			str.deleteChar(c - str.c_str());
+		else
+			str.setChar(' ', c - str.c_str());
+	}
+
+	for (Common::String::iterator it = str.begin(); it != str.end(); ++it)
+		if (*it == ',')
+			*it = ' ';
 }
 
 void Conversation::nextActiveNode() {

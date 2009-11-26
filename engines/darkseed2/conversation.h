@@ -169,6 +169,7 @@ private:
 	bool addHide(Entry &entry, const Common::String &args);
 	bool addMessage(Entry &entry, const Common::String &args, uint8 speaker);
 	bool setText(Entry &entry, const Common::String &args);
+	void stripComma(Common::String &str);
 };
 
 } // End of namespace DarkSeed2
