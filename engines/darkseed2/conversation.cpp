@@ -46,6 +46,7 @@ Conversation::Assign::Assign(const Common::String &var, const Common::String &va
 
 Conversation::Entry::Entry(Node &pa) {
 	visible   = false;
+	persist   = false;
 	initial   = false;
 	destroyed = false;
 	parent = &pa;
@@ -347,6 +348,8 @@ bool Conversation::addEntry(Node &node, const Common::String &args, DATFile &con
 		if (lArgs[i].equalsIgnoreCase("initial")) {
 			// Shown at startup
 			entry->initial = true;
+		} else if (lArgs[i].equalsIgnoreCase("persist")) {
+			entry->persist = true;
 		} else {
 			warning("Conversation::addEntry(): Unknown modifier \"%s\"", lArgs[i].c_str());
 			return false;
@@ -466,9 +469,8 @@ void Conversation::nextActiveNode() {
 		return;
 
 	// While there's still a node and it doesn't have any entries...
-	while (_currentNode && _currentNode->entries.empty())
-		// ...follow the gotos
-		goTo(_currentNode->goTo);
+	while (_currentNode && !_currentNode->goTo.empty() && goTo(_currentNode->goTo)) {
+	}
 }
 
 Common::Array<Conversation::Entry *> Conversation::getVisibleEntries(Node &node) {
@@ -644,7 +646,9 @@ bool Conversation::hasEnded() const {
 	return !_ready || _currentNode == 0;
 }
 
-void Conversation::goTo(const Common::Array<Action> &node) {
+bool Conversation::goTo(const Common::Array<Action> &node) {
+	bool gone = false;
+
 	_currentNode = 0;
 
 	for (Common::Array<Action>::const_iterator it = node.begin(); it != node.end(); ++it) {
@@ -656,16 +660,17 @@ void Conversation::goTo(const Common::Array<Action> &node) {
 			// This is an exit
 			break;
 
+		gone = true;
 		_currentNode = _nodes.getVal(it->operand);
 		break;
 	}
 
 	if (!_currentNode)
-		return;
+		return gone;
 
 	if (_currentNode->entries.empty() && !_currentNode->goTo.empty())
 		// No entries, but gotos. Evaluate these instead
-		return;
+		return gone;
 
 	if (getVisibleEntries(*_currentNode).size() <= _currentNode->fallthroughNum) {
 		// Few enough visible entries, moving along to the fallthrough
@@ -676,12 +681,14 @@ void Conversation::goTo(const Common::Array<Action> &node) {
 
 			// No (valid) fallthrough, exit
 			_currentNode = 0;
-			return;
+			return true;
 		}
 
+		gone = true;
 		_currentNode = _nodes.getVal(fallthrough);
 	}
 
+	return gone;
 }
 
 void Conversation::pick(const Common::String &entry) {

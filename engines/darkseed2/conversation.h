@@ -89,6 +89,7 @@ private:
 
 	struct Entry {
 		bool visible;
+		bool persist;
 		bool initial;
 		bool destroyed;
 
@@ -151,7 +152,7 @@ private:
 	void destroy(const Common::Array<Action> &entries);
 	void assign(const Assign &entry);
 	void assign(const Common::Array<Assign> &entries);
-	void goTo(const Common::Array<Action> &node);
+	bool goTo(const Common::Array<Action> &node);
 
 	// Parsing helpers
 	bool addSpeaker(const Common::String &args);
