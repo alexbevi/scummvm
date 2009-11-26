@@ -54,11 +54,6 @@ void Room::clear() {
 	_background.clear();
 	_walkMap.clear();
 
-	_left   = 0;
-	_top    = 0;
-	_right  = 0;
-	_bottom = 0;
-
 	_walkMapArg1 = 0;
 	_walkMapArg2 = 0;
 
@@ -223,10 +218,8 @@ bool Room::setDimensions(const Common::String &args) {
 		return false;
 	}
 
-	_left   = atoi(lArgs[0].c_str());
-	_top    = atoi(lArgs[1].c_str());
-	_right  = atoi(lArgs[2].c_str()) - 1;
-	_bottom = atoi(lArgs[3].c_str()) - 1;
+	_area = Common::Rect(atoi(lArgs[0].c_str()), atoi(lArgs[1].c_str()),
+	                     atoi(lArgs[2].c_str()), atoi(lArgs[3].c_str()));
 
 	return true;
 }

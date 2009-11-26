@@ -36,18 +36,9 @@ static const char *objectVerb[] = {
 
 
 Object::Object() : _variables(0) {
-	_left   = 0;
-	_top    = 0;
-	_right  = 0;
-	_bottom = 0;
 }
 
 Object::Object(const Variables &variables) : _variables(&variables) {
-	_left   = 0;
-	_top    = 0;
-	_right  = 0;
-	_bottom = 0;
-
 	_scripts.resize(kObjectVerbNone);
 }
 
@@ -76,10 +67,8 @@ bool Object::setDimensions(const Common::String &args) {
 		return false;
 	}
 
-	_left   = atoi(lArgs[0].c_str());
-	_top    = atoi(lArgs[1].c_str());
-	_right  = atoi(lArgs[2].c_str()) - 1;
-	_bottom = atoi(lArgs[3].c_str()) - 1;
+	_area = Common::Rect(atoi(lArgs[0].c_str()), atoi(lArgs[1].c_str()),
+	                     atoi(lArgs[2].c_str()), atoi(lArgs[3].c_str()));
 
 	return true;
 }

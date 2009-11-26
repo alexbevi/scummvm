@@ -64,7 +64,7 @@ private:
 	Common::String _background;
 	Common::String _walkMap;
 
-	uint32 _left, _top, _right, _bottom;
+	Common::Rect _area;
 
 	uint32 _walkMapArg1, _walkMapArg2;
 

@@ -62,7 +62,7 @@ private:
 	const Variables *_variables;
 
 	Common::String _name;
-	uint32 _left, _top, _right, _bottom;
+	Common::Rect _area;
 
 	Common::Array< Common::List<ScriptChunk *> > _scripts;
 
