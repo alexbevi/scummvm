@@ -134,7 +134,13 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 }
 
 void Events::mouseClickedRight(uint32 x, uint32 y) {
-	cycleCursorMode();
+	if (!_vm->_graphics->getConversationBox().isActive() && !_vm->_talkMan->isTalking())
+		// If no one is talking and the conversation box isn't shown, cycle the mouse cursors
+		cycleCursorMode();
+
+	if (_vm->_talkMan->isTalking())
+		// Aborting talks with the right mouse button
+		_vm->_talkMan->endTalk();
 }
 
 void Events::cycleCursorMode() {
