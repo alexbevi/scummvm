@@ -375,10 +375,6 @@ bool Conversation::setFallthrough(Node &node, const Common::String &args) {
 	node.fallthroughNum = atoi(lArgs[0].c_str());
 	node.fallthrough = lArgs[1];
 
-	if (node.fallthroughNum != 0)
-		warning("Conversation::setFallthrough(): Fallthrough to \"%s\" with number %d\n",
-				node.fallthrough.c_str(), node.fallthroughNum);
-
 	return true;
 }
 
@@ -392,7 +388,7 @@ bool Conversation::parseNode(DATFile &conversation, Node &node) {
 			break;
 
 		} else if (cmd->equalsIgnoreCase("fallthrough")) {
-			// Unknown
+			// Fallthrough. When only n lines are avaible, automatically go to the specified node
 
 			if (!setFallthrough(node, *args))
 				return false;
@@ -665,8 +661,12 @@ void Conversation::goTo(const Common::Array<Action> &node) {
 	if (!_currentNode)
 		return;
 
-	if (getVisibleEntries(*_currentNode).empty() && _currentNode->goTo.empty()) {
-		// No visible entries and no gotos anymore, moving along to the fallthrough
+	if (_currentNode->entries.empty() && !_currentNode->goTo.empty())
+		// No entries, but gotos. Evaluate these instead
+		return;
+
+	if (getVisibleEntries(*_currentNode).size() <= _currentNode->fallthroughNum) {
+		// Few enough visible entries, moving along to the fallthrough
 
 		const Common::String fallthrough = _currentNode->fallthrough;
 		if (fallthrough.empty() ||
@@ -679,6 +679,7 @@ void Conversation::goTo(const Common::Array<Action> &node) {
 
 		_currentNode = _nodes.getVal(fallthrough);
 	}
+
 }
 
 void Conversation::pick(const Common::String &entry) {
