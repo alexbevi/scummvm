@@ -68,6 +68,10 @@ TextObject &ConversationBox::PhysLineRef::getTextObject() {
 	return **it3;
 }
 
+ConversationBox::Line *ConversationBox::PhysLineRef::getLine() {
+	return *it1;
+}
+
 uint32 ConversationBox::PhysLineRef::getLineNum() const {
 	return n;
 }
@@ -105,6 +109,9 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables, Gra
 			_width - 2 * _textMargin, _textHeight * 3);
 	_textAreas[2] = Common::Rect(_textMargin, _textHeight * 3,
 			_width - 2 * _textMargin, _textHeight * 4);
+
+	_scrollAreas[0] = Common::Rect(15, 24, 34, 40);
+	_scrollAreas[1] = Common::Rect(15, 41, 34, 57);
 
 	loadSprites();
 	resetSprites();
@@ -232,14 +239,11 @@ void ConversationBox::updateLines() {
 void ConversationBox::updateScroll() {
 	Common::Rect scrollArea = _sprites[3].getArea();
 
-	if (_physLineCount <= 3)
-		// Can't scroll
+	if (!canScroll())
 		_sprites[0].blit(_sprites[2], scrollArea, 0, 0, true);
-	else if ((_physLineTop > 0) && ((_physLineTop + 3) > (_physLineCount - 1)))
-		// Can scroll up and down
+	else if (canScrollUp() && canScrollDown())
 		_sprites[0].blit(_sprites[3], 0, 0, true);
-	else if (_physLineTop > 0)
-		// Can scroll up
+	else if (canScrollUp())
 		_sprites[0].blit(_sprites[5], 0, 0, true);
 	else
 		// Can scroll down
@@ -257,7 +261,9 @@ void ConversationBox::drawLines() {
 		for (int i = 0; i < 3; i++) {
 			TextObject &text = curLine.getTextObject();
 
-			if ((curLine.getLineNum() + 1) == _selected)
+			uint32 selected = physLineNumToRealLineNum(_selected);
+
+			if ((curLine.getLineNum() + 1) == selected)
 				text.recolor(_colorSelected);
 			else
 				text.recolor(_colorUnselected);
@@ -267,7 +273,7 @@ void ConversationBox::drawLines() {
 
 			if (curLine.isTop()) {
 				TextObject *marker;
-				if ((curLine.getLineNum() + 1) == _selected)
+				if ((curLine.getLineNum() + 1) == selected)
 					marker = _markerSelect;
 				else
 					marker = _markerUnselect;
@@ -335,6 +341,9 @@ bool ConversationBox::nextPhysRealLine(PhysLineRef &ref) const {
 }
 
 void ConversationBox::notifyMouseMove(uint32 x, uint32 y) {
+	if (!isActive())
+		return;
+
 	uint32 selected = getTextArea(x, y);
 
 	if (selected != _selected) {
@@ -344,30 +353,100 @@ void ConversationBox::notifyMouseMove(uint32 x, uint32 y) {
 }
 
 void ConversationBox::notifyClicked(uint32 x, uint32 y) {
-	notifyMouseMove(x, y);
-
-	Line *selLine = getSelectedLine();
-	if (!selLine)
+	if (!isActive())
 		return;
 
-	_conversation->pick(selLine->talk->getName());
-	updateLines();
-	drawLines();
+	notifyMouseMove(x, y);
+
+	doScroll(getScrollAction(x, y));
+
+	Line *selLine = getSelectedLine();
+	if (selLine) {
+		warning("Selected \"%s\"", selLine->talk->getTXT().c_str());
+		_conversation->pick(selLine->talk->getName());
+		updateLines();
+		drawLines();
+	}
 }
 
 int ConversationBox::getTextArea(uint32 x, uint32 y) {
 	for (int i = 0; i < 3; i++)
 		if (_textAreas[i].contains(x, y))
-			return i + 1;
+			return _physLineTop + i + 1;
 
 	return 0;
 }
 
+ConversationBox::ScrollAction ConversationBox::getScrollAction(uint32 x, uint32 y) {
+	for (int i = 0; i < 2; i++)
+		if (_scrollAreas[i].contains(x, y))
+			return (ScrollAction) i;
+
+	return kScrollActionNone;
+}
+
 ConversationBox::Line *ConversationBox::getSelectedLine() {
-	if ((_selected == 0) || (_selected > _lines.size()))
+	if (_selected == 0)
 		return 0;
 
-	return _lines[_selected - 1];
+	PhysLineRef line;
+	if (!findPhysLine(_selected - 1, line))
+		return 0;
+
+	return line.getLine();
+}
+
+bool ConversationBox::canScroll() const {
+	return _physLineCount > 3;
+}
+
+bool ConversationBox::canScrollUp() const {
+	return _physLineTop > 0;
+}
+
+bool ConversationBox::canScrollDown() const {
+	return (_physLineTop + 3) < _physLineCount;
+}
+
+void ConversationBox::doScroll(ScrollAction scroll) {
+	switch (scroll) {
+	case kScrollActionNone:
+		return;
+
+	case kScrollActionUp:
+		if (!canScrollUp())
+			return;
+
+		_physLineTop--;
+		break;
+
+	case kScrollActionDown:
+		if (!canScrollDown())
+			return;
+
+		_physLineTop++;
+		break;
+	}
+
+	drawLines();
+}
+
+uint32 ConversationBox::physLineNumToRealLineNum(uint32 physLineNum) const {
+	if (physLineNum == 0)
+		return 0;
+
+	int realLineNum = 1;
+	for (Common::Array<Line *>::const_iterator it = _lines.begin(); it != _lines.end(); ++it) {
+		uint32 size = (*it)->texts.size();
+
+		if (size >= physLineNum)
+			return realLineNum;
+
+		physLineNum -= size;
+		realLineNum++;
+	}
+
+	return 0;
 }
 
 } // End of namespace DarkSeed2

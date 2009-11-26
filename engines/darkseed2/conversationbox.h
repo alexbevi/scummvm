@@ -69,6 +69,12 @@ private:
 	static const uint32 _textHeight = 14;
 	static const uint32 _textMargin = 90;
 
+	enum ScrollAction {
+		kScrollActionUp,
+		kScrollActionDown,
+		kScrollActionNone
+	};
+
 	struct Line {
 		TalkLine *talk;
 		Common::StringList texts;
@@ -89,6 +95,7 @@ private:
 		const Common::String &getName() const;
 		const Common::String &getString() const;
 		TextObject &getTextObject();
+		Line *getLine();
 
 		uint32 getLineNum() const;
 		bool isTop() const;
@@ -109,6 +116,7 @@ private:
 	Common::Array<Line *> _lines;
 
 	Common::Rect _textAreas[3];
+	Common::Rect _scrollAreas[2];
 
 	uint32 _physLineCount;
 	uint32 _physLineTop;
@@ -134,12 +142,22 @@ private:
 	void drawLines();
 	void redrawLines();
 
+	void doScroll(ScrollAction scroll);
+
+	uint32 physLineNumToRealLineNum(uint32 physLineNum) const;
+
 	bool findPhysLine(uint32 n, PhysLineRef &ref) const;
 	bool nextPhysLine(PhysLineRef &ref) const;
 	bool nextPhysRealLine(PhysLineRef &ref) const;
 
 	int getTextArea(uint32 x, uint32 y);
+	ScrollAction getScrollAction(uint32 x, uint32 y);
+
 	Line *getSelectedLine();
+
+	bool canScroll() const;
+	bool canScrollUp() const;
+	bool canScrollDown() const;
 };
 
 } // End of namespace DarkSeed2
