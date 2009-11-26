@@ -509,7 +509,8 @@ Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) {
 		TalkLine *line = new TalkLine(resources, (*it)->text);
 
 		line->setName((*it)->name);
-		line->setSpeaker(_speakers[0]);
+		if (!_speakers.empty())
+			line->setSpeaker(_speakers[0]);
 
 		lines.push_back(line);
 	}
@@ -535,7 +536,8 @@ Common::Array<TalkLine *> Conversation::getReplies(Resources &resources,
 	for (; (speaker != e->speakers.end()) && (message != e->messages.end()); ++speaker, ++message) {
 		TalkLine *reply = new TalkLine(resources, *message);
 
-		reply->setSpeaker(_speakers[*speaker]);
+		if (*speaker < _speakers.size())
+			reply->setSpeaker(_speakers[*speaker]);
 
 		replies.push_back(reply);
 	}
