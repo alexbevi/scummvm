@@ -38,6 +38,11 @@ Conversation::Entry::Entry(Node &pa) {
 }
 
 
+Conversation::Node::Node() {
+	fallthroughNum = 0;
+}
+
+
 Conversation::Conversation(Variables &variables) : _variables(&variables) {
 	_startNode = 0;
 	_currentNode = 0;
@@ -266,7 +271,20 @@ bool Conversation::addEntry(Node &node, const Common::String &args, DATFile &con
 }
 
 bool Conversation::setFallthrough(Node &node, const Common::String &args) {
-	node.fallthrough = args;
+	Common::Array<Common::String> lArgs = DATFile::argGet(args);
+
+	if (lArgs.size() != 2) {
+		warning("Conversation::setFallthrough(): Broken arguments");
+		return false;
+	}
+
+	node.fallthroughNum = atoi(lArgs[0].c_str());
+	node.fallthrough = lArgs[1];
+
+	if (node.fallthroughNum != 0)
+		warning("Conversation::setFallthrough(): Fallthrough to \"%s\" with number %d\n",
+				node.fallthrough.c_str(), node.fallthroughNum);
+
 	return true;
 }
 
@@ -429,6 +447,21 @@ void Conversation::goTo(const Common::String &node) {
 	}
 
 	_currentNode = _nodes.getVal(node);
+
+	if (getVisibleEntries(*_currentNode).empty()) {
+		// No visible entries anymore, moving along to the fallthrough
+
+		const Common::String fallthrough = _currentNode->fallthrough;
+		if (fallthrough.empty() ||
+				fallthrough.equalsIgnoreCase("exit") || !_nodes.contains(fallthrough)) {
+
+			// No (valid) fallthrough, exit
+			_currentNode = 0;
+			return;
+		}
+
+		_currentNode = _nodes.getVal(fallthrough);
+	}
 }
 
 void Conversation::pick(const Common::String &entry) {

@@ -121,7 +121,7 @@ Common::Error DarkSeed2Engine::run() {
 		warning("Successfully parsed room 0806");
 
 	warning("Loading conversation CONV0001: %d",
-			_graphics->getConversationBox().start("CONV0001"));
+			_graphics->getConversationBox().start("CONV0008"));
 
 	_events->mainLoop();
 

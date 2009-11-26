@@ -93,8 +93,11 @@ private:
 	typedef Common::HashMap<Common::String, Entry *> EntryMap;
 
 	struct Node {
+		uint32 fallthroughNum;
 		Common::String fallthrough;
 		EntryMap entries;
+
+		Node();
 	};
 
 	typedef Common::HashMap<Common::String, Node *> NodeMap;
