@@ -439,6 +439,9 @@ bool Conversation::parseNode(const Common::String &args, DATFile &conversation) 
 	// Adding the node to our hashmap
 	_nodes.setVal(args, node);
 
+	if (!node->entries.empty() && !node->goTo.empty())
+		warning("TODO: Node \"%s\" has goto and entry!", node->name.c_str());
+
 	// If this is the first node, it's our start node
 	if (!_startNode)
 		_startNode = node;
@@ -501,6 +504,9 @@ Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) {
 	if (!_currentNode)
 		// None found
 		return lines;
+
+	if (!_currentNode->entries.empty() && !_currentNode->goTo.empty())
+		warning("TODO: Node \"%s\" has goto and entry!", _currentNode->name.c_str());
 
 	Common::Array<Entry *> entries = getVisibleEntries(*_currentNode);
 	for (Common::Array<Entry *>::iterator it = entries.begin(); it != entries.end(); ++it) {
