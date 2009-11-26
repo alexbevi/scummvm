@@ -65,6 +65,10 @@ void DATFile::load(Common::SeekableReadStream &dat) {
 		if (line.empty())
 			continue;
 
+		// Workaround CONV0032.TXT
+		if (line[0] == '.')
+			line.setChar(' ', 0);;
+
 		// Remove comments
 		const char *semicolon = strchr(line.c_str(), ';');
 		if (semicolon)
@@ -120,9 +124,16 @@ int DATFile::argCount(const Common::String &arguments) {
 	const char *args = arguments.c_str();
 
 	int count = 1;
-	while (*args)
-		if (*args++ == ' ')
-			count++;
+	while (*args) {
+		if (*args == ' ') {
+			while (*args == ' ')
+				args++;
+
+			if (*args)
+				count++;
+		} else
+			args++;
+	}
 
 	return count;
 }
@@ -137,6 +148,9 @@ Common::String DATFile::argGet(const Common::String &arguments, int n) {
 		start++;
 	}
 
+	while (*start == ' ')
+		start++;
+
 	const char *end = strchr(start, ' ');
 	if (!end)
 		end = start + strlen(start) - 1;
@@ -149,12 +163,18 @@ Common::String DATFile::argGet(const Common::String &arguments, int n) {
 }
 
 Common::Array<Common::String> DATFile::argGet(const Common::String &arguments) {
+	Common::Array<Common::String> list;
+
 	const char *start = arguments.c_str();
-	const char *end   = strchr(start, ' ');
+	if (!start)
+		return list;
+
+	while (*start == ' ')
+		start++;
+
+	const char *end  = strchr(start, ' ');
 
 	int count = argCount(arguments);
-
-	Common::Array<Common::String> list;
 
 	list.reserve(count);
 
@@ -166,6 +186,8 @@ Common::Array<Common::String> DATFile::argGet(const Common::String &arguments) {
 		list.push_back(string);
 
 		start = end + 1;
+		while (*start == ' ')
+			start++;
 		end   = strchr(start, ' ');
 	}
 
