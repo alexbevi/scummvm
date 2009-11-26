@@ -111,9 +111,8 @@ bool Conversation::parse(DATFile &conversation) {
 
 	}
 
-	reset();
-
 	_ready = true;
+	reset();
 
 	return true;
 }

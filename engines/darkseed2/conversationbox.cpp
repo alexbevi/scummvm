@@ -170,6 +170,9 @@ bool ConversationBox::restart() {
 }
 
 bool ConversationBox::isActive() const {
+	if (!_conversation)
+		return false;
+
 	if (_state != kStateWaitUserAction)
 		return true;
 
