@@ -111,7 +111,7 @@ private:
 	/** All indexed glues. */
 	Common::Array<Glue> _glues;
 	/** All indexed resources. */
-	Common::HashMap<Common::String, Res> _resources;
+	Common::HashMap<Common::String, Res, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> _resources;
 
 	/** Read the index file's header. */
 	bool readIndexHeader(Common::File &indexFile);
