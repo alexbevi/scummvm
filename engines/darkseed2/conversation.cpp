@@ -180,7 +180,7 @@ bool Conversation::handleAssign(Entry &entry, const Common::String &args, uint8 
 	Common::Array<Common::String> lArgs = DATFile::argGet(args);
 
 	if (lArgs.size() != 2) {
-		warning("Conversation::handleAssign(): Broken arguments: %s", args.c_str());
+		warning("Conversation::handleAssign(): Broken arguments");
 		return false;
 	}
 
