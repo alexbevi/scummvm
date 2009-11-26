@@ -59,7 +59,7 @@ public:
 	/** Get all currently available lines. */
 	Common::Array<TalkLine *> getCurrentLines(Resources &resources) const;
 	/** Get the reply to a certain line. */
-	TalkLine *getReply(Resources &resources, const Common::String &entry) const;
+	Common::Array<TalkLine *> getReplies(Resources &resources, const Common::String &entry) const;
 
 	/** Has the conversation ended? */
 	bool hasEnded() const;
@@ -79,8 +79,10 @@ private:
 
 		Common::String name;
 		Common::String text;
-		Common::String message;
 		Common::String goTo;
+
+		Common::Array<uint8> speakers;
+		Common::Array<Common::String> messages;
 
 		Common::Array<Common::String> hide;
 		Common::Array<Common::String> unhide;
@@ -127,10 +129,11 @@ private:
 	bool addEntry(Entry &entry, DATFile &conversation);
 	bool addEntry(Node &node, const Common::String &args, DATFile &conversation);
 	bool setFallthrough(Node &node, const Common::String &args);
+	bool handleAssign(Entry &entry, const Common::String &args, uint8 &speaker);
 	bool setGoTo(Entry &entry, const Common::String &args);
 	bool addUnhide(Entry &entry, const Common::String &args);
 	bool addHide(Entry &entry, const Common::String &args);
-	bool setMessage(Entry &entry, const Common::String &args);
+	bool addMessage(Entry &entry, const Common::String &args, uint8 speaker);
 	bool setText(Entry &entry, const Common::String &args);
 };
 

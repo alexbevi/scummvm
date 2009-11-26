@@ -105,7 +105,7 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 	_markerUnselect = 0;
 
 	_state = kStateWaitUserAction;
-	_nextReply = 0;
+	_curReply = 0xFFFF;
 
 	updateColors();
 
@@ -219,8 +219,7 @@ void ConversationBox::redraw(Sprite &sprite, uint32 x, uint32 y, const Common::R
 }
 
 void ConversationBox::clearLines() {
-	delete _nextReply;
-	_nextReply = 0;
+	clearReplies();
 
 	for (Common::Array<Line *>::iterator it = _lines.begin(); it != _lines.end(); ++it)
 		delete *it;
@@ -230,6 +229,13 @@ void ConversationBox::clearLines() {
 	_physLineTop   = 0;
 
 	_state = kStateWaitUserAction;
+}
+
+void ConversationBox::clearReplies() {
+	for (Common::Array<TalkLine *>::iterator it = _nextReplies.begin(); it != _nextReplies.end(); ++it)
+		delete *it;
+	_nextReplies.clear();
+	_curReply = 0xFFFF;
 }
 
 void ConversationBox::updateLines() {
@@ -391,9 +397,10 @@ void ConversationBox::updateStatus() {
 			// Still talking, we'll continue waiting
 			return;
 
-		// Playing the reply
-		if (_nextReply)
-			speakLine(*_nextReply);
+		// Playing the replies
+		_curReply = 0;
+		if (_curReply < _nextReplies.size())
+			speakLine(*_nextReplies[_curReply]);
 
 		_state = kStatePlayingReply;
 		return;
@@ -404,8 +411,13 @@ void ConversationBox::updateStatus() {
 			// Still talking, we'll continue waiting
 			return;
 
-		delete _nextReply;
-		_nextReply = 0;
+		_curReply++;
+		if (_curReply < _nextReplies.size()) {
+			speakLine(*_nextReplies[_curReply]);
+			return;
+		}
+
+		clearReplies();
 
 		// Done playing, show the next lines
 		updateLines();
@@ -420,7 +432,8 @@ void ConversationBox::pickLine(Line *line) {
 	if (!line)
 		return;
 
-	_nextReply = _conversation->getReply(*_resources, line->talk->getName());
+	clearReplies();
+	_nextReplies = _conversation->getReplies(*_resources, line->talk->getName());
 
 	speakLine(*line->talk);
 

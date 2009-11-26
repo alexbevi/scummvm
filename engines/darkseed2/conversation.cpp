@@ -145,6 +145,24 @@ bool Conversation::addSpeaker(const Common::String &args) {
 	return true;
 }
 
+bool Conversation::handleAssign(Entry &entry, const Common::String &args, uint8 &speaker) {
+	Common::Array<Common::String> lArgs = DATFile::argGet(args);
+
+	if (lArgs.size() != 2) {
+		warning("Conversation::handleAssign(): Broken arguments");
+		return false;
+	}
+
+	if (lArgs[0].equalsIgnoreCase("speaker")) {
+		speaker = atoi(lArgs[1].c_str());
+		return true;
+	}
+
+	warning("Conversation::handleAssign(): Real variable assignment unsupported (%s)",
+			lArgs[0].c_str());
+	return false;
+}
+
 bool Conversation::setGoTo(Entry &entry, const Common::String &args) {
 	if (DATFile::argCount(args) != 1) {
 		warning("Conversation::setGoTo(): Broken arguments");
@@ -175,13 +193,14 @@ bool Conversation::addHide(Entry &entry, const Common::String &args) {
 	return true;
 }
 
-bool Conversation::setMessage(Entry &entry, const Common::String &args) {
+bool Conversation::addMessage(Entry &entry, const Common::String &args, uint8 speaker) {
 	if (DATFile::argCount(args) != 1) {
-		warning("Conversation::setMessage(): Broken arguments");
+		warning("Conversation::addMessage(): Broken arguments");
 		return false;
 	}
 
-	entry.message = args;
+	entry.speakers.push_back(speaker);
+	entry.messages.push_back(args);
 	return true;
 }
 
@@ -196,6 +215,8 @@ bool Conversation::setText(Entry &entry, const Common::String &args) {
 }
 
 bool Conversation::addEntry(Entry &entry, DATFile &conversation) {
+	uint8 curSpeaker = 1;
+
 	const Common::String *cmd, *args;
 	while (conversation.nextLine(cmd, args)) {
 		if ((cmd->equalsIgnoreCase("entry")) || (cmd->equalsIgnoreCase("node"))) {
@@ -213,7 +234,7 @@ bool Conversation::addEntry(Entry &entry, DATFile &conversation) {
 		} else if (cmd->equalsIgnoreCase("message")) {
 			// The entry's reply
 
-			if (!setMessage(entry, *args))
+			if (!addMessage(entry, *args, curSpeaker))
 				return false;
 
 		} else if (cmd->equalsIgnoreCase("hide")) {
@@ -234,7 +255,19 @@ bool Conversation::addEntry(Entry &entry, DATFile &conversation) {
 			if (!setGoTo(entry, *args))
 				return false;
 
+		} else if (cmd->equalsIgnoreCase("assign")) {
+			// Assigning a value to a variable
+
+			if (!handleAssign(entry, *args, curSpeaker))
+				return false;
+
+		} else {
+			// Unknown command, error
+
+			warning("Conversation::addEntry(): Unknown command \"%s\" (\"%s\")", cmd->c_str(), args->c_str());
+			return false;
 		}
+
 	}
 
 	return true;
@@ -383,17 +416,28 @@ Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) co
 	return lines;
 }
 
-TalkLine *Conversation::getReply(Resources &resources, const Common::String &entry) const {
+Common::Array<TalkLine *> Conversation::getReplies(Resources &resources,
+		const Common::String &entry) const {
+
+	Common::Array<TalkLine *> replies;
+
 	if (!_currentNode || !_currentNode->entries.contains(entry))
-		return 0;
+		return replies;
 
 	Entry *e = _currentNode->entries.getVal(entry);
 
-	TalkLine *line = new TalkLine(resources, e->message);
+	Common::Array<uint8>::const_iterator speaker = e->speakers.begin();
+	Common::Array<Common::String>::const_iterator message = e->messages.begin();
 
-	line->setSpeaker(_speakers[1]);
+	for (; (speaker != e->speakers.end()) && (message != e->messages.end()); ++speaker, ++message) {
+		TalkLine *reply = new TalkLine(resources, *message);
 
-	return line;
+		reply->setSpeaker(_speakers[*speaker]);
+
+		replies.push_back(reply);
+	}
+
+	return replies;
 }
 
 void Conversation::hide(const Common::String &entry) {

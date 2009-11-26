@@ -145,7 +145,8 @@ private:
 	uint32 _mouseX;
 	uint32 _mouseY;
 
-	TalkLine *_nextReply;
+	uint16 _curReply;
+	Common::Array<TalkLine *> _nextReplies;
 
 	void loadSprites();
 	void resetSprites();
@@ -155,6 +156,7 @@ private:
 	void updateColors();
 
 	void clearLines();
+	void clearReplies();
 	void updateLines();
 	void updateScroll();
 	void drawLines();
