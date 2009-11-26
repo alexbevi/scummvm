@@ -90,6 +90,7 @@ private:
 	struct Entry {
 		bool visible;
 		bool initial;
+		bool destroyed;
 
 		Common::String name;
 		Common::String text;
@@ -99,6 +100,7 @@ private:
 
 		Common::Array<Action> hide;
 		Common::Array<Action> unhide;
+		Common::Array<Action> destroy;
 		Common::Array<Action> goTo;
 
 		Common::Array<Assign> assigns;
@@ -145,6 +147,8 @@ private:
 	void hide(const Common::Array<Action> &entries);
 	void unhide(const Action &entry);
 	void unhide(const Common::Array<Action> &entries);
+	void destroy(const Action &entry);
+	void destroy(const Common::Array<Action> &entries);
 	void assign(const Assign &entry);
 	void assign(const Common::Array<Assign> &entries);
 	void goTo(const Common::Array<Action> &node);
@@ -160,6 +164,7 @@ private:
 	bool handleAssign(Entry &entry, const Common::String &args, uint8 &speaker);
 	bool addAction(Common::Array<Action> &actions, const Common::String &args);
 	bool addGoTo(Entry &entry, const Common::String &args);
+	bool addDestroy(Entry &entry, const Common::String &args);
 	bool addUnhide(Entry &entry, const Common::String &args);
 	bool addHide(Entry &entry, const Common::String &args);
 	bool addMessage(Entry &entry, const Common::String &args, uint8 speaker);

@@ -45,8 +45,9 @@ Conversation::Assign::Assign(const Common::String &var, const Common::String &va
 
 
 Conversation::Entry::Entry(Node &pa) {
-	visible = false;
-	initial = false;
+	visible   = false;
+	initial   = false;
+	destroyed = false;
 	parent = &pa;
 }
 
@@ -143,7 +144,8 @@ bool Conversation::reset() {
 		for (EntryMap::iterator e = node.entries.begin(); e != node.entries.end(); ++e) {
 			Entry &entry = *e->_value;
 
-			entry.visible = entry.initial;
+			entry.visible   = entry.initial;
+			entry.destroyed = false;
 		}
 
 	}
@@ -222,6 +224,10 @@ bool Conversation::addGoTo(Entry &entry, const Common::String &args) {
 	return addAction(entry.goTo, args);
 }
 
+bool Conversation::addDestroy(Entry &entry, const Common::String &args) {
+	return addAction(entry.destroy, args);
+}
+
 bool Conversation::addUnhide(Entry &entry, const Common::String &args) {
 	return addAction(entry.unhide, args);
 }
@@ -284,6 +290,12 @@ bool Conversation::addEntry(Entry &entry, DATFile &conversation) {
 			// Selecting this entry will unhide that entry
 
 			if (!addUnhide(entry, *args))
+				return false;
+
+		} else if (cmd->equalsIgnoreCase("destroy")) {
+			// Destroying an entry (?)
+
+			if (!addDestroy(entry, *args))
 				return false;
 
 		} else if (cmd->equalsIgnoreCase("goto")) {
@@ -562,6 +574,34 @@ void Conversation::unhide(const Common::Array<Action> &entries) {
 		unhide(*it);
 }
 
+void Conversation::destroy(const Action &entry) {
+	if (!_currentNode)
+		return;
+
+	// Does this entry exist?
+	if (!_currentNode->entries.contains(entry.operand))
+		return;
+
+	// Condition met?
+	if (!_variables->evalCondition(entry.condition))
+		return;
+
+	Entry *e = _currentNode->entries.getVal(entry.operand);
+
+	warning("TODO: Destroying \"%s\" (%s)", entry.operand.c_str(), e->text.c_str());
+
+	// Destroying
+	e->destroyed = true;
+}
+
+void Conversation::destroy(const Common::Array<Action> &entries) {
+	if (!_currentNode)
+		return;
+
+	for (Common::Array<Action>::const_iterator it = entries.begin(); it != entries.end(); ++it)
+		destroy(*it);
+}
+
 void Conversation::assign(const Assign &entry) {
 	if (!_currentNode)
 		return;
@@ -638,6 +678,7 @@ void Conversation::pick(const Common::String &entry) {
 	assign(e->assigns);
 	hide(e->hide);
 	unhide(e->unhide);
+	destroy(e->destroy);
 	goTo(e->goTo);
 }
 
