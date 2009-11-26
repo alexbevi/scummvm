@@ -54,7 +54,7 @@ public:
 	bool parse(const Resources &resources, const Common::String &convName);
 
 	/** Reset the conversation to the loading defaults. */
-	void reset();
+	bool reset();
 
 	/** Get all currently available lines. */
 	Common::Array<TalkLine *> getCurrentLines(Resources &resources);
@@ -127,6 +127,8 @@ private:
 	typedef Common::HashMap<Common::String, Node *, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> NodeMap;
 
 	Variables *_variables;
+
+	bool _ready;
 
 	NodeMap _nodes;
 	Node *_startNode;

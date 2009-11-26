@@ -57,6 +57,7 @@ Conversation::Node::Node() {
 
 
 Conversation::Conversation(Variables &variables) : _variables(&variables) {
+	_ready = false;
 	_startNode = 0;
 	_currentNode = 0;
 }
@@ -75,6 +76,7 @@ void Conversation::clear() {
 		delete n->_value;
 	}
 
+	_ready = false;
 	_startNode = 0;
 	_speakers.clear();
 }
@@ -111,6 +113,8 @@ bool Conversation::parse(DATFile &conversation) {
 
 	reset();
 
+	_ready = true;
+
 	return true;
 }
 
@@ -130,7 +134,10 @@ bool Conversation::parse(const Resources &resources, const Common::String &convN
 	return result;
 }
 
-void Conversation::reset() {
+bool Conversation::reset() {
+	if (!_ready)
+		return false;
+
 	for (NodeMap::iterator n = _nodes.begin(); n != _nodes.end(); ++n) {
 		Node &node = *n->_value;
 
@@ -143,6 +150,8 @@ void Conversation::reset() {
 	}
 
 	_currentNode = _startNode;
+
+	return true;
 }
 
 bool Conversation::addSpeaker(const Common::String &args) {
@@ -570,7 +579,7 @@ void Conversation::assign(const Common::Array<Assign> &entries) {
 }
 
 bool Conversation::hasEnded() const {
-	return _currentNode == 0;
+	return !_ready || _currentNode == 0;
 }
 
 void Conversation::goTo(const Common::Array<Action> &node) {
