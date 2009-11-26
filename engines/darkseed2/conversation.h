@@ -109,11 +109,14 @@ private:
 	};
 
 	typedef Common::HashMap<Common::String, Entry *, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> EntryMap;
+	typedef Common::Array<Entry *> EntryList;
 
 	struct Node {
 		uint32 fallthroughNum;
 		Common::String fallthrough;
+
 		EntryMap entries;
+		EntryList sortedEntries;
 
 		Common::String name;
 		Common::Array<Action> goTo;

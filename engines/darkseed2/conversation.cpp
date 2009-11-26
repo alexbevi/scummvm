@@ -328,6 +328,7 @@ bool Conversation::addEntry(Node &node, const Common::String &args, DATFile &con
 
 	entry->name = lArgs[0];
 	node.entries.setVal(entry->name, entry);
+	node.sortedEntries.push_back(entry);
 
 	return true;
 }
@@ -431,9 +432,9 @@ void Conversation::nextActiveNode() {
 Common::Array<Conversation::Entry *> Conversation::getVisibleEntries(Node &node) {
 	Common::Array<Entry *> entries;
 
-	for (EntryMap::iterator it = node.entries.begin(); it != node.entries.end(); ++it)
-		if (it->_value->visible)
-			entries.push_back(it->_value);
+	for (EntryList::iterator it = node.sortedEntries.begin(); it != node.sortedEntries.end(); ++it)
+		if ((*it)->visible)
+			entries.push_back(*it);
 
 	return entries;
 }
@@ -441,9 +442,9 @@ Common::Array<Conversation::Entry *> Conversation::getVisibleEntries(Node &node)
 Common::Array<const Conversation::Entry *> Conversation::getVisibleEntries(Node &node) const {
 	Common::Array<const Entry *> entries;
 
-	for (EntryMap::const_iterator it = node.entries.begin(); it != node.entries.end(); ++it)
-		if (it->_value->visible)
-			entries.push_back(it->_value);
+	for (EntryList::const_iterator it = node.sortedEntries.begin(); it != node.sortedEntries.end(); ++it)
+		if ((*it)->visible)
+			entries.push_back(*it);
 
 	return entries;
 }
