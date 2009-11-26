@@ -357,7 +357,7 @@ Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) co
 		TalkLine *line = new TalkLine(resources, (*it)->text);
 
 		line->setName((*it)->name);
-		line->setSpeaker(0);
+		line->setSpeaker(_speakers[0]);
 
 		lines.push_back(line);
 	}
@@ -373,7 +373,7 @@ TalkLine *Conversation::getReply(Resources &resources, const Common::String &ent
 
 	TalkLine *line = new TalkLine(resources, e->message);
 
-	line->setSpeaker(1);
+	line->setSpeaker(_speakers[1]);
 
 	return line;
 }

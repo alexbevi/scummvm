@@ -38,8 +38,6 @@ TalkLine::TalkLine(const Resources &resources, const Common::String &talkName) {
 
 	_resource = talkName;
 
-	_speaker = 0;
-
 	_wav = 0;
 
 	// Reading the sound
@@ -98,11 +96,11 @@ void TalkLine::setName(const Common::String &name) {
 	_name = name;
 }
 
-uint8 TalkLine::getSpeaker() const {
+const Common::String &TalkLine::getSpeaker() const {
 	return _speaker;
 }
 
-void TalkLine::setSpeaker(uint8 speaker) {
+void TalkLine::setSpeaker(const Common::String &speaker) {
 	_speaker = speaker;
 }
 
@@ -126,13 +124,12 @@ bool TalkManager::talk(const TalkLine &talkLine) {
 			return false;
 		}
 
-		byte color;
-		if (talkLine.getSpeaker() == 0)
-			color = _graphics->getPalette().findWhite();
-		else
-			color = _graphics->getPalette().findColor(239, 167, 127);
+		Common::String text = talkLine.getTXT();
+		if (!talkLine.getSpeaker().empty())
+			text = talkLine.getSpeaker() + ":\n" + text;
 
-		TextObject *talkObject = new TextObject(talkLine.getTXT(), 5, 0, color, 300);
+		TextObject *talkObject = new TextObject(text, 5, 0,
+				_graphics->getPalette().findWhite(), 300);
 
 		_graphics->talk(talkObject);
 

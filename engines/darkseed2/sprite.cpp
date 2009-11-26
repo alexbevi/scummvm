@@ -348,7 +348,7 @@ void Sprite::drawStrings(const Common::StringList &strings, const ::Graphics::Fo
 
 	for (Common::StringList::const_iterator it = strings.begin(); it != strings.end(); ++it) {
 		font.drawString(surface, *it, x, y, _width, color,
-				::Graphics::kTextAlignCenter, 0, false);
+				::Graphics::kTextAlignLeft, 0, false);
 
 		y += font.getFontHeight();
 	}

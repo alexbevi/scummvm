@@ -66,6 +66,9 @@ TextObject::TextObject(const Common::String &text, uint32 x, uint32 y,
 
 	int width = font->wordWrapText(text, maxWidth, lines);
 
+	for (Common::StringList::iterator it = lines.begin(); it != lines.end(); ++it)
+		it->trim();
+
 	_area.left = x;
 	_area.top  = y;
 	_area.setWidth(width);
@@ -109,7 +112,12 @@ uint32 TextObject::wrap(const Common::String &string, Common::StringList &list, 
 	const ::Graphics::Font *font =
 		::Graphics::FontManager::instance().getFontByUsage(fontUsage);
 
-	return font->wordWrapText(string, maxWidth, list);
+	uint32 width = font->wordWrapText(string, maxWidth, list);
+
+	for (Common::StringList::iterator it = list.begin(); it != list.end(); ++it)
+		it->trim();
+
+	return width;
 }
 
 } // End of namespace DarkSeed2
