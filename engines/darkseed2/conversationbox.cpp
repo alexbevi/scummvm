@@ -362,7 +362,6 @@ void ConversationBox::notifyClicked(uint32 x, uint32 y) {
 
 	Line *selLine = getSelectedLine();
 	if (selLine) {
-		warning("Selected \"%s\"", selLine->talk->getTXT().c_str());
 		_conversation->pick(selLine->talk->getName());
 		updateLines();
 		drawLines();

@@ -439,6 +439,9 @@ void Conversation::pick(const Common::String &entry) {
 		return;
 	}
 
+	// A entry should automatically hide itself
+	hide(entry);
+
 	// Evaluate changes brought in by the entry
 	hide(e->hide);
 	unhide(e->unhide);
