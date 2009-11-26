@@ -57,6 +57,7 @@ public:
 
 	void newPalette();
 	bool start(const Common::String &conversation);
+	bool restart();
 
 	bool isActive() const;
 

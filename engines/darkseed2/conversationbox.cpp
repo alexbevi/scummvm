@@ -157,7 +157,22 @@ bool ConversationBox::start(const Common::String &conversation) {
 	return true;
 }
 
+bool ConversationBox::restart() {
+	if (!_conversation)
+		return false;
+
+	_conversation->reset();
+
+	updateLines();
+	drawLines();
+
+	return true;
+}
+
 bool ConversationBox::isActive() const {
+	if (_state != kStateWaitUserAction)
+		return true;
+
 	return !_conversation->hasEnded();
 }
 

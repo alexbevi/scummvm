@@ -27,9 +27,22 @@
 #include "engines/darkseed2/conversation.h"
 #include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/talk.h"
 
 namespace DarkSeed2 {
+
+Conversation::Action::Action(const Common::String &op, const Common::String &cond) {
+	operand   = op;
+	condition = cond;
+}
+
+
+Conversation::Assign::Assign(const Common::String &var, const Common::String &val) {
+	variable = var;
+	value    = atoi(val.c_str());
+}
+
 
 Conversation::Entry::Entry(Node &pa) {
 	visible = false;
@@ -83,6 +96,10 @@ bool Conversation::parse(DATFile &conversation) {
 
 		} else if (cmd->equalsIgnoreCase("conversation")) {
 			// Useless information, ignoring
+		} else if (cmd->equalsIgnoreCase("declare")) {
+			// Useless information, ignoring
+		} else if (cmd->equalsIgnoreCase("import")) {
+			// Useless information, ignoring
 		} else {
 			// Unknown command, error
 
@@ -131,7 +148,7 @@ void Conversation::reset() {
 bool Conversation::addSpeaker(const Common::String &args) {
 	Common::Array<Common::String> lArgs = DATFile::argGet(args);
 
-	if (lArgs.size() != 2) {
+	if (lArgs.size() < 2) {
 		warning("Conversation::addSpeaker(): Broken arguments");
 		return false;
 	}
@@ -140,7 +157,11 @@ bool Conversation::addSpeaker(const Common::String &args) {
 
 	_speakers.resize(MAX<int>(_speakers.size(), num + 1));
 
-	_speakers[num] = lArgs[1];
+	// Speaker names can include spaces
+	_speakers[num].clear();
+	for (uint i = 1; i < lArgs.size(); i++)
+		_speakers[num] += lArgs[i] + " ";
+	_speakers[num].trim();
 
 	return true;
 }
@@ -158,39 +179,47 @@ bool Conversation::handleAssign(Entry &entry, const Common::String &args, uint8 
 		return true;
 	}
 
-	warning("Conversation::handleAssign(): Real variable assignment unsupported (%s)",
-			lArgs[0].c_str());
-	return false;
+	entry.assigns.push_back(Assign(lArgs[0], lArgs[1]));
+
+	return true;
 }
 
-bool Conversation::setGoTo(Entry &entry, const Common::String &args) {
-	if (DATFile::argCount(args) != 1) {
-		warning("Conversation::setGoTo(): Broken arguments");
+bool Conversation::addAction(Common::Array<Action> &actions, const Common::String &args) {
+	Common::Array<Common::String> lArgs = DATFile::argGet(args);
+
+	if ((lArgs.size() != 1) && (lArgs.size() != 2)) {
+		warning("Conversation::addAction(): Broken arguments");
 		return false;
 	}
 
-	entry.goTo = args;
+	if (lArgs.size() == 1) {
+		actions.push_back(Action(lArgs[0]));
+		return true;
+	}
+
+	if ((lArgs[0][0] != '(') || (lArgs[0].lastChar() != ')')) {
+		warning("Conversation::addAction(): Broken arguments");
+		return false;
+	}
+
+	lArgs[0].deleteLastChar();
+	lArgs[0].deleteChar(0);
+
+	actions.push_back(Action(lArgs[1], lArgs[0]));
+
 	return true;
+}
+
+bool Conversation::addGoTo(Entry &entry, const Common::String &args) {
+	return addAction(entry.goTo, args);
 }
 
 bool Conversation::addUnhide(Entry &entry, const Common::String &args) {
-	if (DATFile::argCount(args) != 1) {
-		warning("Conversation::addUnhide(): Broken arguments");
-		return false;
-	}
-
-	entry.unhide.push_back(args);
-	return true;
+	return addAction(entry.unhide, args);
 }
 
 bool Conversation::addHide(Entry &entry, const Common::String &args) {
-	if (DATFile::argCount(args) != 1) {
-		warning("Conversation::addHide(): Broken arguments");
-		return false;
-	}
-
-	entry.hide.push_back(args);
-	return true;
+	return addAction(entry.hide, args);
 }
 
 bool Conversation::addMessage(Entry &entry, const Common::String &args, uint8 speaker) {
@@ -252,7 +281,7 @@ bool Conversation::addEntry(Entry &entry, DATFile &conversation) {
 		} else if (cmd->equalsIgnoreCase("goto")) {
 			// Will continue with that node
 
-			if (!setGoTo(entry, *args))
+			if (!addGoTo(entry, *args))
 				return false;
 
 		} else if (cmd->equalsIgnoreCase("assign")) {
@@ -303,6 +332,10 @@ bool Conversation::addEntry(Node &node, const Common::String &args, DATFile &con
 	return true;
 }
 
+bool Conversation::addGoTo(Node &node, const Common::String &args) {
+	return addAction(node.goTo, args);
+}
+
 bool Conversation::setFallthrough(Node &node, const Common::String &args) {
 	Common::Array<Common::String> lArgs = DATFile::argGet(args);
 
@@ -342,6 +375,12 @@ bool Conversation::parseNode(DATFile &conversation, Node &node) {
 			if (!addEntry(node, *args, conversation))
 				return false;
 
+		} else if (cmd->equalsIgnoreCase("goto")) {
+			// Direct falling through to other nodes
+
+			if (!addGoTo(node, *args))
+				return false;
+
 		} else {
 			// Unknown command, error
 
@@ -367,6 +406,8 @@ bool Conversation::parseNode(const Common::String &args, DATFile &conversation) 
 		return false;
 	}
 
+	node->name = args;
+
 	// Adding the node to our hashmap
 	_nodes.setVal(args, node);
 
@@ -375,6 +416,16 @@ bool Conversation::parseNode(const Common::String &args, DATFile &conversation) 
 		_startNode = node;
 
 	return true;
+}
+
+void Conversation::nextActiveNode() {
+	if (!_currentNode)
+		return;
+
+	// While there's still a node and it doesn't have any entries...
+	while (_currentNode && _currentNode->entries.empty())
+		// ...follow the gotos
+		goTo(_currentNode->goTo);
 }
 
 Common::Array<Conversation::Entry *> Conversation::getVisibleEntries(Node &node) {
@@ -397,14 +448,18 @@ Common::Array<const Conversation::Entry *> Conversation::getVisibleEntries(Node 
 	return entries;
 }
 
-Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) const {
+Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) {
 	Common::Array<TalkLine *> lines;
 
+	// Traversing to the next node with entries
+	nextActiveNode();
+
 	if (!_currentNode)
+		// None found
 		return lines;
 
-	Common::Array<const Entry *> entries = getVisibleEntries(*_currentNode);
-	for (Common::Array<const Entry *>::iterator it = entries.begin(); it != entries.end(); ++it) {
+	Common::Array<Entry *> entries = getVisibleEntries(*_currentNode);
+	for (Common::Array<Entry *>::iterator it = entries.begin(); it != entries.end(); ++it) {
 		TalkLine *line = new TalkLine(resources, (*it)->text);
 
 		line->setName((*it)->name);
@@ -422,6 +477,7 @@ Common::Array<TalkLine *> Conversation::getReplies(Resources &resources,
 	Common::Array<TalkLine *> replies;
 
 	if (!_currentNode || !_currentNode->entries.contains(entry))
+		// No replies
 		return replies;
 
 	Entry *e = _currentNode->entries.getVal(entry);
@@ -429,6 +485,7 @@ Common::Array<TalkLine *> Conversation::getReplies(Resources &resources,
 	Common::Array<uint8>::const_iterator speaker = e->speakers.begin();
 	Common::Array<Common::String>::const_iterator message = e->messages.begin();
 
+	// Building the reply talklines
 	for (; (speaker != e->speakers.end()) && (message != e->messages.end()); ++speaker, ++message) {
 		TalkLine *reply = new TalkLine(resources, *message);
 
@@ -440,60 +497,98 @@ Common::Array<TalkLine *> Conversation::getReplies(Resources &resources,
 	return replies;
 }
 
-void Conversation::hide(const Common::String &entry) {
+void Conversation::hide(const Action &entry) {
 	if (!_currentNode)
 		return;
 
-	if (!_currentNode->entries.contains(entry))
+	// Does this entry exist?
+	if (!_currentNode->entries.contains(entry.operand))
 		return;
 
-	Entry *e = _currentNode->entries.getVal(entry);
+	// Condition met?
+	if (!_variables->evalCondition(entry.condition))
+		return;
 
+	Entry *e = _currentNode->entries.getVal(entry.operand);
+
+	// Hiding
 	e->visible = false;
 }
 
-void Conversation::hide(const Common::Array<Common::String> &entries) {
+void Conversation::hide(const Common::Array<Action> &entries) {
 	if (!_currentNode)
 		return;
 
-	for (Common::Array<Common::String>::const_iterator it = entries.begin(); it != entries.end(); ++it)
+	for (Common::Array<Action>::const_iterator it = entries.begin(); it != entries.end(); ++it)
 		hide(*it);
 }
 
-void Conversation::unhide(const Common::String &entry) {
+void Conversation::unhide(const Action &entry) {
 	if (!_currentNode)
 		return;
 
-	if (!_currentNode->entries.contains(entry))
+	// Does this entry exist?
+	if (!_currentNode->entries.contains(entry.operand))
 		return;
 
-	Entry *e = _currentNode->entries.getVal(entry);
+	// Condition met?
+	if (!_variables->evalCondition(entry.condition))
+		return;
 
+	Entry *e = _currentNode->entries.getVal(entry.operand);
+
+	// Unhiding
 	e->visible = true;
 }
 
-void Conversation::unhide(const Common::Array<Common::String> &entries) {
+void Conversation::unhide(const Common::Array<Action> &entries) {
 	if (!_currentNode)
 		return;
 
-	for (Common::Array<Common::String>::const_iterator it = entries.begin(); it != entries.end(); ++it)
+	for (Common::Array<Action>::const_iterator it = entries.begin(); it != entries.end(); ++it)
 		unhide(*it);
+}
+
+void Conversation::assign(const Assign &entry) {
+	if (!_currentNode)
+		return;
+
+	_variables->set(entry.variable, entry.value);
+}
+
+void Conversation::assign(const Common::Array<Assign> &entries) {
+	if (!_currentNode)
+		return;
+
+	for (Common::Array<Assign>::const_iterator it = entries.begin(); it != entries.end(); ++it)
+		assign(*it);
 }
 
 bool Conversation::hasEnded() const {
 	return _currentNode == 0;
 }
 
-void Conversation::goTo(const Common::String &node) {
-	if (node.equalsIgnoreCase("exit") || !_nodes.contains(node)) {
-		_currentNode = 0;
-		return;
+void Conversation::goTo(const Common::Array<Action> &node) {
+	_currentNode = 0;
+
+	for (Common::Array<Action>::const_iterator it = node.begin(); it != node.end(); ++it) {
+		if (!_variables->evalCondition(it->condition))
+			// Condition failed, next goto
+			continue;
+
+		if (it->operand.equalsIgnoreCase("exit") || !_nodes.contains(it->operand))
+			// This is an exit
+			break;
+
+		_currentNode = _nodes.getVal(it->operand);
+		break;
 	}
 
-	_currentNode = _nodes.getVal(node);
+	if (!_currentNode)
+		return;
 
-	if (getVisibleEntries(*_currentNode).empty()) {
-		// No visible entries anymore, moving along to the fallthrough
+	if (getVisibleEntries(*_currentNode).empty() && _currentNode->goTo.empty()) {
+		// No visible entries and no gotos anymore, moving along to the fallthrough
 
 		const Common::String fallthrough = _currentNode->fallthrough;
 		if (fallthrough.empty() ||
@@ -527,6 +622,7 @@ void Conversation::pick(const Common::String &entry) {
 	hide(entry);
 
 	// Evaluate changes brought in by the entry
+	assign(e->assigns);
 	hide(e->hide);
 	unhide(e->unhide);
 	goTo(e->goTo);

@@ -58,6 +58,8 @@ Events::~Events() {
 }
 
 void Events::mainLoop() {
+	bool restarted = false;
+
 	while (!_vm->shouldQuit()) {
 		handleInput();
 
@@ -68,6 +70,12 @@ void Events::mainLoop() {
 
 		_vm->_graphics->retrace();
 		g_system->updateScreen();
+
+		if (!_vm->_graphics->getConversationBox().isActive() && !restarted) {
+			warning("Restarting conversation");
+			_vm->_graphics->getConversationBox().restart();
+			restarted = true;
+		}
 	}
 }
 
