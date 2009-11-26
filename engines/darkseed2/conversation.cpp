@@ -76,6 +76,8 @@ bool Conversation::parse(DATFile &conversation) {
 			if (!parseNode(*args, conversation))
 				return false;
 
+		} else if (cmd->equalsIgnoreCase("conversation")) {
+			// Useless information, ignoring
 		} else {
 			// Unknown command, error
 
