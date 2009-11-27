@@ -27,6 +27,7 @@
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/music.h"
+#include "engines/darkseed2/movie.h"
 
 namespace DarkSeed2 {
 

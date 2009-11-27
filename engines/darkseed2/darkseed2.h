@@ -48,6 +48,7 @@ class Music;
 class Variables;
 class Graphics;
 class TalkManager;
+class Movie;
 class ScriptInterpreter;
 class Events;
 
@@ -61,6 +62,7 @@ public:
 	Variables         *_variables;
 	Graphics          *_graphics;
 	TalkManager       *_talkMan;
+	Movie             *_movie;
 	ScriptInterpreter *_inter;
 	Events            *_events;
 
