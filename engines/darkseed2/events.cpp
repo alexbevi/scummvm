@@ -117,6 +117,30 @@ void Events::leaveIntro() {
 	for (int i = 0; i < 5; i++)
 		_titleSprites[i].clear();
 
+	// Intro movie room
+	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "1501")) {
+		warning("Failed loading the intro movie room");
+		_vm->quitGame();
+		return;
+	}
+
+	if (!roomEnter()) {
+		warning("Failed entering the intro movie room");
+		_vm->quitGame();
+		return;
+	}
+
+	Common::Array<Object> &roomObjects = _vm->_graphics->getRoom().getObjects();
+
+	if (roomObjects.size() != 1) {
+		warning("Intro movie room has a strange number of objects (%d)", roomObjects.size());
+		_vm->quitGame();
+		return;
+	}
+
+	// Playing the intro movies
+	_vm->_inter->interpret(roomObjects[0].getScripts(kObjectVerbUse));
+
 	_inIntro = false;
 
 	_canSwitchCursors = true;
