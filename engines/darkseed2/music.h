@@ -49,8 +49,15 @@ class MidiPlayer;
 
 class Music {
 public:
+	enum MidiMode {
+		kMidiModeGM,
+		kMidiModeFM
+	};
+
 	Music(Audio::Mixer &mixer, MidiDriver &driver);
 	~Music();
+
+	void setMidiMode(MidiMode midiMode);
 
 	bool playMID(Common::SeekableReadStream &mid);
 	bool playMID(const Resource &resource);
@@ -65,6 +72,8 @@ private:
 	Audio::Mixer *_mixer;
 
 	MidiPlayer *_midiPlayer;
+
+	MidiMode _midiMode;
 
 	bool _mute;
 };

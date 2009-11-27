@@ -39,6 +39,7 @@ namespace DarkSeed2 {
 Music::Music(Audio::Mixer &mixer, MidiDriver &driver) : _mixer(&mixer) {
 	_midiPlayer = new MidiPlayer(&driver, 0);
 
+	_midiMode = kMidiModeGM;
 	_mute = false;
 }
 
@@ -46,6 +47,10 @@ Music::~Music() {
 	stop();
 
 	delete _midiPlayer;
+}
+
+void Music::setMidiMode(MidiMode midiMode) {
+	_midiMode = midiMode;
 }
 
 bool Music::playMID(Common::SeekableReadStream &mid) {
@@ -64,7 +69,14 @@ bool Music::playMID(const Resource &resource) {
 bool Music::playMID(const Resources &resources, const Common::String &mid) {
 	Common::String midFile = "sndtrack/";
 
-	midFile += mid + ".mid";
+	midFile += mid;
+
+	if      (_midiMode == kMidiModeGM)
+		midFile += "gm";
+	else if (_midiMode == kMidiModeFM)
+		midFile += "fm";
+
+	midFile += ".mid";
 
 	if (!resources.hasResource(midFile))
 		return false;
