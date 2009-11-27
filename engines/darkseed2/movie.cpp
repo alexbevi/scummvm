@@ -23,9 +23,12 @@
  *
  */
 
+#include "common/events.h"
+
 #include "graphics/video/avi_decoder.h"
 
 #include "engines/darkseed2/movie.h"
+#include "engines/darkseed2/palette.h"
 #include "engines/darkseed2/graphics.h"
 
 namespace DarkSeed2 {
@@ -45,13 +48,58 @@ bool Movie::play(const Common::String &avi) {
 	if (!_aviDecoder->loadFile((avi + ".avi").c_str()))
 		return false;
 
-	while (_aviDecoder->decodeNextFrame()) {
-		int32 frameDelay = _aviDecoder->getFrameDelay();
+	_buffer.create(_aviDecoder->getWidth(), _aviDecoder->getHeight());
 
-		g_system->delayMillis(frameDelay);
+	_abort = false;
+
+	Palette pal;
+
+	for (int i = 0; i < 256; i++) {
+		pal[i * 3 + 0] = i;
+		pal[i * 3 + 1] = i;
+		pal[i * 3 + 2] = i;
 	}
 
+	_graphics->setPalette(pal);
+
+	while (!_abort && (_aviDecoder->getCurFrame() <= _aviDecoder->getFrameCount())) {
+		_aviDecoder->decodeNextFrame();
+		_aviDecoder->copyFrameToBuffer(_buffer.getData(), 0, 0, _buffer.getWidth());
+
+		int32 waitTime = _aviDecoder->getFrameWaitTime();
+
+		if (waitTime > 0)
+			g_system->delayMillis(waitTime);
+
+		handleInput();
+	}
+
+	_buffer.clear();
+
+	_aviDecoder->closeFile();
+
 	return true;
+}
+
+void Movie::handleInput() {
+	Common::Event event;
+
+	while (g_system->getEventManager()->pollEvent(event)) {
+		switch (event.type) {
+		case Common::EVENT_KEYDOWN:
+			if (event.kbd.keycode == Common::KEYCODE_ESCAPE)
+				_abort = true;
+			break;
+
+		case Common::EVENT_QUIT:
+			_abort = true;
+			break;
+
+		default:
+			break;
+
+		}
+	}
 }
 
 } // End of namespace DarkSeed2

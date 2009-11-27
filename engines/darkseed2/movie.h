@@ -29,6 +29,7 @@
 #include "sound/mixer.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/sprite.h"
 
 namespace Common {
 	class String;
@@ -54,6 +55,12 @@ private:
 	Graphics *_graphics;
 
 	::Graphics::AviDecoder *_aviDecoder;
+
+	bool _abort;
+
+	Sprite _buffer;
+
+	void handleInput();
 };
 
 } // End of namespace DarkSeed2

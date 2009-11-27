@@ -83,6 +83,10 @@ const byte *Sprite::getData() const {
 	return _data;
 }
 
+byte *Sprite::getData() {
+	return _data;
+}
+
 const Palette &Sprite::getPalette() const {
 	return _palette;
 }

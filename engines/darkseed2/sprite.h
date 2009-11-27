@@ -67,6 +67,7 @@ public:
 	Common::Rect getArea() const;
 
 	const byte *getData() const;
+	byte *getData();
 	const Palette &getPalette() const;
 
 	/** Create a new sprite with the specified dimensions. */

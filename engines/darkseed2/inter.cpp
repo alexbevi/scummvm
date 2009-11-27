@@ -130,9 +130,11 @@ bool ScriptInterpreter::oMidi(const ScriptChunk::Action &action) {
 bool ScriptInterpreter::oAnim(const ScriptChunk::Action &action) {
 
 	Common::Array<Common::String> lArgs = DATFile::argGet(action.arguments);
-	if (lArgs.size() >= 5)
+	if (lArgs.size() >= 5) {
 		warning("TODO: Playing video \"%s\"", lArgs[4].c_str());
-	else
+
+		_vm->_movie->play(lArgs[4]);
+	} else
 		warning("TODO: oAnim \"%s\"", action.arguments.c_str());
 
 	return true;
