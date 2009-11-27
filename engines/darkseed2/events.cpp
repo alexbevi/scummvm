@@ -97,7 +97,7 @@ bool Events::setupIntroSequence() {
 	Sprite sprite;
 	if (sprite.loadFromBMP(*_vm->_resources, "002TIT01")) {
 		int x = ((Graphics::_screenWidth - sprite.getWidth()) / 2) + 9;
-		_vm->_graphics->blitToScreen(sprite, x, 25, true);
+		_vm->_graphics->blitToScreen(sprite, x, 27, true);
 	}
 	if (sprite.loadFromBMP(*_vm->_resources, "002BTN01")) {
 		int x = ((Graphics::_screenWidth - sprite.getWidth()) / 2) + 2;
@@ -107,7 +107,6 @@ bool Events::setupIntroSequence() {
 		int x = ((Graphics::_screenWidth - sprite.getWidth()) / 2) + 2;
 		_vm->_graphics->blitToScreen(sprite, x, 256, true);
 	}
-
 	if (sprite.loadFromBMP(*_vm->_resources, "002BTN03")) {
 		int x = ((Graphics::_screenWidth - sprite.getWidth()) / 2) + 2;
 		_vm->_graphics->blitToScreen(sprite, x, 314, true);
