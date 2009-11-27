@@ -149,6 +149,10 @@ bool Object::parse(DATFile &dat) {
 	return true;
 }
 
+const Common::String &Object::getName() const {
+	return _name;
+}
+
 const Common::List<ScriptChunk *> &Object::getScripts(ObjectVerb verb) const {
 	assert(_variables);
 	assert(verb < kObjectVerbNone);
@@ -185,6 +189,14 @@ Common::Array<Object> &ObjectContainer::getObjects() {
 
 void ObjectContainer::clear() {
 	_objects.clear();
+}
+
+Object *ObjectContainer::findObject(const Common::String &name) {
+	for (Common::Array<Object>::iterator it = _objects.begin(); it != _objects.end(); ++it)
+		if (it->getName().equalsIgnoreCase(name))
+			return &*it;
+
+	return 0;
 }
 
 bool ObjectContainer::parse(DATFile &dat) {

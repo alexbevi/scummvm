@@ -32,6 +32,8 @@
 
 namespace DarkSeed2 {
 
+class Room;
+
 enum CursorMode {
 	kCursorModeWalk = 0,
 	kCursorModeUse,
@@ -81,6 +83,7 @@ private:
 	void leaveIntro();
 
 	bool roomEnter();
+	bool executeAutoStart(Room &room);
 };
 
 } // End of namespace DarkSeed2

@@ -77,15 +77,7 @@ bool Events::setupIntroSequence() {
 	if (!roomEnter())
 		return false;
 
-	Common::Array<Object> &roomObjects = _vm->_graphics->getRoom().getObjects();
-
-	if (roomObjects.size() != 1) {
-		warning("First intro room has a strange number of objects (%d)", roomObjects.size());
-		return false;
-	}
-
-	// Playing the cutscene logo
-	_vm->_inter->interpret(roomObjects[0].getScripts(kObjectVerbUse));
+	executeAutoStart(_vm->_graphics->getRoom());
 
 	// Title room
 	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0002"))
@@ -130,16 +122,9 @@ void Events::leaveIntro() {
 		return;
 	}
 
-	Common::Array<Object> &roomObjects = _vm->_graphics->getRoom().getObjects();
+	Room &room = _vm->_graphics->getRoom();
 
-	if (roomObjects.size() != 1) {
-		warning("Intro movie room has a strange number of objects (%d)", roomObjects.size());
-		_vm->quitGame();
-		return;
-	}
-
-	// Playing the intro movies
-	_vm->_inter->interpret(roomObjects[0].getScripts(kObjectVerbUse));
+	executeAutoStart(room);
 
 	_inIntro = false;
 
@@ -323,6 +308,34 @@ bool Events::roomEnter() {
 		return false;
 
 	return true;
+}
+
+bool Events::executeAutoStart(Room &room) {
+	bool has = false;
+	Object *autoStart;
+
+	autoStart = room.findObject("autostart");
+	if (autoStart) {
+		_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse));
+		has = true;
+	}
+	autoStart = room.findObject("auto start");
+	if (autoStart) {
+		_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse));
+		has = true;
+	}
+	autoStart = room.findObject("autoroom");
+	if (autoStart) {
+		_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse));
+		has = true;
+	}
+	autoStart = room.findObject("auto room");
+	if (autoStart) {
+		_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse));
+		has = true;
+	}
+
+	return has;
 }
 
 } // End of namespace DarkSeed2

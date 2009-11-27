@@ -56,6 +56,8 @@ public:
 	/** Parse an object out of a suitably positioned DAT file. */
 	bool parse(DATFile &dat);
 
+	const Common::String &getName() const;
+
 	Common::List<ScriptChunk *> &getScripts(ObjectVerb verb);
 	const Common::List<ScriptChunk *> &getScripts(ObjectVerb verb) const;
 
@@ -82,6 +84,8 @@ public:
 	~ObjectContainer();
 
 	Common::Array<Object> &getObjects();
+
+	Object *findObject(const Common::String &name);
 
 	void clear();
 
