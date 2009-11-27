@@ -78,6 +78,7 @@ private:
 	void setCursor(const Cursors::Cursor &cursor);
 
 	int checkTitleSprites(uint32 x, uint32 y) const;
+	void leaveIntro();
 
 	bool roomEnter();
 };

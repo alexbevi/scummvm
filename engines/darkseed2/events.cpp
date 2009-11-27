@@ -113,6 +113,9 @@ bool Events::setupIntroSequence() {
 	return true;
 }
 
+void Events::leaveIntro() {
+}
+
 void Events::mainLoop() {
 	while (!_vm->shouldQuit()) {
 		handleInput();
@@ -141,7 +144,7 @@ void Events::handleInput() {
 			mouseY = event.mouse.y;
 			break;
 
-		case Common::EVENT_LBUTTONDOWN:
+		case Common::EVENT_LBUTTONUP:
 			// If the mouse was moved, handle that beforehand
 			if (hasMove)
 				mouseMoved(mouseX, mouseY);
@@ -150,7 +153,7 @@ void Events::handleInput() {
 			mouseClickedLeft(event.mouse.x, event.mouse.y);
 			break;
 
-		case Common::EVENT_RBUTTONDOWN:
+		case Common::EVENT_RBUTTONUP:
 			// If the mouse was moved, handle that beforehand
 			if (hasMove)
 				mouseMoved(mouseX, mouseY);
@@ -196,6 +199,7 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 
 		if        (titleSprite == 2) {
 			// New game
+			leaveIntro();
 		} else if (titleSprite == 3) {
 			// Load game
 		} else if (titleSprite == 4) {
