@@ -77,8 +77,6 @@ bool Events::setupIntroSequence() {
 	if (!roomEnter())
 		return false;
 
-	executeAutoStart(_vm->_graphics->getRoom());
-
 	// Title room
 	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0002"))
 		return false;
@@ -121,10 +119,6 @@ void Events::leaveIntro() {
 		_vm->quitGame();
 		return;
 	}
-
-	Room &room = _vm->_graphics->getRoom();
-
-	executeAutoStart(room);
 
 	_inIntro = false;
 
@@ -307,6 +301,8 @@ bool Events::roomEnter() {
 	if (!_vm->_inter->interpret(room.getScripts(kRoomVerbEntry)))
 		return false;
 
+	// Evaluate the autostart objects
+	executeAutoStart(room);
 	return true;
 }
 
