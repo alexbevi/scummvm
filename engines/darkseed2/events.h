@@ -77,6 +77,8 @@ private:
 	void setCursor(CursorMode cursor, bool active);
 	void setCursor(const Cursors::Cursor &cursor);
 
+	int checkTitleSprites(uint32 x, uint32 y) const;
+
 	bool roomEnter();
 };
 

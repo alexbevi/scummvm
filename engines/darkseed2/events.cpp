@@ -176,17 +176,42 @@ void Events::handleInput() {
 }
 
 void Events::mouseMoved(uint32 x, uint32 y) {
-	uint32 convX = x - Graphics::_conversationX;
-	uint32 convY = y - Graphics::_conversationY;
+	if (_inIntro) {
+		int titleSprite = checkTitleSprites(x, y);
 
-	_vm->_graphics->getConversationBox().notifyMouseMove(convX, convY);
+		_cursorActive = (titleSprite != 0);
+		setCursor();
+
+	} else {
+		uint32 convX = x - Graphics::_conversationX;
+		uint32 convY = y - Graphics::_conversationY;
+
+		_vm->_graphics->getConversationBox().notifyMouseMove(convX, convY);
+	}
 }
 
 void Events::mouseClickedLeft(uint32 x, uint32 y) {
-	uint32 convX = x - Graphics::_conversationX;
-	uint32 convY = y - Graphics::_conversationY;
+	if (_inIntro) {
+		int titleSprite = checkTitleSprites(x, y);
 
-	_vm->_graphics->getConversationBox().notifyClicked(convX, convY);
+		if        (titleSprite == 2) {
+			// New game
+		} else if (titleSprite == 3) {
+			// Load game
+		} else if (titleSprite == 4) {
+			// Options
+			_vm->openMainMenuDialog();
+		} else if (titleSprite == 5) {
+			// Exit
+			_vm->quitGame();
+		}
+
+	} else {
+		uint32 convX = x - Graphics::_conversationX;
+		uint32 convY = y - Graphics::_conversationY;
+
+		_vm->_graphics->getConversationBox().notifyClicked(convX, convY);
+	}
 }
 
 void Events::mouseClickedRight(uint32 x, uint32 y) {
@@ -223,6 +248,14 @@ void Events::setCursor(CursorMode cursor, bool active) {
 
 void Events::setCursor(const Cursors::Cursor &cursor) {
 	_vm->_cursors->setCursor(cursor);
+}
+
+int Events::checkTitleSprites(uint32 x, uint32 y) const {
+	for (int i = 1; i < 5; i++)
+		if (_titleSprites[i].isIn(x, y))
+			return i + 1;
+
+	return 0;
 }
 
 bool Events::roomEnter() {
