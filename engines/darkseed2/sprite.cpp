@@ -376,22 +376,18 @@ bool Sprite::readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize) 
 	for (uint32 i = 0; i < _height; i++) {
 		byte *rowData = data;
 
-		uint8 code1 = bmp.readByte();
-		uint8 code2 = bmp.readByte();
+		uint32 size1 = bmp.readUint16LE();
+		uint32 size2 = bmp.readUint16LE();
 
-		if ((code1 == 0x00) && (code2 == 0x00)) {
-			uint16 size = bmp.readUint16LE();
-
-			if (size > _width) {
-				warning("Broken image compression: size %d, width %d", size, _width);
-				return false;
-			}
-
-			bmp.read(rowData, size);
-		} else {
-			warning("Unknown image compression code 0x%02X%02X", code1, code2);
-			return false;
+		if ((size1 + size2) > _width) {
+			warning("Broken image compression: size %d (%d + %d), width %d",
+					size1 + size2, size1, size2, _width);
 		}
+
+		// TODO: This might be something else than just a simple skip...
+		rowData += size1;
+
+		bmp.read(rowData, size2);
 
 		data -= _width;
 	}
