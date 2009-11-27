@@ -149,13 +149,18 @@ bool Object::parse(DATFile &dat) {
 	return true;
 }
 
-const Common::List<ScriptChunk *> *Object::getScripts(ObjectVerb verb) const {
+const Common::List<ScriptChunk *> &Object::getScripts(ObjectVerb verb) const {
 	assert(_variables);
+	assert(verb < kObjectVerbNone);
 
-	if ((verb < 0) || (verb >= kObjectVerbNone))
-		return 0;
+	return _scripts[(int) verb];
+}
 
-	return &_scripts[(int) verb];
+Common::List<ScriptChunk *> &Object::getScripts(ObjectVerb verb) {
+	assert(_variables);
+	assert(verb < kObjectVerbNone);
+
+	return _scripts[(int) verb];
 }
 
 ObjectVerb Object::parseObjectVerb(const Common::String &verb) {
@@ -172,6 +177,10 @@ ObjectContainer::ObjectContainer(const Variables &variables) : _variables(&varia
 
 ObjectContainer::~ObjectContainer() {
 	clear();
+}
+
+Common::Array<Object> &ObjectContainer::getObjects() {
+	return _objects;
 }
 
 void ObjectContainer::clear() {

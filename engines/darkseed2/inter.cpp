@@ -25,6 +25,7 @@
 
 #include "engines/darkseed2/inter.h"
 #include "engines/darkseed2/variables.h"
+#include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/music.h"
 
 namespace DarkSeed2 {
@@ -126,8 +127,14 @@ bool ScriptInterpreter::oMidi(const ScriptChunk::Action &action) {
 }
 
 bool ScriptInterpreter::oAnim(const ScriptChunk::Action &action) {
-	warning("Unimplemented script function oAnim");
-	return false;
+
+	Common::Array<Common::String> lArgs = DATFile::argGet(action.arguments);
+	if (lArgs.size() >= 5)
+		warning("TODO: Playing video \"%s\"", lArgs[4].c_str());
+	else
+		warning("TODO: oAnim \"%s\"", action.arguments.c_str());
+
+	return true;
 }
 
 bool ScriptInterpreter::oStatus(const ScriptChunk::Action &action) {
@@ -206,8 +213,12 @@ bool ScriptInterpreter::oSpeechVar(const ScriptChunk::Action &action) {
 }
 
 bool ScriptInterpreter::oWaitUntil(const ScriptChunk::Action &action) {
-	warning("Unimplemented script function oWaitUntil");
-	return false;
+	if (!_vm->_variables->evalCondition(action.arguments)) {
+		warning("TODO: Real WaitUntil condition");
+		return false;
+	}
+
+	return true;
 }
 
 bool ScriptInterpreter::oEffect(const ScriptChunk::Action &action) {

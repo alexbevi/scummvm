@@ -56,7 +56,8 @@ public:
 	/** Parse an object out of a suitably positioned DAT file. */
 	bool parse(DATFile &dat);
 
-	const Common::List<ScriptChunk *> *getScripts(ObjectVerb verb) const;
+	Common::List<ScriptChunk *> &getScripts(ObjectVerb verb);
+	const Common::List<ScriptChunk *> &getScripts(ObjectVerb verb) const;
 
 private:
 	const Variables *_variables;
@@ -79,6 +80,8 @@ class ObjectContainer {
 public:
 	ObjectContainer(const Variables &variables);
 	~ObjectContainer();
+
+	Common::Array<Object> &getObjects();
 
 	void clear();
 

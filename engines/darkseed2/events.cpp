@@ -68,10 +68,28 @@ bool Events::setupIntroSequence() {
 	_cursorActive = false;
 	setCursor();
 
+	// Cutscene room
 	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0001"))
 		return false;
 
 	_inIntro = true;
+
+	if (!roomEnter())
+		return false;
+
+	Common::Array<Object> &roomObjects = _vm->_graphics->getRoom().getObjects();
+
+	if (roomObjects.size() != 1) {
+		warning("First intro room has a strange number of objects (%d)", roomObjects.size());
+		return false;
+	}
+
+	// Playing the cutscene logo
+	_vm->_inter->interpret(roomObjects[0].getScripts(kObjectVerbUse));
+
+	// Title room
+	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0002"))
+		return false;
 
 	if (!roomEnter())
 		return false;
