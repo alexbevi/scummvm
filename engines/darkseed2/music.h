@@ -59,8 +59,6 @@ public:
 
 	void setMidiMode(MidiMode midiMode);
 
-	bool playMID(Common::SeekableReadStream &mid);
-	bool playMID(const Resource &resource);
 	bool playMID(const Resources &resources, const Common::String &mid);
 
 	void stop();
@@ -73,9 +71,13 @@ private:
 
 	MidiPlayer *_midiPlayer;
 
+	Common::String _name;
 	MidiMode _midiMode;
 
 	bool _mute;
+
+	bool playMID(Common::SeekableReadStream &mid);
+	bool playMID(const Resource &resource);
 };
 
 // Taken from Draci, which took it from MADE, which took it from SAGA.

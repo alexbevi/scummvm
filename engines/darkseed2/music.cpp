@@ -67,6 +67,10 @@ bool Music::playMID(const Resource &resource) {
 }
 
 bool Music::playMID(const Resources &resources, const Common::String &mid) {
+	if (mid == _name)
+		// If the current music is already playing, don't restart it
+		return true;
+
 	Common::String midFile = "sndtrack/";
 
 	midFile += mid;
@@ -86,6 +90,8 @@ bool Music::playMID(const Resources &resources, const Common::String &mid) {
 	bool result = playMID(*resMID);
 
 	delete resMID;
+
+	_name = mid;
 
 	return result;
 }
@@ -108,6 +114,7 @@ void Music::syncSettings(const Options &options) {
 }
 
 void Music::stop() {
+	_name.clear();
 	_midiPlayer->stop();
 }
 
