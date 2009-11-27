@@ -42,7 +42,7 @@ Sound::~Sound() {
 }
 
 bool Sound::playWAV(Common::SeekableReadStream &wav,
-		Audio::Mixer::SoundType type) {
+		Audio::Mixer::SoundType type, bool autoFree) {
 
 	// Try to find an unoccupied channel
 	Audio::SoundHandle *handle = 0;
@@ -65,7 +65,8 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 		return false;
 
 	// Play it
-	_mixer->playInputStream(type, handle, wavStream, _id++);
+	_mixer->playInputStream(type, handle, wavStream, _id++,
+			Audio::Mixer::kMaxChannelVolume, 0, autoFree);
 
 	return true;
 }
@@ -74,6 +75,27 @@ bool Sound::playWAV(const Resource &resource,
 		Audio::Mixer::SoundType type) {
 
 	return playWAV(resource.getStream(), type);
+}
+
+bool Sound::playWAV(Resources &resources, const Common::String &wav,
+		Audio::Mixer::SoundType type) {
+
+	if (!resources.hasResource(wav + ".wav"))
+		return false;
+
+	Resource *resWAV = resources.getResource(wav + ".wav");
+
+	uint32 size = resWAV->getSize();
+
+	byte *data = (byte *) malloc(size);
+	resWAV->getStream().read(data, size);
+
+	delete resWAV;
+
+	Common::MemoryReadStream *stream =
+	 new Common::MemoryReadStream(data, size, Common::DisposeAfterUse::YES);
+
+	return playWAV(*stream, type, true);
 }
 
 bool Sound::playWAV(Common::SeekableReadStream &wav, int &id,
@@ -88,6 +110,13 @@ bool Sound::playWAV(const Resource &resource, int &id,
 
 	id = _id;
 	return playWAV(resource, type);
+}
+
+bool Sound::playWAV(Resources &resources, const Common::String &wav, int &id,
+		Audio::Mixer::SoundType type) {
+
+	id = _id;
+	return playWAV(resources, wav, type);
 }
 
 void Sound::stopID(int id) {
