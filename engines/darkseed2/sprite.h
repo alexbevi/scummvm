@@ -111,6 +111,9 @@ private:
 	Palette _palette;
 
 	::Graphics::Surface *wrapInSurface() const;
+
+	bool readBMPDataComp0(Common::SeekableReadStream &bmp, uint32 dataSize);
+	bool readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize);
 };
 
 } // End of namespace DarkSeed2

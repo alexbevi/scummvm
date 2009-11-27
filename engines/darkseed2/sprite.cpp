@@ -143,15 +143,10 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 
 	uint32 compression = bmp.readUint32LE();
 
-	if (compression == 2) {
-		// Thanks to clone2727 for finding that out, while I was raking the disasm for a "decompression" :P
-		_width++;
-	} else if (compression != 0)
+	if ((compression != 0) && (compression != 2))
 		return false;
 
 	uint32 bmpDataSize = bmp.readUint32LE();
-	if ((bmpDataSize > fSize) || (fSize < (_width * _height + 0x36)))
-		return false;
 
 	// Horizontal + vertical image resolution
 	bmp.skip(8);
@@ -177,21 +172,17 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 	delete[] palette;
 
 	_data = new byte[_width * _height];
+	memset(_data, 0, _width * _height);
 
 	if (!bmp.seek(bmpDataOffset))
 		return false;
 
-	byte *data = _data + ((_height - 1) * _width);
-
-	int extraDataLength = (_width % 4) ? 4 - (_width % 4) : 0;
-	for (uint32 i = 0; i < _height; i++) {
-		byte *rowData = data;
-
-		for (uint32 j = 0; j < _width; j++)
-			*rowData++ = bmp.readByte();
-
-		bmp.skip(extraDataLength);
-		data -= _width;
+	if (compression == 0) {
+		if (!readBMPDataComp0(bmp, bmpDataSize))
+			return false;
+	} else if (compression == 2) {
+		if (!readBMPDataComp2(bmp, bmpDataSize))
+			return false;
 	}
 
 	return true;
@@ -360,6 +351,52 @@ void Sprite::drawStrings(const Common::StringList &strings, const ::Graphics::Fo
 void Sprite::applyChangeSet(const Common::Array<byte> &changeSet) {
 	for (uint32 i = 0; i < _width * _height; i++)
 		_data[i] = changeSet[_data[i]];
+}
+
+bool Sprite::readBMPDataComp0(Common::SeekableReadStream &bmp, uint32 dataSize) {
+	byte *data = _data + ((_height - 1) * _width);
+
+	int extraDataLength = (_width % 4) ? 4 - (_width % 4) : 0;
+	for (uint32 i = 0; i < _height; i++) {
+		byte *rowData = data;
+
+		for (uint32 j = 0; j < _width; j++)
+			*rowData++ = bmp.readByte();
+
+		bmp.skip(extraDataLength);
+		data -= _width;
+	}
+
+	return true;
+}
+
+bool Sprite::readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize) {
+	byte *data = _data + ((_height - 1) * _width);
+
+	for (uint32 i = 0; i < _height; i++) {
+		byte *rowData = data;
+
+		uint8 code1 = bmp.readByte();
+		uint8 code2 = bmp.readByte();
+
+		if ((code1 == 0x00) && (code2 == 0x00)) {
+			uint16 size = bmp.readUint16LE();
+
+			if (size > _width) {
+				warning("Broken image compression: size %d, width %d", size, _width);
+				return false;
+			}
+
+			bmp.read(rowData, size);
+		} else {
+			warning("Unknown image compression code 0x%02X%02X", code1, code2);
+			return false;
+		}
+
+		data -= _width;
+	}
+
+	return true;
 }
 
 } // End of namespace DarkSeed2
