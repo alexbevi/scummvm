@@ -26,6 +26,7 @@
 #include "engines/darkseed2/inter.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
+#include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/music.h"
 #include "engines/darkseed2/movie.h"
 
@@ -225,8 +226,8 @@ bool ScriptInterpreter::oWaitUntil(const ScriptChunk::Action &action) {
 }
 
 bool ScriptInterpreter::oEffect(const ScriptChunk::Action &action) {
-	warning("Unimplemented script function oEffect");
-	return false;
+	_vm->_sound->playWAV(*_vm->_resources, action.arguments);
+	return true;
 }
 
 } // End of namespace DarkSeed2
