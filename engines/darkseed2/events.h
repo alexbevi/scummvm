@@ -34,8 +34,8 @@ namespace DarkSeed2 {
 
 enum CursorMode {
 	kCursorModeWalk = 0,
-	kCursorModeLook,
 	kCursorModeUse,
+	kCursorModeLook,
 	kCursorModeNone
 };
 

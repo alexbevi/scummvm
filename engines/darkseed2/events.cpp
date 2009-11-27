@@ -40,10 +40,10 @@ Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
 	// Getting cursors
 	_cursors[kCursorModeWalk].inactive = _vm->_cursors->getCursor();
 	_cursors[kCursorModeWalk].active   = _vm->_cursors->getCursor("c4Ways");
-	_cursors[kCursorModeLook].inactive = _vm->_cursors->getCursor("cLook");
-	_cursors[kCursorModeLook].active   = _vm->_cursors->getCursor("cLookAt");
 	_cursors[kCursorModeUse ].inactive = _vm->_cursors->getCursor("cHand");
 	_cursors[kCursorModeUse ].active   = _vm->_cursors->getCursor("cUseIt");
+	_cursors[kCursorModeLook].inactive = _vm->_cursors->getCursor("cLook");
+	_cursors[kCursorModeLook].active   = _vm->_cursors->getCursor("cLookAt");
 
 	_inIntro = false;
 
