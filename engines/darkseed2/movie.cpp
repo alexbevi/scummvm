@@ -25,6 +25,8 @@
 
 #include "common/events.h"
 
+#include "graphics/cursorman.h"
+
 #include "graphics/video/avi_decoder.h"
 
 #include "engines/darkseed2/movie.h"
@@ -52,6 +54,10 @@ bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 
 	_abort = false;
 
+	// Switching off the cursor
+	bool cursorVisible = CursorMan.isVisible();
+	CursorMan.showMouse(false);
+
 	while (!_abort && (_aviDecoder->getCurFrame() <= _aviDecoder->getFrameCount())) {
 		_aviDecoder->decodeNextFrame();
 		_aviDecoder->copyFrameToBuffer(_buffer.getData(), 0, 0, _buffer.getWidth());
@@ -65,6 +71,9 @@ bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 
 		handleInput();
 	}
+
+	// Restoring the cursor visibility
+	CursorMan.showMouse(cursorVisible);
 
 	_buffer.clear();
 
