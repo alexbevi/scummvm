@@ -114,6 +114,28 @@ bool Events::setupIntroSequence() {
 }
 
 void Events::leaveIntro() {
+	for (int i = 0; i < 5; i++)
+		_titleSprites[i].clear();
+
+	_inIntro = false;
+
+	_canSwitchCursors = true;
+	_cursorMode   = kCursorModeWalk;
+	_cursorActive = false;
+	setCursor();
+
+	// First room
+	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0101")) {
+		warning("Failed loading the first room");
+		_vm->quitGame();
+		return;
+	}
+
+	if (!roomEnter()) {
+		warning("Failed entering the first room");
+		_vm->quitGame();
+		return;
+	}
 }
 
 void Events::mainLoop() {
