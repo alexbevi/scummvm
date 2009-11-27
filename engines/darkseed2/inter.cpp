@@ -133,7 +133,7 @@ bool ScriptInterpreter::oAnim(const ScriptChunk::Action &action) {
 	if (lArgs.size() >= 5) {
 		warning("TODO: Playing video \"%s\"", lArgs[4].c_str());
 
-		_vm->_movie->play(lArgs[4]);
+		_vm->_movie->play(lArgs[4], atoi(lArgs[0].c_str()), atoi(lArgs[1].c_str()));
 	} else
 		warning("TODO: oAnim \"%s\"", action.arguments.c_str());
 

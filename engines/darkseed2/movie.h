@@ -48,7 +48,7 @@ public:
 	Movie(Audio::Mixer &mixer, Graphics &graphics);
 	~Movie();
 
-	bool play(const Common::String &avi);
+	bool play(const Common::String &avi, uint32 x = 0, uint32 y = 0);
 
 private:
 	Audio::Mixer *_mixer;

@@ -44,7 +44,7 @@ Movie::~Movie() {
 	delete _aviDecoder;
 }
 
-bool Movie::play(const Common::String &avi) {
+bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 	if (!_aviDecoder->loadFile((avi + ".avi").c_str()))
 		return false;
 
@@ -52,22 +52,14 @@ bool Movie::play(const Common::String &avi) {
 
 	_abort = false;
 
-	Palette pal;
-
-	for (int i = 0; i < 256; i++) {
-		pal[i * 3 + 0] = i;
-		pal[i * 3 + 1] = i;
-		pal[i * 3 + 2] = i;
-	}
-
-	_graphics->setPalette(pal);
-
 	while (!_abort && (_aviDecoder->getCurFrame() <= _aviDecoder->getFrameCount())) {
 		_aviDecoder->decodeNextFrame();
 		_aviDecoder->copyFrameToBuffer(_buffer.getData(), 0, 0, _buffer.getWidth());
 
-		int32 waitTime = _aviDecoder->getFrameWaitTime();
+		_graphics->blitToScreen(_buffer, x, y, false);
+		_graphics->retrace();
 
+		int32 waitTime = _aviDecoder->getFrameWaitTime();
 		if (waitTime > 0)
 			g_system->delayMillis(waitTime);
 
