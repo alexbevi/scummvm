@@ -43,6 +43,7 @@ class Variables;
 class TalkManager;
 
 class ConversationBox;
+class Room;
 
 class Resource;
 class TextObject;
@@ -65,6 +66,7 @@ public:
 	void init(TalkManager &talkManager);
 
 	ConversationBox &getConversationBox();
+	Room &getRoom();
 
 	void updateStatus();
 
@@ -87,7 +89,7 @@ public:
 
 	void retrace();
 
-	void registerBackground(Sprite &background);
+	void registerBackground(const Sprite &background);
 	void unregisterBackground();
 
 private:
@@ -95,6 +97,7 @@ private:
 	Variables *_variables;
 
 	ConversationBox *_conversationBox;
+	Room *_room;
 
 	Palette _gamePalette;
 	Sprite _screen;
@@ -102,10 +105,11 @@ private:
 	bool _dirtyAll;
 	Common::List<Common::Rect> _dirtyRects;
 
-	Sprite *_background;
+	const Sprite *_background;
 
 	TextObject *_talk;
 
+	void initPalette();
 	void applyGamePalette();
 
 	void redrawScreen(const Common::Rect &rect);

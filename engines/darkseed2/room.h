@@ -33,9 +33,11 @@ namespace DarkSeed2 {
 
 class Resources;
 class Variables;
+class Graphics;
 
 class DATFile;
 class ScriptChunk;
+class Sprite;
 
 enum RoomVerb {
 	kRoomVerbEntry = 0,
@@ -49,20 +51,29 @@ enum RoomVerb {
 
 class Room : public ObjectContainer {
 public:
-	Room(Variables &variables);
+	Room(Variables &variables, Graphics &graphics);
 	~Room();
+
+	const Common::String &getName() const;
+
+	const Sprite &getBackground() const;
 
 	void clear();
 
-	bool parse(DATFile &room, DATFile &objects);
-	bool parse(const Resources &resources, const Common::String &room, const Common::String &objects);
 	bool parse(const Resources &resources, const Common::String &base);
 
 private:
 	Variables *_variables;
+	Graphics  *_graphics;
 
-	Common::String _background;
-	Common::String _walkMap;
+	bool _ready;
+
+	Common::String _name;
+	Common::String _backgroundFile;
+	Common::String _walkMapFile;
+
+	Sprite *_background;
+	Sprite *_walkMap;
 
 	Common::Rect _area;
 
@@ -81,6 +92,11 @@ private:
 	bool addScriptChunk(const Common::String &cmd, DATFile &room, RoomVerb curVerb);
 
 	static RoomVerb parseRoomVerb(const Common::String &verb);
+
+	bool parse(const Resources &resources, DATFile &room, DATFile &objects);
+	bool parse(const Resources &resources, const Common::String &room, const Common::String &objects);
+
+	bool setup(const Resources &resources);
 };
 
 } // End of namespace DarkSeed2

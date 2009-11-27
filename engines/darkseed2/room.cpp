@@ -30,6 +30,7 @@
 #include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/script.h"
+#include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
 
@@ -37,8 +38,12 @@ static const char *roomVerb[] = {
 	"EntryStart", "MirrorStart", "MusicStart", "PaletteStart", "SpriteStart"
 };
 
-Room::Room(Variables &variables) : ObjectContainer(variables) {
+Room::Room(Variables &variables, Graphics &graphics) : ObjectContainer(variables) {
 	_variables = &variables;
+	_graphics  = &graphics;
+
+	_background = 0;
+	_walkMap    = 0;
 
 	clear();
 }
@@ -48,11 +53,19 @@ Room::~Room() {
 }
 
 void Room::clear() {
+	_ready = false;
+
 	// Remove all local variables
 	_variables->clearLocal();
 
-	_background.clear();
-	_walkMap.clear();
+	_backgroundFile.clear();
+	_walkMapFile.clear();
+
+	delete _background;
+	delete _walkMap;
+
+	_background = 0;
+	_walkMap    = 0;
 
 	_walkMapArg1 = 0;
 	_walkMapArg2 = 0;
@@ -69,7 +82,17 @@ void Room::clear() {
 	_scripts.resize(kRoomVerbNone);
 }
 
-bool Room::parse(DATFile &room, DATFile &objects) {
+const Common::String &Room::getName() const {
+	return _name;
+}
+
+const Sprite &Room::getBackground() const {
+	assert(_ready);
+
+	return *_background;
+}
+
+bool Room::parse(const Resources &resources, DATFile &room, DATFile &objects) {
 	RoomVerb curVerb = kRoomVerbNone;
 
 	const Common::String *cmd, *args;
@@ -123,7 +146,13 @@ bool Room::parse(DATFile &room, DATFile &objects) {
 		}
 	}
 
-	return ObjectContainer::parse(objects);
+	if (!ObjectContainer::parse(objects))
+		return false;
+
+	if (!setup(resources))
+		return false;
+
+	return true;
 }
 
 bool Room::parse(const Resources &resources,
@@ -138,7 +167,7 @@ bool Room::parse(const Resources &resources,
 	DATFile roomParser(*resRoom);
 	DATFile objectsParser(*resObjects);
 
-	bool result = parse(roomParser, objectsParser);
+	bool result = parse(resources, roomParser, objectsParser);
 
 	delete resRoom;
 	delete resObjects;
@@ -148,6 +177,8 @@ bool Room::parse(const Resources &resources,
 
 bool Room::parse(const Resources &resources,
 		const Common::String &base) {
+
+	_name = base;
 
 	Common::String room    = "ROOM";
 	Common::String objects = "OBJ_";
@@ -172,7 +203,7 @@ bool Room::setBackground(const Common::String &args) {
 		return false;
 	}
 
-	_background = args;
+	_backgroundFile = args;
 
 	return true;
 }
@@ -185,7 +216,7 @@ bool Room::setWalkMap(const Common::String &args) {
 		return false;
 	}
 
-	_walkMap = lArgs[0];
+	_walkMapFile = lArgs[0];
 
 	if (lArgs.size() == 3) {
 		_walkMapArg1 = atoi(lArgs[1].c_str());
@@ -253,6 +284,35 @@ bool Room::addScriptChunk(const Common::String &cmd, DATFile &room, RoomVerb cur
 
 	// Add it to our list
 	_scripts[(int) curVerb].push_back(script);
+
+	return true;
+}
+
+bool Room::setup(const Resources &resources) {
+	if (_backgroundFile.empty()) {
+		warning("Room::setup(): No background");
+		return false;
+	}
+
+	if (_walkMapFile.empty()) {
+		warning("Room::setup(): No walk map");
+		return false;
+	}
+
+	_background = new Sprite();
+	_walkMap    = new Sprite();
+
+	if (!_background->loadFromBMP(resources, _backgroundFile)) {
+		warning("Room::setup(): Can't load background");
+		return false;
+	}
+
+	if (!_walkMap->loadFromBMP(resources, _walkMapFile)) {
+		warning("Room::setup(): Can't load walk map");
+		return false;
+	}
+
+	_ready = true;
 
 	return true;
 }

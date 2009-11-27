@@ -30,6 +30,7 @@
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/conversationbox.h"
+#include "engines/darkseed2/room.h"
 #include "engines/darkseed2/graphicalobject.h"
 
 namespace DarkSeed2 {
@@ -49,19 +50,35 @@ Graphics::Graphics(Resources &resources, Variables &variables) {
 	_talk = 0;
 
 	_conversationBox = 0;
+	_room            = 0;
 }
 
 Graphics::~Graphics() {
+	delete _room;
 	delete _conversationBox;
 	delete _talk;
 }
 
 void Graphics::init(TalkManager &talkManager) {
 	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager);
+	_room            = new Room(*_variables, *this);
+
+	_screen.clear();
+
+	initPalette();
+	dirtyAll();
 }
 
 ConversationBox &Graphics::getConversationBox() {
+	assert(_conversationBox);
+
 	return *_conversationBox;
+}
+
+Room &Graphics::getRoom() {
+	assert(_room);
+
+	return *_room;
 }
 
 void Graphics::updateStatus() {
@@ -78,6 +95,10 @@ void Graphics::clearPalette() {
 void Graphics::setPalette(const Palette &pal) {
 	_gamePalette = pal;
 
+	initPalette();
+}
+
+void Graphics::initPalette() {
 	// Palette entry 0 is transparent
 	_gamePalette[0] = 0;
 	_gamePalette[1] = 0;
@@ -151,6 +172,7 @@ const Palette &Graphics::getPalette() const {
 void Graphics::redraw(ScreenPart part) {
 	switch (part) {
 	case kScreenPartPlayArea:
+		redrawScreen(Common::Rect(0, 0, _screenWidth, _screenHeight));
 		break;
 
 	case kScreenPartConversation:
@@ -213,7 +235,7 @@ bool Graphics::dirtyRectsApply() {
 	return true;
 }
 
-void Graphics::registerBackground(Sprite &background) {
+void Graphics::registerBackground(const Sprite &background) {
 	assert(_conversationBox);
 
 	_background = &background;
@@ -232,7 +254,8 @@ void Graphics::unregisterBackground() {
 void Graphics::redrawScreen(const Common::Rect &rect) {
 	assert(_conversationBox);
 
-	blitToScreen(*_background, rect, rect.left, rect.top, false);
+	if (_background)
+		blitToScreen(*_background, rect, rect.left, rect.top, false);
 
 	if (_talk)
 		_talk->redraw(_screen, rect);

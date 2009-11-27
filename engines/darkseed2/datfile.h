@@ -62,6 +62,8 @@ public:
 	static Common::String argGet(const Common::String &arguments, int n);
 	static Common::Array<Common::String> argGet(const Common::String &arguments);
 
+	static Common::String mergeArgs(const Common::Array<Common::String> &args, uint32 n = 0);
+
 private:
 	struct Line {
 		Common::String command;

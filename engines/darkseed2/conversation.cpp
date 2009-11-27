@@ -170,9 +170,7 @@ bool Conversation::addSpeaker(const Common::String &args) {
 
 	// Speaker names can include spaces
 	_speakers[num].clear();
-	for (uint i = 1; i < lArgs.size(); i++)
-		_speakers[num] += lArgs[i] + " ";
-	_speakers[num].trim();
+	_speakers[num] = DATFile::mergeArgs(lArgs, 1);
 
 	return true;
 }

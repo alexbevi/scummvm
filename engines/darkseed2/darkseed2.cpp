@@ -43,7 +43,6 @@
 #include "engines/darkseed2/music.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
-#include "engines/darkseed2/room.h"
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/conversation.h"
 #include "engines/darkseed2/conversationbox.h"
@@ -97,31 +96,10 @@ Common::Error DarkSeed2Engine::run() {
 
 	warning("Done initializing");
 
-	Sprite sprite;
-
-	if (sprite.loadFromBMP(*_resources, "RM0101")) {
-		_graphics->registerBackground(sprite);
-		_graphics->retrace();
-	} else
-		warning("BMP loading failed");
-
-	if (!_music->playMID(*_resources, "mm001gm"))
-		warning("MID playing failed");
-
-	warning("Evaluating condition: %d",
-			_variables->evalCondition("!FALSE TRUE TRUE TRUE !FALSE TRUE =TRUE,1 =FALSE,0") == 1);
-
-	_variables->set("Foobar01", 0);
-	_variables->set("Foobar02", 1);
-
-	Room room(*_variables);
-	if (!room.parse(*_resources, "0806"))
-		warning("Failed parsing room 0806");
-	else
-		warning("Successfully parsed room 0806");
-
-	warning("Loading conversation CONV0001: %d",
-			_graphics->getConversationBox().start("CONV0002"));
+	if (!_events->setupIntroSequence()) {
+		warning("Failed setting up the intro sequence");
+		return Common::kUnknownError;
+	}
 
 	_events->mainLoop();
 
@@ -183,7 +161,7 @@ bool DarkSeed2Engine::init() {
 }
 
 bool DarkSeed2Engine::initGraphics() {
-	warning("Setting up graphics");
+	warning("Setting up graphics...");
 
 	_graphics->init(*_talkMan);
 

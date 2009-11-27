@@ -27,39 +27,57 @@
 
 #include "engines/darkseed2/events.h"
 #include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/room.h"
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/conversationbox.h"
 
 namespace DarkSeed2 {
 
 Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
-	_cursors = new const Cursors::Cursor**[kCursorModeNone];
-	for (int i = 0; i < kCursorModeNone; i++)
-		_cursors[i] = new const Cursors::Cursor*[2];
+	_cursors = new ModeCursors[kCursorModeNone];
 
 	// Getting cursors
-	_cursors[kCursorModeWalk][0] = _vm->_cursors->getCursor();
-	_cursors[kCursorModeWalk][1] = _vm->_cursors->getCursor("c4Ways");
-	_cursors[kCursorModeLook][0] = _vm->_cursors->getCursor("cLook");
-	_cursors[kCursorModeLook][1] = _vm->_cursors->getCursor("cLookAt");
-	_cursors[kCursorModeUse] [0] = _vm->_cursors->getCursor("cHand");
-	_cursors[kCursorModeUse] [1] = _vm->_cursors->getCursor("cUseIt");
+	_cursors[kCursorModeWalk].inactive = _vm->_cursors->getCursor();
+	_cursors[kCursorModeWalk].active   = _vm->_cursors->getCursor("c4Ways");
+	_cursors[kCursorModeLook].inactive = _vm->_cursors->getCursor("cLook");
+	_cursors[kCursorModeLook].active   = _vm->_cursors->getCursor("cLookAt");
+	_cursors[kCursorModeUse ].inactive = _vm->_cursors->getCursor("cHand");
+	_cursors[kCursorModeUse ].active   = _vm->_cursors->getCursor("cUseIt");
+
+	_inIntro = false;
 
 	// Set the default (pointer) cursor
-	_cursorMode = kCursorModeWalk;
-	_vm->_cursors->setCursor(*_cursors[_cursorMode][0]);
+	_canSwitchCursors = true;
+
+	_cursorMode   = kCursorModeWalk;
+	_cursorActive = false;
+	setCursor();
+
 	_vm->_cursors->setVisible(true);
 }
 
 Events::~Events() {
-	for (int i = 0; i < kCursorModeNone; i++)
-		delete[] _cursors[i];
 	delete[] _cursors;
 }
 
-void Events::mainLoop() {
-	bool restarted = false;
+bool Events::setupIntroSequence() {
+	_canSwitchCursors = false;
 
+	_cursorMode   = kCursorModeUse;
+	_cursorActive = false;
+	setCursor();
+
+	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0001"))
+		return false;
+
+	_vm->_graphics->registerBackground(_vm->_graphics->getRoom().getBackground());
+
+	_inIntro = true;
+
+	return true;
+}
+
+void Events::mainLoop() {
 	while (!_vm->shouldQuit()) {
 		handleInput();
 
@@ -70,12 +88,6 @@ void Events::mainLoop() {
 
 		_vm->_graphics->retrace();
 		g_system->updateScreen();
-
-		if (!_vm->_graphics->getConversationBox().isActive() && !restarted) {
-			warning("Restarting conversation");
-			_vm->_graphics->getConversationBox().restart();
-			restarted = true;
-		}
 	}
 }
 
@@ -152,8 +164,29 @@ void Events::mouseClickedRight(uint32 x, uint32 y) {
 }
 
 void Events::cycleCursorMode() {
-	_cursorMode = (_cursorMode + 1) % kCursorModeNone;
-	_vm->_cursors->setCursor(*_cursors[_cursorMode][0]);
+	if (!_canSwitchCursors)
+		return;
+
+	_cursorMode = (CursorMode) ((((int) _cursorMode) + 1) % kCursorModeNone);
+	setCursor();
+}
+
+void Events::setCursor() {
+	setCursor(_cursorMode, _cursorActive);
+}
+
+void Events::setCursor(CursorMode cursor, bool active) {
+	if (_cursorMode >= kCursorModeNone)
+		return;
+
+	if (active)
+		setCursor(*_cursors[(int) cursor].active);
+	else
+		setCursor(*_cursors[(int) cursor].inactive);
+}
+
+void Events::setCursor(const Cursors::Cursor &cursor) {
+	_vm->_cursors->setCursor(cursor);
 }
 
 } // End of namespace DarkSeed2

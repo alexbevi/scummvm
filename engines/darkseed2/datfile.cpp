@@ -199,4 +199,15 @@ Common::Array<Common::String> DATFile::argGet(const Common::String &arguments) {
 	return list;
 }
 
+Common::String DATFile::mergeArgs(const Common::Array<Common::String> &args, uint32 n) {
+	Common::String str;
+
+	for (uint32 i = n; i < args.size(); i++)
+		str += args[i] + " ";
+
+	str.trim();
+
+	return str;
+}
+
 } // End of namespace DarkSeed2

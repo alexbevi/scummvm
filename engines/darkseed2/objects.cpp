@@ -49,12 +49,12 @@ Object::~Object() {
 }
 
 bool Object::setName(const Common::String &args) {
-	if (DATFile::argCount(args) != 1) {
+	if (DATFile::argCount(args) < 1) {
 		warning("Object::setName: Broken arguments");
 		return false;
 	}
 
-	_name= args;
+	_name = args;
 
 	return true;
 }

@@ -43,13 +43,25 @@ public:
 	Events(DarkSeed2Engine &vm);
 	~Events();
 
+	bool setupIntroSequence();
+
 	void mainLoop();
 
 private:
+	struct ModeCursors {
+		const Cursors::Cursor *inactive;
+		const Cursors::Cursor *active;
+	};
+
 	DarkSeed2Engine *_vm;
 
-	const Cursors::Cursor ***_cursors;
-	int _cursorMode;
+	bool _inIntro;
+
+	bool _canSwitchCursors;
+
+	ModeCursors *_cursors;
+	CursorMode _cursorMode;
+	bool _cursorActive;
 
 	void handleInput();
 
@@ -58,6 +70,9 @@ private:
 	void mouseClickedRight(uint32 x, uint32 y);
 
 	void cycleCursorMode();
+	void setCursor();
+	void setCursor(CursorMode cursor, bool active);
+	void setCursor(const Cursors::Cursor &cursor);
 };
 
 } // End of namespace DarkSeed2
