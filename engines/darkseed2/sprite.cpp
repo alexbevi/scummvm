@@ -42,6 +42,7 @@ Sprite::Sprite() {
 }
 
 Sprite::Sprite(const Sprite &sprite) {
+	_data = 0;
 	copyFrom(sprite);
 }
 
