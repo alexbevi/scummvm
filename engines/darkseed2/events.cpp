@@ -94,6 +94,10 @@ bool Events::setupIntroSequence() {
 	if (!roomEnter())
 		return false;
 
+	Sprite sprite;
+	if (sprite.loadFromBMP(*_vm->_resources, "002BTN01"))
+		_vm->_graphics->blitToScreen(sprite, (Graphics::_screenWidth - sprite.getWidth()) / 2, 196, true);
+
 	return true;
 }
 
