@@ -30,6 +30,7 @@
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/conversationbox.h"
+#include "engines/darkseed2/inter.h"
 
 namespace DarkSeed2 {
 
@@ -70,9 +71,15 @@ bool Events::setupIntroSequence() {
 	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0001"))
 		return false;
 
-	_vm->_graphics->registerBackground(_vm->_graphics->getRoom().getBackground());
-
 	_inIntro = true;
+
+	Room &room = _vm->_graphics->getRoom();
+
+	// Set the background
+	_vm->_graphics->registerBackground(room.getBackground());
+
+	// Evaluate music changes
+	_vm->_inter->interpret(room.getScripts(kRoomVerbMusic));
 
 	return true;
 }

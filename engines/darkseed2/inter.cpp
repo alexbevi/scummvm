@@ -24,6 +24,7 @@
  */
 
 #include "engines/darkseed2/inter.h"
+#include "engines/darkseed2/music.h"
 
 namespace DarkSeed2 {
 
@@ -93,7 +94,7 @@ bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks) {
 }
 
 bool ScriptInterpreter::interpret(const ScriptChunk::Action &action) {
-	return true;
+	return (this->*_scriptFunc[action.action])(action);
 }
 
 bool ScriptInterpreter::oXYRoom(const ScriptChunk::Action &action) {
@@ -117,8 +118,10 @@ bool ScriptInterpreter::oText(const ScriptChunk::Action &action) {
 }
 
 bool ScriptInterpreter::oMidi(const ScriptChunk::Action &action) {
-	warning("Unimplemented script function oMidi");
-	return false;
+	if (!_vm->_music->playMID(*_vm->_resources, action.arguments))
+		warning("Failed playing music \"%s\"", action.arguments.c_str());
+
+	return true;
 }
 
 bool ScriptInterpreter::oAnim(const ScriptChunk::Action &action) {

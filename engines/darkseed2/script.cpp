@@ -40,7 +40,7 @@ static const char *scriptAction[] = {
 
 
 ScriptChunk::Action::Action(ScriptAction act, const Common::String &args) {
-	action    = action;
+	action    = act;
 	arguments = args;
 }
 
