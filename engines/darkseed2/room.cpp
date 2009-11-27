@@ -92,6 +92,12 @@ const Sprite &Room::getBackground() const {
 	return *_background;
 }
 
+Common::List<ScriptChunk *> &Room::getScripts(RoomVerb verb) {
+	assert(verb < kRoomVerbNone);
+
+	return _scripts[verb];
+}
+
 bool Room::parse(const Resources &resources, DATFile &room, DATFile &objects) {
 	RoomVerb curVerb = kRoomVerbNone;
 

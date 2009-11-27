@@ -48,19 +48,21 @@ class Music;
 class Variables;
 class Graphics;
 class TalkManager;
+class ScriptInterpreter;
 class Events;
 
 class DarkSeed2Engine : public Engine {
 public:
-	Options     *_options;
-	Cursors     *_cursors;
-	Resources   *_resources;
-	Sound       *_sound;
-	Music       *_music;
-	Variables   *_variables;
-	Graphics    *_graphics;
-	TalkManager *_talkMan;
-	Events      *_events;
+	Options           *_options;
+	Cursors           *_cursors;
+	Resources         *_resources;
+	Sound             *_sound;
+	Music             *_music;
+	Variables         *_variables;
+	Graphics          *_graphics;
+	TalkManager       *_talkMan;
+	ScriptInterpreter *_inter;
+	Events            *_events;
 
 	void pauseGame();
 

@@ -55,8 +55,9 @@ public:
 	~Room();
 
 	const Common::String &getName() const;
-
 	const Sprite &getBackground() const;
+
+	Common::List<ScriptChunk *> &getScripts(RoomVerb verb);
 
 	void clear();
 

@@ -20,6 +20,7 @@ MODULE_OBJS := \
 	talk.o \
 	conversation.o \
 	conversationbox.o \
+	inter.o \
 	events.o
 
 # This module can be built as a plugin

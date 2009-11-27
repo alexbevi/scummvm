@@ -46,6 +46,7 @@
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/conversation.h"
 #include "engines/darkseed2/conversationbox.h"
+#include "engines/darkseed2/inter.h"
 #include "engines/darkseed2/events.h"
 
 namespace DarkSeed2 {
@@ -64,6 +65,7 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	_variables = 0;
 	_graphics  = 0;
 	_talkMan   = 0;
+	_inter     = 0;
 	_events    = 0;
 }
 
@@ -74,6 +76,7 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 	_mixer->stopAll();
 
 	delete _events;
+	delete _inter;
 	delete _talkMan;
 	delete _graphics;
 
@@ -139,6 +142,7 @@ bool DarkSeed2Engine::init() {
 	_graphics  = new Graphics(*_resources, *_variables);
 	_talkMan   = new TalkManager(*_sound, *_graphics);
 
+	_inter     = new ScriptInterpreter(*this);
 	_events    = new Events(*this);
 
 	syncSoundSettings();
