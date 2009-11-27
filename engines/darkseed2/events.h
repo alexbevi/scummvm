@@ -28,6 +28,7 @@
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/cursors.h"
+#include "engines/darkseed2/graphicalobject.h"
 
 namespace DarkSeed2 {
 
@@ -62,6 +63,8 @@ private:
 	ModeCursors *_cursors;
 	CursorMode _cursorMode;
 	bool _cursorActive;
+
+	SpriteObject _titleSprites[5];
 
 	void handleInput();
 

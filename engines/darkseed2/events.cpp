@@ -94,26 +94,20 @@ bool Events::setupIntroSequence() {
 	if (!roomEnter())
 		return false;
 
-	Sprite sprite;
-	if (sprite.loadFromBMP(*_vm->_resources, "002TIT01")) {
-		int x = ((Graphics::_screenWidth - sprite.getWidth()) / 2) + 9;
-		_vm->_graphics->blitToScreen(sprite, x, 27, true);
-	}
-	if (sprite.loadFromBMP(*_vm->_resources, "002BTN01")) {
-		int x = ((Graphics::_screenWidth - sprite.getWidth()) / 2) + 2;
-		_vm->_graphics->blitToScreen(sprite, x, 196, true);
-	}
-	if (sprite.loadFromBMP(*_vm->_resources, "002BTN02")) {
-		int x = ((Graphics::_screenWidth - sprite.getWidth()) / 2) + 2;
-		_vm->_graphics->blitToScreen(sprite, x, 256, true);
-	}
-	if (sprite.loadFromBMP(*_vm->_resources, "002BTN03")) {
-		int x = ((Graphics::_screenWidth - sprite.getWidth()) / 2) + 2;
-		_vm->_graphics->blitToScreen(sprite, x, 314, true);
-	}
-	if (sprite.loadFromBMP(*_vm->_resources, "002BTN04")) {
-		int x = ((Graphics::_screenWidth - sprite.getWidth()) / 2) + 2;
-		_vm->_graphics->blitToScreen(sprite, x, 376, true);
+	_titleSprites[0].loadFromBMP(*_vm->_resources, "002TIT01", 145,  27);
+	_titleSprites[1].loadFromBMP(*_vm->_resources, "002BTN01", 164, 196);
+	_titleSprites[2].loadFromBMP(*_vm->_resources, "002BTN02", 164, 256);
+	_titleSprites[3].loadFromBMP(*_vm->_resources, "002BTN03", 164, 314);
+	_titleSprites[4].loadFromBMP(*_vm->_resources, "002BTN04", 164, 376);
+
+	for (int i = 0; i < 5; i++) {
+		if (_titleSprites[i].empty()) {
+			warning("Couldn't load title screen elements");
+			return false;
+		}
+
+		_vm->_graphics->blitToScreen(_titleSprites[i].getSprite(),
+				_titleSprites[i].getX(), _titleSprites[i].getY(), true);
 	}
 
 	return true;
