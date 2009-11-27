@@ -48,6 +48,13 @@ void GraphicalObject::move(uint32 x, uint32 y) {
 	_area.moveTo(x, y);
 }
 
+void GraphicalObject::clearArea() {
+	_area.left   = 0;
+	_area.top    = 0;
+	_area.right  = 0;
+	_area.bottom = 0;
+}
+
 
 TextObject::TextObject(const Common::String &text, uint32 x, uint32 y,
 		byte color, uint32 maxWidth) {
@@ -118,6 +125,73 @@ uint32 TextObject::wrap(const Common::String &string, Common::StringList &list, 
 		it->trim();
 
 	return width;
+}
+
+SpriteObject::SpriteObject() {
+	_sprite = 0;
+}
+
+SpriteObject::~SpriteObject() {
+	delete _sprite;
+}
+
+void SpriteObject::clear() {
+	clearArea();
+
+	delete _sprite;
+	_sprite = 0;
+}
+
+bool SpriteObject::isIn(uint32 x, uint32 y) const {
+	return _area.contains(x, y);
+}
+
+bool SpriteObject::empty() const {
+	return _sprite == 0;
+}
+
+uint32 SpriteObject::getX() const {
+	return _area.left;
+}
+
+uint32 SpriteObject::getY() const {
+	return _area.top;
+}
+
+Sprite &SpriteObject::getSprite() {
+	return *_sprite;
+}
+
+const Sprite &SpriteObject::getSprite() const {
+	return *_sprite;
+}
+
+bool SpriteObject::loadFromBMP(Resources &resources, const Common::String &bmp, uint32 x, uint32 y) {
+	clear();
+
+	_sprite = new Sprite;
+
+	if (!_sprite->loadFromBMP(resources, bmp))
+		return false;
+
+	_area = _sprite->getArea();
+	_area.moveTo(x, y);
+
+	return true;
+}
+
+void SpriteObject::redraw(Sprite &sprite, Common::Rect area) {
+	if (!_area.intersects(area))
+		return;
+
+	area.clip(_area);
+
+	uint32 x = area.left;
+	uint32 y = area.top;
+
+	area.moveTo(0, 0);
+
+	sprite.blit(*_sprite, area, x, y, true);
 }
 
 } // End of namespace DarkSeed2

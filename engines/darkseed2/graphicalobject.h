@@ -51,6 +51,8 @@ public:
 
 protected:
 	Common::Rect _area;
+
+	void clearArea();
 };
 
 class TextObject : public GraphicalObject {
@@ -69,6 +71,30 @@ private:
 	Sprite *_sprite;
 
 	byte _color;
+};
+
+class SpriteObject : public GraphicalObject {
+public:
+	SpriteObject();
+	~SpriteObject();
+
+	void clear();
+
+	bool empty() const;
+	bool isIn(uint32 x, uint32 y) const;
+
+	uint32 getX() const;
+	uint32 getY() const;
+
+	Sprite &getSprite();
+	const Sprite &getSprite() const;
+
+	bool loadFromBMP(Resources &resources, const Common::String &bmp, uint32 x = 0, uint32 y = 0);
+
+	void redraw(Sprite &sprite, Common::Rect area);
+
+private:
+	Sprite *_sprite;
 };
 
 } // End of namespace DarkSeed2
