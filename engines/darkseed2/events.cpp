@@ -73,13 +73,8 @@ bool Events::setupIntroSequence() {
 
 	_inIntro = true;
 
-	Room &room = _vm->_graphics->getRoom();
-
-	// Set the background
-	_vm->_graphics->registerBackground(room.getBackground());
-
-	// Evaluate music changes
-	_vm->_inter->interpret(room.getScripts(kRoomVerbMusic));
+	if (!roomEnter())
+		return false;
 
 	return true;
 }
@@ -194,6 +189,23 @@ void Events::setCursor(CursorMode cursor, bool active) {
 
 void Events::setCursor(const Cursors::Cursor &cursor) {
 	_vm->_cursors->setCursor(cursor);
+}
+
+bool Events::roomEnter() {
+	Room &room = _vm->_graphics->getRoom();
+
+	// Set the background
+	_vm->_graphics->registerBackground(room.getBackground());
+
+	// Evaluate music changes
+	if (!_vm->_inter->interpret(room.getScripts(kRoomVerbMusic)))
+		return false;
+
+	// Evaluate the entry logic
+	if (!_vm->_inter->interpret(room.getScripts(kRoomVerbEntry)))
+		return false;
+
+	return true;
 }
 
 } // End of namespace DarkSeed2

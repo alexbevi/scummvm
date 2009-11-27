@@ -73,6 +73,8 @@ private:
 	void setCursor();
 	void setCursor(CursorMode cursor, bool active);
 	void setCursor(const Cursors::Cursor &cursor);
+
+	bool roomEnter();
 };
 
 } // End of namespace DarkSeed2

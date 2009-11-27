@@ -24,6 +24,7 @@
  */
 
 #include "engines/darkseed2/inter.h"
+#include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/music.h"
 
 namespace DarkSeed2 {
@@ -72,7 +73,7 @@ bool ScriptInterpreter::interpret(ScriptChunk &chunk, bool &ran) {
 	const Common::List<ScriptChunk::Action> &actions = chunk.getActions();
 
 	for (Common::List<ScriptChunk::Action>::const_iterator it = actions.begin(); it != actions.end(); ++it)
-		if (interpret(*it))
+		if (!interpret(*it))
 			return false;
 
 	return true;
@@ -98,8 +99,8 @@ bool ScriptInterpreter::interpret(const ScriptChunk::Action &action) {
 }
 
 bool ScriptInterpreter::oXYRoom(const ScriptChunk::Action &action) {
-	warning("Unimplemented script function oXYRoom");
-	return false;
+	warning("TODO: Unimplemented script function oXYRoom");
+	return true;
 }
 
 bool ScriptInterpreter::oCursor(const ScriptChunk::Action &action) {
@@ -108,8 +109,8 @@ bool ScriptInterpreter::oCursor(const ScriptChunk::Action &action) {
 }
 
 bool ScriptInterpreter::oChange(const ScriptChunk::Action &action) {
-	warning("Unimplemented script function oChange");
-	return false;
+	_vm->_variables->evalChange(action.arguments);
+	return true;
 }
 
 bool ScriptInterpreter::oText(const ScriptChunk::Action &action) {
@@ -165,8 +166,8 @@ bool ScriptInterpreter::oScaleVal(const ScriptChunk::Action &action) {
 }
 
 bool ScriptInterpreter::oFrom(const ScriptChunk::Action &action) {
-	warning("Unimplemented script function oFrom");
-	return false;
+	warning("TODO: Unimplemented script function oFrom");
+	return true;
 }
 
 bool ScriptInterpreter::oPaletteChange(const ScriptChunk::Action &action) {
