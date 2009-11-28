@@ -126,6 +126,7 @@ MidiPlayer::MidiPlayer(MidiDriver *driver, const char *pathMask) : _parser(0), _
 	this->open();
 	_smfParser = MidiParser::createParser_SMF();
 	_midiMusicData = NULL;
+	_nativeMT32 = false;
 
 	// TODO: Load cmf.ins with the instrument table.  It seems that an
 	// interface for such an operation is supported for Adlib.  Maybe for
