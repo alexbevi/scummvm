@@ -39,7 +39,7 @@ Movie::Movie(Audio::Mixer &mixer, Graphics &graphics) {
 	_mixer    = &mixer;
 	_graphics = &graphics;
 
-	_aviDecoder = new ::Graphics::AviDecoder(_mixer);
+	_aviDecoder = new ::Graphics::AviDecoder(_mixer, Audio::Mixer::kSFXSoundType);
 }
 
 Movie::~Movie() {
