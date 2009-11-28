@@ -39,12 +39,16 @@ public:
 	bool interpret(Common::List<ScriptChunk *> &chunks);
 
 private:
-	typedef bool (ScriptInterpreter::*func)(const ScriptChunk::Action &action);
+	typedef bool (ScriptInterpreter::*func_t)(const ScriptChunk::Action &action);
+	struct OpcodeEntry {
+		func_t func;
+		const char *name;
+	};
 
 	DarkSeed2Engine *_vm;
 
 	/** All opcodes. */
-	static func _scriptFunc[kScriptActionNone];
+	static OpcodeEntry _scriptFunc[kScriptActionNone];
 
 	// Interpreting helpers
 	bool interpret(ScriptChunk &chunk, bool &ran);

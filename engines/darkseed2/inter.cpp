@@ -32,30 +32,36 @@
 
 namespace DarkSeed2 {
 
-ScriptInterpreter::func ScriptInterpreter::_scriptFunc[kScriptActionNone] = {
-	&ScriptInterpreter::oXYRoom,
-	&ScriptInterpreter::oCursor,
-	&ScriptInterpreter::oChange,
-	&ScriptInterpreter::oText,
-	&ScriptInterpreter::oMidi,
-	&ScriptInterpreter::oAnim,
-	&ScriptInterpreter::oStatus,
-	&ScriptInterpreter::oSequence,
-	&ScriptInterpreter::oSpriteIDX,
-	&ScriptInterpreter::oClipXY,
-	&ScriptInterpreter::oPosX,
-	&ScriptInterpreter::oPosY,
-	&ScriptInterpreter::oScaleVal,
-	&ScriptInterpreter::oFrom,
-	&ScriptInterpreter::oPaletteChange,
-	&ScriptInterpreter::oXYRoomEffect,
-	&ScriptInterpreter::oChangeAt,
-	&ScriptInterpreter::oDialog,
-	&ScriptInterpreter::oPicture,
-	&ScriptInterpreter::oSpeech,
-	&ScriptInterpreter::oSpeechVar,
-	&ScriptInterpreter::oWaitUntil,
-	&ScriptInterpreter::oEffect
+#ifndef REDUCE_MEMORY_USAGE
+	#define OPCODE(x) { &ScriptInterpreter::x, #x }
+#else
+	#define OPCODE(x) { &ScriptInterpreter::x, "" }
+#endif
+
+ScriptInterpreter::OpcodeEntry ScriptInterpreter::_scriptFunc[kScriptActionNone] = {
+	OPCODE(oXYRoom),
+	OPCODE(oCursor),
+	OPCODE(oChange),
+	OPCODE(oText),
+	OPCODE(oMidi),
+	OPCODE(oAnim),
+	OPCODE(oStatus),
+	OPCODE(oSequence),
+	OPCODE(oSpriteIDX),
+	OPCODE(oClipXY),
+	OPCODE(oPosX),
+	OPCODE(oPosY),
+	OPCODE(oScaleVal),
+	OPCODE(oFrom),
+	OPCODE(oPaletteChange),
+	OPCODE(oXYRoomEffect),
+	OPCODE(oChangeAt),
+	OPCODE(oDialog),
+	OPCODE(oPicture),
+	OPCODE(oSpeech),
+	OPCODE(oSpeechVar),
+	OPCODE(oWaitUntil),
+	OPCODE(oEffect)
 };
 
 ScriptInterpreter::ScriptInterpreter(DarkSeed2Engine &vm) : _vm(&vm) {
@@ -98,7 +104,7 @@ bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks) {
 }
 
 bool ScriptInterpreter::interpret(const ScriptChunk::Action &action) {
-	return (this->*_scriptFunc[action.action])(action);
+	return (this->*_scriptFunc[action.action].func)(action);
 }
 
 bool ScriptInterpreter::oXYRoom(const ScriptChunk::Action &action) {
