@@ -38,13 +38,15 @@ class Variables;
 class DATFile;
 class ScriptChunk;
 
+/** Object Verbs. */
 enum ObjectVerb {
-	kObjectVerbGo = 0,
-	kObjectVerbLook,
-	kObjectVerbUse,
-	kObjectVerbNone
+	kObjectVerbGo = 0, ///< Go.
+	kObjectVerbLook,   ///< Look.
+	kObjectVerbUse,    ///< Use.
+	kObjectVerbNone    ///< None.
 };
 
+/** A script object. */
 class Object {
 public:
 	/** Default constructor, only for the sake of Common::Array<>. NOT USEABLE! */
@@ -56,17 +58,21 @@ public:
 	/** Parse an object out of a suitably positioned DAT file. */
 	bool parse(DATFile &dat);
 
+	/** Return the object's name. */
 	const Common::String &getName() const;
 
+	/** Get the scripts for that verb. */
 	Common::List<ScriptChunk *> &getScripts(ObjectVerb verb);
+	/** Get the scripts for that verb. */
 	const Common::List<ScriptChunk *> &getScripts(ObjectVerb verb) const;
 
 private:
 	const Variables *_variables;
 
-	Common::String _name;
-	Common::Rect _area;
+	Common::String _name; ///< The object's name.
+	Common::Rect _area;   ///< The object's position.
 
+	/** All scripts. */
 	Common::Array< Common::List<ScriptChunk *> > _scripts;
 
 	// Parsing helpers
@@ -75,25 +81,30 @@ private:
 	bool setVerb(const Common::String &cmd, ObjectVerb &curVerb);
 	bool addScriptChunk(const Common::String &cmd, DATFile &dat, ObjectVerb curVerb);
 
+	/** Parse a verb string. */
 	static ObjectVerb parseObjectVerb(const Common::String &verb);
 };
 
+/** A container holding several objects. */
 class ObjectContainer {
 public:
 	ObjectContainer(const Variables &variables);
 	~ObjectContainer();
 
+	/** Get all objects. */
 	Common::Array<Object> &getObjects();
 
+	/** Find the object with the specified name. */
 	Object *findObject(const Common::String &name);
 
+	/** Empty the container. */
 	void clear();
 
 	/** Parse objects out of a OBJ_*.DAT file. */
 	bool parse(DATFile &dat);
 
 protected:
-	Common::Array<Object> _objects;
+	Common::Array<Object> _objects; ///< All objects.
 
 private:
 	const Variables *_variables;

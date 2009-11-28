@@ -49,18 +49,22 @@ class MidiPlayer;
 
 class Music {
 public:
+	/** The MIDI mode. */
 	enum MidiMode {
-		kMidiModeGM,
-		kMidiModeFM
+		kMidiModeGM, ///< General MIDI
+		kMidiModeFM  ///< Frequency modulation synthesis
 	};
 
 	Music(Audio::Mixer &mixer, MidiDriver &driver);
 	~Music();
 
+	/** Set the MIDI mode. */
 	void setMidiMode(MidiMode midiMode);
 
+	/** Play that MIDI file. */
 	bool playMID(const Resources &resources, const Common::String &mid);
 
+	/** Stop the music. */
 	void stop();
 
 	/** Apply volume settings. */
@@ -71,10 +75,10 @@ private:
 
 	MidiPlayer *_midiPlayer;
 
-	Common::String _name;
-	MidiMode _midiMode;
+	Common::String _name; ///< The current playing music.
+	MidiMode _midiMode;   ///< The current MIDI mode.
 
-	bool _mute;
+	bool _mute; ///< Muted?
 
 	bool playMID(Common::SeekableReadStream &mid);
 	bool playMID(const Resource &resource);

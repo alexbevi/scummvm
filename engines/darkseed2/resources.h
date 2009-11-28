@@ -50,17 +50,20 @@ public:
 	Resource(Common::ReadStream &stream, uint32 size);
 	~Resource();
 
+	/** Size of resource data in bytes. */
 	uint32 getSize() const;
 
+	/** Return the resource's data. */
 	const byte *getData() const;
+	/** Return the resource's data as a stream. */
 	Common::SeekableReadStream &getStream() const;
 
 private:
-	const byte *_foreignData;
-	byte *_ownData;
+	const byte *_foreignData; ///< Static foreign data.
+	byte *_ownData;           ///< Self-managed data.
 
-	uint32 _size;
-	Common::MemoryReadStream *_stream;
+	uint32 _size; ///< Size of the data in bytes
+	Common::MemoryReadStream *_stream; ///< The stream.
 };
 
 /** The resource manager. */
@@ -82,12 +85,13 @@ public:
 	Resource *getResource(const Common::String &resource) const;
 
 private:
+	/** A glue archive file. */
 	struct Glue {
-		Common::String fileName;
+		Common::String fileName; ///< File name.
 
-		byte *data;
-		Common::MemoryReadStream *stream;
-		uint32 size;
+		byte *data;                       ///< File data.
+		Common::MemoryReadStream *stream; ///< Stream to the file data.
+		uint32 size;                      ///< File size.
 
 		Glue();
 		~Glue();

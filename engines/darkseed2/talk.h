@@ -38,51 +38,65 @@ class Graphics;
 class Resource;
 class Sound;
 
+/** A talk line containing it's text, sprite and sound. */
 class TalkLine {
 public:
 	TalkLine(const Resources &resources, const Common::String &talkName);
 	~TalkLine();
 
+	/** Get the line's name. */
 	const Common::String &getName() const;
+	/** Set the line's name. */
 	void setName(const Common::String &name);
 
+	/** Get the line's speaker. */
 	const Common::String &getSpeaker() const;
+	/** Set the line's speaker. */
 	void setSpeaker(const Common::String &speaker);
 
+	/** Has this line a WAV sound? */
 	bool hasWAV() const;
+	/** Has this line a TXT text? */
 	bool hasTXT() const;
 
+	/** Get the line's WAV. */
 	const Resource &getWAV() const;
+	/** Get the line's TXT. */
 	const Common::String &getTXT() const;
 
 private:
 	const Resources *_resources;
 
-	Common::String _resource;
-	Common::String _name;
-	Common::String _speaker;
+	Common::String _resource; ///< The line's resource name.
+	Common::String _name;     ///< The line's name.
+	Common::String _speaker;  ///< The line's speaker.
 
-	Resource *_wav;
-	Common::String _txt;
+	Resource *_wav;      ///< The WAV.
+	Common::String _txt; ///< The TXT.
 };
 
+/** The talk manager. */
 class TalkManager {
 public:
 	TalkManager(Sound &sound, Graphics &graphics);
 	~TalkManager();
 
+	/** Speak the given line. */
 	bool talk(const TalkLine &talkLine);
+	/** End talking. */
 	void endTalk();
 
+	/** Is someone currently talking? */
 	bool isTalking() const;
 
+	/** Check for status changes. */
 	void updateStatus();
 
 private:
 	Sound *_sound;
 	Graphics *_graphics;
 
-	int _curTalk;
+	int _curTalk; ///< The current talk ID.
 };
 
 } // End of namespace DarkSeed2

@@ -58,19 +58,23 @@ public:
 	bool playWAV(Resources &resources, const Common::String &wav, int &id,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 
+	/** Is the that ID playing? */
 	bool isIDPlaying(int id);
 
+	/** Stop that ID. */
 	void stopID(int id);
+	/** Stop all playing sounds. */
 	void stopAll();
 
 	/** Apply volume settings. */
 	void syncSettings(const Options &options);
 
 private:
-	static const int _channelCount = 8;
+	static const int _channelCount = 8; ///< Number of usable channels.
 
-	int _id;
+	int _id; ///< The next ID.
 
+	/** All sound handles. */
 	Audio::SoundHandle _handles[_channelCount];
 
 	Audio::Mixer *_mixer;

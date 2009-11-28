@@ -49,19 +49,24 @@ public:
 	Variables();
 	~Variables();
 
+	/** Remove all variables. */
 	void clear();
+	/** Remove all local variables. */
 	void clearLocal();
 
+	/** Declare a variable as local. */
 	void addLocal(const Common::String &var);
 
+	/** Set a variable's value. */
 	void set(const Common::String &var, uint8 value);
+	/** Get a variable's value. */
 	uint8 get(const Common::String &var) const;
 
-	/*** Load initial variable values from an IDX file. */
+	/** Load initial variable values from an IDX file. */
 	bool loadFromIDX(Common::SeekableReadStream &idx);
-	/*** Load initial variable values from an IDX file. */
+	/** Load initial variable values from an IDX file. */
 	bool loadFromIDX(const Resource &idx);
-	/*** Load initial variable values from an IDX file. */
+	/** Load initial variable values from an IDX file. */
 	bool loadFromIDX(const Resources &resources, const Common::String &idx);
 
 	/** Evaluates a condition string, like they are found in the game scripts. */
@@ -77,12 +82,12 @@ public:
 private:
 	typedef Common::HashMap<Common::String, uint8, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> VarMap;
 
-	VarMap _variables;
-	VarMap _localVariables;
+	VarMap _variables;      ///< The variables.
+	VarMap _localVariables; ///< The local variables.
 
+	// Evaluation helpers
 	bool evalConditionPart(const Common::String &conditionPart) const;
 	void evalChangePart(const Common::String &changePart);
-
 	uint8 get(const Common::String &var, uint8 def) const;
 };
 

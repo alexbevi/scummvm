@@ -48,67 +48,94 @@ class TalkLine;
 
 class ConversationBox {
 public:
-	static const uint32 _width  = 640;
-	static const uint32 _height = 70;
+	static const uint32 _width  = 640; ///< The box's width.
+	static const uint32 _height = 70;  ///< The box's heigth.
 
 	ConversationBox(Resources &resources, Variables &variables,
 			Graphics &graphics, TalkManager &talkManager);
 	~ConversationBox();
 
+	/** Notify the box that a new palette is active. */
 	void newPalette();
+
+	/** Start the specified conversation. */
 	bool start(const Common::String &conversation);
+	/** Restart the conversation. */
 	bool restart();
 
+	/** Is the conversation still running? */
 	bool isActive() const;
 
+	/** Redraw the conversation box. */
 	void redraw(Sprite &sprite, uint32 x, uint32 y, const Common::Rect &area);
 
+	/** Notify that the mouse was moved (over the box). */
 	void notifyMouseMove(uint32 x, uint32 y);
+	/** Notify that the mouse clicked (on the box). */
 	void notifyClicked(uint32 x, uint32 y);
 
+	/** Check for changes in the box's status. */
 	void updateStatus();
 
 private:
-	static const uint32 _textAreaWidth  = 512;
-	static const uint32 _textAreaHeight = 50;
-	static const uint32 _textHeight = 14;
-	static const uint32 _textMargin = 90;
+	static const uint32 _textAreaWidth  = 512; ///< The width of the raw text area.
+	static const uint32 _textAreaHeight = 50;  ///< The height of the raw text area.
+	static const uint32 _textHeight = 14;      ///< The height of a text line.
+	static const uint32 _textMargin = 90;      ///< The maximum width of a text line.
 
+	/** A scrolling action. */
 	enum ScrollAction {
-		kScrollActionUp,
-		kScrollActionDown,
-		kScrollActionNone
+		kScrollActionUp,   ///< Scroll up.
+		kScrollActionDown, ///< Scroll down.
+		kScrollActionNone  ///< No scroll.
 	};
 
+	/** A box's state. */
 	enum State {
-		kStateWaitUserAction,
-		kStatePlayingLine,
-		kStatePlayingReply
+		kStateWaitUserAction, ///< Waiting for the user to do something.
+		kStatePlayingLine,    ///< Playing an entry's line.
+		kStatePlayingReply    ///< Playign an entry's reply.
 	};
 
+	/** A conversation line. */
 	struct Line {
+		/** The talk line with the sound and text. */
 		TalkLine *talk;
+		/** The line's text wrapped to the text area. */
 		Common::StringList texts;
+		/** The graphical text lines of the wrapped text lines. */
 		Common::Array<TextObject *> textObjects;
 
 		Line(TalkLine *line = 0, byte color = 0);
 		~Line();
 
+		/** Return the line's name. */
 		const Common::String &getName() const;
 	};
 
+	/** A reference to a physical line. */
 	struct PhysLineRef {
+		/** Which real line does it belong to. */
 		uint32 n;
+		/** Iterator to the real line. */
 		Common::Array<Line *>::const_iterator it1;
+		/** Iterator to the line's text part. */
 		Common::StringList::const_iterator it2;
+		/** Iterator to the line's graphic part. */
 		Common::Array<TextObject *>::iterator it3;
 
+		/** Return the line's name. */
 		const Common::String &getName() const;
+		/** Return the line's text. */
 		const Common::String &getString() const;
+		/** Return the line's graphic. */
 		TextObject &getTextObject();
+		/** Return the line. */
 		Line *getLine();
 
+		/** Return the line's number. */
 		uint32 getLineNum() const;
+		/** Is the physical line the first line of a real line? */
 		bool isTop() const;
 	};
 
@@ -117,45 +144,51 @@ private:
 	Graphics    *_graphics;
 	TalkManager *_talkMan;
 
+	/** The currently running conversation. */
 	Conversation *_conversation;
 
-	Sprite *_origSprites;
-	Sprite *_sprites;
+	Sprite *_origSprites; ///< The original box part sprites.
+	Sprite *_sprites;     ///< The box part sprites adapted to the current palette.
 
-	TextObject *_markerSelect;
-	TextObject *_markerUnselect;
+	TextObject *_markerSelect;   ///< Marker text of a selected line.
+	TextObject *_markerUnselect; ///< Marker text of an unselected line.
 
-	Common::Array<Line *> _lines;
+	Common::Array<Line *> _lines; ///< All current conversation lines.
 
-	Common::Rect _textAreas[3];
-	Common::Rect _scrollAreas[2];
+	Common::Rect _textAreas[3];   ///< Areas of the 3 visible lines.
+	Common::Rect _scrollAreas[2]; ///< Areas of the scroll up/down buttons.
 
-	uint32 _physLineCount;
-	uint32 _physLineTop;
+	uint32 _physLineCount; ///< Number of physical lines.
+	uint32 _physLineTop;   ///< The visible physical line at the top.
 
-	uint32 _selected;
+	uint32 _selected; ///< The selected physical line.
 
-	Sprite _box;
+	Sprite _box; ///< The box's sprite.
 
-	byte _colorSelected;
-	byte _colorUnselected;
-	byte _colorBlack;
+	byte _colorSelected;   ///< Color index of a selected line.
+	byte _colorUnselected; ///< Color index of an unselected line.
+	byte _colorBlack;      ///< Color index of black.
 
-	State _state;
+	State _state; ///< The current state.
 
-	uint32 _mouseX;
-	uint32 _mouseY;
+	uint32 _mouseX; ///< The X coordinate of the current mouse position.
+	uint32 _mouseY; ///< The Y coordinate of the current mouse position.
 
-	uint16 _curReply;
-	Common::Array<TalkLine *> _nextReplies;
+	uint16 _curReply;                       ///< The current playing reply.
+	Common::Array<TalkLine *> _nextReplies; ///< The replies playing next.
 
+	/** Load all needed sprites. */
 	void loadSprites();
+	/** Reset all needed sprites and adjust to the current palette. */
 	void resetSprites();
 
+	/** Rebuild the box's sprite. */
 	void rebuild();
 
+	/** Update the color indices from the current palette. */
 	void updateColors();
 
+	// Update helpers
 	void clearLines();
 	void clearReplies();
 	void updateLines();
@@ -163,24 +196,34 @@ private:
 	void drawLines();
 	void redrawLines();
 
+	/** Scroll the lines. */
 	void doScroll(ScrollAction scroll);
+	/** Pick a line. */
 	void pickLine(Line *line);
 
+	/** Translate the physical line number to a real line number. */
 	uint32 physLineNumToRealLineNum(uint32 physLineNum) const;
 
+	/** Find the nth physical line. */
 	bool findPhysLine(uint32 n, PhysLineRef &ref) const;
+	/** Find the next physical line. */
 	bool nextPhysLine(PhysLineRef &ref) const;
+	/** Helper method for nextPhysLine. */
 	bool nextPhysRealLine(PhysLineRef &ref) const;
 
+	/** Get the text area the coordinates are in. */
 	int getTextArea(uint32 x, uint32 y);
+	/** Get the scroll action area the coordinates are in. */
 	ScrollAction getScrollAction(uint32 x, uint32 y);
 
+	/** Get the currently selected line. */
 	Line *getSelectedLine();
 
-	bool canScroll() const;
-	bool canScrollUp() const;
-	bool canScrollDown() const;
+	bool canScroll() const;     ///< Is scrolling possible?
+	bool canScrollUp() const;   ///< Is scrolling up possible?
+	bool canScrollDown() const; ///< Is scrolling down possible?
 
+	/** Speak that line. */
 	void speakLine(TalkLine &line);
 };
 

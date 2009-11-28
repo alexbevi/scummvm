@@ -61,13 +61,19 @@ public:
 	/** Does the sprite have any data? */
 	bool exists() const;
 
+	/** Return the sprite's width. */
 	uint32 getWidth() const;
+	/** Return the sprite's height. */
 	uint32 getHeight() const;
 
+	/** Return the sprite's area. */
 	Common::Rect getArea() const;
 
+	/** Return the sprite's data. */
 	const byte *getData() const;
+	/** Return the sprite's data. */
 	byte *getData();
+	/** Return the sprite's palette. */
 	const Palette &getPalette() const;
 
 	/** Create a new sprite with the specified dimensions. */
@@ -75,17 +81,23 @@ public:
 	/** Discard the sprite data. */
 	void discard();
 
+	/** Copy from another sprite. */
 	void copyFrom(const Sprite &sprite);
 
+	/** Load a sprite from a BMP. */
 	bool loadFromBMP(Common::SeekableReadStream &bmp);
+	/** Load a sprite from a BMP. */
 	bool loadFromBMP(const Resource &resource);
+	/** Load a sprite from a BMP. */
 	bool loadFromBMP(const Resources &resources, const Common::String &bmp);
 
 	/** Load from a cursor embedded in an EXE file. */
 	bool loadFromStaticCursor(const StaticCursor &staticCursor);
 
+	/** Blit that sprite onto this sprite. */
 	void blit(const Sprite &from, const Common::Rect &area,
 			uint32 x, uint32 y, bool transp = false);
+	/** Blit that sprite onto this sprite. */
 	void blit(const Sprite &from, uint32 x, uint32 y, bool transp = false);
 
 	/** Fill the whole sprite with one palette entry. */
@@ -99,21 +111,26 @@ public:
 	/** Change pixels of color oldColor to newColor. */
 	void recolor(byte oldColor, byte newColor);
 
+	/** Apply a change set from a palette merge. */
 	void applyChangeSet(const Common::Array<byte> &changeSet);
 
+	/** Draw a string. */
 	void drawStrings(const Common::StringList &strings, const ::Graphics::Font &font,
 			int x, int y, byte color);
 
 private:
-	uint32 _width;
-	uint32 _height;
-	byte *_data;
+	uint32 _width;  ///< The sprite's width.
+	uint32 _height; ///< The sprite's height.
+	byte *_data;    ///< The sprite's data.
 
-	Palette _palette;
+	Palette _palette; ///< The sprite's palette.
 
+	/** Wrap the sprite into a standard ScummVM surface. */
 	::Graphics::Surface *wrapInSurface() const;
 
+	/** Read uncompressed BMP data. */
 	bool readBMPDataComp0(Common::SeekableReadStream &bmp, uint32 dataSize);
+	/** Read BMP data, compressed with method 2. */
 	bool readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize);
 };
 

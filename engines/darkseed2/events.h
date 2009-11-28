@@ -34,11 +34,12 @@ namespace DarkSeed2 {
 
 class Room;
 
+/** Cursor modes. */
 enum CursorMode {
-	kCursorModeWalk = 0,
-	kCursorModeUse,
-	kCursorModeLook,
-	kCursorModeNone
+	kCursorModeWalk = 0, ///< Walk.
+	kCursorModeUse,      ///< Use.
+	kCursorModeLook,     ///< Look.
+	kCursorModeNone      ///< None.
 };
 
 class Events {
@@ -46,43 +47,59 @@ public:
 	Events(DarkSeed2Engine &vm);
 	~Events();
 
+	/** Set up the game's hardcoded intro sequences. */
 	bool setupIntroSequence();
 
+	/** Start the game's main loop. */
 	void mainLoop();
 
 private:
+	/** A mode's cursor. */
 	struct ModeCursors {
-		const Cursors::Cursor *inactive;
-		const Cursors::Cursor *active;
+		const Cursors::Cursor *inactive; ///< Not in hotspot.
+		const Cursors::Cursor *active;   ///< In hotspot.
 	};
 
 	DarkSeed2Engine *_vm;
 
-	bool _inIntro;
+	bool _inIntro; ///< Currently in the intro?
 
-	bool _canSwitchCursors;
+	bool _canSwitchCursors; ///< Is cursor mode switching allowed?
 
-	ModeCursors *_cursors;
-	CursorMode _cursorMode;
-	bool _cursorActive;
+	ModeCursors *_cursors;  ///< The cursors.
+	CursorMode _cursorMode; ///< The current cursor mode.
+	bool _cursorActive;     ///< Currently in a hotspot?
 
-	SpriteObject _titleSprites[5];
+	SpriteObject _titleSprites[5]; ///< Title elements.
 
+	/** Handle user input. */
 	void handleInput();
 
+	/** Handle mouse move events. */
 	void mouseMoved(uint32 x, uint32 y);
+	/** Handle mouse click left events. */
 	void mouseClickedLeft(uint32 x, uint32 y);
+	/** Handle mouse click right events. */
 	void mouseClickedRight(uint32 x, uint32 y);
 
+	/** Cycle the cursor mode. */
 	void cycleCursorMode();
+	/** Set the current cursor. */
 	void setCursor();
+	/** Set the specific cursor. */
 	void setCursor(CursorMode cursor, bool active);
+	/** Set the specific cursor. */
 	void setCursor(const Cursors::Cursor &cursor);
 
+	/** The coordinates are in which title sprite area? */
 	int checkTitleSprites(uint32 x, uint32 y) const;
+
+	/** End the intro. */
 	void leaveIntro();
 
+	/** Execute the current room's entry logic. */
 	bool roomEnter();
+	/** Execute the current room's autostart logic. */
 	bool executeAutoStart(Room &room);
 };
 

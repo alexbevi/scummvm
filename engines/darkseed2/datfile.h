@@ -49,6 +49,7 @@ public:
 	/** Reached the end? */
 	bool atEnd() const;
 
+	/** Get the next line. */
 	bool nextLine(const Common::String *&command, const Common::String *&arguments);
 
 	/** Skip the current line. */
@@ -58,24 +59,32 @@ public:
 	/** Seek to the beginning. */
 	void rewind();
 
+	/** Get the number of arguments in the string. */
 	static int argCount(const Common::String &arguments);
+	/** Get the nth argument out of the string. */
 	static Common::String argGet(const Common::String &arguments, int n);
+	/** Split the string into separate argument strings. */
 	static Common::Array<Common::String> argGet(const Common::String &arguments);
 
+	/** Merge arguments back together to a string. */
 	static Common::String mergeArgs(const Common::Array<Common::String> &args, uint32 n = 0);
 
 private:
+	/** A DATFile line. */
 	struct Line {
-		Common::String command;
-		Common::String arguments;
+		Common::String command;   ///< The command.
+		Common::String arguments; ///< The arguments.
 
 		Line();
 		Line(const char *cmd, int cmdLen, const char *args);
 	};
 
+	/** All lines. */
 	Common::List<Line> _lines;
+	/** The current line. */
 	Common::List<Line>::const_iterator _pos;
 
+	/** Load from a stream. */
 	void load(Common::SeekableReadStream &dat);
 };
 

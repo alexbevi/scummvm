@@ -72,9 +72,10 @@ enum ScriptAction {
 /** A self-contained script chunk. */
 class ScriptChunk {
 public:
+	/** A script action. */
 	struct Action {
-		ScriptAction action;
-		Common::String arguments;
+		ScriptAction action;      ///< The action.
+		Common::String arguments; ///< The arguments.
 
 		Action(ScriptAction act, const Common::String &args);
 	};
@@ -90,14 +91,19 @@ public:
 	/** Are all conditions for this chunk met? */
 	bool conditionsMet() const;
 
+	/** Get all script actions. */
 	const Common::List<Action> &getActions() const;
 
 private:
 	const Variables *_variables;
 
-	Common::String _cond1, _cond2;
+	Common::String _cond1; ///< The first condition.
+	Common::String _cond2; ///< The second condition.
+
+	///< All actions.
 	Common::List<Action> _actions;
 
+	/** Parse a script action string. */
 	static ScriptAction parseScriptAction(const Common::String &action);
 };
 

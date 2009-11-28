@@ -48,74 +48,96 @@ class Room;
 class Resource;
 class TextObject;
 
+/** A screen part. */
 enum ScreenPart {
-	kScreenPartPlayArea,
-	kScreenPartConversation
+	kScreenPartPlayArea,    ///< The play area.
+	kScreenPartConversation ///< The conversation box.
 };
 
 class Graphics {
 public:
-	static const uint32 _screenWidth  = 640;
-	static const uint32 _screenHeight = 480;
-	static const uint32 _conversationX = 0;
-	static const uint32 _conversationY = 410;
+	static const uint32 _screenWidth  = 640;  ///< The screen width.
+	static const uint32 _screenHeight = 480;  ///< The screen height.
+	static const uint32 _conversationX = 0;   ///< The conversation box's x coordinate.
+	static const uint32 _conversationY = 410; ///< The conversation box's y coordinate.
 
 	Graphics(Resources &resources, Variables &variables);
 	~Graphics();
 
+	/** Init the graphics subsystem. */
 	void init(TalkManager &talkManager);
 
+	/** Get the conversation box. */
 	ConversationBox &getConversationBox();
+	/** Get the current room. */
 	Room &getRoom();
 
+	/** Check for status changes. */
 	void updateStatus();
 
+	/** Clear the game palette. */
 	void clearPalette();
+	/** Change the game palette. */
 	void setPalette(const Palette &pal);
 
+	/** Speak that text. */
 	void talk(TextObject *talkObject);
+	/** End the current talk. */
 	void talkEnd();
 
+	/** Blit the sprite to the screen. */
 	void blitToScreen(const Sprite &from, Common::Rect area,
 			uint32 x, uint32 y, bool transp = false);
+	/** Blit the sprite to the screen. */
 	void blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp = false);
 
 	/** Merge the sprite's palette into the current game palette. */
 	void mergePalette(Sprite &sprite);
 
+	/** Get the game palette. */
 	const Palette &getPalette() const;
 
+	/** Redraw that screen part. */
 	void redraw(ScreenPart part);
 
+	/** Copy the screen to the ScummVM screen. */
 	void retrace();
 
+	/** Register that sprite to be the current background. */
 	void registerBackground(const Sprite &background);
+	/** Remove the background. */
 	void unregisterBackground();
 
 private:
 	Resources *_resources;
 	Variables *_variables;
 
-	ConversationBox *_conversationBox;
-	Room *_room;
+	ConversationBox *_conversationBox; ///< The conversation box.
+	Room *_room;                       ///< The current room.
 
-	Palette _gamePalette;
-	Sprite _screen;
+	Palette _gamePalette; ///< The game palette.
+	Sprite _screen;       ///< The game screen.
 
-	bool _dirtyAll;
-	Common::List<Common::Rect> _dirtyRects;
+	Common::List<Common::Rect> _dirtyRects; ///< The dirty rectangle.
+	bool _dirtyAll;                         ///< Whole screen dirty?
 
-	const Sprite *_background;
+	const Sprite *_background; ///< The current background.
 
-	TextObject *_talk;
+	TextObject *_talk; ///< The currently active speech line.
 
+	/** Initialize the game palette. */
 	void initPalette();
+	/** Apply the game palette. */
 	void applyGamePalette();
 
+	/** Redraw that area of the game screen. */
 	void redrawScreen(const Common::Rect &rect);
 
+	/** Dirty the whole screen. */
 	void dirtyAll();
+	/** Add that area to the dirty rectangles. */
 	void dirtyRectsAdd(const Common::Rect &rect);
+	/** Copy all dirty areas to the screen. */
 	bool dirtyRectsApply();
 };
 

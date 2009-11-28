@@ -48,18 +48,21 @@ public:
 	Movie(Audio::Mixer &mixer, Graphics &graphics);
 	~Movie();
 
+	/** Play that movie. */
 	bool play(const Common::String &avi, uint32 x = 0, uint32 y = 0);
 
 private:
 	Audio::Mixer *_mixer;
 	Graphics *_graphics;
 
+	/** The AVI decoder. */
 	::Graphics::AviDecoder *_aviDecoder;
 
-	bool _abort;
+	bool _abort; ///< Movie canceling requested?
 
-	Sprite _buffer;
+	Sprite _buffer; ///< The current frame's buffer.
 
+	/** Handle the user input. */
 	void handleInput();
 };
 

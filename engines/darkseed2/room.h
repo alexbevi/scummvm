@@ -39,49 +39,56 @@ class DATFile;
 class ScriptChunk;
 class Sprite;
 
+/** Room Verbs. */
 enum RoomVerb {
-	kRoomVerbEntry = 0,
-	kRoomVerbMirror,
-	kRoomVerbMusic,
-	kRoomVerbPalette,
-	kRoomVerbSprite,
-	kRoomVerbNone
+	kRoomVerbEntry = 0, ///< Entry.
+	kRoomVerbMirror,    ///< Mirror.
+	kRoomVerbMusic,     ///< Music.
+	kRoomVerbPalette,   ///< Palette.
+	kRoomVerbSprite,    ///< Sprite.
+	kRoomVerbNone       ///< None.
 };
-
 
 class Room : public ObjectContainer {
 public:
 	Room(Variables &variables, Graphics &graphics);
 	~Room();
 
+	/** Get the room's name. */
 	const Common::String &getName() const;
+	/** Get the room's background. */
 	const Sprite &getBackground() const;
 
+	/** Get the scripts for that verb. */
 	Common::List<ScriptChunk *> &getScripts(RoomVerb verb);
 
+	/** Empty the room. */
 	void clear();
 
+	/** Parse a room. */
 	bool parse(const Resources &resources, const Common::String &base);
 
 private:
 	Variables *_variables;
 	Graphics  *_graphics;
 
+	/** Was everything set up so that the room can be used? */
 	bool _ready;
 
-	Common::String _name;
-	Common::String _backgroundFile;
-	Common::String _walkMapFile;
+	Common::String _name;           ///< The room's name.
+	Common::String _backgroundFile; ///< The room's background file.
+	Common::String _walkMapFile;    ///< The room's walk map file.
 
-	Sprite *_background;
-	Sprite *_walkMap;
+	Sprite *_background; ///< The room's background.
+	Sprite *_walkMap;    ///< The room's walk map.
 
-	Common::Rect _area;
+	Common::Rect _area; ///< The room's area;
 
 	uint32 _walkMapArg1, _walkMapArg2;
 
 	int32 _scaleFactor1, _scaleFactor2, _scaleFactor3;
 
+	/** All scripts. */
 	Common::Array< Common::List<ScriptChunk *> > _scripts;
 
 	// Parsing helpers
@@ -92,12 +99,14 @@ private:
 	bool setVerb(const Common::String &cmd, RoomVerb &curVerb);
 	bool addScriptChunk(const Common::String &cmd, DATFile &room, RoomVerb curVerb);
 
-	static RoomVerb parseRoomVerb(const Common::String &verb);
-
 	bool parse(const Resources &resources, DATFile &room, DATFile &objects);
 	bool parse(const Resources &resources, const Common::String &room, const Common::String &objects);
 
+	/** Set up the room after parsing. */
 	bool setup(const Resources &resources);
+
+	/** Parse a verb string. */
+	static RoomVerb parseRoomVerb(const Common::String &verb);
 };
 
 } // End of namespace DarkSeed2

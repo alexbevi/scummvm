@@ -58,7 +58,7 @@ public:
 
 	/** Get all currently available lines. */
 	Common::Array<TalkLine *> getCurrentLines(Resources &resources);
-	/** Get the reply to a certain line. */
+	/** Get the replies to a certain line. */
 	Common::Array<TalkLine *> getReplies(Resources &resources, const Common::String &entry) const;
 
 	/** Has the conversation ended? */
@@ -67,46 +67,51 @@ public:
 	/** The user has picked a certain entry. */
 	void pick(const Common::String &entry);
 
+	/** Free the TalkLines. */
 	void discardLines(Common::Array<TalkLine *> &lines);
+	/** Free the TalkLine. */
 	void discardLines(TalkLine *&lines);
 
 private:
 	struct Node;
 
+	/** A when-picked action. */
 	struct Action {
-		Common::String operand;
-		Common::String condition;
+		Common::String operand;   ///< The action's target.
+		Common::String condition; ///< The condition that has to be met.
 
 		Action(const Common::String &op = "", const Common::String &cond = "");
 	};
 
+	/** A variable assignment action. */
 	struct Assign {
-		Common::String variable;
-		uint8 value;
+		Common::String variable; ///< The variable name.
+		uint8 value;             ///< The new value.
 
 		Assign(const Common::String &var = "", const Common::String &val = "");
 	};
 
+	/** A conversation entry. */
 	struct Entry {
-		bool visible;
-		bool persist;
-		bool initial;
-		bool destroyed;
+		bool visible;   ///< Currently visible?
+		bool persist;   ///< Unknown.
+		bool initial;   ///< Initially visible?
+		bool destroyed; ///< Unknown.
 
-		Common::String name;
-		Common::String text;
+		Common::String name; ///< The entry's name.
+		Common::String text; ///< The entry's text.
 
-		Common::Array<uint8> speakers;
-		Common::Array<Common::String> messages;
+		Common::Array<uint8> speakers;          ///< The reply line speakers.
+		Common::Array<Common::String> messages; ///< The reply lines.
 
-		Common::Array<Action> hide;
-		Common::Array<Action> unhide;
-		Common::Array<Action> destroy;
-		Common::Array<Action> goTo;
+		Common::Array<Action> hide;    ///< When picked, these lines will be hidden.
+		Common::Array<Action> unhide;  ///< When picked, these lines will be unhidden.
+		Common::Array<Action> destroy; ///< When picked, these lines will be destroyed.
+		Common::Array<Action> goTo;    ///< Candidates for the following node.
 
-		Common::Array<Assign> assigns;
+		Common::Array<Assign> assigns; ///< When picked, these variables will be assigned values.
 
-		Node *parent;
+		Node *parent; ///< The node this entry belongs too.
 
 		Entry(Node &pa);
 	};
@@ -114,15 +119,19 @@ private:
 	typedef Common::HashMap<Common::String, Entry *, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> EntryMap;
 	typedef Common::Array<Entry *> EntryList;
 
+	/** A conversation node. */
 	struct Node {
+		/** Number of entries left for the fallthrough to kick in. */
 		uint32 fallthroughNum;
+		/** Name of the node to fall through. */
 		Common::String fallthrough;
 
-		EntryMap entries;
-		EntryList sortedEntries;
+		EntryMap entries;        ///< Entries mapped by name.
+		EntryList sortedEntries; ///< Entries sorted by occurence in the file.
 
-		Common::String name;
-		Common::Array<Action> goTo;
+		Common::String name; ///< The name of the node.
+
+		Common::Array<Action> goTo; ///< Node names to jump to.
 
 		Node();
 	};
@@ -131,16 +140,21 @@ private:
 
 	Variables *_variables;
 
+	/** Was everything set up so that the conversation can be held? */
 	bool _ready;
 
-	NodeMap _nodes;
-	Node *_startNode;
-	Node *_currentNode;
+	NodeMap _nodes;     ///< All nodes.
+	Node *_startNode;   ///< The starting node.
+	Node *_currentNode; ///< The current node.
 
+	/** The people active in the conversation. */
 	Common::Array<Common::String> _speakers;
 
+	/** Find the next node that has active entries. */
 	void nextActiveNode();
+	/** Find all entries of the current node that are not hidden. */
 	Common::Array<Entry *> getVisibleEntries(Node &node);
+	/** Find all entries of the current node that are not hidden. */
 	Common::Array<const Entry *> getVisibleEntries(Node &node) const;
 
 	// Conversation execution helpers

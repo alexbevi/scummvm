@@ -37,42 +37,53 @@ class Palette;
 
 class Cursors {
 public:
+	/** A cursor. */
 	struct Cursor {
-		uint16 hotspotX;
-		uint16 hotspotY;
-		Sprite *sprite;
+		uint16 hotspotX; ///< The X coordinate of the cursor's hotspot.
+		uint16 hotspotY; ///< The Y coordinate of the cursor's hotspot.
+		Sprite *sprite;  ///< The cursor's sprite.
 	};
 
-	static const int _cursorWidth  = 32;
-	static const int _cursorHeight = 32;
+	static const int _cursorWidth  = 32; ///< The width of a cursor.
+	static const int _cursorHeight = 32; ///< The height of a cursor.
 
 	Cursors();
 	~Cursors();
 
+	/** Is the cursor visible? */
 	bool isVisible() const;
+	/** Hide/Show the cursor. */
 	void setVisible(bool visible);
 
+	/** Get the cursor with that name. */
 	const Cursor *getCursor(const Common::String &cursor = "") const;
 
+	/** Set the current cursor. */
 	bool setCursor(const Cursor &cursor);
+	/** Set the current cursor. */
 	bool setCursor(const Common::String &cursor = "");
 
 private:
 
 	typedef Common::HashMap<Common::String, Cursor, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> CursorMap;
 
-	Cursor _default;
-	CursorMap _cursors;
+	Cursor _default;    ///< The default pointer cursor.
+	CursorMap _cursors; ///< The available cursors.
 
+	/** Load the cursors from static data. */
 	bool loadFromStatics();
 
+	/** Set the cursor's palette. */
 	bool setPalette(const Palette &palette);
 };
 
+/** A static cursor datum. */
 struct StaticCursor {
-	uint16 hotspotX;
-	uint16 hotspotY;
+	uint16 hotspotX; ///< The X coordinate of the cursor's hotspot.
+	uint16 hotspotY; ///< The Y coordinate of the cursor's hotspot.
+	/** The pixel data. */
 	byte pixels[Cursors::_cursorWidth * Cursors::_cursorHeight / 8];
+	/** The mask data. */
 	byte mask  [Cursors::_cursorWidth * Cursors::_cursorHeight / 8];
 };
 

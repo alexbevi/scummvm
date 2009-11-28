@@ -30,21 +30,23 @@
 
 namespace DarkSeed2 {
 
+/** Global game options. */
 class Options {
 public:
 	Options();
 	~Options();
 
+	/** Sync with ScummVM's settings. */
 	void syncSettings();
 
-	int getVolumeSFX() const;
-	int getVolumeSpeech() const;
-	int getVolumeMusic() const;
+	int getVolumeSFX() const;    ///< Get the SFX volume.
+	int getVolumeSpeech() const; ///< Get the speech volume.
+	int getVolumeMusic() const;  ///< Get the music volume.
 
 private:
-	int _volumeSFX;
-	int _volumeSpeech;
-	int _volumeMusic;
+	int _volumeSFX;    ///< SFX volume.
+	int _volumeSpeech; ///< Speech volume.
+	int _volumeMusic;  ///< Music volume.
 };
 
 } // End of namespace DarkSeed2

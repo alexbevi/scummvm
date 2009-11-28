@@ -43,11 +43,14 @@ private:
 
 	DarkSeed2Engine *_vm;
 
+	/** All opcodes. */
 	static func _scriptFunc[kScriptActionNone];
 
+	// Interpreting helpers
 	bool interpret(ScriptChunk &chunk, bool &ran);
 	bool interpret(const ScriptChunk::Action &action);
 
+	// Opcodes
 	bool oXYRoom(const ScriptChunk::Action &action);
 	bool oCursor(const ScriptChunk::Action &action);
 	bool oChange(const ScriptChunk::Action &action);

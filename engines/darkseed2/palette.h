@@ -40,14 +40,18 @@ public:
 
 	Palette &operator=(const Palette &palette);
 
+	/** Copy from another palette. */
 	void copyFrom(const Palette &palette);
+	/** Copy from another palette. */
 	void copyFrom(const byte *palette, int size);
 
+	/** Number of entries filled. */
 	int getSize() const;
 
 	byte &operator[](int n);
 	const byte &operator[](int n) const;
 
+	/** Clear the palette. */
 	void clear();
 
 	/** Create a palette that's compatible with ScummVM's O_System. */
@@ -55,26 +59,31 @@ public:
 
 	/** Find the color that's nearest to the specified color. */
 	byte findColor(byte c1, byte c2, byte c3, uint32 *diff = 0) const;
+	/** Find the color index that's nearest to pure white. */
 	byte findWhite() const;
+	/** Find the color index that's nearest to pure black. */
 	byte findBlack() const;
 
 	/** Merge with the current palette, returning a change set for images using the other palette. */
 	Common::Array<byte> merge(const Palette &palette, bool average = false);
 
+	/** Add the color to the palette. */
 	byte addColor(byte c1, byte c2, byte c3, bool average = false);
 
 private:
+	/** A palettes comparison match. */
 	struct Match {
-		byte index1;
-		byte index2;
-		uint32 diff;
+		byte index1; ///< Color index in the first palette.
+		byte index2; ///< Color index in the second palette.
+		uint32 diff; ///< Difference between the two colors.
 
 		bool operator<(const Match &match) const;
 	};
 
-	int _size;
-	byte _palette[768];
+	int _size;          ///< Number of indices filled.
+	byte _palette[768]; ///< The palette data.
 
+	/** Add another palette to the back. */
 	void addPalette(const Palette &palette);
 };
 
