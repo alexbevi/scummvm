@@ -157,6 +157,8 @@ void Graphics::blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp)
 }
 
 void Graphics::mergePalette(Sprite &from) {
+	debugC(2, kDebugGraphics, "Merging palettes");
+
 	Common::Array<byte> changeSet = _gamePalette.merge(from.getPalette(), true);
 
 	from.applyChangeSet(changeSet);
@@ -170,6 +172,8 @@ const Palette &Graphics::getPalette() const {
 }
 
 void Graphics::redraw(ScreenPart part) {
+	debugC(3, kDebugGraphics, "Redraw part %d", part);
+
 	switch (part) {
 	case kScreenPartPlayArea:
 		redrawScreen(Common::Rect(0, 0, _screenWidth, _screenHeight));
@@ -206,6 +210,7 @@ void Graphics::dirtyRectsAdd(const Common::Rect &rect) {
 
 bool Graphics::dirtyRectsApply() {
 	if (_dirtyAll) {
+		debugC(5, kDebugGraphics, "Refreshing the whole screen");
 		// Everything is dirty, copy the whole screen
 
 		g_system->copyRectToScreen(_screen.getData(), _screen.getWidth(),
@@ -216,6 +221,8 @@ bool Graphics::dirtyRectsApply() {
 
 	if (_dirtyRects.empty())
 		return false;
+
+	debugC(5, kDebugGraphics, "Refreshing %d rectangle(s)", _dirtyRects.size());
 
 	int screenWidth  = _screen.getWidth();
 	int screenHeight = _screen.getHeight();
@@ -239,6 +246,8 @@ bool Graphics::dirtyRectsApply() {
 }
 
 void Graphics::registerBackground(const Sprite &background) {
+	debugC(-1, kDebugGraphics, "New background");
+
 	assert(_conversationBox);
 
 	_background = &background;

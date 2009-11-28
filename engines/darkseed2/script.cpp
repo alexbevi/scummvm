@@ -63,6 +63,8 @@ bool ScriptChunk::parse(DATFile &dat) {
 	const Common::String *cmd, *arg;
 	bool hasCond = false;
 	while (dat.nextLine(cmd, arg)) {
+		debugC(2, kDebugScript, "Parsing script action \"%s\" [%s]", cmd->c_str(), arg->c_str());
+
 		if (cmd->equalsIgnoreCase("Cond")) {
 			// Found a condition
 

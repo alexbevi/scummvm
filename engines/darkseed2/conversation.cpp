@@ -261,6 +261,8 @@ bool Conversation::addEntry(Entry &entry, DATFile &conversation) {
 
 	const Common::String *cmd, *args;
 	while (conversation.nextLine(cmd, args)) {
+		debugC(2, kDebugConversation, "Parsing conversation entry command \"%s\" [%s]", cmd->c_str(), args->c_str());
+
 		if ((cmd->equalsIgnoreCase("entry")) || (cmd->equalsIgnoreCase("node"))) {
 			// This entry is finished here
 
@@ -334,6 +336,8 @@ bool Conversation::addEntry(Node &node, const Common::String &args, DATFile &con
 
 	Entry *entry = new Entry(node);
 
+	debugC(1, kDebugConversation, "Parsing conversation entry \"%s\"", lArgs[0].c_str());
+
 	if (!addEntry(*entry, conversation)) {
 		delete entry;
 		return false;
@@ -382,6 +386,8 @@ bool Conversation::setFallthrough(Node &node, const Common::String &args) {
 bool Conversation::parseNode(DATFile &conversation, Node &node) {
 	const Common::String *cmd, *args;
 	while (conversation.nextLine(cmd, args)) {
+		debugC(2, kDebugConversation, "Parsing conversation node command \"%s\" [%s]", cmd->c_str(), args->c_str());
+
 		if (cmd->equalsIgnoreCase("node")) {
 			// This node is finished here
 
@@ -424,6 +430,8 @@ bool Conversation::parseNode(const Common::String &args, DATFile &conversation) 
 	}
 
 	Node *node = new Node;
+
+	debugC(1, kDebugConversation, "Parsing conversation node \"%s\"", args.c_str());
 
 	// Parsing the node's data
 	if (!parseNode(conversation, *node)) {

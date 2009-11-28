@@ -49,7 +49,17 @@
 namespace DarkSeed2 {
 
 DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
-	Common::addDebugChannel(kDebugResources, "Resources", "Resource handling debug level");
+	Common::addDebugChannel(kDebugResources   , "Resources"   , "Resource handling debug level");
+	Common::addDebugChannel(kDebugGraphics    , "Graphics"    , "Graphics debug level");
+	Common::addDebugChannel(kDebugMusic       , "Music"       , "Music debug level");
+	Common::addDebugChannel(kDebugSound       , "Sound"       , "Sound debug level");
+	Common::addDebugChannel(kDebugTalk        , "Talk"        , "Talk debug level");
+	Common::addDebugChannel(kDebugMovie       , "Movie"       , "Movie debug level");
+	Common::addDebugChannel(kDebugScript      , "Script"      , "Script debug level");
+	Common::addDebugChannel(kDebugRooms       , "Rooms"       , "Rooms debug level");
+	Common::addDebugChannel(kDebugObjects     , "Objects"     , "Objects debug level");
+	Common::addDebugChannel(kDebugConversation, "Conversation", "Conversation debug level");
+	Common::addDebugChannel(kDebugOpcodes     , "Opcodes"     , "Script functions debug level");
 
 	// Setup mixer
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));
@@ -96,10 +106,10 @@ Common::Error DarkSeed2Engine::run() {
 	if (!initGraphics())
 		return Common::kUnknownError;
 
-	warning("Done initializing");
+	debug(-1, "Done initializing.");
 
 	if (!_events->setupIntroSequence()) {
-		warning("Failed setting up the intro sequence");
+		warning("DarkSeed2Engine::run(): Failed setting up the intro sequence");
 		return Common::kUnknownError;
 	}
 
@@ -130,7 +140,7 @@ bool DarkSeed2Engine::init() {
 	if (native_mt32)
 		_midiDriver->property(MidiDriver::PROP_CHANNEL_MASK, 0x03FE);
 
-	warning("Creating subclasses...");
+	debug(-1, "Creating subclasses...");
 
 	_options   = new Options();
 	_cursors   = new Cursors();
@@ -147,17 +157,17 @@ bool DarkSeed2Engine::init() {
 
 	syncSoundSettings();
 
-	warning("Indexing resources...");
+	debug(-1, "Indexing resources...");
 
 	if (!_resources->index("gfile.hdr")) {
-		warning("Couldn't index resources");
+		warning("DarkSeed2Engine::init(): Couldn't index resources");
 		return false;
 	}
 
-	warning("Initializing game variables...");
+	debug(-1, "Initializing game variables...");
 
 	if (!_variables->loadFromIDX(*_resources, "GAMEVAR")) {
-		warning("Couldn't load initial variables values");
+		warning("DarkSeed2Engine::init(): Couldn't load initial variables values");
 		return false;
 	}
 
@@ -165,7 +175,7 @@ bool DarkSeed2Engine::init() {
 }
 
 bool DarkSeed2Engine::initGraphics() {
-	warning("Setting up graphics...");
+	debug(-1, "Setting up graphics...");
 
 	_graphics->init(*_talkMan);
 

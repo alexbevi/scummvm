@@ -88,6 +88,10 @@ const Common::String &TalkLine::getTXT() const {
 	return _txt;
 }
 
+const Common::String &TalkLine::getResourceName() const {
+	return _resource;
+}
+
 const Common::String &TalkLine::getName() const {
 	return _name;
 }
@@ -124,6 +128,8 @@ bool TalkManager::talk(const TalkLine &talkLine) {
 			warning("TalkManager::talk(): WAV playing failed");
 			return false;
 		}
+
+		debugC(-1, kDebugTalk, "Speaking line \"%s\"", talkLine.getResourceName().c_str());
 
 		// Text
 		Common::String text = talkLine.getTXT();

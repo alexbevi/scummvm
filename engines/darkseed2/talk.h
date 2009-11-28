@@ -44,6 +44,9 @@ public:
 	TalkLine(const Resources &resources, const Common::String &talkName);
 	~TalkLine();
 
+	/** Get the resource's name. */
+	const Common::String &getResourceName() const;
+
 	/** Get the line's name. */
 	const Common::String &getName() const;
 	/** Set the line's name. */

@@ -149,6 +149,8 @@ void ConversationBox::newPalette() {
 }
 
 bool ConversationBox::start(const Common::String &conversation) {
+	debugC(-1, kDebugConversation, "Starting conversation \"%s\"", conversation.c_str());
+
 	if (!_conversation->parse(*_resources, conversation))
 		return false;
 
@@ -161,6 +163,8 @@ bool ConversationBox::start(const Common::String &conversation) {
 bool ConversationBox::restart() {
 	if (!_conversation)
 		return false;
+
+	debugC(-1, kDebugConversation, "Restarting conversation");
 
 	_conversation->reset();
 

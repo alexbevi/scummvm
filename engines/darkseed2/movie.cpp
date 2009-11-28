@@ -47,6 +47,8 @@ Movie::~Movie() {
 }
 
 bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
+	debugC(-1, kDebugMovie, "Playing movie \"%s\"", avi.c_str());
+
 	if (!_aviDecoder->loadFile((avi + ".avi").c_str()))
 		return false;
 

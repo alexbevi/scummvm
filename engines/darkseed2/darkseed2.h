@@ -35,7 +35,17 @@ class MidiDriver;
 namespace DarkSeed2 {
 
 enum {
-	kDebugResources = 1 << 0
+	kDebugResources    = 1 <<  0,
+	kDebugGraphics     = 1 <<  1,
+	kDebugMusic        = 1 <<  2,
+	kDebugSound        = 1 <<  3,
+	kDebugTalk         = 1 <<  4,
+	kDebugMovie        = 1 <<  5,
+	kDebugScript       = 1 <<  6,
+	kDebugRooms        = 1 <<  7,
+	kDebugObjects      = 1 <<  8,
+	kDebugConversation = 1 <<  9,
+	kDebugOpcodes      = 1 << 10
 };
 
 struct DS2GameDescription;

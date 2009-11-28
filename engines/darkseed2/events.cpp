@@ -303,6 +303,8 @@ int Events::checkTitleSprites(uint32 x, uint32 y) const {
 bool Events::roomEnter() {
 	Room &room = _vm->_graphics->getRoom();
 
+	debugC(-1, kDebugRooms, "Entering room \"%s\"", room.getName().c_str());
+
 	// Set the background
 	_vm->_graphics->registerBackground(room.getBackground());
 

@@ -194,6 +194,8 @@ bool Room::parse(const Resources &resources,
 	room    += base + ".DAT";
 	objects += base + ".DAT";
 
+	debugC(-1, kDebugRooms, "Parsing room \"%s\"", _name.c_str());
+
 	return parse(resources, room, objects);
 }
 

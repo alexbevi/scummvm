@@ -71,6 +71,8 @@ bool Music::playMID(const Resources &resources, const Common::String &mid) {
 		// If the current music is already playing, don't restart it
 		return true;
 
+	debugC(-1, kDebugMusic, "Playing MIDI \"%s\"", mid.c_str());
+
 	Common::String midFile = "sndtrack/";
 
 	midFile += mid;
@@ -114,6 +116,8 @@ void Music::syncSettings(const Options &options) {
 }
 
 void Music::stop() {
+	debugC(-1, kDebugMusic, "Stopping music");
+
 	_name.clear();
 	_midiPlayer->stop();
 }

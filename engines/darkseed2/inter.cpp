@@ -104,6 +104,9 @@ bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks) {
 }
 
 bool ScriptInterpreter::interpret(const ScriptChunk::Action &action) {
+	debugC(-1, kDebugOpcodes, "Script function %s [%s]", _scriptFunc[action.action].name,
+			action.arguments.c_str());
+
 	return (this->*_scriptFunc[action.action].func)(action);
 }
 

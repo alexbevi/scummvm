@@ -125,6 +125,8 @@ bool Object::parse(DATFile &dat) {
 			if (!setName(*args))
 				return false;
 
+			debugC(-1, kDebugObjects, "Parsing object \"%s\"", _name.c_str());
+
 		} else if (cmd->equalsIgnoreCase("ObjXY")) {
 			// Object coordinates
 

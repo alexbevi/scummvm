@@ -79,6 +79,8 @@ bool Sound::playWAV(const Resource &resource,
 bool Sound::playWAV(Resources &resources, const Common::String &wav,
 		Audio::Mixer::SoundType type) {
 
+	debugC(-1, kDebugSound, "Playing WAV \"%s", wav.c_str());
+
 	if (!resources.hasResource(wav + ".wav"))
 		return false;
 
@@ -127,6 +129,8 @@ void Sound::stopID(int id) {
 	if (id == -1)
 		return;
 
+	debugC(0, kDebugSound, "Stopping sound ID %d", id);
+
 	_mixer->stopID(id);
 }
 
@@ -144,6 +148,8 @@ void Sound::syncSettings(const Options &options) {
 }
 
 void Sound::stopAll() {
+	debugC(-1, kDebugSound, "Stopping all sounds");
+
 	// Stopping all channels
 	for (int i = 0; i < _channelCount; i++)
 		_mixer->stopHandle(_handles[i]);
