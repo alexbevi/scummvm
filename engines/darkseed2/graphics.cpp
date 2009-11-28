@@ -197,6 +197,7 @@ void Graphics::dirtyRectsAdd(const Common::Rect &rect) {
 	if (_dirtyAll)
 		return;
 
+	// Upper limit. Dirty rectangle overhead isn't that great either :P
 	if (_dirtyRects.size() >= 30)
 		dirtyAll();
 
@@ -205,7 +206,9 @@ void Graphics::dirtyRectsAdd(const Common::Rect &rect) {
 
 bool Graphics::dirtyRectsApply() {
 	if (_dirtyAll) {
-			g_system->copyRectToScreen(_screen.getData(), _screen.getWidth(),
+		// Everything is dirty, copy the whole screen
+
+		g_system->copyRectToScreen(_screen.getData(), _screen.getWidth(),
 					0, 0, _screen.getWidth(), _screen.getHeight());
 		_dirtyAll = false;
 		return true;

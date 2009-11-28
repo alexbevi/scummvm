@@ -109,6 +109,7 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 
 	updateColors();
 
+	// Regions of the three visible lines
 	_textAreas[0] = Common::Rect(_textMargin, _textHeight * 1,
 			_width - 2 * _textMargin, _textHeight * 2);
 	_textAreas[1] = Common::Rect(_textMargin, _textHeight * 2,
@@ -116,8 +117,8 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 	_textAreas[2] = Common::Rect(_textMargin, _textHeight * 3,
 			_width - 2 * _textMargin, _textHeight * 4);
 
-	_scrollAreas[0] = Common::Rect(15, 24, 34, 40);
-	_scrollAreas[1] = Common::Rect(15, 41, 34, 57);
+	_scrollAreas[0] = Common::Rect(15, 24, 34, 40); // Scroll up button
+	_scrollAreas[1] = Common::Rect(15, 41, 34, 57); // Scroll down button
 
 	loadSprites();
 	resetSprites();
@@ -182,9 +183,13 @@ bool ConversationBox::isActive() const {
 void ConversationBox::loadSprites() {
 	bool loaded0, loaded1, loaded2, loaded3;
 
+	// The box's frame
 	loaded0 = _origSprites[0].loadFromBMP(*_resources, "INVNTRY1");
+	// Both scroll buttons active
 	loaded1 = _origSprites[1].loadFromBMP(*_resources, "DIALOG1");
+	// Scroll down active, scroll up grayed out
 	loaded2 = _origSprites[2].loadFromBMP(*_resources, "DIALOG2");
+	// Scroll up active, scroll down grayed out
 	loaded3 = _origSprites[3].loadFromBMP(*_resources, "DIALOG3");
 
 	assert(loaded0 && loaded1 && loaded2 && loaded3);
@@ -194,12 +199,14 @@ void ConversationBox::loadSprites() {
 }
 
 void ConversationBox::resetSprites() {
+	// _origSprites[i] -> _sprites[i + 2], for all 4 box elements
 	for (int i = 0; i < 4; i++) {
 		_sprites[i + 2] = _origSprites[i];
 
 		_graphics->mergePalette(_sprites[i + 2]);
 	}
 
+	// The shading grid
 	_sprites[1].create(_textAreaWidth, _textAreaHeight);
 	_sprites[1].shade(_colorBlack);
 
@@ -211,11 +218,14 @@ void ConversationBox::resetSprites() {
 }
 
 void ConversationBox::rebuild() {
+	// Clear everything
 	_box.clear();
 	_sprites[0].clear();
 
+	// Put the shading grid
 	_sprites[0].blit(_sprites[1], (_width  - _textAreaWidth ) / 2,
 	                              (_height - _textAreaHeight) / 2, true);
+	// Put the frame
 	_sprites[0].blit(_sprites[2], 0, 0, true);
 
 	_box.blit(_sprites[0], 0, 0, false);
@@ -274,6 +284,7 @@ void ConversationBox::updateLines() {
 void ConversationBox::updateScroll() {
 	Common::Rect scrollArea = _sprites[3].getArea();
 
+	// Look which scroll directions are possible and blit the fitting sprite
 	if (!canScroll())
 		_sprites[0].blit(_sprites[2], scrollArea, 0, 0, true);
 	else if (canScrollUp() && canScrollDown())
@@ -288,24 +299,29 @@ void ConversationBox::updateScroll() {
 }
 
 void ConversationBox::drawLines() {
+	// Update the scroll sprite
 	updateScroll();
 
 	PhysLineRef curLine;
 
+	// Update the lines
 	if (findPhysLine(_physLineTop, curLine)) {
 		for (int i = 0; i < 3; i++) {
 			TextObject &text = curLine.getTextObject();
 
 			uint32 selected = physLineNumToRealLineNum(_selected);
 
+			// Is that line a selected line? Color it accordingly
 			if ((curLine.getLineNum() + 1) == selected)
 				text.recolor(_colorSelected);
 			else
 				text.recolor(_colorUnselected);
 
+			// Move the line to the correct place and draw it
 			text.move(_textAreas[i].left, _textAreas[i].top);
 			text.redraw(_box, text.getArea());
 
+			// If that line is a top line, place the correct selected/unselected marker
 			if (curLine.isTop()) {
 				TextObject *marker;
 				if ((curLine.getLineNum() + 1) == selected)
@@ -318,6 +334,7 @@ void ConversationBox::drawLines() {
 			}
 
 			if (!nextPhysLine(curLine))
+				// No next line, stop
 				break;
 		}
 	}
@@ -332,17 +349,21 @@ void ConversationBox::redrawLines() {
 }
 
 bool ConversationBox::findPhysLine(uint32 n, PhysLineRef &ref) const {
+	// Put the first level iterator at the beginning
 	ref.it1 = _lines.begin();
 	if (ref.it1 == _lines.end())
 		return false;
 
+	// Put the second level iterators at the beginning
 	ref.it2 = (*ref.it1)->texts.begin();
 	ref.it3 = (*ref.it1)->textObjects.begin();
 	ref.n = 0;
 
+	// Find the first non-empty line
 	if (!nextPhysRealLine(ref))
 		return false;
 
+	// Iterate to the nth line
 	while (n-- > 0)
 		if (!nextPhysLine(ref))
 			return false;
@@ -351,23 +372,30 @@ bool ConversationBox::findPhysLine(uint32 n, PhysLineRef &ref) const {
 }
 
 bool ConversationBox::nextPhysLine(PhysLineRef &ref) const {
+	// Advance second level iterators
 	++ref.it2;
 	++ref.it3;
 
+	// Find the next non-empty line
 	return nextPhysRealLine(ref);
 }
 
 bool ConversationBox::nextPhysRealLine(PhysLineRef &ref) const {
 	if (ref.it1 == _lines.end())
+		// First level iterator is at its end => no next lines
 		return false;
 
+	// Are the second level iterators at their end?
 	while (ref.it2 == (*ref.it1)->texts.end()) {
+		// Advance the first level iterator
 		++ref.it1;
 		++ref.n;
 
 		if (ref.it1 == _lines.end())
+			// First level iterator is at its end => no next lines
 			return false;
 
+		// Set the second level iterator to the beginning
 		ref.it2 = (*ref.it1)->texts.begin();
 		ref.it3 = (*ref.it1)->textObjects.begin();
 	}
@@ -377,17 +405,23 @@ bool ConversationBox::nextPhysRealLine(PhysLineRef &ref) const {
 
 void ConversationBox::notifyMouseMove(uint32 x, uint32 y) {
 	if (!isActive())
+		// Not active => ignore user events
 		return;
 
+	// Remember mouse coordinates
 	_mouseX = x;
 	_mouseY = y;
 
 	if (_state != kStateWaitUserAction)
+		// Not at a user action state => ignore user events
 		return;
 
+	// Which line was selected?
 	uint32 selected = getTextArea(x, y);
 
 	if (selected != _selected) {
+		// Selection changed, update graphics
+
 		_selected = selected;
 		redrawLines();
 	}
@@ -395,22 +429,29 @@ void ConversationBox::notifyMouseMove(uint32 x, uint32 y) {
 
 void ConversationBox::notifyClicked(uint32 x, uint32 y) {
 	if (!isActive())
+		// Not active => ignore user events
 		return;
 
 	notifyMouseMove(x, y);
 
 	if (_state != kStateWaitUserAction)
+		// Not at a user action state => ignore user events
 		return;
 
+	// Line scrolling
 	doScroll(getScrollAction(x, y));
+	// Line picking
 	pickLine(getSelectedLine());
 }
 
 void ConversationBox::updateStatus() {
 	if (_state == kStateWaitUserAction)
+		// We're waiting for a user action
 		return;
 
 	if (_state == kStatePlayingLine) {
+		// We're playing a line
+
 		if (_talkMan->isTalking())
 			// Still talking, we'll continue waiting
 			return;
@@ -425,6 +466,8 @@ void ConversationBox::updateStatus() {
 	}
 
 	if (_state == kStatePlayingReply) {
+		// We're playing a reply
+
 		if (_talkMan->isTalking())
 			// Still talking, we'll continue waiting
 			return;
@@ -450,13 +493,17 @@ void ConversationBox::pickLine(Line *line) {
 	if (!line)
 		return;
 
+	// Get new replies
 	clearReplies();
 	_nextReplies = _conversation->getReplies(*_resources, line->talk->getName());
 
+	// Start talking the line
 	speakLine(*line->talk);
 
+	// Set state
 	_state = kStatePlayingLine;
 
+	// And advance the conversation
 	_conversation->pick(line->talk->getName());
 }
 
@@ -528,6 +575,9 @@ uint32 ConversationBox::physLineNumToRealLineNum(uint32 physLineNum) const {
 
 	int realLineNum = 1;
 	for (Common::Array<Line *>::const_iterator it = _lines.begin(); it != _lines.end(); ++it) {
+		// Iterate through all lines, substract the number of sub-lines as long as it's >= 0.
+		// As soon as it's < 0, we've found our real line number
+
 		uint32 size = (*it)->texts.size();
 
 		if (size >= physLineNum)

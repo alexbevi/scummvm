@@ -60,12 +60,14 @@ bool DATFile::atEnd() const {
 void DATFile::load(Common::SeekableReadStream &dat) {
 	dat.seek(0);
 
+	// Reading all lines
 	while (!dat.err() && !dat.eos()) {
 		Common::String line = dat.readLine();
+		// Ignore empty lines
 		if (line.empty())
 			continue;
 
-		// Workaround CONV0032.TXT
+		// Workaround for CONV0032.TXT
 		if (line[0] == '.')
 			line.setChar(' ', 0);;
 
@@ -126,11 +128,16 @@ int DATFile::argCount(const Common::String &arguments) {
 	int count = 1;
 	while (*args) {
 		if (*args == ' ') {
+			// Found separating space
+
+			// Ignore all spaces
 			while (*args == ' ')
 				args++;
 
 			if (*args)
+				// Not line end => New argument
 				count++;
+
 		} else
 			args++;
 	}
@@ -141,22 +148,25 @@ int DATFile::argCount(const Common::String &arguments) {
 Common::String DATFile::argGet(const Common::String &arguments, int n) {
 	const char *start = arguments.c_str();
 	for (int i = 0; i < n; i++) {
+		// Looking for the next separator
 		start = strchr(start, ' ');
 		if (!start)
+			// None found, argument n doesn't exist
 			return "";
 
-		start++;
+		// Skip consecutive spaces
+		while (*start == ' ')
+			start++;
 	}
 
-	while (*start == ' ')
-		start++;
-
+	// Look for the end of the argument
 	const char *end = strchr(start, ' ');
 	if (!end)
 		end = start + strlen(start) - 1;
 
 	Common::String string(start, end - start);
 	if (string.lastChar() == ',')
+		// Strip trailing ,
 		string.deleteLastChar();
 
 	return string;
@@ -169,9 +179,11 @@ Common::Array<Common::String> DATFile::argGet(const Common::String &arguments) {
 	if (!start)
 		return list;
 
+	// Skip leading spaces
 	while (*start == ' ')
 		start++;
 
+	// Look for the first separator
 	const char *end  = strchr(start, ' ');
 
 	int count = argCount(arguments);
@@ -181,18 +193,24 @@ Common::Array<Common::String> DATFile::argGet(const Common::String &arguments) {
 	while (end) {
 		Common::String string(start, end - start);
 		if (string.lastChar() == ',')
+			// Strip trailing ,
 			string.deleteLastChar();
 
 		list.push_back(string);
 
 		start = end + 1;
+
+		// Skip consecutive spaces
 		while (*start == ' ')
 			start++;
-		end   = strchr(start, ' ');
+
+		// Look for the next separator
+		end = strchr(start, ' ');
 	}
 
 	Common::String string(start);
 	if (string.lastChar() == ',')
+		// Strip trailing ,
 		string.deleteLastChar();
 	list.push_back(string);
 
@@ -202,9 +220,11 @@ Common::Array<Common::String> DATFile::argGet(const Common::String &arguments) {
 Common::String DATFile::mergeArgs(const Common::Array<Common::String> &args, uint32 n) {
 	Common::String str;
 
+	// Merge args with spaces inbetween
 	for (uint32 i = n; i < args.size(); i++)
 		str += args[i] + " ";
 
+	// Trim the last (unecessary) space
 	str.trim();
 
 	return str;

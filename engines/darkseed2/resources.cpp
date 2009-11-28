@@ -205,7 +205,7 @@ bool Resources::indexGluesContents() {
 		}
 
 		if (isCompressedGlue(glueFile)) {
-			// If the glue is compress, uncompress it and keep it in memory
+			// If the glue is compressed, uncompress it and keep it in memory
 
 			_glues[i].data   = uncompressGlue(glueFile, _glues[i].size);
 			_glues[i].stream = new Common::MemoryReadStream(_glues[i].data, _glues[i].size);

@@ -84,6 +84,7 @@ bool Events::setupIntroSequence() {
 	if (!roomEnter())
 		return false;
 
+	// Loading title parts
 	_titleSprites[0].loadFromBMP(*_vm->_resources, "002TIT01", 145,  27);
 	_titleSprites[1].loadFromBMP(*_vm->_resources, "002BTN01", 164, 196);
 	_titleSprites[2].loadFromBMP(*_vm->_resources, "002BTN02", 164, 256);
@@ -91,6 +92,8 @@ bool Events::setupIntroSequence() {
 	_titleSprites[4].loadFromBMP(*_vm->_resources, "002BTN04", 164, 376);
 
 	for (int i = 0; i < 5; i++) {
+		// Draw those parts
+
 		if (_titleSprites[i].empty()) {
 			warning("Couldn't load title screen elements");
 			return false;
@@ -104,6 +107,7 @@ bool Events::setupIntroSequence() {
 }
 
 void Events::leaveIntro() {
+	// Throw title parts away again
 	for (int i = 0; i < 5; i++)
 		_titleSprites[i].clear();
 
@@ -122,6 +126,7 @@ void Events::leaveIntro() {
 
 	_inIntro = false;
 
+	// Restore normal cursor mode
 	_canSwitchCursors = true;
 	_cursorMode   = kCursorModeWalk;
 	_cursorActive = false;
@@ -143,15 +148,19 @@ void Events::leaveIntro() {
 
 void Events::mainLoop() {
 	while (!_vm->shouldQuit()) {
+		// Look for user input
 		handleInput();
 
-		g_system->delayMillis(10);
-
+		// Update subsystem statuses
 		_vm->_talkMan->updateStatus();
 		_vm->_graphics->updateStatus();
 
+		// Update screen
 		_vm->_graphics->retrace();
 		g_system->updateScreen();
+
+		// Wait
+		g_system->delayMillis(10);
 	}
 }
 
@@ -205,21 +214,24 @@ void Events::handleInput() {
 
 void Events::mouseMoved(uint32 x, uint32 y) {
 	if (_inIntro) {
+		// Mouse in a button area?
 		int titleSprite = checkTitleSprites(x, y);
 
 		_cursorActive = (titleSprite != 0);
 		setCursor();
 
-	} else {
-		uint32 convX = x - Graphics::_conversationX;
-		uint32 convY = y - Graphics::_conversationY;
-
-		_vm->_graphics->getConversationBox().notifyMouseMove(convX, convY);
+		return;
 	}
+
+	uint32 convX = x - Graphics::_conversationX;
+	uint32 convY = y - Graphics::_conversationY;
+
+	_vm->_graphics->getConversationBox().notifyMouseMove(convX, convY);
 }
 
 void Events::mouseClickedLeft(uint32 x, uint32 y) {
 	if (_inIntro) {
+		// Mouse in a button area?
 		int titleSprite = checkTitleSprites(x, y);
 
 		if        (titleSprite == 2) {
@@ -235,12 +247,13 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 			_vm->quitGame();
 		}
 
-	} else {
-		uint32 convX = x - Graphics::_conversationX;
-		uint32 convY = y - Graphics::_conversationY;
-
-		_vm->_graphics->getConversationBox().notifyClicked(convX, convY);
+		return;
 	}
+
+	uint32 convX = x - Graphics::_conversationX;
+	uint32 convY = y - Graphics::_conversationY;
+
+	_vm->_graphics->getConversationBox().notifyClicked(convX, convY);
 }
 
 void Events::mouseClickedRight(uint32 x, uint32 y) {
@@ -306,29 +319,21 @@ bool Events::roomEnter() {
 	return true;
 }
 
+static const char *autoStartName[] = {
+	"autostart", "auto start", "autoroom", "auto room"
+};
+
 bool Events::executeAutoStart(Room &room) {
 	bool has = false;
 	Object *autoStart;
 
-	autoStart = room.findObject("autostart");
-	if (autoStart) {
-		_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse));
-		has = true;
-	}
-	autoStart = room.findObject("auto start");
-	if (autoStart) {
-		_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse));
-		has = true;
-	}
-	autoStart = room.findObject("autoroom");
-	if (autoStart) {
-		_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse));
-		has = true;
-	}
-	autoStart = room.findObject("auto room");
-	if (autoStart) {
-		_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse));
-		has = true;
+	// Looking for all different auto start objects
+	for (int i = 0; i < ARRAYSIZE(autoStartName); i++) {
+		autoStart = room.findObject(autoStartName[i]);
+		if (autoStart) {
+			_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse));
+			has = true;
+		}
 	}
 
 	return has;

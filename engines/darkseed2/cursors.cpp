@@ -48,6 +48,7 @@ Cursors::~Cursors() {
 }
 
 bool Cursors::loadFromStatics() {
+	// Loading named static cursors
 	for (int i = 0; i < staticCursorCount; i++) {
 		Cursor cursor;
 
@@ -64,6 +65,7 @@ bool Cursors::loadFromStatics() {
 		_cursors.setVal(staticCursorNames[i], cursor);
 	}
 
+	// Loading the default arrow cursor
 	_default.hotspotX = 0;
 	_default.hotspotY = 0;
 	_default.sprite = new Sprite;
@@ -85,12 +87,15 @@ void Cursors::setVisible(bool visible) {
 }
 
 const Cursors::Cursor *Cursors::getCursor(const Common::String &cursor) const {
+	// "" = default cursor
 	if (cursor.empty())
 		return &_default;
 
 	if (!_cursors.contains(cursor))
+		// Doesn't exist
 		return 0;
 
+	// Named cursor
 	return &_cursors.getVal(cursor);
 }
 
@@ -111,6 +116,8 @@ bool Cursors::setCursor(const Cursors::Cursor &cursor) {
 }
 
 bool Cursors::setPalette(const Palette &palette) {
+	// Copy 3 palette entries
+
 	byte newPal[12];
 
 	newPal[ 0] = palette[0];

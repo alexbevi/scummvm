@@ -119,11 +119,13 @@ bool TalkManager::talk(const TalkLine &talkLine) {
 	endTalk();
 
 	if (talkLine.hasWAV()) {
+		// Sound
 		if (!_sound->playWAV(talkLine.getWAV(), _curTalk, Audio::Mixer::kSpeechSoundType)) {
 			warning("TalkManager::talk(): WAV playing failed");
 			return false;
 		}
 
+		// Text
 		Common::String text = talkLine.getTXT();
 		if (!talkLine.getSpeaker().empty())
 			text = talkLine.getSpeaker() + ":\n" + text;
