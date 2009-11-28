@@ -60,13 +60,12 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 	wav.seek(0);
 
 	// Load WAV
-	Audio::AudioStream *wavStream = Audio::makeWAVStream(&wav);
+	Audio::AudioStream *wavStream = Audio::makeWAVStream(&wav, autoFree);
 	if (!wavStream)
 		return false;
 
 	// Play it
-	_mixer->playInputStream(type, handle, wavStream, _id++,
-			Audio::Mixer::kMaxChannelVolume, 0, autoFree);
+	_mixer->playInputStream(type, handle, wavStream, _id++);
 
 	return true;
 }
@@ -95,7 +94,12 @@ bool Sound::playWAV(Resources &resources, const Common::String &wav,
 	Common::MemoryReadStream *stream =
 	 new Common::MemoryReadStream(data, size, Common::DisposeAfterUse::YES);
 
-	return playWAV(*stream, type, true);
+	if (!playWAV(*stream, type, true)) {
+		delete stream;
+		return false;
+	}
+
+	return true;
 }
 
 bool Sound::playWAV(Common::SeekableReadStream &wav, int &id,

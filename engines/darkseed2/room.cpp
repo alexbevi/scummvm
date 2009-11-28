@@ -184,6 +184,8 @@ bool Room::parse(const Resources &resources,
 bool Room::parse(const Resources &resources,
 		const Common::String &base) {
 
+	clear();
+
 	_name = base;
 
 	Common::String room    = "ROOM";
@@ -304,6 +306,9 @@ bool Room::setup(const Resources &resources) {
 		warning("Room::setup(): No walk map");
 		return false;
 	}
+
+	delete _background;
+	delete _walkMap;
 
 	_background = new Sprite();
 	_walkMap    = new Sprite();
