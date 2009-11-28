@@ -119,7 +119,7 @@ void Music::stop() {
 }
 
 
-MidiPlayer::MidiPlayer(MidiDriver *driver, const char *pathMask) : _parser(0), _driver(driver), _pathMask(pathMask), _looping(false), _isPlaying(false), _passThrough(false), _isGM(false), _track(0) {
+MidiPlayer::MidiPlayer(MidiDriver *driver, const char *pathMask) : _parser(0), _driver(driver), _pathMask(pathMask), _looping(false), _isPlaying(false), _passThrough(false), _isGM(true), _track(0) {
 	memset(_channel, 0, sizeof(_channel));
 	memset(_channelVolume, 255, sizeof(_channelVolume));
 	_masterVolume = 0;
