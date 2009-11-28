@@ -81,15 +81,22 @@ bool ScriptInterpreter::interpret(ScriptChunk &chunk, bool &ran) {
 
 	const Common::List<ScriptChunk::Action> &actions = chunk.getActions();
 
-	for (Common::List<ScriptChunk::Action>::const_iterator it = actions.begin(); it != actions.end(); ++it)
+	for (Common::List<ScriptChunk::Action>::const_iterator it = actions.begin(); it != actions.end(); ++it) {
+		if (_vm->shouldQuit())
+			break;
+
 		if (!interpret(*it))
 			return false;
+	}
 
 	return true;
 }
 
 bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks) {
 	for (Common::List<ScriptChunk *>::iterator it = chunks.begin(); it != chunks.end(); ++it) {
+		if (_vm->shouldQuit())
+			break;
+
 		bool ran;
 
 		if (!interpret(**it, ran))
