@@ -95,7 +95,7 @@ bool Events::setupIntroSequence() {
 		// Draw those parts
 
 		if (_titleSprites[i].empty()) {
-			warning("Couldn't load title screen elements");
+			warning("Events::setupIntroSequence(): Couldn't load title screen elements");
 			return false;
 		}
 
@@ -113,13 +113,13 @@ void Events::leaveIntro() {
 
 	// Intro movie room
 	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "1501")) {
-		warning("Failed loading the intro movie room");
+		warning("Events::leaveIntro(): Failed loading the intro movie room");
 		_vm->quitGame();
 		return;
 	}
 
 	if (!roomEnter()) {
-		warning("Failed entering the intro movie room");
+		warning("Events::leaveIntro(): Failed entering the intro movie room");
 		_vm->quitGame();
 		return;
 	}
@@ -134,13 +134,13 @@ void Events::leaveIntro() {
 
 	// First room
 	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0101")) {
-		warning("Failed loading the first room");
+		warning("Events::leaveIntro(): Failed loading the first room");
 		_vm->quitGame();
 		return;
 	}
 
 	if (!roomEnter()) {
-		warning("Failed entering the first room");
+		warning("Events::leaveIntro(): Failed entering the first room");
 		_vm->quitGame();
 		return;
 	}

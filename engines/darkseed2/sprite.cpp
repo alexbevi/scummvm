@@ -387,7 +387,7 @@ bool Sprite::readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize) 
 		uint32 sizeData = bmp.readUint16LE();
 
 		if ((sizeSkip + sizeData) > _width) {
-			warning("Broken image compression: size %d (%d + %d), width %d",
+			warning("Sprite::readBMPDataComp2(): Broken image compression: size %d (%d + %d), width %d",
 					sizeSkip + sizeData, sizeSkip, sizeData, _width);
 			return false;
 		}
