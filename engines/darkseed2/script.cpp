@@ -36,7 +36,7 @@ static const char *scriptAction[] = {
 	"ScaleVal"    , "From"     , "PaletteChange", "XYRoomEffect",
 	"ChangeAt"    , "Dialog"   , "Picture"      , "Speech"      ,
 	"SpeechVar"   , "WaitUntil", "Effect"       , "LoopCond"    ,
-	"LoopPoint"
+	"LoopPoint"   , "LoadCond"
 };
 
 

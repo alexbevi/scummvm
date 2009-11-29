@@ -126,6 +126,7 @@ private:
 	Result oEffect(Script &script);
 	Result oLoopCond(Script &script);
 	Result oLoopPoint(Script &script);
+	Result oLoadCond(Script &script);
 };
 
 } // End of namespace DarkSeed2

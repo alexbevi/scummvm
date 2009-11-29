@@ -78,7 +78,8 @@ ScriptInterpreter::OpcodeEntry ScriptInterpreter::_scriptFunc[kScriptActionNone]
 	OPCODE(oWaitUntil),
 	OPCODE(oEffect),
 	OPCODE(oLoopCond),
-	OPCODE(oLoopPoint)
+	OPCODE(oLoopPoint),
+	OPCODE(oLoadCond)
 };
 
 ScriptInterpreter::ScriptInterpreter(DarkSeed2Engine &vm) : _vm(&vm) {
@@ -370,6 +371,11 @@ ScriptInterpreter::Result ScriptInterpreter::oLoopCond(Script &script) {
 
 ScriptInterpreter::Result ScriptInterpreter::oLoopPoint(Script &script) {
 	warning("Unimplemented script function oLoopPoint");
+	return kResultInvalid;
+}
+
+ScriptInterpreter::Result ScriptInterpreter::oLoadCond(Script &script) {
+	warning("Unimplemented script function oLoadCond");
 	return kResultInvalid;
 }
 

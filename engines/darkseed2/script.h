@@ -66,8 +66,9 @@ enum ScriptAction {
 	kScriptActionSpeechVar,
 	kScriptActionWaitUntil,
 	kScriptActionEffect,
-	KScriptActionLoopCond,
-	KScriptActionLoopPoint,
+	kScriptActionLoopCond,
+	kScriptActionLoopPoint,
+	kScriptActionLoadCond,
 	kScriptActionNone
 };
 
