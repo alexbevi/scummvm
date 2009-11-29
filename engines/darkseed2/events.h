@@ -54,6 +54,9 @@ public:
 	/** Start the game's main loop. */
 	void mainLoop(bool finishScripts = false);
 
+	/** Register a room transition. */
+	void setNextRoom(uint32 room);
+
 private:
 	/** A mode's cursor. */
 	struct ModeCursors {
@@ -72,6 +75,9 @@ private:
 	bool _cursorActive;     ///< Currently in a hotspot?
 
 	SpriteObject _titleSprites[5]; ///< Title elements.
+
+	Common::String _nextRoom;
+	bool _changeRoom;
 
 	/** Handle user input. */
 	void handleInput();
@@ -104,7 +110,10 @@ private:
 	void roomLeave();
 	/** Execute the current room's autostart logic. */
 	bool executeAutoStart(Room &room);
+	/** Go to another room. */
+	bool roomGo(const Common::String &room);
 
+	/** Executre an object's script for the given verb. */
 	void doObjectVerb(Object &object, ObjectVerb verb);
 
 	static ObjectVerb cursorModeToObjectVerb(CursorMode cursorMode);

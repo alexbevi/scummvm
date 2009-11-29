@@ -69,27 +69,17 @@ bool Events::setupIntroSequence() {
 	_cursorActive = false;
 	setCursor();
 
-	roomLeave();
-
 	// Cutscene room
-	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0001"))
+	if (!roomGo("0001"))
 		return false;
 
 	_inIntro = true;
 
-	if (!roomEnter())
-		return false;
-
 	// Run the main loop as long as scripts are still active
 	mainLoop(true);
 
-	roomLeave();
-
 	// Title room
-	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0002"))
-		return false;
-
-	if (!roomEnter())
+	if (!roomGo("0002"))
 		return false;
 
 	// Run the main loop as long as scripts are still active
@@ -122,17 +112,9 @@ void Events::leaveIntro() {
 	for (int i = 0; i < 5; i++)
 		_titleSprites[i].clear();
 
-	roomLeave();
-
 	// Intro movie room
-	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "1501")) {
+	if (!roomGo("1501")) {
 		warning("Events::leaveIntro(): Failed loading the intro movie room");
-		_vm->quitGame();
-		return;
-	}
-
-	if (!roomEnter()) {
-		warning("Events::leaveIntro(): Failed entering the intro movie room");
 		_vm->quitGame();
 		return;
 	}
@@ -148,17 +130,9 @@ void Events::leaveIntro() {
 	_cursorActive = false;
 	setCursor();
 
-	roomLeave();
-
 	// First room
-	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0101")) {
+	if (!roomGo("0101")) {
 		warning("Events::leaveIntro(): Failed loading the first room");
-		_vm->quitGame();
-		return;
-	}
-
-	if (!roomEnter()) {
-		warning("Events::leaveIntro(): Failed entering the first room");
 		_vm->quitGame();
 		return;
 	}
@@ -179,6 +153,13 @@ void Events::mainLoop(bool finishScripts) {
 		if (finishScripts && !scriptStateChanged)
 			// We run only to finish the scripts, but the scripts won't do anything
 			break;
+
+		// Room chaning
+		if (_changeRoom) {
+			_changeRoom = false;
+
+			roomGo(_nextRoom);
+		}
 
 		// Update screen
 		_vm->_graphics->retrace();
@@ -390,6 +371,31 @@ bool Events::roomEnter() {
 void Events::roomLeave() {
 	_vm->_graphics->unregisterBackground();
 	_vm->_inter->clear();
+}
+
+bool Events::roomGo(const Common::String &room) {
+	Room &curRoom = _vm->_graphics->getRoom();
+
+	roomLeave();
+
+	if (!curRoom.parse(*_vm->_resources, room))
+		return false;
+
+	if (!roomEnter())
+		return false;
+
+	return true;
+}
+
+void Events::setNextRoom(uint32 room) {
+	if (!_inIntro) {
+		_nextRoom = Common::String::printf("%04d", room);
+
+		if (_nextRoom != _vm->_graphics->getRoom().getName()) {
+			warning("Room transition to room %s", _nextRoom.c_str());
+			_changeRoom = true;
+		}
+	}
 }
 
 static const char *autoStartName[] = {

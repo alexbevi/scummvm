@@ -32,6 +32,7 @@
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/conversationbox.h"
+#include "engines/darkseed2/events.h"
 
 namespace DarkSeed2 {
 
@@ -204,6 +205,15 @@ ScriptInterpreter::Result ScriptInterpreter::interpret(Script &script) {
 
 ScriptInterpreter::Result ScriptInterpreter::oXYRoom(Script &script) {
 	warning("TODO: Unimplemented script function oXYRoom");
+
+	Common::Array<Common::String> lArgs = DATFile::argGet(script.action->arguments);
+	if (lArgs.size() > 3) {
+		uint32 room = atoi(lArgs[2].c_str());
+
+		if (room != 0)
+			_vm->_events->setNextRoom(room);
+	}
+
 	return kResultOK;
 }
 
