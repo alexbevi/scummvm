@@ -217,10 +217,10 @@ ScriptInterpreter::Result ScriptInterpreter::interpret(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oXYRoom(Script &script) {
-	warning("TODO: Unimplemented script function oXYRoom");
+	warning("TODO: Unimplemented script function oXYRoom [%s]", script.action->arguments.c_str());
 
 	Common::Array<Common::String> lArgs = DATFile::argGet(script.action->arguments);
-	if (lArgs.size() > 3) {
+	if (lArgs.size() >= 3) {
 		uint32 room = atoi(lArgs[2].c_str());
 
 		if (room != 0)
