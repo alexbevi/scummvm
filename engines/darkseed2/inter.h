@@ -38,10 +38,27 @@ public:
 	ScriptInterpreter(DarkSeed2Engine &vm);
 	~ScriptInterpreter();
 
+	/** Are there any scripts currently in the queue? */
+	bool hasScripts() const;
+
+	/** Remove all scripts from the queue. */
+	void clear();
+
+	/** Push the first chunk where the conditions are met into the queue. */
 	bool interpret(Common::List<ScriptChunk *> &chunks);
 
+	/** Update status, interpret next lines, .... */
+	void updateStatus();
+
 private:
-	typedef bool (ScriptInterpreter::*func_t)(const ScriptChunk::Action &action);
+	/** The result of a script action. */
+	enum Result {
+		kResultOK,     ///< Everything was okay, proceed to the next line.
+		kResultWait,   ///< Wait on this line.
+		kResultInvalid ///< Invalid script line.
+	};
+
+	typedef Result (ScriptInterpreter::*func_t)(const ScriptChunk::Action &action);
 	struct OpcodeEntry {
 		func_t func;
 		const char *name;
@@ -49,39 +66,42 @@ private:
 
 	DarkSeed2Engine *_vm;
 
-	Common::String _speechVar;
-
 	/** All opcodes. */
 	static OpcodeEntry _scriptFunc[kScriptActionNone];
 
-	// Interpreting helpers
-	bool interpret(ScriptChunk &chunk, bool &ran);
-	bool interpret(const ScriptChunk::Action &action);
+	/** The current variable that gets changed when the talking/sfx ends. */
+	Common::String _speechVar;
+
+	/** The currently active scripts. */
+	Common::List<ScriptChunk *> _scripts;
+
+	// Interpreting helper
+	Result interpret(const ScriptChunk::Action &action);
 
 	// Opcodes
-	bool oXYRoom(const ScriptChunk::Action &action);
-	bool oCursor(const ScriptChunk::Action &action);
-	bool oChange(const ScriptChunk::Action &action);
-	bool oText(const ScriptChunk::Action &action);
-	bool oMidi(const ScriptChunk::Action &action);
-	bool oAnim(const ScriptChunk::Action &action);
-	bool oStatus(const ScriptChunk::Action &action);
-	bool oSequence(const ScriptChunk::Action &action);
-	bool oSpriteIDX(const ScriptChunk::Action &action);
-	bool oClipXY(const ScriptChunk::Action &action);
-	bool oPosX(const ScriptChunk::Action &action);
-	bool oPosY(const ScriptChunk::Action &action);
-	bool oScaleVal(const ScriptChunk::Action &action);
-	bool oFrom(const ScriptChunk::Action &action);
-	bool oPaletteChange(const ScriptChunk::Action &action);
-	bool oXYRoomEffect(const ScriptChunk::Action &action);
-	bool oChangeAt(const ScriptChunk::Action &action);
-	bool oDialog(const ScriptChunk::Action &action);
-	bool oPicture(const ScriptChunk::Action &action);
-	bool oSpeech(const ScriptChunk::Action &action);
-	bool oSpeechVar(const ScriptChunk::Action &action);
-	bool oWaitUntil(const ScriptChunk::Action &action);
-	bool oEffect(const ScriptChunk::Action &action);
+	Result oXYRoom(const ScriptChunk::Action &action);
+	Result oCursor(const ScriptChunk::Action &action);
+	Result oChange(const ScriptChunk::Action &action);
+	Result oText(const ScriptChunk::Action &action);
+	Result oMidi(const ScriptChunk::Action &action);
+	Result oAnim(const ScriptChunk::Action &action);
+	Result oStatus(const ScriptChunk::Action &action);
+	Result oSequence(const ScriptChunk::Action &action);
+	Result oSpriteIDX(const ScriptChunk::Action &action);
+	Result oClipXY(const ScriptChunk::Action &action);
+	Result oPosX(const ScriptChunk::Action &action);
+	Result oPosY(const ScriptChunk::Action &action);
+	Result oScaleVal(const ScriptChunk::Action &action);
+	Result oFrom(const ScriptChunk::Action &action);
+	Result oPaletteChange(const ScriptChunk::Action &action);
+	Result oXYRoomEffect(const ScriptChunk::Action &action);
+	Result oChangeAt(const ScriptChunk::Action &action);
+	Result oDialog(const ScriptChunk::Action &action);
+	Result oPicture(const ScriptChunk::Action &action);
+	Result oSpeech(const ScriptChunk::Action &action);
+	Result oSpeechVar(const ScriptChunk::Action &action);
+	Result oWaitUntil(const ScriptChunk::Action &action);
+	Result oEffect(const ScriptChunk::Action &action);
 };
 
 } // End of namespace DarkSeed2

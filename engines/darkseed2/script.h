@@ -83,6 +83,18 @@ public:
 	ScriptChunk(const Variables &variables);
 	~ScriptChunk();
 
+	/** Was the end of the ScriptChunk reached? */
+	bool atEnd() const;
+
+	/** Advance the script to the next line. */
+	void next();
+	/** Rewind the ScriptChunk to the start. */
+	void rewind();
+	/** Seek the ScriptChunk to the end. */
+	void seekEnd();
+
+	ScriptChunk &operator++();
+
 	/** Reset the chunk to its empty factory state. */
 	void clear();
 	/** Parse a chunk out of a suitably positioned DAT file. */
@@ -94,14 +106,25 @@ public:
 	/** Get all script actions. */
 	const Common::List<Action> &getActions() const;
 
+	/** Return the current action. */
+	const Action &getAction() const;
+
 private:
+	static const Action invalidAction;
+
 	const Variables *_variables;
 
 	Common::String _cond1; ///< The first condition.
 	Common::String _cond2; ///< The second condition.
 
-	///< All actions.
+	/** Was everything loaded so that the ScriptChunk can be interpreted? */
+	bool _ready;
+
+	/** All actions. */
 	Common::List<Action> _actions;
+
+	/** The current position within the actions. */
+	Common::List<Action>::iterator _curPos;
 
 	/** Parse a script action string. */
 	static ScriptAction parseScriptAction(const Common::String &action);

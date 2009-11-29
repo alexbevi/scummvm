@@ -51,7 +51,7 @@ public:
 	bool setupIntroSequence();
 
 	/** Start the game's main loop. */
-	void mainLoop();
+	void mainLoop(bool needScripts = false);
 
 private:
 	/** A mode's cursor. */
@@ -99,6 +99,8 @@ private:
 
 	/** Execute the current room's entry logic. */
 	bool roomEnter();
+	/** Revert any changes dependant on the current room. */
+	void roomLeave();
 	/** Execute the current room's autostart logic. */
 	bool executeAutoStart(Room &room);
 };

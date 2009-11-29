@@ -68,6 +68,8 @@ bool Events::setupIntroSequence() {
 	_cursorActive = false;
 	setCursor();
 
+	roomLeave();
+
 	// Cutscene room
 	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0001"))
 		return false;
@@ -76,6 +78,8 @@ bool Events::setupIntroSequence() {
 
 	if (!roomEnter())
 		return false;
+
+	roomLeave();
 
 	// Title room
 	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0002"))
@@ -111,6 +115,8 @@ void Events::leaveIntro() {
 	for (int i = 0; i < 5; i++)
 		_titleSprites[i].clear();
 
+	roomLeave();
+
 	// Intro movie room
 	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "1501")) {
 		warning("Events::leaveIntro(): Failed loading the intro movie room");
@@ -132,6 +138,8 @@ void Events::leaveIntro() {
 	_cursorActive = false;
 	setCursor();
 
+	roomLeave();
+
 	// First room
 	if (!_vm->_graphics->getRoom().parse(*_vm->_resources, "0101")) {
 		warning("Events::leaveIntro(): Failed loading the first room");
@@ -146,14 +154,19 @@ void Events::leaveIntro() {
 	}
 }
 
-void Events::mainLoop() {
+void Events::mainLoop(bool needScripts) {
 	while (!_vm->shouldQuit()) {
+		// If there's no scripts but script execution was required, break
+		if (needScripts && !_vm->_inter->hasScripts())
+			break;
+
 		// Look for user input
 		handleInput();
 
 		// Update subsystem statuses
 		_vm->_talkMan->updateStatus();
 		_vm->_graphics->updateStatus();
+		_vm->_inter->updateStatus();
 
 		// Update screen
 		_vm->_graphics->retrace();
@@ -312,13 +325,28 @@ bool Events::roomEnter() {
 	if (!_vm->_inter->interpret(room.getScripts(kRoomVerbMusic)))
 		return false;
 
+	// Run the main loop as long as scripts are still active
+	mainLoop(true);
+
 	// Evaluate the entry logic
 	if (!_vm->_inter->interpret(room.getScripts(kRoomVerbEntry)))
 		return false;
 
+	// Run the main loop as long as scripts are still active
+	mainLoop(true);
+
 	// Evaluate the autostart objects
 	executeAutoStart(room);
+
+	// Run the main loop as long as scripts are still active
+	mainLoop(true);
+
 	return true;
+}
+
+void Events::roomLeave() {
+	_vm->_graphics->unregisterBackground();
+	_vm->_inter->clear();
 }
 
 static const char *autoStartName[] = {

@@ -39,6 +39,8 @@ static const char *scriptAction[] = {
 };
 
 
+const ScriptChunk::Action ScriptChunk::invalidAction(kScriptActionNone, "");
+
 ScriptChunk::Action::Action(ScriptAction act, const Common::String &args) {
 	action    = act;
 	arguments = args;
@@ -46,12 +48,43 @@ ScriptChunk::Action::Action(ScriptAction act, const Common::String &args) {
 
 
 ScriptChunk::ScriptChunk(const Variables &variables) : _variables(&variables) {
+	_ready = false;
 }
 
 ScriptChunk::~ScriptChunk() {
 }
 
+bool ScriptChunk::atEnd() const {
+	if (!_ready)
+		return true;
+
+	return _curPos == _actions.end();
+}
+
+void ScriptChunk::next() {
+	if (!_ready)
+		return;
+
+	++_curPos;
+}
+
+void ScriptChunk::rewind() {
+	if (!_ready)
+		return;
+
+	_curPos = _actions.begin();
+}
+
+void ScriptChunk::seekEnd() {
+	if (!_ready)
+		return;
+
+	_curPos = _actions.end();
+}
+
 void ScriptChunk::clear() {
+	_ready = false;
+
 	_cond1.clear();
 	_cond2.clear();
 	_actions.clear();
@@ -105,10 +138,16 @@ bool ScriptChunk::parse(DATFile &dat) {
 		}
 	}
 
+	_curPos = _actions.begin();
+	_ready = true;
+
 	return true;
 }
 
 bool ScriptChunk::conditionsMet() const {
+	if (!_ready)
+		return false;
+
 	bool result = _variables->evalCondition(_cond1);
 
 	if (!_cond2.empty())
@@ -119,6 +158,13 @@ bool ScriptChunk::conditionsMet() const {
 
 const Common::List<ScriptChunk::Action> &ScriptChunk::getActions() const {
 	return _actions;
+}
+
+const ScriptChunk::Action &ScriptChunk::getAction() const {
+	if (atEnd())
+		return invalidAction;
+
+	return *_curPos;
 }
 
 ScriptAction ScriptChunk::parseScriptAction(const Common::String &action) {
