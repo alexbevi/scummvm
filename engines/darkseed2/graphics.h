@@ -80,6 +80,10 @@ public:
 	/** Change the game palette. */
 	void setPalette(const Palette &pal);
 
+	void enterMovieMode();
+
+	void leaveMovieMode();
+
 	/** Assert that palette entry 0 is black, after the palette
 	  * has been changed from "the outside", e.g. AVI decoder.
 	  */
@@ -129,6 +133,8 @@ private:
 	const Sprite *_background; ///< The current background.
 
 	TextObject *_talk; ///< The currently active speech line.
+
+	bool _movieMode;
 
 	/** Initialize the game palette. */
 	void initPalette();

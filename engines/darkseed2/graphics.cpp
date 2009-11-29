@@ -49,6 +49,8 @@ Graphics::Graphics(Resources &resources, Variables &variables) {
 
 	_talk = 0;
 
+	_movieMode = false;
+
 	_conversationBox = 0;
 	_room            = 0;
 }
@@ -98,6 +100,23 @@ void Graphics::setPalette(const Palette &pal) {
 	initPalette();
 }
 
+void Graphics::enterMovieMode() {
+	_movieMode = true;
+
+	_screen.clear();
+
+	g_system->fillScreen(0);
+	redraw(kScreenPartPlayArea);
+	g_system->updateScreen();
+}
+
+void Graphics::leaveMovieMode() {
+	_movieMode = false;
+
+	applyGamePalette();
+	redraw(kScreenPartPlayArea);
+}
+
 void Graphics::assertPalette0() {
 	byte index0[4];
 
@@ -111,7 +130,6 @@ void Graphics::assertPalette0() {
 	index0[2] = 0;
 
 	g_system->setPalette(index0, 0, 1);
-	g_system->fillScreen(0);
 	g_system->updateScreen();
 }
 
@@ -282,6 +300,11 @@ void Graphics::unregisterBackground() {
 
 void Graphics::redrawScreen(const Common::Rect &rect) {
 	assert(_conversationBox);
+
+	if (_movieMode) {
+		dirtyRectsAdd(rect);
+		return;
+	}
 
 	if (_background)
 		blitToScreen(*_background, rect, rect.left, rect.top, false);

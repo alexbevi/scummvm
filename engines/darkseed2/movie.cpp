@@ -56,6 +56,8 @@ bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 
 	_abort = false;
 
+	_graphics->enterMovieMode();
+
 	// Switching off the cursor
 	bool cursorVisible = CursorMan.isVisible();
 	CursorMan.showMouse(false);
@@ -81,6 +83,8 @@ bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 	_buffer.clear();
 
 	_aviDecoder->closeFile();
+
+	_graphics->leaveMovieMode();
 
 	return true;
 }
