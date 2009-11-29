@@ -154,19 +154,21 @@ void Events::leaveIntro() {
 	}
 }
 
-void Events::mainLoop(bool needScripts) {
-	while (!_vm->shouldQuit()) {
-		// If there's no scripts but script execution was required, break
-		if (needScripts && !_vm->_inter->hasScripts())
-			break;
+void Events::mainLoop(bool finishScripts) {
+	bool scriptStateChanged;
 
+	while (!_vm->shouldQuit()) {
 		// Look for user input
 		handleInput();
 
 		// Update subsystem statuses
 		_vm->_talkMan->updateStatus();
 		_vm->_graphics->updateStatus();
-		_vm->_inter->updateStatus();
+
+		scriptStateChanged = _vm->_inter->updateStatus();
+		if (finishScripts && !scriptStateChanged)
+			// We run only to finish the scripts, but the scripts won't do anything
+			break;
 
 		// Update screen
 		_vm->_graphics->retrace();
@@ -325,18 +327,24 @@ bool Events::roomEnter() {
 	if (!_vm->_inter->interpret(room.getScripts(kRoomVerbMusic)))
 		return false;
 
+/*
 	// Run the main loop as long as scripts are still active
 	mainLoop(true);
+*/
 
 	// Evaluate the entry logic
 	if (!_vm->_inter->interpret(room.getScripts(kRoomVerbEntry)))
 		return false;
 
+/*
 	// Run the main loop as long as scripts are still active
 	mainLoop(true);
+*/
 
 	// Evaluate the autostart objects
 	executeAutoStart(room);
+
+	_vm->_inter->interpret(room.getScripts(kRoomVerbSprite), true);
 
 	// Run the main loop as long as scripts are still active
 	mainLoop(true);
@@ -361,7 +369,7 @@ bool Events::executeAutoStart(Room &room) {
 	for (int i = 0; i < ARRAYSIZE(autoStartName); i++) {
 		autoStart = room.findObject(autoStartName[i]);
 		if (autoStart) {
-			_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse));
+			_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse), true);
 			has = true;
 		}
 	}

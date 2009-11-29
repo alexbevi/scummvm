@@ -169,6 +169,7 @@ void TalkManager::endTalk() {
 	_curTalk = -1;
 
 	delete _curTalkLine;
+	_curTalkLine = 0;
 }
 
 int TalkManager::getSoundID() const {

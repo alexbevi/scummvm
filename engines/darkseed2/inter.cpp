@@ -33,6 +33,13 @@
 
 namespace DarkSeed2 {
 
+ScriptInterpreter::Script::Script(ScriptChunk *chnk, bool perm) {
+	chunk     = chnk;
+	permanent = perm;
+	started   = false;
+	soundID   = -1;
+}
+
 #ifndef REDUCE_MEMORY_USAGE
 	#define OPCODE(x)          { &ScriptInterpreter::x, 0                    , #x }
 	#define OPCODEUPDATE(x, y) { &ScriptInterpreter::x, &ScriptInterpreter::y, #x }
@@ -68,6 +75,7 @@ ScriptInterpreter::OpcodeEntry ScriptInterpreter::_scriptFunc[kScriptActionNone]
 };
 
 ScriptInterpreter::ScriptInterpreter(DarkSeed2Engine &vm) : _vm(&vm) {
+	_updatesWithoutChanges = 0;
 	_soundID = -1;
 }
 
@@ -83,51 +91,84 @@ void ScriptInterpreter::clear() {
 
 	_soundID = -1;
 	_speechVar.clear();
+
+	_updatesWithoutChanges = 0;
 }
 
-void ScriptInterpreter::updateStatus() {
-	Common::List<ScriptChunk *>::iterator script;
+bool ScriptInterpreter::updateStatus() {
+	Common::List<Script>::iterator script;
+
+	_updatesWithoutChanges++;
 
 	// Interpret one action from every script in the queue
 	for (script = _scripts.begin(); script != _scripts.end(); ++script) {
 		if (_vm->shouldQuit())
 			break;
 
-		const ScriptChunk::Action &action = (*script)->getAction();
+		if (!script->started) {
+			// If the script wasn't started yet, check if the conditions are met
+			if (!script->chunk->conditionsMet()) {
+				// Conditions not met
+
+				if (!script->permanent)
+					// Not a permanent script, end it
+					script->chunk->seekEnd();
+
+				continue;
+			}
+
+			// Conditions met, start the script
+			script->started = true;
+			_updatesWithoutChanges = 0;
+		}
+
+		const ScriptChunk::Action &action = script->chunk->getAction();
 		Result result = interpret(action);
 
-		if      (result == kResultInvalid) {
-			(*script)->seekEnd();
-		} else {
-			if (result == kResultOK)
-				(*script)->next();
-
-			updateScriptState(**script, action);
+		if (result == kResultInvalid) {
+			script->chunk->seekEnd();
+			_updatesWithoutChanges = 0;
+			continue;
 		}
+
+		if (result == kResultOK) {
+			script->chunk->next();
+			_updatesWithoutChanges = 0;
+		}
+
+		updateScriptState(*script, action);
 	}
 
 	// Go through all scripts and erase those that ended
 	script = _scripts.begin();
 	while (script != _scripts.end()) {
-		if ((*script)->atEnd())
+		if (script->chunk->atEnd()) {
+			script->chunk->setUsed(false);
 			script = _scripts.erase(script);
-		else
+			_updatesWithoutChanges = 0;
+		} else
 			++script;
 	}
 
+	return _updatesWithoutChanges < 10;
 }
 
-bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks) {
-	// Find the first chunk with met conditions and push it into our queue
+bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks, bool permanent) {
+	bool has = false;
+
 	for (Common::List<ScriptChunk *>::iterator it = chunks.begin(); it != chunks.end(); ++it) {
-		if ((*it)->conditionsMet()) {
+		if (!(*it)->isUsed()) {
+			(*it)->setUsed(true);
 			(*it)->rewind();
-			_scripts.push_back(*it);
-			return true;
+			_scripts.push_back(Script(*it, permanent));
+			has = true;
 		}
 	}
 
-	return false;
+	if (has)
+		_updatesWithoutChanges = 0;
+
+	return has;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::interpret(const ScriptChunk::Action &action) {
@@ -144,7 +185,7 @@ ScriptInterpreter::Result ScriptInterpreter::interpret(const ScriptChunk::Action
 	return (this->*_scriptFunc[action.action].func)(action);
 }
 
-void ScriptInterpreter::updateScriptState(ScriptChunk &script, const ScriptChunk::Action &action) {
+void ScriptInterpreter::updateScriptState(Script &script, const ScriptChunk::Action &action) {
 	updateFunc_t updateFunc = _scriptFunc[action.action].updateFunc;
 
 	if (updateFunc)
@@ -195,8 +236,8 @@ ScriptInterpreter::Result ScriptInterpreter::oAnim(const ScriptChunk::Action &ac
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oStatus(const ScriptChunk::Action &action) {
-	warning("Unimplemented script function oStatus");
-	return kResultInvalid;
+	warning("TODO: Unimplemented script function oStatus");
+	return kResultOK;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oSequence(const ScriptChunk::Action &action) {
@@ -205,8 +246,8 @@ ScriptInterpreter::Result ScriptInterpreter::oSequence(const ScriptChunk::Action
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oSpriteIDX(const ScriptChunk::Action &action) {
-	warning("Unimplemented script function oSpriteIDX");
-	return kResultInvalid;
+	warning("TODO: Unimplemented script function oSpriteIDX");
+	return kResultOK;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oClipXY(const ScriptChunk::Action &action) {
@@ -284,18 +325,16 @@ ScriptInterpreter::Result ScriptInterpreter::oEffect(const ScriptChunk::Action &
 	return kResultOK;
 }
 
-void ScriptInterpreter::uText(ScriptChunk &script) {
-	script.setSoundID(_soundID);
+void ScriptInterpreter::uText(Script &script) {
+	script.soundID = _soundID;
 }
 
-void ScriptInterpreter::uSpeechVar(ScriptChunk &script) {
-	script.setSpeechVar(_speechVar);
-
-	_vm->_sound->setSoundVar(script.getSoundID(), _speechVar);
+void ScriptInterpreter::uSpeechVar(Script &script) {
+	_vm->_sound->setSoundVar(script.soundID, _speechVar);
 }
 
-void ScriptInterpreter::uEffect(ScriptChunk &script) {
-	script.setSoundID(_soundID);
+void ScriptInterpreter::uEffect(Script &script) {
+	script.soundID = _soundID;
 }
 
 } // End of namespace DarkSeed2

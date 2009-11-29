@@ -49,8 +49,7 @@ ScriptChunk::Action::Action(ScriptAction act, const Common::String &args) {
 
 ScriptChunk::ScriptChunk(const Variables &variables) : _variables(&variables) {
 	_ready = false;
-
-	_soundID = -1;
+	_used  = false;
 }
 
 ScriptChunk::~ScriptChunk() {
@@ -75,9 +74,6 @@ void ScriptChunk::rewind() {
 		return;
 
 	_curPos = _actions.begin();
-
-	_soundID = -1;
-	_speechVar.clear();
 }
 
 void ScriptChunk::seekEnd() {
@@ -89,6 +85,7 @@ void ScriptChunk::seekEnd() {
 
 void ScriptChunk::clear() {
 	_ready = false;
+	_used  = false;
 
 	_cond1.clear();
 	_cond2.clear();
@@ -173,20 +170,12 @@ const ScriptChunk::Action &ScriptChunk::getAction() const {
 	return *_curPos;
 }
 
-int ScriptChunk::getSoundID() const {
-	return _soundID;
+bool ScriptChunk::isUsed() const {
+	return _used;
 }
 
-void ScriptChunk::setSoundID(int soundID) {
-	_soundID = soundID;
-}
-
-const Common::String &ScriptChunk::getSpeechVar() const {
-	return _speechVar;
-}
-
-void ScriptChunk::setSpeechVar(const Common::String &speechVar) {
-	_speechVar = speechVar;
+void ScriptChunk::setUsed(bool used) {
+	_used = used;
 }
 
 ScriptAction ScriptChunk::parseScriptAction(const Common::String &action) {

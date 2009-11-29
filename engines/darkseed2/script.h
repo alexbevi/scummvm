@@ -109,11 +109,8 @@ public:
 	/** Return the current action. */
 	const Action &getAction() const;
 
-	int getSoundID() const;
-	void setSoundID(int soundID);
-
-	const Common::String &getSpeechVar() const;
-	void setSpeechVar(const Common::String &speechVar);
+	bool isUsed() const;
+	void setUsed(bool used);
 
 private:
 	static const Action invalidAction;
@@ -125,15 +122,14 @@ private:
 
 	/** Was everything loaded so that the ScriptChunk can be interpreted? */
 	bool _ready;
+	/** Is the script currently being used by the interpreter? */
+	bool _used;
 
 	/** All actions. */
 	Common::List<Action> _actions;
 
 	/** The current position within the actions. */
 	Common::List<Action>::iterator _curPos;
-
-	int _soundID;
-	Common::String _speechVar;
 
 	/** Parse a script action string. */
 	static ScriptAction parseScriptAction(const Common::String &action);

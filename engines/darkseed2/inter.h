@@ -44,11 +44,11 @@ public:
 	/** Remove all scripts from the queue. */
 	void clear();
 
-	/** Push the first chunk where the conditions are met into the queue. */
-	bool interpret(Common::List<ScriptChunk *> &chunks);
+	/** Push the chunks with met conditions into the queue. */
+	bool interpret(Common::List<ScriptChunk *> &chunks, bool permanent = false);
 
 	/** Update status, interpret next lines, .... */
-	void updateStatus();
+	bool updateStatus();
 
 private:
 	/** The result of a script action. */
@@ -58,8 +58,17 @@ private:
 		kResultInvalid ///< Invalid script line.
 	};
 
+	struct Script {
+		ScriptChunk *chunk;
+		bool started;
+		bool permanent;
+		int soundID;
+
+		Script(ScriptChunk *chnk = 0, bool perm = false);
+	};
+
 	typedef Result (ScriptInterpreter::*func_t)(const ScriptChunk::Action &action);
-	typedef void (ScriptInterpreter::*updateFunc_t)(ScriptChunk &script);
+	typedef void (ScriptInterpreter::*updateFunc_t)(Script &script);
 	struct OpcodeEntry {
 		func_t func;
 		updateFunc_t updateFunc;
@@ -71,17 +80,19 @@ private:
 	/** All opcodes. */
 	static OpcodeEntry _scriptFunc[kScriptActionNone];
 
+	int _updatesWithoutChanges;
+
 	/** The ID of the last started sound. */
 	int _soundID;
 	/** The current variable that gets changed when the talking/sfx ends. */
 	Common::String _speechVar;
 
 	/** The currently active scripts. */
-	Common::List<ScriptChunk *> _scripts;
+	Common::List<Script> _scripts;
 
 	// Interpreting helper
 	Result interpret(const ScriptChunk::Action &action);
-	void updateScriptState(ScriptChunk &script, const ScriptChunk::Action &action);
+	void updateScriptState(Script &script, const ScriptChunk::Action &action);
 
 	// Opcodes
 	Result oXYRoom(const ScriptChunk::Action &action);
@@ -108,9 +119,9 @@ private:
 	Result oWaitUntil(const ScriptChunk::Action &action);
 	Result oEffect(const ScriptChunk::Action &action);
 
-	void uText(ScriptChunk &script);
-	void uSpeechVar(ScriptChunk &script);
-	void uEffect(ScriptChunk &script);
+	void uText(Script &script);
+	void uSpeechVar(Script &script);
+	void uEffect(Script &script);
 };
 
 } // End of namespace DarkSeed2

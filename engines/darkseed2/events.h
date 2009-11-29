@@ -51,7 +51,7 @@ public:
 	bool setupIntroSequence();
 
 	/** Start the game's main loop. */
-	void mainLoop(bool needScripts = false);
+	void mainLoop(bool finishScripts = false);
 
 private:
 	/** A mode's cursor. */
