@@ -145,6 +145,15 @@ void Events::mainLoop(bool finishScripts) {
 		// Look for user input
 		handleInput();
 
+		// Always use that mode/activity when the conversation box is visible
+		if (_vm->_graphics->getConversationBox().isActive()) {
+			if ((_cursorMode != kCursorModeWalk) || (_cursorActive != false)) {
+				_cursorMode   = kCursorModeWalk;
+				_cursorActive = false;
+				setCursor();
+			}
+		}
+
 		// Update subsystem statuses
 		_vm->_talkMan->updateStatus();
 		_vm->_graphics->updateStatus();
