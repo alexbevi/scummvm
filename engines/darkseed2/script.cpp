@@ -49,6 +49,8 @@ ScriptChunk::Action::Action(ScriptAction act, const Common::String &args) {
 
 ScriptChunk::ScriptChunk(const Variables &variables) : _variables(&variables) {
 	_ready = false;
+
+	_soundID = -1;
 }
 
 ScriptChunk::~ScriptChunk() {
@@ -73,6 +75,9 @@ void ScriptChunk::rewind() {
 		return;
 
 	_curPos = _actions.begin();
+
+	_soundID = -1;
+	_speechVar.clear();
 }
 
 void ScriptChunk::seekEnd() {
@@ -138,8 +143,9 @@ bool ScriptChunk::parse(DATFile &dat) {
 		}
 	}
 
-	_curPos = _actions.begin();
 	_ready = true;
+
+	rewind();
 
 	return true;
 }
@@ -165,6 +171,22 @@ const ScriptChunk::Action &ScriptChunk::getAction() const {
 		return invalidAction;
 
 	return *_curPos;
+}
+
+int ScriptChunk::getSoundID() const {
+	return _soundID;
+}
+
+void ScriptChunk::setSoundID(int soundID) {
+	_soundID = soundID;
+}
+
+const Common::String &ScriptChunk::getSpeechVar() const {
+	return _speechVar;
+}
+
+void ScriptChunk::setSpeechVar(const Common::String &speechVar) {
+	_speechVar = speechVar;
 }
 
 ScriptAction ScriptChunk::parseScriptAction(const Common::String &action) {

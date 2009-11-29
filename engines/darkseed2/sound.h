@@ -49,23 +49,18 @@ public:
 	~Sound();
 
 	bool playWAV(Common::SeekableReadStream &wav,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
-			const Common::String &soundVar = "", bool autoFree = false);
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType, bool autoFree = false);
 	bool playWAV(const Resource &resource,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
-			const Common::String &soundVar = "");
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 	bool playWAV(Resources &resources, const Common::String &wav,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
-			const Common::String &soundVar = "");
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 
 	bool playWAV(Common::SeekableReadStream &wav, int &id,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 	bool playWAV(const Resource &resource, int &id,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
-			const Common::String &soundVar = "");
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 	bool playWAV(Resources &resources, const Common::String &wav, int &id,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
-			const Common::String &soundVar = "");
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 
 	/** Is the that ID playing? */
 	bool isIDPlaying(int id);
@@ -74,6 +69,9 @@ public:
 	void stopID(int id);
 	/** Stop all playing sounds. */
 	void stopAll();
+
+	/** Set the sound variable of playing sound with the given ID. */
+	bool setSoundVar(int id, const Common::String &soundVar);
 
 	/** Apply volume settings. */
 	void syncSettings(const Options &options);
@@ -88,6 +86,8 @@ private:
 		Audio::SoundHandle handle;
 		/** The variable that changes when playing stopped. */
 		Common::String soundVar;
+		/** The ID of the playing sound. */
+		int id;
 	};
 
 	Audio::Mixer *_mixer;
@@ -96,8 +96,6 @@ private:
 	static const int _channelCount = 8; ///< Number of usable channels.
 
 	int _id; ///< The next ID.
-
-	Common::String _soundVar;
 
 	/** All sound channels. */
 	SoundChannel _channels[_channelCount];

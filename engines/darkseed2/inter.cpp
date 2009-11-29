@@ -34,16 +34,18 @@
 namespace DarkSeed2 {
 
 #ifndef REDUCE_MEMORY_USAGE
-	#define OPCODE(x) { &ScriptInterpreter::x, #x }
+	#define OPCODE(x)          { &ScriptInterpreter::x, 0                    , #x }
+	#define OPCODEUPDATE(x, y) { &ScriptInterpreter::x, &ScriptInterpreter::y, #x }
 #else
-	#define OPCODE(x) { &ScriptInterpreter::x, "" }
+	#define OPCODE(x)          { &ScriptInterpreter::x, 0                    , "" }
+	#define OPCODEUPDATE(x, y) { &ScriptInterpreter::x, &ScriptInterpreter::y, "" }
 #endif
 
 ScriptInterpreter::OpcodeEntry ScriptInterpreter::_scriptFunc[kScriptActionNone] = {
 	OPCODE(oXYRoom),
 	OPCODE(oCursor),
 	OPCODE(oChange),
-	OPCODE(oText),
+	OPCODEUPDATE(oText, uText),
 	OPCODE(oMidi),
 	OPCODE(oAnim),
 	OPCODE(oStatus),
@@ -60,12 +62,13 @@ ScriptInterpreter::OpcodeEntry ScriptInterpreter::_scriptFunc[kScriptActionNone]
 	OPCODE(oDialog),
 	OPCODE(oPicture),
 	OPCODE(oSpeech),
-	OPCODE(oSpeechVar),
+	OPCODEUPDATE(oSpeechVar, uSpeechVar),
 	OPCODE(oWaitUntil),
-	OPCODE(oEffect)
+	OPCODEUPDATE(oEffect, uEffect)
 };
 
 ScriptInterpreter::ScriptInterpreter(DarkSeed2Engine &vm) : _vm(&vm) {
+	_soundID = -1;
 }
 
 ScriptInterpreter::~ScriptInterpreter() {
@@ -77,6 +80,9 @@ bool ScriptInterpreter::hasScripts() const {
 
 void ScriptInterpreter::clear() {
 	_scripts.clear();
+
+	_soundID = -1;
+	_speechVar.clear();
 }
 
 void ScriptInterpreter::updateStatus() {
@@ -90,10 +96,14 @@ void ScriptInterpreter::updateStatus() {
 		const ScriptChunk::Action &action = (*script)->getAction();
 		Result result = interpret(action);
 
-		if      (result == kResultInvalid)
+		if      (result == kResultInvalid) {
 			(*script)->seekEnd();
-		else if (result == kResultOK)
-			(*script)->next();
+		} else {
+			if (result == kResultOK)
+				(*script)->next();
+
+			updateScriptState(**script, action);
+		}
 	}
 
 	// Go through all scripts and erase those that ended
@@ -134,6 +144,13 @@ ScriptInterpreter::Result ScriptInterpreter::interpret(const ScriptChunk::Action
 	return (this->*_scriptFunc[action.action].func)(action);
 }
 
+void ScriptInterpreter::updateScriptState(ScriptChunk &script, const ScriptChunk::Action &action) {
+	updateFunc_t updateFunc = _scriptFunc[action.action].updateFunc;
+
+	if (updateFunc)
+		(this->*updateFunc)(script);
+}
+
 ScriptInterpreter::Result ScriptInterpreter::oXYRoom(const ScriptChunk::Action &action) {
 	warning("TODO: Unimplemented script function oXYRoom");
 	return kResultOK;
@@ -150,7 +167,9 @@ ScriptInterpreter::Result ScriptInterpreter::oChange(const ScriptChunk::Action &
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oText(const ScriptChunk::Action &action) {
-	_vm->_talkMan->talk(*_vm->_resources, action.arguments, _speechVar);
+	_vm->_talkMan->talk(*_vm->_resources, action.arguments);
+
+	_soundID = _vm->_talkMan->getSoundID();
 
 	return kResultOK;
 }
@@ -251,19 +270,32 @@ ScriptInterpreter::Result ScriptInterpreter::oSpeechVar(const ScriptChunk::Actio
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oWaitUntil(const ScriptChunk::Action &action) {
-	if (!_vm->_variables->evalCondition(action.arguments)) {
-		warning("TODO: Real WaitUntil condition");
-		return kResultInvalid;
-	}
+	if (_vm->_variables->evalCondition(action.arguments))
+		// Condition is true => Proceed
+		return kResultOK;
+
+	// Condition is false => Keep waiting here
+	return kResultWait;
+}
+
+ScriptInterpreter::Result ScriptInterpreter::oEffect(const ScriptChunk::Action &action) {
+	_vm->_sound->playWAV(*_vm->_resources, action.arguments, _soundID);
 
 	return kResultOK;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oEffect(const ScriptChunk::Action &action) {
-	_vm->_sound->playWAV(*_vm->_resources, action.arguments,
-			Audio::Mixer::kSFXSoundType, _speechVar);
+void ScriptInterpreter::uText(ScriptChunk &script) {
+	script.setSoundID(_soundID);
+}
 
-	return kResultOK;
+void ScriptInterpreter::uSpeechVar(ScriptChunk &script) {
+	script.setSpeechVar(_speechVar);
+
+	_vm->_sound->setSoundVar(script.getSoundID(), _speechVar);
+}
+
+void ScriptInterpreter::uEffect(ScriptChunk &script) {
+	script.setSoundID(_soundID);
 }
 
 } // End of namespace DarkSeed2

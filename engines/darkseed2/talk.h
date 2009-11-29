@@ -87,10 +87,12 @@ public:
 	/** Speak the given line. */
 	bool talk(const TalkLine &talkLine);
 	/** Speak the given line. */
-	bool talk(Resources &resources, const Common::String &talkName,
-			const Common::String &speechVar = "");
+	bool talk(Resources &resources, const Common::String &talkName);
 	/** End talking. */
 	void endTalk();
+
+	/** Return the sound ID of the currently playing line. */
+	int getSoundID() const;
 
 	/** Is someone currently talking? */
 	bool isTalking() const;
@@ -107,8 +109,7 @@ private:
 
 	int _curTalk; ///< The current talk ID.
 
-	bool talkInternal(const TalkLine &talkLine,
-			const Common::String &speechVar = "");
+	bool talkInternal(const TalkLine &talkLine);
 };
 
 } // End of namespace DarkSeed2

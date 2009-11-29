@@ -59,8 +59,10 @@ private:
 	};
 
 	typedef Result (ScriptInterpreter::*func_t)(const ScriptChunk::Action &action);
+	typedef void (ScriptInterpreter::*updateFunc_t)(ScriptChunk &script);
 	struct OpcodeEntry {
 		func_t func;
+		updateFunc_t updateFunc;
 		const char *name;
 	};
 
@@ -69,6 +71,8 @@ private:
 	/** All opcodes. */
 	static OpcodeEntry _scriptFunc[kScriptActionNone];
 
+	/** The ID of the last started sound. */
+	int _soundID;
 	/** The current variable that gets changed when the talking/sfx ends. */
 	Common::String _speechVar;
 
@@ -77,6 +81,7 @@ private:
 
 	// Interpreting helper
 	Result interpret(const ScriptChunk::Action &action);
+	void updateScriptState(ScriptChunk &script, const ScriptChunk::Action &action);
 
 	// Opcodes
 	Result oXYRoom(const ScriptChunk::Action &action);
@@ -102,6 +107,10 @@ private:
 	Result oSpeechVar(const ScriptChunk::Action &action);
 	Result oWaitUntil(const ScriptChunk::Action &action);
 	Result oEffect(const ScriptChunk::Action &action);
+
+	void uText(ScriptChunk &script);
+	void uSpeechVar(ScriptChunk &script);
+	void uEffect(ScriptChunk &script);
 };
 
 } // End of namespace DarkSeed2

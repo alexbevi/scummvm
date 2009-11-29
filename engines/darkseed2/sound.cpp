@@ -46,7 +46,7 @@ Sound::~Sound() {
 }
 
 bool Sound::playWAV(Common::SeekableReadStream &wav,
-		Audio::Mixer::SoundType type, const Common::String &soundVar, bool autoFree) {
+		Audio::Mixer::SoundType type, bool autoFree) {
 
 	// Try to find an unoccupied channel
 	SoundChannel *channel = 0;
@@ -68,25 +68,23 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 	if (!wavStream)
 		return false;
 
-	// Play it
-	_mixer->playInputStream(type, &channel->handle, wavStream, _id++);
+	channel->id = _id++;
 
-	// Assign sound variables
-	channel->soundVar = soundVar;
+	// Play it
+	_mixer->playInputStream(type, &channel->handle, wavStream, channel->id);
 
 	return true;
 }
 
-bool Sound::playWAV(const Resource &resource,
-		Audio::Mixer::SoundType type, const Common::String &soundVar) {
+bool Sound::playWAV(const Resource &resource, Audio::Mixer::SoundType type) {
 
-	return playWAV(resource.getStream(), type, soundVar);
+	return playWAV(resource.getStream(), type);
 }
 
 bool Sound::playWAV(Resources &resources, const Common::String &wav,
-		Audio::Mixer::SoundType type, const Common::String &soundVar) {
+		Audio::Mixer::SoundType type) {
 
-	debugC(-1, kDebugSound, "Playing WAV \"%s", wav.c_str());
+	debugC(-1, kDebugSound, "Playing WAV \"%s\"", wav.c_str());
 
 	if (!resources.hasResource(wav + ".wav"))
 		return false;
@@ -103,7 +101,7 @@ bool Sound::playWAV(Resources &resources, const Common::String &wav,
 	Common::MemoryReadStream *stream =
 	 new Common::MemoryReadStream(data, size, Common::DisposeAfterUse::YES);
 
-	if (!playWAV(*stream, type, soundVar, true)) {
+	if (!playWAV(*stream, type, true)) {
 		delete stream;
 		return false;
 	}
@@ -119,17 +117,17 @@ bool Sound::playWAV(Common::SeekableReadStream &wav, int &id,
 }
 
 bool Sound::playWAV(const Resource &resource, int &id,
-		Audio::Mixer::SoundType type, const Common::String &soundVar) {
+		Audio::Mixer::SoundType type) {
 
 	id = _id;
-	return playWAV(resource, type, soundVar);
+	return playWAV(resource, type);
 }
 
 bool Sound::playWAV(Resources &resources, const Common::String &wav, int &id,
-		Audio::Mixer::SoundType type, const Common::String &soundVar) {
+		Audio::Mixer::SoundType type) {
 
 	id = _id;
-	return playWAV(resources, wav, type, soundVar);
+	return playWAV(resources, wav, type);
 }
 
 void Sound::stopID(int id) {
@@ -162,10 +160,26 @@ void Sound::stopAll() {
 		_mixer->stopHandle(_channels[i].handle);
 }
 
+bool Sound::setSoundVar(int id, const Common::String &soundVar) {
+	if (id == -1)
+		return false;
+
+	for (int i = 0; i < _channelCount; i++) {
+		SoundChannel &channel = _channels[i];
+
+		if (channel.id == id)
+			channel.soundVar = soundVar;
+	}
+
+	return false;
+}
+
 void Sound::updateStatus() {
 	for (int i = 0; i < _channelCount; i++) {
 		SoundChannel &channel = _channels[i];
 		if (!_mixer->isSoundHandleActive(channel.handle)) {
+			channel.id = -1;
+
 			if (!channel.soundVar.empty()) {
 				_variables->set(channel.soundVar, 0);
 				channel.soundVar.clear();

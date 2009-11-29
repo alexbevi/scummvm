@@ -109,6 +109,12 @@ public:
 	/** Return the current action. */
 	const Action &getAction() const;
 
+	int getSoundID() const;
+	void setSoundID(int soundID);
+
+	const Common::String &getSpeechVar() const;
+	void setSpeechVar(const Common::String &speechVar);
+
 private:
 	static const Action invalidAction;
 
@@ -125,6 +131,9 @@ private:
 
 	/** The current position within the actions. */
 	Common::List<Action>::iterator _curPos;
+
+	int _soundID;
+	Common::String _speechVar;
 
 	/** Parse a script action string. */
 	static ScriptAction parseScriptAction(const Common::String &action);

@@ -121,12 +121,10 @@ TalkManager::TalkManager(Sound &sound, Graphics &graphics) {
 TalkManager::~TalkManager() {
 }
 
-bool TalkManager::talkInternal(const TalkLine &talkLine,
-		const Common::String &speechVar) {
-
+bool TalkManager::talkInternal(const TalkLine &talkLine) {
 	if (talkLine.hasWAV()) {
 		// Sound
-		if (!_sound->playWAV(talkLine.getWAV(), _curTalk, Audio::Mixer::kSpeechSoundType, speechVar)) {
+		if (!_sound->playWAV(talkLine.getWAV(), _curTalk, Audio::Mixer::kSpeechSoundType)) {
 			warning("TalkManager::talk(): WAV playing failed");
 			return false;
 		}
@@ -157,14 +155,12 @@ bool TalkManager::talk(const TalkLine &talkLine) {
 	return talkInternal(talkLine);
 }
 
-bool TalkManager::talk(Resources &resources, const Common::String &talkName,
-		const Common::String &speechVar) {
-
+bool TalkManager::talk(Resources &resources, const Common::String &talkName) {
 	endTalk();
 
 	_curTalkLine = new TalkLine(resources, talkName);
 
-	return talkInternal(*_curTalkLine, speechVar);
+	return talkInternal(*_curTalkLine);
 }
 
 void TalkManager::endTalk() {
@@ -173,6 +169,10 @@ void TalkManager::endTalk() {
 	_curTalk = -1;
 
 	delete _curTalkLine;
+}
+
+int TalkManager::getSoundID() const {
+	return _curTalk;
 }
 
 bool TalkManager::isTalking() const {
