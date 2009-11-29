@@ -316,8 +316,15 @@ void MidiPlayer::play(bool loop) {
 void MidiPlayer::stop(bool unload) {
 	Common::StackLock lock(_mutex);
 
-	if (!_isPlaying)
+	if (!_isPlaying) {
+		if (unload) {
+			delete[] _midiMusicData;
+			_midiMusicData = 0;
+			_midiMusicSize = 0;
+		}
+
 		return;
+	}
 
 	_track = 0;
 	_isPlaying = false;

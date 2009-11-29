@@ -119,6 +119,7 @@ TalkManager::TalkManager(Sound &sound, Graphics &graphics) {
 }
 
 TalkManager::~TalkManager() {
+	delete _curTalkLine;
 }
 
 bool TalkManager::talkInternal(const TalkLine &talkLine) {
