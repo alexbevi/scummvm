@@ -105,6 +105,8 @@ private:
 	/** Execute the current room's autostart logic. */
 	bool executeAutoStart(Room &room);
 
+	void doObjectVerb(Object &object, ObjectVerb verb);
+
 	static ObjectVerb cursorModeToObjectVerb(CursorMode cursorMode);
 };
 

@@ -303,6 +303,17 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 
 		_vm->_graphics->getConversationBox().notifyClicked(convX, convY);
 	}
+
+	// Did we click any objects? (But ignore if we're doing something important)
+	if (_vm->_variables->get("SysCall") == 0) {
+		Object *curObject = _vm->_graphics->getRoom().findObject(x, y);
+		if (curObject)
+			doObjectVerb(*curObject, cursorModeToObjectVerb(_cursorMode));
+	}
+}
+
+void Events::doObjectVerb(Object &object, ObjectVerb verb) {
+	_vm->_inter->interpret(object.getScripts(verb));
 }
 
 void Events::mouseClickedRight(uint32 x, uint32 y) {
