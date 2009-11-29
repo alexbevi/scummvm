@@ -71,6 +71,7 @@ private:
 		bool permanent;
 		int soundID;
 		Wait waitingFor;
+		int lastWaitDebug;
 
 		Script(ScriptChunk *chnk = 0, bool perm = false);
 	};

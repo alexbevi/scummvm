@@ -43,6 +43,8 @@ ScriptInterpreter::Script::Script(ScriptChunk *chnk, bool perm) {
 	started    = false;
 	soundID    = -1;
 	waitingFor = kWaitNone;
+
+	lastWaitDebug = 0;
 }
 
 #ifndef REDUCE_MEMORY_USAGE
@@ -147,6 +149,7 @@ bool ScriptInterpreter::updateStatus() {
 
 		if (result == kResultOK) {
 			script->chunk->next();
+			script->lastWaitDebug = 0;
 			_updatesWithoutChanges = 0;
 		}
 	}
@@ -193,8 +196,18 @@ ScriptInterpreter::Result ScriptInterpreter::interpret(Script &script) {
 		return kResultInvalid;
 	}
 
-	debugC(-1, kDebugOpcodes, "Script function %s [%s]", _scriptFunc[script.action->action].name,
-			script.action->arguments.c_str());
+	bool doDebug = true;
+	if (script.action->action == kScriptActionWaitUntil) {
+		if (script.lastWaitDebug++ != 0)
+			doDebug = false;
+
+		if (script.lastWaitDebug >= 100)
+			script.lastWaitDebug = 0;
+	}
+
+	if (doDebug)
+		debugC(-1, kDebugOpcodes, "Script function %s [%s]", _scriptFunc[script.action->action].name,
+				script.action->arguments.c_str());
 
 	Result result = (this->*_scriptFunc[script.action->action].func)(script);
 
