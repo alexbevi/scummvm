@@ -78,9 +78,9 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 }
 
 bool Sound::playWAV(const Resource &resource,
-		Audio::Mixer::SoundType type) {
+		Audio::Mixer::SoundType type, const Common::String &soundVar) {
 
-	return playWAV(resource.getStream(), type);
+	return playWAV(resource.getStream(), type, soundVar);
 }
 
 bool Sound::playWAV(Resources &resources, const Common::String &wav,
@@ -119,10 +119,10 @@ bool Sound::playWAV(Common::SeekableReadStream &wav, int &id,
 }
 
 bool Sound::playWAV(const Resource &resource, int &id,
-		Audio::Mixer::SoundType type) {
+		Audio::Mixer::SoundType type, const Common::String &soundVar) {
 
 	id = _id;
-	return playWAV(resource, type);
+	return playWAV(resource, type, soundVar);
 }
 
 bool Sound::playWAV(Resources &resources, const Common::String &wav, int &id,

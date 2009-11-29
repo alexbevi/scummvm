@@ -52,7 +52,8 @@ public:
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
 			const Common::String &soundVar = "", bool autoFree = false);
 	bool playWAV(const Resource &resource,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
+			const Common::String &soundVar = "");
 	bool playWAV(Resources &resources, const Common::String &wav,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
 			const Common::String &soundVar = "");
@@ -60,7 +61,8 @@ public:
 	bool playWAV(Common::SeekableReadStream &wav, int &id,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 	bool playWAV(const Resource &resource, int &id,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
+			const Common::String &soundVar = "");
 	bool playWAV(Resources &resources, const Common::String &wav, int &id,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
 			const Common::String &soundVar = "");

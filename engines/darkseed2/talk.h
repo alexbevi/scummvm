@@ -86,6 +86,9 @@ public:
 
 	/** Speak the given line. */
 	bool talk(const TalkLine &talkLine);
+	/** Speak the given line. */
+	bool talk(Resources &resources, const Common::String &talkName,
+			const Common::String &speechVar = "");
 	/** End talking. */
 	void endTalk();
 
@@ -99,7 +102,13 @@ private:
 	Sound *_sound;
 	Graphics *_graphics;
 
+	/** The current mananged talk line. */
+	TalkLine *_curTalkLine;
+
 	int _curTalk; ///< The current talk ID.
+
+	bool talkInternal(const TalkLine &talkLine,
+			const Common::String &speechVar = "");
 };
 
 } // End of namespace DarkSeed2
