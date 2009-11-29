@@ -251,8 +251,8 @@ ScriptInterpreter::Result ScriptInterpreter::oStatus(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oSequence(Script &script) {
-	warning("Unimplemented script function oSequence");
-	return kResultInvalid;
+	warning("TODO: Unimplemented script function oSequence");
+	return kResultOK;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oSpriteIDX(Script &script) {
