@@ -26,6 +26,8 @@
 #ifndef DARKSEED2_INTER_H
 #define DARKSEED2_INTER_H
 
+#include "common/str.h"
+
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/script.h"
 
@@ -46,6 +48,8 @@ private:
 	};
 
 	DarkSeed2Engine *_vm;
+
+	Common::String _speechVar;
 
 	/** All opcodes. */
 	static OpcodeEntry _scriptFunc[kScriptActionNone];

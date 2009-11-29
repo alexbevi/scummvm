@@ -160,6 +160,8 @@ bool TalkManager::isTalking() const {
 }
 
 void TalkManager::updateStatus() {
+	_sound->updateStatus();
+
 	if (_curTalk == -1)
 		return;
 

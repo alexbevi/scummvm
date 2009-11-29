@@ -29,11 +29,15 @@
 
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/options.h"
+#include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {
 
-Sound::Sound(Audio::Mixer &mixer) : _mixer(&mixer) {
+Sound::Sound(Audio::Mixer &mixer, Variables &variables) {
+	_mixer     = &mixer;
+	_variables = &variables;
+
 	_id = 0;
 }
 
@@ -42,17 +46,17 @@ Sound::~Sound() {
 }
 
 bool Sound::playWAV(Common::SeekableReadStream &wav,
-		Audio::Mixer::SoundType type, bool autoFree) {
+		Audio::Mixer::SoundType type, const Common::String &soundVar, bool autoFree) {
 
 	// Try to find an unoccupied channel
-	Audio::SoundHandle *handle = 0;
+	SoundChannel *channel = 0;
 	for (int i = 0 ; i < _channelCount; i++)
-		if (!_mixer->isSoundHandleActive(_handles[i])) {
-			handle = &_handles[i];
+		if (!_mixer->isSoundHandleActive(_channels[i].handle)) {
+			channel = &_channels[i];
 			break;
 		}
 
-	if (!handle) {
+	if (!channel) {
 		warning("Sound::playWAV(): Sound::playWAV(): All channels occupied");
 		return false;
 	}
@@ -65,7 +69,10 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 		return false;
 
 	// Play it
-	_mixer->playInputStream(type, handle, wavStream, _id++);
+	_mixer->playInputStream(type, &channel->handle, wavStream, _id++);
+
+	// Assign sound variables
+	channel->soundVar = soundVar;
 
 	return true;
 }
@@ -77,7 +84,7 @@ bool Sound::playWAV(const Resource &resource,
 }
 
 bool Sound::playWAV(Resources &resources, const Common::String &wav,
-		Audio::Mixer::SoundType type) {
+		Audio::Mixer::SoundType type, const Common::String &soundVar) {
 
 	debugC(-1, kDebugSound, "Playing WAV \"%s", wav.c_str());
 
@@ -96,7 +103,7 @@ bool Sound::playWAV(Resources &resources, const Common::String &wav,
 	Common::MemoryReadStream *stream =
 	 new Common::MemoryReadStream(data, size, Common::DisposeAfterUse::YES);
 
-	if (!playWAV(*stream, type, true)) {
+	if (!playWAV(*stream, type, soundVar, true)) {
 		delete stream;
 		return false;
 	}
@@ -119,10 +126,10 @@ bool Sound::playWAV(const Resource &resource, int &id,
 }
 
 bool Sound::playWAV(Resources &resources, const Common::String &wav, int &id,
-		Audio::Mixer::SoundType type) {
+		Audio::Mixer::SoundType type, const Common::String &soundVar) {
 
 	id = _id;
-	return playWAV(resources, wav, type);
+	return playWAV(resources, wav, type, soundVar);
 }
 
 void Sound::stopID(int id) {
@@ -152,7 +159,19 @@ void Sound::stopAll() {
 
 	// Stopping all channels
 	for (int i = 0; i < _channelCount; i++)
-		_mixer->stopHandle(_handles[i]);
+		_mixer->stopHandle(_channels[i].handle);
+}
+
+void Sound::updateStatus() {
+	for (int i = 0; i < _channelCount; i++) {
+		SoundChannel &channel = _channels[i];
+		if (!_mixer->isSoundHandleActive(channel.handle)) {
+			if (!channel.soundVar.empty()) {
+				_variables->set(channel.soundVar, 0);
+				channel.soundVar.clear();
+			}
+		}
+	}
 }
 
 } // End of namespace DarkSeed2

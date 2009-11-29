@@ -26,6 +26,8 @@
 #ifndef DARKSEED2_SOUND_H
 #define DARKSEED2_SOUND_H
 
+#include "common/str.h"
+
 #include "sound/mixer.h"
 
 #include "engines/darkseed2/darkseed2.h"
@@ -36,27 +38,32 @@ namespace Common {
 
 namespace DarkSeed2 {
 
+class Variables;
+
 class Options;
 class Resource;
 
 class Sound {
 public:
-	Sound(Audio::Mixer &mixer);
+	Sound(Audio::Mixer &mixer, Variables &variables);
 	~Sound();
 
 	bool playWAV(Common::SeekableReadStream &wav,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType, bool autoFree = false);
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
+			const Common::String &soundVar = "", bool autoFree = false);
 	bool playWAV(const Resource &resource,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 	bool playWAV(Resources &resources, const Common::String &wav,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
+			const Common::String &soundVar = "");
 
 	bool playWAV(Common::SeekableReadStream &wav, int &id,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 	bool playWAV(const Resource &resource, int &id,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 	bool playWAV(Resources &resources, const Common::String &wav, int &id,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType,
+			const Common::String &soundVar = "");
 
 	/** Is the that ID playing? */
 	bool isIDPlaying(int id);
@@ -69,15 +76,29 @@ public:
 	/** Apply volume settings. */
 	void syncSettings(const Options &options);
 
+	/** Check for status changes. */
+	void updateStatus();
+
 private:
+	/** A sound channel. */
+	struct SoundChannel {
+		/** The sound handle. */
+		Audio::SoundHandle handle;
+		/** The variable that changes when playing stopped. */
+		Common::String soundVar;
+	};
+
+	Audio::Mixer *_mixer;
+	Variables *_variables;
+
 	static const int _channelCount = 8; ///< Number of usable channels.
 
 	int _id; ///< The next ID.
 
-	/** All sound handles. */
-	Audio::SoundHandle _handles[_channelCount];
+	Common::String _soundVar;
 
-	Audio::Mixer *_mixer;
+	/** All sound channels. */
+	SoundChannel _channels[_channelCount];
 };
 
 } // End of namespace DarkSeed2

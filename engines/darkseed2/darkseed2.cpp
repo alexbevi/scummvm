@@ -146,7 +146,7 @@ bool DarkSeed2Engine::init() {
 	_cursors   = new Cursors();
 	_variables = new Variables();
 	_resources = new Resources();
-	_sound     = new Sound(*_mixer);
+	_sound     = new Sound(*_mixer, *_variables);
 	_music     = new Music(*_mixer, *_midiDriver);
 	_graphics  = new Graphics(*_resources, *_variables);
 	_talkMan   = new TalkManager(*_sound, *_graphics);

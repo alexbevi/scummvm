@@ -228,8 +228,8 @@ bool ScriptInterpreter::oSpeech(const ScriptChunk::Action &action) {
 }
 
 bool ScriptInterpreter::oSpeechVar(const ScriptChunk::Action &action) {
-	warning("Unimplemented script function oSpeechVar");
-	return false;
+	_speechVar = action.arguments;
+	return true;
 }
 
 bool ScriptInterpreter::oWaitUntil(const ScriptChunk::Action &action) {
@@ -242,7 +242,9 @@ bool ScriptInterpreter::oWaitUntil(const ScriptChunk::Action &action) {
 }
 
 bool ScriptInterpreter::oEffect(const ScriptChunk::Action &action) {
-	_vm->_sound->playWAV(*_vm->_resources, action.arguments);
+	_vm->_sound->playWAV(*_vm->_resources, action.arguments,
+			Audio::Mixer::kSFXSoundType, _speechVar);
+
 	return true;
 }
 
