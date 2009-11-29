@@ -66,11 +66,18 @@ public:
 	/** Get the scripts for that verb. */
 	const Common::List<ScriptChunk *> &getScripts(ObjectVerb verb) const;
 
+	/** Are those coordinates within the object's area? */
+	bool isIn(uint32 x, uint32 y) const;
+	/** Has the objects scripts for that verb? */
+	bool hasVerb(ObjectVerb verb) const;
+	/** Has the objects scripts with met conditions for that verb? */
+	bool hasActiveVerb(ObjectVerb verb) const;
+
 private:
 	const Variables *_variables;
 
 	Common::String _name; ///< The object's name.
-	Common::Rect _area;   ///< The object's position.
+	Common::Rect   _area; ///< The object's position.
 
 	/** All scripts. */
 	Common::Array< Common::List<ScriptChunk *> > _scripts;
@@ -96,6 +103,8 @@ public:
 
 	/** Find the object with the specified name. */
 	Object *findObject(const Common::String &name);
+	/** Find the object that's at the specified coordinates. */
+	Object *findObject(uint32 x, uint32 y);
 
 	/** Empty the container. */
 	void clear();

@@ -30,6 +30,7 @@
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/conversationbox.h"
+#include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/inter.h"
 
 namespace DarkSeed2 {
@@ -247,10 +248,31 @@ void Events::mouseMoved(uint32 x, uint32 y) {
 		return;
 	}
 
-	uint32 convX = x - Graphics::_conversationX;
-	uint32 convY = y - Graphics::_conversationY;
+	// Update conversation box
+	if (_vm->_graphics->getConversationBox().isActive()) {
+		uint32 convX = x - Graphics::_conversationX;
+		uint32 convY = y - Graphics::_conversationY;
 
-	_vm->_graphics->getConversationBox().notifyMouseMove(convX, convY);
+		_vm->_graphics->getConversationBox().notifyMouseMove(convX, convY);
+
+		return;
+	}
+
+	// Look for hotspots, but only if we're not currently doing something important
+	if (_vm->_variables->get("SysCall") == 0) {
+		bool cursorActive = false;
+
+		Object *curObject = _vm->_graphics->getRoom().findObject(x, y);
+		if (curObject) {
+			if (curObject->hasActiveVerb(cursorModeToObjectVerb(_cursorMode)))
+				cursorActive = true;
+		}
+
+		if (cursorActive != _cursorActive) {
+			_cursorActive = cursorActive;
+			setCursor();
+		}
+	}
 }
 
 void Events::mouseClickedLeft(uint32 x, uint32 y) {
@@ -274,16 +296,22 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 		return;
 	}
 
-	uint32 convX = x - Graphics::_conversationX;
-	uint32 convY = y - Graphics::_conversationY;
+	// Update conversation box
+	if (_vm->_graphics->getConversationBox().isActive()) {
+		uint32 convX = x - Graphics::_conversationX;
+		uint32 convY = y - Graphics::_conversationY;
 
-	_vm->_graphics->getConversationBox().notifyClicked(convX, convY);
+		_vm->_graphics->getConversationBox().notifyClicked(convX, convY);
+	}
 }
 
 void Events::mouseClickedRight(uint32 x, uint32 y) {
-	if (!_vm->_graphics->getConversationBox().isActive() && !_vm->_talkMan->isTalking())
+	if (!_vm->_graphics->getConversationBox().isActive() && !_vm->_talkMan->isTalking()) {
 		// If no one is talking and the conversation box isn't shown, cycle the mouse cursors
-		cycleCursorMode();
+		if (_vm->_variables->get("SysCall") == 0)
+			// If we're not doing something important
+			cycleCursorMode();
+	}
 
 	if (_vm->_talkMan->isTalking())
 		// Aborting talks with the right mouse button
@@ -371,6 +399,19 @@ bool Events::executeAutoStart(Room &room) {
 	}
 
 	return has;
+}
+
+ObjectVerb Events::cursorModeToObjectVerb(CursorMode cursorMode) {
+	switch (cursorMode) {
+	case kCursorModeWalk:
+		return kObjectVerbGo;
+	case kCursorModeUse:
+		return kObjectVerbUse;
+	case kCursorModeLook:
+		return kObjectVerbLook;
+	default:
+		return kObjectVerbNone;
+	}
 }
 
 } // End of namespace DarkSeed2

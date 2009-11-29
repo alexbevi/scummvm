@@ -169,6 +169,30 @@ Common::List<ScriptChunk *> &Object::getScripts(ObjectVerb verb) {
 	return _scripts[(int) verb];
 }
 
+bool Object::isIn(uint32 x, uint32 y) const {
+	return _area.contains(x, y);
+}
+
+bool Object::hasVerb(ObjectVerb verb) const {
+	if (verb >= kObjectVerbNone)
+		return false;
+
+	return !_scripts[(int) verb].empty();
+}
+
+bool Object::hasActiveVerb(ObjectVerb verb) const {
+	if (verb >= kObjectVerbNone)
+		return false;
+
+	// Iterator through all scripts, looking for one with met conditions
+	const Common::List<ScriptChunk *> &scripts = _scripts[(int) verb];
+	for (Common::List<ScriptChunk *>::const_iterator it = scripts.begin(); it != scripts.end(); ++it)
+		if ((*it)->conditionsMet())
+			return true;
+
+	return false;
+}
+
 ObjectVerb Object::parseObjectVerb(const Common::String &verb) {
 	for (int i = 0; i < kObjectVerbNone; i++)
 		if (verb.equalsIgnoreCase(objectVerb[i]))
@@ -196,6 +220,14 @@ void ObjectContainer::clear() {
 Object *ObjectContainer::findObject(const Common::String &name) {
 	for (Common::Array<Object>::iterator it = _objects.begin(); it != _objects.end(); ++it)
 		if (it->getName().equalsIgnoreCase(name))
+			return &*it;
+
+	return 0;
+}
+
+Object *ObjectContainer::findObject(uint32 x, uint32 y) {
+	for (Common::Array<Object>::iterator it = _objects.begin(); it != _objects.end(); ++it)
+		if (it->isIn(x, y))
 			return &*it;
 
 	return 0;

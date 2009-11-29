@@ -28,6 +28,7 @@
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/cursors.h"
+#include "engines/darkseed2/objects.h"
 #include "engines/darkseed2/graphicalobject.h"
 
 namespace DarkSeed2 {
@@ -103,6 +104,8 @@ private:
 	void roomLeave();
 	/** Execute the current room's autostart logic. */
 	bool executeAutoStart(Room &room);
+
+	static ObjectVerb cursorModeToObjectVerb(CursorMode cursorMode);
 };
 
 } // End of namespace DarkSeed2
