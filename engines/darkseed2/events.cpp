@@ -79,6 +79,9 @@ bool Events::setupIntroSequence() {
 	if (!roomEnter())
 		return false;
 
+	// Run the main loop as long as scripts are still active
+	mainLoop(true);
+
 	roomLeave();
 
 	// Title room
@@ -87,6 +90,9 @@ bool Events::setupIntroSequence() {
 
 	if (!roomEnter())
 		return false;
+
+	// Run the main loop as long as scripts are still active
+	mainLoop(true);
 
 	// Loading title parts
 	_titleSprites[0].loadFromBMP(*_vm->_resources, "002TIT01", 145,  27);
@@ -129,6 +135,9 @@ void Events::leaveIntro() {
 		_vm->quitGame();
 		return;
 	}
+
+	// Run the main loop as long as scripts are still active
+	mainLoop(true);
 
 	_inIntro = false;
 
@@ -327,27 +336,14 @@ bool Events::roomEnter() {
 	if (!_vm->_inter->interpret(room.getScripts(kRoomVerbMusic)))
 		return false;
 
-/*
-	// Run the main loop as long as scripts are still active
-	mainLoop(true);
-*/
-
 	// Evaluate the entry logic
 	if (!_vm->_inter->interpret(room.getScripts(kRoomVerbEntry)))
 		return false;
-
-/*
-	// Run the main loop as long as scripts are still active
-	mainLoop(true);
-*/
 
 	// Evaluate the autostart objects
 	executeAutoStart(room);
 
 	_vm->_inter->interpret(room.getScripts(kRoomVerbSprite), true);
-
-	// Run the main loop as long as scripts are still active
-	mainLoop(true);
 
 	return true;
 }

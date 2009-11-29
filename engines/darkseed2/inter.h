@@ -58,20 +58,26 @@ private:
 		kResultInvalid ///< Invalid script line.
 	};
 
+	/** Waiting for something to happen. */
+	enum Wait {
+		kWaitNone,        ///< Waiting for nothing
+		kWaitConversation ///< Waiting for the conversation to end
+	};
+
 	struct Script {
 		ScriptChunk *chunk;
+		const ScriptChunk::Action *action;
 		bool started;
 		bool permanent;
 		int soundID;
+		Wait waitingFor;
 
 		Script(ScriptChunk *chnk = 0, bool perm = false);
 	};
 
-	typedef Result (ScriptInterpreter::*func_t)(const ScriptChunk::Action &action);
-	typedef void (ScriptInterpreter::*updateFunc_t)(Script &script);
+	typedef Result (ScriptInterpreter::*func_t)(Script &script);
 	struct OpcodeEntry {
 		func_t func;
-		updateFunc_t updateFunc;
 		const char *name;
 	};
 
@@ -91,37 +97,32 @@ private:
 	Common::List<Script> _scripts;
 
 	// Interpreting helper
-	Result interpret(const ScriptChunk::Action &action);
-	void updateScriptState(Script &script, const ScriptChunk::Action &action);
+	Result interpret(Script &script);
 
 	// Opcodes
-	Result oXYRoom(const ScriptChunk::Action &action);
-	Result oCursor(const ScriptChunk::Action &action);
-	Result oChange(const ScriptChunk::Action &action);
-	Result oText(const ScriptChunk::Action &action);
-	Result oMidi(const ScriptChunk::Action &action);
-	Result oAnim(const ScriptChunk::Action &action);
-	Result oStatus(const ScriptChunk::Action &action);
-	Result oSequence(const ScriptChunk::Action &action);
-	Result oSpriteIDX(const ScriptChunk::Action &action);
-	Result oClipXY(const ScriptChunk::Action &action);
-	Result oPosX(const ScriptChunk::Action &action);
-	Result oPosY(const ScriptChunk::Action &action);
-	Result oScaleVal(const ScriptChunk::Action &action);
-	Result oFrom(const ScriptChunk::Action &action);
-	Result oPaletteChange(const ScriptChunk::Action &action);
-	Result oXYRoomEffect(const ScriptChunk::Action &action);
-	Result oChangeAt(const ScriptChunk::Action &action);
-	Result oDialog(const ScriptChunk::Action &action);
-	Result oPicture(const ScriptChunk::Action &action);
-	Result oSpeech(const ScriptChunk::Action &action);
-	Result oSpeechVar(const ScriptChunk::Action &action);
-	Result oWaitUntil(const ScriptChunk::Action &action);
-	Result oEffect(const ScriptChunk::Action &action);
-
-	void uText(Script &script);
-	void uSpeechVar(Script &script);
-	void uEffect(Script &script);
+	Result oXYRoom(Script &script);
+	Result oCursor(Script &script);
+	Result oChange(Script &script);
+	Result oText(Script &script);
+	Result oMidi(Script &script);
+	Result oAnim(Script &script);
+	Result oStatus(Script &script);
+	Result oSequence(Script &script);
+	Result oSpriteIDX(Script &script);
+	Result oClipXY(Script &script);
+	Result oPosX(Script &script);
+	Result oPosY(Script &script);
+	Result oScaleVal(Script &script);
+	Result oFrom(Script &script);
+	Result oPaletteChange(Script &script);
+	Result oXYRoomEffect(Script &script);
+	Result oChangeAt(Script &script);
+	Result oDialog(Script &script);
+	Result oPicture(Script &script);
+	Result oSpeech(Script &script);
+	Result oSpeechVar(Script &script);
+	Result oWaitUntil(Script &script);
+	Result oEffect(Script &script);
 };
 
 } // End of namespace DarkSeed2

@@ -30,29 +30,31 @@
 #include "engines/darkseed2/music.h"
 #include "engines/darkseed2/movie.h"
 #include "engines/darkseed2/talk.h"
+#include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/conversationbox.h"
 
 namespace DarkSeed2 {
 
 ScriptInterpreter::Script::Script(ScriptChunk *chnk, bool perm) {
-	chunk     = chnk;
-	permanent = perm;
-	started   = false;
-	soundID   = -1;
+	chunk      = chnk;
+	action     = 0;
+	permanent  = perm;
+	started    = false;
+	soundID    = -1;
+	waitingFor = kWaitNone;
 }
 
 #ifndef REDUCE_MEMORY_USAGE
-	#define OPCODE(x)          { &ScriptInterpreter::x, 0                    , #x }
-	#define OPCODEUPDATE(x, y) { &ScriptInterpreter::x, &ScriptInterpreter::y, #x }
+	#define OPCODE(x)          { &ScriptInterpreter::x, #x }
 #else
-	#define OPCODE(x)          { &ScriptInterpreter::x, 0                    , "" }
-	#define OPCODEUPDATE(x, y) { &ScriptInterpreter::x, &ScriptInterpreter::y, "" }
+	#define OPCODE(x)          { &ScriptInterpreter::x, "" }
 #endif
 
 ScriptInterpreter::OpcodeEntry ScriptInterpreter::_scriptFunc[kScriptActionNone] = {
 	OPCODE(oXYRoom),
 	OPCODE(oCursor),
 	OPCODE(oChange),
-	OPCODEUPDATE(oText, uText),
+	OPCODE(oText),
 	OPCODE(oMidi),
 	OPCODE(oAnim),
 	OPCODE(oStatus),
@@ -69,9 +71,9 @@ ScriptInterpreter::OpcodeEntry ScriptInterpreter::_scriptFunc[kScriptActionNone]
 	OPCODE(oDialog),
 	OPCODE(oPicture),
 	OPCODE(oSpeech),
-	OPCODEUPDATE(oSpeechVar, uSpeechVar),
+	OPCODE(oSpeechVar),
 	OPCODE(oWaitUntil),
-	OPCODEUPDATE(oEffect, uEffect)
+	OPCODE(oEffect)
 };
 
 ScriptInterpreter::ScriptInterpreter(DarkSeed2Engine &vm) : _vm(&vm) {
@@ -122,8 +124,19 @@ bool ScriptInterpreter::updateStatus() {
 			_updatesWithoutChanges = 0;
 		}
 
-		const ScriptChunk::Action &action = script->chunk->getAction();
-		Result result = interpret(action);
+		// Evaluating waiting orders
+		if (script->waitingFor != kWaitNone) {
+			if (script->waitingFor == kWaitConversation) {
+				if (_vm->_graphics->getConversationBox().isActive())
+					continue;
+				else
+					script->waitingFor = kWaitNone;
+			}
+
+			_updatesWithoutChanges = 0;
+		}
+
+		Result result = interpret(*script);
 
 		if (result == kResultInvalid) {
 			script->chunk->seekEnd();
@@ -135,8 +148,6 @@ bool ScriptInterpreter::updateStatus() {
 			script->chunk->next();
 			_updatesWithoutChanges = 0;
 		}
-
-		updateScriptState(*script, action);
 	}
 
 	// Go through all scripts and erase those that ended
@@ -171,147 +182,150 @@ bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks, bool perm
 	return has;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::interpret(const ScriptChunk::Action &action) {
-	if (action.action >= kScriptActionNone) {
+ScriptInterpreter::Result ScriptInterpreter::interpret(Script &script) {
+	script.action = &script.chunk->getAction();
+
+	if (script.action->action >= kScriptActionNone) {
 		warning("ScriptInterpreter::interpret(): Invalid script action %d",
-				action.action);
+				script.action->action);
 
 		return kResultInvalid;
 	}
 
-	debugC(-1, kDebugOpcodes, "Script function %s [%s]", _scriptFunc[action.action].name,
-			action.arguments.c_str());
+	debugC(-1, kDebugOpcodes, "Script function %s [%s]", _scriptFunc[script.action->action].name,
+			script.action->arguments.c_str());
 
-	return (this->*_scriptFunc[action.action].func)(action);
+	Result result = (this->*_scriptFunc[script.action->action].func)(script);
+
+	script.action = 0;
+
+	return result;
 }
 
-void ScriptInterpreter::updateScriptState(Script &script, const ScriptChunk::Action &action) {
-	updateFunc_t updateFunc = _scriptFunc[action.action].updateFunc;
-
-	if (updateFunc)
-		(this->*updateFunc)(script);
-}
-
-ScriptInterpreter::Result ScriptInterpreter::oXYRoom(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oXYRoom(Script &script) {
 	warning("TODO: Unimplemented script function oXYRoom");
 	return kResultOK;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oCursor(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oCursor(Script &script) {
 	warning("Unimplemented script function oCursor");
 	return kResultInvalid;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oChange(const ScriptChunk::Action &action) {
-	_vm->_variables->evalChange(action.arguments);
+ScriptInterpreter::Result ScriptInterpreter::oChange(Script &script) {
+	_vm->_variables->evalChange(script.action->arguments);
 	return kResultOK;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oText(const ScriptChunk::Action &action) {
-	_vm->_talkMan->talk(*_vm->_resources, action.arguments);
+ScriptInterpreter::Result ScriptInterpreter::oText(Script &script) {
+	_vm->_talkMan->talk(*_vm->_resources, script.action->arguments);
 
-	_soundID = _vm->_talkMan->getSoundID();
-
-	return kResultOK;
-}
-
-ScriptInterpreter::Result ScriptInterpreter::oMidi(const ScriptChunk::Action &action) {
-	if (!_vm->_music->playMID(*_vm->_resources, action.arguments))
-		warning("Failed playing music \"%s\"", action.arguments.c_str());
+	script.soundID = _vm->_talkMan->getSoundID();
 
 	return kResultOK;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oAnim(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oMidi(Script &script) {
+	if (!_vm->_music->playMID(*_vm->_resources, script.action->arguments))
+		warning("Failed playing music \"%s\"", script.action->arguments.c_str());
 
-	Common::Array<Common::String> lArgs = DATFile::argGet(action.arguments);
+	return kResultOK;
+}
+
+ScriptInterpreter::Result ScriptInterpreter::oAnim(Script &script) {
+
+	Common::Array<Common::String> lArgs = DATFile::argGet(script.action->arguments);
 	if (lArgs.size() >= 5) {
 		warning("TODO: Playing video \"%s\"", lArgs[4].c_str());
 
 		_vm->_movie->play(lArgs[4], atoi(lArgs[0].c_str()), atoi(lArgs[1].c_str()));
 	} else
-		warning("TODO: oAnim \"%s\"", action.arguments.c_str());
+		warning("TODO: oAnim \"%s\"", script.action->arguments.c_str());
 
 	return kResultOK;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oStatus(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oStatus(Script &script) {
 	warning("TODO: Unimplemented script function oStatus");
 	return kResultOK;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oSequence(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oSequence(Script &script) {
 	warning("Unimplemented script function oSequence");
 	return kResultInvalid;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oSpriteIDX(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oSpriteIDX(Script &script) {
 	warning("TODO: Unimplemented script function oSpriteIDX");
 	return kResultOK;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oClipXY(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oClipXY(Script &script) {
 	warning("Unimplemented script function oClipXY");
 	return kResultInvalid;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oPosX(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oPosX(Script &script) {
 	warning("Unimplemented script function oPosX");
 	return kResultInvalid;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oPosY(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oPosY(Script &script) {
 	warning("Unimplemented script function oPosY");
 	return kResultInvalid;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oScaleVal(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oScaleVal(Script &script) {
 	warning("Unimplemented script function oScaleVal");
 	return kResultInvalid;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oFrom(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oFrom(Script &script) {
 	warning("TODO: Unimplemented script function oFrom");
 	return kResultOK;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oPaletteChange(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oPaletteChange(Script &script) {
 	warning("Unimplemented script function oPaletteChange");
 	return kResultInvalid;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oXYRoomEffect(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oXYRoomEffect(Script &script) {
 	warning("Unimplemented script function oXYRoomEffect");
 	return kResultInvalid;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oChangeAt(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oChangeAt(Script &script) {
 	warning("Unimplemented script function oChangeAt");
 	return kResultInvalid;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oDialog(const ScriptChunk::Action &action) {
-	warning("Unimplemented script function oDialog");
-	return kResultInvalid;
+ScriptInterpreter::Result ScriptInterpreter::oDialog(Script &script) {
+	_vm->_graphics->getConversationBox().start(script.action->arguments);
+
+	script.waitingFor = kWaitConversation;
+
+	return kResultOK;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oPicture(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oPicture(Script &script) {
 	warning("Unimplemented script function oPicture");
 	return kResultInvalid;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oSpeech(const ScriptChunk::Action &action) {
+ScriptInterpreter::Result ScriptInterpreter::oSpeech(Script &script) {
 	warning("Unimplemented script function oSpeech");
 	return kResultInvalid;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oSpeechVar(const ScriptChunk::Action &action) {
-	_speechVar = action.arguments;
+ScriptInterpreter::Result ScriptInterpreter::oSpeechVar(Script &script) {
+	_vm->_sound->setSoundVar(script.soundID, script.action->arguments);
+
 	return kResultOK;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oWaitUntil(const ScriptChunk::Action &action) {
-	if (_vm->_variables->evalCondition(action.arguments))
+ScriptInterpreter::Result ScriptInterpreter::oWaitUntil(Script &script) {
+	if (_vm->_variables->evalCondition(script.action->arguments))
 		// Condition is true => Proceed
 		return kResultOK;
 
@@ -319,22 +333,10 @@ ScriptInterpreter::Result ScriptInterpreter::oWaitUntil(const ScriptChunk::Actio
 	return kResultWait;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oEffect(const ScriptChunk::Action &action) {
-	_vm->_sound->playWAV(*_vm->_resources, action.arguments, _soundID);
+ScriptInterpreter::Result ScriptInterpreter::oEffect(Script &script) {
+	_vm->_sound->playWAV(*_vm->_resources, script.action->arguments, script.soundID);
 
 	return kResultOK;
-}
-
-void ScriptInterpreter::uText(Script &script) {
-	script.soundID = _soundID;
-}
-
-void ScriptInterpreter::uSpeechVar(Script &script) {
-	_vm->_sound->setSoundVar(script.soundID, _speechVar);
-}
-
-void ScriptInterpreter::uEffect(Script &script) {
-	script.soundID = _soundID;
 }
 
 } // End of namespace DarkSeed2
