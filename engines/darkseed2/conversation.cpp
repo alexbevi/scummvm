@@ -78,12 +78,17 @@ void Conversation::clear() {
 		delete n->_value;
 	}
 
+	_nodes.clear();
+
 	_ready = false;
-	_startNode = 0;
+	_startNode   = 0;
+	_currentNode = 0;
 	_speakers.clear();
 }
 
 bool Conversation::parse(DATFile &conversation) {
+	clear();
+
 	const Common::String *cmd, *args;
 	while (conversation.nextLine(cmd, args)) {
 		if (cmd->equalsIgnoreCase("speaker")) {
