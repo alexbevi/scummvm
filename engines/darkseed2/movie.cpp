@@ -64,6 +64,7 @@ bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 		_aviDecoder->decodeNextFrame();
 		_aviDecoder->copyFrameToBuffer(_buffer.getData(), 0, 0, _buffer.getWidth());
 
+		_graphics->assertPalette0();
 		_graphics->blitToScreen(_buffer, x, y, false);
 		_graphics->retrace();
 

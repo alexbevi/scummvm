@@ -98,6 +98,23 @@ void Graphics::setPalette(const Palette &pal) {
 	initPalette();
 }
 
+void Graphics::assertPalette0() {
+	byte index0[4];
+
+	g_system->grabPalette(index0, 0, 1);
+
+	if ((index0[0] == 0) && (index0[1] == 0) && (index0[2] == 0))
+		return;
+
+	index0[0] = 0;
+	index0[1] = 0;
+	index0[2] = 0;
+
+	g_system->setPalette(index0, 0, 1);
+	g_system->fillScreen(0);
+	g_system->updateScreen();
+}
+
 void Graphics::initPalette() {
 	// Palette entry 0 is transparent
 	_gamePalette[0] = 0;

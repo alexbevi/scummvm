@@ -80,6 +80,11 @@ public:
 	/** Change the game palette. */
 	void setPalette(const Palette &pal);
 
+	/** Assert that palette entry 0 is black, after the palette
+	  * has been changed from "the outside", e.g. AVI decoder.
+	  */
+	void assertPalette0();
+
 	/** Speak that text. */
 	void talk(TextObject *talkObject);
 	/** End the current talk. */
