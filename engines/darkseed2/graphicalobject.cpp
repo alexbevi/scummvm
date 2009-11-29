@@ -173,7 +173,7 @@ const Sprite &SpriteObject::getSprite() const {
 	return *_sprite;
 }
 
-bool SpriteObject::loadFromBMP(Resources &resources, const Common::String &bmp, uint32 x, uint32 y) {
+bool SpriteObject::loadFromBMP(Resources &resources, const Common::String &bmp) {
 	clear();
 
 	_sprite = new Sprite;
@@ -182,7 +182,7 @@ bool SpriteObject::loadFromBMP(Resources &resources, const Common::String &bmp, 
 		return false;
 
 	_area = _sprite->getArea();
-	_area.moveTo(x, y);
+	_area.moveTo(_sprite->getDefaultX(), _sprite->getDefaultY());
 
 	return true;
 }

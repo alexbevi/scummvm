@@ -107,7 +107,7 @@ public:
 	const Sprite &getSprite() const;
 
 	/** Load the sprite from a BMP. */
-	bool loadFromBMP(Resources &resources, const Common::String &bmp, uint32 x = 0, uint32 y = 0);
+	bool loadFromBMP(Resources &resources, const Common::String &bmp);
 
 	/** Redraw the object. */
 	void redraw(Sprite &sprite, Common::Rect area);

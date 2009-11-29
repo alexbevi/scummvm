@@ -39,6 +39,9 @@ Sprite::Sprite() {
 	_width  = 0;
 	_height = 0;
 	_data   = 0;
+
+	_defaultX = 0;
+	_defaultY = 0;
 }
 
 Sprite::Sprite(const Sprite &sprite) {
@@ -75,6 +78,14 @@ uint32 Sprite::getHeight() const {
 	return _height;
 }
 
+uint16 Sprite::getDefaultX() const {
+	return _defaultX;
+}
+
+uint16 Sprite::getDefaultY() const {
+	return _defaultY;
+}
+
 Common::Rect Sprite::getArea() const {
 	return Common::Rect(_width, _height);
 }
@@ -108,6 +119,9 @@ void Sprite::discard() {
 	_width  = 0;
 	_height = 0;
 	_data   = 0;
+
+	_defaultX = 0;
+	_defaultY = 0;
 
 	_palette.clear();
 }
@@ -153,8 +167,12 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 
 	uint32 bmpDataSize = bmp.readUint32LE();
 
-	// Horizontal + vertical image resolution
-	bmp.skip(8);
+	// Unknown
+	bmp.skip(4);
+
+	// Default coordinates
+	_defaultX = bmp.readUint16LE();
+	_defaultY = bmp.readUint16LE();
 
 	uint32 numPalColors = bmp.readUint32LE();
 	if (numPalColors == 0)

@@ -86,11 +86,11 @@ bool Events::setupIntroSequence() {
 	mainLoop(true);
 
 	// Loading title parts
-	_titleSprites[0].loadFromBMP(*_vm->_resources, "002TIT01", 145,  27);
-	_titleSprites[1].loadFromBMP(*_vm->_resources, "002BTN01", 164, 196);
-	_titleSprites[2].loadFromBMP(*_vm->_resources, "002BTN02", 164, 256);
-	_titleSprites[3].loadFromBMP(*_vm->_resources, "002BTN03", 164, 314);
-	_titleSprites[4].loadFromBMP(*_vm->_resources, "002BTN04", 164, 376);
+	_titleSprites[0].loadFromBMP(*_vm->_resources, "002TIT01");
+	_titleSprites[1].loadFromBMP(*_vm->_resources, "002BTN01");
+	_titleSprites[2].loadFromBMP(*_vm->_resources, "002BTN02");
+	_titleSprites[3].loadFromBMP(*_vm->_resources, "002BTN03");
+	_titleSprites[4].loadFromBMP(*_vm->_resources, "002BTN04");
 
 	for (int i = 0; i < 5; i++) {
 		// Draw those parts
