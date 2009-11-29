@@ -237,7 +237,7 @@ ScriptInterpreter::Result ScriptInterpreter::oAnim(Script &script) {
 	Common::Array<Common::String> lArgs = DATFile::argGet(script.action->arguments);
 	if (lArgs.size() >= 5) {
 		if (!_vm->_movie->play(lArgs[4], atoi(lArgs[0].c_str()), atoi(lArgs[1].c_str())))
-			warning("oAnim: Failed playing vide \"%s\"", lArgs[4].c_str());
+			warning("oAnim: Failed playing video \"%s\"", lArgs[4].c_str());
 	} else
 		warning("TODO: oAnim \"%s\"", script.action->arguments.c_str());
 
