@@ -240,20 +240,8 @@ void Events::mouseMoved(uint32 x, uint32 y) {
 	}
 
 	// Look for hotspots, but only if we're not currently doing something important
-	if (_vm->_variables->get("SysCall") == 0) {
-		bool cursorActive = false;
-
-		Object *curObject = _vm->_graphics->getRoom().findObject(x, y);
-		if (curObject) {
-			if (curObject->hasActiveVerb(cursorModeToObjectVerb(_cursorMode)))
-				cursorActive = true;
-		}
-
-		if (cursorActive != _cursorActive) {
-			_cursorActive = cursorActive;
-			setCursor();
-		}
-	}
+	if (_vm->_variables->get("SysCall") == 0)
+		checkHotspot(x, y);
 }
 
 void Events::mouseClickedLeft(uint32 x, uint32 y) {
@@ -293,16 +281,29 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 	}
 }
 
-void Events::doObjectVerb(Object &object, ObjectVerb verb) {
-	_vm->_inter->interpret(object.getScripts(verb), true);
+void Events::checkHotspot(uint32 x, uint32 y) {
+	bool cursorActive = false;
+
+	Object *curObject = _vm->_graphics->getRoom().findObject(x, y);
+	if (curObject) {
+		if (curObject->hasActiveVerb(cursorModeToObjectVerb(_cursorMode)))
+			cursorActive = true;
+	}
+
+	if (cursorActive != _cursorActive) {
+		_cursorActive = cursorActive;
+		setCursor();
+	}
 }
 
 void Events::mouseClickedRight(uint32 x, uint32 y) {
 	if (!_vm->_graphics->getConversationBox().isActive() && !_vm->_talkMan->isTalking()) {
 		// If no one is talking and the conversation box isn't shown, cycle the mouse cursors
-		if (_vm->_variables->get("SysCall") == 0)
+		if (_vm->_variables->get("SysCall") == 0) {
 			// If we're not doing something important
 			cycleCursorMode();
+			checkHotspot(x, y);
+		}
 	}
 
 	if (_vm->_talkMan->isTalking())
@@ -334,6 +335,10 @@ void Events::setCursor(CursorMode cursor, bool active) {
 
 void Events::setCursor(const Cursors::Cursor &cursor) {
 	_vm->_cursors->setCursor(cursor);
+}
+
+void Events::doObjectVerb(Object &object, ObjectVerb verb) {
+	_vm->_inter->interpret(object.getScripts(verb), true);
 }
 
 int Events::checkTitleSprites(uint32 x, uint32 y) const {

@@ -89,6 +89,9 @@ private:
 	/** Handle mouse click right events. */
 	void mouseClickedRight(uint32 x, uint32 y);
 
+	/** Look if we're in a hotspot. */
+	void checkHotspot(uint32 x, uint32 y);
+
 	/** Cycle the cursor mode. */
 	void cycleCursorMode();
 	/** Set the current cursor. */
