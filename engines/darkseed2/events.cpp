@@ -294,7 +294,7 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 }
 
 void Events::doObjectVerb(Object &object, ObjectVerb verb) {
-	_vm->_inter->interpret(object.getScripts(verb));
+	_vm->_inter->interpret(object.getScripts(verb), true);
 }
 
 void Events::mouseClickedRight(uint32 x, uint32 y) {
