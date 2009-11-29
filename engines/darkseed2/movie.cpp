@@ -58,6 +58,15 @@ bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 
 	_graphics->enterMovieMode();
 
+	bool doubl = false;
+	if (_doubleHalfSizedVideos) {
+		if ((_aviDecoder->getWidth() == 320) && (_aviDecoder->getHeight() == 240)) {
+			doubl = true;
+			x = 0;
+			y = 0;
+		}
+	}
+
 	// Switching off the cursor
 	bool cursorVisible = CursorMan.isVisible();
 	CursorMan.showMouse(false);
@@ -67,7 +76,12 @@ bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 		_aviDecoder->copyFrameToBuffer(_buffer.getData(), 0, 0, _buffer.getWidth());
 
 		_graphics->assertPalette0();
-		_graphics->blitToScreen(_buffer, x, y, false);
+
+		if (doubl)
+			_graphics->blitToScreenDouble(_buffer, x, y, false);
+		else
+			_graphics->blitToScreen(_buffer, x, y, false);
+
 		_graphics->retrace();
 
 		int32 waitTime = _aviDecoder->getFrameWaitTime();

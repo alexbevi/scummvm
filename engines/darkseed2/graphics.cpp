@@ -191,6 +191,30 @@ void Graphics::blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp)
 	dirtyRectsAdd(area);
 }
 
+void Graphics::blitToScreenDouble(const Sprite &from, Common::Rect area,
+		uint32 x, uint32 y, bool transp) {
+
+	_screen.blitDouble(from, area, x, y, transp);
+
+	area.moveTo(x, y);
+	area.setWidth (area.width () * 2);
+	area.setHeight(area.height() * 2);
+
+	dirtyRectsAdd(area);
+}
+
+void Graphics::blitToScreenDouble(const Sprite &from, uint32 x, uint32 y, bool transp) {
+	_screen.blitDouble(from, x, y, transp);
+
+	Common::Rect area = from.getArea();
+
+	area.moveTo(x, y);
+	area.setWidth (area.width () * 2);
+	area.setHeight(area.height() * 2);
+
+	dirtyRectsAdd(area);
+}
+
 void Graphics::mergePalette(Sprite &from) {
 	debugC(2, kDebugGraphics, "Merging palettes");
 
@@ -236,9 +260,18 @@ void Graphics::dirtyRectsAdd(const Common::Rect &rect) {
 	if (_dirtyAll)
 		return;
 
-	// Upper limit. Dirty rectangle overhead isn't that great either :P
-	if (_dirtyRects.size() >= 30)
+	if ((rect.left == 0) && (rect.top == 0) &&
+	    (rect.right >= ((int) _screenWidth)) && (rect.bottom >= ((int) _screenHeight))) {
+
 		dirtyAll();
+		return;
+	}
+
+	// Upper limit. Dirty rectangle overhead isn't that great either :P
+	if (_dirtyRects.size() >= 30) {
+		dirtyAll();
+		return;
+	}
 
 	_dirtyRects.push_back(rect);
 }

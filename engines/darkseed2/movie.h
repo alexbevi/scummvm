@@ -52,6 +52,8 @@ public:
 	bool play(const Common::String &avi, uint32 x = 0, uint32 y = 0);
 
 private:
+	static const bool _doubleHalfSizedVideos = true;
+
 	Audio::Mixer *_mixer;
 	Graphics *_graphics;
 

@@ -100,6 +100,10 @@ public:
 	/** Blit that sprite onto this sprite. */
 	void blit(const Sprite &from, uint32 x, uint32 y, bool transp = false);
 
+	void blitDouble(const Sprite &from, const Common::Rect &area,
+			uint32 x, uint32 y, bool transp = false);
+	void blitDouble(const Sprite &from, uint32 x, uint32 y, bool transp = false);
+
 	/** Fill the whole sprite with one palette entry. */
 	void fill(byte c);
 	/** Fill the whole sprite with palette entry 0. */

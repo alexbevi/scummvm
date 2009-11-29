@@ -284,6 +284,54 @@ void Sprite::blit(const Sprite &from, uint32 x, uint32 y, bool transp) {
 	blit(from, from.getArea(), x, y, transp);
 }
 
+void Sprite::blitDouble(const Sprite &from, const Common::Rect &area,
+		uint32 x, uint32 y, bool transp) {
+
+	if (exists() || from.exists())
+		return;
+
+	Common::Rect toArea = getArea();
+
+	toArea.left = x;
+	toArea.top  = y;
+	if (toArea.isEmpty())
+		return;
+
+	Common::Rect fromArea = from.getArea();
+
+	fromArea.clip(area);
+	fromArea.setWidth (MIN(fromArea.width()  * 2, ((toArea.width())  / 2) * 2) / 2);
+	fromArea.setHeight(MIN(fromArea.height() * 2, ((toArea.height()) / 2) * 2) / 2);
+	if (fromArea.isEmpty())
+		return;
+
+	uint32 w = fromArea.width();
+	uint32 h = fromArea.height();
+
+	const byte *src = from.getData() + fromArea.top * from.getWidth() + fromArea.left;
+	byte *dst = _data + y * _width + x;
+
+	while (h-- > 0) {
+		byte *dstRow = dst;
+		for (int i = 0; i < 2; i++) {
+			const byte *srcRow = src;
+
+			for (uint32 j = 0; j < w; j++, srcRow++, dstRow += 2)
+				if (!transp || *srcRow != 0) {
+					dstRow[0] = *srcRow;
+					dstRow[1] = *srcRow;
+				}
+
+			dst += _width;
+		}
+		src += from.getWidth();
+	}
+}
+
+void Sprite::blitDouble(const Sprite &from, uint32 x, uint32 y, bool transp) {
+	blitDouble(from, from.getArea(), x, y, transp);
+}
+
 void Sprite::fill(byte c) {
 	memset(_data, c, _width * _height);
 }

@@ -100,6 +100,10 @@ public:
 	/** Blit the sprite to the screen. */
 	void blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp = false);
 
+	void blitToScreenDouble(const Sprite &from, Common::Rect area,
+			uint32 x, uint32 y, bool transp = false);
+	void blitToScreenDouble(const Sprite &from, uint32 x, uint32 y, bool transp = false);
+
 	/** Merge the sprite's palette into the current game palette. */
 	void mergePalette(Sprite &sprite);
 
