@@ -76,7 +76,9 @@ ScriptInterpreter::OpcodeEntry ScriptInterpreter::_scriptFunc[kScriptActionNone]
 	OPCODE(oSpeech),
 	OPCODE(oSpeechVar),
 	OPCODE(oWaitUntil),
-	OPCODE(oEffect)
+	OPCODE(oEffect),
+	OPCODE(oLoopCond),
+	OPCODE(oLoopPoint)
 };
 
 ScriptInterpreter::ScriptInterpreter(DarkSeed2Engine &vm) : _vm(&vm) {
@@ -359,6 +361,16 @@ ScriptInterpreter::Result ScriptInterpreter::oEffect(Script &script) {
 	_vm->_sound->playWAV(*_vm->_resources, script.action->arguments, script.soundID);
 
 	return kResultOK;
+}
+
+ScriptInterpreter::Result ScriptInterpreter::oLoopCond(Script &script) {
+	warning("Unimplemented script function oLoopCond");
+	return kResultInvalid;
+}
+
+ScriptInterpreter::Result ScriptInterpreter::oLoopPoint(Script &script) {
+	warning("Unimplemented script function oLoopPoint");
+	return kResultInvalid;
 }
 
 } // End of namespace DarkSeed2

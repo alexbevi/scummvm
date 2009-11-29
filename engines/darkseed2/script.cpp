@@ -35,7 +35,8 @@ static const char *scriptAction[] = {
 	"SpriteIDX"   , "ClipXY"   , "PosX"         , "PosY"        ,
 	"ScaleVal"    , "From"     , "PaletteChange", "XYRoomEffect",
 	"ChangeAt"    , "Dialog"   , "Picture"      , "Speech"      ,
-	"SpeechVar"   , "WaitUntil", "Effect"
+	"SpeechVar"   , "WaitUntil", "Effect"       , "LoopCond"    ,
+	"LoopPoint"
 };
 
 
