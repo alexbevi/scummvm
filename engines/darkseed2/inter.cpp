@@ -288,18 +288,18 @@ ScriptInterpreter::Result ScriptInterpreter::oClipXY(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oPosX(Script &script) {
-	warning("Unimplemented script function oPosX");
-	return kResultInvalid;
+	warning("TODO: Unimplemented script function oPosX");
+	return kResultOK;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oPosY(Script &script) {
-	warning("Unimplemented script function oPosY");
-	return kResultInvalid;
+	warning("TODO: Unimplemented script function oPosY");
+	return kResultOK;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oScaleVal(Script &script) {
-	warning("Unimplemented script function oScaleVal");
-	return kResultInvalid;
+	warning("TODO: Unimplemented script function oScaleVal");
+	return kResultOK;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oFrom(Script &script) {
@@ -308,8 +308,8 @@ ScriptInterpreter::Result ScriptInterpreter::oFrom(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oPaletteChange(Script &script) {
-	warning("Unimplemented script function oPaletteChange");
-	return kResultInvalid;
+	warning("TODO: Unimplemented script function oPaletteChange");
+	return kResultOK;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oXYRoomEffect(Script &script) {
