@@ -71,6 +71,11 @@ public:
 	/** Return the sprite's default Y coordinate. */
 	uint16 getDefaultY() const;
 
+	/** Return the sprite's "feet" X coordinate. */
+	uint16 getFeetX() const;
+	/** Return the sprite's "feet" Y coordinate. */
+	uint16 getFeetY() const;
+
 	/** Return the sprite's area. */
 	Common::Rect getArea() const;
 
@@ -132,8 +137,11 @@ private:
 	uint32 _height; ///< The sprite's height.
 	byte *_data;    ///< The sprite's data.
 
-	uint16 _defaultX; ///< The sprite's default X coordinate
-	uint16 _defaultY; ///< The sprite's default Y coordinate
+	uint16 _defaultX; ///< The sprite's default X coordinate.
+	uint16 _defaultY; ///< The sprite's default Y coordinate.
+
+	uint16 _feetX; ///< The sprite's "feet" X coordinate.
+	uint16 _feetY; ///< The sprite's "feet" Y coordinate.
 
 	Palette _palette; ///< The sprite's palette.
 

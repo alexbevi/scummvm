@@ -42,6 +42,8 @@ Sprite::Sprite() {
 
 	_defaultX = 0;
 	_defaultY = 0;
+	_feetX    = 0;
+	_feetY    = 0;
 }
 
 Sprite::Sprite(const Sprite &sprite) {
@@ -86,6 +88,14 @@ uint16 Sprite::getDefaultY() const {
 	return _defaultY;
 }
 
+uint16 Sprite::getFeetX() const {
+	return _feetX;
+}
+
+uint16 Sprite::getFeetY() const {
+	return _feetY;
+}
+
 Common::Rect Sprite::getArea() const {
 	return Common::Rect(_width, _height);
 }
@@ -122,6 +132,8 @@ void Sprite::discard() {
 
 	_defaultX = 0;
 	_defaultY = 0;
+	_feetX    = 0;
+	_feetY    = 0;
 
 	_palette.clear();
 }
@@ -167,8 +179,8 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 
 	uint32 bmpDataSize = bmp.readUint32LE();
 
-	// Unknown
-	bmp.skip(4);
+	_feetX = MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _width );
+	_feetY = MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _height);
 
 	// Default coordinates
 	_defaultX = bmp.readUint16LE();
@@ -207,6 +219,10 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 		if (!readBMPDataComp2(bmp, bmpDataSize))
 			return false;
 	}
+
+	for (int i = MAX<int>(0, _feetX - 2); i < MIN<int>(_feetX + 2, _width - 1); i++)
+		for (int j = MAX<int>(0, _feetY - 2); j < MIN<int>(_feetY + 2, _height - 1); j++)
+				_data[j * _width + i] = 1;
 
 	return true;
 }
