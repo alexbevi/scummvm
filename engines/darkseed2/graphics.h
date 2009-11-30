@@ -27,6 +27,7 @@
 #define DARKSEED2_GRAPHICS_H
 
 #include "common/rect.h"
+#include "common/list.h"
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/palette.h"
@@ -94,6 +95,8 @@ public:
 	/** End the current talk. */
 	void talkEnd();
 
+	Common::Rect talkEndTalk();
+
 	/** Blit the sprite to the screen. */
 	void blitToScreen(const Sprite &from, Common::Rect area,
 			uint32 x, uint32 y, bool transp = false);
@@ -112,6 +115,10 @@ public:
 
 	/** Redraw that screen part. */
 	void redraw(ScreenPart part);
+	/** Redraw that area in that screen part. */
+	void redraw(ScreenPart part, Common::Rect &rect);
+	/** Redraw thease areas in that screen part. */
+	void redraw(ScreenPart part, Common::List<Common::Rect> &rects);
 
 	/** Copy the screen to the ScummVM screen. */
 	void retrace();
@@ -147,11 +154,15 @@ private:
 
 	/** Redraw that area of the game screen. */
 	void redrawScreen(const Common::Rect &rect);
+	/** Redraw these areas of the game screen. */
+	void redrawScreen(const Common::List<Common::Rect> &rects);
 
 	/** Dirty the whole screen. */
 	void dirtyAll();
 	/** Add that area to the dirty rectangles. */
 	void dirtyRectsAdd(const Common::Rect &rect);
+	/** Add these areas to the dirty rectangles. */
+	void dirtyRectsAdd(const Common::List<Common::Rect> &rects);
 	/** Copy all dirty areas to the screen. */
 	bool dirtyRectsApply();
 };
