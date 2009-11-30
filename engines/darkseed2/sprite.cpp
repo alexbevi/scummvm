@@ -179,8 +179,8 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 
 	uint32 bmpDataSize = bmp.readUint32LE();
 
-	_feetX = MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _width );
-	_feetY = MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _height);
+	_feetX = MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _width  - 1);
+	_feetY = MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _height - 1);
 
 	// Default coordinates
 	_defaultX = bmp.readUint16LE();
@@ -219,10 +219,6 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 		if (!readBMPDataComp2(bmp, bmpDataSize))
 			return false;
 	}
-
-	for (int i = MAX<int>(0, _feetX - 2); i < MIN<int>(_feetX + 2, _width - 1); i++)
-		for (int j = MAX<int>(0, _feetY - 2); j < MIN<int>(_feetY + 2, _height - 1); j++)
-				_data[j * _width + i] = 1;
 
 	return true;
 }
