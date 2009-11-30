@@ -27,6 +27,7 @@
 #define DARKSEED2_GRAPHICALOBJECT_H
 
 #include "common/rect.h"
+#include "common/array.h"
 
 #include "engines/darkseed2/darkseed2.h"
 
@@ -114,6 +115,79 @@ public:
 
 private:
 	Sprite *_sprite; ///< The sprite.
+};
+
+/** An animation consisting of several sprite objects. */
+class Animation {
+public:
+	Animation();
+	~Animation();
+
+	/** Clear the animation. */
+	void clear();
+
+	/** Is the animation empty? */
+	bool empty() const;
+	/** Return the number of sprites contained in this animation. */
+	int frameCount() const;
+
+	/** Is the animation visible? */
+	bool isVisible() const;
+	/** Set the visibility of the animations. */
+	void setVisible(bool visible);
+
+	/** Set the current frame. */
+	void setFrame(int frame);
+	/** Advance the animation to the next frame. */
+	void nextFrame();
+
+	/** Advance the animation to the next frame. */
+	void operator++(int);
+
+	/** Return the animation's name. */
+	const Common::String &getName() const;
+
+	/** Load the animation from files. */
+	bool load(Resources &resources, const Common::String &base);
+
+	/** Get the nth sprite. */
+	SpriteObject &getFrame(int n);
+	/** Get the nth sprite. */
+	const SpriteObject &getFrame(int n) const;
+
+	/** Get the nth sprite. */
+	SpriteObject &operator[](int n);
+	/** Get the nth sprite. */
+	const SpriteObject &operator[](int n) const;
+
+	/** Get the current frame. */
+	SpriteObject &getCurrentFrame();
+	/** Get the current frame. */
+	const SpriteObject &getCurrentFrame() const;
+
+	/** Get the current frame. */
+	SpriteObject &operator*();
+	/** Get the current frame. */
+	const SpriteObject &operator*() const;
+
+	/** Get the current frame. */
+	SpriteObject *operator->();
+	/** Get the current frame. */
+	const SpriteObject *operator->() const;
+
+private:
+	/** The sprites. */
+	Common::Array<SpriteObject *> _frames;
+	Common::Array<SpriteObject *> _sprites;
+
+	/** The animation's name. */
+	Common::String _name;
+
+	/** Is the animation visible? */
+	bool _visible;
+
+	/** The current frame. */
+	int _curFrame;
 };
 
 } // End of namespace DarkSeed2

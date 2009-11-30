@@ -31,6 +31,7 @@
 #include "engines/darkseed2/graphicalobject.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/sprite.h"
+#include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {
 
@@ -199,6 +200,161 @@ void SpriteObject::redraw(Sprite &sprite, Common::Rect area) {
 	area.moveTo(0, 0);
 
 	sprite.blit(*_sprite, area, x, y, true);
+}
+
+
+Animation::Animation() {
+	_visible  = false;
+	_curFrame = 0;
+}
+
+Animation::~Animation() {
+	clear();
+}
+
+void Animation::clear() {
+	for (Common::Array<SpriteObject *>::iterator it = _sprites.begin(); it != _sprites.end(); ++it)
+		delete *it;
+
+	_sprites.clear();
+	_frames.clear();
+	_name.clear();
+
+	_visible  = false;
+	_curFrame = 0;
+}
+
+bool Animation::empty() const {
+	return _frames.empty();
+}
+
+int Animation::frameCount() const {
+	return _frames.size();
+}
+
+bool Animation::isVisible() const {
+	return _visible;
+}
+
+void Animation::setVisible(bool visible) {
+	_visible = visible;
+}
+
+void Animation::setFrame(int frame) {
+	_curFrame = frame % _frames.size();
+}
+
+void Animation::nextFrame() {
+	_curFrame = (_curFrame + 1) % _frames.size();
+}
+
+void Animation::operator++(int) {
+	nextFrame();
+}
+
+const Common::String &Animation::getName() const {
+	return _name;
+}
+
+bool Animation::load(Resources &resources, const Common::String &base) {
+	clear();
+
+	// Find the frame with the biggest number that still exists
+	uint8 count = 0;
+	for (int i = 99; i > 0; i--) {
+		if (resources.hasResource(base + Common::String::printf("%02d", i) + ".BMP")) {
+			count = i;
+			break;
+		}
+	}
+
+	// None found
+	if (count == 0) {
+		// Try to open the file without a frame number attached
+		if (!resources.hasResource(base + ".BMP")) {
+			warning("Animation::load(): No such animation \"%s\"", base.c_str());
+			return false;
+		}
+
+		// Load it
+		SpriteObject *object = new SpriteObject;
+		if (!object->loadFromBMP(resources, base)) {
+			warning("Animation::load(): Failed loading sprite \"%s\"", base.c_str());
+			delete object;
+			return false;
+		}
+
+		// Put it into the arrays
+		_sprites.push_back(object);
+		_frames.push_back(object);
+		return true;
+	}
+
+	_frames.resize(count);
+	for (int i = 0; i < count; i++) {
+		// Open every frame in sequence
+		Common::String bmp = base + Common::String::printf("%02d", i + 1);
+
+		SpriteObject *object = new SpriteObject;
+		if (!object->loadFromBMP(resources, bmp)) {
+			// Frame doesn't exist
+
+			// If it's the first one, take the newly created empty one.
+			if (i > 0) {
+				// Otherwise, take the last one.
+				delete object;
+				object = _frames[i - 1];
+			}
+
+		} else
+			// Actually exist, also remember it here
+			_sprites.push_back(object);
+
+		// Put the frame into the array
+		_frames[i] = object;
+	}
+
+	return true;
+}
+
+SpriteObject &Animation::getFrame(int n) {
+	return *_frames[n];
+}
+
+const SpriteObject &Animation::getFrame(int n) const {
+	return *_frames[n];
+}
+
+SpriteObject &Animation::operator[](int n) {
+	return getFrame(n);
+}
+
+const SpriteObject &Animation::operator[](int n) const {
+	return getFrame(n);
+}
+
+SpriteObject &Animation::getCurrentFrame() {
+	return *_frames[_curFrame];
+}
+
+const SpriteObject &Animation::getCurrentFrame() const {
+	return *_frames[_curFrame];
+}
+
+SpriteObject &Animation::operator*() {
+	return getCurrentFrame();
+}
+
+const SpriteObject &Animation::operator*() const {
+	return getCurrentFrame();
+}
+
+SpriteObject *Animation::operator->() {
+	return &getCurrentFrame();
+}
+
+const SpriteObject *Animation::operator->() const {
+	return &getCurrentFrame();
 }
 
 } // End of namespace DarkSeed2
