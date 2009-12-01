@@ -49,7 +49,7 @@ ScriptChunk::Action::Action(ScriptAction act, const Common::String &args) {
 
 ScriptChunk::ScriptChunk(const Variables &variables) : _variables(&variables) {
 	_ready = false;
-	_used  = false;
+	_from  = 0;
 }
 
 ScriptChunk::~ScriptChunk() {
@@ -60,6 +60,10 @@ bool ScriptChunk::atEnd() const {
 		return true;
 
 	return _curPos == _actions.end();
+}
+
+uint32 ScriptChunk::getFrom() const {
+	return _from;
 }
 
 void ScriptChunk::next() {
@@ -85,7 +89,7 @@ void ScriptChunk::seekEnd() {
 
 void ScriptChunk::clear() {
 	_ready = false;
-	_used  = false;
+	_from  = 0;
 
 	_conditions.clear();
 	_actions.clear();
@@ -133,6 +137,9 @@ bool ScriptChunk::parse(DATFile &dat) {
 				return false;
 			}
 
+			if (action == kScriptActionFrom)
+				parseFrom(*arg);
+
 			// Put the action into our list
 			_actions.push_back(Action(action, *arg));
 		}
@@ -164,20 +171,19 @@ const ScriptChunk::Action &ScriptChunk::getAction() const {
 	return *_curPos;
 }
 
-bool ScriptChunk::isUsed() const {
-	return _used;
-}
-
-void ScriptChunk::setUsed(bool used) {
-	_used = used;
-}
-
 ScriptAction ScriptChunk::parseScriptAction(const Common::String &action) {
 	for (int i = 0; i < kScriptActionNone; i++)
 		if (action.equalsIgnoreCase(scriptAction[i]))
 			return (ScriptAction) i;
 
 	return kScriptActionNone;
+}
+
+void ScriptChunk::parseFrom(const Common::String &args) {
+	Common::Array<Common::String> lArgs = DATFile::argGet(args);
+
+	if (lArgs.size() >= 3)
+		_from = atoi(lArgs[2].c_str());
 }
 
 } // End of namespace DarkSeed2

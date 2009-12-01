@@ -36,10 +36,9 @@
 
 namespace DarkSeed2 {
 
-ScriptInterpreter::Script::Script(ScriptChunk *chnk, bool perm) {
+ScriptInterpreter::Script::Script(ScriptChunk *chnk) {
 	chunk      = chnk;
 	action     = 0;
-	permanent  = perm;
 	started    = false;
 	soundID    = -1;
 	waitingFor = kWaitNone;
@@ -88,11 +87,16 @@ ScriptInterpreter::~ScriptInterpreter() {
 }
 
 bool ScriptInterpreter::hasScripts() const {
-	return !_scripts.empty();
+	for (int i = 0; i < kPriorityLevels; i++)
+		if (!_scripts[i].empty())
+			return true;
+
+	return false;
 }
 
 void ScriptInterpreter::clear() {
-	_scripts.clear();
+	for (int i = 0; i < kPriorityLevels; i++)
+		_scripts[i].clear();
 
 	_soundID = -1;
 	_speechVar.clear();
@@ -105,90 +109,106 @@ bool ScriptInterpreter::updateStatus() {
 
 	_updatesWithoutChanges++;
 
-	// Interpret one action from every script in the queue
-	for (script = _scripts.begin(); script != _scripts.end(); ++script) {
-		if (_vm->shouldQuit())
-			break;
+	for (int i = 0; i < kPriorityLevels; i++) {
+		if (_scripts[i].empty()) {
+			Common::List< Common::List<ScriptChunk *> >::iterator it1 = _scriptsQueues[i].begin();
+			while (it1 != _scriptsQueues[i].end()) {
+				Common::List<ScriptChunk *>::iterator it2;
+				for (it2 = it1->begin(); it2 != it1->end(); ++it2) {
+					if ((*it2)->conditionsMet() && _vm->_events->cameFrom((*it2)->getFrom())) {
+						(*it2)->rewind();
+						_scripts[i].push_back(Script(*it2));
+						break;
+					}
+				}
 
-		if (!script->started) {
-			// If the script wasn't started yet, check if the conditions are met
-			if (!script->chunk->conditionsMet()) {
-				// Conditions not met
+				it1 = _scriptsQueues[i].erase(it1);
 
-				if (!script->permanent)
-					// Not a permanent script, end it
-					script->chunk->seekEnd();
-
-				continue;
+				if (!_scripts[i].empty())
+					break;
 			}
 
-			// Conditions met, start the script
-			script->started = true;
-			_updatesWithoutChanges = 0;
-		}
-
-		// Evaluating waiting orders
-		if (script->waitingFor != kWaitNone) {
-			bool waitEnd = false;
-
-			if      (script->waitingFor == kWaitConversation)
-				waitEnd = !_vm->_graphics->getConversationBox().isActive();
-			else if (script->waitingFor == kWaitMovie)
-				waitEnd = !_vm->_movie->isPlaying();
-
-			if (waitEnd)
-				script->waitingFor = kWaitNone;
-			else
+			if (_scripts[i].empty())
 				continue;
-
-			_updatesWithoutChanges = 0;
 		}
 
-		Result result = interpret(*script);
+		// Interpret one action from every script in the queue
+		for (script = _scripts[i].begin(); script != _scripts[i].end(); ++script) {
+			if (_vm->shouldQuit())
+				break;
 
-		if        (result == kResultInvalid) {
-			script->chunk->seekEnd();
-			_updatesWithoutChanges = 0;
-		} else if (result == kResultOK) {
-			script->chunk->next();
-			script->lastWaitDebug = 0;
-			_updatesWithoutChanges = 0;
-		} else if (result == kResultStop) {
-			script->chunk->seekEnd();
-			_updatesWithoutChanges = 0;
+			if (!script->started) {
+				// If the script wasn't started yet, check if the conditions are met
+				if (!script->chunk->conditionsMet()) {
+					// Conditions not met
+					continue;
+				}
+
+				// Conditions met, start the script
+				script->started = true;
+				_updatesWithoutChanges = 0;
+			}
+
+			// Evaluating waiting orders
+			if (script->waitingFor != kWaitNone) {
+				bool waitEnd = false;
+
+				if      (script->waitingFor == kWaitConversation)
+					waitEnd = !_vm->_graphics->getConversationBox().isActive();
+				else if (script->waitingFor == kWaitMovie)
+					waitEnd = !_vm->_movie->isPlaying();
+
+				if (waitEnd)
+					script->waitingFor = kWaitNone;
+				else
+					continue;
+
+				_updatesWithoutChanges = 0;
+			}
+
+			Result result = interpret(*script);
+
+			if        (result == kResultInvalid) {
+				script->chunk->seekEnd();
+				_updatesWithoutChanges = 0;
+			} else if (result == kResultOK) {
+				script->chunk->next();
+				script->lastWaitDebug = 0;
+				_updatesWithoutChanges = 0;
+			} else if (result == kResultStop) {
+				script->chunk->seekEnd();
+				_updatesWithoutChanges = 0;
+			}
 		}
+
+		break;
 	}
 
-	// Go through all scripts and erase those that ended
-	script = _scripts.begin();
-	while (script != _scripts.end()) {
-		if (script->chunk->atEnd()) {
-			script->chunk->setUsed(false);
-			script = _scripts.erase(script);
-			_updatesWithoutChanges = 0;
-		} else
-			++script;
+	for (int i = 0; i < kPriorityLevels; i++) {
+		// Go through all scripts and erase those that ended
+		script = _scripts[i].begin();
+		while (script != _scripts[i].end()) {
+			if (script->chunk->atEnd()) {
+				//script->chunk->setUsed(false);
+				script = _scripts[i].erase(script);
+				_updatesWithoutChanges = 0;
+			} else
+				++script;
+		}
 	}
 
 	return _updatesWithoutChanges < 10;
 }
 
-bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks, bool permanent) {
-	bool has = false;
+bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks, int priority) {
+	if ((priority < 0) || (priority >= kPriorityLevels))
+		priority = kPriorityLevels - 1;
 
-	for (Common::List<ScriptChunk *>::iterator it = chunks.begin(); it != chunks.end(); ++it) {
-		if (!(*it)->isUsed()) {
-			(*it)->setUsed(true);
-			(*it)->rewind();
-			_scripts.push_back(Script(*it, permanent));
-			has = true;
-		}
-	}
+	_scriptsQueues[priority].push_back(chunks);
 
-	if (has)
-		_updatesWithoutChanges = 0;
+	_updatesWithoutChanges = 0;
 
-	return has;
+	return true;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::interpret(Script &script) {

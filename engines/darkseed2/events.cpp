@@ -373,7 +373,7 @@ void Events::setCursor(const Cursors::Cursor &cursor) {
 }
 
 void Events::doObjectVerb(Object &object, ObjectVerb verb) {
-	_vm->_inter->interpret(object.getScripts(verb));
+	_vm->_inter->interpret(object.getScripts(verb), 2);
 }
 
 int Events::checkTitleSprites(uint32 x, uint32 y) const {
@@ -393,7 +393,7 @@ bool Events::roomEnter() {
 	_vm->_graphics->registerBackground(room.getBackground());
 
 	// Evaluate the entry logic
-	_vm->_inter->interpret(room.getEntryScripts());
+	_vm->_inter->interpret(room.getEntryScripts(), 0);
 
 	// Evaluate the autostart objects
 	executeAutoStart(room);
@@ -453,7 +453,7 @@ bool Events::executeAutoStart(Room &room) {
 	for (int i = 0; i < ARRAYSIZE(autoStartName); i++) {
 		autoStart = room.findObject(autoStartName[i]);
 		if (autoStart) {
-			_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse), true);
+			_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse), 1);
 			has = true;
 		}
 	}

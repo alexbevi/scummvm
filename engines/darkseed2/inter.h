@@ -45,12 +45,14 @@ public:
 	void clear();
 
 	/** Push the chunks with met conditions into the queue. */
-	bool interpret(Common::List<ScriptChunk *> &chunks, bool permanent = false);
+	bool interpret(Common::List<ScriptChunk *> &chunks, int priority);
 
 	/** Update status, interpret next lines, .... */
 	bool updateStatus();
 
 private:
+	static const int kPriorityLevels = 3;
+
 	/** The result of a script action. */
 	enum Result {
 		kResultOK,     ///< Everything was okay, proceed to the next line.
@@ -70,12 +72,11 @@ private:
 		ScriptChunk *chunk;
 		const ScriptChunk::Action *action;
 		bool started;
-		bool permanent;
 		int soundID;
 		Wait waitingFor;
 		int lastWaitDebug;
 
-		Script(ScriptChunk *chnk = 0, bool perm = false);
+		Script(ScriptChunk *chnk = 0);
 	};
 
 	typedef Result (ScriptInterpreter::*func_t)(Script &script);
@@ -97,7 +98,9 @@ private:
 	Common::String _speechVar;
 
 	/** The currently active scripts. */
-	Common::List<Script> _scripts;
+	Common::List<Script> _scripts[kPriorityLevels];
+	/** The scripts waiting in the queue. */
+	Common::List< Common::List<ScriptChunk *> > _scriptsQueues[kPriorityLevels];
 
 	// Interpreting helper
 	Result interpret(Script &script);

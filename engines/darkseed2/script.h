@@ -86,6 +86,9 @@ public:
 	/** Was the end of the ScriptChunk reached? */
 	bool atEnd() const;
 
+	/** Return the "from" room flag. */
+	uint32 getFrom() const;
+
 	/** Advance the script to the next line. */
 	void next();
 	/** Rewind the ScriptChunk to the start. */
@@ -109,9 +112,6 @@ public:
 	/** Return the current action. */
 	const Action &getAction() const;
 
-	bool isUsed() const;
-	void setUsed(bool used);
-
 private:
 	static const Action invalidAction;
 
@@ -122,8 +122,8 @@ private:
 
 	/** Was everything loaded so that the ScriptChunk can be interpreted? */
 	bool _ready;
-	/** Is the script currently being used by the interpreter? */
-	bool _used;
+
+	uint32 _from; //< The "from" room flag.
 
 	/** All actions. */
 	Common::List<Action> _actions;
@@ -133,6 +133,8 @@ private:
 
 	/** Parse a script action string. */
 	static ScriptAction parseScriptAction(const Common::String &action);
+
+	void parseFrom(const Common::String &args);
 };
 
 } // End of namespace DarkSeed2
