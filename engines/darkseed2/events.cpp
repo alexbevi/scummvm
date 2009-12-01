@@ -134,6 +134,8 @@ void Events::leaveIntro() {
 		_vm->quitGame();
 		return;
 	}
+
+	_nextRoom = _vm->_graphics->getRoom().getName();
 }
 
 void Events::mainLoop(bool finishScripts) {
@@ -371,7 +373,7 @@ void Events::setCursor(const Cursors::Cursor &cursor) {
 }
 
 void Events::doObjectVerb(Object &object, ObjectVerb verb) {
-	_vm->_inter->interpret(object.getScripts(verb), true);
+	_vm->_inter->interpret(object.getScripts(verb));
 }
 
 int Events::checkTitleSprites(uint32 x, uint32 y) const {
@@ -421,13 +423,22 @@ bool Events::roomGo(const Common::String &room) {
 
 void Events::setNextRoom(uint32 room) {
 	if (!_inIntro) {
-		_nextRoom = Common::String::printf("%04d", room);
+		Common::String nextRoom = Common::String::printf("%04d", room);
 
-		if (_nextRoom != _vm->_graphics->getRoom().getName()) {
-			warning("Room transition to room %s", _nextRoom.c_str());
+		if (nextRoom != _vm->_graphics->getRoom().getName()) {
+			warning("Room transition %s->%s", _nextRoom.c_str(), nextRoom.c_str());
+			_lastRoom = _nextRoom;
+			_nextRoom = nextRoom;
 			_changeRoom = true;
 		}
 	}
+}
+
+bool Events::cameFrom(uint32 room) {
+	if (room == 0)
+		return true;
+
+	return _lastRoom == Common::String::printf("%04d", room);
 }
 
 static const char *autoStartName[] = {

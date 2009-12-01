@@ -57,6 +57,9 @@ public:
 	/** Register a room transition. */
 	void setNextRoom(uint32 room);
 
+	/** Did we come from that room? */
+	bool cameFrom(uint32 room);
+
 private:
 	/** A mode's cursor. */
 	struct ModeCursors {
@@ -76,6 +79,7 @@ private:
 
 	SpriteObject _titleSprites[4]; ///< Title elements.
 
+	Common::String _lastRoom;
 	Common::String _nextRoom;
 	bool _changeRoom;
 

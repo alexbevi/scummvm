@@ -146,15 +146,15 @@ bool ScriptInterpreter::updateStatus() {
 
 		Result result = interpret(*script);
 
-		if (result == kResultInvalid) {
+		if        (result == kResultInvalid) {
 			script->chunk->seekEnd();
 			_updatesWithoutChanges = 0;
-			continue;
-		}
-
-		if (result == kResultOK) {
+		} else if (result == kResultOK) {
 			script->chunk->next();
 			script->lastWaitDebug = 0;
+			_updatesWithoutChanges = 0;
+		} else if (result == kResultStop) {
+			script->chunk->seekEnd();
 			_updatesWithoutChanges = 0;
 		}
 	}
@@ -312,7 +312,21 @@ ScriptInterpreter::Result ScriptInterpreter::oScaleVal(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oFrom(Script &script) {
-	warning("TODO: Unimplemented script function oFrom");
+	Common::Array<Common::String> lArgs = DATFile::argGet(script.action->arguments);
+
+	uint32 args[3];
+
+	for (uint i = 0; i < 3; i++) {
+		args[i] = 0;
+		if (lArgs.size() > i)
+			args[i] = atoi(lArgs[i].c_str());
+	}
+
+	warning("TODO: oFrom: Coming from %d? %dx%d", args[2], args[1], args[2]);
+
+	if (!_vm->_events->cameFrom(args[2]))
+		return kResultStop;
+
 	return kResultOK;
 }
 

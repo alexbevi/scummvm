@@ -55,6 +55,7 @@ private:
 	enum Result {
 		kResultOK,     ///< Everything was okay, proceed to the next line.
 		kResultWait,   ///< Wait on this line.
+		kResultStop,   ///< Stop this script.
 		kResultInvalid ///< Invalid script line.
 	};
 
