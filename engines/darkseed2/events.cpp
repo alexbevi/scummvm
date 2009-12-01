@@ -29,6 +29,7 @@
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/talk.h"
+#include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/inter.h"
@@ -156,6 +157,7 @@ void Events::mainLoop(bool finishScripts) {
 
 		// Update subsystem statuses
 		_vm->_talkMan->updateStatus();
+		_vm->_roomConfMan->updateStatus();
 		_vm->_graphics->updateStatus();
 
 		scriptStateChanged = _vm->_inter->updateStatus();
@@ -366,18 +368,11 @@ bool Events::roomEnter() {
 	// Set the background
 	_vm->_graphics->registerBackground(room.getBackground());
 
-	// Evaluate music changes
-	if (!_vm->_inter->interpret(room.getScripts(kRoomVerbMusic)))
-		return false;
-
 	// Evaluate the entry logic
-	if (!_vm->_inter->interpret(room.getScripts(kRoomVerbEntry)))
-		return false;
+	_vm->_inter->interpret(room.getEntryScripts());
 
 	// Evaluate the autostart objects
 	executeAutoStart(room);
-
-	_vm->_inter->interpret(room.getScripts(kRoomVerbSprite), true);
 
 	return true;
 }
@@ -385,6 +380,7 @@ bool Events::roomEnter() {
 void Events::roomLeave() {
 	_vm->_graphics->unregisterBackground();
 	_vm->_inter->clear();
+	_vm->_graphics->getRoom().clear();
 }
 
 bool Events::roomGo(const Common::String &room) {

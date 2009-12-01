@@ -29,6 +29,7 @@
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/talk.h"
+#include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/graphicalobject.h"
@@ -61,9 +62,11 @@ Graphics::~Graphics() {
 	delete _talk;
 }
 
-void Graphics::init(TalkManager &talkManager) {
+void Graphics::init(TalkManager &talkManager, RoomConfigManager &roomConfigManager) {
 	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager);
-	_room            = new Room(*_variables, *this);
+
+	_room = new Room(*_variables, *this);
+	_room->registerConfigManager(roomConfigManager);
 
 	_screen.clear();
 
@@ -183,6 +186,17 @@ void Graphics::talk(TextObject *talkObject) {
 
 void Graphics::talkEnd() {
 	redrawScreen(talkEndTalk());
+}
+
+void Graphics::addRoomAnimation(const Common::String &animation, int frame)  {
+
+	Animation *anim = _room->getAnimation(animation);
+	if (!anim)
+		return;
+
+	anim->setFrame(frame);
+
+	blitToScreen((*anim)->getSprite(), (*anim)->getX(), (*anim)->getY(), true);
 }
 
 void Graphics::blitToScreen(const Sprite &from, Common::Rect area,

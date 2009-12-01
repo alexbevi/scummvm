@@ -43,6 +43,7 @@
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/movie.h"
+#include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/inter.h"
 #include "engines/darkseed2/events.h"
 
@@ -64,17 +65,18 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	// Setup mixer
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));
 
-	_options   = 0;
-	_cursors   = 0;
-	_resources = 0;
-	_sound     = 0;
-	_music     = 0;
-	_variables = 0;
-	_graphics  = 0;
-	_talkMan   = 0;
-	_movie     = 0;
-	_inter     = 0;
-	_events    = 0;
+	_options     = 0;
+	_cursors     = 0;
+	_resources   = 0;
+	_sound       = 0;
+	_music       = 0;
+	_variables   = 0;
+	_graphics    = 0;
+	_talkMan     = 0;
+	_movie       = 0;
+	_roomConfMan = 0;
+	_inter       = 0;
+	_events      = 0;
 }
 
 DarkSeed2Engine::~DarkSeed2Engine() {
@@ -88,6 +90,7 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 	delete _movie;
 	delete _talkMan;
 	delete _graphics;
+	delete _roomConfMan;
 
 	delete _variables;
 	delete _music;
@@ -142,18 +145,19 @@ bool DarkSeed2Engine::init() {
 
 	debug(-1, "Creating subclasses...");
 
-	_options   = new Options();
-	_cursors   = new Cursors();
-	_variables = new Variables();
-	_resources = new Resources();
-	_sound     = new Sound(*_mixer, *_variables);
-	_music     = new Music(*_mixer, *_midiDriver);
-	_graphics  = new Graphics(*_resources, *_variables);
-	_talkMan   = new TalkManager(*_sound, *_graphics);
-	_movie     = new Movie(*_mixer, *_graphics);
+	_options     = new Options();
+	_cursors     = new Cursors();
+	_variables   = new Variables();
+	_resources   = new Resources();
+	_sound       = new Sound(*_mixer, *_variables);
+	_music       = new Music(*_mixer, *_midiDriver);
+	_graphics    = new Graphics(*_resources, *_variables);
+	_talkMan     = new TalkManager(*_sound, *_graphics);
+	_movie       = new Movie(*_mixer, *_graphics);
 
-	_inter     = new ScriptInterpreter(*this);
-	_events    = new Events(*this);
+	_roomConfMan = new RoomConfigManager(*this);
+	_inter       = new ScriptInterpreter(*this);
+	_events      = new Events(*this);
 
 	syncSoundSettings();
 
@@ -177,7 +181,7 @@ bool DarkSeed2Engine::init() {
 bool DarkSeed2Engine::initGraphics() {
 	debug(-1, "Setting up graphics...");
 
-	_graphics->init(*_talkMan);
+	_graphics->init(*_talkMan, *_roomConfMan);
 
 	::initGraphics(_graphics->_screenWidth, _graphics->_screenHeight, true);
 	return true;

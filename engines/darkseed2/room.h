@@ -34,43 +34,47 @@ namespace DarkSeed2 {
 class Resources;
 class Variables;
 class Graphics;
+class RoomConfigManager;
 
 class DATFile;
 class ScriptChunk;
 class Sprite;
-
-/** Room Verbs. */
-enum RoomVerb {
-	kRoomVerbEntry = 0, ///< Entry.
-	kRoomVerbMirror,    ///< Mirror.
-	kRoomVerbMusic,     ///< Music.
-	kRoomVerbPalette,   ///< Palette.
-	kRoomVerbSprite,    ///< Sprite.
-	kRoomVerbNone       ///< None.
-};
+class Animation;
 
 class Room : public ObjectContainer {
 public:
 	Room(Variables &variables, Graphics &graphics);
 	~Room();
 
+	void registerConfigManager(RoomConfigManager &configManager);
+
 	/** Get the room's name. */
 	const Common::String &getName() const;
 	/** Get the room's background. */
 	const Sprite &getBackground() const;
 
-	/** Get the scripts for that verb. */
-	Common::List<ScriptChunk *> &getScripts(RoomVerb verb);
+	/** Get the room's entry logic scripts. */
+	Common::List<ScriptChunk *> &getEntryScripts();
+
+	/** Get the specified animation. */
+	Animation *getAnimation(const Common::String &animation);
 
 	/** Empty the room. */
 	void clear();
+
+	/** Load an animation. */
+	bool loadAnimation(Resources &resources, const Common::String &base);
 
 	/** Parse a room. */
 	bool parse(const Resources &resources, const Common::String &base);
 
 private:
+	typedef Common::HashMap<Common::String, Animation *, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> AnimationMap;
+
 	Variables *_variables;
 	Graphics  *_graphics;
+
+	RoomConfigManager *_confMan;
 
 	/** Was everything set up so that the room can be used? */
 	bool _ready;
@@ -88,25 +92,25 @@ private:
 
 	int32 _scaleFactor1, _scaleFactor2, _scaleFactor3;
 
-	/** All scripts. */
-	Common::Array< Common::List<ScriptChunk *> > _scripts;
+	/** Room's entry logic. */
+	Common::List<ScriptChunk *> _entryScripts;
+
+	/** All animations. */
+	AnimationMap _animations;
 
 	// Parsing helpers
 	bool setBackground(const Common::String &args);
 	bool setWalkMap(const Common::String &args);
 	bool setScaleFactor(const Common::String &args);
 	bool setDimensions(const Common::String &args);
-	bool setVerb(const Common::String &cmd, RoomVerb &curVerb);
-	bool addScriptChunk(const Common::String &cmd, DATFile &room, RoomVerb curVerb);
+	bool addEntryScript(DATFile &room);
+	bool parseEntryScripts(DATFile &room);
 
 	bool parse(const Resources &resources, DATFile &room, DATFile &objects);
 	bool parse(const Resources &resources, const Common::String &room, const Common::String &objects);
 
 	/** Set up the room after parsing. */
 	bool setup(const Resources &resources);
-
-	/** Parse a verb string. */
-	static RoomVerb parseRoomVerb(const Common::String &verb);
 };
 
 } // End of namespace DarkSeed2

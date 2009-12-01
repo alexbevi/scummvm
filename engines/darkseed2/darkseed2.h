@@ -59,6 +59,7 @@ class Variables;
 class Graphics;
 class TalkManager;
 class Movie;
+class RoomConfigManager;
 class ScriptInterpreter;
 class Events;
 
@@ -73,6 +74,7 @@ public:
 	Graphics          *_graphics;
 	TalkManager       *_talkMan;
 	Movie             *_movie;
+	RoomConfigManager *_roomConfMan;
 	ScriptInterpreter *_inter;
 	Events            *_events;
 

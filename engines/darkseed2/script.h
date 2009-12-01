@@ -66,9 +66,6 @@ enum ScriptAction {
 	kScriptActionSpeechVar,
 	kScriptActionWaitUntil,
 	kScriptActionEffect,
-	kScriptActionLoopCond,
-	kScriptActionLoopPoint,
-	kScriptActionLoadCond,
 	kScriptActionNone
 };
 
@@ -120,8 +117,8 @@ private:
 
 	const Variables *_variables;
 
-	Common::String _cond1; ///< The first condition.
-	Common::String _cond2; ///< The second condition.
+	/** The conditions required for this script. */
+	Common::List<Common::String> _conditions;
 
 	/** Was everything loaded so that the ScriptChunk can be interpreted? */
 	bool _ready;

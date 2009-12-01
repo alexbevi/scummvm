@@ -139,6 +139,7 @@ bool Object::parse(DATFile &dat) {
 			if (!setVerb(*cmd, curVerb))
 				return false;
 
+		} else if (cmd->matchString("*End", true)) {
 		} else {
 			// Script chunk
 

@@ -17,6 +17,7 @@ MODULE_OBJS := \
 	script.o \
 	objects.o \
 	room.o \
+	roomconfig.o \
 	talk.o \
 	conversation.o \
 	conversationbox.o \

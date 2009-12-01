@@ -124,8 +124,6 @@ private:
 	Result oSpeechVar(Script &script);
 	Result oWaitUntil(Script &script);
 	Result oEffect(Script &script);
-	Result oLoopCond(Script &script);
-	Result oLoopPoint(Script &script);
 	Result oLoadCond(Script &script);
 };
 

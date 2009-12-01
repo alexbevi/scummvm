@@ -67,6 +67,13 @@ bool Music::playMID(const Resource &resource) {
 }
 
 bool Music::playMID(const Resources &resources, const Common::String &mid) {
+	if (mid.empty()) {
+		// No file specified, stop playback
+
+		stop();
+		return true;
+	}
+
 	if (mid == _name)
 		// If the current music is already playing, don't restart it
 		return true;

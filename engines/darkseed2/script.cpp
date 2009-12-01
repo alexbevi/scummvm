@@ -35,8 +35,7 @@ static const char *scriptAction[] = {
 	"SpriteIDX"   , "ClipXY"   , "PosX"         , "PosY"        ,
 	"ScaleVal"    , "From"     , "PaletteChange", "XYRoomEffect",
 	"ChangeAt"    , "Dialog"   , "Picture"      , "Speech"      ,
-	"SpeechVar"   , "WaitUntil", "Effect"       , "LoopCond"    ,
-	"LoopPoint"   , "LoadCond"
+	"SpeechVar"   , "WaitUntil", "Effect"
 };
 
 
@@ -88,8 +87,7 @@ void ScriptChunk::clear() {
 	_ready = false;
 	_used  = false;
 
-	_cond1.clear();
-	_cond2.clear();
+	_conditions.clear();
 	_actions.clear();
 }
 
@@ -97,32 +95,31 @@ bool ScriptChunk::parse(DATFile &dat) {
 	clear();
 
 	const Common::String *cmd, *arg;
-	bool hasCond = false;
 	while (dat.nextLine(cmd, arg)) {
 		debugC(2, kDebugScript, "Parsing script action \"%s\" [%s]", cmd->c_str(), arg->c_str());
 
 		if (cmd->equalsIgnoreCase("Cond")) {
 			// Found a condition
 
-			if (hasCond) {
+			if (!_conditions.empty()) {
 				// Already got one, must belong to the next chunk
 				dat.previous();
 				break;
 			}
 
-			// Our condition, then
-			hasCond = true;
-			_cond1 = *arg;
+			// A primary condition
+			_conditions.push_back(*arg);
 		} else if (cmd->equalsIgnoreCase("Cond2")) {
-			// A second condition
-			_cond2 = *arg;
+			// A secondary condition
+			_conditions.push_back(*arg);
 		} else if (cmd->matchString("*End", true)) {
 			// Reached the end of the current verb section
+			dat.previous();
 			break;
 		} else {
 			// An action
 
-			if (!hasCond) {
+			if (_conditions.empty()) {
 				// We do need a condition first
 				warning("ScriptChunk::parse(Script sync error, first line must be a condition");
 				return false;
@@ -149,15 +146,11 @@ bool ScriptChunk::parse(DATFile &dat) {
 }
 
 bool ScriptChunk::conditionsMet() const {
-	if (!_ready)
-		return false;
+	for (Common::List<Common::String>::const_iterator it = _conditions.begin(); it != _conditions.end(); ++it)
+		if (_variables->evalCondition(*it))
+			return true;
 
-	bool result = _variables->evalCondition(_cond1);
-
-	if (!_cond2.empty())
-		result = result || _variables->evalCondition(_cond2);
-
-	return result;
+	return false;
 }
 
 const Common::List<ScriptChunk::Action> &ScriptChunk::getActions() const {

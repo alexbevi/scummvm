@@ -29,18 +29,18 @@
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/script.h"
 #include "engines/darkseed2/sprite.h"
+#include "engines/darkseed2/graphicalobject.h"
 
 namespace DarkSeed2 {
-
-static const char *roomVerb[] = {
-	"EntryStart", "MirrorStart", "MusicStart", "PaletteStart", "SpriteStart"
-};
 
 Room::Room(Variables &variables, Graphics &graphics) : ObjectContainer(variables) {
 	_variables = &variables;
 	_graphics  = &graphics;
+
+	_confMan = 0;
 
 	_background = 0;
 	_walkMap    = 0;
@@ -52,8 +52,15 @@ Room::~Room() {
 	clear();
 }
 
+void Room::registerConfigManager(RoomConfigManager &configManager) {
+	_confMan = &configManager;
+}
+
 void Room::clear() {
 	_ready = false;
+
+	if (_confMan)
+		_confMan->deinitRoom();
 
 	// Remove all local variables
 	_variables->clearLocal();
@@ -74,12 +81,16 @@ void Room::clear() {
 	_scaleFactor2 = 0;
 	_scaleFactor3 = 0;
 
-	for (uint i = 0; i < _scripts.size(); i++)
-		for (Common::List<ScriptChunk *>::iterator it = _scripts[i].begin(); it != _scripts[i].end(); ++it)
-			delete *it;
+	// Clear entry scripts
+	for (Common::List<ScriptChunk *>::iterator it = _entryScripts.begin(); it != _entryScripts.end(); ++it)
+		delete *it;
+	_entryScripts.clear();
 
-	_scripts.clear();
-	_scripts.resize(kRoomVerbNone);
+	// Clear animations
+	for (AnimationMap::iterator it = _animations.begin(); it != _animations.end(); ++it)
+		delete it->_value;
+
+	_animations.clear();
 }
 
 const Common::String &Room::getName() const {
@@ -92,15 +103,18 @@ const Sprite &Room::getBackground() const {
 	return *_background;
 }
 
-Common::List<ScriptChunk *> &Room::getScripts(RoomVerb verb) {
-	assert(verb < kRoomVerbNone);
+Common::List<ScriptChunk *> &Room::getEntryScripts() {
+	return _entryScripts;
+}
 
-	return _scripts[verb];
+Animation *Room::getAnimation(const Common::String &animation) {
+	if (!_animations.contains(animation))
+		return 0;
+
+	return _animations.getVal(animation);
 }
 
 bool Room::parse(const Resources &resources, DATFile &room, DATFile &objects) {
-	RoomVerb curVerb = kRoomVerbNone;
-
 	const Common::String *cmd, *args;
 	while (room.nextLine(cmd, args)) {
 		if (cmd->equalsIgnoreCase("BackDrop")) {
@@ -132,10 +146,18 @@ bool Room::parse(const Resources &resources, DATFile &room, DATFile &objects) {
 
 			_variables->addLocal(*args);
 
-		} else if (cmd->matchString("*Start")) {
-			// Start of a verb section
+		} else if (cmd->matchString("EntryStart")) {
+			// Entry logic script block
 
-			if (!setVerb(*cmd, curVerb))
+			if (!parseEntryScripts(room))
+				return false;
+
+		} else if (cmd->matchString("*Start")) {
+			// Start of a config section
+
+			room.previous();
+
+			if (!_confMan->parseConfig(room))
 				return false;
 
 		} else if (cmd->equalsIgnoreCase("EndID")) {
@@ -144,11 +166,11 @@ bool Room::parse(const Resources &resources, DATFile &room, DATFile &objects) {
 			break;
 
 		} else {
-			// Script chunk
+			// Unknown
 
-			if (!addScriptChunk(*cmd, room, curVerb))
-				return false;
-
+			warning("Room::parse(): Unkown command \"%s\" (\"%s\")",
+					cmd->c_str(), args->c_str());
+			return false;
 		}
 	}
 
@@ -184,6 +206,8 @@ bool Room::parse(const Resources &resources,
 bool Room::parse(const Resources &resources,
 		const Common::String &base) {
 
+	assert(_confMan);
+
 	clear();
 
 	_name = base;
@@ -197,14 +221,6 @@ bool Room::parse(const Resources &resources,
 	debugC(-1, kDebugRooms, "Parsing room \"%s\"", _name.c_str());
 
 	return parse(resources, room, objects);
-}
-
-RoomVerb Room::parseRoomVerb(const Common::String &verb) {
-	for (int i = 0; i < kRoomVerbNone; i++)
-		if (verb.equalsIgnoreCase(roomVerb[i]))
-			return (RoomVerb) i;
-
-	return kRoomVerbNone;
 }
 
 bool Room::setBackground(const Common::String &args) {
@@ -265,26 +281,7 @@ bool Room::setDimensions(const Common::String &args) {
 	return true;
 }
 
-bool Room::setVerb(const Common::String &cmd, RoomVerb &curVerb) {
-	curVerb = parseRoomVerb(cmd);
-	if (curVerb == kRoomVerbNone) {
-		warning("Room::setVerb(): Unknown script verb \"%s\"", cmd.c_str());
-		return false;
-	}
-
-	return true;
-}
-
-bool Room::addScriptChunk(const Common::String &cmd, DATFile &room, RoomVerb curVerb) {
-	// Need to be in a verb section
-	if (curVerb == kRoomVerbNone) {
-		warning("Room::addScriptChunk(): Action without a verb \"%s\"", cmd.c_str());
-		return false;
-	}
-
-	// Rewind past the line we've just read
-	room.previous();
-
+bool Room::addEntryScript(DATFile &room) {
 	// Parse the script chunk
 	ScriptChunk *script = new ScriptChunk(*_variables);
 	if (!script->parse(room)) {
@@ -293,7 +290,27 @@ bool Room::addScriptChunk(const Common::String &cmd, DATFile &room, RoomVerb cur
 	}
 
 	// Add it to our list
-	_scripts[(int) curVerb].push_back(script);
+	_entryScripts.push_back(script);
+
+	return true;
+}
+
+bool Room::parseEntryScripts(DATFile &room) {
+	const Common::String *cmd, *args;
+	while (room.nextLine(cmd, args)) {
+		if (cmd->equalsIgnoreCase("EntryEnd")) {
+			// Reached the end of the entry block
+			return true;
+		} else if (!cmd->equalsIgnoreCase("Cond")) {
+			warning("Room::parseEntryScripts(): First command must be a condition!");
+			return false;
+		}
+
+		room.previous();
+
+		if (!addEntryScript(room))
+			return false;
+	}
 
 	return true;
 }
@@ -325,8 +342,25 @@ bool Room::setup(const Resources &resources) {
 		return false;
 	}
 
+	_confMan->initRoom();
+
 	_ready = true;
 
+	return true;
+}
+
+bool Room::loadAnimation(Resources &resources, const Common::String &base) {
+	if (_animations.contains(base))
+		return true;
+
+	Animation *animation = new Animation;
+
+	if (!animation->load(resources, base)) {
+		delete animation;
+		return false;
+	}
+
+	_animations.setVal(base, animation);
 	return true;
 }
 

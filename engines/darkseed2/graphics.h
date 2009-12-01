@@ -42,6 +42,7 @@ namespace DarkSeed2 {
 class Resources;
 class Variables;
 class TalkManager;
+class RoomConfigManager;
 
 class ConversationBox;
 class Room;
@@ -66,7 +67,7 @@ public:
 	~Graphics();
 
 	/** Init the graphics subsystem. */
-	void init(TalkManager &talkManager);
+	void init(TalkManager &talkManager, RoomConfigManager &roomConfigManager);
 
 	/** Get the conversation box. */
 	ConversationBox &getConversationBox();
@@ -95,7 +96,7 @@ public:
 	/** End the current talk. */
 	void talkEnd();
 
-	Common::Rect talkEndTalk();
+	void addRoomAnimation(const Common::String &animation, int frame);
 
 	/** Blit the sprite to the screen. */
 	void blitToScreen(const Sprite &from, Common::Rect area,
@@ -151,6 +152,8 @@ private:
 	void initPalette();
 	/** Apply the game palette. */
 	void applyGamePalette();
+
+	Common::Rect talkEndTalk();
 
 	/** Redraw that area of the game screen. */
 	void redrawScreen(const Common::Rect &rect);
