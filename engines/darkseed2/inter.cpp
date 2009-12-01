@@ -129,12 +129,17 @@ bool ScriptInterpreter::updateStatus() {
 
 		// Evaluating waiting orders
 		if (script->waitingFor != kWaitNone) {
-			if (script->waitingFor == kWaitConversation) {
-				if (_vm->_graphics->getConversationBox().isActive())
-					continue;
-				else
-					script->waitingFor = kWaitNone;
-			}
+			bool waitEnd = false;
+
+			if      (script->waitingFor == kWaitConversation)
+				waitEnd = !_vm->_graphics->getConversationBox().isActive();
+			else if (script->waitingFor == kWaitMovie)
+				waitEnd = !_vm->_movie->isPlaying();
+
+			if (waitEnd)
+				script->waitingFor = kWaitNone;
+			else
+				continue;
 
 			_updatesWithoutChanges = 0;
 		}
@@ -263,6 +268,8 @@ ScriptInterpreter::Result ScriptInterpreter::oAnim(Script &script) {
 	if (lArgs.size() >= 5) {
 		if (!_vm->_movie->play(lArgs[4], atoi(lArgs[0].c_str()), atoi(lArgs[1].c_str())))
 			warning("oAnim: Failed playing video \"%s\"", lArgs[4].c_str());
+		else
+			script.waitingFor = kWaitMovie;
 	} else
 		warning("TODO: oAnim \"%s\"", script.action->arguments.c_str());
 

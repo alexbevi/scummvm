@@ -30,19 +30,31 @@
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/roomconfig.h"
+#include "engines/darkseed2/movie.h"
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/graphicalobject.h"
 
 namespace DarkSeed2 {
 
+static const uint32 kConversationX =   0;
+static const uint32 kConversationY = 410;
+
+Graphics::SpriteRef::SpriteRef() {
+	layer = -1;
+	anim  =  0;
+	frame =  0;
+}
+
+
 Graphics::Graphics(Resources &resources, Variables &variables) {
 	_resources = &resources;
 	_variables = &variables;
+	_movie     = 0;
 
 	clearPalette();
 
-	_screen.create(_screenWidth, _screenHeight);
+	_screen.create(kScreenWidth, kScreenHeight);
 
 	_dirtyAll = false;
 
@@ -62,8 +74,11 @@ Graphics::~Graphics() {
 	delete _talk;
 }
 
-void Graphics::init(TalkManager &talkManager, RoomConfigManager &roomConfigManager) {
+void Graphics::init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie) {
+	_movie = &movie;
+
 	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager);
+	_conversationBox->move(kConversationX, kConversationY);
 
 	_room = new Room(*_variables, *this);
 	_room->registerConfigManager(roomConfigManager);
@@ -104,20 +119,11 @@ void Graphics::setPalette(const Palette &pal) {
 }
 
 void Graphics::enterMovieMode() {
-	_movieMode = true;
-
-	_screen.clear();
-
-	g_system->fillScreen(0);
-	redraw(kScreenPartPlayArea);
-	g_system->updateScreen();
 }
 
 void Graphics::leaveMovieMode() {
-	_movieMode = false;
-
 	applyGamePalette();
-	redraw(kScreenPartPlayArea);
+	requestRedraw();
 }
 
 void Graphics::assertPalette0() {
@@ -158,47 +164,70 @@ void Graphics::applyGamePalette() {
 	g_system->setPalette(pal, 0, 256);
 }
 
-Common::Rect Graphics::talkEndTalk() {
-	if (!_talk)
-		return Common::Rect();
-
-	Common::Rect talkArea = _talk->getArea();
-
-	delete _talk;
-	_talk = 0;
-
-	return talkArea;
-}
-
 void Graphics::talk(TextObject *talkObject) {
-	Common::List<Common::Rect> areas;
-
-	Common::Rect oldTalkArea = talkEndTalk();
-
-	if (!oldTalkArea.isEmpty())
-		areas.push_back(oldTalkArea);
+	talkEnd();
 
 	_talk = talkObject;
-	areas.push_back(_talk->getArea());
 
-	redrawScreen(areas);
+	requestRedraw(_talk->getArea());
 }
 
 void Graphics::talkEnd() {
-	redrawScreen(talkEndTalk());
+	if (!_talk)
+		return;
+
+	requestRedraw(_talk->getArea());
+
+	delete _talk;
+	_talk = 0;
 }
 
-void Graphics::addRoomAnimation(const Common::String &animation, int frame)  {
+void Graphics::clearRoomAnimations() {
+	for (int i = 0; i < kLayerCount; i++)
+		_spriteQueue[i].clear();
+}
+
+void Graphics::addRoomAnimation(const Common::String &animation, SpriteRef &ref, int frame, int layer) {
+	assert(_room);
 
 	Animation *anim = _room->getAnimation(animation);
 	if (!anim)
 		return;
 
+	if ((ref.layer != -1) && (ref.anim == anim) && (ref.frame == frame))
+		return;
+
+	removeRoomAnimation(ref);
+
+	if ((frame < 0) || (frame > 99))
+		return;
+
 	anim->setFrame(frame);
 
-	blitToScreen((*anim)->getSprite(), (*anim)->getX(), (*anim)->getY(), true);
+	layer = (kLayerCount - 1) - CLIP<int>(layer, 0, (kLayerCount - 1));
+
+	_spriteQueue[layer].push_back(&**anim);
+
+	requestRedraw((*anim)->getArea());
+
+	ref.layer = layer;
+	ref.it    = _spriteQueue[layer].reverse_begin();
+	ref.anim  = anim;
+	ref.frame = frame;
 }
 
+void Graphics::removeRoomAnimation(SpriteRef &ref) {
+	if (ref.layer < 0)
+		return;
+
+	requestRedraw((*ref.it)->getArea());
+
+	_spriteQueue[ref.layer].erase(ref.it);
+
+	ref.layer = -1;
+}
+
+/*
 void Graphics::blitToScreen(const Sprite &from, Common::Rect area,
 		uint32 x, uint32 y, bool transp) {
 
@@ -240,6 +269,7 @@ void Graphics::blitToScreenDouble(const Sprite &from, uint32 x, uint32 y, bool t
 
 	dirtyRectsAdd(area);
 }
+*/
 
 void Graphics::mergePalette(Sprite &from) {
 	debugC(2, kDebugGraphics, "Merging palettes");
@@ -256,54 +286,9 @@ const Palette &Graphics::getPalette() const {
 	return _gamePalette;
 }
 
-void Graphics::redraw(ScreenPart part) {
-	Common::Rect rect;
-
-	switch (part) {
-	case kScreenPartPlayArea:
-		rect = Common::Rect(0, 0, _screenWidth, _screenHeight);
-		break;
-
-	case kScreenPartConversation:
-		rect = Common::Rect(0, 0, ConversationBox::_width, ConversationBox::_height);
-		break;
-
-	default:
-		return;
-	}
-
-	redraw(part, rect);
-}
-
-void Graphics::redraw(ScreenPart part, Common::Rect &rect) {
-	if (rect.isEmpty())
-		return;
-
-	Common::List<Common::Rect> rects;
-
-	rects.push_back(rect);
-
-	redraw(part, rects);
-}
-
-void Graphics::redraw(ScreenPart part, Common::List<Common::Rect> &rects) {
-	debugC(3, kDebugGraphics, "Redraw part %d", part);
-
-	switch (part) {
-	case kScreenPartPlayArea:
-		redrawScreen(rects);
-		break;
-
-	case kScreenPartConversation:
-		for (Common::List<Common::Rect>::iterator it = rects.begin(); it != rects.end(); ++it)
-			it->moveTo(_conversationX, _conversationY);
-
-		redrawScreen(rects);
-		break;
-	}
-}
-
 void Graphics::retrace() {
+	redraw();
+
 	if (dirtyRectsApply())
 		g_system->updateScreen();
 }
@@ -318,7 +303,7 @@ void Graphics::dirtyRectsAdd(const Common::Rect &rect) {
 		return;
 
 	if ((rect.left == 0) && (rect.top == 0) &&
-	    (rect.right >= ((int) _screenWidth)) && (rect.bottom >= ((int) _screenHeight))) {
+	    (rect.right >= ((int) kScreenWidth)) && (rect.bottom >= ((int) kScreenHeight))) {
 
 		dirtyAll();
 		return;
@@ -330,12 +315,18 @@ void Graphics::dirtyRectsAdd(const Common::Rect &rect) {
 		return;
 	}
 
-	_dirtyRects.push_back(rect);
-}
+/*
+	// If the rectangle intersects with an already existing one, merge them
+	for (Common::List<Common::Rect>::iterator it = _dirtyRects.begin(); it != _dirtyRects.end(); ++it) {
+		if(it->intersects(rect)) {
+			it->extend(rect);
+			return;
+		}
+	}
+*/
 
-void Graphics::dirtyRectsAdd(const Common::List<Common::Rect> &rects) {
-	for (Common::List<Common::Rect>::const_iterator it = rects.begin(); it != rects.end(); ++it)
-		dirtyRectsAdd(*it);
+	// Otherwise, add it as a separate one
+	_dirtyRects.push_back(rect);
 }
 
 bool Graphics::dirtyRectsApply() {
@@ -386,45 +377,55 @@ void Graphics::registerBackground(const Sprite &background) {
 
 	_conversationBox->newPalette();
 
-	redrawScreen(_background->getArea());
+	requestRedraw();
 }
 
 void Graphics::unregisterBackground() {
 	_background = 0;
+	requestRedraw();
 }
 
-void Graphics::redrawScreen(const Common::Rect &rect) {
+void Graphics::requestRedraw() {
+	requestRedraw(Common::Rect(0, 0, kScreenWidth, kScreenHeight));
+}
+
+void Graphics::requestRedraw(const Common::Rect &rect) {
+	dirtyRectsAdd(rect);
+}
+
+void Graphics::redraw() {
+	if (_dirtyAll) {
+		redraw(Common::Rect(0, 0, kScreenWidth, kScreenHeight));
+		return;
+	}
+
+	for (Common::List<Common::Rect>::iterator it = _dirtyRects.begin(); it != _dirtyRects.end(); ++it)
+		redraw(*it);
+}
+
+void Graphics::redraw(const Common::Rect &rect) {
 	if (rect.isEmpty())
 		return;
 
-	Common::List<Common::Rect> rects;
-
-	rects.push_back(rect);
-
-	redrawScreen(rects);
-}
-
-void Graphics::redrawScreen(const Common::List<Common::Rect> &rects) {
-	assert(_conversationBox);
-
-	if (_movieMode) {
-		dirtyRectsAdd(rects);
+	if (_movie->isPlaying()) {
+		_movie->redraw(_screen, rect);
 		return;
 	}
 
 	if (_background)
-		for (Common::List<Common::Rect>::const_iterator it = rects.begin(); it != rects.end(); ++it)
-			blitToScreen(*_background, *it, it->left, it->top, false);
+		_screen.blit(*_background, rect, rect.left, rect.top, false);
+
+	for (int i = 0; i < kLayerCount; i++) {
+		for (SpriteQueue::iterator it = _spriteQueue[i].begin(); it != _spriteQueue[i].end(); ++it) {
+			(*it)->redraw(_screen, rect);
+		}
+	}
 
 	if (_talk)
-		for (Common::List<Common::Rect>::const_iterator it = rects.begin(); it != rects.end(); ++it)
-			_talk->redraw(_screen, *it);
+		_talk->redraw(_screen, rect);
 
-	if (_conversationBox->isActive())
-		for (Common::List<Common::Rect>::const_iterator it = rects.begin(); it != rects.end(); ++it)
-			_conversationBox->redraw(_screen, _conversationX, _conversationY, *it);
-
-	dirtyRectsAdd(rects);
+	if (_conversationBox && _conversationBox->isActive())
+		_conversationBox->redraw(_screen, rect);
 }
 
 } // End of namespace DarkSeed2

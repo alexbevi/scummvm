@@ -27,7 +27,6 @@
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
-#include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/music.h"
 
@@ -217,13 +216,16 @@ void RoomConfigSprite::updateStatus() {
 
 	startWait(100);
 
-	_graphics->addRoomAnimation(_anim, _sequence[_curPos]);
-	// TODO: Register frame _sequence[_curPos];
+	_graphics->addRoomAnimation(_anim, _currentSprite, _sequence[_curPos], _status[0]);
 
 	if (++_curPos >= _sequence.size()) {
 		stop();
 
 		applyChanges();
+
+		if (_status[4] != 1)
+			_graphics->removeRoomAnimation(_currentSprite);
+
 	}
 
 }

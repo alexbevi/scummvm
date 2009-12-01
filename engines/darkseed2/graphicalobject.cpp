@@ -63,7 +63,7 @@ TextObject::TextObject(const Common::String &text, uint32 x, uint32 y,
 	_color = color;
 
 	if (maxWidth == 0)
-		maxWidth = Graphics::_screenWidth;
+		maxWidth = Graphics::kScreenWidth;
 
 	// We want the big font
 	::Graphics::FontManager::FontUsage fontUsage = ::Graphics::FontManager::kBigGUIFont;
@@ -104,7 +104,7 @@ void TextObject::redraw(Sprite &sprite, Common::Rect area) {
 	uint32 x = area.left;
 	uint32 y = area.top;
 
-	area.moveTo(0, 0);
+	area.moveTo(area.left - _area.left, area.top - _area.top);
 
 	sprite.blit(*_sprite, area, x, y, true);
 }
@@ -197,7 +197,7 @@ void SpriteObject::redraw(Sprite &sprite, Common::Rect area) {
 	uint32 x = area.left;
 	uint32 y = area.top;
 
-	area.moveTo(0, 0);
+	area.moveTo(area.left - _area.left, area.top - _area.top);
 
 	sprite.blit(*_sprite, area, x, y, true);
 }

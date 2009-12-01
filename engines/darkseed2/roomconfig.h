@@ -31,12 +31,12 @@
 #include "common/rect.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/graphics.h"
 
 namespace DarkSeed2 {
 
 class Resources;
 class Variables;
-class Graphics;
 
 class DATFile;
 class Music;
@@ -131,6 +131,8 @@ public:
 private:
 	Resources *_resources;
 	Graphics  *_graphics;
+
+	Graphics::SpriteRef _currentSprite;
 
 	Common::String _anim;
 	uint16 _status[6];

@@ -26,6 +26,8 @@
 #ifndef DARKSEED2_MOVIE_H
 #define DARKSEED2_MOVIE_H
 
+#include "common/rect.h"
+
 #include "sound/mixer.h"
 
 #include "engines/darkseed2/darkseed2.h"
@@ -48,8 +50,22 @@ public:
 	Movie(Audio::Mixer &mixer, Graphics &graphics);
 	~Movie();
 
+	/** Is a movie currently playing? */
+	bool isPlaying() const;
+
 	/** Play that movie. */
 	bool play(const Common::String &avi, uint32 x = 0, uint32 y = 0);
+
+	/** Stop playing that movie. */
+	void stop();
+
+	/** Check for status changes. */
+	void updateStatus();
+
+	/** Redraw the movie frame. */
+	void redraw(Sprite &sprite, Common::Rect area);
+
+	uint32 getFrameWaitTime() const;
 
 private:
 	static const bool _doubleHalfSizedVideos = true;
@@ -57,15 +73,15 @@ private:
 	Audio::Mixer *_mixer;
 	Graphics *_graphics;
 
+	Common::Rect _area;
+
+	bool _doubling;
+	bool _cursorVisible;
+
 	/** The AVI decoder. */
 	::Graphics::AviDecoder *_aviDecoder;
 
-	bool _abort; ///< Movie canceling requested?
-
 	Sprite _buffer; ///< The current frame's buffer.
-
-	/** Handle the user input. */
-	void handleInput();
 };
 
 } // End of namespace DarkSeed2

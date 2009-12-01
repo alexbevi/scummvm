@@ -34,6 +34,11 @@
 
 namespace DarkSeed2 {
 
+static const uint32 kTextAreaWidth  = 512; ///< The width of the raw text area.
+static const uint32 kTextAreaHeight =  50; ///< The height of the raw text area.
+static const uint32 kTextHeight     =  14; ///< The height of a text line.
+static const uint32 kTextMargin     =  90; ///< The maximum width of a text line.
+
 ConversationBox::Line::Line(TalkLine *line, byte color) {
 	talk = line;
 	if (talk) {
@@ -91,7 +96,9 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 
 	_conversation = new Conversation(*_variables);
 
-	_box.create(_width, _height);
+	_area = Common::Rect(kWidth, kHeight);
+
+	_box.create(kWidth, kHeight);
 
 	_origSprites = new Sprite[4];
 	_sprites     = new Sprite[6];
@@ -110,12 +117,12 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 	updateColors();
 
 	// Regions of the three visible lines
-	_textAreas[0] = Common::Rect(_textMargin, _textHeight * 1,
-			_width - 2 * _textMargin, _textHeight * 2);
-	_textAreas[1] = Common::Rect(_textMargin, _textHeight * 2,
-			_width - 2 * _textMargin, _textHeight * 3);
-	_textAreas[2] = Common::Rect(_textMargin, _textHeight * 3,
-			_width - 2 * _textMargin, _textHeight * 4);
+	_textAreas[0] = Common::Rect(kTextMargin, kTextHeight * 1,
+			kWidth - 2 * kTextMargin, kTextHeight * 2);
+	_textAreas[1] = Common::Rect(kTextMargin, kTextHeight * 2,
+			kWidth - 2 * kTextMargin, kTextHeight * 3);
+	_textAreas[2] = Common::Rect(kTextMargin, kTextHeight * 3,
+			kWidth - 2 * kTextMargin, kTextHeight * 4);
 
 	_scrollAreas[0] = Common::Rect(15, 24, 34, 40); // Scroll up button
 	_scrollAreas[1] = Common::Rect(15, 41, 34, 57); // Scroll down button
@@ -198,8 +205,8 @@ void ConversationBox::loadSprites() {
 
 	assert(loaded0 && loaded1 && loaded2 && loaded3);
 
-	_sprites[0].create(_width, _height);
-	_box.create(_width, _height);
+	_sprites[0].create(kWidth, kHeight);
+	_box.create(kWidth, kHeight);
 }
 
 void ConversationBox::resetSprites() {
@@ -211,14 +218,14 @@ void ConversationBox::resetSprites() {
 	}
 
 	// The shading grid
-	_sprites[1].create(_textAreaWidth, _textAreaHeight);
+	_sprites[1].create(kTextAreaWidth, kTextAreaHeight);
 	_sprites[1].shade(_colorBlack);
 
 	delete _markerSelect;
 	delete _markerUnselect;
 
-	_markerSelect   = new TextObject(">", _textMargin - 9, 0, _colorSelected);
-	_markerUnselect = new TextObject("-", _textMargin - 8, 0, _colorUnselected);
+	_markerSelect   = new TextObject(">", kTextMargin - 9, 0, _colorSelected);
+	_markerUnselect = new TextObject("-", kTextMargin - 8, 0, _colorUnselected);
 }
 
 void ConversationBox::rebuild() {
@@ -227,27 +234,30 @@ void ConversationBox::rebuild() {
 	_sprites[0].clear();
 
 	// Put the shading grid
-	_sprites[0].blit(_sprites[1], (_width  - _textAreaWidth ) / 2,
-	                              (_height - _textAreaHeight) / 2, true);
+	_sprites[0].blit(_sprites[1], (kWidth  - kTextAreaWidth ) / 2,
+	                              (kHeight - kTextAreaHeight) / 2, true);
 	// Put the frame
 	_sprites[0].blit(_sprites[2], 0, 0, true);
 
 	_box.blit(_sprites[0], 0, 0, false);
 }
 
-void ConversationBox::redraw(Sprite &sprite, uint32 x, uint32 y, const Common::Rect &area) {
-	Common::Rect boxArea(_box.getWidth(), _box.getHeight());
+void ConversationBox::move(uint32 x, uint32 y) {
+	_area.moveTo(x, y);
+}
 
-	boxArea.moveTo(x, y);
-
-	if (!boxArea.intersects(area))
+void ConversationBox::redraw(Sprite &sprite, Common::Rect area) {
+	if (!_area.intersects(area))
 		return;
 
-	boxArea.clip(area);
+	area.clip(_area);
 
-	boxArea.moveTo(0, 0);
+	uint32 x = area.left;
+	uint32 y = area.top;
 
-	sprite.blit(_box, boxArea, x, y, true);
+	area.moveTo(area.left - _area.left, area.top - _area.top);
+
+	sprite.blit(_box, area, x, y, true);
 }
 
 void ConversationBox::clearLines() {
@@ -343,7 +353,7 @@ void ConversationBox::drawLines() {
 		}
 	}
 
-	_graphics->redraw(kScreenPartConversation);
+	_graphics->requestRedraw(_area);
 }
 
 void ConversationBox::redrawLines() {
@@ -412,13 +422,12 @@ void ConversationBox::notifyMouseMove(uint32 x, uint32 y) {
 		// Not active => ignore user events
 		return;
 
-	// Remember mouse coordinates
-	_mouseX = x;
-	_mouseY = y;
-
 	if (_state != kStateWaitUserAction)
 		// Not at a user action state => ignore user events
 		return;
+
+	x -= _area.left;
+	y -= _area.top;
 
 	// Which line was selected?
 	uint32 selected = getTextArea(x, y);
@@ -441,6 +450,9 @@ void ConversationBox::notifyClicked(uint32 x, uint32 y) {
 	if (_state != kStateWaitUserAction)
 		// Not at a user action state => ignore user events
 		return;
+
+	x -= _area.left;
+	y -= _area.top;
 
 	// Line scrolling
 	doScroll(getScrollAction(x, y));

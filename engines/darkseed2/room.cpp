@@ -27,8 +27,9 @@
 
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/variables.h"
-#include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/script.h"
 #include "engines/darkseed2/sprite.h"
@@ -61,6 +62,9 @@ void Room::clear() {
 
 	if (_confMan)
 		_confMan->deinitRoom();
+
+	_graphics->clearRoomAnimations();
+	_graphics->unregisterBackground();
 
 	// Remove all local variables
 	_variables->clearLocal();

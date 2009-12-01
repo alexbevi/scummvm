@@ -60,8 +60,9 @@ private:
 
 	/** Waiting for something to happen. */
 	enum Wait {
-		kWaitNone,        ///< Waiting for nothing
-		kWaitConversation ///< Waiting for the conversation to end
+		kWaitNone,         ///< Waiting for nothing
+		kWaitConversation, ///< Waiting for the conversation to end
+		kWaitMovie         ///< Waiting for a movie to end
 	};
 
 	struct Script {

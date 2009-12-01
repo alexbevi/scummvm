@@ -82,6 +82,9 @@ private:
 	/** Handle user input. */
 	void handleInput();
 
+	/** Handle user input while a movie is playing. */
+	void handleMovieInput();
+
 	/** Handle mouse move events. */
 	void mouseMoved(uint32 x, uint32 y);
 	/** Handle mouse click left events. */

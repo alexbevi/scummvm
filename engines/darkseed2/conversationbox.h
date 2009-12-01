@@ -48,8 +48,8 @@ class TalkLine;
 
 class ConversationBox {
 public:
-	static const uint32 _width  = 640; ///< The box's width.
-	static const uint32 _height = 70;  ///< The box's heigth.
+	static const uint32 kWidth  = 640; ///< The box's width.
+	static const uint32 kHeight =  70; ///< The box's heigth.
 
 	ConversationBox(Resources &resources, Variables &variables,
 			Graphics &graphics, TalkManager &talkManager);
@@ -66,8 +66,10 @@ public:
 	/** Is the conversation still running? */
 	bool isActive() const;
 
+	void move(uint32 x, uint32 y);
+
 	/** Redraw the conversation box. */
-	void redraw(Sprite &sprite, uint32 x, uint32 y, const Common::Rect &area);
+	void redraw(Sprite &sprite, Common::Rect area);
 
 	/** Notify that the mouse was moved (over the box). */
 	void notifyMouseMove(uint32 x, uint32 y);
@@ -78,11 +80,6 @@ public:
 	void updateStatus();
 
 private:
-	static const uint32 _textAreaWidth  = 512; ///< The width of the raw text area.
-	static const uint32 _textAreaHeight = 50;  ///< The height of the raw text area.
-	static const uint32 _textHeight = 14;      ///< The height of a text line.
-	static const uint32 _textMargin = 90;      ///< The maximum width of a text line.
-
 	/** A scrolling action. */
 	enum ScrollAction {
 		kScrollActionUp,   ///< Scroll up.
@@ -144,6 +141,8 @@ private:
 	Graphics    *_graphics;
 	TalkManager *_talkMan;
 
+	Common::Rect _area;
+
 	/** The currently running conversation. */
 	Conversation *_conversation;
 
@@ -170,9 +169,6 @@ private:
 	byte _colorBlack;      ///< Color index of black.
 
 	State _state; ///< The current state.
-
-	uint32 _mouseX; ///< The X coordinate of the current mouse position.
-	uint32 _mouseY; ///< The Y coordinate of the current mouse position.
 
 	uint16 _curReply;                       ///< The current playing reply.
 	Common::Array<TalkLine *> _nextReplies; ///< The replies playing next.

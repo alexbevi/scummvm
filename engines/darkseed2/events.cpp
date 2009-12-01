@@ -33,6 +33,7 @@
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/inter.h"
+#include "engines/darkseed2/movie.h"
 
 namespace DarkSeed2 {
 
@@ -139,6 +140,22 @@ void Events::mainLoop(bool finishScripts) {
 	bool scriptStateChanged;
 
 	while (!_vm->shouldQuit()) {
+		if (_vm->_movie->isPlaying()) {
+			// Special mode for movie playing
+			handleMovieInput();
+
+			_vm->_movie->updateStatus();
+
+			// Update screen
+			_vm->_graphics->retrace();
+			g_system->updateScreen();
+
+			// Wait
+			g_system->delayMillis(_vm->_movie->getFrameWaitTime());
+
+			continue;
+		}
+
 		// Look for user input
 		handleInput();
 
@@ -225,6 +242,23 @@ void Events::handleInput() {
 		mouseMoved(mouseX, mouseY);
 }
 
+void Events::handleMovieInput() {
+	Common::Event event;
+
+	while (g_system->getEventManager()->pollEvent(event)) {
+		switch (event.type) {
+		case Common::EVENT_KEYDOWN:
+			if (event.kbd.keycode == Common::KEYCODE_ESCAPE)
+				// Aborting the movie
+				_vm->_movie->stop();
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
 void Events::mouseMoved(uint32 x, uint32 y) {
 	if (_inIntro) {
 		// Mouse in a button area?
@@ -238,11 +272,7 @@ void Events::mouseMoved(uint32 x, uint32 y) {
 
 	// Update conversation box
 	if (_vm->_graphics->getConversationBox().isActive()) {
-		uint32 convX = x - Graphics::_conversationX;
-		uint32 convY = y - Graphics::_conversationY;
-
-		_vm->_graphics->getConversationBox().notifyMouseMove(convX, convY);
-
+		_vm->_graphics->getConversationBox().notifyMouseMove(x, y);
 		return;
 	}
 
@@ -273,12 +303,8 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 	}
 
 	// Update conversation box
-	if (_vm->_graphics->getConversationBox().isActive()) {
-		uint32 convX = x - Graphics::_conversationX;
-		uint32 convY = y - Graphics::_conversationY;
-
-		_vm->_graphics->getConversationBox().notifyClicked(convX, convY);
-	}
+	if (_vm->_graphics->getConversationBox().isActive())
+		_vm->_graphics->getConversationBox().notifyClicked(x, y);
 
 	// Did we click any objects? (But ignore if we're doing something important)
 	if (_vm->_variables->get("SysCall") == 0) {

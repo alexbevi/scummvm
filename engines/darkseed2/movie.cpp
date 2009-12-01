@@ -39,89 +39,109 @@ Movie::Movie(Audio::Mixer &mixer, Graphics &graphics) {
 	_mixer    = &mixer;
 	_graphics = &graphics;
 
+	_doubling = false;
+	_cursorVisible = false;
+
 	_aviDecoder = new ::Graphics::AviDecoder(_mixer, Audio::Mixer::kSFXSoundType);
 }
 
 Movie::~Movie() {
+	stop();
 	delete _aviDecoder;
+}
+
+bool Movie::isPlaying() const {
+	return _aviDecoder->isVideoLoaded();
 }
 
 bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 	debugC(-1, kDebugMovie, "Playing movie \"%s\"", avi.c_str());
 
-	if (!_aviDecoder->loadFile((avi + ".avi").c_str()))
+	stop();
+
+	if (!_aviDecoder->loadFile((avi + ".avi").c_str())) {
+		stop();
 		return false;
+	}
 
+	_area = Common::Rect(_aviDecoder->getWidth(), _aviDecoder->getHeight());
 	_buffer.create(_aviDecoder->getWidth(), _aviDecoder->getHeight());
-
-	_abort = false;
 
 	_graphics->enterMovieMode();
 
-	bool doubl = false;
-	if (_doubleHalfSizedVideos) {
-		if ((_aviDecoder->getWidth() == 320) && (_aviDecoder->getHeight() == 240)) {
-			doubl = true;
-			x = 0;
-			y = 0;
-		}
-	}
+	_doubling = false;
+	if (_doubleHalfSizedVideos)
+		if ((_aviDecoder->getWidth() == 320) && (_aviDecoder->getHeight() == 240))
+			_doubling = true;
 
-	// Switching off the cursor
-	bool cursorVisible = CursorMan.isVisible();
+	if (_doubling) {
+		x = 0;
+		y = 0;
+
+		_area.setWidth (_area.width () * 2);
+		_area.setHeight(_area.height() * 2);
+	} else
+		_area.moveTo(x, y);
+
+	_cursorVisible = CursorMan.isVisible();
 	CursorMan.showMouse(false);
 
-	while (!_abort && (_aviDecoder->getCurFrame() <= _aviDecoder->getFrameCount())) {
-		_aviDecoder->decodeNextFrame();
-		_aviDecoder->copyFrameToBuffer(_buffer.getData(), 0, 0, _buffer.getWidth());
+	return true;
+}
 
-		_graphics->assertPalette0();
+void Movie::updateStatus() {
+	if (!isPlaying())
+		return;
 
-		if (doubl)
-			_graphics->blitToScreenDouble(_buffer, x, y, false);
-		else
-			_graphics->blitToScreen(_buffer, x, y, false);
-
-		_graphics->retrace();
-
-		int32 waitTime = _aviDecoder->getFrameWaitTime();
-		if (waitTime > 0)
-			g_system->delayMillis(waitTime);
-
-		handleInput();
+	if (_aviDecoder->getCurFrame() >= _aviDecoder->getFrameCount()) {
+		stop();
+		return;
 	}
 
+	_aviDecoder->decodeNextFrame();
+	_aviDecoder->copyFrameToBuffer(_buffer.getData(), 0, 0, _buffer.getWidth());
+
+	_graphics->assertPalette0();
+
+	_graphics->requestRedraw(_area);
+}
+
+void Movie::redraw(Sprite &sprite, Common::Rect area) {
+	if (!_area.intersects(area))
+		return;
+
+	area.clip(_area);
+
+	uint32 x = area.left;
+	uint32 y = area.top;
+
+	area.moveTo(area.left - _area.left, area.top - _area.top);
+
+	if (_doubling)
+		sprite.blitDouble(_buffer, area, x, y, false);
+	else
+		sprite.blit(_buffer, area, x, y, false);
+}
+
+uint32 Movie::getFrameWaitTime() const {
+	if (!isPlaying())
+		return 0;
+
+	return _aviDecoder->getFrameWaitTime();
+}
+
+void Movie::stop() {
+	if (!isPlaying())
+		return;
+
 	// Restoring the cursor visibility
-	CursorMan.showMouse(cursorVisible);
+	CursorMan.showMouse(_cursorVisible);
 
 	_buffer.clear();
 
 	_aviDecoder->closeFile();
 
 	_graphics->leaveMovieMode();
-
-	return true;
-}
-
-void Movie::handleInput() {
-	Common::Event event;
-
-	while (g_system->getEventManager()->pollEvent(event)) {
-		switch (event.type) {
-		case Common::EVENT_KEYDOWN:
-			if (event.kbd.keycode == Common::KEYCODE_ESCAPE)
-				_abort = true;
-			break;
-
-		case Common::EVENT_QUIT:
-			_abort = true;
-			break;
-
-		default:
-			break;
-
-		}
-	}
 }
 
 } // End of namespace DarkSeed2

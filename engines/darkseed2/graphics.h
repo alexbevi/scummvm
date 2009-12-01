@@ -43,31 +43,37 @@ class Resources;
 class Variables;
 class TalkManager;
 class RoomConfigManager;
+class Movie;
 
 class ConversationBox;
 class Room;
 
 class Resource;
 class TextObject;
-
-/** A screen part. */
-enum ScreenPart {
-	kScreenPartPlayArea,    ///< The play area.
-	kScreenPartConversation ///< The conversation box.
-};
+class SpriteObject;
+class Animation;
 
 class Graphics {
 public:
-	static const uint32 _screenWidth  = 640;  ///< The screen width.
-	static const uint32 _screenHeight = 480;  ///< The screen height.
-	static const uint32 _conversationX = 0;   ///< The conversation box's x coordinate.
-	static const uint32 _conversationY = 410; ///< The conversation box's y coordinate.
+	typedef Common::List<SpriteObject *> SpriteQueue;
+
+	struct SpriteRef {
+		SpriteQueue::iterator it;
+		int layer;
+		Animation *anim;
+		int frame;
+
+		SpriteRef();
+	};
+
+	static const uint32 kScreenWidth  = 640;  ///< The screen width.
+	static const uint32 kScreenHeight = 480;  ///< The screen height.
 
 	Graphics(Resources &resources, Variables &variables);
 	~Graphics();
 
 	/** Init the graphics subsystem. */
-	void init(TalkManager &talkManager, RoomConfigManager &roomConfigManager);
+	void init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie);
 
 	/** Get the conversation box. */
 	ConversationBox &getConversationBox();
@@ -96,17 +102,22 @@ public:
 	/** End the current talk. */
 	void talkEnd();
 
-	void addRoomAnimation(const Common::String &animation, int frame);
+	void clearRoomAnimations();
+
+	void addRoomAnimation(const Common::String &animation, SpriteRef &ref, int frame, int layer);
+	void removeRoomAnimation(SpriteRef &ref);
 
 	/** Blit the sprite to the screen. */
-	void blitToScreen(const Sprite &from, Common::Rect area,
-			uint32 x, uint32 y, bool transp = false);
+	// void blitToScreen(const Sprite &from, Common::Rect area,
+			//uint32 x, uint32 y, bool transp = false);
 	/** Blit the sprite to the screen. */
-	void blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp = false);
+	// void blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp = false);
 
+/*
 	void blitToScreenDouble(const Sprite &from, Common::Rect area,
 			uint32 x, uint32 y, bool transp = false);
 	void blitToScreenDouble(const Sprite &from, uint32 x, uint32 y, bool transp = false);
+*/
 
 	/** Merge the sprite's palette into the current game palette. */
 	void mergePalette(Sprite &sprite);
@@ -114,12 +125,10 @@ public:
 	/** Get the game palette. */
 	const Palette &getPalette() const;
 
-	/** Redraw that screen part. */
-	void redraw(ScreenPart part);
-	/** Redraw that area in that screen part. */
-	void redraw(ScreenPart part, Common::Rect &rect);
-	/** Redraw thease areas in that screen part. */
-	void redraw(ScreenPart part, Common::List<Common::Rect> &rects);
+	/** Request a redraw of the whole screen. */
+	void requestRedraw();
+	/** Request a redraw of that screen area. */
+	void requestRedraw(const Common::Rect &rect);
 
 	/** Copy the screen to the ScummVM screen. */
 	void retrace();
@@ -130,8 +139,11 @@ public:
 	void unregisterBackground();
 
 private:
+	static const int kLayerCount = 30;
+
 	Resources *_resources;
 	Variables *_variables;
+	Movie     *_movie;
 
 	ConversationBox *_conversationBox; ///< The conversation box.
 	Room *_room;                       ///< The current room.
@@ -139,7 +151,7 @@ private:
 	Palette _gamePalette; ///< The game palette.
 	Sprite _screen;       ///< The game screen.
 
-	Common::List<Common::Rect> _dirtyRects; ///< The dirty rectangle.
+	Common::List<Common::Rect> _dirtyRects; ///< The dirty rectangles.
 	bool _dirtyAll;                         ///< Whole screen dirty?
 
 	const Sprite *_background; ///< The current background.
@@ -148,24 +160,22 @@ private:
 
 	bool _movieMode;
 
+	SpriteQueue _spriteQueue[kLayerCount];
+
 	/** Initialize the game palette. */
 	void initPalette();
 	/** Apply the game palette. */
 	void applyGamePalette();
 
-	Common::Rect talkEndTalk();
-
+	/** Redraw the dirty screen areas. */
+	void redraw();
 	/** Redraw that area of the game screen. */
-	void redrawScreen(const Common::Rect &rect);
-	/** Redraw these areas of the game screen. */
-	void redrawScreen(const Common::List<Common::Rect> &rects);
+	void redraw(const Common::Rect &rect);
 
 	/** Dirty the whole screen. */
 	void dirtyAll();
 	/** Add that area to the dirty rectangles. */
 	void dirtyRectsAdd(const Common::Rect &rect);
-	/** Add these areas to the dirty rectangles. */
-	void dirtyRectsAdd(const Common::List<Common::Rect> &rects);
 	/** Copy all dirty areas to the screen. */
 	bool dirtyRectsApply();
 };
