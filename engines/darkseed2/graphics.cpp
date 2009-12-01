@@ -62,8 +62,6 @@ Graphics::Graphics(Resources &resources, Variables &variables) {
 
 	_talk = 0;
 
-	_movieMode = false;
-
 	_conversationBox = 0;
 	_room            = 0;
 }
@@ -192,24 +190,32 @@ void Graphics::addRoomAnimation(const Common::String &animation, SpriteRef &ref,
 
 	Animation *anim = _room->getAnimation(animation);
 	if (!anim)
+		// No animation
 		return;
 
 	if ((ref.layer != -1) && (ref.anim == anim) && (ref.frame == frame))
+		// The animation is already at that frame
 		return;
 
+	// Remove the old frame
 	removeRoomAnimation(ref);
 
 	if ((frame < 0) || (frame > 99))
+		// Broken frame number
 		return;
 
 	anim->setFrame(frame);
 
+	// Set the layer and flip the order
 	layer = (kLayerCount - 1) - CLIP<int>(layer, 0, (kLayerCount - 1));
 
+	// Push it into the queue
 	_spriteQueue[layer].push_back(&**anim);
 
+	// We need to redraw that area
 	requestRedraw((*anim)->getArea());
 
+	// Refresh reference
 	ref.layer = layer;
 	ref.it    = _spriteQueue[layer].reverse_begin();
 	ref.anim  = anim;
@@ -218,58 +224,18 @@ void Graphics::addRoomAnimation(const Common::String &animation, SpriteRef &ref,
 
 void Graphics::removeRoomAnimation(SpriteRef &ref) {
 	if (ref.layer < 0)
+		// Empty reference
 		return;
 
+	// We need to redraw that area
 	requestRedraw((*ref.it)->getArea());
 
+	// Remove the animation frame from the queue
 	_spriteQueue[ref.layer].erase(ref.it);
 
+	// Marking reference as empty
 	ref.layer = -1;
 }
-
-/*
-void Graphics::blitToScreen(const Sprite &from, Common::Rect area,
-		uint32 x, uint32 y, bool transp) {
-
-	_screen.blit(from, area, x, y, transp);
-
-	area.moveTo(x, y);
-	dirtyRectsAdd(area);
-}
-
-void Graphics::blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp) {
-	_screen.blit(from, x, y, transp);
-
-	Common::Rect area = from.getArea();
-
-	area.moveTo(x, y);
-	dirtyRectsAdd(area);
-}
-
-void Graphics::blitToScreenDouble(const Sprite &from, Common::Rect area,
-		uint32 x, uint32 y, bool transp) {
-
-	_screen.blitDouble(from, area, x, y, transp);
-
-	area.moveTo(x, y);
-	area.setWidth (area.width () * 2);
-	area.setHeight(area.height() * 2);
-
-	dirtyRectsAdd(area);
-}
-
-void Graphics::blitToScreenDouble(const Sprite &from, uint32 x, uint32 y, bool transp) {
-	_screen.blitDouble(from, x, y, transp);
-
-	Common::Rect area = from.getArea();
-
-	area.moveTo(x, y);
-	area.setWidth (area.width () * 2);
-	area.setHeight(area.height() * 2);
-
-	dirtyRectsAdd(area);
-}
-*/
 
 void Graphics::mergePalette(Sprite &from) {
 	debugC(2, kDebugGraphics, "Merging palettes");

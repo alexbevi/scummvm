@@ -102,22 +102,13 @@ public:
 	/** End the current talk. */
 	void talkEnd();
 
+	/** Clear all room animations. */
 	void clearRoomAnimations();
 
+	/** Add/Set a room animation frame. */
 	void addRoomAnimation(const Common::String &animation, SpriteRef &ref, int frame, int layer);
+	/** Remove a room animation frame from the rendering queue. */
 	void removeRoomAnimation(SpriteRef &ref);
-
-	/** Blit the sprite to the screen. */
-	// void blitToScreen(const Sprite &from, Common::Rect area,
-			//uint32 x, uint32 y, bool transp = false);
-	/** Blit the sprite to the screen. */
-	// void blitToScreen(const Sprite &from, uint32 x, uint32 y, bool transp = false);
-
-/*
-	void blitToScreenDouble(const Sprite &from, Common::Rect area,
-			uint32 x, uint32 y, bool transp = false);
-	void blitToScreenDouble(const Sprite &from, uint32 x, uint32 y, bool transp = false);
-*/
 
 	/** Merge the sprite's palette into the current game palette. */
 	void mergePalette(Sprite &sprite);
@@ -158,8 +149,7 @@ private:
 
 	TextObject *_talk; ///< The currently active speech line.
 
-	bool _movieMode;
-
+	/** The animation frame sprites queue. */
 	SpriteQueue _spriteQueue[kLayerCount];
 
 	/** Initialize the game palette. */

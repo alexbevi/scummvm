@@ -134,8 +134,10 @@ private:
 
 	Graphics::SpriteRef _currentSprite;
 
+	/** The animation name. */
 	Common::String _anim;
 	uint16 _status[6];
+	/** The frame sequence to cycle through. */
 	Common::Array<uint8> _sequence;
 	uint8 _spriteIDX;
 	Common::String _effect;
@@ -151,6 +153,7 @@ private:
 	/** The current position within the sequence. */
 	uint _curPos;
 
+	// Parsing helpers
 	bool parseStatus(const Common::String &args);
 	bool parseSequence(const Common::String &args);
 };

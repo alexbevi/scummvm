@@ -69,6 +69,7 @@ bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 
 	_graphics->enterMovieMode();
 
+	// Check for doubling
 	_doubling = false;
 	if (_doubleHalfSizedVideos)
 		if ((_aviDecoder->getWidth() == 320) && (_aviDecoder->getHeight() == 240))

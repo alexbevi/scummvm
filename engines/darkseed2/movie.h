@@ -65,6 +65,7 @@ public:
 	/** Redraw the movie frame. */
 	void redraw(Sprite &sprite, Common::Rect area);
 
+	/** Return the time to wait until the next frame can be displayed. */
 	uint32 getFrameWaitTime() const;
 
 private:
@@ -73,10 +74,11 @@ private:
 	Audio::Mixer *_mixer;
 	Graphics *_graphics;
 
+	/** The movie's area. */
 	Common::Rect _area;
 
-	bool _doubling;
-	bool _cursorVisible;
+	bool _doubling;      ///< Double the video's resolution?
+	bool _cursorVisible; ///< Was the cursor visible at the start?
 
 	/** The AVI decoder. */
 	::Graphics::AviDecoder *_aviDecoder;

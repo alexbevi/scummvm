@@ -203,7 +203,10 @@ void RoomConfigSprite::updateStatus() {
 	assert(isLoaded());
 
 	if (!isRunning()) {
+		// Not running
+
 		if (!conditionsMet())
+			// But conditions are not met, abort
 			return;
 
 		run();
@@ -212,18 +215,25 @@ void RoomConfigSprite::updateStatus() {
 	}
 
 	if (!waited())
+		// We still need to wait until we can display the next frame
 		return;
 
+	// Start the waiting timer for the next frame
 	startWait(100);
 
+	// Update animation frame
 	_graphics->addRoomAnimation(_anim, _currentSprite, _sequence[_curPos], _status[0]);
 
 	if (++_curPos >= _sequence.size()) {
+		// We've reached the end
 		stop();
 
+		// Apply variable changes
 		applyChanges();
 
+		// Permanent animation?
 		if (_status[4] != 1)
+			// If not, remove the animation frame
 			_graphics->removeRoomAnimation(_currentSprite);
 
 	}
