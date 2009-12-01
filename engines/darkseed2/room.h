@@ -53,6 +53,9 @@ public:
 	/** Get the room's background. */
 	const Sprite &getBackground() const;
 
+	/** Clip the rectangle to the room area. */
+	void clipToRoom(Common::Rect &rect) const;
+
 	/** Get the room's entry logic scripts. */
 	Common::List<ScriptChunk *> &getEntryScripts();
 

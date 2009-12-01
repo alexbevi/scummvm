@@ -381,9 +381,12 @@ void Graphics::redraw(const Common::Rect &rect) {
 	if (_background)
 		_screen.blit(*_background, rect, rect.left, rect.top, false);
 
+	// Clip the area for animation sprite redraw to the room area
+	Common::Rect spriteArea = rect;
+	_room->clipToRoom(spriteArea);
 	for (int i = 0; i < kLayerCount; i++) {
 		for (SpriteQueue::iterator it = _spriteQueue[i].begin(); it != _spriteQueue[i].end(); ++it) {
-			(*it)->redraw(_screen, rect);
+			(*it)->redraw(_screen, spriteArea);
 		}
 	}
 

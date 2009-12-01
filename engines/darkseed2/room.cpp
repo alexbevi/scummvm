@@ -107,6 +107,10 @@ const Sprite &Room::getBackground() const {
 	return *_background;
 }
 
+void Room::clipToRoom(Common::Rect &rect) const {
+	rect.clip(_area);
+}
+
 Common::List<ScriptChunk *> &Room::getEntryScripts() {
 	return _entryScripts;
 }
