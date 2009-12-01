@@ -144,13 +144,15 @@ bool Variables::evalConditionPart(const Common::String &conditionPart) const {
 				conditionPart.c_str());*/
 		return get(conditionPart.c_str() + 1, 0) == 23;
 	else if (conditionPart[0] == '+')
-		warning("Variables::evalConditionPart(): "
+/*		warning("Variables::evalConditionPart(): "
 				"Meaning of '+' not yet understood in condition part \"%s\"",
-				conditionPart.c_str());
+				conditionPart.c_str());*/
+		return get(conditionPart.c_str() + 1, 0) == 24;
 	else if (conditionPart[0] == '@')
-		warning("Variables::evalConditionPart(): "
+/*		warning("Variables::evalConditionPart(): "
 				"Meaning of '@' not yet understood in condition part \"%s\"",
-				conditionPart.c_str());
+				conditionPart.c_str());*/
+		return get(conditionPart.c_str() + 1, 0) == 25;
 	else if (conditionPart[0] == '!')
 		return get(conditionPart.c_str() + 1, 0) == 0;
 	else if (conditionPart[0] == '=') {
@@ -188,13 +190,15 @@ void Variables::evalChangePart(const Common::String &changePart) {
 				"Meaning of '*' not yet understood in change part \"%s\"",
 				changePart.c_str());*/
 	else if (changePart[0] == '+')
-		warning("Variables::evalChangePart(): "
+		set(changePart.c_str() + 1, 24);
+/*		warning("Variables::evalChangePart(): "
 				"Meaning of '+' not yet understood in change part \"%s\"",
-				changePart.c_str());
+				changePart.c_str());*/
 	else if (changePart[0] == '@')
-		warning("Variables::evalChangePart(): "
+		set(changePart.c_str() + 1, 25);
+/*		warning("Variables::evalChangePart(): "
 				"Meaning of '@' not yet understood in change part \"%s\"",
-				changePart.c_str());
+				changePart.c_str());*/
 	else if (changePart[0] == '!')
 		set(changePart.c_str() + 1, 0);
 	else if (changePart[0] == '=') {
