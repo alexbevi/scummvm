@@ -74,7 +74,7 @@ private:
 	CursorMode _cursorMode; ///< The current cursor mode.
 	bool _cursorActive;     ///< Currently in a hotspot?
 
-	SpriteObject _titleSprites[5]; ///< Title elements.
+	SpriteObject _titleSprites[4]; ///< Title elements.
 
 	Common::String _nextRoom;
 	bool _changeRoom;

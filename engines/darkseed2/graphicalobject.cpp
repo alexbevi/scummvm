@@ -304,7 +304,8 @@ bool Animation::load(Resources &resources, const Common::String &base) {
 				// Otherwise, take the last one.
 				delete object;
 				object = _frames[i - 1];
-			}
+			} else
+				_sprites.push_back(object);
 
 		} else
 			// Actually exist, also remember it here

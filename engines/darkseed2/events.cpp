@@ -57,6 +57,8 @@ Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
 	setCursor();
 
 	_vm->_cursors->setVisible(true);
+
+	_changeRoom = false;
 }
 
 Events::~Events() {
@@ -86,23 +88,17 @@ bool Events::setupIntroSequence() {
 	// Run the main loop as long as scripts are still active
 	mainLoop(true);
 
-	// Loading title parts
-	_titleSprites[0].loadFromBMP(*_vm->_resources, "002TIT01");
-	_titleSprites[1].loadFromBMP(*_vm->_resources, "002BTN01");
-	_titleSprites[2].loadFromBMP(*_vm->_resources, "002BTN02");
-	_titleSprites[3].loadFromBMP(*_vm->_resources, "002BTN03");
-	_titleSprites[4].loadFromBMP(*_vm->_resources, "002BTN04");
+	// Loading title parts, for hotspot detection
+	_titleSprites[0].loadFromBMP(*_vm->_resources, "002BTN01");
+	_titleSprites[1].loadFromBMP(*_vm->_resources, "002BTN02");
+	_titleSprites[2].loadFromBMP(*_vm->_resources, "002BTN03");
+	_titleSprites[3].loadFromBMP(*_vm->_resources, "002BTN04");
 
-	for (int i = 0; i < 5; i++) {
-		// Draw those parts
-
+	for (int i = 0; i < 4; i++) {
 		if (_titleSprites[i].empty()) {
 			warning("Events::setupIntroSequence(): Couldn't load title screen elements");
 			return false;
 		}
-
-		_vm->_graphics->blitToScreen(_titleSprites[i].getSprite(),
-				_titleSprites[i].getX(), _titleSprites[i].getY(), true);
 	}
 
 	return true;
@@ -110,7 +106,7 @@ bool Events::setupIntroSequence() {
 
 void Events::leaveIntro() {
 	// Throw title parts away again
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 4; i++)
 		_titleSprites[i].clear();
 
 	// Intro movie room
@@ -260,15 +256,15 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 		// Mouse in a button area?
 		int titleSprite = checkTitleSprites(x, y);
 
-		if        (titleSprite == 2) {
+		if        (titleSprite == 1) {
 			// New game
 			leaveIntro();
-		} else if (titleSprite == 3) {
+		} else if (titleSprite == 2) {
 			// Load game
-		} else if (titleSprite == 4) {
+		} else if (titleSprite == 3) {
 			// Options
 			_vm->openMainMenuDialog();
-		} else if (titleSprite == 5) {
+		} else if (titleSprite == 4) {
 			// Exit
 			_vm->quitGame();
 		}
@@ -353,7 +349,7 @@ void Events::doObjectVerb(Object &object, ObjectVerb verb) {
 }
 
 int Events::checkTitleSprites(uint32 x, uint32 y) const {
-	for (int i = 1; i < 5; i++)
+	for (int i = 0; i < 4; i++)
 		if (_titleSprites[i].isIn(x, y))
 			return i + 1;
 
