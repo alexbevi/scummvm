@@ -290,6 +290,11 @@ bool RoomConfigSprite::parseLine(const Common::String &cmd, const Common::String
 
 		_changeAt = args;
 
+	} else if (cmd.equalsIgnoreCase("Speech")) {
+		// Unknown
+
+		_speech = args;
+
 	} else {
 		// Unknown
 

@@ -144,6 +144,7 @@ private:
 	Common::String _loopPoint;
 	Common::String _loadCond;
 	Common::String _changeAt;
+	Common::String _speech;
 
 	/** The current position within the sequence. */
 	uint _curPos;
