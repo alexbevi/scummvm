@@ -26,6 +26,8 @@
 #ifndef DARKSEED2_EVENTS_H
 #define DARKSEED2_EVENTS_H
 
+#include "common/list.h"
+
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/objects.h"
@@ -34,6 +36,7 @@
 namespace DarkSeed2 {
 
 class Room;
+class ScriptChunk;
 
 /** Cursor modes. */
 enum CursorMode {
@@ -82,6 +85,8 @@ private:
 	Common::String _lastRoom;
 	Common::String _nextRoom;
 	bool _changeRoom;
+
+	Common::List<ScriptChunk *> _lastAction;
 
 	/** Handle user input. */
 	void handleInput();

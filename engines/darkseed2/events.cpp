@@ -32,6 +32,7 @@
 #include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/variables.h"
+#include "engines/darkseed2/script.h"
 #include "engines/darkseed2/inter.h"
 #include "engines/darkseed2/movie.h"
 
@@ -179,6 +180,12 @@ void Events::mainLoop(bool finishScripts) {
 		if (finishScripts && !scriptStateChanged)
 			// We run only to finish the scripts, but the scripts won't do anything
 			break;
+
+		// If the script variable "LastAction" is set, queue the last object verb scripts again
+		if (_vm->_variables->get("LastAction") == 1) {
+			_vm->_variables->set("LastAction", 0);
+			_vm->_inter->interpret(_lastAction, 2);
+		}
 
 		// Room chaning
 		if (_changeRoom) {
@@ -373,7 +380,9 @@ void Events::setCursor(const Cursors::Cursor &cursor) {
 }
 
 void Events::doObjectVerb(Object &object, ObjectVerb verb) {
-	_vm->_inter->interpret(object.getScripts(verb), 2);
+	_lastAction = object.getScripts(verb);
+
+	_vm->_inter->interpret(_lastAction, 2);
 }
 
 int Events::checkTitleSprites(uint32 x, uint32 y) const {
@@ -405,6 +414,8 @@ void Events::roomLeave() {
 	_vm->_graphics->unregisterBackground();
 	_vm->_inter->clear();
 	_vm->_graphics->getRoom().clear();
+
+	_lastAction.clear();
 }
 
 bool Events::roomGo(const Common::String &room) {
