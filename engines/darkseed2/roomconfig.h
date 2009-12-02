@@ -52,6 +52,9 @@ public:
 	/** Is the RoomConfig running? */
 	bool isRunning() const;
 
+	/** Has the conditions state changed? */
+	bool stateChanged() const;
+
 	/** Parse the RoomConfig out of a DAT file. */
 	bool parse(DATFile &dat);
 
@@ -62,7 +65,7 @@ public:
 
 protected:
 	/** Are the conditions to run the RoomConfig met? */
-	bool conditionsMet() const;
+	bool conditionsMet();
 
 	/** Enter the running state. */
 	void run();
@@ -90,6 +93,9 @@ private:
 
 	/** Wait until that time stamp. */
 	uint32 _waitUntil;
+
+	bool _state;        ///< Conditions state.
+	bool _stateChanged; ///< Conditions state changed.
 
 	/** The conditions required for this RoomConfig. */
 	Common::List<Common::String> _conditions;
@@ -137,6 +143,7 @@ private:
 	/** The animation name. */
 	Common::String _anim;
 	uint16 _status[6];
+	Common::String _sequenceString;
 	/** The frame sequence to cycle through. */
 	Common::Array<uint8> _sequence;
 	uint8 _spriteIDX;

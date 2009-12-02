@@ -37,6 +37,9 @@ RoomConfig::RoomConfig(Variables &variables) : _variables(&variables) {
 	_running = false;
 
 	_waitUntil = 0;
+
+	_state        = false;
+	_stateChanged = false;
 }
 
 RoomConfig::~RoomConfig() {
@@ -48,6 +51,10 @@ bool RoomConfig::isLoaded() const {
 
 bool RoomConfig::isRunning() const {
 	return _running;
+}
+
+bool RoomConfig::stateChanged() const {
+	return _stateChanged;
 }
 
 bool RoomConfig::parse(DATFile &dat) {
@@ -90,12 +97,22 @@ bool RoomConfig::parse(DATFile &dat) {
 	return true;
 }
 
-bool RoomConfig::conditionsMet() const {
-	for (Common::List<Common::String>::const_iterator it = _conditions.begin(); it != _conditions.end(); ++it)
-		if (_variables->evalCondition(*it))
-			return true;
+bool RoomConfig::conditionsMet() {
+	bool met = false;
 
-	return false;
+	for (Common::List<Common::String>::const_iterator it = _conditions.begin(); it != _conditions.end(); ++it)
+		if (_variables->evalCondition(*it)) {
+			met = true;
+			break;
+		}
+
+	_stateChanged = false;
+	if (_state != met) {
+		_stateChanged = true;
+		_state = met;
+	}
+
+	return met;
 }
 
 void RoomConfig::run() {
@@ -111,8 +128,12 @@ void RoomConfig::stop() {
 }
 
 void RoomConfig::applyChanges() {
-	for (Common::List<Common::String>::const_iterator it = _changes.begin(); it != _changes.end(); ++it)
+	for (Common::List<Common::String>::const_iterator it = _changes.begin(); it != _changes.end(); ++it) {
+		if (!_changes.empty())
+			debugC(-1, kDebugRoomConf, "RoomConfig: Apply change set [%s]", it->c_str());
+
 		_variables->evalChange(*it);
+	}
 }
 
 void RoomConfig::startWait(uint32 millis) {
@@ -147,6 +168,9 @@ void RoomConfigMusic::updateStatus() {
 
 	if (!conditionsMet())
 		return;
+
+	if (stateChanged())
+		debugC(-1, kDebugRoomConf, "RoomConfigMusic: Changing music to \"%s\"", _midi.c_str());
 
 	_music->playMID(*_resources, _midi);
 	applyChanges();
@@ -208,6 +232,10 @@ void RoomConfigSprite::updateStatus() {
 		if (!conditionsMet())
 			// But conditions are not met, abort
 			return;
+
+		if (stateChanged())
+			if (!_sequenceString.empty())
+				debugC(-1, kDebugRoomConf, "RoomConfigSprite: Running sequence [%s]", _sequenceString.c_str());
 
 		run();
 		resetWait();
@@ -337,6 +365,11 @@ bool RoomConfigSprite::parseSequence(const Common::String &args) {
 
 	for (Common::Array<Common::String>::const_iterator it = lArgs.begin(); it != lArgs.end(); ++it)
 		_sequence.push_back(atoi(it->c_str()) - 1);
+
+	_sequenceString.clear();
+	for (Common::Array<uint8>::const_iterator it = _sequence.begin(); it != _sequence.end(); ++it)
+		_sequenceString += Common::String::printf("%d ", *it);
+	_sequenceString.trim();
 
 	return true;
 }
