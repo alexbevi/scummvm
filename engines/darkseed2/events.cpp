@@ -407,6 +407,9 @@ bool Events::roomEnter() {
 	// Evaluate the autostart objects
 	executeAutoStart(room);
 
+	// Evaluate the room config, to get the initial room sprites set up
+	_vm->_roomConfMan->updateStatus();
+
 	return true;
 }
 
