@@ -54,8 +54,10 @@ public:
 
 	/** Get the line's speaker. */
 	const Common::String &getSpeaker() const;
+	/** Get the line's speaker. */
+	uint8 getSpeakerNum() const;
 	/** Set the line's speaker. */
-	void setSpeaker(const Common::String &speaker);
+	void setSpeaker(uint8 speakerNum, const Common::String &speaker);
 
 	/** Has this line a WAV sound? */
 	bool hasWAV() const;
@@ -70,10 +72,10 @@ public:
 private:
 	const Resources *_resources;
 
-	Common::String _resource; ///< The line's resource name.
-	Common::String _name;     ///< The line's name.
-	Common::String _speaker;  ///< The line's speaker.
-
+	Common::String _resource;   ///< The line's resource name.
+	Common::String _name;       ///< The line's name.
+	Common::String _speaker;    ///< The line's speaker.
+	uint8          _speakerNum; ///< The line's speaker's number.
 	Resource *_wav;      ///< The WAV.
 	Common::String _txt; ///< The TXT.
 };

@@ -104,8 +104,13 @@ const Common::String &TalkLine::getSpeaker() const {
 	return _speaker;
 }
 
-void TalkLine::setSpeaker(const Common::String &speaker) {
-	_speaker = speaker;
+uint8 TalkLine::getSpeakerNum() const {
+	return _speakerNum;
+}
+
+void TalkLine::setSpeaker(uint8 speakerNum, const Common::String &speaker) {
+	_speakerNum = speakerNum;
+	_speaker    = speaker;
 }
 
 

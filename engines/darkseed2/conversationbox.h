@@ -170,6 +170,7 @@ private:
 
 	State _state; ///< The current state.
 
+	uint8  _curSpeaker;                     ///< The current playing line's speaker.
 	uint16 _curReply;                       ///< The current playing reply.
 	Common::Array<TalkLine *> _nextReplies; ///< The replies playing next.
 
@@ -221,6 +222,8 @@ private:
 
 	/** Speak that line. */
 	void speakLine(TalkLine &line);
+
+	void speakerVariable(uint8 speaker, bool on);
 };
 
 } // End of namespace DarkSeed2

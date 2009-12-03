@@ -472,10 +472,15 @@ void ConversationBox::updateStatus() {
 			// Still talking, we'll continue waiting
 			return;
 
+		speakerVariable(_curSpeaker, false);
+
 		// Playing the replies
 		_curReply = 0;
 		if (_curReply < _nextReplies.size())
 			speakLine(*_nextReplies[_curReply]);
+
+		_curSpeaker = _nextReplies[_curReply]->getSpeakerNum();
+		speakerVariable(_curSpeaker, true);
 
 		_state = kStatePlayingReply;
 		return;
@@ -488,9 +493,13 @@ void ConversationBox::updateStatus() {
 			// Still talking, we'll continue waiting
 			return;
 
+		speakerVariable(_curSpeaker, false);
+
 		_curReply++;
 		if (_curReply < _nextReplies.size()) {
 			speakLine(*_nextReplies[_curReply]);
+			_curSpeaker = _nextReplies[_curReply]->getSpeakerNum();
+			speakerVariable(_curSpeaker, true);
 			return;
 		}
 
@@ -518,6 +527,10 @@ void ConversationBox::pickLine(Line *line) {
 
 	// Set state
 	_state = kStatePlayingLine;
+
+	_curSpeaker = line->talk->getSpeakerNum();
+
+	speakerVariable(_curSpeaker, true);
 
 	// And advance the conversation
 	_conversation->pick(line->talk->getName());
@@ -608,6 +621,12 @@ uint32 ConversationBox::physLineNumToRealLineNum(uint32 physLineNum) const {
 
 void ConversationBox::speakLine(TalkLine &line) {
 	_talkMan->talk(line);
+}
+
+void ConversationBox::speakerVariable(uint8 speaker, bool on) {
+	Common::String speakerVar = Common::String::printf("SysTalking%d", speaker);
+
+	_variables->set(speakerVar, on ? 1 : 0);
 }
 
 } // End of namespace DarkSeed2
