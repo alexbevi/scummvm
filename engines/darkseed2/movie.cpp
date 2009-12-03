@@ -102,8 +102,6 @@ void Movie::updateStatus() {
 	_aviDecoder->decodeNextFrame();
 	_aviDecoder->copyFrameToBuffer(_buffer.getData(), 0, 0, _buffer.getWidth());
 
-	_graphics->assertPalette0();
-
 	_graphics->requestRedraw(_area);
 }
 
