@@ -184,7 +184,8 @@ void Events::mainLoop(bool finishScripts) {
 		// If the script variable "LastAction" is set, queue the last object verb scripts again
 		if (_vm->_variables->get("LastAction") == 1) {
 			_vm->_variables->set("LastAction", 0);
-			_vm->_inter->interpret(_lastAction, 2);
+			if (_lastObject)
+				_vm->_inter->interpret(_lastObject->getScripts(kObjectVerbUse), 2);
 		}
 
 		// Room chaning
@@ -380,9 +381,8 @@ void Events::setCursor(const Cursors::Cursor &cursor) {
 }
 
 void Events::doObjectVerb(Object &object, ObjectVerb verb) {
-	_lastAction = object.getScripts(verb);
-
-	_vm->_inter->interpret(_lastAction, 2);
+	_lastObject = &object;
+	_vm->_inter->interpret(object.getScripts(verb), 2);
 }
 
 int Events::checkTitleSprites(uint32 x, uint32 y) const {
@@ -418,7 +418,7 @@ void Events::roomLeave() {
 	_vm->_inter->clear();
 	_vm->_graphics->getRoom().clear();
 
-	_lastAction.clear();
+	_lastObject = 0;
 }
 
 bool Events::roomGo(const Common::String &room) {

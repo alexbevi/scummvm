@@ -86,7 +86,7 @@ private:
 	Common::String _nextRoom;
 	bool _changeRoom;
 
-	Common::List<ScriptChunk *> _lastAction;
+	Object *_lastObject;
 
 	/** Handle user input. */
 	void handleInput();
