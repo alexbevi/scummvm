@@ -127,13 +127,18 @@ void RoomConfig::stop() {
 	_running = false;
 }
 
-void RoomConfig::applyChanges() {
+bool RoomConfig::applyChanges() {
+	if (_changes.empty())
+		return false;
+
 	for (Common::List<Common::String>::const_iterator it = _changes.begin(); it != _changes.end(); ++it) {
 		if (!_changes.empty())
 			debugC(-1, kDebugRoomConf, "RoomConfig: Apply change set [%s]", it->c_str());
 
 		_variables->evalChange(*it);
 	}
+
+	return true;
 }
 
 void RoomConfig::startWait(uint32 millis) {
@@ -163,17 +168,17 @@ bool RoomConfigMusic::init() {
 	return true;
 }
 
-void RoomConfigMusic::updateStatus() {
+bool RoomConfigMusic::updateStatus() {
 	assert(isLoaded());
 
 	if (!conditionsMet())
-		return;
+		return false;
 
 	if (stateChanged())
 		debugC(-1, kDebugRoomConf, "RoomConfigMusic: Changing music to \"%s\"", _midi.c_str());
 
 	_music->playMID(*_resources, _midi);
-	applyChanges();
+	return applyChanges();
 }
 
 bool RoomConfigMusic::parseLine(const Common::String &cmd, const Common::String &args) {
@@ -223,15 +228,17 @@ bool RoomConfigSprite::init() {
 	return true;
 }
 
-void RoomConfigSprite::updateStatus() {
+bool RoomConfigSprite::updateStatus() {
 	assert(isLoaded());
 
 	if (!isRunning()) {
 		// Not running
 
-		if (!conditionsMet())
+		if (!conditionsMet()) {
 			// But conditions are not met, abort
-			return;
+			_graphics->removeRoomAnimation(_currentSprite);
+			return false;
+		}
 
 		if (stateChanged())
 			if (!_sequenceString.empty())
@@ -242,9 +249,15 @@ void RoomConfigSprite::updateStatus() {
 		_curPos = 0;
 	}
 
+	if (!conditionsMet()) {
+		stop();
+		_graphics->removeRoomAnimation(_currentSprite);
+		return false;
+	}
+
 	if (!waited())
 		// We still need to wait until we can display the next frame
-		return;
+		return false;
 
 	// Start the waiting timer for the next frame
 	startWait(100);
@@ -253,19 +266,24 @@ void RoomConfigSprite::updateStatus() {
 	_graphics->addRoomAnimation(_anim, _currentSprite, _sequence[_curPos], _status[0]);
 
 	if (++_curPos >= _sequence.size()) {
+		_curPos = 0;
 		// We've reached the end
-		stop();
+		//stop();
 
 		// Apply variable changes
-		applyChanges();
+		return applyChanges();
 
 		// Permanent animation?
-		if (_status[4] != 1)
-			// If not, remove the animation frame
-			_graphics->removeRoomAnimation(_currentSprite);
+//		if (_status[4] != 1)
+//			// If not, remove the animation frame
+			//_graphics->removeRoomAnimation(_currentSprite);
+
+//		if (_sequence.size() >= 1)
+//			updateStatus();
 
 	}
 
+	return false;
 }
 
 bool RoomConfigSprite::parseLine(const Common::String &cmd, const Common::String &args) {
@@ -392,8 +410,10 @@ bool RoomConfigPalette::init() {
 	return true;
 }
 
-void RoomConfigPalette::updateStatus() {
+bool RoomConfigPalette::updateStatus() {
 	assert(isLoaded());
+
+	return false;
 }
 
 bool RoomConfigPalette::parseLine(const Common::String &cmd, const Common::String &args) {
@@ -437,8 +457,10 @@ bool RoomConfigMirror::init() {
 	return true;
 }
 
-void RoomConfigMirror::updateStatus() {
+bool RoomConfigMirror::updateStatus() {
 	assert(isLoaded());
+
+	return false;
 }
 
 bool RoomConfigMirror::parseLine(const Common::String &cmd, const Common::String &args) {
@@ -567,8 +589,14 @@ void RoomConfigManager::deinitRoom() {
 }
 
 void RoomConfigManager::updateStatus() {
-	for (Common::List<RoomConfig *>::iterator it = _configs.begin(); it != _configs.end(); ++it)
-		(*it)->updateStatus();
+	Common::List<RoomConfig *>::iterator it = _configs.begin();
+	while (it != _configs.end()) {
+		if ((*it)->updateStatus()) {
+			it = _configs.begin();
+			continue;
+		}
+		++it;
+	}
 }
 
 bool RoomConfigManager::parseConfig(DATFile &dat) {

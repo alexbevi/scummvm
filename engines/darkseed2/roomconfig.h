@@ -61,7 +61,7 @@ public:
 	virtual bool init() = 0;
 
 	/** Check for status changes and run the RoomConfig if possible. */
-	virtual void updateStatus() = 0;
+	virtual bool updateStatus() = 0;
 
 protected:
 	/** Are the conditions to run the RoomConfig met? */
@@ -73,7 +73,7 @@ protected:
 	void stop();
 
 	/** Apply the variable change sets. */
-	void applyChanges();
+	bool applyChanges();
 
 	/** Start a waiting of that amount of milliseconds. */
 	void startWait(uint32 millis);
@@ -111,7 +111,7 @@ public:
 
 	bool init();
 
-	void updateStatus();
+	bool updateStatus();
 
 	bool parseLine(const Common::String &cmd, const Common::String &args);
 
@@ -130,7 +130,7 @@ public:
 
 	bool init();
 
-	void updateStatus();
+	bool updateStatus();
 
 	bool parseLine(const Common::String &cmd, const Common::String &args);
 
@@ -173,7 +173,7 @@ public:
 
 	bool init();
 
-	void updateStatus();
+	bool updateStatus();
 
 	bool parseLine(const Common::String &cmd, const Common::String &args);
 
@@ -193,7 +193,7 @@ public:
 
 	bool init();
 
-	void updateStatus();
+	bool updateStatus();
 
 	bool parseLine(const Common::String &cmd, const Common::String &args);
 
