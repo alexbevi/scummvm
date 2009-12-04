@@ -28,6 +28,7 @@
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
 #include "engines/darkseed2/room.h"
+#include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/music.h"
 
 namespace DarkSeed2 {
@@ -198,11 +199,12 @@ bool RoomConfigMusic::parseLine(const Common::String &cmd, const Common::String 
 }
 
 
-RoomConfigSprite::RoomConfigSprite(Variables &variables, Resources &resources, Graphics &graphics) :
-		RoomConfig(variables) {
+RoomConfigSprite::RoomConfigSprite(Variables &variables, Resources &resources,
+		Graphics &graphics, Sound &sound) : RoomConfig(variables) {
 
 	_resources = &resources;
 	_graphics  = &graphics;
+	_sound     = &sound;
 
 	for (int i = 0; i < 6; i++)
 		_status[i] = 0;
@@ -279,6 +281,12 @@ bool RoomConfigSprite::updateStatus() {
 	// Start the waiting timer for the next frame
 	startWait(100);
 
+	for (uint i = 0; i < _effects.size(); i++)
+		if (_effects[i].frameNum == _curPos) {
+			debugC(-1, kDebugRoomConf, "RoomConfigSprite: Playing effect \"%s\"", _effects[i].effect.c_str());
+			_sound->playWAV(*_resources, _effects[i].effect);
+		}
+
 	if (_curPos < _frames.size())
 		// Update animation frame
 		_graphics->addRoomAnimation(_anim, _currentSprite, _frames[_curPos].frame,
@@ -328,9 +336,10 @@ bool RoomConfigSprite::parseLine(const Common::String &cmd, const Common::String
 		_spriteIDX = atoi(args.c_str());
 
 	} else if (cmd.equalsIgnoreCase("Effect")) {
-		// Unknown
+		// SFX
 
-		_effect = args;
+		if (!parseEffect(args))
+			return false;
 
 	} else if (cmd.equalsIgnoreCase("ScaleVal")) {
 		// Unknown
@@ -408,6 +417,29 @@ bool RoomConfigSprite::parseSequence(const Common::String &args) {
 		_sequenceString += Common::String::printf("%d ", *it);
 	_sequenceString.trim();
 
+	return true;
+}
+
+bool RoomConfigSprite::parseEffect(const Common::String &args) {
+	Effect effect;
+
+	const char *space = strchr(args.c_str(), ' ');
+	if (!space) {
+		effect.frameNum = 0;
+		effect.effect   = args;
+
+		_effects.push_back(effect);
+		return true;
+	}
+
+	effect.frameNum = atoi(args.c_str()) - 1;
+
+	while (*space == ' ')
+		space++;
+
+	effect.effect = Common::String(space);
+
+	_effects.push_back(effect);
 	return true;
 }
 
@@ -776,7 +808,8 @@ bool RoomConfigManager::parseSpriteConfigs(DATFile &dat) {
 
 		dat.previous();
 
-		RoomConfigSprite *music = new RoomConfigSprite(*_vm->_variables, *_vm->_resources, *_vm->_graphics);
+		RoomConfigSprite *music =
+			new RoomConfigSprite(*_vm->_variables, *_vm->_resources, *_vm->_graphics, *_vm->_sound);
 		if (!music->parse(dat)) {
 			delete music;
 			return false;

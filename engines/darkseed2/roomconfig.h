@@ -39,6 +39,7 @@ class Resources;
 class Variables;
 
 class DATFile;
+class Sound;
 class Music;
 
 /** A generic RoomConfig base class. */
@@ -125,7 +126,8 @@ private:
 /** A sprite RoomConfig. */
 class RoomConfigSprite : public RoomConfig {
 public:
-	RoomConfigSprite(Variables &variables, Resources &resources, Graphics &graphics);
+	RoomConfigSprite(Variables &variables, Resources &resources,
+			Graphics &graphics, Sound &sound);
 	~RoomConfigSprite();
 
 	bool init();
@@ -140,8 +142,14 @@ private:
 		int32 y;
 	};
 
+	struct Effect {
+		uint32 frameNum;
+		Common::String effect;
+	};
+
 	Resources *_resources;
 	Graphics  *_graphics;
+	Sound     *_sound;
 
 	Graphics::SpriteRef _currentSprite;
 
@@ -149,8 +157,8 @@ private:
 	Common::String _anim;
 	uint16 _status[6];
 	Common::Array<Frame> _frames;
+	Common::Array<Effect> _effects;
 	uint8 _spriteIDX;
-	Common::String _effect;
 	Common::String _scaleVal;
 	Common::String _loopCond;
 	Common::String _loopPoint;
@@ -164,11 +172,12 @@ private:
 	Common::Array<int32> _posY;
 
 	/** The current position within the sequence. */
-	uint _curPos;
+	uint32 _curPos;
 
 	// Parsing helpers
 	bool parseStatus(const Common::String &args);
 	bool parseSequence(const Common::String &args);
+	bool parseEffect(const Common::String &args);
 
 	static bool parsePackedIntLine(const Common::String &args, Common::Array<int32> &ints);
 };
