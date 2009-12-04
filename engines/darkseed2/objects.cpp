@@ -56,6 +56,9 @@ bool Object::setName(const Common::String &args) {
 
 	_name = args;
 
+	if (_name.empty())
+		_name = "[UNNAMED]";
+
 	return true;
 }
 
