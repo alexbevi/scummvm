@@ -134,6 +134,12 @@ public:
 
 	bool parseLine(const Common::String &cmd, const Common::String &args);
 private:
+	struct Frame {
+		int32 frame;
+		int32 x;
+		int32 y;
+	};
+
 	Resources *_resources;
 	Graphics  *_graphics;
 
@@ -142,19 +148,20 @@ private:
 	/** The animation name. */
 	Common::String _anim;
 	uint16 _status[6];
-	Common::String _sequenceString;
-	/** The frame sequence to cycle through. */
-	Common::Array<int32> _sequence;
+	Common::Array<Frame> _frames;
 	uint8 _spriteIDX;
 	Common::String _effect;
 	Common::String _scaleVal;
-	Common::String _posX;
-	Common::String _posY;
 	Common::String _loopCond;
 	Common::String _loopPoint;
 	Common::String _loadCond;
 	Common::String _changeAt;
 	Common::String _speech;
+
+	Common::String _sequenceString;
+	Common::Array<int32> _sequence;
+	Common::Array<int32> _posX;
+	Common::Array<int32> _posY;
 
 	/** The current position within the sequence. */
 	uint _curPos;

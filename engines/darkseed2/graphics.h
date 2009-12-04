@@ -106,7 +106,8 @@ public:
 	void clearRoomAnimations();
 
 	/** Add/Set a room animation frame. */
-	void addRoomAnimation(const Common::String &animation, SpriteRef &ref, int frame, int layer);
+	void addRoomAnimation(const Common::String &animation, SpriteRef &ref,
+			int32 frame, int layer, int32 x = -1, int32 y = -1);
 	/** Remove a room animation frame from the rendering queue. */
 	void removeRoomAnimation(SpriteRef &ref);
 

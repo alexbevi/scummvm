@@ -89,6 +89,13 @@ public:
 	SpriteObject();
 	~SpriteObject();
 
+	/** Move the object to its default coordinates. */
+	void move();
+	/** Move the object. */
+	void move(uint32 x, uint32 y);
+	/** Move the object relative to its feet. */
+	void moveFeet(uint32 x, uint32 y);
+
 	/** Clear the sprite. */
 	void clear();
 

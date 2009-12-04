@@ -222,6 +222,23 @@ bool RoomConfigSprite::init() {
 			_sequence.push_back(i);
 	}
 
+	_frames.resize(_sequence.size());
+	for (uint i = 0; i < _sequence.size(); i++) {
+		_frames[i].frame = _sequence[i];
+
+		if ((i >= _posX.size()) || (i >= _posY.size())) {
+			_frames[i].x = -1;
+			_frames[i].y = -1;
+		} else {
+			_frames[i].x = _posX[i];
+			_frames[i].y = _posY[i];
+		}
+	}
+
+	_sequence.clear();
+	_posX.clear();
+	_posY.clear();
+
 	if (!_graphics->getRoom().loadAnimation(*_resources, _anim))
 		return false;
 
@@ -262,11 +279,12 @@ bool RoomConfigSprite::updateStatus() {
 	// Start the waiting timer for the next frame
 	startWait(100);
 
-	if (_curPos < _sequence.size())
+	if (_curPos < _frames.size())
 		// Update animation frame
-		_graphics->addRoomAnimation(_anim, _currentSprite, _sequence[_curPos], _status[0]);
+		_graphics->addRoomAnimation(_anim, _currentSprite, _frames[_curPos].frame,
+				_status[0], _frames[_curPos].x, _frames[_curPos].y);
 
-	if (++_curPos >= _sequence.size()) {
+	if (++_curPos >= _frames.size()) {
 		_curPos = 0;
 		// We've reached the end
 		//stop();
@@ -320,14 +338,16 @@ bool RoomConfigSprite::parseLine(const Common::String &cmd, const Common::String
 		_scaleVal = args;
 
 	} else if (cmd.equalsIgnoreCase("PosX")) {
-		// Unknown
+		// The frames' X coordinates
 
-		_scaleVal = args;
+		if (!parsePackedIntLine(args, _posX))
+			return false;
 
 	} else if (cmd.equalsIgnoreCase("PosY")) {
-		// Unknown
+		// The frames' Y coordinates
 
-		_scaleVal = args;
+		if (!parsePackedIntLine(args, _posY))
+			return false;
 
 	} else if (cmd.equalsIgnoreCase("LoopCond")) {
 		// Looping when this condition is met

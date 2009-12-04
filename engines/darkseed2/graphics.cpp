@@ -185,7 +185,9 @@ void Graphics::clearRoomAnimations() {
 		_spriteQueue[i].clear();
 }
 
-void Graphics::addRoomAnimation(const Common::String &animation, SpriteRef &ref, int frame, int layer) {
+void Graphics::addRoomAnimation(const Common::String &animation, SpriteRef &ref,
+		int32 frame, int layer, int32 x, int32 y) {
+
 	assert(_room);
 
 	Animation *anim = _room->getAnimation(animation);
@@ -208,6 +210,11 @@ void Graphics::addRoomAnimation(const Common::String &animation, SpriteRef &ref,
 
 	// Set the layer and flip the order
 	layer = (kLayerCount - 1) - CLIP<int>(layer, 0, (kLayerCount - 1));
+
+	if ((x < 0) || (y < 0))
+		(*anim)->move();
+	else
+		(*anim)->moveFeet((uint32) x, (uint32) y);
 
 	// Push it into the queue
 	_spriteQueue[layer].push_back(&**anim);

@@ -143,6 +143,18 @@ SpriteObject::~SpriteObject() {
 	delete _sprite;
 }
 
+void SpriteObject::move() {
+	move(_sprite->getDefaultX(), _sprite->getDefaultY());
+}
+
+void SpriteObject::move(uint32 x, uint32 y) {
+	GraphicalObject::move(x, y);
+}
+
+void SpriteObject::moveFeet(uint32 x, uint32 y) {
+	GraphicalObject::move(x - _sprite->getFeetX(), y - _sprite->getFeetY());
+}
+
 void SpriteObject::clear() {
 	clearArea();
 
