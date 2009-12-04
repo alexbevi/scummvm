@@ -133,7 +133,6 @@ public:
 	bool updateStatus();
 
 	bool parseLine(const Common::String &cmd, const Common::String &args);
-
 private:
 	Resources *_resources;
 	Graphics  *_graphics;
@@ -145,7 +144,7 @@ private:
 	uint16 _status[6];
 	Common::String _sequenceString;
 	/** The frame sequence to cycle through. */
-	Common::Array<uint8> _sequence;
+	Common::Array<int32> _sequence;
 	uint8 _spriteIDX;
 	Common::String _effect;
 	Common::String _scaleVal;
@@ -163,6 +162,8 @@ private:
 	// Parsing helpers
 	bool parseStatus(const Common::String &args);
 	bool parseSequence(const Common::String &args);
+
+	static bool parsePackedIntLine(const Common::String &args, Common::Array<int32> &ints);
 };
 
 /** A palette RoomConfig. */

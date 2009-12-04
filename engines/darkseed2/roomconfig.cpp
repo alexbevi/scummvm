@@ -252,7 +252,7 @@ bool RoomConfigSprite::updateStatus() {
 	if (!conditionsMet()) {
 		stop();
 		_graphics->removeRoomAnimation(_currentSprite);
-		return false;
+		return true;
 	}
 
 	if (!waited())
@@ -380,15 +380,85 @@ bool RoomConfigSprite::parseStatus(const Common::String &args) {
 }
 
 bool RoomConfigSprite::parseSequence(const Common::String &args) {
-	Common::Array<Common::String> lArgs = DATFile::argGet(args);
-
-	for (Common::Array<Common::String>::const_iterator it = lArgs.begin(); it != lArgs.end(); ++it)
-		_sequence.push_back(atoi(it->c_str()) - 1);
+	if (!parsePackedIntLine(args, _sequence))
+		return false;
 
 	_sequenceString.clear();
-	for (Common::Array<uint8>::const_iterator it = _sequence.begin(); it != _sequence.end(); ++it)
+	for (Common::Array<int32>::const_iterator it = _sequence.begin(); it != _sequence.end(); ++it)
 		_sequenceString += Common::String::printf("%d ", *it);
 	_sequenceString.trim();
+
+	return true;
+}
+
+bool RoomConfigSprite::parsePackedIntLine(const Common::String &args, Common::Array<int32> &ints) {
+	if (args.empty())
+		return true;
+
+	const char *str = args.c_str();
+	char *squashedStr = new char[args.size() + 1];
+
+	// Squashing multiple spaces into one space
+	char *squash = squashedStr;
+	while (*str) {
+		if (*str == ' ') {
+			*squash++ = ' ';
+			while (*str == ' ')
+				*str++;
+		} else if (*str == '(') {
+			*squash++ = *str++;
+			while (*str == ' ')
+				*str++;
+		} else
+			*squash++ = *str++;
+	}
+	*squash = '\0';
+
+	str = squashedStr;
+
+	while (*str) {
+		const char *space       = strchr(str, ' ');
+		const char *openParen   = strchr(str, '(');
+		const char *closedParen = strchr(str, ')');
+
+		if ((space && !openParen) || (space && (space < openParen)) || (!space && !openParen)) {
+
+			ints.push_back(atoi(str) - 1);
+
+			if (!space)
+				return true;
+
+			str = space + 1;
+
+			continue;
+		}
+
+		if (!openParen || !closedParen) {
+			warning("RoomConfigSprite::parsePackedIntLine(): No parenthesis: \"%s\"",
+					args.c_str());
+			return false;
+		}
+
+		int start;
+		int count;
+		int inc = 0;
+
+		if (space && (openParen < space) && (space < closedParen)) {
+			start = atoi(str) - 1;
+			count = atoi(openParen + 1);
+			inc   = atoi(space + 1);
+		} else {
+			start = atoi(str) - 1;
+			count = atoi(openParen + 1);
+		}
+
+		for (int i = 0; i < count; i++, start += inc)
+			ints.push_back(start);
+
+		str = closedParen + 1;
+		while (*str == ' ')
+			str++;
+	}
 
 	return true;
 }
