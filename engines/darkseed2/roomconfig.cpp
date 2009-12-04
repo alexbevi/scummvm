@@ -262,8 +262,9 @@ bool RoomConfigSprite::updateStatus() {
 	// Start the waiting timer for the next frame
 	startWait(100);
 
-	// Update animation frame
-	_graphics->addRoomAnimation(_anim, _currentSprite, _sequence[_curPos], _status[0]);
+	if (_curPos < _sequence.size())
+		// Update animation frame
+		_graphics->addRoomAnimation(_anim, _currentSprite, _sequence[_curPos], _status[0]);
 
 	if (++_curPos >= _sequence.size()) {
 		_curPos = 0;
