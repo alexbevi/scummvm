@@ -245,9 +245,15 @@ void Events::handleInput() {
 			break;
 
 		case Common::EVENT_KEYDOWN:
-			if (event.kbd.keycode == Common::KEYCODE_F5)
+			if (event.kbd.keycode == Common::KEYCODE_F5) {
 				// Options, handled by the GMM
 				_vm->openMainMenuDialog();
+			} else if (event.kbd.keycode == Common::KEYCODE_ESCAPE) {
+				if (_vm->_talkMan->isTalking())
+					// Aborting talks with escape
+					_vm->_talkMan->endTalk();
+			}
+
 			break;
 
 		default:
