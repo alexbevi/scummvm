@@ -62,6 +62,7 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	Common::addDebugChannel(kDebugConversation, "Conversation", "Conversation debug level");
 	Common::addDebugChannel(kDebugOpcodes     , "Opcodes"     , "Script functions debug level");
 	Common::addDebugChannel(kDebugRoomConf    , "RoomConf"    , "Room config debug level");
+	Common::addDebugChannel(kDebugGameflow    , "Gameflow"    , "Gameflow debug level");
 
 	// Setup mixer
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));

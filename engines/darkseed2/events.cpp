@@ -74,6 +74,8 @@ bool Events::setupIntroSequence() {
 	_cursorActive = false;
 	setCursor();
 
+	debugC(-1, kDebugGameflow, "Entering cutscene room");
+
 	// Cutscene room
 	if (!roomGo("0001"))
 		return false;
@@ -82,6 +84,8 @@ bool Events::setupIntroSequence() {
 
 	// Run the main loop as long as scripts are still active
 	mainLoop(true);
+
+	debugC(-1, kDebugGameflow, "Entering title room");
 
 	// Title room
 	if (!roomGo("0002"))
@@ -111,6 +115,8 @@ void Events::leaveIntro() {
 	for (int i = 0; i < 4; i++)
 		_titleSprites[i].clear();
 
+	debugC(-1, kDebugGameflow, "Entering intro movie room");
+
 	// Intro movie room
 	if (!roomGo("1501")) {
 		warning("Events::leaveIntro(): Failed loading the intro movie room");
@@ -128,6 +134,8 @@ void Events::leaveIntro() {
 	_cursorMode   = kCursorModeWalk;
 	_cursorActive = false;
 	setCursor();
+
+	debugC(-1, kDebugGameflow, "Entering first room 0101");
 
 	// First room
 	if (!roomGo("0101")) {
@@ -381,6 +389,8 @@ void Events::setCursor(const Cursors::Cursor &cursor) {
 }
 
 void Events::doObjectVerb(Object &object, ObjectVerb verb) {
+	debugC(-1, kDebugGameflow, "Doing verb %d on object \"%s\"", verb, object.getName().c_str());
+
 	_lastObject = &object;
 	_vm->_inter->interpret(object.getScripts(verb), 2);
 }
@@ -440,7 +450,7 @@ void Events::setNextRoom(uint32 room) {
 		Common::String nextRoom = Common::String::printf("%04d", room);
 
 		if (nextRoom != _vm->_graphics->getRoom().getName()) {
-			warning("Room transition %s->%s", _nextRoom.c_str(), nextRoom.c_str());
+			debugC(-1, kDebugGameflow, "Room transition %s->%s", _nextRoom.c_str(), nextRoom.c_str());
 			_lastRoom = _nextRoom;
 			_nextRoom = nextRoom;
 			_changeRoom = true;

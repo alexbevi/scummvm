@@ -46,7 +46,8 @@ enum {
 	kDebugObjects      = 1 <<  8,
 	kDebugConversation = 1 <<  9,
 	kDebugOpcodes      = 1 << 10,
-	kDebugRoomConf     = 1 << 11
+	kDebugRoomConf     = 1 << 11,
+	kDebugGameflow     = 1 << 12
 };
 
 struct DS2GameDescription;
