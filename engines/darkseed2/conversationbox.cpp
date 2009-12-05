@@ -476,11 +476,12 @@ void ConversationBox::updateStatus() {
 
 		// Playing the replies
 		_curReply = 0;
-		if (_curReply < _nextReplies.size())
+		if (_curReply < _nextReplies.size()) {
 			speakLine(*_nextReplies[_curReply]);
 
-		_curSpeaker = _nextReplies[_curReply]->getSpeakerNum();
-		speakerVariable(_curSpeaker, true);
+			_curSpeaker = _nextReplies[_curReply]->getSpeakerNum();
+			speakerVariable(_curSpeaker, true);
+		}
 
 		_state = kStatePlayingReply;
 		return;

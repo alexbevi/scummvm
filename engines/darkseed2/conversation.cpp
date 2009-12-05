@@ -241,13 +241,20 @@ bool Conversation::addHide(Entry &entry, const Common::String &args) {
 }
 
 bool Conversation::addMessage(Entry &entry, const Common::String &args, uint8 speaker) {
-	if (DATFile::argCount(args) != 1) {
+	Common::Array<Common::String> lArgs = DATFile::argGet(args);
+
+	if ((lArgs.size() != 1) && (lArgs.size() != 2)) {
 		warning("Conversation::addMessage(): Broken arguments");
 		return false;
 	}
 
 	entry.speakers.push_back(speaker);
-	entry.messages.push_back(args);
+
+	if (lArgs.size() == 1)
+		entry.messages.push_back(args);
+	else
+		entry.messages.push_back(lArgs[1]);
+
 	return true;
 }
 
@@ -284,6 +291,12 @@ bool Conversation::addEntry(Entry &entry, DATFile &conversation) {
 			// The entry's reply
 
 			if (!addMessage(entry, *args, curSpeaker))
+				return false;
+
+		} else if (cmd->matchString("message *")) {
+			// The entry's reply, buggy version (CONV0008.TXT)
+
+			if (!addMessage(entry, *cmd, curSpeaker))
 				return false;
 
 		} else if (cmd->equalsIgnoreCase("hide")) {

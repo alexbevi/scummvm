@@ -83,8 +83,12 @@ void DATFile::load(Common::SeekableReadStream &dat) {
 
 		// Find the command-argument separator
 		const char *equals = strchr(line.c_str(), '=');
-		if (!equals)
+		if (!equals) {
+			// Workaround for CONV0008.TXT *sigh*
+			if (line.matchString("*message*"))
+				_lines.push_back(Line(line.c_str(), line.size(), ""));
 			continue;
+		}
 
 		_lines.push_back(Line(line.c_str(), line.size() - strlen(equals), equals + 1));
 	}
