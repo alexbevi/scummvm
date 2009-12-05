@@ -683,7 +683,7 @@ bool Conversation::goTo(const Common::Array<Action> &node) {
 		// No entries, but gotos. Evaluate these instead
 		return gone;
 
-	if (getVisibleEntries(*_currentNode).size() <= _currentNode->fallthroughNum) {
+	while (getVisibleEntries(*_currentNode).size() <= _currentNode->fallthroughNum) {
 		// Few enough visible entries, moving along to the fallthrough
 
 		const Common::String fallthrough = _currentNode->fallthrough;
