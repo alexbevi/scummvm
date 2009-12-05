@@ -361,8 +361,8 @@ ScriptInterpreter::Result ScriptInterpreter::oXYRoomEffect(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oChangeAt(Script &script) {
-	warning("Unimplemented script function oChangeAt");
-	return kResultInvalid;
+	warning("TODO: Unimplemented script function oChangeAt");
+	return kResultOK;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oDialog(Script &script) {
