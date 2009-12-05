@@ -196,11 +196,13 @@ void Events::mainLoop(bool finishScripts) {
 				_vm->_inter->interpret(_lastObject->getScripts(kObjectVerbUse), 2);
 		}
 
-		// Room chaning
+		// Room changing, but not during a syscall
 		if (_changeRoom) {
-			_changeRoom = false;
+			if (_vm->_variables->get("SysCall") == 0) {
+				_changeRoom = false;
 
-			roomGo(_nextRoom);
+				roomGo(_nextRoom);
+			}
 		}
 
 		// Update screen
