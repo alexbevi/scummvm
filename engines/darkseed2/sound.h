@@ -73,6 +73,9 @@ public:
 	/** Set the sound variable of playing sound with the given ID. */
 	bool setSoundVar(int id, const Common::String &soundVar);
 
+	/** Signal that a speech has ended. */
+	void signalSpeechEnd(int id);
+
 	/** Apply volume settings. */
 	void syncSettings(const Options &options);
 
@@ -88,6 +91,8 @@ private:
 		Common::String soundVar;
 		/** The ID of the playing sound. */
 		int id;
+		/** Currently playing speech? */
+		bool speech;
 	};
 
 	Audio::Mixer *_mixer;

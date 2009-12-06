@@ -37,12 +37,13 @@ Options::~Options() {
 }
 
 void Options::syncSettings() {
+	// Volumes
 	_volumeSFX    = ConfMan.getInt("sfx_volume");
 	_volumeSpeech = ConfMan.getInt("speech_volume");
 	_volumeMusic  = ConfMan.getInt("music_volume");
 
-	bool muteSFX    = ConfMan.getBool("speech_mute");
-	bool muteSpeech = ConfMan.getBool("sfx_mute");
+	bool muteSFX    = ConfMan.getBool("sfx_mute");
+	bool muteSpeech = ConfMan.getBool("speech_mute");
 	bool muteMusic  = ConfMan.getBool("music_mute");
 	bool mute       = ConfMan.getBool("mute");
 
@@ -52,6 +53,10 @@ void Options::syncSettings() {
 		_volumeSpeech = 0;
 	if (muteMusic  || mute)
 		_volumeMusic  = 0;
+
+	// Subtitles
+	_subtitlesEnabled = ConfMan.getBool("subtitles");
+	_subtitleSpeed    = ConfMan.getInt("talkspeed");
 }
 
 int Options::getVolumeSFX() const {
@@ -64,6 +69,14 @@ int Options::getVolumeSpeech() const {
 
 int Options::getVolumeMusic() const {
 	return _volumeMusic;
+}
+
+int Options::getSubtitleSpeed() const {
+	return _subtitleSpeed;
+}
+
+bool Options::getSubtitlesEnabled() const {
+	return _subtitlesEnabled;
 }
 
 } // End of namespace DarkSeed2

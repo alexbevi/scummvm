@@ -92,11 +92,6 @@ private:
 
 	int _updatesWithoutChanges;
 
-	/** The ID of the last started sound. */
-	int _soundID;
-	/** The current variable that gets changed when the talking/sfx ends. */
-	Common::String _speechVar;
-
 	/** The currently active scripts. */
 	Common::List<Script> _scripts[kPriorityLevels];
 	/** The scripts waiting in the queue. */

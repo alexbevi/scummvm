@@ -43,10 +43,16 @@ public:
 	int getVolumeSpeech() const; ///< Get the speech volume.
 	int getVolumeMusic() const;  ///< Get the music volume.
 
+	int  getSubtitleSpeed() const;    ///< Get the subtitle speed.
+	bool getSubtitlesEnabled() const; ///< Are the subtitles enabled?
+
 private:
 	int _volumeSFX;    ///< SFX volume.
 	int _volumeSpeech; ///< Speech volume.
 	int _volumeMusic;  ///< Music volume.
+
+	int  _subtitleSpeed;    ///< Subtitle speed.
+	bool _subtitlesEnabled; ///< Subtitles enabled?
 };
 
 } // End of namespace DarkSeed2

@@ -35,6 +35,7 @@ namespace DarkSeed2 {
 class Resources;
 class Graphics;
 
+class Options;
 class Resource;
 class Sound;
 
@@ -99,6 +100,9 @@ public:
 	/** Is someone currently talking? */
 	bool isTalking() const;
 
+	/** Apply subtitle settings. */
+	void syncSettings(const Options &options);
+
 	/** Check for status changes. */
 	void updateStatus();
 
@@ -110,6 +114,11 @@ private:
 	TalkLine *_curTalkLine;
 
 	int _curTalk; ///< The current talk ID.
+
+	bool _txtEnabled; ///< Should the TXT displayed?
+
+	int _waitTextLength; ///< Duration of waiting after the sound has finished.
+	int _waitTextUntil;  ///< Time to wait until this line is considered finished.
 
 	bool talkInternal(const TalkLine &talkLine);
 };

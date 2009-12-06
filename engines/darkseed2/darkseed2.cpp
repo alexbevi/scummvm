@@ -134,6 +134,7 @@ void DarkSeed2Engine::syncSoundSettings() {
 
 	_sound->syncSettings(*_options);
 	_music->syncSettings(*_options);
+	_talkMan->syncSettings(*_options);
 }
 
 bool DarkSeed2Engine::init() {

@@ -27,6 +27,7 @@
 
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/options.h"
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/graphicalobject.h"
@@ -121,6 +122,11 @@ TalkManager::TalkManager(Sound &sound, Graphics &graphics) {
 	_curTalk = -1;
 
 	_curTalkLine = 0;
+
+	_txtEnabled = true;
+
+	_waitTextLength =  0;
+	_waitTextUntil  = -1;
 }
 
 TalkManager::~TalkManager() {
@@ -137,15 +143,17 @@ bool TalkManager::talkInternal(const TalkLine &talkLine) {
 
 		debugC(-1, kDebugTalk, "Speaking line \"%s\"", talkLine.getResourceName().c_str());
 
-		// Text
-		Common::String text = talkLine.getTXT();
-		if (!talkLine.getSpeaker().empty())
-			text = talkLine.getSpeaker() + ":\n" + text;
+		if (_txtEnabled) {
+			// Text
+			Common::String text = talkLine.getTXT();
+			if (!talkLine.getSpeaker().empty())
+				text = talkLine.getSpeaker() + ":\n" + text;
 
-		TextObject *talkObject = new TextObject(text, 5, 0,
-				_graphics->getPalette().findWhite(), 300);
+			TextObject *talkObject = new TextObject(text, 5, 0,
+					_graphics->getPalette().findWhite(), 300);
 
-		_graphics->talk(talkObject);
+			_graphics->talk(talkObject);
+		}
 
 	} else {
 		warning("TalkManager::talk(): Talk line has no WAV");
@@ -170,7 +178,12 @@ bool TalkManager::talk(Resources &resources, const Common::String &talkName) {
 }
 
 void TalkManager::endTalk() {
+	if (_curTalk < -1) {
+		_curTalk = -(_curTalk + 2);
+	}
+
 	_sound->stopID(_curTalk);
+	_sound->signalSpeechEnd(_curTalk);
 	_graphics->talkEnd();
 	_curTalk = -1;
 
@@ -186,14 +199,55 @@ bool TalkManager::isTalking() const {
 	return _curTalk != -1;
 }
 
+void TalkManager::syncSettings(const Options &options) {
+	_txtEnabled = options.getSubtitlesEnabled();
+
+	if (_txtEnabled) {
+		int subSpeed = options.getSubtitleSpeed();
+
+		if (subSpeed >= 255) {
+			// Don't wait after the sound has finished playing
+			_waitTextLength = 0;
+		} else if (subSpeed <= 0) {
+			// Wait until aborted by mouse click
+			_waitTextLength = -1;
+		} else {
+			// Wait for 20ms per missing speed step, to a max of 5.08s
+			_waitTextLength = (255 - subSpeed) * 20;
+		}
+	} else
+		// Subtitles not enabled, so don't wait
+		_waitTextLength = 0;
+}
+
 void TalkManager::updateStatus() {
 	_sound->updateStatus();
 
-	if (_curTalk == -1)
+	if (_waitTextUntil >= 0) {
+		if (g_system->getMillis() >= ((uint32) _waitTextUntil)) {
+			// Waited long enough, end talking
+
+			endTalk();
+			_waitTextUntil = -1;
+		}
+	}
+
+	if (_curTalk < 0)
 		return;
 
-	if (!_sound->isIDPlaying(_curTalk))
-		endTalk();
+	if (!_sound->isIDPlaying(_curTalk)) {
+		if (_waitTextLength < 0)
+			// Wait til aborted
+			_waitTextUntil = -2;
+		else if (_waitTextLength > 0)
+			// Wait _waitTextLength ms
+			_waitTextUntil = g_system->getMillis() + _waitTextLength;
+		else
+			// End at once
+			endTalk();
+
+		_curTalk = -_curTalk - 2;
+	}
 }
 
 } // End of namespace DarkSeed2

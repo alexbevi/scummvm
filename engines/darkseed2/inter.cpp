@@ -80,7 +80,6 @@ ScriptInterpreter::OpcodeEntry ScriptInterpreter::_scriptFunc[kScriptActionNone]
 
 ScriptInterpreter::ScriptInterpreter(DarkSeed2Engine &vm) : _vm(&vm) {
 	_updatesWithoutChanges = 0;
-	_soundID = -1;
 }
 
 ScriptInterpreter::~ScriptInterpreter() {
@@ -99,9 +98,6 @@ void ScriptInterpreter::clear() {
 		_scripts[i].clear();
 	for (int i = 0; i < kPriorityLevels; i++)
 		_scriptsQueues[i].clear();
-
-	_soundID = -1;
-	_speechVar.clear();
 
 	_updatesWithoutChanges = 0;
 }
