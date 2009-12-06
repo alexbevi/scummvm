@@ -69,7 +69,7 @@ public:
 	bool loadAnimation(Resources &resources, const Common::String &base);
 
 	/** Parse a room. */
-	bool parse(const Resources &resources, const Common::String &base);
+	bool parse(Resources &resources, const Common::String &base);
 
 private:
 	typedef Common::HashMap<Common::String, Animation *, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> AnimationMap;
@@ -109,11 +109,11 @@ private:
 	bool addEntryScript(DATFile &room);
 	bool parseEntryScripts(DATFile &room);
 
-	bool parse(const Resources &resources, DATFile &room, DATFile &objects);
-	bool parse(const Resources &resources, const Common::String &room, const Common::String &objects);
+	bool parse(Resources &resources, DATFile &room, DATFile &objects);
+	bool parse(Resources &resources, const Common::String &room, const Common::String &objects);
 
 	/** Set up the room after parsing. */
-	bool setup(const Resources &resources);
+	bool setup(Resources &resources);
 };
 
 } // End of namespace DarkSeed2

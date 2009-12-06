@@ -124,7 +124,7 @@ bool Conversation::parse(DATFile &conversation) {
 	return true;
 }
 
-bool Conversation::parse(const Resources &resources, const Common::String &convName) {
+bool Conversation::parse(Resources &resources, const Common::String &convName) {
 	if (!resources.hasResource(convName + ".TXT")) {
 		warning("Conversation::parse(): No such conversation \"%s\"", convName.c_str());
 		return false;

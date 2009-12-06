@@ -78,11 +78,14 @@ public:
 	/** Clear all resource information. */
 	void clear();
 
+	/** Remove the file data from unused compressed glues. */
+	void clearUncompressedData();
+
 	/** Does a specific resource exist? */
-	bool hasResource(const Common::String &resource) const;
+	bool hasResource(const Common::String &resource);
 
 	/** Get a specific resource. */
-	Resource *getResource(const Common::String &resource) const;
+	Resource *getResource(const Common::String &resource);
 
 private:
 	/** A glue archive file. */
@@ -92,6 +95,8 @@ private:
 		byte *data;                       ///< File data.
 		Common::MemoryReadStream *stream; ///< Stream to the file data.
 		uint32 size;                      ///< File size.
+
+		bool indexed; ///< Have we indexed that glue yet?
 
 		Glue();
 		~Glue();
@@ -103,6 +108,8 @@ private:
 		uint32 offset;   ///< Offset within the glue file.
 		uint32 size;     ///< Size in bytes.
 		byte unknown[8];
+
+		bool indexed; ///< Have we indexed that resource yet?
 
 		bool exists; ///< Have we found it while indexing its glue file?
 
@@ -124,8 +131,11 @@ private:
 	/** Read the resources section of the index file. */
 	bool readIndexResources(Common::File &indexFile);
 
-	/** Index all resources in all indexed glue files. */
-	bool indexGluesContents();
+	/** Index the glue where this resource can be found. */
+	bool indexParentGlue(Res &res);
+
+	/** Index all resources contained in this glue files. */
+	bool indexGlueContents(Glue &glue);
 
 	/** Index all resources in the specified glue file. */
 	bool readGlueContents(Common::SeekableReadStream &glueFile, const Common::String &fileName);

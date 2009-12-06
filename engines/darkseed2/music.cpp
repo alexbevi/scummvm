@@ -66,7 +66,7 @@ bool Music::playMID(const Resource &resource) {
 	return playMID(resource.getStream());
 }
 
-bool Music::playMID(const Resources &resources, const Common::String &mid) {
+bool Music::playMID(Resources &resources, const Common::String &mid) {
 	if (mid.empty()) {
 		// No file specified, stop playback
 

@@ -227,7 +227,7 @@ bool Sprite::loadFromBMP(const Resource &resource) {
 	return loadFromBMP(resource.getStream());
 }
 
-bool Sprite::loadFromBMP(const Resources &resources, const Common::String &bmp) {
+bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
 	if (!resources.hasResource(bmp + ".BMP"))
 		return false;
 

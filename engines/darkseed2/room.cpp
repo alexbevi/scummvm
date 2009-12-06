@@ -122,7 +122,7 @@ Animation *Room::getAnimation(const Common::String &animation) {
 	return _animations.getVal(animation);
 }
 
-bool Room::parse(const Resources &resources, DATFile &room, DATFile &objects) {
+bool Room::parse(Resources &resources, DATFile &room, DATFile &objects) {
 	const Common::String *cmd, *args;
 	while (room.nextLine(cmd, args)) {
 		if (cmd->equalsIgnoreCase("BackDrop")) {
@@ -191,7 +191,7 @@ bool Room::parse(const Resources &resources, DATFile &room, DATFile &objects) {
 	return true;
 }
 
-bool Room::parse(const Resources &resources,
+bool Room::parse(Resources &resources,
 		const Common::String &room, const Common::String &objects) {
 
 	if (!resources.hasResource(room) || !resources.hasResource(objects))
@@ -211,8 +211,7 @@ bool Room::parse(const Resources &resources,
 	return result;
 }
 
-bool Room::parse(const Resources &resources,
-		const Common::String &base) {
+bool Room::parse(Resources &resources, const Common::String &base) {
 
 	assert(_confMan);
 
@@ -323,7 +322,7 @@ bool Room::parseEntryScripts(DATFile &room) {
 	return true;
 }
 
-bool Room::setup(const Resources &resources) {
+bool Room::setup(Resources &resources) {
 	if (_backgroundFile.empty()) {
 		warning("Room::setup(): No background");
 		return false;

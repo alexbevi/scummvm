@@ -51,7 +51,7 @@ public:
 	/** Parse a conversation out of a DAT file. */
 	bool parse(DATFile &conversation);
 	/** Parse a conversation out of a resource. */
-	bool parse(const Resources &resources, const Common::String &convName);
+	bool parse(Resources &resources, const Common::String &convName);
 
 	/** Reset the conversation to the loading defaults. */
 	bool reset();

@@ -62,7 +62,7 @@ public:
 	void setMidiMode(MidiMode midiMode);
 
 	/** Play that MIDI file. */
-	bool playMID(const Resources &resources, const Common::String &mid);
+	bool playMID(Resources &resources, const Common::String &mid);
 
 	/** Stop the music. */
 	void stop();

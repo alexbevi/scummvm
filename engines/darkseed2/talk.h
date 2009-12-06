@@ -42,7 +42,7 @@ class Sound;
 /** A talk line containing it's text, sprite and sound. */
 class TalkLine {
 public:
-	TalkLine(const Resources &resources, const Common::String &talkName);
+	TalkLine(Resources &resources, const Common::String &talkName);
 	~TalkLine();
 
 	/** Get the resource's name. */
@@ -71,7 +71,7 @@ public:
 	const Common::String &getTXT() const;
 
 private:
-	const Resources *_resources;
+	Resources *_resources;
 
 	Common::String _resource;   ///< The line's resource name.
 	Common::String _name;       ///< The line's name.

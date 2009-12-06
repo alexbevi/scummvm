@@ -34,7 +34,7 @@
 
 namespace DarkSeed2 {
 
-TalkLine::TalkLine(const Resources &resources, const Common::String &talkName) {
+TalkLine::TalkLine(Resources &resources, const Common::String &talkName) {
 	_resources = &resources;
 
 	_resource = talkName;

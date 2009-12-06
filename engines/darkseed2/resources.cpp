@@ -73,7 +73,7 @@ Common::SeekableReadStream &Resource::getStream() const {
 }
 
 
-Resources::Glue::Glue() : data(0), stream(0), size(0) {
+Resources::Glue::Glue() : data(0), stream(0), size(0), indexed(false) {
 }
 
 Resources::Glue::~Glue() {
@@ -82,7 +82,7 @@ Resources::Glue::~Glue() {
 }
 
 
-Resources::Res::Res() : glue(0), offset(0), size(0), exists(false) {
+Resources::Res::Res() : glue(0), offset(0), size(0), exists(false), indexed(false) {
 }
 
 
@@ -114,10 +114,6 @@ bool Resources::index(const char *fileName) {
 
 	indexFile.close();
 
-	// Index all glues
-	if (!indexGluesContents())
-		return false;
-
 	return true;
 }
 
@@ -127,6 +123,18 @@ void Resources::clear() {
 
 	_glueCount = 0;
 	_resCount  = 0;
+}
+
+void Resources::clearUncompressedData() {
+	for (int i = 0; i < _glueCount; i++) {
+		Glue &glue = _glues[i];
+
+		delete glue.stream;
+		delete[] glue.data;
+
+		glue.stream = 0;
+		glue.data   = 0;
+	}
 }
 
 bool Resources::readIndexHeader(Common::File &indexFile) {
@@ -194,29 +202,35 @@ bool Resources::readIndexResources(Common::File &indexFile) {
 	return true;
 }
 
-bool Resources::indexGluesContents() {
-	for (int i = 0; i < _glueCount; i++) {
-		Common::File glueFile;
+bool Resources::indexGlueContents(Glue &glue) {
+	if (glue.data || glue.stream)
+		// Already indexed
+		return true;
 
-		if (!glueFile.open(_glues[i].fileName)) {
-			warning("Resources::indexGluesContents(): "
-					"Can't open glue file \"%s\"", _glues[i].fileName.c_str());
-			return false;
-		}
+	Common::File glueFile;
 
-		if (isCompressedGlue(glueFile)) {
-			// If the glue is compressed, uncompress it and keep it in memory
-
-			_glues[i].data   = uncompressGlue(glueFile, _glues[i].size);
-			_glues[i].stream = new Common::MemoryReadStream(_glues[i].data, _glues[i].size);
-
-			if (!readGlueContents(*_glues[i].stream, _glues[i].fileName))
-				return false;
-
-		} else
-			if (!readGlueContents(glueFile, _glues[i].fileName))
-				return false;
+	if (!glueFile.open(glue.fileName)) {
+		warning("Resources::indexGlueContents(): "
+				"Can't open glue file \"%s\"", glue.fileName.c_str());
+		return false;
 	}
+
+	if (isCompressedGlue(glueFile)) {
+		// If the glue is compressed, uncompress it and keep it in memory
+
+		glue.data   = uncompressGlue(glueFile, glue.size);
+		glue.stream = new Common::MemoryReadStream(glue.data, glue.size);
+
+		if (!glue.indexed)
+			if (!readGlueContents(*glue.stream, glue.fileName))
+				return false;
+
+	} else
+		if (!glue.indexed)
+			if (!readGlueContents(glueFile, glue.fileName))
+				return false;
+
+	glue.indexed = true;
 
 	return true;
 }
@@ -262,19 +276,42 @@ bool Resources::readGlueContents(Common::SeekableReadStream &glueFile, const Com
 	return true;
 }
 
-bool Resources::hasResource(const Common::String &resource) const {
+bool Resources::indexParentGlue(Res &res) {
+	if (res.indexed)
+		return true;
+
+	if (!res.glue) {
+		warning("Resources::indexParentGlue(): Resource has no parent glue");
+		return false;
+	}
+
+	if (!indexGlueContents(*res.glue))
+		return false;
+
+	if (res.indexed) {
+		warning("Resources::indexParentGlue(): Resource not in parent glue");
+		return false;
+	}
+
+	return true;
+}
+
+bool Resources::hasResource(const Common::String &resource) {
 	if (Common::File::exists(resource))
 		return true;
 
 	if (!_resources.contains(resource))
 		return false;
 
-	const Res &res = _resources.getVal(resource);
+	Res &res = _resources.getVal(resource);
+
+	if (!indexParentGlue(res))
+		return false;
 
 	return res.exists && (res.size != 0);
 }
 
-Resource *Resources::getResource(const Common::String &resource) const {
+Resource *Resources::getResource(const Common::String &resource) {
 	debugC(3, kDebugResources, "Getting resource \"%s\"", resource.c_str());
 
 	Common::File plainFile;
@@ -288,7 +325,10 @@ Resource *Resources::getResource(const Common::String &resource) const {
 		error("Resources::getResource(): Resource \"%s\" does not exist",
 				resource.c_str());
 
-	const Res &res = _resources.getVal(resource);
+	Res &res = _resources.getVal(resource);
+
+	if (!indexParentGlue(res))
+		return false;
 
 	if (!res.exists || (res.size == 0))
 		error("Resources::getResource(): Resource \"%s\" not available",

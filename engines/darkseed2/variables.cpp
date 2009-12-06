@@ -101,7 +101,7 @@ bool Variables::loadFromIDX(const Resource &idx) {
 	return loadFromIDX(idx.getStream());
 }
 
-bool Variables::loadFromIDX(const Resources &resources, const Common::String &idx) {
+bool Variables::loadFromIDX(Resources &resources, const Common::String &idx) {
 	if (!resources.hasResource(idx + ".IDX"))
 		return false;
 

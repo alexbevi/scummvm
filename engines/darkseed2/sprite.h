@@ -99,7 +99,7 @@ public:
 	/** Load a sprite from a BMP. */
 	bool loadFromBMP(const Resource &resource);
 	/** Load a sprite from a BMP. */
-	bool loadFromBMP(const Resources &resources, const Common::String &bmp);
+	bool loadFromBMP(Resources &resources, const Common::String &bmp);
 
 	/** Load from a cursor embedded in an EXE file. */
 	bool loadFromStaticCursor(const StaticCursor &staticCursor);

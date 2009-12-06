@@ -26,6 +26,7 @@
 #include "common/events.h"
 
 #include "engines/darkseed2/events.h"
+#include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/talk.h"
@@ -443,6 +444,9 @@ bool Events::roomGo(const Common::String &room) {
 	Room &curRoom = _vm->_graphics->getRoom();
 
 	roomLeave();
+
+	// Primitive "garbadge collector"
+	_vm->_resources->clearUncompressedData();
 
 	if (!curRoom.parse(*_vm->_resources, room))
 		return false;
