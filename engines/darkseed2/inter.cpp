@@ -97,6 +97,8 @@ bool ScriptInterpreter::hasScripts() const {
 void ScriptInterpreter::clear() {
 	for (int i = 0; i < kPriorityLevels; i++)
 		_scripts[i].clear();
+	for (int i = 0; i < kPriorityLevels; i++)
+		_scriptsQueues[i].clear();
 
 	_soundID = -1;
 	_speechVar.clear();
