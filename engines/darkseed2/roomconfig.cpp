@@ -477,8 +477,10 @@ bool RoomConfigSprite::parsePackedIntLine(const Common::String &args, Common::Ar
 
 			ints.push_back(atoi(str) - 1);
 
-			if (!space)
+			if (!space) {
+				delete[] squashedStr;
 				return true;
+			}
 
 			str = space + 1;
 
@@ -488,6 +490,7 @@ bool RoomConfigSprite::parsePackedIntLine(const Common::String &args, Common::Ar
 		if (!openParen || !closedParen) {
 			warning("RoomConfigSprite::parsePackedIntLine(): No parenthesis: \"%s\"",
 					args.c_str());
+			delete[] squashedStr;
 			return false;
 		}
 
@@ -512,6 +515,7 @@ bool RoomConfigSprite::parsePackedIntLine(const Common::String &args, Common::Ar
 			str++;
 	}
 
+	delete[] squashedStr;
 	return true;
 }
 
