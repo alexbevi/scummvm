@@ -105,6 +105,8 @@ public:
 	Object *findObject(const Common::String &name);
 	/** Find the object that's at the specified coordinates. */
 	Object *findObject(uint32 x, uint32 y);
+	/** Find the autostart object ("auto*") */
+	Object *findAutoObject();
 
 	/** Empty the container. */
 	void clear();

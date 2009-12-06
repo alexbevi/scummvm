@@ -420,10 +420,10 @@ bool Events::roomEnter() {
 	_vm->_graphics->registerBackground(room.getBackground());
 
 	// Evaluate the entry logic
-	_vm->_inter->interpret(room.getEntryScripts(), 0);
+	_vm->_inter->interpret(room.getEntryScripts(), 2);
 
-	// Evaluate the autostart objects
-	executeAutoStart(room);
+	// Look for the autostart object
+	findAutoStart(room);
 
 	// Evaluate the room config, to get the initial room sprites set up
 	_vm->_roomConfMan->updateStatus();
@@ -473,24 +473,14 @@ bool Events::cameFrom(uint32 room) {
 	return _lastRoom == Common::String::printf("%04d", room);
 }
 
-static const char *autoStartName[] = {
-	"autostart", "auto start", "autoroom", "auto room"
-};
-
-bool Events::executeAutoStart(Room &room) {
-	bool has = false;
-	Object *autoStart;
-
-	// Looking for all different auto start objects
-	for (int i = 0; i < ARRAYSIZE(autoStartName); i++) {
-		autoStart = room.findObject(autoStartName[i]);
-		if (autoStart) {
-			_vm->_inter->interpret(autoStart->getScripts(kObjectVerbUse), 1);
-			has = true;
-		}
+bool Events::findAutoStart(Room &room) {
+	Object *autoStart = room.findAutoObject();
+	if (autoStart) {
+		_lastObject = autoStart;
+		return true;
 	}
 
-	return has;
+	return false;
 }
 
 ObjectVerb Events::cursorModeToObjectVerb(CursorMode cursorMode) {

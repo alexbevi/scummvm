@@ -237,6 +237,14 @@ Object *ObjectContainer::findObject(uint32 x, uint32 y) {
 	return 0;
 }
 
+Object *ObjectContainer::findAutoObject() {
+	for (Common::Array<Object>::iterator it = _objects.begin(); it != _objects.end(); ++it)
+		if (it->getName().matchString("auto*", true))
+			return &*it;
+
+	return 0;
+}
+
 bool ObjectContainer::parse(DATFile &dat) {
 	clear();
 

@@ -124,7 +124,7 @@ private:
 	/** Revert any changes dependant on the current room. */
 	void roomLeave();
 	/** Execute the current room's autostart logic. */
-	bool executeAutoStart(Room &room);
+	bool findAutoStart(Room &room);
 	/** Go to another room. */
 	bool roomGo(const Common::String &room);
 
