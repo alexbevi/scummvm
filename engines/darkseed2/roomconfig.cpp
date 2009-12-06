@@ -116,6 +116,10 @@ bool RoomConfig::conditionsMet() {
 	return met;
 }
 
+bool RoomConfig::conditionsMet(const Common::String &cond) {
+	return _variables->evalCondition(cond);
+}
+
 void RoomConfig::run() {
 	assert(_loaded);
 
@@ -210,6 +214,9 @@ RoomConfigSprite::RoomConfigSprite(Variables &variables, Resources &resources,
 		_status[i] = 0;
 
 	_spriteIDX = 0;
+
+	_loopStart = -1;
+	_loopEnd   = -1;
 }
 
 RoomConfigSprite::~RoomConfigSprite() {
@@ -281,6 +288,12 @@ bool RoomConfigSprite::updateStatus() {
 	// Start the waiting timer for the next frame
 	startWait(100);
 
+	// Looping
+	if ((_loopEnd > 0) && (_loopStart > 0) && (_curPos > ((uint32) _loopEnd)))
+		if (conditionsMet(_loopCond))
+			_curPos = _loopStart;
+
+	// SFX playing
 	for (uint i = 0; i < _effects.size(); i++)
 		if (_effects[i].frameNum == _curPos) {
 			debugC(-1, kDebugRoomConf, "RoomConfigSprite: Playing effect \"%s\"", _effects[i].effect.c_str());
@@ -294,20 +307,9 @@ bool RoomConfigSprite::updateStatus() {
 
 	if (++_curPos >= _frames.size()) {
 		_curPos = 0;
-		// We've reached the end
-		//stop();
 
 		// Apply variable changes
 		return applyChanges();
-
-		// Permanent animation?
-//		if (_status[4] != 1)
-//			// If not, remove the animation frame
-			//_graphics->removeRoomAnimation(_currentSprite);
-
-//		if (_sequence.size() >= 1)
-//			updateStatus();
-
 	}
 
 	return false;
@@ -366,7 +368,8 @@ bool RoomConfigSprite::parseLine(const Common::String &cmd, const Common::String
 	} else if (cmd.equalsIgnoreCase("LoopPoint")) {
 		// Looping start and end index
 
-		_loopPoint = args;
+		if (!parseLoopPoint(args))
+			return false;
 
 	} else if (cmd.equalsIgnoreCase("LoadCond")) {
 		// Unknown
@@ -440,6 +443,20 @@ bool RoomConfigSprite::parseEffect(const Common::String &args) {
 	effect.effect = Common::String(space);
 
 	_effects.push_back(effect);
+	return true;
+}
+
+bool RoomConfigSprite::parseLoopPoint(const Common::String &args) {
+	Common::Array<Common::String> lArgs = DATFile::argGet(args);
+
+	if (lArgs.size() != 2) {
+		warning("RoomConfigSprite::parseLoopPoint(): Broken arguments");
+		return false;
+	}
+
+	_loopStart = atoi(lArgs[0].c_str());
+	_loopEnd   = atoi(lArgs[1].c_str());
+
 	return true;
 }
 

@@ -67,6 +67,8 @@ public:
 protected:
 	/** Are the conditions to run the RoomConfig met? */
 	bool conditionsMet();
+	/** Are these conditions met? */
+	bool conditionsMet(const Common::String &cond);
 
 	/** Enter the running state. */
 	void run();
@@ -158,13 +160,16 @@ private:
 	uint16 _status[6];
 	Common::Array<Frame> _frames;
 	Common::Array<Effect> _effects;
+
 	uint8 _spriteIDX;
 	Common::String _scaleVal;
-	Common::String _loopCond;
-	Common::String _loopPoint;
 	Common::String _loadCond;
 	Common::String _changeAt;
 	Common::String _speech;
+
+	Common::String _loopCond;
+	int32 _loopStart;
+	int32 _loopEnd;
 
 	Common::String _sequenceString;
 	Common::Array<int32> _sequence;
@@ -178,6 +183,7 @@ private:
 	bool parseStatus(const Common::String &args);
 	bool parseSequence(const Common::String &args);
 	bool parseEffect(const Common::String &args);
+	bool parseLoopPoint(const Common::String &args);
 
 	static bool parsePackedIntLine(const Common::String &args, Common::Array<int32> &ints);
 };
