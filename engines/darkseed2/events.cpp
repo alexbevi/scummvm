@@ -194,7 +194,7 @@ void Events::mainLoop(bool finishScripts) {
 		if (_vm->_variables->get("LastAction") == 1) {
 			_vm->_variables->set("LastAction", 0);
 			if (_lastObject)
-				_vm->_inter->interpret(_lastObject->getScripts(kObjectVerbUse), 2);
+				_vm->_inter->interpret(_lastObject->getScripts(kObjectVerbUse));
 		}
 
 		// Room changing, but not during a syscall
@@ -401,7 +401,7 @@ void Events::doObjectVerb(Object &object, ObjectVerb verb) {
 	debugC(-1, kDebugGameflow, "Doing verb %d on object \"%s\"", verb, object.getName().c_str());
 
 	_lastObject = &object;
-	_vm->_inter->interpret(object.getScripts(verb), 2);
+	_vm->_inter->interpret(object.getScripts(verb));
 }
 
 int Events::checkTitleSprites(uint32 x, uint32 y) const {
@@ -421,7 +421,7 @@ bool Events::roomEnter() {
 	_vm->_graphics->registerBackground(room.getBackground());
 
 	// Evaluate the entry logic
-	_vm->_inter->interpret(room.getEntryScripts(), 2);
+	_vm->_inter->interpret(room.getEntryScripts());
 
 	// Look for the autostart object
 	findAutoStart(room);

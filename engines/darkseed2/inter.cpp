@@ -39,7 +39,6 @@ namespace DarkSeed2 {
 ScriptInterpreter::Script::Script(ScriptChunk *chnk) {
 	chunk      = chnk;
 	action     = 0;
-	started    = false;
 	soundID    = -1;
 	waitingFor = kWaitNone;
 
@@ -59,16 +58,8 @@ ScriptInterpreter::OpcodeEntry ScriptInterpreter::_scriptFunc[kScriptActionNone]
 	OPCODE(oText),
 	OPCODE(oMidi),
 	OPCODE(oAnim),
-	OPCODE(oStatus),
-	OPCODE(oSequence),
-	OPCODE(oSpriteIDX),
-	OPCODE(oClipXY),
-	OPCODE(oPosX),
-	OPCODE(oPosY),
-	OPCODE(oScaleVal),
 	OPCODE(oFrom),
 	OPCODE(oPaletteChange),
-	OPCODE(oXYRoomEffect),
 	OPCODE(oChangeAt),
 	OPCODE(oDialog),
 	OPCODE(oPicture),
@@ -86,132 +77,100 @@ ScriptInterpreter::~ScriptInterpreter() {
 }
 
 bool ScriptInterpreter::hasScripts() const {
-	for (int i = 0; i < kPriorityLevels; i++)
-		if (!_scripts[i].empty())
-			return true;
-
-	return false;
+	return !_scripts.empty();
 }
 
 void ScriptInterpreter::clear() {
-	for (int i = 0; i < kPriorityLevels; i++)
-		_scripts[i].clear();
-	for (int i = 0; i < kPriorityLevels; i++)
-		_scriptsQueues[i].clear();
-
+	_scripts.clear();
 	_updatesWithoutChanges = 0;
 }
 
 bool ScriptInterpreter::updateStatus() {
-	Common::List<Script>::iterator script;
-
 	_updatesWithoutChanges++;
 
-	for (int i = 0; i < kPriorityLevels; i++) {
-		if (_scripts[i].empty()) {
-			Common::List< Common::List<ScriptChunk *> >::iterator it1 = _scriptsQueues[i].begin();
-			while (it1 != _scriptsQueues[i].end()) {
-				Common::List<ScriptChunk *>::iterator it2;
-				for (it2 = it1->begin(); it2 != it1->end(); ++it2) {
-					if ((*it2)->conditionsMet() && _vm->_events->cameFrom((*it2)->getFrom())) {
-						(*it2)->rewind();
-						_scripts[i].push_back(Script(*it2));
-						break;
-					}
-				}
+	Common::List<Script>::iterator script;
 
-				it1 = _scriptsQueues[i].erase(it1);
+	// Interpret one action from every script in the queue
+	for (script = _scripts.begin(); script != _scripts.end(); ++script) {
+		if (_vm->shouldQuit())
+			break;
 
-				if (!_scripts[i].empty())
-					break;
-			}
+		// Evaluating waiting orders
+		if (script->waitingFor != kWaitNone) {
+			bool waitEnd = false;
 
-			if (_scripts[i].empty())
+			if      (script->waitingFor == kWaitConversation)
+				// Waiting for a conversation to end
+				waitEnd = !_vm->_graphics->getConversationBox().isActive();
+			else if (script->waitingFor == kWaitMovie)
+				// Waiting for a movie to end
+				waitEnd = !_vm->_movie->isPlaying();
+
+			if (waitEnd)
+				script->waitingFor = kWaitNone;
+			else
 				continue;
+
+			_updatesWithoutChanges = 0;
 		}
 
-		// Interpret one action from every script in the queue
-		for (script = _scripts[i].begin(); script != _scripts[i].end(); ++script) {
-			if (_vm->shouldQuit())
-				break;
+		// Interpret the next command
+		Result result = interpret(*script);
 
-			if (!script->started) {
-				// If the script wasn't started yet, check if the conditions are met
-				if (!script->chunk->conditionsMet()) {
-					// Conditions not met
-					continue;
-				}
-
-				// Conditions met, start the script
-				script->started = true;
-				_updatesWithoutChanges = 0;
-			}
-
-			// Evaluating waiting orders
-			if (script->waitingFor != kWaitNone) {
-				bool waitEnd = false;
-
-				if      (script->waitingFor == kWaitConversation)
-					waitEnd = !_vm->_graphics->getConversationBox().isActive();
-				else if (script->waitingFor == kWaitMovie)
-					waitEnd = !_vm->_movie->isPlaying();
-
-				if (waitEnd)
-					script->waitingFor = kWaitNone;
-				else
-					continue;
-
-				_updatesWithoutChanges = 0;
-			}
-
-			Result result = interpret(*script);
-
-			if        (result == kResultInvalid) {
-				script->chunk->seekEnd();
-				_updatesWithoutChanges = 0;
-			} else if (result == kResultOK) {
-				script->chunk->next();
-				script->lastWaitDebug = 0;
-				_updatesWithoutChanges = 0;
-			} else if (result == kResultStop) {
-				script->chunk->seekEnd();
-				_updatesWithoutChanges = 0;
-			}
+		// Check result
+		if        (result == kResultInvalid) {
+			// Invalid opcode
+			script->chunk->seekEnd();
+			_updatesWithoutChanges = 0;
+		} else if (result == kResultOK) {
+			// Everything went okay
+			script->chunk->next();
+			script->lastWaitDebug = 0;
+			_updatesWithoutChanges = 0;
+		} else if (result == kResultStop) {
+			// Script stops here
+			script->chunk->seekEnd();
+			_updatesWithoutChanges = 0;
 		}
-
-		break;
 	}
 
-	for (int i = 0; i < kPriorityLevels; i++) {
-		// Go through all scripts and erase those that ended
-		script = _scripts[i].begin();
-		while (script != _scripts[i].end()) {
-			if (script->chunk->atEnd()) {
-				//script->chunk->setUsed(false);
-				script = _scripts[i].erase(script);
-				_updatesWithoutChanges = 0;
-			} else
-				++script;
-		}
+	// Go through all scripts and erase those that ended
+	script = _scripts.begin();
+	while (script != _scripts.end()) {
+		if (script->chunk->atEnd()) {
+			script = _scripts.erase(script);
+			_updatesWithoutChanges = 0;
+		} else
+			++script;
 	}
 
 	return _updatesWithoutChanges < 10;
 }
 
-bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks, int priority) {
-	if ((priority < 0) || (priority >= kPriorityLevels))
-		priority = kPriorityLevels - 1;
+bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks) {
+	bool queued = false;
 
-	_scriptsQueues[priority].push_back(chunks);
+	// Push the first script with met conditions into the queue
+	for (Common::List<ScriptChunk *>::iterator it = chunks.begin(); it != chunks.end(); ++it) {
+		if ((*it)->conditionsMet() && _vm->_events->cameFrom((*it)->getFrom())) {
+			(*it)->rewind();
+			_scripts.push_back(Script(*it));
+			queued = true;
+			break;
+		}
+	}
 
-	_updatesWithoutChanges = 0;
+	if (queued)
+		_updatesWithoutChanges = 0;
 
-	return true;
+	return queued;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::interpret(Script &script) {
+	// Get the next action
 	script.action = &script.chunk->getAction();
 
+	// Valid action?
 	if (script.action->action >= kScriptActionNone) {
 		warning("ScriptInterpreter::interpret(): Invalid script action %d",
 				script.action->action);
@@ -219,6 +178,7 @@ ScriptInterpreter::Result ScriptInterpreter::interpret(Script &script) {
 		return kResultInvalid;
 	}
 
+	// Look if we want another debug message printed, to avoid spamming oWait lines
 	bool doDebug = true;
 	if (script.action->action == kScriptActionWaitUntil) {
 		if (script.lastWaitDebug++ != 0)
@@ -232,7 +192,16 @@ ScriptInterpreter::Result ScriptInterpreter::interpret(Script &script) {
 		debugC(-1, kDebugOpcodes, "Script function %s [%s]", _scriptFunc[script.action->action].name,
 				script.action->arguments.c_str());
 
-	Result result = (this->*_scriptFunc[script.action->action].func)(script);
+	// Look if the opcode is existing
+	func_t func = _scriptFunc[script.action->action].func;
+	if (!func) {
+		warning("ScriptInterpreter::interpret(): Invalid script action %d",
+				script.action->action);
+		return kResultInvalid;
+	}
+
+	// Interpret the action
+	Result result = (this->*func)(script);
 
 	script.action = 0;
 
@@ -240,12 +209,15 @@ ScriptInterpreter::Result ScriptInterpreter::interpret(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oXYRoom(Script &script) {
+	// Position changing?
+
 	warning("TODO: Unimplemented script function oXYRoom [%s]", script.action->arguments.c_str());
 
 	Common::Array<Common::String> lArgs = DATFile::argGet(script.action->arguments);
 	if (lArgs.size() >= 3) {
 		uint32 room = atoi(lArgs[2].c_str());
 
+		// Room transition
 		if (room != 0)
 			_vm->_events->setNextRoom(room);
 	}
@@ -254,16 +226,22 @@ ScriptInterpreter::Result ScriptInterpreter::oXYRoom(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oCursor(Script &script) {
+	// Change the current cursor
+
 	warning("Unimplemented script function oCursor");
 	return kResultInvalid;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oChange(Script &script) {
+	// Apply a variables change set
+
 	_vm->_variables->evalChange(script.action->arguments);
 	return kResultOK;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oText(Script &script) {
+	// Speak a line
+
 	_vm->_talkMan->talk(*_vm->_resources, script.action->arguments);
 
 	script.soundID = _vm->_talkMan->getSoundID();
@@ -272,7 +250,7 @@ ScriptInterpreter::Result ScriptInterpreter::oText(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oMidi(Script &script) {
-	warning("Unimplemented script function oMidi");
+	// Change the background music
 
 	if (!_vm->_music->playMID(*_vm->_resources, script.action->arguments))
 		warning("Failed playing music \"%s\"", script.action->arguments.c_str());
@@ -281,6 +259,7 @@ ScriptInterpreter::Result ScriptInterpreter::oMidi(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oAnim(Script &script) {
+	// Animation / Video
 
 	Common::Array<Common::String> lArgs = DATFile::argGet(script.action->arguments);
 	if (lArgs.size() >= 5) {
@@ -294,42 +273,9 @@ ScriptInterpreter::Result ScriptInterpreter::oAnim(Script &script) {
 	return kResultOK;
 }
 
-ScriptInterpreter::Result ScriptInterpreter::oStatus(Script &script) {
-	warning("TODO: Unimplemented script function oStatus");
-	return kResultOK;
-}
-
-ScriptInterpreter::Result ScriptInterpreter::oSequence(Script &script) {
-	warning("TODO: Unimplemented script function oSequence");
-	return kResultOK;
-}
-
-ScriptInterpreter::Result ScriptInterpreter::oSpriteIDX(Script &script) {
-	warning("TODO: Unimplemented script function oSpriteIDX");
-	return kResultOK;
-}
-
-ScriptInterpreter::Result ScriptInterpreter::oClipXY(Script &script) {
-	warning("Unimplemented script function oClipXY");
-	return kResultInvalid;
-}
-
-ScriptInterpreter::Result ScriptInterpreter::oPosX(Script &script) {
-	warning("TODO: Unimplemented script function oPosX");
-	return kResultOK;
-}
-
-ScriptInterpreter::Result ScriptInterpreter::oPosY(Script &script) {
-	warning("TODO: Unimplemented script function oPosY");
-	return kResultOK;
-}
-
-ScriptInterpreter::Result ScriptInterpreter::oScaleVal(Script &script) {
-	warning("TODO: Unimplemented script function oScaleVal");
-	return kResultOK;
-}
-
 ScriptInterpreter::Result ScriptInterpreter::oFrom(Script &script) {
+	// Changing position when coming from a specific room?
+
 	Common::Array<Common::String> lArgs = DATFile::argGet(script.action->arguments);
 
 	uint32 args[3];
@@ -349,13 +295,10 @@ ScriptInterpreter::Result ScriptInterpreter::oFrom(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oPaletteChange(Script &script) {
+	// Palette changing
+
 	warning("TODO: Unimplemented script function oPaletteChange");
 	return kResultOK;
-}
-
-ScriptInterpreter::Result ScriptInterpreter::oXYRoomEffect(Script &script) {
-	warning("Unimplemented script function oXYRoomEffect");
-	return kResultInvalid;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oChangeAt(Script &script) {
@@ -364,6 +307,8 @@ ScriptInterpreter::Result ScriptInterpreter::oChangeAt(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oDialog(Script &script) {
+	// Start a conversation
+
 	_vm->_graphics->getConversationBox().start(script.action->arguments);
 
 	script.waitingFor = kWaitConversation;
@@ -382,12 +327,16 @@ ScriptInterpreter::Result ScriptInterpreter::oSpeech(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oSpeechVar(Script &script) {
+	// Set the variable that should change once the talking/SFX has finished
+
 	_vm->_sound->setSoundVar(script.soundID, script.action->arguments);
 
 	return kResultOK;
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oWaitUntil(Script &script) {
+	// Wait until a condition is met
+
 	if (_vm->_variables->evalCondition(script.action->arguments))
 		// Condition is true => Proceed
 		return kResultOK;
@@ -397,6 +346,8 @@ ScriptInterpreter::Result ScriptInterpreter::oWaitUntil(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oEffect(Script &script) {
+	// Play a sound effect
+
 	_vm->_sound->playWAV(*_vm->_resources, script.action->arguments, script.soundID);
 
 	return kResultOK;

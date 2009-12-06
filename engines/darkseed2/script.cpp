@@ -30,11 +30,9 @@
 namespace DarkSeed2 {
 
 static const char *scriptAction[] = {
-	"XYRoom"      , "Cursor"   , "Change"       , "Text"        ,
-	"Midi"        , "Anim"     , "Status"       , "Sequence"    ,
-	"SpriteIDX"   , "ClipXY"   , "PosX"         , "PosY"        ,
-	"ScaleVal"    , "From"     , "PaletteChange", "XYRoomEffect",
-	"ChangeAt"    , "Dialog"   , "Picture"      , "Speech"      ,
+	"XYRoom"      , "Cursor"   , "Change"       , "Text"         ,
+	"Midi"        , "Anim"     , "From"         , "PaletteChange",
+	"ChangeAt"    , "Dialog"   , "Picture"      , "Speech"       ,
 	"SpeechVar"   , "WaitUntil", "Effect"
 };
 

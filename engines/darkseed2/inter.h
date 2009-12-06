@@ -45,14 +45,12 @@ public:
 	void clear();
 
 	/** Push the chunks with met conditions into the queue. */
-	bool interpret(Common::List<ScriptChunk *> &chunks, int priority);
+	bool interpret(Common::List<ScriptChunk *> &chunks);
 
 	/** Update status, interpret next lines, .... */
 	bool updateStatus();
 
 private:
-	static const int kPriorityLevels = 3;
-
 	/** The result of a script action. */
 	enum Result {
 		kResultOK,     ///< Everything was okay, proceed to the next line.
@@ -68,21 +66,28 @@ private:
 		kWaitMovie         ///< Waiting for a movie to end
 	};
 
+	/** A script state. */
 	struct Script {
+		/** The actual script chunk. */
 		ScriptChunk *chunk;
+		/** The current script action within that chunk. */
 		const ScriptChunk::Action *action;
-		bool started;
+		/** The ID of the sound last started by that script. */
 		int soundID;
+		/** The event the script is currently waiting for. */
 		Wait waitingFor;
+		/** Number of updates since the last wait debug message. */
 		int lastWaitDebug;
 
 		Script(ScriptChunk *chnk = 0);
 	};
 
+	/** A script function. */
 	typedef Result (ScriptInterpreter::*func_t)(Script &script);
+	/** An opcode. */
 	struct OpcodeEntry {
-		func_t func;
-		const char *name;
+		func_t func;      ///< The opcode's function.
+		const char *name; ///< The opcode's name.
 	};
 
 	DarkSeed2Engine *_vm;
@@ -90,12 +95,11 @@ private:
 	/** All opcodes. */
 	static OpcodeEntry _scriptFunc[kScriptActionNone];
 
+	/** Number of updateStatus() class without any changes in the interpreter state. */
 	int _updatesWithoutChanges;
 
 	/** The currently active scripts. */
-	Common::List<Script> _scripts[kPriorityLevels];
-	/** The scripts waiting in the queue. */
-	Common::List< Common::List<ScriptChunk *> > _scriptsQueues[kPriorityLevels];
+	Common::List<Script> _scripts;
 
 	// Interpreting helper
 	Result interpret(Script &script);
@@ -107,16 +111,8 @@ private:
 	Result oText(Script &script);
 	Result oMidi(Script &script);
 	Result oAnim(Script &script);
-	Result oStatus(Script &script);
-	Result oSequence(Script &script);
-	Result oSpriteIDX(Script &script);
-	Result oClipXY(Script &script);
-	Result oPosX(Script &script);
-	Result oPosY(Script &script);
-	Result oScaleVal(Script &script);
 	Result oFrom(Script &script);
 	Result oPaletteChange(Script &script);
-	Result oXYRoomEffect(Script &script);
 	Result oChangeAt(Script &script);
 	Result oDialog(Script &script);
 	Result oPicture(Script &script);
@@ -124,7 +120,6 @@ private:
 	Result oSpeechVar(Script &script);
 	Result oWaitUntil(Script &script);
 	Result oEffect(Script &script);
-	Result oLoadCond(Script &script);
 };
 
 } // End of namespace DarkSeed2
