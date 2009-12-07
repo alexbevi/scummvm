@@ -97,8 +97,13 @@ private:
 	/** Wait until that time stamp. */
 	uint32 _waitUntil;
 
+	// For debug info purposes
 	bool _state;        ///< Conditions state.
 	bool _stateChanged; ///< Conditions state changed.
+
+	// For caching purposes
+	bool   _conditionsState;       ///< The last remembered conditions state.
+	uint32 _conditionsCheckedLast; ///< When were the conditions checked last?
 
 	/** The conditions required for this RoomConfig. */
 	Common::List<Common::String> _conditions;

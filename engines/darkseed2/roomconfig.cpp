@@ -41,6 +41,9 @@ RoomConfig::RoomConfig(Variables &variables) : _variables(&variables) {
 
 	_state        = false;
 	_stateChanged = false;
+
+	_conditionsState       = false;
+	_conditionsCheckedLast = 0;
 }
 
 RoomConfig::~RoomConfig() {
@@ -99,6 +102,12 @@ bool RoomConfig::parse(DATFile &dat) {
 }
 
 bool RoomConfig::conditionsMet() {
+	uint32 changedLast = _variables->getLastChanged();
+	if (changedLast <= _conditionsCheckedLast) {
+		// Nothing changed, return the cached result
+		return _conditionsState;
+	}
+
 	bool met = false;
 
 	for (Common::List<Common::String>::const_iterator it = _conditions.begin(); it != _conditions.end(); ++it)
@@ -113,7 +122,10 @@ bool RoomConfig::conditionsMet() {
 		_state = met;
 	}
 
-	return met;
+	_conditionsState       = met;
+	_conditionsCheckedLast = changedLast;
+
+	return _conditionsState;
 }
 
 bool RoomConfig::conditionsMet(const Common::String &cond) {

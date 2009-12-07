@@ -41,14 +41,20 @@ Variables::~Variables() {
 
 void Variables::clear() {
 	_variables.clear();
+
+	_lastChanged = g_system->getMillis();
 }
 
 void Variables::clearLocal() {
 	_localVariables.clear();
+
+	_lastChanged = g_system->getMillis();
 }
 
 void Variables::addLocal(const Common::String &var) {
 	_localVariables.setVal(var, 0);
+
+	_lastChanged = g_system->getMillis();
 }
 
 void Variables::set(const Common::String &var, uint8 value) {
@@ -56,6 +62,8 @@ void Variables::set(const Common::String &var, uint8 value) {
 		_localVariables.setVal(var, value);
 	else
 		_variables.setVal(var, value);
+
+	_lastChanged = g_system->getMillis();
 }
 
 uint8 Variables::get(const Common::String &var) const {
@@ -73,6 +81,10 @@ uint8 Variables::get(const Common::String &var, uint8 def) const {
 		return _variables.getVal(var);
 
 	return def;
+}
+
+uint32 Variables::getLastChanged() const {
+	return _lastChanged;
 }
 
 bool Variables::loadFromIDX(Common::SeekableReadStream &idx) {
@@ -93,6 +105,8 @@ bool Variables::loadFromIDX(Common::SeekableReadStream &idx) {
 
 		_variables.setVal(varName, (uint8) atoi(value.c_str()));
 	}
+
+	_lastChanged = g_system->getMillis();
 
 	return true;
 }

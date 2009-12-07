@@ -62,6 +62,9 @@ public:
 	/** Get a variable's value. */
 	uint8 get(const Common::String &var) const;
 
+	/** When was a variable change last? */
+	uint32 getLastChanged() const;
+
 	/** Load initial variable values from an IDX file. */
 	bool loadFromIDX(Common::SeekableReadStream &idx);
 	/** Load initial variable values from an IDX file. */
@@ -84,6 +87,8 @@ private:
 
 	VarMap _variables;      ///< The variables.
 	VarMap _localVariables; ///< The local variables.
+
+	uint32 _lastChanged; ///< Timestamp of when a variable was changed last.
 
 	// Evaluation helpers
 	bool evalConditionPart(const Common::String &conditionPart) const;
