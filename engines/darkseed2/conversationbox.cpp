@@ -34,10 +34,26 @@
 
 namespace DarkSeed2 {
 
+// Coordinates of the different areas
 static const uint32 kTextAreaWidth  = 512; ///< The width of the raw text area.
 static const uint32 kTextAreaHeight =  50; ///< The height of the raw text area.
 static const uint32 kTextHeight     =  14; ///< The height of a text line.
 static const uint32 kTextMargin     =  90; ///< The maximum width of a text line.
+
+// Sprite file names
+static const char *kSpriteFrame        = "INVNTRY1"; ///< The conversation box's general frame.
+static const char *kSpriteScrollUpDown = "DIALOG1";  ///< Both scroll buttons active.
+static const char *kSpriteScrollDown   = "DIALOG2";  ///< Scroll down active, scroll up grayed out.
+static const char *kSpriteScrollUp     = "DIALOG3";  ///< Scroll up active, scroll down grayed out.
+
+// Scroll button coordinates
+static const int kScrollUp  [4] = {15, 24, 34, 40};
+static const int kScrollDown[4] = {15, 41, 34, 57};
+
+// Colors
+static const byte kColorSelected  [3] = {255, 255, 255};
+static const byte kColorUnselected[3] = {239, 167, 127};
+static const byte kColorShading   [3] = {  0,   0,   0};
 
 ConversationBox::Line::Line(TalkLine *line, byte color) {
 	talk = line;
@@ -98,8 +114,6 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 
 	_area = Common::Rect(kWidth, kHeight);
 
-	_box.create(kWidth, kHeight);
-
 	_origSprites = new Sprite[4];
 	_sprites     = new Sprite[6];
 
@@ -124,8 +138,8 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 	_textAreas[2] = Common::Rect(kTextMargin, kTextHeight * 3,
 			kWidth - 2 * kTextMargin, kTextHeight * 4);
 
-	_scrollAreas[0] = Common::Rect(15, 24, 34, 40); // Scroll up button
-	_scrollAreas[1] = Common::Rect(15, 41, 34, 57); // Scroll down button
+	_scrollAreas[0] = Common::Rect(kScrollUp  [0], kScrollUp  [1], kScrollUp  [2], kScrollUp  [3]);
+	_scrollAreas[1] = Common::Rect(kScrollDown[0], kScrollDown[1], kScrollDown[2], kScrollDown[3]);
 
 	loadSprites();
 	resetSprites();
@@ -144,9 +158,12 @@ ConversationBox::~ConversationBox() {
 }
 
 void ConversationBox::updateColors() {
-	_colorSelected   = _graphics->getPalette().findWhite();
-	_colorUnselected = _graphics->getPalette().findColor(239, 167, 127);
-	_colorBlack      = _graphics->getPalette().findBlack();
+	_colorSelected =
+		_graphics->getPalette().findColor(kColorSelected  [0], kColorSelected  [1], kColorSelected  [2]);
+	_colorUnselected =
+		_graphics->getPalette().findColor(kColorUnselected[0], kColorUnselected[1], kColorUnselected[2]);
+	_colorShading =
+		_graphics->getPalette().findColor(kColorShading   [0], kColorShading   [1], kColorShading   [2]);
 }
 
 void ConversationBox::newPalette() {
@@ -194,14 +211,10 @@ bool ConversationBox::isActive() const {
 void ConversationBox::loadSprites() {
 	bool loaded0, loaded1, loaded2, loaded3;
 
-	// The box's frame
-	loaded0 = _origSprites[0].loadFromBMP(*_resources, "INVNTRY1");
-	// Both scroll buttons active
-	loaded1 = _origSprites[1].loadFromBMP(*_resources, "DIALOG1");
-	// Scroll down active, scroll up grayed out
-	loaded2 = _origSprites[2].loadFromBMP(*_resources, "DIALOG2");
-	// Scroll up active, scroll down grayed out
-	loaded3 = _origSprites[3].loadFromBMP(*_resources, "DIALOG3");
+	loaded0 = _origSprites[0].loadFromBMP(*_resources, kSpriteFrame);
+	loaded1 = _origSprites[1].loadFromBMP(*_resources, kSpriteScrollUpDown);
+	loaded2 = _origSprites[2].loadFromBMP(*_resources, kSpriteScrollDown);
+	loaded3 = _origSprites[3].loadFromBMP(*_resources, kSpriteScrollUp);
 
 	assert(loaded0 && loaded1 && loaded2 && loaded3);
 
@@ -219,7 +232,7 @@ void ConversationBox::resetSprites() {
 
 	// The shading grid
 	_sprites[1].create(kTextAreaWidth, kTextAreaHeight);
-	_sprites[1].shade(_colorBlack);
+	_sprites[1].shade(_colorShading);
 
 	delete _markerSelect;
 	delete _markerUnselect;

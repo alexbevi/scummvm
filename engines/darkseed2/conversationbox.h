@@ -66,14 +66,15 @@ public:
 	/** Is the conversation still running? */
 	bool isActive() const;
 
+	/** Move the box to these coordinates. */
 	void move(uint32 x, uint32 y);
 
 	/** Redraw the conversation box. */
 	void redraw(Sprite &sprite, Common::Rect area);
 
-	/** Notify that the mouse was moved (over the box). */
+	/** Notify that the mouse was moved. */
 	void notifyMouseMove(uint32 x, uint32 y);
-	/** Notify that the mouse clicked (on the box). */
+	/** Notify that the mouse clicked. */
 	void notifyClicked(uint32 x, uint32 y);
 
 	/** Check for changes in the box's status. */
@@ -141,7 +142,7 @@ private:
 	Graphics    *_graphics;
 	TalkManager *_talkMan;
 
-	Common::Rect _area;
+	Common::Rect _area; ///< The area where the box is visible.
 
 	/** The currently running conversation. */
 	Conversation *_conversation;
@@ -166,7 +167,7 @@ private:
 
 	byte _colorSelected;   ///< Color index of a selected line.
 	byte _colorUnselected; ///< Color index of an unselected line.
-	byte _colorBlack;      ///< Color index of black.
+	byte _colorShading;    ///< Color index of the background shading.
 
 	State _state; ///< The current state.
 
