@@ -71,7 +71,7 @@ InventoryBox::InventoryBox(Resources &resources, Variables &variables, Graphics 
 	_area = Common::Rect(kWidth, kHeight);
 
 	_origSprites = new Sprite[5];
-	_sprites     = new Sprite[9];
+	_sprites     = new Sprite[8];
 
 	_itemsArea      = Common::Rect(kItems      [0], kItems      [1], kItems      [2], kItems      [3]);
 	_scrollAreas[0] = Common::Rect(kScrollLeft [0], kScrollLeft [1], kScrollLeft [2], kScrollLeft [3]);
@@ -113,15 +113,14 @@ void InventoryBox::loadSprites() {
 	_box.create(kWidth, kHeight);
 
 	_sprites[2].create(kVisibleItems[2] - kVisibleItems[0], kVisibleItems[3] - kVisibleItems[1]);
-	_sprites[3].create(kVisibleItems[2] - kVisibleItems[0], kVisibleItems[3] - kVisibleItems[1]);
 }
 
 void InventoryBox::resetSprites() {
-	// _origSprites[i] -> _sprites[i + 4], for all 5 box elements
+	// _origSprites[i] -> _sprites[i + 3], for all 5 box elements
 	for (int i = 0; i < 5; i++) {
-		_sprites[i + 4] = _origSprites[i];
+		_sprites[i + 3] = _origSprites[i];
 
-		_graphics->mergePalette(_sprites[i + 4]);
+		_graphics->mergePalette(_sprites[i + 3]);
 	}
 
 	// The shading grid
@@ -131,14 +130,14 @@ void InventoryBox::resetSprites() {
 
 void InventoryBox::updateScroll() {
 	if (canScrollLeft())
-		_sprites[0].blit(_sprites[5], 0, 0, true);
+		_sprites[0].blit(_sprites[4], 0, 0, true);
 	else
-		_sprites[0].blit(_sprites[6], 0, 0, true);
+		_sprites[0].blit(_sprites[5], 0, 0, true);
 
 	if (canScrollRight())
-		_sprites[0].blit(_sprites[7], kWidth - _sprites[7].getWidth(), 0, true);
+		_sprites[0].blit(_sprites[6], kWidth - _sprites[6].getWidth(), 0, true);
 	else
-		_sprites[0].blit(_sprites[8], kWidth - _sprites[8].getWidth(), 0, true);
+		_sprites[0].blit(_sprites[7], kWidth - _sprites[7].getWidth(), 0, true);
 }
 
 bool InventoryBox::updateItems() {
@@ -179,7 +178,7 @@ void InventoryBox::rebuild() {
 	// Put the shading grid
 	_sprites[0].blit(_sprites[1], _itemsArea.left, _itemsArea.top, true);
 	// Put the frame
-	_sprites[0].blit(_sprites[4], 0, 0, true);
+	_sprites[0].blit(_sprites[3], 0, 0, true);
 
 	// Put the visible items
 	updateItems();
@@ -192,14 +191,22 @@ void InventoryBox::rebuild() {
 }
 
 void InventoryBox::redrawItems() {
-	// Clear the visible item's area
-	_box.blit(_sprites[3], kVisibleItems[0], kVisibleItems[1], false);
-	// Put back the shading grid
-	_box.blit(_sprites[1], kVisibleItems[0], kVisibleItems[1], true);
-	// Put the visible items
-	_box.blit(_sprites[2], kVisibleItems[0], kVisibleItems[1], true);
+	Common::Rect visibleItemArea =
+		Common::Rect(kVisibleItems[0], kVisibleItems[1], kVisibleItems[2], kVisibleItems[3]);
 
-	_graphics->requestRedraw(Common::Rect(kVisibleItems[0], kVisibleItems[1], kVisibleItems[2], kVisibleItems[3]));
+	Common::Rect shadingArea = _sprites[1].getArea();
+
+	// Calculate the area of the shading grid that needs to be redrawn
+	shadingArea.translate(_itemsArea.left, _itemsArea.top);
+	shadingArea.clip(visibleItemArea);
+	shadingArea.translate(-_itemsArea.left, -_itemsArea.top);
+
+	// Draw the shading grid
+	_box.blit(_sprites[1], shadingArea, visibleItemArea.left, visibleItemArea.top, false);
+	// Put the visible items
+	_box.blit(_sprites[2], visibleItemArea.left, visibleItemArea.top, true);
+
+	_graphics->requestRedraw(visibleItemArea);
 }
 
 bool InventoryBox::canScrollLeft() const {
