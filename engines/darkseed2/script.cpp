@@ -130,9 +130,14 @@ bool ScriptChunk::parse(DATFile &dat) {
 			// Is this a known action?
 			ScriptAction action = parseScriptAction(*cmd);
 			if (action == kScriptActionNone) {
-				// No, die
-				warning("ScriptChunk::parse(): Unknown script action \"%s\" (\"%s\")", cmd->c_str(), arg->c_str());
-				return false;
+				if (cmd->equalsIgnoreCase("Chnage")) {
+					// Workaround for OBJ_0307.DAT
+					action = kScriptActionChange;
+				} else {
+					// No know action, die
+					warning("ScriptChunk::parse(): Unknown script action \"%s\" (\"%s\")", cmd->c_str(), arg->c_str());
+					return false;
+				}
 			}
 
 			if (action == kScriptActionFrom)
