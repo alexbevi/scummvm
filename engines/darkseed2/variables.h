@@ -74,7 +74,7 @@ public:
 
 	/** Evaluates a condition string, like they are found in the game scripts. */
 	bool evalCondition(const Common::String &condition) const;
-	/** Evaluates a condition string, like they are found in the game scripts. */
+	/** Evaluates several condition strings, like they are found in the game scripts. */
 	bool evalCondition(const Common::List<Common::String> &condition) const;
 
 	/** Evaluate a change string, like they are found in the game scripts. */

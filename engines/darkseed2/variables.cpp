@@ -143,12 +143,11 @@ bool Variables::evalCondition(const Common::String &condition) const {
 }
 
 bool Variables::evalCondition(const Common::List<Common::String> &condition) const {
-	bool result = true;
-
 	for (Common::List<Common::String>::const_iterator it = condition.begin(); it != condition.end(); ++it)
-		result = result && evalConditionPart(*it);
+		if (evalCondition(*it))
+			return true;
 
-	return result;
+	return false;
 }
 
 bool Variables::evalConditionPart(const Common::String &conditionPart) const {
