@@ -351,7 +351,6 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 					cursorModeToObjectVerb(_cursorMode), _itemCursor);
 
 			if ((_itemRef != 0) && (_itemCursor != 0)) {
-				warning("ItemMode");
 				_itemVerb = cursorModeToObjectVerb(_cursorMode);
 				_itemMode = true;
 				setCursor(kCursorModeWalk, false);
@@ -411,7 +410,6 @@ void Events::cycleCursorMode() {
 		return;
 
 	if (_itemMode) {
-		warning("Away!");
 		_vm->_graphics->getInventoryBox().undoAction(_itemRef, _itemVerb);
 		_itemMode = false;
 	}
