@@ -283,6 +283,9 @@ InventoryBox::ItemRef InventoryBox::doAction(uint32 x, uint32 y, ObjectVerb verb
 	if (item < 0)
 		return 0;
 
+	if (((uint32) item) >= _visibleItems.size())
+		return 0;
+
 	if ((verb == kObjectVerbLook) && (_visibleItems[item]->curLook))
 		_talkMan->talk(*_resources, _visibleItems[item]->curLook->text);
 
