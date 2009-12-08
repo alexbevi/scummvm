@@ -158,6 +158,10 @@ bool ScriptChunk::conditionsMet() const {
 	return false;
 }
 
+const Common::List<Common::String> &ScriptChunk::getConditions() const {
+	return _conditions;
+}
+
 const Common::List<ScriptChunk::Action> &ScriptChunk::getActions() const {
 	return _actions;
 }
