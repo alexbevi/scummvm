@@ -193,7 +193,7 @@ void Variables::evalChange(const Common::String &change) {
 
 void Variables::evalChange(const Common::List<Common::String> &change) {
 	for (Common::List<Common::String>::const_iterator it = change.begin(); it != change.end(); ++it)
-		evalChangePart(*it);
+		evalChange(*it);
 }
 
 void Variables::evalChangePart(const Common::String &changePart) {

@@ -79,7 +79,7 @@ public:
 
 	/** Evaluate a change string, like they are found in the game scripts. */
 	void evalChange(const Common::String &change);
-	/** Evaluate a change string, like they are found in the game scripts. */
+	/** Evaluate several change strings, like they are found in the game scripts. */
 	void evalChange(const Common::List<Common::String> &change);
 
 private:
