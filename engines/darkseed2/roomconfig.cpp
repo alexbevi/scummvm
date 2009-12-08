@@ -108,13 +108,7 @@ bool RoomConfig::conditionsMet() {
 		return _conditionsState;
 	}
 
-	bool met = false;
-
-	for (Common::List<Common::String>::const_iterator it = _conditions.begin(); it != _conditions.end(); ++it)
-		if (_variables->evalCondition(*it)) {
-			met = true;
-			break;
-		}
+	bool met = _variables->evalCondition(_conditions);
 
 	_stateChanged = false;
 	if (_state != met) {

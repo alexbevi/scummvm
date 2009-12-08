@@ -151,11 +151,7 @@ bool ScriptChunk::parse(DATFile &dat) {
 }
 
 bool ScriptChunk::conditionsMet() const {
-	for (Common::List<Common::String>::const_iterator it = _conditions.begin(); it != _conditions.end(); ++it)
-		if (_variables->evalCondition(*it))
-			return true;
-
-	return false;
+	return _variables->evalCondition(_conditions);
 }
 
 const Common::List<Common::String> &ScriptChunk::getConditions() const {
