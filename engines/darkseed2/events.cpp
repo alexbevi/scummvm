@@ -303,9 +303,16 @@ void Events::mouseMoved(uint32 x, uint32 y) {
 		return;
 	}
 
-	// Look for hotspots, but only if we're not currently doing something important
-	if (_vm->_variables->get("SysCall") == 0)
+	if (_vm->_variables->get("SysCall") == 0) {
+	// Check for entering/leaving the inventory box
+		if (y >= (Graphics::kScreenHeight - 20))
+			_vm->_graphics->getInventoryBox().show();
+		else if (y < (Graphics::kScreenHeight - InventoryBox::kHeight))
+			_vm->_graphics->getInventoryBox().hide();
+
+		// Look for hotspots
 		checkHotspot(x, y);
+	}
 }
 
 void Events::mouseClickedLeft(uint32 x, uint32 y) {
@@ -338,10 +345,29 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 		Object *curObject = _vm->_graphics->getRoom().findObject(x, y);
 		if (curObject)
 			doObjectVerb(*curObject, cursorModeToObjectVerb(_cursorMode));
+
+		if (_vm->_graphics->getInventoryBox().isVisible() && !_itemMode) {
+			_itemRef = _vm->_graphics->getInventoryBox().doAction(x, y,
+					cursorModeToObjectVerb(_cursorMode), _itemCursor);
+
+			if ((_itemRef != 0) && (_itemCursor != 0)) {
+				warning("ItemMode");
+				_itemVerb = cursorModeToObjectVerb(_cursorMode);
+				_itemMode = true;
+				setCursor(kCursorModeWalk, false);
+			}
+		}
+
 	}
+
 }
 
 void Events::checkHotspot(uint32 x, uint32 y) {
+	if (_vm->_graphics->getInventoryBox().isVisible()) {
+		checkInventoryHotspot(x, y);
+		return;
+	}
+
 	bool cursorActive = false;
 
 	Object *curObject = _vm->_graphics->getRoom().findObject(x, y);
@@ -349,6 +375,15 @@ void Events::checkHotspot(uint32 x, uint32 y) {
 		if (curObject->hasActiveVerb(cursorModeToObjectVerb(_cursorMode)))
 			cursorActive = true;
 	}
+
+	if (cursorActive != _cursorActive) {
+		_cursorActive = cursorActive;
+		setCursor();
+	}
+}
+
+void Events::checkInventoryHotspot(uint32 x, uint32 y) {
+	bool cursorActive = _vm->_graphics->getInventoryBox().hasAction(x, y, cursorModeToObjectVerb(_cursorMode));
 
 	if (cursorActive != _cursorActive) {
 		_cursorActive = cursorActive;
@@ -375,11 +410,26 @@ void Events::cycleCursorMode() {
 	if (!_canSwitchCursors)
 		return;
 
+	if (_itemMode) {
+		warning("Away!");
+		_vm->_graphics->getInventoryBox().undoAction(_itemRef, _itemVerb);
+		_itemMode = false;
+	}
+
 	_cursorMode = (CursorMode) ((((int) _cursorMode) + 1) % kCursorModeNone);
 	setCursor();
 }
 
 void Events::setCursor() {
+	if (_itemMode) {
+		if (_cursorActive)
+			setCursor(*_itemCursor);
+		else
+			setCursor(kCursorModeWalk, false);
+
+		return;
+	}
+
 	setCursor(_cursorMode, _cursorActive);
 }
 

@@ -31,7 +31,9 @@
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/movie.h"
+#include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/conversationbox.h"
+#include "engines/darkseed2/inventorybox.h"
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/graphicalobject.h"
 
@@ -39,6 +41,8 @@ namespace DarkSeed2 {
 
 static const uint32 kConversationX =   0;
 static const uint32 kConversationY = 410;
+static const uint32 kInventoryX    =   0;
+static const uint32 kInventoryY    = 410;
 
 Graphics::SpriteRef::SpriteRef() {
 	layer = -1;
@@ -47,9 +51,10 @@ Graphics::SpriteRef::SpriteRef() {
 }
 
 
-Graphics::Graphics(Resources &resources, Variables &variables) {
+Graphics::Graphics(Resources &resources, Variables &variables, Cursors &cursors) {
 	_resources = &resources;
 	_variables = &variables;
+	_cursors   = &cursors;
 	_movie     = 0;
 
 	clearPalette();
@@ -68,6 +73,7 @@ Graphics::Graphics(Resources &resources, Variables &variables) {
 
 Graphics::~Graphics() {
 	delete _room;
+	delete _inventoryBox;
 	delete _conversationBox;
 	delete _talk;
 }
@@ -77,6 +83,9 @@ void Graphics::init(TalkManager &talkManager, RoomConfigManager &roomConfigManag
 
 	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager);
 	_conversationBox->move(kConversationX, kConversationY);
+
+	_inventoryBox = new InventoryBox(*_resources, *_variables, *this, talkManager, *_cursors);
+	_inventoryBox->move(kInventoryX, kInventoryY);
 
 	_room = new Room(*_variables, *this);
 	_room->registerConfigManager(roomConfigManager);
@@ -93,6 +102,12 @@ ConversationBox &Graphics::getConversationBox() {
 	return *_conversationBox;
 }
 
+InventoryBox &Graphics::getInventoryBox() {
+	assert(_inventoryBox);
+
+	return *_inventoryBox;
+}
+
 Room &Graphics::getRoom() {
 	assert(_room);
 
@@ -101,8 +116,10 @@ Room &Graphics::getRoom() {
 
 void Graphics::updateStatus() {
 	assert(_conversationBox);
+	assert(_inventoryBox);
 
 	_conversationBox->updateStatus();
+	_inventoryBox->updateStatus();
 }
 
 void Graphics::clearPalette() {
@@ -343,12 +360,14 @@ void Graphics::registerBackground(const Sprite &background) {
 	debugC(-1, kDebugGraphics, "New background");
 
 	assert(_conversationBox);
+	assert(_inventoryBox);
 
 	_background = &background;
 
 	setPalette(_background->getPalette());
 
 	_conversationBox->newPalette();
+	_inventoryBox->newPalette();
 
 	requestRedraw();
 }
@@ -402,6 +421,9 @@ void Graphics::redraw(const Common::Rect &rect) {
 
 	if (_conversationBox && _conversationBox->isActive())
 		_conversationBox->redraw(_screen, rect);
+
+	if (_inventoryBox && _inventoryBox->isVisible())
+		_inventoryBox->redraw(_screen, rect);
 }
 
 } // End of namespace DarkSeed2

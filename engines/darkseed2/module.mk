@@ -21,6 +21,8 @@ MODULE_OBJS := \
 	talk.o \
 	conversation.o \
 	conversationbox.o \
+	inventory.o \
+	inventorybox.o \
 	movie.o \
 	inter.o \
 	events.o

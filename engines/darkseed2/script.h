@@ -98,6 +98,9 @@ public:
 	/** Are all conditions for this chunk met? */
 	bool conditionsMet() const;
 
+	/** Get the script conditions. */
+	const Common::List<Common::String> &getConditions() const;
+
 	/** Get all script actions. */
 	const Common::List<Action> &getActions() const;
 

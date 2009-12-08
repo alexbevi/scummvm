@@ -46,12 +46,14 @@ class RoomConfigManager;
 class Movie;
 
 class ConversationBox;
+class InventoryBox;
 class Room;
 
 class Resource;
 class TextObject;
 class SpriteObject;
 class Animation;
+class Cursors;
 
 class Graphics {
 public:
@@ -69,7 +71,7 @@ public:
 	static const uint32 kScreenWidth  = 640;  ///< The screen width.
 	static const uint32 kScreenHeight = 480;  ///< The screen height.
 
-	Graphics(Resources &resources, Variables &variables);
+	Graphics(Resources &resources, Variables &variables, Cursors &cursors);
 	~Graphics();
 
 	/** Init the graphics subsystem. */
@@ -77,6 +79,8 @@ public:
 
 	/** Get the conversation box. */
 	ConversationBox &getConversationBox();
+	/** Get the inventory box. */
+	InventoryBox &getInventoryBox();
 	/** Get the current room. */
 	Room &getRoom();
 
@@ -135,10 +139,12 @@ private:
 
 	Resources *_resources;
 	Variables *_variables;
+	Cursors   *_cursors;
 	Movie     *_movie;
 
 	ConversationBox *_conversationBox; ///< The conversation box.
-	Room *_room;                       ///< The current room.
+	InventoryBox    *_inventoryBox;    ///< The inventory box.
+	Room            *_room;            ///< The current room.
 
 	Palette _gamePalette; ///< The game palette.
 	Sprite _screen;       ///< The game screen.

@@ -32,6 +32,7 @@
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/objects.h"
 #include "engines/darkseed2/graphicalobject.h"
+#include "engines/darkseed2/inventorybox.h"
 
 namespace DarkSeed2 {
 
@@ -88,6 +89,12 @@ private:
 
 	Object *_lastObject;
 
+	// Item usage
+	bool _itemMode;                     ///< Currently in item mode?
+	const Cursors::Cursor *_itemCursor; ///< The item's cursor.
+	InventoryBox::ItemRef _itemRef;     ///< A reference to the active item.
+	ObjectVerb _itemVerb;               ///< The verb that triggered the object mode.
+
 	/** Handle user input. */
 	void handleInput();
 
@@ -103,6 +110,8 @@ private:
 
 	/** Look if we're in a hotspot. */
 	void checkHotspot(uint32 x, uint32 y);
+	/** Look if we're in an inventory hotspot. */
+	void checkInventoryHotspot(uint32 x, uint32 y);
 
 	/** Cycle the cursor mode. */
 	void cycleCursorMode();

@@ -309,6 +309,7 @@ ScriptInterpreter::Result ScriptInterpreter::oChangeAt(Script &script) {
 ScriptInterpreter::Result ScriptInterpreter::oDialog(Script &script) {
 	// Start a conversation
 
+	_vm->_graphics->getInventoryBox().hide();
 	_vm->_graphics->getConversationBox().start(script.action->arguments);
 
 	script.waitingFor = kWaitConversation;
