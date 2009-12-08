@@ -45,8 +45,8 @@ static const uint32 kItemWidth         = 50;
 static const uint32 kVisibleItemsCount = (kVisibleItems[2] - kVisibleItems[0]) / kItemWidth;
 
 // Scroll button coordinates
-static const int kScrollLeft [4] = {0, 0, 0, 0};
-static const int kScrollRight[4] = {0, 0, 0, 0};
+static const int kScrollLeft [4] = { 11,  27,  32,  53};
+static const int kScrollRight[4] = {608,  27, 629,  53};
 
 // Colors
 static const byte kColorShading[3] = {  0,   0,   0};
@@ -67,6 +67,8 @@ InventoryBox::InventoryBox(Resources &resources, Variables &variables, Graphics 
 	_visible = false;
 
 	_firstItem = 0;
+
+	_scrolled = false;
 
 	_area = Common::Rect(kWidth, kHeight);
 
@@ -130,21 +132,31 @@ void InventoryBox::resetSprites() {
 
 void InventoryBox::updateScroll() {
 	if (canScrollLeft())
-		_sprites[0].blit(_sprites[4], 0, 0, true);
+		_box.blit(_sprites[4], 0, 0, true);
 	else
-		_sprites[0].blit(_sprites[5], 0, 0, true);
+		_box.blit(_sprites[5], 0, 0, true);
 
 	if (canScrollRight())
-		_sprites[0].blit(_sprites[6], kWidth - _sprites[6].getWidth(), 0, true);
+		_box.blit(_sprites[6], kWidth - _sprites[6].getWidth(), 0, true);
 	else
-		_sprites[0].blit(_sprites[7], kWidth - _sprites[7].getWidth(), 0, true);
+		_box.blit(_sprites[7], kWidth - _sprites[7].getWidth(), 0, true);
+
+	Common::Rect scroll1 = _sprites[4].getArea();
+	Common::Rect scroll2 = _sprites[6].getArea();
+	scroll2.moveTo(kWidth - _sprites[6].getWidth(), 0);
+
+	scroll1.translate(_area.left, _area.top);
+	scroll2.translate(_area.left, _area.top);
+
+	_graphics->requestRedraw(scroll1);
+	_graphics->requestRedraw(scroll2);
 }
 
 bool InventoryBox::updateItems() {
 	bool first   = _items == 0;
 	bool changed = _inventory->getItems(_items);
 
-	if (!first && !changed)
+	if (!first && !changed && !_scrolled)
 		// Nothing to do
 		return false;
 
@@ -206,6 +218,7 @@ void InventoryBox::redrawItems() {
 	// Put the visible items
 	_box.blit(_sprites[2], visibleItemArea.left, visibleItemArea.top, true);
 
+	visibleItemArea.translate(_area.left, _area.top);
 	_graphics->requestRedraw(visibleItemArea);
 }
 
@@ -214,7 +227,7 @@ bool InventoryBox::canScrollLeft() const {
 }
 
 bool InventoryBox::canScrollRight() const {
-	return (_firstItem + _visibleItems.size()) > kVisibleItemsCount;
+	return (_visibleItems.size() - _firstItem) > kVisibleItemsCount;
 }
 
 void InventoryBox::newPalette() {
@@ -286,6 +299,12 @@ InventoryBox::ItemRef InventoryBox::doAction(uint32 x, uint32 y, ObjectVerb verb
 
 	changeTo = 0;
 
+	ScrollAction scroll = getScrollAction(x - _area.left, y - _area.top);
+	if (scroll != kScrollActionNone) {
+		doScroll(scroll);
+		return 0;
+	}
+
 	int32 item = getItemNumber(x, y);
 	if (item < 0)
 		return 0;
@@ -349,8 +368,39 @@ int32 InventoryBox::getItemNumber(uint32 x, uint32 y) {
 }
 
 void InventoryBox::updateStatus() {
-	if (updateItems())
+	if (updateItems()) {
 		redrawItems();
+		updateScroll();
+	}
+
+	_scrolled = false;
+}
+
+InventoryBox::ScrollAction InventoryBox::getScrollAction(uint32 x, uint32 y) {
+	for (int i = 0; i < 2; i++)
+		if (_scrollAreas[i].contains(x, y))
+			return (ScrollAction) i;
+
+	return kScrollActionNone;
+}
+
+void InventoryBox::doScroll(ScrollAction scroll) {
+	switch (scroll) {
+	case kScrollActionLeft:
+		if (canScrollLeft())
+			_firstItem--;
+			_scrolled = true;
+		break;
+
+	case kScrollActionRight:
+		if (canScrollRight())
+			_firstItem++;
+			_scrolled = true;
+		break;
+
+	default:
+		break;
+	}
 }
 
 } // End of namespace DarkSeed2

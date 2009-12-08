@@ -82,6 +82,13 @@ public:
 	void updateStatus();
 
 private:
+	/** A scrolling action. */
+	enum ScrollAction {
+		kScrollActionLeft,  ///< Scroll left.
+		kScrollActionRight, ///< Scroll right.
+		kScrollActionNone   ///< No scroll.
+	};
+
 	Resources   *_resources;
 	Variables   *_variables;
 	Graphics    *_graphics;
@@ -113,6 +120,8 @@ private:
 
 	uint32 _firstItem;  ///< The first visible item.
 
+	bool _scrolled;
+
 	void initInventory();
 
 	void updateColors();
@@ -124,9 +133,17 @@ private:
 	void rebuild();
 	void redrawItems();
 
+	/** Get the number of the item on these coordinates. */
 	int32 getItemNumber(uint32 x, uint32 y);
+	/** Get the scroll action area the coordinates are in. */
+	ScrollAction getScrollAction(uint32 x, uint32 y);
 
+	/** Scroll the items. */
+	void doScroll(ScrollAction scroll);
+
+	/** Is it possible to scroll to the left? */
 	bool canScrollLeft() const;
+	/** Is it possible to scroll to the right? */
 	bool canScrollRight() const;
 };
 
