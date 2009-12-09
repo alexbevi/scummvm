@@ -30,6 +30,7 @@
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/music.h"
+#include "engines/darkseed2/mike.h"
 
 namespace DarkSeed2 {
 
@@ -210,11 +211,12 @@ bool RoomConfigMusic::parseLine(const Common::String &cmd, const Common::String 
 
 
 RoomConfigSprite::RoomConfigSprite(Variables &variables, Resources &resources,
-		Graphics &graphics, Sound &sound) : RoomConfig(variables) {
+		Graphics &graphics, Sound &sound, Mike &mike) : RoomConfig(variables) {
 
 	_resources = &resources;
 	_graphics  = &graphics;
 	_sound     = &sound;
+	_mike      = &mike;
 
 	for (int i = 0; i < 6; i++)
 		_status[i] = 0;
@@ -306,10 +308,23 @@ bool RoomConfigSprite::updateStatus() {
 			_sound->playWAV(*_resources, _effects[i].effect);
 		}
 
-	if (_curPos < _frames.size())
+	if (_curPos < _frames.size()) {
+		int32 x = _frames[_curPos].x;
+		int32 y = _frames[_curPos].y;
+
+		if (_status[0] & 8) {
+			uint32 mX, mY;
+
+			_mike->getPosition(mX, mY);
+
+			x = mX;
+			y = mY;
+		}
+
 		// Update animation frame
 		_graphics->addRoomAnimation(_anim, _currentSprite, _frames[_curPos].frame,
-				_status[0], _frames[_curPos].x, _frames[_curPos].y);
+				_status[0], x, y);
+	}
 
 	if (++_curPos >= _frames.size()) {
 		_curPos = 0;
@@ -404,15 +419,10 @@ bool RoomConfigSprite::parseLine(const Common::String &cmd, const Common::String
 }
 
 bool RoomConfigSprite::parseStatus(const Common::String &args) {
-	Common::Array<Common::String> lArgs = DATFile::argGet(args);
+	Common::Array<int32> arg = DATFile::argGetInts(args, 6, 0);
 
-	if (lArgs.size() > 6) {
-		warning("RoomConfigSprite::parseStatus(): Broken arguments");
-		return false;
-	}
-
-	for (uint i = 0; i < lArgs.size(); i++)
-		_status[i] = atoi(lArgs[i].c_str());
+	for (uint i = 0; i < 6; i++)
+		_status[i] = arg[i];
 
 	return true;
 }
@@ -836,7 +846,7 @@ bool RoomConfigManager::parseSpriteConfigs(DATFile &dat) {
 		dat.previous();
 
 		RoomConfigSprite *music =
-			new RoomConfigSprite(*_vm->_variables, *_vm->_resources, *_vm->_graphics, *_vm->_sound);
+			new RoomConfigSprite(*_vm->_variables, *_vm->_resources, *_vm->_graphics, *_vm->_sound, *_vm->_mike);
 		if (!music->parse(dat)) {
 			delete music;
 			return false;

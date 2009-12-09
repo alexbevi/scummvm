@@ -42,6 +42,7 @@
 #include "engines/darkseed2/music.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/talk.h"
+#include "engines/darkseed2/mike.h"
 #include "engines/darkseed2/movie.h"
 #include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/inter.h"
@@ -75,6 +76,7 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	_variables   = 0;
 	_graphics    = 0;
 	_talkMan     = 0;
+	_mike        = 0 ;
 	_movie       = 0;
 	_roomConfMan = 0;
 	_inter       = 0;
@@ -90,6 +92,7 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 	delete _events;
 	delete _inter;
 	delete _movie;
+	delete _mike;
 	delete _talkMan;
 	delete _graphics;
 	delete _roomConfMan;
@@ -156,6 +159,7 @@ bool DarkSeed2Engine::init() {
 	_music       = new Music(*_mixer, *_midiDriver);
 	_graphics    = new Graphics(*_resources, *_variables, *_cursors);
 	_talkMan     = new TalkManager(*_sound, *_graphics);
+	_mike        = new Mike();
 	_movie       = new Movie(*_mixer, *_graphics);
 
 	_roomConfMan = new RoomConfigManager(*this);

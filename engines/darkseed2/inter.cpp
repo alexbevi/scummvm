@@ -30,7 +30,9 @@
 #include "engines/darkseed2/music.h"
 #include "engines/darkseed2/movie.h"
 #include "engines/darkseed2/talk.h"
+#include "engines/darkseed2/mike.h"
 #include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/room.h"
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/events.h"
 
@@ -209,18 +211,15 @@ ScriptInterpreter::Result ScriptInterpreter::interpret(Script &script) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::oXYRoom(Script &script) {
-	// Position changing?
+	// Position changing
 
-	warning("TODO: Unimplemented script function oXYRoom [%s]", script.action->arguments.c_str());
+	Common::Array<int32> args = DATFile::argGetInts(script.action->arguments, 5);
 
-	Common::Array<Common::String> lArgs = DATFile::argGet(script.action->arguments);
-	if (lArgs.size() >= 3) {
-		uint32 room = atoi(lArgs[2].c_str());
+	_vm->_mike->setPosition(args[0], args[1]);
+	_vm->_mike->setDirection((Mike::Direction) args[3]);
 
-		// Room transition
-		if (room != 0)
-			_vm->_events->setNextRoom(room);
-	}
+	if (args[2] != 0)
+		_vm->_events->setNextRoom(args[2]);
 
 	return kResultOK;
 }

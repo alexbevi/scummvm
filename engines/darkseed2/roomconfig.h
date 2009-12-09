@@ -41,6 +41,7 @@ class Variables;
 class DATFile;
 class Sound;
 class Music;
+class Mike;
 
 /** A generic RoomConfig base class. */
 class RoomConfig {
@@ -134,7 +135,7 @@ private:
 class RoomConfigSprite : public RoomConfig {
 public:
 	RoomConfigSprite(Variables &variables, Resources &resources,
-			Graphics &graphics, Sound &sound);
+			Graphics &graphics, Sound &sound, Mike &mike);
 	~RoomConfigSprite();
 
 	bool init();
@@ -157,20 +158,22 @@ private:
 	Resources *_resources;
 	Graphics  *_graphics;
 	Sound     *_sound;
+	Mike      *_mike;
 
 	Graphics::SpriteRef _currentSprite;
 
 	/** The animation name. */
 	Common::String _anim;
-	uint16 _status[6];
+	int32 _status[6];
 	Common::Array<Frame> _frames;
 	Common::Array<Effect> _effects;
 
-	uint8 _spriteIDX;
 	Common::String _scaleVal;
 	Common::String _loadCond;
 	Common::String _changeAt;
 	Common::String _speech;
+
+	int32 _spriteIDX;
 
 	Common::String _loopCond;
 	int32 _loopStart;

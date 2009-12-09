@@ -24,6 +24,7 @@ MODULE_OBJS := \
 	inventory.o \
 	inventorybox.o \
 	movie.o \
+	mike.o \
 	inter.o \
 	events.o
 

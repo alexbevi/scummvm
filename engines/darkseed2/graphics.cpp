@@ -228,8 +228,8 @@ void Graphics::addRoomAnimation(const Common::String &animation, SpriteRef &ref,
 	// Set the layer and flip the order
 	layer = (kLayerCount - 1) - CLIP<int>(layer, 0, (kLayerCount - 1));
 
-	if ((x < 0) || (y < 0))
-		(*anim)->move();
+	if ((x < 0) || (y < 0)) { }
+//		(*anim)->move();
 	else
 		(*anim)->moveFeet((uint32) x, (uint32) y);
 

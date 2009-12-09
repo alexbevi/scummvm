@@ -232,8 +232,8 @@ void Animation::clear() {
 	_frames.clear();
 	_name.clear();
 
-	_visible  = false;
-	_curFrame = 0;
+	_visible   = false;
+	_curFrame  = 0;
 }
 
 bool Animation::empty() const {
@@ -250,6 +250,21 @@ bool Animation::isVisible() const {
 
 void Animation::setVisible(bool visible) {
 	_visible = visible;
+}
+
+void Animation::move() {
+	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
+		(*frame)->move();
+}
+
+void Animation::move(uint32 x, uint32 y) {
+	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
+		(*frame)->move(x, y);
+}
+
+void Animation::moveFeet(uint32 x, uint32 y) {
+	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
+		(*frame)->move(x, y);
 }
 
 void Animation::setFrame(int frame) {

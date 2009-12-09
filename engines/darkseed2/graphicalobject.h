@@ -143,6 +143,13 @@ public:
 	/** Set the visibility of the animations. */
 	void setVisible(bool visible);
 
+	/** Move the animation to its default coordinates. */
+	void move();
+	/** Move the animation. */
+	void move(uint32 x, uint32 y);
+	/** Move the animation relative to its feet. */
+	void moveFeet(uint32 x, uint32 y);
+
 	/** Set the current frame. */
 	void setFrame(int frame);
 	/** Advance the animation to the next frame. */

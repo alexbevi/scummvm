@@ -66,6 +66,8 @@ public:
 	/** Split the string into separate argument strings. */
 	static Common::Array<Common::String> argGet(const Common::String &arguments);
 
+	static Common::Array<int32> argGetInts(const Common::String &arguments, int n = -1, int def = 0);
+
 	/** Merge arguments back together to a string. */
 	static Common::String mergeArgs(const Common::Array<Common::String> &args, uint32 n = 0);
 

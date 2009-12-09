@@ -60,6 +60,7 @@ class Music;
 class Variables;
 class Graphics;
 class TalkManager;
+class Mike;
 class Movie;
 class RoomConfigManager;
 class ScriptInterpreter;
@@ -75,6 +76,7 @@ public:
 	Variables         *_variables;
 	Graphics          *_graphics;
 	TalkManager       *_talkMan;
+	Mike              *_mike;
 	Movie             *_movie;
 	RoomConfigManager *_roomConfMan;
 	ScriptInterpreter *_inter;

@@ -221,6 +221,23 @@ Common::Array<Common::String> DATFile::argGet(const Common::String &arguments) {
 	return list;
 }
 
+Common::Array<int32> DATFile::argGetInts(const Common::String &arguments, int n, int def) {
+	Common::Array<Common::String> lArgs = argGet(arguments);
+
+	if (n >= 0)
+		lArgs.resize(n);
+
+	Common::Array<int32> ints;
+	for (uint i = 0; i < lArgs.size(); i++) {
+		if (lArgs[i].empty())
+			ints.push_back(def);
+		else
+			ints.push_back(atoi(lArgs[i].c_str()));
+	}
+
+	return ints;
+}
+
 Common::String DATFile::mergeArgs(const Common::Array<Common::String> &args, uint32 n) {
 	Common::String str;
 
