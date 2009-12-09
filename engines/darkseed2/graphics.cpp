@@ -395,7 +395,9 @@ void Graphics::redraw() {
 		redraw(*it);
 }
 
-void Graphics::redraw(const Common::Rect &rect) {
+void Graphics::redraw(Common::Rect rect) {
+	rect.clip(Common::Rect(0, 0, kScreenWidth, kScreenHeight));
+
 	if (rect.isEmpty())
 		return;
 

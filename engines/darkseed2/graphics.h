@@ -167,7 +167,7 @@ private:
 	/** Redraw the dirty screen areas. */
 	void redraw();
 	/** Redraw that area of the game screen. */
-	void redraw(const Common::Rect &rect);
+	void redraw(Common::Rect rect);
 
 	/** Dirty the whole screen. */
 	void dirtyAll();
