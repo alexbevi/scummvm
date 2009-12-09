@@ -141,7 +141,7 @@ void DarkSeed2Engine::syncSoundSettings() {
 }
 
 bool DarkSeed2Engine::init() {
-	int midiDriver = MidiDriver::detectMusicDriver(MDT_MIDI | MDT_ADLIB | MDT_PREFER_MIDI);
+	MidiDriverType midiDriver = MidiDriver::detectMusicDriver(MDT_MIDI | MDT_ADLIB | MDT_PREFER_MIDI);
 	bool native_mt32 = ((midiDriver == MD_MT32) || ConfMan.getBool("native_mt32"));
 
 	_midiDriver = MidiDriver::createMidi(midiDriver);
