@@ -215,11 +215,16 @@ ScriptInterpreter::Result ScriptInterpreter::oXYRoom(Script &script) {
 
 	Common::Array<int32> args = DATFile::argGetInts(script.action->arguments, 5);
 
-	_vm->_mike->setPosition(args[0], args[1]);
+	if ((args[0] > 0) && (args[1] > 0))
+		_vm->_mike->setPosition(args[0], args[1]);
 	_vm->_mike->setDirection((Mike::Direction) args[3]);
 
 	if (args[2] != 0)
 		_vm->_events->setNextRoom(args[2]);
+
+	uint32 x, y;
+
+	_vm->_mike->getPosition(x, y);
 
 	return kResultOK;
 }
