@@ -69,7 +69,7 @@ void Sprite::copyFrom(const Sprite &sprite) {
 }
 
 bool Sprite::exists() const {
-	return _data == 0;
+	return _data != 0;
 }
 
 uint32 Sprite::getWidth() const {
@@ -269,7 +269,7 @@ bool Sprite::loadFromStaticCursor(const StaticCursor &staticCursor) {
 void Sprite::blit(const Sprite &from, const Common::Rect &area,
 		uint32 x, uint32 y, bool transp) {
 
-	if (exists() || from.exists())
+	if (!exists() || !from.exists())
 		return;
 
 	Common::Rect toArea = getArea();
@@ -317,7 +317,7 @@ void Sprite::blit(const Sprite &from, uint32 x, uint32 y, bool transp) {
 void Sprite::blitDouble(const Sprite &from, const Common::Rect &area,
 		uint32 x, uint32 y, bool transp) {
 
-	if (exists() || from.exists())
+	if (!exists() || !from.exists())
 		return;
 
 	Common::Rect toArea = getArea();
