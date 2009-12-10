@@ -27,8 +27,12 @@
 #define DARKSEED2_MIKE_H
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/graphicalobject.h"
 
 namespace DarkSeed2 {
+
+class Resources;
+class Graphics;
 
 class Mike {
 public:
@@ -44,8 +48,12 @@ public:
 		kDirNone
 	};
 
-	Mike();
+	Mike(Resources &resources, Graphics &graphics);
 	~Mike();
+
+	Common::Rect getArea() const;
+
+	bool init();
 
 	void getPosition(uint32 &x, uint32 &y) const;
 	void setPosition(uint32 x, uint32 y);
@@ -53,11 +61,20 @@ public:
 	Direction getDirection() const;
 	void setDirection(Direction direction);
 
+	void redraw(Sprite &sprite, Common::Rect area);
+
 private:
+	Resources *_resources;
+	Graphics  *_graphics;
+
 	uint32 _x;
 	uint32 _y;
 
+	Animation _animations[kDirNone];
+
 	Direction _direction;
+
+	bool loadAnimations();
 };
 
 } // End of namespace DarkSeed2

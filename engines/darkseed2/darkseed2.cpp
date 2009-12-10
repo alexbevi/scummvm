@@ -76,7 +76,7 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	_variables   = 0;
 	_graphics    = 0;
 	_talkMan     = 0;
-	_mike        = 0 ;
+	_mike        = 0;
 	_movie       = 0;
 	_roomConfMan = 0;
 	_inter       = 0;
@@ -159,7 +159,7 @@ bool DarkSeed2Engine::init() {
 	_music       = new Music(*_mixer, *_midiDriver);
 	_graphics    = new Graphics(*_resources, *_variables, *_cursors);
 	_talkMan     = new TalkManager(*_sound, *_graphics);
-	_mike        = new Mike();
+	_mike        = new Mike(*_resources, *_graphics);
 	_movie       = new Movie(*_mixer, *_graphics);
 
 	_roomConfMan = new RoomConfigManager(*this);
@@ -182,13 +182,18 @@ bool DarkSeed2Engine::init() {
 		return false;
 	}
 
+	if (!_mike->init()) {
+		warning("DarkSeed2Engine::init(): Couldn't initialize Mike");
+		return false;
+	}
+
 	return true;
 }
 
 bool DarkSeed2Engine::initGraphics() {
 	debug(-1, "Setting up graphics...");
 
-	_graphics->init(*_talkMan, *_roomConfMan, *_movie);
+	_graphics->init(*_talkMan, *_roomConfMan, *_movie, *_mike);
 
 	::initGraphics(Graphics::kScreenWidth, Graphics::kScreenHeight, true);
 	return true;

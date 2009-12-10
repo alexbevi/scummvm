@@ -264,7 +264,7 @@ void Animation::move(uint32 x, uint32 y) {
 
 void Animation::moveFeet(uint32 x, uint32 y) {
 	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
-		(*frame)->move(x, y);
+		(*frame)->moveFeet(x, y);
 }
 
 void Animation::setFrame(int frame) {

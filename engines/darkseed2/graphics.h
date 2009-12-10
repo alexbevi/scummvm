@@ -44,6 +44,7 @@ class Variables;
 class TalkManager;
 class RoomConfigManager;
 class Movie;
+class Mike;
 
 class ConversationBox;
 class InventoryBox;
@@ -75,7 +76,7 @@ public:
 	~Graphics();
 
 	/** Init the graphics subsystem. */
-	void init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie);
+	void init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie, Mike &mike);
 
 	/** Get the conversation box. */
 	ConversationBox &getConversationBox();
@@ -141,6 +142,7 @@ private:
 	Variables *_variables;
 	Cursors   *_cursors;
 	Movie     *_movie;
+	Mike      *_mike;
 
 	ConversationBox *_conversationBox; ///< The conversation box.
 	InventoryBox    *_inventoryBox;    ///< The inventory box.

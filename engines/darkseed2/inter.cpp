@@ -290,10 +290,12 @@ ScriptInterpreter::Result ScriptInterpreter::oFrom(Script &script) {
 			args[i] = atoi(lArgs[i].c_str());
 	}
 
-	warning("TODO: oFrom: Coming from %d? %dx%d", args[2], args[1], args[2]);
+	warning("TODO: oFrom: Coming from %d? %dx%d", args[2], args[0], args[1]);
 
 	if (!_vm->_events->cameFrom(args[2]))
 		return kResultStop;
+
+	_vm->_mike->setPosition(args[0], args[1]);
 
 	return kResultOK;
 }

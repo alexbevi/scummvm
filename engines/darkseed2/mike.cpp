@@ -24,10 +24,14 @@
  */
 
 #include "engines/darkseed2/mike.h"
+#include "engines/darkseed2/graphics.h"
 
 namespace DarkSeed2 {
 
-Mike::Mike() {
+Mike::Mike(Resources &resources, Graphics &graphics) {
+	_resources = &resources;
+	_graphics  = &graphics;
+
 	_x = 0;
 	_y = 0;
 
@@ -35,6 +39,42 @@ Mike::Mike() {
 }
 
 Mike::~Mike() {
+}
+
+Common::Rect Mike::getArea() const {
+	return _animations[_direction]->getArea();
+}
+
+bool Mike::init() {
+	if (!loadAnimations())
+		return false;
+
+	return true;
+}
+
+bool Mike::loadAnimations() {
+	if (!_animations[kDirN].load(*_resources, "n"))
+		return false;
+	if (!_animations[kDirNE].load(*_resources, "nw"))
+		return false;
+	if (!_animations[kDirE].load(*_resources, "w"))
+		return false;
+	if (!_animations[kDirSE].load(*_resources, "sw"))
+		return false;
+	if (!_animations[kDirS].load(*_resources, "s"))
+		return false;
+	if (!_animations[kDirSW].load(*_resources, "sw"))
+		return false;
+	if (!_animations[kDirW].load(*_resources, "w"))
+		return false;
+	if (!_animations[kDirNW].load(*_resources, "nw"))
+		return false;
+
+	_animations[kDirNE].flipHorizontally();
+	_animations[kDirE].flipHorizontally();
+	_animations[kDirSE].flipHorizontally();
+
+	return true;
 }
 
 void Mike::getPosition(uint32 &x, uint32 &y) const {
@@ -45,6 +85,13 @@ void Mike::getPosition(uint32 &x, uint32 &y) const {
 void Mike::setPosition(uint32 x, uint32 y) {
 	_x = x;
 	_y = y;
+
+	_graphics->requestRedraw(_animations[_direction]->getArea());
+
+	for (uint i = 0; i < kDirNone; i++)
+		_animations[i].moveFeet(x, y);
+
+	_graphics->requestRedraw(_animations[_direction]->getArea());
 }
 
 Mike::Direction Mike::getDirection() const {
@@ -55,7 +102,16 @@ void Mike::setDirection(Direction direction) {
 	if ((direction < 0) || (direction >= kDirNone))
 		direction = kDirE;
 
+	_graphics->requestRedraw(_animations[_direction]->getArea());
+
 	_direction = direction;
+
+	_graphics->requestRedraw(_animations[_direction]->getArea());
+}
+
+void Mike::redraw(Sprite &sprite, Common::Rect area) {
+	if ((_x > 0) && (_y > 0))
+		_animations[_direction]->redraw(sprite, area);
 }
 
 } // End of namespace DarkSeed2

@@ -36,6 +36,7 @@
 #include "engines/darkseed2/script.h"
 #include "engines/darkseed2/inter.h"
 #include "engines/darkseed2/movie.h"
+#include "engines/darkseed2/mike.h"
 
 namespace DarkSeed2 {
 
@@ -64,6 +65,8 @@ Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
 	_vm->_cursors->setVisible(true);
 
 	_changeRoom = false;
+
+	_showMike = false;
 }
 
 Events::~Events() {
@@ -206,6 +209,12 @@ void Events::mainLoop(bool finishScripts) {
 
 				roomGo(_nextRoom);
 			}
+		}
+
+		bool showMike = _vm->_variables->get("ShowMike");
+		if (_showMike != showMike) {
+			_vm->_graphics->requestRedraw(_vm->_mike->getArea());
+			_showMike = showMike;
 		}
 
 		// Update screen
@@ -478,6 +487,8 @@ bool Events::roomEnter() {
 
 	// Evaluate the room config, to get the initial room sprites set up
 	_vm->_roomConfMan->updateStatus();
+
+	_vm->_variables->set("ShowMike", 1);
 
 	return true;
 }

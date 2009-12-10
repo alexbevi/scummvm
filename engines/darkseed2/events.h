@@ -89,6 +89,8 @@ private:
 
 	Object *_lastObject;
 
+	bool _showMike;
+
 	// Item usage
 	bool _itemMode;                     ///< Currently in item mode?
 	const Cursors::Cursor *_itemCursor; ///< The item's cursor.

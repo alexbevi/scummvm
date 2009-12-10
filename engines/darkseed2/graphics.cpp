@@ -31,6 +31,7 @@
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/movie.h"
+#include "engines/darkseed2/mike.h"
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/inventorybox.h"
@@ -56,6 +57,7 @@ Graphics::Graphics(Resources &resources, Variables &variables, Cursors &cursors)
 	_variables = &variables;
 	_cursors   = &cursors;
 	_movie     = 0;
+	_mike      = 0;
 
 	clearPalette();
 
@@ -78,8 +80,9 @@ Graphics::~Graphics() {
 	delete _talk;
 }
 
-void Graphics::init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie) {
+void Graphics::init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie, Mike &mike) {
 	_movie = &movie;
+	_mike  = &mike;
 
 	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager);
 	_conversationBox->move(kConversationX, kConversationY);
@@ -412,7 +415,15 @@ void Graphics::redraw(Common::Rect rect) {
 	// Clip the area for animation sprite redraw to the room area
 	Common::Rect spriteArea = rect;
 	_room->clipToRoom(spriteArea);
-	for (int i = 0; i < kLayerCount; i++) {
+
+	for (SpriteQueue::iterator it = _spriteQueue[0].begin(); it != _spriteQueue[0].end(); ++it)
+		(*it)->redraw(_screen, spriteArea);
+
+	if (_variables->get("ShowMike") == 1)
+		if (_mike)
+			_mike->redraw(_screen, spriteArea);
+
+	for (int i = 1; i < kLayerCount; i++) {
 		for (SpriteQueue::iterator it = _spriteQueue[i].begin(); it != _spriteQueue[i].end(); ++it) {
 			(*it)->redraw(_screen, spriteArea);
 		}
