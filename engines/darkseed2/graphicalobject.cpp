@@ -345,6 +345,16 @@ bool Animation::load(Resources &resources, const Common::String &base) {
 	return true;
 }
 
+void Animation::flipHorizontally() {
+	for (Common::Array<SpriteObject *>::iterator sprite = _sprites.begin(); sprite != _sprites.end(); ++sprite)
+		(*sprite)->getSprite().flipHorizontally();
+}
+
+void Animation::flipVertically() {
+	for (Common::Array<SpriteObject *>::iterator sprite = _sprites.begin(); sprite != _sprites.end(); ++sprite)
+		(*sprite)->getSprite().flipVertically();
+}
+
 SpriteObject &Animation::getFrame(int n) {
 	return *_frames[n];
 }

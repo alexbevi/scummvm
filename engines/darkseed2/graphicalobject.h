@@ -164,6 +164,9 @@ public:
 	/** Load the animation from files. */
 	bool load(Resources &resources, const Common::String &base);
 
+	void flipHorizontally();
+	void flipVertically();
+
 	/** Get the nth sprite. */
 	SpriteObject &getFrame(int n);
 	/** Get the nth sprite. */
