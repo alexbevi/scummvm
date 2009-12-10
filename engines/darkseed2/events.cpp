@@ -52,6 +52,8 @@ Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
 
 	_inIntro = false;
 
+	_itemMode = false;
+
 	// Set the default (pointer) cursor
 	_canSwitchCursors = true;
 
