@@ -240,6 +240,42 @@ bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
 	return result;
 }
 
+void Sprite::flipHorizontally() {
+	if (!exists())
+		return;
+
+	uint32 halfWidth = _width / 2;
+
+	byte *data = _data;
+	for (uint32 i = 0; i < _height; i++, data += _width) {
+		byte *dataStart = data;
+		byte *dataEnd   = data + _width - 1;
+
+		for (uint32 j = 0; j < halfWidth; j++, dataStart++, dataEnd--)
+			SWAP(*dataStart, *dataEnd);
+	}
+}
+
+void Sprite::flipVertically() {
+	if (!exists())
+		return;
+
+	uint32 halfHeight = _height / 2;
+
+	byte *dataStart = _data;
+	byte *dataEnd   = _data + (_width * _height) - _width;
+
+	byte *buffer = new byte[_width];
+
+	for (uint32 i = 0; i < halfHeight; i++, dataStart += _width, dataEnd -= _width) {
+		memcpy(buffer   , dataStart, _width);
+		memcpy(dataStart, dataEnd  , _width);
+		memcpy(dataEnd  , buffer   , _width);
+	}
+
+	delete[] buffer;
+}
+
 bool Sprite::loadFromStaticCursor(const StaticCursor &staticCursor) {
 	create(Cursors::_cursorWidth, Cursors::_cursorHeight);
 

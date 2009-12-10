@@ -104,6 +104,9 @@ public:
 	/** Load from a cursor embedded in an EXE file. */
 	bool loadFromStaticCursor(const StaticCursor &staticCursor);
 
+	void flipHorizontally();
+	void flipVertically();
+
 	/** Blit that sprite onto this sprite. */
 	void blit(const Sprite &from, const Common::Rect &area,
 			uint32 x, uint32 y, bool transp = false);
