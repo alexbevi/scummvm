@@ -50,6 +50,16 @@ Inventory::~Inventory() {
 
 void Inventory::clear() {
 	ObjectContainer::clear();
+
+	for (SpriteMap::iterator sprite = _origSprites.begin(); sprite != _origSprites.end(); ++sprite)
+		delete sprite->_value;
+	_origSprites.clear();
+
+	for (SpriteMap::iterator sprite = _sprites.begin(); sprite != _sprites.end(); ++sprite)
+		delete sprite->_value;
+	_sprites.clear();
+
+	_items.clear();
 }
 
 void Inventory::newPalette() {
@@ -84,6 +94,8 @@ void Inventory::assignSprites() {
 }
 
 bool Inventory::parse(DATFile &dat) {
+	clear();
+
 	if (!ObjectContainer::parse(dat))
 		return false;
 
@@ -107,10 +119,16 @@ bool Inventory::parse(DATFile &dat) {
 
 		// Load sprites
 		for (Common::Array<ItemLook>::iterator it = item.looks.begin(); it != item.looks.end(); ++it) {
+			if (_origSprites.contains(it->spriteName))
+				// Sprite already loaded
+				continue;
+
 			Sprite *sprite = new Sprite;
 
-			if (!sprite->loadFromBMP(*_resources, it->spriteName))
+			if (!sprite->loadFromBMP(*_resources, it->spriteName)) {
+				delete sprite;
 				return false;
+			}
 
 			_origSprites[it->spriteName] = sprite;
 		}

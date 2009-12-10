@@ -86,6 +86,9 @@ InventoryBox::InventoryBox(Resources &resources, Variables &variables, Graphics 
 
 InventoryBox::~InventoryBox() {
 	delete _inventory;
+
+	delete[] _origSprites;
+	delete[] _sprites;
 }
 
 void InventoryBox::initInventory() {
