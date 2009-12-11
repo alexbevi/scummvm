@@ -64,14 +64,21 @@ public:
 	void redraw(Sprite &sprite, Common::Rect area);
 
 private:
+	enum State {
+		kStateStanding = 0,
+		kStateWalking,
+		kStateNone
+	};
+
 	Resources *_resources;
 	Graphics  *_graphics;
 
 	uint32 _x;
 	uint32 _y;
 
-	Animation _animations[kDirNone];
+	Animation _animations[kStateNone][kDirNone];
 
+	State _state;
 	Direction _direction;
 
 	bool loadAnimations();
