@@ -254,6 +254,8 @@ void Sprite::flipHorizontally() {
 		for (uint32 j = 0; j < halfWidth; j++, dataStart++, dataEnd--)
 			SWAP(*dataStart, *dataEnd);
 	}
+
+	_feetX = _width - _feetX;
 }
 
 void Sprite::flipVertically() {
@@ -274,6 +276,8 @@ void Sprite::flipVertically() {
 	}
 
 	delete[] buffer;
+
+	_feetY = _height - _feetY;
 }
 
 bool Sprite::loadFromStaticCursor(const StaticCursor &staticCursor) {
