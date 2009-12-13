@@ -27,15 +27,25 @@
 #define DARKSEED2_MIKE_H
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/graphicalobject.h"
+
+namespace Common {
+	class String;
+}
 
 namespace DarkSeed2 {
 
 class Resources;
-class Graphics;
+
+class Sprite;
 
 class Mike {
 public:
+	static const uint32 kWalkMapResolution = 10;
+	static const uint32 kWalkMapWidth      = Graphics::kScreenWidth  / kWalkMapResolution;
+	static const uint32 kWalkMapHeight     = Graphics::kScreenHeight / kWalkMapResolution;
+
 	enum Direction {
 		kDirN = 0,
 		kDirNE,
@@ -63,6 +73,11 @@ public:
 
 	void redraw(Sprite &sprite, Common::Rect area);
 
+	void setWalkMap();
+	void setWalkMap(const Sprite &walkMap);
+
+	byte getWalkData(uint32 x, uint32 y) const;
+
 private:
 	enum State {
 		kStateStanding = 0,
@@ -76,12 +91,17 @@ private:
 	uint32 _x;
 	uint32 _y;
 
+	byte _walkMap[kWalkMapWidth * kWalkMapHeight];
+
 	Animation _animations[kStateNone][kDirNone];
 
 	State _state;
 	Direction _direction;
 
 	bool loadAnimations();
+
+	inline static uint32 screenCoordToWalkCoord(uint32 walkCoord);
+	inline byte getWalk(uint32 x, uint32 y) const;
 };
 
 } // End of namespace DarkSeed2

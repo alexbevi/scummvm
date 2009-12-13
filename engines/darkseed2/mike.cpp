@@ -24,7 +24,7 @@
  */
 
 #include "engines/darkseed2/mike.h"
-#include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
 
@@ -37,6 +37,8 @@ Mike::Mike(Resources &resources, Graphics &graphics) {
 
 	_state = kStateStanding;
 	_direction = kDirE;
+
+	setWalkMap();
 }
 
 Mike::~Mike() {
@@ -134,6 +136,35 @@ void Mike::setDirection(Direction direction) {
 void Mike::redraw(Sprite &sprite, Common::Rect area) {
 	if ((_x > 0) && (_y > 0))
 		_animations[_state][_direction]->redraw(sprite, area);
+}
+
+void Mike::setWalkMap() {
+	memset(_walkMap, 0, sizeof(_walkMap));
+}
+
+void Mike::setWalkMap(const Sprite &walkMap) {
+	if ((walkMap.getWidth() != kWalkMapWidth) || (walkMap.getHeight() != kWalkMapHeight)) {
+		warning("Mike::setWalkMap(): Invalid walk map dimensions: %dx%d",
+				walkMap.getWidth(), walkMap.getHeight());
+		setWalkMap();
+		return;
+	}
+
+	memcpy(_walkMap, walkMap.getData(), sizeof(_walkMap));
+}
+
+byte Mike::getWalkData(uint32 x, uint32 y) const {
+	return getWalk(screenCoordToWalkCoord(x), screenCoordToWalkCoord(y));
+}
+
+inline uint32 Mike::screenCoordToWalkCoord(uint32 walkCoord) {
+	return walkCoord / kWalkMapResolution;
+}
+
+inline byte Mike::getWalk(uint32 x, uint32 y) const {
+	assert((x < kWalkMapWidth) && (y < kWalkMapHeight));
+
+	return _walkMap[y * kWalkMapWidth + x];
 }
 
 } // End of namespace DarkSeed2

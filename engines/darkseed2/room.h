@@ -52,6 +52,8 @@ public:
 	const Common::String &getName() const;
 	/** Get the room's background. */
 	const Sprite &getBackground() const;
+	/** Get the roon's walk map. */
+	const Sprite &getWalkMap() const;
 
 	/** Clip the rectangle to the room area. */
 	void clipToRoom(Common::Rect &rect) const;

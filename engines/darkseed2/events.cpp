@@ -490,10 +490,14 @@ bool Events::roomEnter() {
 
 	_vm->_variables->set("ShowMike", 1);
 
+	_vm->_mike->setWalkMap(room.getWalkMap());
+
 	return true;
 }
 
 void Events::roomLeave() {
+	_vm->_mike->setWalkMap();
+
 	_vm->_graphics->unregisterBackground();
 	_vm->_inter->clear();
 	_vm->_graphics->getRoom().clear();

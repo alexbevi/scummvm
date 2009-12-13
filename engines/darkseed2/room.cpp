@@ -107,6 +107,12 @@ const Sprite &Room::getBackground() const {
 	return *_background;
 }
 
+const Sprite &Room::getWalkMap() const {
+	assert(_ready);
+
+	return *_walkMap;
+}
+
 void Room::clipToRoom(Common::Rect &rect) const {
 	rect.clip(_area);
 }
