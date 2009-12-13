@@ -24,13 +24,19 @@
  */
 
 #include "engines/darkseed2/mike.h"
+#include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
 
-Mike::Mike(Resources &resources, Graphics &graphics) {
+static const char *kVariableVisible = "ShowMike";
+
+Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 	_resources = &resources;
+	_variables = &variables;
 	_graphics  = &graphics;
+
+	_visible = false;
 
 	_x = 0;
 	_y = 0;
@@ -100,6 +106,16 @@ bool Mike::loadAnimations() {
 	return true;
 }
 
+bool Mike::isVisible() {
+	updateVisible();
+	return _visible;
+}
+
+void Mike::setVisible(bool visible) {
+	_variables->set(kVariableVisible, visible ? 1 : 0);
+	updateVisible();
+}
+
 void Mike::getPosition(uint32 &x, uint32 &y) const {
 	x = _x;
 	y = _y;
@@ -133,9 +149,25 @@ void Mike::setDirection(Direction direction) {
 	_graphics->requestRedraw(_animations[_state][_direction]->getArea());
 }
 
+void Mike::updateStatus() {
+	updateVisible();
+}
+
+void Mike::updateVisible() {
+	bool visible = _variables->get(kVariableVisible);
+	if (_visible != visible) {
+		_graphics->requestRedraw(getArea());
+		_visible = visible;
+	}
+}
+
 void Mike::redraw(Sprite &sprite, Common::Rect area) {
-	if ((_x > 0) && (_y > 0))
-		_animations[_state][_direction]->redraw(sprite, area);
+	if (!_visible)
+		return;
+	if ((_x == 0) || (_y == 0))
+		return;
+
+	_animations[_state][_direction]->redraw(sprite, area);
 }
 
 void Mike::setWalkMap() {

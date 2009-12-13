@@ -419,9 +419,8 @@ void Graphics::redraw(Common::Rect rect) {
 	for (SpriteQueue::iterator it = _spriteQueue[0].begin(); it != _spriteQueue[0].end(); ++it)
 		(*it)->redraw(_screen, spriteArea);
 
-	if (_variables->get("ShowMike") == 1)
-		if (_mike)
-			_mike->redraw(_screen, spriteArea);
+	if (_mike)
+		_mike->redraw(_screen, spriteArea);
 
 	for (int i = 1; i < kLayerCount; i++) {
 		for (SpriteQueue::iterator it = _spriteQueue[i].begin(); it != _spriteQueue[i].end(); ++it) {

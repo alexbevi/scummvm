@@ -185,7 +185,8 @@ void Events::mainLoop(bool finishScripts) {
 			}
 		}
 
-		// Update subsystem statuses
+		// Update the subsystems' status
+
 		_vm->_talkMan->updateStatus();
 		_vm->_roomConfMan->updateStatus();
 		_vm->_graphics->updateStatus();
@@ -211,11 +212,7 @@ void Events::mainLoop(bool finishScripts) {
 			}
 		}
 
-		bool showMike = _vm->_variables->get("ShowMike");
-		if (_showMike != showMike) {
-			_vm->_graphics->requestRedraw(_vm->_mike->getArea());
-			_showMike = showMike;
-		}
+		_vm->_mike->updateStatus();
 
 		// Update screen
 		_vm->_graphics->retrace();
@@ -488,8 +485,7 @@ bool Events::roomEnter() {
 	// Evaluate the room config, to get the initial room sprites set up
 	_vm->_roomConfMan->updateStatus();
 
-	_vm->_variables->set("ShowMike", 1);
-
+	_vm->_mike->setVisible(true);
 	_vm->_mike->setWalkMap(room.getWalkMap());
 
 	return true;

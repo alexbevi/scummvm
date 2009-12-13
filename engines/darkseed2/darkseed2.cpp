@@ -159,7 +159,7 @@ bool DarkSeed2Engine::init() {
 	_music       = new Music(*_mixer, *_midiDriver);
 	_graphics    = new Graphics(*_resources, *_variables, *_cursors);
 	_talkMan     = new TalkManager(*_sound, *_graphics);
-	_mike        = new Mike(*_resources, *_graphics);
+	_mike        = new Mike(*_resources, *_variables, *_graphics);
 	_movie       = new Movie(*_mixer, *_graphics);
 
 	_roomConfMan = new RoomConfigManager(*this);

@@ -37,6 +37,7 @@ namespace Common {
 namespace DarkSeed2 {
 
 class Resources;
+class Variables;
 
 class Sprite;
 
@@ -58,18 +59,24 @@ public:
 		kDirNone
 	};
 
-	Mike(Resources &resources, Graphics &graphics);
+	Mike(Resources &resources, Variables &variables, Graphics &graphics);
 	~Mike();
 
 	Common::Rect getArea() const;
 
 	bool init();
 
+	bool isVisible();
+	void setVisible(bool visible);
+
 	void getPosition(uint32 &x, uint32 &y) const;
 	void setPosition(uint32 x, uint32 y);
 
 	Direction getDirection() const;
 	void setDirection(Direction direction);
+
+	/** Check for status changes. */
+	void updateStatus();
 
 	void redraw(Sprite &sprite, Common::Rect area);
 
@@ -86,7 +93,10 @@ private:
 	};
 
 	Resources *_resources;
+	Variables *_variables;
 	Graphics  *_graphics;
+
+	bool _visible;
 
 	uint32 _x;
 	uint32 _y;
@@ -102,6 +112,8 @@ private:
 
 	inline static uint32 screenCoordToWalkCoord(uint32 walkCoord);
 	inline byte getWalk(uint32 x, uint32 y) const;
+
+	void updateVisible();
 };
 
 } // End of namespace DarkSeed2
