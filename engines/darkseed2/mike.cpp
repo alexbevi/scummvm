@@ -62,45 +62,45 @@ bool Mike::init() {
 }
 
 bool Mike::loadAnimations() {
-	if (!_animations[kStateWalking][kDirN].load(*_resources, "n"))
+	if (!_animations[kStateWalking][kDirN ].load(*_resources, "n" ))
 		return false;
 	if (!_animations[kStateWalking][kDirNE].load(*_resources, "nw"))
 		return false;
-	if (!_animations[kStateWalking][kDirE].load(*_resources, "w"))
+	if (!_animations[kStateWalking][kDirE ].load(*_resources, "w" ))
 		return false;
 	if (!_animations[kStateWalking][kDirSE].load(*_resources, "sw"))
 		return false;
-	if (!_animations[kStateWalking][kDirS].load(*_resources, "s"))
+	if (!_animations[kStateWalking][kDirS ].load(*_resources, "s" ))
 		return false;
 	if (!_animations[kStateWalking][kDirSW].load(*_resources, "sw"))
 		return false;
-	if (!_animations[kStateWalking][kDirW].load(*_resources, "w"))
+	if (!_animations[kStateWalking][kDirW ].load(*_resources, "w" ))
 		return false;
 	if (!_animations[kStateWalking][kDirNW].load(*_resources, "nw"))
 		return false;
 
-	if (!_animations[kStateStanding][kDirN].load(*_resources, "n00"))
+	if (!_animations[kStateStanding][kDirN ].load(*_resources, "n00" ))
 		return false;
 	if (!_animations[kStateStanding][kDirNE].load(*_resources, "nw00"))
 		return false;
-	if (!_animations[kStateStanding][kDirE].load(*_resources, "w00"))
+	if (!_animations[kStateStanding][kDirE ].load(*_resources, "w00" ))
 		return false;
 	if (!_animations[kStateStanding][kDirSE].load(*_resources, "sw00"))
 		return false;
-	if (!_animations[kStateStanding][kDirS].load(*_resources, "s00"))
+	if (!_animations[kStateStanding][kDirS ].load(*_resources, "s00" ))
 		return false;
 	if (!_animations[kStateStanding][kDirSW].load(*_resources, "sw00"))
 		return false;
-	if (!_animations[kStateStanding][kDirW].load(*_resources, "w00"))
+	if (!_animations[kStateStanding][kDirW ].load(*_resources, "w00" ))
 		return false;
 	if (!_animations[kStateStanding][kDirNW].load(*_resources, "nw00"))
 		return false;
 
-	_animations[kStateWalking][kDirNE].flipHorizontally();
-	_animations[kStateWalking][kDirE].flipHorizontally();
-	_animations[kStateWalking][kDirSE].flipHorizontally();
+	_animations[kStateWalking ][kDirNE].flipHorizontally();
+	_animations[kStateWalking ][kDirE ].flipHorizontally();
+	_animations[kStateWalking ][kDirSE].flipHorizontally();
 	_animations[kStateStanding][kDirNE].flipHorizontally();
-	_animations[kStateStanding][kDirE].flipHorizontally();
+	_animations[kStateStanding][kDirE ].flipHorizontally();
 	_animations[kStateStanding][kDirSE].flipHorizontally();
 
 	return true;
