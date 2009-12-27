@@ -48,6 +48,9 @@ public:
 	/** Number of entries filled. */
 	int getSize() const;
 
+	byte *get();
+	const byte *get() const;
+
 	byte &operator[](int n);
 	const byte &operator[](int n) const;
 

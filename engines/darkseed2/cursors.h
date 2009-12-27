@@ -39,6 +39,8 @@ class Cursors {
 public:
 	/** A cursor. */
 	struct Cursor {
+		uint16 width;    ///< The cursor's width.
+		uint16 height;   ///< The cursor's height.
 		uint16 hotspotX; ///< The X coordinate of the cursor's hotspot.
 		uint16 hotspotY; ///< The Y coordinate of the cursor's hotspot.
 		Sprite *sprite;  ///< The cursor's sprite.
@@ -47,7 +49,7 @@ public:
 	static const int _cursorWidth  = 32; ///< The width of a cursor.
 	static const int _cursorHeight = 32; ///< The height of a cursor.
 
-	Cursors();
+	Cursors(const Common::String &exe = "");
 	~Cursors();
 
 	/** Is the cursor visible? */
@@ -62,6 +64,9 @@ public:
 	bool setCursor(const Cursor &cursor);
 	/** Set the current cursor. */
 	bool setCursor(const Common::String &cursor = "");
+
+	/** Load cursors from a NE EXE. */
+	bool loadFromNEEXE(const Common::String &exe);
 
 private:
 
@@ -79,12 +84,16 @@ private:
 
 /** A static cursor datum. */
 struct StaticCursor {
+	uint16 width;  ///< The cursor's width.
+	uint16 height; ///< The cursor's height.
+
 	uint16 hotspotX; ///< The X coordinate of the cursor's hotspot.
 	uint16 hotspotY; ///< The Y coordinate of the cursor's hotspot.
+
 	/** The pixel data. */
-	byte pixels[Cursors::_cursorWidth * Cursors::_cursorHeight / 8];
+	byte *pixels;
 	/** The mask data. */
-	byte mask  [Cursors::_cursorWidth * Cursors::_cursorHeight / 8];
+	byte *mask;
 };
 
 } // End of namespace DarkSeed2

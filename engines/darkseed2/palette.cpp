@@ -46,6 +46,10 @@ Palette::Palette(const Palette &palette) {
 Palette::~Palette() {
 }
 
+int Palette::getSize() const {
+	return _size;
+}
+
 Palette &Palette::operator=(const Palette &palette) {
 	copyFrom(palette);
 	return *this;
@@ -61,6 +65,14 @@ void Palette::copyFrom(const byte *palette, int size) {
 
 	_size = size;
 	memcpy(_palette, palette, 3 * size);
+}
+
+byte *Palette::get() {
+	return _palette;
+}
+
+const byte *Palette::get() const {
+	return _palette;
 }
 
 byte &Palette::operator[](int n) {

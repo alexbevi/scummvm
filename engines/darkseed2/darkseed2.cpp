@@ -152,7 +152,7 @@ bool DarkSeed2Engine::init() {
 	debug(-1, "Creating subclasses...");
 
 	_options     = new Options();
-	_cursors     = new Cursors();
+	_cursors     = new Cursors("dark0001.exe");
 	_variables   = new Variables();
 	_resources   = new Resources();
 	_sound       = new Sound(*_mixer, *_variables);

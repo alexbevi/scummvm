@@ -27,15 +27,22 @@
 
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/palette.h"
+#include "engines/darkseed2/neresources.h"
 
 namespace DarkSeed2 {
 
 #include "engines/darkseed2/cursordata.h"
 
-Cursors::Cursors() {
-	bool loaded = loadFromStatics();
+Cursors::Cursors(const Common::String &exe) {
+	bool loaded;
 
+	loaded = loadFromStatics();
 	assert(loaded);
+
+	if (!exe.empty()) {
+		loaded = loadFromNEEXE(exe);
+		assert(loaded);
+	}
 }
 
 Cursors::~Cursors() {
@@ -48,26 +55,12 @@ Cursors::~Cursors() {
 }
 
 bool Cursors::loadFromStatics() {
-	// Loading named static cursors
-	for (int i = 0; i < staticCursorCount; i++) {
-		Cursor cursor;
-
-		cursor.sprite = new Sprite;
-
-		if (!cursor.sprite->loadFromStaticCursor(staticCursors[i])) {
-			delete cursor.sprite;
-			return false;
-		}
-
-		cursor.hotspotX = staticCursors[i].hotspotX;
-		cursor.hotspotY = staticCursors[i].hotspotY;
-
-		_cursors.setVal(staticCursorNames[i], cursor);
-	}
-
 	// Loading the default arrow cursor
-	_default.hotspotX = 0;
-	_default.hotspotY = 0;
+	_default.width    = staticCursorPointer.width;
+	_default.height   = staticCursorPointer.height;
+	_default.hotspotX = staticCursorPointer.hotspotX;
+	_default.hotspotY = staticCursorPointer.hotspotY;
+
 	_default.sprite = new Sprite;
 
 	if (!_default.sprite->loadFromStaticCursor(staticCursorPointer)) {
@@ -109,7 +102,7 @@ bool Cursors::setCursor(const Common::String &cursor) {
 }
 
 bool Cursors::setCursor(const Cursors::Cursor &cursor) {
-	CursorMan.replaceCursor(cursor.sprite->getData(), _cursorWidth, _cursorHeight,
+	CursorMan.replaceCursor(cursor.sprite->getData(), cursor.width, cursor.height,
 			cursor.hotspotX, cursor.hotspotY, 0);
 
 	return setPalette(cursor.sprite->getPalette());
@@ -134,6 +127,38 @@ bool Cursors::setPalette(const Palette &palette) {
 	newPal[11] = 255;
 
 	CursorMan.replaceCursorPalette(newPal, 0, 3);
+
+	return true;
+}
+
+bool Cursors::loadFromNEEXE(const Common::String &exe) {
+	NEResources resources;
+
+	if (!resources.loadFromEXE(exe))
+		return false;
+
+	const Common::Array<NECursorGroup> &cursorGroups = resources.getCursors();
+	Common::Array<NECursorGroup>::const_iterator cursorGroup;
+	for (cursorGroup = cursorGroups.begin(); cursorGroup != cursorGroups.end(); ++cursorGroup) {
+		if (cursorGroup->cursors.empty())
+			continue;
+
+		const NECursor &neCursor = cursorGroup->cursors[0];
+		Cursor cursor;
+
+		cursor.sprite = new Sprite;
+		if (!cursor.sprite->loadFromCursorResource(neCursor)) {
+			delete cursor.sprite;
+			return false;
+		}
+
+		cursor.width    = neCursor.width;
+		cursor.height   = neCursor.height / 2;
+		cursor.hotspotX = neCursor.hotspotX;
+		cursor.hotspotY = neCursor.hotspotY;
+
+		_cursors.setVal(cursorGroup->name, cursor);
+	}
 
 	return true;
 }

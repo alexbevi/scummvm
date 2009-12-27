@@ -45,6 +45,8 @@ namespace Graphics {
 
 namespace DarkSeed2 {
 
+struct NECursor;
+
 class Resources;
 
 class Resource;
@@ -101,8 +103,10 @@ public:
 	/** Load a sprite from a BMP. */
 	bool loadFromBMP(Resources &resources, const Common::String &bmp);
 
-	/** Load from a cursor embedded in an EXE file. */
+	/** Load from static cursor data. */
 	bool loadFromStaticCursor(const StaticCursor &staticCursor);
+	/** Load from a cursor resource embedded in an EXE file. */
+	bool loadFromCursorResource(const NECursor &cursor);
 
 	void flipHorizontally();
 	void flipVertically();

@@ -32,6 +32,7 @@
 #include "engines/darkseed2/sprite.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/cursors.h"
+#include "engines/darkseed2/neresources.h"
 
 namespace DarkSeed2 {
 
@@ -281,14 +282,14 @@ void Sprite::flipVertically() {
 }
 
 bool Sprite::loadFromStaticCursor(const StaticCursor &staticCursor) {
-	create(Cursors::_cursorWidth, Cursors::_cursorHeight);
+	create(staticCursor.width, staticCursor.height);
 
 	_palette[2 * 3 + 0] = 255;
 	_palette[2 * 3 + 1] = 255;
 	_palette[2 * 3 + 2] = 255;
 
 	byte *data = _data;
-	for (int i = 0; i < (Cursors::_cursorWidth * Cursors::_cursorHeight / 8); i++) {
+	for (int i = 0; i < ((staticCursor.width * staticCursor.height) / 8); i++) {
 		byte p = staticCursor.pixels[i];
 		byte m = staticCursor.mask[i];
 
@@ -301,6 +302,95 @@ bool Sprite::loadFromStaticCursor(const StaticCursor &staticCursor) {
 			} else
 				*data = 0;
 		}
+	}
+
+	return true;
+}
+
+bool Sprite::loadFromCursorResource(const NECursor &cursor) {
+	uint16 width  = cursor.width;
+	uint16 height = cursor.height;
+
+	Common::MemoryReadStream stream(cursor.data, cursor.dataSize);
+
+	// Check header size
+	if (stream.readUint32LE() != 40)
+		return false;
+
+	// Check dimensions
+	if (stream.readUint32LE() != width)
+		return false;
+	if (stream.readUint32LE() != height)
+		return false;
+
+	// Color planes
+	if (stream.readUint16LE() != 1)
+		return false;
+	// Bits per pixel
+	if (stream.readUint16LE() != 1)
+		return false;
+	// Compression
+	if (stream.readUint32LE() != 0)
+		return false;
+
+	// Image size + X resolution + Y resolution
+	stream.skip(4 + 4 + 4);
+
+	uint32 numColors = stream.readUint32LE();
+
+	if (numColors == 0)
+		numColors = 2;
+
+	if (numColors > 2)
+		return false;
+
+	// Assert that enough data is there for the whole cursor
+	if (cursor.dataSize < (40 + numColors * 4 + ((width * height) / 8)))
+		return false;
+
+	// Height includes AND-mask and XOR-mask
+	height /= 2;
+
+	create(width, height);
+
+	// Standard palette: transparent, black white
+	memset(_palette.get()    , 0, 6);
+	memset(_palette.get() + 6, 0, 3);
+
+	// Reading the palette
+	stream.seek(40);
+	for (uint32 i = 0 ; i < numColors; i++) {
+		_palette[(i + 1) * 3 + 2] = stream.readByte();
+		_palette[(i + 1) * 3 + 1] = stream.readByte();
+		_palette[(i + 1) * 3 + 0] = stream.readByte();
+		stream.skip(1);
+	}
+
+	// Reading the bitmap data
+	const byte *srcP = cursor.data + 40 + numColors * 4;
+	const byte *srcM = srcP + ((width * height) / 8);
+	byte *dest = _data + (width * height) - width;
+	for (int i = 0; i < height; i++) {
+		byte *rowDest = dest;
+
+		for (int j = 0; j < (width / 8); j++) {
+			byte p = srcP[j];
+			byte m = srcM[j];
+
+			for (int k = 0; k < 8; k++, rowDest++, p <<= 1, m <<= 1) {
+				if ((m & 0x80) != 0x80) {
+					if ((p & 0x80) == 0x80)
+						*rowDest = 2;
+					else
+						*rowDest = 1;
+				} else
+					*rowDest = 0;
+			}
+		}
+
+		dest -= width;
+		srcP += width / 8;
+		srcM += width / 8;
 	}
 
 	return true;

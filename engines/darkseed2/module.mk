@@ -9,6 +9,7 @@ MODULE_OBJS := \
 	sprite.o \
 	graphics.o \
 	graphicalobject.o \
+	neresources.o \
 	cursors.o \
 	sound.o \
 	music.o \
