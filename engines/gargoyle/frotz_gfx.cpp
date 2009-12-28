@@ -226,6 +226,7 @@ bool FrotzPictures::getPictureData(int picNumber, int16 *width, int16 *height, i
 	*/
     int old = _fileNumber;
 	bool foundPicture = false;
+	info = NULL;
 
     do {
 		if (_fileNumber == 0)
@@ -259,6 +260,7 @@ bool FrotzPictures::getPictureData(int picNumber, int16 *width, int16 *height, i
 
     /* Read all information from directory entry */
 
+	assert(info);
     *height = READ_LE_UINT16(info + PIC_HEIGHT);
     *width = READ_LE_UINT16(info + PIC_WIDTH);
 	if (retScale) {
