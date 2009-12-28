@@ -128,8 +128,8 @@ bb_err_t BlorbFile::open(Common::SeekableReadStream *srcStream, bool ownsStream)
 		bb_chunkdesc_t *chu;
 		
 		_stream->seek(nextpos);
-		if (_stream->ioFailed())
-			return bb_err_Read;
+//		if (_stream->ioFailed())
+//			return bb_err_Read;
 		
 		readlen = _stream->read(buffer, sizeof(uint32) * 2);
 		if (readlen != (sizeof(uint32) * 2))
@@ -252,8 +252,8 @@ bb_err_t BlorbFile::loadChunkByNumber(int method, bb_result_t *res, int chunknum
 				return bb_err_Alloc;
 			
 			_stream->seek(chu->datpos);
-			if (_stream->ioFailed())
-				return bb_err_Read;
+//			if (_stream->ioFailed())
+//				return bb_err_Read;
 			
 			readlen = _stream->read(dat, chu->len);
 			if (readlen != chu->len)
