@@ -34,6 +34,7 @@
 namespace DarkSeed2 {
 
 class Palette;
+class NECursor;
 
 class Cursors {
 public:
@@ -45,9 +46,6 @@ public:
 		uint16 hotspotY; ///< The Y coordinate of the cursor's hotspot.
 		Sprite *sprite;  ///< The cursor's sprite.
 	};
-
-	static const int _cursorWidth  = 32; ///< The width of a cursor.
-	static const int _cursorHeight = 32; ///< The height of a cursor.
 
 	Cursors(const Common::String &exe = "");
 	~Cursors();
@@ -65,35 +63,21 @@ public:
 	/** Set the current cursor. */
 	bool setCursor(const Common::String &cursor = "");
 
-	/** Load cursors from a NE EXE. */
-	bool loadFromNEEXE(const Common::String &exe);
-
 private:
-
 	typedef Common::HashMap<Common::String, Cursor, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> CursorMap;
+
+	NECursor *_defaultResource; ///< NE Resource of the default pointer cursor.
 
 	Cursor _default;    ///< The default pointer cursor.
 	CursorMap _cursors; ///< The available cursors.
 
-	/** Load the cursors from static data. */
-	bool loadFromStatics();
-
 	/** Set the cursor's palette. */
 	bool setPalette(const Palette &palette);
-};
 
-/** A static cursor datum. */
-struct StaticCursor {
-	uint16 width;  ///< The cursor's width.
-	uint16 height; ///< The cursor's height.
-
-	uint16 hotspotX; ///< The X coordinate of the cursor's hotspot.
-	uint16 hotspotY; ///< The Y coordinate of the cursor's hotspot.
-
-	/** The pixel data. */
-	byte *pixels;
-	/** The mask data. */
-	byte *mask;
+	/** Load cursors from a NE EXE. */
+	bool loadFromNEEXE(const Common::String &exe);
+	/** Load a cursor from a NE resource. */
+	bool loadFromResource(Cursor &cursor, const NECursor &resource);
 };
 
 } // End of namespace DarkSeed2

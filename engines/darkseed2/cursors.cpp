@@ -34,9 +34,15 @@ namespace DarkSeed2 {
 #include "engines/darkseed2/cursordata.h"
 
 Cursors::Cursors(const Common::String &exe) {
+	_defaultResource = new NECursor;
+
+	_defaultResource->setDimensions(staticCursorPointer.width   , staticCursorPointer.height  );
+	_defaultResource->setHotspot   (staticCursorPointer.hotspotX, staticCursorPointer.hotspotY);
+	_defaultResource->setData      (staticCursorPointer.data    , staticCursorPointer.dataSize);
+
 	bool loaded;
 
-	loaded = loadFromStatics();
+	loaded = loadFromResource(_default, *_defaultResource);
 	assert(loaded);
 
 	if (!exe.empty()) {
@@ -46,29 +52,14 @@ Cursors::Cursors(const Common::String &exe) {
 }
 
 Cursors::~Cursors() {
+	delete _defaultResource;
+
 	for (CursorMap::iterator it = _cursors.begin(); it != _cursors.end(); ++it)
 		delete it->_value.sprite;
 
 	delete _default.sprite;
 
 	_cursors.clear();
-}
-
-bool Cursors::loadFromStatics() {
-	// Loading the default arrow cursor
-	_default.width    = staticCursorPointer.width;
-	_default.height   = staticCursorPointer.height;
-	_default.hotspotX = staticCursorPointer.hotspotX;
-	_default.hotspotY = staticCursorPointer.hotspotY;
-
-	_default.sprite = new Sprite;
-
-	if (!_default.sprite->loadFromStaticCursor(staticCursorPointer)) {
-		delete _default.sprite;
-		return false;
-	}
-
-	return true;
 }
 
 bool Cursors::isVisible() const {
@@ -146,19 +137,26 @@ bool Cursors::loadFromNEEXE(const Common::String &exe) {
 		const NECursor &neCursor = cursorGroup->cursors[0];
 		Cursor cursor;
 
-		cursor.sprite = new Sprite;
-		if (!cursor.sprite->loadFromCursorResource(neCursor)) {
-			delete cursor.sprite;
+		if (!loadFromResource(cursor, neCursor))
 			return false;
-		}
-
-		cursor.width    = neCursor.width;
-		cursor.height   = neCursor.height / 2;
-		cursor.hotspotX = neCursor.hotspotX;
-		cursor.hotspotY = neCursor.hotspotY;
 
 		_cursors.setVal(cursorGroup->name, cursor);
 	}
+
+	return true;
+}
+
+bool Cursors::loadFromResource(Cursor &cursor, const NECursor &resource) {
+	cursor.sprite = new Sprite;
+	if (!cursor.sprite->loadFromCursorResource(resource)) {
+		delete cursor.sprite;
+		return false;
+	}
+
+	cursor.width    = resource.getWidth();
+	cursor.height   = resource.getHeight();
+	cursor.hotspotX = resource.getHotspotX();
+	cursor.hotspotY = resource.getHotspotY();
 
 	return true;
 }

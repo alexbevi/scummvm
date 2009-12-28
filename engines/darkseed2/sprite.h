@@ -45,12 +45,11 @@ namespace Graphics {
 
 namespace DarkSeed2 {
 
-struct NECursor;
+class NECursor;
 
 class Resources;
 
 class Resource;
-class StaticCursor;
 
 class Sprite {
 public:
@@ -103,8 +102,6 @@ public:
 	/** Load a sprite from a BMP. */
 	bool loadFromBMP(Resources &resources, const Common::String &bmp);
 
-	/** Load from static cursor data. */
-	bool loadFromStaticCursor(const StaticCursor &staticCursor);
 	/** Load from a cursor resource embedded in an EXE file. */
 	bool loadFromCursorResource(const NECursor &cursor);
 

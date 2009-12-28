@@ -28,16 +28,92 @@
 namespace DarkSeed2 {
 
 NECursor::NECursor() {
-	width    = 0;
-	height   = 0;
-	hotspotX = 0;
-	hotspotY = 0;
-	dataSize = 0;
-	data     = 0;
+	_needFree = false;
+	_width    = 0;
+	_height   = 0;
+	_hotspotX = 0;
+	_hotspotY = 0;
+	_dataSize = 0;
+	_data     = 0;
+	_stream   = 0;
 }
 
 NECursor::~NECursor() {
-	delete[] data;
+	clear();
+}
+
+uint16 NECursor::getWidth() const {
+	return _width;
+}
+
+uint16 NECursor::getHeight() const {
+	return _height;
+}
+
+uint16 NECursor::getHotspotX() const {
+	return _hotspotX;
+}
+
+uint16 NECursor::getHotspotY() const {
+	return _hotspotY;
+}
+
+const byte *NECursor::getData() const {
+	return _data;
+}
+
+Common::SeekableReadStream &NECursor::getStream() const {
+	assert(_stream);
+
+	return *_stream;
+}
+
+void NECursor::setDimensions(uint16 width, uint16 height) {
+	_width  = width;
+	_height = height;
+}
+
+void NECursor::setHotspot(uint16 x, uint16 y) {
+	_hotspotX = x;
+	_hotspotY = y;
+}
+
+bool NECursor::readData(Common::ReadStream &stream, uint32 count) {
+	clear();
+
+	_needFree = true;
+	_dataSize = count;
+	_data     = new byte[count];
+
+	if (stream.read(_data, count) != count) {
+		clear();
+		return false;
+	}
+
+	_stream = new Common::MemoryReadStream(_data, _dataSize);
+
+	return true;
+}
+
+void NECursor::setData(byte *data, uint32 size) {
+	clear();
+
+	_dataSize = size;
+	_data     = data;
+
+	_stream = new Common::MemoryReadStream(_data, _dataSize);
+}
+
+void NECursor::clear() {
+	if (_needFree)
+		delete[] _data;
+
+	delete _stream;
+
+	_needFree = false;
+	_dataSize = 0;
+	_data     = 0;
+	_stream   = 0;
 }
 
 
@@ -212,11 +288,16 @@ const NEResources::Resource *NEResources::findResource(uint16 type, uint16 id) c
 }
 
 bool NEResources::readCursors() {
-	uint32 cursorCount;
+	uint32 cursorCount = 0;
 
 	for (Common::List<Resource>::const_iterator it = _resources.begin(); it != _resources.end(); ++it)
 		if ((it->type == 0x800C) && (it->idType == kIDTypeString))
 			cursorCount++;
+
+	if (cursorCount == 0) {
+		_cursors.clear();
+		return true;
+	}
 
 	_cursors.resize(cursorCount);
 
@@ -281,11 +362,10 @@ bool NEResources::readCursorGroup(NECursorGroup &group, const Resource &resource
 			return false;
 		}
 
-		cursor.width    = READ_LE_UINT16(data + offset +  0);
-		cursor.height   = READ_LE_UINT16(data + offset +  2);
-		cursor.dataSize = READ_LE_UINT32(data + offset +  8);
+		cursor.setDimensions(READ_LE_UINT16(data + offset), READ_LE_UINT16(data + offset + 2) / 2);
 
-		if (!readCursor(cursor, *cursorResource)) {
+		uint32 dataSize = READ_LE_UINT32(data + offset +  8);
+		if (!readCursor(cursor, *cursorResource, dataSize)) {
 			delete[] data;
 			return false;
 		}
@@ -295,28 +375,29 @@ bool NEResources::readCursorGroup(NECursorGroup &group, const Resource &resource
 
 	group.name = resource.name;
 
+	delete[] data;
 	return true;
 }
 
-bool NEResources::readCursor(NECursor &cursor, const Resource &resource) {
+bool NEResources::readCursor(NECursor &cursor, const Resource &resource, uint32 size) {
 	if (!tryOpen())
 		return false;
 
-	if (cursor.dataSize <= 4)
+	if (size <= 4)
 		return false;
-	if (resource.size < cursor.dataSize)
+	if (resource.size < size)
 		return false;
 
 	if (!_exe.seek(resource.offset))
 		return false;
 
-	cursor.hotspotX = _exe.readUint16LE();
-	cursor.hotspotY = _exe.readUint16LE();
+	uint32 hotspotX = _exe.readUint16LE();
+	uint32 hotspotY = _exe.readUint16LE();
+	cursor.setHotspot(hotspotX, hotspotY);
 
-	cursor.dataSize -= 4;
+	size -= 4;
 
-	cursor.data = new byte[cursor.dataSize];
-	if (!_exe.read(cursor.data, cursor.dataSize))
+	if (!cursor.readData(_exe, size))
 		return false;
 
 	return true;

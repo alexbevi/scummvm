@@ -27,6 +27,7 @@
 #define DARKSEED2_NECURSORS_H
 
 #include "common/str.h"
+#include "common/stream.h"
 #include "common/array.h"
 #include "common/list.h"
 #include "common/file.h"
@@ -35,17 +36,39 @@
 
 namespace DarkSeed2 {
 
-struct NECursor {
-	uint16 width;
-	uint16 height;
-	uint16 hotspotX;
-	uint16 hotspotY;
-
-	uint32 dataSize;
-	byte *data;
-
+class NECursor {
+public:
 	NECursor();
 	~NECursor();
+
+	uint16 getWidth() const;
+	uint16 getHeight() const;
+	uint16 getHotspotX() const;
+	uint16 getHotspotY() const;
+
+	const byte *getData() const;
+	Common::SeekableReadStream &getStream() const;
+
+	void setDimensions(uint16 width, uint16 height);
+	void setHotspot(uint16 x, uint16 y);
+
+	bool readData(Common::ReadStream &stream, uint32 count);
+	void setData(byte *data, uint32 size);
+
+private:
+	bool _needFree;
+
+	uint16 _width;
+	uint16 _height;
+	uint16 _hotspotX;
+	uint16 _hotspotY;
+
+	uint32 _dataSize;
+	byte  *_data;
+
+	Common::MemoryReadStream *_stream;
+
+	void clear();
 };
 
 struct NECursorGroup {
@@ -101,7 +124,7 @@ private:
 
 	bool readCursors();
 	bool readCursorGroup(NECursorGroup &group, const Resource &resource);
-	bool readCursor(NECursor &cursor, const Resource &resource);
+	bool readCursor(NECursor &cursor, const Resource &resource, uint32 size);
 
 	const Resource *findResource(uint16 type, uint16 id) const;
 

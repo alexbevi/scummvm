@@ -281,37 +281,14 @@ void Sprite::flipVertically() {
 	_feetY = _height - _feetY;
 }
 
-bool Sprite::loadFromStaticCursor(const StaticCursor &staticCursor) {
-	create(staticCursor.width, staticCursor.height);
-
-	_palette[2 * 3 + 0] = 255;
-	_palette[2 * 3 + 1] = 255;
-	_palette[2 * 3 + 2] = 255;
-
-	byte *data = _data;
-	for (int i = 0; i < ((staticCursor.width * staticCursor.height) / 8); i++) {
-		byte p = staticCursor.pixels[i];
-		byte m = staticCursor.mask[i];
-
-		for (int j = 0; j < 8; j++, data++, p <<= 1, m <<= 1) {
-			if ((m & 0x80) == 0x80) {
-				if ((p & 0x80) == 0x80)
-					*data = 2;
-				else
-					*data = 1;
-			} else
-				*data = 0;
-		}
-	}
-
-	return true;
-}
-
 bool Sprite::loadFromCursorResource(const NECursor &cursor) {
-	uint16 width  = cursor.width;
-	uint16 height = cursor.height;
+	uint16 width  = cursor.getWidth();
+	uint16 height = cursor.getHeight() * 2;
 
-	Common::MemoryReadStream stream(cursor.data, cursor.dataSize);
+	Common::SeekableReadStream &stream = cursor.getStream();
+
+	if (stream.size() <= 40)
+		return false;
 
 	// Check header size
 	if (stream.readUint32LE() != 40)
@@ -345,7 +322,7 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 		return false;
 
 	// Assert that enough data is there for the whole cursor
-	if (cursor.dataSize < (40 + numColors * 4 + ((width * height) / 8)))
+	if (((uint32) stream.size()) < (40 + numColors * 4 + ((width * height) / 8)))
 		return false;
 
 	// Height includes AND-mask and XOR-mask
@@ -367,7 +344,7 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 	}
 
 	// Reading the bitmap data
-	const byte *srcP = cursor.data + 40 + numColors * 4;
+	const byte *srcP = cursor.getData() + 40 + numColors * 4;
 	const byte *srcM = srcP + ((width * height) / 8);
 	byte *dest = _data + (width * height) - width;
 	for (int i = 0; i < height; i++) {
