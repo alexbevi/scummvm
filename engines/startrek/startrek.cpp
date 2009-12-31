@@ -140,7 +140,7 @@ Common::SeekableReadStream *StarTrekEngine::openFile(Common::String filename) {
 	uint16 uncompressedSize = 0;
 	
 	while (!indexFile.eos() && !indexFile.err()) {
-		Common::String testfile = Common::String::emptyString;
+		Common::String testfile;
 		for (byte i = 0; i < 8; i++) {
 			char c = indexFile.readByte();
 			if (c)

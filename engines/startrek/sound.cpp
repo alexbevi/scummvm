@@ -207,7 +207,7 @@ Common::SeekableReadStream *Sound::getMacintoshFile(const char *baseSoundName) {
 	int32 index = -1;
 	
 	for (uint16 i = 0; i < MAC_AUD_FILE_COUNT; i++) {
-		Common::String filename = Common::String::emptyString;
+		Common::String filename;
 		byte stringLength = file.readByte();
 		for (byte j = 0; j < stringLength; j++)
 			filename += file.readByte();
