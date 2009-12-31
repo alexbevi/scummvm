@@ -85,6 +85,9 @@ public:
 
 	byte getWalkData(uint32 x, uint32 y) const;
 
+	/** Walk to a specific position. */
+	void go(uint32 x, uint32 y);
+
 private:
 	enum State {
 		kStateIdle,
@@ -102,31 +105,69 @@ private:
 	Variables *_variables;
 	Graphics  *_graphics;
 
+	/** Is Mike visible? */
 	bool _visible;
 
+	/** The current position's x coordinate. */
 	uint32 _x;
+	/** The current position's y coordinate. */
 	uint32 _y;
+
+	/** Our target's x coordinate. */
+	uint32 _targetX;
+	/** Our target's y coordinate. */
+	uint32 _targetY;
+	/** Our target's direction. */
+	Direction _targetDirection;
 
 	byte _walkMap[kWalkMapWidth * kWalkMapHeight];
 
+	/** All animations. */
 	Animation _animations[kAnimStateNone][kDirNone];
 
+	/** The current animation state. */
 	AnimState _animState;
+	/** The current animation direction. */
 	Direction _direction;
 
+	/** The current state. */
 	State _state;
 
+	/** The reference to the sprite in the rendering queue. */
 	Graphics::SpriteRef _spriteRef;
 
+	/** Wait until that time stamp before the next movement can be performed. */
+	uint32 _waitUntil;
+
+	/** Load animations. */
 	bool loadAnimations();
 
 	inline static uint32 screenCoordToWalkCoord(uint32 walkCoord);
 	inline byte getWalk(uint32 x, uint32 y) const;
 
+	/** Update all animations' positions. */
+	void updateAnimPositions();
+
+	/** Update Mike's visibility status. */
 	void updateVisible();
 
+	/** Remove the current Mike sprite from the rendering queue. */
 	void removeSprite();
+	/** Add the current Mike sprite to the rendering queue. */
 	void addSprite();
+
+	/** Advance turn movements. */
+	void advanceTurn();
+	/** Advance walk movements. */
+	void advanceWalk();
+
+	/** How much will the next step move Mike forward in the X direction? */
+	uint32 getStepOffsetX() const;
+	/** How much will the next step move Mike forward in the Y direction? */
+	uint32 getStepOffsetY() const;
+
+	/** Calculate the direction direction between two points. */
+	static Direction getDirection(uint32 x1, uint32 y1, uint32 x2, uint32 y2);
 };
 
 } // End of namespace DarkSeed2

@@ -41,10 +41,16 @@ Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 	_x = 0;
 	_y = 0;
 
+	_targetX = 0;
+	_targetY = 0;
+	_targetDirection = kDirNone;
+
 	_animState = kAnimStateStanding;
 	_direction = kDirE;
 
 	_state = kStateIdle;
+
+	_waitUntil = 0;
 
 	setWalkMap();
 }
@@ -136,11 +142,15 @@ void Mike::setPosition(uint32 x, uint32 y) {
 
 	removeSprite();
 
-	for (uint j = 0; j < kAnimStateNone; j++)
-		for (uint i = 0; i < kDirNone; i++)
-			_animations[j][i].moveFeetTo(x, y);
+	updateAnimPositions();
 
 	addSprite();
+}
+
+void Mike::updateAnimPositions() {
+	for (uint j = 0; j < kAnimStateNone; j++)
+		for (uint i = 0; i < kDirNone; i++)
+			_animations[j][i].moveFeetTo(_x, _y);
 }
 
 Mike::Direction Mike::getDirection() const {
@@ -163,6 +173,20 @@ void Mike::setDirection(Direction direction) {
 
 void Mike::updateStatus() {
 	updateVisible();
+
+	if (_state != kStateIdle) {
+		if (g_system->getMillis() >= _waitUntil) {
+			if (_state == kStateWalking) {
+				advanceWalk();
+				if (_animState == kAnimStateStanding)
+					_state = kStateIdle;
+			} else if (_state == kStateTurning)
+				advanceTurn();
+
+			if (_state != kStateIdle)
+				_waitUntil = g_system->getMillis() + 100;
+		}
+	}
 }
 
 void Mike::updateVisible() {
@@ -215,6 +239,176 @@ inline byte Mike::getWalk(uint32 x, uint32 y) const {
 	assert((x < kWalkMapWidth) && (y < kWalkMapHeight));
 
 	return _walkMap[y * kWalkMapWidth + x];
+}
+
+void Mike::advanceTurn() {
+	if (_direction == _targetDirection) {
+		// Reached the target direction, continue walking
+		_state     = kStateWalking;
+		_animState = kAnimStateWalking;
+		_animations[_animState][_direction].setFrame(0);
+		return;
+	}
+
+	removeSprite();
+
+	_animState = kAnimStateStanding;
+
+	// Always turn the shortest way round
+	if (_targetDirection > _direction) {
+		if ((_targetDirection - _direction) < (_direction + (kDirNone - 1 - _targetDirection))) {
+			_direction = (Direction) ((_direction + 1) % kDirNone);
+		} else {
+			_direction = (Direction) (_direction - 1);
+			if ((_direction < 0) || (_direction >= kDirNone))
+				_direction = (Direction) (kDirNone - 1);
+		}
+	} else {
+		if ((_direction - _targetDirection) < (_targetDirection + (kDirNone - 1 - _direction))) {
+			_direction = (Direction) (_direction - 1);
+			if ((_direction < 0) || (_direction >= kDirNone))
+				_direction = (Direction) (kDirNone - 1);
+		} else {
+			_direction = (Direction) ((_direction + 1) % kDirNone);
+		}
+	}
+
+	addSprite();
+}
+
+void Mike::advanceWalk() {
+	removeSprite();
+
+	bool east  = _x > _targetX;
+	bool south = _y > _targetY;
+
+	_x += getStepOffsetX();
+	_y += getStepOffsetY();
+
+	// Overshooting?
+	if (east) {
+		if (_x <= _targetX)
+			_x = _targetX;
+	} else {
+		if (_x >= _targetX)
+			_x = _targetX;
+	}
+	if (south) {
+		if (_y <= _targetY)
+			_y = _targetY;
+	} else {
+		if (_y >= _targetY)
+			_y = _targetY;
+	}
+
+	if ((_x == _targetX) && (_y == _targetY)) {
+		// Reached our target
+		_animState = kAnimStateStanding;
+	}
+
+	Direction direction = getDirection(_x, _y, _targetX, _targetY);
+	if ((_direction != direction) && (direction != kDirNone)) {
+		// We need to turn to a new direction
+		_state = kStateTurning;
+		_targetDirection = direction;
+	}
+
+	_animations[_animState][_direction]++;
+
+	updateAnimPositions();
+
+	addSprite();
+}
+
+void Mike::go(uint32 x, uint32 y) {
+	_targetX = x;
+	_targetY = y;
+
+	_state = kStateWalking;
+	_animState = kAnimStateWalking;
+	_waitUntil = g_system->getMillis();
+}
+
+uint32 Mike::getStepOffsetX() const {
+	switch (_direction) {
+	case kDirNE:
+		return 7;
+
+	case kDirE:
+		return 12;
+
+	case kDirSE:
+		return 7;
+
+	case kDirSW:
+		return -7;
+
+	case kDirW:
+		return -12;
+
+	case kDirNW:
+		return -7;
+
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+uint32 Mike::getStepOffsetY() const {
+	switch (_direction) {
+	case kDirN:
+		return -4;
+
+	case kDirNE:
+		return -2;
+
+	case kDirSE:
+		return 2;
+
+	case kDirS:
+		return 4;
+
+	case kDirSW:
+		return 2;
+
+	case kDirNW:
+		return -2;
+
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+Mike::Direction Mike::getDirection(uint32 x1, uint32 y1, uint32 x2, uint32 y2) {
+	if ((x1 == x2) && (y1 > y2))
+		return kDirN;
+
+	if ((x1 == x2) && (y1 < y2))
+		return kDirS;
+
+	if ((y1 == y2) && (x1 > x2))
+		return kDirW;
+
+	if ((y1 == y2) && (x1 < x2))
+		return kDirE;
+
+	if ((x1 > x2) && (y1 > y2))
+		return kDirNW;
+
+	if ((x1 > x2) && (y1 < y2))
+		return kDirSW;
+
+	if ((x1 < x2) && (y1 > y2))
+		return kDirNE;
+
+	if ((x1 < x2) && (y1 < y2))
+		return kDirSE;
+
+	return kDirNone;
 }
 
 } // End of namespace DarkSeed2
