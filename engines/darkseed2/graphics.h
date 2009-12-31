@@ -30,6 +30,7 @@
 #include "common/list.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/sortedlist.h"
 #include "engines/darkseed2/palette.h"
 #include "engines/darkseed2/sprite.h"
 
@@ -44,7 +45,6 @@ class Variables;
 class TalkManager;
 class RoomConfigManager;
 class Movie;
-class Mike;
 
 class ConversationBox;
 class InventoryBox;
@@ -58,13 +58,24 @@ class Cursors;
 
 class Graphics {
 public:
-	typedef Common::List<SpriteObject *> SpriteQueue;
+	struct SpriteQueueEntry {
+		Animation *anim;
+		SpriteObject *object;
+		bool persistent;
+		uint32 layer;
+		int frame;
+
+		SpriteQueueEntry();
+		SpriteQueueEntry(Animation &a, uint32 l, bool per);
+
+		bool operator<(const SpriteQueueEntry &right) const;
+	};
+
+	typedef SortedList<SpriteQueueEntry> SpriteQueue;
 
 	struct SpriteRef {
+		bool empty;
 		SpriteQueue::iterator it;
-		int layer;
-		Animation *anim;
-		int frame;
 
 		SpriteRef();
 	};
@@ -76,7 +87,7 @@ public:
 	~Graphics();
 
 	/** Init the graphics subsystem. */
-	void init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie, Mike &mike);
+	void init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie);
 
 	/** Get the conversation box. */
 	ConversationBox &getConversationBox();
@@ -108,13 +119,17 @@ public:
 	void talkEnd();
 
 	/** Clear all room animations. */
-	void clearRoomAnimations();
+	void clearAnimations();
 
-	/** Add/Set a room animation frame. */
+	/** Add an animation frame to the rendering queue. */
+	void addAnimation(Animation &animation, SpriteRef &ref,
+			int32 frame, int32 x = -1, int32 y = -1, bool persistent = false);
+	/** Remove an animation frame from the rendering queue. */
+	void removeAnimation(SpriteRef &ref);
+
+	/** Add a room animation frame to the rendering queue. */
 	void addRoomAnimation(const Common::String &animation, SpriteRef &ref,
-			int32 frame, int layer, int32 x = -1, int32 y = -1);
-	/** Remove a room animation frame from the rendering queue. */
-	void removeRoomAnimation(SpriteRef &ref);
+			int32 frame, int32 x = -1, int32 y = -1, bool persistent = false);
 
 	/** Merge the sprite's palette into the current game palette. */
 	void mergePalette(Sprite &sprite);
@@ -136,13 +151,10 @@ public:
 	void unregisterBackground();
 
 private:
-	static const int kLayerCount = 30;
-
 	Resources *_resources;
 	Variables *_variables;
 	Cursors   *_cursors;
 	Movie     *_movie;
-	Mike      *_mike;
 
 	ConversationBox *_conversationBox; ///< The conversation box.
 	InventoryBox    *_inventoryBox;    ///< The inventory box.
@@ -159,7 +171,7 @@ private:
 	TextObject *_talk; ///< The currently active speech line.
 
 	/** The animation frame sprites queue. */
-	SpriteQueue _spriteQueue[kLayerCount];
+	SpriteQueue _spriteQueue;
 
 	/** Initialize the game palette. */
 	void initPalette();

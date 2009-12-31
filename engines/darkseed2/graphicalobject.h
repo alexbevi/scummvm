@@ -49,7 +49,10 @@ public:
 	Common::Rect getArea() const;
 
 	/** Move the object. */
-	virtual void move(uint32 x, uint32 y);
+	virtual void moveTo(uint32 x, uint32 y);
+
+	/** Move the object relative to its current position. */
+	virtual void move(int32 x, int32 y);
 
 	/** Redraw the object. */
 	virtual void redraw(Sprite &sprite, Common::Rect area) = 0;
@@ -90,11 +93,14 @@ public:
 	~SpriteObject();
 
 	/** Move the object to its default coordinates. */
-	void move();
+	void moveTo();
 	/** Move the object. */
-	void move(uint32 x, uint32 y);
+	void moveTo(uint32 x, uint32 y);
 	/** Move the object relative to its feet. */
-	void moveFeet(uint32 x, uint32 y);
+	void moveFeetTo(uint32 x, uint32 y);
+
+	/** Move the object relative to its current position. */
+	void move(int32 x, int32 y);
 
 	/** Clear the sprite. */
 	void clear();
@@ -108,6 +114,11 @@ public:
 	uint32 getX() const;
 	/** Return the sprite's y coordinate. */
 	uint32 getY() const;
+
+	/** Return the sprite's feet's x coordinate. */
+	uint32 getFeetX() const;
+	/** Return the sprite's feet's y coordinate. */
+	uint32 getFeetY() const;
 
 	/** Return the sprite. */
 	Sprite &getSprite();
@@ -137,6 +148,8 @@ public:
 	bool empty() const;
 	/** Return the number of sprites contained in this animation. */
 	int frameCount() const;
+	/** Get the current frame number. */
+	int currentFrame() const;
 
 	/** Is the animation visible? */
 	bool isVisible() const;
@@ -144,19 +157,26 @@ public:
 	void setVisible(bool visible);
 
 	/** Move the animation to its default coordinates. */
-	void move();
+	void moveTo();
 	/** Move the animation. */
-	void move(uint32 x, uint32 y);
+	void moveTo(uint32 x, uint32 y);
 	/** Move the animation relative to its feet. */
-	void moveFeet(uint32 x, uint32 y);
+	void moveFeetTo(uint32 x, uint32 y);
+
+	/** Move the animation relative to its current position. */
+	void move(int32 x, int32 y);
 
 	/** Set the current frame. */
 	void setFrame(int frame);
 	/** Advance the animation to the next frame. */
 	void nextFrame();
+	/** Roll back the animation to the previous frame. */
+	void previousFrame();
 
 	/** Advance the animation to the next frame. */
 	void operator++(int);
+	/** Roll back the animation to the previous frame. */
+	void operator--(int);
 
 	/** Return the animation's name. */
 	const Common::String &getName() const;

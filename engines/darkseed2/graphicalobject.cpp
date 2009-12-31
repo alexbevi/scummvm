@@ -45,8 +45,12 @@ Common::Rect GraphicalObject::getArea() const {
 	return _area;
 }
 
-void GraphicalObject::move(uint32 x, uint32 y) {
+void GraphicalObject::moveTo(uint32 x, uint32 y) {
 	_area.moveTo(x, y);
+}
+
+void GraphicalObject::move(int32 x, int32 y) {
+	_area.translate(x, y);
 }
 
 void GraphicalObject::clearArea() {
@@ -143,16 +147,20 @@ SpriteObject::~SpriteObject() {
 	delete _sprite;
 }
 
-void SpriteObject::move() {
-	move(_sprite->getDefaultX(), _sprite->getDefaultY());
+void SpriteObject::moveTo() {
+	moveTo(_sprite->getDefaultX(), _sprite->getDefaultY());
 }
 
-void SpriteObject::move(uint32 x, uint32 y) {
+void SpriteObject::moveTo(uint32 x, uint32 y) {
+	GraphicalObject::moveTo(x, y);
+}
+
+void SpriteObject::moveFeetTo(uint32 x, uint32 y) {
+	GraphicalObject::moveTo(x - _sprite->getFeetX(), y - _sprite->getFeetY());
+}
+
+void SpriteObject::move(int32 x, int32 y) {
 	GraphicalObject::move(x, y);
-}
-
-void SpriteObject::moveFeet(uint32 x, uint32 y) {
-	GraphicalObject::move(x - _sprite->getFeetX(), y - _sprite->getFeetY());
 }
 
 void SpriteObject::clear() {
@@ -176,6 +184,14 @@ uint32 SpriteObject::getX() const {
 
 uint32 SpriteObject::getY() const {
 	return _area.top;
+}
+
+uint32 SpriteObject::getFeetX() const {
+	return getX() + _sprite->getFeetX();
+}
+
+uint32 SpriteObject::getFeetY() const {
+	return getY() + _sprite->getFeetY();
 }
 
 Sprite &SpriteObject::getSprite() {
@@ -244,6 +260,10 @@ int Animation::frameCount() const {
 	return _frames.size();
 }
 
+int Animation::currentFrame() const {
+	return _curFrame;
+}
+
 bool Animation::isVisible() const {
 	return _visible;
 }
@@ -252,19 +272,24 @@ void Animation::setVisible(bool visible) {
 	_visible = visible;
 }
 
-void Animation::move() {
+void Animation::moveTo() {
 	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
-		(*frame)->move();
+		(*frame)->moveTo();
 }
 
-void Animation::move(uint32 x, uint32 y) {
+void Animation::moveTo(uint32 x, uint32 y) {
+	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
+		(*frame)->moveTo(x, y);
+}
+
+void Animation::moveFeetTo(uint32 x, uint32 y) {
+	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
+		(*frame)->moveFeetTo(x, y);
+}
+
+void Animation::move(int32 x, int32 y) {
 	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
 		(*frame)->move(x, y);
-}
-
-void Animation::moveFeet(uint32 x, uint32 y) {
-	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
-		(*frame)->moveFeet(x, y);
 }
 
 void Animation::setFrame(int frame) {
@@ -275,7 +300,17 @@ void Animation::nextFrame() {
 	_curFrame = (_curFrame + 1) % _frames.size();
 }
 
+void Animation::previousFrame() {
+	_curFrame--;
+	if (_curFrame < 0)
+		_curFrame = _frames.size() - 1;
+}
+
 void Animation::operator++(int) {
+	nextFrame();
+}
+
+void Animation::operator--(int) {
 	nextFrame();
 }
 
@@ -341,6 +376,8 @@ bool Animation::load(Resources &resources, const Common::String &base) {
 		// Put the frame into the array
 		_frames[i] = object;
 	}
+
+	_name = base;
 
 	return true;
 }

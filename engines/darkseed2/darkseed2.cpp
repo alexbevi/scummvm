@@ -193,7 +193,7 @@ bool DarkSeed2Engine::init() {
 bool DarkSeed2Engine::initGraphics() {
 	debug(-1, "Setting up graphics...");
 
-	_graphics->init(*_talkMan, *_roomConfMan, *_movie, *_mike);
+	_graphics->init(*_talkMan, *_roomConfMan, *_movie);
 
 	::initGraphics(Graphics::kScreenWidth, Graphics::kScreenHeight, true);
 	return true;

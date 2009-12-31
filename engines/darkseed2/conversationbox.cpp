@@ -345,7 +345,7 @@ void ConversationBox::drawLines() {
 				text.recolor(_colorUnselected);
 
 			// Move the line to the correct place and draw it
-			text.move(_textAreas[i].left, _textAreas[i].top);
+			text.moveTo(_textAreas[i].left, _textAreas[i].top);
 			text.redraw(_box, text.getArea());
 
 			// If that line is a top line, place the correct selected/unselected marker
@@ -356,7 +356,7 @@ void ConversationBox::drawLines() {
 				else
 					marker = _markerUnselect;
 
-				marker->move(marker->getArea().left, text.getArea().top);
+				marker->moveTo(marker->getArea().left, text.getArea().top);
 				marker->redraw(_box, marker->getArea());
 			}
 

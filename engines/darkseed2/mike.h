@@ -66,6 +66,8 @@ public:
 
 	bool init();
 
+	bool isBusy() const;
+
 	bool isVisible();
 	void setVisible(bool visible);
 
@@ -78,8 +80,6 @@ public:
 	/** Check for status changes. */
 	void updateStatus();
 
-	void redraw(Sprite &sprite, Common::Rect area);
-
 	void setWalkMap();
 	void setWalkMap(const Sprite &walkMap);
 
@@ -87,9 +87,15 @@ public:
 
 private:
 	enum State {
-		kStateStanding = 0,
+		kStateIdle,
 		kStateWalking,
-		kStateNone
+		kStateTurning
+	};
+
+	enum AnimState {
+		kAnimStateStanding = 0,
+		kAnimStateWalking,
+		kAnimStateNone
 	};
 
 	Resources *_resources;
@@ -103,10 +109,14 @@ private:
 
 	byte _walkMap[kWalkMapWidth * kWalkMapHeight];
 
-	Animation _animations[kStateNone][kDirNone];
+	Animation _animations[kAnimStateNone][kDirNone];
+
+	AnimState _animState;
+	Direction _direction;
 
 	State _state;
-	Direction _direction;
+
+	Graphics::SpriteRef _spriteRef;
 
 	bool loadAnimations();
 
@@ -114,6 +124,9 @@ private:
 	inline byte getWalk(uint32 x, uint32 y) const;
 
 	void updateVisible();
+
+	void removeSprite();
+	void addSprite();
 };
 
 } // End of namespace DarkSeed2

@@ -270,7 +270,7 @@ bool RoomConfigSprite::updateStatus() {
 
 		if (!conditionsMet()) {
 			// But conditions are not met, abort
-			_graphics->removeRoomAnimation(_currentSprite);
+			_graphics->removeAnimation(_currentSprite);
 			return false;
 		}
 
@@ -285,7 +285,7 @@ bool RoomConfigSprite::updateStatus() {
 
 	if (!conditionsMet()) {
 		stop();
-		_graphics->removeRoomAnimation(_currentSprite);
+		_graphics->removeAnimation(_currentSprite);
 		return true;
 	}
 
@@ -322,8 +322,7 @@ bool RoomConfigSprite::updateStatus() {
 		}
 
 		// Update animation frame
-		_graphics->addRoomAnimation(_anim, _currentSprite, _frames[_curPos].frame,
-				_status[0], x, y);
+		_graphics->addRoomAnimation(_anim, _currentSprite, _frames[_curPos].frame, x, y);
 	}
 
 	if (++_curPos >= _frames.size()) {

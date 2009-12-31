@@ -31,7 +31,6 @@
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/movie.h"
-#include "engines/darkseed2/mike.h"
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/inventorybox.h"
@@ -45,10 +44,29 @@ static const uint32 kConversationY = 410;
 static const uint32 kInventoryX    =   0;
 static const uint32 kInventoryY    = 410;
 
+Graphics::SpriteQueueEntry::SpriteQueueEntry() {
+	anim       = 0;
+	object     = 0;
+	persistent = false;
+	layer      = -1;
+	frame      = -1;
+}
+
+Graphics::SpriteQueueEntry::SpriteQueueEntry(Animation &a, uint32 l, bool per) {
+	anim       = &a;
+	object     = &*a;
+	persistent = per;
+	layer      = l;
+	frame      = a.currentFrame();
+}
+
+bool Graphics::SpriteQueueEntry::operator<(const SpriteQueueEntry &right) const {
+	return layer < right.layer;
+}
+
+
 Graphics::SpriteRef::SpriteRef() {
-	layer = -1;
-	anim  =  0;
-	frame =  0;
+	empty = true;
 }
 
 
@@ -57,7 +75,6 @@ Graphics::Graphics(Resources &resources, Variables &variables, Cursors &cursors)
 	_variables = &variables;
 	_cursors   = &cursors;
 	_movie     = 0;
-	_mike      = 0;
 
 	clearPalette();
 
@@ -80,9 +97,8 @@ Graphics::~Graphics() {
 	delete _talk;
 }
 
-void Graphics::init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie, Mike &mike) {
+void Graphics::init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie) {
 	_movie = &movie;
-	_mike  = &mike;
 
 	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager);
 	_conversationBox->move(kConversationX, kConversationY);
@@ -200,13 +216,52 @@ void Graphics::talkEnd() {
 	_talk = 0;
 }
 
-void Graphics::clearRoomAnimations() {
-	for (int i = 0; i < kLayerCount; i++)
-		_spriteQueue[i].clear();
+void Graphics::clearAnimations() {
+	// Remove all non-persistent sprites
+	SpriteQueue::iterator sprite = _spriteQueue.begin();
+	while (sprite != _spriteQueue.end()) {
+		if (!sprite->persistent)
+			sprite = _spriteQueue.erase(sprite);
+		else
+			++sprite;
+	}
+}
+
+void Graphics::addAnimation(Animation &animation, SpriteRef &ref,
+		int32 frame, int32 x, int32 y, bool persistent) {
+
+	if (frame < 0)
+		frame = animation.currentFrame();
+
+	if (!ref.empty && (ref.it->anim == &animation) && (ref.it->frame == frame)) {
+		// The animation is already at that frame
+		return;
+	}
+
+	// Remove the old frame
+	removeAnimation(ref);
+
+	if ((frame < 0) || (frame > 99))
+		// Broken frame number
+		return;
+
+	animation.setFrame(frame);
+
+	if ((x >= 0) && (y >= 0))
+		animation->moveFeetTo((uint32) x, (uint32) y);
+
+	uint32 layer = animation->getFeetY();
+
+	// Push it into the queue
+	ref.it    = _spriteQueue.insert(SpriteQueueEntry(animation, layer, persistent));
+	ref.empty = false;
+
+	// We need to redraw that area
+	requestRedraw(animation->getArea());
 }
 
 void Graphics::addRoomAnimation(const Common::String &animation, SpriteRef &ref,
-		int32 frame, int layer, int32 x, int32 y) {
+		int32 frame, int32 x, int32 y, bool persistent) {
 
 	assert(_room);
 
@@ -215,53 +270,22 @@ void Graphics::addRoomAnimation(const Common::String &animation, SpriteRef &ref,
 		// No animation
 		return;
 
-	if ((ref.layer != -1) && (ref.anim == anim) && (ref.frame == frame))
-		// The animation is already at that frame
-		return;
-
-	// Remove the old frame
-	removeRoomAnimation(ref);
-
-	if ((frame < 0) || (frame > 99))
-		// Broken frame number
-		return;
-
-	anim->setFrame(frame);
-
-	// Set the layer and flip the order
-	layer = (kLayerCount - 1) - CLIP<int>(layer, 0, (kLayerCount - 1));
-
-	if ((x < 0) || (y < 0)) { }
-//		(*anim)->move();
-	else
-		(*anim)->moveFeet((uint32) x, (uint32) y);
-
-	// Push it into the queue
-	_spriteQueue[layer].push_back(&**anim);
-
-	// We need to redraw that area
-	requestRedraw((*anim)->getArea());
-
-	// Refresh reference
-	ref.layer = layer;
-	ref.it    = _spriteQueue[layer].reverse_begin();
-	ref.anim  = anim;
-	ref.frame = frame;
+	addAnimation(*anim, ref, frame, x, y, persistent);
 }
 
-void Graphics::removeRoomAnimation(SpriteRef &ref) {
-	if (ref.layer < 0)
-		// Empty reference
+void Graphics::removeAnimation(SpriteRef &ref) {
+	if (ref.empty)
 		return;
 
-	// We need to redraw that area
-	requestRedraw((*ref.it)->getArea());
+	if (ref.it->object)
+		// Redraw the area
+		requestRedraw(ref.it->object->getArea());
 
-	// Remove the animation frame from the queue
-	_spriteQueue[ref.layer].erase(ref.it);
+	// Remove the sprite from the queue
+	_spriteQueue.erase(ref.it);
 
 	// Marking reference as empty
-	ref.layer = -1;
+	ref.empty = true;
 }
 
 void Graphics::mergePalette(Sprite &from) {
@@ -416,17 +440,8 @@ void Graphics::redraw(Common::Rect rect) {
 	Common::Rect spriteArea = rect;
 	_room->clipToRoom(spriteArea);
 
-	for (SpriteQueue::iterator it = _spriteQueue[0].begin(); it != _spriteQueue[0].end(); ++it)
-		(*it)->redraw(_screen, spriteArea);
-
-	if (_mike)
-		_mike->redraw(_screen, spriteArea);
-
-	for (int i = 1; i < kLayerCount; i++) {
-		for (SpriteQueue::iterator it = _spriteQueue[i].begin(); it != _spriteQueue[i].end(); ++it) {
-			(*it)->redraw(_screen, spriteArea);
-		}
-	}
+	for (SpriteQueue::iterator it = _spriteQueue.begin(); it != _spriteQueue.end(); ++it)
+		it->object->redraw(_screen, spriteArea);
 
 	if (_talk)
 		_talk->redraw(_screen, rect);

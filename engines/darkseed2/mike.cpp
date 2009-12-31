@@ -41,8 +41,10 @@ Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 	_x = 0;
 	_y = 0;
 
-	_state = kStateStanding;
+	_animState = kAnimStateStanding;
 	_direction = kDirE;
+
+	_state = kStateIdle;
 
 	setWalkMap();
 }
@@ -51,7 +53,7 @@ Mike::~Mike() {
 }
 
 Common::Rect Mike::getArea() const {
-	return _animations[_state][_direction]->getArea();
+	return _animations[_animState][_direction]->getArea();
 }
 
 bool Mike::init() {
@@ -62,48 +64,52 @@ bool Mike::init() {
 }
 
 bool Mike::loadAnimations() {
-	if (!_animations[kStateWalking][kDirN ].load(*_resources, "n" ))
+	if (!_animations[kAnimStateWalking][kDirN ].load(*_resources, "n" ))
 		return false;
-	if (!_animations[kStateWalking][kDirNE].load(*_resources, "nw"))
+	if (!_animations[kAnimStateWalking][kDirNE].load(*_resources, "nw"))
 		return false;
-	if (!_animations[kStateWalking][kDirE ].load(*_resources, "w" ))
+	if (!_animations[kAnimStateWalking][kDirE ].load(*_resources, "w" ))
 		return false;
-	if (!_animations[kStateWalking][kDirSE].load(*_resources, "sw"))
+	if (!_animations[kAnimStateWalking][kDirSE].load(*_resources, "sw"))
 		return false;
-	if (!_animations[kStateWalking][kDirS ].load(*_resources, "s" ))
+	if (!_animations[kAnimStateWalking][kDirS ].load(*_resources, "s" ))
 		return false;
-	if (!_animations[kStateWalking][kDirSW].load(*_resources, "sw"))
+	if (!_animations[kAnimStateWalking][kDirSW].load(*_resources, "sw"))
 		return false;
-	if (!_animations[kStateWalking][kDirW ].load(*_resources, "w" ))
+	if (!_animations[kAnimStateWalking][kDirW ].load(*_resources, "w" ))
 		return false;
-	if (!_animations[kStateWalking][kDirNW].load(*_resources, "nw"))
-		return false;
-
-	if (!_animations[kStateStanding][kDirN ].load(*_resources, "n00" ))
-		return false;
-	if (!_animations[kStateStanding][kDirNE].load(*_resources, "nw00"))
-		return false;
-	if (!_animations[kStateStanding][kDirE ].load(*_resources, "w00" ))
-		return false;
-	if (!_animations[kStateStanding][kDirSE].load(*_resources, "sw00"))
-		return false;
-	if (!_animations[kStateStanding][kDirS ].load(*_resources, "s00" ))
-		return false;
-	if (!_animations[kStateStanding][kDirSW].load(*_resources, "sw00"))
-		return false;
-	if (!_animations[kStateStanding][kDirW ].load(*_resources, "w00" ))
-		return false;
-	if (!_animations[kStateStanding][kDirNW].load(*_resources, "nw00"))
+	if (!_animations[kAnimStateWalking][kDirNW].load(*_resources, "nw"))
 		return false;
 
-	_animations[kStateWalking ][kDirNE].flipHorizontally();
-	_animations[kStateWalking ][kDirE ].flipHorizontally();
-	_animations[kStateWalking ][kDirSE].flipHorizontally();
-	_animations[kStateStanding][kDirNE].flipHorizontally();
-	_animations[kStateStanding][kDirE ].flipHorizontally();
-	_animations[kStateStanding][kDirSE].flipHorizontally();
+	if (!_animations[kAnimStateStanding][kDirN ].load(*_resources, "n00" ))
+		return false;
+	if (!_animations[kAnimStateStanding][kDirNE].load(*_resources, "nw00"))
+		return false;
+	if (!_animations[kAnimStateStanding][kDirE ].load(*_resources, "w00" ))
+		return false;
+	if (!_animations[kAnimStateStanding][kDirSE].load(*_resources, "sw00"))
+		return false;
+	if (!_animations[kAnimStateStanding][kDirS ].load(*_resources, "s00" ))
+		return false;
+	if (!_animations[kAnimStateStanding][kDirSW].load(*_resources, "sw00"))
+		return false;
+	if (!_animations[kAnimStateStanding][kDirW ].load(*_resources, "w00" ))
+		return false;
+	if (!_animations[kAnimStateStanding][kDirNW].load(*_resources, "nw00"))
+		return false;
+
+	_animations[kAnimStateWalking ][kDirNE].flipHorizontally();
+	_animations[kAnimStateWalking ][kDirE ].flipHorizontally();
+	_animations[kAnimStateWalking ][kDirSE].flipHorizontally();
+	_animations[kAnimStateStanding][kDirNE].flipHorizontally();
+	_animations[kAnimStateStanding][kDirE ].flipHorizontally();
+	_animations[kAnimStateStanding][kDirSE].flipHorizontally();
 
 	return true;
+}
+
+bool Mike::isBusy() const {
+	return _state != kStateIdle;
 }
 
 bool Mike::isVisible() {
@@ -122,16 +128,19 @@ void Mike::getPosition(uint32 &x, uint32 &y) const {
 }
 
 void Mike::setPosition(uint32 x, uint32 y) {
+	if ((_x == x) && (_y == y))
+		return;
+
 	_x = x;
 	_y = y;
 
-	_graphics->requestRedraw(_animations[_state][_direction]->getArea());
+	removeSprite();
 
-	for (uint j = 0; j < kStateNone; j++)
+	for (uint j = 0; j < kAnimStateNone; j++)
 		for (uint i = 0; i < kDirNone; i++)
-			_animations[j][i].moveFeet(x, y);
+			_animations[j][i].moveFeetTo(x, y);
 
-	_graphics->requestRedraw(_animations[_state][_direction]->getArea());
+	addSprite();
 }
 
 Mike::Direction Mike::getDirection() const {
@@ -142,11 +151,14 @@ void Mike::setDirection(Direction direction) {
 	if ((direction < 0) || (direction >= kDirNone))
 		direction = kDirE;
 
-	_graphics->requestRedraw(_animations[_state][_direction]->getArea());
+	if (_direction == direction)
+		return;
+
+	removeSprite();
 
 	_direction = direction;
 
-	_graphics->requestRedraw(_animations[_state][_direction]->getArea());
+	addSprite();
 }
 
 void Mike::updateStatus() {
@@ -156,18 +168,24 @@ void Mike::updateStatus() {
 void Mike::updateVisible() {
 	bool visible = _variables->get(kVariableVisible);
 	if (_visible != visible) {
-		_graphics->requestRedraw(getArea());
+		if (visible)
+			addSprite();
+		else
+			removeSprite();
+
 		_visible = visible;
 	}
 }
 
-void Mike::redraw(Sprite &sprite, Common::Rect area) {
-	if (!_visible)
-		return;
+void Mike::addSprite() {
 	if ((_x == 0) || (_y == 0))
 		return;
 
-	_animations[_state][_direction]->redraw(sprite, area);
+	_graphics->addAnimation(_animations[_animState][_direction], _spriteRef, -1, -1, -1, true);
+}
+
+void Mike::removeSprite() {
+	_graphics->removeAnimation(_spriteRef);
 }
 
 void Mike::setWalkMap() {

@@ -63,7 +63,7 @@ void Room::clear() {
 	if (_confMan)
 		_confMan->deinitRoom();
 
-	_graphics->clearRoomAnimations();
+	_graphics->clearAnimations();
 	_graphics->unregisterBackground();
 
 	// Remove all local variables
