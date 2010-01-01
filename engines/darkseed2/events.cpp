@@ -191,24 +191,28 @@ void Events::mainLoop(bool finishScripts) {
 		_vm->_roomConfMan->updateStatus();
 		_vm->_graphics->updateStatus();
 
-		scriptStateChanged = _vm->_inter->updateStatus();
-		if (finishScripts && !scriptStateChanged)
-			// We run only to finish the scripts, but the scripts won't do anything
-			break;
+		if (!_vm->_mike->isBusy())
+			scriptStateChanged = _vm->_inter->updateStatus();
 
-		// If the script variable "LastAction" is set, queue the last object verb scripts again
-		if (_vm->_variables->get("LastAction") == 1) {
-			_vm->_variables->set("LastAction", 0);
-			if (_lastObject)
-				_vm->_inter->interpret(_lastObject->getScripts(kObjectVerbUse));
-		}
+		if (!_vm->_mike->isBusy()) {
+			if (finishScripts && !scriptStateChanged)
+				// We run only to finish the scripts, but the scripts won't do anything
+				break;
 
-		// Room changing, but not during a syscall
-		if (_changeRoom) {
-			if (_vm->_variables->get("SysCall") == 0) {
-				_changeRoom = false;
+			// If the script variable "LastAction" is set, queue the last object verb scripts again
+			if (_vm->_variables->get("LastAction") == 1) {
+				_vm->_variables->set("LastAction", 0);
+				if (_lastObject)
+					_vm->_inter->interpret(_lastObject->getScripts(kObjectVerbUse));
+			}
 
-				roomGo(_nextRoom);
+			// Room changing, but not during a syscall
+			if (_changeRoom) {
+				if (_vm->_variables->get("SysCall") == 0) {
+					_changeRoom = false;
+
+					roomGo(_nextRoom);
+				}
 			}
 		}
 

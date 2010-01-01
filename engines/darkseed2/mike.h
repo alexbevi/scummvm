@@ -86,7 +86,7 @@ public:
 	byte getWalkData(uint32 x, uint32 y) const;
 
 	/** Walk to a specific position. */
-	void go(uint32 x, uint32 y);
+	void go(uint32 x, uint32 y, Direction direction);
 
 private:
 	enum State {
@@ -119,6 +119,8 @@ private:
 	uint32 _targetY;
 	/** Our target's direction. */
 	Direction _targetDirection;
+
+	Direction _turnTo;
 
 	byte _walkMap[kWalkMapWidth * kWalkMapHeight];
 

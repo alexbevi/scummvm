@@ -215,9 +215,12 @@ ScriptInterpreter::Result ScriptInterpreter::oXYRoom(Script &script) {
 
 	Common::Array<int32> args = DATFile::argGetInts(script.action->arguments, 5);
 
-	if ((args[0] > 0) && (args[1] > 0))
-		_vm->_mike->setPosition(args[0], args[1]);
-	_vm->_mike->setDirection((Mike::Direction) args[3]);
+	if (args[0] < 0)
+		args[0] = 0;
+	if (args[1] < 0)
+		args[1] = 0;
+
+	_vm->_mike->go(args[0], args[1], (Mike::Direction) args[3]);
 
 	if (args[2] != 0)
 		_vm->_events->setNextRoom(args[2]);
@@ -291,6 +294,11 @@ ScriptInterpreter::Result ScriptInterpreter::oFrom(Script &script) {
 	}
 
 	warning("TODO: oFrom: Coming from %d? %dx%d", args[2], args[0], args[1]);
+
+	if (((int32) args[0]) < 0)
+		args[0] = 0;
+	if (((int32) args[1]) < 0)
+		args[1] = 0;
 
 	if (!_vm->_events->cameFrom(args[2]))
 		return kResultStop;

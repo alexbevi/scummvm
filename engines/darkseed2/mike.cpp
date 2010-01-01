@@ -43,7 +43,7 @@ Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 
 	_targetX = 0;
 	_targetY = 0;
-	_targetDirection = kDirNone;
+	_turnTo = kDirNone;
 
 	_animState = kAnimStateStanding;
 	_direction = kDirE;
@@ -186,6 +186,16 @@ void Mike::updateStatus() {
 			if (_state != kStateIdle)
 				_waitUntil = g_system->getMillis() + 100;
 		}
+
+		if (_state == kStateIdle) {
+			if (_direction != _targetDirection) {
+				_targetX = _x;
+				_targetY = _y;
+				_turnTo = _targetDirection;
+				_state = kStateTurning;
+				_waitUntil = g_system->getMillis();
+			}
+		}
 	}
 }
 
@@ -203,6 +213,9 @@ void Mike::updateVisible() {
 
 void Mike::addSprite() {
 	if ((_x == 0) || (_y == 0))
+		return;
+
+	if (!_visible)
 		return;
 
 	_graphics->addAnimation(_animations[_animState][_direction], _spriteRef, -1, -1, -1, true);
@@ -242,7 +255,7 @@ inline byte Mike::getWalk(uint32 x, uint32 y) const {
 }
 
 void Mike::advanceTurn() {
-	if (_direction == _targetDirection) {
+	if (_direction == _turnTo) {
 		// Reached the target direction, continue walking
 		_state     = kStateWalking;
 		_animState = kAnimStateWalking;
@@ -255,8 +268,8 @@ void Mike::advanceTurn() {
 	_animState = kAnimStateStanding;
 
 	// Always turn the shortest way round
-	if (_targetDirection > _direction) {
-		if ((_targetDirection - _direction) < (_direction + (kDirNone - 1 - _targetDirection))) {
+	if (_turnTo > _direction) {
+		if ((_turnTo - _direction) < (_direction + (kDirNone - 1 - _turnTo))) {
 			_direction = (Direction) ((_direction + 1) % kDirNone);
 		} else {
 			_direction = (Direction) (_direction - 1);
@@ -264,7 +277,7 @@ void Mike::advanceTurn() {
 				_direction = (Direction) (kDirNone - 1);
 		}
 	} else {
-		if ((_direction - _targetDirection) < (_targetDirection + (kDirNone - 1 - _direction))) {
+		if ((_direction - _turnTo) < (_turnTo + (kDirNone - 1 - _direction))) {
 			_direction = (Direction) (_direction - 1);
 			if ((_direction < 0) || (_direction >= kDirNone))
 				_direction = (Direction) (kDirNone - 1);
@@ -279,26 +292,28 @@ void Mike::advanceTurn() {
 void Mike::advanceWalk() {
 	removeSprite();
 
-	bool east  = _x > _targetX;
-	bool south = _y > _targetY;
+	if ((_x != _targetX) || (_y != _targetY)) {
+		bool east  = _x > _targetX;
+		bool south = _y > _targetY;
 
-	_x += getStepOffsetX();
-	_y += getStepOffsetY();
+		_x += getStepOffsetX();
+		_y += getStepOffsetY();
 
-	// Overshooting?
-	if (east) {
-		if (_x <= _targetX)
-			_x = _targetX;
-	} else {
-		if (_x >= _targetX)
-			_x = _targetX;
-	}
-	if (south) {
-		if (_y <= _targetY)
-			_y = _targetY;
-	} else {
-		if (_y >= _targetY)
-			_y = _targetY;
+		// Overshooting?
+		if (east) {
+			if (_x <= _targetX)
+				_x = _targetX;
+		} else {
+			if (_x >= _targetX)
+				_x = _targetX;
+		}
+		if (south) {
+			if (_y <= _targetY)
+				_y = _targetY;
+		} else {
+			if (_y >= _targetY)
+				_y = _targetY;
+		}
 	}
 
 	if ((_x == _targetX) && (_y == _targetY)) {
@@ -310,7 +325,7 @@ void Mike::advanceWalk() {
 	if ((_direction != direction) && (direction != kDirNone)) {
 		// We need to turn to a new direction
 		_state = kStateTurning;
-		_targetDirection = direction;
+		_turnTo = direction;
 	}
 
 	_animations[_animState][_direction]++;
@@ -320,9 +335,17 @@ void Mike::advanceWalk() {
 	addSprite();
 }
 
-void Mike::go(uint32 x, uint32 y) {
+void Mike::go(uint32 x, uint32 y, Direction direction) {
+	if ((x == 0) || (y == 0)) {
+		x = _x;
+		y = _y;
+	}
+	if ((direction < 0) || (direction >= kDirNone))
+		direction = _direction;
+
 	_targetX = x;
 	_targetY = y;
+	_targetDirection = direction;
 
 	_state = kStateWalking;
 	_animState = kAnimStateWalking;
