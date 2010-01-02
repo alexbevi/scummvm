@@ -123,13 +123,13 @@ public:
 
 	/** Add an animation frame to the rendering queue. */
 	void addAnimation(Animation &animation, SpriteRef &ref,
-			int32 frame, int32 x = -1, int32 y = -1, bool persistent = false);
+			int32 frame = -1, int32 x = -1, int32 y = -1, bool persistent = false);
 	/** Remove an animation frame from the rendering queue. */
 	void removeAnimation(SpriteRef &ref);
 
 	/** Add a room animation frame to the rendering queue. */
 	void addRoomAnimation(const Common::String &animation, SpriteRef &ref,
-			int32 frame, int32 x = -1, int32 y = -1, bool persistent = false);
+			int32 frame = -1, int32 x = -1, int32 y = -1, bool persistent = false);
 
 	/** Merge the sprite's palette into the current game palette. */
 	void mergePalette(Sprite &sprite);
