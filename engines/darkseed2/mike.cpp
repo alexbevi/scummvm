@@ -154,6 +154,10 @@ void Mike::setPosition(uint32 x, uint32 y) {
 	addSprite();
 }
 
+frac_t Mike::getScale() const {
+	return _scale;
+}
+
 void Mike::updateScale() {
 	_scale = CLIP(intToFrac(_y - _scaleFactors[0]) / _scaleFactors[1], _scaleMin, _scaleMax);
 }

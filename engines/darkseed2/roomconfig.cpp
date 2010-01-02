@@ -23,6 +23,8 @@
  *
  */
 
+#include "common/frac.h"
+
 #include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/variables.h"
@@ -319,7 +321,11 @@ bool RoomConfigSprite::updateStatus() {
 
 			x = mX;
 			y = mY;
-		}
+
+			_graphics->scaleRoomAnimation(_anim, _mike->getScale());
+
+		} else
+			_graphics->scaleRoomAnimation(_anim, FRAC_ONE);
 
 		// Update animation frame
 		_graphics->addRoomAnimation(_anim, _currentSprite, _frames[_curPos].frame, x, y);

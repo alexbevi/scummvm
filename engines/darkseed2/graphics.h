@@ -28,6 +28,7 @@
 
 #include "common/rect.h"
 #include "common/list.h"
+#include "common/frac.h"
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/sortedlist.h"
@@ -130,6 +131,9 @@ public:
 	/** Add a room animation frame to the rendering queue. */
 	void addRoomAnimation(const Common::String &animation, SpriteRef &ref,
 			int32 frame = -1, int32 x = -1, int32 y = -1, bool persistent = false);
+
+	/** Set the scaling value of that room animation. */
+	void scaleRoomAnimation(const Common::String &animation, frac_t scale);
 
 	/** Merge the sprite's palette into the current game palette. */
 	void mergePalette(Sprite &sprite);

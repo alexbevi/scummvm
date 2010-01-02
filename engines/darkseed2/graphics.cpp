@@ -273,6 +273,17 @@ void Graphics::addRoomAnimation(const Common::String &animation, SpriteRef &ref,
 	addAnimation(*anim, ref, frame, x, y, persistent);
 }
 
+void Graphics::scaleRoomAnimation(const Common::String &animation, frac_t scale) {
+	assert(_room);
+
+	Animation *anim = _room->getAnimation(animation);
+	if (!anim)
+		// No animation
+		return;
+
+	anim->setScale(scale);
+}
+
 void Graphics::removeAnimation(SpriteRef &ref) {
 	if (ref.empty)
 		return;

@@ -76,6 +76,8 @@ public:
 	void getPosition(uint32 &x, uint32 &y) const;
 	void setPosition(uint32 x, uint32 y);
 
+	frac_t getScale() const;
+
 	Direction getDirection() const;
 	void setDirection(Direction direction);
 
