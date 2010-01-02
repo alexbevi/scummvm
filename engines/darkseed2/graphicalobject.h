@@ -120,6 +120,9 @@ public:
 	/** Return the sprite's feet's y coordinate. */
 	uint32 getFeetY() const;
 
+	/** Set the sprite's scaling value. */
+	void setScale(double scale);
+
 	/** Return the sprite. */
 	Sprite &getSprite();
 	/** Return the sprite. */
@@ -165,6 +168,9 @@ public:
 
 	/** Move the animation relative to its current position. */
 	void move(int32 x, int32 y);
+
+	/** Set the sprite's scaling value. */
+	void setScale(double scale);
 
 	/** Set the current frame. */
 	void setFrame(int frame);

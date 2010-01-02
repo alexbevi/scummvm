@@ -29,6 +29,7 @@
 #include "common/rect.h"
 #include "common/str.h"
 #include "common/array.h"
+#include "common/frac.h"
 
 #include "graphics/font.h"
 
@@ -63,22 +64,22 @@ public:
 	bool exists() const;
 
 	/** Return the sprite's width. */
-	uint32 getWidth() const;
+	uint32 getWidth(bool unscaled = false) const;
 	/** Return the sprite's height. */
-	uint32 getHeight() const;
+	uint32 getHeight(bool unscaled = false) const;
 
 	/** Return the sprite's default X coordinate. */
-	uint16 getDefaultX() const;
+	uint16 getDefaultX(bool unscaled = false) const;
 	/** Return the sprite's default Y coordinate. */
-	uint16 getDefaultY() const;
+	uint16 getDefaultY(bool unscaled = false) const;
 
 	/** Return the sprite's "feet" X coordinate. */
-	uint16 getFeetX() const;
+	uint16 getFeetX(bool unscaled = false) const;
 	/** Return the sprite's "feet" Y coordinate. */
-	uint16 getFeetY() const;
+	uint16 getFeetY(bool unscaled = false) const;
 
 	/** Return the sprite's area. */
-	Common::Rect getArea() const;
+	Common::Rect getArea(bool unscaled = false) const;
 
 	/** Return the sprite's data. */
 	const byte *getData() const;
@@ -114,10 +115,6 @@ public:
 	/** Blit that sprite onto this sprite. */
 	void blit(const Sprite &from, uint32 x, uint32 y, bool transp = false);
 
-	void blitDouble(const Sprite &from, const Common::Rect &area,
-			uint32 x, uint32 y, bool transp = false);
-	void blitDouble(const Sprite &from, uint32 x, uint32 y, bool transp = false);
-
 	/** Fill the whole sprite with one palette entry. */
 	void fill(byte c);
 	/** Fill the whole sprite with palette entry 0. */
@@ -136,6 +133,9 @@ public:
 	void drawStrings(const Common::StringList &strings, const ::Graphics::Font &font,
 			int x, int y, byte color);
 
+	/** Set the scaling value. */
+	void setScale(double scale);
+
 private:
 	uint32 _width;  ///< The sprite's width.
 	uint32 _height; ///< The sprite's height.
@@ -148,6 +148,14 @@ private:
 	uint16 _feetY; ///< The sprite's "feet" Y coordinate.
 
 	Palette _palette; ///< The sprite's palette.
+
+	frac_t _scale;        ///< The sprite's current scaling value.
+	frac_t _scaleInverse; ///< The inverse value to the current scaling value.
+
+	/** Get the scaling value. */
+	double getScale() const;
+	/** Get the inverse scaling value. */
+	double getScaleInverse() const;
 
 	/** Wrap the sprite into a standard ScummVM surface. */
 	::Graphics::Surface *wrapInSurface() const;

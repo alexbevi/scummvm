@@ -79,8 +79,8 @@ bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 		x = 0;
 		y = 0;
 
-		_area.setWidth (_area.width () * 2);
-		_area.setHeight(_area.height() * 2);
+		_buffer.setScale(2.0);
+		_area = Common::Rect(_buffer.getWidth(), _buffer.getHeight());
 	} else
 		_area.moveTo(x, y);
 
@@ -100,7 +100,7 @@ void Movie::updateStatus() {
 	}
 
 	_aviDecoder->decodeNextFrame();
-	_aviDecoder->copyFrameToBuffer(_buffer.getData(), 0, 0, _buffer.getWidth());
+	_aviDecoder->copyFrameToBuffer(_buffer.getData(), 0, 0, _buffer.getWidth(true));
 
 	_graphics->requestRedraw(_area);
 }
@@ -116,10 +116,7 @@ void Movie::redraw(Sprite &sprite, Common::Rect area) {
 
 	area.moveTo(area.left - _area.left, area.top - _area.top);
 
-	if (_doubling)
-		sprite.blitDouble(_buffer, area, x, y, false);
-	else
-		sprite.blit(_buffer, area, x, y, false);
+	sprite.blit(_buffer, area, x, y, false);
 }
 
 uint32 Movie::getFrameWaitTime() const {

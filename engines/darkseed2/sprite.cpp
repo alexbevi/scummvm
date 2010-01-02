@@ -45,6 +45,9 @@ Sprite::Sprite() {
 	_defaultY = 0;
 	_feetX    = 0;
 	_feetY    = 0;
+
+	_scale        = FRAC_ONE;
+	_scaleInverse = FRAC_ONE;
 }
 
 Sprite::Sprite(const Sprite &sprite) {
@@ -73,32 +76,53 @@ bool Sprite::exists() const {
 	return _data != 0;
 }
 
-uint32 Sprite::getWidth() const {
-	return _width;
+uint32 Sprite::getWidth(bool unscaled) const {
+	if (unscaled || (_scale == FRAC_ONE))
+		return _width;
+
+	return _width * getScale();
 }
 
-uint32 Sprite::getHeight() const {
-	return _height;
+uint32 Sprite::getHeight(bool unscaled) const {
+	if (unscaled || (_scale == FRAC_ONE))
+		return _height;
+
+	return _height * getScale();
 }
 
-uint16 Sprite::getDefaultX() const {
-	return _defaultX;
+uint16 Sprite::getDefaultX(bool unscaled) const {
+	if (unscaled || (_scale == FRAC_ONE))
+		return _defaultX;
+
+	return _defaultX * getScale();
 }
 
-uint16 Sprite::getDefaultY() const {
-	return _defaultY;
+uint16 Sprite::getDefaultY(bool unscaled) const {
+	if (unscaled || (_scale == FRAC_ONE))
+		return _defaultY;
+
+	return _defaultY * getScale();
 }
 
-uint16 Sprite::getFeetX() const {
-	return _feetX;
+uint16 Sprite::getFeetX(bool unscaled) const {
+	if (unscaled || (_scale == FRAC_ONE))
+		return _feetX;
+
+	return _feetX * getScale();
 }
 
-uint16 Sprite::getFeetY() const {
-	return _feetY;
+uint16 Sprite::getFeetY(bool unscaled) const {
+	if (unscaled || (_scale == FRAC_ONE))
+		return _feetY;
+
+	return _feetY * getScale();
 }
 
-Common::Rect Sprite::getArea() const {
-	return Common::Rect(_width, _height);
+Common::Rect Sprite::getArea(bool unscaled) const {
+	if (unscaled || (_scale == FRAC_ONE))
+		return Common::Rect(_width, _height);
+
+	return Common::Rect(getWidth(), getHeight());
 }
 
 const byte *Sprite::getData() const {
@@ -135,6 +159,9 @@ void Sprite::discard() {
 	_defaultY = 0;
 	_feetX    = 0;
 	_feetY    = 0;
+
+	_scale        = FRAC_ONE;
+	_scaleInverse = FRAC_ONE;
 
 	_palette.clear();
 }
@@ -379,7 +406,7 @@ void Sprite::blit(const Sprite &from, const Common::Rect &area,
 	if (!exists() || !from.exists())
 		return;
 
-	Common::Rect toArea = getArea();
+	Common::Rect toArea = getArea(true);
 
 	toArea.left = x;
 	toArea.top  = y;
@@ -397,76 +424,45 @@ void Sprite::blit(const Sprite &from, const Common::Rect &area,
 	uint32 w = fromArea.width();
 	uint32 h = fromArea.height();
 
-	const byte *src = from.getData() + fromArea.top * from.getWidth() + fromArea.left;
+	const uint32 fromTop   = fromArea.top  * from.getScaleInverse();
+	const uint32 fromLeft  = fromArea.left * from.getScaleInverse();
+	const uint32 fromWidth = from.getWidth(true);
+
+	const byte *src = from.getData() + fromTop * fromWidth + fromLeft;
 	byte *dst = _data + y * _width + x;
 
-	if (transp) {
-		while (h-- > 0) {
-			const byte *srcRow = src;
-			byte *dstRow = dst;
+	frac_t posW = 0, posH = 0;
+	while (h-- > 0) {
+		posW = 0;
 
-			for (uint32 i = 0; i < w; i++, srcRow++, dstRow++)
-				if (*srcRow != 0)
-					*dstRow = *srcRow;
+		byte *dstRow = dst;
+		const byte *srcRow = src;
 
-			src += from.getWidth();
-			dst += _width;
+		for (uint32 j = 0; j < w; j++, dstRow++) {
+			if (!transp || *srcRow != 0)
+				dstRow[0] = *srcRow;
+
+			posW += from._scaleInverse;
+			while (posW >= ((frac_t) FRAC_ONE)) {
+				srcRow++;
+				posW -= FRAC_ONE;
+			}
+
 		}
-	} else
-		for (; h > 0; h--, src += from.getWidth(), dst += _width)
-			memcpy(dst, src, w);
+
+		dst += _width;
+
+		posH += from._scaleInverse;
+		while (posH >= ((frac_t) FRAC_ONE)) {
+			src += from.getWidth(true);
+			posH -= FRAC_ONE;
+		}
+
+	}
 }
 
 void Sprite::blit(const Sprite &from, uint32 x, uint32 y, bool transp) {
 	blit(from, from.getArea(), x, y, transp);
-}
-
-void Sprite::blitDouble(const Sprite &from, const Common::Rect &area,
-		uint32 x, uint32 y, bool transp) {
-
-	if (!exists() || !from.exists())
-		return;
-
-	Common::Rect toArea = getArea();
-
-	toArea.left = x;
-	toArea.top  = y;
-	if (toArea.isEmpty())
-		return;
-
-	Common::Rect fromArea = from.getArea();
-
-	fromArea.clip(area);
-	fromArea.setWidth (MIN(fromArea.width()  * 2, ((toArea.width())  / 2) * 2) / 2);
-	fromArea.setHeight(MIN(fromArea.height() * 2, ((toArea.height()) / 2) * 2) / 2);
-	if (fromArea.isEmpty())
-		return;
-
-	uint32 w = fromArea.width();
-	uint32 h = fromArea.height();
-
-	const byte *src = from.getData() + fromArea.top * from.getWidth() + fromArea.left;
-	byte *dst = _data + y * _width + x;
-
-	while (h-- > 0) {
-		byte *dstRow = dst;
-		for (int i = 0; i < 2; i++) {
-			const byte *srcRow = src;
-
-			for (uint32 j = 0; j < w; j++, srcRow++, dstRow += 2)
-				if (!transp || *srcRow != 0) {
-					dstRow[0] = *srcRow;
-					dstRow[1] = *srcRow;
-				}
-
-			dst += _width;
-		}
-		src += from.getWidth();
-	}
-}
-
-void Sprite::blitDouble(const Sprite &from, uint32 x, uint32 y, bool transp) {
-	blitDouble(from, from.getArea(), x, y, transp);
 }
 
 void Sprite::fill(byte c) {
@@ -585,6 +581,19 @@ bool Sprite::readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize) 
 	}
 
 	return true;
+}
+
+double Sprite::getScale() const {
+	return fracToDouble(_scale);
+}
+
+double Sprite::getScaleInverse() const {
+	return fracToDouble(_scaleInverse);
+}
+
+void Sprite::setScale(double scale) {
+	_scale        = doubleToFrac(scale);
+	_scaleInverse = doubleToFrac(1.0 / scale);
 }
 
 } // End of namespace DarkSeed2
