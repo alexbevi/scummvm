@@ -283,15 +283,7 @@ ScriptInterpreter::Result ScriptInterpreter::oAnim(Script &script) {
 ScriptInterpreter::Result ScriptInterpreter::oFrom(Script &script) {
 	// Changing position when coming from a specific room?
 
-	Common::Array<Common::String> lArgs = DATFile::argGet(script.action->arguments);
-
-	uint32 args[3];
-
-	for (uint i = 0; i < 3; i++) {
-		args[i] = 0;
-		if (lArgs.size() > i)
-			args[i] = atoi(lArgs[i].c_str());
-	}
+	Common::Array<int32> args = DATFile::argGetInts(script.action->arguments, 3);
 
 	warning("TODO: oFrom: Coming from %d? %dx%d", args[2], args[0], args[1]);
 
