@@ -134,7 +134,7 @@ public:
 			int x, int y, byte color);
 
 	/** Set the scaling value. */
-	void setScale(double scale);
+	void setScale(frac_t scale);
 
 private:
 	uint32 _width;  ///< The sprite's width.
@@ -151,11 +151,6 @@ private:
 
 	frac_t _scale;        ///< The sprite's current scaling value.
 	frac_t _scaleInverse; ///< The inverse value to the current scaling value.
-
-	/** Get the scaling value. */
-	double getScale() const;
-	/** Get the inverse scaling value. */
-	double getScaleInverse() const;
 
 	/** Wrap the sprite into a standard ScummVM surface. */
 	::Graphics::Surface *wrapInSurface() const;

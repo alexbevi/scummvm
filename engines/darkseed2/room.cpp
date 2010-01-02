@@ -81,9 +81,8 @@ void Room::clear() {
 	_walkMapArg1 = 0;
 	_walkMapArg2 = 0;
 
-	_scaleFactor1 = 0;
-	_scaleFactor2 = 0;
-	_scaleFactor3 = 0;
+	for (int i = 0; i < 3; i++)
+		_scaleFactors[i] = 0;
 
 	// Clear entry scripts
 	for (Common::List<ScriptChunk *>::iterator it = _entryScripts.begin(); it != _entryScripts.end(); ++it)
@@ -113,8 +112,16 @@ const Sprite &Room::getWalkMap() const {
 	return *_walkMap;
 }
 
+const int32 *Room::getScaleFactors() const {
+	return _scaleFactors;
+}
+
 void Room::clipToRoom(Common::Rect &rect) const {
 	rect.clip(_area);
+}
+
+const Common::Rect &Room::getClipRect() const {
+	return _area;
 }
 
 Common::List<ScriptChunk *> &Room::getEntryScripts() {
@@ -266,16 +273,10 @@ bool Room::setWalkMap(const Common::String &args) {
 }
 
 bool Room::setScaleFactor(const Common::String &args) {
-	Common::Array<Common::String> lArgs = DATFile::argGet(args);
+	Common::Array<int32> lArgs = DATFile::argGetInts(args, 3, 0);
 
-	if (lArgs.size() != 3) {
-		warning("Room::setScaleFactor(): Broken arguments");
-		return false;
-	}
-
-	_scaleFactor1 = atoi(lArgs[0].c_str());
-	_scaleFactor2 = atoi(lArgs[1].c_str());
-	_scaleFactor3 = atoi(lArgs[2].c_str());
+	for (int i = 0; i < 3; i++)
+		_scaleFactors[i] = lArgs[i];
 
 	return true;
 }

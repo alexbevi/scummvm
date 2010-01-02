@@ -53,6 +53,13 @@ Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 	_waitUntil = 0;
 
 	setWalkMap();
+
+	for (int i = 0; i < 3; i++)
+		_scaleFactors[i] = 0;
+	_scale = FRAC_ONE;
+
+	_scaleMin = doubleToFrac(0.05);
+	_scaleMax = doubleToFrac(1.05);
 }
 
 Mike::~Mike() {
@@ -147,10 +154,18 @@ void Mike::setPosition(uint32 x, uint32 y) {
 	addSprite();
 }
 
+void Mike::updateScale() {
+	_scale = CLIP(intToFrac(_y - _scaleFactors[0]) / _scaleFactors[1], _scaleMin, _scaleMax);
+}
+
 void Mike::updateAnimPositions() {
+	updateScale();
+
 	for (uint j = 0; j < kAnimStateNone; j++)
-		for (uint i = 0; i < kDirNone; i++)
+		for (uint i = 0; i < kDirNone; i++) {
 			_animations[j][i].moveFeetTo(_x, _y);
+			_animations[j][i].setScale(_scale);
+		}
 }
 
 Mike::Direction Mike::getDirection() const {
@@ -238,6 +253,11 @@ void Mike::setWalkMap(const Sprite &walkMap) {
 	}
 
 	memcpy(_walkMap, walkMap.getData(), sizeof(_walkMap));
+}
+
+void Mike::setScaleFactors(const int32 *scaleFactors) {
+	for (int i = 0; i < 3; i++)
+		_scaleFactors[i] = scaleFactors[i];
 }
 
 byte Mike::getWalkData(uint32 x, uint32 y) const {
@@ -352,58 +372,78 @@ void Mike::go(uint32 x, uint32 y, Direction direction) {
 	_waitUntil = g_system->getMillis();
 }
 
-uint32 Mike::getStepOffsetX() const {
+int32 Mike::getStepOffsetX() const {
+	int32 offset = 0;
+
 	switch (_direction) {
 	case kDirNE:
-		return 7;
+		offset = 7;
+		break;
 
 	case kDirE:
-		return 12;
+		offset = 12;
+		break;
 
 	case kDirSE:
-		return 7;
+		offset = 7;
+		break;
 
 	case kDirSW:
-		return -7;
+		offset = -7;
+		break;
 
 	case kDirW:
-		return -12;
+		offset = -12;
+		break;
 
 	case kDirNW:
-		return -7;
+		offset = -7;
+		break;
 
 	default:
 		break;
 	}
 
-	return 0;
+	offset = fracToInt(offset * _scale);
+
+	return offset;
 }
 
-uint32 Mike::getStepOffsetY() const {
+int32 Mike::getStepOffsetY() const {
+	int32 offset;
+
 	switch (_direction) {
 	case kDirN:
-		return -4;
+		offset = -4;
+		break;
 
 	case kDirNE:
-		return -2;
+		offset = -2;
+		break;
 
 	case kDirSE:
-		return 2;
+		offset = 2;
+		break;
 
 	case kDirS:
-		return 4;
+		offset = 4;
+		break;
 
 	case kDirSW:
-		return 2;
+		offset = 2;
+		break;
 
 	case kDirNW:
-		return -2;
+		offset = -2;
+		break;
 
 	default:
 		break;
 	}
 
-	return 0;
+	offset = fracToInt(offset * _scale);
+
+	return offset;
 }
 
 Mike::Direction Mike::getDirection(uint32 x1, uint32 y1, uint32 x2, uint32 y2) {

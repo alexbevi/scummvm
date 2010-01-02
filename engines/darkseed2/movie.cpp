@@ -79,7 +79,7 @@ bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 		x = 0;
 		y = 0;
 
-		_buffer.setScale(2.0);
+		_buffer.setScale(2 * FRAC_ONE);
 		_area = Common::Rect(_buffer.getWidth(), _buffer.getHeight());
 	} else
 		_area.moveTo(x, y);

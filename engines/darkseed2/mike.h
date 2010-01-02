@@ -26,6 +26,8 @@
 #ifndef DARKSEED2_MIKE_H
 #define DARKSEED2_MIKE_H
 
+#include "common/frac.h"
+
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/graphicalobject.h"
@@ -83,6 +85,8 @@ public:
 	void setWalkMap();
 	void setWalkMap(const Sprite &walkMap);
 
+	void setScaleFactors(const int32 *scaleFactors);
+
 	byte getWalkData(uint32 x, uint32 y) const;
 
 	/** Walk to a specific position. */
@@ -124,6 +128,12 @@ private:
 
 	byte _walkMap[kWalkMapWidth * kWalkMapHeight];
 
+	int32 _scaleFactors[3];
+
+	frac_t _scale;
+	frac_t _scaleMin;
+	frac_t _scaleMax;
+
 	/** All animations. */
 	Animation _animations[kAnimStateNone][kDirNone];
 
@@ -147,6 +157,9 @@ private:
 	inline static uint32 screenCoordToWalkCoord(uint32 walkCoord);
 	inline byte getWalk(uint32 x, uint32 y) const;
 
+	/** Update the scaling value based on the current y coordinate. */
+	void updateScale();
+
 	/** Update all animations' positions. */
 	void updateAnimPositions();
 
@@ -164,9 +177,9 @@ private:
 	void advanceWalk();
 
 	/** How much will the next step move Mike forward in the X direction? */
-	uint32 getStepOffsetX() const;
+	int32 getStepOffsetX() const;
 	/** How much will the next step move Mike forward in the Y direction? */
-	uint32 getStepOffsetY() const;
+	int32 getStepOffsetY() const;
 
 	/** Calculate the direction direction between two points. */
 	static Direction getDirection(uint32 x1, uint32 y1, uint32 x2, uint32 y2);

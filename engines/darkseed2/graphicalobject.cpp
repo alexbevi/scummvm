@@ -194,11 +194,16 @@ uint32 SpriteObject::getFeetY() const {
 	return getY() + _sprite->getFeetY();
 }
 
-void SpriteObject::setScale(double scale) {
+void SpriteObject::setScale(frac_t scale) {
+	uint32 feetX = _area.left + _sprite->getFeetX();
+	uint32 feetY = _area.top  + _sprite->getFeetY();
+
 	_sprite->setScale(scale);
 
-	_area.setWidth (_sprite->getWidth());
+	_area.setWidth(_sprite->getWidth());
 	_area.setHeight(_sprite->getHeight());
+
+	moveFeetTo(feetX, feetY);
 }
 
 Sprite &SpriteObject::getSprite() {
@@ -299,7 +304,7 @@ void Animation::move(int32 x, int32 y) {
 		(*frame)->move(x, y);
 }
 
-void Animation::setScale(double scale) {
+void Animation::setScale(frac_t scale) {
 	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
 		(*frame)->setScale(scale);
 }

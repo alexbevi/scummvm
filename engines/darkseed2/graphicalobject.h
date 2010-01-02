@@ -28,6 +28,7 @@
 
 #include "common/rect.h"
 #include "common/array.h"
+#include "common/frac.h"
 
 #include "engines/darkseed2/darkseed2.h"
 
@@ -121,7 +122,7 @@ public:
 	uint32 getFeetY() const;
 
 	/** Set the sprite's scaling value. */
-	void setScale(double scale);
+	void setScale(frac_t scale);
 
 	/** Return the sprite. */
 	Sprite &getSprite();
@@ -170,7 +171,7 @@ public:
 	void move(int32 x, int32 y);
 
 	/** Set the sprite's scaling value. */
-	void setScale(double scale);
+	void setScale(frac_t scale);
 
 	/** Set the current frame. */
 	void setFrame(int frame);

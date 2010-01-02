@@ -80,42 +80,42 @@ uint32 Sprite::getWidth(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _width;
 
-	return _width * getScale();
+	return fracToInt(_width * _scale);
 }
 
 uint32 Sprite::getHeight(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _height;
 
-	return _height * getScale();
+	return fracToInt(_height * _scale);
 }
 
 uint16 Sprite::getDefaultX(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _defaultX;
 
-	return _defaultX * getScale();
+	return fracToInt(_defaultX * _scale);
 }
 
 uint16 Sprite::getDefaultY(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _defaultY;
 
-	return _defaultY * getScale();
+	return fracToInt(_defaultY * _scale);
 }
 
 uint16 Sprite::getFeetX(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _feetX;
 
-	return _feetX * getScale();
+	return fracToInt(_feetX * _scale);
 }
 
 uint16 Sprite::getFeetY(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _feetY;
 
-	return _feetY * getScale();
+	return fracToInt(_feetY * _scale);
 }
 
 Common::Rect Sprite::getArea(bool unscaled) const {
@@ -424,8 +424,8 @@ void Sprite::blit(const Sprite &from, const Common::Rect &area,
 	uint32 w = fromArea.width();
 	uint32 h = fromArea.height();
 
-	const uint32 fromTop   = fromArea.top  * from.getScaleInverse();
-	const uint32 fromLeft  = fromArea.left * from.getScaleInverse();
+	const uint32 fromTop   = fracToInt(fromArea.top  * from._scaleInverse);
+	const uint32 fromLeft  = fracToInt(fromArea.left * from._scaleInverse);
 	const uint32 fromWidth = from.getWidth(true);
 
 	const byte *src = from.getData() + fromTop * fromWidth + fromLeft;
@@ -583,17 +583,12 @@ bool Sprite::readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize) 
 	return true;
 }
 
-double Sprite::getScale() const {
-	return fracToDouble(_scale);
-}
+void Sprite::setScale(frac_t scale) {
+	assert(scale != 0);
 
-double Sprite::getScaleInverse() const {
-	return fracToDouble(_scaleInverse);
-}
-
-void Sprite::setScale(double scale) {
-	_scale        = doubleToFrac(scale);
-	_scaleInverse = doubleToFrac(1.0 / scale);
+	_scale        = scale;
+	// Is there a better way to do that? :/
+	_scaleInverse = doubleToFrac(1.0 / fracToDouble(scale));
 }
 
 } // End of namespace DarkSeed2

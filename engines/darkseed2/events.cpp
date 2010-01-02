@@ -491,6 +491,7 @@ bool Events::roomEnter() {
 
 	_vm->_mike->setVisible(true);
 	_vm->_mike->setWalkMap(room.getWalkMap());
+	_vm->_mike->setScaleFactors(room.getScaleFactors());
 
 	return true;
 }

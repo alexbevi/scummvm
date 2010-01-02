@@ -55,8 +55,12 @@ public:
 	/** Get the roon's walk map. */
 	const Sprite &getWalkMap() const;
 
+	const int32 *getScaleFactors() const;
+
 	/** Clip the rectangle to the room area. */
 	void clipToRoom(Common::Rect &rect) const;
+
+	const Common::Rect &getClipRect() const;
 
 	/** Get the room's entry logic scripts. */
 	Common::List<ScriptChunk *> &getEntryScripts();
@@ -95,7 +99,7 @@ private:
 
 	uint32 _walkMapArg1, _walkMapArg2;
 
-	int32 _scaleFactor1, _scaleFactor2, _scaleFactor3;
+	int32 _scaleFactors[3];
 
 	/** Room's entry logic. */
 	Common::List<ScriptChunk *> _entryScripts;
