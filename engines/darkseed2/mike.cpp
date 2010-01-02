@@ -401,6 +401,7 @@ int32 Mike::getStepOffsetX() const {
 		break;
 
 	default:
+		return 0;
 		break;
 	}
 
@@ -410,7 +411,7 @@ int32 Mike::getStepOffsetX() const {
 }
 
 int32 Mike::getStepOffsetY() const {
-	int32 offset;
+	int32 offset = 0;
 
 	switch (_direction) {
 	case kDirN:
@@ -438,6 +439,7 @@ int32 Mike::getStepOffsetY() const {
 		break;
 
 	default:
+		return 0;
 		break;
 	}
 
