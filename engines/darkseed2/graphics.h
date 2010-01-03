@@ -79,6 +79,7 @@ public:
 		SpriteQueue::iterator it;
 
 		SpriteRef();
+		bool isUpToDate(int32 frame, int32 x, int32 y, frac_t scale) const;
 	};
 
 	static const uint32 kScreenWidth  = 640;  ///< The screen width.
@@ -123,17 +124,9 @@ public:
 	void clearAnimations();
 
 	/** Add an animation frame to the rendering queue. */
-	void addAnimation(Animation &animation, SpriteRef &ref,
-			int32 frame = -1, int32 x = -1, int32 y = -1, bool persistent = false);
+	void addAnimation(Animation &animation, SpriteRef &ref, bool persistent = false);
 	/** Remove an animation frame from the rendering queue. */
 	void removeAnimation(SpriteRef &ref);
-
-	/** Add a room animation frame to the rendering queue. */
-	void addRoomAnimation(const Common::String &animation, SpriteRef &ref,
-			int32 frame = -1, int32 x = -1, int32 y = -1, bool persistent = false);
-
-	/** Set the scaling value of that room animation. */
-	void scaleRoomAnimation(const Common::String &animation, frac_t scale);
 
 	/** Merge the sprite's palette into the current game palette. */
 	void mergePalette(Sprite &sprite);

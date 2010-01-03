@@ -69,6 +69,24 @@ Graphics::SpriteRef::SpriteRef() {
 	empty = true;
 }
 
+bool Graphics::SpriteRef::isUpToDate(int32 frame, int32 x, int32 y, frac_t scale) const {
+	if (empty)
+		return false;
+
+	if ((frame>= 0) && (it->frame != frame))
+		return false;
+
+	if ((x >= 0) && (it->object->getX() != ((uint32) x)))
+		return false;
+	if ((y >= 0) && (it->object->getY() != ((uint32) y)))
+		return false;
+
+	if (it->object->getScale() != scale)
+		return false;
+
+	return true;
+}
+
 
 Graphics::Graphics(Resources &resources, Variables &variables, Cursors &cursors) {
 	_resources = &resources;
@@ -227,28 +245,14 @@ void Graphics::clearAnimations() {
 	}
 }
 
-void Graphics::addAnimation(Animation &animation, SpriteRef &ref,
-		int32 frame, int32 x, int32 y, bool persistent) {
-
-	if (frame < 0)
-		frame = animation.currentFrame();
-
-	if (!ref.empty && (ref.it->anim == &animation) && (ref.it->frame == frame)) {
+void Graphics::addAnimation(Animation &animation, SpriteRef &ref, bool persistent) {
+	if (!ref.empty && (ref.it->anim == &animation) && (ref.it->frame == animation.currentFrame())) {
 		// The animation is already at that frame
 		return;
 	}
 
 	// Remove the old frame
 	removeAnimation(ref);
-
-	if ((frame < 0) || (frame > 99))
-		// Broken frame number
-		return;
-
-	animation.setFrame(frame);
-
-	if ((x >= 0) && (y >= 0))
-		animation->moveFeetTo((uint32) x, (uint32) y);
 
 	uint32 layer = animation->getFeetY();
 
@@ -258,30 +262,6 @@ void Graphics::addAnimation(Animation &animation, SpriteRef &ref,
 
 	// We need to redraw that area
 	requestRedraw(animation->getArea());
-}
-
-void Graphics::addRoomAnimation(const Common::String &animation, SpriteRef &ref,
-		int32 frame, int32 x, int32 y, bool persistent) {
-
-	assert(_room);
-
-	Animation *anim = _room->getAnimation(animation);
-	if (!anim)
-		// No animation
-		return;
-
-	addAnimation(*anim, ref, frame, x, y, persistent);
-}
-
-void Graphics::scaleRoomAnimation(const Common::String &animation, frac_t scale) {
-	assert(_room);
-
-	Animation *anim = _room->getAnimation(animation);
-	if (!anim)
-		// No animation
-		return;
-
-	anim->setScale(scale);
 }
 
 void Graphics::removeAnimation(SpriteRef &ref) {

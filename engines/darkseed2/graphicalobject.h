@@ -121,6 +121,13 @@ public:
 	/** Return the sprite's feet's y coordinate. */
 	uint32 getFeetY() const;
 
+	uint32 getHeight(bool unscaled = false) const;
+
+	/** Calculate the corresponding scale value. */
+	frac_t calculateScaleVal(uint32 height);
+
+	/** Get the sprite's scaling value. */
+	frac_t getScale() const;
 	/** Set the sprite's scaling value. */
 	void setScale(frac_t scale);
 
@@ -169,6 +176,9 @@ public:
 
 	/** Move the animation relative to its current position. */
 	void move(int32 x, int32 y);
+
+	/** Calculate the corresponding scale value. */
+	frac_t calculateScaleVal(int frame, uint32 height);
 
 	/** Set the sprite's scaling value. */
 	void setScale(frac_t scale);

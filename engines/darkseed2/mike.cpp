@@ -158,8 +158,17 @@ frac_t Mike::getScale() const {
 	return _scale;
 }
 
+frac_t Mike::calculateScale(uint32 y) const {
+	frac_t scale = intToFrac(_y - _scaleFactors[0]) / _scaleFactors[1];
+
+	if (scale < 0)
+		return FRAC_ONE;
+
+	return CLIP(scale, _scaleMin, _scaleMax);
+}
+
 void Mike::updateScale() {
-	_scale = CLIP(intToFrac(_y - _scaleFactors[0]) / _scaleFactors[1], _scaleMin, _scaleMax);
+	_scale = calculateScale(_y);
 }
 
 void Mike::updateAnimPositions() {
@@ -237,7 +246,7 @@ void Mike::addSprite() {
 	if (!_visible)
 		return;
 
-	_graphics->addAnimation(_animations[_animState][_direction], _spriteRef, -1, -1, -1, true);
+	_graphics->addAnimation(_animations[_animState][_direction], _spriteRef, true);
 }
 
 void Mike::removeSprite() {

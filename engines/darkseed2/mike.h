@@ -78,6 +78,8 @@ public:
 
 	frac_t getScale() const;
 
+	frac_t calculateScale(uint32 y) const;
+
 	Direction getDirection() const;
 	void setDirection(Direction direction);
 

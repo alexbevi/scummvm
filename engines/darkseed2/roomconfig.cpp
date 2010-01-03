@@ -252,14 +252,24 @@ bool RoomConfigSprite::init() {
 			_frames[i].x = _posX[i];
 			_frames[i].y = _posY[i];
 		}
+
+		_frames[i].scale = FRAC_ONE;
 	}
 
 	_sequence.clear();
 	_posX.clear();
 	_posY.clear();
 
-	if (!_graphics->getRoom().loadAnimation(*_resources, _anim))
+	_animation = _graphics->getRoom().loadAnimation(*_resources, _anim);
+	if (!_animation)
 		return false;
+
+	for (uint i = 0; (i < _frames.size()) && (i < _scaleVal.size()) ; i++) {
+		if (_scaleVal[i] > 0)
+			_frames[i].scale = FRAC_ONE;
+			// Jack sitting on the bench has scaling values too?!?
+			// _frames[i].scale = _animation->calculateScaleVal(_frames[i].frame, _scaleVal[i]);
+	}
 
 	return true;
 }
@@ -310,9 +320,13 @@ bool RoomConfigSprite::updateStatus() {
 			_sound->playWAV(*_resources, _effects[i].effect);
 		}
 
+	_graphics->removeAnimation(_currentSprite);
+
 	if (_curPos < _frames.size()) {
-		int32 x = _frames[_curPos].x;
-		int32 y = _frames[_curPos].y;
+		int32 x      = _frames[_curPos].x;
+		int32 y      = _frames[_curPos].y;
+		int32 frame  = _frames[_curPos].frame;
+		frac_t scale = _frames[_curPos].scale;;
 
 		if (_status[0] & 8) {
 			uint32 mX, mY;
@@ -322,13 +336,25 @@ bool RoomConfigSprite::updateStatus() {
 			x = mX;
 			y = mY;
 
-			_graphics->scaleRoomAnimation(_anim, _mike->getScale());
+			scale = _mike->getScale();
+		}
 
-		} else
-			_graphics->scaleRoomAnimation(_anim, FRAC_ONE);
+		if (!_currentSprite.isUpToDate(frame, x, y, scale)) {
+			// Update animation frame
 
-		// Update animation frame
-		_graphics->addRoomAnimation(_anim, _currentSprite, _frames[_curPos].frame, x, y);
+			_graphics->removeAnimation(_currentSprite);
+
+			_animation->setFrame(_frames[_curPos].frame);
+
+			if ((x >= 0) && (y >= 0)) {
+				_animation->moveFeetTo(x, y);
+				scale = _mike->calculateScale(y);
+			}
+
+			_animation->setScale(scale);
+
+			_graphics->addAnimation(*_animation, _currentSprite);
+		}
 	}
 
 	if (++_curPos >= _frames.size()) {
@@ -370,9 +396,10 @@ bool RoomConfigSprite::parseLine(const Common::String &cmd, const Common::String
 			return false;
 
 	} else if (cmd.equalsIgnoreCase("ScaleVal")) {
-		// Unknown
+		// The frames' scaling values
 
-		_scaleVal = args;
+		if (!parsePackedIntLine(args, _scaleVal))
+			return false;
 
 	} else if (cmd.equalsIgnoreCase("PosX")) {
 		// The frames' X coordinates

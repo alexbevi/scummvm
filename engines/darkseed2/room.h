@@ -26,6 +26,8 @@
 #ifndef DARKSEED2_ROOM_H
 #define DARKSEED2_ROOM_H
 
+#include "common/frac.h"
+
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/objects.h"
 
@@ -68,11 +70,14 @@ public:
 	/** Get the specified animation. */
 	Animation *getAnimation(const Common::String &animation);
 
+	/** Set the scaling value of that animation. */
+	void scaleAnimation(const Common::String &animation, frac_t scale);
+
 	/** Empty the room. */
 	void clear();
 
 	/** Load an animation. */
-	bool loadAnimation(Resources &resources, const Common::String &base);
+	Animation *loadAnimation(Resources &resources, const Common::String &base);
 
 	/** Parse a room. */
 	bool parse(Resources &resources, const Common::String &base);

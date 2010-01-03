@@ -363,19 +363,29 @@ bool Room::setup(Resources &resources) {
 	return true;
 }
 
-bool Room::loadAnimation(Resources &resources, const Common::String &base) {
+Animation *Room::loadAnimation(Resources &resources, const Common::String &base) {
 	if (_animations.contains(base))
-		return true;
+		return _animations.getVal(base);
 
 	Animation *animation = new Animation;
 
 	if (!animation->load(resources, base)) {
 		delete animation;
-		return false;
+		return 0;
 	}
 
 	_animations.setVal(base, animation);
-	return true;
+
+	return animation;
+}
+
+void Room::scaleAnimation(const Common::String &animation, frac_t scale) {
+	Animation *anim = getAnimation(animation);
+	if (!anim)
+		// No animation
+		return;
+
+	anim->setScale(scale);
 }
 
 } // End of namespace DarkSeed2

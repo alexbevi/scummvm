@@ -29,6 +29,7 @@
 #include "common/str.h"
 #include "common/list.h"
 #include "common/rect.h"
+#include "common/frac.h"
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/graphics.h"
@@ -146,6 +147,7 @@ public:
 private:
 	struct Frame {
 		int32 frame;
+		frac_t scale;
 		int32 x;
 		int32 y;
 	};
@@ -164,11 +166,13 @@ private:
 
 	/** The animation name. */
 	Common::String _anim;
+
+	Animation *_animation;
+
 	int32 _status[6];
 	Common::Array<Frame> _frames;
 	Common::Array<Effect> _effects;
 
-	Common::String _scaleVal;
 	Common::String _loadCond;
 	Common::String _changeAt;
 	Common::String _speech;
@@ -183,6 +187,7 @@ private:
 	Common::Array<int32> _sequence;
 	Common::Array<int32> _posX;
 	Common::Array<int32> _posY;
+	Common::Array<int32> _scaleVal;
 
 	/** The current position within the sequence. */
 	uint32 _curPos;

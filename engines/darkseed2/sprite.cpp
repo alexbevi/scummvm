@@ -583,6 +583,10 @@ bool Sprite::readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize) 
 	return true;
 }
 
+frac_t Sprite::getScale() const {
+	return _scale;
+}
+
 void Sprite::setScale(frac_t scale) {
 	assert(scale != 0);
 

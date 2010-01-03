@@ -133,6 +133,8 @@ public:
 	void drawStrings(const Common::StringList &strings, const ::Graphics::Font &font,
 			int x, int y, byte color);
 
+	/** Get the scaling value. */
+	frac_t getScale() const;
 	/** Set the scaling value. */
 	void setScale(frac_t scale);
 
