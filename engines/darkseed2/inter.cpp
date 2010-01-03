@@ -152,6 +152,8 @@ bool ScriptInterpreter::updateStatus() {
 bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks) {
 	bool queued = false;
 
+	_vm->_variables->reRollRandom();
+
 	// Push the first script with met conditions into the queue
 	for (Common::List<ScriptChunk *>::iterator it = chunks.begin(); it != chunks.end(); ++it) {
 		if ((*it)->conditionsMet() && _vm->_events->cameFrom((*it)->getFrom())) {

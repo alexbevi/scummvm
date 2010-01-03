@@ -92,6 +92,8 @@ public:
 private:
 	MidiDriver *_midiDriver;
 
+	Common::RandomSource *_rnd;
+
 	// Engine APIs
 	virtual Common::Error run();
 	virtual bool hasFeature(EngineFeature f) const;

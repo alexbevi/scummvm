@@ -30,6 +30,8 @@
 
 #include "common/config-manager.h"
 
+#include "common/EventRecorder.h"
+
 #include "sound/mixer.h"
 #include "sound/mididrv.h"
 
@@ -81,6 +83,9 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	_roomConfMan = 0;
 	_inter       = 0;
 	_events      = 0;
+
+	_rnd = new Common::RandomSource();
+	g_eventRec.registerRandomSource(*_rnd, "ds2");
 }
 
 DarkSeed2Engine::~DarkSeed2Engine() {
@@ -105,6 +110,8 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 	delete _options;
 
 	delete _midiDriver;
+
+	delete _rnd;
 }
 
 Common::Error DarkSeed2Engine::run() {
@@ -153,7 +160,7 @@ bool DarkSeed2Engine::init() {
 
 	_options     = new Options();
 	_cursors     = new Cursors("dark0001.exe");
-	_variables   = new Variables();
+	_variables   = new Variables(*_rnd);
 	_resources   = new Resources();
 	_sound       = new Sound(*_mixer, *_variables);
 	_music       = new Music(*_mixer, *_midiDriver);

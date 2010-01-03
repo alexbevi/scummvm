@@ -31,7 +31,7 @@
 
 namespace DarkSeed2 {
 
-Variables::Variables() {
+Variables::Variables(Common::RandomSource &rnd) : _rnd(&rnd) {
 }
 
 Variables::~Variables() {
@@ -85,6 +85,11 @@ uint8 Variables::get(const Common::String &var, uint8 def) const {
 
 uint32 Variables::getLastChanged() const {
 	return _lastChanged;
+}
+
+void Variables::reRollRandom() {
+	set("SysRandom", _rnd->getRandomNumber(1));
+	set("SysRandom4", _rnd->getRandomNumber(4));
 }
 
 bool Variables::loadFromIDX(Common::SeekableReadStream &idx) {

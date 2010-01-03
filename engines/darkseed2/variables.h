@@ -46,7 +46,7 @@ class Resource;
 
 class Variables {
 public:
-	Variables();
+	Variables(Common::RandomSource &rnd);
 	~Variables();
 
 	/** Remove all variables. */
@@ -64,6 +64,9 @@ public:
 
 	/** When was a variable change last? */
 	uint32 getLastChanged() const;
+
+	/** Assign new random values to the special random variables. */
+	void reRollRandom();
 
 	/** Load initial variable values from an IDX file. */
 	bool loadFromIDX(Common::SeekableReadStream &idx);
@@ -84,6 +87,8 @@ public:
 
 private:
 	typedef Common::HashMap<Common::String, uint8, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> VarMap;
+
+	Common::RandomSource *_rnd;
 
 	VarMap _variables;      ///< The variables.
 	VarMap _localVariables; ///< The local variables.
