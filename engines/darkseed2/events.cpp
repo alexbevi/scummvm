@@ -36,6 +36,7 @@
 #include "engines/darkseed2/script.h"
 #include "engines/darkseed2/inter.h"
 #include "engines/darkseed2/movie.h"
+#include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/mike.h"
 
 namespace DarkSeed2 {
@@ -500,6 +501,8 @@ bool Events::roomEnter() {
 }
 
 void Events::roomLeave() {
+	_vm->_sound->stopAll();
+
 	_vm->_mike->setWalkMap();
 
 	_vm->_graphics->unregisterBackground();
