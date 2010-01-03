@@ -1444,8 +1444,7 @@ void Game::loopInterfaceCollide() {
 			_settings.mouseState = 0; // Walk
 		}
 
-	} else {
-		if (_player.command == CMD_USE) {
+	} else if (_player.command == CMD_USE) {
 
 			if (_settings.collideChar >= 0 &&
 				_settings.collideCharZ < _settings.collideObjZ) {
@@ -1464,15 +1463,15 @@ void Game::loopInterfaceCollide() {
 				_settings.mouseState = 0; // Walk
 			}
 
-		} else if (_player.command == CMD_FIGHT ||
-		           _player.command == CMD_CAST_SPELL) {
-			if (_settings.collideChar < 0)
-				_settings.mouseState = 0; // Walk
-			else {
-				_settings.overType = 2;
-				_settings.overNum = _settings.collideChar;
-				_settings.mouseState = 3; // Hotspot
-			}
+	} else if (_player.command == CMD_FIGHT ||
+			   _player.command == CMD_CAST_SPELL) {
+
+		if (_settings.collideChar < 0)
+			_settings.mouseState = 0; // Walk
+		else {
+			_settings.overType = 2;
+			_settings.overNum = _settings.collideChar;
+			_settings.mouseState = 3; // Hotspot
 		}
 	}
 }
