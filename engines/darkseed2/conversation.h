@@ -48,8 +48,6 @@ public:
 	/** Discard the conversation. */
 	void clear();
 
-	/** Parse a conversation out of a DAT file. */
-	bool parse(DATFile &conversation);
 	/** Parse a conversation out of a resource. */
 	bool parse(Resources &resources, const Common::String &convName);
 
@@ -143,6 +141,8 @@ private:
 	/** Was everything set up so that the conversation can be held? */
 	bool _ready;
 
+	Common::String _name; ///< The name of the current conversation.
+
 	// Nodes
 	NodeMap _nodes;       ///< All nodes.
 	Node   *_startNode;   ///< The starting node.
@@ -168,6 +168,9 @@ private:
 	void assign(const Assign &entry);
 	void assign(const Common::Array<Assign> &entries);
 	bool goTo(const Common::Array<Action> &node);
+
+	/** Parse a conversation out of a DAT file. */
+	bool parse(DATFile &conversation, const Common::String &convName = "");
 
 	// Parsing helpers
 	bool addSpeaker(const Common::String &args);

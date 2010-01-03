@@ -78,6 +78,8 @@ void Conversation::clear() {
 		delete n->_value;
 	}
 
+	_name.clear();
+
 	_nodes.clear();
 
 	_ready = false;
@@ -86,8 +88,10 @@ void Conversation::clear() {
 	_speakers.clear();
 }
 
-bool Conversation::parse(DATFile &conversation) {
+bool Conversation::parse(DATFile &conversation, const Common::String &convName) {
 	clear();
+
+	_name = convName;
 
 	const Common::String *cmd, *args;
 	while (conversation.nextLine(cmd, args)) {
@@ -133,7 +137,7 @@ bool Conversation::parse(Resources &resources, const Common::String &convName) {
 	Resource *resource = resources.getResource(convName + ".TXT");
 	DATFile conversation(*resource);
 
-	bool result = parse(conversation);
+	bool result = parse(conversation, convName);
 
 	delete resource;
 
@@ -184,8 +188,11 @@ bool Conversation::handleAssign(Entry &entry, const Common::String &args, uint8 
 	Common::Array<Common::String> lArgs = DATFile::argGet(args);
 
 	if (lArgs.size() != 2) {
-		warning("Conversation::handleAssign(): Broken arguments");
-		return false;
+		// WORKAROUND: CONV0011 has a partly malformed assign string
+		if (!_name.equalsIgnoreCase("CONV0011")) {
+			warning("Conversation::handleAssign(): Broken arguments");
+			return false;
+		}
 	}
 
 	if (lArgs[0].equalsIgnoreCase("speaker")) {
