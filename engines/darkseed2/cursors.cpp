@@ -34,6 +34,7 @@ namespace DarkSeed2 {
 #include "engines/darkseed2/cursordata.h"
 
 Cursors::Cursors(const Common::String &exe) {
+	// Loading the default pointer cursor from static memory
 	_defaultResource = new NECursor;
 
 	_defaultResource->setDimensions(staticCursorPointer.width   , staticCursorPointer.height  );
@@ -46,6 +47,7 @@ Cursors::Cursors(const Common::String &exe) {
 	assert(loaded);
 
 	if (!exe.empty()) {
+		// Loading the rest of the cursors out of the EXE resource table
 		loaded = loadFromNEEXE(exe);
 		assert(loaded);
 	}
@@ -125,9 +127,11 @@ bool Cursors::setPalette(const Palette &palette) {
 bool Cursors::loadFromNEEXE(const Common::String &exe) {
 	NEResources resources;
 
+	// Load the resources from the EXE
 	if (!resources.loadFromEXE(exe))
 		return false;
 
+	// Convert cursor resources to usable cursors
 	const Common::Array<NECursorGroup> &cursorGroups = resources.getCursors();
 	Common::Array<NECursorGroup>::const_iterator cursorGroup;
 	for (cursorGroup = cursorGroups.begin(); cursorGroup != cursorGroups.end(); ++cursorGroup) {
@@ -147,12 +151,14 @@ bool Cursors::loadFromNEEXE(const Common::String &exe) {
 }
 
 bool Cursors::loadFromResource(Cursor &cursor, const NECursor &resource) {
+	// Load image
 	cursor.sprite = new Sprite;
 	if (!cursor.sprite->loadFromCursorResource(resource)) {
 		delete cursor.sprite;
 		return false;
 	}
 
+	// Copy properties
 	cursor.width    = resource.getWidth();
 	cursor.height   = resource.getHeight();
 	cursor.hotspotX = resource.getHotspotX();

@@ -59,26 +59,34 @@ class Cursors;
 
 class Graphics {
 public:
+	/** An entry in the sprite queue. */
 	struct SpriteQueueEntry {
-		Animation *anim;
-		SpriteObject *object;
-		bool persistent;
-		uint32 layer;
-		int frame;
+		bool persistent; ///< Is the sprite persistent or should it be removed on room change?
+
+		Animation    *anim;    ///< The animation the sprite is from.
+		SpriteObject *object; ///< The object the sprite belongs to.
+
+		uint32 layer; ///< The drawing layer the sprite is on.
+		int    frame; ///< The current frame within the animation.
 
 		SpriteQueueEntry();
 		SpriteQueueEntry(Animation &a, uint32 l, bool per);
 
+		/** SpriteQueueEntrys are sortable by layer. */
 		bool operator<(const SpriteQueueEntry &right) const;
 	};
 
+	/** A sprite queue. */
 	typedef SortedList<SpriteQueueEntry> SpriteQueue;
 
+	/** A reference to a specific sprite within the sprite queue. */
 	struct SpriteRef {
-		bool empty;
-		SpriteQueue::iterator it;
+		bool empty; ///< Empty reference?
+
+		SpriteQueue::iterator it; ///< The iterator within the sprite queue the reference refers to.
 
 		SpriteRef();
+		/** Is the sprite up-to-date with the information in the parameters? */
 		bool isUpToDate(int32 frame, int32 x, int32 y, frac_t scale) const;
 	};
 
@@ -106,8 +114,10 @@ public:
 	/** Change the game palette. */
 	void setPalette(const Palette &pal);
 
+	/** Enter a special mode for movie playback. */
 	void enterMovieMode();
 
+	/** Leave the special movie mode. */
 	void leaveMovieMode();
 
 	/** Assert that palette entry 0 is black, after the palette
@@ -158,10 +168,10 @@ private:
 	Room            *_room;            ///< The current room.
 
 	Palette _gamePalette; ///< The game palette.
-	Sprite _screen;       ///< The game screen.
+	Sprite  _screen;      ///< The game screen.
 
+	bool                       _dirtyAll;   ///< Whole screen dirty?
 	Common::List<Common::Rect> _dirtyRects; ///< The dirty rectangles.
-	bool _dirtyAll;                         ///< Whole screen dirty?
 
 	const Sprite *_background; ///< The current background.
 

@@ -63,6 +63,7 @@ void Room::clear() {
 	if (_confMan)
 		_confMan->deinitRoom();
 
+	// Remove graphics
 	_graphics->clearAnimations();
 	_graphics->unregisterBackground();
 

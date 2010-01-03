@@ -66,8 +66,6 @@ Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
 	_vm->_cursors->setVisible(true);
 
 	_changeRoom = false;
-
-	_showMike = false;
 }
 
 Events::~Events() {
@@ -75,6 +73,7 @@ Events::~Events() {
 }
 
 bool Events::setupIntroSequence() {
+	// Restricting the cursors in the intro
 	_canSwitchCursors = false;
 
 	_cursorMode   = kCursorModeUse;
@@ -487,6 +486,7 @@ bool Events::roomEnter() {
 	// Look for the autostart object
 	findAutoStart(room);
 
+	// Update Mike
 	_vm->_mike->setVisible(true);
 	_vm->_mike->setWalkMap(room.getWalkMap());
 	_vm->_mike->setScaleFactors(room.getScaleFactors());
@@ -494,6 +494,7 @@ bool Events::roomEnter() {
 	// Evaluate the room config, to get the initial room sprites set up
 	_vm->_roomConfMan->updateStatus();
 
+	// Allow for the transition movie to play at once
 	for (int i = 0; (i < 10) && !_vm->_movie->isPlaying(); i++)
 		_vm->_inter->updateStatus();
 
@@ -501,14 +502,20 @@ bool Events::roomEnter() {
 }
 
 void Events::roomLeave() {
+	// Stop all sounds
 	_vm->_sound->stopAll();
 
+	// Reset Mike
 	_vm->_mike->setWalkMap();
 
+	// Clear graphics
 	_vm->_graphics->unregisterBackground();
+	// Clear scripts
 	_vm->_inter->clear();
+	// Clear room
 	_vm->_graphics->getRoom().clear();
 
+	// No last object
 	_lastObject = 0;
 }
 

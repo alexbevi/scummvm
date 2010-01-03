@@ -45,68 +45,86 @@ class Sprite;
 
 class Mike {
 public:
+	/** The resolution of a walk map tile in pixels. */
 	static const uint32 kWalkMapResolution = 10;
+	/** The width of the walk map. */
 	static const uint32 kWalkMapWidth      = Graphics::kScreenWidth  / kWalkMapResolution;
+	/** The height of the walk map. */
 	static const uint32 kWalkMapHeight     = Graphics::kScreenHeight / kWalkMapResolution;
 
+	/** A direction. */
 	enum Direction {
-		kDirN = 0,
-		kDirNE,
-		kDirE,
-		kDirSE,
-		kDirS,
-		kDirSW,
-		kDirW,
-		kDirNW,
-		kDirNone
+		kDirN = 0, ///< North.
+		kDirNE,    ///< North-East.
+		kDirE,     ///< East.
+		kDirSE,    ///< South-East.
+		kDirS,     ///< South.
+		kDirSW,    ///< South-West.
+		kDirW,     ///< West.
+		kDirNW,    ///< North-West.
+		kDirNone   ///< No direction.
 	};
 
 	Mike(Resources &resources, Variables &variables, Graphics &graphics);
 	~Mike();
 
-	Common::Rect getArea() const;
-
+	/** Initialize Mike. */
 	bool init();
 
+	/** Is Mike busy (not idly standing around)? */
 	bool isBusy() const;
 
+	/** Is Mike visible? */
 	bool isVisible();
+	/** Set Mike visibility. */
 	void setVisible(bool visible);
 
+	/** Set Mike's position. */
 	void getPosition(uint32 &x, uint32 &y) const;
+	/** Get Mike's position. */
 	void setPosition(uint32 x, uint32 y);
 
+	/** Get Mike's current scaling value. */
 	frac_t getScale() const;
 
+	/** Calculate the scaling value of an object in the given y coordinate with the current scaling factors. */
 	frac_t calculateScale(uint32 y) const;
 
+	/** Get Mike's current direction. */
 	Direction getDirection() const;
+	/** Set Mike's current direction. */
 	void setDirection(Direction direction);
 
 	/** Check for status changes. */
 	void updateStatus();
 
+	/** Reset the walk map. */
 	void setWalkMap();
+	/** Set the walk map. */
 	void setWalkMap(const Sprite &walkMap);
 
+	/** Set the scaling factors. */
 	void setScaleFactors(const int32 *scaleFactors);
 
+	/** Get the walk map data in that coordinate. */
 	byte getWalkData(uint32 x, uint32 y) const;
 
 	/** Walk to a specific position. */
 	void go(uint32 x, uint32 y, Direction direction);
 
 private:
+	/** Mike's state. */
 	enum State {
-		kStateIdle,
-		kStateWalking,
-		kStateTurning
+		kStateIdle,    ///< Idling standing by.
+		kStateWalking, ///< Walking somewhere.
+		kStateTurning  ///< Turning around.
 	};
 
+	/** The animation state Mike's currently in. */
 	enum AnimState {
-		kAnimStateStanding = 0,
-		kAnimStateWalking,
-		kAnimStateNone
+		kAnimStateStanding = 0, ///< Standing.
+		kAnimStateWalking,      ///< Walking.
+		kAnimStateNone          ///< No/Invalid state.
 	};
 
 	Resources *_resources;
@@ -116,38 +134,31 @@ private:
 	/** Is Mike visible? */
 	bool _visible;
 
-	/** The current position's x coordinate. */
-	uint32 _x;
-	/** The current position's y coordinate. */
-	uint32 _y;
+	// Current position
+	uint32    _x;         ///< Mike's current x position.
+	uint32    _y;         ///< Mike's current y position.
+	Direction _direction; ///< Mike's current direction.
 
-	/** Our target's x coordinate. */
-	uint32 _targetX;
-	/** Our target's y coordinate. */
-	uint32 _targetY;
-	/** Our target's direction. */
-	Direction _targetDirection;
+	// Targeting
+	uint32    _targetX;         ///< Our target's x coordinate
+	uint32    _targetY;         ///< Our target's y coordinate.
+	Direction _targetDirection; ///< Our target's direction.
 
+	/** The direction to turn to. */
 	Direction _turnTo;
 
 	byte _walkMap[kWalkMapWidth * kWalkMapHeight];
 
-	int32 _scaleFactors[3];
-
-	frac_t _scale;
-	frac_t _scaleMin;
-	frac_t _scaleMax;
+	int32  _scaleFactors[3]; ///< The scaling factors.
+	frac_t _scale;           ///< The current scaling value.
+	frac_t _scaleMin;        ///< Minimal scaling.
+	frac_t _scaleMax;        ///< Maximal scaling.
 
 	/** All animations. */
 	Animation _animations[kAnimStateNone][kDirNone];
 
-	/** The current animation state. */
-	AnimState _animState;
-	/** The current animation direction. */
-	Direction _direction;
-
-	/** The current state. */
-	State _state;
+	State     _state;     ///< The current state. */
+	AnimState _animState; ///< The current animation state. */
 
 	/** The reference to the sprite in the rendering queue. */
 	Graphics::SpriteRef _spriteRef;

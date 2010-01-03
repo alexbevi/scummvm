@@ -60,7 +60,7 @@ public:
 
 private:
 	const byte *_foreignData; ///< Static foreign data.
-	byte *_ownData;           ///< Self-managed data.
+	      byte *_ownData;     ///< Self-managed data.
 
 	uint32 _size; ///< Size of the data in bytes
 	Common::MemoryReadStream *_stream; ///< The stream.
@@ -92,9 +92,10 @@ private:
 	struct Glue {
 		Common::String fileName; ///< File name.
 
-		byte *data;                       ///< File data.
+		uint32 size; ///< File size.
+		byte  *data; ///< File data.
+
 		Common::MemoryReadStream *stream; ///< Stream to the file data.
-		uint32 size;                      ///< File size.
 
 		bool indexed; ///< Have we indexed that glue yet?
 
@@ -104,9 +105,11 @@ private:
 
 	/** Information about a resource. */
 	struct Res {
-		Glue *glue;      ///< Pointer to its glue file.
-		uint32 offset;   ///< Offset within the glue file.
-		uint32 size;     ///< Size in bytes.
+		Glue *glue; ///< Pointer to its glue file.
+
+		uint32 offset; ///< Offset within the glue file.
+		uint32 size;   ///< Size in bytes.
+
 		byte unknown[8];
 
 		bool indexed; ///< Have we indexed that resource yet?

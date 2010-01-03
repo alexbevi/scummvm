@@ -71,19 +71,25 @@ Graphics::SpriteRef::SpriteRef() {
 
 bool Graphics::SpriteRef::isUpToDate(int32 frame, int32 x, int32 y, frac_t scale) const {
 	if (empty)
+		// Empty reference => Not up-to-date
 		return false;
 
-	if ((frame>= 0) && (it->frame != frame))
+	if ((frame >= 0) && (it->frame != frame))
+		// Frames don't match => Not up-to-date
 		return false;
 
 	if ((x >= 0) && (it->object->getX() != ((uint32) x)))
+		// X positions don't match => Not up-to-date
 		return false;
 	if ((y >= 0) && (it->object->getY() != ((uint32) y)))
+		// Y positions don't match => Not up-to-date
 		return false;
 
 	if (it->object->getScale() != scale)
+		// Scalings don't match => Not up-to-date
 		return false;
 
+	// Must be up-to-date then
 	return true;
 }
 
@@ -118,12 +124,15 @@ Graphics::~Graphics() {
 void Graphics::init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie) {
 	_movie = &movie;
 
+	// Init conversation box
 	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager);
 	_conversationBox->move(kConversationX, kConversationY);
 
+	// Init inventory box
 	_inventoryBox = new InventoryBox(*_resources, *_variables, *this, talkManager, *_cursors);
 	_inventoryBox->move(kInventoryX, kInventoryY);
 
+	// Init room
 	_room = new Room(*_variables, *this);
 	_room->registerConfigManager(roomConfigManager);
 
@@ -254,6 +263,7 @@ void Graphics::addAnimation(Animation &animation, SpriteRef &ref, bool persisten
 	// Remove the old frame
 	removeAnimation(ref);
 
+	// The vertical position of the feet dictates the layer, and therefore the drawing order
 	uint32 layer = animation->getFeetY();
 
 	// Push it into the queue
@@ -266,6 +276,7 @@ void Graphics::addAnimation(Animation &animation, SpriteRef &ref, bool persisten
 
 void Graphics::removeAnimation(SpriteRef &ref) {
 	if (ref.empty)
+		// Nothing to do
 		return;
 
 	if (ref.it->object)
@@ -282,11 +293,14 @@ void Graphics::removeAnimation(SpriteRef &ref) {
 void Graphics::mergePalette(Sprite &from) {
 	debugC(2, kDebugGraphics, "Merging palettes");
 
+	// Merge the palette
 	Common::Array<byte> changeSet = _gamePalette.merge(from.getPalette(), true);
 
+	// Apply the change set
 	from.applyChangeSet(changeSet);
-	applyGamePalette();
 
+	// Apply the palette and mark the whole screen as dirty
+	applyGamePalette();
 	dirtyAll();
 }
 
@@ -392,7 +406,7 @@ void Graphics::registerBackground(const Sprite &background) {
 
 void Graphics::unregisterBackground() {
 	_background = 0;
-	requestRedraw();
+	dirtyAll();
 }
 
 void Graphics::requestRedraw() {

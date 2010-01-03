@@ -85,6 +85,8 @@ public:
 	void updateStatus();
 
 private:
+	static const int kChannelCount = 8; ///< Number of usable channels.
+
 	/** A sound channel. */
 	struct SoundChannel {
 		/** The sound handle. */
@@ -100,12 +102,10 @@ private:
 	Audio::Mixer *_mixer;
 	Variables *_variables;
 
-	static const int _channelCount = 8; ///< Number of usable channels.
-
 	int _id; ///< The next ID.
 
 	/** All sound channels. */
-	SoundChannel _channels[_channelCount];
+	SoundChannel _channels[kChannelCount];
 };
 
 } // End of namespace DarkSeed2

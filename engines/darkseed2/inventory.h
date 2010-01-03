@@ -50,10 +50,9 @@ public:
 		/** The conditions needed to be met for the look to be active. */
 		Common::List<Common::String> conditions;
 
-		/** The name of the sprite. */
-		Common::String spriteName;
+		Common::String spriteName; ///< The name of the sprite.
+		const Sprite  *sprite;     ///< The item's sprite.
 
-		const Sprite *sprite; ///< The item's sprite.
 		Common::String text;  ///< The text to be spooken.
 	};
 
@@ -62,22 +61,19 @@ public:
 		/** The conditions needed to be met for the use to be active. */
 		Common::List<Common::String> conditions;
 
-		/** The name of the cursor. */
-		Common::String cursorName;
+		Common::String         cursorName; ///< The name of the cursor.
+		const Cursors::Cursor *cursor;     ///< The item's cursor.
 
-		const Cursors::Cursor *cursor;        ///< The item's cursor.
 		Common::List<Common::String> changes; ///< The changes brought in by the use.
 	};
 
 	/** An item. */
 	struct Item {
-		/** All looks for this item. */
-		Common::Array<ItemLook> looks;
-		/** All uses for this item. */
-		Common::Array<ItemUse>  uses;
+		Common::Array<ItemLook> looks; ///< All looks for this item.
+		Common::Array<ItemUse>  uses;  ///< All uses for this item.
 
-		ItemLook *curLook; ///< The currently active look, or 0 if none. */
-		ItemUse  *curUse;  ///< The currently active use, or 0 if none. */
+		ItemLook *curLook; ///< The currently active look, or 0 if none.
+		ItemUse  *curUse;  ///< The currently active use, or 0 if none.
 	};
 
 	Inventory(Resources &resources, Variables &variables, Graphics &graphics, Cursors &cursors);

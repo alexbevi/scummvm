@@ -121,8 +121,6 @@ public:
 	/** Return the sprite's feet's y coordinate. */
 	uint32 getFeetY() const;
 
-	uint32 getHeight(bool unscaled = false) const;
-
 	/** Calculate the corresponding scale value. */
 	frac_t calculateScaleVal(uint32 height);
 

@@ -75,27 +75,26 @@ private:
 
 	bool _inIntro; ///< Currently in the intro?
 
-	bool _canSwitchCursors; ///< Is cursor mode switching allowed?
-
-	ModeCursors *_cursors;  ///< The cursors.
-	CursorMode _cursorMode; ///< The current cursor mode.
-	bool _cursorActive;     ///< Currently in a hotspot?
+	// Cursors
+	bool         _canSwitchCursors; ///< Is cursor mode switching allowed?
+	bool         _cursorActive;     ///< Currently in a hotspot?
+	CursorMode   _cursorMode;       ///< The current cursor mode.
+	ModeCursors *_cursors;          ///< The cursors.
 
 	SpriteObject _titleSprites[4]; ///< Title elements.
 
-	Common::String _lastRoom;
-	Common::String _nextRoom;
-	bool _changeRoom;
+	// Room changing
+	bool           _changeRoom; ///< Do we need to change the room?
+	Common::String _lastRoom;   ///< The room we came from.
+	Common::String _nextRoom;   ///< The room to change to.
 
-	Object *_lastObject;
-
-	bool _showMike;
+	Object *_lastObject; ///< The object the last action was done upon.
 
 	// Item usage
-	bool _itemMode;                     ///< Currently in item mode?
+	bool                   _itemMode;   ///< Currently in item mode?
+	ObjectVerb             _itemVerb;   ///< The verb that triggered the object mode.
+	InventoryBox::ItemRef  _itemRef;    ///< A reference to the active item.
 	const Cursors::Cursor *_itemCursor; ///< The item's cursor.
-	InventoryBox::ItemRef _itemRef;     ///< A reference to the active item.
-	ObjectVerb _itemVerb;               ///< The verb that triggered the object mode.
 
 	/** Handle user input. */
 	void handleInput();

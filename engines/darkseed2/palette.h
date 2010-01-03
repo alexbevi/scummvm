@@ -48,10 +48,14 @@ public:
 	/** Number of entries filled. */
 	int getSize() const;
 
+	/** Return the complete palette data. */
 	byte *get();
+	/** Return the complete palette data. */
 	const byte *get() const;
 
+	/** Return a specific palette index. */
 	byte &operator[](int n);
+	/** Return a specific palette index. */
 	const byte &operator[](int n) const;
 
 	/** Clear the palette. */
@@ -76,14 +80,14 @@ public:
 private:
 	/** A palettes comparison match. */
 	struct Match {
-		byte index1; ///< Color index in the first palette.
-		byte index2; ///< Color index in the second palette.
-		uint32 diff; ///< Difference between the two colors.
+		byte   index1; ///< Color index in the first palette.
+		byte   index2; ///< Color index in the second palette.
+		uint32 diff;   ///< Difference between the two colors.
 
 		bool operator<(const Match &match) const;
 	};
 
-	int _size;          ///< Number of indices filled.
+	int  _size;         ///< Number of indices filled.
 	byte _palette[768]; ///< The palette data.
 
 	/** Add another palette to the back. */

@@ -86,7 +86,7 @@ private:
 	/** A variable assignment action. */
 	struct Assign {
 		Common::String variable; ///< The variable name.
-		uint8 value;             ///< The new value.
+		uint8          value;    ///< The new value.
 
 		Assign(const Common::String &var = "", const Common::String &val = "");
 	};
@@ -126,7 +126,7 @@ private:
 		/** Name of the node to fall through. */
 		Common::String fallthrough;
 
-		EntryMap entries;        ///< Entries mapped by name.
+		EntryMap  entries;       ///< Entries mapped by name.
 		EntryList sortedEntries; ///< Entries sorted by occurence in the file.
 
 		Common::String name; ///< The name of the node.
@@ -143,9 +143,10 @@ private:
 	/** Was everything set up so that the conversation can be held? */
 	bool _ready;
 
-	NodeMap _nodes;     ///< All nodes.
-	Node *_startNode;   ///< The starting node.
-	Node *_currentNode; ///< The current node.
+	// Nodes
+	NodeMap _nodes;       ///< All nodes.
+	Node   *_startNode;   ///< The starting node.
+	Node   *_currentNode; ///< The current node.
 
 	/** The people active in the conversation. */
 	Common::Array<Common::String> _speakers;

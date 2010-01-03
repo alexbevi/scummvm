@@ -40,7 +40,7 @@ Sound::Sound(Audio::Mixer &mixer, Variables &variables) {
 
 	_id = 0;
 
-	for (int i = 0 ; i < _channelCount; i++) {
+	for (int i = 0 ; i < kChannelCount; i++) {
 		_channels[i].id = -1;
 		_channels[i].speech = false;
 	}
@@ -55,7 +55,7 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 
 	// Try to find an unoccupied channel
 	SoundChannel *channel = 0;
-	for (int i = 0 ; i < _channelCount; i++)
+	for (int i = 0 ; i < kChannelCount; i++)
 		if (!_mixer->isSoundHandleActive(_channels[i].handle)) {
 			channel = &_channels[i];
 			break;
@@ -162,12 +162,12 @@ void Sound::stopAll() {
 	debugC(-1, kDebugSound, "Stopping all sounds");
 
 	// Stopping all channels
-	for (int i = 0; i < _channelCount; i++)
+	for (int i = 0; i < kChannelCount; i++)
 		_mixer->stopHandle(_channels[i].handle);
 }
 
 void Sound::pauseAll(bool pause) {
-	for (int i = 0; i < _channelCount; i++) {
+	for (int i = 0; i < kChannelCount; i++) {
 		SoundChannel &channel = _channels[i];
 
 		if (channel.id >= 0)
@@ -179,7 +179,7 @@ void Sound::signalSpeechEnd(int id) {
 	if (id == -1)
 		return;
 
-	for (int i = 0; i < _channelCount; i++) {
+	for (int i = 0; i < kChannelCount; i++) {
 		SoundChannel &channel = _channels[i];
 
 		if ((channel.id == id) && channel.speech) {
@@ -197,7 +197,7 @@ bool Sound::setSoundVar(int id, const Common::String &soundVar) {
 	if (id == -1)
 		return false;
 
-	for (int i = 0; i < _channelCount; i++) {
+	for (int i = 0; i < kChannelCount; i++) {
 		SoundChannel &channel = _channels[i];
 
 		if (channel.id == id)
@@ -208,7 +208,7 @@ bool Sound::setSoundVar(int id, const Common::String &soundVar) {
 }
 
 void Sound::updateStatus() {
-	for (int i = 0; i < _channelCount; i++) {
+	for (int i = 0; i < kChannelCount; i++) {
 		SoundChannel &channel = _channels[i];
 		if (!_mixer->isSoundHandleActive(channel.handle)) {
 			if (!channel.soundVar.empty() && channel.speech)

@@ -90,7 +90,7 @@ static const DS2GameDescription fallbackDescs[] = {
 };
 
 static const ADFileBasedFallback fileBased[] = {
-	{ &fallbackDescs[ 0], { "gfile.hdr", 0 } },
+	{ &fallbackDescs[ 0], { "gfile.hdr", "dark0001.exe", 0 } },
 	{ 0, { 0 } }
 };
 

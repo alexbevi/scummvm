@@ -106,7 +106,9 @@ public:
 	/** Load from a cursor resource embedded in an EXE file. */
 	bool loadFromCursorResource(const NECursor &cursor);
 
+	/** Flip the sprite horizontally. */
 	void flipHorizontally();
+	/** Flip the sprite vertically. */
 	void flipVertically();
 
 	/** Blit that sprite onto this sprite. */
@@ -141,7 +143,7 @@ public:
 private:
 	uint32 _width;  ///< The sprite's width.
 	uint32 _height; ///< The sprite's height.
-	byte *_data;    ///< The sprite's data.
+	byte  *_data;   ///< The sprite's data.
 
 	uint16 _defaultX; ///< The sprite's default X coordinate.
 	uint16 _defaultY; ///< The sprite's default Y coordinate.

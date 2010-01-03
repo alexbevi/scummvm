@@ -232,6 +232,7 @@ bool NEResources::readResourceTable(uint32 offset) {
 
 			Resource &res = _resources.back();
 
+			// Resource properties
 			res.offset = _exe.readUint16LE() * align;
 			res.size   = _exe.readUint16LE() * align;
 			res.flags  = _exe.readUint16LE();

@@ -194,10 +194,6 @@ uint32 SpriteObject::getFeetY() const {
 	return getY() + _sprite->getFeetY();
 }
 
-uint32 SpriteObject::getHeight(bool unscaled) const {
-	return _sprite->getHeight(unscaled);
-}
-
 frac_t SpriteObject::getScale() const {
 	return _sprite->getScale();
 }
@@ -208,16 +204,21 @@ frac_t SpriteObject::calculateScaleVal(uint32 height) {
 
 void SpriteObject::setScale(frac_t scale) {
 	if (scale == _sprite->getScale())
+		// Nothing to do
 		return;
 
+	// Remember the current feet position
 	uint32 feetX = _area.left + _sprite->getFeetX();
 	uint32 feetY = _area.top  + _sprite->getFeetY();
 
+	// Scale
 	_sprite->setScale(scale);
 
+	// Update the drawing area
 	_area.setWidth(_sprite->getWidth());
 	_area.setHeight(_sprite->getHeight());
 
+	// Move the feet back to their original position
 	moveFeetTo(feetX, feetY);
 }
 
@@ -356,7 +357,7 @@ void Animation::operator++(int) {
 }
 
 void Animation::operator--(int) {
-	nextFrame();
+	previousFrame();
 }
 
 const Common::String &Animation::getName() const {

@@ -77,6 +77,7 @@ private:
 	Common::String _name;       ///< The line's name.
 	Common::String _speaker;    ///< The line's speaker.
 	uint8          _speakerNum; ///< The line's speaker's number.
+
 	Resource *_wav;      ///< The WAV.
 	Common::String _txt; ///< The TXT.
 };

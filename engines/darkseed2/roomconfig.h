@@ -145,16 +145,18 @@ public:
 
 	bool parseLine(const Common::String &cmd, const Common::String &args);
 private:
+	/** A sprite animation frame. */
 	struct Frame {
-		int32 frame;
-		frac_t scale;
-		int32 x;
-		int32 y;
+		int32  frame; ///< The frame number.
+		frac_t scale; ///< The sprite's scaling value.
+		int32  x;     ///< The sprite's x coordinate.
+		int32  y;     ///< The sprite's y coordinate.
 	};
 
+	/** A sound effect. */
 	struct Effect {
-		uint32 frameNum;
-		Common::String effect;
+		uint32         frameNum; ///< Playing on that frame.
+		Common::String effect;   ///< The sound effect's name.
 	};
 
 	Resources *_resources;
@@ -162,35 +164,37 @@ private:
 	Sound     *_sound;
 	Mike      *_mike;
 
-	Graphics::SpriteRef _currentSprite;
+	Graphics::SpriteRef _currentSprite; ///< The current sprite.
 
-	/** The animation name. */
-	Common::String _anim;
+	Common::String _anim; ///< The animation name.
 
-	Animation *_animation;
+	Animation *_animation; ///< The animation.
 
-	int32 _status[6];
-	Common::Array<Frame> _frames;
-	Common::Array<Effect> _effects;
+	int32 _status[6]; ///< Status flags.
 
-	Common::String _loadCond;
-	Common::String _changeAt;
-	Common::String _speech;
+	uint32 _curPos; ///< The current position within the sequence.
 
-	int32 _spriteIDX;
+	// Actions
+	Common::Array<Frame>  _frames;  ///< All frames to be played.
+	Common::Array<Effect> _effects; ///< All effects to be played.
 
-	Common::String _loopCond;
-	int32 _loopStart;
-	int32 _loopEnd;
+	// Looping
+	Common::String _loopCond;  ///< Looping while this condition is true.
+	int32          _loopStart; ///< Looping sequence starts here.
+	int32          _loopEnd;   ///< Looping sequence ends here.
 
-	Common::String _sequenceString;
+	// Unknown/Unhandled
+	Common::String _loadCond;  ///< Loading condition?
+	Common::String _changeAt;  ///< Advance at specific condition?
+	Common::String _speech;    ///< Speech to be played?
+	int32          _spriteIDX; ///< Sprite index?
+
+	// Loading helpers/temporaries
+	Common::String       _sequenceString;
 	Common::Array<int32> _sequence;
 	Common::Array<int32> _posX;
 	Common::Array<int32> _posY;
 	Common::Array<int32> _scaleVal;
-
-	/** The current position within the sequence. */
-	uint32 _curPos;
 
 	// Parsing helpers
 	bool parseStatus(const Common::String &args);

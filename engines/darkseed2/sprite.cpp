@@ -442,6 +442,7 @@ void Sprite::blit(const Sprite &from, const Common::Rect &area,
 			if (!transp || *srcRow != 0)
 				dstRow[0] = *srcRow;
 
+			// Advance source data
 			posW += from._scaleInverse;
 			while (posW >= ((frac_t) FRAC_ONE)) {
 				srcRow++;
@@ -452,6 +453,7 @@ void Sprite::blit(const Sprite &from, const Common::Rect &area,
 
 		dst += _width;
 
+		// Advance source data
 		posH += from._scaleInverse;
 		while (posH >= ((frac_t) FRAC_ONE)) {
 			src += from.getWidth(true);

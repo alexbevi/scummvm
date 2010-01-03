@@ -68,6 +68,7 @@ class Events;
 
 class DarkSeed2Engine : public Engine {
 public:
+	// Subsystems
 	Options           *_options;
 	Cursors           *_cursors;
 	Resources         *_resources;

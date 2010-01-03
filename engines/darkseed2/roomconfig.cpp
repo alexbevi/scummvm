@@ -329,6 +329,8 @@ bool RoomConfigSprite::updateStatus() {
 		frac_t scale = _frames[_curPos].scale;;
 
 		if (_status[0] & 8) {
+			// A Mike sprite, sync position and scaling
+
 			uint32 mX, mY;
 
 			_mike->getPosition(mX, mY);
@@ -347,6 +349,8 @@ bool RoomConfigSprite::updateStatus() {
 			_animation->setFrame(_frames[_curPos].frame);
 
 			if ((x >= 0) && (y >= 0)) {
+				// Has positional values, set the position and scaling accordingly
+
 				_animation->moveFeetTo(x, y);
 				scale = _mike->calculateScale(y);
 			}

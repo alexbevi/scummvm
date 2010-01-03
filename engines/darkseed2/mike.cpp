@@ -38,35 +38,32 @@ Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 
 	_visible = false;
 
-	_x = 0;
-	_y = 0;
-
-	_targetX = 0;
-	_targetY = 0;
-	_turnTo = kDirNone;
-
-	_animState = kAnimStateStanding;
+	_x         = 0;
+	_y         = 0;
 	_direction = kDirE;
 
-	_state = kStateIdle;
+	_targetX         = 0;
+	_targetY         = 0;
+	_targetDirection = _direction;
+
+	_turnTo = kDirNone;
+
+	_state     = kStateIdle;
+	_animState = kAnimStateStanding;
 
 	_waitUntil = 0;
 
 	setWalkMap();
 
-	for (int i = 0; i < 3; i++)
-		_scaleFactors[i] = 0;
-	_scale = FRAC_ONE;
-
-	_scaleMin = doubleToFrac(0.05);
-	_scaleMax = doubleToFrac(1.05);
+	_scaleFactors[0] = 0;
+	_scaleFactors[1] = 0;
+	_scaleFactors[2] = 0;
+	_scale           = FRAC_ONE;
+	_scaleMin        = doubleToFrac(0.05);
+	_scaleMax        = doubleToFrac(1.05);
 }
 
 Mike::~Mike() {
-}
-
-Common::Rect Mike::getArea() const {
-	return _animations[_animState][_direction]->getArea();
 }
 
 bool Mike::init() {
@@ -204,19 +201,31 @@ void Mike::updateStatus() {
 
 	if (_state != kStateIdle) {
 		if (g_system->getMillis() >= _waitUntil) {
+			// Time for a new frame
+
 			if (_state == kStateWalking) {
+				// Walk
 				advanceWalk();
 				if (_animState == kAnimStateStanding)
+					// Done walking
 					_state = kStateIdle;
+
 			} else if (_state == kStateTurning)
+				// Turn
 				advanceTurn();
 
 			if (_state != kStateIdle)
+				// New next frame time
 				_waitUntil = g_system->getMillis() + 100;
+
 		}
 
 		if (_state == kStateIdle) {
+			// Done walking
+
 			if (_direction != _targetDirection) {
+				// We still need to turn
+
 				_targetX = _x;
 				_targetY = _y;
 				_turnTo = _targetDirection;
@@ -230,9 +239,13 @@ void Mike::updateStatus() {
 void Mike::updateVisible() {
 	bool visible = _variables->get(kVariableVisible);
 	if (_visible != visible) {
+		// Visibility changed
+
 		if (visible)
+			// Sprite needs to be drawn
 			addSprite();
 		else
+			// Sprite needs not to be drawn
 			removeSprite();
 
 		_visible = visible;
@@ -326,9 +339,11 @@ void Mike::advanceWalk() {
 	removeSprite();
 
 	if ((_x != _targetX) || (_y != _targetY)) {
+		// Direction we're walking
 		bool east  = _x > _targetX;
 		bool south = _y > _targetY;
 
+		// Advance position
 		_x += getStepOffsetX();
 		_y += getStepOffsetY();
 
@@ -376,18 +391,23 @@ void Mike::go(uint32 x, uint32 y, Direction direction) {
 	if ((direction < 0) || (direction >= kDirNone))
 		direction = _direction;
 
-	_targetX = x;
-	_targetY = y;
+	// Set target
+	_targetX         = x;
+	_targetY         = y;
 	_targetDirection = direction;
 
-	_state = kStateWalking;
+	// Set states to walking
+	_state     = kStateWalking;
 	_animState = kAnimStateWalking;
+
+	// Update at once
 	_waitUntil = g_system->getMillis();
 }
 
 int32 Mike::getStepOffsetX() const {
 	int32 offset = 0;
 
+	// Offset
 	switch (_direction) {
 	case kDirNE:
 		offset = 7;
@@ -418,14 +438,14 @@ int32 Mike::getStepOffsetX() const {
 		break;
 	}
 
-	offset = fracToInt(offset * _scale);
-
-	return offset;
+	// Scale offset
+	return fracToInt(offset * _scale);
 }
 
 int32 Mike::getStepOffsetY() const {
 	int32 offset = 0;
 
+	// Offset
 	switch (_direction) {
 	case kDirN:
 		offset = -4;
@@ -456,9 +476,8 @@ int32 Mike::getStepOffsetY() const {
 		break;
 	}
 
-	offset = fracToInt(offset * _scale);
-
-	return offset;
+	// Scale offset
+	return fracToInt(offset * _scale);
 }
 
 Mike::Direction Mike::getDirection(uint32 x1, uint32 y1, uint32 x2, uint32 y2) {

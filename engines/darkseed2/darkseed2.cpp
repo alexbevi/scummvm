@@ -52,6 +52,11 @@
 
 namespace DarkSeed2 {
 
+// Files
+static const char *kExecutable    = "dark0001.exe";
+static const char *kResourceIndex = "gfile.hdr";
+static const char *kVariableIndex = "GAMEVAR";
+
 DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	Common::addDebugChannel(kDebugResources   , "Resources"   , "Resource handling debug level");
 	Common::addDebugChannel(kDebugGraphics    , "Graphics"    , "Graphics debug level");
@@ -159,7 +164,7 @@ bool DarkSeed2Engine::init() {
 	debug(-1, "Creating subclasses...");
 
 	_options     = new Options();
-	_cursors     = new Cursors("dark0001.exe");
+	_cursors     = new Cursors(kExecutable);
 	_variables   = new Variables(*_rnd);
 	_resources   = new Resources();
 	_sound       = new Sound(*_mixer, *_variables);
@@ -177,14 +182,14 @@ bool DarkSeed2Engine::init() {
 
 	debug(-1, "Indexing resources...");
 
-	if (!_resources->index("gfile.hdr")) {
+	if (!_resources->index(kResourceIndex)) {
 		warning("DarkSeed2Engine::init(): Couldn't index resources");
 		return false;
 	}
 
 	debug(-1, "Initializing game variables...");
 
-	if (!_variables->loadFromIDX(*_resources, "GAMEVAR")) {
+	if (!_variables->loadFromIDX(*_resources, kVariableIndex)) {
 		warning("DarkSeed2Engine::init(): Couldn't load initial variables values");
 		return false;
 	}

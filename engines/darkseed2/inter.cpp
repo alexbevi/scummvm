@@ -152,6 +152,7 @@ bool ScriptInterpreter::updateStatus() {
 bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks) {
 	bool queued = false;
 
+	// Create new random variables for the evaluation below
 	_vm->_variables->reRollRandom();
 
 	// Push the first script with met conditions into the queue
@@ -226,10 +227,6 @@ ScriptInterpreter::Result ScriptInterpreter::oXYRoom(Script &script) {
 
 	if (args[2] != 0)
 		_vm->_events->setNextRoom(args[2]);
-
-	uint32 x, y;
-
-	_vm->_mike->getPosition(x, y);
 
 	return kResultOK;
 }

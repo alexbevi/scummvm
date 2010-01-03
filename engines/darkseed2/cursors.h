@@ -68,7 +68,7 @@ private:
 
 	NECursor *_defaultResource; ///< NE Resource of the default pointer cursor.
 
-	Cursor _default;    ///< The default pointer cursor.
+	Cursor    _default; ///< The default pointer cursor.
 	CursorMap _cursors; ///< The available cursors.
 
 	/** Set the cursor's palette. */

@@ -62,6 +62,7 @@ public:
 	/** Clip the rectangle to the room area. */
 	void clipToRoom(Common::Rect &rect) const;
 
+	/** Return the room's clipping rectangle. */
 	const Common::Rect &getClipRect() const;
 
 	/** Get the room's entry logic scripts. */
@@ -104,6 +105,7 @@ private:
 
 	uint32 _walkMapArg1, _walkMapArg2;
 
+	/** The scaling factors. */
 	int32 _scaleFactors[3];
 
 	/** Room's entry logic. */

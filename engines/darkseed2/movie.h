@@ -73,8 +73,8 @@ private:
 	static const bool _doubleHalfSizedVideos = true;
 
 	Audio::Mixer *_mixer;
-	Graphics *_graphics;
-	Sound    *_sound;
+	Graphics     *_graphics;
+	Sound        *_sound;
 
 	/** The movie's area. */
 	Common::Rect _area;
