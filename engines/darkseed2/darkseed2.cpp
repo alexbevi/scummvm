@@ -160,7 +160,7 @@ bool DarkSeed2Engine::init() {
 	_graphics    = new Graphics(*_resources, *_variables, *_cursors);
 	_talkMan     = new TalkManager(*_sound, *_graphics);
 	_mike        = new Mike(*_resources, *_variables, *_graphics);
-	_movie       = new Movie(*_mixer, *_graphics);
+	_movie       = new Movie(*_mixer, *_graphics, *_sound);
 
 	_roomConfMan = new RoomConfigManager(*this);
 	_inter       = new ScriptInterpreter(*this);

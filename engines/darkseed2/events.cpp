@@ -493,6 +493,9 @@ bool Events::roomEnter() {
 	// Evaluate the room config, to get the initial room sprites set up
 	_vm->_roomConfMan->updateStatus();
 
+	for (int i = 0; (i < 10) && !_vm->_movie->isPlaying(); i++)
+		_vm->_inter->updateStatus();
+
 	return true;
 }
 

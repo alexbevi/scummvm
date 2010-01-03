@@ -70,6 +70,8 @@ public:
 	/** Stop all playing sounds. */
 	void stopAll();
 
+	void pauseAll(bool pause);
+
 	/** Set the sound variable of playing sound with the given ID. */
 	bool setSoundVar(int id, const Common::String &soundVar);
 

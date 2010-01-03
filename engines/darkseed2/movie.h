@@ -44,10 +44,11 @@ namespace Graphics {
 namespace DarkSeed2 {
 
 class Graphics;
+class Sound;
 
 class Movie {
 public:
-	Movie(Audio::Mixer &mixer, Graphics &graphics);
+	Movie(Audio::Mixer &mixer, Graphics &graphics, Sound &sound);
 	~Movie();
 
 	/** Is a movie currently playing? */
@@ -73,6 +74,7 @@ private:
 
 	Audio::Mixer *_mixer;
 	Graphics *_graphics;
+	Sound    *_sound;
 
 	/** The movie's area. */
 	Common::Rect _area;

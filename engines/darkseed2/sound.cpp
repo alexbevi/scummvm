@@ -166,6 +166,15 @@ void Sound::stopAll() {
 		_mixer->stopHandle(_channels[i].handle);
 }
 
+void Sound::pauseAll(bool pause) {
+	for (int i = 0; i < _channelCount; i++) {
+		SoundChannel &channel = _channels[i];
+
+		if (channel.id >= 0)
+			_mixer->pauseID(channel.id, pause);
+	}
+}
+
 void Sound::signalSpeechEnd(int id) {
 	if (id == -1)
 		return;

@@ -32,12 +32,14 @@
 #include "engines/darkseed2/movie.h"
 #include "engines/darkseed2/palette.h"
 #include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/sound.h"
 
 namespace DarkSeed2 {
 
-Movie::Movie(Audio::Mixer &mixer, Graphics &graphics) {
+Movie::Movie(Audio::Mixer &mixer, Graphics &graphics, Sound &sound) {
 	_mixer    = &mixer;
 	_graphics = &graphics;
+	_sound    = &sound;
 
 	_doubling = false;
 	_cursorVisible = false;
@@ -58,6 +60,8 @@ bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
 	debugC(-1, kDebugMovie, "Playing movie \"%s\"", avi.c_str());
 
 	stop();
+
+	_sound->pauseAll(true);
 
 	if (!_aviDecoder->loadFile((avi + ".avi").c_str())) {
 		stop();
@@ -129,6 +133,8 @@ uint32 Movie::getFrameWaitTime() const {
 void Movie::stop() {
 	if (!isPlaying())
 		return;
+
+	_sound->pauseAll(false);
 
 	// Restoring the cursor visibility
 	CursorMan.showMouse(_cursorVisible);
