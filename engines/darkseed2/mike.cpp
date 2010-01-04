@@ -141,11 +141,6 @@ void Mike::setPosition(int32 x, int32 y) {
 	// Sanity checks
 	assert((ABS(x) <= 0x7FFF) && (ABS(y) <= 0x7FFF));
 
-	if (x < 0)
-		x = 0;
-	if (y < 0)
-		y = 0;
-
 	if ((_x == x) && (_y == y))
 		return;
 
@@ -398,11 +393,6 @@ void Mike::advanceWalk() {
 void Mike::go(int32 x, int32 y, Direction direction) {
 	// Sanity checks
 	assert((ABS(x) <= 0x7FFF) && (ABS(y) <= 0x7FFF));
-
-	if (x < 0)
-		x = 0;
-	if (y < 0)
-		y = 0;
 
 	if ((x == 0) || (y == 0)) {
 		x = _x;
