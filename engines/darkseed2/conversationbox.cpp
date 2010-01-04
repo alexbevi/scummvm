@@ -35,10 +35,10 @@
 namespace DarkSeed2 {
 
 // Coordinates of the different areas
-static const uint32 kTextAreaWidth  = 512; ///< The width of the raw text area.
-static const uint32 kTextAreaHeight =  50; ///< The height of the raw text area.
-static const uint32 kTextHeight     =  14; ///< The height of a text line.
-static const uint32 kTextMargin     =  90; ///< The maximum width of a text line.
+static const int32 kTextAreaWidth  = 512; ///< The width of the raw text area.
+static const int32 kTextAreaHeight =  50; ///< The height of the raw text area.
+static const int32 kTextHeight     =  14; ///< The height of a text line.
+static const int32 kTextMargin     =  90; ///< The maximum width of a text line.
 
 // Sprite file names
 static const char *kSpriteFrame        = "INVNTRY1"; ///< The conversation box's general frame.
@@ -47,8 +47,8 @@ static const char *kSpriteScrollDown   = "DIALOG2";  ///< Scroll down active, sc
 static const char *kSpriteScrollUp     = "DIALOG3";  ///< Scroll up active, scroll down grayed out.
 
 // Scroll button coordinates
-static const int kScrollUp  [4] = {15, 24, 34, 40};
-static const int kScrollDown[4] = {15, 41, 34, 57};
+static const int32 kScrollUp  [4] = {15, 24, 34, 40};
+static const int32 kScrollDown[4] = {15, 41, 34, 57};
 
 // Colors
 static const byte kColorSelected  [3] = {255, 255, 255};
@@ -58,7 +58,7 @@ static const byte kColorShading   [3] = {  0,   0,   0};
 ConversationBox::Line::Line(TalkLine *line, byte color) {
 	talk = line;
 	if (talk) {
-		uint32 width = TextObject::wrap(talk->getTXT(), texts, 460);
+		int32 width = TextObject::wrap(talk->getTXT(), texts, 460);
 
 		for (Common::StringList::iterator it = texts.begin(); it != texts.end(); ++it)
 			textObjects.push_back(new TextObject(*it, 0, 0, color, width));
@@ -255,7 +255,10 @@ void ConversationBox::rebuild() {
 	_box.blit(_sprites[0], 0, 0, false);
 }
 
-void ConversationBox::move(uint32 x, uint32 y) {
+void ConversationBox::move(int32 x, int32 y) {
+	// Sanity checks
+	assert((ABS(x) <= 0x7FFF) && (ABS(y) <= 0x7FFF));
+
 	_area.moveTo(x, y);
 }
 
@@ -265,8 +268,8 @@ void ConversationBox::redraw(Sprite &sprite, Common::Rect area) {
 
 	area.clip(_area);
 
-	uint32 x = area.left;
-	uint32 y = area.top;
+	int32 x = area.left;
+	int32 y = area.top;
 
 	area.moveTo(area.left - _area.left, area.top - _area.top);
 
@@ -430,7 +433,7 @@ bool ConversationBox::nextPhysRealLine(PhysLineRef &ref) const {
 	return true;
 }
 
-void ConversationBox::notifyMouseMove(uint32 x, uint32 y) {
+void ConversationBox::notifyMouseMove(int32 x, int32 y) {
 	if (!isActive())
 		// Not active => ignore user events
 		return;
@@ -453,7 +456,7 @@ void ConversationBox::notifyMouseMove(uint32 x, uint32 y) {
 	}
 }
 
-void ConversationBox::notifyClicked(uint32 x, uint32 y) {
+void ConversationBox::notifyClicked(int32 x, int32 y) {
 	if (!isActive())
 		// Not active => ignore user events
 		return;
@@ -550,7 +553,7 @@ void ConversationBox::pickLine(Line *line) {
 	_conversation->pick(line->talk->getName());
 }
 
-int ConversationBox::getTextArea(uint32 x, uint32 y) {
+int ConversationBox::getTextArea(int32 x, int32 y) {
 	for (int i = 0; i < 3; i++)
 		if (_textAreas[i].contains(x, y))
 			return _physLineTop + i + 1;
@@ -558,7 +561,7 @@ int ConversationBox::getTextArea(uint32 x, uint32 y) {
 	return 0;
 }
 
-ConversationBox::ScrollAction ConversationBox::getScrollAction(uint32 x, uint32 y) {
+ConversationBox::ScrollAction ConversationBox::getScrollAction(int32 x, int32 y) {
 	for (int i = 0; i < 2; i++)
 		if (_scrollAreas[i].contains(x, y))
 			return (ScrollAction) i;

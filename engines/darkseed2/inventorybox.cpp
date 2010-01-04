@@ -38,15 +38,15 @@ static const char *kSpriteScrollNoLeft  = "ARWLFT2";  ///< Scrolling left grayed
 static const char *kSpriteScrollRight   = "ARWRGHT1"; ///< Scrolling right active.
 static const char *kSpriteScrollNoRight = "ARWRGHT2"; ///< Scrolling right grayed out.
 
-static const uint32 kItems[4]        = { 64,  10, 576,  60};
-static const uint32 kVisibleItems[4] = { 95,  10, 545,  60};
+static const int32 kItems[4]        = { 64,  10, 576,  60};
+static const int32 kVisibleItems[4] = { 95,  10, 545,  60};
 
-static const uint32 kItemWidth         = 50;
+static const  int32 kItemWidth         = 50;
 static const uint32 kVisibleItemsCount = (kVisibleItems[2] - kVisibleItems[0]) / kItemWidth;
 
 // Scroll button coordinates
-static const int kScrollLeft [4] = { 11,  27,  32,  53};
-static const int kScrollRight[4] = {608,  27, 629,  53};
+static const int32 kScrollLeft [4] = { 11,  27,  32,  53};
+static const int32 kScrollRight[4] = {608,  27, 629,  53};
 
 // Colors
 static const byte kColorShading[3] = {  0,   0,   0};
@@ -241,7 +241,7 @@ void InventoryBox::newPalette() {
 	rebuild();
 }
 
-void InventoryBox::move(uint32 x, uint32 y) {
+void InventoryBox::move(int32 x, int32 y) {
 	_area.moveTo(x, y);
 }
 
@@ -273,15 +273,15 @@ void InventoryBox::redraw(Sprite &sprite, Common::Rect area) {
 
 	area.clip(_area);
 
-	uint32 x = area.left;
-	uint32 y = area.top;
+	int32 x = area.left;
+	int32 y = area.top;
 
 	area.moveTo(area.left - _area.left, area.top - _area.top);
 
 	sprite.blit(_box, area, x, y, true);
 }
 
-bool InventoryBox::hasAction(uint32 x, uint32 y, ObjectVerb verb) {
+bool InventoryBox::hasAction(int32 x, int32 y, ObjectVerb verb) {
 	int32 item = getItemNumber(x, y);
 	if (item < 0)
 		return false;
@@ -297,7 +297,7 @@ bool InventoryBox::hasAction(uint32 x, uint32 y, ObjectVerb verb) {
 	return false;
 }
 
-InventoryBox::ItemRef InventoryBox::doAction(uint32 x, uint32 y, ObjectVerb verb,
+InventoryBox::ItemRef InventoryBox::doAction(int32 x, int32 y, ObjectVerb verb,
 		const Cursors::Cursor *&changeTo) {
 
 	changeTo = 0;
@@ -353,10 +353,10 @@ void InventoryBox::undoAction(ItemRef item, ObjectVerb verb) {
 	}
 }
 
-int32 InventoryBox::getItemNumber(uint32 x, uint32 y) {
-	if (x < ((uint32) _area.left))
+int32 InventoryBox::getItemNumber(int32 x, int32 y) {
+	if (x < _area.left)
 		return -1;
-	if (y < ((uint32) _area.top))
+	if (y < _area.top)
 		return -1;
 
 	x -= _area.left;
@@ -379,7 +379,7 @@ void InventoryBox::updateStatus() {
 	_scrolled = false;
 }
 
-InventoryBox::ScrollAction InventoryBox::getScrollAction(uint32 x, uint32 y) {
+InventoryBox::ScrollAction InventoryBox::getScrollAction(int32 x, int32 y) {
 	for (int i = 0; i < 2; i++)
 		if (_scrollAreas[i].contains(x, y))
 			return (ScrollAction) i;

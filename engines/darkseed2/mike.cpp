@@ -132,12 +132,20 @@ void Mike::setVisible(bool visible) {
 	updateVisible();
 }
 
-void Mike::getPosition(uint32 &x, uint32 &y) const {
+void Mike::getPosition(int32 &x, int32 &y) const {
 	x = _x;
 	y = _y;
 }
 
-void Mike::setPosition(uint32 x, uint32 y) {
+void Mike::setPosition(int32 x, int32 y) {
+	// Sanity checks
+	assert((ABS(x) <= 0x7FFF) && (ABS(y) <= 0x7FFF));
+
+	if (x < 0)
+		x = 0;
+	if (y < 0)
+		y = 0;
+
 	if ((_x == x) && (_y == y))
 		return;
 
@@ -155,7 +163,10 @@ frac_t Mike::getScale() const {
 	return _scale;
 }
 
-frac_t Mike::calculateScale(uint32 y) const {
+frac_t Mike::calculateScale(int32 y) const {
+	// Sanity checks
+	assert(ABS(y) <= 0x7FFF);
+
 	frac_t scale = intToFrac(_y - _scaleFactors[0]) / _scaleFactors[1];
 
 	if (scale < 0)
@@ -286,16 +297,17 @@ void Mike::setScaleFactors(const int32 *scaleFactors) {
 		_scaleFactors[i] = scaleFactors[i];
 }
 
-byte Mike::getWalkData(uint32 x, uint32 y) const {
+byte Mike::getWalkData(int32 x, int32 y) const {
 	return getWalk(screenCoordToWalkCoord(x), screenCoordToWalkCoord(y));
 }
 
-inline uint32 Mike::screenCoordToWalkCoord(uint32 walkCoord) {
+inline int32 Mike::screenCoordToWalkCoord(int32 walkCoord) {
 	return walkCoord / kWalkMapResolution;
 }
 
-inline byte Mike::getWalk(uint32 x, uint32 y) const {
-	assert((x < kWalkMapWidth) && (y < kWalkMapHeight));
+inline byte Mike::getWalk(int32 x, int32 y) const {
+	// Sanity checks
+	assert((x >= 0) && (y >= 0) && (x < kWalkMapWidth) && (y < kWalkMapHeight));
 
 	return _walkMap[y * kWalkMapWidth + x];
 }
@@ -383,7 +395,15 @@ void Mike::advanceWalk() {
 	addSprite();
 }
 
-void Mike::go(uint32 x, uint32 y, Direction direction) {
+void Mike::go(int32 x, int32 y, Direction direction) {
+	// Sanity checks
+	assert((ABS(x) <= 0x7FFF) && (ABS(y) <= 0x7FFF));
+
+	if (x < 0)
+		x = 0;
+	if (y < 0)
+		y = 0;
+
 	if ((x == 0) || (y == 0)) {
 		x = _x;
 		y = _y;
@@ -480,7 +500,7 @@ int32 Mike::getStepOffsetY() const {
 	return fracToInt(offset * _scale);
 }
 
-Mike::Direction Mike::getDirection(uint32 x1, uint32 y1, uint32 x2, uint32 y2) {
+Mike::Direction Mike::getDirection(int32 x1, int32 y1, int32 x2, int32 y2) {
 	if ((x1 == x2) && (y1 > y2))
 		return kDirN;
 

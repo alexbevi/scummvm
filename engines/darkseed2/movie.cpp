@@ -56,7 +56,10 @@ bool Movie::isPlaying() const {
 	return _aviDecoder->isVideoLoaded();
 }
 
-bool Movie::play(const Common::String &avi, uint32 x, uint32 y) {
+bool Movie::play(const Common::String &avi, int32 x, int32 y) {
+	// Sanity checks
+	assert((x >= 0) && (y >= 0) && (x <= 0x7FFF) & (y <= 0x7FFF));
+
 	debugC(-1, kDebugMovie, "Playing movie \"%s\"", avi.c_str());
 
 	stop();
@@ -115,8 +118,8 @@ void Movie::redraw(Sprite &sprite, Common::Rect area) {
 
 	area.clip(_area);
 
-	uint32 x = area.left;
-	uint32 y = area.top;
+	int32 x = area.left;
+	int32 y = area.top;
 
 	area.moveTo(area.left - _area.left, area.top - _area.top);
 

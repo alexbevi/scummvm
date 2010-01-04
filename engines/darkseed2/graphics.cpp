@@ -39,10 +39,10 @@
 
 namespace DarkSeed2 {
 
-static const uint32 kConversationX =   0;
-static const uint32 kConversationY = 410;
-static const uint32 kInventoryX    =   0;
-static const uint32 kInventoryY    = 410;
+static const int32 kConversationX =   0;
+static const int32 kConversationY = 410;
+static const int32 kInventoryX    =   0;
+static const int32 kInventoryY    = 410;
 
 Graphics::SpriteQueueEntry::SpriteQueueEntry() {
 	anim       = 0;
@@ -52,7 +52,7 @@ Graphics::SpriteQueueEntry::SpriteQueueEntry() {
 	frame      = -1;
 }
 
-Graphics::SpriteQueueEntry::SpriteQueueEntry(Animation &a, uint32 l, bool per) {
+Graphics::SpriteQueueEntry::SpriteQueueEntry(Animation &a, int32 l, bool per) {
 	anim       = &a;
 	object     = &*a;
 	persistent = per;
@@ -78,10 +78,10 @@ bool Graphics::SpriteRef::isUpToDate(int32 frame, int32 x, int32 y, frac_t scale
 		// Frames don't match => Not up-to-date
 		return false;
 
-	if ((x >= 0) && (it->object->getX() != ((uint32) x)))
+	if (it->object->getX() != x)
 		// X positions don't match => Not up-to-date
 		return false;
-	if ((y >= 0) && (it->object->getY() != ((uint32) y)))
+	if (it->object->getY() != y)
 		// Y positions don't match => Not up-to-date
 		return false;
 

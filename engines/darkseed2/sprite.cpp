@@ -76,42 +76,42 @@ bool Sprite::exists() const {
 	return _data != 0;
 }
 
-uint32 Sprite::getWidth(bool unscaled) const {
+int32 Sprite::getWidth(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _width;
 
 	return fracToInt(_width * _scale);
 }
 
-uint32 Sprite::getHeight(bool unscaled) const {
+int32 Sprite::getHeight(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _height;
 
 	return fracToInt(_height * _scale);
 }
 
-uint16 Sprite::getDefaultX(bool unscaled) const {
+int32 Sprite::getDefaultX(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _defaultX;
 
 	return fracToInt(_defaultX * _scale);
 }
 
-uint16 Sprite::getDefaultY(bool unscaled) const {
+int32 Sprite::getDefaultY(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _defaultY;
 
 	return fracToInt(_defaultY * _scale);
 }
 
-uint16 Sprite::getFeetX(bool unscaled) const {
+int32 Sprite::getFeetX(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _feetX;
 
 	return fracToInt(_feetX * _scale);
 }
 
-uint16 Sprite::getFeetY(bool unscaled) const {
+int32 Sprite::getFeetY(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
 		return _feetY;
 
@@ -137,7 +137,10 @@ const Palette &Sprite::getPalette() const {
 	return _palette;
 }
 
-void Sprite::create(uint32 width, uint32 height) {
+void Sprite::create(int32 width, int32 height) {
+	// Sanity checks
+	assert((width > 0) && (height > 0) && (width <= 0x7FFF) && (height <= 0x7FFF));
+
 	discard();
 
 	_width  = width;
@@ -189,8 +192,11 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 	if (bmp.readUint32LE() != 40)
 		return false;
 
-	_width  = bmp.readUint32LE();
-	_height = bmp.readUint32LE();
+	_width  = (int32) bmp.readUint32LE();
+	_height = (int32) bmp.readUint32LE();
+
+	// Sanity checks
+	assert((_width > 0) && (_height > 0) && (_width <= 0x7FFF) && (_height <= 0x7FFF));
 
 	// Number of color planes
 	if (bmp.readUint16LE() != 1)
@@ -207,12 +213,12 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 
 	uint32 bmpDataSize = bmp.readUint32LE();
 
-	_feetX = MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _width  - 1);
-	_feetY = MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _height - 1);
+	_feetX = (int32) MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _width  - 1);
+	_feetY = (int32) MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _height - 1);
 
 	// Default coordinates
-	_defaultX = bmp.readUint16LE();
-	_defaultY = bmp.readUint16LE();
+	_defaultX = (int32) bmp.readUint16LE();
+	_defaultY = (int32) bmp.readUint16LE();
 
 	uint32 numPalColors = bmp.readUint32LE();
 	if (numPalColors == 0)
@@ -272,14 +278,14 @@ void Sprite::flipHorizontally() {
 	if (!exists())
 		return;
 
-	uint32 halfWidth = _width / 2;
+	int32 halfWidth = _width / 2;
 
 	byte *data = _data;
-	for (uint32 i = 0; i < _height; i++, data += _width) {
+	for (int32 i = 0; i < _height; i++, data += _width) {
 		byte *dataStart = data;
 		byte *dataEnd   = data + _width - 1;
 
-		for (uint32 j = 0; j < halfWidth; j++, dataStart++, dataEnd--)
+		for (int32 j = 0; j < halfWidth; j++, dataStart++, dataEnd--)
 			SWAP(*dataStart, *dataEnd);
 	}
 
@@ -290,14 +296,14 @@ void Sprite::flipVertically() {
 	if (!exists())
 		return;
 
-	uint32 halfHeight = _height / 2;
+	int32 halfHeight = _height / 2;
 
 	byte *dataStart = _data;
 	byte *dataEnd   = _data + (_width * _height) - _width;
 
 	byte *buffer = new byte[_width];
 
-	for (uint32 i = 0; i < halfHeight; i++, dataStart += _width, dataEnd -= _width) {
+	for (int32 i = 0; i < halfHeight; i++, dataStart += _width, dataEnd -= _width) {
 		memcpy(buffer   , dataStart, _width);
 		memcpy(dataStart, dataEnd  , _width);
 		memcpy(dataEnd  , buffer   , _width);
@@ -309,8 +315,11 @@ void Sprite::flipVertically() {
 }
 
 bool Sprite::loadFromCursorResource(const NECursor &cursor) {
-	uint16 width  = cursor.getWidth();
-	uint16 height = cursor.getHeight() * 2;
+	int32 width  = cursor.getWidth();
+	int32 height = cursor.getHeight() * 2;
+
+	// Sanity checks
+	assert((width > 0) && (height > 0));
 
 	Common::SeekableReadStream &stream = cursor.getStream();
 
@@ -322,9 +331,9 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 		return false;
 
 	// Check dimensions
-	if (stream.readUint32LE() != width)
+	if (stream.readUint32LE() != ((uint32) width))
 		return false;
-	if (stream.readUint32LE() != height)
+	if (stream.readUint32LE() != ((uint32) height))
 		return false;
 
 	// Color planes
@@ -374,10 +383,10 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 	const byte *srcP = cursor.getData() + 40 + numColors * 4;
 	const byte *srcM = srcP + ((width * height) / 8);
 	byte *dest = _data + (width * height) - width;
-	for (int i = 0; i < height; i++) {
+	for (int32 i = 0; i < height; i++) {
 		byte *rowDest = dest;
 
-		for (int j = 0; j < (width / 8); j++) {
+		for (int32 j = 0; j < (width / 8); j++) {
 			byte p = srcP[j];
 			byte m = srcM[j];
 
@@ -400,8 +409,9 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 	return true;
 }
 
-void Sprite::blit(const Sprite &from, const Common::Rect &area,
-		uint32 x, uint32 y, bool transp) {
+void Sprite::blit(const Sprite &from, const Common::Rect &area, int32 x, int32 y, bool transp) {
+	// Sanity checks
+	assert((x >= 0) && (y >= 0) && (x <= 0x7FFF) && (y <= 0x7FFF));
 
 	if (!exists() || !from.exists())
 		return;
@@ -418,15 +428,15 @@ void Sprite::blit(const Sprite &from, const Common::Rect &area,
 	fromArea.clip(area);
 	fromArea.setWidth (MIN(fromArea.width() , toArea.width()));
 	fromArea.setHeight(MIN(fromArea.height(), toArea.height()));
-	if (fromArea.isEmpty())
+	if (fromArea.isEmpty() || !fromArea.isValidRect())
 		return;
 
-	uint32 w = fromArea.width();
-	uint32 h = fromArea.height();
+	int32 w = fromArea.width();
+	int32 h = fromArea.height();
 
-	const uint32 fromTop   = fracToInt(fromArea.top  * from._scaleInverse);
-	const uint32 fromLeft  = fracToInt(fromArea.left * from._scaleInverse);
-	const uint32 fromWidth = from.getWidth(true);
+	const int32 fromTop   = fracToInt(fromArea.top  * from._scaleInverse);
+	const int32 fromLeft  = fracToInt(fromArea.left * from._scaleInverse);
+	const int32 fromWidth = from.getWidth(true);
 
 	const byte *src = from.getData() + fromTop * fromWidth + fromLeft;
 	byte *dst = _data + y * _width + x;
@@ -438,7 +448,7 @@ void Sprite::blit(const Sprite &from, const Common::Rect &area,
 		byte *dstRow = dst;
 		const byte *srcRow = src;
 
-		for (uint32 j = 0; j < w; j++, dstRow++) {
+		for (int32 j = 0; j < w; j++, dstRow++) {
 			if (!transp || *srcRow != 0)
 				dstRow[0] = *srcRow;
 
@@ -463,7 +473,7 @@ void Sprite::blit(const Sprite &from, const Common::Rect &area,
 	}
 }
 
-void Sprite::blit(const Sprite &from, uint32 x, uint32 y, bool transp) {
+void Sprite::blit(const Sprite &from, int32 x, int32 y, bool transp) {
 	blit(from, from.getArea(), x, y, transp);
 }
 
@@ -480,10 +490,10 @@ void Sprite::shade(byte c) {
 	bool solid = true;
 	bool rowSolid;
 
-	for (uint32 i = 0; i < _height; i++) {
+	for (int32 i = 0; i < _height; i++) {
 		rowSolid = solid;
 
-		for (uint32 j = 0; j < _width; j++) {
+		for (int32 j = 0; j < _width; j++) {
 			*data = rowSolid ? c : 0;
 			data++;
 			rowSolid = !rowSolid;
@@ -537,7 +547,7 @@ void Sprite::drawStrings(const Common::StringList &strings, const ::Graphics::Fo
 }
 
 void Sprite::applyChangeSet(const Common::Array<byte> &changeSet) {
-	for (uint32 i = 0; i < _width * _height; i++)
+	for (int32 i = 0; i < _width * _height; i++)
 		_data[i] = changeSet[_data[i]];
 }
 
@@ -545,10 +555,10 @@ bool Sprite::readBMPDataComp0(Common::SeekableReadStream &bmp, uint32 dataSize) 
 	byte *data = _data + ((_height - 1) * _width);
 
 	int extraDataLength = (_width % 4) ? 4 - (_width % 4) : 0;
-	for (uint32 i = 0; i < _height; i++) {
+	for (int32 i = 0; i < _height; i++) {
 		byte *rowData = data;
 
-		for (uint32 j = 0; j < _width; j++)
+		for (int32 j = 0; j < _width; j++)
 			*rowData++ = bmp.readByte();
 
 		bmp.skip(extraDataLength);
@@ -561,13 +571,13 @@ bool Sprite::readBMPDataComp0(Common::SeekableReadStream &bmp, uint32 dataSize) 
 bool Sprite::readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize) {
 	byte *data = _data + ((_height - 1) * _width);
 
-	for (uint32 i = 0; i < _height; i++) {
+	for (int32 i = 0; i < _height; i++) {
 		byte *rowData = data;
 
 		// Skip this many pixels (they'll stay transparent)
-		uint32 sizeSkip = bmp.readUint16LE();
+		int32 sizeSkip = bmp.readUint16LE();
 		// Read this many pixels of data
-		uint32 sizeData = bmp.readUint16LE();
+		int32 sizeData = bmp.readUint16LE();
 
 		if ((sizeSkip + sizeData) > _width) {
 			warning("Sprite::readBMPDataComp2(): Broken image compression: size %d (%d + %d), width %d",

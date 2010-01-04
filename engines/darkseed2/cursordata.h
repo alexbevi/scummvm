@@ -1,8 +1,8 @@
 struct StaticCursor {
-	uint16 width;
-	uint16 height;
-	uint16 hotspotX;
-	uint16 hotspotY;
+	int32 width;
+	int32 height;
+	int32 hotspotX;
+	int32 hotspotY;
 
 	uint32 dataSize;
 	byte *data;

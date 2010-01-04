@@ -45,11 +45,17 @@ Common::Rect GraphicalObject::getArea() const {
 	return _area;
 }
 
-void GraphicalObject::moveTo(uint32 x, uint32 y) {
+void GraphicalObject::moveTo(int32 x, int32 y) {
+	// Sanity checks
+	assert((ABS(x) <= 0x7FFF) && (ABS(y) <= 0x7FFF));
+
 	_area.moveTo(x, y);
 }
 
 void GraphicalObject::move(int32 x, int32 y) {
+	// Sanity checks
+	assert((ABS(x) <= 0x7FFF) && (ABS(y) <= 0x7FFF));
+
 	_area.translate(x, y);
 }
 
@@ -61,12 +67,15 @@ void GraphicalObject::clearArea() {
 }
 
 
-TextObject::TextObject(const Common::String &text, uint32 x, uint32 y,
-		byte color, uint32 maxWidth) {
+TextObject::TextObject(const Common::String &text, int32 x, int32 y,
+		byte color, int32 maxWidth) {
+
+	// Sanity checks
+	assert((x >= 0) && (y >= 0) && (x <= 0x7FFF) && (y <= 0x7FFF));
 
 	_color = color;
 
-	if (maxWidth == 0)
+	if (maxWidth <= 0)
 		maxWidth = Graphics::kScreenWidth;
 
 	// We want the big font
@@ -105,8 +114,8 @@ void TextObject::redraw(Sprite &sprite, Common::Rect area) {
 
 	area.clip(_area);
 
-	uint32 x = area.left;
-	uint32 y = area.top;
+	int32 x = area.left;
+	int32 y = area.top;
 
 	area.moveTo(area.left - _area.left, area.top - _area.top);
 
@@ -122,14 +131,17 @@ void TextObject::recolor(byte color) {
 	_color = color;
 }
 
-uint32 TextObject::wrap(const Common::String &string, Common::StringList &list, uint32 maxWidth) {
+int32 TextObject::wrap(const Common::String &string, Common::StringList &list, int32 maxWidth) {
+	if (maxWidth <= 0)
+		maxWidth = Graphics::kScreenWidth;
+
 	// We want the big font
 	::Graphics::FontManager::FontUsage fontUsage = ::Graphics::FontManager::kBigGUIFont;
 	const ::Graphics::Font *font =
 		::Graphics::FontManager::instance().getFontByUsage(fontUsage);
 
 	// Wrap the string
-	uint32 width = font->wordWrapText(string, maxWidth, list);
+	int32 width = font->wordWrapText(string, maxWidth, list);
 
 	// Removing leading and trailing spaces from all resulting lines
 	for (Common::StringList::iterator it = list.begin(); it != list.end(); ++it)
@@ -151,11 +163,11 @@ void SpriteObject::moveTo() {
 	moveTo(_sprite->getDefaultX(), _sprite->getDefaultY());
 }
 
-void SpriteObject::moveTo(uint32 x, uint32 y) {
+void SpriteObject::moveTo(int32 x, int32 y) {
 	GraphicalObject::moveTo(x, y);
 }
 
-void SpriteObject::moveFeetTo(uint32 x, uint32 y) {
+void SpriteObject::moveFeetTo(int32 x, int32 y) {
 	GraphicalObject::moveTo(x - _sprite->getFeetX(), y - _sprite->getFeetY());
 }
 
@@ -170,7 +182,7 @@ void SpriteObject::clear() {
 	_sprite = 0;
 }
 
-bool SpriteObject::isIn(uint32 x, uint32 y) const {
+bool SpriteObject::isIn(int32 x, int32 y) const {
 	return _area.contains(x, y);
 }
 
@@ -178,19 +190,19 @@ bool SpriteObject::empty() const {
 	return _sprite == 0;
 }
 
-uint32 SpriteObject::getX() const {
+int32 SpriteObject::getX() const {
 	return _area.left;
 }
 
-uint32 SpriteObject::getY() const {
+int32 SpriteObject::getY() const {
 	return _area.top;
 }
 
-uint32 SpriteObject::getFeetX() const {
+int32 SpriteObject::getFeetX() const {
 	return getX() + _sprite->getFeetX();
 }
 
-uint32 SpriteObject::getFeetY() const {
+int32 SpriteObject::getFeetY() const {
 	return getY() + _sprite->getFeetY();
 }
 
@@ -198,7 +210,10 @@ frac_t SpriteObject::getScale() const {
 	return _sprite->getScale();
 }
 
-frac_t SpriteObject::calculateScaleVal(uint32 height) {
+frac_t SpriteObject::calculateScaleVal(int32 height) {
+	// Sanity checks
+	assert((height >= 0) && (height <= 0x7FFF));
+
 	return intToFrac(height) / _sprite->getHeight(true);
 }
 
@@ -208,8 +223,8 @@ void SpriteObject::setScale(frac_t scale) {
 		return;
 
 	// Remember the current feet position
-	uint32 feetX = _area.left + _sprite->getFeetX();
-	uint32 feetY = _area.top  + _sprite->getFeetY();
+	int32 feetX = _area.left + _sprite->getFeetX();
+	int32 feetY = _area.top  + _sprite->getFeetY();
 
 	// Scale
 	_sprite->setScale(scale);
@@ -250,8 +265,8 @@ void SpriteObject::redraw(Sprite &sprite, Common::Rect area) {
 
 	area.clip(_area);
 
-	uint32 x = area.left;
-	uint32 y = area.top;
+	int32 x = area.left;
+	int32 y = area.top;
 
 	area.moveTo(area.left - _area.left, area.top - _area.top);
 
@@ -305,12 +320,12 @@ void Animation::moveTo() {
 		(*frame)->moveTo();
 }
 
-void Animation::moveTo(uint32 x, uint32 y) {
+void Animation::moveTo(int32 x, int32 y) {
 	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
 		(*frame)->moveTo(x, y);
 }
 
-void Animation::moveFeetTo(uint32 x, uint32 y) {
+void Animation::moveFeetTo(int32 x, int32 y) {
 	for (Common::Array<SpriteObject *>::iterator frame = _frames.begin(); frame != _frames.end(); ++frame)
 		(*frame)->moveFeetTo(x, y);
 }
@@ -320,7 +335,7 @@ void Animation::move(int32 x, int32 y) {
 		(*frame)->move(x, y);
 }
 
-frac_t Animation::calculateScaleVal(int frame, uint32 height) {
+frac_t Animation::calculateScaleVal(int frame, int32 height) {
 	if (frame < 0)
 		frame = _curFrame;
 

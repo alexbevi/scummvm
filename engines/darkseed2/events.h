@@ -103,16 +103,16 @@ private:
 	void handleMovieInput();
 
 	/** Handle mouse move events. */
-	void mouseMoved(uint32 x, uint32 y);
+	void mouseMoved(int32 x, int32 y);
 	/** Handle mouse click left events. */
-	void mouseClickedLeft(uint32 x, uint32 y);
+	void mouseClickedLeft(int32 x, int32 y);
 	/** Handle mouse click right events. */
-	void mouseClickedRight(uint32 x, uint32 y);
+	void mouseClickedRight(int32 x, int32 y);
 
 	/** Look if we're in a hotspot. */
-	void checkHotspot(uint32 x, uint32 y);
+	void checkHotspot(int32 x, int32 y);
 	/** Look if we're in an inventory hotspot. */
-	void checkInventoryHotspot(uint32 x, uint32 y);
+	void checkInventoryHotspot(int32 x, int32 y);
 
 	/** Cycle the cursor mode. */
 	void cycleCursorMode();
@@ -124,7 +124,7 @@ private:
 	void setCursor(const Cursors::Cursor &cursor);
 
 	/** The coordinates are in which title sprite area? */
-	int checkTitleSprites(uint32 x, uint32 y) const;
+	int checkTitleSprites(int32 x, int32 y) const;
 
 	/** End the intro. */
 	void leaveIntro();

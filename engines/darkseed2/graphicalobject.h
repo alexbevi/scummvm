@@ -50,7 +50,7 @@ public:
 	Common::Rect getArea() const;
 
 	/** Move the object. */
-	virtual void moveTo(uint32 x, uint32 y);
+	virtual void moveTo(int32 x, int32 y);
 
 	/** Move the object relative to its current position. */
 	virtual void move(int32 x, int32 y);
@@ -68,8 +68,8 @@ protected:
 /** A text graphic. */
 class TextObject : public GraphicalObject {
 public:
-	TextObject(const Common::String &text, uint32 x, uint32 y,
-			byte color, uint32 maxWidth = 0);
+	TextObject(const Common::String &text, int32 x, int32 y,
+			byte color, int32 maxWidth = 0);
 	~TextObject();
 
 	/** Redraw the object. */
@@ -79,7 +79,7 @@ public:
 	void recolor(byte color);
 
 	/** Create a wrapped StringList out of the supplied string. */
-	static uint32 wrap(const Common::String &string, Common::StringList &list, uint32 maxWidth);
+	static int32 wrap(const Common::String &string, Common::StringList &list, int32 maxWidth);
 
 private:
 	Sprite *_sprite; ///< The text's sprite.
@@ -96,9 +96,9 @@ public:
 	/** Move the object to its default coordinates. */
 	void moveTo();
 	/** Move the object. */
-	void moveTo(uint32 x, uint32 y);
+	void moveTo(int32 x, int32 y);
 	/** Move the object relative to its feet. */
-	void moveFeetTo(uint32 x, uint32 y);
+	void moveFeetTo(int32 x, int32 y);
 
 	/** Move the object relative to its current position. */
 	void move(int32 x, int32 y);
@@ -109,20 +109,20 @@ public:
 	/** Is the sprite empty? */
 	bool empty() const;
 	/** Are the coordinates within the sprite? */
-	bool isIn(uint32 x, uint32 y) const;
+	bool isIn(int32 x, int32 y) const;
 
 	/** Return the sprite's x coordinate. */
-	uint32 getX() const;
+	int32 getX() const;
 	/** Return the sprite's y coordinate. */
-	uint32 getY() const;
+	int32 getY() const;
 
 	/** Return the sprite's feet's x coordinate. */
-	uint32 getFeetX() const;
+	int32 getFeetX() const;
 	/** Return the sprite's feet's y coordinate. */
-	uint32 getFeetY() const;
+	int32 getFeetY() const;
 
 	/** Calculate the corresponding scale value. */
-	frac_t calculateScaleVal(uint32 height);
+	frac_t calculateScaleVal(int32 height);
 
 	/** Get the sprite's scaling value. */
 	frac_t getScale() const;
@@ -168,15 +168,15 @@ public:
 	/** Move the animation to its default coordinates. */
 	void moveTo();
 	/** Move the animation. */
-	void moveTo(uint32 x, uint32 y);
+	void moveTo(int32 x, int32 y);
 	/** Move the animation relative to its feet. */
-	void moveFeetTo(uint32 x, uint32 y);
+	void moveFeetTo(int32 x, int32 y);
 
 	/** Move the animation relative to its current position. */
 	void move(int32 x, int32 y);
 
 	/** Calculate the corresponding scale value. */
-	frac_t calculateScaleVal(int frame, uint32 height);
+	frac_t calculateScaleVal(int frame, int32 height);
 
 	/** Set the sprite's scaling value. */
 	void setScale(frac_t scale);

@@ -66,11 +66,11 @@ public:
 		Animation    *anim;    ///< The animation the sprite is from.
 		SpriteObject *object; ///< The object the sprite belongs to.
 
-		uint32 layer; ///< The drawing layer the sprite is on.
-		int    frame; ///< The current frame within the animation.
+		int32 layer; ///< The drawing layer the sprite is on.
+		int   frame; ///< The current frame within the animation.
 
 		SpriteQueueEntry();
-		SpriteQueueEntry(Animation &a, uint32 l, bool per);
+		SpriteQueueEntry(Animation &a, int32 l, bool per);
 
 		/** SpriteQueueEntrys are sortable by layer. */
 		bool operator<(const SpriteQueueEntry &right) const;
@@ -90,8 +90,8 @@ public:
 		bool isUpToDate(int32 frame, int32 x, int32 y, frac_t scale) const;
 	};
 
-	static const uint32 kScreenWidth  = 640;  ///< The screen width.
-	static const uint32 kScreenHeight = 480;  ///< The screen height.
+	static const int32 kScreenWidth  = 640;  ///< The screen width.
+	static const int32 kScreenHeight = 480;  ///< The screen height.
 
 	Graphics(Resources &resources, Variables &variables, Cursors &cursors);
 	~Graphics();

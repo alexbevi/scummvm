@@ -46,11 +46,11 @@ class Sprite;
 class Mike {
 public:
 	/** The resolution of a walk map tile in pixels. */
-	static const uint32 kWalkMapResolution = 10;
+	static const int32 kWalkMapResolution = 10;
 	/** The width of the walk map. */
-	static const uint32 kWalkMapWidth      = Graphics::kScreenWidth  / kWalkMapResolution;
+	static const int32 kWalkMapWidth      = Graphics::kScreenWidth  / kWalkMapResolution;
 	/** The height of the walk map. */
-	static const uint32 kWalkMapHeight     = Graphics::kScreenHeight / kWalkMapResolution;
+	static const int32 kWalkMapHeight     = Graphics::kScreenHeight / kWalkMapResolution;
 
 	/** A direction. */
 	enum Direction {
@@ -80,15 +80,15 @@ public:
 	void setVisible(bool visible);
 
 	/** Set Mike's position. */
-	void getPosition(uint32 &x, uint32 &y) const;
+	void getPosition(int32 &x, int32 &y) const;
 	/** Get Mike's position. */
-	void setPosition(uint32 x, uint32 y);
+	void setPosition(int32 x, int32 y);
 
 	/** Get Mike's current scaling value. */
 	frac_t getScale() const;
 
 	/** Calculate the scaling value of an object in the given y coordinate with the current scaling factors. */
-	frac_t calculateScale(uint32 y) const;
+	frac_t calculateScale(int32 y) const;
 
 	/** Get Mike's current direction. */
 	Direction getDirection() const;
@@ -107,10 +107,10 @@ public:
 	void setScaleFactors(const int32 *scaleFactors);
 
 	/** Get the walk map data in that coordinate. */
-	byte getWalkData(uint32 x, uint32 y) const;
+	byte getWalkData(int32 x, int32 y) const;
 
 	/** Walk to a specific position. */
-	void go(uint32 x, uint32 y, Direction direction);
+	void go(int32 x, int32 y, Direction direction);
 
 private:
 	/** Mike's state. */
@@ -135,13 +135,13 @@ private:
 	bool _visible;
 
 	// Current position
-	uint32    _x;         ///< Mike's current x position.
-	uint32    _y;         ///< Mike's current y position.
+	int32    _x;          ///< Mike's current x position.
+	int32    _y;          ///< Mike's current y position.
 	Direction _direction; ///< Mike's current direction.
 
 	// Targeting
-	uint32    _targetX;         ///< Our target's x coordinate
-	uint32    _targetY;         ///< Our target's y coordinate.
+	int32    _targetX;          ///< Our target's x coordinate
+	int32    _targetY;          ///< Our target's y coordinate.
 	Direction _targetDirection; ///< Our target's direction.
 
 	/** The direction to turn to. */
@@ -169,8 +169,8 @@ private:
 	/** Load animations. */
 	bool loadAnimations();
 
-	inline static uint32 screenCoordToWalkCoord(uint32 walkCoord);
-	inline byte getWalk(uint32 x, uint32 y) const;
+	inline static int32 screenCoordToWalkCoord(int32 walkCoord);
+	inline byte getWalk(int32 x, int32 y) const;
 
 	/** Update the scaling value based on the current y coordinate. */
 	void updateScale();
@@ -197,7 +197,7 @@ private:
 	int32 getStepOffsetY() const;
 
 	/** Calculate the direction direction between two points. */
-	static Direction getDirection(uint32 x1, uint32 y1, uint32 x2, uint32 y2);
+	static Direction getDirection(int32 x1, int32 y1, int32 x2, int32 y2);
 };
 
 } // End of namespace DarkSeed2

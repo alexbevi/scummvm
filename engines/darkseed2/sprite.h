@@ -64,19 +64,19 @@ public:
 	bool exists() const;
 
 	/** Return the sprite's width. */
-	uint32 getWidth(bool unscaled = false) const;
+	int32 getWidth(bool unscaled = false) const;
 	/** Return the sprite's height. */
-	uint32 getHeight(bool unscaled = false) const;
+	int32 getHeight(bool unscaled = false) const;
 
 	/** Return the sprite's default X coordinate. */
-	uint16 getDefaultX(bool unscaled = false) const;
+	int32 getDefaultX(bool unscaled = false) const;
 	/** Return the sprite's default Y coordinate. */
-	uint16 getDefaultY(bool unscaled = false) const;
+	int32 getDefaultY(bool unscaled = false) const;
 
 	/** Return the sprite's "feet" X coordinate. */
-	uint16 getFeetX(bool unscaled = false) const;
+	int32 getFeetX(bool unscaled = false) const;
 	/** Return the sprite's "feet" Y coordinate. */
-	uint16 getFeetY(bool unscaled = false) const;
+	int32 getFeetY(bool unscaled = false) const;
 
 	/** Return the sprite's area. */
 	Common::Rect getArea(bool unscaled = false) const;
@@ -89,7 +89,7 @@ public:
 	const Palette &getPalette() const;
 
 	/** Create a new sprite with the specified dimensions. */
-	void create(uint32 width, uint32 height);
+	void create(int32 width, int32 height);
 	/** Discard the sprite data. */
 	void discard();
 
@@ -113,9 +113,9 @@ public:
 
 	/** Blit that sprite onto this sprite. */
 	void blit(const Sprite &from, const Common::Rect &area,
-			uint32 x, uint32 y, bool transp = false);
+			int32 x, int32 y, bool transp = false);
 	/** Blit that sprite onto this sprite. */
-	void blit(const Sprite &from, uint32 x, uint32 y, bool transp = false);
+	void blit(const Sprite &from, int32 x, int32 y, bool transp = false);
 
 	/** Fill the whole sprite with one palette entry. */
 	void fill(byte c);
@@ -141,15 +141,15 @@ public:
 	void setScale(frac_t scale);
 
 private:
-	uint32 _width;  ///< The sprite's width.
-	uint32 _height; ///< The sprite's height.
+	int32 _width;  ///< The sprite's width.
+	int32 _height; ///< The sprite's height.
 	byte  *_data;   ///< The sprite's data.
 
-	uint16 _defaultX; ///< The sprite's default X coordinate.
-	uint16 _defaultY; ///< The sprite's default Y coordinate.
+	int32 _defaultX; ///< The sprite's default X coordinate.
+	int32 _defaultY; ///< The sprite's default Y coordinate.
 
-	uint16 _feetX; ///< The sprite's "feet" X coordinate.
-	uint16 _feetY; ///< The sprite's "feet" Y coordinate.
+	int32 _feetX; ///< The sprite's "feet" X coordinate.
+	int32 _feetY; ///< The sprite's "feet" Y coordinate.
 
 	Palette _palette; ///< The sprite's palette.
 

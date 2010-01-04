@@ -45,8 +45,8 @@ class InventoryBox {
 public:
 	typedef const Inventory::Item *ItemRef;
 
-	static const uint32 kWidth  = 640; ///< The box's width.
-	static const uint32 kHeight =  70; ///< The box's heigth.
+	static const int32 kWidth  = 640; ///< The box's width.
+	static const int32 kHeight =  70; ///< The box's heigth.
 
 	InventoryBox(Resources &resources, Variables &variables, Graphics &graphics,
 			TalkManager &talkManager, Cursors &cursors);
@@ -56,7 +56,7 @@ public:
 	void newPalette();
 
 	/** Move the box to these coordinates. */
-	void move(uint32 x, uint32 y);
+	void move(int32 x, int32 y);
 
 	/** Is the inventory currently visible? */
 	bool isVisible() const;
@@ -70,10 +70,10 @@ public:
 	void redraw(Sprite &sprite, Common::Rect area);
 
 	/** Has the inventory an action for this verb at these coordinates? */
-	bool hasAction(uint32 x, uint32 y, ObjectVerb verb);
+	bool hasAction(int32 x, int32 y, ObjectVerb verb);
 
 	/** Do the action the inventory has for this verb at these coordinates. */
-	ItemRef doAction(uint32 x, uint32 y, ObjectVerb verb, const Cursors::Cursor *&changeTo);
+	ItemRef doAction(int32 x, int32 y, ObjectVerb verb, const Cursors::Cursor *&changeTo);
 
 	/** Undo that item action. */
 	void undoAction(ItemRef item, ObjectVerb verb);
@@ -134,9 +134,9 @@ private:
 	void redrawItems();
 
 	/** Get the number of the item on these coordinates. */
-	int32 getItemNumber(uint32 x, uint32 y);
+	int32 getItemNumber(int32 x, int32 y);
 	/** Get the scroll action area the coordinates are in. */
-	ScrollAction getScrollAction(uint32 x, uint32 y);
+	ScrollAction getScrollAction(int32 x, int32 y);
 
 	/** Scroll the items. */
 	void doScroll(ScrollAction scroll);

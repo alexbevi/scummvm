@@ -55,7 +55,7 @@ public:
 	bool isPlaying() const;
 
 	/** Play that movie. */
-	bool play(const Common::String &avi, uint32 x = 0, uint32 y = 0);
+	bool play(const Common::String &avi, int32 x = 0, int32 y = 0);
 
 	/** Stop playing that movie. */
 	void stop();

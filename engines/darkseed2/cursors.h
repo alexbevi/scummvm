@@ -40,11 +40,11 @@ class Cursors {
 public:
 	/** A cursor. */
 	struct Cursor {
-		uint16 width;    ///< The cursor's width.
-		uint16 height;   ///< The cursor's height.
-		uint16 hotspotX; ///< The X coordinate of the cursor's hotspot.
-		uint16 hotspotY; ///< The Y coordinate of the cursor's hotspot.
-		Sprite *sprite;  ///< The cursor's sprite.
+		int32 width;    ///< The cursor's width.
+		int32 height;   ///< The cursor's height.
+		int32 hotspotX; ///< The X coordinate of the cursor's hotspot.
+		int32 hotspotY; ///< The Y coordinate of the cursor's hotspot.
+		Sprite *sprite; ///< The cursor's sprite.
 	};
 
 	Cursors(const Common::String &exe = "");

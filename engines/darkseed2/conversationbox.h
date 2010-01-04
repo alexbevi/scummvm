@@ -48,8 +48,8 @@ class TalkLine;
 
 class ConversationBox {
 public:
-	static const uint32 kWidth  = 640; ///< The box's width.
-	static const uint32 kHeight =  70; ///< The box's heigth.
+	static const int32 kWidth  = 640; ///< The box's width.
+	static const int32 kHeight =  70; ///< The box's heigth.
 
 	ConversationBox(Resources &resources, Variables &variables,
 			Graphics &graphics, TalkManager &talkManager);
@@ -67,15 +67,15 @@ public:
 	bool isActive() const;
 
 	/** Move the box to these coordinates. */
-	void move(uint32 x, uint32 y);
+	void move(int32 x, int32 y);
 
 	/** Redraw the conversation box. */
 	void redraw(Sprite &sprite, Common::Rect area);
 
 	/** Notify that the mouse was moved. */
-	void notifyMouseMove(uint32 x, uint32 y);
+	void notifyMouseMove(int32 x, int32 y);
 	/** Notify that the mouse clicked. */
-	void notifyClicked(uint32 x, uint32 y);
+	void notifyClicked(int32 x, int32 y);
 
 	/** Check for changes in the box's status. */
 	void updateStatus();
@@ -210,15 +210,15 @@ private:
 	bool nextPhysRealLine(PhysLineRef &ref) const;
 
 	/** Get the text area the coordinates are in. */
-	int getTextArea(uint32 x, uint32 y);
+	int getTextArea(int32 x, int32 y);
 	/** Get the scroll action area the coordinates are in. */
-	ScrollAction getScrollAction(uint32 x, uint32 y);
+	ScrollAction getScrollAction(int32 x, int32 y);
 
 	/** Get the currently selected line. */
 	Line *getSelectedLine();
 
-	bool canScroll() const;     ///< Is scrolling possible?
-	bool canScrollUp() const;   ///< Is scrolling up possible?
+	bool canScroll()     const; ///< Is scrolling possible?
+	bool canScrollUp()   const; ///< Is scrolling up possible?
 	bool canScrollDown() const; ///< Is scrolling down possible?
 
 	/** Speak that line. */

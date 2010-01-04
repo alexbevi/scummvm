@@ -330,14 +330,7 @@ bool RoomConfigSprite::updateStatus() {
 
 		if (_status[0] & 8) {
 			// A Mike sprite, sync position and scaling
-
-			uint32 mX, mY;
-
-			_mike->getPosition(mX, mY);
-
-			x = mX;
-			y = mY;
-
+			_mike->getPosition(x, y);
 			scale = _mike->getScale();
 		}
 

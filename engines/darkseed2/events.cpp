@@ -231,7 +231,7 @@ void Events::handleInput() {
 	Common::Event event;
 
 	bool hasMove = false;
-	uint32 mouseX, mouseY;
+	int32 mouseX, mouseY;
 
 	while (g_system->getEventManager()->pollEvent(event)) {
 		switch (event.type) {
@@ -298,7 +298,7 @@ void Events::handleMovieInput() {
 	}
 }
 
-void Events::mouseMoved(uint32 x, uint32 y) {
+void Events::mouseMoved(int32 x, int32 y) {
 	if (_inIntro) {
 		// Mouse in a button area?
 		int titleSprite = checkTitleSprites(x, y);
@@ -327,7 +327,7 @@ void Events::mouseMoved(uint32 x, uint32 y) {
 	}
 }
 
-void Events::mouseClickedLeft(uint32 x, uint32 y) {
+void Events::mouseClickedLeft(int32 x, int32 y) {
 	if (_inIntro) {
 		// Mouse in a button area?
 		int titleSprite = checkTitleSprites(x, y);
@@ -373,7 +373,7 @@ void Events::mouseClickedLeft(uint32 x, uint32 y) {
 
 }
 
-void Events::checkHotspot(uint32 x, uint32 y) {
+void Events::checkHotspot(int32 x, int32 y) {
 	if (_vm->_graphics->getInventoryBox().isVisible()) {
 		checkInventoryHotspot(x, y);
 		return;
@@ -393,7 +393,7 @@ void Events::checkHotspot(uint32 x, uint32 y) {
 	}
 }
 
-void Events::checkInventoryHotspot(uint32 x, uint32 y) {
+void Events::checkInventoryHotspot(int32 x, int32 y) {
 	bool cursorActive = _vm->_graphics->getInventoryBox().hasAction(x, y, cursorModeToObjectVerb(_cursorMode));
 
 	if (cursorActive != _cursorActive) {
@@ -402,7 +402,7 @@ void Events::checkInventoryHotspot(uint32 x, uint32 y) {
 	}
 }
 
-void Events::mouseClickedRight(uint32 x, uint32 y) {
+void Events::mouseClickedRight(int32 x, int32 y) {
 	if (!_vm->_graphics->getConversationBox().isActive() && !_vm->_talkMan->isTalking()) {
 		// If no one is talking and the conversation box isn't shown, cycle the mouse cursors
 		if (_vm->_variables->get("SysCall") == 0) {
@@ -464,7 +464,7 @@ void Events::doObjectVerb(Object &object, ObjectVerb verb) {
 	_vm->_inter->interpret(object.getScripts(verb));
 }
 
-int Events::checkTitleSprites(uint32 x, uint32 y) const {
+int Events::checkTitleSprites(int32 x, int32 y) const {
 	for (int i = 0; i < 4; i++)
 		if (_titleSprites[i].isIn(x, y))
 			return i + 1;
