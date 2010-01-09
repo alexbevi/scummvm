@@ -23,8 +23,10 @@
  *
  */
 
+#include "common/types.h"
 #include "common/stream.h"
 
+#include "sound/audiostream.h"
 #include "sound/wave.h"
 
 #include "engines/darkseed2/sound.h"
@@ -105,7 +107,7 @@ bool Sound::playWAV(Resources &resources, const Common::String &wav,
 	delete resWAV;
 
 	Common::MemoryReadStream *stream =
-	 new Common::MemoryReadStream(data, size, Common::DisposeAfterUse::YES);
+	 new Common::MemoryReadStream(data, size, DisposeAfterUse::YES);
 
 	if (!playWAV(*stream, type, true)) {
 		delete stream;
