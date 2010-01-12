@@ -36,6 +36,8 @@ Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 	_variables = &variables;
 	_graphics  = &graphics;
 
+	_pathfinder = new Pathfinder(kWalkMapWidth, kWalkMapHeight);
+
 	_visible = false;
 
 	_x         = 0;
@@ -45,6 +47,8 @@ Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 	_targetX         = 0;
 	_targetY         = 0;
 	_targetDirection = _direction;
+
+	_currentWayPoint = _wayPoints.end();
 
 	_turnTo = kDirNone;
 
@@ -64,6 +68,7 @@ Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 }
 
 Mike::~Mike() {
+	delete _pathfinder;
 }
 
 bool Mike::init() {
@@ -273,7 +278,7 @@ void Mike::removeSprite() {
 }
 
 void Mike::setWalkMap() {
-	memset(_walkMap, 0, sizeof(_walkMap));
+	_pathfinder->clear();
 }
 
 void Mike::setWalkMap(const Sprite &walkMap) {
@@ -284,27 +289,12 @@ void Mike::setWalkMap(const Sprite &walkMap) {
 		return;
 	}
 
-	memcpy(_walkMap, walkMap.getData(), sizeof(_walkMap));
+	_pathfinder->setWalkMap(walkMap.getData());
 }
 
 void Mike::setScaleFactors(const int32 *scaleFactors) {
 	for (int i = 0; i < 3; i++)
 		_scaleFactors[i] = scaleFactors[i];
-}
-
-byte Mike::getWalkData(int32 x, int32 y) const {
-	return getWalk(screenCoordToWalkCoord(x), screenCoordToWalkCoord(y));
-}
-
-inline int32 Mike::screenCoordToWalkCoord(int32 walkCoord) {
-	return walkCoord / kWalkMapResolution;
-}
-
-inline byte Mike::getWalk(int32 x, int32 y) const {
-	// Sanity checks
-	assert((x >= 0) && (y >= 0) && (x < kWalkMapWidth) && (y < kWalkMapHeight));
-
-	return _walkMap[y * kWalkMapWidth + x];
 }
 
 void Mike::advanceTurn() {
@@ -345,10 +335,20 @@ void Mike::advanceTurn() {
 void Mike::advanceWalk() {
 	removeSprite();
 
-	if ((_x != _targetX) || (_y != _targetY)) {
+	int32 targetX, targetY;
+	if (_currentWayPoint != _wayPoints.end()) {
+		targetX = _currentWayPoint->x * kWalkMapResolution + _targetX % kWalkMapResolution;
+		targetY = _currentWayPoint->y * kWalkMapResolution + _targetY % kWalkMapResolution;
+	} else {
+		targetX = _targetX;
+		targetY = _targetY;
+	}
+
+
+	if ((_x != targetX) || (_y != targetY)) {
 		// Direction we're walking
-		bool east  = _x > _targetX;
-		bool south = _y > _targetY;
+		bool east  = _x > targetX;
+		bool south = _y > targetY;
 
 		// Advance position
 		_x += getStepOffsetX();
@@ -356,27 +356,30 @@ void Mike::advanceWalk() {
 
 		// Overshooting?
 		if (east) {
-			if (_x <= _targetX)
-				_x = _targetX;
+			if (_x <= targetX)
+				_x = targetX;
 		} else {
-			if (_x >= _targetX)
-				_x = _targetX;
+			if (_x >= targetX)
+				_x = targetX;
 		}
 		if (south) {
-			if (_y <= _targetY)
-				_y = _targetY;
+			if (_y <= targetY)
+				_y = targetY;
 		} else {
-			if (_y >= _targetY)
-				_y = _targetY;
+			if (_y >= targetY)
+				_y = targetY;
 		}
 	}
 
-	if ((_x == _targetX) && (_y == _targetY)) {
-		// Reached our target
-		_animState = kAnimStateStanding;
+	if ((_x == targetX) && (_y == targetY)) {
+		if (_currentWayPoint != _wayPoints.end())
+			++_currentWayPoint;
+		else
+			// Reached our target
+			_animState = kAnimStateStanding;
 	}
 
-	Direction direction = getDirection(_x, _y, _targetX, _targetY);
+	Direction direction = getDirection(_x, _y, targetX, targetY);
 	if ((_direction != direction) && (direction != kDirNone)) {
 		// We need to turn to a new direction
 		_state = kStateTurning;
@@ -405,6 +408,10 @@ void Mike::go(int32 x, int32 y, Direction direction) {
 	_targetX         = x;
 	_targetY         = y;
 	_targetDirection = direction;
+
+	_wayPoints = _pathfinder->findPath(_x / kWalkMapResolution, _y / kWalkMapResolution,
+			_targetX / kWalkMapResolution, _targetY / kWalkMapResolution);
+	_currentWayPoint = _wayPoints.begin();
 
 	// Set states to walking
 	_state     = kStateWalking;
@@ -449,7 +456,18 @@ int32 Mike::getStepOffsetX() const {
 	}
 
 	// Scale offset
-	return fracToInt(offset * _scale);
+	int32 scaledOffset = fracToInt(offset * _scale);
+
+	if (scaledOffset == 0) {
+		// If we scaled it down to 0, return the minimum, 1/-1
+
+		if      (offset > 0)
+			return  1;
+		else if (offset < 0)
+			return -1;
+	}
+
+	return scaledOffset;
 }
 
 int32 Mike::getStepOffsetY() const {
@@ -487,7 +505,18 @@ int32 Mike::getStepOffsetY() const {
 	}
 
 	// Scale offset
-	return fracToInt(offset * _scale);
+	int32 scaledOffset = fracToInt(offset * _scale);
+
+	if (scaledOffset == 0) {
+		// If we scaled it down to 0, return the minimum, 1/-1
+
+		if      (offset > 0)
+			return  1;
+		else if (offset < 0)
+			return -1;
+	}
+
+	return scaledOffset;
 }
 
 Mike::Direction Mike::getDirection(int32 x1, int32 y1, int32 x2, int32 y2) {

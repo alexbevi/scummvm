@@ -31,6 +31,7 @@
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/graphicalobject.h"
+#include "engines/darkseed2/pathfinder.h"
 
 namespace Common {
 	class String;
@@ -131,6 +132,7 @@ private:
 	Variables *_variables;
 	Graphics  *_graphics;
 
+	Pathfinder *_pathfinder;
 	/** Is Mike visible? */
 	bool _visible;
 
@@ -143,11 +145,11 @@ private:
 	int32    _targetX;          ///< Our target's x coordinate
 	int32    _targetY;          ///< Our target's y coordinate.
 	Direction _targetDirection; ///< Our target's direction.
+	Common::List<Position> _wayPoints;
+	Common::List<Position>::const_iterator _currentWayPoint;
 
 	/** The direction to turn to. */
 	Direction _turnTo;
-
-	byte _walkMap[kWalkMapWidth * kWalkMapHeight];
 
 	int32  _scaleFactors[3]; ///< The scaling factors.
 	frac_t _scale;           ///< The current scaling value.
@@ -168,9 +170,6 @@ private:
 
 	/** Load animations. */
 	bool loadAnimations();
-
-	inline static int32 screenCoordToWalkCoord(int32 walkCoord);
-	inline byte getWalk(int32 x, int32 y) const;
 
 	/** Update the scaling value based on the current y coordinate. */
 	void updateScale();
