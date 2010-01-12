@@ -31,7 +31,6 @@
 #ifndef DARKSEED2_PATHFINDER_H
 #define DARKSEED2_PATHFINDER_H
 
-#include "common/array.h"
 #include "common/list.h"
 
 #include "engines/darkseed2/darkseed2.h"
@@ -65,7 +64,7 @@ public:
 	void setWalkMap(const byte *map);
 
 	/** Find a path between two positions. */
-	Common::Array<Position> findPath(int32 x1, int32 y1, int32 x2, int32 y2);
+	Common::List<Position> findPath(int32 x1, int32 y1, int32 x2, int32 y2);
 
 private:
 	struct Walkable {

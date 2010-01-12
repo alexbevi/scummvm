@@ -174,8 +174,8 @@ Pathfinder::Walkable *Pathfinder::findNearest(int32 x, int32 y) {
 	return nearest;
 }
 
-Common::Array<Position> Pathfinder::findPath(int32 x1, int32 y1, int32 x2, int32 y2) {
-	Common::Array<Position> pathPos;
+Common::List<Position> Pathfinder::findPath(int32 x1, int32 y1, int32 x2, int32 y2) {
+	Common::List<Position> pathPos;
 
 	Walkable *start = 0;
 	Walkable *end   = 0;
@@ -201,7 +201,9 @@ Common::Array<Position> Pathfinder::findPath(int32 x1, int32 y1, int32 x2, int32
 
 	// Create a position list
 	for (Common::List<const Walkable *>::iterator it = path.begin(); it != path.end(); ++it)
-		pathPos.push_back((*it)->position);
+		pathPos.push_front((*it)->position);
+	pathPos.push_front(pathPos.back());
+	pathPos.pop_back();
 
 	return pathPos;
 }
