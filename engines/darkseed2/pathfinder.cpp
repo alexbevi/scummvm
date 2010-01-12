@@ -205,6 +205,8 @@ Common::List<Position> Pathfinder::findPath(int32 x1, int32 y1, int32 x2, int32 
 	pathPos.push_front(pathPos.back());
 	pathPos.pop_back();
 
+	simplifyPath(pathPos);
+
 	return pathPos;
 }
 
@@ -296,6 +298,74 @@ bool Pathfinder::DFS(uint32 cost, Walkable &node, uint32 &costLimit, Common::Lis
 
 	costLimit = nextCostLimit;
 	return false;
+}
+
+void Pathfinder::simplifyPath(Common::List<Position> &path) {
+	Common::List<Position>::iterator first, second, third;
+
+	first = path.begin();
+
+	second = first;
+	second++;
+
+	third = second;
+	third++;
+
+	while ((first != path.end()) && (second != path.end()) && (third != path.end())) {
+		if (!isStraightLine(first, second, third)) {
+			first++;
+			second++;
+			third++;
+		} else
+			removeMiddleman(path, first, second, third);
+	}
+
+}
+
+bool Pathfinder::isStraightLine(const Common::List<Position>::iterator &a,
+		const Common::List<Position>::iterator &b, const Common::List<Position>::iterator &c) {
+
+	// Straight horizontal
+	if ((a->x == b->x) && (a->x == c->x))
+		return true;
+
+	// Straight vertical
+	if ((a->y == b->y) && (a->y == c->y))
+		return true;
+
+	// Diagonal up-right
+	if (((a->x + 1) == b->x) && ((b->x + 1) && c->x) &&
+	    ((a->y + 1) == b->y) && ((b->y + 1) && c->y))
+		return true;
+
+	// Diagonal down-left
+	if (((a->x - 1) == b->x) && ((b->x - 1) && c->x) &&
+	    ((a->y - 1) == b->y) && ((b->y - 1) && c->y))
+		return true;
+
+	// Diagonal down-right
+	if (((a->x + 1) == b->x) && ((b->x + 1) && c->x) &&
+	    ((a->y - 1) == b->y) && ((b->y - 1) && c->y))
+		return true;
+
+	// Diagonal up-left
+	if (((a->x - 1) == b->x) && ((b->x - 1) && c->x) &&
+	    ((a->y + 1) == b->y) && ((b->y + 1) && c->y))
+		return true;
+
+	return false;
+}
+
+void Pathfinder::removeMiddleman(Common::List<Position> &list,
+		Common::List<Position>::iterator &a, Common::List<Position>::iterator &b,
+		Common::List<Position>::iterator &c) {
+
+	// Remove the node
+	list.erase(b);
+
+	// Set the iterator to the next three positions
+	b = c;
+	c++;
 }
 
 } // End of namespace DarkSeed2

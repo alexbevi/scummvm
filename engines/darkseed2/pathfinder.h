@@ -113,6 +113,16 @@ private:
 	Common::List<const Walkable *> findPathIDAStar(Walkable &start, Walkable &end);
 	/** Recursively called depth-first search method. */
 	bool DFS(uint32 cost, Walkable &node, uint32 &costLimit, Common::List<const Walkable *> &path);
+
+	/** Simplify a path to only contain really needed edge nodes. */
+	static void simplifyPath(Common::List<Position> &path);
+	/** Do these three positions lie in a straight line? */
+	static bool isStraightLine(const Common::List<Position>::iterator &a,
+			const Common::List<Position>::iterator &b, const Common::List<Position>::iterator &c);
+	/** Remove the middle position and set the iterators to the next three positions. */
+	static void removeMiddleman(Common::List<Position> &list,
+			Common::List<Position>::iterator &a, Common::List<Position>::iterator &b,
+			Common::List<Position>::iterator &c);
 };
 
 } // End of namespace DarkSeed2
