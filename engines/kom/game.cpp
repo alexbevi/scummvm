@@ -1966,7 +1966,7 @@ int8 Game::doDonut(int type, Inventory *inv) {
 
 		break;
 	default:
-		error("Illegal type for donut\n");
+		error("Illegal type for donut");
 	}
 
 	while (donutLoopState != 0) {
@@ -2084,7 +2084,7 @@ int8 Game::doDonut(int type, Inventory *inv) {
 				hotspotDesc =
 					_vm->database()->getObj(_settings.collideObj)->desc;
 			else
-				error("Illegal collide type in donut\n");
+				error("Illegal collide type in donut");
 
 			_vm->panel()->setHotspotDesc(hotspotDesc);
 		}
