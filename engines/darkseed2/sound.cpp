@@ -71,7 +71,8 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 	wav.seek(0);
 
 	// Load WAV
-	Audio::AudioStream *wavStream = Audio::makeWAVStream(&wav, autoFree);
+	DisposeAfterUse::Flag dispose = autoFree ? DisposeAfterUse::YES : DisposeAfterUse::NO;
+	Audio::AudioStream *wavStream = Audio::makeWAVStream(&wav, dispose);
 	if (!wavStream)
 		return false;
 
