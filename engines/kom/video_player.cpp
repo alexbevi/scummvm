@@ -71,6 +71,12 @@ bool VideoPlayer::playVideo(char *filename) {
 	// Backup the palette
 	_vm->_system->grabPalette(backupPalette, 0, 256);
 
+	// Unload previous sample (when the movie finishes before
+	// the sample, it never unloads. This happens when talking
+	// to the pixie)
+	_vm->sound()->stopSample(_sample);
+	_sample.unload();
+
 	if (!_player->loadFile(filename)) {
 		ColorSet *cs;
 		int length = strlen(filename);
