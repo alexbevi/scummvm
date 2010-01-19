@@ -333,24 +333,13 @@ bool Pathfinder::isStraightLine(const Common::List<Position>::iterator &a,
 	if ((a->y == b->y) && (a->y == c->y))
 		return true;
 
-	// Diagonal up-right
-	if (((a->x + 1) == b->x) && ((b->x + 1) && c->x) &&
-	    ((a->y + 1) == b->y) && ((b->y + 1) && c->y))
-		return true;
+	int32 dx1 = b->x - a->x;
+	int32 dx2 = c->x - b->x;
+	int32 dy1 = b->y - a->y;
+	int32 dy2 = c->y - b->y;
 
-	// Diagonal down-left
-	if (((a->x - 1) == b->x) && ((b->x - 1) && c->x) &&
-	    ((a->y - 1) == b->y) && ((b->y - 1) && c->y))
-		return true;
-
-	// Diagonal down-right
-	if (((a->x + 1) == b->x) && ((b->x + 1) && c->x) &&
-	    ((a->y - 1) == b->y) && ((b->y - 1) && c->y))
-		return true;
-
-	// Diagonal up-left
-	if (((a->x - 1) == b->x) && ((b->x - 1) && c->x) &&
-	    ((a->y + 1) == b->y) && ((b->y + 1) && c->y))
+	// Diagonal
+	if ((ABS(dx1) == ABS(dy1)) && (ABS(dx2) == ABS(dy2)))
 		return true;
 
 	return false;
