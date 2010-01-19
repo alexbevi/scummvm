@@ -110,7 +110,7 @@ void Sound::playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType t
 		flags |= Audio::Mixer::FLAG_LOOP;
 
 	_mixer->playRaw(type, &(sample._handle.handle), sample._data,
-			sample._size, 11025, flags, -1, volume);
+			sample._size, DisposeAfterUse::NO, 11025, flags, -1, volume);
 }
 
 void Sound::stopSample(SoundSample &sample) {
