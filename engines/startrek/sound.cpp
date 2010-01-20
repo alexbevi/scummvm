@@ -28,6 +28,7 @@
 #include "common/file.h"
 
 #include "sound/mods/protracker.h"
+#include "sound/raw.h"
 
 namespace StarTrek {
 
@@ -155,7 +156,8 @@ void Sound::playAmigaSoundEffect(const char *baseSoundName) {
 	Common::SeekableReadStream *stream = _vm->openFile(soundName.c_str());
 	byte *data = (byte *)malloc(stream->size());
 	stream->read(data, stream->size());
-	_vm->_mixer->playRaw(Audio::Mixer::kSFXSoundType, _soundHandle, data, stream->size(), DisposeAfterUse::YES, 11025, 0);
+	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawMemoryStream(data, stream->size(), DisposeAfterUse::YES, 11025, 0);
+	_vm->_mixer->playInputStream(Audio::Mixer::kSFXSoundType, _soundHandle, audStream);
 	delete stream;
 }
 
@@ -177,7 +179,8 @@ void Sound::playMacSoundEffect(const char *baseSoundName) {
 		_vm->_mixer->stopHandle(*_soundHandle);
 	byte *data = (byte *)malloc(stream->size());
 	stream->read(data, stream->size());
-	_vm->_mixer->playRaw(Audio::Mixer::kSFXSoundType, _soundHandle, data, stream->size(), DisposeAfterUse::YES, 11025, 0);
+	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawMemoryStream(data, stream->size(), DisposeAfterUse::YES, 11025, 0);
+	_vm->_mixer->playInputStream(Audio::Mixer::kSFXSoundType, _soundHandle, audStream);
 	delete stream;
 }
 
