@@ -36,6 +36,7 @@
 #include "sound/mixer.h"
 #include "sound/voc.h"
 #include "sound/audiostream.h"
+#include "sound/raw.h"
 
 using Common::File;
 
@@ -43,6 +44,7 @@ namespace Kom {
 
 bool SoundSample::loadFile(Common::String filename) {
 	File f;
+	byte *data;
 
 	unload();
 
@@ -53,16 +55,19 @@ bool SoundSample::loadFile(Common::String filename) {
 
 	f.open(filename);
 	_size = f.size();
-	_data = new byte[_size];
-	f.read(_data, f.size());
+	data = (byte *)malloc(_size);
+	f.read(data, f.size());
 	f.close();
+
+	_stream = Audio::makeRawMemoryStream(data, _size,
+			DisposeAfterUse::YES, 11025, Audio::FLAG_UNSIGNED);
 
 	return true;
 }
 
 void SoundSample::unload() {
-	delete[] _data;
-	_data = 0;
+	delete _stream;
+	_stream = 0;
 }
 
 Sound::Sound(KomEngine *vm, Audio::Mixer *mixer)
@@ -89,12 +94,13 @@ void Sound::playSampleSpeech(SoundSample &sample) {
 }
 
 void Sound::playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume) {
-	byte flags;
+
+	uint8 i;
 
 	if (!sample.isLoaded())
 		return;
 
-	uint8 i;
+	sample._stream->rewind();
 
 	if (_mixer->isSoundHandleActive(sample._handle.handle)) {
 		_mixer->stopHandle(sample._handle.handle);
@@ -104,13 +110,12 @@ void Sound::playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType t
 		_handles[i] = &(sample._handle);
 	}
 
-	flags = Audio::Mixer::FLAG_UNSIGNED;
-
-	if (loop)
-		flags |= Audio::Mixer::FLAG_LOOP;
-
-	_mixer->playRaw(type, &(sample._handle.handle), sample._data,
-			sample._size, DisposeAfterUse::NO, 11025, flags, -1, volume);
+	if (loop) {
+		Audio::AudioStream *stream = new Audio::LoopingAudioStream(sample._stream, 0, DisposeAfterUse::NO);
+		_mixer->playInputStream(type, &(sample._handle.handle), stream, -1, volume, 0, DisposeAfterUse::YES);
+	} else {
+		_mixer->playInputStream(type, &(sample._handle.handle), sample._stream, -1, volume, 0, DisposeAfterUse::NO);
+	}
 }
 
 void Sound::stopSample(SoundSample &sample) {

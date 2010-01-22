@@ -33,6 +33,7 @@
 #include "common/str.h"
 
 #include "sound/mixer.h"
+#include "sound/audiostream.h"
 
 namespace Kom {
 
@@ -46,17 +47,17 @@ struct SoundHandle {
 class SoundSample {
 	friend class Sound;
 public:
-	SoundSample() { _data = 0; }
-	~SoundSample() { delete[] _data; }
+	SoundSample() { _stream = 0; }
+	~SoundSample() { delete _stream; }
 
 	bool loadFile(Common::String filename);
 	void unload();
-	bool isLoaded() { return _data != 0; }
+	bool isLoaded() { return _stream != 0; }
 
 private:
 	SoundHandle _handle;
 	uint32 _size;
-	byte* _data;
+	Audio::SeekableAudioStream *_stream;
 };
 
 class Sound {
