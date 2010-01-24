@@ -156,7 +156,7 @@ void Sound::playAmigaSoundEffect(const char *baseSoundName) {
 	Common::SeekableReadStream *stream = _vm->openFile(soundName.c_str());
 	byte *data = (byte *)malloc(stream->size());
 	stream->read(data, stream->size());
-	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawMemoryStream(data, stream->size(), DisposeAfterUse::YES, 11025, 0);
+	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawMemoryStream(data, stream->size(), 11025, 0);
 	_vm->_mixer->playInputStream(Audio::Mixer::kSFXSoundType, _soundHandle, audStream);
 	delete stream;
 }
@@ -179,7 +179,7 @@ void Sound::playMacSoundEffect(const char *baseSoundName) {
 		_vm->_mixer->stopHandle(*_soundHandle);
 	byte *data = (byte *)malloc(stream->size());
 	stream->read(data, stream->size());
-	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawMemoryStream(data, stream->size(), DisposeAfterUse::YES, 11025, 0);
+	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawMemoryStream(data, stream->size(), 11025, 0);
 	_vm->_mixer->playInputStream(Audio::Mixer::kSFXSoundType, _soundHandle, audStream);
 	delete stream;
 }
