@@ -41,7 +41,9 @@ using Common::String;
 namespace Kom {
 
 ActorManager::ActorManager(KomEngine *vm) : _vm(vm) {
-
+	_actors.resize(6);
+	for (uint i = 0; i < _actors.size(); ++i)
+		_actors[i] = NULL;
 }
 
 ActorManager::~ActorManager() {
