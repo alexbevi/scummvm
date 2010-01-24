@@ -137,7 +137,7 @@ public:
 	Actor *getObjects() { return _objectsActor; }
 	Actor *getCharIcon() { return _charIconActor; }
 	void unload(int idx) { if (idx >= 0) { delete _actors[idx]; _actors[idx] = 0; } }
-	void unloadAll() { _actors.clear(); }
+	void unloadAll() { for (uint i = 0; i < _actors.size(); i++) unload(i); }
 	void displayAll();
 	void pauseAnimAll(bool pause);
 
