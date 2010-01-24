@@ -60,7 +60,7 @@ bool SoundSample::loadFile(Common::String filename) {
 	f.close();
 
 	_stream = Audio::makeRawMemoryStream(data, _size,
-			DisposeAfterUse::YES, 11025, Audio::FLAG_UNSIGNED);
+			11025, Audio::FLAG_UNSIGNED);
 
 	return true;
 }
