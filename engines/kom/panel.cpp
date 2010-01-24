@@ -56,6 +56,8 @@ Panel::~Panel() {
 	delete[] _panelData;
 	delete[] _panelBuf;
 	delete[] _locationDesc;
+	delete[] _actionDesc;
+	delete[] _hotspotDesc;
 }
 
 void Panel::clear() {
