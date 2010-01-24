@@ -55,7 +55,7 @@ public:
 	bool isLoaded() { return _stream != 0; }
 
 private:
-	SoundHandle _handle;
+	Audio::SoundHandle _handle;
 	uint32 _size;
 	Audio::SeekableAudioStream *_stream;
 };
@@ -74,16 +74,12 @@ public:
 	void playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume);
 	void stopSample(SoundSample &sample);
 	void pauseSample(SoundSample &sample, bool paused);
-	bool isPlaying(SoundSample &sample) { return _mixer->isSoundHandleActive(sample._handle.handle); }
+	bool isPlaying(SoundSample &sample) { return _mixer->isSoundHandleActive(sample._handle); }
 
 private:
 
 	KomEngine *_vm;
 	Audio::Mixer *_mixer;
-
-	SoundHandle *_handles[SOUND_HANDLES];
-
-	uint8 getFreeHandle();
 };
 
 } // end of namespace Kom

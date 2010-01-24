@@ -48,8 +48,6 @@ bool SoundSample::loadFile(Common::String filename) {
 
 	unload();
 
-	_handle.index = -1;
-
 	if (!File::exists(filename))
 		return false;
 
@@ -73,9 +71,6 @@ void SoundSample::unload() {
 Sound::Sound(KomEngine *vm, Audio::Mixer *mixer)
 	: _vm(vm), _mixer(mixer), _musicEnabled(true),
 	_sfxEnabled(true) {
-
-	for (int i = 0; i < SOUND_HANDLES; i++)
-		_handles[i] = 0;
 }
 
 Sound::~Sound() {
@@ -95,57 +90,33 @@ void Sound::playSampleSpeech(SoundSample &sample) {
 
 void Sound::playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume) {
 
-	uint8 i;
-
 	if (!sample.isLoaded())
 		return;
 
 	sample._stream->rewind();
 
-	if (_mixer->isSoundHandleActive(sample._handle.handle)) {
-		_mixer->stopHandle(sample._handle.handle);
-	} else {
-		i = getFreeHandle();
-		sample._handle.index = i;
-		_handles[i] = &(sample._handle);
+	if (_mixer->isSoundHandleActive(sample._handle)) {
+		_mixer->stopHandle(sample._handle);
 	}
 
 	if (loop) {
 		Audio::AudioStream *stream = new Audio::LoopingAudioStream(sample._stream, 0, DisposeAfterUse::NO);
-		_mixer->playInputStream(type, &(sample._handle.handle), stream, -1, volume, 0, DisposeAfterUse::YES);
+		_mixer->playInputStream(type, &(sample._handle), stream, -1, volume, 0, DisposeAfterUse::YES);
 	} else {
-		_mixer->playInputStream(type, &(sample._handle.handle), sample._stream, -1, volume, 0, DisposeAfterUse::NO);
+		_mixer->playInputStream(type, &(sample._handle), sample._stream, -1, volume, 0, DisposeAfterUse::NO);
 	}
 }
 
 void Sound::stopSample(SoundSample &sample) {
-	if (_mixer->isSoundHandleActive(sample._handle.handle)) {
-		_handles[sample._handle.index] = 0;
-		sample._handle.index = -1;
-		_mixer->stopHandle(sample._handle.handle);
+	if (_mixer->isSoundHandleActive(sample._handle)) {
+		_mixer->stopHandle(sample._handle);
 	}
 }
 
 void Sound::pauseSample(SoundSample &sample, bool paused) {
-	if (_mixer->isSoundHandleActive(sample._handle.handle)) {
-		_mixer->pauseHandle(sample._handle.handle, paused);
+	if (_mixer->isSoundHandleActive(sample._handle)) {
+		_mixer->pauseHandle(sample._handle, paused);
 	}
-}
-
-uint8 Sound::getFreeHandle() {
-	for (int i = 0; i < SOUND_HANDLES; i++) {
-		if (_handles[i] == 0)
-			return i;
-
-		if (!_mixer->isSoundHandleActive(_handles[i]->handle)) {
-			_handles[i] = 0;
-			return i;
-		}
-	}
-
-	error("Sound::getHandle(): Too many sound handles");
-
-	return 0;
 }
 
 } // end of namespace Kom
