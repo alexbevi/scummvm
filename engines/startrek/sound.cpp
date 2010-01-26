@@ -28,7 +28,7 @@
 #include "common/file.h"
 
 #include "sound/mods/protracker.h"
-#include "sound/raw.h"
+#include "sound/decoders/raw.h"
 
 namespace StarTrek {
 
