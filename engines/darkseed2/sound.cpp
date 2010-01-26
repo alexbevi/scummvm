@@ -27,7 +27,7 @@
 #include "common/stream.h"
 
 #include "sound/audiostream.h"
-#include "sound/wave.h"
+#include "sound/decoders/wave.h"
 
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/options.h"
