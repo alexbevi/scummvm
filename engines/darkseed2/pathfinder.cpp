@@ -24,6 +24,7 @@
  */
 
 #include "engines/darkseed2/pathfinder.h"
+#include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
 
@@ -83,6 +84,9 @@ Pathfinder::Pathfinder(int32 width, int32 height) {
 	// A limit that seems high enough for all Dark Seed II walk maps :P
 	_nodesVisitedLimit = 3 * _width * _height;
 	_abortSearch       = false;
+
+	_topY =  0;
+	_resY = 10;
 }
 
 Pathfinder::~Pathfinder() {
@@ -96,18 +100,43 @@ void Pathfinder::clear() {
 		delete _tiles[i];
 		_tiles[i] = 0;
 	}
+
+	_topY =  0;
+	_resY = 10;
 }
 
-void Pathfinder::setWalkMap(const byte *map) {
-	clear();
+void Pathfinder::setWalkMap(const Sprite &map, int32 topY, int32 resY) {
+	if (!map.exists())
+		return;
 
-	// Create tiles array
+	clear();
+	delete[] _tiles;
+
+	_width  = map.getWidth();
+	_height = map.getHeight();
+
+	_topY = topY;
+	_resY = resY;
+
+	_tiles = new Walkable*[_width * _height];
+	for (int32 i = 0; i < (_width * _height); i++)
+		_tiles[i] = 0;
+
+	const byte *mapData = map.getData();
 	for (int32 y = 0; y < _height; y++)
 		for (int32 x = 0; x < _width; x++)
-			if (map[y * _width + x])
-				_tiles[y * _width + x] = new Walkable(x, y, map[y * _width + x]);
+			if (mapData[y * _width + x])
+				_tiles[y * _width + x] = new Walkable(x, y, mapData[y * _width + x]);
 
 	findNeighbours();
+}
+
+int32 Pathfinder::getXResolution() const {
+	return 10;
+}
+
+int32 Pathfinder::getYResolution() const {
+	return _resY;
 }
 
 void Pathfinder::findNeighbours() {
@@ -180,6 +209,9 @@ Common::List<Position> Pathfinder::findPath(int32 x1, int32 y1, int32 x2, int32 
 	Walkable *start = 0;
 	Walkable *end   = 0;
 
+	convertToMapCoordinates(x1, y1);
+	convertToMapCoordinates(x2, y2);
+
 	// If the coordinates of either node are valid, look at the walk map
 	if ((x1 >= 0) && (y1 >= 0) && (x1 < _width) && (y1 < _height))
 		start = _tiles[y1 * _width + x1];
@@ -201,7 +233,7 @@ Common::List<Position> Pathfinder::findPath(int32 x1, int32 y1, int32 x2, int32 
 
 	// Create a position list
 	for (Common::List<const Walkable *>::iterator it = path.begin(); it != path.end(); ++it)
-		pathPos.push_front((*it)->position);
+		pathPos.push_front(convertFromMapCoordinates((*it)->position));
 	pathPos.push_front(pathPos.back());
 	pathPos.pop_back();
 
@@ -355,6 +387,15 @@ void Pathfinder::removeMiddleman(Common::List<Position> &list,
 	// Set the iterator to the next three positions
 	b = c;
 	c++;
+}
+
+void Pathfinder::convertToMapCoordinates(int32 &x, int32 &y) const {
+	x /= 10;
+	y = (y - _topY) / _resY;
+}
+
+Position Pathfinder::convertFromMapCoordinates(const Position position) const {
+	return Position(position.x * 10, (position.y * _resY) + _topY);
 }
 
 } // End of namespace DarkSeed2

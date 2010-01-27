@@ -50,6 +50,12 @@ int Palette::getSize() const {
 	return _size;
 }
 
+void Palette::resize(int n) {
+	n = CLIP(n, 0, 256);
+
+	_size = n;
+}
+
 Palette &Palette::operator=(const Palette &palette) {
 	copyFrom(palette);
 	return *this;

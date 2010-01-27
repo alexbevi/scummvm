@@ -281,15 +281,8 @@ void Mike::setWalkMap() {
 	_pathfinder->clear();
 }
 
-void Mike::setWalkMap(const Sprite &walkMap) {
-	if ((walkMap.getWidth() != kWalkMapWidth) || (walkMap.getHeight() != kWalkMapHeight)) {
-		warning("Mike::setWalkMap(): Invalid walk map dimensions: %dx%d",
-				walkMap.getWidth(), walkMap.getHeight());
-		setWalkMap();
-		return;
-	}
-
-	_pathfinder->setWalkMap(walkMap.getData());
+void Mike::setWalkMap(const Sprite &walkMap, int32 arg1, int32 arg2) {
+	_pathfinder->setWalkMap(walkMap, arg1, arg2);
 }
 
 void Mike::setScaleFactors(const int32 *scaleFactors) {
@@ -337,8 +330,8 @@ void Mike::advanceWalk() {
 
 	int32 targetX, targetY;
 	if (_currentWayPoint != _wayPoints.end()) {
-		targetX = _currentWayPoint->x * kWalkMapResolution + _targetX % kWalkMapResolution;
-		targetY = _currentWayPoint->y * kWalkMapResolution + _targetY % kWalkMapResolution;
+		targetX = _currentWayPoint->x + _targetX % _pathfinder->getXResolution();
+		targetY = _currentWayPoint->y + _targetY % _pathfinder->getYResolution();
 	} else {
 		targetX = _targetX;
 		targetY = _targetY;
@@ -409,8 +402,7 @@ void Mike::go(int32 x, int32 y, Direction direction) {
 	_targetY         = y;
 	_targetDirection = direction;
 
-	_wayPoints = _pathfinder->findPath(_x / kWalkMapResolution, _y / kWalkMapResolution,
-			_targetX / kWalkMapResolution, _targetY / kWalkMapResolution);
+	_wayPoints = _pathfinder->findPath(_x, _y, _targetX, _targetY);
 	_currentWayPoint = _wayPoints.begin();
 
 	// Set states to walking

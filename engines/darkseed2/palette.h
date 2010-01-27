@@ -47,6 +47,8 @@ public:
 
 	/** Number of entries filled. */
 	int getSize() const;
+	/** Resize the palette to n entries. */
+	void resize(int n);
 
 	/** Return the complete palette data. */
 	byte *get();

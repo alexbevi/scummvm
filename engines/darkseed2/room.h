@@ -56,6 +56,11 @@ public:
 	const Sprite &getBackground() const;
 	/** Get the roon's walk map. */
 	const Sprite &getWalkMap() const;
+	/** Get the area the walk map applies to. */
+	Common::Rect getWalkMapArea() const;
+
+	int32 getWalkMapYTop() const;
+	int32 getWalkMapYResolution() const;
 
 	const int32 *getScaleFactors() const;
 
@@ -98,12 +103,13 @@ private:
 	Common::String _backgroundFile; ///< The room's background file.
 	Common::String _walkMapFile;    ///< The room's walk map file.
 
+	int32 _walkMapYTop;
+	int32 _walkMapYResolution;
+
 	Sprite *_background; ///< The room's background.
 	Sprite *_walkMap;    ///< The room's walk map.
 
 	Common::Rect _area; ///< The room's area;
-
-	uint32 _walkMapArg1, _walkMapArg2;
 
 	/** The scaling factors. */
 	int32 _scaleFactors[3];

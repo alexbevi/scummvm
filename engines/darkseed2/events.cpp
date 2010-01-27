@@ -488,7 +488,7 @@ bool Events::roomEnter() {
 
 	// Update Mike
 	_vm->_mike->setVisible(true);
-	_vm->_mike->setWalkMap(room.getWalkMap());
+	_vm->_mike->setWalkMap(room.getWalkMap(), room.getWalkMapYTop(), room.getWalkMapYResolution());
 	_vm->_mike->setScaleFactors(room.getScaleFactors());
 
 	// Evaluate the room config, to get the initial room sprites set up

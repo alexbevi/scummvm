@@ -37,6 +37,8 @@
 
 namespace DarkSeed2 {
 
+class Sprite;
+
 /** A position within a walk map. */
 struct Position {
 	int32 x; ///< X coordinate.
@@ -61,10 +63,13 @@ public:
 	void clear();
 
 	/** Set the walk map. */
-	void setWalkMap(const byte *map);
+	void setWalkMap(const Sprite &map, int32 topY, int32 resY);
 
 	/** Find a path between two positions. */
 	Common::List<Position> findPath(int32 x1, int32 y1, int32 x2, int32 y2);
+
+	int32 getXResolution() const;
+	int32 getYResolution() const;
 
 private:
 	struct Walkable {
@@ -90,6 +95,9 @@ private:
 
 	int32 _width;  ///< The walk map's width.
 	int32 _height; ///< The walk map's height.
+
+	int32 _topY;
+	int32 _resY;
 
 	/** The complete walk map. */
 	Walkable **_tiles;
@@ -123,6 +131,9 @@ private:
 	static void removeMiddleman(Common::List<Position> &list,
 			Common::List<Position>::iterator &a, Common::List<Position>::iterator &b,
 			Common::List<Position>::iterator &c);
+
+	void convertToMapCoordinates(int32 &x, int32 &y) const;
+	Position convertFromMapCoordinates(const Position) const;
 };
 
 } // End of namespace DarkSeed2

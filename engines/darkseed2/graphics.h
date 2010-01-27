@@ -109,6 +109,9 @@ public:
 	/** Check for status changes. */
 	void updateStatus();
 
+	/** Fill the whole screen with palette entry 0. */
+	void clearScreen();
+
 	/** Clear the game palette. */
 	void clearPalette();
 	/** Change the game palette. */

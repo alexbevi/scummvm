@@ -168,6 +168,11 @@ void Graphics::updateStatus() {
 	_inventoryBox->updateStatus();
 }
 
+void Graphics::clearScreen() {
+	_screen.clear();
+	dirtyAll();
+}
+
 void Graphics::clearPalette() {
 	_gamePalette.clear();
 	applyGamePalette();
@@ -184,7 +189,7 @@ void Graphics::enterMovieMode() {
 
 void Graphics::leaveMovieMode() {
 	applyGamePalette();
-	requestRedraw();
+	dirtyAll();
 }
 
 void Graphics::assertPalette0() {
@@ -210,8 +215,8 @@ void Graphics::initPalette() {
 	_gamePalette[2] = 0;
 
 	// Some standard colors
-	_gamePalette.addColor(255, 255, 255, true);
 	_gamePalette.addColor(  0,   0,   0, true);
+	_gamePalette.addColor(255, 255, 255, true);
 	_gamePalette.addColor(239, 167, 127, true);
 
 	applyGamePalette();
@@ -410,7 +415,7 @@ void Graphics::unregisterBackground() {
 }
 
 void Graphics::requestRedraw() {
-	requestRedraw(Common::Rect(0, 0, kScreenWidth, kScreenHeight));
+	dirtyAll();
 }
 
 void Graphics::requestRedraw(const Common::Rect &rect) {

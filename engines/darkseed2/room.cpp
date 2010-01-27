@@ -79,8 +79,8 @@ void Room::clear() {
 	_background = 0;
 	_walkMap    = 0;
 
-	_walkMapArg1 = 0;
-	_walkMapArg2 = 0;
+	_walkMapYTop        =  0;
+	_walkMapYResolution = 10;
 
 	for (int i = 0; i < 3; i++)
 		_scaleFactors[i] = 0;
@@ -111,6 +111,14 @@ const Sprite &Room::getWalkMap() const {
 	assert(_ready);
 
 	return *_walkMap;
+}
+
+int32 Room::getWalkMapYTop() const {
+	return _walkMapYTop;
+}
+
+int32 Room::getWalkMapYResolution() const {
+	return _walkMapYResolution;
 }
 
 const int32 *Room::getScaleFactors() const {
@@ -266,9 +274,13 @@ bool Room::setWalkMap(const Common::String &args) {
 	_walkMapFile = lArgs[0];
 
 	if (lArgs.size() == 3) {
-		_walkMapArg1 = atoi(lArgs[1].c_str());
-		_walkMapArg2 = atoi(lArgs[2].c_str());
+		_walkMapYTop        = atoi(lArgs[1].c_str());
+		_walkMapYResolution = atoi(lArgs[2].c_str());
+	} else {
+		_walkMapYTop        =  0;
+		_walkMapYResolution = 10;
 	}
+
 
 	return true;
 }

@@ -102,7 +102,7 @@ public:
 	/** Reset the walk map. */
 	void setWalkMap();
 	/** Set the walk map. */
-	void setWalkMap(const Sprite &walkMap);
+	void setWalkMap(const Sprite &walkMap, int32 arg1, int32 arg2);
 
 	/** Set the scaling factors. */
 	void setScaleFactors(const int32 *scaleFactors);
