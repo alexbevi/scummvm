@@ -322,21 +322,13 @@ void Mike::advanceTurn() {
 		}
 	}
 
+	_animations[_animState][_direction].setFrame(0);
 	addSprite();
 }
 
 void Mike::advanceWalk() {
-	removeSprite();
-
-	int32 targetX, targetY;
-	if (_currentWayPoint != _wayPoints.end()) {
-		targetX = _currentWayPoint->x + _targetX % _pathfinder->getXResolution();
-		targetY = _currentWayPoint->y + _targetY % _pathfinder->getYResolution();
-	} else {
-		targetX = _targetX;
-		targetY = _targetY;
-	}
-
+	int32 targetX = (_currentWayPoint != _wayPoints.end()) ? _currentWayPoint->x : _x;
+	int32 targetY = (_currentWayPoint != _wayPoints.end()) ? _currentWayPoint->y : _y;
 
 	if ((_x != targetX) || (_y != targetY)) {
 		// Direction we're walking
@@ -379,11 +371,12 @@ void Mike::advanceWalk() {
 		_turnTo = direction;
 	}
 
-	_animations[_animState][_direction]++;
-
-	updateAnimPositions();
-
-	addSprite();
+	if ((_x != targetX) || (_y != targetY)) {
+		removeSprite();
+		_animations[_animState][_direction]++;
+		updateAnimPositions();
+		addSprite();
+	}
 }
 
 void Mike::go(int32 x, int32 y, Direction direction) {
@@ -408,6 +401,8 @@ void Mike::go(int32 x, int32 y, Direction direction) {
 	// Set states to walking
 	_state     = kStateWalking;
 	_animState = kAnimStateWalking;
+
+	_animations[_animState][_direction].setFrame(0);
 
 	// Update at once
 	_waitUntil = g_system->getMillis();

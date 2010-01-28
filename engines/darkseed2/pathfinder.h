@@ -123,7 +123,7 @@ private:
 	bool DFS(uint32 cost, Walkable &node, uint32 &costLimit, Common::List<const Walkable *> &path);
 
 	/** Simplify a path to only contain really needed edge nodes. */
-	static void simplifyPath(Common::List<Position> &path);
+	void simplifyPath(Common::List<Position> &path) const;
 	/** Do these three positions lie in a straight line? */
 	static bool isStraightLine(const Common::List<Position>::iterator &a,
 			const Common::List<Position>::iterator &b, const Common::List<Position>::iterator &c);
@@ -134,6 +134,9 @@ private:
 
 	void convertToMapCoordinates(int32 &x, int32 &y) const;
 	Position convertFromMapCoordinates(const Position) const;
+
+	bool isSameTile(const Common::List<Position>::iterator &a,
+			const Common::List<Position>::iterator &b) const;
 };
 
 } // End of namespace DarkSeed2

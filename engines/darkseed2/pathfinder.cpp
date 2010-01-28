@@ -209,6 +209,11 @@ Common::List<Position> Pathfinder::findPath(int32 x1, int32 y1, int32 x2, int32 
 	Walkable *start = 0;
 	Walkable *end   = 0;
 
+	int32 fromX = x1;
+	int32 fromY = y1;
+	int32 toX   = x2;
+	int32 toY   = y2;
+
 	convertToMapCoordinates(x1, y1);
 	convertToMapCoordinates(x2, y2);
 
@@ -236,6 +241,9 @@ Common::List<Position> Pathfinder::findPath(int32 x1, int32 y1, int32 x2, int32 
 		pathPos.push_front(convertFromMapCoordinates((*it)->position));
 	pathPos.push_front(pathPos.back());
 	pathPos.pop_back();
+
+	pathPos.push_front(Position(fromX, fromY));
+	pathPos.push_back (Position(toX  , toY  ));
 
 	simplifyPath(pathPos);
 
@@ -332,9 +340,40 @@ bool Pathfinder::DFS(uint32 cost, Walkable &node, uint32 &costLimit, Common::Lis
 	return false;
 }
 
-void Pathfinder::simplifyPath(Common::List<Position> &path) {
+bool Pathfinder::isSameTile(const Common::List<Position>::iterator &a,
+		const Common::List<Position>::iterator &b) const {
+
+	int inX = ABS(a->x - b->x);
+	int inY = ABS(a->y - b->y);
+
+	return (inX < 10) && (inY < _resY);
+}
+
+void Pathfinder::simplifyPath(Common::List<Position> &path) const {
 	Common::List<Position>::iterator first, second, third;
 
+	// Look if the start nodes are on the same tile and remove the inner one then
+	first = path.begin();
+	second = first;
+	second++;
+
+	while ((first != path.end()) && (second != path.end()) && isSameTile(first, second))
+		second = path.erase(second);
+
+	// Look if the end nodes are on the same tile and remove the inner one then
+	first = path.end();
+	first--;
+	second = first;
+	second--;
+
+	while ((first  != path.end()) && (first  != path.begin()) &&
+	       (second != path.end()) && (second != path.begin()) &&
+	       isSameTile(first, second)) {
+		second = path.erase(second);
+		second--;
+	}
+
+	// Remove not needed nodes
 	first = path.begin();
 
 	second = first;
