@@ -56,7 +56,7 @@ bool SoundSample::loadFile(Common::String filename) {
 	f.read(data, f.size());
 	f.close();
 
-	_stream = Audio::makeRawMemoryStream(data, _size,
+	_stream = Audio::makeRawStream(data, _size,
 			11025, Audio::FLAG_UNSIGNED);
 
 	return true;
