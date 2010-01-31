@@ -151,14 +151,12 @@ void Sound::playAmigaSound(const char *baseSoundName) {
 void Sound::playAmigaSoundEffect(const char *baseSoundName) {
 	Common::String soundName = baseSoundName;
 	soundName += ".SFX";
+
 	if (_vm->_mixer->isSoundHandleActive(*_soundHandle))
 		_vm->_mixer->stopHandle(*_soundHandle);
-	Common::SeekableReadStream *stream = _vm->openFile(soundName.c_str());
-	byte *data = (byte *)malloc(stream->size());
-	stream->read(data, stream->size());
-	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawMemoryStream(data, stream->size(), 11025, 0);
+
+	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawStream(_vm->openFile(soundName.c_str()), 11025, 0);
 	_vm->_mixer->playInputStream(Audio::Mixer::kSFXSoundType, _soundHandle, audStream);
-	delete stream;
 }
 
 // Macintosh Functions
@@ -174,14 +172,11 @@ void Sound::playMacSMFSound(const char *baseSoundName) {
 }
 
 void Sound::playMacSoundEffect(const char *baseSoundName) {
-	Common::SeekableReadStream *stream = getMacintoshFile(baseSoundName);
 	if (_vm->_mixer->isSoundHandleActive(*_soundHandle))
 		_vm->_mixer->stopHandle(*_soundHandle);
-	byte *data = (byte *)malloc(stream->size());
-	stream->read(data, stream->size());
-	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawMemoryStream(data, stream->size(), 11025, 0);
+
+	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawStream(getMacintoshFile(baseSoundName), 11025, 0);
 	_vm->_mixer->playInputStream(Audio::Mixer::kSFXSoundType, _soundHandle, audStream);
-	delete stream;
 }
 
 #define MAC_AUD_FILE_COUNT 139
