@@ -34,6 +34,7 @@
 #include "common/list.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/graphics.h"
 
 namespace DarkSeed2 {
 
@@ -56,7 +57,7 @@ struct Position {
 /** A path finding class implementing the IDA* algorithm. */
 class Pathfinder {
 public:
-	Pathfinder(int32 width, int32 height);
+	Pathfinder();
 	~Pathfinder();
 
 	/** Clear the pathfinder's walk map. */
@@ -68,10 +69,14 @@ public:
 	/** Find a path between two positions. */
 	Common::List<Position> findPath(int32 x1, int32 y1, int32 x2, int32 y2);
 
-	int32 getXResolution() const;
-	int32 getYResolution() const;
+	bool getValue(int32 x, int32 y) const;
 
 private:
+	static const int32 kWidth  = 64;
+	static const int32 kHeight = 48;
+	static const int32 kXResolution = Graphics::kScreenWidth  / kWidth;
+	static const int32 kYResolution = Graphics::kScreenHeight / kHeight;
+
 	struct Walkable {
 		Position position; ///< The position of the walkable tile.
 
@@ -81,7 +86,9 @@ private:
 
 		Common::List<Walkable *> neighbours; ///< The neighbouring tiles.
 
-		Walkable(int32 x, int32 y, byte v);
+		Walkable(int32 x = 0, int32 y = 0, byte v = 0);
+
+		void setPosition(int32 x, int32 y);
 
 		/** Return a comparable distance value. */
 		int32 getDistanceValue(int32 x, int32 y) const;
@@ -93,14 +100,8 @@ private:
 		bool operator==(const Walkable &right) const;
 	};
 
-	int32 _width;  ///< The walk map's width.
-	int32 _height; ///< The walk map's height.
-
-	int32 _topY;
-	int32 _resY;
-
 	/** The complete walk map. */
-	Walkable **_tiles;
+	Walkable *_tiles;
 
 	// Temporaries for a path search
 	Walkable *_goalNode;       ///< Our current goal.
@@ -122,6 +123,8 @@ private:
 	/** Recursively called depth-first search method. */
 	bool DFS(uint32 cost, Walkable &node, uint32 &costLimit, Common::List<const Walkable *> &path);
 
+	bool isTurn(const Common::List<const Walkable *> &path, const Walkable &next) const;
+
 	/** Simplify a path to only contain really needed edge nodes. */
 	void simplifyPath(Common::List<Position> &path) const;
 	/** Do these three positions lie in a straight line? */
@@ -131,9 +134,6 @@ private:
 	static void removeMiddleman(Common::List<Position> &list,
 			Common::List<Position>::iterator &a, Common::List<Position>::iterator &b,
 			Common::List<Position>::iterator &c);
-
-	void convertToMapCoordinates(int32 &x, int32 &y) const;
-	Position convertFromMapCoordinates(const Position) const;
 
 	bool isSameTile(const Common::List<Position>::iterator &a,
 			const Common::List<Position>::iterator &b) const;

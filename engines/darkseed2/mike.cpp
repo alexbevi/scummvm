@@ -36,7 +36,7 @@ Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 	_variables = &variables;
 	_graphics  = &graphics;
 
-	_pathfinder = new Pathfinder(kWalkMapWidth, kWalkMapHeight);
+	_pathfinder = new Pathfinder();
 
 	_visible = false;
 
