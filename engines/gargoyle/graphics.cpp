@@ -64,6 +64,7 @@ RGBList::~RGBList() {
 
 TextSettings::TextSettings(): textPosition(0, 0) {
 	_style = 0;
+	_stdFont = true;
 	setFont(FONT_STD);
 	fore = FOREGROUND_COLOUR;
 	back = BACKGROUND_COLOUR;
