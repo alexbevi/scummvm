@@ -32,6 +32,7 @@
 #include "common/frac.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 #include "engines/darkseed2/graphics.h"
 
 namespace DarkSeed2 {
@@ -45,10 +46,22 @@ class Music;
 class Mike;
 
 /** A generic RoomConfig base class. */
-class RoomConfig {
+class RoomConfig : public Saveable {
 public:
+	/** A specific config type. */
+	enum Type {
+		kTypeMusic   = 0,
+		kTypeSprite  = 1,
+		kTypePalette = 2,
+		kTypeMirror  = 3,
+		kTypeNone    = 4
+	};
+
 	RoomConfig(Variables &variables);
 	virtual ~RoomConfig();
+
+	/** Return the specific config type. */
+	Type getType() const;
 
 	/** Is the RoomConfig loaded and ready to run? */
 	bool isLoaded()  const;
@@ -67,6 +80,8 @@ public:
 	virtual bool updateStatus() = 0;
 
 protected:
+	Type _type; ///< The specific config type.
+
 	/** Are the conditions to run the RoomConfig met? */
 	bool conditionsMet();
 	/** Are these conditions met? */
@@ -90,6 +105,9 @@ protected:
 	/** Parse a DAT line. */
 	virtual bool parseLine(const Common::String &cmd, const Common::String &args) = 0;
 
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
 	Variables *_variables;
 
@@ -107,6 +125,7 @@ private:
 	bool   _conditionsState;       ///< The last remembered conditions state.
 	uint32 _conditionsCheckedLast; ///< When were the conditions checked last?
 
+public:
 	/** The conditions required for this RoomConfig. */
 	Common::List<Common::String> _conditions;
 	/** The variables change set to be applied once the RoomConfig finished. */
@@ -124,6 +143,10 @@ public:
 	bool updateStatus();
 
 	bool parseLine(const Common::String &cmd, const Common::String &args);
+
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
 
 private:
 	Resources *_resources;
@@ -144,7 +167,14 @@ public:
 	bool updateStatus();
 
 	bool parseLine(const Common::String &cmd, const Common::String &args);
+
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
+	friend class SaveLoad;
+
 	/** A sprite animation frame. */
 	struct Frame {
 		int32  frame; ///< The frame number.
@@ -217,6 +247,10 @@ public:
 
 	bool parseLine(const Common::String &cmd, const Common::String &args);
 
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
 	Resources *_resources;
 	Graphics  *_graphics;
@@ -237,6 +271,10 @@ public:
 
 	bool parseLine(const Common::String &cmd, const Common::String &args);
 
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
 	Resources *_resources;
 	Graphics  *_graphics;
@@ -252,7 +290,7 @@ private:
 	bool parseScale(const Common::String &args);
 };
 
-class RoomConfigManager {
+class RoomConfigManager : public Saveable {
 public:
 	RoomConfigManager(DarkSeed2Engine &vm);
 	~RoomConfigManager();
@@ -264,6 +302,12 @@ public:
 
 	bool parseConfig(DATFile &dat);
 
+	RoomConfig *createRoomConfig(RoomConfig::Type type);
+
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
 	DarkSeed2Engine *_vm;
 
@@ -271,10 +315,7 @@ private:
 
 	void clear();
 
-	bool parseMusicConfigs(DATFile &dat);
-	bool parseSpriteConfigs(DATFile &dat);
-	bool parsePaletteConfigs(DATFile &dat);
-	bool parseMirrorConfigs(DATFile &dat);
+	bool parseConfigs(DATFile &dat, RoomConfig::Type type);
 };
 
 } // End of namespace DarkSeed2

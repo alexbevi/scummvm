@@ -24,6 +24,7 @@
  */
 
 #include "common/stream.h"
+#include "common/serializer.h"
 
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/variables.h"
@@ -34,12 +35,16 @@
 #include "engines/darkseed2/script.h"
 #include "engines/darkseed2/sprite.h"
 #include "engines/darkseed2/graphicalobject.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
-Room::Room(Variables &variables, Graphics &graphics) : ObjectContainer(variables) {
-	_variables = &variables;
-	_graphics  = &graphics;
+Room::Room(Variables &variables, ScriptRegister &scriptRegister, Graphics &graphics) :
+	ObjectContainer(variables, scriptRegister) {
+
+	_variables      = &variables;
+	_scriptRegister = &scriptRegister;
+	_graphics       = &graphics;
 
 	_confMan = 0;
 
@@ -58,6 +63,8 @@ void Room::registerConfigManager(RoomConfigManager &configManager) {
 }
 
 void Room::clear() {
+	ObjectContainer::clear();
+
 	_ready = false;
 
 	if (_confMan)
@@ -70,6 +77,9 @@ void Room::clear() {
 	// Remove all local variables
 	_variables->clearLocal();
 
+	_name.clear();
+	_roomFile.clear();
+	_objsFile.clear();
 	_backgroundFile.clear();
 	_walkMapFile.clear();
 
@@ -89,6 +99,7 @@ void Room::clear() {
 	for (Common::List<ScriptChunk *>::iterator it = _entryScripts.begin(); it != _entryScripts.end(); ++it)
 		delete *it;
 	_entryScripts.clear();
+	_entryScriptLines.clear();
 
 	// Clear animations
 	for (AnimationMap::iterator it = _animations.begin(); it != _animations.end(); ++it)
@@ -219,6 +230,9 @@ bool Room::parse(Resources &resources,
 	if (!resources.hasResource(room) || !resources.hasResource(objects))
 		return false;
 
+	_roomFile = room;
+	_objsFile = objects;
+
 	Resource *resRoom    = resources.getResource(room);
 	Resource *resObjects = resources.getResource(objects);
 
@@ -241,15 +255,10 @@ bool Room::parse(Resources &resources, const Common::String &base) {
 
 	_name = base;
 
-	Common::String room    = "ROOM";
-	Common::String objects = "OBJ_";
-
-	room    += base + ".DAT";
-	objects += base + ".DAT";
-
 	debugC(-1, kDebugRooms, "Parsing room \"%s\"", _name.c_str());
 
-	return parse(resources, room, objects);
+	return parse(resources, Resources::addExtension("ROOM" + base, "DAT"),
+	                        Resources::addExtension("OBJ_" + base, "DAT"));
 }
 
 bool Room::setBackground(const Common::String &args) {
@@ -310,7 +319,7 @@ bool Room::setDimensions(const Common::String &args) {
 
 bool Room::addEntryScript(DATFile &room) {
 	// Parse the script chunk
-	ScriptChunk *script = new ScriptChunk(*_variables);
+	ScriptChunk *script = new ScriptChunk(*_variables, *_scriptRegister);
 	if (!script->parse(room)) {
 		delete script;
 		return false;
@@ -335,6 +344,7 @@ bool Room::parseEntryScripts(DATFile &room) {
 
 		room.previous();
 
+		_entryScriptLines.push_back(room.getLineNumber());
 		if (!addEntryScript(room))
 			return false;
 	}
@@ -342,7 +352,7 @@ bool Room::parseEntryScripts(DATFile &room) {
 	return true;
 }
 
-bool Room::setup(Resources &resources) {
+bool Room::loadSprites(Resources &resources) {
 	if (_backgroundFile.empty()) {
 		warning("Room::setup(): No background");
 		return false;
@@ -368,6 +378,13 @@ bool Room::setup(Resources &resources) {
 		warning("Room::setup(): Can't load walk map");
 		return false;
 	}
+
+	return true;
+}
+
+bool Room::setup(Resources &resources) {
+	if (!loadSprites(resources))
+		return false;
 
 	_confMan->initRoom();
 
@@ -399,6 +416,67 @@ void Room::scaleAnimation(const Common::String &animation, frac_t scale) {
 		return;
 
 	anim->setScale(scale);
+}
+
+bool Room::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	SaveLoad::sync(serializer, _ready);
+	if (!_ready)
+		return true;
+
+	SaveLoad::sync(serializer, _name);
+	SaveLoad::sync(serializer, _roomFile);
+	SaveLoad::sync(serializer, _objsFile);
+	SaveLoad::sync(serializer, _backgroundFile);
+	SaveLoad::sync(serializer, _walkMapFile);
+
+	SaveLoad::sync(serializer, _walkMapYTop);
+	SaveLoad::sync(serializer, _walkMapYResolution);
+
+	SaveLoad::sync(serializer, _area);
+
+	SaveLoad::sync(serializer, _scaleFactors[0]);
+	SaveLoad::sync(serializer, _scaleFactors[1]);
+	SaveLoad::sync(serializer, _scaleFactors[2]);
+
+	SaveLoad::sync(serializer, _entryScriptLines);
+
+	return true;
+}
+
+bool Room::loading(Resources &resources) {
+	ObjectContainer::clear();
+
+	if (!_ready)
+		return true;
+
+	if (!loadSprites(resources))
+		return false;
+
+	_entryScripts.clear();
+
+	Resource *resRoom    = resources.getResource(_roomFile);
+	Resource *resObjects = resources.getResource(_objsFile);
+
+	DATFile roomParser(*resRoom);
+	DATFile objectsParser(*resObjects);
+
+	Common::List<uint32>::const_iterator line;
+	for (line = _entryScriptLines.begin(); line != _entryScriptLines.end(); ++line) {
+		roomParser.seekTo(*line);
+
+		ScriptChunk *script = new ScriptChunk(*_variables, *_scriptRegister);
+		if (!script->parse(roomParser)) {
+			delete script;
+			return false;
+		}
+
+		_entryScripts.push_back(script);
+	}
+
+	if (!ObjectContainer::parse(objectsParser))
+		return false;
+
+	return true;
 }
 
 } // End of namespace DarkSeed2

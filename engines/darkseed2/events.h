@@ -29,6 +29,7 @@
 #include "common/list.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/objects.h"
 #include "engines/darkseed2/graphicalobject.h"
@@ -42,29 +43,46 @@ class ScriptChunk;
 /** Cursor modes. */
 enum CursorMode {
 	kCursorModeWalk = 0, ///< Walk.
-	kCursorModeUse,      ///< Use.
-	kCursorModeLook,     ///< Look.
-	kCursorModeNone      ///< None.
+	kCursorModeUse  = 1, ///< Use.
+	kCursorModeLook = 2, ///< Look.
+	kCursorModeNone = 3  ///< None.
 };
 
-class Events {
+class Events : public Saveable {
 public:
 	Events(DarkSeed2Engine &vm);
 	~Events();
 
-	/** Set up the game's hardcoded intro sequences. */
-	bool setupIntroSequence();
+	/** Run the game's normal course. */
+	bool run();
 
-	/** Start the game's main loop. */
-	void mainLoop(bool finishScripts = false);
+	/** Did we come from that room? */
+	bool cameFrom(uint32 room) const;
 
 	/** Register a room transition. */
 	void setNextRoom(uint32 room);
 
-	/** Did we come from that room? */
-	bool cameFrom(uint32 room);
+	/** Set the loading requested state. */
+	void setLoading(bool load);
+
+	bool _loading; ///< Loading a saved game requested?
+
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
 
 private:
+	/** A global state of the game. */
+	enum State {
+		kStateStarted = 0, ///< Game just started.
+		kStateIntro1  = 1, ///< Game showing the first part of the intro.
+		kStateIntro2  = 2, ///< Game showing the second part of the intro.
+		kStateIntro3  = 3, ///< Game showing the third part of the intro.
+		kStateIntro4  = 4, ///< Game showing the third part of the intro.
+		kStateIntro5  = 5, ///< Game showing the fourth part of the intro.
+		kStateRunning = 6  ///< Game running normally.
+	};
+
 	/** A mode's cursor. */
 	struct ModeCursors {
 		const Cursors::Cursor *inactive; ///< Not in hotspot.
@@ -73,7 +91,7 @@ private:
 
 	DarkSeed2Engine *_vm;
 
-	bool _inIntro; ///< Currently in the intro?
+	State _state; ///< The current global state of the game.
 
 	// Cursors
 	bool         _canSwitchCursors; ///< Is cursor mode switching allowed?
@@ -95,6 +113,17 @@ private:
 	ObjectVerb             _itemVerb;   ///< The verb that triggered the object mode.
 	InventoryBox::ItemRef  _itemRef;    ///< A reference to the active item.
 	const Cursors::Cursor *_itemCursor; ///< The item's cursor.
+
+	// Used for loading
+	Common::String _lastObjectName;
+	Common::String _itemName;
+	Common::String _itemCursorName;
+
+	/** Set up the game's hardcoded intro sequences. */
+	bool introSequence();
+
+	/** Start the game's main loop. */
+	void mainLoop(bool finishScripts = false);
 
 	/** Handle user input. */
 	void handleInput();

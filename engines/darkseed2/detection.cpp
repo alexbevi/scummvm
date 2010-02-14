@@ -27,12 +27,24 @@
 #include "engines/advancedDetector.h"
 
 #include "darkseed2/darkseed2.h"
+#include "darkseed2/saveload.h"
+#include "graphics/surface.h"
 
 namespace DarkSeed2 {
 
 struct DS2GameDescription {
 	ADGameDescription desc;
 };
+
+const char *DarkSeed2Engine::getGameId() const {
+	return _gameDescription->desc.gameid;
+}
+Common::Language DarkSeed2Engine::getLanguage() const {
+	return _gameDescription->desc.language;
+}
+Common::Platform DarkSeed2Engine::getPlatform() const {
+	return _gameDescription->desc.platform;
+}
 
 }
 
@@ -131,21 +143,60 @@ public:
 
 	virtual bool hasFeature(MetaEngineFeature f) const;
 	virtual bool createInstance(OSystem *syst, Engine **engine, const ADGameDescription *desc) const;
+
+	SaveStateList listSaves(const char *target) const;
+	int getMaximumSaveSlot() const;
+	void removeSaveState(const char *target, int slot) const;
+	SaveStateDescriptor querySaveMetaInfos(const char *target, int slot) const;
+
 };
 
 bool DarkSeed2MetaEngine::hasFeature(MetaEngineFeature f) const {
+	return (f == kSupportsListSaves           ) ||
+	       (f == kSupportsLoadingDuringStartup) ||
+	       (f == kSupportsDeleteSave          ) ||
+	       (f == kSavesSupportMetaInfo        ) ||
+	       (f == kSavesSupportThumbnail       ) ||
+	       (f == kSavesSupportCreationDate    ) ||
+	       (f == kSavesSupportPlayTime        );
 	return false;
 }
 
 bool DarkSeed2::DarkSeed2Engine::hasFeature(EngineFeature f) const {
-	return (f == kSupportsRTL) ||
-	       (f == kSupportsSubtitleOptions);
+	return (f == kSupportsRTL                 ) ||
+	       (f == kSupportsLoadingDuringRuntime) ||
+	       (f == kSupportsSavingDuringRuntime ) ||
+	       (f == kSupportsSubtitleOptions     );
+}
+
+SaveStateList DarkSeed2MetaEngine::listSaves(const char *target) const {
+	SaveStateList list;
+	if (!DarkSeed2::SaveLoad::getStates(list, target))
+		return SaveStateList();
+
+	return list;
+}
+
+int DarkSeed2MetaEngine::getMaximumSaveSlot() const {
+	return DarkSeed2::SaveLoad::kMaxSlot;
+}
+
+void DarkSeed2MetaEngine::removeSaveState(const char *target, int slot) const {
+	DarkSeed2::SaveLoad::removeSave(target, slot);
+}
+
+SaveStateDescriptor DarkSeed2MetaEngine::querySaveMetaInfos(const char *target, int slot) const {
+	SaveStateDescriptor state;
+	if (!DarkSeed2::SaveLoad::getState(state, target, slot))
+		return SaveStateDescriptor();
+
+	return state;
 }
 
 bool DarkSeed2MetaEngine::createInstance(OSystem *syst, Engine **engine, const ADGameDescription *desc) const {
 	const DarkSeed2::DS2GameDescription *gd = (const DarkSeed2::DS2GameDescription *)desc;
 	if (gd) {
-		*engine = new DarkSeed2::DarkSeed2Engine(syst);
+		*engine = new DarkSeed2::DarkSeed2Engine(syst, gd);
 		((DarkSeed2::DarkSeed2Engine *)*engine)->initGame(gd);
 	}
 	return gd != 0;

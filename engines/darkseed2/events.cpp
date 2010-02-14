@@ -24,6 +24,7 @@
  */
 
 #include "common/events.h"
+#include "common/serializer.h"
 
 #include "engines/darkseed2/events.h"
 #include "engines/darkseed2/resources.h"
@@ -38,6 +39,7 @@
 #include "engines/darkseed2/movie.h"
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/mike.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
@@ -52,7 +54,7 @@ Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
 	_cursors[kCursorModeLook].inactive = _vm->_cursors->getCursor("cLook");
 	_cursors[kCursorModeLook].active   = _vm->_cursors->getCursor("cLookAt");
 
-	_inIntro = false;
+	_state = kStateStarted;
 
 	_itemMode = false;
 
@@ -65,75 +67,125 @@ Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
 
 	_vm->_cursors->setVisible(true);
 
+	_lastObject = 0;
+
 	_changeRoom = false;
+
+	_loading = false;
 }
 
 Events::~Events() {
 	delete[] _cursors;
 }
 
-bool Events::setupIntroSequence() {
-	// Restricting the cursors in the intro
-	_canSwitchCursors = false;
+bool Events::run() {
+	switch (_state) {
+	case kStateStarted:
+	case kStateIntro1:
+	case kStateIntro2:
+	case kStateIntro3:
+		return introSequence();
 
-	_cursorMode   = kCursorModeUse;
-	_cursorActive = false;
-	setCursor();
+	case kStateIntro4:
+		leaveIntro();
+		break;
 
-	debugC(-1, kDebugGameflow, "Entering cutscene room");
+	case kStateIntro5:
+	case kStateRunning:
+		mainLoop();
+		break;
 
-	// Cutscene room
-	if (!roomGo("0001"))
+	default:
 		return false;
-
-	_inIntro = true;
-
-	// Run the main loop as long as scripts are still active
-	mainLoop(true);
-
-	debugC(-1, kDebugGameflow, "Entering title room");
-
-	// Title room
-	if (!roomGo("0002"))
-		return false;
-
-	// Run the main loop as long as scripts are still active
-	mainLoop(true);
-
-	// Loading title parts, for hotspot detection
-	_titleSprites[0].loadFromBMP(*_vm->_resources, "002BTN01");
-	_titleSprites[1].loadFromBMP(*_vm->_resources, "002BTN02");
-	_titleSprites[2].loadFromBMP(*_vm->_resources, "002BTN03");
-	_titleSprites[3].loadFromBMP(*_vm->_resources, "002BTN04");
-
-	for (int i = 0; i < 4; i++) {
-		if (_titleSprites[i].empty()) {
-			warning("Events::setupIntroSequence(): Couldn't load title screen elements");
-			return false;
-		}
+		break;
 	}
 
 	return true;
 }
 
+bool Events::introSequence() {
+	if (_state < kStateIntro3) {
+		if (_state < kStateIntro2) {
+			if (_state < kStateIntro1) {
+				// Restricting the cursors in the intro
+				_canSwitchCursors = false;
+
+				_cursorMode   = kCursorModeUse;
+				_cursorActive = false;
+				setCursor();
+
+				debugC(-1, kDebugGameflow, "Entering cutscene room");
+
+				// Cutscene room
+				if (!roomGo("0001"))
+					return false;
+
+				_state = kStateIntro1;
+			}
+
+			// Run the main loop as long as scripts are still active
+			mainLoop(true);
+			if (_loading)
+				return true;
+
+			debugC(-1, kDebugGameflow, "Entering title room");
+
+			// Title room
+			if (!roomGo("0002"))
+				return false;
+
+			_state = kStateIntro2;
+		}
+
+		// Run the main loop as long as scripts are still active
+		mainLoop(true);
+		if (_loading)
+			return true;
+
+		// Loading title parts, for hotspot detection
+		_titleSprites[0].loadFromBMP(*_vm->_resources, "002BTN01");
+		_titleSprites[1].loadFromBMP(*_vm->_resources, "002BTN02");
+		_titleSprites[2].loadFromBMP(*_vm->_resources, "002BTN03");
+		_titleSprites[3].loadFromBMP(*_vm->_resources, "002BTN04");
+
+		for (int i = 0; i < 4; i++) {
+			if (_titleSprites[i].empty()) {
+				warning("Events::setupIntroSequence(): Couldn't load title screen elements");
+				return false;
+			}
+		}
+
+		_state = kStateIntro3;
+	}
+
+	mainLoop(false);
+
+	_state = kStateRunning;
+	return true;
+}
+
 void Events::leaveIntro() {
-	// Throw title parts away again
-	for (int i = 0; i < 4; i++)
-		_titleSprites[i].clear();
+	if (_state < kStateIntro4) {
+		// Throw title parts away again
+		for (int i = 0; i < 4; i++)
+			_titleSprites[i].clear();
 
-	debugC(-1, kDebugGameflow, "Entering intro movie room");
+		debugC(-1, kDebugGameflow, "Entering intro movie room");
 
-	// Intro movie room
-	if (!roomGo("1501")) {
-		warning("Events::leaveIntro(): Failed loading the intro movie room");
-		_vm->quitGame();
-		return;
+		// Intro movie room
+		if (!roomGo("1501")) {
+			warning("Events::leaveIntro(): Failed loading the intro movie room");
+			_vm->quitGame();
+			return;
+		}
+
+		_state = kStateIntro4;
 	}
 
 	// Run the main loop as long as scripts are still active
 	mainLoop(true);
-
-	_inIntro = false;
+	if (_loading)
+		return;
 
 	// Restore normal cursor mode
 	_canSwitchCursors = true;
@@ -151,6 +203,8 @@ void Events::leaveIntro() {
 	}
 
 	_nextRoom = _vm->_graphics->getRoom().getName();
+
+	_state = kStateIntro5;
 }
 
 void Events::mainLoop(bool finishScripts) {
@@ -160,6 +214,9 @@ void Events::mainLoop(bool finishScripts) {
 		if (_vm->_movie->isPlaying()) {
 			// Special mode for movie playing
 			handleMovieInput();
+			// If loading a game state was requested, break the loop
+			if (_loading)
+				break;
 
 			_vm->_movie->updateStatus();
 
@@ -175,6 +232,16 @@ void Events::mainLoop(bool finishScripts) {
 
 		// Look for user input
 		handleInput();
+
+		// Leaving the intro
+		if (_state == kStateIntro5) {
+			_state = kStateRunning;
+			break;
+		}
+
+		// If loading a game state was requested, break the loop
+		if (_loading)
+			break;
 
 		// Always use that mode/activity when the conversation box is visible
 		if (_vm->_graphics->getConversationBox().isActive()) {
@@ -195,9 +262,15 @@ void Events::mainLoop(bool finishScripts) {
 			scriptStateChanged = _vm->_inter->updateStatus();
 
 		if (!_vm->_mike->isBusy()) {
-			if (finishScripts && !scriptStateChanged)
-				// We run only to finish the scripts, but the scripts won't do anything
-				break;
+			if (finishScripts) {
+				// Just waiting for the scripts to finish
+
+				// No room changing
+				_changeRoom = false;
+				if (!scriptStateChanged)
+					// Scripts finished
+					break;
+			}
 
 			// If the script variable "LastAction" is set, queue the last object verb scripts again
 			if (_vm->_variables->get("LastAction") == 1) {
@@ -299,7 +372,7 @@ void Events::handleMovieInput() {
 }
 
 void Events::mouseMoved(int32 x, int32 y) {
-	if (_inIntro) {
+	if ((_state == kStateIntro1) || (_state == kStateIntro2) || (_state == kStateIntro3)) {
 		// Mouse in a button area?
 		int titleSprite = checkTitleSprites(x, y);
 
@@ -328,7 +401,7 @@ void Events::mouseMoved(int32 x, int32 y) {
 }
 
 void Events::mouseClickedLeft(int32 x, int32 y) {
-	if (_inIntro) {
+	if ((_state == kStateIntro1) || (_state == kStateIntro2) || (_state == kStateIntro3)) {
 		// Mouse in a button area?
 		int titleSprite = checkTitleSprites(x, y);
 
@@ -337,6 +410,9 @@ void Events::mouseClickedLeft(int32 x, int32 y) {
 			leaveIntro();
 		} else if (titleSprite == 2) {
 			// Load game
+			if (_vm->doLoadDialog())
+				// Successful
+				leaveIntro();
 		} else if (titleSprite == 3) {
 			// Options
 			_vm->openMainMenuDialog();
@@ -512,6 +588,7 @@ void Events::roomLeave() {
 	_vm->_graphics->unregisterBackground();
 	// Clear scripts
 	_vm->_inter->clear();
+	_vm->_scriptRegister->clear();
 	// Clear room
 	_vm->_graphics->getRoom().clear();
 
@@ -537,7 +614,7 @@ bool Events::roomGo(const Common::String &room) {
 }
 
 void Events::setNextRoom(uint32 room) {
-	if (!_inIntro) {
+	if (!((_state == kStateIntro1) || (_state == kStateIntro2) || (_state == kStateIntro3))) {
 		Common::String nextRoom = Common::String::printf("%04d", room);
 
 		if (nextRoom != _vm->_graphics->getRoom().getName()) {
@@ -549,11 +626,16 @@ void Events::setNextRoom(uint32 room) {
 	}
 }
 
-bool Events::cameFrom(uint32 room) {
+bool Events::cameFrom(uint32 room) const {
 	if (room == 0)
 		return true;
 
 	return _lastRoom == Common::String::printf("%04d", room);
+}
+
+void Events::setLoading(bool load) {
+	_vm->_cursors->assertCursorProperties();
+	_loading = load;
 }
 
 bool Events::findAutoStart(Room &room) {
@@ -577,6 +659,60 @@ ObjectVerb Events::cursorModeToObjectVerb(CursorMode cursorMode) {
 	default:
 		return kObjectVerbNone;
 	}
+}
+
+bool Events::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	_lastObjectName.clear();
+	_itemName.clear();
+	_itemCursorName.clear();
+
+	byte state      = (byte) _state;
+	byte cursorMode = (byte) _cursorMode;
+	byte itemVerb   = (byte) _itemVerb;
+
+	if (serializer.isSaving()) {
+		if (_lastObject)
+			_lastObjectName = _lastObject->getName();
+		if (_itemMode && _itemRef && _itemCursor) {
+			_itemName       = _itemRef->name;
+			_itemCursorName = _itemCursor->name;
+		}
+	}
+
+	SaveLoad::sync(serializer, state);
+	SaveLoad::sync(serializer, _canSwitchCursors);
+	SaveLoad::sync(serializer, _cursorActive);
+	SaveLoad::sync(serializer, cursorMode);
+	SaveLoad::sync(serializer, _changeRoom);
+	SaveLoad::sync(serializer, _itemMode);
+	SaveLoad::sync(serializer, itemVerb);
+	SaveLoad::sync(serializer, _lastObjectName);
+	SaveLoad::sync(serializer, _itemName);
+	SaveLoad::sync(serializer, _itemCursorName);
+	SaveLoad::sync(serializer, _lastRoom);
+	SaveLoad::sync(serializer, _nextRoom);
+
+	_state      = (State) state;
+	_cursorMode = (CursorMode) cursorMode;
+	_itemVerb   = (ObjectVerb) itemVerb;
+
+	return true;
+}
+
+bool Events::loading(Resources &resources) {
+	_lastObject = 0;
+	_itemRef    = 0;
+
+	if (!_lastObjectName.empty())
+		_lastObject = _vm->_graphics->getRoom().findObject(_lastObjectName);
+	if (!_itemName.empty())
+		_itemRef = _vm->_graphics->getInventoryBox().findItem(_itemName);
+	_itemCursor = _vm->_cursors->getCursor(_itemCursorName);
+
+	Room &room = _vm->_graphics->getRoom();
+	_vm->_mike->setWalkMap(room.getWalkMap(), room.getWalkMapYTop(), room.getWalkMapYResolution());
+
+	return true;
 }
 
 } // End of namespace DarkSeed2

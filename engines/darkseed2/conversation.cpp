@@ -29,6 +29,7 @@
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/talk.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
@@ -44,17 +45,85 @@ Conversation::Assign::Assign(const Common::String &var, const Common::String &va
 }
 
 
+Conversation::Entry::Entry() {
+	visible   = false;
+	persist   = false;
+	initial   = false;
+	destroyed = false;
+	parent = 0;
+	parentIndex = 0;
+}
+
 Conversation::Entry::Entry(Node &pa) {
 	visible   = false;
 	persist   = false;
 	initial   = false;
 	destroyed = false;
 	parent = &pa;
+	parentIndex = pa.listIndex;
 }
 
 
 Conversation::Node::Node() {
 	fallthroughNum = 0;
+}
+
+
+template<>
+void SaveLoad::sync<Conversation::Action>(Common::Serializer &serializer, Conversation::Action &action) {
+	SaveLoad::sync(serializer, action.operand);
+	SaveLoad::sync(serializer, action.condition);
+}
+
+template<>
+void SaveLoad::sync<Conversation::Assign>(Common::Serializer &serializer, Conversation::Assign &assign) {
+	SaveLoad::sync(serializer, assign.variable);
+	SaveLoad::sync(serializer, assign.value);
+}
+
+template<>
+void SaveLoad::sync<Conversation::Entry *>(Common::Serializer &serializer, Conversation::Entry *&entry) {
+	if (serializer.isLoading())
+		entry = new Conversation::Entry;
+
+	SaveLoad::sync(serializer, entry->visible);
+	SaveLoad::sync(serializer, entry->persist);
+	SaveLoad::sync(serializer, entry->initial);
+	SaveLoad::sync(serializer, entry->destroyed);
+
+	SaveLoad::sync(serializer, entry->name);
+	SaveLoad::sync(serializer, entry->text);
+
+	SaveLoad::sync(serializer, entry->speakers);
+	SaveLoad::sync(serializer, entry->messages);
+
+	SaveLoad::sync(serializer, entry->hide);
+	SaveLoad::sync(serializer, entry->unhide);
+	SaveLoad::sync(serializer, entry->destroy);
+	SaveLoad::sync(serializer, entry->goTo);
+
+	SaveLoad::sync(serializer, entry->assigns);
+
+	SaveLoad::sync(serializer, entry->parentIndex);
+
+	SaveLoad::sync(serializer, entry->listIndex);
+}
+
+template<>
+void SaveLoad::sync<Conversation::Node *>(Common::Serializer &serializer, Conversation::Node *&node) {
+	if (serializer.isLoading())
+		node = new Conversation::Node;
+
+	SaveLoad::sync(serializer, node->fallthroughNum);
+	SaveLoad::sync(serializer, node->fallthrough);
+
+	SaveLoad::sync(serializer, node->entryIndices);
+
+	SaveLoad::sync(serializer, node->name);
+
+	SaveLoad::sync(serializer, node->goTo);
+
+	SaveLoad::sync(serializer, node->listIndex);
 }
 
 
@@ -86,6 +155,9 @@ void Conversation::clear() {
 	_startNode   = 0;
 	_currentNode = 0;
 	_speakers.clear();
+
+	_nodeList.clear();
+	_entryList.clear();
 }
 
 bool Conversation::parse(DATFile &conversation, const Common::String &convName) {
@@ -129,12 +201,13 @@ bool Conversation::parse(DATFile &conversation, const Common::String &convName) 
 }
 
 bool Conversation::parse(Resources &resources, const Common::String &convName) {
-	if (!resources.hasResource(convName + ".TXT")) {
+	Common::String txtFile = Resources::addExtension(convName, "TXT");
+	if (!resources.hasResource(txtFile)) {
 		warning("Conversation::parse(): No such conversation \"%s\"", convName.c_str());
 		return false;
 	}
 
-	Resource *resource = resources.getResource(convName + ".TXT");
+	Resource *resource = resources.getResource(txtFile);
 	DATFile conversation(*resource);
 
 	bool result = parse(conversation, convName);
@@ -384,8 +457,13 @@ bool Conversation::addEntry(Node &node, const Common::String &args, DATFile &con
 	}
 
 	entry->name = lArgs[0];
+
+	entry->listIndex = _entryList.size();
+	_entryList.push_back(entry);
+
 	node.entries.setVal(entry->name, entry);
 	node.sortedEntries.push_back(entry);
+	node.entryIndices.push_back(entry->listIndex);
 
 	return true;
 }
@@ -455,6 +533,10 @@ bool Conversation::parseNode(const Common::String &args, DATFile &conversation) 
 	}
 
 	Node *node = new Node;
+
+	// Add the node to the global node list
+	node->listIndex = _nodeList.size();
+	_nodeList.push_back(node);
 
 	debugC(1, kDebugConversation, "Parsing conversation node \"%s\"", args.c_str());
 
@@ -758,6 +840,65 @@ void Conversation::discardLines(Common::Array<TalkLine *> &lines) {
 void Conversation::discardLines(TalkLine *&lines) {
 	delete lines;
 	lines = 0;
+}
+
+bool Conversation::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	if (serializer.isLoading())
+		clear();
+
+	SaveLoad::sync(serializer, _ready);
+
+	if (!_ready)
+		return true;
+
+	_hasCurrentNode   = _currentNode != 0;
+	_startNodeIndex   = _startNode ? _startNode->listIndex : 0;
+	_currentNodeIndex = _currentNode ? _currentNode->listIndex : 0;
+
+	SaveLoad::sync(serializer, _name);
+	SaveLoad::sync(serializer, _speakers);
+
+	SaveLoad::sync(serializer, _nodeList);
+	SaveLoad::sync(serializer, _entryList);
+
+	warning("Save/Load: %d, %d", _nodeList.size(), _entryList.size());
+
+	SaveLoad::sync(serializer, _hasCurrentNode);
+	SaveLoad::sync(serializer, _startNodeIndex);
+	SaveLoad::sync(serializer, _currentNodeIndex);
+
+	return true;
+}
+
+bool Conversation::loading(Resources &resources) {
+	if (!_ready)
+		return true;
+
+	_startNode   = 0;
+	_currentNode = 0;
+
+	if (_startNodeIndex < _nodeList.size())
+		_startNode   = _nodeList[_startNodeIndex];
+	if (_hasCurrentNode && (_currentNodeIndex < _nodeList.size()))
+		_currentNode = _nodeList[_currentNodeIndex];
+
+	// Rebuild entries
+	for (Common::Array<Entry *>::iterator entry = _entryList.begin(); entry != _entryList.end(); ++entry)
+	(*entry)->parent = _nodeList[(*entry)->parentIndex];
+
+	// Rebuild nodes
+	for (Common::Array<Node *>::iterator node = _nodeList.begin(); node != _nodeList.end(); ++node) {
+		Common::Array<uint32>::const_iterator entry;
+		for (entry = (*node)->entryIndices.begin(); entry != (*node)->entryIndices.end(); ++entry) {
+			Entry *e = _entryList[*entry];
+			(*node)->sortedEntries.push_back(e);
+			(*node)->entries.setVal(e->name, e);
+		}
+
+		_nodes.setVal((*node)->name, *node);
+	}
+
+	return true;
 }
 
 } // End of namespace DarkSeed2

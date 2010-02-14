@@ -30,6 +30,7 @@
 #include "common/list.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -61,6 +62,51 @@ enum ScriptAction {
 	kScriptActionNone
 };
 
+class ScriptChunk;
+
+/** A global register of all script, for saving/loading script positions. */
+class ScriptRegister : public Saveable {
+public:
+	ScriptRegister();
+	~ScriptRegister();
+
+	void clear();
+
+	/** Add a script to the register. */
+	void addScript(ScriptChunk &chunk);
+	/** Remove a script to the register. */
+	void removeScript(ScriptChunk &chunk);
+
+	/** Return the script's current line. */
+	uint32 getLine(const Common::String &signature) const;
+	/** Return the script's current line. */
+	uint32 getLine(const ScriptChunk &chunk) const;
+
+	ScriptChunk *getScript(const Common::String &signature) const;
+
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
+private:
+	friend class SaveLoad;
+
+	struct Script {
+		ScriptChunk *chunk;
+		uint32 line;
+
+		Script();
+		Script(ScriptChunk &c);
+		Script(uint32 l);
+
+		uint32 getLine() const;
+	};
+
+	typedef Common::HashMap<Common::String, Script, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> ScriptMap;
+
+	ScriptMap *_scriptMap;
+};
+
 /** A self-contained script chunk. */
 class ScriptChunk {
 public:
@@ -72,7 +118,7 @@ public:
 		Action(ScriptAction act, const Common::String &args);
 	};
 
-	ScriptChunk(const Variables &variables);
+	ScriptChunk(const Variables &variables, ScriptRegister &scriptRegister);
 	~ScriptChunk();
 
 	/** Was the end of the ScriptChunk reached? */
@@ -87,6 +133,13 @@ public:
 	void rewind();
 	/** Seek the ScriptChunk to the end. */
 	void seekEnd();
+	/** Seek to a specific position. */
+	void seekTo(uint32 n);
+
+	/** Return the chunk's signature. */
+	const Common::String &getSignature() const;
+	/** Get the current position. */
+	uint32 getCurLine() const;
 
 	ScriptChunk &operator++();
 
@@ -107,24 +160,31 @@ public:
 	/** Return the current action. */
 	const Action &getAction() const;
 
-private:
+public:
 	static const Action invalidAction;
 
 	const Variables *_variables;
 
+	ScriptRegister *_scriptRegister;
+
 	/** The conditions required for this script. */
 	Common::List<Common::String> _conditions;
+
+	/** The script file's signature. */
+	Common::String _signature;
 
 	/** Was everything loaded so that the ScriptChunk can be interpreted? */
 	bool _ready;
 
-	uint32 _from; //< The "from" room flag.
+	uint32 _from; ///< The "from" room flag.
 
 	/** All actions. */
 	Common::List<Action> _actions;
 
 	/** The current position within the actions. */
 	Common::List<Action>::iterator _curPos;
+	/** The current position's number within the actions. */
+	uint32 _curPosNumber;
 
 	/** Parse a script action string. */
 	static ScriptAction parseScriptAction(const Common::String &action);

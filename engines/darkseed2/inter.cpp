@@ -35,8 +35,25 @@
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/events.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
+
+template<>
+void SaveLoad::sync<ScriptInterpreter::Script>(Common::Serializer &serializer, ScriptInterpreter::Script &script) {
+	byte waitingFor = (byte) script.waitingFor;
+
+	SaveLoad::sync(serializer, script.signature);
+
+	SaveLoad::sync(serializer, script.soundVar);
+	SaveLoad::sync(serializer, script.soundName);
+	SaveLoad::sync(serializer, script.soundTalk);
+
+	SaveLoad::sync(serializer, waitingFor);
+
+	script.waitingFor = (ScriptInterpreter::Wait) waitingFor;
+}
+
 
 ScriptInterpreter::Script::Script(ScriptChunk *chnk) {
 	chunk      = chnk;
@@ -45,6 +62,9 @@ ScriptInterpreter::Script::Script(ScriptChunk *chnk) {
 	waitingFor = kWaitNone;
 
 	lastWaitDebug = 0;
+
+	if (chnk)
+		signature = chnk->getSignature();
 }
 
 #ifndef REDUCE_MEMORY_USAGE
@@ -122,7 +142,8 @@ bool ScriptInterpreter::updateStatus() {
 		// Check result
 		if        (result == kResultInvalid) {
 			// Invalid opcode
-			script->chunk->seekEnd();
+			if (script->chunk)
+				script->chunk->seekEnd();
 			_updatesWithoutChanges = 0;
 		} else if (result == kResultOK) {
 			// Everything went okay
@@ -139,7 +160,7 @@ bool ScriptInterpreter::updateStatus() {
 	// Go through all scripts and erase those that ended
 	script = _scripts.begin();
 	while (script != _scripts.end()) {
-		if (script->chunk->atEnd()) {
+		if (!script->chunk || script->chunk->atEnd()) {
 			script = _scripts.erase(script);
 			_updatesWithoutChanges = 0;
 		} else
@@ -172,6 +193,11 @@ bool ScriptInterpreter::interpret(Common::List<ScriptChunk *> &chunks) {
 }
 
 ScriptInterpreter::Result ScriptInterpreter::interpret(Script &script) {
+	if (!script.chunk) {
+		warning("ScriptInterpreter::interpret(): No such script \"%s\"", script.signature.c_str());
+		return kResultInvalid;
+	}
+
 	// Get the next action
 	script.action = &script.chunk->getAction();
 
@@ -247,7 +273,9 @@ ScriptInterpreter::Result ScriptInterpreter::oText(Script &script) {
 
 	_vm->_talkMan->talk(*_vm->_resources, script.action->arguments);
 
-	script.soundID = _vm->_talkMan->getSoundID();
+	script.soundName = script.action->arguments;
+	script.soundID   = _vm->_talkMan->getSoundID();
+	script.soundTalk = true;
 
 	return kResultOK;
 }
@@ -327,7 +355,8 @@ ScriptInterpreter::Result ScriptInterpreter::oSpeech(Script &script) {
 ScriptInterpreter::Result ScriptInterpreter::oSpeechVar(Script &script) {
 	// Set the variable that should change once the talking/SFX has finished
 
-	_vm->_sound->setSoundVar(script.soundID, script.action->arguments);
+	script.soundVar = script.action->arguments;
+	_vm->_sound->setSoundVar(script.soundID, script.soundVar);
 
 	return kResultOK;
 }
@@ -348,7 +377,42 @@ ScriptInterpreter::Result ScriptInterpreter::oEffect(Script &script) {
 
 	_vm->_sound->playWAV(*_vm->_resources, script.action->arguments, script.soundID);
 
+	script.soundName = script.action->arguments;
+	script.soundTalk = false;
+
 	return kResultOK;
+}
+
+bool ScriptInterpreter::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	for (Common::List<Script>::iterator script = _scripts.begin(); script != _scripts.end(); ++script)
+		if (!_vm->_sound->isIDPlaying(script->soundID)) {
+			script->soundVar.clear();
+			script->soundName.clear();
+		}
+
+	SaveLoad::sync(serializer, _scripts);
+
+	return true;
+}
+
+bool ScriptInterpreter::loading(Resources &resources) {
+	_updatesWithoutChanges = 0;
+
+	// Rebuild the script list
+	for (Common::List<Script>::iterator script = _scripts.begin(); script != _scripts.end(); ++script) {
+		script->chunk = _vm->_scriptRegister->getScript(script->signature);
+		if (!script->soundName.empty()) {
+			if (script->soundTalk) {
+				_vm->_talkMan->talk(resources, script->soundName);
+				script->soundID = _vm->_talkMan->getSoundID();
+				_vm->_sound->setSoundVar(script->soundID, script->soundVar);
+			} else
+				_vm->_sound->playWAV(resources, script->soundName, script->soundID);
+				_vm->_sound->setSoundVar(script->soundID, script->soundVar);
+		}
+	}
+
+	return true;
 }
 
 } // End of namespace DarkSeed2

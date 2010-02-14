@@ -42,11 +42,9 @@ DATFile::Line::Line(const char *cmd, int cmdLen, const char *args) {
 	arguments.trim();
 }
 
-DATFile::DATFile(Common::SeekableReadStream &dat) {
-	load(dat);
-}
-
 DATFile::DATFile(const Resource &dat) {
+	_name = dat.getName();
+
 	load(dat.getStream());
 }
 
@@ -93,7 +91,8 @@ void DATFile::load(Common::SeekableReadStream &dat) {
 		_lines.push_back(Line(line.c_str(), line.size() - strlen(equals), equals + 1));
 	}
 
-	_pos = _lines.begin();
+	_lineNumber = 0;
+	_pos        = _lines.begin();
 }
 
 bool DATFile::nextLine(const Common::String *&command, const Common::String *&arguments) {
@@ -107,23 +106,49 @@ bool DATFile::nextLine(const Common::String *&command, const Common::String *&ar
 	command   = &_pos->command;
 	arguments = &_pos->arguments;
 
+	++_lineNumber;
 	++_pos;
 
 	return true;
 }
 
 void DATFile::next() {
-	if (_pos != _lines.end())
+	if (_pos != _lines.end()) {
+		++_lineNumber;
 		++_pos;
+	}
 }
 
 void DATFile::previous() {
-	if (_pos != _lines.begin())
+	if (_pos != _lines.begin()) {
+		--_lineNumber;
 		--_pos;
+	}
 }
 
 void DATFile::rewind() {
-	_pos = _lines.begin();
+	_lineNumber = 0;
+	_pos        = _lines.begin();
+}
+
+void DATFile::seekTo(uint32 n) {
+	if (n < _lineNumber)
+		rewind();
+
+	while (!atEnd() && (_lineNumber != n))
+		next();
+}
+
+uint32 DATFile::getLineNumber() const {
+	return _lineNumber;
+}
+
+const Common::String &DATFile::getName() const {
+	return _name;
+}
+
+Common::String DATFile::getSignature() const {
+	return Common::String::printf("%s:%d", _name.c_str(), getLineNumber());
 }
 
 int DATFile::argCount(const Common::String &arguments) {

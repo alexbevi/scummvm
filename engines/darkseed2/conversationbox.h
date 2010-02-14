@@ -31,6 +31,7 @@
 #include "common/array.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 #include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
@@ -46,7 +47,7 @@ class TextObject;
 class Sprite;
 class TalkLine;
 
-class ConversationBox {
+class ConversationBox : public Saveable {
 public:
 	static const int32 kWidth  = 640; ///< The box's width.
 	static const int32 kHeight =  70; ///< The box's heigth.
@@ -62,6 +63,8 @@ public:
 	bool start(const Common::String &conversation);
 	/** Restart the conversation. */
 	bool restart();
+	/** Stop the currently running conversation. */
+	void stop();
 
 	/** Is the conversation still running? */
 	bool isActive() const;
@@ -80,6 +83,10 @@ public:
 	/** Check for changes in the box's status. */
 	void updateStatus();
 
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
 	/** A scrolling action. */
 	enum ScrollAction {
@@ -90,9 +97,9 @@ private:
 
 	/** A box's state. */
 	enum State {
-		kStateWaitUserAction, ///< Waiting for the user to do something.
-		kStatePlayingLine,    ///< Playing an entry's line.
-		kStatePlayingReply    ///< Playign an entry's reply.
+		kStateWaitUserAction = 0, ///< Waiting for the user to do something.
+		kStatePlayingLine    = 1, ///< Playing an entry's line.
+		kStatePlayingReply   = 2  ///< Playign an entry's reply.
 	};
 
 	/** A conversation line. */
@@ -103,6 +110,9 @@ private:
 		Common::StringList texts;
 		/** The graphical text lines of the wrapped text lines. */
 		Common::Array<TextObject *> textObjects;
+
+		/** The number within the lines array. */
+		uint32 lineNumber;
 
 		Line(TalkLine *line = 0, byte color = 0);
 		~Line();
@@ -174,6 +184,10 @@ private:
 	uint8  _curSpeaker;                     ///< The current playing line's speaker.
 	uint16 _curReply;                       ///< The current playing reply.
 	Common::Array<TalkLine *> _nextReplies; ///< The replies playing next.
+
+	// For saving/loading
+	uint32 _curLineNumber;
+	Common::String _curReplyName;
 
 	/** Load all needed sprites. */
 	void loadSprites();

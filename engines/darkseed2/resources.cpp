@@ -30,7 +30,8 @@
 
 namespace DarkSeed2 {
 
-Resource::Resource(const byte *data, uint32 size) {
+Resource::Resource(const Common::String &name, const byte *data, uint32 size) {
+	_name        = name;
 	_ownData     = 0;
 	_foreignData = data;
 	_size        = size;
@@ -38,7 +39,8 @@ Resource::Resource(const byte *data, uint32 size) {
 	_stream = new Common::MemoryReadStream(_foreignData, size);
 }
 
-Resource::Resource(Common::ReadStream &stream, uint32 size) {
+Resource::Resource(const Common::String &name, Common::ReadStream &stream, uint32 size) {
+	_name        = name;
 	_foreignData = 0;
 	_ownData     = new byte[size];
 	_size        = size;
@@ -55,6 +57,10 @@ Resource::Resource(Common::ReadStream &stream, uint32 size) {
 Resource::~Resource() {
 	delete[] _ownData;
 	delete _stream;
+}
+
+const Common::String &Resource::getName() const {
+	return _name;
 }
 
 uint32 Resource::getSize() const {
@@ -318,7 +324,7 @@ Resource *Resources::getResource(const Common::String &resource) {
 	if (plainFile.open(resource)) {
 		// Loading directly from file
 
-		return new Resource(plainFile, plainFile.size());
+		return new Resource(resource, plainFile, plainFile.size());
 	}
 
 	if (!_resources.contains(resource))
@@ -341,7 +347,7 @@ Resource *Resources::getResource(const Common::String &resource) {
 			error("Resources::getResource(): Resource \"%s\" offset %d out of bounds",
 					resource.c_str(), res.offset);
 
-		return new Resource(res.glue->data + res.offset, res.size);
+		return new Resource(resource, res.glue->data + res.offset, res.size);
 	}
 
 	// Uncompressed glue, constructing new resource with data from file
@@ -356,7 +362,20 @@ Resource *Resources::getResource(const Common::String &resource) {
 		error("Resources::getResource(): Couldn't seek glue file \"%s\" to offset %d",
 				res.glue->fileName.c_str(), res.offset);
 
-	return new Resource(glueFile, res.size);
+	return new Resource(resource, glueFile, res.size);
+}
+
+Common::String Resources::addExtension(const Common::String &name, const Common::String &extension) {
+	if (name.empty() || extension.empty())
+		return name;
+
+	const char *str = name.c_str();
+	const char *dot = strrchr(str, '.');
+
+	if (!dot)
+		return name + "." + extension;
+
+	return Common::String(str, dot + 1) + extension;
 }
 
 byte *Resources::uncompressGlue(Common::File &file, uint32 &size) const {

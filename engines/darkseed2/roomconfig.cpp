@@ -33,10 +33,32 @@
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/music.h"
 #include "engines/darkseed2/mike.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
+template<>
+void SaveLoad::sync<RoomConfigSprite::Frame>(Common::Serializer &serializer, RoomConfigSprite::Frame &var) {
+	uint32 scale = (uint32) var.scale;
+
+	sync(serializer, var.frame);
+	sync(serializer, scale);
+	sync(serializer, var.x);
+	sync(serializer, var.y);
+
+	var.scale = (frac_t) scale;
+}
+
+template<>
+void SaveLoad::sync<RoomConfigSprite::Effect>(Common::Serializer &serializer, RoomConfigSprite::Effect &var) {
+	sync(serializer, var.frameNum);
+	sync(serializer, var.effect);
+}
+
+
 RoomConfig::RoomConfig(Variables &variables) : _variables(&variables) {
+	_type = kTypeNone;
+
 	_loaded  = false;
 	_running = false;
 
@@ -50,6 +72,10 @@ RoomConfig::RoomConfig(Variables &variables) : _variables(&variables) {
 }
 
 RoomConfig::~RoomConfig() {
+}
+
+RoomConfig::Type RoomConfig::getType() const {
+	return _type;
 }
 
 bool RoomConfig::isLoaded() const {
@@ -167,12 +193,37 @@ bool RoomConfig::waited() const {
 	return g_system->getMillis() >= _waitUntil;
 }
 
+bool RoomConfig::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	SaveLoad::sync(serializer, _loaded);
+	SaveLoad::sync(serializer, _running);
+
+	SaveLoad::sync(serializer, _conditionsState);
+
+	SaveLoad::sync(serializer, _conditions);
+	SaveLoad::sync(serializer, _changes);
+
+	SaveLoad::syncTimestamp(serializer, _waitUntil);
+
+	return true;
+}
+
+bool RoomConfig::loading(Resources &resources) {
+	_conditionsCheckedLast = 0;
+
+	_state        = false;
+	_stateChanged = false;
+
+	return true;
+}
+
 
 RoomConfigMusic::RoomConfigMusic(Variables &variables, Resources &resources, Music &music) :
 		RoomConfig(variables) {
 
 	_resources = &resources;
 	_music     = &music;
+
+	_type = kTypeMusic;
 }
 
 RoomConfigMusic::~RoomConfigMusic() {
@@ -211,6 +262,22 @@ bool RoomConfigMusic::parseLine(const Common::String &cmd, const Common::String 
 	return true;
 }
 
+bool RoomConfigMusic::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	if (!RoomConfig::saveLoad(serializer, resources))
+		return false;
+	if (serializer.isLoading())
+		if (!RoomConfig::loading(resources))
+			return false;
+
+	SaveLoad::sync(serializer, _midi);
+
+	return true;
+}
+
+bool RoomConfigMusic::loading(Resources &resources) {
+	return true;
+}
+
 
 RoomConfigSprite::RoomConfigSprite(Variables &variables, Resources &resources,
 		Graphics &graphics, Sound &sound, Mike &mike) : RoomConfig(variables) {
@@ -219,6 +286,10 @@ RoomConfigSprite::RoomConfigSprite(Variables &variables, Resources &resources,
 	_graphics  = &graphics;
 	_sound     = &sound;
 	_mike      = &mike;
+
+	_type = kTypeSprite;
+
+	_curPos = 0;
 
 	for (int i = 0; i < 6; i++)
 		_status[i] = 0;
@@ -581,12 +652,56 @@ bool RoomConfigSprite::parsePackedIntLine(const Common::String &args, Common::Ar
 	return true;
 }
 
+bool RoomConfigSprite::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	if (!RoomConfig::saveLoad(serializer, resources))
+		return false;
+	if (serializer.isLoading())
+		if (!RoomConfig::loading(resources))
+			return false;
+
+	SaveLoad::sync(serializer, _anim);
+
+	SaveLoad::sync(serializer, _status[0]);
+	SaveLoad::sync(serializer, _status[1]);
+	SaveLoad::sync(serializer, _status[2]);
+	SaveLoad::sync(serializer, _status[3]);
+	SaveLoad::sync(serializer, _status[4]);
+	SaveLoad::sync(serializer, _status[5]);
+
+	SaveLoad::sync(serializer, _curPos);
+
+	SaveLoad::sync(serializer, _frames);
+	SaveLoad::sync(serializer, _effects);
+
+	SaveLoad::sync(serializer, _loopCond);
+	SaveLoad::sync(serializer, _loopStart);
+	SaveLoad::sync(serializer, _loopEnd);
+
+	SaveLoad::sync(serializer, _loadCond);
+	SaveLoad::sync(serializer, _changeAt);
+	SaveLoad::sync(serializer, _speech);
+	SaveLoad::sync(serializer, _spriteIDX);
+	return true;
+}
+
+bool RoomConfigSprite::loading(Resources &resources) {
+	_animation = _graphics->getRoom().loadAnimation(*_resources, _anim);
+	if (!_animation)
+		return false;
+
+	_currentSprite.clear();
+
+	return true;
+}
+
 
 RoomConfigPalette::RoomConfigPalette(Variables &variables, Resources &resources, Graphics &graphics) :
 		RoomConfig(variables) {
 
 	_resources = &resources;
 	_graphics  = &graphics;
+
+	_type = kTypePalette;
 
 	_startIndex = 0;
 	_endIndex   = 0;
@@ -625,12 +740,31 @@ bool RoomConfigPalette::parseLine(const Common::String &cmd, const Common::Strin
 	return true;
 }
 
+bool RoomConfigPalette::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	if (!RoomConfig::saveLoad(serializer, resources))
+		return false;
+	if (serializer.isLoading())
+		if (!RoomConfig::loading(resources))
+			return false;
+
+	SaveLoad::sync(serializer, _startIndex);
+	SaveLoad::sync(serializer, _endIndex);
+
+	return true;
+}
+
+bool RoomConfigPalette::loading(Resources &resources) {
+	return true;
+}
+
 
 RoomConfigMirror::RoomConfigMirror(Variables &variables, Resources &resources, Graphics &graphics) :
 		RoomConfig(variables) {
 
 	_resources = &resources;
 	_graphics  = &graphics;
+
+	_type = kTypeMirror;
 
 	for (int i = 0; i < 3; i++) {
 		_posX [i] = 0;
@@ -746,6 +880,31 @@ bool RoomConfigMirror::parseScale(const Common::String &args) {
 	return true;
 }
 
+bool RoomConfigMirror::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	if (!RoomConfig::saveLoad(serializer, resources))
+		return false;
+	if (serializer.isLoading())
+		if (!RoomConfig::loading(resources))
+			return false;
+
+	SaveLoad::sync(serializer, _area);
+	SaveLoad::sync(serializer, _posX[0]);
+	SaveLoad::sync(serializer, _posX[1]);
+	SaveLoad::sync(serializer, _posX[2]);
+	SaveLoad::sync(serializer, _posY[0]);
+	SaveLoad::sync(serializer, _posY[1]);
+	SaveLoad::sync(serializer, _posY[2]);
+	SaveLoad::sync(serializer, _scale[0]);
+	SaveLoad::sync(serializer, _scale[1]);
+	SaveLoad::sync(serializer, _scale[2]);
+
+	return true;
+}
+
+bool RoomConfigMirror::loading(Resources &resources) {
+	return true;
+}
+
 
 RoomConfigManager::RoomConfigManager(DarkSeed2Engine &vm) : _vm(&vm) {
 }
@@ -793,22 +952,22 @@ bool RoomConfigManager::parseConfig(DATFile &dat) {
 	while (dat.nextLine(cmd, args)) {
 		if        (cmd->equalsIgnoreCase("MusicStart")) {
 
-			if (!parseMusicConfigs(dat))
+			if (!parseConfigs(dat, RoomConfig::kTypeMusic))
 				return false;
 
 		} else if (cmd->equalsIgnoreCase("SpriteStart")) {
 
-			if (!parseSpriteConfigs(dat))
+			if (!parseConfigs(dat, RoomConfig::kTypeSprite))
 				return false;
 
 		} else if (cmd->equalsIgnoreCase("PaletteStart")) {
 
-			if (!parsePaletteConfigs(dat))
+			if (!parseConfigs(dat, RoomConfig::kTypePalette))
 				return false;
 
 		} else if (cmd->equalsIgnoreCase("MirrorStart")) {
 
-			if (!parseMirrorConfigs(dat))
+			if (!parseConfigs(dat, RoomConfig::kTypeMirror))
 				return false;
 
 		} else if (cmd->equalsIgnoreCase("EndID")) {
@@ -836,7 +995,7 @@ void RoomConfigManager::clear() {
 	_configs.clear();
 }
 
-bool RoomConfigManager::parseMusicConfigs(DATFile &dat) {
+bool RoomConfigManager::parseConfigs(DATFile &dat, RoomConfig::Type type) {
 	const Common::String *cmd, *args;
 	while (dat.nextLine(cmd, args)) {
 		if (cmd->matchString("*End")) {
@@ -849,91 +1008,72 @@ bool RoomConfigManager::parseMusicConfigs(DATFile &dat) {
 
 		dat.previous();
 
-		RoomConfigMusic *music = new RoomConfigMusic(*_vm->_variables, *_vm->_resources, *_vm->_music);
-		if (!music->parse(dat)) {
-			delete music;
+		RoomConfig *conf = createRoomConfig(type);
+		if (!conf->parse(dat)) {
+			delete conf;
 			return false;
 		}
 
-		_configs.push_back(music);
+		_configs.push_back(conf);
 	}
 
 	return true;
 }
 
-bool RoomConfigManager::parseSpriteConfigs(DATFile &dat) {
-	const Common::String *cmd, *args;
-	while (dat.nextLine(cmd, args)) {
-		if (cmd->matchString("*End")) {
-			// Reached the end of this config block
-			return true;
-		} else if (!cmd->equalsIgnoreCase("Cond")) {
-			warning("RoomConfigManager::parseSpriteConfigs(): First command must be a condition!");
-			return false;
+RoomConfig *RoomConfigManager::createRoomConfig(RoomConfig::Type type) {
+	switch (type) {
+	case RoomConfig::kTypeMusic:
+		return new RoomConfigMusic(*_vm->_variables, *_vm->_resources, *_vm->_music);
+
+	case RoomConfig::kTypeSprite:
+		return new RoomConfigSprite(*_vm->_variables, *_vm->_resources, *_vm->_graphics, *_vm->_sound, *_vm->_mike);
+
+	case RoomConfig::kTypePalette:
+		return new RoomConfigPalette(*_vm->_variables, *_vm->_resources, *_vm->_graphics);
+
+	case RoomConfig::kTypeMirror:
+		return new RoomConfigMirror(*_vm->_variables, *_vm->_resources, *_vm->_graphics);
+
+	default:
+		assert(false);
+		return 0;
+	}
+
+	return 0;
+}
+
+bool RoomConfigManager::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	uint32 size = _configs.size();
+
+	SaveLoad::sync(serializer, size);
+
+	if (serializer.isSaving()) {
+		for (Common::List<RoomConfig *>::iterator conf = _configs.begin(); conf != _configs.end(); ++conf) {
+			byte type = (byte) (*conf)->getType();
+			SaveLoad::sync(serializer, type);
+			if (!(*conf)->doSaveLoad(serializer, resources))
+				return false;
 		}
+	} else {
+		clear();
+		for (uint32 i = 0; i < size; i++) {
+			byte type;
 
-		dat.previous();
+			SaveLoad::sync(serializer, type);
 
-		RoomConfigSprite *music =
-			new RoomConfigSprite(*_vm->_variables, *_vm->_resources, *_vm->_graphics, *_vm->_sound, *_vm->_mike);
-		if (!music->parse(dat)) {
-			delete music;
-			return false;
+			RoomConfig *conf = createRoomConfig((RoomConfig::Type) type);
+
+			if (!conf->doSaveLoad(serializer, resources))
+				return false;
+
+			_configs.push_back(conf);
 		}
-
-		_configs.push_back(music);
 	}
 
 	return true;
 }
 
-bool RoomConfigManager::parsePaletteConfigs(DATFile &dat) {
-	const Common::String *cmd, *args;
-	while (dat.nextLine(cmd, args)) {
-		if (cmd->matchString("*End")) {
-			// Reached the end of this config block
-			return true;
-		} else if (!cmd->equalsIgnoreCase("Cond")) {
-			warning("RoomConfigManager::parsePaletteConfigs(): First command must be a condition!");
-			return false;
-		}
-
-		dat.previous();
-
-		RoomConfigPalette *music = new RoomConfigPalette(*_vm->_variables, *_vm->_resources, *_vm->_graphics);
-		if (!music->parse(dat)) {
-			delete music;
-			return false;
-		}
-
-		_configs.push_back(music);
-	}
-
-	return true;
-}
-
-bool RoomConfigManager::parseMirrorConfigs(DATFile &dat) {
-	const Common::String *cmd, *args;
-	while (dat.nextLine(cmd, args)) {
-		if (cmd->matchString("*End")) {
-			// Reached the end of this config block
-			return true;
-		} else if (!cmd->equalsIgnoreCase("Cond")) {
-			warning("RoomConfigManager::parseMirrorConfigs(): First command must be a condition!");
-			return false;
-		}
-
-		dat.previous();
-
-		RoomConfigMirror *music = new RoomConfigMirror(*_vm->_variables, *_vm->_resources, *_vm->_graphics);
-		if (!music->parse(dat)) {
-			delete music;
-			return false;
-		}
-
-		_configs.push_back(music);
-	}
-
+bool RoomConfigManager::loading(Resources &resources) {
 	return true;
 }
 

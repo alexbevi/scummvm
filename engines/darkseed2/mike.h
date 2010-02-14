@@ -32,6 +32,7 @@
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/graphicalobject.h"
 #include "engines/darkseed2/pathfinder.h"
+#include "engines/darkseed2/saveable.h"
 
 namespace Common {
 	class String;
@@ -44,7 +45,7 @@ class Variables;
 
 class Sprite;
 
-class Mike {
+class Mike : public Saveable {
 public:
 	/** The resolution of a walk map tile in pixels. */
 	static const int32 kWalkMapResolution = 10;
@@ -55,15 +56,15 @@ public:
 
 	/** A direction. */
 	enum Direction {
-		kDirN = 0, ///< North.
-		kDirNE,    ///< North-East.
-		kDirE,     ///< East.
-		kDirSE,    ///< South-East.
-		kDirS,     ///< South.
-		kDirSW,    ///< South-West.
-		kDirW,     ///< West.
-		kDirNW,    ///< North-West.
-		kDirNone   ///< No direction.
+		kDirN    = 0, ///< North.
+		kDirNE   = 1, ///< North-East.
+		kDirE    = 2, ///< East.
+		kDirSE   = 3, ///< South-East.
+		kDirS    = 4, ///< South.
+		kDirSW   = 5, ///< South-West.
+		kDirW    = 6, ///< West.
+		kDirNW   = 7, ///< North-West.
+		kDirNone = 8  ///< No direction.
 	};
 
 	Mike(Resources &resources, Variables &variables, Graphics &graphics);
@@ -113,19 +114,23 @@ public:
 	/** Walk to a specific position. */
 	void go(int32 x, int32 y, Direction direction);
 
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
 	/** Mike's state. */
 	enum State {
-		kStateIdle,    ///< Idling standing by.
-		kStateWalking, ///< Walking somewhere.
-		kStateTurning  ///< Turning around.
+		kStateIdle    = 0, ///< Idling standing by.
+		kStateWalking = 1, ///< Walking somewhere.
+		kStateTurning = 2  ///< Turning around.
 	};
 
 	/** The animation state Mike's currently in. */
 	enum AnimState {
 		kAnimStateStanding = 0, ///< Standing.
-		kAnimStateWalking,      ///< Walking.
-		kAnimStateNone          ///< No/Invalid state.
+		kAnimStateWalking  = 1, ///< Walking.
+		kAnimStateNone     = 2  ///< No/Invalid state.
 	};
 
 	Resources *_resources;
@@ -147,6 +152,7 @@ private:
 	Direction _targetDirection; ///< Our target's direction.
 	Common::List<Position> _wayPoints;
 	Common::List<Position>::const_iterator _currentWayPoint;
+	uint32 _currentWayPointNumber;
 
 	/** The direction to turn to. */
 	Direction _turnTo;

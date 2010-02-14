@@ -31,6 +31,7 @@
 #include "common/frac.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 #include "engines/darkseed2/sortedlist.h"
 #include "engines/darkseed2/palette.h"
 #include "engines/darkseed2/sprite.h"
@@ -57,7 +58,7 @@ class SpriteObject;
 class Animation;
 class Cursors;
 
-class Graphics {
+class Graphics : public Saveable {
 public:
 	/** An entry in the sprite queue. */
 	struct SpriteQueueEntry {
@@ -86,6 +87,7 @@ public:
 		SpriteQueue::iterator it; ///< The iterator within the sprite queue the reference refers to.
 
 		SpriteRef();
+		void clear();
 		/** Is the sprite up-to-date with the information in the parameters? */
 		bool isUpToDate(int32 frame, int32 x, int32 y, frac_t scale) const;
 	};
@@ -97,7 +99,8 @@ public:
 	~Graphics();
 
 	/** Init the graphics subsystem. */
-	void init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie);
+	void init(TalkManager &talkManager, ScriptRegister &scriptRegister,
+			RoomConfigManager &roomConfigManager, Movie &movie);
 
 	/** Get the conversation box. */
 	ConversationBox &getConversationBox();
@@ -159,6 +162,10 @@ public:
 	void registerBackground(const Sprite &background);
 	/** Remove the background. */
 	void unregisterBackground();
+
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
 
 private:
 	Resources *_resources;

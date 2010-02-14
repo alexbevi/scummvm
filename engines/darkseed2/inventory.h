@@ -38,6 +38,7 @@ namespace DarkSeed2 {
 
 class Resources;
 class Variables;
+class ScriptRegister;
 class Graphics;
 
 class DATFile;
@@ -69,6 +70,8 @@ public:
 
 	/** An item. */
 	struct Item {
+		Common::String name; ///< The item's name.
+
 		Common::Array<ItemLook> looks; ///< All looks for this item.
 		Common::Array<ItemUse>  uses;  ///< All uses for this item.
 
@@ -76,7 +79,8 @@ public:
 		ItemUse  *curUse;  ///< The currently active use, or 0 if none.
 	};
 
-	Inventory(Resources &resources, Variables &variables, Graphics &graphics, Cursors &cursors);
+	Inventory(Resources &resources, Variables &variables,
+			ScriptRegister &scriptRegister, Graphics &graphics, Cursors &cursors);
 	~Inventory();
 
 	/** Empty the inventory. */
@@ -90,6 +94,9 @@ public:
 
 	/** Get all items. */
 	bool getItems(const Common::Array<Item> *&items);
+
+	/** Find a specific item. */
+	const Item *findItem(const Common::String &name) const;
 
 private:
 	typedef Common::HashMap<Common::String, Sprite *, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> SpriteMap;

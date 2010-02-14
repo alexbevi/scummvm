@@ -29,6 +29,7 @@
 #include "common/rect.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 #include "engines/darkseed2/inventory.h"
 #include "engines/darkseed2/objects.h"
 #include "engines/darkseed2/sprite.h"
@@ -38,18 +39,19 @@ namespace DarkSeed2 {
 
 class Resources;
 class Variables;
+class ScriptRegister;
 class Graphics;
 class TalkManager;
 
-class InventoryBox {
+class InventoryBox : public Saveable {
 public:
 	typedef const Inventory::Item *ItemRef;
 
 	static const int32 kWidth  = 640; ///< The box's width.
 	static const int32 kHeight =  70; ///< The box's heigth.
 
-	InventoryBox(Resources &resources, Variables &variables, Graphics &graphics,
-			TalkManager &talkManager, Cursors &cursors);
+	InventoryBox(Resources &resources, Variables &variables, ScriptRegister &scriptRegister,
+			Graphics &graphics, TalkManager &talkManager, Cursors &cursors);
 	~InventoryBox();
 
 	/** Notify the box that a new palette is active. */
@@ -66,6 +68,9 @@ public:
 	/** Hide the inventory. */
 	void hide();
 
+	/** Find a specific item. */
+	ItemRef findItem(const Common::String &name) const;
+
 	/** Redraw the inventory box. */
 	void redraw(Sprite &sprite, Common::Rect area);
 
@@ -81,6 +86,10 @@ public:
 	/** Check for changes in the box's status. */
 	void updateStatus();
 
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
 	/** A scrolling action. */
 	enum ScrollAction {
@@ -89,11 +98,12 @@ private:
 		kScrollActionNone   ///< No scroll.
 	};
 
-	Resources   *_resources;
-	Variables   *_variables;
-	Graphics    *_graphics;
-	TalkManager *_talkMan;
-	Cursors     *_cursors;
+	Resources      *_resources;
+	Variables      *_variables;
+	ScriptRegister *_scriptRegister;
+	Graphics       *_graphics;
+	TalkManager    *_talkMan;
+	Cursors        *_cursors;
 
 	/** The actual inventory. */
 	Inventory *_inventory;

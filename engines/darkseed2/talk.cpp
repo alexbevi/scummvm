@@ -41,14 +41,17 @@ TalkLine::TalkLine(Resources &resources, const Common::String &talkName) {
 
 	_wav = 0;
 
+	Common::String wavFile = Resources::addExtension(talkName, "WAV");
+	Common::String txtFile = Resources::addExtension(talkName, "TXT");
+
 	// Reading the sound
-	if (_resources->hasResource(talkName + ".WAV"))
-		_wav = _resources->getResource(talkName + ".WAV");
+	if (_resources->hasResource(wavFile))
+		_wav = _resources->getResource(wavFile);
 
 	// Reading the text
 	Resource *txt;
-	if (_resources->hasResource(talkName + ".TXT")) {
-		txt = _resources->getResource(talkName + ".TXT");
+	if (_resources->hasResource(txtFile)) {
+		txt = _resources->getResource(txtFile);
 
 		Common::SeekableReadStream &txtStream = txt->getStream();
 

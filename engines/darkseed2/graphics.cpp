@@ -24,6 +24,7 @@
  */
 
 #include "common/stream.h"
+#include "common/serializer.h"
 
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/variables.h"
@@ -66,6 +67,10 @@ bool Graphics::SpriteQueueEntry::operator<(const SpriteQueueEntry &right) const 
 
 
 Graphics::SpriteRef::SpriteRef() {
+	empty = true;
+}
+
+void Graphics::SpriteRef::clear() {
 	empty = true;
 }
 
@@ -121,7 +126,9 @@ Graphics::~Graphics() {
 	delete _talk;
 }
 
-void Graphics::init(TalkManager &talkManager, RoomConfigManager &roomConfigManager, Movie &movie) {
+void Graphics::init(TalkManager &talkManager, ScriptRegister &scriptRegister,
+		RoomConfigManager &roomConfigManager, Movie &movie) {
+
 	_movie = &movie;
 
 	// Init conversation box
@@ -129,11 +136,11 @@ void Graphics::init(TalkManager &talkManager, RoomConfigManager &roomConfigManag
 	_conversationBox->move(kConversationX, kConversationY);
 
 	// Init inventory box
-	_inventoryBox = new InventoryBox(*_resources, *_variables, *this, talkManager, *_cursors);
+	_inventoryBox = new InventoryBox(*_resources, *_variables, scriptRegister, *this, talkManager, *_cursors);
 	_inventoryBox->move(kInventoryX, kInventoryY);
 
 	// Init room
-	_room = new Room(*_variables, *this);
+	_room = new Room(*_variables, scriptRegister, *this);
 	_room->registerConfigManager(roomConfigManager);
 
 	_screen.clear();
@@ -461,6 +468,37 @@ void Graphics::redraw(Common::Rect rect) {
 
 	if (_inventoryBox && _inventoryBox->isVisible())
 		_inventoryBox->redraw(_screen, rect);
+}
+
+bool Graphics::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	if (serializer.isLoading()) {
+		_spriteQueue.clear();
+
+		delete _talk;
+		_talk = 0;
+
+		unregisterBackground();
+		dirtyAll();
+	}
+
+	assert(_conversationBox);
+	assert(_inventoryBox);
+	assert(_room);
+
+	if (!_conversationBox->doSaveLoad(serializer, resources))
+		return false;
+	if (!_inventoryBox->doSaveLoad(serializer, resources))
+		return false;
+	if (!_room->doSaveLoad(serializer, resources))
+		return false;
+
+	return true;
+}
+
+bool Graphics::loading(Resources &resources) {
+	registerBackground(_room->getBackground());
+	dirtyAll();
+	return true;
 }
 
 } // End of namespace DarkSeed2

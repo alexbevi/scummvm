@@ -32,6 +32,7 @@
 #include "common/hash-str.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -44,7 +45,7 @@ class Resources;
 
 class Resource;
 
-class Variables {
+class Variables : public Saveable {
 public:
 	Variables(Common::RandomSource &rnd);
 	~Variables();
@@ -84,6 +85,10 @@ public:
 	void evalChange(const Common::String &change);
 	/** Evaluate several change strings, like they are found in the game scripts. */
 	void evalChange(const Common::List<Common::String> &change);
+
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
 
 private:
 	typedef Common::HashMap<Common::String, uint8, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> VarMap;

@@ -29,12 +29,14 @@
 #include "common/frac.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 #include "engines/darkseed2/objects.h"
 
 namespace DarkSeed2 {
 
 class Resources;
 class Variables;
+class ScriptRegister;
 class Graphics;
 class RoomConfigManager;
 
@@ -43,9 +45,9 @@ class ScriptChunk;
 class Sprite;
 class Animation;
 
-class Room : public ObjectContainer {
+class Room : public ObjectContainer, public Saveable {
 public:
-	Room(Variables &variables, Graphics &graphics);
+	Room(Variables &variables, ScriptRegister &scriptRegister, Graphics &graphics);
 	~Room();
 
 	void registerConfigManager(RoomConfigManager &configManager);
@@ -88,11 +90,16 @@ public:
 	/** Parse a room. */
 	bool parse(Resources &resources, const Common::String &base);
 
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
 	typedef Common::HashMap<Common::String, Animation *, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> AnimationMap;
 
-	Variables *_variables;
-	Graphics  *_graphics;
+	Variables      *_variables;
+	ScriptRegister *_scriptRegister;
+	Graphics       *_graphics;
 
 	RoomConfigManager *_confMan;
 
@@ -100,6 +107,8 @@ private:
 	bool _ready;
 
 	Common::String _name;           ///< The room's name.
+	Common::String _roomFile;       ///< The room's room file.
+	Common::String _objsFile;       ///< The room's objects file.
 	Common::String _backgroundFile; ///< The room's background file.
 	Common::String _walkMapFile;    ///< The room's walk map file.
 
@@ -120,6 +129,9 @@ private:
 	/** All animations. */
 	AnimationMap _animations;
 
+	// For saving/loading
+	Common::List<uint32> _entryScriptLines;
+
 	// Parsing helpers
 	bool setBackground(const Common::String &args);
 	bool setWalkMap(const Common::String &args);
@@ -130,6 +142,9 @@ private:
 
 	bool parse(Resources &resources, DATFile &room, DATFile &objects);
 	bool parse(Resources &resources, const Common::String &room, const Common::String &objects);
+
+	/** Load the sprites. */
+	bool loadSprites(Resources &resources);
 
 	/** Set up the room after parsing. */
 	bool setup(Resources &resources);

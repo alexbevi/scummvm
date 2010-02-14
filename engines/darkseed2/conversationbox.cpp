@@ -31,6 +31,7 @@
 #include "engines/darkseed2/conversation.h"
 #include "engines/darkseed2/graphicalobject.h"
 #include "engines/darkseed2/sprite.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
@@ -170,6 +171,7 @@ void ConversationBox::newPalette() {
 	updateColors();
 	resetSprites();
 	rebuild();
+	redrawLines();
 }
 
 bool ConversationBox::start(const Common::String &conversation) {
@@ -196,6 +198,14 @@ bool ConversationBox::restart() {
 	drawLines();
 
 	return true;
+}
+
+void ConversationBox::stop() {
+	if (!_conversation)
+		return;
+
+	_conversation->clear();
+	_state = kStateWaitUserAction;
 }
 
 bool ConversationBox::isActive() const {
@@ -294,6 +304,9 @@ void ConversationBox::clearReplies() {
 		delete *it;
 	_nextReplies.clear();
 	_curReply = 0xFFFF;
+
+	_curLineNumber = 0;
+	_curReplyName.clear();
 }
 
 void ConversationBox::updateLines() {
@@ -305,6 +318,8 @@ void ConversationBox::updateLines() {
 	Common::Array<TalkLine *> lines = _conversation->getCurrentLines(*_resources);
 	for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
 		Line *line = new Line(*it, _colorUnselected);
+
+		line->lineNumber = _lines.size();
 
 		_lines.push_back(line);
 		_physLineCount += line->texts.size();
@@ -542,6 +557,9 @@ void ConversationBox::pickLine(Line *line) {
 	// Start talking the line
 	speakLine(*line->talk);
 
+	_curLineNumber = line->lineNumber;
+	_curReplyName = line->talk->getName();
+
 	// Set state
 	_state = kStatePlayingLine;
 
@@ -644,6 +662,68 @@ void ConversationBox::speakerVariable(uint8 speaker, bool on) {
 	Common::String speakerVar = Common::String::printf("SysTalking%d", speaker);
 
 	_variables->set(speakerVar, on ? 1 : 0);
+}
+
+bool ConversationBox::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	byte state = _state;
+
+	if (!_conversation->doSaveLoad(serializer, resources))
+		return false;
+
+	SaveLoad::sync(serializer, _physLineTop);
+	SaveLoad::sync(serializer, state);
+	SaveLoad::sync(serializer, _curSpeaker);
+	SaveLoad::sync(serializer, _curReply);
+
+	SaveLoad::sync(serializer, _curLineNumber);
+	SaveLoad::sync(serializer, _curReplyName);
+
+	_state = (State) state;
+
+	return true;
+}
+
+bool ConversationBox::loading(Resources &resources) {
+	uint32 physLineTop = _physLineTop;
+
+	State state = _state;
+
+	uint8  curSpeaker    = _curSpeaker;
+	uint16 curReply      = _curReply;
+	uint32 curLineNumber = _curLineNumber;
+
+	Common::String curReplyName = _curReplyName;
+
+	updateLines();
+
+	_physLineTop = physLineTop;
+
+	_state = state;
+
+	_curSpeaker    = curSpeaker;
+	_curReply      = curReply;
+	_curLineNumber = curLineNumber;
+	_curReplyName  = curReplyName;
+
+	redrawLines();
+
+	if (_state == kStatePlayingLine) {
+		pickLine(_lines[_curLineNumber]);
+	} else if (_state == kStatePlayingReply) {
+		pickLine(_lines[_curLineNumber]);
+
+		_curSpeaker    = curSpeaker;
+		_curReply      = curReply;
+		_curLineNumber = curLineNumber;
+		_curReplyName  = curReplyName;
+		_state         = state;
+
+		_curSpeaker = _nextReplies[_curReply]->getSpeakerNum();
+		speakerVariable(_curSpeaker, true);
+		speakLine(*_nextReplies[_curReply]);
+	}
+
+	return true;
 }
 
 } // End of namespace DarkSeed2

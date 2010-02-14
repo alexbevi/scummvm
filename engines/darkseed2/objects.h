@@ -36,14 +36,15 @@ namespace DarkSeed2 {
 class Variables;
 
 class DATFile;
+class ScriptRegister;
 class ScriptChunk;
 
 /** Object Verbs. */
 enum ObjectVerb {
-	kObjectVerbGo = 0, ///< Go.
-	kObjectVerbLook,   ///< Look.
-	kObjectVerbUse,    ///< Use.
-	kObjectVerbNone    ///< None.
+	kObjectVerbGo   = 0, ///< Go.
+	kObjectVerbLook = 1, ///< Look.
+	kObjectVerbUse  = 2, ///< Use.
+	kObjectVerbNone = 3  ///< None.
 };
 
 /** A script object. */
@@ -52,7 +53,7 @@ public:
 	/** Default constructor, only for the sake of Common::Array<>. NOT USEABLE! */
 	Object();
 
-	Object(const Variables &variables);
+	Object(const Variables &variables, ScriptRegister &scriptRegister);
 	~Object();
 
 	/** Parse an object out of a suitably positioned DAT file. */
@@ -76,6 +77,8 @@ public:
 private:
 	const Variables *_variables;
 
+	ScriptRegister *_scriptRegister;
+
 	Common::String _name; ///< The object's name.
 	Common::Rect   _area; ///< The object's position.
 
@@ -95,7 +98,7 @@ private:
 /** A container holding several objects. */
 class ObjectContainer {
 public:
-	ObjectContainer(const Variables &variables);
+	ObjectContainer(const Variables &variables, ScriptRegister &scriptRegister);
 	~ObjectContainer();
 
 	/** Get all objects. */
@@ -119,6 +122,8 @@ protected:
 
 private:
 	const Variables *_variables;
+
+	ScriptRegister *_scriptRegister;
 };
 
 } // End of namespace DarkSeed2

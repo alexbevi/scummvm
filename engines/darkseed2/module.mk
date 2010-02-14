@@ -28,7 +28,9 @@ MODULE_OBJS := \
 	pathfinder.o \
 	mike.o \
 	inter.o \
-	events.o
+	events.o \
+	saveable.o \
+	saveload.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_DARKSEED2), DYNAMIC_PLUGIN)

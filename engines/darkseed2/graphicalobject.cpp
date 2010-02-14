@@ -385,7 +385,7 @@ bool Animation::load(Resources &resources, const Common::String &base) {
 	// Find the frame with the biggest number that still exists
 	uint8 count = 0;
 	for (int i = 99; i > 0; i--) {
-		if (resources.hasResource(base + Common::String::printf("%02d", i) + ".BMP")) {
+		if (resources.hasResource(Resources::addExtension(base + Common::String::printf("%02d", i), "BMP"))) {
 			count = i;
 			break;
 		}
@@ -394,7 +394,7 @@ bool Animation::load(Resources &resources, const Common::String &base) {
 	// None found
 	if (count == 0) {
 		// Try to open the file without a frame number attached
-		if (!resources.hasResource(base + ".BMP")) {
+		if (!resources.hasResource(Resources::addExtension(base, "BMP"))) {
 			warning("Animation::load(): No such animation \"%s\"", base.c_str());
 			return false;
 		}

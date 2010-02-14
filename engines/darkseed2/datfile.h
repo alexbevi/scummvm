@@ -42,7 +42,6 @@ class Resource;
 
 class DATFile {
 public:
-	DATFile(Common::SeekableReadStream &dat);
 	DATFile(const Resource &dat);
 	~DATFile();
 
@@ -58,6 +57,16 @@ public:
 	void previous();
 	/** Seek to the beginning. */
 	void rewind();
+	/** Seek to a specific line. */
+	void seekTo(uint32 n);
+
+	/** Get the current file name. */
+	const Common::String &getName() const;
+	/** Get the current line number. */
+	uint32 getLineNumber() const;
+
+	/** Get the signature ("file:line"). */
+	Common::String getSignature() const;
 
 	/** Get the number of arguments in the string. */
 	static int argCount(const Common::String &arguments);
@@ -82,10 +91,15 @@ private:
 		Line(const char *cmd, int cmdLen, const char *args);
 	};
 
+	/** The file's name. */
+	Common::String _name;
+
 	/** All lines. */
 	Common::List<Line> _lines;
 	/** The current line. */
 	Common::List<Line>::const_iterator _pos;
+	/** The current line's number. */
+	uint32 _lineNumber;
 
 	/** Load from a stream. */
 	void load(Common::SeekableReadStream &dat);

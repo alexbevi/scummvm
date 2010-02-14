@@ -28,6 +28,7 @@
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/palette.h"
 #include "engines/darkseed2/neresources.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
@@ -51,6 +52,8 @@ Cursors::Cursors(const Common::String &exe) {
 		loaded = loadFromNEEXE(exe);
 		assert(loaded);
 	}
+
+	_visible = true;
 }
 
 Cursors::~Cursors() {
@@ -64,11 +67,17 @@ Cursors::~Cursors() {
 	_cursors.clear();
 }
 
+void Cursors::assertCursorProperties() {
+	setVisible(_visible);
+	setCursor(_currentCursor);
+}
+
 bool Cursors::isVisible() const {
-	return CursorMan.isVisible();
+	return _visible;
 }
 
 void Cursors::setVisible(bool visible) {
+	_visible = visible;
 	CursorMan.showMouse(visible);
 }
 
@@ -95,10 +104,16 @@ bool Cursors::setCursor(const Common::String &cursor) {
 }
 
 bool Cursors::setCursor(const Cursors::Cursor &cursor) {
+	_currentCursor = cursor.name;
+
 	CursorMan.replaceCursor(cursor.sprite->getData(), cursor.width, cursor.height,
 			cursor.hotspotX, cursor.hotspotY, 0);
 
 	return setPalette(cursor.sprite->getPalette());
+}
+
+const Common::String &Cursors::getCurrentCursor() const {
+	return _currentCursor;
 }
 
 bool Cursors::setPalette(const Palette &palette) {
@@ -144,6 +159,8 @@ bool Cursors::loadFromNEEXE(const Common::String &exe) {
 		if (!loadFromResource(cursor, neCursor))
 			return false;
 
+		cursor.name = cursorGroup->name;
+
 		_cursors.setVal(cursorGroup->name, cursor);
 	}
 
@@ -163,7 +180,17 @@ bool Cursors::loadFromResource(Cursor &cursor, const NECursor &resource) {
 	cursor.height   = resource.getHeight();
 	cursor.hotspotX = resource.getHotspotX();
 	cursor.hotspotY = resource.getHotspotY();
+	return true;
+}
 
+bool Cursors::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	SaveLoad::sync(serializer, _visible);
+	SaveLoad::sync(serializer, _currentCursor);
+	return true;
+}
+
+bool Cursors::loading(Resources &resources) {
+	assertCursorProperties();
 	return true;
 }
 

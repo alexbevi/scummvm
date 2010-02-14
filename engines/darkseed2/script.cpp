@@ -26,6 +26,7 @@
 #include "engines/darkseed2/script.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/datfile.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
@@ -37,6 +38,94 @@ static const char *scriptAction[] = {
 };
 
 
+template<>
+void SaveLoad::sync<ScriptRegister::Script>(Common::Serializer &serializer, ScriptRegister::Script &var) {
+	if (serializer.isSaving())
+		if (var.chunk)
+			var.line = var.chunk->getCurLine();
+
+	serializer.syncAsUint32LE(var.line);
+
+	if (serializer.isLoading())
+		var.chunk = 0;
+}
+
+
+ScriptRegister::Script::Script() {
+	chunk = 0;
+	line  = 0;
+}
+
+ScriptRegister::Script::Script(ScriptChunk &c) {
+	chunk = &c;
+	line  = 0;
+}
+
+ScriptRegister::Script::Script(uint32 l) {
+	chunk = 0;
+	line  = l;
+}
+
+uint32 ScriptRegister::Script::getLine() const {
+	if (!chunk)
+		return line;
+
+	return chunk->getCurLine();
+}
+
+
+ScriptRegister::ScriptRegister() {
+	_scriptMap = new ScriptMap;
+}
+
+ScriptRegister::~ScriptRegister() {
+	delete _scriptMap;
+}
+
+void ScriptRegister::clear() {
+	_scriptMap->clear();
+}
+
+void ScriptRegister::addScript(ScriptChunk &chunk) {
+	_scriptMap->setVal(chunk.getSignature(), Script(chunk));
+}
+
+void ScriptRegister::removeScript(ScriptChunk &chunk) {
+	_scriptMap->setVal(chunk.getSignature(), Script(0xFFFFFFFF));
+}
+
+uint32 ScriptRegister::getLine(const Common::String &signature) const {
+	ScriptMap::const_iterator script = _scriptMap->find(signature);
+
+	if (script == _scriptMap->end())
+		return 0;
+
+	return script->_value.getLine();
+}
+
+uint32 ScriptRegister::getLine(const ScriptChunk &chunk) const {
+	return getLine(chunk.getSignature());
+}
+
+ScriptChunk *ScriptRegister::getScript(const Common::String &signature) const {
+	ScriptMap::const_iterator script = _scriptMap->find(signature);
+
+	if (script == _scriptMap->end())
+		return 0;
+
+	return script->_value.chunk;
+}
+
+bool ScriptRegister::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	SaveLoad::sync(serializer, *_scriptMap);
+	return true;
+}
+
+bool ScriptRegister::loading(Resources &resources) {
+	return true;
+}
+
+
 const ScriptChunk::Action ScriptChunk::invalidAction(kScriptActionNone, "");
 
 ScriptChunk::Action::Action(ScriptAction act, const Common::String &args) {
@@ -45,12 +134,18 @@ ScriptChunk::Action::Action(ScriptAction act, const Common::String &args) {
 }
 
 
-ScriptChunk::ScriptChunk(const Variables &variables) : _variables(&variables) {
+ScriptChunk::ScriptChunk(const Variables &variables, ScriptRegister &scriptRegister) {
+	_variables = &variables;
+
+	_scriptRegister = &scriptRegister;
+
 	_ready = false;
 	_from  = 0;
 }
 
 ScriptChunk::~ScriptChunk() {
+	if (_ready)
+		_scriptRegister->removeScript(*this);
 }
 
 bool ScriptChunk::atEnd() const {
@@ -69,32 +164,57 @@ void ScriptChunk::next() {
 		return;
 
 	++_curPos;
+	++_curPosNumber;
 }
 
 void ScriptChunk::rewind() {
 	if (!_ready)
 		return;
 
-	_curPos = _actions.begin();
+	_curPos       = _actions.begin();
+	_curPosNumber = 0;
 }
 
 void ScriptChunk::seekEnd() {
 	if (!_ready)
 		return;
 
-	_curPos = _actions.end();
+	_curPos       = _actions.end();
+	_curPosNumber = _actions.size();
+}
+
+void ScriptChunk::seekTo(uint32 n) {
+	if (n < _curPosNumber)
+		rewind();
+
+	while (!atEnd() && (_curPosNumber != n))
+		next();
+}
+
+const Common::String &ScriptChunk::getSignature() const {
+	return _signature;
+}
+
+uint32 ScriptChunk::getCurLine() const {
+	return _curPosNumber;
 }
 
 void ScriptChunk::clear() {
+	if (_ready)
+		_scriptRegister->removeScript(*this);
+
 	_ready = false;
 	_from  = 0;
 
+	_signature.clear();
 	_conditions.clear();
 	_actions.clear();
 }
 
 bool ScriptChunk::parse(DATFile &dat) {
 	clear();
+
+	_signature = dat.getSignature();
 
 	const Common::String *cmd, *arg;
 	while (dat.nextLine(cmd, arg)) {
@@ -148,9 +268,18 @@ bool ScriptChunk::parse(DATFile &dat) {
 		}
 	}
 
+	uint32 lineNumber = _scriptRegister->getLine(*this);
+	if (lineNumber == 0xFFFFFFFF) {
+		clear();
+		return true;
+	}
+
 	_ready = true;
 
 	rewind();
+	seekTo(lineNumber);
+
+	_scriptRegister->addScript(*this);
 
 	return true;
 }

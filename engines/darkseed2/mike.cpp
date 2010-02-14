@@ -26,10 +26,17 @@
 #include "engines/darkseed2/mike.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/sprite.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
 static const char *kVariableVisible = "ShowMike";
+
+template<>
+void SaveLoad::sync<Position>(Common::Serializer &serializer, Position &position) {
+	SaveLoad::sync(serializer, position.x);
+	SaveLoad::sync(serializer, position.y);
+}
 
 Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 	_resources = &resources;
@@ -48,7 +55,8 @@ Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 	_targetY         = 0;
 	_targetDirection = _direction;
 
-	_currentWayPoint = _wayPoints.end();
+	_currentWayPoint       = _wayPoints.end();
+	_currentWayPointNumber = 0xFFFFFFFF;
 
 	_turnTo = kDirNone;
 
@@ -357,9 +365,10 @@ void Mike::advanceWalk() {
 	}
 
 	if ((_x == targetX) && (_y == targetY)) {
-		if (_currentWayPoint != _wayPoints.end())
+		if (_currentWayPoint != _wayPoints.end()) {
 			++_currentWayPoint;
-		else
+			++_currentWayPointNumber;
+		} else
 			// Reached our target
 			_animState = kAnimStateStanding;
 	}
@@ -397,6 +406,7 @@ void Mike::go(int32 x, int32 y, Direction direction) {
 
 	_wayPoints = _pathfinder->findPath(_x, _y, _targetX, _targetY);
 	_currentWayPoint = _wayPoints.begin();
+	_currentWayPointNumber = 0;
 
 	// Set states to walking
 	_state     = kStateWalking;
@@ -532,6 +542,71 @@ Mike::Direction Mike::getDirection(int32 x1, int32 y1, int32 x2, int32 y2) {
 		return kDirSE;
 
 	return kDirNone;
+}
+
+bool Mike::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	byte direction       = _direction;
+	byte targetDirection = _targetDirection;
+	byte turnTo          = _turnTo;
+
+	uint32 scale = _scale;
+
+	byte state     = _state;
+	byte animState = _animState;
+
+	SaveLoad::sync(serializer, _visible);
+	SaveLoad::sync(serializer, _x);
+	SaveLoad::sync(serializer, _y);
+	SaveLoad::sync(serializer, direction);
+
+	SaveLoad::sync(serializer, _targetX);
+	SaveLoad::sync(serializer, _targetY);
+	SaveLoad::sync(serializer, targetDirection);
+
+	SaveLoad::sync(serializer, _wayPoints);
+	SaveLoad::sync(serializer, _currentWayPointNumber);
+
+	SaveLoad::sync(serializer, turnTo);
+
+	SaveLoad::sync(serializer, _scaleFactors[0]);
+	SaveLoad::sync(serializer, _scaleFactors[1]);
+	SaveLoad::sync(serializer, _scaleFactors[2]);
+
+	SaveLoad::sync(serializer, scale);
+
+	SaveLoad::sync(serializer, state);
+	SaveLoad::sync(serializer, animState);
+
+	SaveLoad::syncTimestamp(serializer, _waitUntil);
+
+	_direction       = (Direction) direction;
+	_targetDirection = (Direction) targetDirection;
+	_turnTo          = (Direction) turnTo;
+
+	_scale = (frac_t) scale;
+
+	_state     = (State) state;
+	_animState = (AnimState) animState;
+
+	return true;
+}
+
+bool Mike::loading(Resources &resources) {
+	uint32 currentWayPointNumber = _currentWayPointNumber;
+	_currentWayPointNumber = 0;
+
+	_currentWayPoint = _wayPoints.begin();
+	while ((_currentWayPoint != _wayPoints.end()) && (currentWayPointNumber != _currentWayPointNumber)) {
+		++_currentWayPoint;
+		++_currentWayPointNumber;
+	}
+
+	_spriteRef.clear();
+
+	updateAnimPositions();
+	addSprite();
+
+	return true;
 }
 
 } // End of namespace DarkSeed2

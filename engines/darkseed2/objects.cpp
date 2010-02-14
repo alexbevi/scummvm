@@ -38,7 +38,11 @@ static const char *objectVerb[] = {
 Object::Object() : _variables(0) {
 }
 
-Object::Object(const Variables &variables) : _variables(&variables) {
+Object::Object(const Variables &variables, ScriptRegister &scriptRegister) {
+	_variables = &variables;
+
+	_scriptRegister = &scriptRegister;
+
 	_scripts.resize(kObjectVerbNone);
 }
 
@@ -97,7 +101,7 @@ bool Object::addScriptChunk(const Common::String &cmd, DATFile &dat, ObjectVerb 
 	dat.previous();
 
 	// Parse the script chunk
-	ScriptChunk *script = new ScriptChunk(*_variables);
+	ScriptChunk *script = new ScriptChunk(*_variables, *_scriptRegister);
 	if (!script->parse(dat)) {
 		delete script;
 		return false;
@@ -206,7 +210,10 @@ ObjectVerb Object::parseObjectVerb(const Common::String &verb) {
 }
 
 
-ObjectContainer::ObjectContainer(const Variables &variables) : _variables(&variables) {
+ObjectContainer::ObjectContainer(const Variables &variables, ScriptRegister &scriptRegister) {
+	_variables = &variables;
+
+	_scriptRegister = &scriptRegister;
 }
 
 ObjectContainer::~ObjectContainer() {
@@ -270,7 +277,7 @@ bool ObjectContainer::parse(DATFile &dat) {
 	// Reading all objects
 	_objects.reserve(objCount);
 	for (int i = 0; i < objCount; i++) {
-		_objects.push_back(Object(*_variables));
+		_objects.push_back(Object(*_variables, *_scriptRegister));
 
 		if (!_objects[i].parse(dat))
 			return false;

@@ -28,11 +28,14 @@
 
 #include "common/config-manager.h"
 
+#include "common/serializer.h"
+
 #include "sound/midiparser.h"
 
 #include "engines/darkseed2/music.h"
 #include "engines/darkseed2/options.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
@@ -89,7 +92,7 @@ bool Music::playMID(Resources &resources, const Common::String &mid) {
 	else if (_midiMode == kMidiModeFM)
 		midFile += "fm";
 
-	midFile += ".mid";
+	midFile = Resources::addExtension(midFile, "MID");
 
 	if (!resources.hasResource(midFile))
 		return false;
@@ -127,6 +130,26 @@ void Music::stop() {
 
 	_name.clear();
 	_midiPlayer->stop();
+}
+
+bool Music::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	byte midiMode = (byte) _midiMode;
+
+	SaveLoad::sync(serializer, midiMode);
+	SaveLoad::sync(serializer, _name);
+
+	_midiMode = (MidiMode) midiMode;
+
+	return true;
+}
+
+bool Music::loading(Resources &resources) {
+	Common::String name = _name;
+
+	stop();
+	playMID(resources, name);
+
+	return true;
 }
 
 

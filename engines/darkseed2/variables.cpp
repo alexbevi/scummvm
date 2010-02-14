@@ -28,6 +28,7 @@
 
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
@@ -121,10 +122,11 @@ bool Variables::loadFromIDX(const Resource &idx) {
 }
 
 bool Variables::loadFromIDX(Resources &resources, const Common::String &idx) {
-	if (!resources.hasResource(idx + ".IDX"))
+	Common::String idxFile = Resources::addExtension(idx, "IDX");
+	if (!resources.hasResource(idxFile))
 		return false;
 
-	Resource *resIDX = resources.getResource(idx + ".IDX");
+	Resource *resIDX = resources.getResource(idxFile);
 
 	bool result = loadFromIDX(*resIDX);
 
@@ -228,6 +230,19 @@ void Variables::evalChangePart(const Common::String &changePart) {
 		set(varName, atoi(value.c_str()));
 	} else
 		set(changePart, 1);
+}
+
+bool Variables::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	SaveLoad::sync(serializer, _variables);
+	SaveLoad::sync(serializer, _localVariables);
+
+	return true;
+}
+
+bool Variables::loading(Resources &resources) {
+	_lastChanged = 0;
+
+	return true;
 }
 
 } // End of namespace DarkSeed2

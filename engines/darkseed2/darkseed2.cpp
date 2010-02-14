@@ -23,23 +23,30 @@
  *
  */
 
+// Base stuff
 #include "common/endian.h"
 #include "common/md5.h"
-
 #include "base/plugins.h"
-
 #include "common/config-manager.h"
-
 #include "common/EventRecorder.h"
 
+// Sound
 #include "sound/mixer.h"
 #include "sound/mididrv.h"
 
+// Save/Load
+#include "gui/saveload.h"
+#include "engines/darkseed2/saveload.h"
+
+// Dark Seed II subsystems
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/options.h"
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/script.h"
 #include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/room.h"
+#include "engines/darkseed2/conversationbox.h"
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/music.h"
 #include "engines/darkseed2/variables.h"
@@ -57,7 +64,9 @@ static const char *kExecutable    = "dark0001.exe";
 static const char *kResourceIndex = "gfile.hdr";
 static const char *kVariableIndex = "GAMEVAR";
 
-DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
+DarkSeed2Engine::DarkSeed2Engine(OSystem *syst, const DS2GameDescription *gameDesc) :
+	Engine(syst), _gameDescription(gameDesc) {
+
 	Common::addDebugChannel(kDebugResources   , "Resources"   , "Resource handling debug level");
 	Common::addDebugChannel(kDebugGraphics    , "Graphics"    , "Graphics debug level");
 	Common::addDebugChannel(kDebugMusic       , "Music"       , "Music debug level");
@@ -75,22 +84,26 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst) : Engine(syst) {
 	// Setup mixer
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));
 
-	_options     = 0;
-	_cursors     = 0;
-	_resources   = 0;
-	_sound       = 0;
-	_music       = 0;
-	_variables   = 0;
-	_graphics    = 0;
-	_talkMan     = 0;
-	_mike        = 0;
-	_movie       = 0;
-	_roomConfMan = 0;
-	_inter       = 0;
-	_events      = 0;
+	_options        = 0;
+	_cursors        = 0;
+	_resources      = 0;
+	_sound          = 0;
+	_music          = 0;
+	_variables      = 0;
+	_scriptRegister = 0;
+	_graphics       = 0;
+	_talkMan        = 0;
+	_mike           = 0;
+	_movie          = 0;
+	_roomConfMan    = 0;
+	_inter          = 0;
+	_events         = 0;
 
 	_rnd = new Common::RandomSource();
 	g_eventRec.registerRandomSource(*_rnd, "ds2");
+
+	_engineStartTime = 0;
+	_playTime        = 0;
 }
 
 DarkSeed2Engine::~DarkSeed2Engine() {
@@ -108,6 +121,7 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 	delete _roomConfMan;
 
 	delete _variables;
+	delete _scriptRegister;
 	delete _music;
 	delete _sound;
 	delete _resources;
@@ -128,12 +142,14 @@ Common::Error DarkSeed2Engine::run() {
 
 	debug(-1, "Done initializing.");
 
-	if (!_events->setupIntroSequence()) {
-		warning("DarkSeed2Engine::run(): Failed setting up the intro sequence");
-		return Common::kUnknownError;
-	}
+	_engineStartTime = g_system->getMillis();
 
-	_events->mainLoop();
+	while (!shouldQuit()) {
+		_events->setLoading(false);
+		if (!_events->run()) {
+			return Common::kUnknownError;
+		}
+	}
 
 	return Common::kNoError;
 }
@@ -163,16 +179,17 @@ bool DarkSeed2Engine::init() {
 
 	debug(-1, "Creating subclasses...");
 
-	_options     = new Options();
-	_cursors     = new Cursors(kExecutable);
-	_variables   = new Variables(*_rnd);
-	_resources   = new Resources();
-	_sound       = new Sound(*_mixer, *_variables);
-	_music       = new Music(*_mixer, *_midiDriver);
-	_graphics    = new Graphics(*_resources, *_variables, *_cursors);
-	_talkMan     = new TalkManager(*_sound, *_graphics);
-	_mike        = new Mike(*_resources, *_variables, *_graphics);
-	_movie       = new Movie(*_mixer, *_graphics, *_sound);
+	_options        = new Options();
+	_cursors        = new Cursors(kExecutable);
+	_variables      = new Variables(*_rnd);
+	_scriptRegister = new ScriptRegister();
+	_resources      = new Resources();
+	_sound          = new Sound(*_mixer, *_variables);
+	_music          = new Music(*_mixer, *_midiDriver);
+	_graphics       = new Graphics(*_resources, *_variables, *_cursors);
+	_talkMan        = new TalkManager(*_sound, *_graphics);
+	_mike           = new Mike(*_resources, *_variables, *_graphics);
+	_movie          = new Movie(*_mixer, *_graphics, *_cursors, *_sound);
 
 	_roomConfMan = new RoomConfigManager(*this);
 	_inter       = new ScriptInterpreter(*this);
@@ -205,9 +222,150 @@ bool DarkSeed2Engine::init() {
 bool DarkSeed2Engine::initGraphics() {
 	debug(-1, "Setting up graphics...");
 
-	_graphics->init(*_talkMan, *_roomConfMan, *_movie);
+	_graphics->init(*_talkMan, *_scriptRegister, *_roomConfMan, *_movie);
 
 	::initGraphics(Graphics::kScreenWidth, Graphics::kScreenHeight, true);
+	return true;
+}
+
+bool DarkSeed2Engine::doLoadDialog() {
+	const EnginePlugin *plugin = 0;
+	EngineMan.findGame(getGameId(), &plugin);
+	assert(plugin);
+
+	GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser("Load game:", "Load");
+
+	dialog->setSaveMode(false);
+	int slot = dialog->runModal(plugin, ConfMan.getActiveDomainName());
+
+	bool result = false;
+	if (slot >= 0)
+		if (!loadGameState(slot))
+			result = true;
+
+	delete dialog;
+	return result;
+}
+
+void DarkSeed2Engine::clearAll() {
+	_movie->stop();
+	_music->stop();
+	_talkMan->endTalk();
+	_sound->stopAll();
+	_mike->setWalkMap();
+
+	_graphics->unregisterBackground();
+	_inter->clear();
+
+	_graphics->getRoom().clear();
+	_graphics->getConversationBox().stop();
+
+	_scriptRegister->clear();
+}
+
+bool DarkSeed2Engine::canLoadGameStateCurrently() {
+	// We can always load
+	return true;
+}
+
+bool DarkSeed2Engine::canSaveGameStateCurrently() {
+	// We can always save
+	return true;
+}
+
+Common::Error DarkSeed2Engine::loadGameState(int slot) {
+	SaveMetaInfo meta;
+
+	Common::InSaveFile *file = SaveLoad::openForLoading(SaveLoad::createFileName(_targetName, slot));
+	if (!file)
+		return Common::kUnknownError;
+
+	if (!SaveLoad::skipThumbnailHeader(*file))
+		return Common::kUnknownError;
+
+	Common::Serializer serializer(file, 0);
+
+	if (!saveLoad(serializer, meta))
+		return Common::kUnknownError;
+
+	delete file;
+
+	_playTime = meta.getPlayTime();
+
+	_events->setLoading(true);
+
+	_graphics->retrace();
+	g_system->updateScreen();
+
+	return Common::kNoError;
+}
+
+Common::Error DarkSeed2Engine::saveGameState(int slot, const char *desc) {
+	_graphics->retrace();
+
+	SaveMetaInfo meta;
+
+	meta.description = desc;
+	meta.fillWithCurrentTime(_engineStartTime, _playTime);
+
+	Common::OutSaveFile *file = SaveLoad::openForSaving(SaveLoad::createFileName(_targetName, slot));
+	if (!file)
+		return Common::kUnknownError;
+
+	if (!SaveLoad::saveThumbnail(*file))
+		return Common::kUnknownError;
+
+	Common::Serializer serializer(0, file);
+
+	if (!saveLoad(serializer, meta))
+		return Common::kUnknownError;
+
+	bool flushed = file->flush();
+	if (!flushed || file->err())
+		return Common::kUnknownError;
+
+	delete file;
+
+	return Common::kNoError;
+}
+
+bool DarkSeed2Engine::saveLoad(Common::Serializer &serializer, SaveMetaInfo &meta) {
+	if (!SaveLoad::syncMetaInfo(serializer, meta))
+		return false;
+
+	if (serializer.isLoading())
+		clearAll();
+
+	if (!_variables->doSaveLoad(serializer, *_resources))
+		return false;
+
+	if (!_music->doSaveLoad(serializer, *_resources))
+		return false;
+
+	if (!_scriptRegister->doSaveLoad(serializer, *_resources))
+		return false;
+
+	if (!_graphics->doSaveLoad(serializer, *_resources))
+		return false;
+
+	if (!_roomConfMan->doSaveLoad(serializer, *_resources))
+		return false;
+
+	if (!_movie->doSaveLoad(serializer, *_resources))
+		return false;
+
+	if (!_inter->doSaveLoad(serializer, *_resources))
+		return false;
+
+	if (!_mike->doSaveLoad(serializer, *_resources))
+		return false;
+
+	if (!_events->doSaveLoad(serializer, *_resources))
+		return false;
+
+	if (!_cursors->doSaveLoad(serializer, *_resources))
+		return false;
+
 	return true;
 }
 

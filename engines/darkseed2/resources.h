@@ -45,10 +45,13 @@ namespace DarkSeed2 {
 class Resource {
 public:
 	/** Use that foreign data as resource memory. */
-	Resource(const byte *data, uint32 size);
+	Resource(const Common::String &name, const byte *data, uint32 size);
 	/** Read resource data from stream. */
-	Resource(Common::ReadStream &stream, uint32 size);
+	Resource(const Common::String &name, Common::ReadStream &stream, uint32 size);
 	~Resource();
+
+	/** Return the resource's name. */
+	const Common::String &getName() const;
 
 	/** Size of resource data in bytes. */
 	uint32 getSize() const;
@@ -59,6 +62,8 @@ public:
 	Common::SeekableReadStream &getStream() const;
 
 private:
+	Common::String _name; ///< The resource's name.
+
 	const byte *_foreignData; ///< Static foreign data.
 	      byte *_ownData;     ///< Self-managed data.
 
@@ -86,6 +91,8 @@ public:
 
 	/** Get a specific resource. */
 	Resource *getResource(const Common::String &resource);
+
+	static Common::String addExtension(const Common::String &name, const Common::String &extension);
 
 private:
 	/** A glue archive file. */

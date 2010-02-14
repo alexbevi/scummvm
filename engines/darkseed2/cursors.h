@@ -29,6 +29,7 @@
 #include "common/str.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 #include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
@@ -36,19 +37,23 @@ namespace DarkSeed2 {
 class Palette;
 class NECursor;
 
-class Cursors {
+class Cursors : public Saveable {
 public:
 	/** A cursor. */
 	struct Cursor {
-		int32 width;    ///< The cursor's width.
-		int32 height;   ///< The cursor's height.
-		int32 hotspotX; ///< The X coordinate of the cursor's hotspot.
-		int32 hotspotY; ///< The Y coordinate of the cursor's hotspot.
-		Sprite *sprite; ///< The cursor's sprite.
+		Common::String name; ///< The cursor's name.
+		int32 width;         ///< The cursor's width.
+		int32 height;        ///< The cursor's height.
+		int32 hotspotX;      ///< The X coordinate of the cursor's hotspot.
+		int32 hotspotY;      ///< The Y coordinate of the cursor's hotspot.
+		Sprite *sprite;      ///< The cursor's sprite.
 	};
 
 	Cursors(const Common::String &exe = "");
 	~Cursors();
+
+	/** Make sure the class's information on the cursor is in sync with the sytem's. */
+	void assertCursorProperties();
 
 	/** Is the cursor visible? */
 	bool isVisible() const;
@@ -63,10 +68,20 @@ public:
 	/** Set the current cursor. */
 	bool setCursor(const Common::String &cursor = "");
 
+	/** Get the current cursor's name. */
+	const Common::String &getCurrentCursor() const;
+
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
 	typedef Common::HashMap<Common::String, Cursor, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> CursorMap;
 
 	NECursor *_defaultResource; ///< NE Resource of the default pointer cursor.
+
+	bool _visible; ///< Is the cursor visible?
+	Common::String _currentCursor; ///< The name of the current cursor.
 
 	Cursor    _default; ///< The default pointer cursor.
 	CursorMap _cursors; ///< The available cursors.

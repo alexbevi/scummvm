@@ -34,6 +34,7 @@
 #include "graphics/font.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 #include "engines/darkseed2/palette.h"
 
 namespace Common {
@@ -52,7 +53,7 @@ class Resources;
 
 class Resource;
 
-class Sprite {
+class Sprite : public Saveable {
 public:
 	Sprite();
 	Sprite(const Sprite &sprite);
@@ -97,10 +98,6 @@ public:
 	void copyFrom(const Sprite &sprite);
 
 	/** Load a sprite from a BMP. */
-	bool loadFromBMP(Common::SeekableReadStream &bmp);
-	/** Load a sprite from a BMP. */
-	bool loadFromBMP(const Resource &resource);
-	/** Load a sprite from a BMP. */
 	bool loadFromBMP(Resources &resources, const Common::String &bmp);
 
 	/** Load from a cursor resource embedded in an EXE file. */
@@ -140,16 +137,26 @@ public:
 	/** Set the scaling value. */
 	void setScale(frac_t scale);
 
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
+	Common::String _fileName; ///< The file from which the sprite was loaded.
+	bool _fromCursor; ///< Was the sprite loaded from a cursor resource?
+
 	int32 _width;  ///< The sprite's width.
 	int32 _height; ///< The sprite's height.
-	byte  *_data;   ///< The sprite's data.
+	byte *_data;   ///< The sprite's data.
 
 	int32 _defaultX; ///< The sprite's default X coordinate.
 	int32 _defaultY; ///< The sprite's default Y coordinate.
 
 	int32 _feetX; ///< The sprite's "feet" X coordinate.
 	int32 _feetY; ///< The sprite's "feet" Y coordinate.
+
+	bool _flippedHorizontally; ///< Sprite was flipped horizontally.
+	bool _flippedVertically;   ///< Sprite was flipped vertically.
 
 	Palette _palette; ///< The sprite's palette.
 
@@ -158,6 +165,14 @@ private:
 
 	/** Wrap the sprite into a standard ScummVM surface. */
 	::Graphics::Surface *wrapInSurface() const;
+
+	/** Clear/Initialize. */
+	void clearData();
+
+	/** Load a sprite from a BMP. */
+	bool loadFromBMP(Common::SeekableReadStream &bmp);
+	/** Load a sprite from a BMP. */
+	bool loadFromBMP(const Resource &resource);
 
 	/** Read uncompressed BMP data. */
 	bool readBMPDataComp0(Common::SeekableReadStream &bmp, uint32 dataSize);

@@ -93,12 +93,14 @@ bool Sound::playWAV(const Resource &resource, Audio::Mixer::SoundType type) {
 bool Sound::playWAV(Resources &resources, const Common::String &wav,
 		Audio::Mixer::SoundType type) {
 
-	debugC(-1, kDebugSound, "Playing WAV \"%s\"", wav.c_str());
+	Common::String wavFile = Resources::addExtension(wav, "WAV");
 
-	if (!resources.hasResource(wav + ".wav"))
+	debugC(-1, kDebugSound, "Playing WAV \"%s\"", wavFile.c_str());
+
+	if (!resources.hasResource(wavFile))
 		return false;
 
-	Resource *resWAV = resources.getResource(wav + ".wav");
+	Resource *resWAV = resources.getResource(wavFile);
 
 	uint32 size = resWAV->getSize();
 

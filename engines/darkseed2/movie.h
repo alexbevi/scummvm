@@ -32,6 +32,7 @@
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/sprite.h"
+#include "engines/darkseed2/saveable.h"
 
 namespace Common {
 	class String;
@@ -44,11 +45,12 @@ namespace Graphics {
 namespace DarkSeed2 {
 
 class Graphics;
+class Cursors;
 class Sound;
 
-class Movie {
+class Movie : public Saveable {
 public:
-	Movie(Audio::Mixer &mixer, Graphics &graphics, Sound &sound);
+	Movie(Audio::Mixer &mixer, Graphics &graphics, Cursors &cursors, Sound &sound);
 	~Movie();
 
 	/** Is a movie currently playing? */
@@ -69,12 +71,21 @@ public:
 	/** Return the time to wait until the next frame can be displayed. */
 	uint32 getFrameWaitTime() const;
 
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
 	static const bool _doubleHalfSizedVideos = true;
 
 	Audio::Mixer *_mixer;
 	Graphics     *_graphics;
+	Cursors      *_cursors;
 	Sound        *_sound;
+
+	Common::String _fileName;
+	int32 _x;
+	int32 _y;
 
 	/** The movie's area. */
 	Common::Rect _area;

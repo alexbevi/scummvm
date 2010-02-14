@@ -29,11 +29,12 @@
 #include "common/str.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 #include "engines/darkseed2/script.h"
 
 namespace DarkSeed2 {
 
-class ScriptInterpreter {
+class ScriptInterpreter : public Saveable {
 public:
 	ScriptInterpreter(DarkSeed2Engine &vm);
 	~ScriptInterpreter();
@@ -50,7 +51,13 @@ public:
 	/** Update status, interpret next lines, .... */
 	bool updateStatus();
 
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
+	friend class SaveLoad;
+
 	/** The result of a script action. */
 	enum Result {
 		kResultOK,     ///< Everything was okay, proceed to the next line.
@@ -61,19 +68,30 @@ private:
 
 	/** Waiting for something to happen. */
 	enum Wait {
-		kWaitNone,         ///< Waiting for nothing
-		kWaitConversation, ///< Waiting for the conversation to end
-		kWaitMovie         ///< Waiting for a movie to end
+		kWaitNone         = 0, ///< Waiting for nothing
+		kWaitConversation = 1, ///< Waiting for the conversation to end
+		kWaitMovie        = 2  ///< Waiting for a movie to end
 	};
 
 	/** A script state. */
 	struct Script {
 		/** The actual script chunk. */
 		ScriptChunk *chunk;
+		/** The script chunk's signature. */
+		Common::String signature;
+
 		/** The current script action within that chunk. */
 		const ScriptChunk::Action *action;
+
+		/** The name of the sound last started by that script. */
+		Common::String soundName;
+		/** The name of the signal variable for the last started sound by that script. */
+		Common::String soundVar;
 		/** The ID of the sound last started by that script. */
 		int soundID;
+		/** Was that sound a talk line? */
+		bool soundTalk;
+
 		/** The event the script is currently waiting for. */
 		Wait waitingFor;
 		/** Number of updates since the last wait debug message. */

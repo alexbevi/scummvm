@@ -33,8 +33,9 @@
 
 namespace DarkSeed2 {
 
-Inventory::Inventory(Resources &resources, Variables &variables, Graphics &graphics, Cursors &cursors) :
-	ObjectContainer(variables) {
+Inventory::Inventory(Resources &resources, Variables &variables,
+		ScriptRegister &scriptRegister, Graphics &graphics, Cursors &cursors) :
+	ObjectContainer(variables, scriptRegister) {
 
 	_resources = &resources;
 	_variables = &variables;
@@ -103,16 +104,19 @@ bool Inventory::parse(DATFile &dat) {
 
 	_items.resize(objects.size());
 	for (uint i = 0; i < objects.size(); i++) {
-		Item &item = _items[i];
+		Object &object = objects[i];
+		Item   &item   = _items[i];
+
+		item.name = object.getName();
 
 		// Parse looks
-		Common::List<ScriptChunk *> &lookScripts = objects[i].getScripts(kObjectVerbLook);
+		Common::List<ScriptChunk *> &lookScripts = object.getScripts(kObjectVerbLook);
 		for (Common::List<ScriptChunk *>::iterator it = lookScripts.begin(); it != lookScripts.end(); ++it)
 			if (!parseLook(item, **it))
 				return false;
 
 		// Parse uses
-		Common::List<ScriptChunk *> &useScripts  = objects[i].getScripts(kObjectVerbUse);
+		Common::List<ScriptChunk *> &useScripts  = object.getScripts(kObjectVerbUse);
 		for (Common::List<ScriptChunk *>::iterator it = useScripts.begin(); it != useScripts.end(); ++it)
 			if (!parseUse(item, **it))
 				return false;
@@ -191,10 +195,11 @@ bool Inventory::parseUse(Item &item, ScriptChunk &useScript) {
 }
 
 bool Inventory::parse(Resources &resources, const Common::String &inv) {
-	if (!resources.hasResource(inv + ".DAT"))
+	Common::String datFile = Resources::addExtension(inv, "DAT");
+	if (!resources.hasResource(datFile))
 		return false;
 
-	Resource *resInv = resources.getResource(inv + ".DAT");
+	Resource *resInv = resources.getResource(datFile);
 
 	DATFile invParser(*resInv);
 
@@ -211,6 +216,14 @@ bool Inventory::getItems(const Common::Array<Item> *&items) {
 	items = &_items;
 
 	return changed;
+}
+
+const Inventory::Item *Inventory::findItem(const Common::String &name) const {
+	for (Common::Array<Item>::const_iterator item = _items.begin(); item != _items.end(); ++item)
+		if (item->name == name)
+			return &*item;
+
+	return 0;
 }
 
 bool Inventory::updateItems() {

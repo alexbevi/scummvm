@@ -32,6 +32,7 @@
 #include "sound/mididrv.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -47,12 +48,12 @@ class Resources;
 class Resource;
 class MidiPlayer;
 
-class Music {
+class Music : public Saveable {
 public:
 	/** The MIDI mode. */
 	enum MidiMode {
-		kMidiModeGM, ///< General MIDI
-		kMidiModeFM  ///< Frequency modulation synthesis
+		kMidiModeGM = 0, ///< General MIDI
+		kMidiModeFM = 1  ///< Frequency modulation synthesis
 	};
 
 	Music(Audio::Mixer &mixer, MidiDriver &driver);
@@ -69,6 +70,10 @@ public:
 
 	/** Apply volume settings. */
 	void syncSettings(const Options &options);
+
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
 
 private:
 	Audio::Mixer *_mixer;

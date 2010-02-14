@@ -25,24 +25,31 @@
 
 #include "common/events.h"
 
-#include "graphics/cursorman.h"
+#include "common/serializer.h"
 
 #include "graphics/video/avi_decoder.h"
 
 #include "engines/darkseed2/movie.h"
+#include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/palette.h"
 #include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/sound.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
-Movie::Movie(Audio::Mixer &mixer, Graphics &graphics, Sound &sound) {
+Movie::Movie(Audio::Mixer &mixer, Graphics &graphics, Cursors &cursors, Sound &sound) {
 	_mixer    = &mixer;
 	_graphics = &graphics;
+	_cursors  = &cursors;
 	_sound    = &sound;
 
 	_doubling = false;
 	_cursorVisible = false;
+
+	_x = 0;
+	_y = 0;
 
 	_aviDecoder = new ::Graphics::AviDecoder(_mixer, Audio::Mixer::kSFXSoundType);
 }
@@ -66,7 +73,7 @@ bool Movie::play(const Common::String &avi, int32 x, int32 y) {
 
 	_sound->pauseAll(true);
 
-	if (!_aviDecoder->loadFile((avi + ".avi").c_str())) {
+	if (!_aviDecoder->loadFile(Resources::addExtension(avi, "AVI").c_str())) {
 		stop();
 		return false;
 	}
@@ -75,6 +82,9 @@ bool Movie::play(const Common::String &avi, int32 x, int32 y) {
 	_buffer.create(_aviDecoder->getWidth(), _aviDecoder->getHeight());
 
 	_graphics->enterMovieMode();
+
+	_x = x;
+	_y = y;
 
 	// Check for doubling
 	_doubling = false;
@@ -91,8 +101,10 @@ bool Movie::play(const Common::String &avi, int32 x, int32 y) {
 	} else
 		_area.moveTo(x, y);
 
-	_cursorVisible = CursorMan.isVisible();
-	CursorMan.showMouse(false);
+	_cursorVisible = _cursors->isVisible();
+	_cursors->setVisible(false);
+
+	_fileName = avi;
 
 	return true;
 }
@@ -137,16 +149,30 @@ void Movie::stop() {
 	if (!isPlaying())
 		return;
 
+	_fileName.clear();
+
 	_sound->pauseAll(false);
 
 	// Restoring the cursor visibility
-	CursorMan.showMouse(_cursorVisible);
+	_cursors->setVisible(_cursorVisible);
 
 	_buffer.clear();
 
 	_aviDecoder->closeFile();
 
 	_graphics->leaveMovieMode();
+}
+
+bool Movie::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	SaveLoad::sync(serializer, _fileName);
+	SaveLoad::sync(serializer, _x);
+	SaveLoad::sync(serializer, _y);
+	return true;
+}
+
+bool Movie::loading(Resources &resources) {
+	play(_fileName, _x, _y);
+	return true;
 }
 
 } // End of namespace DarkSeed2

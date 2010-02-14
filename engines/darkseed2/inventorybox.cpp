@@ -23,11 +23,14 @@
  *
  */
 
+#include "common/serializer.h"
+
 #include "engines/darkseed2/inventorybox.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/talk.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
@@ -51,14 +54,15 @@ static const int32 kScrollRight[4] = {608,  27, 629,  53};
 // Colors
 static const byte kColorShading[3] = {  0,   0,   0};
 
-InventoryBox::InventoryBox(Resources &resources, Variables &variables, Graphics &graphics,
-		TalkManager &talkManager, Cursors &cursors) {
+InventoryBox::InventoryBox(Resources &resources, Variables &variables, ScriptRegister &scriptRegister,
+		Graphics &graphics, TalkManager &talkManager, Cursors &cursors) {
 
-	_resources = &resources;
-	_variables = &variables;
-	_graphics  = &graphics;
-	_talkMan   = &talkManager;
-	_cursors   = &cursors;
+	_resources      = &resources;
+	_variables      = &variables;
+	_scriptRegister = &scriptRegister;
+	_graphics       = &graphics;
+	_talkMan        = &talkManager;
+	_cursors        = &cursors;
 
 	initInventory();
 
@@ -92,7 +96,7 @@ InventoryBox::~InventoryBox() {
 }
 
 void InventoryBox::initInventory() {
-	_inventory = new Inventory(*_resources, *_variables, *_graphics, *_cursors);
+	_inventory = new Inventory(*_resources, *_variables, *_scriptRegister, *_graphics, *_cursors);
 
 	bool loaded = _inventory->parse(*_resources, "OBJ_9999");
 	assert(loaded);
@@ -267,6 +271,10 @@ void InventoryBox::hide() {
 	_graphics->requestRedraw(_area);
 }
 
+InventoryBox::ItemRef InventoryBox::findItem(const Common::String &name) const {
+	return _inventory->findItem(name);
+}
+
 void InventoryBox::redraw(Sprite &sprite, Common::Rect area) {
 	if (!_area.intersects(area))
 		return;
@@ -404,6 +412,17 @@ void InventoryBox::doScroll(ScrollAction scroll) {
 	default:
 		break;
 	}
+}
+
+bool InventoryBox::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	SaveLoad::sync(serializer, _visible);
+	SaveLoad::sync(serializer, _firstItem);
+	return true;
+}
+
+bool InventoryBox::loading(Resources &resources) {
+	rebuild();
+	return true;
 }
 
 } // End of namespace DarkSeed2

@@ -29,8 +29,13 @@
 #include "common/system.h"
 
 #include "engines/engine.h"
+#include "engines/game.h"
 
 class MidiDriver;
+
+namespace Common {
+	class Serializer;
+}
 
 namespace DarkSeed2 {
 
@@ -58,6 +63,7 @@ class Resources;
 class Sound;
 class Music;
 class Variables;
+class ScriptRegister;
 class Graphics;
 class TalkManager;
 class Mike;
@@ -65,6 +71,8 @@ class Movie;
 class RoomConfigManager;
 class ScriptInterpreter;
 class Events;
+
+struct SaveMetaInfo;
 
 class DarkSeed2Engine : public Engine {
 public:
@@ -75,6 +83,7 @@ public:
 	Sound             *_sound;
 	Music             *_music;
 	Variables         *_variables;
+	ScriptRegister    *_scriptRegister;
 	Graphics          *_graphics;
 	TalkManager       *_talkMan;
 	Mike              *_mike;
@@ -85,15 +94,32 @@ public:
 
 	void pauseGame();
 
-	DarkSeed2Engine(OSystem *syst);
+	DarkSeed2Engine(OSystem *syst, const DS2GameDescription *gameDesc);
 	virtual ~DarkSeed2Engine();
 
 	void initGame(const DS2GameDescription *gd);
 
+	bool doLoadDialog();
+
 private:
+	struct SaveMeta {
+		Common::String description;
+		uint32 saveData;
+		uint16 saveTime;
+		uint32 playTime;
+	};
+
+	const DS2GameDescription *_gameDescription;
+
 	MidiDriver *_midiDriver;
 
 	Common::RandomSource *_rnd;
+
+	uint32 _engineStartTime;
+	uint32 _playTime;
+
+	/** Clear all subsystems */
+	void clearAll();
 
 	// Engine APIs
 	virtual Common::Error run();
@@ -103,6 +129,19 @@ private:
 
 	bool init();
 	bool initGraphics();
+
+	const char *getGameId() const;
+	Common::Language getLanguage() const;
+	Common::Platform getPlatform() const;
+
+	// Saving/Loading
+	bool canLoadGameStateCurrently();
+	bool canSaveGameStateCurrently();
+
+	Common::Error loadGameState(int slot);
+	Common::Error saveGameState(int slot, const char *desc);
+
+	bool saveLoad(Common::Serializer &serializer, SaveMetaInfo &meta);
 };
 
 } // End of namespace DarkSeed2

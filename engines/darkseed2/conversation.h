@@ -31,6 +31,7 @@
 #include "common/hashmap.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/saveable.h"
 
 namespace DarkSeed2 {
 
@@ -40,7 +41,7 @@ class Variables;
 class DATFile;
 class TalkLine;
 
-class Conversation {
+class Conversation : public Saveable {
 public:
 	Conversation(Variables &variables);
 	~Conversation();
@@ -70,7 +71,13 @@ public:
 	/** Free the TalkLine. */
 	void discardLines(TalkLine *&lines);
 
+protected:
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
+
 private:
+	friend class SaveLoad;
+
 	struct Node;
 
 	/** A when-picked action. */
@@ -111,6 +118,11 @@ private:
 
 		Node *parent; ///< The node this entry belongs too.
 
+		uint32 parentIndex;
+
+		uint32 listIndex; ///< Index into the global entry list.
+
+		Entry();
 		Entry(Node &pa);
 	};
 
@@ -127,14 +139,19 @@ private:
 		EntryMap  entries;       ///< Entries mapped by name.
 		EntryList sortedEntries; ///< Entries sorted by occurence in the file.
 
+		Common::Array<uint32> entryIndices; ///< List of entry indices.
+
 		Common::String name; ///< The name of the node.
 
 		Common::Array<Action> goTo; ///< Node names to jump to.
+
+		uint32 listIndex; ///< Index into the global node list.
 
 		Node();
 	};
 
 	typedef Common::HashMap<Common::String, Node *, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> NodeMap;
+	typedef Common::Array<Node *> NodeList;
 
 	Variables *_variables;
 
@@ -150,6 +167,13 @@ private:
 
 	/** The people active in the conversation. */
 	Common::Array<Common::String> _speakers;
+
+	// For saving/loading
+	NodeList  _nodeList;  ///< All nodes in one array
+	EntryList _entryList; ///< All entries in one array
+	bool _hasCurrentNode;
+	uint32 _startNodeIndex;
+	uint32 _currentNodeIndex;
 
 	/** Find the next node that has active entries. */
 	void nextActiveNode();

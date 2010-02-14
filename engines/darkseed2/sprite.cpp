@@ -25,6 +25,8 @@
 
 #include "common/stream.h"
 
+#include "common/serializer.h"
+
 #include "graphics/surface.h"
 #include "graphics/fontman.h"
 #include "graphics/font.h"
@@ -33,21 +35,12 @@
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/neresources.h"
+#include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 
 Sprite::Sprite() {
-	_width  = 0;
-	_height = 0;
-	_data   = 0;
-
-	_defaultX = 0;
-	_defaultY = 0;
-	_feetX    = 0;
-	_feetY    = 0;
-
-	_scale        = FRAC_ONE;
-	_scaleInverse = FRAC_ONE;
+	clearData();
 }
 
 Sprite::Sprite(const Sprite &sprite) {
@@ -154,6 +147,14 @@ void Sprite::create(int32 width, int32 height) {
 void Sprite::discard() {
 	delete[] _data;
 
+	clearData();
+}
+
+void Sprite::clearData() {
+	_fileName.clear();
+
+	_fromCursor = false;
+
 	_width  = 0;
 	_height = 0;
 	_data   = 0;
@@ -162,6 +163,9 @@ void Sprite::discard() {
 	_defaultY = 0;
 	_feetX    = 0;
 	_feetY    = 0;
+
+	_flippedHorizontally = false;
+	_flippedVertically   = false;
 
 	_scale        = FRAC_ONE;
 	_scaleInverse = FRAC_ONE;
@@ -262,14 +266,17 @@ bool Sprite::loadFromBMP(const Resource &resource) {
 }
 
 bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
-	if (!resources.hasResource(bmp + ".BMP"))
+	Common::String bmpFile = Resources::addExtension(bmp, "BMP");
+	if (!resources.hasResource(bmpFile))
 		return false;
 
-	Resource *resBMP = resources.getResource(bmp + ".BMP");
+	Resource *resBMP = resources.getResource(bmpFile);
 
 	bool result = loadFromBMP(*resBMP);
 
 	delete resBMP;
+
+	_fileName = bmp;
 
 	return result;
 }
@@ -290,6 +297,7 @@ void Sprite::flipHorizontally() {
 	}
 
 	_feetX = _width - _feetX;
+	_flippedHorizontally = !_flippedHorizontally;
 }
 
 void Sprite::flipVertically() {
@@ -312,6 +320,7 @@ void Sprite::flipVertically() {
 	delete[] buffer;
 
 	_feetY = _height - _feetY;
+	_flippedVertically = !_flippedVertically;
 }
 
 bool Sprite::loadFromCursorResource(const NECursor &cursor) {
@@ -405,6 +414,8 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 		srcP += width / 8;
 		srcM += width / 8;
 	}
+
+	_fromCursor = true;
 
 	return true;
 }
@@ -605,6 +616,41 @@ void Sprite::setScale(frac_t scale) {
 	_scale        = scale;
 	// Is there a better way to do that? :/
 	_scaleInverse = doubleToFrac(1.0 / fracToDouble(scale));
+}
+
+bool Sprite::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	assert(!_fromCursor);
+
+	uint32 scale = (uint32) _scale;
+
+	SaveLoad::sync(serializer, _fileName);
+	SaveLoad::sync(serializer, _flippedHorizontally);
+	SaveLoad::sync(serializer, _flippedVertically);
+	SaveLoad::sync(serializer, scale);
+
+	_scale = (frac_t) scale;
+
+	return true;
+}
+
+bool Sprite::loading(Resources &resources) {
+	if (_fileName.empty())
+		return true;
+
+	byte   flippedHorizontally = _flippedHorizontally;
+	byte   flippedVertically   = _flippedVertically;
+	uint32 scale               = _scale;
+
+	loadFromBMP(resources, _fileName);
+
+	if (flippedHorizontally)
+		flipHorizontally();
+	if (flippedVertically)
+		flipVertically();
+
+	setScale(scale);
+
+	return true;
 }
 
 } // End of namespace DarkSeed2
