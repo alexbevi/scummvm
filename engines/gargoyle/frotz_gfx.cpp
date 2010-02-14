@@ -317,8 +317,8 @@ void FrotzPictures::drawPicture(int picNumber, Graphics::Surface &s, int x, int 
     unsigned int val;
     unsigned int transparent;
     int16 height, width;
-    int count;
-    int bits;
+    int count = 0;
+    int bits = 0;
     int bits_per_code;
     int bits_left;
     int pos, scanwidth, pixy, cmp;
