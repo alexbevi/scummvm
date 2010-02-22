@@ -199,7 +199,9 @@ public:
 	/** Load the animation from files. */
 	bool load(Resources &resources, const Common::String &base);
 
+	/** Flip the animation's sprites horizontally. */
 	void flipHorizontally();
+	/** Flip the animation's sprites vertically. */
 	void flipVertically();
 
 	/** Get the nth sprite. */

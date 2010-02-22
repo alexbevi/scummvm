@@ -34,14 +34,18 @@ namespace DarkSeed2 {
 
 class Resources;
 
+/** A saveable base class. */
 class Saveable {
 public:
 	virtual ~Saveable();
 
+	/** Initiate a saving/loading. */
 	bool doSaveLoad(Common::Serializer &serializer, Resources &resources);
 
 protected:
+	/** Sync all necessary information. */
 	virtual bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	/** Set up the class again after loading. */
 	virtual bool loading(Resources &resources);
 };
 

@@ -70,6 +70,7 @@ public:
 	/** Stop all playing sounds. */
 	void stopAll();
 
+	/** Pause/Unpause all playing sounds. */
 	void pauseAll(bool pause);
 
 	/** Set the sound variable of playing sound with the given ID. */

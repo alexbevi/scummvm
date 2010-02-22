@@ -118,9 +118,9 @@ private:
 
 		Node *parent; ///< The node this entry belongs too.
 
-		uint32 parentIndex;
-
-		uint32 listIndex; ///< Index into the global entry list.
+		// For saving/loading
+		uint32 parentIndex; ///< Index into the global node list.
+		uint32 listIndex;   ///< Index into the global entry list.
 
 		Entry();
 		Entry(Node &pa);
@@ -145,6 +145,7 @@ private:
 
 		Common::Array<Action> goTo; ///< Node names to jump to.
 
+		// For saving/loading
 		uint32 listIndex; ///< Index into the global node list.
 
 		Node();
@@ -171,9 +172,9 @@ private:
 	// For saving/loading
 	NodeList  _nodeList;  ///< All nodes in one array
 	EntryList _entryList; ///< All entries in one array
-	bool _hasCurrentNode;
-	uint32 _startNodeIndex;
-	uint32 _currentNodeIndex;
+	bool   _hasCurrentNode;   ///< Is there a current node?
+	uint32 _startNodeIndex;   ///< The index of the starting node.
+	uint32 _currentNodeIndex; ///< The index of the current node.
 
 	/** Find the next node that has active entries. */
 	void nextActiveNode();

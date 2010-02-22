@@ -104,7 +104,7 @@ private:
 
 	typedef Common::HashMap<Common::String, Script, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> ScriptMap;
 
-	ScriptMap *_scriptMap;
+	ScriptMap _scriptMap;
 };
 
 /** A self-contained script chunk. */

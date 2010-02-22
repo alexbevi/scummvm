@@ -186,8 +186,8 @@ private:
 	Common::Array<TalkLine *> _nextReplies; ///< The replies playing next.
 
 	// For saving/loading
-	uint32 _curLineNumber;
-	Common::String _curReplyName;
+	uint32 _curLineNumber;        ///< The number of the current line.
+	Common::String _curReplyName; ///< The name of the current reply.
 
 	/** Load all needed sprites. */
 	void loadSprites();
@@ -238,6 +238,7 @@ private:
 	/** Speak that line. */
 	void speakLine(TalkLine &line);
 
+	/** Set the give speaker variable to a specific state. */
 	void speakerVariable(uint8 speaker, bool on);
 };
 

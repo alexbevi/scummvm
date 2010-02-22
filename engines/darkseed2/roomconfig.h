@@ -125,7 +125,6 @@ private:
 	bool   _conditionsState;       ///< The last remembered conditions state.
 	uint32 _conditionsCheckedLast; ///< When were the conditions checked last?
 
-public:
 	/** The conditions required for this RoomConfig. */
 	Common::List<Common::String> _conditions;
 	/** The variables change set to be applied once the RoomConfig finished. */
@@ -220,11 +219,11 @@ private:
 	int32          _spriteIDX; ///< Sprite index?
 
 	// Loading helpers/temporaries
-	Common::String       _sequenceString;
-	Common::Array<int32> _sequence;
-	Common::Array<int32> _posX;
-	Common::Array<int32> _posY;
-	Common::Array<int32> _scaleVal;
+	Common::String       _sequenceString; ///< The sequence string.
+	Common::Array<int32> _sequence;       ///< The sequence numbers.
+	Common::Array<int32> _posX;           ///< The X positions.
+	Common::Array<int32> _posY;           ///< The Y positions.
+	Common::Array<int32> _scaleVal;       ///< The scaling values.
 
 	// Parsing helpers
 	bool parseStatus(const Common::String &args);

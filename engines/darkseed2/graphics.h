@@ -60,6 +60,9 @@ class Cursors;
 
 class Graphics : public Saveable {
 public:
+	static const int32 kScreenWidth  = 640;  ///< The screen width.
+	static const int32 kScreenHeight = 480;  ///< The screen height.
+
 	/** An entry in the sprite queue. */
 	struct SpriteQueueEntry {
 		bool persistent; ///< Is the sprite persistent or should it be removed on room change?
@@ -87,13 +90,13 @@ public:
 		SpriteQueue::iterator it; ///< The iterator within the sprite queue the reference refers to.
 
 		SpriteRef();
+
+		/** Clear the sprite reference. */
 		void clear();
+
 		/** Is the sprite up-to-date with the information in the parameters? */
 		bool isUpToDate(int32 frame, int32 x, int32 y, frac_t scale) const;
 	};
-
-	static const int32 kScreenWidth  = 640;  ///< The screen width.
-	static const int32 kScreenHeight = 480;  ///< The screen height.
 
 	Graphics(Resources &resources, Variables &variables, Cursors &cursors);
 	~Graphics();
@@ -127,8 +130,8 @@ public:
 	void leaveMovieMode();
 
 	/** Assert that palette entry 0 is black, after the palette
-	  * has been changed from "the outside", e.g. AVI decoder.
-	  */
+	 *  has been changed from "the outside", e.g. AVI decoder.
+	 */
 	void assertPalette0();
 
 	/** Speak that text. */

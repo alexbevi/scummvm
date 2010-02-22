@@ -83,12 +83,12 @@ private:
 	Cursors      *_cursors;
 	Sound        *_sound;
 
-	Common::String _fileName;
-	int32 _x;
-	int32 _y;
+	Common::String _fileName; ///< The current video's file name.
 
-	/** The movie's area. */
-	Common::Rect _area;
+	int32 _x; ///< The X origin.
+	int32 _y; ///< The Y origin.
+
+	Common::Rect _area; ///< The movie's area.
 
 	bool _doubling;      ///< Double the video's resolution?
 	bool _cursorVisible; ///< Was the cursor visible at the start?

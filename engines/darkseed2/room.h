@@ -61,9 +61,12 @@ public:
 	/** Get the area the walk map applies to. */
 	Common::Rect getWalkMapArea() const;
 
+	/** Get the Y top information for the current walk map. */
 	int32 getWalkMapYTop() const;
+	/** Get the Y resolution information for the current walk map. */
 	int32 getWalkMapYResolution() const;
 
+	/** Get the Mike scaling factors. */
 	const int32 *getScaleFactors() const;
 
 	/** Clip the rectangle to the room area. */
@@ -112,8 +115,8 @@ private:
 	Common::String _backgroundFile; ///< The room's background file.
 	Common::String _walkMapFile;    ///< The room's walk map file.
 
-	int32 _walkMapYTop;
-	int32 _walkMapYResolution;
+	int32 _walkMapYTop;        ///< Y top of the walk map.
+	int32 _walkMapYResolution; ///< Y resolution of the walk map.
 
 	Sprite *_background; ///< The room's background.
 	Sprite *_walkMap;    ///< The room's walk map.

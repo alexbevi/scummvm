@@ -36,11 +36,13 @@
 
 namespace DarkSeed2 {
 
+/** Meta information for a save state. */
 struct SaveMetaInfo {
-	Common::String description;
-	uint32 saveDate;
-	uint16 saveTime;
-	uint32 playTime;
+	Common::String description; ///< The save's description.
+
+	uint32 saveDate; ///< The save's date.
+	uint16 saveTime; ///< The save's time.
+	uint32 playTime; ///< The save's playing time.
 
 	SaveMetaInfo();
 
@@ -58,31 +60,41 @@ struct SaveMetaInfo {
 	uint32 getPlayTime() const;
 };
 
+/** Saving/Loading helpers. */
 class SaveLoad {
 public:
 	static const int kMaxSlot = 99;
 
+	// Meta information
 	static bool syncMetaInfo(Common::Serializer &serializer, SaveMetaInfo &meta);
 	static bool loadMetaInfo(Common::SeekableReadStream *stream, SaveMetaInfo &meta);
 
+	/** Create the proper file name for a slot. */
 	static Common::String createFileName(const Common::String &base, int slot);
 
+	// Opening helpers
 	static Common::OutSaveFile *openForSaving (const Common::String &file);
 	static Common::InSaveFile  *openForLoading(const Common::String &file);
 
+	// State listings
 	static bool getState(SaveStateDescriptor &state, const Common::String &target, int slot);
 	static bool getStates(SaveStateList &list, const Common::String &target);
 
+	// Remove a save
 	static bool removeSave(const Common::String &base, int slot);
 
+	// Thumbnails
 	static bool skipThumbnailHeader(Common::SeekableReadStream &in);
 	static bool saveThumbnail(Common::WriteStream &out);
 
+	/** Properly sync a time stamp. */
 	static void syncTimestamp(Common::Serializer &serializer, uint32 &time);
 
+	// Syncing helpers
 	template<typename T>
 	static void sync(Common::Serializer &serializer, T &var);
 
+	/** Sync a HashMap. */
 	template<class Key, class Val, class HashFunc, class EqualFunc>
 	static void sync(Common::Serializer &serializer, Common::HashMap<Key, Val, HashFunc, EqualFunc> &map) {
 		uint32 size = map.size();
@@ -109,6 +121,7 @@ public:
 
 	}
 
+	/** Sync an Array. */
 	template<class T>
 	static void sync(Common::Serializer &serializer, Common::Array<T> &array) {
 		uint32 size = array.size();
@@ -132,6 +145,7 @@ public:
 
 	}
 
+	/** Sync a List. */
 	template<class T>
 	static void sync(Common::Serializer &serializer, Common::List<T> &list) {
 		uint32 size = list.size();

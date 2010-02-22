@@ -130,17 +130,25 @@ private:
 
 	uint32 _firstItem;  ///< The first visible item.
 
-	bool _scrolled;
+	bool _scrolled; ///< Has a scroll-button been pressed?
 
+	/** Initialize the inventory. */
 	void initInventory();
 
+	/** Update the used colors. */
 	void updateColors();
+	/** Load all item sprites. */
 	void loadSprites();
+	/** Reset the sprites to a new palette. */
 	void resetSprites();
+	/** Update the scrolling sprites. */
 	void updateScroll();
+	/** Update the items sprite. */
 	bool updateItems();
 
+	/** Completely rebuild the box. */
 	void rebuild();
+	/** Redraw the items sprite. */
 	void redrawItems();
 
 	/** Get the number of the item on these coordinates. */

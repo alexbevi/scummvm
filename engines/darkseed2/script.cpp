@@ -75,29 +75,27 @@ uint32 ScriptRegister::Script::getLine() const {
 
 
 ScriptRegister::ScriptRegister() {
-	_scriptMap = new ScriptMap;
 }
 
 ScriptRegister::~ScriptRegister() {
-	delete _scriptMap;
 }
 
 void ScriptRegister::clear() {
-	_scriptMap->clear();
+	_scriptMap.clear();
 }
 
 void ScriptRegister::addScript(ScriptChunk &chunk) {
-	_scriptMap->setVal(chunk.getSignature(), Script(chunk));
+	_scriptMap.setVal(chunk.getSignature(), Script(chunk));
 }
 
 void ScriptRegister::removeScript(ScriptChunk &chunk) {
-	_scriptMap->setVal(chunk.getSignature(), Script(0xFFFFFFFF));
+	_scriptMap.setVal(chunk.getSignature(), Script(0xFFFFFFFF));
 }
 
 uint32 ScriptRegister::getLine(const Common::String &signature) const {
-	ScriptMap::const_iterator script = _scriptMap->find(signature);
+	ScriptMap::const_iterator script = _scriptMap.find(signature);
 
-	if (script == _scriptMap->end())
+	if (script == _scriptMap.end())
 		return 0;
 
 	return script->_value.getLine();
@@ -108,16 +106,16 @@ uint32 ScriptRegister::getLine(const ScriptChunk &chunk) const {
 }
 
 ScriptChunk *ScriptRegister::getScript(const Common::String &signature) const {
-	ScriptMap::const_iterator script = _scriptMap->find(signature);
+	ScriptMap::const_iterator script = _scriptMap.find(signature);
 
-	if (script == _scriptMap->end())
+	if (script == _scriptMap.end())
 		return 0;
 
 	return script->_value.chunk;
 }
 
 bool ScriptRegister::saveLoad(Common::Serializer &serializer, Resources &resources) {
-	SaveLoad::sync(serializer, *_scriptMap);
+	SaveLoad::sync(serializer, _scriptMap);
 	return true;
 }
 

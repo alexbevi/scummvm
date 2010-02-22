@@ -65,8 +65,6 @@ public:
 	/** Set the loading requested state. */
 	void setLoading(bool load);
 
-	bool _loading; ///< Loading a saved game requested?
-
 protected:
 	bool saveLoad(Common::Serializer &serializer, Resources &resources);
 	bool loading(Resources &resources);
@@ -113,6 +111,8 @@ private:
 	ObjectVerb             _itemVerb;   ///< The verb that triggered the object mode.
 	InventoryBox::ItemRef  _itemRef;    ///< A reference to the active item.
 	const Cursors::Cursor *_itemCursor; ///< The item's cursor.
+
+	bool _loading; ///< Loading a saved game requested?
 
 	// Used for loading
 	Common::String _lastObjectName;
@@ -170,6 +170,7 @@ private:
 	/** Executre an object's script for the given verb. */
 	void doObjectVerb(Object &object, ObjectVerb verb);
 
+	/** Translate the cursor mode to an object verb. */
 	static ObjectVerb cursorModeToObjectVerb(CursorMode cursorMode);
 };
 

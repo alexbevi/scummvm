@@ -80,7 +80,7 @@ private:
 
 	MidiPlayer *_midiPlayer;
 
-	Common::String _name; ///< The current playing music.
+	Common::String _name; ///< The currently playing music.
 	MidiMode _midiMode;   ///< The current MIDI mode.
 
 	bool _mute; ///< Muted?

@@ -118,9 +118,12 @@ private:
 	bool parseLook(Item &item, ScriptChunk &lookScript);
 	bool parseUse(Item &item, ScriptChunk &useScript);
 
+	/** Reset the sprites to new a new palette. */
 	void resetSprites();
+	/** Refresh the items' sprite pointers. */
 	void assignSprites();
 
+	/** Update the items' looks and uses. */
 	bool updateItems();
 };
 

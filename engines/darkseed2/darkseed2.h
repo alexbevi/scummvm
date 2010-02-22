@@ -92,6 +92,7 @@ public:
 	ScriptInterpreter *_inter;
 	Events            *_events;
 
+	/** Pause the engine. */
 	void pauseGame();
 
 	DarkSeed2Engine(OSystem *syst, const DS2GameDescription *gameDesc);
@@ -99,6 +100,7 @@ public:
 
 	void initGame(const DS2GameDescription *gd);
 
+	/** Show the load dialog. */
 	bool doLoadDialog();
 
 private:
