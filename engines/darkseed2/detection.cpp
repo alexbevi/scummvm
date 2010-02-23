@@ -84,11 +84,26 @@ static const DS2GameDescription gameDescriptions[] = {
 			GUIO_NONE
 		},
 	},
+	{ // Japanese Sega Saturn version
+		{
+			"darkseed2",
+			"",
+			{
+				{"initial.idx",  0, "92438db5d1b4b8946ec59ecfbd6107c0", 1284},
+				{"initial.glu",  0, "558a62491c612a890a25991016ab3f81", 540300},
+				{"conv0000.pgf", 0, "a82a02d0f825b54010938586b76b3019", 368}
+			},
+			JA_JPN,
+			kPlatformUnknown, // kPlatformSaturn
+			ADGF_NO_FLAGS,
+			GUIO_NONE
+		},
+	},
 	{ AD_TABLE_END_MARKER }
 };
 
 static const DS2GameDescription fallbackDescs[] = {
-	{ //0
+	{ // 0
 		{
 			"darkseed2",
 			"unknown",
@@ -99,10 +114,22 @@ static const DS2GameDescription fallbackDescs[] = {
 			GUIO_NONE
 		},
 	},
+	{ // 1
+		{
+			"darkseed2",
+			"unknown",
+			AD_ENTRY1(0, 0),
+			UNK_LANG,
+			kPlatformUnknown, // kPlatformSaturn
+			ADGF_NO_FLAGS,
+			GUIO_NONE
+		},
+	},
 };
 
 static const ADFileBasedFallback fileBased[] = {
 	{ &fallbackDescs[ 0], { "gfile.hdr", "dark0001.exe", 0 } },
+	{ &fallbackDescs[ 1], { "initial.idx", "initial.glu", "conv0000.pgf", 0 } },
 	{ 0, { 0 } }
 };
 
