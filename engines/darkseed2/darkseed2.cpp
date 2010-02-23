@@ -62,6 +62,8 @@ namespace DarkSeed2 {
 // Files
 static const char *kExecutable    = "dark0001.exe";
 static const char *kResourceIndex = "gfile.hdr";
+static const char *kInitialIndex  = "initial.idx";
+static const char *kInitialGlue   = "initial.glu";
 static const char *kVariableIndex = "GAMEVAR";
 
 DarkSeed2Engine::DarkSeed2Engine(OSystem *syst, const DS2GameDescription *gameDesc) :
@@ -180,7 +182,12 @@ bool DarkSeed2Engine::init() {
 	debug(-1, "Creating subclasses...");
 
 	_options        = new Options();
-	_cursors        = new Cursors(kExecutable);
+
+	if (isPC())
+		_cursors        = new Cursors(kExecutable);
+	else
+		_cursors        = new Cursors();
+
 	_variables      = new Variables(*_rnd);
 	_scriptRegister = new ScriptRegister();
 	_resources      = new Resources();
@@ -199,9 +206,16 @@ bool DarkSeed2Engine::init() {
 
 	debug(-1, "Indexing resources...");
 
-	if (!_resources->index(kResourceIndex)) {
-		warning("DarkSeed2Engine::init(): Couldn't index resources");
-		return false;
+	if (isSaturn()) {
+		if (!_resources->indexPGF(kInitialIndex, kInitialGlue)) {
+			warning("DarkSeed2Engine::init(): Couldn't index resources");
+			return false;
+		}
+	} else {
+		if (!_resources->index(kResourceIndex)) {
+			warning("DarkSeed2Engine::init(): Couldn't index resources");
+			return false;
+		}
 	}
 
 	debug(-1, "Initializing game variables...");
@@ -261,6 +275,15 @@ void DarkSeed2Engine::clearAll() {
 	_graphics->getConversationBox().stop();
 
 	_scriptRegister->clear();
+}
+
+bool DarkSeed2Engine::isPC() const {
+	return getPlatform() == Common::kPlatformPC;
+}
+
+bool DarkSeed2Engine::isSaturn() const {
+	// TODO: kPlatformSaturn
+	return getPlatform() == Common::kPlatformUnknown;
 }
 
 bool DarkSeed2Engine::canLoadGameStateCurrently() {

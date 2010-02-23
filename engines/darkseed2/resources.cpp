@@ -79,16 +79,16 @@ Common::SeekableReadStream &Resource::getStream() const {
 }
 
 
-Resources::Glue::Glue() : data(0), stream(0), size(0), indexed(false) {
+Resources::Archive::Archive() : type(kArchiveTypeNone), data(0), stream(0), size(0), indexed(false) {
 }
 
-Resources::Glue::~Glue() {
+Resources::Archive::~Archive() {
 	delete stream;
 	delete[] data;
 }
 
 
-Resources::Res::Res() : glue(0), offset(0), size(0), exists(false), indexed(false) {
+Resources::Res::Res() : archive(0), offset(0), size(0), exists(false), indexed(false) {
 }
 
 
@@ -123,33 +123,78 @@ bool Resources::index(const char *fileName) {
 	return true;
 }
 
+bool Resources::indexPGF(const char *initalIndex, const char *initialGlue) {
+	// Find all PGFs
+
+	Common::ArchiveMemberList pgfs;
+
+	SearchMan.listMatchingMembers(pgfs, "*.PGF");
+
+	_archiveCount = pgfs.size();
+
+	if (_archiveCount == 0)
+		return false;
+
+	// Indexing the initial index/glue pair
+
+	Common::File indexFile;
+	if (!indexFile.open(initalIndex)) {
+		warning("Resources::indexPGF(): Can't open initial index file \"%s\"", initalIndex);
+		return false;
+	}
+
+	_archiveCount++;
+	_archives.resize(_archiveCount);
+
+	_archives[0].type     = kArchiveTypePGF;
+	_archives[0].fileName = initialGlue;
+
+	if (!readInitialIndexContents(indexFile, _archives[0]))
+		return false;
+
+	// Indexing all PGFs
+
+	Common::ArchiveMemberList::const_iterator it = pgfs.begin();
+	for (uint i = 1; it != pgfs.end(); ++it, ++i) {
+		Archive &archive = _archives[i];
+
+		archive.type     = kArchiveTypePGF;
+		archive.fileName = (*it)->getName();
+
+		if (!indexArchiveContents(archive))
+			return false;
+	}
+
+	return true;
+}
+
 void Resources::clear() {
 	_resources.clear();
-	_glues.clear();
+	_archives.clear();
 
-	_glueCount = 0;
-	_resCount  = 0;
+	_archiveCount = 0;
+	_resCount     = 0;
 }
 
 void Resources::clearUncompressedData() {
-	for (int i = 0; i < _glueCount; i++) {
-		Glue &glue = _glues[i];
+	for (int i = 0; i < _archiveCount; i++) {
+		Archive &archive = _archives[i];
 
-		delete glue.stream;
-		delete[] glue.data;
+		delete archive.stream;
+		delete[] archive.data;
 
-		glue.stream = 0;
-		glue.data   = 0;
+		archive.stream = 0;
+		archive.data   = 0;
 	}
 }
 
 bool Resources::readIndexHeader(Common::File &indexFile) {
-	_glueCount = indexFile.readUint16LE();
+	_archiveCount = indexFile.readUint16LE();
 	_resCount  = indexFile.readUint16LE();
 
-	_glues.resize(_glueCount);
+	_archives.resize(_archiveCount);
 
-	debugC(1, kDebugResources, "Found %d glues and %d resources", _glueCount, _resCount);
+	debugC(1, kDebugResources, "Found %d glues and %d resources", _archiveCount, _resCount);
 
 	return true;
 }
@@ -158,15 +203,16 @@ bool Resources::readIndexGlues(Common::File &indexFile) {
 	byte buffer[33];
 
 	// Read the names of all available glues
-	for (int i = 0; i < _glueCount; i++) {
+	for (int i = 0; i < _archiveCount; i++) {
 		indexFile.read(buffer, 32);
 		indexFile.skip(32);
 
 		buffer[32] = '\0';
 
-		_glues[i].fileName = (const char *) buffer;
+		_archives[i].type     = kArchiveTypeGlue;
+		_archives[i].fileName = (const char *) buffer;
 
-		debugC(2, kDebugResources, "Glue file \"%s\"", _glues[i].fileName.c_str());
+		debugC(2, kDebugResources, "Glue file \"%s\"", _archives[i].fileName.c_str());
 	}
 
 	return true;
@@ -178,17 +224,17 @@ bool Resources::readIndexResources(Common::File &indexFile) {
 	// Read information about all avaiable resources
 	for (int i = 0; i < _resCount; i++) {
 		// In which glue is it found?
-		uint16 glue = indexFile.readUint16LE();
+		uint16 archive = indexFile.readUint16LE();
 
 		// File name
 		indexFile.read(buffer, 12);
 		buffer[12] = '\0';
 		Common::String resFile = (const char *) buffer;
 
-		if (glue >= _glueCount) {
+		if (archive >= _archiveCount) {
 			warning("Resources::readIndexResources(): Glue number out "
 					"of range for resource \"%s\" (%d vs. %d)",
-					resFile.c_str(), glue, _glueCount);
+					resFile.c_str(), archive, _archiveCount);
 			return false;
 		}
 
@@ -197,46 +243,81 @@ bool Resources::readIndexResources(Common::File &indexFile) {
 		// Unknown
 		indexFile.read(resource.unknown, 8);
 
-		resource.glue = &_glues[glue];
+		resource.archive = &_archives[archive];
 
 		_resources.setVal(resFile, resource);
 
 		debugC(3, kDebugResources, "Resource \"%s\", in glue \"%s\"",
-				resFile.c_str(), resource.glue->fileName.c_str());
+				resFile.c_str(), resource.archive->fileName.c_str());
 	}
 
 	return true;
 }
 
-bool Resources::indexGlueContents(Glue &glue) {
-	if (glue.data || glue.stream)
+bool Resources::indexArchiveContents(Archive &archive) {
+	switch (archive.type) {
+	case kArchiveTypeGlue:
+		return indexGlueContents(archive);
+	case kArchiveTypePGF:
+		return indexPGFContents(archive);
+	default:
+		assert(false);
+		error("Resources::indexArchiveContents(): Unknown archive type %d", archive.type);
+	}
+
+	return false;
+}
+
+bool Resources::indexGlueContents(Archive &archive) {
+	if (archive.data || archive.stream)
 		// Already indexed
 		return true;
 
-	Common::File glueFile;
+	Common::File archiveFile;
 
-	if (!glueFile.open(glue.fileName)) {
+	if (!archiveFile.open(archive.fileName)) {
 		warning("Resources::indexGlueContents(): "
-				"Can't open glue file \"%s\"", glue.fileName.c_str());
+				"Can't open glue file \"%s\"", archive.fileName.c_str());
 		return false;
 	}
 
-	if (isCompressedGlue(glueFile)) {
-		// If the glue is compressed, uncompress it and keep it in memory
+	if (isCompressedGlue(archiveFile)) {
+		// If the archive is compressed, uncompress it and keep it in memory
 
-		glue.data   = uncompressGlue(glueFile, glue.size);
-		glue.stream = new Common::MemoryReadStream(glue.data, glue.size);
+		archive.data   = uncompressGlue(archiveFile, archive.size);
+		archive.stream = new Common::MemoryReadStream(archive.data, archive.size);
 
-		if (!glue.indexed)
-			if (!readGlueContents(*glue.stream, glue.fileName))
+		if (!archive.indexed)
+			if (!readGlueContents(*archive.stream, archive.fileName))
 				return false;
 
 	} else
-		if (!glue.indexed)
-			if (!readGlueContents(glueFile, glue.fileName))
+		if (!archive.indexed)
+			if (!readGlueContents(archiveFile, archive.fileName))
 				return false;
 
-	glue.indexed = true;
+	archive.indexed = true;
+
+	return true;
+}
+
+bool Resources::indexPGFContents(Archive &archive) {
+	if (archive.indexed)
+		// Already indexed
+		return true;
+
+	Common::File archiveFile;
+
+	if (!archiveFile.open(archive.fileName)) {
+		warning("Resources::indexPGFContents(): "
+				"Can't open PGF file \"%s\"", archive.fileName.c_str());
+		return false;
+	}
+
+	if (!readPGFContents(archiveFile, archive))
+		return false;
+
+	archive.indexed = true;
 
 	return true;
 }
@@ -269,7 +350,7 @@ bool Resources::readGlueContents(Common::SeekableReadStream &glueFile, const Com
 		Res &resource = _resources.getVal(resFile);
 
 		// Just to make sure that the resource is the really in the glue file it should be
-		assert(!strcmp(fileName.c_str(), resource.glue->fileName.c_str()));
+		assert(!strcmp(fileName.c_str(), resource.archive->fileName.c_str()));
 
 		resource.exists = true;
 		resource.size   = glueFile.readUint32LE();
@@ -282,20 +363,80 @@ bool Resources::readGlueContents(Common::SeekableReadStream &glueFile, const Com
 	return true;
 }
 
-bool Resources::indexParentGlue(Res &res) {
+bool Resources::readPGFContents(Common::SeekableReadStream &pgfFile, Archive &archive) {
+	debugC(3, kDebugResources, "Reading contents of PGF file \"%s\"", archive.fileName.c_str());
+
+	pgfFile.seek(0);
+
+	uint32 pgfResCount = pgfFile.readUint32BE();
+
+	debugC(4, kDebugResources, "Has %d resources", pgfResCount);
+
+	// Size of the index
+	uint32 startOffset = pgfResCount * (12 + 4 + 4) + 4;
+
+	for (uint32 i = 0; i < pgfResCount; i++)
+		if (!readBEResourcList(pgfFile, archive, startOffset))
+			return false;
+
+	return true;
+}
+
+bool Resources::readInitialIndexContents(Common::SeekableReadStream &indexFile, Archive &archive) {
+	debugC(3, kDebugResources, "Reading contents of glue file \"%s\"", archive.fileName.c_str());
+
+	indexFile.seek(0);
+
+	uint32 glueResCount = indexFile.readUint32BE();
+
+	debugC(4, kDebugResources, "Has %d resources", glueResCount);
+
+	for (uint32 i = 0; i < glueResCount; i++)
+		if (!readBEResourcList(indexFile, archive, 0))
+			return false;
+
+	archive.indexed = true;
+
+	return true;
+}
+
+bool Resources::readBEResourcList(Common::SeekableReadStream &file, Archive &archive, uint32 startOffset) {
+	byte buffer[13];
+
+	// Resource's file name
+	file.read(buffer, 12);
+	buffer[12] = '\0';
+	Common::String resFile = (const char *) buffer;
+
+	Res resource;
+
+	resource.archive = &archive;
+	resource.exists  = true;
+	resource.size    = file.readUint32BE();
+	resource.offset  = file.readUint32BE() + startOffset;
+
+	debugC(5, kDebugResources, "Resource \"%s\", offset %d, size %d",
+			resFile.c_str(), resource.offset, resource.size);
+
+	_resources.setVal(resFile, resource);
+
+	return true;
+}
+
+bool Resources::indexParentArchive(Res &res) {
 	if (res.indexed)
 		return true;
 
-	if (!res.glue) {
-		warning("Resources::indexParentGlue(): Resource has no parent glue");
+	if (!res.archive) {
+		warning("Resources::indexParentArchive(): Resource has no parent archive");
 		return false;
 	}
 
-	if (!indexGlueContents(*res.glue))
+	if (!indexArchiveContents(*res.archive))
 		return false;
 
 	if (res.indexed) {
-		warning("Resources::indexParentGlue(): Resource not in parent glue");
+		warning("Resources::indexParentArchive(): Resource not in parent archive");
 		return false;
 	}
 
@@ -311,7 +452,7 @@ bool Resources::hasResource(const Common::String &resource) {
 
 	Res &res = _resources.getVal(resource);
 
-	if (!indexParentGlue(res))
+	if (!indexParentArchive(res))
 		return false;
 
 	return res.exists && (res.size != 0);
@@ -333,36 +474,36 @@ Resource *Resources::getResource(const Common::String &resource) {
 
 	Res &res = _resources.getVal(resource);
 
-	if (!indexParentGlue(res))
+	if (!indexParentArchive(res))
 		return false;
 
 	if (!res.exists || (res.size == 0))
 		error("Resources::getResource(): Resource \"%s\" not available",
 				resource.c_str());
 
-	if (res.glue->data) {
-		// Compressed glue, constructing new resource with direct data held in memory
+	if (res.archive->data) {
+		// Compressed archive, constructing new resource with direct data held in memory
 
-		if ((res.offset + res.size) > res.glue->size)
+		if ((res.offset + res.size) > res.archive->size)
 			error("Resources::getResource(): Resource \"%s\" offset %d out of bounds",
 					resource.c_str(), res.offset);
 
-		return new Resource(resource, res.glue->data + res.offset, res.size);
+		return new Resource(resource, res.archive->data + res.offset, res.size);
 	}
 
-	// Uncompressed glue, constructing new resource with data from file
+	// Uncompressed archive, constructing new resource with data from file
 
-	Common::File glueFile;
+	Common::File archiveFile;
 
-	if (!glueFile.open(res.glue->fileName))
-		error("Resources::getResource(): Couldn't open glue file \"%s\"",
-				res.glue->fileName.c_str());
+	if (!archiveFile.open(res.archive->fileName))
+		error("Resources::getResource(): Couldn't open archive file \"%s\"",
+				res.archive->fileName.c_str());
 
-	if (!glueFile.seek(res.offset))
-		error("Resources::getResource(): Couldn't seek glue file \"%s\" to offset %d",
-				res.glue->fileName.c_str(), res.offset);
+	if (!archiveFile.seek(res.offset))
+		error("Resources::getResource(): Couldn't seek archive file \"%s\" to offset %d",
+				res.archive->fileName.c_str(), res.offset);
 
-	return new Resource(resource, glueFile, res.size);
+	return new Resource(resource, archiveFile, res.size);
 }
 
 Common::String Resources::addExtension(const Common::String &name, const Common::String &extension) {

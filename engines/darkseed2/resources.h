@@ -80,10 +80,13 @@ public:
 	/** Index all resources, based on a resource index file. */
 	bool index(const char *fileName);
 
+	/** Index all availabe PGF resources. */
+	bool indexPGF(const char *initalIndex, const char *initialGlue);
+
 	/** Clear all resource information. */
 	void clear();
 
-	/** Remove the file data from unused compressed glues. */
+	/** Remove the file data from unused compressed archives. */
 	void clearUncompressedData();
 
 	/** Does a specific resource exist? */
@@ -95,8 +98,17 @@ public:
 	static Common::String addExtension(const Common::String &name, const Common::String &extension);
 
 private:
-	/** A glue archive file. */
-	struct Glue {
+	/** An archive type. */
+	enum ArchiveType {
+		kArchiveTypeNone = 0, ///< No valid archive.
+		kArchiveTypeGlue,     ///< A glue archive.
+		kArchiveTypePGF       ///< A PGF archive.
+	};
+
+	/** An archive file. */
+	struct Archive {
+		ArchiveType type; ///< The archive type.
+
 		Common::String fileName; ///< File name.
 
 		uint32 size; ///< File size.
@@ -104,33 +116,33 @@ private:
 
 		Common::MemoryReadStream *stream; ///< Stream to the file data.
 
-		bool indexed; ///< Have we indexed that glue yet?
+		bool indexed; ///< Have we indexed that archive yet?
 
-		Glue();
-		~Glue();
+		Archive();
+		~Archive();
 	};
 
 	/** Information about a resource. */
 	struct Res {
-		Glue *glue; ///< Pointer to its glue file.
+		Archive *archive; ///< Pointer to its archive file.
 
-		uint32 offset; ///< Offset within the glue file.
+		uint32 offset; ///< Offset within the archive file.
 		uint32 size;   ///< Size in bytes.
 
 		byte unknown[8];
 
 		bool indexed; ///< Have we indexed that resource yet?
 
-		bool exists; ///< Have we found it while indexing its glue file?
+		bool exists; ///< Have we found it while indexing its resource file?
 
 		Res();
 	};
 
-	uint16 _glueCount; ///< Number of indexed glue files.
+	uint16 _archiveCount; ///< Number of indexed archive files.
 	uint16 _resCount;  ///< Number of indexed resources.
 
-	/** All indexed glues. */
-	Common::Array<Glue> _glues;
+	/** All indexed archives. */
+	Common::Array<Archive> _archives;
 	/** All indexed resources. */
 	Common::HashMap<Common::String, Res, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> _resources;
 
@@ -141,14 +153,28 @@ private:
 	/** Read the resources section of the index file. */
 	bool readIndexResources(Common::File &indexFile);
 
-	/** Index the glue where this resource can be found. */
-	bool indexParentGlue(Res &res);
+	/** Read an initial.idx/initial.glu pair. */
+	bool readInitial(Common::SeekableReadStream &idxFile, Common::SeekableReadStream &glueFile);
 
-	/** Index all resources contained in this glue files. */
-	bool indexGlueContents(Glue &glue);
+	/** Index the glue where this resource can be found. */
+	bool indexParentArchive(Res &res);
+
+	/** Index all resources contained in this archive file. */
+	bool indexArchiveContents(Archive &archive);
+	/** Index all resources contained in this glue file. */
+	bool indexGlueContents(Archive &archive);
+	/** Index all resources contained in this PGF file. */
+	bool indexPGFContents(Archive &archive);
 
 	/** Index all resources in the specified glue file. */
 	bool readGlueContents(Common::SeekableReadStream &glueFile, const Common::String &fileName);
+	/** Index all resources in the specified pgf file. */
+	bool readPGFContents(Common::SeekableReadStream &pgfFile, Archive &archive);
+	/** Index all resources in the specified initial resource pair. */
+	bool readInitialIndexContents(Common::SeekableReadStream &IndexFile, Archive &archive);
+
+	/** Read a resource list entry with big endian values. */
+	bool readBEResourcList(Common::SeekableReadStream &file, Archive &archive, uint32 startOffset);
 
 	/** Uncompress a glue file. */
 	byte *uncompressGlue(Common::File &file, uint32 &size) const;

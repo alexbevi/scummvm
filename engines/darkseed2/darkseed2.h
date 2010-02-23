@@ -103,6 +103,9 @@ public:
 	/** Show the load dialog. */
 	bool doLoadDialog();
 
+	bool isPC    () const;
+	bool isSaturn() const;
+
 private:
 	struct SaveMeta {
 		Common::String description;
