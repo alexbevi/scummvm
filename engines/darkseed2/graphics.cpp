@@ -116,6 +116,7 @@ Graphics::Graphics(Resources &resources, Variables &variables, Cursors &cursors)
 	_talk = 0;
 
 	_conversationBox = 0;
+	_inventoryBox    = 0;
 	_room            = 0;
 }
 

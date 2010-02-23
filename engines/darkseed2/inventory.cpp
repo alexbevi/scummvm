@@ -129,7 +129,7 @@ bool Inventory::parse(DATFile &dat) {
 
 			Sprite *sprite = new Sprite;
 
-			if (!sprite->loadFromBMP(*_resources, it->spriteName)) {
+			if (!sprite->loadFromImage(*_resources, it->spriteName)) {
 				delete sprite;
 				return false;
 			}

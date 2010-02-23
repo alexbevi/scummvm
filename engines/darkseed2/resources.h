@@ -74,6 +74,12 @@ private:
 /** The resource manager. */
 class Resources {
 public:
+	/** An image type. */
+	enum ImageType {
+		kImageTypeBMP = 0, ///< BMP images.
+		kImageTypeRGB = 1  ///< RGB images.
+	};
+
 	Resources();
 	~Resources();
 
@@ -95,9 +101,19 @@ public:
 	/** Get a specific resource. */
 	Resource *getResource(const Common::String &resource);
 
+	/** Set the type of images the game uses. */
+	void setImageType(ImageType imageType);
+	/** Get the type of images the game uses. */
+	ImageType getImageType() const;
+
+	/** Get the extension used for images by the game. */
+	const char *getImageExtension() const;
+
 	static Common::String addExtension(const Common::String &name, const Common::String &extension);
 
 private:
+	static const char *kImageExtensions[2];
+
 	/** An archive type. */
 	enum ArchiveType {
 		kArchiveTypeNone = 0, ///< No valid archive.
@@ -137,6 +153,8 @@ private:
 
 		Res();
 	};
+
+	ImageType _imageType; ///< The type of images the game uses.
 
 	uint16 _archiveCount; ///< Number of indexed archive files.
 	uint16 _resCount;  ///< Number of indexed resources.

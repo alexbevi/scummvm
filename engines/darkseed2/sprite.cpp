@@ -43,7 +43,7 @@ Sprite::Sprite() {
 	clearData();
 }
 
-Sprite::Sprite(const Sprite &sprite) {
+Sprite::Sprite(const Sprite &sprite) : Saveable(sprite) {
 	_data = 0;
 	copyFrom(sprite);
 }
@@ -63,6 +63,21 @@ void Sprite::copyFrom(const Sprite &sprite) {
 	memcpy(_data, sprite._data, _width * _height);
 
 	_palette = sprite._palette;
+
+	_fileName = sprite._fileName;
+	_fromCursor = sprite._fromCursor;
+
+	_defaultX = sprite._defaultX;
+	_defaultY = sprite._defaultY;
+
+	_feetX = sprite._feetX;
+	_feetY = sprite._feetY;
+
+	_flippedHorizontally = sprite._flippedHorizontally;
+	_flippedVertically   = sprite._flippedVertically;
+
+	_scale        = sprite._scale;
+	_scaleInverse = sprite._scaleInverse;
 }
 
 bool Sprite::exists() const {
@@ -261,12 +276,29 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 	return true;
 }
 
+bool Sprite::loadFromImage(Resources &resources, const Common::String &image) {
+	switch (resources.getImageType()) {
+	case Resources::kImageTypeBMP:
+		return loadFromBMP(resources, image);
+
+	case Resources::kImageTypeRGB:
+		return loadFromRGB(resources, image);
+	}
+
+	return false;
+}
+
+bool Sprite::loadFromRGB(Common::SeekableReadStream &rgb) {
+	warning("TODO: Sprite::loadFromRGB()");
+	return false;
+}
+
 bool Sprite::loadFromBMP(const Resource &resource) {
 	return loadFromBMP(resource.getStream());
 }
 
 bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
-	Common::String bmpFile = Resources::addExtension(bmp, "BMP");
+	Common::String bmpFile = Resources::addExtension(bmp, resources.getImageExtension());
 	if (!resources.hasResource(bmpFile))
 		return false;
 
@@ -277,6 +309,26 @@ bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
 	delete resBMP;
 
 	_fileName = bmp;
+
+	return result;
+}
+
+bool Sprite::loadFromRGB(const Resource &resource) {
+	return loadFromRGB(resource.getStream());
+}
+
+bool Sprite::loadFromRGB(Resources &resources, const Common::String &rgb) {
+	Common::String rgbFile = Resources::addExtension(rgb, resources.getImageExtension());
+	if (!resources.hasResource(rgbFile))
+		return false;
+
+	Resource *resRGB = resources.getResource(rgbFile);
+
+	bool result = loadFromRGB(*resRGB);
+
+	delete resRGB;
+
+	_fileName = rgb;
 
 	return result;
 }
@@ -641,7 +693,7 @@ bool Sprite::loading(Resources &resources) {
 	byte   flippedVertically   = _flippedVertically;
 	uint32 scale               = _scale;
 
-	loadFromBMP(resources, _fileName);
+	loadFromImage(resources, _fileName);
 
 	if (flippedHorizontally)
 		flipHorizontally();

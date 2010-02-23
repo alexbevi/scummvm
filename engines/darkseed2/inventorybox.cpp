@@ -110,11 +110,11 @@ void InventoryBox::updateColors() {
 void InventoryBox::loadSprites() {
 	bool loaded0, loaded1, loaded2, loaded3, loaded4;
 
-	loaded0 = _origSprites[0].loadFromBMP(*_resources, kSpriteFrame);
-	loaded1 = _origSprites[1].loadFromBMP(*_resources, kSpriteScrollLeft);
-	loaded2 = _origSprites[2].loadFromBMP(*_resources, kSpriteScrollNoLeft);
-	loaded3 = _origSprites[3].loadFromBMP(*_resources, kSpriteScrollRight);
-	loaded4 = _origSprites[4].loadFromBMP(*_resources, kSpriteScrollNoRight);
+	loaded0 = _origSprites[0].loadFromImage(*_resources, kSpriteFrame);
+	loaded1 = _origSprites[1].loadFromImage(*_resources, kSpriteScrollLeft);
+	loaded2 = _origSprites[2].loadFromImage(*_resources, kSpriteScrollNoLeft);
+	loaded3 = _origSprites[3].loadFromImage(*_resources, kSpriteScrollRight);
+	loaded4 = _origSprites[4].loadFromImage(*_resources, kSpriteScrollNoRight);
 
 	assert(loaded0 && loaded1 && loaded2 && loaded3 && loaded4);
 

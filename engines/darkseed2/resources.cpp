@@ -79,6 +79,9 @@ Common::SeekableReadStream &Resource::getStream() const {
 }
 
 
+const char *Resources::kImageExtensions[2] = {"BMP", "RGB"};
+
+
 Resources::Archive::Archive() : type(kArchiveTypeNone), data(0), stream(0), size(0), indexed(false) {
 }
 
@@ -93,6 +96,8 @@ Resources::Res::Res() : archive(0), offset(0), size(0), exists(false), indexed(f
 
 
 Resources::Resources() {
+	_imageType = kImageTypeBMP;
+
 	clear();
 }
 
@@ -504,6 +509,18 @@ Resource *Resources::getResource(const Common::String &resource) {
 				res.archive->fileName.c_str(), res.offset);
 
 	return new Resource(resource, archiveFile, res.size);
+}
+
+void Resources::setImageType(ImageType imageType) {
+	_imageType = imageType;
+}
+
+Resources::ImageType Resources::getImageType() const {
+	return _imageType;
+}
+
+const char *Resources::getImageExtension() const {
+	return kImageExtensions[_imageType];
 }
 
 Common::String Resources::addExtension(const Common::String &name, const Common::String &extension) {

@@ -97,8 +97,14 @@ public:
 	/** Copy from another sprite. */
 	void copyFrom(const Sprite &sprite);
 
+	/** Load a sprite from an image file. */
+	bool loadFromImage(Resources &resources, const Common::String &image);
+
 	/** Load a sprite from a BMP. */
 	bool loadFromBMP(Resources &resources, const Common::String &bmp);
+
+	/** Load a sprite from a RGB. */
+	bool loadFromRGB(Resources &resources, const Common::String &rgb);
 
 	/** Load from a cursor resource embedded in an EXE file. */
 	bool loadFromCursorResource(const NECursor &cursor);
@@ -173,6 +179,11 @@ private:
 	bool loadFromBMP(Common::SeekableReadStream &bmp);
 	/** Load a sprite from a BMP. */
 	bool loadFromBMP(const Resource &resource);
+
+	/** Load a sprite from a RGB. */
+	bool loadFromRGB(Common::SeekableReadStream &rgb);
+	/** Load a sprite from a RGB. */
+	bool loadFromRGB(const Resource &resource);
 
 	/** Read uncompressed BMP data. */
 	bool readBMPDataComp0(Common::SeekableReadStream &bmp, uint32 dataSize);

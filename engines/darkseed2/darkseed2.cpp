@@ -211,11 +211,16 @@ bool DarkSeed2Engine::init() {
 			warning("DarkSeed2Engine::init(): Couldn't index resources");
 			return false;
 		}
+
+		_resources->setImageType(Resources::kImageTypeRGB);
+
 	} else {
 		if (!_resources->index(kResourceIndex)) {
 			warning("DarkSeed2Engine::init(): Couldn't index resources");
 			return false;
 		}
+
+		_resources->setImageType(Resources::kImageTypeBMP);
 	}
 
 	debug(-1, "Initializing game variables...");

@@ -245,12 +245,12 @@ const Sprite &SpriteObject::getSprite() const {
 	return *_sprite;
 }
 
-bool SpriteObject::loadFromBMP(Resources &resources, const Common::String &bmp) {
+bool SpriteObject::loadFromImage(Resources &resources, const Common::String &image) {
 	clear();
 
 	_sprite = new Sprite;
 
-	if (!_sprite->loadFromBMP(resources, bmp))
+	if (!_sprite->loadFromImage(resources, image))
 		return false;
 
 	_area = _sprite->getArea();
@@ -385,7 +385,8 @@ bool Animation::load(Resources &resources, const Common::String &base) {
 	// Find the frame with the biggest number that still exists
 	uint8 count = 0;
 	for (int i = 99; i > 0; i--) {
-		if (resources.hasResource(Resources::addExtension(base + Common::String::printf("%02d", i), "BMP"))) {
+		if (resources.hasResource(Resources::addExtension(base + Common::String::printf("%02d", i),
+						resources.getImageExtension()))) {
 			count = i;
 			break;
 		}
@@ -394,14 +395,14 @@ bool Animation::load(Resources &resources, const Common::String &base) {
 	// None found
 	if (count == 0) {
 		// Try to open the file without a frame number attached
-		if (!resources.hasResource(Resources::addExtension(base, "BMP"))) {
+		if (!resources.hasResource(Resources::addExtension(base, resources.getImageExtension()))) {
 			warning("Animation::load(): No such animation \"%s\"", base.c_str());
 			return false;
 		}
 
 		// Load it
 		SpriteObject *object = new SpriteObject;
-		if (!object->loadFromBMP(resources, base)) {
+		if (!object->loadFromImage(resources, base)) {
 			warning("Animation::load(): Failed loading sprite \"%s\"", base.c_str());
 			delete object;
 			return false;
@@ -419,7 +420,7 @@ bool Animation::load(Resources &resources, const Common::String &base) {
 		Common::String bmp = base + Common::String::printf("%02d", i + 1);
 
 		SpriteObject *object = new SpriteObject;
-		if (!object->loadFromBMP(resources, bmp)) {
+		if (!object->loadFromImage(resources, bmp)) {
 			// Frame doesn't exist
 
 			// If it's the first one, take the newly created empty one.

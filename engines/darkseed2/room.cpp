@@ -369,12 +369,12 @@ bool Room::loadSprites(Resources &resources) {
 	_background = new Sprite();
 	_walkMap    = new Sprite();
 
-	if (!_background->loadFromBMP(resources, _backgroundFile)) {
+	if (!_background->loadFromImage(resources, _backgroundFile)) {
 		warning("Room::setup(): Can't load background");
 		return false;
 	}
 
-	if (!_walkMap->loadFromBMP(resources, _walkMapFile)) {
+	if (!_walkMap->loadFromImage(resources, _walkMapFile)) {
 		warning("Room::setup(): Can't load walk map");
 		return false;
 	}

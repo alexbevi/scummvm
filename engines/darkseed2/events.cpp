@@ -143,10 +143,10 @@ bool Events::introSequence() {
 			return true;
 
 		// Loading title parts, for hotspot detection
-		_titleSprites[0].loadFromBMP(*_vm->_resources, "002BTN01");
-		_titleSprites[1].loadFromBMP(*_vm->_resources, "002BTN02");
-		_titleSprites[2].loadFromBMP(*_vm->_resources, "002BTN03");
-		_titleSprites[3].loadFromBMP(*_vm->_resources, "002BTN04");
+		_titleSprites[0].loadFromImage(*_vm->_resources, "002BTN01");
+		_titleSprites[1].loadFromImage(*_vm->_resources, "002BTN02");
+		_titleSprites[2].loadFromImage(*_vm->_resources, "002BTN03");
+		_titleSprites[3].loadFromImage(*_vm->_resources, "002BTN04");
 
 		for (int i = 0; i < 4; i++) {
 			if (_titleSprites[i].empty()) {
