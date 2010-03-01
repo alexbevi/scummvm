@@ -27,6 +27,7 @@
 #include "common/serializer.h"
 
 #include "engines/darkseed2/graphics.h"
+#include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/talk.h"
@@ -106,6 +107,7 @@ Graphics::Graphics(Resources &resources, Variables &variables, Cursors &cursors)
 	_movie     = 0;
 
 	clearPalette();
+	ImgConv.registerStandardPalette(_gamePalette);
 
 	_screen.create(kScreenWidth, kScreenHeight);
 
@@ -121,6 +123,8 @@ Graphics::Graphics(Resources &resources, Variables &variables, Cursors &cursors)
 }
 
 Graphics::~Graphics() {
+	ImgConv.unregisterStandardPalette();
+
 	delete _room;
 	delete _inventoryBox;
 	delete _conversationBox;
@@ -144,7 +148,7 @@ void Graphics::init(TalkManager &talkManager, ScriptRegister &scriptRegister,
 	_room = new Room(*_variables, scriptRegister, *this);
 	_room->registerConfigManager(roomConfigManager);
 
-	_screen.clear();
+	_screen.darken();
 
 	initPalette();
 	dirtyAll();
@@ -177,7 +181,7 @@ void Graphics::updateStatus() {
 }
 
 void Graphics::clearScreen() {
-	_screen.clear();
+	_screen.darken();
 	dirtyAll();
 }
 
@@ -221,11 +225,6 @@ void Graphics::initPalette() {
 	_gamePalette[0] = 0;
 	_gamePalette[1] = 0;
 	_gamePalette[2] = 0;
-
-	// Some standard colors
-	_gamePalette.addColor(  0,   0,   0, true);
-	_gamePalette.addColor(255, 255, 255, true);
-	_gamePalette.addColor(239, 167, 127, true);
 
 	applyGamePalette();
 }
@@ -303,20 +302,6 @@ void Graphics::removeAnimation(SpriteRef &ref) {
 	ref.empty = true;
 }
 
-void Graphics::mergePalette(Sprite &from) {
-	debugC(2, kDebugGraphics, "Merging palettes");
-
-	// Merge the palette
-	Common::Array<byte> changeSet = _gamePalette.merge(from.getPalette(), true);
-
-	// Apply the change set
-	from.applyChangeSet(changeSet);
-
-	// Apply the palette and mark the whole screen as dirty
-	applyGamePalette();
-	dirtyAll();
-}
-
 const Palette &Graphics::getPalette() const {
 	return _gamePalette;
 }
@@ -369,8 +354,10 @@ bool Graphics::dirtyRectsApply() {
 		debugC(5, kDebugGraphics, "Refreshing the whole screen");
 		// Everything is dirty, copy the whole screen
 
-		g_system->copyRectToScreen(_screen.getData(), _screen.getWidth(),
-					0, 0, _screen.getWidth(), _screen.getHeight());
+		const ::Graphics::Surface &surface = _screen.getTrueColor();
+
+		g_system->copyRectToScreen((const byte *) surface.pixels, surface.pitch, 0, 0, surface.w, surface.h);
+
 		_dirtyAll = false;
 		return true;
 	}
@@ -392,9 +379,10 @@ bool Graphics::dirtyRectsApply() {
 		if (it->isEmpty())
 			continue;
 
-		const byte *data = _screen.getData() + it->top * screenWidth + it->left;
+		const ::Graphics::Surface &surface = _screen.getTrueColor();
+		const byte *data = (const byte *) surface.getBasePtr(it->left, it->top);
 
-		g_system->copyRectToScreen(data, screenWidth, it->left, it->top, it->width(), it->height());
+		g_system->copyRectToScreen(data, surface.pitch, it->left, it->top, it->width(), it->height());
 	}
 
 	_dirtyRects.clear();
@@ -407,12 +395,11 @@ void Graphics::registerBackground(const Sprite &background) {
 	assert(_conversationBox);
 	assert(_inventoryBox);
 
+	_screen.darken();
+
 	_background = &background;
 
 	setPalette(_background->getPalette());
-
-	_conversationBox->newPalette();
-	_inventoryBox->newPalette();
 
 	requestRedraw();
 }
@@ -452,7 +439,7 @@ void Graphics::redraw(Common::Rect rect) {
 	}
 
 	if (_background)
-		_screen.blit(*_background, rect, rect.left, rect.top, false);
+		_screen.blit(*_background, rect, rect.left, rect.top, true);
 
 	// Clip the area for animation sprite redraw to the room area
 	Common::Rect spriteArea = rect;

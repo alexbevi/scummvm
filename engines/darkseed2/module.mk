@@ -6,6 +6,7 @@ MODULE_OBJS := \
 	options.o \
 	resources.o \
 	palette.o \
+	imageconverter.o \
 	sprite.o \
 	graphics.o \
 	graphicalobject.o \

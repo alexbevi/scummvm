@@ -44,6 +44,7 @@
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/script.h"
+#include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/room.h"
 #include "engines/darkseed2/conversationbox.h"
@@ -136,10 +137,13 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 }
 
 Common::Error DarkSeed2Engine::run() {
+	if (!initGraphics())
+		return Common::kUnknownError;
+
 	if (!init())
 		return Common::kUnknownError;
 
-	if (!initGraphics())
+	if (!initGraphicsSystem())
 		return Common::kUnknownError;
 
 	debug(-1, "Done initializing.");
@@ -241,9 +245,18 @@ bool DarkSeed2Engine::init() {
 bool DarkSeed2Engine::initGraphics() {
 	debug(-1, "Setting up graphics...");
 
+	::initGraphics(Graphics::kScreenWidth, Graphics::kScreenHeight, true, 0);
+
+	ImgConv.setPixelFormat(g_system->getScreenFormat());
+
+	return true;
+}
+
+bool DarkSeed2Engine::initGraphicsSystem() {
+	debug(-1, "Setting up the graphics system...");
+
 	_graphics->init(*_talkMan, *_scriptRegister, *_roomConfMan, *_movie);
 
-	::initGraphics(Graphics::kScreenWidth, Graphics::kScreenHeight, true);
 	return true;
 }
 

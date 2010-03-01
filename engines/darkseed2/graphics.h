@@ -147,9 +147,6 @@ public:
 	/** Remove an animation frame from the rendering queue. */
 	void removeAnimation(SpriteRef &ref);
 
-	/** Merge the sprite's palette into the current game palette. */
-	void mergePalette(Sprite &sprite);
-
 	/** Get the game palette. */
 	const Palette &getPalette() const;
 

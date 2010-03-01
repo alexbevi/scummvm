@@ -32,6 +32,7 @@
 #include "graphics/font.h"
 
 #include "engines/darkseed2/sprite.h"
+#include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/neresources.h"
@@ -44,7 +45,8 @@ Sprite::Sprite() {
 }
 
 Sprite::Sprite(const Sprite &sprite) : Saveable(sprite) {
-	_data = 0;
+	_transparencyMap = 0;
+
 	copyFrom(sprite);
 }
 
@@ -58,9 +60,17 @@ Sprite &Sprite::operator=(const Sprite &sprite) {
 }
 
 void Sprite::copyFrom(const Sprite &sprite) {
-	create(sprite._width, sprite._height);
+	discard();
 
-	memcpy(_data, sprite._data, _width * _height);
+	if (sprite._surfacePaletted.pixels) {
+		_surfacePaletted.copyFrom(sprite._surfacePaletted);
+
+		_transparencyMap = new uint8[_surfacePaletted.w * _surfacePaletted.h];
+		memcpy(_transparencyMap, sprite._transparencyMap, _surfacePaletted.w * _surfacePaletted.h);
+	}
+
+	if (sprite._surfaceTrueColor.pixels)
+		_surfaceTrueColor.copyFrom(sprite._surfaceTrueColor);
 
 	_palette = sprite._palette;
 
@@ -80,22 +90,29 @@ void Sprite::copyFrom(const Sprite &sprite) {
 	_scaleInverse = sprite._scaleInverse;
 }
 
+void Sprite::copyFrom(const byte *sprite, bool system) {
+	memcpy(_surfacePaletted.pixels, sprite, _surfacePaletted.w * _surfacePaletted.h);
+	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
+
+	convertToTrueColor(system);
+}
+
 bool Sprite::exists() const {
-	return _data != 0;
+	return _surfacePaletted.pixels != 0;
 }
 
 int32 Sprite::getWidth(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
-		return _width;
+		return _surfacePaletted.w;
 
-	return fracToInt(_width * _scale);
+	return fracToInt(_surfacePaletted.w * _scale);
 }
 
 int32 Sprite::getHeight(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
-		return _height;
+		return _surfacePaletted.h;
 
-	return fracToInt(_height * _scale);
+	return fracToInt(_surfacePaletted.h * _scale);
 }
 
 int32 Sprite::getDefaultX(bool unscaled) const {
@@ -128,17 +145,17 @@ int32 Sprite::getFeetY(bool unscaled) const {
 
 Common::Rect Sprite::getArea(bool unscaled) const {
 	if (unscaled || (_scale == FRAC_ONE))
-		return Common::Rect(_width, _height);
+		return Common::Rect(_surfacePaletted.w, _surfacePaletted.h);
 
 	return Common::Rect(getWidth(), getHeight());
 }
 
-const byte *Sprite::getData() const {
-	return _data;
+const ::Graphics::Surface &Sprite::getPaletted() const {
+	return _surfacePaletted;
 }
 
-byte *Sprite::getData() {
-	return _data;
+const ::Graphics::Surface &Sprite::getTrueColor() const {
+	return _surfaceTrueColor;
 }
 
 const Palette &Sprite::getPalette() const {
@@ -146,21 +163,28 @@ const Palette &Sprite::getPalette() const {
 }
 
 void Sprite::create(int32 width, int32 height) {
+	create(width, height, true);
+}
+
+void Sprite::create(int32 width, int32 height, bool createTrueData) {
 	// Sanity checks
 	assert((width > 0) && (height > 0) && (width <= 0x7FFF) && (height <= 0x7FFF));
 
 	discard();
 
-	_width  = width;
-	_height = height;
+	_surfacePaletted.create(width, height, 1);
+	_surfaceTrueColor.create(width, height, 2);
 
-	_data = new byte[_width * _height];
+	_transparencyMap = new uint8[width * height];
 
 	clear();
 }
 
 void Sprite::discard() {
-	delete[] _data;
+	_surfacePaletted.free();
+	_surfaceTrueColor.free();
+
+	delete[] _transparencyMap;
 
 	clearData();
 }
@@ -170,9 +194,7 @@ void Sprite::clearData() {
 
 	_fromCursor = false;
 
-	_width  = 0;
-	_height = 0;
-	_data   = 0;
+	_transparencyMap = 0;
 
 	_defaultX = 0;
 	_defaultY = 0;
@@ -186,6 +208,50 @@ void Sprite::clearData() {
 	_scaleInverse = FRAC_ONE;
 
 	_palette.clear();
+}
+
+void Sprite::convertToTrueColor(bool system) {
+	if (!exists())
+		return;
+
+	if (system)
+		ImgConv.convert8bitSystem(_surfaceTrueColor, _surfacePaletted);
+	else
+		ImgConv.convert8bit(_surfaceTrueColor, _surfacePaletted, _palette);
+}
+
+void Sprite::createTransparencyMap() {
+	if (!exists())
+		return;
+
+	const byte *img = (const byte *) _surfacePaletted.pixels;
+	uint8 *map = _transparencyMap;
+
+	for (int32 y = 0; y < _surfacePaletted.h; y++)
+		for (int32 x = 0; x < _surfacePaletted.w; x++)
+			*map++ = (*img++ == 0) ? 1 : 0;
+}
+
+void Sprite::updateTransparencyMap() {
+	if (!exists())
+		return;
+
+	const byte *img = (const byte *) _surfaceTrueColor.pixels;
+	uint8 *map = _transparencyMap;
+
+	uint32 colorTransp = ImgConv.convertColor(0, _palette);
+
+	for (int32 y = 0; y < _surfaceTrueColor.h; y++) {
+		for (int32 x = 0; x < _surfaceTrueColor.w; x++, map++, img += _surfaceTrueColor.bytesPerPixel) {
+			uint32 p;
+
+			if (_surfaceTrueColor.bytesPerPixel == 2)
+				p = *((uint16 *) img);
+
+			if ((*map == 1) && (p != colorTransp))
+				*map = 0;
+		}
+	}
 }
 
 bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
@@ -211,11 +277,14 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 	if (bmp.readUint32LE() != 40)
 		return false;
 
-	_width  = (int32) bmp.readUint32LE();
-	_height = (int32) bmp.readUint32LE();
+	int32 width  = (int32) bmp.readUint32LE();
+	int32 height = (int32) bmp.readUint32LE();
 
 	// Sanity checks
-	assert((_width > 0) && (_height > 0) && (_width <= 0x7FFF) && (_height <= 0x7FFF));
+	assert((width > 0) && (height > 0) && (width <= 0x7FFF) && (height <= 0x7FFF));
+
+	// Create surfaces
+	create(width, height, true);
 
 	// Number of color planes
 	if (bmp.readUint16LE() != 1)
@@ -232,8 +301,8 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 
 	uint32 bmpDataSize = bmp.readUint32LE();
 
-	_feetX = (int32) MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _width  - 1);
-	_feetY = (int32) MIN<uint16>(ABS(((int16) bmp.readUint16LE())), _height - 1);
+	_feetX = (int32) MIN<uint16>(ABS(((int16) bmp.readUint16LE())), width  - 1);
+	_feetY = (int32) MIN<uint16>(ABS(((int16) bmp.readUint16LE())), height - 1);
 
 	// Default coordinates
 	_defaultX = (int32) bmp.readUint16LE();
@@ -245,22 +314,15 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 	if (numPalColors > 256)
 		numPalColors = 256;
 
+	if (bmpDataOffset == 54) {
+		// Image data begins right after the header => no palette
+		numPalColors = 0;
+	}
+
 	// Important colors
 	bmp.skip(4);
 
-	byte *palette = new byte[numPalColors * 3];
-	for (uint32 i = 0; i < numPalColors; i++) {
-		palette[i * 3 + 2] = bmp.readByte();
-		palette[i * 3 + 1] = bmp.readByte();
-		palette[i * 3 + 0] = bmp.readByte();
-
-		bmp.readByte();
-	}
-	_palette.copyFrom(palette, numPalColors);
-	delete[] palette;
-
-	_data = new byte[_width * _height];
-	memset(_data, 0, _width * _height);
+	loadPalette(bmp, numPalColors);
 
 	if (!bmp.seek(bmpDataOffset))
 		return false;
@@ -273,7 +335,26 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 			return false;
 	}
 
+	createTransparencyMap();
+	convertToTrueColor();
+
 	return true;
+}
+
+void Sprite::loadPalette(Common::SeekableReadStream &stream, uint32 count) {
+	if (count == 0)
+		return;
+
+	byte *palette = new byte[count * 3];
+	for (uint32 i = 0; i < count ; i++) {
+		palette[i * 3 + 2] = stream.readByte();
+		palette[i * 3 + 1] = stream.readByte();
+		palette[i * 3 + 0] = stream.readByte();
+
+		stream.skip(1);
+	}
+	_palette.copyFrom(palette, count);
+	delete[] palette;
 }
 
 bool Sprite::loadFromImage(Resources &resources, const Common::String &image) {
@@ -337,18 +418,43 @@ void Sprite::flipHorizontally() {
 	if (!exists())
 		return;
 
-	int32 halfWidth = _width / 2;
+	int32 width     = _surfacePaletted.w;
+	int32 height    = _surfacePaletted.h;
+	int32 halfWidth = width / 2;
 
-	byte *data = _data;
-	for (int32 i = 0; i < _height; i++, data += _width) {
-		byte *dataStart = data;
-		byte *dataEnd   = data + _width - 1;
+	byte  *dataPal    = (byte *) _surfacePaletted.pixels;
+	byte  *dataTrue   = (byte *) _surfaceTrueColor.pixels;
+	uint8 *dataTransp =          _transparencyMap;
 
-		for (int32 j = 0; j < halfWidth; j++, dataStart++, dataEnd--)
-			SWAP(*dataStart, *dataEnd);
+	for (int32 i = 0; i < height; i++) {
+		byte  *dataPalStart    = dataPal;
+		byte  *dataPalEnd      = dataPal    + width - 1;
+		byte  *dataTrueStart   = dataTrue;
+		byte  *dataTrueEnd     = dataTrue   + _surfaceTrueColor.pitch - _surfaceTrueColor.bytesPerPixel;
+		uint8 *dataTranspStart = dataTransp;
+		uint8 *dataTranspEnd   = dataTransp + width - 1;
+
+		for (int32 j = 0; j < halfWidth; j++) {
+			SWAP(*dataPalStart, *dataPalEnd);
+			dataPalStart++;
+			dataPalEnd--;
+
+			if (_surfaceTrueColor.bytesPerPixel == 2)
+				SWAP(*((uint16 *) dataTrueStart), *((uint16 *) dataTrueEnd));
+			dataTrueStart += _surfaceTrueColor.bytesPerPixel;
+			dataTrueEnd   -= _surfaceTrueColor.bytesPerPixel;
+
+			SWAP(*dataTranspStart, *dataTranspEnd);
+			dataTranspStart++;
+			dataTranspEnd--;
+		}
+
+		dataPal    += width;
+		dataTrue   += _surfaceTrueColor.pitch;
+		dataTransp += width;
 	}
 
-	_feetX = _width - _feetX;
+	_feetX = width - _feetX;
 	_flippedHorizontally = !_flippedHorizontally;
 }
 
@@ -356,22 +462,50 @@ void Sprite::flipVertically() {
 	if (!exists())
 		return;
 
-	int32 halfHeight = _height / 2;
+	int32 width      = _surfacePaletted.w;
+	int32 height     = _surfacePaletted.h;
+	int32 halfHeight = height / 2;
 
-	byte *dataStart = _data;
-	byte *dataEnd   = _data + (_width * _height) - _width;
+	byte  *dataPal    = (byte *) _surfacePaletted.pixels;
+	byte  *dataTrue   = (byte *) _surfaceTrueColor.pixels;
+	uint8 *dataTransp =          _transparencyMap;
 
-	byte *buffer = new byte[_width];
+	byte  *dataPalStart    = dataPal;
+	byte  *dataPalEnd      = dataPal    + (width * height) - width;
+	byte  *dataTrueStart   = dataTrue;
+	byte  *dataTrueEnd     = dataTrue   + (_surfaceTrueColor.pitch * height) - _surfaceTrueColor.pitch;
+	uint8 *dataTranspStart = dataTransp;
+	uint8 *dataTranspEnd   = dataTransp + (width * height) - width;
 
-	for (int32 i = 0; i < halfHeight; i++, dataStart += _width, dataEnd -= _width) {
-		memcpy(buffer   , dataStart, _width);
-		memcpy(dataStart, dataEnd  , _width);
-		memcpy(dataEnd  , buffer   , _width);
+	byte   *bufferPal    = new byte  [width];
+	byte   *bufferTrue   = new byte  [_surfaceTrueColor.pitch];
+	uint8  *bufferTransp = new uint8 [width];
+
+	for (int32 i = 0; i < halfHeight; i++) {
+		memcpy(bufferPal   , dataPalStart, width);
+		memcpy(dataPalStart, dataPalEnd  , width);
+		memcpy(dataPalEnd  , bufferPal   , width);
+		dataPalStart += width;
+		dataPalEnd   -= width;
+
+		memcpy(bufferTrue   , dataTrueStart, _surfaceTrueColor.pitch);
+		memcpy(dataTrueStart, dataTrueEnd  , _surfaceTrueColor.pitch);
+		memcpy(dataTrueEnd  , bufferTrue   , _surfaceTrueColor.pitch);
+		dataTrueStart += _surfaceTrueColor.pitch;
+		dataTrueEnd   -= _surfaceTrueColor.pitch;
+
+		memcpy(bufferTransp   , dataTranspStart, width);
+		memcpy(dataTranspStart, dataTranspEnd  , width);
+		memcpy(dataTranspEnd  , bufferTransp   , width);
+		dataTranspStart += width;
+		dataTranspEnd   -= width;
 	}
 
-	delete[] buffer;
+	delete[] bufferPal;
+	delete[] bufferTrue;
+	delete[] bufferTransp;
 
-	_feetY = _height - _feetY;
+	_feetY = height - _feetY;
 	_flippedVertically = !_flippedVertically;
 }
 
@@ -425,11 +559,13 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 	// Height includes AND-mask and XOR-mask
 	height /= 2;
 
-	create(width, height);
+	create(width, height, true);
 
-	// Standard palette: transparent, black white
-	memset(_palette.get()    , 0, 6);
-	memset(_palette.get() + 6, 0, 3);
+	_palette.resize(3);
+
+	// Standard palette: transparent, black, white
+	memset(_palette.get()    ,   0, 6);
+	memset(_palette.get() + 6, 255, 3);
 
 	// Reading the palette
 	stream.seek(40);
@@ -443,7 +579,7 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 	// Reading the bitmap data
 	const byte *srcP = cursor.getData() + 40 + numColors * 4;
 	const byte *srcM = srcP + ((width * height) / 8);
-	byte *dest = _data + (width * height) - width;
+	byte *dest = (byte *) _surfacePaletted.getBasePtr(0, height - 1);
 	for (int32 i = 0; i < height; i++) {
 		byte *rowDest = dest;
 
@@ -468,6 +604,9 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 	}
 
 	_fromCursor = true;
+
+	createTransparencyMap();
+	convertToTrueColor();
 
 	return true;
 }
@@ -499,37 +638,58 @@ void Sprite::blit(const Sprite &from, const Common::Rect &area, int32 x, int32 y
 
 	const int32 fromTop   = fracToInt(fromArea.top  * from._scaleInverse);
 	const int32 fromLeft  = fracToInt(fromArea.left * from._scaleInverse);
-	const int32 fromWidth = from.getWidth(true);
 
-	const byte *src = from.getData() + fromTop * fromWidth + fromLeft;
-	byte *dst = _data + y * _width + x;
+	const byte *src = (const byte *) from._surfaceTrueColor.getBasePtr(fromLeft, fromTop);
+	      byte *dst = (      byte *)      _surfaceTrueColor.getBasePtr(x, y);
+
+	const uint8 *srcT = from._transparencyMap + fromTop * from._surfaceTrueColor.w + fromLeft;
+	      uint8 *dstT =      _transparencyMap +       y *      _surfaceTrueColor.w + x;
 
 	frac_t posW = 0, posH = 0;
 	while (h-- > 0) {
 		posW = 0;
 
-		byte *dstRow = dst;
 		const byte *srcRow = src;
+		      byte *dstRow = dst;
 
-		for (int32 j = 0; j < w; j++, dstRow++) {
-			if (!transp || *srcRow != 0)
-				dstRow[0] = *srcRow;
+		const uint8 *srcRowT = srcT;
+		      uint8 *dstRowT = dstT;
+
+		for (int32 j = 0; j < w; j++, dstRow += _surfaceTrueColor.bytesPerPixel, dstRowT++) {
+			if (!transp || (*srcRowT == 0)) {
+				// Ignore transparency or source is solid => copy
+				memcpy(dstRow, srcRow, _surfaceTrueColor.bytesPerPixel);
+				*dstRowT = *srcRowT;
+			} else if (*srcRowT == 2) {
+				// Half-transparent
+				if (*dstRowT == 1)
+					// But destination is transparent => propagate
+					memcpy(dstRow, srcRow, _surfaceTrueColor.bytesPerPixel);
+				else
+					// Destination is solid => mix
+					ImgConv.mixTrueColor(dstRow, srcRow);
+
+				*dstRowT = *srcRowT;
+			}
 
 			// Advance source data
 			posW += from._scaleInverse;
 			while (posW >= ((frac_t) FRAC_ONE)) {
-				srcRow++;
+				srcRow += from._surfaceTrueColor.bytesPerPixel;
+				srcRowT++;
 				posW -= FRAC_ONE;
 			}
 
 		}
 
-		dst += _width;
+		dst  += _surfaceTrueColor.pitch;
+		dstT += _surfaceTrueColor.w;
 
 		// Advance source data
 		posH += from._scaleInverse;
 		while (posH >= ((frac_t) FRAC_ONE)) {
-			src += from.getWidth(true);
+			src  += from._surfaceTrueColor.pitch;
+			srcT += from._surfaceTrueColor.w;
 			posH -= FRAC_ONE;
 		}
 
@@ -540,101 +700,106 @@ void Sprite::blit(const Sprite &from, int32 x, int32 y, bool transp) {
 	blit(from, from.getArea(), x, y, transp);
 }
 
+void Sprite::fillImage(byte cP, uint32 cT) {
+	memset(_surfacePaletted.pixels, cP,
+			_surfacePaletted.w * _surfacePaletted.h * _surfacePaletted.bytesPerPixel);
+
+	byte *trueColor = (byte *) _surfaceTrueColor.pixels;
+	for (int32 y = 0; y < _surfaceTrueColor.h; y++) {
+		for (int32 x = 0; x < _surfaceTrueColor.w; x++) {
+			if (_surfaceTrueColor.bytesPerPixel == 2)
+				*((uint16 *) trueColor) = (uint16) cT;
+
+			trueColor += _surfaceTrueColor.bytesPerPixel;
+		}
+	}
+}
+
 void Sprite::fill(byte c) {
-	memset(_data, c, _width * _height);
+	if (!exists())
+		return;
+
+	fillImage(c, ImgConv.convertColor(c, _palette));
+
+	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
+}
+
+void Sprite::fill(uint32 c) {
+	if (!exists())
+		return;
+
+	fillImage(0, c);
+
+	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
 }
 
 void Sprite::clear() {
-	fill(0);
+	if (!exists())
+		return;
+
+	fillImage(0, ImgConv.convertColor(0, _palette));
+
+	memset(_transparencyMap, 1, _surfacePaletted.w * _surfacePaletted.h);
 }
 
-void Sprite::shade(byte c) {
-	byte *data = _data;
-	bool solid = true;
-	bool rowSolid;
+void Sprite::darken() {
+	if (!exists())
+		return;
 
-	for (int32 i = 0; i < _height; i++) {
-		rowSolid = solid;
+	fillImage(0, ImgConv.getColor(0, 0, 0));
 
-		for (int32 j = 0; j < _width; j++) {
-			*data = rowSolid ? c : 0;
-			data++;
-			rowSolid = !rowSolid;
-		}
-
-		solid = !solid;
-	}
+	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
 }
 
-void Sprite::recolor(byte oldColor, byte newColor) {
-	uint32 n = _width * _height;
-	byte *data = _data;
+void Sprite::shade(uint32 c) {
+	if (!exists())
+		return;
 
-	while (n-- > 0) {
-		if (*data == oldColor)
-			*data = newColor;
+	fillImage(0, c);
 
-		data++;
-	}
-}
-
-::Graphics::Surface *Sprite::wrapInSurface() const {
-	::Graphics::Surface *surface = new ::Graphics::Surface;
-
-	surface->w = _width;
-	surface->h = _height;
-
-	surface->pitch = _width;
-
-	surface->bytesPerPixel = 1;
-
-	surface->pixels = (void *) _data;
-
-	return surface;
+	memset(_transparencyMap, 2, _surfacePaletted.w * _surfacePaletted.h);
 }
 
 void Sprite::drawStrings(const Common::StringList &strings, const ::Graphics::Font &font,
-		int x, int y, byte color) {
-
-	::Graphics::Surface *surface = wrapInSurface();
+		int x, int y, uint32 color) {
 
 	for (Common::StringList::const_iterator it = strings.begin(); it != strings.end(); ++it) {
-		font.drawString(surface, *it, x, y, _width, color,
+		font.drawString(&_surfaceTrueColor, *it, x, y, _surfaceTrueColor.w, color,
 				::Graphics::kTextAlignLeft, 0, false);
 
 		y += font.getFontHeight();
 	}
 
-	delete surface;
-
-}
-
-void Sprite::applyChangeSet(const Common::Array<byte> &changeSet) {
-	for (int32 i = 0; i < _width * _height; i++)
-		_data[i] = changeSet[_data[i]];
+	updateTransparencyMap();
 }
 
 bool Sprite::readBMPDataComp0(Common::SeekableReadStream &bmp, uint32 dataSize) {
-	byte *data = _data + ((_height - 1) * _width);
+	int32 width  = _surfacePaletted.w;
+	int32 height = _surfacePaletted.h;
 
-	int extraDataLength = (_width % 4) ? 4 - (_width % 4) : 0;
-	for (int32 i = 0; i < _height; i++) {
+	byte *data = (byte *) _surfacePaletted.getBasePtr(0, height - 1);
+
+	int extraDataLength = (width % 4) ? 4 - (width % 4) : 0;
+	for (int32 i = 0; i < height; i++) {
 		byte *rowData = data;
 
-		for (int32 j = 0; j < _width; j++)
+		for (int32 j = 0; j < width; j++)
 			*rowData++ = bmp.readByte();
 
 		bmp.skip(extraDataLength);
-		data -= _width;
+		data -= width;
 	}
 
 	return true;
 }
 
 bool Sprite::readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize) {
-	byte *data = _data + ((_height - 1) * _width);
+	int32 width  = _surfacePaletted.w;
+	int32 height = _surfacePaletted.h;
 
-	for (int32 i = 0; i < _height; i++) {
+	byte *data = (byte *) _surfacePaletted.getBasePtr(0, height - 1);
+
+	for (int32 i = 0; i < height; i++) {
 		byte *rowData = data;
 
 		// Skip this many pixels (they'll stay transparent)
@@ -642,9 +807,9 @@ bool Sprite::readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize) 
 		// Read this many pixels of data
 		int32 sizeData = bmp.readUint16LE();
 
-		if ((sizeSkip + sizeData) > _width) {
+		if ((sizeSkip + sizeData) > width) {
 			warning("Sprite::readBMPDataComp2(): Broken image compression: size %d (%d + %d), width %d",
-					sizeSkip + sizeData, sizeSkip, sizeData, _width);
+					sizeSkip + sizeData, sizeSkip, sizeData, width);
 			return false;
 		}
 
@@ -652,7 +817,7 @@ bool Sprite::readBMPDataComp2(Common::SeekableReadStream &bmp, uint32 dataSize) 
 
 		bmp.read(rowData, sizeData);
 
-		data -= _width;
+		data -= width;
 	}
 
 	return true;

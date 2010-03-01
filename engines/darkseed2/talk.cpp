@@ -26,6 +26,7 @@
 #include "common/stream.h"
 
 #include "engines/darkseed2/talk.h"
+#include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/options.h"
 #include "engines/darkseed2/sound.h"
@@ -152,8 +153,7 @@ bool TalkManager::talkInternal(const TalkLine &talkLine) {
 			if (!talkLine.getSpeaker().empty())
 				text = talkLine.getSpeaker() + ":\n" + text;
 
-			TextObject *talkObject = new TextObject(text, 5, 0,
-					_graphics->getPalette().findWhite(), 300);
+			TextObject *talkObject = new TextObject(text, 5, 0, ImgConv.getColor(255, 255, 255), 300);
 
 			_graphics->talk(talkObject);
 		}

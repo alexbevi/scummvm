@@ -52,34 +52,11 @@ Inventory::~Inventory() {
 void Inventory::clear() {
 	ObjectContainer::clear();
 
-	for (SpriteMap::iterator sprite = _origSprites.begin(); sprite != _origSprites.end(); ++sprite)
-		delete sprite->_value;
-	_origSprites.clear();
-
 	for (SpriteMap::iterator sprite = _sprites.begin(); sprite != _sprites.end(); ++sprite)
 		delete sprite->_value;
 	_sprites.clear();
 
 	_items.clear();
-}
-
-void Inventory::newPalette() {
-	resetSprites();
-	assignSprites();
-}
-
-void Inventory::resetSprites() {
-	for (SpriteMap::iterator it = _sprites.begin(); it != _sprites.end(); ++it)
-		delete it->_value;
-	_sprites.clear();
-
-	for (SpriteMap::iterator it = _origSprites.begin(); it != _origSprites.end(); ++it) {
-		Sprite *&sprite = _sprites[it->_key];
-
-		sprite = new Sprite(*it->_value);
-
-		_graphics->mergePalette(*sprite);
-	}
 }
 
 void Inventory::assignSprites() {
@@ -123,7 +100,7 @@ bool Inventory::parse(DATFile &dat) {
 
 		// Load sprites
 		for (Common::Array<ItemLook>::iterator it = item.looks.begin(); it != item.looks.end(); ++it) {
-			if (_origSprites.contains(it->spriteName))
+			if (_sprites.contains(it->spriteName))
 				// Sprite already loaded
 				continue;
 
@@ -134,7 +111,7 @@ bool Inventory::parse(DATFile &dat) {
 				return false;
 			}
 
-			_origSprites[it->spriteName] = sprite;
+			_sprites[it->spriteName] = sprite;
 		}
 
 		// Load cursors
@@ -148,7 +125,6 @@ bool Inventory::parse(DATFile &dat) {
 		}
 	}
 
-	resetSprites();
 	assignSprites();
 
 	_checkedLast = 0;

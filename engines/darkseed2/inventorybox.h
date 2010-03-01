@@ -54,9 +54,6 @@ public:
 			Graphics &graphics, TalkManager &talkManager, Cursors &cursors);
 	~InventoryBox();
 
-	/** Notify the box that a new palette is active. */
-	void newPalette();
-
 	/** Move the box to these coordinates. */
 	void move(int32 x, int32 y);
 
@@ -112,10 +109,9 @@ private:
 
 	Sprite _box; ///< The box's sprite.
 
-	Sprite *_origSprites; ///< The original box part sprites.
-	Sprite *_sprites;     ///< The box part sprites adapted to the current palette.
+	Sprite *_sprites; ///< The box part sprites.
 
-	byte _colorShading; ///< Color index of the background shading.
+	uint32 _colorShading; ///< Color index of the background shading.
 
 	Common::Rect _itemsArea;      ///< Area where the items are visible.
 	Common::Rect _scrollAreas[2]; ///< Areas of the scroll left/right buttons.
@@ -139,15 +135,13 @@ private:
 	void updateColors();
 	/** Load all item sprites. */
 	void loadSprites();
-	/** Reset the sprites to a new palette. */
-	void resetSprites();
 	/** Update the scrolling sprites. */
 	void updateScroll();
 	/** Update the items sprite. */
 	bool updateItems();
 
-	/** Completely rebuild the box. */
-	void rebuild();
+	/** Build the box. */
+	void build();
 	/** Redraw the items sprite. */
 	void redrawItems();
 

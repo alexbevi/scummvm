@@ -24,6 +24,7 @@
  */
 
 #include "engines/darkseed2/mike.h"
+#include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/sprite.h"
 #include "engines/darkseed2/saveload.h"
@@ -87,6 +88,15 @@ bool Mike::init() {
 }
 
 bool Mike::loadAnimations() {
+	Palette palette;
+
+	// Loading the fixed palette for Mike
+	if (!palette.loadFromPAL(*_resources, "fix"))
+		return false;
+
+	ImgConv.registerStandardPalette(palette);
+
+	// Walking animations
 	if (!_animations[kAnimStateWalking][kDirN ].load(*_resources, "n" ))
 		return false;
 	if (!_animations[kAnimStateWalking][kDirNE].load(*_resources, "nw"))
@@ -104,6 +114,7 @@ bool Mike::loadAnimations() {
 	if (!_animations[kAnimStateWalking][kDirNW].load(*_resources, "nw"))
 		return false;
 
+	// Standing animations
 	if (!_animations[kAnimStateStanding][kDirN ].load(*_resources, "n00" ))
 		return false;
 	if (!_animations[kAnimStateStanding][kDirNE].load(*_resources, "nw00"))
@@ -121,12 +132,15 @@ bool Mike::loadAnimations() {
 	if (!_animations[kAnimStateStanding][kDirNW].load(*_resources, "nw00"))
 		return false;
 
+	// Flip where necessary
 	_animations[kAnimStateWalking ][kDirNE].flipHorizontally();
 	_animations[kAnimStateWalking ][kDirE ].flipHorizontally();
 	_animations[kAnimStateWalking ][kDirSE].flipHorizontally();
 	_animations[kAnimStateStanding][kDirNE].flipHorizontally();
 	_animations[kAnimStateStanding][kDirE ].flipHorizontally();
 	_animations[kAnimStateStanding][kDirSE].flipHorizontally();
+
+	ImgConv.unregisterStandardPalette();
 
 	return true;
 }

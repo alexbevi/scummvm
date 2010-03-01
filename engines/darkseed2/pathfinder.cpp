@@ -102,7 +102,7 @@ void Pathfinder::setWalkMap(const Sprite &map, int32 topY, int32 resY) {
 
 	clear();
 
-	const byte *mapData = map.getData();
+	const byte *mapData = (const byte *) map.getPaletted().pixels;
 	for (int32 y = 0; y < kHeight; y++) {
 		for (int32 x = 0; x < kWidth; x++) {
 			int mX = x * (Graphics::kScreenWidth / map.getWidth()) / kXResolution;

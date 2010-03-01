@@ -48,6 +48,8 @@ Movie::Movie(Audio::Mixer &mixer, Graphics &graphics, Cursors &cursors, Sound &s
 	_doubling = false;
 	_cursorVisible = false;
 
+	_buffer = 0;
+
 	_x = 0;
 	_y = 0;
 
@@ -79,7 +81,9 @@ bool Movie::play(const Common::String &avi, int32 x, int32 y) {
 	}
 
 	_area = Common::Rect(_aviDecoder->getWidth(), _aviDecoder->getHeight());
-	_buffer.create(_aviDecoder->getWidth(), _aviDecoder->getHeight());
+	_screen.create(_aviDecoder->getWidth(), _aviDecoder->getHeight());
+
+	_buffer = new byte[_aviDecoder->getWidth() * _aviDecoder->getHeight()];
 
 	_graphics->enterMovieMode();
 
@@ -96,8 +100,8 @@ bool Movie::play(const Common::String &avi, int32 x, int32 y) {
 		x = 0;
 		y = 0;
 
-		_buffer.setScale(2 * FRAC_ONE);
-		_area = Common::Rect(_buffer.getWidth(), _buffer.getHeight());
+		_screen.setScale(2 * FRAC_ONE);
+		_area = Common::Rect(_screen.getWidth(), _screen.getHeight());
 	} else
 		_area.moveTo(x, y);
 
@@ -113,18 +117,29 @@ void Movie::updateStatus() {
 	if (!isPlaying())
 		return;
 
+	// TODO: Apparently, the AVI decoder is useless ATM when playing 8bpp videos while in 16bpp mode.
+	//       It directly applies the palette to the O_System, but that ignores palettes when not in
+	//       a paletted mode. Great. \o/
+	warning("Playing movie \"%s\"", _fileName.c_str());
+	stop();
+	return;
+
 	if (_aviDecoder->getCurFrame() >= _aviDecoder->getFrameCount()) {
 		stop();
 		return;
 	}
 
 	_aviDecoder->decodeNextFrame();
-	_aviDecoder->copyFrameToBuffer(_buffer.getData(), 0, 0, _buffer.getWidth(true));
+	_aviDecoder->copyFrameToBuffer(_buffer, 0, 0, _aviDecoder->getWidth());
+
+	_screen.copyFrom(_buffer, true);
 
 	_graphics->requestRedraw(_area);
 }
 
 void Movie::redraw(Sprite &sprite, Common::Rect area) {
+	return;
+
 	if (!_area.intersects(area))
 		return;
 
@@ -135,7 +150,7 @@ void Movie::redraw(Sprite &sprite, Common::Rect area) {
 
 	area.moveTo(area.left - _area.left, area.top - _area.top);
 
-	sprite.blit(_buffer, area, x, y, false);
+	sprite.blit(_screen, area, x, y, false);
 }
 
 uint32 Movie::getFrameWaitTime() const {
@@ -156,7 +171,10 @@ void Movie::stop() {
 	// Restoring the cursor visibility
 	_cursors->setVisible(_cursorVisible);
 
-	_buffer.clear();
+	_screen.clear();
+
+	delete[] _buffer;
+	_buffer = 0;
 
 	_aviDecoder->closeFile();
 

@@ -93,6 +93,9 @@ public:
 	/** Parse a room. */
 	bool parse(Resources &resources, const Common::String &base);
 
+	/** Initialize the room after parsing. */
+	void init();
+
 protected:
 	bool saveLoad(Common::Serializer &serializer, Resources &resources);
 	bool loading(Resources &resources);

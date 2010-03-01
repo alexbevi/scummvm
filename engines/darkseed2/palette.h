@@ -30,7 +30,13 @@
 
 #include "engines/darkseed2/darkseed2.h"
 
+namespace Common {
+	class SeekableReadStream;
+}
+
 namespace DarkSeed2 {
+
+class Resources;
 
 class Palette {
 public:
@@ -50,6 +56,9 @@ public:
 	/** Resize the palette to n entries. */
 	void resize(int n);
 
+	/** Is the palette empty? */
+	bool empty() const;
+
 	/** Return the complete palette data. */
 	byte *get();
 	/** Return the complete palette data. */
@@ -62,6 +71,9 @@ public:
 
 	/** Clear the palette. */
 	void clear();
+
+	/** Load the palette from a PAL file. */
+	bool loadFromPAL(Resources &resources, const Common::String &palette);
 
 	/** Create a palette that's compatible with ScummVM's O_System. */
 	void makeSystemCompatible(byte *pal) const;
@@ -94,6 +106,9 @@ private:
 
 	/** Add another palette to the back. */
 	void addPalette(const Palette &palette);
+
+	/** Load the palette from a PAL file stream. */
+	bool loadFromPAL(Common::SeekableReadStream &palette);
 };
 
 } // End of namespace DarkSeed2

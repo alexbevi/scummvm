@@ -56,9 +56,6 @@ public:
 			Graphics &graphics, TalkManager &talkManager);
 	~ConversationBox();
 
-	/** Notify the box that a new palette is active. */
-	void newPalette();
-
 	/** Start the specified conversation. */
 	bool start(const Common::String &conversation);
 	/** Restart the conversation. */
@@ -108,13 +105,15 @@ private:
 		TalkLine *talk;
 		/** The line's text wrapped to the text area. */
 		Common::StringList texts;
-		/** The graphical text lines of the wrapped text lines. */
-		Common::Array<TextObject *> textObjects;
+		/** The graphical text lines of the selected wrapped text lines. */
+		Common::Array<TextObject *> textObjectsSelected;
+		/** The graphical text lines of the unselected wrapped text lines. */
+		Common::Array<TextObject *> textObjectsUnselected;
 
 		/** The number within the lines array. */
 		uint32 lineNumber;
 
-		Line(TalkLine *line = 0, byte color = 0);
+		Line(TalkLine *line = 0, uint32 colorSelected = 0, uint32 colorUnselected = 0);
 		~Line();
 
 		/** Return the line's name. */
@@ -126,18 +125,22 @@ private:
 		/** Which real line does it belong to. */
 		uint32 n;
 		/** Iterator to the real line. */
-		Common::Array<Line *>::const_iterator it1;
+		Common::Array<Line *>::const_iterator itLine;
 		/** Iterator to the line's text part. */
-		Common::StringList::const_iterator it2;
-		/** Iterator to the line's graphic part. */
-		Common::Array<TextObject *>::iterator it3;
+		Common::StringList::const_iterator itString;
+		/** Iterator to the line's selected graphic part. */
+		Common::Array<TextObject *>::iterator itTextSel;
+		/** Iterator to the line's unselected graphic part. */
+		Common::Array<TextObject *>::iterator itTextUnsel;
 
 		/** Return the line's name. */
 		const Common::String &getName() const;
 		/** Return the line's text. */
 		const Common::String &getString() const;
-		/** Return the line's graphic. */
-		TextObject &getTextObject();
+		/** Return the line's selected graphic. */
+		TextObject *getSelectedText();
+		/** Return the line's unselected graphic. */
+		TextObject *getUnselectedText();
 		/** Return the line. */
 		Line *getLine();
 
@@ -157,8 +160,7 @@ private:
 	/** The currently running conversation. */
 	Conversation *_conversation;
 
-	Sprite *_origSprites; ///< The original box part sprites.
-	Sprite *_sprites;     ///< The box part sprites adapted to the current palette.
+	Sprite *_sprites;     ///< The box part sprites.
 
 	TextObject *_markerSelect;   ///< Marker text of a selected line.
 	TextObject *_markerUnselect; ///< Marker text of an unselected line.
@@ -175,9 +177,9 @@ private:
 
 	Sprite _box; ///< The box's sprite.
 
-	byte _colorSelected;   ///< Color index of a selected line.
-	byte _colorUnselected; ///< Color index of an unselected line.
-	byte _colorShading;    ///< Color index of the background shading.
+	uint32 _colorSelected;   ///< Color index of a selected line.
+	uint32 _colorUnselected; ///< Color index of an unselected line.
+	uint32 _colorShading;    ///< Color index of the background shading.
 
 	State _state; ///< The current state.
 
@@ -191,11 +193,9 @@ private:
 
 	/** Load all needed sprites. */
 	void loadSprites();
-	/** Reset all needed sprites and adjust to the current palette. */
-	void resetSprites();
 
-	/** Rebuild the box's sprite. */
-	void rebuild();
+	/** Build the box's sprite. */
+	void build();
 
 	/** Update the color indices from the current palette. */
 	void updateColors();

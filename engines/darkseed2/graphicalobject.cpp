@@ -68,12 +68,10 @@ void GraphicalObject::clearArea() {
 
 
 TextObject::TextObject(const Common::String &text, int32 x, int32 y,
-		byte color, int32 maxWidth) {
+		uint32 color, int32 maxWidth) {
 
 	// Sanity checks
 	assert((x >= 0) && (y >= 0) && (x <= 0x7FFF) && (y <= 0x7FFF));
-
-	_color = color;
 
 	if (maxWidth <= 0)
 		maxWidth = Graphics::kScreenWidth;
@@ -123,12 +121,6 @@ void TextObject::redraw(Sprite &sprite, Common::Rect area) {
 }
 
 void TextObject::recolor(byte color) {
-	if (_color == color)
-		// Color didn't change
-		return;
-
-	_sprite->recolor(_color, color);
-	_color = color;
 }
 
 int32 TextObject::wrap(const Common::String &string, Common::StringList &list, int32 maxWidth) {

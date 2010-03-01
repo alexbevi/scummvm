@@ -86,9 +86,6 @@ public:
 	/** Empty the inventory. */
 	void clear();
 
-	/** Notify the box that a new palette is active. */
-	void newPalette();
-
 	/** Parse an inventory file. */
 	bool parse(Resources &resources, const Common::String &inv);
 
@@ -106,8 +103,7 @@ private:
 	Graphics  *_graphics;
 	Cursors   *_cursors;
 
-	SpriteMap _origSprites; ///< The original item sprites.
-	SpriteMap _sprites;     ///< The item sprites adapted to the current palette.
+	SpriteMap _sprites;     ///< The item sprites.
 
 	Common::Array<Item> _items; ///< All available items.
 
@@ -118,8 +114,6 @@ private:
 	bool parseLook(Item &item, ScriptChunk &lookScript);
 	bool parseUse(Item &item, ScriptChunk &useScript);
 
-	/** Reset the sprites to new a new palette. */
-	void resetSprites();
 	/** Refresh the items' sprite pointers. */
 	void assignSprites();
 

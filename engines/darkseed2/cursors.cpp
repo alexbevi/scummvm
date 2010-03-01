@@ -26,6 +26,7 @@
 #include "graphics/cursorman.h"
 
 #include "engines/darkseed2/cursors.h"
+#include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/palette.h"
 #include "engines/darkseed2/neresources.h"
 #include "engines/darkseed2/saveload.h"
@@ -35,6 +36,16 @@ namespace DarkSeed2 {
 #include "engines/darkseed2/cursordata.h"
 
 Cursors::Cursors(const Common::String &exe) {
+	Palette palette;
+
+	palette.resize(3);
+
+	// Standard palette: transparent, black, white
+	memset(palette.get()    ,   0, 6);
+	memset(palette.get() + 6, 255, 3);
+
+	ImgConv.registerStandardPalette(palette);
+
 	// Loading the default pointer cursor from static memory
 	_defaultResource = new NECursor;
 
@@ -54,6 +65,8 @@ Cursors::Cursors(const Common::String &exe) {
 	}
 
 	_visible = true;
+
+	ImgConv.unregisterStandardPalette();
 }
 
 Cursors::~Cursors() {
@@ -106,8 +119,8 @@ bool Cursors::setCursor(const Common::String &cursor) {
 bool Cursors::setCursor(const Cursors::Cursor &cursor) {
 	_currentCursor = cursor.name;
 
-	CursorMan.replaceCursor(cursor.sprite->getData(), cursor.width, cursor.height,
-			cursor.hotspotX, cursor.hotspotY, 0);
+	CursorMan.replaceCursor((const byte *) cursor.sprite->getPaletted().pixels,
+			cursor.width, cursor.height, cursor.hotspotX, cursor.hotspotY, 0);
 
 	return setPalette(cursor.sprite->getPalette());
 }

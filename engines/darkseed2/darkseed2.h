@@ -134,6 +134,7 @@ private:
 
 	bool init();
 	bool initGraphics();
+	bool initGraphicsSystem();
 
 	const char *getGameId() const;
 	Common::Language getLanguage() const;

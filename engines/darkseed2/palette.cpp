@@ -25,8 +25,10 @@
 
 
 #include "common/algorithm.h"
+#include "common/stream.h"
 
 #include "engines/darkseed2/palette.h"
+#include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {
 
@@ -54,6 +56,10 @@ void Palette::resize(int n) {
 	n = CLIP(n, 0, 256);
 
 	_size = n;
+}
+
+bool Palette::empty() const {
+	return _size == 0;
 }
 
 Palette &Palette::operator=(const Palette &palette) {
@@ -92,6 +98,37 @@ const byte &Palette::operator[](int n) const {
 void Palette::clear() {
 	_size = 0;
 	memset(_palette, 0, 768);
+}
+
+bool Palette::loadFromPAL(Common::SeekableReadStream &palette) {
+	palette.seek(0);
+
+	_size = CLIP(palette.size() / 4, 0, 256);
+
+	byte *pal = _palette;
+	for (int i = 0; i < _size; i++, pal += 3) {
+		pal[2] = palette.readByte();
+		pal[1] = palette.readByte();
+		pal[0] = palette.readByte();
+
+		palette.skip(1);
+	}
+
+	return true;
+}
+
+bool Palette::loadFromPAL(Resources &resources, const Common::String &palette) {
+	Common::String palFile = Resources::addExtension(palette, "PAL");
+	if (!resources.hasResource(palFile))
+		return false;
+
+	Resource *resPAL = resources.getResource(palFile);
+
+	bool result = loadFromPAL(resPAL->getStream());
+
+	delete resPAL;
+
+	return result;
 }
 
 void Palette::makeSystemCompatible(byte *pal) const {

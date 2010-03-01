@@ -24,6 +24,7 @@
  */
 
 #include "engines/darkseed2/conversationbox.h"
+#include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/graphics.h"
@@ -56,19 +57,24 @@ static const byte kColorSelected  [3] = {255, 255, 255};
 static const byte kColorUnselected[3] = {239, 167, 127};
 static const byte kColorShading   [3] = {  0,   0,   0};
 
-ConversationBox::Line::Line(TalkLine *line, byte color) {
+ConversationBox::Line::Line(TalkLine *line, uint32 colorSelected, uint32 colorUnselected) {
 	talk = line;
 	if (talk) {
 		int32 width = TextObject::wrap(talk->getTXT(), texts, 460);
 
-		for (Common::StringList::iterator it = texts.begin(); it != texts.end(); ++it)
-			textObjects.push_back(new TextObject(*it, 0, 0, color, width));
+		for (Common::StringList::iterator it = texts.begin(); it != texts.end(); ++it) {
+			textObjectsSelected.push_back  (new TextObject(*it, 0, 0, colorSelected  , width));
+			textObjectsUnselected.push_back(new TextObject(*it, 0, 0, colorUnselected, width));
+		}
 	}
 }
 
 ConversationBox::Line::~Line() {
-	for (Common::Array<TextObject *>::iterator it = textObjects.begin(); it != textObjects.end(); ++it)
-		delete *it;
+	Common::Array<TextObject *>::iterator text;
+	for (text = textObjectsSelected.begin(); text != textObjectsSelected.end(); ++text)
+		delete *text;
+	for (text = textObjectsUnselected.begin(); text != textObjectsUnselected.end(); ++text)
+		delete *text;
 
 	delete talk;
 }
@@ -79,19 +85,23 @@ const Common::String &ConversationBox::Line::getName() const {
 
 
 const Common::String &ConversationBox::PhysLineRef::getName() const {
-	return (*it1)->getName();
+	return (*itLine)->getName();
 }
 
 const Common::String &ConversationBox::PhysLineRef::getString() const {
-	return *it2;
+	return *itString;
 }
 
-TextObject &ConversationBox::PhysLineRef::getTextObject() {
-	return **it3;
+TextObject *ConversationBox::PhysLineRef::getSelectedText() {
+	return *itTextSel;
+}
+
+TextObject *ConversationBox::PhysLineRef::getUnselectedText() {
+	return *itTextUnsel;
 }
 
 ConversationBox::Line *ConversationBox::PhysLineRef::getLine() {
-	return *it1;
+	return *itLine;
 }
 
 uint32 ConversationBox::PhysLineRef::getLineNum() const {
@@ -99,7 +109,7 @@ uint32 ConversationBox::PhysLineRef::getLineNum() const {
 }
 
 bool ConversationBox::PhysLineRef::isTop() const {
-	return it2 == (*it1)->texts.begin();
+	return itString == (*itLine)->texts.begin();
 }
 
 
@@ -115,7 +125,6 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 
 	_area = Common::Rect(kWidth, kHeight);
 
-	_origSprites = new Sprite[4];
 	_sprites     = new Sprite[6];
 
 	_physLineCount = 0;
@@ -143,7 +152,8 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 	_scrollAreas[1] = Common::Rect(kScrollDown[0], kScrollDown[1], kScrollDown[2], kScrollDown[3]);
 
 	loadSprites();
-	resetSprites();
+	build();
+	redrawLines();
 }
 
 ConversationBox::~ConversationBox() {
@@ -155,23 +165,12 @@ ConversationBox::~ConversationBox() {
 	delete _markerUnselect;
 
 	delete[] _sprites;
-	delete[] _origSprites;
 }
 
 void ConversationBox::updateColors() {
-	_colorSelected =
-		_graphics->getPalette().findColor(kColorSelected  [0], kColorSelected  [1], kColorSelected  [2]);
-	_colorUnselected =
-		_graphics->getPalette().findColor(kColorUnselected[0], kColorUnselected[1], kColorUnselected[2]);
-	_colorShading =
-		_graphics->getPalette().findColor(kColorShading   [0], kColorShading   [1], kColorShading   [2]);
-}
-
-void ConversationBox::newPalette() {
-	updateColors();
-	resetSprites();
-	rebuild();
-	redrawLines();
+	_colorSelected   = ImgConv.getColor(kColorSelected  [0], kColorSelected  [1], kColorSelected  [2]);
+	_colorUnselected = ImgConv.getColor(kColorUnselected[0], kColorUnselected[1], kColorUnselected[2]);
+	_colorShading    = ImgConv.getColor(kColorShading   [0], kColorShading   [1], kColorShading   [2]);
 }
 
 bool ConversationBox::start(const Common::String &conversation) {
@@ -221,40 +220,25 @@ bool ConversationBox::isActive() const {
 void ConversationBox::loadSprites() {
 	bool loaded0, loaded1, loaded2, loaded3;
 
-	loaded0 = _origSprites[0].loadFromImage(*_resources, kSpriteFrame);
-	loaded1 = _origSprites[1].loadFromImage(*_resources, kSpriteScrollUpDown);
-	loaded2 = _origSprites[2].loadFromImage(*_resources, kSpriteScrollDown);
-	loaded3 = _origSprites[3].loadFromImage(*_resources, kSpriteScrollUp);
+	loaded0 = _sprites[2].loadFromImage(*_resources, kSpriteFrame);
+	loaded1 = _sprites[3].loadFromImage(*_resources, kSpriteScrollUpDown);
+	loaded2 = _sprites[4].loadFromImage(*_resources, kSpriteScrollDown);
+	loaded3 = _sprites[5].loadFromImage(*_resources, kSpriteScrollUp);
 
 	assert(loaded0 && loaded1 && loaded2 && loaded3);
 
-	_sprites[0].create(kWidth, kHeight);
-	_box.create(kWidth, kHeight);
 }
 
-void ConversationBox::resetSprites() {
-	// _origSprites[i] -> _sprites[i + 2], for all 4 box elements
-	for (int i = 0; i < 4; i++) {
-		_sprites[i + 2] = _origSprites[i];
-
-		_graphics->mergePalette(_sprites[i + 2]);
-	}
-
+void ConversationBox::build() {
 	// The shading grid
 	_sprites[1].create(kTextAreaWidth, kTextAreaHeight);
 	_sprites[1].shade(_colorShading);
 
-	delete _markerSelect;
-	delete _markerUnselect;
+	_sprites[0].create(kWidth, kHeight);
+	_box.create(kWidth, kHeight);
 
 	_markerSelect   = new TextObject(">", kTextMargin - 9, 0, _colorSelected);
 	_markerUnselect = new TextObject("-", kTextMargin - 8, 0, _colorUnselected);
-}
-
-void ConversationBox::rebuild() {
-	// Clear everything
-	_box.clear();
-	_sprites[0].clear();
 
 	// Put the shading grid
 	_sprites[0].blit(_sprites[1], (kWidth  - kTextAreaWidth ) / 2,
@@ -317,7 +301,7 @@ void ConversationBox::updateLines() {
 
 	Common::Array<TalkLine *> lines = _conversation->getCurrentLines(*_resources);
 	for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
-		Line *line = new Line(*it, _colorUnselected);
+		Line *line = new Line(*it, _colorSelected, _colorUnselected);
 
 		line->lineNumber = _lines.size();
 
@@ -352,19 +336,19 @@ void ConversationBox::drawLines() {
 	// Update the lines
 	if (findPhysLine(_physLineTop, curLine)) {
 		for (int i = 0; i < 3; i++) {
-			TextObject &text = curLine.getTextObject();
-
 			uint32 selected = physLineNumToRealLineNum(_selected);
 
-			// Is that line a selected line? Color it accordingly
+			TextObject *text;
+
+			// Is that line a selected line?
 			if ((curLine.getLineNum() + 1) == selected)
-				text.recolor(_colorSelected);
+				text = curLine.getSelectedText();
 			else
-				text.recolor(_colorUnselected);
+				text = curLine.getUnselectedText();
 
 			// Move the line to the correct place and draw it
-			text.moveTo(_textAreas[i].left, _textAreas[i].top);
-			text.redraw(_box, text.getArea());
+			text->moveTo(_textAreas[i].left, _textAreas[i].top);
+			text->redraw(_box, text->getArea());
 
 			// If that line is a top line, place the correct selected/unselected marker
 			if (curLine.isTop()) {
@@ -374,7 +358,7 @@ void ConversationBox::drawLines() {
 				else
 					marker = _markerUnselect;
 
-				marker->moveTo(marker->getArea().left, text.getArea().top);
+				marker->moveTo(marker->getArea().left, text->getArea().top);
 				marker->redraw(_box, marker->getArea());
 			}
 
@@ -395,13 +379,14 @@ void ConversationBox::redrawLines() {
 
 bool ConversationBox::findPhysLine(uint32 n, PhysLineRef &ref) const {
 	// Put the first level iterator at the beginning
-	ref.it1 = _lines.begin();
-	if (ref.it1 == _lines.end())
+	ref.itLine = _lines.begin();
+	if (ref.itLine == _lines.end())
 		return false;
 
 	// Put the second level iterators at the beginning
-	ref.it2 = (*ref.it1)->texts.begin();
-	ref.it3 = (*ref.it1)->textObjects.begin();
+	ref.itString = (*ref.itLine)->texts.begin();
+	ref.itTextSel = (*ref.itLine)->textObjectsSelected.begin();
+	ref.itTextUnsel = (*ref.itLine)->textObjectsUnselected.begin();
 	ref.n = 0;
 
 	// Find the first non-empty line
@@ -418,31 +403,33 @@ bool ConversationBox::findPhysLine(uint32 n, PhysLineRef &ref) const {
 
 bool ConversationBox::nextPhysLine(PhysLineRef &ref) const {
 	// Advance second level iterators
-	++ref.it2;
-	++ref.it3;
+	++ref.itString;
+	++ref.itTextSel;
+	++ref.itTextUnsel;
 
 	// Find the next non-empty line
 	return nextPhysRealLine(ref);
 }
 
 bool ConversationBox::nextPhysRealLine(PhysLineRef &ref) const {
-	if (ref.it1 == _lines.end())
+	if (ref.itLine == _lines.end())
 		// First level iterator is at its end => no next lines
 		return false;
 
 	// Are the second level iterators at their end?
-	while (ref.it2 == (*ref.it1)->texts.end()) {
+	while (ref.itString == (*ref.itLine)->texts.end()) {
 		// Advance the first level iterator
-		++ref.it1;
+		++ref.itLine;
 		++ref.n;
 
-		if (ref.it1 == _lines.end())
+		if (ref.itLine == _lines.end())
 			// First level iterator is at its end => no next lines
 			return false;
 
 		// Set the second level iterator to the beginning
-		ref.it2 = (*ref.it1)->texts.begin();
-		ref.it3 = (*ref.it1)->textObjects.begin();
+		ref.itString = (*ref.itLine)->texts.begin();
+		ref.itTextSel = (*ref.itLine)->textObjectsSelected.begin();
+		ref.itTextUnsel = (*ref.itLine)->textObjectsUnselected.begin();
 	}
 
 	return true;

@@ -157,7 +157,7 @@ private:
 	ImageType _imageType; ///< The type of images the game uses.
 
 	uint16 _archiveCount; ///< Number of indexed archive files.
-	uint16 _resCount;  ///< Number of indexed resources.
+	uint32 _resCount;  ///< Number of indexed resources.
 
 	/** All indexed archives. */
 	Common::Array<Archive> _archives;

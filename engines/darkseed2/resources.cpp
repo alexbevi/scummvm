@@ -227,7 +227,7 @@ bool Resources::readIndexResources(Common::File &indexFile) {
 	byte buffer[13];
 
 	// Read information about all avaiable resources
-	for (int i = 0; i < _resCount; i++) {
+	for (uint32 i = 0; i < _resCount; i++) {
 		// In which glue is it found?
 		uint16 archive = indexFile.readUint16LE();
 
@@ -376,6 +376,8 @@ bool Resources::readPGFContents(Common::SeekableReadStream &pgfFile, Archive &ar
 	uint32 pgfResCount = pgfFile.readUint32BE();
 
 	debugC(4, kDebugResources, "Has %d resources", pgfResCount);
+
+	_resCount += pgfResCount;
 
 	// Size of the index
 	uint32 startOffset = pgfResCount * (12 + 4 + 4) + 4;

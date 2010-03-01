@@ -248,7 +248,6 @@ bool Room::parse(Resources &resources,
 }
 
 bool Room::parse(Resources &resources, const Common::String &base) {
-
 	assert(_confMan);
 
 	clear();
@@ -386,11 +385,13 @@ bool Room::setup(Resources &resources) {
 	if (!loadSprites(resources))
 		return false;
 
-	_confMan->initRoom();
-
 	_ready = true;
 
 	return true;
+}
+
+void Room::init() {
+	_confMan->initRoom();
 }
 
 Animation *Room::loadAnimation(Resources &resources, const Common::String &base) {

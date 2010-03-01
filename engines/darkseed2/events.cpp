@@ -556,6 +556,9 @@ bool Events::roomEnter() {
 	// Set the background
 	_vm->_graphics->registerBackground(room.getBackground());
 
+	// Initialize the room
+	room.init();
+
 	// Evaluate the entry logic
 	_vm->_inter->interpret(room.getEntryScripts());
 

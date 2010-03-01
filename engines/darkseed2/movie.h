@@ -96,7 +96,8 @@ private:
 	/** The AVI decoder. */
 	::Graphics::AviDecoder *_aviDecoder;
 
-	Sprite _buffer; ///< The current frame's buffer.
+	byte  *_buffer; ///< The current frame's buffer.
+	Sprite _screen; ///< The current frame's sprite.
 };
 
 } // End of namespace DarkSeed2

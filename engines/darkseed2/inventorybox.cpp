@@ -26,6 +26,7 @@
 #include "common/serializer.h"
 
 #include "engines/darkseed2/inventorybox.h"
+#include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/graphics.h"
@@ -76,7 +77,6 @@ InventoryBox::InventoryBox(Resources &resources, Variables &variables, ScriptReg
 
 	_area = Common::Rect(kWidth, kHeight);
 
-	_origSprites = new Sprite[5];
 	_sprites     = new Sprite[8];
 
 	_itemsArea      = Common::Rect(kItems      [0], kItems      [1], kItems      [2], kItems      [3]);
@@ -85,13 +85,12 @@ InventoryBox::InventoryBox(Resources &resources, Variables &variables, ScriptReg
 
 	updateColors();
 	loadSprites();
-	resetSprites();
+	build();
 }
 
 InventoryBox::~InventoryBox() {
 	delete _inventory;
 
-	delete[] _origSprites;
 	delete[] _sprites;
 }
 
@@ -103,38 +102,19 @@ void InventoryBox::initInventory() {
 }
 
 void InventoryBox::updateColors() {
-	_colorShading =
-		_graphics->getPalette().findColor(kColorShading[0], kColorShading[1], kColorShading[2]);
+	_colorShading = ImgConv.getColor(kColorShading[0], kColorShading[1], kColorShading[2]);
 }
 
 void InventoryBox::loadSprites() {
 	bool loaded0, loaded1, loaded2, loaded3, loaded4;
 
-	loaded0 = _origSprites[0].loadFromImage(*_resources, kSpriteFrame);
-	loaded1 = _origSprites[1].loadFromImage(*_resources, kSpriteScrollLeft);
-	loaded2 = _origSprites[2].loadFromImage(*_resources, kSpriteScrollNoLeft);
-	loaded3 = _origSprites[3].loadFromImage(*_resources, kSpriteScrollRight);
-	loaded4 = _origSprites[4].loadFromImage(*_resources, kSpriteScrollNoRight);
+	loaded0 = _sprites[3].loadFromImage(*_resources, kSpriteFrame);
+	loaded1 = _sprites[4].loadFromImage(*_resources, kSpriteScrollLeft);
+	loaded2 = _sprites[5].loadFromImage(*_resources, kSpriteScrollNoLeft);
+	loaded3 = _sprites[6].loadFromImage(*_resources, kSpriteScrollRight);
+	loaded4 = _sprites[7].loadFromImage(*_resources, kSpriteScrollNoRight);
 
 	assert(loaded0 && loaded1 && loaded2 && loaded3 && loaded4);
-
-	_sprites[0].create(kWidth, kHeight);
-	_box.create(kWidth, kHeight);
-
-	_sprites[2].create(kVisibleItems[2] - kVisibleItems[0], kVisibleItems[3] - kVisibleItems[1]);
-}
-
-void InventoryBox::resetSprites() {
-	// _origSprites[i] -> _sprites[i + 3], for all 5 box elements
-	for (int i = 0; i < 5; i++) {
-		_sprites[i + 3] = _origSprites[i];
-
-		_graphics->mergePalette(_sprites[i + 3]);
-	}
-
-	// The shading grid
-	_sprites[1].create(_itemsArea.width(), _itemsArea.height());
-	_sprites[1].shade(_colorShading);
 }
 
 void InventoryBox::updateScroll() {
@@ -189,10 +169,15 @@ bool InventoryBox::updateItems() {
 	return true;
 }
 
-void InventoryBox::rebuild() {
-	// Clear everything
-	_box.clear();
-	_sprites[0].clear();
+void InventoryBox::build() {
+	_sprites[0].create(kWidth, kHeight);
+	_box.create(kWidth, kHeight);
+
+	// The shading grid
+	_sprites[1].create(_itemsArea.width(), _itemsArea.height());
+	_sprites[1].shade(_colorShading);
+
+	_sprites[2].create(kVisibleItems[2] - kVisibleItems[0], kVisibleItems[3] - kVisibleItems[1]);
 
 	// Put the shading grid
 	_sprites[0].blit(_sprites[1], _itemsArea.left, _itemsArea.top, true);
@@ -235,14 +220,6 @@ bool InventoryBox::canScrollLeft() const {
 
 bool InventoryBox::canScrollRight() const {
 	return (_visibleItems.size() - _firstItem) > kVisibleItemsCount;
-}
-
-void InventoryBox::newPalette() {
-	_inventory->newPalette();
-
-	updateColors();
-	resetSprites();
-	rebuild();
 }
 
 void InventoryBox::move(int32 x, int32 y) {
@@ -421,7 +398,7 @@ bool InventoryBox::saveLoad(Common::Serializer &serializer, Resources &resources
 }
 
 bool InventoryBox::loading(Resources &resources) {
-	rebuild();
+	build();
 	return true;
 }
 

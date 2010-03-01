@@ -32,6 +32,7 @@
 #include "common/frac.h"
 
 #include "graphics/font.h"
+#include "graphics/surface.h"
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/saveable.h"
@@ -39,10 +40,6 @@
 
 namespace Common {
 	class SeekableReadStream;
-}
-
-namespace Graphics {
-	struct Surface;
 }
 
 namespace DarkSeed2 {
@@ -82,10 +79,11 @@ public:
 	/** Return the sprite's area. */
 	Common::Rect getArea(bool unscaled = false) const;
 
-	/** Return the sprite's data. */
-	const byte *getData() const;
-	/** Return the sprite's data. */
-	byte *getData();
+	/** Return the sprite's paletted data. */
+	const ::Graphics::Surface &getPaletted() const;
+	/** Return the sprite's true color data. */
+	const ::Graphics::Surface &getTrueColor() const;
+
 	/** Return the sprite's palette. */
 	const Palette &getPalette() const;
 
@@ -96,15 +94,11 @@ public:
 
 	/** Copy from another sprite. */
 	void copyFrom(const Sprite &sprite);
+	/** Copy from a buffer. */
+	void copyFrom(const byte *sprite, bool system = false);
 
 	/** Load a sprite from an image file. */
 	bool loadFromImage(Resources &resources, const Common::String &image);
-
-	/** Load a sprite from a BMP. */
-	bool loadFromBMP(Resources &resources, const Common::String &bmp);
-
-	/** Load a sprite from a RGB. */
-	bool loadFromRGB(Resources &resources, const Common::String &rgb);
 
 	/** Load from a cursor resource embedded in an EXE file. */
 	bool loadFromCursorResource(const NECursor &cursor);
@@ -122,21 +116,19 @@ public:
 
 	/** Fill the whole sprite with one palette entry. */
 	void fill(byte c);
-	/** Fill the whole sprite with palette entry 0. */
+	/** Fill the whole sprite with one color entry. */
+	void fill(uint32 c);
+	/** Fill the whole sprite with palette entry 0, making it completely transparent. */
 	void clear();
+	/** Fill the whole sprite with the color black. */
+	void darken();
 
-	/** Fill the sprite with a "shading" grid. */
-	void shade(byte c);
-
-	/** Change pixels of color oldColor to newColor. */
-	void recolor(byte oldColor, byte newColor);
-
-	/** Apply a change set from a palette merge. */
-	void applyChangeSet(const Common::Array<byte> &changeSet);
+	/** Shade the sprite. */
+	void shade(uint32 c);
 
 	/** Draw a string. */
 	void drawStrings(const Common::StringList &strings, const ::Graphics::Font &font,
-			int x, int y, byte color);
+			int x, int y, uint32 color);
 
 	/** Get the scaling value. */
 	frac_t getScale() const;
@@ -151,9 +143,10 @@ private:
 	Common::String _fileName; ///< The file from which the sprite was loaded.
 	bool _fromCursor; ///< Was the sprite loaded from a cursor resource?
 
-	int32 _width;  ///< The sprite's width.
-	int32 _height; ///< The sprite's height.
-	byte *_data;   ///< The sprite's data.
+	::Graphics::Surface _surfacePaletted;  ///< The sprite's (original) paletted data.
+	::Graphics::Surface _surfaceTrueColor; ///< The sprite's true color data.
+
+	uint8 *_transparencyMap; ///< The sprite's transparency map.
 
 	int32 _defaultX; ///< The sprite's default X coordinate.
 	int32 _defaultY; ///< The sprite's default Y coordinate.
@@ -169,21 +162,37 @@ private:
 	frac_t _scale;        ///< The sprite's current scaling value.
 	frac_t _scaleInverse; ///< The inverse value to the current scaling value.
 
-	/** Wrap the sprite into a standard ScummVM surface. */
-	::Graphics::Surface *wrapInSurface() const;
-
 	/** Clear/Initialize. */
 	void clearData();
 
+	/** Create a new sprite with the specified dimensions. */
+	void create(int32 width, int32 height, bool createTrueData);
+
+	/** Convert the paletted 8bit data to true color data. */
+	void convertToTrueColor(bool system = false);
+
+	/** Create the transparency map. */
+	void createTransparencyMap();
+	/** Update the transparency map after drawing to the true color surface. */
+	void updateTransparencyMap();
+
+	void fillImage(byte cP, uint32 cT);
+
+	/** Load a sprite from a BMP. */
+	bool loadFromBMP(Resources &resources, const Common::String &bmp);
 	/** Load a sprite from a BMP. */
 	bool loadFromBMP(Common::SeekableReadStream &bmp);
 	/** Load a sprite from a BMP. */
 	bool loadFromBMP(const Resource &resource);
 
 	/** Load a sprite from a RGB. */
+	bool loadFromRGB(Resources &resources, const Common::String &rgb);
+	/** Load a sprite from a RGB. */
 	bool loadFromRGB(Common::SeekableReadStream &rgb);
 	/** Load a sprite from a RGB. */
 	bool loadFromRGB(const Resource &resource);
+
+	void loadPalette(Common::SeekableReadStream &stream, uint32 count);
 
 	/** Read uncompressed BMP data. */
 	bool readBMPDataComp0(Common::SeekableReadStream &bmp, uint32 dataSize);

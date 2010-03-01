@@ -69,7 +69,7 @@ protected:
 class TextObject : public GraphicalObject {
 public:
 	TextObject(const Common::String &text, int32 x, int32 y,
-			byte color, int32 maxWidth = 0);
+			uint32 color, int32 maxWidth = 0);
 	~TextObject();
 
 	/** Redraw the object. */
@@ -83,8 +83,6 @@ public:
 
 private:
 	Sprite *_sprite; ///< The text's sprite.
-
-	byte _color; ///< The text's current color.
 };
 
 /** A simple sprite object. */
