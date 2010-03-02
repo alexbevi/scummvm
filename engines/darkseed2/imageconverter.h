@@ -57,6 +57,10 @@ public:
 	void convert8bitSystem(::Graphics::Surface &trueColor,
 			const ::Graphics::Surface &paletted) const;
 
+	uint32 readColor(const byte *img) const;
+	void writeColor(byte *img, uint32 color) const;
+	void swapColor(byte *img1, byte *img2) const;
+
 	/** Mix one pixel to another. */
 	void mixTrueColor(byte *dst, const byte *src);
 

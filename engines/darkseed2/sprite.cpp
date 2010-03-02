@@ -163,10 +163,6 @@ const Palette &Sprite::getPalette() const {
 }
 
 void Sprite::create(int32 width, int32 height) {
-	create(width, height, true);
-}
-
-void Sprite::create(int32 width, int32 height, bool createTrueData) {
 	// Sanity checks
 	assert((width > 0) && (height > 0) && (width <= 0x7FFF) && (height <= 0x7FFF));
 
@@ -243,10 +239,7 @@ void Sprite::updateTransparencyMap() {
 
 	for (int32 y = 0; y < _surfaceTrueColor.h; y++) {
 		for (int32 x = 0; x < _surfaceTrueColor.w; x++, map++, img += _surfaceTrueColor.bytesPerPixel) {
-			uint32 p;
-
-			if (_surfaceTrueColor.bytesPerPixel == 2)
-				p = *((uint16 *) img);
+			const uint32 p = ImgConv.readColor(img);
 
 			if ((*map == 1) && (p != colorTransp))
 				*map = 0;
@@ -284,7 +277,7 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 	assert((width > 0) && (height > 0) && (width <= 0x7FFF) && (height <= 0x7FFF));
 
 	// Create surfaces
-	create(width, height, true);
+	create(width, height);
 
 	// Number of color planes
 	if (bmp.readUint16LE() != 1)
@@ -364,7 +357,55 @@ bool Sprite::loadFromImage(Resources &resources, const Common::String &image) {
 
 	case Resources::kImageTypeRGB:
 		return loadFromRGB(resources, image);
+
+	case Resources::kImageTypeBDP:
+		return loadFromRGB(resources, image);
 	}
+
+	return false;
+}
+
+bool Sprite::loadFromRoomImage(Resources &resources, const Common::String &image) {
+	warning("load from room image %s, %d", image.c_str(), resources.getRoomImageType());
+	switch (resources.getRoomImageType()) {
+	case Resources::kImageTypeBMP:
+		return loadFromBMP(resources, image);
+
+	case Resources::kImageTypeRGB:
+		return loadFromRGB(resources, image);
+
+	case Resources::kImageTypeBDP:
+		return loadFromBDP(resources, image);
+	}
+
+	return false;
+}
+
+bool Sprite::loadFromBDP(Common::SeekableReadStream &bdp) {
+	bdp.seek(0);
+
+	if (bdp.size() != (320*240*2))
+		return false;
+
+	create(320, 240);
+
+	byte *img = (byte *) _surfaceTrueColor.pixels;
+	for (int32 y = 0; y < 320; y++) {
+		for (int32 x = 0; x < 240; x++) {
+			const uint16 p = bdp.readUint16BE();
+			const uint8  r = ((p & 0x001F)      ) << 3;
+			const uint8  g = ((p & 0x03E0) >>  5) << 3;
+			const uint8  b = ((p & 0x7C00) >> 10) << 3;
+			const uint32 c = ImgConv.getColor(r, g, b);
+
+			ImgConv.writeColor(img, c);
+
+			img += _surfaceTrueColor.bytesPerPixel;
+		}
+	}
+
+	// Completely non-transparent
+	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
 
 	return false;
 }
@@ -379,7 +420,9 @@ bool Sprite::loadFromBMP(const Resource &resource) {
 }
 
 bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
-	Common::String bmpFile = Resources::addExtension(bmp, resources.getImageExtension());
+	Common::String bmpFile = Resources::addExtension(bmp,
+			resources.getImageExtension(Resources::kImageTypeBMP));
+
 	if (!resources.hasResource(bmpFile))
 		return false;
 
@@ -394,12 +437,34 @@ bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
 	return result;
 }
 
+bool Sprite::loadFromBDP(const Resource &resource) {
+	return loadFromBDP(resource.getStream());
+}
+
 bool Sprite::loadFromRGB(const Resource &resource) {
 	return loadFromRGB(resource.getStream());
 }
 
+bool Sprite::loadFromBDP(Resources &resources, const Common::String &bdp) {
+	Common::String bdpFile = Resources::addExtension(bdp,+
+			resources.getImageExtension(Resources::kImageTypeBDP));
+	if (!resources.hasResource(bdpFile))
+		return false;
+
+	Resource *resBDP = resources.getResource(bdpFile);
+
+	bool result = loadFromBDP(*resBDP);
+
+	delete resBDP;
+
+	_fileName = bdp;
+
+	return result;
+}
+
 bool Sprite::loadFromRGB(Resources &resources, const Common::String &rgb) {
-	Common::String rgbFile = Resources::addExtension(rgb, resources.getImageExtension());
+	Common::String rgbFile = Resources::addExtension(rgb,
+			resources.getImageExtension(Resources::kImageTypeRGB));
 	if (!resources.hasResource(rgbFile))
 		return false;
 
@@ -439,8 +504,7 @@ void Sprite::flipHorizontally() {
 			dataPalStart++;
 			dataPalEnd--;
 
-			if (_surfaceTrueColor.bytesPerPixel == 2)
-				SWAP(*((uint16 *) dataTrueStart), *((uint16 *) dataTrueEnd));
+			ImgConv.swapColor(dataTrueStart, dataTrueEnd);
 			dataTrueStart += _surfaceTrueColor.bytesPerPixel;
 			dataTrueEnd   -= _surfaceTrueColor.bytesPerPixel;
 
@@ -559,7 +623,7 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 	// Height includes AND-mask and XOR-mask
 	height /= 2;
 
-	create(width, height, true);
+	create(width, height);
 
 	_palette.resize(3);
 
@@ -708,7 +772,7 @@ void Sprite::fillImage(byte cP, uint32 cT) {
 	for (int32 y = 0; y < _surfaceTrueColor.h; y++) {
 		for (int32 x = 0; x < _surfaceTrueColor.w; x++) {
 			if (_surfaceTrueColor.bytesPerPixel == 2)
-				*((uint16 *) trueColor) = (uint16) cT;
+				ImgConv.writeColor(trueColor, cT);
 
 			trueColor += _surfaceTrueColor.bytesPerPixel;
 		}

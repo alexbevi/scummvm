@@ -77,7 +77,8 @@ public:
 	/** An image type. */
 	enum ImageType {
 		kImageTypeBMP = 0, ///< BMP images.
-		kImageTypeRGB = 1  ///< RGB images.
+		kImageTypeRGB = 1, ///< RGB images.
+		kImageTypeBDP = 2  ///< BDP images.
 	};
 
 	Resources();
@@ -106,13 +107,22 @@ public:
 	/** Get the type of images the game uses. */
 	ImageType getImageType() const;
 
+	/** Set the type of images the game uses for rooms. */
+	void setRoomImageType(ImageType imageType);
+	/** Get the type of images the game uses for rooms. */
+	ImageType getRoomImageType() const;
+
 	/** Get the extension used for images by the game. */
 	const char *getImageExtension() const;
+	/** Get the extension used for images by the game. */
+	const char *getRoomImageExtension() const;
+	/** Get the extension used for images by the game. */
+	const char *getImageExtension(ImageType imageType) const;
 
 	static Common::String addExtension(const Common::String &name, const Common::String &extension);
 
 private:
-	static const char *kImageExtensions[2];
+	static const char *kImageExtensions[3];
 
 	/** An archive type. */
 	enum ArchiveType {
@@ -154,7 +164,8 @@ private:
 		Res();
 	};
 
-	ImageType _imageType; ///< The type of images the game uses.
+	ImageType _imageType;     ///< The type of images the game uses for images.
+	ImageType _roomImageType; ///< The type of images the game uses for images.
 
 	uint16 _archiveCount; ///< Number of indexed archive files.
 	uint32 _resCount;  ///< Number of indexed resources.

@@ -217,6 +217,7 @@ bool DarkSeed2Engine::init() {
 		}
 
 		_resources->setImageType(Resources::kImageTypeRGB);
+		_resources->setRoomImageType(Resources::kImageTypeBDP);
 
 	} else {
 		if (!_resources->index(kResourceIndex)) {
@@ -225,6 +226,7 @@ bool DarkSeed2Engine::init() {
 		}
 
 		_resources->setImageType(Resources::kImageTypeBMP);
+		_resources->setRoomImageType(Resources::kImageTypeBMP);
 	}
 
 	debug(-1, "Initializing game variables...");

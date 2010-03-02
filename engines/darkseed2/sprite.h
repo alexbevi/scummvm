@@ -100,6 +100,9 @@ public:
 	/** Load a sprite from an image file. */
 	bool loadFromImage(Resources &resources, const Common::String &image);
 
+	/** Load a sprite from a room image file. */
+	bool loadFromRoomImage(Resources &resources, const Common::String &image);
+
 	/** Load from a cursor resource embedded in an EXE file. */
 	bool loadFromCursorResource(const NECursor &cursor);
 
@@ -165,9 +168,6 @@ private:
 	/** Clear/Initialize. */
 	void clearData();
 
-	/** Create a new sprite with the specified dimensions. */
-	void create(int32 width, int32 height, bool createTrueData);
-
 	/** Convert the paletted 8bit data to true color data. */
 	void convertToTrueColor(bool system = false);
 
@@ -191,6 +191,13 @@ private:
 	bool loadFromRGB(Common::SeekableReadStream &rgb);
 	/** Load a sprite from a RGB. */
 	bool loadFromRGB(const Resource &resource);
+
+	/** Load a sprite from a BDP. */
+	bool loadFromBDP(Resources &resources, const Common::String &rgb);
+	/** Load a sprite from a BDP. */
+	bool loadFromBDP(Common::SeekableReadStream &bdp);
+	/** Load a sprite from a BDP. */
+	bool loadFromBDP(const Resource &resource);
 
 	void loadPalette(Common::SeekableReadStream &stream, uint32 count);
 

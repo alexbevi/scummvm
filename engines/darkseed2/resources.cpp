@@ -79,7 +79,7 @@ Common::SeekableReadStream &Resource::getStream() const {
 }
 
 
-const char *Resources::kImageExtensions[2] = {"BMP", "RGB"};
+const char *Resources::kImageExtensions[3] = {"BMP", "RGB", "BDP"};
 
 
 Resources::Archive::Archive() : type(kArchiveTypeNone), data(0), stream(0), size(0), indexed(false) {
@@ -97,6 +97,7 @@ Resources::Res::Res() : archive(0), offset(0), size(0), exists(false), indexed(f
 
 Resources::Resources() {
 	_imageType = kImageTypeBMP;
+	_roomImageType = kImageTypeBMP;
 
 	clear();
 }
@@ -521,8 +522,25 @@ Resources::ImageType Resources::getImageType() const {
 	return _imageType;
 }
 
+void Resources::setRoomImageType(ImageType imageType) {
+	_roomImageType = imageType;
+}
+
+Resources::ImageType Resources::getRoomImageType() const {
+	return _roomImageType;
+}
+
 const char *Resources::getImageExtension() const {
 	return kImageExtensions[_imageType];
+}
+
+const char *Resources::getRoomImageExtension() const {
+	return kImageExtensions[_roomImageType];
+}
+
+const char *Resources::getImageExtension(ImageType imageType) const {
+	assert((imageType >= 0) && (imageType < ARRAYSIZE(kImageExtensions)));
+	return kImageExtensions[imageType];
 }
 
 Common::String Resources::addExtension(const Common::String &name, const Common::String &extension) {
