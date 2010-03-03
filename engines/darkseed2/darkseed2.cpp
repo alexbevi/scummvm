@@ -219,6 +219,7 @@ bool DarkSeed2Engine::init() {
 		_resources->setImageType(kImageTypeRGB);
 		_resources->setRoomImageType(kImageTypeBDP);
 		_resources->setBoxImageType(kImageType256);
+		_resources->setWalkMapType(kWalkMapTypeMAP);
 
 		if (!_cursors->loadSaturnCursors(*_resources)) {
 			warning("DarkSeed2Engine::init(): Couldn't load cursors");
@@ -234,6 +235,7 @@ bool DarkSeed2Engine::init() {
 		_resources->setImageType(kImageTypeBMP);
 		_resources->setRoomImageType(kImageTypeBMP);
 		_resources->setBoxImageType(kImageTypeBMP);
+		_resources->setWalkMapType(kWalkMapTypeBMP);
 	}
 
 

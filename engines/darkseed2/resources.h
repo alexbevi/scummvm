@@ -111,6 +111,11 @@ public:
 	/** Get the type of images the game uses for boxes. */
 	ImageType getBoxImageType() const;
 
+	/** Set the type of file the game uses for walk maps. */
+	void setWalkMapType(WalkMapType walkMapType);
+	/** Get the type of file the game uses for walk maps. */
+	WalkMapType getWalkMapType() const;
+
 	/** Get the extension used for images by the game. */
 	const char *getImageExtension() const;
 	/** Get the extension used for room images by the game. */
@@ -168,6 +173,8 @@ private:
 	ImageType _imageType;     ///< The type of images the game uses for images.
 	ImageType _roomImageType; ///< The type of images the game uses for room images.
 	ImageType _boxImageType;  ///< The type of images the game uses for box images.
+
+	WalkMapType _walkMapType; ///< The type of file the game uses for walk maps.
 
 	uint16 _archiveCount; ///< Number of indexed archive files.
 	uint32 _resCount;  ///< Number of indexed resources.

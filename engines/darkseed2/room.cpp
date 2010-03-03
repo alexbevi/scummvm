@@ -27,6 +27,7 @@
 #include "common/serializer.h"
 
 #include "engines/darkseed2/room.h"
+#include "engines/darkseed2/versionformats.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/graphics.h"
@@ -368,14 +369,18 @@ bool Room::loadSprites(Resources &resources) {
 	_background = new Sprite();
 	_walkMap    = new Sprite();
 
-	if (!_background->loadFromImage(resources, _backgroundFile)) {
+	if (!_background->loadFromRoomImage(resources, _backgroundFile)) {
 		warning("Room::setup(): Can't load background");
 		return false;
 	}
 
-	if (!_walkMap->loadFromImage(resources, _walkMapFile)) {
-		warning("Room::setup(): Can't load walk map");
-		return false;
+	if (resources.getWalkMapType() == kWalkMapTypeMAP) {
+		warning("TODO: Sega Saturn walk maps");
+	} else if (resources.getWalkMapType() == kWalkMapTypeBMP) {
+		if (!_walkMap->loadFromImage(resources, _walkMapFile)) {
+			warning("Room::setup(): Can't load walk map");
+			return false;
+		}
 	}
 
 	return true;

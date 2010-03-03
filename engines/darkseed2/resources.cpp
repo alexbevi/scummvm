@@ -96,9 +96,11 @@ Resources::Res::Res() : archive(0), offset(0), size(0), exists(false), indexed(f
 
 
 Resources::Resources() {
-	_imageType = kImageTypeBMP;
+	_imageType     = kImageTypeBMP;
 	_roomImageType = kImageTypeBMP;
-	_boxImageType = kImageTypeBMP;
+	_boxImageType  = kImageTypeBMP;
+
+	_walkMapType = kWalkMapTypeBMP;
 
 	clear();
 }
@@ -537,6 +539,14 @@ void Resources::setBoxImageType(ImageType imageType) {
 
 ImageType Resources::getBoxImageType() const {
 	return _boxImageType;
+}
+
+void Resources::setWalkMapType(WalkMapType walkMapType) {
+	_walkMapType = walkMapType;
+}
+
+WalkMapType Resources::getWalkMapType() const {
+	return _walkMapType;
 }
 
 const char *Resources::getImageExtension() const {

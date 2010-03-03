@@ -36,6 +36,11 @@ enum ImageType {
 	kImageType256 = 3  ///< 256 images.
 };
 
+enum WalkMapType {
+	kWalkMapTypeBMP = 0, ///< Walk map in BMP image.
+	kWalkMapTypeMAP = 1  ///< Raw walk map data in a MAP file.
+};
+
 } // End of namespace DarkSeed2
 
 #endif // DARKSEED2_VERSIONFORMATS_H
