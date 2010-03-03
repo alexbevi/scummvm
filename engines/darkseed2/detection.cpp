@@ -96,7 +96,7 @@ static const DS2GameDescription gameDescriptions[] = {
 			JA_JPN,
 			kPlatformUnknown, // kPlatformSaturn
 			ADGF_NO_FLAGS,
-			GUIO_NONE
+			GUIO_NOSPEECH
 		},
 	},
 	{ AD_TABLE_END_MARKER }
