@@ -28,6 +28,7 @@
 
 #include "sound/audiostream.h"
 #include "sound/decoders/wave.h"
+#include "sound/decoders/aiff.h"
 
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/options.h"
@@ -52,7 +53,35 @@ Sound::~Sound() {
 	stopAll();
 }
 
-bool Sound::playWAV(Common::SeekableReadStream &wav,
+bool Sound::playSound(Resources &resources, const Common::String &sound, int *id,
+		Audio::Mixer::SoundType type) {
+
+	switch (resources.getVersionFormats().getSoundType()) {
+		case kSoundTypeWAV:
+			return playWAV(resources, sound, id, type);
+
+		case kSoundTypeAIF:
+			return playAIF(resources, sound, id, type);
+	}
+
+	return false;
+}
+
+bool Sound::playSound(const Resource &resource, SoundType soundType, int *id,
+		Audio::Mixer::SoundType type) {
+
+	switch (soundType) {
+		case kSoundTypeWAV:
+			return playWAV(resource, id, type);
+
+		case kSoundTypeAIF:
+			return playAIF(resource, id, type);
+	}
+
+	return false;
+}
+
+bool Sound::playWAV(Common::SeekableReadStream &wav, int *id,
 		Audio::Mixer::SoundType type, bool autoFree) {
 
 	// Try to find an unoccupied channel
@@ -79,21 +108,25 @@ bool Sound::playWAV(Common::SeekableReadStream &wav,
 	channel->id = _id++;
 	channel->speech = type == Audio::Mixer::kSpeechSoundType;
 
+	if (id)
+		*id = channel->id;
+
 	// Play it
 	_mixer->playInputStream(type, &channel->handle, wavStream, channel->id);
 
 	return true;
 }
 
-bool Sound::playWAV(const Resource &resource, Audio::Mixer::SoundType type) {
+bool Sound::playWAV(const Resource &resource, int *id, Audio::Mixer::SoundType type) {
 
-	return playWAV(resource.getStream(), type);
+	return playWAV(resource.getStream(), id, type);
 }
 
-bool Sound::playWAV(Resources &resources, const Common::String &wav,
+bool Sound::playWAV(Resources &resources, const Common::String &wav, int *id,
 		Audio::Mixer::SoundType type) {
 
-	Common::String wavFile = Resources::addExtension(wav, "WAV");
+	Common::String wavFile = Resources::addExtension(wav,
+			resources.getVersionFormats().getSoundExtension(kSoundTypeWAV));
 
 	debugC(-1, kDebugSound, "Playing WAV \"%s\"", wavFile.c_str());
 
@@ -112,7 +145,7 @@ bool Sound::playWAV(Resources &resources, const Common::String &wav,
 	Common::MemoryReadStream *stream =
 	 new Common::MemoryReadStream(data, size, DisposeAfterUse::YES);
 
-	if (!playWAV(*stream, type, true)) {
+	if (!playWAV(*stream, id, type, true)) {
 		delete stream;
 		return false;
 	}
@@ -120,25 +153,63 @@ bool Sound::playWAV(Resources &resources, const Common::String &wav,
 	return true;
 }
 
-bool Sound::playWAV(Common::SeekableReadStream &wav, int &id,
+bool Sound::playAIF(Common::SeekableReadStream &aif, int *id,
 		Audio::Mixer::SoundType type) {
 
-	id = _id;
-	return playWAV(wav, type);
+	// Try to find an unoccupied channel
+	SoundChannel *channel = 0;
+	for (int i = 0 ; i < kChannelCount; i++)
+		if (!_mixer->isSoundHandleActive(_channels[i].handle)) {
+			channel = &_channels[i];
+			break;
+		}
+
+	if (!channel) {
+		warning("Sound::playAIF(): Sound::playAIF(): All channels occupied");
+		return false;
+	}
+
+	aif.seek(0);
+
+	// Load AIF
+	Audio::AudioStream *aifStream = Audio::makeAIFFStream(aif);
+	if (!aifStream)
+		return false;
+
+	channel->id = _id++;
+	channel->speech = type == Audio::Mixer::kSpeechSoundType;
+
+	if (id)
+		*id = channel->id;
+
+	// Play it
+	_mixer->playInputStream(type, &channel->handle, aifStream, channel->id);
+
+	return true;
 }
 
-bool Sound::playWAV(const Resource &resource, int &id,
-		Audio::Mixer::SoundType type) {
+bool Sound::playAIF(const Resource &resource, int *id, Audio::Mixer::SoundType type) {
 
-	id = _id;
-	return playWAV(resource, type);
+	return playAIF(resource.getStream(), id, type);
 }
 
-bool Sound::playWAV(Resources &resources, const Common::String &wav, int &id,
+bool Sound::playAIF(Resources &resources, const Common::String &aif, int *id,
 		Audio::Mixer::SoundType type) {
 
-	id = _id;
-	return playWAV(resources, wav, type);
+	Common::String aifFile = Resources::addExtension(aif,
+			resources.getVersionFormats().getSoundExtension(kSoundTypeAIF));
+
+	debugC(-1, kDebugSound, "Playing AIF \"%s\"", aifFile.c_str());
+
+	if (!resources.hasResource(aifFile))
+		return false;
+
+	Resource *resAIF = resources.getResource(aifFile);
+
+	if (!playAIF(resAIF->getStream(), id, type))
+		return false;
+
+	return true;
 }
 
 void Sound::stopID(int id) {

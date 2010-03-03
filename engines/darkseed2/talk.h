@@ -29,6 +29,7 @@
 #include "common/str.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/versionformats.h"
 
 namespace DarkSeed2 {
 
@@ -69,6 +70,8 @@ public:
 	const Resource &getWAV() const;
 	/** Get the line's TXT. */
 	const Common::String &getTXT() const;
+
+	SoundType getSoundType() const;
 
 private:
 	Resources *_resources;

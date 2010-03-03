@@ -388,7 +388,7 @@ bool RoomConfigSprite::updateStatus() {
 	for (uint i = 0; i < _effects.size(); i++)
 		if (_effects[i].frameNum == _curPos) {
 			debugC(-1, kDebugRoomConf, "RoomConfigSprite: Playing effect \"%s\"", _effects[i].effect.c_str());
-			_sound->playWAV(*_resources, _effects[i].effect);
+			_sound->playSound(*_resources, _effects[i].effect);
 		}
 
 	_graphics->removeAnimation(_currentSprite);

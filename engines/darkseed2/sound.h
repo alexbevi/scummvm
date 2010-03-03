@@ -31,6 +31,7 @@
 #include "sound/mixer.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/versionformats.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -48,18 +49,9 @@ public:
 	Sound(Audio::Mixer &mixer, Variables &variables);
 	~Sound();
 
-	bool playWAV(Common::SeekableReadStream &wav,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType, bool autoFree = false);
-	bool playWAV(const Resource &resource,
+	bool playSound(Resources &resources, const Common::String &sound, int *id = 0,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
-	bool playWAV(Resources &resources, const Common::String &wav,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
-
-	bool playWAV(Common::SeekableReadStream &wav, int &id,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
-	bool playWAV(const Resource &resource, int &id,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
-	bool playWAV(Resources &resources, const Common::String &wav, int &id,
+	bool playSound(const Resource &resource, SoundType soundType, int *id = 0,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 
 	/** Is the that ID playing? */
@@ -107,6 +99,20 @@ private:
 
 	/** All sound channels. */
 	SoundChannel _channels[kChannelCount];
+
+	bool playWAV(Common::SeekableReadStream &wav, int *id = 0,
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType, bool autoFree = false);
+	bool playWAV(const Resource &resource, int *id = 0,
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+	bool playWAV(Resources &resources, const Common::String &wav, int *id = 0,
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+
+	bool playAIF(Common::SeekableReadStream &wav, int *id = 0,
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+	bool playAIF(const Resource &resource, int *id = 0,
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+	bool playAIF(Resources &resources, const Common::String &wav, int *id = 0,
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 };
 
 } // End of namespace DarkSeed2

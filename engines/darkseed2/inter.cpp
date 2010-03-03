@@ -375,7 +375,7 @@ ScriptInterpreter::Result ScriptInterpreter::oWaitUntil(Script &script) {
 ScriptInterpreter::Result ScriptInterpreter::oEffect(Script &script) {
 	// Play a sound effect
 
-	_vm->_sound->playWAV(*_vm->_resources, script.action->arguments, script.soundID);
+	_vm->_sound->playSound(*_vm->_resources, script.action->arguments, &script.soundID);
 
 	script.soundName = script.action->arguments;
 	script.soundTalk = false;
@@ -407,7 +407,7 @@ bool ScriptInterpreter::loading(Resources &resources) {
 				script->soundID = _vm->_talkMan->getSoundID();
 				_vm->_sound->setSoundVar(script->soundID, script->soundVar);
 			} else
-				_vm->_sound->playWAV(resources, script->soundName, script->soundID);
+				_vm->_sound->playSound(resources, script->soundName, &script->soundID);
 				_vm->_sound->setSoundVar(script->soundID, script->soundVar);
 		}
 	}
