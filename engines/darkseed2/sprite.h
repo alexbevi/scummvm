@@ -106,6 +106,9 @@ public:
 	/** Load from a cursor resource embedded in an EXE file. */
 	bool loadFromCursorResource(const NECursor &cursor);
 
+	/** Load from a cursor found in the Sega Saturn version. */
+	bool loadFromSaturnCursor(Resources &resources, const Common::String &cursor);
+
 	/** Flip the sprite horizontally. */
 	void flipHorizontally();
 	/** Flip the sprite vertically. */
@@ -192,6 +195,9 @@ private:
 	bool loadFromBDP(Resources &resources, const Common::String &rgb);
 	/** Load a sprite from a BDP. */
 	bool loadFromBDP(Common::SeekableReadStream &bdp);
+
+	/** Load from a cursor found in the Sega Saturn version. */
+	bool loadFromSaturnCursor(Common::SeekableReadStream &cursor);
 
 	uint32 readColor555(Common::SeekableReadStream &stream) const;
 

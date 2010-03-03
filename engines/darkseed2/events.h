@@ -53,6 +53,9 @@ public:
 	Events(DarkSeed2Engine &vm);
 	~Events();
 
+	/** Initialize the event handler. */
+	bool init();
+
 	/** Run the game's normal course. */
 	bool run();
 

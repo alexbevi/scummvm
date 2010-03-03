@@ -36,6 +36,7 @@ namespace DarkSeed2 {
 
 class Palette;
 class NECursor;
+class Resources;
 
 class Cursors : public Saveable {
 public:
@@ -51,6 +52,9 @@ public:
 
 	Cursors(const Common::String &exe = "");
 	~Cursors();
+
+	/** Load cursors found in the Sega Saturn version. */
+	bool loadSaturnCursors(Resources &resources);
 
 	/** Make sure the class's information on the cursor is in sync with the sytem's. */
 	void assertCursorProperties();
@@ -76,6 +80,8 @@ protected:
 	bool loading(Resources &resources);
 
 private:
+	static const char *_saturnCursors[];
+
 	typedef Common::HashMap<Common::String, Cursor, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> CursorMap;
 
 	NECursor *_defaultResource; ///< NE Resource of the default pointer cursor.

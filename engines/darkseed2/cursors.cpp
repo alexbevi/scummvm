@@ -27,6 +27,7 @@
 
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/imageconverter.h"
+#include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/palette.h"
 #include "engines/darkseed2/neresources.h"
 #include "engines/darkseed2/saveload.h"
@@ -34,6 +35,17 @@
 namespace DarkSeed2 {
 
 #include "engines/darkseed2/cursordata.h"
+
+const char *Cursors::_saturnCursors[] = {
+	"c4Ways"  , "cArrow"  , "cBCard"  , "cBGun"   , "cCamera" ,
+	"cChanger", "cCTicket", "cCWrench", "cDCard"  , "cDFood"  ,
+	"cDPhoto" , "cEgoMGR" , "cGKey"   , "cHand"   , "cJGun"   ,
+	"cKeyCh"  , "cLetter" , "cLight"  , "cLook"   , "cLookAt" ,
+	"cMagnet" , "cNPaper" , "cPhoneBk", "cPills"  , "cQuarter",
+	"cRingC"  , "cRPhoto" , "crplush" , "cRTicket", "cScroll" ,
+	"cSword"  , "cTargetC", "cTplush" , "cUseIt"  , "cWheelC" ,
+	"cWplush" , "cXBow"
+};
 
 Cursors::Cursors(const Common::String &exe) {
 	Palette palette;
@@ -78,6 +90,29 @@ Cursors::~Cursors() {
 	delete _default.sprite;
 
 	_cursors.clear();
+}
+
+bool Cursors::loadSaturnCursors(Resources &resources) {
+	for (int i = 0; i < ARRAYSIZE(_saturnCursors); i++) {
+		Cursor cursor;
+
+		cursor.sprite = new Sprite;
+
+		if (!cursor.sprite->loadFromSaturnCursor(resources, _saturnCursors[i])) {
+			delete cursor.sprite;
+			return false;
+		}
+
+		cursor.name     = _saturnCursors[i];
+		cursor.width    = cursor.sprite->getWidth();
+		cursor.height   = cursor.sprite->getHeight();
+		cursor.hotspotX = cursor.sprite->getFeetX();
+		cursor.hotspotY = cursor.sprite->getFeetY();
+
+		_cursors.setVal(cursor.name, cursor);
+	}
+
+	return true;
 }
 
 void Cursors::assertCursorProperties() {

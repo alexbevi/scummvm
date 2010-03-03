@@ -324,6 +324,7 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 
 	uint32 bmpDataSize = bmp.readUint32LE();
 
+	// Sprite's feet position
 	_feetX = (int32) MIN<uint16>(ABS(((int16) bmp.readUint16LE())), width  - 1);
 	_feetY = (int32) MIN<uint16>(ABS(((int16) bmp.readUint16LE())), height - 1);
 
@@ -380,13 +381,15 @@ bool Sprite::loadFromRGB(Common::SeekableReadStream &rgb) {
 	// the file size.
 	uint16 linePad = (size - 4 - 8 - (width * height * 2)) / height;
 
-	// Feet & Default?
-	uint16 x1 = rgb.readUint16BE();
-	uint16 x2 = rgb.readUint16BE();
-	uint16 x3 = rgb.readUint16BE();
-	uint16 x4 = rgb.readUint16BE();
+	// TODO: Are those correct for RGB files?
 
-	//warning("(%dx%d, %d, %d), %d (%d), %d (%d), %d, %d", width, height, linePad, size, x1, (int16) x1, x2, (int16) x2, x3, x4);
+	// Sprite's feet position
+	_feetX = (int32) MIN<uint16>(ABS(((int16) rgb.readUint16BE())), width  - 1);
+	_feetY = (int32) MIN<uint16>(ABS(((int16) rgb.readUint16BE())), height - 1);
+
+	// Default coordinates
+	_defaultX = (int32) rgb.readUint16BE();
+	_defaultY = (int32) rgb.readUint16BE();
 
 	create(width, height);
 
@@ -399,6 +402,9 @@ bool Sprite::loadFromRGB(Common::SeekableReadStream &rgb) {
 			img += _surfaceTrueColor.bytesPerPixel;
 		}
 	}
+
+	// TODO: Transparency?
+
 	// Completely non-transparent
 	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
 
@@ -424,6 +430,118 @@ bool Sprite::loadFromBDP(Common::SeekableReadStream &bdp) {
 
 	// Completely non-transparent
 	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
+
+	return true;
+}
+
+bool Sprite::loadFromCursorResource(const NECursor &cursor) {
+	int32 width  = cursor.getWidth();
+	int32 height = cursor.getHeight() * 2;
+
+	// Sanity checks
+	assert((width > 0) && (height > 0));
+
+	Common::SeekableReadStream &stream = cursor.getStream();
+
+	if (stream.size() <= 40)
+		return false;
+
+	// Check header size
+	if (stream.readUint32LE() != 40)
+		return false;
+
+	// Check dimensions
+	if (stream.readUint32LE() != ((uint32) width))
+		return false;
+	if (stream.readUint32LE() != ((uint32) height))
+		return false;
+
+	// Color planes
+	if (stream.readUint16LE() != 1)
+		return false;
+	// Bits per pixel
+	if (stream.readUint16LE() != 1)
+		return false;
+	// Compression
+	if (stream.readUint32LE() != 0)
+		return false;
+
+	// Image size + X resolution + Y resolution
+	stream.skip(4 + 4 + 4);
+
+	uint32 numColors = stream.readUint32LE();
+
+	if (numColors == 0)
+		numColors = 2;
+
+	if (numColors > 2)
+		return false;
+
+	// Assert that enough data is there for the whole cursor
+	if (((uint32) stream.size()) < (40 + numColors * 4 + ((width * height) / 8)))
+		return false;
+
+	// Height includes AND-mask and XOR-mask
+	height /= 2;
+
+	create(width, height);
+
+	_palette.resize(3);
+
+	// Standard palette: transparent, black, white
+	memset(_palette.get()    ,   0, 6);
+	memset(_palette.get() + 6, 255, 3);
+
+	// Reading the palette
+	stream.seek(40);
+	for (uint32 i = 0 ; i < numColors; i++) {
+		_palette[(i + 1) * 3 + 2] = stream.readByte();
+		_palette[(i + 1) * 3 + 1] = stream.readByte();
+		_palette[(i + 1) * 3 + 0] = stream.readByte();
+		stream.skip(1);
+	}
+
+	// Reading the bitmap data
+	const byte *srcP = cursor.getData() + 40 + numColors * 4;
+	const byte *srcM = srcP + ((width * height) / 8);
+	byte *dest = (byte *) _surfacePaletted.getBasePtr(0, height - 1);
+	for (int32 i = 0; i < height; i++) {
+		byte *rowDest = dest;
+
+		for (int32 j = 0; j < (width / 8); j++) {
+			byte p = srcP[j];
+			byte m = srcM[j];
+
+			for (int k = 0; k < 8; k++, rowDest++, p <<= 1, m <<= 1) {
+				if ((m & 0x80) != 0x80) {
+					if ((p & 0x80) == 0x80)
+						*rowDest = 2;
+					else
+						*rowDest = 1;
+				} else
+					*rowDest = 0;
+			}
+		}
+
+		dest -= width;
+		srcP += width / 8;
+		srcM += width / 8;
+	}
+
+	_fromCursor = true;
+
+	createTransparencyMap();
+	convertToTrueColor();
+
+	return true;
+}
+
+bool Sprite::loadFromSaturnCursor(Common::SeekableReadStream &cursor) {
+	_fromCursor = true;
+
+	warning("TODO: loadFromSaturnCursor()");
+
+	create(32, 32);
 
 	return true;
 }
@@ -473,7 +591,7 @@ bool Sprite::loadFromRGB(Resources &resources, const Common::String &rgb) {
 }
 
 bool Sprite::loadFromBDP(Resources &resources, const Common::String &bdp) {
-	Common::String bdpFile = Resources::addExtension(bdp,+
+	Common::String bdpFile = Resources::addExtension(bdp,
 			resources.getImageExtension(Resources::kImageTypeBDP));
 	if (!resources.hasResource(bdpFile))
 		return false;
@@ -485,6 +603,22 @@ bool Sprite::loadFromBDP(Resources &resources, const Common::String &bdp) {
 	delete resBDP;
 
 	_fileName = bdp;
+
+	return result;
+}
+
+bool Sprite::loadFromSaturnCursor(Resources &resources, const Common::String &cursor) {
+	Common::String cursorFile = Resources::addExtension(cursor, "CUR");
+	if (!resources.hasResource(cursorFile))
+		return false;
+
+	Resource *resCursor = resources.getResource(cursorFile);
+
+	bool result = loadFromSaturnCursor(resCursor->getStream());
+
+	delete resCursor;
+
+	_fileName = cursor;
 
 	return result;
 }
@@ -597,108 +731,6 @@ void Sprite::flipVertically() {
 
 	_feetY = height - _feetY;
 	_flippedVertically = !_flippedVertically;
-}
-
-bool Sprite::loadFromCursorResource(const NECursor &cursor) {
-	int32 width  = cursor.getWidth();
-	int32 height = cursor.getHeight() * 2;
-
-	// Sanity checks
-	assert((width > 0) && (height > 0));
-
-	Common::SeekableReadStream &stream = cursor.getStream();
-
-	if (stream.size() <= 40)
-		return false;
-
-	// Check header size
-	if (stream.readUint32LE() != 40)
-		return false;
-
-	// Check dimensions
-	if (stream.readUint32LE() != ((uint32) width))
-		return false;
-	if (stream.readUint32LE() != ((uint32) height))
-		return false;
-
-	// Color planes
-	if (stream.readUint16LE() != 1)
-		return false;
-	// Bits per pixel
-	if (stream.readUint16LE() != 1)
-		return false;
-	// Compression
-	if (stream.readUint32LE() != 0)
-		return false;
-
-	// Image size + X resolution + Y resolution
-	stream.skip(4 + 4 + 4);
-
-	uint32 numColors = stream.readUint32LE();
-
-	if (numColors == 0)
-		numColors = 2;
-
-	if (numColors > 2)
-		return false;
-
-	// Assert that enough data is there for the whole cursor
-	if (((uint32) stream.size()) < (40 + numColors * 4 + ((width * height) / 8)))
-		return false;
-
-	// Height includes AND-mask and XOR-mask
-	height /= 2;
-
-	create(width, height);
-
-	_palette.resize(3);
-
-	// Standard palette: transparent, black, white
-	memset(_palette.get()    ,   0, 6);
-	memset(_palette.get() + 6, 255, 3);
-
-	// Reading the palette
-	stream.seek(40);
-	for (uint32 i = 0 ; i < numColors; i++) {
-		_palette[(i + 1) * 3 + 2] = stream.readByte();
-		_palette[(i + 1) * 3 + 1] = stream.readByte();
-		_palette[(i + 1) * 3 + 0] = stream.readByte();
-		stream.skip(1);
-	}
-
-	// Reading the bitmap data
-	const byte *srcP = cursor.getData() + 40 + numColors * 4;
-	const byte *srcM = srcP + ((width * height) / 8);
-	byte *dest = (byte *) _surfacePaletted.getBasePtr(0, height - 1);
-	for (int32 i = 0; i < height; i++) {
-		byte *rowDest = dest;
-
-		for (int32 j = 0; j < (width / 8); j++) {
-			byte p = srcP[j];
-			byte m = srcM[j];
-
-			for (int k = 0; k < 8; k++, rowDest++, p <<= 1, m <<= 1) {
-				if ((m & 0x80) != 0x80) {
-					if ((p & 0x80) == 0x80)
-						*rowDest = 2;
-					else
-						*rowDest = 1;
-				} else
-					*rowDest = 0;
-			}
-		}
-
-		dest -= width;
-		srcP += width / 8;
-		srcM += width / 8;
-	}
-
-	_fromCursor = true;
-
-	createTransparencyMap();
-	convertToTrueColor();
-
-	return true;
 }
 
 void Sprite::blit(const Sprite &from, const Common::Rect &area, int32 x, int32 y, bool transp) {

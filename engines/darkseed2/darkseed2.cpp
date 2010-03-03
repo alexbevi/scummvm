@@ -219,6 +219,11 @@ bool DarkSeed2Engine::init() {
 		_resources->setImageType(Resources::kImageTypeRGB);
 		_resources->setRoomImageType(Resources::kImageTypeBDP);
 
+		if (!_cursors->loadSaturnCursors(*_resources)) {
+			warning("DarkSeed2Engine::init(): Couldn't load cursors");
+			return false;
+		}
+
 	} else {
 		if (!_resources->index(kResourceIndex)) {
 			warning("DarkSeed2Engine::init(): Couldn't index resources");
@@ -227,6 +232,12 @@ bool DarkSeed2Engine::init() {
 
 		_resources->setImageType(Resources::kImageTypeBMP);
 		_resources->setRoomImageType(Resources::kImageTypeBMP);
+	}
+
+
+	if (!_events->init()) {
+			warning("DarkSeed2Engine::init(): Couldn't initialize the event handler");
+			return false;
 	}
 
 	debug(-1, "Initializing game variables...");

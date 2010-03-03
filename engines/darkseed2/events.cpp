@@ -46,14 +46,6 @@ namespace DarkSeed2 {
 Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
 	_cursors = new ModeCursors[kCursorModeNone];
 
-	// Getting cursors
-	_cursors[kCursorModeWalk].inactive = _vm->_cursors->getCursor();
-	_cursors[kCursorModeWalk].active   = _vm->_cursors->getCursor("c4Ways");
-	_cursors[kCursorModeUse ].inactive = _vm->_cursors->getCursor("cHand");
-	_cursors[kCursorModeUse ].active   = _vm->_cursors->getCursor("cUseIt");
-	_cursors[kCursorModeLook].inactive = _vm->_cursors->getCursor("cLook");
-	_cursors[kCursorModeLook].active   = _vm->_cursors->getCursor("cLookAt");
-
 	_state = kStateStarted;
 
 	_itemMode = false;
@@ -63,9 +55,6 @@ Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
 
 	_cursorMode   = kCursorModeWalk;
 	_cursorActive = false;
-	setCursor();
-
-	_vm->_cursors->setVisible(true);
 
 	_lastObject = 0;
 
@@ -76,6 +65,27 @@ Events::Events(DarkSeed2Engine &vm) : _vm(&vm) {
 
 Events::~Events() {
 	delete[] _cursors;
+}
+
+bool Events::init() {
+	// Getting cursors
+	if (!(_cursors[kCursorModeWalk].inactive = _vm->_cursors->getCursor()))
+		return false;
+	if (!(_cursors[kCursorModeWalk].active   = _vm->_cursors->getCursor("c4Ways")))
+		return false;
+	if (!(_cursors[kCursorModeUse ].inactive = _vm->_cursors->getCursor("cHand")))
+		return false;
+	if (!(_cursors[kCursorModeUse ].active   = _vm->_cursors->getCursor("cUseIt")))
+		return false;
+	if (!(_cursors[kCursorModeLook].inactive = _vm->_cursors->getCursor("cLook")))
+		return false;
+	if (!(_cursors[kCursorModeLook].active   = _vm->_cursors->getCursor("cLookAt")))
+		return false;
+
+	setCursor();
+	_vm->_cursors->setVisible(true);
+
+	return true;
 }
 
 bool Events::run() {
