@@ -100,16 +100,19 @@ bool Graphics::SpriteRef::isUpToDate(int32 frame, int32 x, int32 y, frac_t scale
 }
 
 
-Graphics::Graphics(Resources &resources, Variables &variables, Cursors &cursors) {
+Graphics::Graphics(int32 width, int32 height, Resources &resources, Variables &variables, Cursors &cursors) {
 	_resources = &resources;
 	_variables = &variables;
 	_cursors   = &cursors;
 	_movie     = 0;
 
+	_screenWidth  = width;
+	_screenHeight = height;
+
 	clearPalette();
 	ImgConv.registerStandardPalette(_gamePalette);
 
-	_screen.create(kScreenWidth, kScreenHeight);
+	_screen.create(_screenWidth, _screenHeight);
 
 	_dirtyAll = false;
 
@@ -170,6 +173,14 @@ Room &Graphics::getRoom() {
 	assert(_room);
 
 	return *_room;
+}
+
+int32 Graphics::getScreenWidth() const {
+	return _screenWidth;
+}
+
+int32 Graphics::getScreenHeight() const {
+	return _screenHeight;
 }
 
 void Graphics::updateStatus() {
@@ -323,7 +334,7 @@ void Graphics::dirtyRectsAdd(const Common::Rect &rect) {
 		return;
 
 	if ((rect.left == 0) && (rect.top == 0) &&
-	    (rect.right >= ((int) kScreenWidth)) && (rect.bottom >= ((int) kScreenHeight))) {
+	    (rect.right >= ((int) _screenWidth)) && (rect.bottom >= ((int) _screenHeight))) {
 
 		dirtyAll();
 		return;
@@ -419,7 +430,7 @@ void Graphics::requestRedraw(const Common::Rect &rect) {
 
 void Graphics::redraw() {
 	if (_dirtyAll) {
-		redraw(Common::Rect(0, 0, kScreenWidth, kScreenHeight));
+		redraw(Common::Rect(0, 0, _screenWidth, _screenHeight));
 		return;
 	}
 
@@ -428,7 +439,7 @@ void Graphics::redraw() {
 }
 
 void Graphics::redraw(Common::Rect rect) {
-	rect.clip(Common::Rect(0, 0, kScreenWidth, kScreenHeight));
+	rect.clip(Common::Rect(0, 0, _screenWidth, _screenHeight));
 
 	if (rect.isEmpty())
 		return;

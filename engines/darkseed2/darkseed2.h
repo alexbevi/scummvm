@@ -132,8 +132,10 @@ private:
 	virtual void pauseEngineIntern(bool pause);
 	virtual void syncSoundSettings();
 
-	bool init();
-	bool initGraphics();
+	bool getScreenResolution(int32 &width, int32 &height) const;
+
+	bool init(int32 width, int32 height);
+	bool initGraphics(int32 width, int32 height);
 	bool initGraphicsSystem();
 
 	const char *getGameId() const;

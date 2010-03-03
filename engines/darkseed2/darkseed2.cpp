@@ -137,10 +137,14 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 }
 
 Common::Error DarkSeed2Engine::run() {
-	if (!initGraphics())
+	int32 width, height;
+	if (!getScreenResolution(width, height))
 		return Common::kUnknownError;
 
-	if (!init())
+	if (!initGraphics(width, height))
+		return Common::kUnknownError;
+
+	if (!init(width, height))
 		return Common::kUnknownError;
 
 	if (!initGraphicsSystem())
@@ -174,7 +178,22 @@ void DarkSeed2Engine::syncSoundSettings() {
 	_talkMan->syncSettings(*_options);
 }
 
-bool DarkSeed2Engine::init() {
+bool DarkSeed2Engine::getScreenResolution(int32 &width, int32 &height) const {
+	if (isWindowsPC()) {
+		width  = 640;
+		height = 480;
+		return true;
+	} else if (isSaturn()) {
+		width  = 320;
+		height = 240;
+		return true;
+	} else
+		warning("DarkSeed2Engine::getScreenResolution(): Unknown game version");
+
+	return false;
+}
+
+bool DarkSeed2Engine::init(int32 width, int32 height) {
 	MidiDriverType midiDriver = MidiDriver::detectMusicDriver(MDT_MIDI | MDT_ADLIB | MDT_PREFER_MIDI);
 	bool native_mt32 = ((midiDriver == MD_MT32) || ConfMan.getBool("native_mt32"));
 
@@ -197,7 +216,7 @@ bool DarkSeed2Engine::init() {
 	_resources      = new Resources();
 	_sound          = new Sound(*_mixer, *_variables);
 	_music          = new Music(*_mixer, *_midiDriver);
-	_graphics       = new Graphics(*_resources, *_variables, *_cursors);
+	_graphics       = new Graphics(width, height, *_resources, *_variables, *_cursors);
 	_talkMan        = new TalkManager(*_sound, *_graphics);
 	_mike           = new Mike(*_resources, *_variables, *_graphics);
 	_movie          = new Movie(*_mixer, *_graphics, *_cursors, *_sound);
@@ -234,8 +253,8 @@ bool DarkSeed2Engine::init() {
 
 
 	if (!_events->init()) {
-			warning("DarkSeed2Engine::init(): Couldn't initialize the event handler");
-			return false;
+		warning("DarkSeed2Engine::init(): Couldn't initialize the event handler");
+		return false;
 	}
 
 	debug(-1, "Initializing game variables...");
@@ -254,10 +273,10 @@ bool DarkSeed2Engine::init() {
 	return true;
 }
 
-bool DarkSeed2Engine::initGraphics() {
+bool DarkSeed2Engine::initGraphics(int32 width, int32 height) {
 	debug(-1, "Setting up graphics...");
 
-	::initGraphics(Graphics::kScreenWidth, Graphics::kScreenHeight, true, 0);
+	::initGraphics(width, height, width == 640, 0);
 
 	ImgConv.setPixelFormat(g_system->getScreenFormat());
 

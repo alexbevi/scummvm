@@ -400,9 +400,9 @@ void Events::mouseMoved(int32 x, int32 y) {
 
 	if (_vm->_variables->get("SysCall") == 0) {
 	// Check for entering/leaving the inventory box
-		if (y >= (Graphics::kScreenHeight - 20))
+		if (y >= (_vm->_graphics->getScreenHeight() - 20))
 			_vm->_graphics->getInventoryBox().show();
-		else if (y < (Graphics::kScreenHeight - InventoryBox::kHeight))
+		else if (y < (_vm->_graphics->getScreenHeight() - InventoryBox::kHeight))
 			_vm->_graphics->getInventoryBox().hide();
 
 		// Look for hotspots

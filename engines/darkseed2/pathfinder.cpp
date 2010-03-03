@@ -73,15 +73,23 @@ bool Pathfinder::Walkable::operator==(const Walkable &right) const {
 }
 
 
-Pathfinder::Pathfinder() {
-	_tiles = new Walkable[kWidth * kHeight];
-	for (int32 y = 0; y < kHeight; y++)
-		for (int32 x = 0; x < kWidth; x++)
-			_tiles[y * kWidth + x].setPosition(x, y);
+Pathfinder::Pathfinder(int32 width, int32 height) {
+	// Sanity checks
+	assert((width > 0) && (height > 0) && (width <= 0x7FFF) && (height <= 0x7FFF));
+
+	_screenWidth  = width;
+	_screenHeight = height;
+	_mapWidth     = width  / kXResolution;
+	_mapHeight    = height / kYResolution;
+
+	_tiles = new Walkable[_mapWidth * _mapHeight];
+	for (int32 y = 0; y < _mapHeight; y++)
+		for (int32 x = 0; x < _mapWidth; x++)
+			_tiles[y * _mapWidth + x].setPosition(x, y);
 
 	_nodesVisited      = 0;
 	// A limit that seems high enough for all Dark Seed II walk maps :P
-	_nodesVisitedLimit = 3 * kWidth * kHeight;
+	_nodesVisitedLimit = 3 * _mapWidth * _mapHeight;
 	_abortSearch       = false;
 }
 
@@ -92,7 +100,7 @@ Pathfinder::~Pathfinder() {
 }
 
 void Pathfinder::clear() {
-	for (int32 i = 0; i < (kWidth * kHeight); i++)
+	for (int32 i = 0; i < (_mapWidth * _mapHeight); i++)
 		_tiles[i].value = 0;
 }
 
@@ -103,12 +111,12 @@ void Pathfinder::setWalkMap(const Sprite &map, int32 topY, int32 resY) {
 	clear();
 
 	const byte *mapData = (const byte *) map.getPaletted().pixels;
-	for (int32 y = 0; y < kHeight; y++) {
-		for (int32 x = 0; x < kWidth; x++) {
-			int mX = x * (Graphics::kScreenWidth / map.getWidth()) / kXResolution;
+	for (int32 y = 0; y < _mapHeight; y++) {
+		for (int32 x = 0; x < _mapWidth; x++) {
+			int mX = x * (_screenWidth / map.getWidth()) / kXResolution;
 			int mY = ((y * kYResolution) - topY) / resY;
 			if ((mX >= 0) && (mY >= 0) && (mX < map.getWidth()) && (mY < map.getHeight())) {
-				_tiles[y * kWidth + x].value = mapData[mY * map.getWidth() + mX];
+				_tiles[y * _mapWidth + x].value = mapData[mY * map.getWidth() + mX];
 			}
 		}
 	}
@@ -120,19 +128,19 @@ bool Pathfinder::getValue(int32 x, int32 y) const {
 	x /= kXResolution;
 	y /= kYResolution;
 
-	if ((x < 0) || (y < 0) || (x >= kWidth) || (y >= kHeight))
+	if ((x < 0) || (y < 0) || (x >= _mapWidth) || (y >= _mapHeight))
 		return 0;
 
-	Walkable &tile = _tiles[y * kWidth + x];
+	Walkable &tile = _tiles[y * _mapWidth + x];
 
 	return tile.value;
 }
 
 void Pathfinder::findNeighbours() {
 	// Find existing neighbours for each tile
-	for (int32 y = 0; y < kHeight; y++) {
-		for (int32 x = 0; x < kWidth; x++) {
-			Walkable &tile = _tiles[y * kWidth + x];
+	for (int32 y = 0; y < _mapHeight; y++) {
+		for (int32 x = 0; x < _mapWidth; x++) {
+			Walkable &tile = _tiles[y * _mapWidth + x];
 
 			// Positions of the neighbouring tiles. The straight neighbours first, so that
 			// the pathfinding will favour straight lines over diagonals.
@@ -145,8 +153,8 @@ void Pathfinder::findNeighbours() {
 
 			// Go through the neighbouring tiles, look if they exists and add them to the neighbours list
 			for (int i = 0; i < ARRAYSIZE(neighbours); i++) {
-				if (neighbours[i].isIn(0, 0, kWidth - 1, kHeight - 1)) {
-					Walkable &neighbour = _tiles[neighbours[i].y * kWidth + neighbours[i].x];
+				if (neighbours[i].isIn(0, 0, _mapWidth - 1, _mapHeight - 1)) {
+					Walkable &neighbour = _tiles[neighbours[i].y * _mapWidth + neighbours[i].x];
 					if (neighbour.value != 0)
 						tile.neighbours.push_back(&neighbour);
 				}
@@ -157,7 +165,7 @@ void Pathfinder::findNeighbours() {
 }
 
 void Pathfinder::reset() {
-	for (int32 i = 0; i < (kWidth * kHeight); i++)
+	for (int32 i = 0; i < (_mapWidth * _mapHeight); i++)
 		_tiles[i].lastCost = 0xFFFFFFFF;
 
 	_nodesVisited = 0;
@@ -165,17 +173,17 @@ void Pathfinder::reset() {
 }
 
 Pathfinder::Walkable *Pathfinder::findNearest(int32 x, int32 y) {
-	int32 position = y * kWidth + x;
+	int32 position = y * _mapWidth + x;
 
 	// If a walkable tile in this position exists, return this
-	if ((x >= 0) && (y >= 0) && (x < kWidth) && (y < kHeight))
+	if ((x >= 0) && (y >= 0) && (x < _mapWidth) && (y < _mapHeight))
 		if (_tiles[position].value != 0)
 			return &_tiles[position];
 
 	// If not, go over the whole map, calculating the distance and return the one with the smallest one.
 	Walkable *nearest = 0;
 	int32 distance = 0x7FFFFFFF;
-	for (int32 i = 0; i < (kWidth * kHeight); i++) {
+	for (int32 i = 0; i < (_mapWidth * _mapHeight); i++) {
 		if (_tiles[i].value == 0)
 			continue;
 
@@ -201,10 +209,10 @@ Common::List<Position> Pathfinder::findPath(int32 x1, int32 y1, int32 x2, int32 
 	int32 tY2 = y2 / kYResolution;
 
 	// If the coordinates of either node are valid, look at the walk map
-	if ((tX1 >= 0) && (tY1 >= 0) && (tX1 < kWidth) && (tY1 < kHeight))
-		start = &_tiles[tY1 * kWidth + tX1];
-	if ((tX2 >= 0) && (tY2 >= 0) && (tX2 < kWidth) && (tY2 < kHeight))
-		end   = &_tiles[tY2 * kWidth + tX2];
+	if ((tX1 >= 0) && (tY1 >= 0) && (tX1 < _mapWidth) && (tY1 < _mapHeight))
+		start = &_tiles[tY1 * _mapWidth + tX1];
+	if ((tX2 >= 0) && (tY2 >= 0) && (tX2 < _mapWidth) && (tY2 < _mapHeight))
+		end   = &_tiles[tY2 * _mapWidth + tX2];
 
 	// If one of the nodest doesn't exist, try to find the nearest existent one
 	if (!start)

@@ -44,7 +44,7 @@ Mike::Mike(Resources &resources, Variables &variables, Graphics &graphics) {
 	_variables = &variables;
 	_graphics  = &graphics;
 
-	_pathfinder = new Pathfinder();
+	_pathfinder = new Pathfinder(graphics.getScreenWidth(), graphics.getScreenHeight());
 
 	_visible = false;
 

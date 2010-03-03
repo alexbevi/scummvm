@@ -47,13 +47,6 @@ class Sprite;
 
 class Mike : public Saveable {
 public:
-	/** The resolution of a walk map tile in pixels. */
-	static const int32 kWalkMapResolution = 10;
-	/** The width of the walk map. */
-	static const int32 kWalkMapWidth      = Graphics::kScreenWidth  / kWalkMapResolution;
-	/** The height of the walk map. */
-	static const int32 kWalkMapHeight     = Graphics::kScreenHeight / kWalkMapResolution;
-
 	/** A direction. */
 	enum Direction {
 		kDirN    = 0, ///< North.
@@ -138,6 +131,7 @@ private:
 	Graphics  *_graphics;
 
 	Pathfinder *_pathfinder;
+
 	/** Is Mike visible? */
 	bool _visible;
 

@@ -53,7 +53,7 @@ void VersionFormats::setGameVersion(GameVersion gameVersion) {
 		break;
 
 	default:
-		warning("Unknow game version");
+		warning("VersionFormats::setGameVersion(): Unknown game version");
 		assert(false);
 	}
 }

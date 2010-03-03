@@ -74,7 +74,7 @@ TextObject::TextObject(const Common::String &text, int32 x, int32 y,
 	assert((x >= 0) && (y >= 0) && (x <= 0x7FFF) && (y <= 0x7FFF));
 
 	if (maxWidth <= 0)
-		maxWidth = Graphics::kScreenWidth;
+		maxWidth = 320;
 
 	// We want the big font
 	::Graphics::FontManager::FontUsage fontUsage = ::Graphics::FontManager::kBigGUIFont;
@@ -125,7 +125,7 @@ void TextObject::recolor(byte color) {
 
 int32 TextObject::wrap(const Common::String &string, Common::StringList &list, int32 maxWidth) {
 	if (maxWidth <= 0)
-		maxWidth = Graphics::kScreenWidth;
+		maxWidth = 320;
 
 	// We want the big font
 	::Graphics::FontManager::FontUsage fontUsage = ::Graphics::FontManager::kBigGUIFont;

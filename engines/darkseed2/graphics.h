@@ -60,9 +60,6 @@ class Cursors;
 
 class Graphics : public Saveable {
 public:
-	static const int32 kScreenWidth  = 640;  ///< The screen width.
-	static const int32 kScreenHeight = 480;  ///< The screen height.
-
 	/** An entry in the sprite queue. */
 	struct SpriteQueueEntry {
 		bool persistent; ///< Is the sprite persistent or should it be removed on room change?
@@ -98,7 +95,7 @@ public:
 		bool isUpToDate(int32 frame, int32 x, int32 y, frac_t scale) const;
 	};
 
-	Graphics(Resources &resources, Variables &variables, Cursors &cursors);
+	Graphics(int32 width, int32 height, Resources &resources, Variables &variables, Cursors &cursors);
 	~Graphics();
 
 	/** Init the graphics subsystem. */
@@ -111,6 +108,9 @@ public:
 	InventoryBox &getInventoryBox();
 	/** Get the current room. */
 	Room &getRoom();
+
+	int32 getScreenWidth()  const;
+	int32 getScreenHeight() const;
 
 	/** Check for status changes. */
 	void updateStatus();
@@ -176,6 +176,9 @@ private:
 	ConversationBox *_conversationBox; ///< The conversation box.
 	InventoryBox    *_inventoryBox;    ///< The inventory box.
 	Room            *_room;            ///< The current room.
+
+	int32 _screenWidth;
+	int32 _screenHeight;
 
 	Palette _gamePalette; ///< The game palette.
 	Sprite  _screen;      ///< The game screen.

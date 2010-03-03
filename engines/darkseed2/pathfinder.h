@@ -57,7 +57,7 @@ struct Position {
 /** A path finding class implementing the IDA* algorithm. */
 class Pathfinder {
 public:
-	Pathfinder();
+	Pathfinder(int32 width, int32 height);
 	~Pathfinder();
 
 	/** Clear the pathfinder's walk map. */
@@ -72,10 +72,8 @@ public:
 	bool getValue(int32 x, int32 y) const;
 
 private:
-	static const int32 kWidth  = 64;
-	static const int32 kHeight = 48;
-	static const int32 kXResolution = Graphics::kScreenWidth  / kWidth;
-	static const int32 kYResolution = Graphics::kScreenHeight / kHeight;
+	static const int32 kXResolution = 10;
+	static const int32 kYResolution = 10;
 
 	struct Walkable {
 		Position position; ///< The position of the walkable tile.
@@ -99,6 +97,11 @@ private:
 
 		bool operator==(const Walkable &right) const;
 	};
+
+	int32 _screenWidth;  ///< The screen's width.
+	int32 _screenHeight; ///< The screen's height.
+	int32 _mapWidth;     ///< The walk map's width.
+	int32 _mapHeight;    ///< The walk map's height.
 
 	/** The complete walk map. */
 	Walkable *_tiles;
