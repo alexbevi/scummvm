@@ -247,6 +247,36 @@ void Sprite::updateTransparencyMap() {
 	}
 }
 
+bool Sprite::loadFromImage(Resources &resources, const Common::String &image) {
+	switch (resources.getImageType()) {
+	case Resources::kImageTypeBMP:
+		return loadFromBMP(resources, image);
+
+	case Resources::kImageTypeRGB:
+		return loadFromRGB(resources, image);
+
+	case Resources::kImageTypeBDP:
+		return loadFromRGB(resources, image);
+	}
+
+	return false;
+}
+
+bool Sprite::loadFromRoomImage(Resources &resources, const Common::String &image) {
+	switch (resources.getRoomImageType()) {
+	case Resources::kImageTypeBMP:
+		return loadFromBMP(resources, image);
+
+	case Resources::kImageTypeRGB:
+		return loadFromRGB(resources, image);
+
+	case Resources::kImageTypeBDP:
+		return loadFromBDP(resources, image);
+	}
+
+	return false;
+}
+
 bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 	discard();
 
@@ -334,6 +364,131 @@ bool Sprite::loadFromBMP(Common::SeekableReadStream &bmp) {
 	return true;
 }
 
+bool Sprite::loadFromRGB(Common::SeekableReadStream &rgb) {
+	rgb.seek(0);
+
+	int32 size = rgb.size();
+
+	uint16 width  = rgb.readUint16BE();
+	uint16 height = rgb.readUint16BE();
+
+	if (size < (12 + width * height * 2))
+		return false;
+
+	// Each line might be padded. I don't quite understand to which limits (some files pad to
+	// a power of two, some to 80 bytes, some not at all), so we just calculate the pad from
+	// the file size.
+	uint16 linePad = (size - 4 - 8 - (width * height * 2)) / height;
+
+	// Feet & Default?
+	uint16 x1 = rgb.readUint16BE();
+	uint16 x2 = rgb.readUint16BE();
+	uint16 x3 = rgb.readUint16BE();
+	uint16 x4 = rgb.readUint16BE();
+
+	//warning("(%dx%d, %d, %d), %d (%d), %d (%d), %d, %d", width, height, linePad, size, x1, (int16) x1, x2, (int16) x2, x3, x4);
+
+	create(width, height);
+
+	byte *img = (byte *) _surfaceTrueColor.pixels;
+	for (int32 y = 0; y < height; y++) {
+		rgb.skip(linePad);
+		for (int32 x = 0; x < width; x++) {
+			ImgConv.writeColor(img, readColor555(rgb));
+
+			img += _surfaceTrueColor.bytesPerPixel;
+		}
+	}
+	// Completely non-transparent
+	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
+
+	return true;
+}
+
+bool Sprite::loadFromBDP(Common::SeekableReadStream &bdp) {
+	bdp.seek(0);
+
+	if (bdp.size() != (320*240*2))
+		return false;
+
+	create(320, 240);
+
+	byte *img = (byte *) _surfaceTrueColor.pixels;
+	for (int32 y = 0; y < 320; y++) {
+		for (int32 x = 0; x < 240; x++) {
+			ImgConv.writeColor(img, readColor555(bdp));
+
+			img += _surfaceTrueColor.bytesPerPixel;
+		}
+	}
+
+	// Completely non-transparent
+	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
+
+	return true;
+}
+
+uint32 Sprite::readColor555(Common::SeekableReadStream &stream) const {
+	const uint16 p = stream.readUint16BE();
+	const uint8  r = ((p & 0x001F)      ) << 3;
+	const uint8  g = ((p & 0x03E0) >>  5) << 3;
+	const uint8  b = ((p & 0x7C00) >> 10) << 3;
+
+	return ImgConv.getColor(r, g, b);
+}
+
+bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
+	Common::String bmpFile = Resources::addExtension(bmp,
+			resources.getImageExtension(Resources::kImageTypeBMP));
+
+	if (!resources.hasResource(bmpFile))
+		return false;
+
+	Resource *resBMP = resources.getResource(bmpFile);
+
+	bool result = loadFromBMP(resBMP->getStream());
+
+	delete resBMP;
+
+	_fileName = bmp;
+
+	return result;
+}
+
+bool Sprite::loadFromRGB(Resources &resources, const Common::String &rgb) {
+	Common::String rgbFile = Resources::addExtension(rgb,
+			resources.getImageExtension(Resources::kImageTypeRGB));
+	if (!resources.hasResource(rgbFile))
+		return false;
+
+	Resource *resRGB = resources.getResource(rgbFile);
+
+	bool result = loadFromRGB(resRGB->getStream());
+
+	delete resRGB;
+
+	_fileName = rgb;
+
+	return result;
+}
+
+bool Sprite::loadFromBDP(Resources &resources, const Common::String &bdp) {
+	Common::String bdpFile = Resources::addExtension(bdp,+
+			resources.getImageExtension(Resources::kImageTypeBDP));
+	if (!resources.hasResource(bdpFile))
+		return false;
+
+	Resource *resBDP = resources.getResource(bdpFile);
+
+	bool result = loadFromBDP(resBDP->getStream());
+
+	delete resBDP;
+
+	_fileName = bdp;
+
+	return result;
+}
+
 void Sprite::loadPalette(Common::SeekableReadStream &stream, uint32 count) {
 	if (count == 0)
 		return;
@@ -348,135 +503,6 @@ void Sprite::loadPalette(Common::SeekableReadStream &stream, uint32 count) {
 	}
 	_palette.copyFrom(palette, count);
 	delete[] palette;
-}
-
-bool Sprite::loadFromImage(Resources &resources, const Common::String &image) {
-	switch (resources.getImageType()) {
-	case Resources::kImageTypeBMP:
-		return loadFromBMP(resources, image);
-
-	case Resources::kImageTypeRGB:
-		return loadFromRGB(resources, image);
-
-	case Resources::kImageTypeBDP:
-		return loadFromRGB(resources, image);
-	}
-
-	return false;
-}
-
-bool Sprite::loadFromRoomImage(Resources &resources, const Common::String &image) {
-	warning("load from room image %s, %d", image.c_str(), resources.getRoomImageType());
-	switch (resources.getRoomImageType()) {
-	case Resources::kImageTypeBMP:
-		return loadFromBMP(resources, image);
-
-	case Resources::kImageTypeRGB:
-		return loadFromRGB(resources, image);
-
-	case Resources::kImageTypeBDP:
-		return loadFromBDP(resources, image);
-	}
-
-	return false;
-}
-
-bool Sprite::loadFromBDP(Common::SeekableReadStream &bdp) {
-	bdp.seek(0);
-
-	if (bdp.size() != (320*240*2))
-		return false;
-
-	create(320, 240);
-
-	byte *img = (byte *) _surfaceTrueColor.pixels;
-	for (int32 y = 0; y < 320; y++) {
-		for (int32 x = 0; x < 240; x++) {
-			const uint16 p = bdp.readUint16BE();
-			const uint8  r = ((p & 0x001F)      ) << 3;
-			const uint8  g = ((p & 0x03E0) >>  5) << 3;
-			const uint8  b = ((p & 0x7C00) >> 10) << 3;
-			const uint32 c = ImgConv.getColor(r, g, b);
-
-			ImgConv.writeColor(img, c);
-
-			img += _surfaceTrueColor.bytesPerPixel;
-		}
-	}
-
-	// Completely non-transparent
-	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
-
-	return false;
-}
-
-bool Sprite::loadFromRGB(Common::SeekableReadStream &rgb) {
-	warning("TODO: Sprite::loadFromRGB()");
-	return false;
-}
-
-bool Sprite::loadFromBMP(const Resource &resource) {
-	return loadFromBMP(resource.getStream());
-}
-
-bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
-	Common::String bmpFile = Resources::addExtension(bmp,
-			resources.getImageExtension(Resources::kImageTypeBMP));
-
-	if (!resources.hasResource(bmpFile))
-		return false;
-
-	Resource *resBMP = resources.getResource(bmpFile);
-
-	bool result = loadFromBMP(*resBMP);
-
-	delete resBMP;
-
-	_fileName = bmp;
-
-	return result;
-}
-
-bool Sprite::loadFromBDP(const Resource &resource) {
-	return loadFromBDP(resource.getStream());
-}
-
-bool Sprite::loadFromRGB(const Resource &resource) {
-	return loadFromRGB(resource.getStream());
-}
-
-bool Sprite::loadFromBDP(Resources &resources, const Common::String &bdp) {
-	Common::String bdpFile = Resources::addExtension(bdp,+
-			resources.getImageExtension(Resources::kImageTypeBDP));
-	if (!resources.hasResource(bdpFile))
-		return false;
-
-	Resource *resBDP = resources.getResource(bdpFile);
-
-	bool result = loadFromBDP(*resBDP);
-
-	delete resBDP;
-
-	_fileName = bdp;
-
-	return result;
-}
-
-bool Sprite::loadFromRGB(Resources &resources, const Common::String &rgb) {
-	Common::String rgbFile = Resources::addExtension(rgb,
-			resources.getImageExtension(Resources::kImageTypeRGB));
-	if (!resources.hasResource(rgbFile))
-		return false;
-
-	Resource *resRGB = resources.getResource(rgbFile);
-
-	bool result = loadFromRGB(*resRGB);
-
-	delete resRGB;
-
-	_fileName = rgb;
-
-	return result;
 }
 
 void Sprite::flipHorizontally() {

@@ -182,22 +182,18 @@ private:
 	bool loadFromBMP(Resources &resources, const Common::String &bmp);
 	/** Load a sprite from a BMP. */
 	bool loadFromBMP(Common::SeekableReadStream &bmp);
-	/** Load a sprite from a BMP. */
-	bool loadFromBMP(const Resource &resource);
 
 	/** Load a sprite from a RGB. */
 	bool loadFromRGB(Resources &resources, const Common::String &rgb);
 	/** Load a sprite from a RGB. */
 	bool loadFromRGB(Common::SeekableReadStream &rgb);
-	/** Load a sprite from a RGB. */
-	bool loadFromRGB(const Resource &resource);
 
 	/** Load a sprite from a BDP. */
 	bool loadFromBDP(Resources &resources, const Common::String &rgb);
 	/** Load a sprite from a BDP. */
 	bool loadFromBDP(Common::SeekableReadStream &bdp);
-	/** Load a sprite from a BDP. */
-	bool loadFromBDP(const Resource &resource);
+
+	uint32 readColor555(Common::SeekableReadStream &stream) const;
 
 	void loadPalette(Common::SeekableReadStream &stream, uint32 count);
 
