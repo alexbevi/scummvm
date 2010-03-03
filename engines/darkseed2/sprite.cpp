@@ -394,19 +394,16 @@ bool Sprite::loadFromRGB(Common::SeekableReadStream &rgb) {
 	_defaultY = (int32) rgb.readUint16BE();
 
 	byte *img = (byte *) _surfaceTrueColor.pixels;
+	uint8 *transp = _transparencyMap;
 	for (int32 y = 0; y < height; y++) {
 		rgb.skip(linePad);
 		for (int32 x = 0; x < width; x++) {
-			ImgConv.writeColor(img, readColor555(rgb));
+			ImgConv.writeColor(img, readColor555(rgb, transp));
 
 			img += _surfaceTrueColor.bytesPerPixel;
+			transp++;
 		}
 	}
-
-	// TODO: Transparency?
-
-	// Completely non-transparent
-	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
 
 	return true;
 }
@@ -571,11 +568,14 @@ bool Sprite::loadFromSaturnCursor(Common::SeekableReadStream &cursor) {
 	return true;
 }
 
-uint32 Sprite::readColor555(Common::SeekableReadStream &stream) const {
+uint32 Sprite::readColor555(Common::SeekableReadStream &stream, uint8 *transp) const {
 	const uint16 p = stream.readUint16BE();
 	const uint8  r = ((p & 0x001F)      ) << 3;
 	const uint8  g = ((p & 0x03E0) >>  5) << 3;
 	const uint8  b = ((p & 0x7C00) >> 10) << 3;
+
+	if (transp)
+		*transp = (p == 0) ? 1 : 0;
 
 	return ImgConv.getColor(r, g, b);
 }

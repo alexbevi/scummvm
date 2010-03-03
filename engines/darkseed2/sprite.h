@@ -205,7 +205,7 @@ private:
 	/** Load from a cursor found in the Sega Saturn version. */
 	bool loadFromSaturnCursor(Common::SeekableReadStream &cursor);
 
-	uint32 readColor555(Common::SeekableReadStream &stream) const;
+	uint32 readColor555(Common::SeekableReadStream &stream, uint8 *transp = 0) const;
 
 	void loadPalette(Common::SeekableReadStream &stream, uint32 count);
 
