@@ -25,6 +25,7 @@
 
 #include "engines/darkseed2/mike.h"
 #include "engines/darkseed2/imageconverter.h"
+#include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/sprite.h"
 #include "engines/darkseed2/saveload.h"
@@ -168,6 +169,9 @@ void Mike::getPosition(int32 &x, int32 &y) const {
 }
 
 void Mike::setPosition(int32 x, int32 y) {
+	x /= _resources->getVersionFormats().getHotspotScale();
+	y /= _resources->getVersionFormats().getHotspotScale();
+
 	// Sanity checks
 	assert((ABS(x) <= 0x7FFF) && (ABS(y) <= 0x7FFF));
 
@@ -189,10 +193,12 @@ frac_t Mike::getScale() const {
 }
 
 frac_t Mike::calculateScale(int32 y) const {
+	y *= _resources->getVersionFormats().getHotspotScale();
+
 	// Sanity checks
 	assert(ABS(y) <= 0x7FFF);
 
-	frac_t scale = intToFrac(_y - _scaleFactors[0]) / _scaleFactors[1];
+	frac_t scale = intToFrac(y - _scaleFactors[0]) / _scaleFactors[1];
 
 	if (scale < 0)
 		return FRAC_ONE;
@@ -406,6 +412,9 @@ void Mike::advanceWalk() {
 }
 
 void Mike::go(int32 x, int32 y, Direction direction) {
+	x /= _resources->getVersionFormats().getHotspotScale();
+	y /= _resources->getVersionFormats().getHotspotScale();
+
 	// Sanity checks
 	assert((ABS(x) <= 0x7FFF) && (ABS(y) <= 0x7FFF));
 

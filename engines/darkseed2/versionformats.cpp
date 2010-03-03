@@ -44,6 +44,8 @@ VersionFormats::VersionFormats() {
 	_walkMapType = kWalkMapTypeBMP;
 
 	_soundType = kSoundTypeWAV;
+
+	_hotspotScale = 1;
 }
 
 void VersionFormats::setGameVersion(GameVersion gameVersion) {
@@ -56,6 +58,8 @@ void VersionFormats::setGameVersion(GameVersion gameVersion) {
 		_boxImageType  = kImageTypeBMP;
 		_walkMapType   = kWalkMapTypeBMP;
 		_soundType     = kSoundTypeWAV;
+
+		_hotspotScale = 1;
 		break;
 
 	case kGameVersionSaturn:
@@ -64,6 +68,8 @@ void VersionFormats::setGameVersion(GameVersion gameVersion) {
 		_boxImageType  = kImageType256;
 		_walkMapType   = kWalkMapTypeMAP;
 		_soundType     = kSoundTypeAIF;
+
+		_hotspotScale = 2;
 		break;
 
 	default:
@@ -120,6 +126,10 @@ const char *VersionFormats::getSoundExtension(SoundType soundType) const {
 	assert((soundType >= 0) && (soundType < ARRAYSIZE(kSoundExtensions)));
 
 	return kSoundExtensions[soundType];
+}
+
+int VersionFormats::getHotspotScale() const {
+	return _hotspotScale;
 }
 
 } // End of namespace DarkSeed2

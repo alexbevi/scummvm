@@ -440,6 +440,9 @@ void Events::mouseClickedLeft(int32 x, int32 y) {
 
 	// Did we click any objects? (But ignore if we're doing something important)
 	if (_vm->_variables->get("SysCall") == 0) {
+		x *= _vm->_resources->getVersionFormats().getHotspotScale();
+		y *= _vm->_resources->getVersionFormats().getHotspotScale();
+
 		Object *curObject = _vm->_graphics->getRoom().findObject(x, y);
 		if (curObject)
 			doObjectVerb(*curObject, cursorModeToObjectVerb(_cursorMode));
@@ -467,6 +470,8 @@ void Events::checkHotspot(int32 x, int32 y) {
 
 	bool cursorActive = false;
 
+	x *= _vm->_resources->getVersionFormats().getHotspotScale();
+	y *= _vm->_resources->getVersionFormats().getHotspotScale();
 	Object *curObject = _vm->_graphics->getRoom().findObject(x, y);
 	if (curObject) {
 		if (curObject->hasActiveVerb(cursorModeToObjectVerb(_cursorMode)))

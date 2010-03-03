@@ -85,6 +85,8 @@ public:
 	/** Get the extension used for sounds by the game. */
 	const char *getSoundExtension(SoundType soundType) const;
 
+	int getHotspotScale() const;
+
 private:
 	static const char *kImageExtensions[];
 	static const char *kWalkMapExtensions[];
@@ -101,6 +103,8 @@ private:
 	WalkMapType _walkMapType; ///< The type of file the game uses for walk maps.
 
 	SoundType _soundType;     ///< The type of sounds the game uses.
+
+	int _hotspotScale;
 };
 
 } // End of namespace DarkSeed2
