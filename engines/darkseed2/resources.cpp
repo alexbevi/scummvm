@@ -79,7 +79,7 @@ Common::SeekableReadStream &Resource::getStream() const {
 }
 
 
-const char *Resources::kImageExtensions[3] = {"BMP", "RGB", "BDP"};
+const char *Resources::kImageExtensions[4] = {"BMP", "RGB", "BDP", "256"};
 
 
 Resources::Archive::Archive() : type(kArchiveTypeNone), data(0), stream(0), size(0), indexed(false) {
@@ -98,6 +98,7 @@ Resources::Res::Res() : archive(0), offset(0), size(0), exists(false), indexed(f
 Resources::Resources() {
 	_imageType = kImageTypeBMP;
 	_roomImageType = kImageTypeBMP;
+	_boxImageType = kImageTypeBMP;
 
 	clear();
 }
@@ -518,7 +519,7 @@ void Resources::setImageType(ImageType imageType) {
 	_imageType = imageType;
 }
 
-Resources::ImageType Resources::getImageType() const {
+ImageType Resources::getImageType() const {
 	return _imageType;
 }
 
@@ -526,8 +527,16 @@ void Resources::setRoomImageType(ImageType imageType) {
 	_roomImageType = imageType;
 }
 
-Resources::ImageType Resources::getRoomImageType() const {
+ImageType Resources::getRoomImageType() const {
 	return _roomImageType;
+}
+
+void Resources::setBoxImageType(ImageType imageType) {
+	_boxImageType = imageType;
+}
+
+ImageType Resources::getBoxImageType() const {
+	return _boxImageType;
 }
 
 const char *Resources::getImageExtension() const {
@@ -536,6 +545,10 @@ const char *Resources::getImageExtension() const {
 
 const char *Resources::getRoomImageExtension() const {
 	return kImageExtensions[_roomImageType];
+}
+
+const char *Resources::getBoxImageExtension() const {
+	return kImageExtensions[_boxImageType];
 }
 
 const char *Resources::getImageExtension(ImageType imageType) const {

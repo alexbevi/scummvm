@@ -106,15 +106,21 @@ void InventoryBox::updateColors() {
 }
 
 void InventoryBox::loadSprites() {
-	bool loaded0, loaded1, loaded2, loaded3, loaded4;
+	ImageType boxImageType = _resources->getBoxImageType();
 
-	loaded0 = _sprites[3].loadFromImage(*_resources, kSpriteFrame);
-	loaded1 = _sprites[4].loadFromImage(*_resources, kSpriteScrollLeft);
-	loaded2 = _sprites[5].loadFromImage(*_resources, kSpriteScrollNoLeft);
-	loaded3 = _sprites[6].loadFromImage(*_resources, kSpriteScrollRight);
-	loaded4 = _sprites[7].loadFromImage(*_resources, kSpriteScrollNoRight);
+	if (boxImageType == kImageType256) {
+		warning("TODO: Sega Saturn inventory box images");
+	} else {
+		bool loaded0, loaded1, loaded2, loaded3, loaded4;
 
-	assert(loaded0 && loaded1 && loaded2 && loaded3 && loaded4);
+		loaded0 = _sprites[3].loadFromImage(*_resources, kSpriteFrame);
+		loaded1 = _sprites[4].loadFromImage(*_resources, kSpriteScrollLeft);
+		loaded2 = _sprites[5].loadFromImage(*_resources, kSpriteScrollNoLeft);
+		loaded3 = _sprites[6].loadFromImage(*_resources, kSpriteScrollRight);
+		loaded4 = _sprites[7].loadFromImage(*_resources, kSpriteScrollNoRight);
+
+		assert(loaded0 && loaded1 && loaded2 && loaded3 && loaded4);
+	}
 }
 
 void InventoryBox::updateScroll() {

@@ -31,6 +31,7 @@
 #include "common/hashmap.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/versionformats.h"
 
 namespace Common {
 	class File;
@@ -74,13 +75,6 @@ private:
 /** The resource manager. */
 class Resources {
 public:
-	/** An image type. */
-	enum ImageType {
-		kImageTypeBMP = 0, ///< BMP images.
-		kImageTypeRGB = 1, ///< RGB images.
-		kImageTypeBDP = 2  ///< BDP images.
-	};
-
 	Resources();
 	~Resources();
 
@@ -112,17 +106,24 @@ public:
 	/** Get the type of images the game uses for rooms. */
 	ImageType getRoomImageType() const;
 
+	/** Set the type of images the game uses for boxes. */
+	void setBoxImageType(ImageType imageType);
+	/** Get the type of images the game uses for boxes. */
+	ImageType getBoxImageType() const;
+
 	/** Get the extension used for images by the game. */
 	const char *getImageExtension() const;
-	/** Get the extension used for images by the game. */
+	/** Get the extension used for room images by the game. */
 	const char *getRoomImageExtension() const;
+	/** Get the extension used for box images by the game. */
+	const char *getBoxImageExtension() const;
 	/** Get the extension used for images by the game. */
 	const char *getImageExtension(ImageType imageType) const;
 
 	static Common::String addExtension(const Common::String &name, const Common::String &extension);
 
 private:
-	static const char *kImageExtensions[3];
+	static const char *kImageExtensions[4];
 
 	/** An archive type. */
 	enum ArchiveType {
@@ -165,7 +166,8 @@ private:
 	};
 
 	ImageType _imageType;     ///< The type of images the game uses for images.
-	ImageType _roomImageType; ///< The type of images the game uses for images.
+	ImageType _roomImageType; ///< The type of images the game uses for room images.
+	ImageType _boxImageType;  ///< The type of images the game uses for box images.
 
 	uint16 _archiveCount; ///< Number of indexed archive files.
 	uint32 _resCount;  ///< Number of indexed resources.

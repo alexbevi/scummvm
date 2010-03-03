@@ -218,15 +218,20 @@ bool ConversationBox::isActive() const {
 }
 
 void ConversationBox::loadSprites() {
-	bool loaded0, loaded1, loaded2, loaded3;
+	ImageType boxImageType = _resources->getBoxImageType();
 
-	loaded0 = _sprites[2].loadFromImage(*_resources, kSpriteFrame);
-	loaded1 = _sprites[3].loadFromImage(*_resources, kSpriteScrollUpDown);
-	loaded2 = _sprites[4].loadFromImage(*_resources, kSpriteScrollDown);
-	loaded3 = _sprites[5].loadFromImage(*_resources, kSpriteScrollUp);
+	if (boxImageType == kImageType256) {
+		warning("TODO: Sega Saturn conversation box images");
+	} else {
+		bool loaded0, loaded1, loaded2, loaded3;
 
-	assert(loaded0 && loaded1 && loaded2 && loaded3);
+		loaded0 = _sprites[2].loadFromImage(*_resources, kSpriteFrame);
+		loaded1 = _sprites[3].loadFromImage(*_resources, kSpriteScrollUpDown);
+		loaded2 = _sprites[4].loadFromImage(*_resources, kSpriteScrollDown);
+		loaded3 = _sprites[5].loadFromImage(*_resources, kSpriteScrollUp);
 
+		assert(loaded0 && loaded1 && loaded2 && loaded3);
+	}
 }
 
 void ConversationBox::build() {

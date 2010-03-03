@@ -80,21 +80,23 @@ Mike::~Mike() {
 	delete _pathfinder;
 }
 
-bool Mike::init() {
-	if (!loadAnimations())
+bool Mike::init(bool needPalette) {
+	if (!loadAnimations(needPalette))
 		return false;
 
 	return true;
 }
 
-bool Mike::loadAnimations() {
+bool Mike::loadAnimations(bool needPalette) {
 	Palette palette;
 
-	// Loading the fixed palette for Mike
-	if (!palette.loadFromPAL(*_resources, "fix"))
-		return false;
+	if (needPalette) {
+		// Loading the fixed palette for Mike
+		if (!palette.loadFromPAL(*_resources, "fix"))
+			return false;
 
-	ImgConv.registerStandardPalette(palette);
+		ImgConv.registerStandardPalette(palette);
+	}
 
 	// Walking animations
 	if (!_animations[kAnimStateWalking][kDirN ].load(*_resources, "n" ))
@@ -140,7 +142,8 @@ bool Mike::loadAnimations() {
 	_animations[kAnimStateStanding][kDirE ].flipHorizontally();
 	_animations[kAnimStateStanding][kDirSE].flipHorizontally();
 
-	ImgConv.unregisterStandardPalette();
+	if (needPalette)
+		ImgConv.unregisterStandardPalette();
 
 	return true;
 }

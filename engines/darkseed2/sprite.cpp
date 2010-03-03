@@ -248,30 +248,30 @@ void Sprite::updateTransparencyMap() {
 }
 
 bool Sprite::loadFromImage(Resources &resources, const Common::String &image) {
-	switch (resources.getImageType()) {
-	case Resources::kImageTypeBMP:
-		return loadFromBMP(resources, image);
-
-	case Resources::kImageTypeRGB:
-		return loadFromRGB(resources, image);
-
-	case Resources::kImageTypeBDP:
-		return loadFromRGB(resources, image);
-	}
-
-	return false;
+	return loadFromImage(resources, image, resources.getImageType());
 }
 
 bool Sprite::loadFromRoomImage(Resources &resources, const Common::String &image) {
-	switch (resources.getRoomImageType()) {
-	case Resources::kImageTypeBMP:
+	return loadFromImage(resources, image, resources.getRoomImageType());
+}
+
+bool Sprite::loadFromBoxImage(Resources &resources, const Common::String &image) {
+	return loadFromImage(resources, image, resources.getBoxImageType());
+}
+
+bool Sprite::loadFromImage(Resources &resources, const Common::String &image, ImageType imageType) {
+	switch (imageType) {
+	case kImageTypeBMP:
 		return loadFromBMP(resources, image);
 
-	case Resources::kImageTypeRGB:
+	case kImageTypeRGB:
 		return loadFromRGB(resources, image);
 
-	case Resources::kImageTypeBDP:
+	case kImageTypeBDP:
 		return loadFromBDP(resources, image);
+
+	case kImageType256:
+		break;
 	}
 
 	return false;
@@ -557,7 +557,7 @@ uint32 Sprite::readColor555(Common::SeekableReadStream &stream) const {
 
 bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
 	Common::String bmpFile = Resources::addExtension(bmp,
-			resources.getImageExtension(Resources::kImageTypeBMP));
+			resources.getImageExtension(kImageTypeBMP));
 
 	if (!resources.hasResource(bmpFile))
 		return false;
@@ -575,7 +575,7 @@ bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
 
 bool Sprite::loadFromRGB(Resources &resources, const Common::String &rgb) {
 	Common::String rgbFile = Resources::addExtension(rgb,
-			resources.getImageExtension(Resources::kImageTypeRGB));
+			resources.getImageExtension(kImageTypeRGB));
 	if (!resources.hasResource(rgbFile))
 		return false;
 
@@ -592,7 +592,7 @@ bool Sprite::loadFromRGB(Resources &resources, const Common::String &rgb) {
 
 bool Sprite::loadFromBDP(Resources &resources, const Common::String &bdp) {
 	Common::String bdpFile = Resources::addExtension(bdp,
-			resources.getImageExtension(Resources::kImageTypeBDP));
+			resources.getImageExtension(kImageTypeBDP));
 	if (!resources.hasResource(bdpFile))
 		return false;
 

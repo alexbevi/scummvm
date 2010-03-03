@@ -36,6 +36,7 @@
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/saveable.h"
+#include "engines/darkseed2/versionformats.h"
 #include "engines/darkseed2/palette.h"
 
 namespace Common {
@@ -102,6 +103,9 @@ public:
 
 	/** Load a sprite from a room image file. */
 	bool loadFromRoomImage(Resources &resources, const Common::String &image);
+
+	/** Load a sprite from a box image file. */
+	bool loadFromBoxImage(Resources &resources, const Common::String &image);
 
 	/** Load from a cursor resource embedded in an EXE file. */
 	bool loadFromCursorResource(const NECursor &cursor);
@@ -180,6 +184,8 @@ private:
 	void updateTransparencyMap();
 
 	void fillImage(byte cP, uint32 cT);
+
+	bool loadFromImage(Resources &resources, const Common::String &image, ImageType imageType);
 
 	/** Load a sprite from a BMP. */
 	bool loadFromBMP(Resources &resources, const Common::String &bmp);

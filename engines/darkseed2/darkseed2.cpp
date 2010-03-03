@@ -216,8 +216,9 @@ bool DarkSeed2Engine::init() {
 			return false;
 		}
 
-		_resources->setImageType(Resources::kImageTypeRGB);
-		_resources->setRoomImageType(Resources::kImageTypeBDP);
+		_resources->setImageType(kImageTypeRGB);
+		_resources->setRoomImageType(kImageTypeBDP);
+		_resources->setBoxImageType(kImageType256);
 
 		if (!_cursors->loadSaturnCursors(*_resources)) {
 			warning("DarkSeed2Engine::init(): Couldn't load cursors");
@@ -230,8 +231,9 @@ bool DarkSeed2Engine::init() {
 			return false;
 		}
 
-		_resources->setImageType(Resources::kImageTypeBMP);
-		_resources->setRoomImageType(Resources::kImageTypeBMP);
+		_resources->setImageType(kImageTypeBMP);
+		_resources->setRoomImageType(kImageTypeBMP);
+		_resources->setBoxImageType(kImageTypeBMP);
 	}
 
 
@@ -247,7 +249,8 @@ bool DarkSeed2Engine::init() {
 		return false;
 	}
 
-	if (!_mike->init()) {
+	bool needPalette = !isSaturn();
+	if (!_mike->init(needPalette)) {
 		warning("DarkSeed2Engine::init(): Couldn't initialize Mike");
 		return false;
 	}

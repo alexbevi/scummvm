@@ -71,7 +71,7 @@ public:
 	~Mike();
 
 	/** Initialize Mike. */
-	bool init();
+	bool init(bool needPalette);
 
 	/** Is Mike busy (not idly standing around)? */
 	bool isBusy() const;
@@ -175,7 +175,7 @@ private:
 	uint32 _waitUntil;
 
 	/** Load animations. */
-	bool loadAnimations();
+	bool loadAnimations(bool needPalette);
 
 	/** Update the scaling value based on the current y coordinate. */
 	void updateScale();
