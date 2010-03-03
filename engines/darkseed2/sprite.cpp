@@ -551,8 +551,6 @@ bool Sprite::loadFromSaturnCursor(Common::SeekableReadStream &cursor) {
 
 	create(16, 16);
 
-	fill(ImgConv.getColor(0, 0, 255));
-
 	cursor.seek(0);
 
 	_feetX = cursor.readUint16BE();
