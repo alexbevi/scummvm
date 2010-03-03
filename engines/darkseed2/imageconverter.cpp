@@ -47,6 +47,10 @@ void ImageConverter::unregisterStandardPalette() {
 	_palettes.pop();
 }
 
+const ::Graphics::PixelFormat &ImageConverter::getPixelFormat() const {
+	return _format;
+}
+
 void ImageConverter::setPixelFormat(const ::Graphics::PixelFormat &format) {
 	_format = format;
 }

@@ -53,8 +53,15 @@ Cursors::Cursors(const Common::String &exe) {
 	palette.resize(3);
 
 	// Standard palette: transparent, black, white
-	memset(palette.get()    ,   0, 6);
-	memset(palette.get() + 6, 255, 3);
+	palette.get()[0 * 3 + 0] = 0;
+	palette.get()[0 * 3 + 1] = 0;
+	palette.get()[0 * 3 + 2] = 255;
+	palette.get()[1 * 3 + 0] = 0;
+	palette.get()[1 * 3 + 1] = 0;
+	palette.get()[1 * 3 + 2] = 0;
+	palette.get()[2 * 3 + 0] = 255;
+	palette.get()[2 * 3 + 1] = 255;
+	palette.get()[2 * 3 + 2] = 255;
 
 	ImgConv.registerStandardPalette(palette);
 
@@ -67,8 +74,12 @@ Cursors::Cursors(const Common::String &exe) {
 
 	bool loaded;
 
-	loaded = loadFromResource(_default, *_defaultResource);
+	Cursor def;
+
+	loaded = loadFromResource(def, *_defaultResource);
 	assert(loaded);
+
+	_cursors.setVal("cArrow", def);
 
 	if (!exe.empty()) {
 		// Loading the rest of the cursors out of the EXE resource table
@@ -82,17 +93,22 @@ Cursors::Cursors(const Common::String &exe) {
 }
 
 Cursors::~Cursors() {
+	clearCursors();
+}
+
+void Cursors::clearCursors() {
 	delete _defaultResource;
+	_defaultResource = 0;
 
 	for (CursorMap::iterator it = _cursors.begin(); it != _cursors.end(); ++it)
 		delete it->_value.sprite;
-
-	delete _default.sprite;
 
 	_cursors.clear();
 }
 
 bool Cursors::loadSaturnCursors(Resources &resources) {
+	clearCursors();
+
 	for (int i = 0; i < ARRAYSIZE(_saturnCursors); i++) {
 		Cursor cursor;
 
@@ -130,9 +146,9 @@ void Cursors::setVisible(bool visible) {
 }
 
 const Cursors::Cursor *Cursors::getCursor(const Common::String &cursor) const {
-	// "" = default cursor
+	// "" = default arrow cursor
 	if (cursor.empty())
-		return &_default;
+		return getCursor("cArrow");
 
 	if (!_cursors.contains(cursor))
 		// Doesn't exist
@@ -154,37 +170,15 @@ bool Cursors::setCursor(const Common::String &cursor) {
 bool Cursors::setCursor(const Cursors::Cursor &cursor) {
 	_currentCursor = cursor.name;
 
-	CursorMan.replaceCursor((const byte *) cursor.sprite->getPaletted().pixels,
-			cursor.width, cursor.height, cursor.hotspotX, cursor.hotspotY, 0);
+	CursorMan.replaceCursor((const byte *) cursor.sprite->getTrueColor().pixels,
+			cursor.width, cursor.height, cursor.hotspotX, cursor.hotspotY, ImgConv.getColor(0, 0, 255), 1,
+			&ImgConv.getPixelFormat());
 
-	return setPalette(cursor.sprite->getPalette());
+	return true;
 }
 
 const Common::String &Cursors::getCurrentCursor() const {
 	return _currentCursor;
-}
-
-bool Cursors::setPalette(const Palette &palette) {
-	// Copy 3 palette entries
-
-	byte newPal[12];
-
-	newPal[ 0] = palette[0];
-	newPal[ 1] = palette[1];
-	newPal[ 2] = palette[2];
-	newPal[ 3] = 255;
-	newPal[ 4] = palette[3];
-	newPal[ 5] = palette[4];
-	newPal[ 6] = palette[5];
-	newPal[ 7] = 255;
-	newPal[ 8] = palette[6];
-	newPal[ 9] = palette[7];
-	newPal[10] = palette[8];
-	newPal[11] = 255;
-
-	CursorMan.replaceCursorPalette(newPal, 0, 3);
-
-	return true;
 }
 
 bool Cursors::loadFromNEEXE(const Common::String &exe) {

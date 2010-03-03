@@ -489,8 +489,15 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 	_palette.resize(3);
 
 	// Standard palette: transparent, black, white
-	memset(_palette.get()    ,   0, 6);
-	memset(_palette.get() + 6, 255, 3);
+	_palette.get()[0 * 3 + 0] = 0;
+	_palette.get()[0 * 3 + 1] = 0;
+	_palette.get()[0 * 3 + 2] = 255;
+	_palette.get()[1 * 3 + 0] = 0;
+	_palette.get()[1 * 3 + 1] = 0;
+	_palette.get()[1 * 3 + 2] = 0;
+	_palette.get()[2 * 3 + 0] = 255;
+	_palette.get()[2 * 3 + 1] = 255;
+	_palette.get()[2 * 3 + 2] = 255;
 
 	// Reading the palette
 	stream.seek(40);
@@ -537,11 +544,31 @@ bool Sprite::loadFromCursorResource(const NECursor &cursor) {
 }
 
 bool Sprite::loadFromSaturnCursor(Common::SeekableReadStream &cursor) {
+	if (cursor.size() != 260)
+		return false;
+
 	_fromCursor = true;
 
-	warning("TODO: loadFromSaturnCursor()");
+	create(16, 16);
 
-	create(32, 32);
+	fill(ImgConv.getColor(0, 0, 255));
+
+	cursor.seek(0);
+
+	_feetX = cursor.readUint16BE();
+	_feetY = cursor.readUint16BE();
+
+	byte *img = (byte *) _surfaceTrueColor.pixels;
+	for (int32 y = 0; y < 16; y++) {
+		for (int32 x = 0; x < 16; x++) {
+			const uint8  p = cursor.readByte();
+			const uint32 c = (p == 0) ? ImgConv.getColor(0, 0, 255) : ImgConv.getColor(255 - p, 255 - p, 255 - p);
+
+			ImgConv.writeColor(img, c);
+
+			img += _surfaceTrueColor.bytesPerPixel;
+		}
+	}
 
 	return true;
 }

@@ -44,6 +44,8 @@ public:
 	/** Unregister the standard palette. */
 	void unregisterStandardPalette();
 
+	/** Get the target pixel format. */
+	const ::Graphics::PixelFormat &getPixelFormat() const;
 	/** Set the target pixel format. */
 	void setPixelFormat(const ::Graphics::PixelFormat &format);
 

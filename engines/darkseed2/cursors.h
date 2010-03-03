@@ -89,11 +89,10 @@ private:
 	bool _visible; ///< Is the cursor visible?
 	Common::String _currentCursor; ///< The name of the current cursor.
 
-	Cursor    _default; ///< The default pointer cursor.
 	CursorMap _cursors; ///< The available cursors.
 
-	/** Set the cursor's palette. */
-	bool setPalette(const Palette &palette);
+	/** Clear all cursors. */
+	void clearCursors();
 
 	/** Load cursors from a NE EXE. */
 	bool loadFromNEEXE(const Common::String &exe);
