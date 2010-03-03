@@ -28,6 +28,11 @@
 
 namespace DarkSeed2 {
 
+enum GameVersion {
+	kGameVersionWindows = 0, ///< The Windows PC version.
+	kGameVersionSaturn  = 1  ///< The Sega Saturn version.
+};
+
 /** An image type. */
 enum ImageType {
 	kImageTypeBMP = 0, ///< BMP images.
@@ -39,6 +44,54 @@ enum ImageType {
 enum WalkMapType {
 	kWalkMapTypeBMP = 0, ///< Walk map in BMP image.
 	kWalkMapTypeMAP = 1  ///< Raw walk map data in a MAP file.
+};
+
+enum SoundType {
+	kSoundTypeWAV = 0, ///< WAV sounds.
+	kSoundTypeAIF = 1  ///< AIF sounds.
+};
+
+class VersionFormats {
+public:
+	void setGameVersion(GameVersion gameVersion);
+	GameVersion getGameVersion() const;
+
+	/** Get the type of images the game uses. */
+	ImageType getImageType() const;
+
+	/** Get the type of images the game uses for rooms. */
+	ImageType getRoomImageType() const;
+
+	/** Get the type of images the game uses for boxes. */
+	ImageType getBoxImageType() const;
+
+	/** Get the type of file the game uses for walk maps. */
+	WalkMapType getWalkMapType() const;
+
+	/** Get the type of file the game uses for walk maps. */
+	SoundType getSoundType() const;
+
+	/** Get the extension used for images by the game. */
+	const char *getImageExtension(ImageType imageType) const;
+	/** Get the extension used for walk maps by the game. */
+	const char *getWalkMapExtension(WalkMapType walkMapType) const;
+	/** Get the extension used for sounds by the game. */
+	const char *getSoundExtension(SoundType soundType) const;
+
+private:
+	static const char *kImageExtensions[];
+	static const char *kWalkMapExtensions[];
+	static const char *kSoundExtensions[];
+
+	GameVersion _gameVersion; ///< The game version.
+
+	ImageType _imageType;     ///< The type of images the game uses for images.
+	ImageType _roomImageType; ///< The type of images the game uses for room images.
+	ImageType _boxImageType;  ///< The type of images the game uses for box images.
+
+	WalkMapType _walkMapType; ///< The type of file the game uses for walk maps.
+
+	SoundType _soundType;     ///< The type of sounds the game uses.
 };
 
 } // End of namespace DarkSeed2

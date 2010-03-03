@@ -106,7 +106,7 @@ void InventoryBox::updateColors() {
 }
 
 void InventoryBox::loadSprites() {
-	ImageType boxImageType = _resources->getBoxImageType();
+	ImageType boxImageType = _resources->getVersionFormats().getBoxImageType();
 
 	if (boxImageType == kImageType256) {
 		warning("TODO: Sega Saturn inventory box images");

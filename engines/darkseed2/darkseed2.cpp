@@ -187,7 +187,7 @@ bool DarkSeed2Engine::init() {
 
 	_options        = new Options();
 
-	if (isPC())
+	if (isWindowsPC())
 		_cursors        = new Cursors(kExecutable);
 	else
 		_cursors        = new Cursors();
@@ -216,26 +216,20 @@ bool DarkSeed2Engine::init() {
 			return false;
 		}
 
-		_resources->setImageType(kImageTypeRGB);
-		_resources->setRoomImageType(kImageTypeBDP);
-		_resources->setBoxImageType(kImageType256);
-		_resources->setWalkMapType(kWalkMapTypeMAP);
+		_resources->setGameVersion(kGameVersionSaturn);
 
 		if (!_cursors->loadSaturnCursors(*_resources)) {
 			warning("DarkSeed2Engine::init(): Couldn't load cursors");
 			return false;
 		}
 
-	} else {
+	} else if (isWindowsPC()) {
 		if (!_resources->index(kResourceIndex)) {
 			warning("DarkSeed2Engine::init(): Couldn't index resources");
 			return false;
 		}
 
-		_resources->setImageType(kImageTypeBMP);
-		_resources->setRoomImageType(kImageTypeBMP);
-		_resources->setBoxImageType(kImageTypeBMP);
-		_resources->setWalkMapType(kWalkMapTypeBMP);
+		_resources->setGameVersion(kGameVersionWindows);
 	}
 
 
@@ -313,7 +307,7 @@ void DarkSeed2Engine::clearAll() {
 	_scriptRegister->clear();
 }
 
-bool DarkSeed2Engine::isPC() const {
+bool DarkSeed2Engine::isWindowsPC() const {
 	return getPlatform() == Common::kPlatformPC;
 }
 

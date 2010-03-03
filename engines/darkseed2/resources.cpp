@@ -79,9 +79,6 @@ Common::SeekableReadStream &Resource::getStream() const {
 }
 
 
-const char *Resources::kImageExtensions[4] = {"BMP", "RGB", "BDP", "256"};
-
-
 Resources::Archive::Archive() : type(kArchiveTypeNone), data(0), stream(0), size(0), indexed(false) {
 }
 
@@ -96,17 +93,19 @@ Resources::Res::Res() : archive(0), offset(0), size(0), exists(false), indexed(f
 
 
 Resources::Resources() {
-	_imageType     = kImageTypeBMP;
-	_roomImageType = kImageTypeBMP;
-	_boxImageType  = kImageTypeBMP;
-
-	_walkMapType = kWalkMapTypeBMP;
-
 	clear();
 }
 
 Resources::~Resources() {
 	clear();
+}
+
+void Resources::setGameVersion(GameVersion gameVersion) {
+	_versionFormats.setGameVersion(gameVersion);
+}
+
+const VersionFormats &Resources::getVersionFormats() {
+	return _versionFormats;
 }
 
 bool Resources::index(const char *fileName) {
@@ -515,55 +514,6 @@ Resource *Resources::getResource(const Common::String &resource) {
 				res.archive->fileName.c_str(), res.offset);
 
 	return new Resource(resource, archiveFile, res.size);
-}
-
-void Resources::setImageType(ImageType imageType) {
-	_imageType = imageType;
-}
-
-ImageType Resources::getImageType() const {
-	return _imageType;
-}
-
-void Resources::setRoomImageType(ImageType imageType) {
-	_roomImageType = imageType;
-}
-
-ImageType Resources::getRoomImageType() const {
-	return _roomImageType;
-}
-
-void Resources::setBoxImageType(ImageType imageType) {
-	_boxImageType = imageType;
-}
-
-ImageType Resources::getBoxImageType() const {
-	return _boxImageType;
-}
-
-void Resources::setWalkMapType(WalkMapType walkMapType) {
-	_walkMapType = walkMapType;
-}
-
-WalkMapType Resources::getWalkMapType() const {
-	return _walkMapType;
-}
-
-const char *Resources::getImageExtension() const {
-	return kImageExtensions[_imageType];
-}
-
-const char *Resources::getRoomImageExtension() const {
-	return kImageExtensions[_roomImageType];
-}
-
-const char *Resources::getBoxImageExtension() const {
-	return kImageExtensions[_boxImageType];
-}
-
-const char *Resources::getImageExtension(ImageType imageType) const {
-	assert((imageType >= 0) && (imageType < ARRAYSIZE(kImageExtensions)));
-	return kImageExtensions[imageType];
 }
 
 Common::String Resources::addExtension(const Common::String &name, const Common::String &extension) {

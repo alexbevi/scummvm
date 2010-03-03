@@ -103,7 +103,7 @@ public:
 	/** Show the load dialog. */
 	bool doLoadDialog();
 
-	bool isPC    () const;
+	bool isWindowsPC    () const;
 	bool isSaturn() const;
 
 private:

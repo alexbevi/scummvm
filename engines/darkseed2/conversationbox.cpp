@@ -218,7 +218,7 @@ bool ConversationBox::isActive() const {
 }
 
 void ConversationBox::loadSprites() {
-	ImageType boxImageType = _resources->getBoxImageType();
+	ImageType boxImageType = _resources->getVersionFormats().getBoxImageType();
 
 	if (boxImageType == kImageType256) {
 		warning("TODO: Sega Saturn conversation box images");

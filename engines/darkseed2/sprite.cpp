@@ -248,15 +248,15 @@ void Sprite::updateTransparencyMap() {
 }
 
 bool Sprite::loadFromImage(Resources &resources, const Common::String &image) {
-	return loadFromImage(resources, image, resources.getImageType());
+	return loadFromImage(resources, image, resources.getVersionFormats().getImageType());
 }
 
 bool Sprite::loadFromRoomImage(Resources &resources, const Common::String &image) {
-	return loadFromImage(resources, image, resources.getRoomImageType());
+	return loadFromImage(resources, image, resources.getVersionFormats().getRoomImageType());
 }
 
 bool Sprite::loadFromBoxImage(Resources &resources, const Common::String &image) {
-	return loadFromImage(resources, image, resources.getBoxImageType());
+	return loadFromImage(resources, image, resources.getVersionFormats().getBoxImageType());
 }
 
 bool Sprite::loadFromImage(Resources &resources, const Common::String &image, ImageType imageType) {
@@ -582,7 +582,7 @@ uint32 Sprite::readColor555(Common::SeekableReadStream &stream, uint8 *transp) c
 
 bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
 	Common::String bmpFile = Resources::addExtension(bmp,
-			resources.getImageExtension(kImageTypeBMP));
+			resources.getVersionFormats().getImageExtension(kImageTypeBMP));
 
 	if (!resources.hasResource(bmpFile))
 		return false;
@@ -600,7 +600,7 @@ bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
 
 bool Sprite::loadFromRGB(Resources &resources, const Common::String &rgb) {
 	Common::String rgbFile = Resources::addExtension(rgb,
-			resources.getImageExtension(kImageTypeRGB));
+			resources.getVersionFormats().getImageExtension(kImageTypeRGB));
 	if (!resources.hasResource(rgbFile))
 		return false;
 
@@ -617,7 +617,7 @@ bool Sprite::loadFromRGB(Resources &resources, const Common::String &rgb) {
 
 bool Sprite::loadFromBDP(Resources &resources, const Common::String &bdp) {
 	Common::String bdpFile = Resources::addExtension(bdp,
-			resources.getImageExtension(kImageTypeBDP));
+			resources.getVersionFormats().getImageExtension(kImageTypeBDP));
 	if (!resources.hasResource(bdpFile))
 		return false;
 

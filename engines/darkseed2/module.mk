@@ -4,6 +4,7 @@ MODULE_OBJS := \
 	darkseed2.o \
 	detection.o \
 	options.o \
+	versionformats.o \
 	resources.o \
 	palette.o \
 	imageconverter.o \

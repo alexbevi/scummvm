@@ -96,40 +96,15 @@ public:
 	/** Get a specific resource. */
 	Resource *getResource(const Common::String &resource);
 
-	/** Set the type of images the game uses. */
-	void setImageType(ImageType imageType);
-	/** Get the type of images the game uses. */
-	ImageType getImageType() const;
+	/** Set the specific game version. */
+	void setGameVersion(GameVersion gameVersion);
 
-	/** Set the type of images the game uses for rooms. */
-	void setRoomImageType(ImageType imageType);
-	/** Get the type of images the game uses for rooms. */
-	ImageType getRoomImageType() const;
-
-	/** Set the type of images the game uses for boxes. */
-	void setBoxImageType(ImageType imageType);
-	/** Get the type of images the game uses for boxes. */
-	ImageType getBoxImageType() const;
-
-	/** Set the type of file the game uses for walk maps. */
-	void setWalkMapType(WalkMapType walkMapType);
-	/** Get the type of file the game uses for walk maps. */
-	WalkMapType getWalkMapType() const;
-
-	/** Get the extension used for images by the game. */
-	const char *getImageExtension() const;
-	/** Get the extension used for room images by the game. */
-	const char *getRoomImageExtension() const;
-	/** Get the extension used for box images by the game. */
-	const char *getBoxImageExtension() const;
-	/** Get the extension used for images by the game. */
-	const char *getImageExtension(ImageType imageType) const;
+	/** Get the information class about which formats the game uses. */
+	const VersionFormats &getVersionFormats();
 
 	static Common::String addExtension(const Common::String &name, const Common::String &extension);
 
 private:
-	static const char *kImageExtensions[4];
-
 	/** An archive type. */
 	enum ArchiveType {
 		kArchiveTypeNone = 0, ///< No valid archive.
@@ -170,11 +145,7 @@ private:
 		Res();
 	};
 
-	ImageType _imageType;     ///< The type of images the game uses for images.
-	ImageType _roomImageType; ///< The type of images the game uses for room images.
-	ImageType _boxImageType;  ///< The type of images the game uses for box images.
-
-	WalkMapType _walkMapType; ///< The type of file the game uses for walk maps.
+	VersionFormats _versionFormats;
 
 	uint16 _archiveCount; ///< Number of indexed archive files.
 	uint32 _resCount;  ///< Number of indexed resources.
