@@ -68,6 +68,12 @@ TalkLine::TalkLine(Resources &resources, const Common::String &talkName) {
 
 		delete txt;
 	}
+
+	if (_resources->getVersionFormats().getLanguage() == Common::JA_JPN) {
+		// TODO: Japanese text!
+
+		_txt = "<japanese text>";
+	}
 }
 
 TalkLine::~TalkLine() {
@@ -148,23 +154,19 @@ bool TalkManager::talkInternal(const TalkLine &talkLine) {
 			warning("TalkManager::talk(): WAV playing failed");
 			return false;
 		}
-
-		debugC(-1, kDebugTalk, "Speaking line \"%s\"", talkLine.getResourceName().c_str());
-
-		if (_txtEnabled) {
-			// Text
-			Common::String text = talkLine.getTXT();
-			if (!talkLine.getSpeaker().empty())
-				text = talkLine.getSpeaker() + ":\n" + text;
-
-			TextObject *talkObject = new TextObject(text, 5, 0, ImgConv.getColor(255, 255, 255), 300);
-
-			_graphics->talk(talkObject);
-		}
-
 	} else {
-		warning("TalkManager::talk(): Talk line has no WAV");
-		return false;
+		_sound->playDummySound(_curTalk, 1000, Audio::Mixer::kSpeechSoundType);
+	}
+
+	if (_txtEnabled) {
+		// Text
+		Common::String text = talkLine.getTXT();
+		if (!talkLine.getSpeaker().empty())
+			text = talkLine.getSpeaker() + ":\n" + text;
+
+		TextObject *talkObject = new TextObject(text, 5, 0, ImgConv.getColor(255, 255, 255), 300);
+
+		_graphics->talk(talkObject);
 	}
 
 	return true;

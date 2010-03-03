@@ -26,6 +26,8 @@
 #ifndef DARKSEED2_VERSIONFORMATS_H
 #define DARKSEED2_VERSIONFORMATS_H
 
+#include "common/util.h"
+
 namespace DarkSeed2 {
 
 enum GameVersion {
@@ -53,8 +55,13 @@ enum SoundType {
 
 class VersionFormats {
 public:
+	VersionFormats();
+
 	void setGameVersion(GameVersion gameVersion);
 	GameVersion getGameVersion() const;
+
+	void setLanguage(Common::Language language);
+	Common::Language getLanguage() const;
 
 	/** Get the type of images the game uses. */
 	ImageType getImageType() const;
@@ -84,6 +91,8 @@ private:
 	static const char *kSoundExtensions[];
 
 	GameVersion _gameVersion; ///< The game version.
+
+	Common::Language _language; ///< The game's language.
 
 	ImageType _imageType;     ///< The type of images the game uses for images.
 	ImageType _roomImageType; ///< The type of images the game uses for room images.

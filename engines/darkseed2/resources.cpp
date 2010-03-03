@@ -100,8 +100,9 @@ Resources::~Resources() {
 	clear();
 }
 
-void Resources::setGameVersion(GameVersion gameVersion) {
+void Resources::setGameVersion(GameVersion gameVersion, Common::Language language) {
 	_versionFormats.setGameVersion(gameVersion);
+	_versionFormats.setLanguage(language);
 }
 
 const VersionFormats &Resources::getVersionFormats() {

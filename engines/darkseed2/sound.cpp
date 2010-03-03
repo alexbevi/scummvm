@@ -46,6 +46,7 @@ Sound::Sound(Audio::Mixer &mixer, Variables &variables) {
 	for (int i = 0 ; i < kChannelCount; i++) {
 		_channels[i].id = -1;
 		_channels[i].speech = false;
+		_channels[i].dummyPlaysUntil = 0;
 	}
 }
 
@@ -81,17 +82,25 @@ bool Sound::playSound(const Resource &resource, SoundType soundType, int *id,
 	return false;
 }
 
+void Sound::playDummySound(int &id, uint32 length, Audio::Mixer::SoundType type) {
+	SoundChannel *channel = findEmptyChannel();
+	if (!channel) {
+		warning("Sound::playDummySound(): Sound::playWAV(): All channels occupied");
+		return;
+	}
+
+	channel->id = _id++;
+	channel->speech = type == Audio::Mixer::kSpeechSoundType;
+
+	id = channel->id;
+
+	channel->dummyPlaysUntil = g_system->getMillis() + length;
+}
+
 bool Sound::playWAV(Common::SeekableReadStream &wav, int *id,
 		Audio::Mixer::SoundType type, bool autoFree) {
 
-	// Try to find an unoccupied channel
-	SoundChannel *channel = 0;
-	for (int i = 0 ; i < kChannelCount; i++)
-		if (!_mixer->isSoundHandleActive(_channels[i].handle)) {
-			channel = &_channels[i];
-			break;
-		}
-
+	SoundChannel *channel = findEmptyChannel();
 	if (!channel) {
 		warning("Sound::playWAV(): Sound::playWAV(): All channels occupied");
 		return false;
@@ -156,16 +165,9 @@ bool Sound::playWAV(Resources &resources, const Common::String &wav, int *id,
 bool Sound::playAIF(Common::SeekableReadStream &aif, int *id,
 		Audio::Mixer::SoundType type) {
 
-	// Try to find an unoccupied channel
-	SoundChannel *channel = 0;
-	for (int i = 0 ; i < kChannelCount; i++)
-		if (!_mixer->isSoundHandleActive(_channels[i].handle)) {
-			channel = &_channels[i];
-			break;
-		}
-
+	SoundChannel *channel = findEmptyChannel();
 	if (!channel) {
-		warning("Sound::playAIF(): Sound::playAIF(): All channels occupied");
+		warning("Sound::playAIF(): Sound::playWAV(): All channels occupied");
 		return false;
 	}
 
@@ -212,6 +214,22 @@ bool Sound::playAIF(Resources &resources, const Common::String &aif, int *id,
 	return true;
 }
 
+Sound::SoundChannel *Sound::findEmptyChannel() {
+	for (int i = 0 ; i < kChannelCount; i++)
+		if (!_mixer->isSoundHandleActive(_channels[i].handle))
+			return &_channels[i];
+
+	return 0;
+}
+
+Sound::SoundChannel *Sound::findChannel(int id) {
+	for (int i = 0 ; i < kChannelCount; i++)
+		if (!_channels[i].id == id)
+			return &_channels[i];
+
+	return 0;
+}
+
 void Sound::stopID(int id) {
 	if (id == -1)
 		return;
@@ -219,9 +237,18 @@ void Sound::stopID(int id) {
 	debugC(0, kDebugSound, "Stopping sound ID %d", id);
 
 	_mixer->stopID(id);
+
+	SoundChannel *channel = findChannel(id);
+	if (channel)
+		channel->dummyPlaysUntil = 0;
 }
 
 bool Sound::isIDPlaying(int id) {
+	SoundChannel *channel = findChannel(id);
+	if (channel)
+		if ((channel->dummyPlaysUntil != 0) && (channel->dummyPlaysUntil > g_system->getMillis()))
+			return true;
+
 	return _mixer->isSoundIDActive(id);
 }
 
@@ -238,8 +265,10 @@ void Sound::stopAll() {
 	debugC(-1, kDebugSound, "Stopping all sounds");
 
 	// Stopping all channels
-	for (int i = 0; i < kChannelCount; i++)
+	for (int i = 0; i < kChannelCount; i++) {
 		_mixer->stopHandle(_channels[i].handle);
+		_channels[i].dummyPlaysUntil = 0;
+	}
 }
 
 void Sound::pauseAll(bool pause) {
@@ -289,9 +318,12 @@ void Sound::updateStatus() {
 		if (!_mixer->isSoundHandleActive(channel.handle)) {
 			if (!channel.soundVar.empty() && channel.speech)
 				continue;
+			if ((channel.dummyPlaysUntil != 0) && (channel.dummyPlaysUntil > g_system->getMillis()))
+				continue;
 
 			channel.id = -1;
 			channel.speech = false;
+			channel.dummyPlaysUntil = 0;
 
 			if (!channel.soundVar.empty()) {
 				_variables->set(channel.soundVar, 0);

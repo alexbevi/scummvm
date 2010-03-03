@@ -32,6 +32,20 @@ const char *VersionFormats::kImageExtensions[]   = {"BMP", "RGB", "BDP", "256"};
 const char *VersionFormats::kWalkMapExtensions[] = {"BMP", "MAP"};
 const char *VersionFormats::kSoundExtensions[]   = {"WAV", "AIF"};
 
+VersionFormats::VersionFormats() {
+	_gameVersion = kGameVersionWindows;
+
+	_language = Common::UNK_LANG;
+
+	_imageType     = kImageTypeBMP;
+	_roomImageType = kImageTypeBMP;
+	_boxImageType  = kImageTypeBMP;
+
+	_walkMapType = kWalkMapTypeBMP;
+
+	_soundType = kSoundTypeWAV;
+}
+
 void VersionFormats::setGameVersion(GameVersion gameVersion) {
 	_gameVersion = gameVersion;
 
@@ -60,6 +74,14 @@ void VersionFormats::setGameVersion(GameVersion gameVersion) {
 
 GameVersion VersionFormats::getGameVersion() const {
 	return _gameVersion;
+}
+
+void VersionFormats::setLanguage(Common::Language language) {
+	_language = language;
+}
+
+Common::Language VersionFormats::getLanguage() const {
+	return _language;
 }
 
 ImageType VersionFormats::getImageType() const {

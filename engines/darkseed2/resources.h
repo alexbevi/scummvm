@@ -26,6 +26,7 @@
 #ifndef DARKSEED2_RESOURCES_H
 #define DARKSEED2_RESOURCES_H
 
+#include "common/util.h"
 #include "common/str.h"
 #include "common/array.h"
 #include "common/hashmap.h"
@@ -97,7 +98,7 @@ public:
 	Resource *getResource(const Common::String &resource);
 
 	/** Set the specific game version. */
-	void setGameVersion(GameVersion gameVersion);
+	void setGameVersion(GameVersion gameVersion, Common::Language language);
 
 	/** Get the information class about which formats the game uses. */
 	const VersionFormats &getVersionFormats();

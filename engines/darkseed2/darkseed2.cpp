@@ -235,7 +235,7 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 			return false;
 		}
 
-		_resources->setGameVersion(kGameVersionSaturn);
+		_resources->setGameVersion(kGameVersionSaturn, getLanguage());
 
 		if (!_cursors->loadSaturnCursors(*_resources)) {
 			warning("DarkSeed2Engine::init(): Couldn't load cursors");
@@ -248,7 +248,7 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 			return false;
 		}
 
-		_resources->setGameVersion(kGameVersionWindows);
+		_resources->setGameVersion(kGameVersionWindows, getLanguage());
 	}
 
 

@@ -54,6 +54,8 @@ public:
 	bool playSound(const Resource &resource, SoundType soundType, int *id = 0,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 
+	void playDummySound(int &id, uint32 length, Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+
 	/** Is the that ID playing? */
 	bool isIDPlaying(int id);
 
@@ -90,6 +92,7 @@ private:
 		int id;
 		/** Currently playing speech? */
 		bool speech;
+		uint32 dummyPlaysUntil;
 	};
 
 	Audio::Mixer *_mixer;
@@ -99,6 +102,9 @@ private:
 
 	/** All sound channels. */
 	SoundChannel _channels[kChannelCount];
+
+	SoundChannel *findEmptyChannel();
+	SoundChannel *findChannel(int id);
 
 	bool playWAV(Common::SeekableReadStream &wav, int *id = 0,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType, bool autoFree = false);
