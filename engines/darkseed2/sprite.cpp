@@ -381,6 +381,8 @@ bool Sprite::loadFromRGB(Common::SeekableReadStream &rgb) {
 	// the file size.
 	uint16 linePad = (size - 4 - 8 - (width * height * 2)) / height;
 
+	create(width, height);
+
 	// TODO: Are those correct for RGB files?
 
 	// Sprite's feet position
@@ -390,8 +392,6 @@ bool Sprite::loadFromRGB(Common::SeekableReadStream &rgb) {
 	// Default coordinates
 	_defaultX = (int32) rgb.readUint16BE();
 	_defaultY = (int32) rgb.readUint16BE();
-
-	create(width, height);
 
 	byte *img = (byte *) _surfaceTrueColor.pixels;
 	for (int32 y = 0; y < height; y++) {
