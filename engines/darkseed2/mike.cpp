@@ -490,7 +490,10 @@ int32 Mike::getStepOffsetX() const {
 			return -1;
 	}
 
-	return scaledOffset;
+	if (scaledOffset == 1)
+		return 1;
+
+	return scaledOffset / _resources->getVersionFormats().getHotspotScale();
 }
 
 int32 Mike::getStepOffsetY() const {
@@ -539,7 +542,10 @@ int32 Mike::getStepOffsetY() const {
 			return -1;
 	}
 
-	return scaledOffset;
+	if (scaledOffset == 1)
+		return 1;
+
+	return scaledOffset / _resources->getVersionFormats().getHotspotScale();
 }
 
 Mike::Direction Mike::getDirection(int32 x1, int32 y1, int32 x2, int32 y2) {

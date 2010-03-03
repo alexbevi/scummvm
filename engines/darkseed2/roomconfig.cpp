@@ -415,6 +415,11 @@ bool RoomConfigSprite::updateStatus() {
 			if ((x >= 0) && (y >= 0)) {
 				// Has positional values, set the position and scaling accordingly
 
+				if (!(_status[0] & 8)) {
+					x /= _resources->getVersionFormats().getHotspotScale();
+					y /= _resources->getVersionFormats().getHotspotScale();
+				}
+
 				_animation->moveFeetTo(x, y);
 				scale = _mike->calculateScale(y);
 			}

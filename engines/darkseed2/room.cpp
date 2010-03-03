@@ -84,6 +84,8 @@ void Room::clear() {
 	_backgroundFile.clear();
 	_walkMapFile.clear();
 
+	_clipScale = 1;
+
 	delete _background;
 	delete _walkMap;
 
@@ -157,6 +159,8 @@ Animation *Room::getAnimation(const Common::String &animation) {
 }
 
 bool Room::parse(Resources &resources, DATFile &room, DATFile &objects) {
+	_clipScale = resources.getVersionFormats().getHotspotScale();
+
 	const Common::String *cmd, *args;
 	while (room.nextLine(cmd, args)) {
 		if (cmd->equalsIgnoreCase("BackDrop")) {
@@ -311,8 +315,8 @@ bool Room::setDimensions(const Common::String &args) {
 		return false;
 	}
 
-	_area = Common::Rect(atoi(lArgs[0].c_str()), atoi(lArgs[1].c_str()),
-	                     atoi(lArgs[2].c_str()), atoi(lArgs[3].c_str()));
+	_area = Common::Rect(atoi(lArgs[0].c_str()) / _clipScale, atoi(lArgs[1].c_str()) / _clipScale,
+	                     atoi(lArgs[2].c_str()) / _clipScale, atoi(lArgs[3].c_str()) / _clipScale);
 
 	return true;
 }

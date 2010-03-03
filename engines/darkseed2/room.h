@@ -118,6 +118,8 @@ private:
 	Common::String _backgroundFile; ///< The room's background file.
 	Common::String _walkMapFile;    ///< The room's walk map file.
 
+	int _clipScale;
+
 	int32 _walkMapYTop;        ///< Y top of the walk map.
 	int32 _walkMapYResolution; ///< Y resolution of the walk map.
 
