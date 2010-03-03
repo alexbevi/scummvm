@@ -396,13 +396,13 @@ bool Sprite::loadFromRGB(Common::SeekableReadStream &rgb) {
 	byte *img = (byte *) _surfaceTrueColor.pixels;
 	uint8 *transp = _transparencyMap;
 	for (int32 y = 0; y < height; y++) {
-		rgb.skip(linePad);
 		for (int32 x = 0; x < width; x++) {
 			ImgConv.writeColor(img, readColor555(rgb, transp));
 
 			img += _surfaceTrueColor.bytesPerPixel;
 			transp++;
 		}
+		rgb.skip(linePad);
 	}
 
 	return true;
