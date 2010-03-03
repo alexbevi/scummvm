@@ -180,6 +180,11 @@ private:
 	int32 _screenWidth;
 	int32 _screenHeight;
 
+	int32 _conversationX;
+	int32 _conversationY;
+	int32 _inventoryX;
+	int32 _inventoryY;
+
 	Palette _gamePalette; ///< The game palette.
 	Sprite  _screen;      ///< The game screen.
 

@@ -41,11 +41,6 @@
 
 namespace DarkSeed2 {
 
-static const int32 kConversationX =   0;
-static const int32 kConversationY = 410;
-static const int32 kInventoryX    =   0;
-static const int32 kInventoryY    = 410;
-
 Graphics::SpriteQueueEntry::SpriteQueueEntry() {
 	anim       = 0;
 	object     = 0;
@@ -109,6 +104,11 @@ Graphics::Graphics(int32 width, int32 height, Resources &resources, Variables &v
 	_screenWidth  = width;
 	_screenHeight = height;
 
+	_conversationX = 0;
+	_conversationY = height - 70;
+	_inventoryX    = 0;
+	_inventoryY    = height - 70;
+
 	clearPalette();
 	ImgConv.registerStandardPalette(_gamePalette);
 
@@ -141,11 +141,11 @@ void Graphics::init(TalkManager &talkManager, ScriptRegister &scriptRegister,
 
 	// Init conversation box
 	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager);
-	_conversationBox->move(kConversationX, kConversationY);
+	_conversationBox->move(_conversationX, _conversationY);
 
 	// Init inventory box
 	_inventoryBox = new InventoryBox(*_resources, *_variables, scriptRegister, *this, talkManager, *_cursors);
-	_inventoryBox->move(kInventoryX, kInventoryY);
+	_inventoryBox->move(_inventoryX, _inventoryY);
 
 	// Init room
 	_room = new Room(*_variables, scriptRegister, *this);
