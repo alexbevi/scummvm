@@ -36,22 +36,6 @@
 
 namespace DarkSeed2 {
 
-// Coordinates of the different areas
-static const int32 kTextAreaWidth  = 512; ///< The width of the raw text area.
-static const int32 kTextAreaHeight =  50; ///< The height of the raw text area.
-static const int32 kTextHeight     =  14; ///< The height of a text line.
-static const int32 kTextMargin     =  90; ///< The maximum width of a text line.
-
-// Sprite file names
-static const char *kSpriteFrame        = "INVNTRY1"; ///< The conversation box's general frame.
-static const char *kSpriteScrollUpDown = "DIALOG1";  ///< Both scroll buttons active.
-static const char *kSpriteScrollDown   = "DIALOG2";  ///< Scroll down active, scroll up grayed out.
-static const char *kSpriteScrollUp     = "DIALOG3";  ///< Scroll up active, scroll down grayed out.
-
-// Scroll button coordinates
-static const int32 kScrollUp  [4] = {15, 24, 34, 40};
-static const int32 kScrollDown[4] = {15, 41, 34, 57};
-
 // Colors
 static const byte kColorSelected  [3] = {255, 255, 255};
 static const byte kColorUnselected[3] = {239, 167, 127};
@@ -123,7 +107,9 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 
 	_conversation = new Conversation(*_variables);
 
-	_area = Common::Rect(kWidth, kHeight);
+	fillInBoxProperties(resources.getVersionFormats().getGameVersion());
+
+	_area = Common::Rect(_boxProps.width, _boxProps.height);
 
 	_sprites     = new Sprite[6];
 
@@ -140,16 +126,16 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 
 	updateColors();
 
-	// Regions of the three visible lines
-	_textAreas[0] = Common::Rect(kTextMargin, kTextHeight * 1,
-			kWidth - 2 * kTextMargin, kTextHeight * 2);
-	_textAreas[1] = Common::Rect(kTextMargin, kTextHeight * 2,
-			kWidth - 2 * kTextMargin, kTextHeight * 3);
-	_textAreas[2] = Common::Rect(kTextMargin, kTextHeight * 3,
-			kWidth - 2 * kTextMargin, kTextHeight * 4);
+	// Regions of the visible lines
+	_textAreas = new Common::Rect[_boxProps.numLines];
+	for (uint32 i = 0; i < _boxProps.numLines; i++)
+		_textAreas[i] = Common::Rect(_boxProps.textMargin, _boxProps.textHeight * (i + 1),
+				_boxProps.width - 2 * _boxProps.textMargin, _boxProps.textHeight * (i + 2));
 
-	_scrollAreas[0] = Common::Rect(kScrollUp  [0], kScrollUp  [1], kScrollUp  [2], kScrollUp  [3]);
-	_scrollAreas[1] = Common::Rect(kScrollDown[0], kScrollDown[1], kScrollDown[2], kScrollDown[3]);
+	_scrollAreas[0] = Common::Rect(_boxProps.scrollUp  [0], _boxProps.scrollUp  [1],
+	                               _boxProps.scrollUp  [2], _boxProps.scrollUp  [3]);
+	_scrollAreas[1] = Common::Rect(_boxProps.scrollDown[0], _boxProps.scrollDown[1],
+	                               _boxProps.scrollDown[2], _boxProps.scrollDown[3]);
 
 	loadSprites();
 	build();
@@ -159,12 +145,91 @@ ConversationBox::ConversationBox(Resources &resources, Variables &variables,
 ConversationBox::~ConversationBox() {
 	clearLines();
 
+	delete[] _textAreas;
+
 	delete _conversation;
 
 	delete _markerSelect;
 	delete _markerUnselect;
 
 	delete[] _sprites;
+}
+
+int32 ConversationBox::getWidth() const {
+	return _boxProps.width;
+}
+
+int32 ConversationBox::getHeight() const {
+	return _boxProps.height;
+}
+
+void ConversationBox::fillInBoxProperties(GameVersion gameVersion) {
+	switch(gameVersion) {
+	case kGameVersionWindows:
+		_boxProps.width =  640;
+		_boxProps.height =  70;
+
+		_boxProps.frameFile = "INVNTRY1";
+
+		_boxProps.frameTopFile    = 0;
+		_boxProps.frameBottomFile = 0;
+		_boxProps.frameLeftFile   = 0;
+		_boxProps.frameRightFile  = 0;
+
+		_boxProps.frameLeftRightWidth = 0;
+		_boxProps.frameTopDownHeight  = 0;
+
+		_boxProps.scrollUp[0]   = 15; _boxProps.scrollUp[1]   = 24;
+		_boxProps.scrollUp[2]   = 34; _boxProps.scrollUp[3]   = 40;
+		_boxProps.scrollDown[0] = 15; _boxProps.scrollDown[1] = 41;
+		_boxProps.scrollDown[2] = 34; _boxProps.scrollDown[3] = 57;
+
+		_boxProps.scrollUpFile     = "DIALOG3";
+		_boxProps.scrollDownFile   = "DIALOG2";
+		_boxProps.scrollUpDownFile = "DIALOG1";
+
+		_boxProps.textAreaWidth  = 512;
+		_boxProps.textAreaHeight =  50;
+		_boxProps.textHeight     =  14;
+		_boxProps.textMargin     =  90;
+
+		_boxProps.numLines = 3;
+		break;
+
+	case kGameVersionSaturn:
+		_boxProps.width =  320;
+		_boxProps.height =  48;
+
+		_boxProps.frameFile = 0;
+
+		_boxProps.frameTopFile    = "DLG_TOP";
+		_boxProps.frameBottomFile = "DLG_BTM";
+		_boxProps.frameLeftFile   = "DLG_L";
+		_boxProps.frameRightFile  = "DLG_R";
+
+		_boxProps.frameLeftRightWidth = 40;
+		_boxProps.frameTopDownHeight  =  7;
+
+		_boxProps.scrollUp[0]   = 15; _boxProps.scrollUp[1]   = 24;
+		_boxProps.scrollUp[2]   = 34; _boxProps.scrollUp[3]   = 40;
+		_boxProps.scrollDown[0] = 15; _boxProps.scrollDown[1] = 41;
+		_boxProps.scrollDown[2] = 34; _boxProps.scrollDown[3] = 57;
+
+		_boxProps.scrollUpFile     = "TEXT_U";
+		_boxProps.scrollDownFile   = "TEXT_D";
+		_boxProps.scrollUpDownFile = "TEXT_UD";
+
+		_boxProps.textAreaWidth  = 320;
+		_boxProps.textAreaHeight =  34;
+		_boxProps.textHeight     =  12;
+		_boxProps.textMargin     =  50;
+
+		_boxProps.numLines = 2;
+		break;
+
+	default:
+		error("Unknown game version");
+	}
 }
 
 void ConversationBox::updateColors() {
@@ -221,14 +286,60 @@ void ConversationBox::loadSprites() {
 	ImageType boxImageType = _resources->getVersionFormats().getBoxImageType();
 
 	if (boxImageType == kImageType256) {
-		warning("TODO: Sega Saturn conversation box images");
+		bool loaded0, loaded1, loaded2, loaded3, loaded4, loaded5, loaded6;
+
+		Palette palette;
+
+		if (!palette.loadFromPAL555(*_resources, "MENU"))
+			error("Failed to load MENU.PAL");
+
+		ImgConv.registerStandardPalette(palette);
+
+		_sprites[2].create(_boxProps.width, _boxProps.height);
+
+		Sprite boxPart;
+
+		loaded0 = boxPart.loadFromBoxImage(*_resources, _boxProps.frameLeftFile,
+				_boxProps.frameLeftRightWidth, _boxProps.height);
+
+		_sprites[2].blit(boxPart, 0, 0);
+
+		loaded1 = boxPart.loadFromBoxImage(*_resources, _boxProps.frameRightFile,
+				_boxProps.frameLeftRightWidth, _boxProps.height);
+
+		_sprites[2].blit(boxPart, _boxProps.width - _boxProps.frameLeftRightWidth, 0);
+
+		loaded2 = boxPart.loadFromBoxImage(*_resources, _boxProps.frameTopFile,
+				_boxProps.width - (2 * _boxProps.frameLeftRightWidth), _boxProps.frameTopDownHeight);
+
+		_sprites[2].blit(boxPart, _boxProps.frameLeftRightWidth, 0);
+
+		loaded3 = boxPart.loadFromBoxImage(*_resources, _boxProps.frameBottomFile,
+				_boxProps.width - (2 * _boxProps.frameLeftRightWidth), _boxProps.frameTopDownHeight);
+
+		_sprites[2].blit(boxPart, _boxProps.frameLeftRightWidth,
+				_boxProps.height - _boxProps.frameTopDownHeight);
+
+		assert(loaded0 && loaded1 && loaded2 && loaded3);
+
+		loaded4 = _sprites[3].loadFromBoxImage(*_resources, _boxProps.scrollUpDownFile,
+				_boxProps.frameLeftRightWidth, _boxProps.height);
+		loaded5 = _sprites[4].loadFromBoxImage(*_resources, _boxProps.scrollDownFile,
+				_boxProps.frameLeftRightWidth, _boxProps.height);
+		loaded6 = _sprites[5].loadFromBoxImage(*_resources, _boxProps.scrollUpFile,
+				_boxProps.frameLeftRightWidth, _boxProps.height);
+
+		assert(loaded4 && loaded5 && loaded6);
+
+		ImgConv.unregisterStandardPalette();
+
 	} else {
 		bool loaded0, loaded1, loaded2, loaded3;
 
-		loaded0 = _sprites[2].loadFromImage(*_resources, kSpriteFrame);
-		loaded1 = _sprites[3].loadFromImage(*_resources, kSpriteScrollUpDown);
-		loaded2 = _sprites[4].loadFromImage(*_resources, kSpriteScrollDown);
-		loaded3 = _sprites[5].loadFromImage(*_resources, kSpriteScrollUp);
+		loaded0 = _sprites[2].loadFromImage(*_resources, _boxProps.frameFile);
+		loaded1 = _sprites[3].loadFromImage(*_resources, _boxProps.scrollUpDownFile);
+		loaded2 = _sprites[4].loadFromImage(*_resources, _boxProps.scrollDownFile);
+		loaded3 = _sprites[5].loadFromImage(*_resources, _boxProps.scrollUpFile);
 
 		assert(loaded0 && loaded1 && loaded2 && loaded3);
 	}
@@ -236,18 +347,18 @@ void ConversationBox::loadSprites() {
 
 void ConversationBox::build() {
 	// The shading grid
-	_sprites[1].create(kTextAreaWidth, kTextAreaHeight);
+	_sprites[1].create(_boxProps.textAreaWidth, _boxProps.textAreaHeight);
 	_sprites[1].shade(_colorShading);
 
-	_sprites[0].create(kWidth, kHeight);
-	_box.create(kWidth, kHeight);
+	_sprites[0].create(_boxProps.width, _boxProps.height);
+	_box.create(_boxProps.width, _boxProps.height);
 
-	_markerSelect   = new TextObject(">", kTextMargin - 9, 0, _colorSelected);
-	_markerUnselect = new TextObject("-", kTextMargin - 8, 0, _colorUnselected);
+	_markerSelect   = new TextObject(">", _boxProps.textMargin - 9, 0, _colorSelected);
+	_markerUnselect = new TextObject("-", _boxProps.textMargin - 8, 0, _colorUnselected);
 
 	// Put the shading grid
-	_sprites[0].blit(_sprites[1], (kWidth  - kTextAreaWidth ) / 2,
-	                              (kHeight - kTextAreaHeight) / 2, true);
+	_sprites[0].blit(_sprites[1], (_boxProps.width  - _boxProps.textAreaWidth ) / 2,
+	                              (_boxProps.height - _boxProps.textAreaHeight) / 2, true);
 	// Put the frame
 	_sprites[0].blit(_sprites[2], 0, 0, true);
 
@@ -340,7 +451,7 @@ void ConversationBox::drawLines() {
 
 	// Update the lines
 	if (findPhysLine(_physLineTop, curLine)) {
-		for (int i = 0; i < 3; i++) {
+		for (uint32 i = 0; i < _boxProps.numLines; i++) {
 			uint32 selected = physLineNumToRealLineNum(_selected);
 
 			TextObject *text;
@@ -564,7 +675,7 @@ void ConversationBox::pickLine(Line *line) {
 }
 
 int ConversationBox::getTextArea(int32 x, int32 y) {
-	for (int i = 0; i < 3; i++)
+	for (uint32 i = 0; i < _boxProps.numLines; i++)
 		if (_textAreas[i].contains(x, y))
 			return _physLineTop + i + 1;
 
@@ -591,7 +702,7 @@ ConversationBox::Line *ConversationBox::getSelectedLine() {
 }
 
 bool ConversationBox::canScroll() const {
-	return _physLineCount > 3;
+	return _physLineCount > _boxProps.numLines;
 }
 
 bool ConversationBox::canScrollUp() const {
@@ -599,7 +710,7 @@ bool ConversationBox::canScrollUp() const {
 }
 
 bool ConversationBox::canScrollDown() const {
-	return (_physLineTop + 3) < _physLineCount;
+	return (_physLineTop + _boxProps.numLines) < _physLineCount;
 }
 
 void ConversationBox::doScroll(ScrollAction scroll) {

@@ -73,7 +73,9 @@ public:
 	void clear();
 
 	/** Load the palette from a PAL file. */
-	bool loadFromPAL(Resources &resources, const Common::String &palette);
+	bool loadFromPALRGBA(Resources &resources, const Common::String &palette);
+	/** Load the palette from a PAL file. */
+	bool loadFromPAL555(Resources &resources, const Common::String &palette);
 
 	/** Create a palette that's compatible with ScummVM's O_System. */
 	void makeSystemCompatible(byte *pal) const;
@@ -108,7 +110,9 @@ private:
 	void addPalette(const Palette &palette);
 
 	/** Load the palette from a PAL file stream. */
-	bool loadFromPAL(Common::SeekableReadStream &palette);
+	bool loadFromPALRGBA(Common::SeekableReadStream &palette);
+	/** Load the palette from a PAL file stream. */
+	bool loadFromPAL555(Common::SeekableReadStream &palette);
 };
 
 } // End of namespace DarkSeed2

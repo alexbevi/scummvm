@@ -255,8 +255,25 @@ bool Sprite::loadFromRoomImage(Resources &resources, const Common::String &image
 	return loadFromImage(resources, image, resources.getVersionFormats().getRoomImageType());
 }
 
-bool Sprite::loadFromBoxImage(Resources &resources, const Common::String &image) {
-	return loadFromImage(resources, image, resources.getVersionFormats().getBoxImageType());
+bool Sprite::loadFromBoxImage(Resources &resources, const Common::String &image,
+		int32 width, int32 height) {
+
+	switch (resources.getVersionFormats().getBoxImageType()) {
+	case kImageTypeBMP:
+		return loadFromBMP(resources, image);
+
+	case kImageTypeRGB:
+		return loadFromRGB(resources, image);
+
+	case kImageTypeBDP:
+		return loadFromBDP(resources, image);
+
+	case kImageType256:
+		return loadFrom256(resources, image, width, height);
+		break;
+	}
+
+	return false;
 }
 
 bool Sprite::loadFromImage(Resources &resources, const Common::String &image, ImageType imageType) {
@@ -427,6 +444,25 @@ bool Sprite::loadFromBDP(Common::SeekableReadStream &bdp) {
 
 	// Completely non-transparent
 	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
+
+	return true;
+}
+
+bool Sprite::loadFrom256(Common::SeekableReadStream &f256, int32 width, int32 height) {
+	if (f256.size() < (width * height))
+		return false;
+
+	create(width, height);
+
+	byte *img = (byte *) _surfacePaletted.pixels;
+	for (int32 y = 0; y < width; y++) {
+		for (int32 x = 0; x < height; x++) {
+			*img++ = f256.readByte();
+		}
+	}
+
+	createTransparencyMap();
+	convertToTrueColor();
 
 	return true;
 }
@@ -628,6 +664,23 @@ bool Sprite::loadFromBDP(Resources &resources, const Common::String &bdp) {
 	delete resBDP;
 
 	_fileName = bdp;
+
+	return result;
+}
+
+bool Sprite::loadFrom256(Resources &resources, const Common::String &f256, int32 width, int32 height) {
+	Common::String f256File = Resources::addExtension(f256,
+			resources.getVersionFormats().getImageExtension(kImageType256));
+	if (!resources.hasResource(f256File))
+		return false;
+
+	Resource *res256 = resources.getResource(f256File);
+
+	bool result = loadFrom256(res256->getStream(), width, height);
+
+	delete res256;
+
+	_fileName = f256;
 
 	return result;
 }

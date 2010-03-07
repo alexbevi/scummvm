@@ -100,7 +100,7 @@ void Palette::clear() {
 	memset(_palette, 0, 768);
 }
 
-bool Palette::loadFromPAL(Common::SeekableReadStream &palette) {
+bool Palette::loadFromPALRGBA(Common::SeekableReadStream &palette) {
 	palette.seek(0);
 
 	_size = CLIP(palette.size() / 4, 0, 256);
@@ -117,14 +117,48 @@ bool Palette::loadFromPAL(Common::SeekableReadStream &palette) {
 	return true;
 }
 
-bool Palette::loadFromPAL(Resources &resources, const Common::String &palette) {
+bool Palette::loadFromPAL555(Common::SeekableReadStream &palette) {
+	palette.seek(0);
+
+	_size = CLIP(palette.size() / 2, 0, 256);
+
+	byte *pal = _palette;
+	for (int i = 0; i < _size; i++, pal += 3) {
+		const uint16 p = palette.readUint16BE();
+		const uint8  b = ((p & 0x7C00) >> 10) << 3;
+		const uint8  g = ((p & 0x03E0) >>  5) << 3;
+		const uint8  r = ((p & 0x001F) >>  0) << 3;
+
+		pal[0] = r;
+		pal[1] = g;
+		pal[2] = b;
+	}
+
+	return true;
+}
+
+bool Palette::loadFromPALRGBA(Resources &resources, const Common::String &palette) {
 	Common::String palFile = Resources::addExtension(palette, "PAL");
 	if (!resources.hasResource(palFile))
 		return false;
 
 	Resource *resPAL = resources.getResource(palFile);
 
-	bool result = loadFromPAL(resPAL->getStream());
+	bool result = loadFromPALRGBA(resPAL->getStream());
+
+	delete resPAL;
+
+	return result;
+}
+
+bool Palette::loadFromPAL555(Resources &resources, const Common::String &palette) {
+	Common::String palFile = Resources::addExtension(palette, "PAL");
+	if (!resources.hasResource(palFile))
+		return false;
+
+	Resource *resPAL = resources.getResource(palFile);
+
+	bool result = loadFromPAL555(resPAL->getStream());
 
 	delete resPAL;
 

@@ -105,7 +105,8 @@ public:
 	bool loadFromRoomImage(Resources &resources, const Common::String &image);
 
 	/** Load a sprite from a box image file. */
-	bool loadFromBoxImage(Resources &resources, const Common::String &image);
+	bool loadFromBoxImage(Resources &resources, const Common::String &image,
+			int32 width = 0, int32 height = 0);
 
 	/** Load from a cursor resource embedded in an EXE file. */
 	bool loadFromCursorResource(const NECursor &cursor);
@@ -198,9 +199,14 @@ private:
 	bool loadFromRGB(Common::SeekableReadStream &rgb);
 
 	/** Load a sprite from a BDP. */
-	bool loadFromBDP(Resources &resources, const Common::String &rgb);
+	bool loadFromBDP(Resources &resources, const Common::String &bdp);
 	/** Load a sprite from a BDP. */
 	bool loadFromBDP(Common::SeekableReadStream &bdp);
+
+	/** Load a sprite from a 256. */
+	bool loadFrom256(Resources &resources, const Common::String &f256, int32 width, int32 height);
+	/** Load a sprite from a 256. */
+	bool loadFrom256(Common::SeekableReadStream &f256, int32 width, int32 height);
 
 	/** Load from a cursor found in the Sega Saturn version. */
 	bool loadFromSaturnCursor(Common::SeekableReadStream &cursor);

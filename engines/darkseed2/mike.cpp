@@ -93,7 +93,7 @@ bool Mike::loadAnimations(bool needPalette) {
 
 	if (needPalette) {
 		// Loading the fixed palette for Mike
-		if (!palette.loadFromPAL(*_resources, "fix"))
+		if (!palette.loadFromPALRGBA(*_resources, "fix"))
 			return false;
 
 		ImgConv.registerStandardPalette(palette);

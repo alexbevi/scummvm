@@ -32,6 +32,7 @@
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/saveable.h"
+#include "engines/darkseed2/versionformats.h"
 #include "engines/darkseed2/sprite.h"
 
 namespace DarkSeed2 {
@@ -49,12 +50,12 @@ class TalkLine;
 
 class ConversationBox : public Saveable {
 public:
-	static const int32 kWidth  = 640; ///< The box's width.
-	static const int32 kHeight =  70; ///< The box's heigth.
-
 	ConversationBox(Resources &resources, Variables &variables,
 			Graphics &graphics, TalkManager &talkManager);
 	~ConversationBox();
+
+	int32 getWidth () const;
+	int32 getHeight() const;
 
 	/** Start the specified conversation. */
 	bool start(const Common::String &conversation);
@@ -85,6 +86,38 @@ protected:
 	bool loading(Resources &resources);
 
 private:
+	struct BoxProperties {
+		int32 width;  ///< The box's width.
+		int32 height; ///< The box's height.
+
+		const char *frameFile; ///< File used for the full frame.
+
+		const char *frameTopFile;    ///< File used for the top part of the frame.
+		const char *frameBottomFile; ///< File used for the bottom part of the frame.
+		const char *frameLeftFile;   ///< File used for the left part of the frame.
+		const char *frameRightFile;  ///< File used for the right part of the frame.
+
+		int32 frameLeftRightWidth; ///< The width of the left and right parts of the frame.
+		int32 frameTopDownHeight;  ///< The height of the top and bottom parts of the frame.
+
+		int32 scrollUp[4];   ///< The scroll up button's coordinates.
+		int32 scrollDown[4]; ///< The scroll down button's coordinates.
+
+		/** File used the sprite that's shown when scrolling up is allowed. */
+		const char *scrollUpFile;
+		/** File used the sprite that's shown when scrolling down is allowed. */
+		const char *scrollDownFile;
+		/** File used the sprite that's shown when scrolling up and down is allowed. */
+		const char *scrollUpDownFile;
+
+		int32 textAreaWidth;  ///< The width of the raw text area.
+		int32 textAreaHeight; ///< The height of the raw text area.
+		int32 textHeight;     ///< The height of a text line.
+		int32 textMargin;     ///< The maximum width of a text line.
+
+		uint32 numLines; ///< Max number of text lines visible in the box.
+	} _boxProps;
+
 	/** A scrolling action. */
 	enum ScrollAction {
 		kScrollActionUp,   ///< Scroll up.
@@ -167,7 +200,7 @@ private:
 
 	Common::Array<Line *> _lines; ///< All current conversation lines.
 
-	Common::Rect _textAreas[3];   ///< Areas of the 3 visible lines.
+	Common::Rect *_textAreas;   ///< Areas of the visible lines.
 	Common::Rect _scrollAreas[2]; ///< Areas of the scroll up/down buttons.
 
 	uint32 _physLineCount; ///< Number of physical lines.
@@ -190,6 +223,9 @@ private:
 	// For saving/loading
 	uint32 _curLineNumber;        ///< The number of the current line.
 	Common::String _curReplyName; ///< The name of the current reply.
+
+	/** Fill in the box poperties struct, depending on the game version. */
+	void fillInBoxProperties(GameVersion gameVersion);
 
 	/** Load all needed sprites. */
 	void loadSprites();
