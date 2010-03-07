@@ -105,9 +105,9 @@ Graphics::Graphics(int32 width, int32 height, Resources &resources, Variables &v
 	_screenHeight = height;
 
 	_conversationX = 0;
-	_conversationY = height - 70;
+	_conversationY = height;
 	_inventoryX    = 0;
-	_inventoryY    = height - 70;
+	_inventoryY    = height;
 
 	clearPalette();
 	ImgConv.registerStandardPalette(_gamePalette);
@@ -141,10 +141,12 @@ void Graphics::init(TalkManager &talkManager, ScriptRegister &scriptRegister,
 
 	// Init conversation box
 	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager);
+	_conversationY -= _conversationBox->getHeight();
 	_conversationBox->move(_conversationX, _conversationY);
 
 	// Init inventory box
 	_inventoryBox = new InventoryBox(*_resources, *_variables, scriptRegister, *this, talkManager, *_cursors);
+	_inventoryY -= 70;
 	_inventoryBox->move(_inventoryX, _inventoryY);
 
 	// Init room

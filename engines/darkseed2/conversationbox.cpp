@@ -219,7 +219,7 @@ void ConversationBox::fillInBoxProperties(GameVersion gameVersion) {
 		_boxProps.scrollDownFile   = "TEXT_D";
 		_boxProps.scrollUpDownFile = "TEXT_UD";
 
-		_boxProps.textAreaWidth  = 320;
+		_boxProps.textAreaWidth  = 250;
 		_boxProps.textAreaHeight =  34;
 		_boxProps.textHeight     =  12;
 		_boxProps.textMargin     =  50;
