@@ -57,6 +57,7 @@ class TextObject;
 class SpriteObject;
 class Animation;
 class Cursors;
+class FontManager;
 
 class Graphics : public Saveable {
 public:
@@ -95,7 +96,8 @@ public:
 		bool isUpToDate(int32 frame, int32 x, int32 y, frac_t scale) const;
 	};
 
-	Graphics(int32 width, int32 height, Resources &resources, Variables &variables, Cursors &cursors);
+	Graphics(int32 width, int32 height, Resources &resources,
+			Variables &variables, Cursors &cursors, const FontManager &fontManager);
 	~Graphics();
 
 	/** Init the graphics subsystem. */
@@ -171,7 +173,10 @@ private:
 	Resources *_resources;
 	Variables *_variables;
 	Cursors   *_cursors;
-	Movie     *_movie;
+
+	const FontManager *_fontMan;
+
+	Movie *_movie;
 
 	ConversationBox *_conversationBox; ///< The conversation box.
 	InventoryBox    *_inventoryBox;    ///< The inventory box.

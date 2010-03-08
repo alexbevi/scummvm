@@ -960,14 +960,13 @@ void Sprite::shade(uint32 c) {
 	memset(_transparencyMap, 2, _surfacePaletted.w * _surfacePaletted.h);
 }
 
-void Sprite::drawStrings(const Common::StringList &strings, const ::Graphics::Font &font,
+void Sprite::drawStrings(const FontManager::TextList &strings, const FontManager &fontManager,
 		int x, int y, uint32 color) {
 
-	for (Common::StringList::const_iterator it = strings.begin(); it != strings.end(); ++it) {
-		font.drawString(&_surfaceTrueColor, *it, x, y, _surfaceTrueColor.w, color,
-				::Graphics::kTextAlignLeft, 0, false);
+	for (FontManager::TextList::const_iterator it = strings.begin(); it != strings.end(); ++it) {
+		fontManager.drawText(_surfaceTrueColor, *it, x, y, color);
 
-		y += font.getFontHeight();
+		y += fontManager.getFontHeight();
 	}
 
 	updateTransparencyMap();

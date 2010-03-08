@@ -27,6 +27,7 @@
 #include "common/serializer.h"
 
 #include "engines/darkseed2/events.h"
+#include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/room.h"
@@ -114,6 +115,52 @@ bool Events::run() {
 }
 
 bool Events::introSequence() {
+#if 0
+	Palette palette;
+
+	ImgConv.registerStandardPalette(palette);
+
+	Sprite sprite1, sprite2, sprite3, sprite4;
+	Sprite bg;
+
+	bg.create(320, 240);
+
+	palette.loadFromPAL555(*_vm->_resources, "MENU");
+
+	sprite1.loadFromBoxImage(*_vm->_resources, "DLG_L"  ,  40, 48);
+	sprite2.loadFromBoxImage(*_vm->_resources, "DLG_R"  ,  40, 48);
+	sprite3.loadFromBoxImage(*_vm->_resources, "DLG_TOP", 240,  7);
+	sprite4.loadFromBoxImage(*_vm->_resources, "DLG_BTM", 240,  7);
+
+	bg.blit(sprite1,   0,  0);
+	bg.blit(sprite2, 280,  0);
+	bg.blit(sprite3,  40,  0);
+	bg.blit(sprite4,  40, 41);
+
+	_vm->_graphics->registerBackground(bg);
+
+	while (!_vm->shouldQuit()) {
+		Common::Event event;
+
+		while (g_system->getEventManager()->pollEvent(event)) {
+			switch (event.type) {
+			default:
+				break;
+			}
+		}
+
+		_vm->_graphics->updateStatus();
+
+		// Update screen
+		_vm->_graphics->retrace();
+		g_system->updateScreen();
+		g_system->delayMillis(10);
+	}
+
+	ImgConv.unregisterStandardPalette();
+	return true;
+#endif
+
 	if (_state < kStateIntro3) {
 		if (_state < kStateIntro2) {
 			if (_state < kStateIntro1) {

@@ -34,6 +34,7 @@
 #include "engines/darkseed2/saveable.h"
 #include "engines/darkseed2/versionformats.h"
 #include "engines/darkseed2/sprite.h"
+#include "engines/darkseed2/font.h"
 
 namespace DarkSeed2 {
 
@@ -51,7 +52,7 @@ class TalkLine;
 class ConversationBox : public Saveable {
 public:
 	ConversationBox(Resources &resources, Variables &variables,
-			Graphics &graphics, TalkManager &talkManager);
+			Graphics &graphics, TalkManager &talkManager, const FontManager &fontManager);
 	~ConversationBox();
 
 	int32 getWidth () const;
@@ -137,7 +138,7 @@ private:
 		/** The talk line with the sound and text. */
 		TalkLine *talk;
 		/** The line's text wrapped to the text area. */
-		Common::StringList texts;
+		FontManager::TextList texts;
 		/** The graphical text lines of the selected wrapped text lines. */
 		Common::Array<TextObject *> textObjectsSelected;
 		/** The graphical text lines of the unselected wrapped text lines. */
@@ -146,7 +147,8 @@ private:
 		/** The number within the lines array. */
 		uint32 lineNumber;
 
-		Line(TalkLine *line = 0, uint32 colorSelected = 0, uint32 colorUnselected = 0);
+		Line(TalkLine *line = 0, const FontManager *fontManager = 0,
+				uint32 colorSelected = 0, uint32 colorUnselected = 0);
 		~Line();
 
 		/** Return the line's name. */
@@ -160,7 +162,7 @@ private:
 		/** Iterator to the real line. */
 		Common::Array<Line *>::const_iterator itLine;
 		/** Iterator to the line's text part. */
-		Common::StringList::const_iterator itString;
+		FontManager::TextList::const_iterator itString;
 		/** Iterator to the line's selected graphic part. */
 		Common::Array<TextObject *>::iterator itTextSel;
 		/** Iterator to the line's unselected graphic part. */
@@ -168,8 +170,6 @@ private:
 
 		/** Return the line's name. */
 		const Common::String &getName() const;
-		/** Return the line's text. */
-		const Common::String &getString() const;
 		/** Return the line's selected graphic. */
 		TextObject *getSelectedText();
 		/** Return the line's unselected graphic. */
@@ -187,6 +187,8 @@ private:
 	Variables   *_variables;
 	Graphics    *_graphics;
 	TalkManager *_talkMan;
+
+	const FontManager *_fontMan;
 
 	Common::Rect _area; ///< The area where the box is visible.
 

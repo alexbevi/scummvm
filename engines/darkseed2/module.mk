@@ -8,6 +8,7 @@ MODULE_OBJS := \
 	resources.o \
 	palette.o \
 	imageconverter.o \
+	font.o \
 	sprite.o \
 	graphics.o \
 	graphicalobject.o \

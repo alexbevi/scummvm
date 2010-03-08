@@ -43,6 +43,7 @@
 #include "engines/darkseed2/options.h"
 #include "engines/darkseed2/cursors.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/font.h"
 #include "engines/darkseed2/script.h"
 #include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/graphics.h"
@@ -90,6 +91,7 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst, const DS2GameDescription *gameDe
 	_options        = 0;
 	_cursors        = 0;
 	_resources      = 0;
+	_fontMan        = 0;
 	_sound          = 0;
 	_music          = 0;
 	_variables      = 0;
@@ -127,6 +129,7 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 	delete _scriptRegister;
 	delete _music;
 	delete _sound;
+	delete _fontMan;
 	delete _resources;
 	delete _cursors;
 	delete _options;
@@ -214,10 +217,11 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 	_variables      = new Variables(*_rnd);
 	_scriptRegister = new ScriptRegister();
 	_resources      = new Resources();
+	_fontMan        = new FontManager(*_resources);
 	_sound          = new Sound(*_mixer, *_variables);
 	_music          = new Music(*_mixer, *_midiDriver);
-	_graphics       = new Graphics(width, height, *_resources, *_variables, *_cursors);
-	_talkMan        = new TalkManager(*_sound, *_graphics);
+	_graphics       = new Graphics(width, height, *_resources, *_variables, *_cursors, *_fontMan);
+	_talkMan        = new TalkManager(*_sound, *_graphics, *_fontMan);
 	_mike           = new Mike(*_resources, *_variables, *_graphics);
 	_movie          = new Movie(*_mixer, *_graphics, *_cursors, *_sound);
 
@@ -251,6 +255,10 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 		_resources->setGameVersion(kGameVersionWindows, getLanguage());
 	}
 
+	if (!_fontMan->init(_resources->getVersionFormats().getGameVersion(), getLanguage())) {
+		warning("DarkSeed2Engine::init(): Couldn't initialize the font manager");
+		return false;
+	}
 
 	if (!_events->init()) {
 		warning("DarkSeed2Engine::init(): Couldn't initialize the event handler");

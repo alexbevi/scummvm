@@ -60,6 +60,7 @@ struct DS2GameDescription;
 class Options;
 class Cursors;
 class Resources;
+class FontManager;
 class Sound;
 class Music;
 class Variables;
@@ -80,6 +81,7 @@ public:
 	Options           *_options;
 	Cursors           *_cursors;
 	Resources         *_resources;
+	FontManager       *_fontMan;
 	Sound             *_sound;
 	Music             *_music;
 	Variables         *_variables;

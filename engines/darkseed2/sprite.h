@@ -38,6 +38,7 @@
 #include "engines/darkseed2/saveable.h"
 #include "engines/darkseed2/versionformats.h"
 #include "engines/darkseed2/palette.h"
+#include "engines/darkseed2/font.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -138,7 +139,7 @@ public:
 	void shade(uint32 c);
 
 	/** Draw a string. */
-	void drawStrings(const Common::StringList &strings, const ::Graphics::Font &font,
+	void drawStrings(const FontManager::TextList &strings, const FontManager &fontManager,
 			int x, int y, uint32 color);
 
 	/** Get the scaling value. */

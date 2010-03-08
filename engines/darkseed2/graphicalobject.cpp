@@ -67,8 +67,8 @@ void GraphicalObject::clearArea() {
 }
 
 
-TextObject::TextObject(const Common::String &text, int32 x, int32 y,
-		uint32 color, int32 maxWidth) {
+TextObject::TextObject(const TextLine &text, const FontManager &fontManager,
+		int32 x, int32 y, uint32 color, int32 maxWidth) {
 
 	// Sanity checks
 	assert((x >= 0) && (y >= 0) && (x <= 0x7FFF) && (y <= 0x7FFF));
@@ -76,30 +76,21 @@ TextObject::TextObject(const Common::String &text, int32 x, int32 y,
 	if (maxWidth <= 0)
 		maxWidth = 320;
 
-	// We want the big font
-	::Graphics::FontManager::FontUsage fontUsage = ::Graphics::FontManager::kBigGUIFont;
-	const ::Graphics::Font *font =
-		::Graphics::FontManager::instance().getFontByUsage(fontUsage);
+	FontManager::TextList lines;
 
-	Common::StringList lines;
-
-	// Wrap the string
-	int width = font->wordWrapText(text, maxWidth, lines);
-
-	// Removing leading and trailing spaces from all resulting lines
-	for (Common::StringList::iterator it = lines.begin(); it != lines.end(); ++it)
-		it->trim();
+	int32 width = wrap(text, fontManager, lines, maxWidth);
 
 	// Set area
 	_area.left = x;
 	_area.top  = y;
 	_area.setWidth(width);
-	_area.setHeight(lines.size() * font->getFontHeight());
+	_area.setHeight(lines.size() * fontManager.getFontHeight());
 
 	// Create sprite
 	_sprite = new Sprite;
 	_sprite->create(_area.width(), _area.height());
-	_sprite->drawStrings(lines, *font, 0, 0, color);
+
+	_sprite->drawStrings(lines, fontManager, 0, 0, color);
 }
 
 TextObject::~TextObject() {
@@ -120,26 +111,13 @@ void TextObject::redraw(Sprite &sprite, Common::Rect area) {
 	sprite.blit(*_sprite, area, x, y, true);
 }
 
-void TextObject::recolor(byte color) {
-}
-
-int32 TextObject::wrap(const Common::String &string, Common::StringList &list, int32 maxWidth) {
+int32 TextObject::wrap(const TextLine &text, const FontManager &fontManager,
+		FontManager::TextList &list, int32 maxWidth) {
 	if (maxWidth <= 0)
 		maxWidth = 320;
 
-	// We want the big font
-	::Graphics::FontManager::FontUsage fontUsage = ::Graphics::FontManager::kBigGUIFont;
-	const ::Graphics::Font *font =
-		::Graphics::FontManager::instance().getFontByUsage(fontUsage);
-
 	// Wrap the string
-	int32 width = font->wordWrapText(string, maxWidth, list);
-
-	// Removing leading and trailing spaces from all resulting lines
-	for (Common::StringList::iterator it = list.begin(); it != list.end(); ++it)
-		it->trim();
-
-	return width;
+	return fontManager.wordWrapText(text, maxWidth, list);
 }
 
 

@@ -31,6 +31,7 @@
 #include "common/frac.h"
 
 #include "engines/darkseed2/darkseed2.h"
+#include "engines/darkseed2/font.h"
 
 namespace Common {
 	class String;
@@ -68,18 +69,16 @@ protected:
 /** A text graphic. */
 class TextObject : public GraphicalObject {
 public:
-	TextObject(const Common::String &text, int32 x, int32 y,
-			uint32 color, int32 maxWidth = 0);
+	TextObject(const TextLine &text, const FontManager &fontManager,
+			int32 x, int32 y, uint32 color, int32 maxWidth = 0);
 	~TextObject();
 
 	/** Redraw the object. */
 	void redraw(Sprite &sprite, Common::Rect area);
 
-	/** Recolor the text. */
-	void recolor(byte color);
-
 	/** Create a wrapped StringList out of the supplied string. */
-	static int32 wrap(const Common::String &string, Common::StringList &list, int32 maxWidth);
+	static int32 wrap(const TextLine &text, const FontManager &fontManager,
+			FontManager::TextList &list, int32 maxWidth);
 
 private:
 	Sprite *_sprite; ///< The text's sprite.

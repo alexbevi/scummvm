@@ -30,6 +30,7 @@
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/options.h"
 #include "engines/darkseed2/sound.h"
+#include "engines/darkseed2/font.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/graphicalobject.h"
 
@@ -129,9 +130,11 @@ void TalkLine::setSpeaker(uint8 speakerNum, const Common::String &speaker) {
 }
 
 
-TalkManager::TalkManager(Sound &sound, Graphics &graphics) {
+TalkManager::TalkManager(Sound &sound, Graphics &graphics, const FontManager &fontManager) {
 	_sound    = &sound;
 	_graphics = &graphics;
+
+	_fontMan  = &fontManager;
 
 	_curTalk = -1;
 
@@ -164,7 +167,8 @@ bool TalkManager::talkInternal(const TalkLine &talkLine) {
 		if (!talkLine.getSpeaker().empty())
 			text = talkLine.getSpeaker() + ":\n" + text;
 
-		TextObject *talkObject = new TextObject(text, 5, 0, ImgConv.getColor(255, 255, 255), 300);
+		TextObject *talkObject = new TextObject(TextLine(text), *_fontMan, 5, 0,
+				ImgConv.getColor(255, 255, 255), 300);
 
 		_graphics->talk(talkObject);
 	}

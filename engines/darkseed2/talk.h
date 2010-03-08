@@ -39,6 +39,7 @@ class Graphics;
 class Options;
 class Resource;
 class Sound;
+class FontManager;
 
 /** A talk line containing it's text, sprite and sound. */
 class TalkLine {
@@ -88,7 +89,7 @@ private:
 /** The talk manager. */
 class TalkManager {
 public:
-	TalkManager(Sound &sound, Graphics &graphics);
+	TalkManager(Sound &sound, Graphics &graphics, const FontManager &fontManager);
 	~TalkManager();
 
 	/** Speak the given line. */
@@ -111,8 +112,10 @@ public:
 	void updateStatus();
 
 private:
-	Sound *_sound;
+	Sound    *_sound;
 	Graphics *_graphics;
+
+	const FontManager *_fontMan;
 
 	/** The current mananged talk line. */
 	TalkLine *_curTalkLine;

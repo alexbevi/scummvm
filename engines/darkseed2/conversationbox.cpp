@@ -41,14 +41,16 @@ static const byte kColorSelected  [3] = {255, 255, 255};
 static const byte kColorUnselected[3] = {239, 167, 127};
 static const byte kColorShading   [3] = {  0,   0,   0};
 
-ConversationBox::Line::Line(TalkLine *line, uint32 colorSelected, uint32 colorUnselected) {
-	talk = line;
-	if (talk) {
-		int32 width = TextObject::wrap(talk->getTXT(), texts, 460);
+ConversationBox::Line::Line(TalkLine *line, const FontManager *fontManager,
+		uint32 colorSelected, uint32 colorUnselected) {
 
-		for (Common::StringList::iterator it = texts.begin(); it != texts.end(); ++it) {
-			textObjectsSelected.push_back  (new TextObject(*it, 0, 0, colorSelected  , width));
-			textObjectsUnselected.push_back(new TextObject(*it, 0, 0, colorUnselected, width));
+	talk = line;
+	if (talk && fontManager) {
+		int32 width = TextObject::wrap(TextLine(talk->getTXT()), *fontManager, texts, 460);
+
+		for (FontManager::TextList::iterator it = texts.begin(); it != texts.end(); ++it) {
+			textObjectsSelected.push_back  (new TextObject(*it, *fontManager, 0, 0, colorSelected,   width));
+			textObjectsUnselected.push_back(new TextObject(*it, *fontManager, 0, 0, colorUnselected, width));
 		}
 	}
 }
@@ -70,10 +72,6 @@ const Common::String &ConversationBox::Line::getName() const {
 
 const Common::String &ConversationBox::PhysLineRef::getName() const {
 	return (*itLine)->getName();
-}
-
-const Common::String &ConversationBox::PhysLineRef::getString() const {
-	return *itString;
 }
 
 TextObject *ConversationBox::PhysLineRef::getSelectedText() {
@@ -98,12 +96,14 @@ bool ConversationBox::PhysLineRef::isTop() const {
 
 
 ConversationBox::ConversationBox(Resources &resources, Variables &variables,
-		Graphics &graphics, TalkManager &talkManager) {
+		Graphics &graphics, TalkManager &talkManager, const FontManager &fontManager) {
 
 	_resources = &resources;
 	_variables = &variables;
 	_graphics  = &graphics;
 	_talkMan   = &talkManager;
+
+	_fontMan = &fontManager;
 
 	_conversation = new Conversation(*_variables);
 
@@ -353,8 +353,8 @@ void ConversationBox::build() {
 	_sprites[0].create(_boxProps.width, _boxProps.height);
 	_box.create(_boxProps.width, _boxProps.height);
 
-	_markerSelect   = new TextObject(">", _boxProps.textMargin - 9, 0, _colorSelected);
-	_markerUnselect = new TextObject("-", _boxProps.textMargin - 8, 0, _colorUnselected);
+	_markerSelect   = new TextObject(TextLine(">"), *_fontMan, _boxProps.textMargin - 9, 0, _colorSelected);
+	_markerUnselect = new TextObject(TextLine("-"), *_fontMan, _boxProps.textMargin - 8, 0, _colorUnselected);
 
 	// Put the shading grid
 	_sprites[0].blit(_sprites[1], (_boxProps.width  - _boxProps.textAreaWidth ) / 2,
@@ -417,7 +417,7 @@ void ConversationBox::updateLines() {
 
 	Common::Array<TalkLine *> lines = _conversation->getCurrentLines(*_resources);
 	for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
-		Line *line = new Line(*it, _colorSelected, _colorUnselected);
+		Line *line = new Line(*it, _fontMan, _colorSelected, _colorUnselected);
 
 		line->lineNumber = _lines.size();
 

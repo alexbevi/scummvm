@@ -30,6 +30,7 @@
 #include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/font.h"
 #include "engines/darkseed2/talk.h"
 #include "engines/darkseed2/roomconfig.h"
 #include "engines/darkseed2/movie.h"
@@ -95,11 +96,16 @@ bool Graphics::SpriteRef::isUpToDate(int32 frame, int32 x, int32 y, frac_t scale
 }
 
 
-Graphics::Graphics(int32 width, int32 height, Resources &resources, Variables &variables, Cursors &cursors) {
+Graphics::Graphics(int32 width, int32 height, Resources &resources,
+		Variables &variables, Cursors &cursors, const FontManager &fontManager) {
+
 	_resources = &resources;
 	_variables = &variables;
 	_cursors   = &cursors;
-	_movie     = 0;
+
+	_fontMan = &fontManager;
+
+	_movie = 0;
 
 	_screenWidth  = width;
 	_screenHeight = height;
@@ -140,7 +146,7 @@ void Graphics::init(TalkManager &talkManager, ScriptRegister &scriptRegister,
 	_movie = &movie;
 
 	// Init conversation box
-	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager);
+	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager, *_fontMan);
 	_conversationY -= _conversationBox->getHeight();
 	_conversationBox->move(_conversationX, _conversationY);
 
