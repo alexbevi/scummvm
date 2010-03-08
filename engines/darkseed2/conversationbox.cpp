@@ -290,8 +290,8 @@ void ConversationBox::loadSprites() {
 
 		Palette palette;
 
-		if (!palette.loadFromPAL555(*_resources, "MENU"))
-			error("Failed to load MENU.PAL");
+		if (!palette.loadFromPAL555(*_resources, "PARTS"))
+			error("Failed to load PARTS.PAL");
 
 		ImgConv.registerStandardPalette(palette);
 
