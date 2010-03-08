@@ -186,6 +186,8 @@ private:
 	/** Read a resource list entry with big endian values. */
 	bool readBEResourcList(Common::SeekableReadStream &file, Archive &archive, uint32 startOffset);
 
+	bool indexTND(Common::SeekableReadStream &file, Archive &archive, Res &tnd);
+
 	/** Uncompress a glue file. */
 	byte *uncompressGlue(Common::File &file, uint32 &size) const;
 	/** Uncompress a compress glue file chunk. */

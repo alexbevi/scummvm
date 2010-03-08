@@ -431,6 +431,51 @@ bool Resources::readBEResourcList(Common::SeekableReadStream &file, Archive &arc
 
 	_resources.setVal(resFile, resource);
 
+	if (resFile.matchString("*.TND", true)) {
+		warning("-> %s", resFile.c_str());
+		if (!indexTND(file, archive, resource))
+			return false;
+	}
+
+	return true;
+}
+
+bool Resources::indexTND(Common::SeekableReadStream &file, Archive &archive, Res &tnd) {
+	if (tnd.size == 0)
+		return true;
+
+	uint32 filePos = file.pos();
+
+	if (!file.seek(tnd.offset))
+		return false;
+
+	if (file.readUint32BE() != tnd.size)
+		return false;
+
+	uint32 txtCount = file.readUint32BE();
+
+	uint32 startOffset = tnd.offset + txtCount * 16 + 8;
+	for (uint32 i = 0; i < txtCount; i++) {
+		byte buffer[9];
+
+		file.read(buffer, 8);
+		buffer[8] = '\0';
+		Common::String txtFile = (const char *) buffer;
+
+		txtFile += ".TXT";
+
+		Res resource;
+
+		resource.archive = &archive;
+		resource.exists  = true;
+		resource.size    = file.readUint32BE();
+		resource.offset  = file.readUint32BE() + startOffset;
+
+		_resources.setVal(txtFile, resource);
+	}
+
+	file.seek(filePos);
+
 	return true;
 }
 
