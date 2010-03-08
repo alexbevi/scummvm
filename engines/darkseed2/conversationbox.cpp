@@ -46,7 +46,12 @@ ConversationBox::Line::Line(TalkLine *line, const FontManager *fontManager,
 
 	talk = line;
 	if (talk && fontManager) {
-		int32 width = TextObject::wrap(TextLine(talk->getTXT()), *fontManager, texts, 460);
+		int32 width;
+
+		if (talk->hasTXT())
+			width = TextObject::wrap(TextLine(talk->getTXT()), *fontManager, texts, 460);
+		else
+			width = TextObject::wrap(TextLine("AAAAAAA"), *fontManager, texts, 460);
 
 		for (FontManager::TextList::iterator it = texts.begin(); it != texts.end(); ++it) {
 			textObjectsSelected.push_back  (new TextObject(*it, *fontManager, 0, 0, colorSelected,   width));

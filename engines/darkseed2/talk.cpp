@@ -42,6 +42,7 @@ TalkLine::TalkLine(Resources &resources, const Common::String &talkName) {
 	_resource = talkName;
 
 	_wav = 0;
+	_txt = 0;
 
 	Common::String wavFile = Resources::addExtension(talkName, "WAV");
 	Common::String txtFile = Resources::addExtension(talkName, "TXT");
@@ -51,34 +52,36 @@ TalkLine::TalkLine(Resources &resources, const Common::String &talkName) {
 		_wav = _resources->getResource(wavFile);
 
 	// Reading the text
-	Resource *txt;
 	if (_resources->hasResource(txtFile)) {
-		txt = _resources->getResource(txtFile);
+		Resource *txt = _resources->getResource(txtFile);
 
-		Common::SeekableReadStream &txtStream = txt->getStream();
+		if (_resources->getVersionFormats().getLanguage() == Common::JA_JPN) {
+			_txt = new TextLine(txt->getStream());
+		} else {
+			Common::SeekableReadStream &txtStream = txt->getStream();
 
-		while (!txtStream.err() && !txtStream.eos()) {
-			Common::String line = txtStream.readLine();
-			if (line.empty() && txtStream.eos())
-				continue;
+			Common::String str;
+			while (!txtStream.err() && !txtStream.eos()) {
+				Common::String line = txtStream.readLine();
+				if (line.empty() && txtStream.eos())
+					continue;
 
-			if (!_txt.empty())
-				_txt += '\n';
-			_txt += line;
+				if (!str.empty())
+					str += '\n';
+				str += line;
+			}
+
+			_txt = new TextLine(str);
 		}
 
 		delete txt;
 	}
 
-	if (_resources->getVersionFormats().getLanguage() == Common::JA_JPN) {
-		// TODO: Japanese text!
-
-		_txt = "<japanese text>";
-	}
 }
 
 TalkLine::~TalkLine() {
 	delete _wav;
+	delete _txt;
 }
 
 bool TalkLine::hasWAV() const {
@@ -86,7 +89,7 @@ bool TalkLine::hasWAV() const {
 }
 
 bool TalkLine::hasTXT() const {
-	return !_txt.empty();
+	return _txt != 0;
 }
 
 const Resource &TalkLine::getWAV() const {
@@ -96,8 +99,11 @@ const Resource &TalkLine::getWAV() const {
 	return *_wav;
 }
 
-const Common::String &TalkLine::getTXT() const {
-	return _txt;
+const TextLine &TalkLine::getTXT() const {
+	if (!_txt)
+		error("Resource %s.TXT does not exist", _resource.c_str());
+
+	return *_txt;
 }
 
 SoundType TalkLine::getSoundType() const {
@@ -161,16 +167,24 @@ bool TalkManager::talkInternal(const TalkLine &talkLine) {
 		_sound->playDummySound(_curTalk, 1000, Audio::Mixer::kSpeechSoundType);
 	}
 
-	if (_txtEnabled) {
+	if (_txtEnabled && talkLine.hasTXT()) {
 		// Text
-		Common::String text = talkLine.getTXT();
-		if (!talkLine.getSpeaker().empty())
-			text = talkLine.getSpeaker() + ":\n" + text;
+		const TextLine &text = talkLine.getTXT();
+/*		if (!talkLine.getSpeaker().empty())
+			text = talkLine.getSpeaker() + ":\n" + text;*/
 
-		TextObject *talkObject = new TextObject(TextLine(text), *_fontMan, 5, 0,
+		TextObject *talkObject = new TextObject(text, *_fontMan, 5, 0,
 				ImgConv.getColor(255, 255, 255), 300);
 
 		_graphics->talk(talkObject);
+	} else if (_txtEnabled) {
+		if (!talkLine.getSpeaker().empty()) {
+			warning("Speaking speaker");
+			TextObject *talkObject = new TextObject(TextLine(talkLine.getSpeaker()), *_fontMan, 5, 0,
+						ImgConv.getColor(255, 255, 255), 300);
+
+			_graphics->talk(talkObject);
+		}
 	}
 
 	return true;

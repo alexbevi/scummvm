@@ -41,6 +41,8 @@ class Resource;
 class Sound;
 class FontManager;
 
+class TextLine;
+
 /** A talk line containing it's text, sprite and sound. */
 class TalkLine {
 public:
@@ -70,7 +72,7 @@ public:
 	/** Get the line's WAV. */
 	const Resource &getWAV() const;
 	/** Get the line's TXT. */
-	const Common::String &getTXT() const;
+	const TextLine &getTXT() const;
 
 	SoundType getSoundType() const;
 
@@ -82,8 +84,8 @@ private:
 	Common::String _speaker;    ///< The line's speaker.
 	uint8          _speakerNum; ///< The line's speaker's number.
 
-	Resource *_wav;      ///< The WAV.
-	Common::String _txt; ///< The TXT.
+	Resource *_wav; ///< The WAV.
+	TextLine *_txt; ///< The TXT.
 };
 
 /** The talk manager. */

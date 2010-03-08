@@ -30,12 +30,24 @@
 
 #include "engines/darkseed2/font.h"
 #include "engines/darkseed2/resources.h"
+#include "engines/darkseed2/imageconverter.h"
 
 namespace DarkSeed2 {
 
 TextLine::TextLine() {
 	_length = 0;
 	_str = 0;
+}
+
+TextLine::TextLine(Common::SeekableReadStream &stream) {
+	_length = stream.size() - stream.pos();
+
+	assert(_length > 0);
+
+	_str = new byte[_length + 1];
+	uint32 r = stream.read(_str, _length);
+	assert(r == _length);
+	_str[_length] = '\0';
 }
 
 TextLine::TextLine(const byte *str, uint32 length) {
@@ -59,6 +71,7 @@ TextLine::TextLine(const Common::String &str) {
 }
 
 TextLine::TextLine(const TextLine &right) {
+	_str = 0;
 	*this = right;
 }
 
@@ -91,19 +104,208 @@ const byte *TextLine::getText() const {
 }
 
 
+Font::Font() {
+}
+
+Font::~Font() {
+}
+
+
+Saturn2Byte::Saturn2Byte() {
+	_fileSize = 0;
+	_fontData = 0;
+}
+
+Saturn2Byte::~Saturn2Byte() {
+	clear();
+}
+
+void Saturn2Byte::clear() {
+	delete[] _fontData;
+
+	_fileSize = 0;
+	_fontData = 0;
+}
+
+bool Saturn2Byte::load(Resources &resources, const Common::String &file) {
+	Common::String fonFile = Resources::addExtension(file, "FON");
+
+	if (!resources.hasResource(fonFile))
+		return false;
+
+	Resource *resFON = resources.getResource(fonFile);
+
+	bool result = load(resFON->getStream());
+
+	delete resFON;
+
+	return result;
+}
+
+bool Saturn2Byte::load(Common::SeekableReadStream &stream) {
+	clear();
+
+	stream.seek(0);
+
+	_fileSize = stream.size();
+
+	if (_fileSize == 0)
+		return false;
+
+	_fontData = new byte[_fileSize];
+
+	if (stream.read(_fontData, _fileSize) != _fileSize) {
+		clear();
+		return false;
+	}
+
+	return true;
+}
+
+int32 Saturn2Byte::getFontHeight() const {
+	return 16;
+}
+
+int32 Saturn2Byte::getCharWidth(uint32 c) const {
+	return 16;
+}
+
+bool Saturn2Byte::hasSpaceChars() const {
+	return false;
+}
+
+bool Saturn2Byte::isSpaceChar(uint32 c) const {
+	return false;
+}
+
+bool Saturn2Byte::isValidJIS(uint8 j1, uint8 j2) {
+	uint8 c1 = (j1 >> 4);  // First byte column
+	uint8 l1 =  j1 & 0x0F; // First byte line
+	uint8 c2 = (j2 >> 4);  // Second byte column
+	uint8 l2 =  j2 & 0x0F; // Second byte line
+
+	// The column/line values are only allowed to run from 2/1 to 7/14
+
+	if ((c1 < 2) || (c1 > 7))
+		return false;
+	if ((l1 < 1) || (l1 > 14))
+		return false;
+
+	if ((c2 < 2) || (c2 > 7))
+		return false;
+	if ((l2 < 1) || (l2 > 14))
+		return false;
+
+	return true;
+}
+
+uint16 Saturn2Byte::convertShiftJISToJIS(uint16 c) {
+	const uint8 s1 = (c >> 8) & 0xFF;
+	const uint8 s2 =  c       & 0xFF;
+
+	uint8 j1 = s1;
+	uint8 j2 = s2;
+
+	// First convert the higher-order byte
+	if (s1 > 176)
+		j1 -= 176;
+	else
+		j1 -= 112;
+
+	j1 = (j1 * 2) - 1;
+
+	if (s2 < 126) {
+		// This case is unambiguous
+
+		j2 -= 31;
+		if (j2 >= 97)
+			j2--;
+
+		return (j1 << 8) | j2;
+	}
+
+	// This case is ambiguous, so we first try one possibility and examine if
+	// the result is a valid JIS sequence. If not, try the other possibility.
+
+	j2 -= 126;
+	j1++;
+
+	if (isValidJIS(j1, j2))
+		// It's valid, return that.
+		return (j1 << 8) | j2;
+
+	// Reset the result bytes
+	j1--;
+	j2 = s2;
+
+	j2 -= 31;
+	if (j2 >= 97)
+		j2--;
+
+	return (j1 << 8) | j2;
+}
+
+void Saturn2Byte::drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const {
+	// We get Shift_JIS data, but the font is in JIS X 0208
+	c = convertShiftJISToJIS(c);
+
+	const uint8 highByte = (c >> 8) & 0xFF;
+	const uint8 lowByte  =  c       & 0xFF;
+
+	uint32 filePos = ((highByte - 0x21) * (0x7E - 0x21 + 1) + (lowByte - 0x21)) * 32;
+	if (filePos >= _fileSize)
+		return;
+
+	assert(_fontData);
+
+	const byte *charOffset = _fontData + filePos;
+
+	byte *img = (byte *) surface.getBasePtr(x, y);
+	for (int dY = 0; dY < 16; dY++) {
+		byte *imgRow = img;
+
+		for (int n = 0; n < 2; n++) {
+			byte charData = *charOffset++;
+
+			for (int dX = 0; dX < 8; dX++, imgRow += surface.bytesPerPixel) {
+				if ((charData & 0x80) != 0) {
+					if (surface.bytesPerPixel == 1)
+						*imgRow = color;
+					else if (surface.bytesPerPixel == 2)
+						*((uint16 *) imgRow) = color;
+				}
+				charData <<= 1;
+			}
+		}
+
+		img += surface.pitch;
+	}
+}
+
+
 FontManager::FontManager(Resources &resources) {
+	_resources = &resources;
+
 	_fontLatin1   = 0;
 	_fontJapanese = 0;
 }
 
 FontManager::~FontManager() {
+	delete _fontJapanese;
 }
 
 bool FontManager::init(GameVersion gameVersion, Common::Language language) {
 	if (language == Common::JA_JPN) {
 		if (gameVersion == kGameVersionSaturn) {
-			warning("TODO: Load KANJI.FON");
-			_fontJapanese = (Font *) 1;
+			Saturn2Byte *kanji = new Saturn2Byte();
+
+			if (!kanji->load(*_resources, "KANJI")) {
+				delete kanji;
+				return false;
+			}
+
+			_fontJapanese = kanji;
+
 			return true;
 		}
 
@@ -128,6 +330,16 @@ void FontManager::drawText(::Graphics::Surface &surface, const TextLine &text,
 	}
 
 	if (_fontJapanese) {
+		int32 length = text.getLength() / 2;
+		const byte *txt = text.getText();
+		while (length-- > 0) {
+			uint16 c = READ_BE_UINT16(txt);
+
+			_fontJapanese->drawChar(c, surface, x, y, color);
+
+			x += _fontJapanese->getCharWidth(c);
+			txt += 2;
+		}
 		return;
 	}
 
@@ -147,8 +359,8 @@ int32 FontManager::wordWrapText(const TextLine &text, int maxWidth, TextList &li
 	}
 
 	if (_fontJapanese) {
-		lines.push_back(TextLine((const byte *) "TEXT", 4));
-		return 1;
+		lines.push_back(text);
+		return text.getLength() * 16;
 	}
 
 	return 0;
@@ -159,7 +371,7 @@ int32 FontManager::getFontHeight() const {
 		return _fontLatin1->getFontHeight();
 
 	if (_fontJapanese)
-		return 1;
+		return _fontJapanese->getFontHeight();
 
 	return 0;
 }
