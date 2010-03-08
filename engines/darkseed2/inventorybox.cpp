@@ -35,23 +35,6 @@
 
 namespace DarkSeed2 {
 
-// Sprite file names
-static const char *kSpriteFrame         = "INVNTRY1"; ///< The inventory box's general frame.
-static const char *kSpriteScrollLeft    = "ARWLFT1";  ///< Scrolling left active.
-static const char *kSpriteScrollNoLeft  = "ARWLFT2";  ///< Scrolling left grayed out.
-static const char *kSpriteScrollRight   = "ARWRGHT1"; ///< Scrolling right active.
-static const char *kSpriteScrollNoRight = "ARWRGHT2"; ///< Scrolling right grayed out.
-
-static const int32 kItems[4]        = { 64,  10, 576,  60};
-static const int32 kVisibleItems[4] = { 95,  10, 545,  60};
-
-static const  int32 kItemWidth         = 50;
-static const uint32 kVisibleItemsCount = (kVisibleItems[2] - kVisibleItems[0]) / kItemWidth;
-
-// Scroll button coordinates
-static const int32 kScrollLeft [4] = { 11,  27,  32,  53};
-static const int32 kScrollRight[4] = {608,  27, 629,  53};
-
 // Colors
 static const byte kColorShading[3] = {  0,   0,   0};
 
@@ -65,6 +48,8 @@ InventoryBox::InventoryBox(Resources &resources, Variables &variables, ScriptReg
 	_talkMan        = &talkManager;
 	_cursors        = &cursors;
 
+	fillInBoxProperties(resources.getVersionFormats().getGameVersion());
+
 	initInventory();
 
 	_items = 0;
@@ -75,13 +60,16 @@ InventoryBox::InventoryBox(Resources &resources, Variables &variables, ScriptReg
 
 	_scrolled = false;
 
-	_area = Common::Rect(kWidth, kHeight);
+	_area = Common::Rect(_boxProps.width, _boxProps.height);
 
 	_sprites     = new Sprite[8];
 
-	_itemsArea      = Common::Rect(kItems      [0], kItems      [1], kItems      [2], kItems      [3]);
-	_scrollAreas[0] = Common::Rect(kScrollLeft [0], kScrollLeft [1], kScrollLeft [2], kScrollLeft [3]);
-	_scrollAreas[1] = Common::Rect(kScrollRight[0], kScrollRight[1], kScrollRight[2], kScrollRight[3]);
+	_itemsArea      = Common::Rect(_boxProps.items      [0], _boxProps.items      [1],
+	                               _boxProps.items      [2], _boxProps.items      [3]);
+	_scrollAreas[0] = Common::Rect(_boxProps.scrollLeft [0], _boxProps.scrollLeft [1],
+	                               _boxProps.scrollLeft [2], _boxProps.scrollLeft [3]);
+	_scrollAreas[1] = Common::Rect(_boxProps.scrollRight[0], _boxProps.scrollRight[1],
+	                               _boxProps.scrollRight[2], _boxProps.scrollRight[3]);
 
 	updateColors();
 	loadSprites();
@@ -92,6 +80,93 @@ InventoryBox::~InventoryBox() {
 	delete _inventory;
 
 	delete[] _sprites;
+}
+
+int32 InventoryBox::getWidth() const {
+	return _boxProps.width;
+}
+
+int32 InventoryBox::getHeight() const {
+	return _boxProps.height;
+}
+
+void InventoryBox::fillInBoxProperties(GameVersion gameVersion) {
+	switch(gameVersion) {
+	case kGameVersionWindows:
+		_boxProps.width =  640;
+		_boxProps.height =  70;
+
+		_boxProps.frameFile = "INVNTRY1";
+
+		_boxProps.scrollLeftFile    = "ARWLFT1";
+		_boxProps.scrollNoLeftFile  = "ARWLFT2";
+		_boxProps.scrollRightFile   = "ARWRGHT1";
+		_boxProps.scrollNoRightFile = "ARWRGHT2";
+
+		_boxProps.frameTopFile    = 0;
+		_boxProps.frameBottomFile = 0;
+		_boxProps.frameLeftFile   = 0;
+		_boxProps.frameRightFile  = 0;
+
+		_boxProps.frameLeftRightWidth = 0;
+		_boxProps.frameTopDownHeight  = 0;
+
+		_boxProps.scrollLeft[0]  =  11; _boxProps.scrollLeft[1]  =  27;
+		_boxProps.scrollLeft[2]  =  32; _boxProps.scrollLeft[3]  =  53;
+		_boxProps.scrollRight[0] = 608; _boxProps.scrollRight[1] =  27;
+		_boxProps.scrollRight[2] = 629; _boxProps.scrollRight[3] =  53;
+
+		_boxProps.items[0] =  64; _boxProps.items[1] =  10;
+		_boxProps.items[2] = 576; _boxProps.items[3] =  60;
+
+		_boxProps.visibleItems[0] =  95; _boxProps.visibleItems[1] =  10;
+		_boxProps.visibleItems[2] = 545; _boxProps.visibleItems[3] =  60;
+
+		_boxProps.itemWidth = 50;
+
+		_boxProps.visibleItemsCount = (_boxProps.visibleItems[2] - _boxProps.visibleItems[0]) / _boxProps.itemWidth;
+
+		break;
+
+	case kGameVersionSaturn:
+		_boxProps.width =  320;
+		_boxProps.height =  48;
+
+		_boxProps.frameFile = 0;
+
+		_boxProps.frameTopFile    = "DLG_TOP";
+		_boxProps.frameBottomFile = "DLG_BTM";
+		_boxProps.frameLeftFile   = "DLG_L";
+		_boxProps.frameRightFile  = "DLG_R";
+
+		_boxProps.scrollLeftFile    = "ITEM_L1";
+		_boxProps.scrollNoLeftFile  = "ITEM_L2";
+		_boxProps.scrollRightFile   = "ITEM_R1";
+		_boxProps.scrollNoRightFile = "ITEM_R2";
+
+		_boxProps.frameLeftRightWidth = 40;
+		_boxProps.frameTopDownHeight  =  7;
+
+		_boxProps.scrollLeft[0]  =   6; _boxProps.scrollLeft[1]  =  19;
+		_boxProps.scrollLeft[2]  =  17; _boxProps.scrollLeft[3]  =  36;
+		_boxProps.scrollRight[0] = 303; _boxProps.scrollRight[1] =  19;
+		_boxProps.scrollRight[2] = 314; _boxProps.scrollRight[3] =  36;
+
+		_boxProps.items[0] =  35; _boxProps.items[1] =   7;
+		_boxProps.items[2] = 285; _boxProps.items[3] =  41;
+
+		_boxProps.visibleItems[0] =  48; _boxProps.visibleItems[1] =   8;
+		_boxProps.visibleItems[2] = 272; _boxProps.visibleItems[3] =  40;
+
+		_boxProps.itemWidth = 32;
+
+		_boxProps.visibleItemsCount = (_boxProps.visibleItems[2] - _boxProps.visibleItems[0]) / _boxProps.itemWidth;
+
+		break;
+
+	default:
+		error("Unknown game version");
+	}
 }
 
 void InventoryBox::initInventory() {
@@ -109,15 +184,63 @@ void InventoryBox::loadSprites() {
 	ImageType boxImageType = _resources->getVersionFormats().getBoxImageType();
 
 	if (boxImageType == kImageType256) {
-		warning("TODO: Sega Saturn inventory box images");
+		bool loaded0, loaded1, loaded2, loaded3, loaded4, loaded5, loaded6, loaded7;
+
+		Palette palette;
+
+		if (!palette.loadFromPAL555(*_resources, "PARTS"))
+			error("Failed to load PARTS.PAL");
+
+		ImgConv.registerStandardPalette(palette);
+
+		_sprites[3].create(_boxProps.width, _boxProps.height);
+
+		Sprite boxPart;
+
+		loaded0 = boxPart.loadFromBoxImage(*_resources, _boxProps.frameLeftFile,
+				_boxProps.frameLeftRightWidth, _boxProps.height);
+
+		_sprites[3].blit(boxPart, 0, 0);
+
+		loaded1 = boxPart.loadFromBoxImage(*_resources, _boxProps.frameRightFile,
+				_boxProps.frameLeftRightWidth, _boxProps.height);
+
+		_sprites[3].blit(boxPart, _boxProps.width - _boxProps.frameLeftRightWidth, 0);
+
+		loaded2 = boxPart.loadFromBoxImage(*_resources, _boxProps.frameTopFile,
+				_boxProps.width - (2 * _boxProps.frameLeftRightWidth), _boxProps.frameTopDownHeight);
+
+		_sprites[3].blit(boxPart, _boxProps.frameLeftRightWidth, 0);
+
+		loaded3 = boxPart.loadFromBoxImage(*_resources, _boxProps.frameBottomFile,
+				_boxProps.width - (2 * _boxProps.frameLeftRightWidth), _boxProps.frameTopDownHeight);
+
+		_sprites[3].blit(boxPart, _boxProps.frameLeftRightWidth,
+				_boxProps.height - _boxProps.frameTopDownHeight);
+
+		assert(loaded0 && loaded1 && loaded2 && loaded3);
+
+		loaded4 = _sprites[4].loadFromBoxImage(*_resources, _boxProps.scrollLeftFile,
+				_boxProps.frameLeftRightWidth, _boxProps.height);
+		loaded5 = _sprites[5].loadFromBoxImage(*_resources, _boxProps.scrollNoLeftFile,
+				_boxProps.frameLeftRightWidth, _boxProps.height);
+		loaded6 = _sprites[6].loadFromBoxImage(*_resources, _boxProps.scrollRightFile,
+				_boxProps.frameLeftRightWidth, _boxProps.height);
+		loaded7 = _sprites[7].loadFromBoxImage(*_resources, _boxProps.scrollNoRightFile,
+				_boxProps.frameLeftRightWidth, _boxProps.height);
+
+		assert(loaded4 && loaded5 && loaded6 && loaded7);
+
+		ImgConv.unregisterStandardPalette();
+
 	} else {
 		bool loaded0, loaded1, loaded2, loaded3, loaded4;
 
-		loaded0 = _sprites[3].loadFromImage(*_resources, kSpriteFrame);
-		loaded1 = _sprites[4].loadFromImage(*_resources, kSpriteScrollLeft);
-		loaded2 = _sprites[5].loadFromImage(*_resources, kSpriteScrollNoLeft);
-		loaded3 = _sprites[6].loadFromImage(*_resources, kSpriteScrollRight);
-		loaded4 = _sprites[7].loadFromImage(*_resources, kSpriteScrollNoRight);
+		loaded0 = _sprites[3].loadFromImage(*_resources, _boxProps.frameFile);
+		loaded1 = _sprites[4].loadFromImage(*_resources, _boxProps.scrollLeftFile);
+		loaded2 = _sprites[5].loadFromImage(*_resources, _boxProps.scrollNoLeftFile);
+		loaded3 = _sprites[6].loadFromImage(*_resources, _boxProps.scrollRightFile);
+		loaded4 = _sprites[7].loadFromImage(*_resources, _boxProps.scrollNoRightFile);
 
 		assert(loaded0 && loaded1 && loaded2 && loaded3 && loaded4);
 	}
@@ -130,13 +253,13 @@ void InventoryBox::updateScroll() {
 		_box.blit(_sprites[5], 0, 0, true);
 
 	if (canScrollRight())
-		_box.blit(_sprites[6], kWidth - _sprites[6].getWidth(), 0, true);
+		_box.blit(_sprites[6], _boxProps.width - _sprites[6].getWidth(), 0, true);
 	else
-		_box.blit(_sprites[7], kWidth - _sprites[7].getWidth(), 0, true);
+		_box.blit(_sprites[7], _boxProps.width - _sprites[7].getWidth(), 0, true);
 
 	Common::Rect scroll1 = _sprites[4].getArea();
 	Common::Rect scroll2 = _sprites[6].getArea();
-	scroll2.moveTo(kWidth - _sprites[6].getWidth(), 0);
+	scroll2.moveTo(_boxProps.width - _sprites[6].getWidth(), 0);
 
 	scroll1.translate(_area.left, _area.top);
 	scroll2.translate(_area.left, _area.top);
@@ -161,7 +284,7 @@ bool InventoryBox::updateItems() {
 
 	// Draw the sprites
 	_sprites[2].clear();
-	for (uint32 i = _firstItem, n = 0; (i < _visibleItems.size()) && (n < kVisibleItemsCount); i++, n++) {
+	for (uint32 i = _firstItem, n = 0; (i < _visibleItems.size()) && (n < _boxProps.visibleItemsCount); i++, n++) {
 		const Sprite *sprite = _visibleItems[i]->curLook->sprite;
 
 		if (!sprite) {
@@ -169,21 +292,21 @@ bool InventoryBox::updateItems() {
 			continue;
 		}
 
-		_sprites[2].blit(*sprite, n * kItemWidth, 0, true);
+		_sprites[2].blit(*sprite, n * _boxProps.itemWidth, 0, true);
 	}
 
 	return true;
 }
 
 void InventoryBox::build() {
-	_sprites[0].create(kWidth, kHeight);
-	_box.create(kWidth, kHeight);
+	_sprites[0].create(_boxProps.width, _boxProps.height);
+	_box.create(_boxProps.width, _boxProps.height);
 
 	// The shading grid
 	_sprites[1].create(_itemsArea.width(), _itemsArea.height());
 	_sprites[1].shade(_colorShading);
 
-	_sprites[2].create(kVisibleItems[2] - kVisibleItems[0], kVisibleItems[3] - kVisibleItems[1]);
+	_sprites[2].create(_boxProps.visibleItems[2] - _boxProps.visibleItems[0], _boxProps.visibleItems[3] - _boxProps.visibleItems[1]);
 
 	// Put the shading grid
 	_sprites[0].blit(_sprites[1], _itemsArea.left, _itemsArea.top, true);
@@ -192,7 +315,7 @@ void InventoryBox::build() {
 
 	// Put the visible items
 	updateItems();
-	_sprites[0].blit(_sprites[2], kVisibleItems[0], kVisibleItems[1], true);
+	_sprites[0].blit(_sprites[2], _boxProps.visibleItems[0], _boxProps.visibleItems[1], true);
 
 	// Put the scroll sprites
 	updateScroll();
@@ -202,7 +325,7 @@ void InventoryBox::build() {
 
 void InventoryBox::redrawItems() {
 	Common::Rect visibleItemArea =
-		Common::Rect(kVisibleItems[0], kVisibleItems[1], kVisibleItems[2], kVisibleItems[3]);
+		Common::Rect(_boxProps.visibleItems[0], _boxProps.visibleItems[1], _boxProps.visibleItems[2], _boxProps.visibleItems[3]);
 
 	Common::Rect shadingArea = _sprites[1].getArea();
 
@@ -225,7 +348,7 @@ bool InventoryBox::canScrollLeft() const {
 }
 
 bool InventoryBox::canScrollRight() const {
-	return (_visibleItems.size() - _firstItem) > kVisibleItemsCount;
+	return (_visibleItems.size() - _firstItem) > _boxProps.visibleItemsCount;
 }
 
 void InventoryBox::move(int32 x, int32 y) {
@@ -353,12 +476,12 @@ int32 InventoryBox::getItemNumber(int32 x, int32 y) {
 	x -= _area.left;
 	y -= _area.top;
 
-	if ((x < kVisibleItems[0]) || (x > kVisibleItems[2]))
+	if ((x < _boxProps.visibleItems[0]) || (x > _boxProps.visibleItems[2]))
 		return -1;
-	if ((y < kVisibleItems[1]) || (y > kVisibleItems[3]))
+	if ((y < _boxProps.visibleItems[1]) || (y > _boxProps.visibleItems[3]))
 		return -1;
 
-	return ((x - kVisibleItems[0]) / kItemWidth) + _firstItem;
+	return ((x - _boxProps.visibleItems[0]) / _boxProps.itemWidth) + _firstItem;
 }
 
 void InventoryBox::updateStatus() {

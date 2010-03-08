@@ -402,7 +402,7 @@ void Events::mouseMoved(int32 x, int32 y) {
 	// Check for entering/leaving the inventory box
 		if (y >= (_vm->_graphics->getScreenHeight() - 20))
 			_vm->_graphics->getInventoryBox().show();
-		else if (y < (_vm->_graphics->getScreenHeight() - InventoryBox::kHeight))
+		else if (y < (_vm->_graphics->getScreenHeight() - _vm->_graphics->getInventoryBox().getHeight()))
 			_vm->_graphics->getInventoryBox().hide();
 
 		// Look for hotspots
@@ -440,10 +440,10 @@ void Events::mouseClickedLeft(int32 x, int32 y) {
 
 	// Did we click any objects? (But ignore if we're doing something important)
 	if (_vm->_variables->get("SysCall") == 0) {
-		x *= _vm->_resources->getVersionFormats().getHotspotScale();
-		y *= _vm->_resources->getVersionFormats().getHotspotScale();
+		int32 sX = x * _vm->_resources->getVersionFormats().getHotspotScale();
+		int32 sY = y * _vm->_resources->getVersionFormats().getHotspotScale();
 
-		Object *curObject = _vm->_graphics->getRoom().findObject(x, y);
+		Object *curObject = _vm->_graphics->getRoom().findObject(sX, sY);
 		if (curObject)
 			doObjectVerb(*curObject, cursorModeToObjectVerb(_cursorMode));
 

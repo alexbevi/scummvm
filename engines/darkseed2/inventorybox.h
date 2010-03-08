@@ -47,12 +47,12 @@ class InventoryBox : public Saveable {
 public:
 	typedef const Inventory::Item *ItemRef;
 
-	static const int32 kWidth  = 640; ///< The box's width.
-	static const int32 kHeight =  70; ///< The box's heigth.
-
 	InventoryBox(Resources &resources, Variables &variables, ScriptRegister &scriptRegister,
 			Graphics &graphics, TalkManager &talkManager, Cursors &cursors);
 	~InventoryBox();
+
+	int32 getWidth () const;
+	int32 getHeight() const;
 
 	/** Move the box to these coordinates. */
 	void move(int32 x, int32 y);
@@ -88,6 +88,35 @@ protected:
 	bool loading(Resources &resources);
 
 private:
+	struct BoxProperties {
+		int32 width;  ///< The box's width.
+		int32 height; ///< The box's height.
+
+		const char *frameFile; ///< File used for the full frame.
+
+		const char *frameTopFile;    ///< File used for the top part of the frame.
+		const char *frameBottomFile; ///< File used for the bottom part of the frame.
+		const char *frameLeftFile;   ///< File used for the left part of the frame.
+		const char *frameRightFile;  ///< File used for the right part of the frame.
+
+		const char *scrollLeftFile;    ///< Scrolling left active.
+		const char *scrollNoLeftFile;  ///< Scrolling left grayed out.
+		const char *scrollRightFile;   ///< Scrolling right active.
+		const char *scrollNoRightFile; ///< Scrolling right grayed out.
+
+		int32 frameLeftRightWidth; ///< The width of the left and right parts of the frame.
+		int32 frameTopDownHeight;  ///< The height of the top and bottom parts of the frame.
+
+		int32 scrollLeft[4];   ///< The scroll left button's coordinates.
+		int32 scrollRight[4]; ///< The scroll right button's coordinates.
+
+		int32 items[4];
+		int32 visibleItems[4];
+
+		int32 itemWidth;
+		uint32 visibleItemsCount;
+	} _boxProps;
+
 	/** A scrolling action. */
 	enum ScrollAction {
 		kScrollActionLeft,  ///< Scroll left.
@@ -127,6 +156,9 @@ private:
 	uint32 _firstItem;  ///< The first visible item.
 
 	bool _scrolled; ///< Has a scroll-button been pressed?
+
+	/** Fill in the box poperties struct, depending on the game version. */
+	void fillInBoxProperties(GameVersion gameVersion);
 
 	/** Initialize the inventory. */
 	void initInventory();

@@ -152,7 +152,7 @@ void Graphics::init(TalkManager &talkManager, ScriptRegister &scriptRegister,
 
 	// Init inventory box
 	_inventoryBox = new InventoryBox(*_resources, *_variables, scriptRegister, *this, talkManager, *_cursors);
-	_inventoryY -= 70;
+	_inventoryY -= _conversationBox->getHeight();
 	_inventoryBox->move(_inventoryX, _inventoryY);
 
 	// Init room
