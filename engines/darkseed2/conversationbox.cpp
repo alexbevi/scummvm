@@ -42,16 +42,16 @@ static const byte kColorUnselected[3] = {239, 167, 127};
 static const byte kColorShading   [3] = {  0,   0,   0};
 
 ConversationBox::Line::Line(TalkLine *line, const FontManager *fontManager,
-		uint32 colorSelected, uint32 colorUnselected) {
+		uint32 colorSelected, uint32 colorUnselected, int32 maxWidth) {
 
 	talk = line;
 	if (talk && fontManager) {
 		int32 width;
 
 		if (talk->hasTXT())
-			width = TextObject::wrap(TextLine(talk->getTXT()), *fontManager, texts, 460);
+			width = TextObject::wrap(TextLine(talk->getTXT()), *fontManager, texts, maxWidth);
 		else
-			width = TextObject::wrap(TextLine("AAAAAAA"), *fontManager, texts, 460);
+			width = TextObject::wrap(TextLine("AAAAAAA"), *fontManager, texts, maxWidth);
 
 		for (FontManager::TextList::iterator it = texts.begin(); it != texts.end(); ++it) {
 			textObjectsSelected.push_back  (new TextObject(*it, *fontManager, 0, 0, colorSelected,   width));
@@ -197,8 +197,11 @@ void ConversationBox::fillInBoxProperties(GameVersion gameVersion) {
 		_boxProps.textAreaHeight =  50;
 		_boxProps.textHeight     =  14;
 		_boxProps.textMargin     =  90;
+		_boxProps.textLineWidth  = 460;
 
 		_boxProps.numLines = 3;
+
+		_boxProps.selectMarker = true;
 		break;
 
 	case kGameVersionSaturn:
@@ -227,9 +230,12 @@ void ConversationBox::fillInBoxProperties(GameVersion gameVersion) {
 		_boxProps.textAreaWidth  = 250;
 		_boxProps.textAreaHeight =  34;
 		_boxProps.textHeight     =  12;
-		_boxProps.textMargin     =  50;
+		_boxProps.textMargin     =  45;
+		_boxProps.textLineWidth  = 208;
 
 		_boxProps.numLines = 2;
+
+		_boxProps.selectMarker = false;
 		break;
 
 	default:
@@ -358,8 +364,10 @@ void ConversationBox::build() {
 	_sprites[0].create(_boxProps.width, _boxProps.height);
 	_box.create(_boxProps.width, _boxProps.height);
 
-	_markerSelect   = new TextObject(TextLine(">"), *_fontMan, _boxProps.textMargin - 9, 0, _colorSelected);
-	_markerUnselect = new TextObject(TextLine("-"), *_fontMan, _boxProps.textMargin - 8, 0, _colorUnselected);
+	if (_boxProps.selectMarker) {
+		_markerSelect   = new TextObject(TextLine(">"), *_fontMan, _boxProps.textMargin - 9, 0, _colorSelected);
+		_markerUnselect = new TextObject(TextLine("-"), *_fontMan, _boxProps.textMargin - 8, 0, _colorUnselected);
+	}
 
 	// Put the shading grid
 	_sprites[0].blit(_sprites[1], (_boxProps.width  - _boxProps.textAreaWidth ) / 2,
@@ -422,7 +430,7 @@ void ConversationBox::updateLines() {
 
 	Common::Array<TalkLine *> lines = _conversation->getCurrentLines(*_resources);
 	for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
-		Line *line = new Line(*it, _fontMan, _colorSelected, _colorUnselected);
+		Line *line = new Line(*it, _fontMan, _colorSelected, _colorUnselected, _boxProps.textLineWidth);
 
 		line->lineNumber = _lines.size();
 
@@ -472,7 +480,7 @@ void ConversationBox::drawLines() {
 			text->redraw(_box, text->getArea());
 
 			// If that line is a top line, place the correct selected/unselected marker
-			if (curLine.isTop()) {
+			if (curLine.isTop() && _boxProps.selectMarker) {
 				TextObject *marker;
 				if ((curLine.getLineNum() + 1) == selected)
 					marker = _markerSelect;

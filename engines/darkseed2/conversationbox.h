@@ -114,9 +114,12 @@ private:
 		int32 textAreaWidth;  ///< The width of the raw text area.
 		int32 textAreaHeight; ///< The height of the raw text area.
 		int32 textHeight;     ///< The height of a text line.
-		int32 textMargin;     ///< The maximum width of a text line.
+		int32 textMargin;     ///< The margin of the text line to the left border.
+		int32 textLineWidth;  ///< The maximum width of a text line.
 
 		uint32 numLines; ///< Max number of text lines visible in the box.
+
+		bool selectMarker; ///< Use the selection marker?
 	} _boxProps;
 
 	/** A scrolling action. */
@@ -148,7 +151,7 @@ private:
 		uint32 lineNumber;
 
 		Line(TalkLine *line = 0, const FontManager *fontManager = 0,
-				uint32 colorSelected = 0, uint32 colorUnselected = 0);
+				uint32 colorSelected = 0, uint32 colorUnselected = 0, int32 maxWidth = 0);
 		~Line();
 
 		/** Return the line's name. */

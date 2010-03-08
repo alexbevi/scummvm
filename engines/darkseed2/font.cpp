@@ -359,8 +359,27 @@ int32 FontManager::wordWrapText(const TextLine &text, int maxWidth, TextList &li
 	}
 
 	if (_fontJapanese) {
-		lines.push_back(text);
-		return text.getLength() * 16;
+		// For now, just wrap directly, without following the proper rules
+		const int32 cLength = 16;
+		int32 charLength = text.getLength() / 2;
+		int32 pixelLength = charLength * cLength;
+		const byte *data = text.getText();
+
+		while (pixelLength > 0) {
+			int32 linePixelLength = MAX<int32>(MIN<int32>(maxWidth, pixelLength), cLength);
+			int32 lineCharLength = linePixelLength / cLength;
+
+			lines.push_back(TextLine(data, lineCharLength * 2));
+
+			data += lineCharLength * 2;
+			pixelLength -= linePixelLength;
+			charLength -= lineCharLength;
+		}
+
+		if (lines.empty())
+			return 0;
+
+		return lines[0].getLength() * 16;
 	}
 
 	return 0;
