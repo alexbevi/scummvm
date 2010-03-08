@@ -431,11 +431,9 @@ bool Resources::readBEResourcList(Common::SeekableReadStream &file, Archive &arc
 
 	_resources.setVal(resFile, resource);
 
-	if (resFile.matchString("*.TND", true)) {
-		warning("-> %s", resFile.c_str());
+	if (resFile.matchString("*.TND", true))
 		if (!indexTND(file, archive, resource))
 			return false;
-	}
 
 	return true;
 }
