@@ -28,7 +28,7 @@
 
 #include "common/scummsys.h"
 #include "common/array.h"
-#include "common/util.h"
+#include "common/random.h"
 
 #include "kom/kom.h"
 #include "kom/database.h"
