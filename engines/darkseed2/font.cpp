@@ -25,6 +25,7 @@
 
 #include "common/types.h"
 #include "common/stream.h"
+#include "common/str-array.h"
 
 #include "graphics/fontman.h"
 
@@ -347,7 +348,7 @@ void FontManager::drawText(::Graphics::Surface &surface, const TextLine &text,
 
 int32 FontManager::wordWrapText(const TextLine &text, int maxWidth, TextList &lines) const {
 	if (_fontLatin1) {
-		Common::StringList stringList;
+		Common::StringArray stringList;
 
 		int32 width = _fontLatin1->wordWrapText((const char *) text.getText(), maxWidth, stringList);
 
