@@ -62,20 +62,6 @@ using Common::GUIO_NOSUBTITLES;
 using Common::GUIO_NONE;
 
 static const DS2GameDescription gameDescriptions[] = {
-	{ // German version from the PC Joker. English speech, german text
-		{
-			"darkseed2",
-			"",
-			{
-				{"gfile.hdr",    0, "454ab83dfb35a7232ee0eb635427f761", 210856},
-				{"gl00_txt.000", 0, "e195b792c29e53717a6364b66721731f", 140771},
-			},
-			DE_DEU,
-			kPlatformPC,
-			ADGF_NO_FLAGS,
-			GUIO_NONE
-		},
-	},
 	{ // English version
 		{
 			"darkseed2",
@@ -85,6 +71,20 @@ static const DS2GameDescription gameDescriptions[] = {
 				{"gl00_txt.000", 0, "0f1c8f78fa670e015115b9f2dcdcd4ae", 125377},
 			},
 			EN_ANY,
+			kPlatformPC,
+			ADGF_NO_FLAGS,
+			GUIO_NONE
+		},
+	},
+	{ // German version from the PC Joker. English speech, german text
+		{
+			"darkseed2",
+			"",
+			{
+				{"gfile.hdr",    0, "454ab83dfb35a7232ee0eb635427f761", 210856},
+				{"gl00_txt.000", 0, "e195b792c29e53717a6364b66721731f", 140771},
+			},
+			DE_DEU,
 			kPlatformPC,
 			ADGF_NO_FLAGS,
 			GUIO_NONE
