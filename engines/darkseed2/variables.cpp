@@ -25,6 +25,7 @@
 
 #include "common/stream.h"
 #include "common/util.h"
+#include "common/random.h"
 
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/resources.h"

@@ -35,6 +35,7 @@ class MidiDriver;
 
 namespace Common {
 	class Serializer;
+	class RandomSource;
 }
 
 namespace DarkSeed2 {

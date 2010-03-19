@@ -26,6 +26,7 @@
 // Base stuff
 #include "common/endian.h"
 #include "common/md5.h"
+#include "common/random.h"
 #include "base/plugins.h"
 #include "common/config-manager.h"
 #include "common/EventRecorder.h"
