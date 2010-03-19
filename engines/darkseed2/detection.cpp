@@ -66,7 +66,10 @@ static const DS2GameDescription gameDescriptions[] = {
 		{
 			"darkseed2",
 			"",
-			AD_ENTRY1s("gfile.hdr", "454ab83dfb35a7232ee0eb635427f761", 210856),
+			{
+				{"gfile.hdr",    0, "454ab83dfb35a7232ee0eb635427f761", 210856},
+				{"gl00_txt.000", 0, "e195b792c29e53717a6364b66721731f", 140771},
+			},
 			DE_DEU,
 			kPlatformPC,
 			ADGF_NO_FLAGS,
@@ -77,7 +80,10 @@ static const DS2GameDescription gameDescriptions[] = {
 		{
 			"darkseed2",
 			"",
-			AD_ENTRY1s("gfile.hdr", "a7092ebd44d4bd70acd6dd14e111576f", 211230),
+			{
+				{"gfile.hdr",    0, "454ab83dfb35a7232ee0eb635427f761", 210856},
+				{"gl00_txt.000", 0, "0f1c8f78fa670e015115b9f2dcdcd4ae", 125377},
+			},
 			EN_ANY,
 			kPlatformPC,
 			ADGF_NO_FLAGS,
