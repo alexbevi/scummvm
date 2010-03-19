@@ -76,7 +76,7 @@ static const DS2GameDescription gameDescriptions[] = {
 			GUIO_NONE
 		},
 	},
-	{ // German version from the PC Joker. English speech, german text
+	{ // German version from the PC Joker. English speech, German text
 		{
 			"darkseed2",
 			"",
@@ -90,7 +90,7 @@ static const DS2GameDescription gameDescriptions[] = {
 			GUIO_NONE
 		},
 	},
-	{ // French version. English speech, french text
+	{ // French version. English speech, French text
 		{
 			"darkseed2",
 			"",
