@@ -90,6 +90,20 @@ static const DS2GameDescription gameDescriptions[] = {
 			GUIO_NONE
 		},
 	},
+	{ // French version. English speech, french text
+		{
+			"darkseed2",
+			"",
+			{
+				{"gfile.hdr",    0, "454ab83dfb35a7232ee0eb635427f761", 210856},
+				{"gl00_txt.000", 0, "edbd13f748c306a4e61eb4ca2f41d3d8", 139687},
+			},
+			FR_FRA,
+			kPlatformPC,
+			ADGF_NO_FLAGS,
+			GUIO_NONE
+		},
+	},
 	{ // Japanese Sega Saturn version
 		{
 			"darkseed2",
