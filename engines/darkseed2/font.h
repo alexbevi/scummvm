@@ -69,8 +69,12 @@ public:
 	virtual int32 getFontHeight() const = 0;
 	virtual int32 getCharWidth(uint32 c) const = 0;
 
-	virtual bool hasSpaceChars() const = 0;
-	virtual bool isSpaceChar(uint32 c) const = 0;
+	virtual uint32 getChar(const byte *str) const = 0;
+	virtual const byte *nextChar(const byte *str) const = 0;
+
+	virtual uint32 getStringLength(const TextLine &line) const = 0;
+
+	virtual bool validBreakSpace(uint32 prev, uint32 cur, uint32 next) const = 0;
 
 	virtual void drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const = 0;
 };
@@ -88,8 +92,12 @@ public:
 	int32 getFontHeight() const;
 	int32 getCharWidth(uint32 c) const;
 
-	bool hasSpaceChars() const;
-	bool isSpaceChar(uint32 c) const;
+	uint32 getChar(const byte *str) const;
+	const byte *nextChar(const byte *str) const;
+
+	uint32 getStringLength(const TextLine &line) const;
+
+	bool validBreakSpace(uint32 prev, uint32 cur, uint32 next) const;
 
 	void drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const;
 
@@ -99,6 +107,27 @@ private:
 
 	static uint16 convertShiftJISToJIS(uint16 c);
 	static bool isValidJIS(uint8 j1, uint8 j2);
+};
+
+class ScummVMLatin1 : public Font {
+public:
+	ScummVMLatin1();
+	~ScummVMLatin1();
+
+	int32 getFontHeight() const;
+	int32 getCharWidth(uint32 c) const;
+
+	uint32 getChar(const byte *str) const;
+	const byte *nextChar(const byte *str) const;
+
+	uint32 getStringLength(const TextLine &line) const;
+
+	bool validBreakSpace(uint32 prev, uint32 cur, uint32 next) const;
+
+	void drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const;
+
+private:
+	const ::Graphics::Font *_font;
 };
 
 class FontManager {
@@ -118,8 +147,7 @@ public:
 private:
 	Resources *_resources;
 
-	const ::Graphics::Font *_fontLatin1;
-	Font *_fontJapanese;
+	Font *_font;
 };
 
 } // End of namespace DarkSeed2

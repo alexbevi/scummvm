@@ -171,12 +171,43 @@ int32 Saturn2Byte::getCharWidth(uint32 c) const {
 	return 16;
 }
 
-bool Saturn2Byte::hasSpaceChars() const {
-	return false;
+uint32 Saturn2Byte::getChar(const byte *str) const {
+	if (*str == '\0')
+		return *str;
+	if (*str == '\n')
+		return *str;
+	if (*str == '\r')
+		return *str;
+
+	return READ_BE_UINT16(str);
 }
 
-bool Saturn2Byte::isSpaceChar(uint32 c) const {
-	return false;
+const byte *Saturn2Byte::nextChar(const byte *str) const {
+	if (*str == '\0')
+		return str + 1;
+	else if (*str == '\n')
+		return str + 1;
+	else if (*str == '\r')
+		return str + 1;
+
+	return str + 2;
+}
+
+uint32 Saturn2Byte::getStringLength(const TextLine &line) const {
+	const byte *text = line.getText();
+	uint32 length = 0;
+
+	uint32 c = getChar(text);
+	while (c) {
+		text = nextChar(text);
+		c = getChar(text);
+	}
+
+	return length;
+}
+
+bool Saturn2Byte::validBreakSpace(uint32 prev, uint32 cur, uint32 next) const {
+	return true;
 }
 
 bool Saturn2Byte::isValidJIS(uint8 j1, uint8 j2) {
@@ -247,6 +278,9 @@ uint16 Saturn2Byte::convertShiftJISToJIS(uint16 c) {
 }
 
 void Saturn2Byte::drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const {
+	if ((c == '\n') || (c == '\r'))
+		return;
+
 	// We get Shift_JIS data, but the font is in JIS X 0208
 	c = convertShiftJISToJIS(c);
 
@@ -284,15 +318,52 @@ void Saturn2Byte::drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int3
 }
 
 
+ScummVMLatin1::ScummVMLatin1() {
+	// We want the big font
+	const ::Graphics::FontManager::FontUsage fontUsage = ::Graphics::FontManager::kBigGUIFont;
+	_font = ::Graphics::FontManager::instance().getFontByUsage(fontUsage);
+}
+
+ScummVMLatin1::~ScummVMLatin1() {
+}
+
+int32 ScummVMLatin1::getFontHeight() const {
+	return _font->getFontHeight();
+}
+
+int32 ScummVMLatin1::getCharWidth(uint32 c) const {
+	return _font->getCharWidth(c);
+}
+
+uint32 ScummVMLatin1::getChar(const byte *str) const {
+	return *str;
+}
+
+const byte *ScummVMLatin1::nextChar(const byte *str) const {
+	return str + 1;
+}
+
+uint32 ScummVMLatin1::getStringLength(const TextLine &line) const {
+	return strlen((const char *) line.getText());
+}
+
+bool ScummVMLatin1::validBreakSpace(uint32 prev, uint32 cur, uint32 next) const {
+	return isspace(cur);
+}
+
+void ScummVMLatin1::drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const {
+	_font->drawChar(&surface, c, x, y, color);
+}
+
+
 FontManager::FontManager(Resources &resources) {
 	_resources = &resources;
 
-	_fontLatin1   = 0;
-	_fontJapanese = 0;
+	_font = 0;
 }
 
 FontManager::~FontManager() {
-	delete _fontJapanese;
+	delete _font;
 }
 
 bool FontManager::init(GameVersion gameVersion, Common::Language language) {
@@ -305,7 +376,7 @@ bool FontManager::init(GameVersion gameVersion, Common::Language language) {
 				return false;
 			}
 
-			_fontJapanese = kanji;
+			_font = kanji;
 
 			return true;
 		}
@@ -314,9 +385,7 @@ bool FontManager::init(GameVersion gameVersion, Common::Language language) {
 		return false;
 	}
 
-	// We want the big font
-	const ::Graphics::FontManager::FontUsage fontUsage = ::Graphics::FontManager::kBigGUIFont;
-	_fontLatin1 = ::Graphics::FontManager::instance().getFontByUsage(fontUsage);
+	_font = new ScummVMLatin1();
 
 	return true;
 }
@@ -324,76 +393,70 @@ bool FontManager::init(GameVersion gameVersion, Common::Language language) {
 void FontManager::drawText(::Graphics::Surface &surface, const TextLine &text,
 		int32 x, int32 y, uint32 color) const {
 
-	if (_fontLatin1) {
-		_fontLatin1->drawString(&surface, (const char *) text.getText(), x, y, surface.w,
-				color, ::Graphics::kTextAlignLeft, 0, false);
+	if (!_font)
 		return;
+
+	const byte *txt = text.getText();
+
+	uint32 c = _font->getChar(txt);
+	while (c) {
+		if ((x + _font->getCharWidth(c) - 1) >= surface.w)
+			// Reached the surface's right border
+			break;
+
+		_font->drawChar(c, surface, x, y, color);
+
+		x += _font->getCharWidth(c);
+
+		txt = _font->nextChar(txt);
+		c = _font->getChar(txt);
 	}
-
-	if (_fontJapanese) {
-		int32 length = text.getLength() / 2;
-		const byte *txt = text.getText();
-		while (length-- > 0) {
-			uint16 c = READ_BE_UINT16(txt);
-
-			_fontJapanese->drawChar(c, surface, x, y, color);
-
-			x += _fontJapanese->getCharWidth(c);
-			txt += 2;
-		}
-		return;
-	}
-
 }
 
-int32 FontManager::wordWrapText(const TextLine &text, int maxWidth, TextList &lines) const {
-	if (_fontLatin1) {
-		Common::StringArray stringList;
+int FontManager::wordWrapText(const TextLine &text, int maxWidth, TextList &lines) const {
+	if (!_font)
+		return 0;
 
-		int32 width = _fontLatin1->wordWrapText((const char *) text.getText(), maxWidth, stringList);
+	const byte *txt = text.getText();
 
-		lines.reserve(stringList.size());
-		for (uint i = 0; i < stringList.size(); i++)
-			lines.push_back(TextLine(stringList[i]));
+	const byte *lineStart = txt;
 
-		return width;
-	}
+	int length     = 0;
+	int lineLength = 0;
 
-	if (_fontJapanese) {
-		// For now, just wrap directly, without following the proper rules
-		const int32 cLength = 16;
-		int32 charLength = text.getLength() / 2;
-		int32 pixelLength = charLength * cLength;
-		const byte *data = text.getText();
+	uint32 c = _font->getChar(txt);
+	while (c) {
+		int32 charWidth = _font->getCharWidth(c);
 
-		while (pixelLength > 0) {
-			int32 linePixelLength = MAX<int32>(MIN<int32>(maxWidth, pixelLength), cLength);
-			int32 lineCharLength = linePixelLength / cLength;
+		if ((lineLength + charWidth) > maxWidth) {
+			lines.push_back(TextLine(lineStart, txt - lineStart));
 
-			lines.push_back(TextLine(data, lineCharLength * 2));
+			length = MAX(length, lineLength);
 
-			data += lineCharLength * 2;
-			pixelLength -= linePixelLength;
-			charLength -= lineCharLength;
+			lineStart = txt;
+			lineLength = 0;
 		}
 
-		if (lines.empty())
-			return 0;
+		lineLength += charWidth;
 
-		return lines[0].getLength() * 16;
+		txt = _font->nextChar(txt);
+		c = _font->getChar(txt);
 	}
 
-	return 0;
+	if ((txt - lineStart) > 0) {
+		lines.push_back(TextLine(lineStart, txt - lineStart));
+
+		length = MAX(length, lineLength);
+	}
+
+	return length;
 }
 
 int32 FontManager::getFontHeight() const {
-	if (_fontLatin1)
-		return _fontLatin1->getFontHeight();
+	if (!_font)
+		return 0;
 
-	if (_fontJapanese)
-		return _fontJapanese->getFontHeight();
-
-	return 0;
+	return _font->getFontHeight();
 }
 
 }
