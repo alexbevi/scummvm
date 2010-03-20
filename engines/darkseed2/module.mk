@@ -25,6 +25,8 @@ MODULE_OBJS := \
 	talk.o \
 	conversation.o \
 	conversationbox.o \
+	conversationboxwindows.o \
+	conversationboxsaturn.o \
 	inventory.o \
 	inventorybox.o \
 	movie.o \

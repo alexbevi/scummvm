@@ -101,7 +101,7 @@ public:
 	~Graphics();
 
 	/** Init the graphics subsystem. */
-	void init(TalkManager &talkManager, ScriptRegister &scriptRegister,
+	bool init(TalkManager &talkManager, ScriptRegister &scriptRegister,
 			RoomConfigManager &roomConfigManager, Movie &movie);
 
 	/** Get the conversation box. */

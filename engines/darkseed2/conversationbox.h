@@ -53,10 +53,12 @@ class ConversationBox : public Saveable {
 public:
 	ConversationBox(Resources &resources, Variables &variables,
 			Graphics &graphics, TalkManager &talkManager, const FontManager &fontManager);
-	~ConversationBox();
+	virtual ~ConversationBox();
 
-	int32 getWidth () const;
-	int32 getHeight() const;
+	virtual int32 getWidth () const = 0;
+	virtual int32 getHeight() const = 0;
+
+	bool init();
 
 	/** Start the specified conversation. */
 	bool start(const Common::String &conversation);
@@ -75,60 +77,14 @@ public:
 	void redraw(Sprite &sprite, Common::Rect area);
 
 	/** Notify that the mouse was moved. */
-	void notifyMouseMove(int32 x, int32 y);
+	virtual void notifyMouseMove(int32 x, int32 y) = 0;
 	/** Notify that the mouse clicked. */
-	void notifyClicked(int32 x, int32 y);
+	virtual void notifyClicked(int32 x, int32 y) = 0;
 
 	/** Check for changes in the box's status. */
-	void updateStatus();
+	virtual void updateStatus() = 0;
 
 protected:
-	bool saveLoad(Common::Serializer &serializer, Resources &resources);
-	bool loading(Resources &resources);
-
-private:
-	struct BoxProperties {
-		int32 width;  ///< The box's width.
-		int32 height; ///< The box's height.
-
-		const char *frameFile; ///< File used for the full frame.
-
-		const char *frameTopFile;    ///< File used for the top part of the frame.
-		const char *frameBottomFile; ///< File used for the bottom part of the frame.
-		const char *frameLeftFile;   ///< File used for the left part of the frame.
-		const char *frameRightFile;  ///< File used for the right part of the frame.
-
-		int32 frameLeftRightWidth; ///< The width of the left and right parts of the frame.
-		int32 frameTopDownHeight;  ///< The height of the top and bottom parts of the frame.
-
-		int32 scrollUp[4];   ///< The scroll up button's coordinates.
-		int32 scrollDown[4]; ///< The scroll down button's coordinates.
-
-		/** File used the sprite that's shown when scrolling up is allowed. */
-		const char *scrollUpFile;
-		/** File used the sprite that's shown when scrolling down is allowed. */
-		const char *scrollDownFile;
-		/** File used the sprite that's shown when scrolling up and down is allowed. */
-		const char *scrollUpDownFile;
-
-		int32 textAreaWidth;  ///< The width of the raw text area.
-		int32 textAreaHeight; ///< The height of the raw text area.
-		int32 textHeight;     ///< The height of a text line.
-		int32 textMargin;     ///< The margin of the text line to the left border.
-		int32 textLineWidth;  ///< The maximum width of a text line.
-
-		uint32 numLines; ///< Max number of text lines visible in the box.
-
-		bool selectMarker; ///< Use the selection marker?
-	} _boxProps;
-
-	/** A scrolling action. */
-	enum ScrollAction {
-		kScrollActionUp,   ///< Scroll up.
-		kScrollActionDown, ///< Scroll down.
-		kScrollActionNone  ///< No scroll.
-	};
-
 	/** A box's state. */
 	enum State {
 		kStateWaitUserAction = 0, ///< Waiting for the user to do something.
@@ -193,31 +149,21 @@ private:
 
 	const FontManager *_fontMan;
 
+	bool _inited;
+
 	Common::Rect _area; ///< The area where the box is visible.
 
 	/** The currently running conversation. */
 	Conversation *_conversation;
 
-	Sprite *_sprites;     ///< The box part sprites.
-
-	TextObject *_markerSelect;   ///< Marker text of a selected line.
-	TextObject *_markerUnselect; ///< Marker text of an unselected line.
-
 	Common::Array<Line *> _lines; ///< All current conversation lines.
-
-	Common::Rect *_textAreas;   ///< Areas of the visible lines.
-	Common::Rect _scrollAreas[2]; ///< Areas of the scroll up/down buttons.
 
 	uint32 _physLineCount; ///< Number of physical lines.
 	uint32 _physLineTop;   ///< The visible physical line at the top.
 
 	uint32 _selected; ///< The selected physical line.
 
-	Sprite _box; ///< The box's sprite.
-
-	uint32 _colorSelected;   ///< Color index of a selected line.
-	uint32 _colorUnselected; ///< Color index of an unselected line.
-	uint32 _colorShading;    ///< Color index of the background shading.
+	Sprite *_box; ///< The box's sprite.
 
 	State _state; ///< The current state.
 
@@ -229,30 +175,23 @@ private:
 	uint32 _curLineNumber;        ///< The number of the current line.
 	Common::String _curReplyName; ///< The name of the current reply.
 
-	/** Fill in the box poperties struct, depending on the game version. */
-	void fillInBoxProperties(GameVersion gameVersion);
+	bool saveLoad(Common::Serializer &serializer, Resources &resources);
+	bool loading(Resources &resources);
 
 	/** Load all needed sprites. */
-	void loadSprites();
+	virtual bool loadSprites() = 0;
 
 	/** Build the box's sprite. */
-	void build();
-
-	/** Update the color indices from the current palette. */
-	void updateColors();
+	virtual void build() = 0;
 
 	// Update helpers
 	void clearLines();
 	void clearReplies();
-	void updateLines();
-	void updateScroll();
-	void drawLines();
-	void redrawLines();
 
-	/** Scroll the lines. */
-	void doScroll(ScrollAction scroll);
-	/** Pick a line. */
-	void pickLine(Line *line);
+	virtual void updateLines()  = 0;
+	virtual void updateScroll() = 0;
+	virtual void drawLines()    = 0;
+	virtual void redrawLines()  = 0;
 
 	/** Translate the physical line number to a real line number. */
 	uint32 physLineNumToRealLineNum(uint32 physLineNum) const;
@@ -264,23 +203,102 @@ private:
 	/** Helper method for nextPhysLine. */
 	bool nextPhysRealLine(PhysLineRef &ref) const;
 
-	/** Get the text area the coordinates are in. */
-	int getTextArea(int32 x, int32 y);
-	/** Get the scroll action area the coordinates are in. */
-	ScrollAction getScrollAction(int32 x, int32 y);
-
 	/** Get the currently selected line. */
 	Line *getSelectedLine();
-
-	bool canScroll()     const; ///< Is scrolling possible?
-	bool canScrollUp()   const; ///< Is scrolling up possible?
-	bool canScrollDown() const; ///< Is scrolling down possible?
 
 	/** Speak that line. */
 	void speakLine(TalkLine &line);
 
 	/** Set the give speaker variable to a specific state. */
 	void speakerVariable(uint8 speaker, bool on);
+};
+
+class ConversationBoxWindows : public ConversationBox {
+public:
+	ConversationBoxWindows(Resources &resources, Variables &variables,
+			Graphics &graphics, TalkManager &talkManager, const FontManager &fontManager);
+	~ConversationBoxWindows();
+
+	int32 getWidth () const;
+	int32 getHeight() const;
+
+	void notifyMouseMove(int32 x, int32 y);
+	void notifyClicked(int32 x, int32 y);
+
+	void updateStatus();
+
+protected:
+	/** A scrolling action. */
+	enum ScrollAction {
+		kScrollActionUp,   ///< Scroll up.
+		kScrollActionDown, ///< Scroll down.
+		kScrollActionNone  ///< No scroll.
+	};
+
+	uint32 _colorSelected;   ///< Color index of a selected line.
+	uint32 _colorUnselected; ///< Color index of an unselected line.
+	uint32 _colorShading;    ///< Color index of the background shading.
+
+	Sprite *_sprites; ///< The box part sprites.
+
+	TextObject *_markerSelect;   ///< Marker text of a selected line.
+	TextObject *_markerUnselect; ///< Marker text of an unselected line.
+
+	Common::Rect *_textAreas;   ///< Areas of the visible lines.
+	Common::Rect _scrollAreas[2]; ///< Areas of the scroll up/down buttons.
+
+	bool loadSprites();
+
+	void build();
+
+	void updateLines();
+	void updateScroll();
+	void drawLines();
+	void redrawLines();
+
+	bool canScroll()     const; ///< Is scrolling possible?
+	bool canScrollUp()   const; ///< Is scrolling up possible?
+	bool canScrollDown() const; ///< Is scrolling down possible?
+
+	/** Get the text area the coordinates are in. */
+	int getTextArea(int32 x, int32 y);
+	/** Get the scroll action area the coordinates are in. */
+	ScrollAction getScrollAction(int32 x, int32 y);
+
+	/** Scroll the lines. */
+	void doScroll(ScrollAction scroll);
+	/** Pick a line. */
+	void pickLine(Line *line);
+};
+
+class ConversationBoxSaturn : public ConversationBox {
+public:
+	ConversationBoxSaturn(Resources &resources, Variables &variables,
+			Graphics &graphics, TalkManager &talkManager, const FontManager &fontManager);
+	~ConversationBoxSaturn();
+
+	int32 getWidth () const;
+	int32 getHeight() const;
+
+	void notifyMouseMove(int32 x, int32 y);
+	void notifyClicked(int32 x, int32 y);
+
+	void updateStatus();
+
+protected:
+	uint32 _colorText;          ///< Color index of a text line
+	uint32 _colorBackground;    ///< Color index of the background.
+
+	Sprite *_sprites; ///< The box part sprites.
+
+	bool loadSprites();
+
+	void build();
+
+	void updateLines();
+	void updateScroll();
+	void drawLines();
+	void redrawLines();
 };
 
 } // End of namespace DarkSeed2

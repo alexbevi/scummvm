@@ -295,7 +295,8 @@ bool DarkSeed2Engine::initGraphics(int32 width, int32 height) {
 bool DarkSeed2Engine::initGraphicsSystem() {
 	debug(-1, "Setting up the graphics system...");
 
-	_graphics->init(*_talkMan, *_scriptRegister, *_roomConfMan, *_movie);
+	if (!_graphics->init(*_talkMan, *_scriptRegister, *_roomConfMan, *_movie))
+		return false;
 
 	return true;
 }

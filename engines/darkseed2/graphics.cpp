@@ -140,13 +140,28 @@ Graphics::~Graphics() {
 	delete _talk;
 }
 
-void Graphics::init(TalkManager &talkManager, ScriptRegister &scriptRegister,
+bool Graphics::init(TalkManager &talkManager, ScriptRegister &scriptRegister,
 		RoomConfigManager &roomConfigManager, Movie &movie) {
 
 	_movie = &movie;
 
-	// Init conversation box
-	_conversationBox = new ConversationBox(*_resources, *_variables, *this, talkManager, *_fontMan);
+	// Conversation box
+
+	GameVersion gameVersion = _resources->getVersionFormats().getGameVersion();
+	if        (gameVersion == kGameVersionWindows) {
+		_conversationBox = new ConversationBoxWindows(*_resources, *_variables, *this, talkManager, *_fontMan);
+	} else if (gameVersion == kGameVersionSaturn) {
+		_conversationBox = new ConversationBoxSaturn(*_resources, *_variables, *this, talkManager, *_fontMan);
+	} else {
+		warning("Graphics::init(): Unknown game version");
+		return false;
+	}
+
+	if (!_conversationBox->init()) {
+		warning("Graphics::init(): Failed to initialize conversation box");
+		return false;
+	}
+
 	_conversationY -= _conversationBox->getHeight();
 	_conversationBox->move(_conversationX, _conversationY);
 
@@ -163,6 +178,8 @@ void Graphics::init(TalkManager &talkManager, ScriptRegister &scriptRegister,
 
 	initPalette();
 	dirtyAll();
+
+	return true;
 }
 
 ConversationBox &Graphics::getConversationBox() {
