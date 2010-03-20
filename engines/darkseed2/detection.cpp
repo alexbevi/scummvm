@@ -111,7 +111,7 @@ static const DS2GameDescription gameDescriptions[] = {
 			{
 				{"initial.idx",  0, "92438db5d1b4b8946ec59ecfbd6107c0", 1284},
 				{"initial.glu",  0, "558a62491c612a890a25991016ab3f81", 540300},
-				{"conv0000.pgf", 0, "a82a02d0f825b54010938586b76b3019", 368}
+				{"conv0001.pgf", 0, "a2faad74e14ba51dbcf8e9fccfae1606", 10760}
 			},
 			JA_JPN,
 			kPlatformUnknown, // kPlatformSaturn
