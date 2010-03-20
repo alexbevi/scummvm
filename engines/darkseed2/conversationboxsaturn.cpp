@@ -130,12 +130,12 @@ void ConversationBoxSaturn::build() {
 	_box->create(kWidth, kHeight);
 
 	// The background
-	_sprites[1].create(kWidth, kHeight);
+	_sprites[1].create(kTextAreaWidth, kTextAreaHeight);
 	_sprites[1].fill(_colorBackground);
 
 	_sprites[0].create(kWidth, kHeight);
 
-	// Put the background grid
+	// Put the background
 	_sprites[0].blit(_sprites[1], (kWidth  - kTextAreaWidth)  / 2,
 	                              (kHeight - kTextAreaHeight) / 2, true);
 	// Put the frame

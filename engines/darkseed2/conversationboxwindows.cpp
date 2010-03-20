@@ -218,8 +218,8 @@ void ConversationBoxWindows::build() {
 	_box = new Sprite;
 	_box->create(kWidth, kHeight);
 
-	// The shading grid
-	_sprites[1].create(kWidth, kHeight);
+	// The shading area
+	_sprites[1].create(kTextAreaWidth, kTextAreaHeight);
 	_sprites[1].shade(_colorShading);
 
 	_sprites[0].create(kWidth, kHeight);
@@ -227,7 +227,7 @@ void ConversationBoxWindows::build() {
 	for (Common::Array<uint32>::const_iterator color = _colorText.begin(); color != _colorText.end(); ++color)
 		_marker.push_back(new TextObject(TextLine(">"), *_fontMan, kTextMargin - 9, 0, *color));
 
-	// Put the shading grid
+	// Put the shading area
 	_sprites[0].blit(_sprites[1], (kWidth  - kTextAreaWidth)  / 2,
 	                              (kHeight - kTextAreaHeight) / 2, true);
 	// Put the frame
