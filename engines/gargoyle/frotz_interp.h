@@ -28,6 +28,7 @@
 
 #include "common/scummsys.h"
 #include "common/file.h"
+#include "common/random.h"
 #include "common/savefile.h"
 #include "common/stack.h"
 #include "common/stream.h"
