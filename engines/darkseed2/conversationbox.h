@@ -77,7 +77,7 @@ public:
 	void redraw(Sprite &sprite, Common::Rect area);
 
 	/** Speak that text. */
-	virtual void talk(TextObject *talkObject) = 0;
+	virtual void talk(const TextLine &textLine) = 0;
 
 	/** Notify that the mouse was moved. */
 	virtual void notifyMouseMove(int32 x, int32 y) = 0;
@@ -92,7 +92,8 @@ protected:
 	enum State {
 		kStateWaitUserAction = 0, ///< Waiting for the user to do something.
 		kStatePlayingLine    = 1, ///< Playing an entry's line.
-		kStatePlayingReply   = 2  ///< Playign an entry's reply.
+		kStatePlayingReply   = 2, ///< Playign an entry's reply.
+		kStateWaitEndTalk    = 3  ///< Wait for a talk line to end.
 	};
 
 	/** A conversation line. */
@@ -219,7 +220,7 @@ public:
 	int32 getWidth () const;
 	int32 getHeight() const;
 
-	void talk(TextObject *talkObject);
+	void talk(const TextLine &textLine);
 
 	void notifyMouseMove(int32 x, int32 y);
 	void notifyClicked(int32 x, int32 y);
@@ -279,7 +280,7 @@ public:
 	int32 getWidth () const;
 	int32 getHeight() const;
 
-	void talk(TextObject *talkObject);
+	void talk(const TextLine &textLine);
 
 	void notifyMouseMove(int32 x, int32 y);
 	void notifyClicked(int32 x, int32 y);

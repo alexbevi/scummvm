@@ -187,6 +187,9 @@ bool ConversationBox::isActive() const {
 	if (!_inited)
 		return false;
 
+	if (_state == kStateWaitEndTalk)
+		return true;
+
 	if (!_conversation)
 		return false;
 

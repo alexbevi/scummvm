@@ -273,6 +273,10 @@ void Graphics::applyGamePalette() {
 	g_system->setPalette(pal, 0, 256);
 }
 
+void Graphics::talk(const TextLine &textLine) {
+	talk(new TextObject(textLine,  *_fontMan, 5, 0, ImgConv.getColor(255, 255, 255), 300));
+}
+
 void Graphics::talk(TextObject *talkObject) {
 	talkEnd();
 

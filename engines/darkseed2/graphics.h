@@ -58,6 +58,7 @@ class SpriteObject;
 class Animation;
 class Cursors;
 class FontManager;
+class TextLine;
 
 class Graphics : public Saveable {
 public:
@@ -136,6 +137,8 @@ public:
 	 */
 	void assertPalette0();
 
+	/** Speak that text. */
+	void talk(const TextLine &textLine);
 	/** Speak that text. */
 	void talk(TextObject *talkObject);
 	/** End the current talk. */

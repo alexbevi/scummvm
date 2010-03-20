@@ -190,10 +190,7 @@ bool TalkManager::talkInternal(const TalkLine &talkLine) {
 		} else
 			textLine = new TextLine(text);
 
-		TextObject *talkObject = new TextObject(*textLine, *_fontMan, 5, 0,
-				ImgConv.getColor(255, 255, 255), 300);
-
-		_graphics->getConversationBox().talk(talkObject);
+		_graphics->getConversationBox().talk(*textLine);
 
 		delete textLine;
 	}
