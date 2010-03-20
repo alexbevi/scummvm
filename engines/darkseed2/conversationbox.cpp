@@ -36,16 +36,20 @@
 namespace DarkSeed2 {
 
 ConversationBox::Line::Line(TalkLine *line, const FontManager *fontManager,
-		uint32 colorSelected, uint32 colorUnselected, int32 maxWidth) {
+		const Common::Array<uint32> *colors, int32 maxWidth) {
 
 	talk = line;
-	if (talk && fontManager) {
+	if (talk && colors && fontManager) {
 
 		if (talk->hasTXT()) {
 			int32 width = TextObject::wrap(TextLine(talk->getTXT()), *fontManager, texts, maxWidth);
+
 			for (FontManager::TextList::iterator it = texts.begin(); it != texts.end(); ++it) {
-				textObjectsSelected.push_back  (new TextObject(*it, *fontManager, 0, 0, colorSelected,   width));
-				textObjectsUnselected.push_back(new TextObject(*it, *fontManager, 0, 0, colorUnselected, width));
+				Common::Array <TextObject *> textLine;
+				for (Common::Array<uint32>::const_iterator c = colors->begin(); c != colors->end(); ++c)
+					textLine.push_back(new TextObject(*it, *fontManager, 0, 0, *c, width));
+
+				textObjects.push_back(textLine);
 			}
 		}
 
@@ -54,11 +58,11 @@ ConversationBox::Line::Line(TalkLine *line, const FontManager *fontManager,
 }
 
 ConversationBox::Line::~Line() {
+	Common::Array< Common::Array<TextObject *> >::iterator line;
 	Common::Array<TextObject *>::iterator text;
-	for (text = textObjectsSelected.begin(); text != textObjectsSelected.end(); ++text)
-		delete *text;
-	for (text = textObjectsUnselected.begin(); text != textObjectsUnselected.end(); ++text)
-		delete *text;
+	for (line = textObjects.begin(); line != textObjects.end(); ++line)
+		for (text = line->begin(); text != line->end(); ++text)
+			delete *text;
 
 	delete talk;
 }
@@ -72,12 +76,8 @@ const Common::String &ConversationBox::PhysLineRef::getName() const {
 	return (*itLine)->getName();
 }
 
-TextObject *ConversationBox::PhysLineRef::getSelectedText() {
-	return *itTextSel;
-}
-
-TextObject *ConversationBox::PhysLineRef::getUnselectedText() {
-	return *itTextUnsel;
+const Common::Array<TextObject *> &ConversationBox::PhysLineRef::getText() const {
+	return *itText;
 }
 
 ConversationBox::Line *ConversationBox::PhysLineRef::getLine() {
@@ -295,8 +295,7 @@ bool ConversationBox::findPhysLine(uint32 n, PhysLineRef &ref) const {
 
 	// Put the second level iterators at the beginning
 	ref.itString = (*ref.itLine)->texts.begin();
-	ref.itTextSel = (*ref.itLine)->textObjectsSelected.begin();
-	ref.itTextUnsel = (*ref.itLine)->textObjectsUnselected.begin();
+	ref.itText   = (*ref.itLine)->textObjects.begin();
 	ref.n = 0;
 
 	// Find the first non-empty line
@@ -317,8 +316,7 @@ bool ConversationBox::nextPhysLine(PhysLineRef &ref) const {
 
 	// Advance second level iterators
 	++ref.itString;
-	++ref.itTextSel;
-	++ref.itTextUnsel;
+	++ref.itText;
 
 	// Find the next non-empty line
 	return nextPhysRealLine(ref);
@@ -344,8 +342,7 @@ bool ConversationBox::nextPhysRealLine(PhysLineRef &ref) const {
 
 		// Set the second level iterator to the beginning
 		ref.itString = (*ref.itLine)->texts.begin();
-		ref.itTextSel = (*ref.itLine)->textObjectsSelected.begin();
-		ref.itTextUnsel = (*ref.itLine)->textObjectsUnselected.begin();
+		ref.itText   = (*ref.itLine)->textObjects.begin();
 	}
 
 	return true;

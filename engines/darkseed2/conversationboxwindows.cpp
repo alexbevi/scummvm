@@ -72,8 +72,8 @@ ConversationBoxWindows::~ConversationBoxWindows() {
 
 	delete[] _textAreas;
 
-	delete _markerSelect;
-	delete _markerUnselect;
+	for (Common::Array<TextObject *>::iterator marker = _marker.begin(); marker != _marker.end(); ++marker)
+		delete *marker;
 }
 
 int32 ConversationBoxWindows::getWidth() const {
@@ -201,9 +201,9 @@ bool ConversationBoxWindows::loadSprites() {
 }
 
 void ConversationBoxWindows::build() {
-	_colorSelected   = ImgConv.getColor(kColorSelected  [0], kColorSelected  [1], kColorSelected  [2]);
-	_colorUnselected = ImgConv.getColor(kColorUnselected[0], kColorUnselected[1], kColorUnselected[2]);
-	_colorShading    = ImgConv.getColor(kColorShading   [0], kColorShading   [1], kColorShading   [2]);
+	_colorShading =      ImgConv.getColor(kColorShading   [0], kColorShading   [1], kColorShading   [2]);
+	_colorText.push_back(ImgConv.getColor(kColorSelected  [0], kColorSelected  [1], kColorSelected  [2]));
+	_colorText.push_back(ImgConv.getColor(kColorUnselected[0], kColorUnselected[1], kColorUnselected[2]));
 
 	_textAreas = new Common::Rect[kNumLines];
 	for (uint32 i = 0; i < kNumLines; i++)
@@ -224,8 +224,8 @@ void ConversationBoxWindows::build() {
 
 	_sprites[0].create(kWidth, kHeight);
 
-	_markerSelect   = new TextObject(TextLine(">"), *_fontMan, kTextMargin - 9, 0, _colorSelected);
-	_markerUnselect = new TextObject(TextLine("-"), *_fontMan, kTextMargin - 8, 0, _colorUnselected);
+	for (Common::Array<uint32>::const_iterator color = _colorText.begin(); color != _colorText.end(); ++color)
+		_marker.push_back(new TextObject(TextLine(">"), *_fontMan, kTextMargin - 9, 0, *color));
 
 	// Put the shading grid
 	_sprites[0].blit(_sprites[1], (kWidth  - kTextAreaWidth)  / 2,
@@ -244,7 +244,7 @@ void ConversationBoxWindows::updateLines() {
 
 	Common::Array<TalkLine *> lines = _conversation->getCurrentLines(*_resources);
 	for (Common::Array<TalkLine *>::iterator it = lines.begin(); it != lines.end(); ++it) {
-		Line *line = new Line(*it, _fontMan, _colorSelected, _colorUnselected, kTextLineWidth);
+		Line *line = new Line(*it, _fontMan, &_colorText, kTextLineWidth);
 
 		line->lineNumber = _lines.size();
 
@@ -279,27 +279,23 @@ void ConversationBoxWindows::drawLines() {
 	// Update the lines
 	if (findPhysLine(_physLineTop, curLine)) {
 		for (uint32 i = 0; i < kNumLines; i++) {
+			// Selected line
 			uint32 selected = physLineNumToRealLineNum(_selected);
 
-			TextObject *text;
+			// Current line a selected line?
+			int partNumber = ((curLine.getLineNum() + 1) == selected) ? 0 : 1;
 
-			// Is that line a selected line?
-			if ((curLine.getLineNum() + 1) == selected)
-				text = curLine.getSelectedText();
-			else
-				text = curLine.getUnselectedText();
+			// Line's text object
+			const Common::Array<TextObject *> &textLine = curLine.getText();
+			TextObject *text = textLine[partNumber];
 
 			// Move the line to the correct place and draw it
 			text->moveTo(_textAreas[i].left, _textAreas[i].top);
 			text->redraw(*_box, text->getArea());
 
-			// If that line is a top line, place the correct selected/unselected marker
+			// If that line is a top line, place the correct marker
 			if (curLine.isTop()) {
-				TextObject *marker;
-				if ((curLine.getLineNum() + 1) == selected)
-					marker = _markerSelect;
-				else
-					marker = _markerUnselect;
+				TextObject *marker = _marker[partNumber];
 
 				marker->moveTo(marker->getArea().left, text->getArea().top);
 				marker->redraw(*_box, marker->getArea());

@@ -98,16 +98,14 @@ protected:
 		TalkLine *talk;
 		/** The line's text wrapped to the text area. */
 		FontManager::TextList texts;
-		/** The graphical text lines of the selected wrapped text lines. */
-		Common::Array<TextObject *> textObjectsSelected;
-		/** The graphical text lines of the unselected wrapped text lines. */
-		Common::Array<TextObject *> textObjectsUnselected;
+		/** The graphical text lines. */
+		Common::Array< Common::Array<TextObject *> > textObjects;
 
 		/** The number within the lines array. */
 		uint32 lineNumber;
 
 		Line(TalkLine *line = 0, const FontManager *fontManager = 0,
-				uint32 colorSelected = 0, uint32 colorUnselected = 0, int32 maxWidth = 0);
+				const Common::Array<uint32> *colors = 0, int32 maxWidth = 0);
 		~Line();
 
 		/** Return the line's name. */
@@ -122,17 +120,13 @@ protected:
 		Common::Array<Line *>::const_iterator itLine;
 		/** Iterator to the line's text part. */
 		FontManager::TextList::const_iterator itString;
-		/** Iterator to the line's selected graphic part. */
-		Common::Array<TextObject *>::iterator itTextSel;
-		/** Iterator to the line's unselected graphic part. */
-		Common::Array<TextObject *>::iterator itTextUnsel;
+		/** Iterator to the line's graphic parts. */
+		Common::Array< Common::Array<TextObject *> >::iterator itText;
 
 		/** Return the line's name. */
 		const Common::String &getName() const;
-		/** Return the line's selected graphic. */
-		TextObject *getSelectedText();
-		/** Return the line's unselected graphic. */
-		TextObject *getUnselectedText();
+		/** Return the line's graphics. */
+		const Common::Array<TextObject *> &getText() const;
 		/** Return the line. */
 		Line *getLine();
 
@@ -235,14 +229,14 @@ protected:
 		kScrollActionNone  ///< No scroll.
 	};
 
-	uint32 _colorSelected;   ///< Color index of a selected line.
-	uint32 _colorUnselected; ///< Color index of an unselected line.
-	uint32 _colorShading;    ///< Color index of the background shading.
+	/** Color value used for the background shading. */
+	uint32 _colorShading;
+	/** Color values used for the the text. */
+	Common::Array<uint32> _colorText;
 
 	Sprite *_sprites; ///< The box part sprites.
 
-	TextObject *_markerSelect;   ///< Marker text of a selected line.
-	TextObject *_markerUnselect; ///< Marker text of an unselected line.
+	Common::Array<TextObject *> _marker; ///< Line marker texts
 
 	Common::Rect *_textAreas;   ///< Areas of the visible lines.
 	Common::Rect _scrollAreas[2]; ///< Areas of the scroll up/down buttons.
