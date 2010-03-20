@@ -561,29 +561,29 @@ int32 FontManager::getFontHeight() const {
 void FontManager::trim(TextLine &text) const {
 	const byte *txt = text.getText();
 
-	bool canTrimFront = true;
-
-	int trimFront = 0;
-	int trimBack  = 0;
+	const byte *frontTrimEnd  = 0;
+	const byte *backTrimStart = 0;
 
 	uint32 c = _font->getChar(txt);
 	while (c) {
-		if (_font->isTrimmable(c)) {
-			if (canTrimFront)
-				trimFront++;
+		if (!_font->isTrimmable(c)) {
+			if (frontTrimEnd == 0)
+				frontTrimEnd = txt;
 
-			trimBack++;
-		} else {
-			canTrimFront = false;
-			trimBack = 0;
+			backTrimStart = txt;
 		}
 
 		txt = _font->nextChar(txt);
 		c = _font->getChar(txt);
 	}
 
-	text.trimFront(trimFront);
-	text.trimBack(trimBack);
+	int32 trimFront = frontTrimEnd  ? (frontTrimEnd - text.getText()) : 0;
+	int32 trimBack  = backTrimStart ? ((txt - backTrimStart) - 1)     : 0;
+
+	if (trimFront > 0)
+		text.trimFront(trimFront);
+	if (trimBack > 0)
+		text.trimBack(trimBack);
 }
 
 void FontManager::trim(TextList &lines) const {
