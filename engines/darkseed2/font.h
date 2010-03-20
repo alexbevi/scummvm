@@ -74,7 +74,7 @@ public:
 
 	virtual uint32 getStringLength(const TextLine &line) const = 0;
 
-	virtual bool validBreakSpace(uint32 prev, uint32 cur, uint32 next) const = 0;
+	virtual bool validBreakSpace(const byte *textStart, const byte *curPosition) const = 0;
 
 	virtual void drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const = 0;
 };
@@ -97,7 +97,7 @@ public:
 
 	uint32 getStringLength(const TextLine &line) const;
 
-	bool validBreakSpace(uint32 prev, uint32 cur, uint32 next) const;
+	bool validBreakSpace(const byte *textStart, const byte *curPosition) const;
 
 	void drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const;
 
@@ -122,7 +122,7 @@ public:
 
 	uint32 getStringLength(const TextLine &line) const;
 
-	bool validBreakSpace(uint32 prev, uint32 cur, uint32 next) const;
+	bool validBreakSpace(const byte *textStart, const byte *curPosition) const;
 
 	void drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const;
 

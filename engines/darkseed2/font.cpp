@@ -206,7 +206,7 @@ uint32 Saturn2Byte::getStringLength(const TextLine &line) const {
 	return length;
 }
 
-bool Saturn2Byte::validBreakSpace(uint32 prev, uint32 cur, uint32 next) const {
+bool Saturn2Byte::validBreakSpace(const byte *textStart, const byte *curPosition) const {
 	return true;
 }
 
@@ -347,8 +347,12 @@ uint32 ScummVMLatin1::getStringLength(const TextLine &line) const {
 	return strlen((const char *) line.getText());
 }
 
-bool ScummVMLatin1::validBreakSpace(uint32 prev, uint32 cur, uint32 next) const {
-	return isspace(cur);
+bool ScummVMLatin1::validBreakSpace(const byte *textStart, const byte *curPosition) const {
+	uint32 cur  = getChar(curPosition);
+	uint32 next = (cur == 0) ? 0 : getChar(nextChar(curPosition));
+
+	// In French text, ! and ? are preceeded by a space. We don't want to break there.
+	return isspace(cur) && (next != '!') && (next != '?');
 }
 
 void ScummVMLatin1::drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const {
@@ -417,34 +421,94 @@ int FontManager::wordWrapText(const TextLine &text, int maxWidth, TextList &line
 	if (!_font)
 		return 0;
 
+	// Wrap the line into several lines of at max maxWidth pixel length, breaking
+	// the line at font-specific word boundaries.
+
 	const byte *txt = text.getText();
 
 	const byte *lineStart = txt;
+	const byte *lineEnd   = txt;
 
 	int length     = 0;
+	int wordLength = 0;
 	int lineLength = 0;
 
 	uint32 c = _font->getChar(txt);
 	while (c) {
+		if (_font->validBreakSpace(lineEnd, txt) && ((txt - lineEnd) > 0)) {
+			// We can break and there's already something in the word buffer
+
+			if ((lineLength + wordLength) > maxWidth) {
+				// Adding the word to the line would overflow
+
+				// Commit the line first
+				lines.push_back(TextLine(lineStart, lineEnd - lineStart));
+
+				length = MAX(length, lineLength);
+
+				lineStart = lineEnd;
+				lineLength = 0;
+			}
+
+			// Add the word to the line
+
+			lineEnd = txt;
+
+			lineLength += wordLength;
+			wordLength = 0;
+		}
+
 		int32 charWidth = _font->getCharWidth(c);
 
-		if ((lineLength + charWidth) > maxWidth) {
-			lines.push_back(TextLine(lineStart, txt - lineStart));
+		if ((wordLength + charWidth) > maxWidth) {
+			// The word itself overflows the max width
 
-			length = MAX(length, lineLength);
+			if ((lineEnd - lineStart) > 0)
+				// Commit the line
+				lines.push_back(TextLine(lineStart, lineEnd - lineStart));
+			// Commit the word fragment in a new line
+			lines.push_back(TextLine(lineEnd, txt - lineEnd));
+
+			length = MAX(length, MAX(lineLength, wordLength));
 
 			lineStart = txt;
+			lineEnd   = txt;
+
+			wordLength = 0;
 			lineLength = 0;
 		}
 
-		lineLength += charWidth;
+		// Add the character to the word
+
+		wordLength += charWidth;
 
 		txt = _font->nextChar(txt);
 		c = _font->getChar(txt);
 	}
 
-	if ((txt - lineStart) > 0) {
-		lines.push_back(TextLine(lineStart, txt - lineStart));
+	if ((txt - lineEnd) > 0) {
+		// We've got a dangling word fragment
+
+		if ((lineLength + wordLength) > maxWidth) {
+			// The dangling word would overflow the line, commit that first
+			lines.push_back(TextLine(lineStart, lineEnd - lineStart));
+
+			length = MAX(length, lineLength);
+
+			lineStart = lineEnd;
+			lineLength = 0;
+		}
+
+		// Add the dangling word to the line
+
+		lineEnd = txt;
+
+		lineLength += wordLength;
+	}
+
+	if ((lineEnd - lineStart) > 0) {
+		// We've got a dangling line, commit it
+		lines.push_back(TextLine(lineStart, lineEnd - lineStart));
 
 		length = MAX(length, lineLength);
 	}
