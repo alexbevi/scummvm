@@ -285,7 +285,8 @@ protected:
 	/** Color values used for the the text. */
 	Common::Array<uint32> _colorText;
 
-	Sprite *_sprites; ///< The box part sprites.
+	Sprite *_frameSprites;  ///< The box frame sprites.
+	Sprite *_buttonSprites; ///< The box button sprites.
 
 	bool loadSprites();
 

@@ -38,6 +38,13 @@ static const char *kFileFrame[4]    = { "DLG_L"   , "DLG_TOP" , "DLG_R"    , "DL
 static const int32 kSizeFrame[4][2] = { { 40, 48 }, { 240, 7 }, {  40, 48 }, { 240,  7 } };
 static const int32 kPosFrame [4][2] = { {  0,  0 }, {  40, 0 }, { 280,  0 }, {  40, 41 } };
 
+static const char *kFileButton[8]    = { "TEXT_U"  , "TEXT_D"   , "TEXT_UD"  , "TEXT_FIN",
+                                         "TEXT_BLK", "TEXT_L"   , "TEXT_R"   , "TEXT_LR"   };
+static const int32 kSizeButton[8][2] = { { 40, 48 }, {  40, 48 }, {  40, 48 }, {  40, 48 },
+                                         { 40, 48 }, {  40, 48 }, {  40, 48 }, {  40, 48 } };
+static const int32 kPosButton [8][2] = { {  0,  0 }, {   0,  0 }, {   0,  0 }, {   0,  0 },
+                                         {  0,  0 }, { 280,  0 }, { 280,  0 }, { 280,  0 } };
+
 // Scroll button coordinates
 static const int32 kScrollUp   [4] = {  15,  24,  34,  40};
 static const int32 kScrollDown [4] = {  15,  41,  34,  57};
@@ -59,11 +66,13 @@ ConversationBoxSaturn::ConversationBoxSaturn(Resources &resources, Variables &va
 		Graphics &graphics, TalkManager &talkManager, const FontManager &fontManager) :
 		ConversationBox(resources, variables, graphics, talkManager, fontManager) {
 
-	_sprites = 0;
+	_frameSprites  = 0;
+	_buttonSprites = 0;
 }
 
 ConversationBoxSaturn::~ConversationBoxSaturn() {
-	delete[] _sprites;
+	delete[] _frameSprites;
+	delete[] _buttonSprites;
 }
 
 int32 ConversationBoxSaturn::getWidth() const {
@@ -102,8 +111,8 @@ bool ConversationBoxSaturn::loadSprites() {
 
 	ImgConv.registerStandardPalette(palette);
 
-	_sprites = new Sprite[3];
-	_sprites[2].create(kWidth, kHeight);
+	_frameSprites = new Sprite[3];
+	_frameSprites[2].create(kWidth, kHeight);
 
 	// Building the frame
 	for (int i = 0; i < 4; i++) {
@@ -114,7 +123,15 @@ bool ConversationBoxSaturn::loadSprites() {
 			return false;
 		}
 
-		_sprites[2].blit(frame, kPosFrame[i][0], kPosFrame[i][1]);
+		_frameSprites[2].blit(frame, kPosFrame[i][0], kPosFrame[i][1]);
+	}
+
+	_buttonSprites = new Sprite[8];
+	for (int i = 0; i < 8; i++) {
+		if (!_buttonSprites[i].loadFromBoxImage(*_resources, kFileButton[i], kSizeButton[i][0], kSizeButton[i][1])) {
+			warning("ConversationBoxSaturn::loadSprites(): Failed to load sprite \"%s\"", kFileButton[i]);
+			return false;
+		}
 	}
 
 	ImgConv.unregisterStandardPalette();
@@ -130,25 +147,25 @@ void ConversationBoxSaturn::build() {
 	_box->create(kWidth, kHeight);
 
 	// The background
-	_sprites[1].create(kTextAreaWidth, kTextAreaHeight);
-	_sprites[1].fill(_colorBackground);
+	_frameSprites[1].create(kTextAreaWidth, kTextAreaHeight);
+	_frameSprites[1].fill(_colorBackground);
 
-	_sprites[0].create(kWidth, kHeight);
+	_frameSprites[0].create(kWidth, kHeight);
 
 	// Put the background
-	_sprites[0].blit(_sprites[1], (kWidth  - kTextAreaWidth)  / 2,
-	                              (kHeight - kTextAreaHeight) / 2, true);
+	_frameSprites[0].blit(_frameSprites[1], (kWidth  - kTextAreaWidth)  / 2,
+	                                        (kHeight - kTextAreaHeight) / 2, true);
 	// Put the frame
-	_sprites[0].blit(_sprites[2], 0, 0, true);
+	_frameSprites[0].blit(_frameSprites[2], 0, 0, true);
 
-	_box->blit(_sprites[0], 0, 0, false);
+	_box->blit(_frameSprites[0], 0, 0, false);
 }
 
 void ConversationBoxSaturn::updateLines() {
 }
 
 void ConversationBoxSaturn::updateScroll() {
-	_box->blit(_sprites[0], 0, 0, false);
+	_box->blit(_frameSprites[0], 0, 0, false);
 }
 
 void ConversationBoxSaturn::drawLines() {
@@ -158,7 +175,7 @@ void ConversationBoxSaturn::drawLines() {
 }
 
 void ConversationBoxSaturn::redrawLines() {
-	_box->blit(_sprites[0], 0, 0, false);
+	_box->blit(_frameSprites[0], 0, 0, false);
 
 	drawLines();
 }
