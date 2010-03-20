@@ -207,6 +207,8 @@ uint32 Saturn2Byte::getStringLength(const TextLine &line) const {
 }
 
 bool Saturn2Byte::validBreakSpace(const byte *textStart, const byte *curPosition) const {
+	// TODO: Check if we can really break at that position,
+	//       according to the "kinsoku shori" rules.
 	return true;
 }
 
