@@ -76,6 +76,9 @@ public:
 	/** Redraw the conversation box. */
 	void redraw(Sprite &sprite, Common::Rect area);
 
+	/** Speak that text. */
+	virtual void talk(TextObject *talkObject) = 0;
+
 	/** Notify that the mouse was moved. */
 	virtual void notifyMouseMove(int32 x, int32 y) = 0;
 	/** Notify that the mouse clicked. */
@@ -216,6 +219,8 @@ public:
 	int32 getWidth () const;
 	int32 getHeight() const;
 
+	void talk(TextObject *talkObject);
+
 	void notifyMouseMove(int32 x, int32 y);
 	void notifyClicked(int32 x, int32 y);
 
@@ -273,6 +278,8 @@ public:
 
 	int32 getWidth () const;
 	int32 getHeight() const;
+
+	void talk(TextObject *talkObject);
 
 	void notifyMouseMove(int32 x, int32 y);
 	void notifyClicked(int32 x, int32 y);

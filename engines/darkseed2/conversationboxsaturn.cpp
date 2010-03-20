@@ -83,6 +83,10 @@ int32 ConversationBoxSaturn::getHeight() const {
 	return kHeight;
 }
 
+void ConversationBoxSaturn::talk(TextObject *talkObject) {
+	_graphics->talk(talkObject);
+}
+
 void ConversationBoxSaturn::notifyMouseMove(int32 x, int32 y) {
 	if (!_inited)
 		return;

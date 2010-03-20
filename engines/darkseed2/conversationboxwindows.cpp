@@ -84,6 +84,10 @@ int32 ConversationBoxWindows::getHeight() const {
 	return kHeight;
 }
 
+void ConversationBoxWindows::talk(TextObject *talkObject) {
+	_graphics->talk(talkObject);
+}
+
 void ConversationBoxWindows::notifyMouseMove(int32 x, int32 y) {
 	if (!isActive())
 		// Not active => ignore user events

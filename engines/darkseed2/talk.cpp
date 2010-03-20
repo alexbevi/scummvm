@@ -33,6 +33,7 @@
 #include "engines/darkseed2/font.h"
 #include "engines/darkseed2/graphics.h"
 #include "engines/darkseed2/graphicalobject.h"
+#include "engines/darkseed2/conversationbox.h"
 
 namespace DarkSeed2 {
 
@@ -192,7 +193,7 @@ bool TalkManager::talkInternal(const TalkLine &talkLine) {
 		TextObject *talkObject = new TextObject(*textLine, *_fontMan, 5, 0,
 				ImgConv.getColor(255, 255, 255), 300);
 
-		_graphics->talk(talkObject);
+		_graphics->getConversationBox().talk(talkObject);
 
 		delete textLine;
 	}
