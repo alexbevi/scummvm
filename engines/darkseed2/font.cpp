@@ -38,6 +38,7 @@ namespace DarkSeed2 {
 TextLine::TextLine() {
 	_length = 0;
 	_str = 0;
+	_mem = 0;
 }
 
 TextLine::TextLine(Common::SeekableReadStream &stream) {
@@ -45,7 +46,8 @@ TextLine::TextLine(Common::SeekableReadStream &stream) {
 
 	assert(_length > 0);
 
-	_str = new byte[_length + 1];
+	_mem = new byte[_length + 1];
+	_str = _mem;
 	uint32 r = stream.read(_str, _length);
 	assert(r == _length);
 	_str[_length] = '\0';
@@ -57,7 +59,8 @@ TextLine::TextLine(const byte *str, uint32 length) {
 
 	_length = length;
 
-	_str = new byte[_length + 1];
+	_mem = new byte[_length + 1];
+	_str = _mem;
 	memcpy(_str, str, _length);
 	_str[_length] = '\0';
 }
@@ -66,26 +69,29 @@ TextLine::TextLine(const Common::String &str) {
 	assert(!str.empty());
 
 	_length = str.size();
-	_str = new byte[_length + 1];
+	_mem = new byte[_length + 1];
+	_str = _mem;
 	memcpy(_str, str.c_str(), _length);
 	_str[_length] = '\0';
 }
 
 TextLine::TextLine(const TextLine &right) {
 	_str = 0;
+	_mem = 0;
 	*this = right;
 }
 
 TextLine::~TextLine() {
-	delete[] _str;
+	delete[] _mem;
 }
 
 TextLine &TextLine::operator=(const TextLine &right) {
-	delete[] _str;
+	delete[] _mem;
 
 	_length = right._length;
 
-	_str = new byte[_length + 1];
+	_mem = new byte[_length + 1];
+	_str = _mem;
 	memcpy(_str, right._str, _length);
 	_str[_length] = '\0';
 
@@ -102,6 +108,22 @@ const byte *TextLine::getText() const {
 	assert(_str);
 
 	return _str;
+}
+
+void TextLine::trimFront(uint32 n) {
+	if (n > _length)
+		n = _length;
+
+	_str    += n;
+	_length -= n;
+}
+
+void TextLine::trimBack(uint32 n) {
+	if (n > _length)
+		n = _length;
+
+	_length -= n;
+	_str[_length] = '\0';
 }
 
 
@@ -210,6 +232,10 @@ bool Saturn2Byte::validBreakSpace(const byte *textStart, const byte *curPosition
 	// TODO: Check if we can really break at that position,
 	//       according to the "kinsoku shori" rules.
 	return true;
+}
+
+bool Saturn2Byte::isTrimmable(uint32 c) const {
+	return false;
 }
 
 bool Saturn2Byte::isValidJIS(uint8 j1, uint8 j2) {
@@ -355,6 +381,10 @@ bool ScummVMLatin1::validBreakSpace(const byte *textStart, const byte *curPositi
 
 	// In French text, ! and ? are preceeded by a space. We don't want to break there.
 	return isspace(cur) && (next != '!') && (next != '?');
+}
+
+bool ScummVMLatin1::isTrimmable(uint32 c) const {
+	return isspace(c);
 }
 
 void ScummVMLatin1::drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const {
@@ -515,6 +545,9 @@ int FontManager::wordWrapText(const TextLine &text, int maxWidth, TextList &line
 		length = MAX(length, lineLength);
 	}
 
+	// Trim the resulting lines
+	trim(lines);
+
 	return length;
 }
 
@@ -523,6 +556,39 @@ int32 FontManager::getFontHeight() const {
 		return 0;
 
 	return _font->getFontHeight();
+}
+
+void FontManager::trim(TextLine &text) const {
+	const byte *txt = text.getText();
+
+	bool canTrimFront = true;
+
+	int trimFront = 0;
+	int trimBack  = 0;
+
+	uint32 c = _font->getChar(txt);
+	while (c) {
+		if (_font->isTrimmable(c)) {
+			if (canTrimFront)
+				trimFront++;
+
+			trimBack++;
+		} else {
+			canTrimFront = false;
+			trimBack = 0;
+		}
+
+		txt = _font->nextChar(txt);
+		c = _font->getChar(txt);
+	}
+
+	text.trimFront(trimFront);
+	text.trimBack(trimBack);
+}
+
+void FontManager::trim(TextList &lines) const {
+	for (TextList::iterator text = lines.begin(); text != lines.end(); ++text)
+		trim(*text);
 }
 
 }

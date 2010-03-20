@@ -56,9 +56,13 @@ public:
 	uint32 getLength() const;
 	const byte *getText() const;
 
+	void trimFront(uint32 n);
+	void trimBack(uint32 n);
+
 private:
 	uint32 _length;
 	byte *_str;
+	byte *_mem;
 };
 
 class Font {
@@ -75,6 +79,7 @@ public:
 	virtual uint32 getStringLength(const TextLine &line) const = 0;
 
 	virtual bool validBreakSpace(const byte *textStart, const byte *curPosition) const = 0;
+	virtual bool isTrimmable(uint32 c) const = 0;
 
 	virtual void drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const = 0;
 };
@@ -98,6 +103,7 @@ public:
 	uint32 getStringLength(const TextLine &line) const;
 
 	bool validBreakSpace(const byte *textStart, const byte *curPosition) const;
+	bool isTrimmable(uint32 c) const;
 
 	void drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const;
 
@@ -123,6 +129,7 @@ public:
 	uint32 getStringLength(const TextLine &line) const;
 
 	bool validBreakSpace(const byte *textStart, const byte *curPosition) const;
+	bool isTrimmable(uint32 c) const;
 
 	void drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const;
 
@@ -143,6 +150,9 @@ public:
 
 	int32 wordWrapText(const TextLine &text, int maxWidth, TextList &lines) const;
 	int32 getFontHeight() const;
+
+	void trim(TextLine &text) const;
+	void trim(TextList &lines) const;
 
 private:
 	Resources *_resources;
