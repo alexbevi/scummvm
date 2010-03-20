@@ -25,6 +25,7 @@
 
 #include "common/stream.h"
 #include "common/util.h"
+#include "common/tokenizer.h"
 #include "common/random.h"
 
 #include "engines/darkseed2/variables.h"
