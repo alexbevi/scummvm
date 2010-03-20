@@ -110,6 +110,31 @@ const byte *TextLine::getText() const {
 	return _str;
 }
 
+void TextLine::append(const TextLine &line) {
+	assert(line._str);
+
+	append(line._str, line._length);
+}
+
+void TextLine::append(const byte *str, uint32 length) {
+	assert(str);
+
+	uint32 newLength = _length + length;
+
+	byte *newMem = new byte[newLength + 1];
+	byte *newStr = newMem;
+
+	memcpy(newStr, _str, _length);
+	memcpy(newStr + _length, str, length);
+	newStr[newLength] = '\0';
+
+	delete[] _mem;
+
+	_mem    = newMem;
+	_str    = newStr;
+	_length = newLength;
+}
+
 void TextLine::trimFront(uint32 n) {
 	if (n > _length)
 		n = _length;
@@ -235,7 +260,7 @@ bool Saturn2Byte::validBreakSpace(const byte *textStart, const byte *curPosition
 }
 
 bool Saturn2Byte::isTrimmable(uint32 c) const {
-	return false;
+	return (c == '\n') || (c == '\r');
 }
 
 bool Saturn2Byte::isValidJIS(uint8 j1, uint8 j2) {
@@ -384,7 +409,7 @@ bool ScummVMLatin1::validBreakSpace(const byte *textStart, const byte *curPositi
 }
 
 bool ScummVMLatin1::isTrimmable(uint32 c) const {
-	return isspace(c);
+	return (c == '\n') || (c == '\r') || isspace(c);
 }
 
 void ScummVMLatin1::drawChar(uint32 c, ::Graphics::Surface &surface, int32 x, int32 y, uint32 color) const {
@@ -467,7 +492,7 @@ int FontManager::wordWrapText(const TextLine &text, int maxWidth, TextList &line
 
 	uint32 c = _font->getChar(txt);
 	while (c) {
-		if (_font->validBreakSpace(lineEnd, txt) && ((txt - lineEnd) > 0)) {
+		if (((c == '\n') || _font->validBreakSpace(lineEnd, txt)) && ((txt - lineEnd) > 0)) {
 			// We can break and there's already something in the word buffer
 
 			if ((lineLength + wordLength) > maxWidth) {
@@ -508,6 +533,21 @@ int FontManager::wordWrapText(const TextLine &text, int maxWidth, TextList &line
 
 			wordLength = 0;
 			lineLength = 0;
+		}
+
+		if (c == '\n') {
+			// Mandatory line break
+
+			if ((lineEnd - lineStart) > 0) {
+				// Commit the line
+				lines.push_back(TextLine(lineStart, lineEnd - lineStart));
+
+				length = MAX(length, lineLength);
+
+				lineStart = lineEnd;
+				lineLength = 0;
+			}
+
 		}
 
 		// Add the character to the word

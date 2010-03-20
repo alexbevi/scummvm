@@ -280,8 +280,10 @@ public:
 	void updateStatus();
 
 protected:
-	uint32 _colorText;          ///< Color index of a text line
+	/** Color values used for the background. */
 	uint32 _colorBackground;    ///< Color index of the background.
+	/** Color values used for the the text. */
+	Common::Array<uint32> _colorText;
 
 	Sprite *_sprites; ///< The box part sprites.
 

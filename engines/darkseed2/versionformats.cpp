@@ -25,6 +25,7 @@
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/versionformats.h"
+#include "engines/darkseed2/font.h"
 
 namespace DarkSeed2 {
 
@@ -46,6 +47,8 @@ VersionFormats::VersionFormats() {
 	_soundType = kSoundTypeWAV;
 
 	_hotspotScale = 1;
+
+	_speakerSeparator = 0;
 }
 
 void VersionFormats::setGameVersion(GameVersion gameVersion) {
@@ -60,6 +63,8 @@ void VersionFormats::setGameVersion(GameVersion gameVersion) {
 		_soundType     = kSoundTypeWAV;
 
 		_hotspotScale = 1;
+
+		_speakerSeparator = new TextLine((const byte *) ":\n", 2);
 		break;
 
 	case kGameVersionSaturn:
@@ -70,6 +75,8 @@ void VersionFormats::setGameVersion(GameVersion gameVersion) {
 		_soundType     = kSoundTypeAIF;
 
 		_hotspotScale = 2;
+
+		_speakerSeparator = new TextLine((const byte *) "\n", 1);
 		break;
 
 	default:
@@ -130,6 +137,12 @@ const char *VersionFormats::getSoundExtension(SoundType soundType) const {
 
 int VersionFormats::getHotspotScale() const {
 	return _hotspotScale;
+}
+
+const TextLine &VersionFormats::getSpeakerSeparator() const {
+	assert(_speakerSeparator);
+
+	return *_speakerSeparator;
 }
 
 } // End of namespace DarkSeed2

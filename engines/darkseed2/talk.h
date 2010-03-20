@@ -33,6 +33,7 @@
 
 namespace DarkSeed2 {
 
+class VersionFormats;
 class Resources;
 class Graphics;
 
@@ -58,11 +59,11 @@ public:
 	void setName(const Common::String &name);
 
 	/** Get the line's speaker. */
-	const Common::String &getSpeaker() const;
+	const TextLine *getSpeaker() const;
 	/** Get the line's speaker. */
 	uint8 getSpeakerNum() const;
 	/** Set the line's speaker. */
-	void setSpeaker(uint8 speakerNum, const Common::String &speaker);
+	void setSpeaker(uint8 speakerNum, const TextLine &speaker);
 
 	/** Has this line a WAV sound? */
 	bool hasWAV() const;
@@ -81,7 +82,7 @@ private:
 
 	Common::String _resource;   ///< The line's resource name.
 	Common::String _name;       ///< The line's name.
-	Common::String _speaker;    ///< The line's speaker.
+	TextLine      *_speaker;    ///< The line's speaker.
 	uint8          _speakerNum; ///< The line's speaker's number.
 
 	Resource *_wav; ///< The WAV.
@@ -91,7 +92,8 @@ private:
 /** The talk manager. */
 class TalkManager {
 public:
-	TalkManager(Sound &sound, Graphics &graphics, const FontManager &fontManager);
+	TalkManager(const VersionFormats &versionFormats, Sound &sound,
+			Graphics &graphics, const FontManager &fontManager);
 	~TalkManager();
 
 	/** Speak the given line. */
@@ -114,6 +116,8 @@ public:
 	void updateStatus();
 
 private:
+	const VersionFormats *_versionFormats;
+
 	Sound    *_sound;
 	Graphics *_graphics;
 

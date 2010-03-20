@@ -123,8 +123,8 @@ bool ConversationBoxSaturn::loadSprites() {
 }
 
 void ConversationBoxSaturn::build() {
-	_colorText       = ImgConv.getColor(kColorText      [0], kColorText      [1], kColorText      [2]);
-	_colorBackground = ImgConv.getColor(kColorBackground[0], kColorBackground[1], kColorBackground[2]);
+	_colorBackground =   ImgConv.getColor(kColorBackground[0], kColorBackground[1], kColorBackground[2]);
+	_colorText.push_back(ImgConv.getColor(kColorText      [0], kColorText      [1], kColorText      [2]));
 
 	_box = new Sprite;
 	_box->create(kWidth, kHeight);

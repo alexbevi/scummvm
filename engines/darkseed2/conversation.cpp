@@ -29,6 +29,7 @@
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/variables.h"
 #include "engines/darkseed2/talk.h"
+#include "engines/darkseed2/font.h"
 #include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
@@ -154,6 +155,9 @@ void Conversation::clear() {
 	_ready = false;
 	_startNode   = 0;
 	_currentNode = 0;
+
+	for (Common::Array<TextLine *>::iterator speaker = _speakers.begin(); speaker != _speakers.end(); ++speaker)
+		delete *speaker;
 	_speakers.clear();
 
 	_nodeList.clear();
@@ -246,13 +250,18 @@ bool Conversation::addSpeaker(const Common::String &args) {
 		return false;
 	}
 
-	int num = atoi(lArgs[0].c_str());
+	uint num = atoi(lArgs[0].c_str());
 
-	_speakers.resize(MAX<int>(_speakers.size(), num + 1));
+	if ((num + 1) > _speakers.size()) {
+		uint n = _speakers.size();
 
-	// Speaker names can include spaces
-	_speakers[num].clear();
-	_speakers[num] = DATFile::mergeArgs(lArgs, 1);
+		_speakers.resize(num + 1);
+		while (n < (num + 1))
+			_speakers[n++] = 0;
+	}
+
+	delete _speakers[num];
+	_speakers[num] = new TextLine(DATFile::mergeArgs(lArgs, 1));
 
 	return true;
 }
@@ -624,8 +633,8 @@ Common::Array<TalkLine *> Conversation::getCurrentLines(Resources &resources) {
 		TalkLine *line = new TalkLine(resources, (*it)->text);
 
 		line->setName((*it)->name);
-		if (!_speakers.empty())
-			line->setSpeaker(0, _speakers[0]);
+		if (!_speakers.empty() && _speakers[0])
+			line->setSpeaker(0, *_speakers[0]);
 
 		lines.push_back(line);
 	}
@@ -651,8 +660,8 @@ Common::Array<TalkLine *> Conversation::getReplies(Resources &resources,
 	for (; (speaker != e->speakers.end()) && (message != e->messages.end()); ++speaker, ++message) {
 		TalkLine *reply = new TalkLine(resources, *message);
 
-		if (*speaker < _speakers.size())
-			reply->setSpeaker(*speaker, _speakers[*speaker]);
+		if ((*speaker < _speakers.size()) && _speakers[*speaker])
+			reply->setSpeaker(*speaker, *_speakers[*speaker]);
 
 		replies.push_back(reply);
 	}
@@ -856,7 +865,7 @@ bool Conversation::saveLoad(Common::Serializer &serializer, Resources &resources
 	_currentNodeIndex = _currentNode ? _currentNode->listIndex : 0;
 
 	SaveLoad::sync(serializer, _name);
-	SaveLoad::sync(serializer, _speakers);
+	//SaveLoad::sync(serializer, _speakers);
 
 	SaveLoad::sync(serializer, _nodeList);
 	SaveLoad::sync(serializer, _entryList);

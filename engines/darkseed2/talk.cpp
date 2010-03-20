@@ -44,6 +44,8 @@ TalkLine::TalkLine(Resources &resources, const Common::String &talkName) {
 	_wav = 0;
 	_txt = 0;
 
+	_speaker = 0;
+
 	Common::String wavFile = Resources::addExtension(talkName, "WAV");
 	Common::String txtFile = Resources::addExtension(talkName, "TXT");
 
@@ -82,6 +84,7 @@ TalkLine::TalkLine(Resources &resources, const Common::String &talkName) {
 TalkLine::~TalkLine() {
 	delete _wav;
 	delete _txt;
+	delete _speaker;
 }
 
 bool TalkLine::hasWAV() const {
@@ -122,7 +125,7 @@ void TalkLine::setName(const Common::String &name) {
 	_name = name;
 }
 
-const Common::String &TalkLine::getSpeaker() const {
+const TextLine *TalkLine::getSpeaker() const {
 	return _speaker;
 }
 
@@ -130,13 +133,19 @@ uint8 TalkLine::getSpeakerNum() const {
 	return _speakerNum;
 }
 
-void TalkLine::setSpeaker(uint8 speakerNum, const Common::String &speaker) {
+void TalkLine::setSpeaker(uint8 speakerNum, const TextLine &speaker) {
 	_speakerNum = speakerNum;
-	_speaker    = speaker;
+
+	delete _speaker;
+	_speaker = new TextLine(speaker);
 }
 
 
-TalkManager::TalkManager(Sound &sound, Graphics &graphics, const FontManager &fontManager) {
+TalkManager::TalkManager(const VersionFormats &versionFormats, Sound &sound,
+		Graphics &graphics, const FontManager &fontManager) {
+
+	_versionFormats = &versionFormats;
+
 	_sound    = &sound;
 	_graphics = &graphics;
 
@@ -170,21 +179,22 @@ bool TalkManager::talkInternal(const TalkLine &talkLine) {
 	if (_txtEnabled && talkLine.hasTXT()) {
 		// Text
 		const TextLine &text = talkLine.getTXT();
-/*		if (!talkLine.getSpeaker().empty())
-			text = talkLine.getSpeaker() + ":\n" + text;*/
+		const TextLine *speaker = talkLine.getSpeaker();
 
-		TextObject *talkObject = new TextObject(text, *_fontMan, 5, 0,
+		TextLine *textLine;
+		if (speaker) {
+			textLine = new TextLine(*speaker);
+			textLine->append(_versionFormats->getSpeakerSeparator());
+			textLine->append(text);
+		} else
+			textLine = new TextLine(text);
+
+		TextObject *talkObject = new TextObject(*textLine, *_fontMan, 5, 0,
 				ImgConv.getColor(255, 255, 255), 300);
 
 		_graphics->talk(talkObject);
-	} else if (_txtEnabled) {
-		if (!talkLine.getSpeaker().empty()) {
-			warning("Speaking speaker");
-			TextObject *talkObject = new TextObject(TextLine(talkLine.getSpeaker()), *_fontMan, 5, 0,
-						ImgConv.getColor(255, 255, 255), 300);
 
-			_graphics->talk(talkObject);
-		}
+		delete textLine;
 	}
 
 	return true;

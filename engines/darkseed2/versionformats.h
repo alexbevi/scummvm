@@ -30,6 +30,8 @@
 
 namespace DarkSeed2 {
 
+class TextLine;
+
 enum GameVersion {
 	kGameVersionWindows = 0, ///< The Windows PC version.
 	kGameVersionSaturn  = 1  ///< The Sega Saturn version.
@@ -87,6 +89,8 @@ public:
 
 	int getHotspotScale() const;
 
+	const TextLine &getSpeakerSeparator() const;
+
 private:
 	static const char *kImageExtensions[];
 	static const char *kWalkMapExtensions[];
@@ -105,6 +109,8 @@ private:
 	SoundType _soundType;     ///< The type of sounds the game uses.
 
 	int _hotspotScale;
+
+	TextLine *_speakerSeparator;
 };
 
 } // End of namespace DarkSeed2

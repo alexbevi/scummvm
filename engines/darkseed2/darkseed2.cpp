@@ -222,7 +222,7 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 	_sound          = new Sound(*_mixer, *_variables);
 	_music          = new Music(*_mixer, *_midiDriver);
 	_graphics       = new Graphics(width, height, *_resources, *_variables, *_cursors, *_fontMan);
-	_talkMan        = new TalkManager(*_sound, *_graphics, *_fontMan);
+	_talkMan        = new TalkManager(_resources->getVersionFormats(), *_sound, *_graphics, *_fontMan);
 	_mike           = new Mike(*_resources, *_variables, *_graphics);
 	_movie          = new Movie(*_mixer, *_graphics, *_cursors, *_sound);
 

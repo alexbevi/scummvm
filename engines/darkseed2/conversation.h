@@ -41,6 +41,8 @@ class Variables;
 class DATFile;
 class TalkLine;
 
+class TextLine;
+
 class Conversation : public Saveable {
 public:
 	Conversation(Variables &variables);
@@ -167,7 +169,7 @@ private:
 	Node   *_currentNode; ///< The current node.
 
 	/** The people active in the conversation. */
-	Common::Array<Common::String> _speakers;
+	Common::Array<TextLine *> _speakers;
 
 	// For saving/loading
 	NodeList  _nodeList;  ///< All nodes in one array

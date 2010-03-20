@@ -63,6 +63,9 @@ public:
 	/** Return the text of the line. */
 	const byte *getText() const;
 
+	void append(const TextLine &line);
+	void append(const byte *str, uint32 length);
+
 	/** Trim n bytes from the front of the line. */
 	void trimFront(uint32 n);
 	/** Trim n bytes from the back of the line. */
