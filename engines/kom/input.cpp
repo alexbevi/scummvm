@@ -271,7 +271,7 @@ void Input::checkKeys() {
 	while (eventMan->pollEvent(event)) {
 		switch (event.type) {
 		case Common::EVENT_KEYDOWN:
-			if (event.kbd.flags == Common::KBD_CTRL) {
+			if (event.kbd.hasFlags(Common::KBD_CTRL)) {
 				if (event.kbd.keycode == 'd') {
 					_debugMode = true;
 				}
