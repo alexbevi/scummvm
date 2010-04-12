@@ -100,9 +100,9 @@ void Sound::playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType t
 
 	if (loop) {
 		Audio::AudioStream *stream = new Audio::LoopingAudioStream(sample._stream, 0, DisposeAfterUse::NO);
-		_mixer->playInputStream(type, &(sample._handle), stream, -1, volume, 0, DisposeAfterUse::YES);
+		_mixer->playStream(type, &(sample._handle), stream, -1, volume, 0, DisposeAfterUse::YES);
 	} else {
-		_mixer->playInputStream(type, &(sample._handle), sample._stream, -1, volume, 0, DisposeAfterUse::NO);
+		_mixer->playStream(type, &(sample._handle), sample._stream, -1, volume, 0, DisposeAfterUse::NO);
 	}
 }
 
