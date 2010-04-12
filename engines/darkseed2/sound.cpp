@@ -121,7 +121,7 @@ bool Sound::playWAV(Common::SeekableReadStream &wav, int *id,
 		*id = channel->id;
 
 	// Play it
-	_mixer->playInputStream(type, &channel->handle, wavStream, channel->id);
+	_mixer->playStream(type, &channel->handle, wavStream, channel->id);
 
 	return true;
 }
@@ -185,7 +185,7 @@ bool Sound::playAIF(Common::SeekableReadStream &aif, int *id,
 		*id = channel->id;
 
 	// Play it
-	_mixer->playInputStream(type, &channel->handle, aifStream, channel->id);
+	_mixer->playStream(type, &channel->handle, aifStream, channel->id);
 
 	return true;
 }
