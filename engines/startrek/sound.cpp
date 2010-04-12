@@ -156,7 +156,7 @@ void Sound::playAmigaSoundEffect(const char *baseSoundName) {
 		_vm->_mixer->stopHandle(*_soundHandle);
 
 	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawStream(_vm->openFile(soundName.c_str()), 11025, 0);
-	_vm->_mixer->playInputStream(Audio::Mixer::kSFXSoundType, _soundHandle, audStream);
+	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, _soundHandle, audStream);
 }
 
 // Macintosh Functions
@@ -176,7 +176,7 @@ void Sound::playMacSoundEffect(const char *baseSoundName) {
 		_vm->_mixer->stopHandle(*_soundHandle);
 
 	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawStream(getMacintoshFile(baseSoundName), 11025, 0);
-	_vm->_mixer->playInputStream(Audio::Mixer::kSFXSoundType, _soundHandle, audStream);
+	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, _soundHandle, audStream);
 }
 
 #define MAC_AUD_FILE_COUNT 139
