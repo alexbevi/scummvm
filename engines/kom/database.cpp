@@ -1174,13 +1174,13 @@ bool Database::giveObject(int obj, int charId, bool noAnimation) {
 			// Fall through
 		case 0:
 		case 4:
-			_characters[charId]._inventory.push_back(obj);
+			_characters[charId]._inventory.push_front(obj);
 			break;
 		case 1:
-			_characters[charId]._weapons.push_back(obj);
+			_characters[charId]._weapons.push_front(obj);
 			break;
 		case 2:
-			_characters[charId]._spells.push_back(obj);
+			_characters[charId]._spells.push_front(obj);
 			break;
 		}
 	}
