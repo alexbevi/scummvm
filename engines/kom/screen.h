@@ -65,6 +65,8 @@ public:
 
 	bool init();
 
+	byte *screenBuf() { return _screenBuf; }
+
 	void processGraphics(int mode);
 	void drawDirtyRects();
 	void gfxUpdate();
@@ -104,7 +106,10 @@ public:
 	void narratorScrollDelete();
 	void narratorWriteLine(byte *buf);
 
+	uint16 calcWordWidth(const char *word);
+
 	void writeTextCentered(byte *buf, const char *text, uint8 row, uint8 color, bool isEmbossed);
+	void writeTextWrap(byte *buf, const char *text, uint8 row, uint16 col, uint16 width, uint8 color, bool isEmbossed);
 	void writeText(byte *buf, const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed);
 
 	uint16 getTextWidth(const char *text);

@@ -904,7 +904,7 @@ void Game::doCommand(int command, int type, int id, int type2, int id2) {
 			chr = _vm->database()->getChar(id);
 			if (chr->_isAlive) {
 				doProc(316, 2, id, -1, -1);
-				warning("TODO: doActionLookAt");
+				doLookAt(id);
 			} else {
 				warning("TODO: look at dead char");
 			}
@@ -1487,6 +1487,9 @@ int16 Game::doExternalAction(const char *action) {
 
 	} else if (strcmp(action, "sleepoff") == 0) {
 		_player.sleepTimer = 0;
+
+	} else if (strcmp(action, "stats") == 0) {
+		doLookAt(0, 192, true);
 
 	} else {
 		warning("TODO: Unknown external action: %s", action);
@@ -2314,7 +2317,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 							inv.mouseState = 3;
 						} else {
 							if (inv.selectedInvObj == 9999) {
-								warning("TODO: look at char");
+								doLookAt(0);
 							}
 							inv.mouseState = 0;
 						}
@@ -2451,6 +2454,462 @@ void Game::doActionLostObject(uint16 obj) {
 
 	if (_settings.objectNum == obj)
 		_settings.objectNum = _settings.objectType = -1;
+}
+
+#define KOM_LABEL_TEXT(VAR, TEXT) \
+	VAR.text = TEXT; \
+	VAR.length = strlen(TEXT)
+
+#define KOM_LABEL(VAR, COL, ROW, WRAPCOL, DELAY) \
+	VAR.col = COL; \
+	VAR.row = ROW; \
+	VAR.wrapCol = WRAPCOL; \
+	VAR.delay = DELAY
+
+struct Label {
+	const char *text;
+	uint16 col;
+	uint16 row;
+	int length;
+	uint16 wrapCol;
+	int delay;
+};
+
+static const char *aliases[] = {
+	"Pink Shadow",
+	"Julian",
+	"The Great Boffo",
+	"Lefty",
+	"Minty",
+	"Bumholio",
+	"The Red Baron",
+	"Bunty",
+	"Sheep Warrior",
+	"The Gay Blade",
+	"Purple Helmet",
+	"Dutch",
+	"Vader",
+	"Nutter",
+	"Auntie McCassar",
+	"Toby-Wan"
+};
+
+static const char *madeIn[] = {
+	"a nice ceramic",
+	"the back seat!",
+	"Korea",
+	"Hong Kong",
+	"England",
+	"America",
+	"a hurry!",
+	"just 5 minutes!",
+	"a motel room!",
+	"error!",
+	"instalments!"
+};
+
+static const char *invincible[] = {
+	"More than you!",
+	"Indestructable!",
+	"Rock Hard!",
+	"I D D Q D",
+	"Full On!",
+	"Like Connery!",
+	"'I work out!'",
+	"Ready to rumble!",
+	"Feelin' lucky?",
+	"Bulletproof!"
+};
+
+static const char *noMoney[] = {
+	"None!",
+	"Bankrupt!",
+	"Liquidated!",
+	"Spent it all!",
+	"Big fat zero!",
+	"Insolvent!",
+	"1-800-BROKE",
+	"Yes please!",
+	"'Gold? Pah!'",
+	"Overdrawn!"
+};
+
+static const char *skills[] = {
+	"Fart at will!",
+	"X-Ray hearing!",
+	"Waterproof 500m",
+	"Glow in the dark!",
+	"Origami!",
+	"Smells of egg!",
+	"Shrinks when cold!",
+	"Belly ripple!",
+	"Armpit noises!",
+	"Taxidermy!",
+	"Lysdexia!",
+	"Maths!",
+	"Bedwetting!",
+	"Needlepoint!",
+	"Plays accordian!"
+};
+
+void Game::doLookAt(int charId, int pauseTimer, bool showBackground) {
+
+	Character *chr = _vm->database()->getChar(charId);
+	Actor *act = _vm->actorMan()->get(chr->_actorId);
+
+	if (chr->_lastLocation != _vm->database()->getChar(0)->_lastLocation)
+		return;
+
+	narratorStop();
+	// TODO: stop greeting
+	_vm->screen()->pauseBackground(true);
+	_vm->screen()->showMouseCursor(false);
+
+	if (chr->_scopeInUse == 12) {
+		chr->_spriteTimer = 0;
+		chr->_spriteCutState = 0;
+		chr->_isBusy = false;
+	}
+
+	int delayTimer = 0;
+	int x = chr->_screenX * 256;
+	int y = chr->_screenY * 256;
+	int z = chr->_start5 * 256 * 88 / 60;
+	int xOffset = (256 * 132 - x) / 20;
+	int yOffset = (256 * 260 - y) / 20;
+	int zOffset = (256 * 256 - z) / 20;
+	int loopState = 0;
+	int loopTimer = 4;
+	int charScope = chr->_scopeWanted;
+	int spinTimer = 0;
+	int currRow = 15;
+	const int rowHeight = 15;
+	Label labels[17];
+	char hitPoints[16];
+	char spellPoints[16];
+	char gold[16];
+	int displayedObject = -1;
+	int objRatio;
+	int16 hash[6];
+
+	// Generate codename hash
+	for (int i = 0; i < 6; i++) {
+		if (i % 2 == 0) {
+			hash[i] = chr->_name[i] ^ chr->_name[i+1];
+		} else {
+			hash[i] = chr->_name[i] | chr->_name[i+1];
+		}
+
+		int j = i + 1;
+		while (j > i) {
+			if (j % 2 == 0) {
+				if (chr->_name[j]) {
+					hash[i] ^= 0;
+				} else {
+					hash[i] ^= 0;
+				}
+			} else {
+				hash[i] ^= chr->_name[j];
+			}
+			j++;
+			if (j >= 6)
+				j = 0;
+		}
+	}
+
+	// Set labels
+
+	KOM_LABEL_TEXT(labels[0], chr->_desc);
+	KOM_LABEL(labels[0], 135, 5, 319, 0);
+
+	currRow += rowHeight;
+
+	KOM_LABEL_TEXT(labels[5], "AKA:");
+	KOM_LABEL(labels[5], 122, currRow, 319, -10);
+
+	KOM_LABEL(labels[6], 205, currRow, 319, -30);
+
+	currRow += rowHeight;
+
+	KOM_LABEL_TEXT(labels[1], "Health:");
+	KOM_LABEL(labels[1], 122, currRow, 319, -20);
+
+	if (chr->_hitPoints == -1) {
+		KOM_LABEL_TEXT(labels[2], invincible[hash[1] % ARRAYSIZE(invincible)]);
+	} else {
+		sprintf(hitPoints, "%d/%d", chr->_hitPoints, chr->_hitPointsMax);
+		KOM_LABEL_TEXT(labels[2], hitPoints);
+	}
+	KOM_LABEL(labels[2], 205, currRow, 319, -40);
+
+	currRow += rowHeight;
+
+	KOM_LABEL_TEXT(labels[3], "Spellpower:");
+	KOM_LABEL(labels[3], 122, currRow, 319, -30);
+
+	sprintf(spellPoints, "%d", chr->_spellPoints);
+	KOM_LABEL_TEXT(labels[4], spellPoints);
+	KOM_LABEL(labels[4], 205, currRow, 319, -50);
+
+	currRow += rowHeight;
+
+	KOM_LABEL_TEXT(labels[9], "Made in:");
+	KOM_LABEL(labels[9], 122, currRow, 319, -40);
+
+	KOM_LABEL(labels[10], 205, currRow, 319, -60);
+
+	currRow += rowHeight;
+
+	KOM_LABEL_TEXT(labels[7], "Serial #:");
+	KOM_LABEL(labels[7], 122, currRow, 319, -50);
+
+	KOM_LABEL_TEXT(labels[8], chr->_name);
+	KOM_LABEL(labels[8], 205, currRow, 319, -70);
+
+	currRow += rowHeight;
+
+	KOM_LABEL_TEXT(labels[11], "Gold:");
+	KOM_LABEL(labels[11], 122, currRow, 319, -60);
+
+	if (chr->_gold == 0) {
+		KOM_LABEL_TEXT(labels[12], noMoney[hash[1] % ARRAYSIZE(noMoney)]);
+	} else {
+		sprintf(gold, "%d", chr->_gold);
+		KOM_LABEL_TEXT(labels[12], gold);
+	}
+	KOM_LABEL(labels[12], 205, currRow, 319, -80);
+
+	currRow += rowHeight;
+
+	KOM_LABEL_TEXT(labels[13], "Secret skill:");
+	KOM_LABEL(labels[13], 122, currRow, 319, -100);
+
+	KOM_LABEL(labels[14], 205, currRow, 319, -115);
+
+	KOM_LABEL_TEXT(labels[15], ""); // Object name
+	KOM_LABEL(labels[15], 15, 170, 220, 0);
+
+	KOM_LABEL_TEXT(labels[16], ""); // "Exit" or "More"
+	KOM_LABEL(labels[16], 250, 190, 319, 0);
+
+	if (charId == 0) {
+		if (_player.selectedChar) {
+			KOM_LABEL_TEXT(labels[6], "Mama Reese");
+			KOM_LABEL_TEXT(labels[10], "Heaven");
+			KOM_LABEL_TEXT(labels[14], "Mud wrestling!");
+		} else {
+			KOM_LABEL_TEXT(labels[6], "Greenfinger");
+			KOM_LABEL_TEXT(labels[10], "Falkirk");
+			KOM_LABEL_TEXT(labels[14], "Accountancy!");
+		}
+	} else {
+		KOM_LABEL_TEXT(labels[6], aliases[hash[1] % ARRAYSIZE(aliases)]);
+		KOM_LABEL_TEXT(labels[10], madeIn[hash[3] % ARRAYSIZE(madeIn)]);
+		KOM_LABEL_TEXT(labels[14], skills[hash[4] % ARRAYSIZE(skills)]);
+	}
+
+	// Copy all objects to one list
+	int objectCount = chr->_inventory.size() + chr->_weapons.size() + chr->_spells.size();
+
+	int *objects = new int[objectCount];
+	int currObject = 0;
+	for (Common::List<int>::iterator objId = chr->_inventory.begin(); objId != chr->_inventory.end(); ++objId, ++currObject)
+		objects[currObject] = *objId;
+	for (Common::List<int>::iterator objId = chr->_weapons.begin(); objId != chr->_weapons.end(); ++objId, ++currObject)
+		objects[currObject] = *objId;
+	for (Common::List<int>::iterator objId = chr->_spells.begin(); objId != chr->_spells.end(); ++objId, ++currObject)
+		objects[currObject] = *objId;
+	currObject = -1;
+
+	while (loopState != 4) {
+
+		// Position the character on screen
+		if (loopState > 1) {
+			x = 132;
+			x = 256 * 132;
+			y = 260;
+			y = 256 * 260;
+			z = 256 * 256;
+		} else {
+			x += xOffset;
+			y += yOffset;
+			z += zOffset;
+		}
+
+		// This is only enabled when talking to Krystal at
+		// King Afro's palace, and choosing conversation
+		// options 3, 1
+		if (loopState == 0 && showBackground) {
+			_vm->screen()->drawBackground();
+			_vm->screen()->displayDoors();
+			_vm->actorMan()->pauseAnimAll(true);
+			act->enable(0);
+			_vm->actorMan()->displayAll();
+			act->enable(1);
+			_vm->actorMan()->pauseAnimAll(false);
+		} else {
+			_vm->screen()->clearScreen();
+		}
+
+		act->setPos(x / 512, y / 512);
+		act->setMaskDepth(0, 2);
+		act->setRatio(262144 * 256 / z, 262144 * 256 / z);
+		act->display();
+
+		// Draw current object
+		if (loopState >= 3) {
+			if (_vm->input()->getLeftClick()) {
+				if (++currObject == objectCount) {
+					loopState = 4;
+					currObject--;
+				}
+			}
+
+			if (currObject != displayedObject) {
+				KOM_LABEL_TEXT(labels[15], _vm->database()->getObj(objects[currObject])->desc);
+				displayedObject = currObject;
+				objRatio = 8;
+
+				if (currObject == objectCount - 1) {
+					KOM_LABEL_TEXT(labels[16], " ...EXIT");
+				}
+			}
+
+			if (displayedObject != -1) {
+				Actor *obj = _vm->actorMan()->getObjects();
+				obj->setEffect(0);
+				obj->setPos(220, 180);
+				obj->setMaskDepth(0, 3);
+				obj->setRatio(1024 / objRatio, 1024 / objRatio);
+				obj->setFrame(objects[displayedObject] + 1);
+				obj->display();
+
+				// Animate the object
+				if (objRatio > 1) {
+					objRatio--;
+				}
+			}
+
+		}
+
+		// Write labels
+		if (loopState >= 1) {
+			for (int i = 0; i < ARRAYSIZE(labels); i++) {
+				labels[i].delay++;
+
+				int endPos = MAX(0, MIN(labels[i].length, labels[i].delay));
+				char str[42];
+				strcpy(str, labels[i].text);
+
+				// Special handling of object name - word by word
+				if (i == 15) {
+					while (str[endPos] != '\0' && str[endPos] != ' ')
+						endPos++;
+					labels[i].delay = endPos;
+				}
+
+				str[endPos] = '\0';
+
+				_vm->screen()->writeTextWrap(_vm->screen()->screenBuf(), str,
+						labels[i].row, labels[i].col, labels[i].wrapCol, 31, false);
+			}
+
+		}
+
+		delayTimer++;
+		if (delayTimer > 256 * 64) {
+			delayTimer = 0;
+			for (int i = 0; i < ARRAYSIZE(labels); i++) {
+				labels[i].delay -= 256 * 64;
+			}
+		}
+
+		_vm->screen()->gfxUpdate();
+
+		// Rotate character
+		if (spinTimer) {
+			spinTimer--;
+		} else {
+			spinTimer = 3;
+			switch (charScope - 4) {
+			case 0:
+				charScope = 5;
+				break;
+			case 1:
+				charScope = 6;
+				break;
+			case 2:
+				charScope = 7;
+				break;
+			case 3:
+				charScope = 8;
+				break;
+			case 4:
+				charScope = 9;
+				break;
+			case 5:
+				charScope = 10;
+				break;
+			case 6:
+				charScope = 11;
+				break;
+			case 7:
+				charScope = 4;
+				break;
+			default:
+				charScope = 8;
+			}
+
+			chr->setScope(charScope);
+		}
+
+		if (loopTimer) {
+			loopTimer--;
+		}
+
+		if (_vm->input()->getRightClick() /* TODO: || space key */) {
+			loopState = 4;
+		}
+
+		switch (loopState) {
+		case 0:
+			if (loopTimer == 0) {
+				loopState = 1;
+				loopTimer = 16;
+			}
+			break;
+		case 1:
+			if (loopTimer == 0) {
+				loopState = 2;
+			}
+			break;
+		case 2:
+			if (objectCount == 0) {
+				KOM_LABEL_TEXT(labels[15], "Has no objects");
+				KOM_LABEL_TEXT(labels[16], " ...EXIT");
+			} else {
+				currObject = 0;
+				KOM_LABEL_TEXT(labels[16], "More...");
+			}
+
+			loopState = 3;
+			break;
+		default:
+			break;
+		}
+
+		if (pauseTimer > 0) {
+			pauseTimer--;
+			if (pauseTimer == 0)
+				loopState = 4;
+		}
+	}
+
+	delete[] objects;
+
+	_vm->screen()->showMouseCursor(true);
+	_vm->screen()->pauseBackground(false);
+	_vm->screen()->clearScreen();
 }
 
 void Game::exeUse() {

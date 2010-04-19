@@ -1309,9 +1309,32 @@ void Screen::narratorWriteLine(byte *buf) {
 	}
 }
 
+uint16 Screen::calcWordWidth(const char *word) {
+	uint8 width = 0;
+	for (int i = 0; word[i] != '\0'; ++i)
+		width += *(const uint8 *)_font->getCharData(word[i]) + 1;
+	return width + 4;
+}
+
 void Screen::writeTextCentered(byte *buf, const char *text, uint8 row, uint8 color, bool isEmbossed) {
 	uint8 col = (SCREEN_W - getTextWidth(text)) / 2;
 	writeText(buf, text, row, col, color, isEmbossed);
+}
+
+void Screen::writeTextWrap(byte *buf, const char *text, uint8 row, uint16 col, uint16 wrapCol, uint8 color, bool isEmbossed) {
+	uint16 currCol = col;
+	char *txt = new char[strlen(text) + 1];
+	strcpy(txt, text);
+	for (char *word = strtok(txt, " "); word != 0; word = strtok(NULL, " ")) {
+		uint16 wordWidth = calcWordWidth(word);
+		if (currCol + wordWidth >= wrapCol) {
+			buf += SCREEN_W;
+			currCol = col;
+		}
+		writeText(buf, word, row, currCol, color, isEmbossed);
+		currCol += wordWidth;
+	}
+	delete[] txt;
 }
 
 void Screen::writeText(byte *buf, const char *text, uint8 row, uint16 col, uint8 color, bool isEmbossed) {

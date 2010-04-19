@@ -201,6 +201,8 @@ public:
 	void doActionGotObject(uint16 obj);
 	void doActionLostObject(uint16 obj);
 
+	void doLookAt(int charId, int pauseTimer = 0, bool showBackground = false);
+
 	void exeUse();
 	void exeTalk();
 	void exePickup();
