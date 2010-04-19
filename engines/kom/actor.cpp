@@ -87,7 +87,7 @@ void ActorManager::loadExtras() {
 	_mouseActor->setEffect(4);
 
 	// Init CursorMan
-	_vm->screen()->displayMouse();
+	_mouseActor->display();
 
 	_donutActor = new Actor(_vm, "kom/oneoffs/donut.act", false);
 	_donutActor->enable(0);

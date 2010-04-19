@@ -76,7 +76,6 @@ public:
 
 	void setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int hotspotY);
 	void showMouseCursor(bool show);
-	void displayMouse();
 	void updateCursor();
 
 	void drawPanel(const byte *panelData);

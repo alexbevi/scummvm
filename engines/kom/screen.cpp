@@ -253,7 +253,7 @@ void Screen::processGraphics(int mode) {
 	// TODO - Check menu request
 	if (_vm->game()->settings()->mouseMode == 0) {
 		updateCursor();
-		displayMouse();
+		showMouseCursor(true);
 	} else {
 		showMouseCursor(false);
 	}
@@ -325,6 +325,10 @@ void Screen::gfxUpdate() {
 		_vm->input()->checkKeys();
 		_system->delayMillis(10);
 	}
+
+	if (CursorMan.isVisible())
+		_vm->actorMan()->getMouse()->display();
+
 	_system->updateScreen();
 	_lastFrameTime = _system->getMillis();
 }
@@ -637,11 +641,6 @@ void Screen::setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int h
 
 void Screen::showMouseCursor(bool show) {
 	CursorMan.showMouse(show);
-}
-
-void Screen::displayMouse() {
-	showMouseCursor(true);
-	_vm->actorMan()->getMouse()->display();
 }
 
 void Screen::updateCursor() {
