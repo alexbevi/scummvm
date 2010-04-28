@@ -47,7 +47,7 @@ namespace Gargoyle {
 GargoyleEngine::GargoyleEngine(OSystem *syst, const GargoyleGameDescription *gameDesc) :
 		Engine(syst), _gameDescription(gameDesc) {
 
-	Common::addDebugChannel(kGargoyleDebugScripts, "script", "Script debug level");
+	DebugMan.addDebugChannel(kGargoyleDebugScripts, "script", "Script debug level");
 	_interpreter = NULL;
 }
 
