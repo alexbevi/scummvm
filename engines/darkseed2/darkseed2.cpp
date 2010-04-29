@@ -30,6 +30,7 @@
 #include "base/plugins.h"
 #include "common/config-manager.h"
 #include "common/EventRecorder.h"
+#include "common/debug.h"
 
 // Sound
 #include "sound/mixer.h"
@@ -72,19 +73,19 @@ static const char *kVariableIndex = "GAMEVAR";
 DarkSeed2Engine::DarkSeed2Engine(OSystem *syst, const DS2GameDescription *gameDesc) :
 	Engine(syst), _gameDescription(gameDesc) {
 
-	Common::addDebugChannel(kDebugResources   , "Resources"   , "Resource handling debug level");
-	Common::addDebugChannel(kDebugGraphics    , "Graphics"    , "Graphics debug level");
-	Common::addDebugChannel(kDebugMusic       , "Music"       , "Music debug level");
-	Common::addDebugChannel(kDebugSound       , "Sound"       , "Sound debug level");
-	Common::addDebugChannel(kDebugTalk        , "Talk"        , "Talk debug level");
-	Common::addDebugChannel(kDebugMovie       , "Movie"       , "Movie debug level");
-	Common::addDebugChannel(kDebugScript      , "Script"      , "Script debug level");
-	Common::addDebugChannel(kDebugRooms       , "Rooms"       , "Rooms debug level");
-	Common::addDebugChannel(kDebugObjects     , "Objects"     , "Objects debug level");
-	Common::addDebugChannel(kDebugConversation, "Conversation", "Conversation debug level");
-	Common::addDebugChannel(kDebugOpcodes     , "Opcodes"     , "Script functions debug level");
-	Common::addDebugChannel(kDebugRoomConf    , "RoomConf"    , "Room config debug level");
-	Common::addDebugChannel(kDebugGameflow    , "Gameflow"    , "Gameflow debug level");
+	DebugMan.addDebugChannel(kDebugResources   , "Resources"   , "Resource handling debug level");
+	DebugMan.addDebugChannel(kDebugGraphics    , "Graphics"    , "Graphics debug level");
+	DebugMan.addDebugChannel(kDebugMusic       , "Music"       , "Music debug level");
+	DebugMan.addDebugChannel(kDebugSound       , "Sound"       , "Sound debug level");
+	DebugMan.addDebugChannel(kDebugTalk        , "Talk"        , "Talk debug level");
+	DebugMan.addDebugChannel(kDebugMovie       , "Movie"       , "Movie debug level");
+	DebugMan.addDebugChannel(kDebugScript      , "Script"      , "Script debug level");
+	DebugMan.addDebugChannel(kDebugRooms       , "Rooms"       , "Rooms debug level");
+	DebugMan.addDebugChannel(kDebugObjects     , "Objects"     , "Objects debug level");
+	DebugMan.addDebugChannel(kDebugConversation, "Conversation", "Conversation debug level");
+	DebugMan.addDebugChannel(kDebugOpcodes     , "Opcodes"     , "Script functions debug level");
+	DebugMan.addDebugChannel(kDebugRoomConf    , "RoomConf"    , "Room config debug level");
+	DebugMan.addDebugChannel(kDebugGameflow    , "Gameflow"    , "Gameflow debug level");
 
 	// Setup mixer
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, ConfMan.getInt("music_volume"));
