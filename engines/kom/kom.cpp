@@ -25,10 +25,12 @@
 
 #include <stdio.h>
 
+#include "engines/engine.h"
 #include "common/util.h"
 #include "common/file.h"
 #include "common/error.h"
 #include "common/fs.h"
+#include "common/config-manager.h"
 
 #include "kom/kom.h"
 #include "kom/actor.h"
@@ -66,10 +68,13 @@ KomEngine::~KomEngine() {
 }
 
 Common::Error KomEngine::run() {
+
+	const Common::FSNode gameDataDir(ConfMan.get("path"));
+
 	// Add the game path to the directory search list.
 	// ScummVM defaults to 4, KoM needs 5
-	SearchMan.remove(_gameDataDir.getPath());
-	SearchMan.addDirectory(_gameDataDir.getPath(), _gameDataDir, 0, 5);
+	SearchMan.remove(gameDataDir.getPath());
+	SearchMan.addDirectory(gameDataDir.getPath(), gameDataDir, 0, 5);
 
 	_actorMan = new ActorManager(this);
 

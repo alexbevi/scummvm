@@ -31,6 +31,7 @@
 #include "common/rect.h"
 #include "common/str.h"
 #include "common/util.h"
+#include "engines/util.h"
 #include "graphics/cursorman.h"
 #include "graphics/surface.h"
 
