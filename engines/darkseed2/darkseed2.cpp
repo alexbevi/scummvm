@@ -30,7 +30,9 @@
 #include "base/plugins.h"
 #include "common/config-manager.h"
 #include "common/EventRecorder.h"
-#include "common/debug.h"
+#include "common/debug-channels.h"
+
+#include "engines/util.h"
 
 // Sound
 #include "sound/mixer.h"

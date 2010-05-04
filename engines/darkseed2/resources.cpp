@@ -26,6 +26,8 @@
 #include "common/stream.h"
 #include "common/file.h"
 
+#include "common/archive.h"
+
 #include "engines/darkseed2/resources.h"
 
 namespace DarkSeed2 {
