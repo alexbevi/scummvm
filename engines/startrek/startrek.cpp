@@ -30,6 +30,8 @@
 #include "base/plugins.h"
 #include "base/version.h"
 
+#include "engines/util.h"
+
 #include "startrek/lzss.h"
 #include "startrek/startrek.h"
 
