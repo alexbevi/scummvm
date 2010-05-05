@@ -363,12 +363,14 @@ void ZSystem::init_screen(void) {
 	_h.h_interpreter_version = 'F';
 
 	// Check for sound
+	const Common::FSNode dataDir(ConfMan.get("path"));
+
 	if ((_h.h_version == V3) && (_h.h_flags & OLD_SOUND_FLAG)) {
-		_frotzSound = FrotzSound::init(_interp.getBlorbFile(), _engine->getGameDataDir().getChild("sound"));
+		_frotzSound = FrotzSound::init(_interp.getBlorbFile(), dataDir.getChild("sound"));
 		if (_frotzSound != NULL)
 			_h.h_flags &= ~OLD_SOUND_FLAG;
 	} else if ((_h.h_version >= V4) && (_h.h_flags & SOUND_FLAG)) {
-		_frotzSound = FrotzSound::init(_interp.getBlorbFile(), _engine->getGameDataDir().getChild("sound"));
+		_frotzSound = FrotzSound::init(_interp.getBlorbFile(), dataDir.getChild("sound"));
 		if (_frotzSound != NULL)
 			_h.h_flags &= ~SOUND_FLAG;
 	}

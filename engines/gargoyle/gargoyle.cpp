@@ -32,6 +32,7 @@
 
 #include "base/plugins.h"
 #include "common/config-manager.h"
+#include "common/debug-channels.h"
 #include "common/events.h"
 #include "common/stream.h"
 #include "engines/engine.h"

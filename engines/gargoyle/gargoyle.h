@@ -121,8 +121,6 @@ public:
 	Common::Language getLanguage() const;
 	Common::Platform getPlatform() const;
 	GUI::Debugger *getDebugger();
-	const Common::FSNode &getGameDataDir() { return _gameDataDir; }
-
 	Interpreter *interp() { return _interpreter; };
 
 	virtual void pauseEngine(bool pause);

@@ -33,10 +33,12 @@
 #include "common/EventRecorder.h"
 #include "common/events.h"
 #include "common/file.h"
+#include "engines/engine.h"
+#include "engines/util.h"
 #include "graphics/cursorman.h"
 #include "graphics/font.h"
 #include "graphics/fontman.h"
-#include "engines/engine.h"
+
 
 namespace Frotz {
 
