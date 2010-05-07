@@ -71,12 +71,6 @@ bool VideoPlayer::playVideo(char *filename) {
 	// Backup the palette
 	_vm->_system->grabPalette(backupPalette, 0, 256);
 
-	// Unload previous sample (when the movie finishes before
-	// the sample, it never unloads. This happens when talking
-	// to the pixie)
-	_vm->sound()->stopSample(_sample);
-	_sample.unload();
-
 	if (!_player->loadFile(filename)) {
 		ColorSet *cs;
 		int length = strlen(filename);
@@ -98,20 +92,22 @@ bool VideoPlayer::playVideo(char *filename) {
 		filename[length - 3] = 'r';
 		filename[length - 2] = 'a';
 		filename[length - 1] = 'w';
-		_sample.loadFile(filename);
+		_vm->sound()->playFileSFX(filename, &_soundHandle);
 
 		_background = _vm->screen()->createZoomBlur(160, 100);
 	}
 
 	_vm->_system->fillScreen(0);
 
-	// Sample should continue playing after player is done
-	_vm->sound()->playSampleSFX(_sample, false);
-
 	while (_player->getCurFrame() < _player->getFrameCount() && !_skipVideo && !_vm->shouldQuit()) {
 		processEvents();
 		processFrame();
 	}
+
+	// Sound sample should continue playing after video is done
+	// (for example, when talking to the pixie)
+	if (_skipVideo)
+		_vm->sound()->stopHandle(_soundHandle);
 
 	_player->closeFile();
 

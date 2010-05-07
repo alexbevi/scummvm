@@ -58,7 +58,7 @@ private:
 	FlicDecoder _flic;
 	Graphics::VideoDecoder *_player;
 	byte *_background;
-	SoundSample _sample;
+	SoundHandle _soundHandle;
 };
 
 } // End of namespace Kom

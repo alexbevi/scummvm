@@ -39,6 +39,8 @@ namespace Kom {
 
 #define SOUND_HANDLES 16
 
+typedef Audio::SoundHandle SoundHandle;
+
 class SoundSample {
 	friend class Sound;
 public:
@@ -63,15 +65,21 @@ public:
 	bool _musicEnabled;
 	bool _sfxEnabled;
 
+	bool playFileSFX(Common::String filename, SoundHandle *handle);
+	bool playFileSpeech(Common::String filename, SoundHandle *handle);
 	void playSampleSFX(SoundSample &sample, bool loop);
 	void playSampleMusic(SoundSample &sample);
 	void playSampleSpeech(SoundSample &sample);
-	void playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume);
+
+	void stopHandle(SoundHandle handle);
 	void stopSample(SoundSample &sample);
 	void pauseSample(SoundSample &sample, bool paused);
 	bool isPlaying(SoundSample &sample) { return _mixer->isSoundHandleActive(sample._handle); }
 
 private:
+
+	bool playFile(Common::String filename, SoundHandle *handle, Audio::Mixer::SoundType type, byte volume);
+	void playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume);
 
 	KomEngine *_vm;
 	Audio::Mixer *_mixer;

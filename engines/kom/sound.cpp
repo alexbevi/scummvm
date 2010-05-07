@@ -47,10 +47,9 @@ bool SoundSample::loadFile(Common::String filename) {
 
 	unload();
 
-	if (!File::exists(filename))
+	if (!f.open(filename))
 		return false;
 
-	f.open(filename);
 	_size = f.size();
 	data = (byte *)malloc(_size);
 	f.read(data, f.size());
@@ -75,6 +74,14 @@ Sound::Sound(KomEngine *vm, Audio::Mixer *mixer)
 Sound::~Sound() {
 }
 
+bool Sound::playFileSFX(Common::String filename, SoundHandle *handle) {
+	return playFile(filename, handle, Audio::Mixer::kSFXSoundType, 255);
+}
+
+bool Sound::playFileSpeech(Common::String filename, SoundHandle *handle) {
+	return playFile(filename, handle, Audio::Mixer::kSpeechSoundType, 255);
+}
+
 void Sound::playSampleSFX(SoundSample &sample, bool loop) {
 	playSample(sample, loop, Audio::Mixer::kSFXSoundType, 255);
 }
@@ -85,6 +92,20 @@ void Sound::playSampleMusic(SoundSample &sample) {
 
 void Sound::playSampleSpeech(SoundSample &sample) {
 	playSample(sample, false, Audio::Mixer::kSpeechSoundType, 255);
+}
+
+bool Sound::playFile(Common::String filename, SoundHandle *handle, Audio::Mixer::SoundType type, byte volume) {
+	File *f = new File();
+	Audio::SeekableAudioStream *stream;
+
+	if (!f->open(filename))
+		return false;
+
+	stream = Audio::makeRawStream(f, 11025, Audio::FLAG_UNSIGNED);
+
+	_mixer->playStream(type, handle, stream, -1, volume);
+
+	return true;
 }
 
 void Sound::playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType type, byte volume) {
@@ -106,10 +127,14 @@ void Sound::playSample(SoundSample &sample, bool loop, Audio::Mixer::SoundType t
 	}
 }
 
-void Sound::stopSample(SoundSample &sample) {
-	if (_mixer->isSoundHandleActive(sample._handle)) {
-		_mixer->stopHandle(sample._handle);
+void Sound::stopHandle(SoundHandle handle) {
+	if (_mixer->isSoundHandleActive(handle)) {
+		_mixer->stopHandle(handle);
 	}
+}
+
+void Sound::stopSample(SoundSample &sample) {
+	stopHandle(sample._handle);
 }
 
 void Sound::pauseSample(SoundSample &sample, bool paused) {
