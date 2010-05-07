@@ -39,11 +39,6 @@ namespace Kom {
 
 #define SOUND_HANDLES 16
 
-struct SoundHandle {
-	int index;
-	Audio::SoundHandle handle;
-};
-
 class SoundSample {
 	friend class Sound;
 public:
