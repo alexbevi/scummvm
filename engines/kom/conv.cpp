@@ -181,17 +181,52 @@ bool Conv::doTalk(int16 convNum, int32 optNum) {
 	initConvs(READ_LE_UINT32(_convEntry + 20));
 	initText(READ_LE_UINT32(_convEntry + 8));
 
-	talkInit();
-
-	while (1) {
-		Conversation *conv = 0;
-		// Find conversation
-		for (Common::List<Conversation>::iterator c = _conversations.begin(); c != _conversations.end(); c++) {
-			if (_charId == c->charId && c->convNum == convNum) {
-				conv = &(*c);
-				break;
-			}
+	// Find conversation
+	for (Common::List<Conversation>::iterator c = _conversations.begin(); c != _conversations.end(); c++) {
+		if (_charId == c->charId && c->convNum == convNum) {
+			talkInit();
+			bool result = doOptions(&(*c), optNum);
+			talkDeInit();
+			return result;
 		}
+	}
+
+	return false;
+}
+
+void Conv::doResponse(int responseNum) {
+	int count;
+	int num = -1;
+	int charId, offset;
+
+	initText(READ_LE_UINT32(_convEntry + 12));
+
+	_convData->seek(READ_LE_UINT32(_convEntry + 16));
+	lineBuffer = _convData->readLine();
+	sscanf(lineBuffer.c_str(), "%d", &count);
+
+	for (int i = 0; i < count && num != responseNum; i++) {
+		do {
+			lineBuffer = _convData->readLine();
+		} while (lineBuffer.empty());
+		sscanf(lineBuffer.c_str(), "%d %d %d", &num, &charId, &offset);
+	}
+
+	if (num == responseNum) {
+		warning("TODO talk: %hd - %s", charId, _text + offset);
+	} else {
+		error("Could not find response %d of %s", responseNum, _codename);
+	}
+}
+
+void Conv::talkInit() {
+}
+
+void Conv::talkDeInit() {
+}
+
+bool Conv::doOptions(Conversation *conv, int32 optNum) {
+	while (1) {
 		assert(conv);
 
 		assert(optNum != 0);
@@ -227,37 +262,6 @@ bool Conv::doTalk(int16 convNum, int32 optNum) {
 		if (optNum == 0)
 			return true;
 	}
-}
-
-void Conv::doResponse(int responseNum) {
-	int count;
-	int num = -1;
-	int charId, offset;
-
-	initText(READ_LE_UINT32(_convEntry + 12));
-
-	_convData->seek(READ_LE_UINT32(_convEntry + 16));
-	lineBuffer = _convData->readLine();
-	sscanf(lineBuffer.c_str(), "%d", &count);
-
-	for (int i = 0; i < count && num != responseNum; i++) {
-		do {
-			lineBuffer = _convData->readLine();
-		} while (lineBuffer.empty());
-		sscanf(lineBuffer.c_str(), "%d %d %d", &num, &charId, &offset);
-	}
-
-	if (num == responseNum) {
-		warning("TODO talk: %hd - %s", charId, _text + offset);
-	} else {
-		error("Could not find response %d of %s", responseNum, _codename);
-	}
-}
-
-void Conv::talkInit() {
-}
-
-void Conv::talkDeInit() {
 }
 
 int Conv::showOptions() {

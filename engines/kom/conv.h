@@ -73,6 +73,7 @@ private:
 	void talkInit();
 	void talkDeInit();
 
+	bool doOptions(Conversation *conv, int32 optNum);
 	int showOptions();
 	void freeOptions();
 	int getOption();
