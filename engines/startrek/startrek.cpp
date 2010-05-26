@@ -34,6 +34,8 @@
 
 #include "engines/util.h"
 
+#include "graphics/video/qt_decoder.h"
+
 #include "startrek/lzss.h"
 #include "startrek/startrek.h"
 
@@ -87,6 +89,7 @@ Common::Error StarTrekEngine::run() {
 #if 1
 	if (getGameType() == GType_ST25) {
 		if (getPlatform() == Common::kPlatformMacintosh) {
+			playMovie("Voice Data/Additional Audio/Intro Movie");
 			_gfx->setPalette("BRIDGES.PAL");
 			_gfx->drawImage("BRIDGE0.BMP");
 		} else {
@@ -251,7 +254,7 @@ Common::SeekableReadStream *StarTrekEngine::openFile(Common::String filename) {
 	return NULL;
 }
 
-byte getStartingIndex(Common::String filename) {
+byte StarTrekEngine::getStartingIndex(Common::String filename) {
 	// Find last number
 	int32 lastNumIndex = -1;
 	for (uint32 i = 0; i < filename.size(); i++) {
@@ -264,6 +267,47 @@ byte getStartingIndex(Common::String filename) {
 	if (lastNumIndex == -1)
 		return 0;
 	return (filename[lastNumIndex] - '0');
+}
+
+void StarTrekEngine::playMovie(Common::String filename) {
+	if (getPlatform() == Common::kPlatformMacintosh)
+		playMovieMac(filename);
+	else
+		error("Interplay MVE not yet supported");
+}
+
+void StarTrekEngine::playMovieMac(Common::String filename) {
+	// Swap to 16bpp mode
+	initGraphics(512, 384, true, NULL);
+
+	::Graphics::QuickTimeDecoder *qtDecoder = new ::Graphics::QuickTimeDecoder();
+
+	if (!qtDecoder->loadFile(filename))
+		error("Could not open '%s'", filename.c_str());
+
+	while (!qtDecoder->endOfVideo() && !shouldQuit()) {
+		qtDecoder->updateAudioBuffer();
+
+		if (qtDecoder->needsUpdate()) {
+			::Graphics::Surface *frame = qtDecoder->decodeNextFrame();
+
+			if (frame) {
+				_system->copyRectToScreen((byte *)frame->pixels, frame->pitch, 0, 0, frame->w, frame->h);
+				_system->updateScreen();
+			}
+		}
+
+		Common::Event event;
+		while (g_system->getEventManager()->pollEvent(event))
+			;
+
+		g_system->delayMillis(10);
+	}
+
+	delete qtDecoder;
+
+	// Swap back to 8bpp mode
+	initGraphics(320, 200, false);
 }
 
 } // End of namespace StarTrek

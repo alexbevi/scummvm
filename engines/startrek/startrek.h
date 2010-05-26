@@ -65,16 +65,20 @@ public:
 	StarTrekEngine(OSystem *syst, const StarTrekGameDescription *gamedesc);
 	virtual ~StarTrekEngine();
 
-	//Detection related functions
+	// Detection related functions
 	const StarTrekGameDescription *_gameDescription;
 	uint32 getFeatures() const;
 	uint16 getVersion() const;
 	Common::Platform getPlatform() const;
 	uint8 getGameType();
 	Common::Language getLanguage();
-	
+
+	// Resource related functions
 	Common::SeekableReadStream *openFile(Common::String filename);
-	Common::SeekableReadStream *openFile(const char *filename) { return openFile(Common::String(filename)); }
+
+	// Movie related functions
+	void playMovie(Common::String filename);
+	void playMovieMac(Common::String filename);
 	
 private:
 	Graphics *_gfx;
