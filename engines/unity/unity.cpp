@@ -1,6 +1,7 @@
 #include "unity.h"
 #include "graphics.h"
 #include "sound.h"
+#include "sprite.h"
 
 #include "common/fs.h"
 #include "common/config-manager.h"
@@ -55,6 +56,17 @@ Common::Error UnityEngine::init() {
 	data = Common::makeZipArchive("STTNG.ZIP");
 	if (!data) {
 		error("couldn't open data file");
+	}
+	Common::ArchiveMemberList list;
+	data->listMembers(list);
+	for (Common::ArchiveMemberList::const_iterator file = list.begin(); file != list.end(); ++file) {
+		Common::String filename = (*file)->getName();
+		filename.toLowercase();
+		if (filename.hasSuffix(".spr") || filename.hasSuffix(".spt")) {
+			Common::SeekableReadStream *ourstr = (*file)->createReadStream();
+			printf("trying '%s'\n", filename.c_str());
+			Sprite spr(ourstr);
+		}
 	}
 	SearchMan.add("sttngzip", data);
 
