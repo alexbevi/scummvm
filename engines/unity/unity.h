@@ -2,8 +2,12 @@
 #define _UNITY_H
 
 #include "engines/engine.h"
+#include "common/stream.h"
+#include "common/archive.h"
 
 namespace Unity {
+
+class Graphics;
 
 class UnityEngine : public Engine {
 public:
@@ -12,6 +16,12 @@ public:
 
 	Common::Error init();
 	Common::Error run();
+
+	Common::SeekableReadStream *openFile(Common::String filename);
+
+protected:
+	Graphics *_gfx;
+	Common::Archive *data;
 };
 
 } // Unity
