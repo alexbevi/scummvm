@@ -38,6 +38,10 @@
 #include "startrek/graphics.h"
 #include "startrek/sound.h"
 
+namespace Common {
+	class MacResManager;
+}
+
 namespace StarTrek {
 
 enum StarTrekGameType {
@@ -75,6 +79,7 @@ public:
 private:
 	Graphics *_gfx;
 	Sound *_sound;
+	Common::MacResManager *_macResFork;
 	
 	byte getStartingIndex(Common::String filename);
 };

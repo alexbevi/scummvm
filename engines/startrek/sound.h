@@ -32,6 +32,10 @@
 #include "sound/mididrv.h"
 #include "sound/mixer.h"
 
+namespace Common {
+	class MacResManager;
+}
+
 namespace StarTrek {
 
 class StarTrekEngine;
@@ -55,7 +59,7 @@ private:
 	// Macintosh Sound Functions
 	void playMacSMFSound(const char *baseSoundName);
 	void playMacSoundEffect(const char *baseSoundName);
-	Common::SeekableReadStream *getMacintoshFile(const char *baseSoundName);
+	Common::MacResManager *_macAudioResFork;
 	
 	// Amiga Sound Functions
 	void playAmigaSound(const char *baseSoundName);

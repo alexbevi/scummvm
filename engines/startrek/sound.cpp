@@ -26,6 +26,7 @@
 #include "startrek/sound.h"
 
 #include "common/file.h"
+#include "common/macresman.h"
 
 #include "sound/mods/protracker.h"
 #include "sound/decoders/raw.h"
@@ -49,6 +50,14 @@ Sound::Sound(StarTrekEngine *vm) : _vm(vm) {
 		_midiParser->setTimerRate(_midiDriver->getBaseTempo());
 	}
 
+	if (_vm->getPlatform() == Common::kPlatformMacintosh) {
+		_macAudioResFork = new Common::MacResManager();
+		if (!_macAudioResFork->open("Star Trek Audio"))
+			error("Could not open 'Star Trek Audio'");
+		assert(_macAudioResFork->hasResFork());
+	} else
+		_macAudioResFork = 0;
+
 	_soundHandle = new Audio::SoundHandle();
 }
 
@@ -56,6 +65,7 @@ Sound::~Sound() {
 	delete _midiParser;
 	delete _midiDriver;
 	delete _soundHandle;
+	delete _macAudioResFork;
 }
 
 void Sound::playSound(const char *baseSoundName) {
@@ -162,7 +172,7 @@ void Sound::playAmigaSoundEffect(const char *baseSoundName) {
 // Macintosh Functions
 
 void Sound::playMacSMFSound(const char *baseSoundName) {
-	Common::SeekableReadStream *soundStream = getMacintoshFile(baseSoundName);
+	Common::SeekableReadStream *soundStream = _macAudioResFork->getResource(baseSoundName);
 	byte *soundData = (byte *)malloc(soundStream->size());
 	soundStream->read(soundData, soundStream->size());
 	_midiParser->loadMusic(soundData, soundStream->size());
@@ -175,68 +185,8 @@ void Sound::playMacSoundEffect(const char *baseSoundName) {
 	if (_vm->_mixer->isSoundHandleActive(*_soundHandle))
 		_vm->_mixer->stopHandle(*_soundHandle);
 
-	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawStream(getMacintoshFile(baseSoundName), 11025, 0);
+	Audio::AudioStream *audStream = (Audio::AudioStream *)Audio::makeRawStream(_macAudioResFork->getResource(baseSoundName), 11025, 0);
 	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, _soundHandle, audStream);
 }
 
-#define MAC_AUD_FILE_COUNT 139
-
-static const int16 macFileList[MAC_AUD_FILE_COUNT] = {
-	-1, -1, -1, -1, -1, -1, -1, 1, -1, 2, 3, 4, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, 3, 4, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
-};
-
-Common::SeekableReadStream *Sound::getMacintoshFile(const char *baseSoundName) {
-	// FIXME: This needs to be cleaned up and switched over to the actual resource fork format.
-
-	Common::File file;
-	if (!file.open("Star Trek Audio"))
-		error ("Could not open Star Trek Audio");
-
-	// Check the file table
-	file.seek(0x179AD4);
-	int32 index = -1;
-	
-	for (uint16 i = 0; i < MAC_AUD_FILE_COUNT; i++) {
-		Common::String filename;
-		byte stringLength = file.readByte();
-		for (byte j = 0; j < stringLength; j++)
-			filename += file.readByte();
-		filename += '\0';
-		if (!scumm_stricmp(baseSoundName, filename.c_str())) {
-			index = i;
-			break;
-		}
-	}
-	
-	if (index < 0)
-		error ("Could not find \'%s\' in \'Star Trek Audio\'", baseSoundName);
-		
-	if (macFileList[index] < 0)
-		error ("File mapping for \'%s\' has not yet been found", baseSoundName);
-		
-	Common::SeekableReadStream *stream = NULL;
-		
-	file.seek(0xD74C);
-	for (uint16 i = 0; i < macFileList[index] + 1; i++) {
-		uint32 fileSize = file.readUint32BE();
-		if (i == macFileList[index]) {
-			stream = file.readStream(fileSize);
-			break;
-		} else
-			file.seek(fileSize, SEEK_CUR);
-	}
-	
-	file.close();
-	
-	return stream;
-}
-
-}
+} // End of namespace StarTrek

@@ -23,9 +23,11 @@
  *
  */
 
+#include "common/archive.h"
 #include "common/config-manager.h"
 #include "common/events.h"
 #include "common/file.h"
+#include "common/macresman.h"
 
 #include "base/plugins.h"
 #include "base/version.h"
@@ -38,16 +40,25 @@
 namespace StarTrek {
 
 StarTrekEngine::StarTrekEngine(OSystem *syst, const StarTrekGameDescription *gamedesc) : Engine(syst), _gameDescription(gamedesc) {
+	_macResFork = 0;
 }
 
 StarTrekEngine::~StarTrekEngine() {
 	delete _gfx;
 	delete _sound;
+	delete _macResFork;
 }
 
 Common::Error StarTrekEngine::run() {
 	_gfx = new Graphics(this);
 	_sound = new Sound(this);
+
+	if (getPlatform() == Common::kPlatformMacintosh) {
+		_macResFork = new Common::MacResManager();
+		if (!_macResFork->open("Star Trek Data"))
+			error("Could not load Star Trek Data");
+		assert(_macResFork->hasDataFork() && _macResFork->hasResFork());
+	}
 
 	initGraphics(320, 200, false);
 	
@@ -86,6 +97,8 @@ Common::Error StarTrekEngine::run() {
 		
 		if (getPlatform() == Common::kPlatformAmiga)
 			_sound->playSoundEffect("TREK2");
+		else if (getPlatform() == Common::kPlatformMacintosh)
+			_sound->playSound("title 2");
 		else if (getFeatures() & GF_DEMO)
 			_sound->playSound("STTITLE");
 		else
@@ -121,18 +134,19 @@ Common::SeekableReadStream *StarTrekEngine::openFile(Common::String filename) {
 		return file;
 	}
 
-	Common::File indexFile;
+	Common::SeekableReadStream *indexFile = 0;
+
 	if (getPlatform() == Common::kPlatformAmiga) {
-		if (!indexFile.open("data000.dir"))
+		indexFile = SearchMan.createReadStreamForMember("data000.dir");
+		if (!indexFile)
 			error ("Could not open data000.dir");
 	} else if (getPlatform() == Common::kPlatformMacintosh) {
-		if (!indexFile.open("._Star Trek Data"))
-			error ("Could not open Star Trek Directory");
-		// The Directory file is just the Resource Fork of the Star Trek Data file. Let's get to the actual directory part of it.
-		// TODO: Use resource file info instead of just seeking to the directory
-		indexFile.seek(0x3ad7);
+		indexFile = _macResFork->getResource("Directory");
+		if (!indexFile)
+			error("Could not find 'Directory' resource in 'Star Trek Data'");
 	} else {
-		if (!indexFile.open("data.dir"))
+		indexFile = SearchMan.createReadStreamForMember("data.dir");
+		if (!indexFile)
 			error ("Could not open data.dir");
 	}
 	
@@ -141,28 +155,28 @@ Common::SeekableReadStream *StarTrekEngine::openFile(Common::String filename) {
 	uint16 fileCount = 1;
 	uint16 uncompressedSize = 0;
 	
-	while (!indexFile.eos() && !indexFile.err()) {
+	while (!indexFile->eos() && !indexFile->err()) {
 		Common::String testfile;
 		for (byte i = 0; i < 8; i++) {
-			char c = indexFile.readByte();
+			char c = indexFile->readByte();
 			if (c)
 				testfile += c;
 		}
 		testfile += '.';
 	
 		for (byte i = 0; i < 3; i++)
-			testfile += indexFile.readByte();
+			testfile += indexFile->readByte();
 		
 		if (getFeatures() & GF_DEMO) {
-			indexFile.readByte(); // Always 0?
-			fileCount = indexFile.readUint16LE(); // Always 1
-			indexOffset = indexFile.readUint32LE();
-			uncompressedSize = indexFile.readUint16LE();
+			indexFile->readByte(); // Always 0?
+			fileCount = indexFile->readUint16LE(); // Always 1
+			indexOffset = indexFile->readUint32LE();
+			uncompressedSize = indexFile->readUint16LE();
 		} else {
 			if (getPlatform() == Common::kPlatformAmiga)
-				indexOffset = (indexFile.readByte() << 16) + (indexFile.readByte() << 8) + indexFile.readByte();	
+				indexOffset = (indexFile->readByte() << 16) + (indexFile->readByte() << 8) + indexFile->readByte();	
 			else 
-				indexOffset = indexFile.readByte() + (indexFile.readByte() << 8) + (indexFile.readByte() << 16);
+				indexOffset = indexFile->readByte() + (indexFile->readByte() << 8) + (indexFile->readByte() << 16);
 			
 			if (indexOffset & (1 << 23)) {
 				fileCount = (indexOffset >> 16) & 0x7F;
@@ -180,30 +194,33 @@ Common::SeekableReadStream *StarTrekEngine::openFile(Common::String filename) {
 		}		
 	}
 	
-	indexFile.close();
+	delete indexFile;
 	
 	if (!foundData)
 		error ("Could not find file \'%s\'", filename.c_str());
-	
-		
-	Common::File dataFile;
+
+	Common::SeekableReadStream *dataFile = 0;
+
 	if (getPlatform() == Common::kPlatformAmiga) {
-		if (!dataFile.open("data.000"))
-			error ("Could not open data.000");
+		dataFile = SearchMan.createReadStreamForMember("data.000");
+		if (!dataFile)
+			error("Could not open data.000");
 	} else if (getPlatform() == Common::kPlatformMacintosh) {
-		if (!dataFile.open("Star Trek Data"))
-			error ("Could not open Star Trek Data");
+		dataFile = _macResFork->getDataFork();
+		if (!dataFile)
+			error("Could not get 'Star Trek Data' data fork");
 	} else {
-		if (!dataFile.open("data.001"))
-			error ("Could not open data.001");
+		dataFile = SearchMan.createReadStreamForMember("data.001");
+		if (!dataFile)
+			error("Could not open data.001");
 	}
 		
-	dataFile.seek(indexOffset);
+	dataFile->seek(indexOffset);
 	
 	if (getFeatures() & GF_DEMO) {
 		assert(fileCount == 1); // Sanity check...
-		Common::SeekableReadStream *stream = dataFile.readStream(uncompressedSize);
-		dataFile.close();
+		Common::SeekableReadStream *stream = dataFile->readStream(uncompressedSize);
+		delete dataFile;
 		return stream;
 	} else {
 		uint16 fileIndex = 0;
@@ -215,21 +232,21 @@ Common::SeekableReadStream *StarTrekEngine::openFile(Common::String filename) {
 			error ("Multi-part files not yet handled");
 	
 		for (uint16 i = 0; i < fileCount; i++) {
-			uncompressedSize = (getPlatform() == Common::kPlatformAmiga) ? dataFile.readUint16BE() : dataFile.readUint16LE();
-			uint16 compressedSize = (getPlatform() == Common::kPlatformAmiga) ? dataFile.readUint16BE() : dataFile.readUint16LE();
+			uncompressedSize = (getPlatform() == Common::kPlatformAmiga) ? dataFile->readUint16BE() : dataFile->readUint16LE();
+			uint16 compressedSize = (getPlatform() == Common::kPlatformAmiga) ? dataFile->readUint16BE() : dataFile->readUint16LE();
 			if (i == fileIndex) {
 				debug(0, "Opening file \'%s\'\n", filename.c_str());
-				Common::SeekableReadStream *stream = decodeLZSS(dataFile.readStream(compressedSize), uncompressedSize);
-				dataFile.close();
+				Common::SeekableReadStream *stream = decodeLZSS(dataFile->readStream(compressedSize), uncompressedSize);
+				delete dataFile;
 				return stream;
 			} else {
-				dataFile.seek(compressedSize, SEEK_CUR);
+				dataFile->skip(compressedSize);
 			}
 		}
 	}
 	
 	// We should not get to this point...
-	error ("Could not find data for \'%s\'", filename.c_str());
+	error("Could not find data for \'%s\'", filename.c_str());
 		
 	return NULL;
 }
