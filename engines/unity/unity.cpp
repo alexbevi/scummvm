@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "graphics.h"
+#include "sound.h"
 
 #include "common/fs.h"
 #include "common/config-manager.h"
@@ -16,12 +17,14 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst) {
 }
 
 UnityEngine::~UnityEngine() {
+	delete _snd;
 	delete _gfx;
 	delete data;
 }
 
 Common::Error UnityEngine::init() {
 	_gfx = new Graphics(this);
+	_snd = new Sound(this);
 
 	data = Common::makeZipArchive("STTNG.ZIP");
 	if (!data) {
@@ -37,6 +40,9 @@ Common::Error UnityEngine::run() {
 
 	initGraphics(640, 480, true);
 	_gfx->init();
+	_snd->init();
+
+	_snd->playSpeech("02140000.vac");
 
 	_gfx->setBackgroundImage("sb003003.scr");
 	_gfx->drawBackgroundImage();

@@ -4,6 +4,7 @@ MODULE_OBJS := \
 	debug.o \
 	detection.o \
 	graphics.o \
+	sound.o \
 	unity.o
 
 # This module can be built as a plugin

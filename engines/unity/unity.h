@@ -8,6 +8,7 @@
 namespace Unity {
 
 class Graphics;
+class Sound;
 
 class UnityEngine : public Engine {
 public:
@@ -21,6 +22,7 @@ public:
 
 protected:
 	Graphics *_gfx;
+	Sound *_snd;
 	Common::Archive *data;
 };
 
