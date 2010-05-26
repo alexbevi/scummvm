@@ -10,8 +10,34 @@
 #include "common/unzip.h"
 #include "common/file.h"
 #include "common/archive.h"
+#include "graphics/cursorman.h"
 
 namespace Unity {
+
+/**
+ * A black and white SCI-style arrow cursor (11x16).
+ * 0 = Transparent.
+ * 1 = Black (#000000 in 24-bit RGB).
+ * 2 = White (#FFFFFF in 24-bit RGB).
+ */
+static const byte sciMouseCursor[] = {
+	1,1,0,0,0,0,0,0,0,0,0,
+	1,2,1,0,0,0,0,0,0,0,0,
+	1,2,2,1,0,0,0,0,0,0,0,
+	1,2,2,2,1,0,0,0,0,0,0,
+	1,2,2,2,2,1,0,0,0,0,0,
+	1,2,2,2,2,2,1,0,0,0,0,
+	1,2,2,2,2,2,2,1,0,0,0,
+	1,2,2,2,2,2,2,2,1,0,0,
+	1,2,2,2,2,2,2,2,2,1,0,
+	1,2,2,2,2,2,2,2,2,2,1,
+	1,2,2,2,2,2,1,0,0,0,0,
+	1,2,1,0,1,2,2,1,0,0,0,
+	1,1,0,0,1,2,2,1,0,0,0,
+	0,0,0,0,0,1,2,2,1,0,0,
+	0,0,0,0,0,1,2,2,1,0,0,
+	0,0,0,0,0,0,1,2,2,1,0
+};
 
 UnityEngine::UnityEngine(OSystem *syst) : Engine(syst) {
 }
@@ -42,10 +68,16 @@ Common::Error UnityEngine::run() {
 	_gfx->init();
 	_snd->init();
 
-	_snd->playSpeech("02140000.vac");
+	// XXX: this mouse cursor is borrowed from SCI
+	CursorMan.replaceCursor(sciMouseCursor, 11, 16, 1, 1, 0);
+	CursorMan.showMouse(true);
+	_system->updateScreen();
 
-	_gfx->setBackgroundImage("sb003003.scr");
+	//_snd->playSpeech("02140000.vac");
+
+	_gfx->setBackgroundImage("sb004001.scr");
 	_gfx->drawBackgroundImage();
+	_gfx->drawMRG("awayteam.mrg", 0);
 
 	Common::Event event;
 	while (!shouldQuit()) {
@@ -59,6 +91,7 @@ Common::Error UnityEngine::run() {
 					break;
 			}
 		}
+		_system->updateScreen();
 	}
 
 	return Common::kNoError;

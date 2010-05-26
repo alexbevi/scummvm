@@ -27,6 +27,29 @@ void Graphics::init() {
 	delete palStream;
 }
 
+void Graphics::drawMRG(Common::String filename, unsigned int entry) {
+	Common::SeekableReadStream *mrgStream = _vm->openFile(filename);
+
+	uint16 num_entries = mrgStream->readUint16LE();
+	assert(entry < num_entries);
+	assert(mrgStream->seek(entry * 4, SEEK_CUR));
+	uint32 offset = mrgStream->readUint32LE();
+	assert(mrgStream->seek(offset, SEEK_SET));
+
+	uint16 width = mrgStream->readUint16LE();
+	uint16 height = mrgStream->readUint16LE();
+
+	byte *pixels = new byte[width * height];
+	mrgStream->read(pixels, width * height);
+
+	// TODO: positioning
+	_vm->_system->copyRectToScreen(pixels, width, 0, 400, width, height);
+	_vm->_system->updateScreen();
+
+	delete[] pixels;
+	delete mrgStream;
+}
+
 void Graphics::setBackgroundImage(Common::String filename) {
 	delete[] palette;
 	palette = new byte[256 * 4];
