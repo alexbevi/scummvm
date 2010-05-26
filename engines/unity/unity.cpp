@@ -13,7 +13,6 @@
 namespace Unity {
 
 UnityEngine::UnityEngine(OSystem *syst) : Engine(syst) {
-	const Common::FSNode gameDataDir(ConfMan.get("path"));
 }
 
 UnityEngine::~UnityEngine() {
@@ -22,10 +21,6 @@ UnityEngine::~UnityEngine() {
 }
 
 Common::Error UnityEngine::init() {
-	return Common::kNoError;
-}
-
-Common::Error UnityEngine::run() {
 	_gfx = new Graphics(this);
 
 	data = Common::makeZipArchive("STTNG.ZIP");
@@ -34,9 +29,17 @@ Common::Error UnityEngine::run() {
 	}
 	SearchMan.add("sttngzip", data);
 
-	initGraphics(640, 480, true);
+	return Common::kNoError;
+}
 
-	_gfx->drawBackgroundImage("sb003003.scr");
+Common::Error UnityEngine::run() {
+	init();
+
+	initGraphics(640, 480, true);
+	_gfx->init();
+
+	_gfx->setBackgroundImage("sb003003.scr");
+	_gfx->drawBackgroundImage();
 
 	Common::Event event;
 	while (!shouldQuit()) {
