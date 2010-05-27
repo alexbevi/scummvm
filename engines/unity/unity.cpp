@@ -94,7 +94,7 @@ Common::Error UnityEngine::run() {
 	Common::SeekableReadStream *ourstr = openFile("picard.spr");
 	Sprite spr(ourstr);
 	printf("picard has %d sprites\n", spr.widths.size());
-	_system->copyRectToScreen(spr.sprites[10], spr.widths[10], 40, 40, spr.widths[10], spr.heights[10]);
+	unsigned int i = 0;
 	//_system->copyRectToScreen(spr.sprites[20], spr.widths[20], 140, 40, spr.widths[20], spr.heights[20]);
 
 	Common::Event event;
@@ -109,6 +109,10 @@ Common::Error UnityEngine::run() {
 					break;
 			}
 		}
+		_gfx->drawBackgroundImage();
+		_system->copyRectToScreen(spr.sprites[i], spr.widths[i], 40, 40, spr.widths[i], spr.heights[i]);
+		i++;
+		i %= spr.widths.size();
 		_system->updateScreen();
 	}
 

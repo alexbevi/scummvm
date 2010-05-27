@@ -144,6 +144,10 @@ void Sprite::parseBlock(char blockType[4], uint32 size) {
 	}
 }
 
+#define NEXT_BITS() i = bitoffset / 8; shift = bitoffset % 8; \
+		x = buf[i] << shift; \
+		if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
+
 void Sprite::readCompressedImage(uint32 size) {
 	uint32 width = _stream->readUint32LE();
 	uint32 height = _stream->readUint32LE();
@@ -170,15 +174,13 @@ void Sprite::readCompressedImage(uint32 size) {
 		width, height, width * height, size - 12, unknown3, unknown4);
 
 	uint32 targetsize = width * height;
-	byte *data = new byte[targetsize];
+	byte *data = new byte[targetsize + 2]; // TODO: +2 is stupid hack for overruns
 
 	byte *buf = new byte[size - 12];
 	_stream->read(buf, size - 12);
 
 	// so, unknown3 == 0xd, unknown4 is 0x1 or 0x2: time to decode the image
 	if (unknown4 == 0x1) {
-		delete[] buf;
-		return; // XXX
 		decodeSpriteTypeOne(buf, size - 12, data, width, height);
 	} else {
 		decodeSpriteTypeTwo(buf, size - 12, data, targetsize);
@@ -188,6 +190,141 @@ void Sprite::readCompressedImage(uint32 size) {
 	sprites.push_back(data);
 	widths.push_back(width);
 	heights.push_back(height);
+}
+
+void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsigned int width, unsigned int height) {
+	/*
+	 * unknown4 == 0x1 method:
+	 * image split into blocks, some variable number of bits for type, then per-type data
+         * bit 0 set: single pixel: 3 bit colour offset
+         * bit 1 set: 2 bit colour offset, 3 bit length (+1)
+         * bit 2 set: 7 bit colour (+128 for global palette), 1 bit length (+1)
+	 * bit 3 set: 5 bit length (+1), use previous colour
+         * bit 4 set: 7 bit colour (+128 for global palette), 4 bit length (+1)
+	 * bit 5 set: 8 bit colour, 8 bit length
+         * otherwise: do a pixel run of blank(?) for a whole width, then drop 1 bit
+	 */
+
+	unsigned int bitoffset = 0;
+	unsigned int bytesout = 0;
+	unsigned char last_colour = 0;
+	while (bitoffset < 8 * size) {
+		unsigned int i, shift; unsigned char x;
+		NEXT_BITS();
+
+		unsigned int decodetype = (x >> 2);
+		if ((decodetype & 0x20) == 0) {
+			bitoffset += 1;
+
+			NEXT_BITS();
+			unsigned int colour = (x >> 5);
+			bitoffset += 3;
+
+			if ((colour & 0x4) == 0) {
+				colour = last_colour + 1 + colour;
+			} else {
+				colour = last_colour - 1 - (colour & 0x3);
+			}
+			last_colour = colour;
+			data[bytesout] = colour;
+			bytesout++;
+		} else if ((decodetype & 0x10) == 0) {
+			bitoffset += 2;
+
+			NEXT_BITS();
+			unsigned int colour = (x >> 6);
+			bitoffset += 2;
+
+			NEXT_BITS();
+			unsigned int length = (x >> 5) + 1;
+			bitoffset += 3;
+
+			if ((colour & 0x2) == 0) {
+				colour = last_colour + 1 + colour;
+			} else {
+				colour = last_colour + 1 - colour;
+			}
+			last_colour = colour;
+			for (unsigned int j = 0; j < length; j++) {
+				data[bytesout] = colour;
+				bytesout++;
+			}
+		} else if ((decodetype & 0x8) == 0) {
+			bitoffset += 3;
+
+			NEXT_BITS();
+			unsigned int colour = (x >> 1) + 128;
+			bitoffset += 7;
+
+			NEXT_BITS();
+			unsigned int length = (x >> 7) + 1;
+			bitoffset += 1;
+
+			last_colour = colour;
+			for (unsigned int j = 0; j < length; j++) {
+				data[bytesout] = colour;
+				bytesout++;
+			}
+		} else if ((decodetype & 0x4) == 0) {
+			bitoffset += 4;
+
+			NEXT_BITS();
+			unsigned int length = (x >> 3) + 1;
+			bitoffset += 5;
+
+			last_colour = 128; // XXX: blank
+			for (unsigned int j = 0; j < length; j++) {
+				data[bytesout] = 128; // XXX: blank
+				bytesout++;
+			}
+		} else if ((decodetype & 0x2) == 0) {
+			bitoffset += 5;
+
+			NEXT_BITS();
+			unsigned int colour = (x >> 1) + 128;
+			bitoffset += 7;
+
+			NEXT_BITS();
+			unsigned int length = (x >> 4) + 1;
+			bitoffset += 4;
+
+			last_colour = colour;
+			for (unsigned int j = 0; j < length; j++) {
+				data[bytesout] = colour;
+				bytesout++;
+			}
+		} else if ((decodetype & 0x1) == 0) {
+			bitoffset += 6;
+
+			NEXT_BITS();
+			unsigned int colour = x;
+			bitoffset += 8;
+
+			NEXT_BITS();
+			unsigned int length = x + 1;
+			bitoffset += 8;
+
+			last_colour = colour;
+			for (unsigned int j = 0; j < length; j++) {
+				data[bytesout] = colour;
+				bytesout++;
+			}
+		} else {
+			bitoffset += 7;
+
+			last_colour = 128; // XXX: blank
+			for (unsigned int j = 0; j < width; j++) {
+				data[bytesout] = 128; // XXX: blank
+				bytesout++;
+			}
+		}
+	}
+
+	printf("tried for %d, got %d\n", width * height, bytesout);
+
+	// TODO: why are we overrunning? not detecting the end?
+	assert(bytesout >= width * height);
+	assert(bytesout < 3 + width * height);
 }
 
 void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsigned int targetsize) {
