@@ -169,13 +169,28 @@ void Sprite::readCompressedImage(uint32 size) {
 	printf("compressed image, size 0x%x x 0x%x (%d), actual size %d, param1 0x%x, param2 0x%x\n",
 		width, height, width * height, size - 12, unknown3, unknown4);
 
+	uint32 targetsize = width * height;
+	byte *data = new byte[targetsize];
+
+	byte *buf = new byte[size - 12];
+	_stream->read(buf, size - 12);
+
 	// so, unknown3 == 0xd, unknown4 is 0x1 or 0x2: time to decode the image
 	if (unknown4 == 0x1) {
-		printf("can't decode this quite yet\n");
-		_stream->skip(size - 12);
-		return;
+		delete[] buf;
+		return; // XXX
+		decodeSpriteTypeOne(buf, size - 12, data, width, height);
+	} else {
+		decodeSpriteTypeTwo(buf, size - 12, data, targetsize);
 	}
 
+	delete[] buf;
+	sprites.push_back(data);
+	widths.push_back(width);
+	heights.push_back(height);
+}
+
+void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsigned int targetsize) {
 	/*
 	 * unknown4 == 0x2 method:
 	 * the image is split into blocks, 2 bits for type followed by a per-type number of bits
@@ -184,18 +199,13 @@ void Sprite::readCompressedImage(uint32 size) {
 	 * type 02: 8 bits pixel data, followed by 3 bits n, run of (n + 1) of those pixels
 	 * type 03: 8 bits pixel data, followed by 8 bits n, run of (n + 1) of those pixels
 	 */
-	uint32 targetsize = width * height;
-	byte *data = new byte[targetsize];
-
-	byte buf[size - 12];
-	_stream->read(buf, size - 12);
 
 	unsigned int bitoffset = 0;
 	unsigned int bytesout = 0;
-	while (unknown4 != 0x1 && unknown3 == 0xd && bitoffset < 8 * (size - 12)) {
+	while (bitoffset < 8 * size) {
 		unsigned int i = bitoffset / 8; unsigned int shift = bitoffset % 8;
 		unsigned char x = buf[i] << shift;
-		if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
+		if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
 		unsigned int decodetype = (x >> 6);
 		bitoffset += 2;
 
@@ -203,9 +213,9 @@ void Sprite::readCompressedImage(uint32 size) {
 			// read next 8 bits, output a run of that length
 			i = bitoffset / 8; shift = bitoffset % 8;
 			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
+			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
 			unsigned int length = x + 1;
-			if (shift == 0 || i + 1 < size - 12) {
+			if (shift == 0 || i + 1 < size) {
 				if (bytesout + length <= targetsize) {
 					for (unsigned int j = 0; j < length; j++) {
 						data[bytesout] = 0; // XXX: is zero good?
@@ -214,7 +224,7 @@ void Sprite::readCompressedImage(uint32 size) {
 				} else {
 					// XXX: why do we go off the end sometimes?
 					assert(bytesout == targetsize);
-					assert(i + 2 > size - 12);
+					assert(i + 2 > size);
 				}
 			}
 			bitoffset += 8;
@@ -222,7 +232,7 @@ void Sprite::readCompressedImage(uint32 size) {
 			// read next 8 bits: one byte of data
 			i = bitoffset / 8; shift = bitoffset % 8;
 			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
+			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
 			data[bytesout] = x;
 			bytesout += 1;
 			bitoffset += 8;
@@ -230,12 +240,12 @@ void Sprite::readCompressedImage(uint32 size) {
 			// 8 bit colour + 3-bit length
 			i = bitoffset / 8; shift = bitoffset % 8;
 			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
+			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
 			char colour = x;
 			bitoffset += 8;
 			i = bitoffset / 8; shift = bitoffset % 8;
 			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
+			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
 			unsigned int length = (x >> 5) + 1;
 			for (unsigned int j = 0; j < length; j++) {
 				data[bytesout] = colour;
@@ -246,12 +256,12 @@ void Sprite::readCompressedImage(uint32 size) {
 			// 8 bit colour + 8-bit length
 			i = bitoffset / 8; shift = bitoffset % 8;
 			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
+			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
 			char colour = x;
 			bitoffset += 8;
 			i = bitoffset / 8; shift = bitoffset % 8;
 			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
+			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
 			unsigned int length = x + 1;
 			for (unsigned int j = 0; j < length; j++) {
 				data[bytesout] = colour;
@@ -260,12 +270,8 @@ void Sprite::readCompressedImage(uint32 size) {
 			bitoffset += 8;
 		}
 	}
-	assert(bitoffset >= 8 * (size - 12));
+	assert(bitoffset >= 8 * size);
 	assert(bytesout == targetsize);
-
-	sprites.push_back(data);
-	widths.push_back(width);
-	heights.push_back(height);
 
 	bool dump = false;
 	if (dump) {
@@ -274,9 +280,9 @@ void Sprite::readCompressedImage(uint32 size) {
 		  printf("%02x ", buf[i]);
 		  }
 		  printf("\n, as binary:");*/
-		for (unsigned int i = bitoffset / 8; i < size - 12; i++) {
-			if (i % 4 == 0) printf("\n");
-			char n = buf[i];
+		for (unsigned int j = bitoffset / 8; j < size; j++) {
+			if (j % 4 == 0) printf("\n");
+			char n = buf[j];
 			unsigned int i;
 			i = 1<<(sizeof(n) * 8 - 1);
 

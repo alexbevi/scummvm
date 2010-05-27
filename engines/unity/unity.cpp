@@ -91,7 +91,7 @@ Common::Error UnityEngine::run() {
 	_gfx->drawBackgroundImage();
 	_gfx->drawMRG("awayteam.mrg", 0);
 
-	Common::SeekableReadStream *ourstr = openFile("picard.spt");
+	Common::SeekableReadStream *ourstr = openFile("picard.spr");
 	Sprite spr(ourstr);
 	printf("picard has %d sprites\n", spr.widths.size());
 	_system->copyRectToScreen(spr.sprites[10], spr.widths[10], 40, 40, spr.widths[10], spr.heights[10]);

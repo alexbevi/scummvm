@@ -20,6 +20,8 @@ protected:
 	void parseBlock(char blockType[4], uint32 size);
 
 	void readCompressedImage(uint32 size);
+	void decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsigned int width, unsigned int height);
+	void decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsigned int targetsize);
 
 	bool _isSprite;
 };
