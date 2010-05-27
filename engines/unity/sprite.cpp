@@ -192,6 +192,9 @@ void Sprite::readCompressedImage(uint32 size) {
 	heights.push_back(height);
 }
 
+// XXX: is this always true?
+#define COLOUR_BLANK 225
+
 void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsigned int width, unsigned int height) {
 	/*
 	 * unknown4 == 0x1 method:
@@ -272,9 +275,9 @@ void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsig
 			unsigned int length = (x >> 3) + 1;
 			bitoffset += 5;
 
-			last_colour = 128; // XXX: blank
+			last_colour = COLOUR_BLANK;
 			for (unsigned int j = 0; j < length; j++) {
-				data[bytesout] = 128; // XXX: blank
+				data[bytesout] = COLOUR_BLANK;
 				bytesout++;
 			}
 		} else if ((decodetype & 0x2) == 0) {
@@ -312,9 +315,9 @@ void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsig
 		} else {
 			bitoffset += 7;
 
-			last_colour = 128; // XXX: blank
+			last_colour = COLOUR_BLANK;
 			for (unsigned int j = 0; j < width; j++) {
-				data[bytesout] = 128; // XXX: blank
+				data[bytesout] = COLOUR_BLANK;
 				bytesout++;
 			}
 		}
@@ -355,7 +358,7 @@ void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsig
 			if (shift == 0 || i + 1 < size) {
 				if (bytesout + length <= targetsize) {
 					for (unsigned int j = 0; j < length; j++) {
-						data[bytesout] = 0; // XXX: is zero good?
+						data[bytesout] = COLOUR_BLANK;
 						bytesout++;
 					}
 				} else {
