@@ -150,6 +150,13 @@ void Sprite::readCompressedImage(uint32 size) {
 
 	uint16 unknown3 = _stream->readUint16LE();
 	uint16 unknown4 = _stream->readUint16LE();
+	if (unknown4 == 0x3) {
+		// 4 bytes - reference to elsewhere?
+		assert(size == 16);
+		_stream->skip(size - 12);
+		return;
+	}
+	assert(unknown4 == 0x1 || unknown4 == 0x2);
 	if (unknown3 == 0x0) {
 		// TODO: unknown3 == 0x0 is unknown method!
 		// this isn't used by any images i care about right now
@@ -158,140 +165,109 @@ void Sprite::readCompressedImage(uint32 size) {
 		return;
 	}
 	assert(unknown3 == 0xd);
-	if (unknown4 == 0x3) {
-		// 4 bytes - reference to elsewhere?
-		assert(size == 16);
-		_stream->skip(size - 12);
-		return;
-	}
-	assert (unknown4 != 0x1 || unknown4 != 0x2);
 
 	printf("compressed image, size 0x%x x 0x%x (%d), actual size %d, param1 0x%x, param2 0x%x\n",
 		width, height, width * height, size - 12, unknown3, unknown4);
 
 	// so, unknown3 == 0xd, unknown4 is 0x1 or 0x2: time to decode the image
+	if (unknown4 == 0x1) {
+		printf("can't decode this quite yet\n");
+		_stream->skip(size - 12);
+		return;
+	}
+
 	/*
 	 * unknown4 == 0x2 method:
 	 * the image is split into blocks, 2 bits for type followed by a per-type number of bits
-	 * type 00: the next 8 bits are a number n, make a run of (n + 1) pixels, TODO
-	 * type 01: the next 8 bits represent a single pixel
-	 * type 02: something with 11 bits, TODO
-	 * type 03: something with 16 bits, TODO
+	 * type 00: the next 8 bits are a number n, run of (n + 1) blank(?) pixels
+	 * type 01: the next 8 bits represent data for a single pixel
+	 * type 02: 8 bits pixel data, followed by 3 bits n, run of (n + 1) of those pixels
+	 * type 03: 8 bits pixel data, followed by 8 bits n, run of (n + 1) of those pixels
 	 */
+	uint32 targetsize = width * height;
+	byte *data = new byte[targetsize];
+
 	byte buf[size - 12];
 	_stream->read(buf, size - 12);
+
 	unsigned int bitoffset = 0;
 	unsigned int bytesout = 0;
-	uint32 targetsize = width * height;
-	bool dump = true;
-	while (/*unknown4 != 0x1 &&*/ unknown3 == 0xd && bitoffset < 8 * (size - 12)) {
+	while (unknown4 != 0x1 && unknown3 == 0xd && bitoffset < 8 * (size - 12)) {
 		unsigned int i = bitoffset / 8; unsigned int shift = bitoffset % 8;
 		unsigned char x = buf[i] << shift;
 		if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
-		if (unknown4 == 1) {
-			/*if ((x >> 6) == 0) {
-			  printf("(don't know how to decode: input 0 with method 1)\n");
-			  dump = true;
-			  bitoffset -= 2;
-			  break;
-			  if (shift == 0 || i + 1 < size - 12) {
-			  if (bytesout < targetsize)
-			  bytesout += (int)x + 1;
-			  else
-			  assert(bytesout == targetsize);
-			  }
-			  bitoffset += 8;
-			  continue;
-			  }*/
-			// skip 8 bits of data?
-			//lastcol = x + (buf[i + 1] >> (8 - shift));
-			bitoffset += 8;
-			i = bitoffset / 8; shift = bitoffset % 8;
-			if (i >= size - 12) { bytesout += 1; break; } // XXX
-			x = buf[i] << shift;
-			x += (buf[i + 1] >> (8 - shift));
-			unsigned int decodeamt = (x >> 6);
-			unsigned int old_decodeamt = decodeamt;
-			bitoffset += 2;
-			if (decodeamt == 0) {
-				// was a single pixel
-				decodeamt = 1;
-			} else {
-				// XXX: this is all terribly wrong
-				i = bitoffset / 8; shift = bitoffset % 8;
-				x = buf[i] << shift;
-				x += (buf[i + 1] >> (8 - shift));
-
-				decodeamt = (decodeamt << 2) + (x >> 6);
-				// decodeamt = decodeamt + ((x >> 6) << 2) + 1;
-				//printf("tweaking to %d bytes (with %d)\n", decodeamt, old_decodeamt);
-				bitoffset += 2;
-				//dump = true;
-				//break;
-			}
-			//printf("had %d bytes, got %d bytes to add (making %d) at %d/%d to try reaching %d\n", bytesout, decodeamt, bytesout + decodeamt, i, size - 12, targetsize);
-			/*for (unsigned int j = 0; j < decodeamt; j++) {
-			  if (((bytesout + j) % width) == 0) printf("\n");
-			  printf("%c", (lastcol / 10) + 'a');
-			  }*/
-			if (bytesout < targetsize)
-				bytesout += decodeamt;
-			else {
-				assert(bytesout == targetsize);
-				break;
-			}
-			continue;
-		}
-		bitoffset += 2;
 		unsigned int decodetype = (x >> 6);
+		bitoffset += 2;
+
 		if (decodetype == 0) {
 			// read next 8 bits, output a run of that length
 			i = bitoffset / 8; shift = bitoffset % 8;
 			x = buf[i] << shift;
 			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
-			printf("read a 0 at offset of %d bits, shifted %d bits at %d to output %d bytes (total %d bytes)\n", bitoffset, shift, i, (int)x + 1, bytesout);
+			unsigned int length = x + 1;
 			if (shift == 0 || i + 1 < size - 12) {
-				if (bytesout < targetsize)
-					bytesout += (int)x + 1;
-				else
+				if (bytesout + length <= targetsize) {
+					for (unsigned int j = 0; j < length; j++) {
+						data[bytesout] = 0; // XXX: is zero good?
+						bytesout++;
+					}
+				} else {
+					// XXX: why do we go off the end sometimes?
 					assert(bytesout == targetsize);
+					assert(i + 2 > size - 12);
+				}
 			}
 			bitoffset += 8;
 		} else if (decodetype == 1) {
 			// read next 8 bits: one byte of data
-			printf("read a 1 at offset of %d bits, output 1 byte (total %d bytes)\n", bitoffset, bytesout);
+			i = bitoffset / 8; shift = bitoffset % 8;
+			x = buf[i] << shift;
+			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
+			data[bytesout] = x;
 			bytesout += 1;
 			bitoffset += 8;
 		} else if (decodetype == 2) {
-			printf("read a 2 with val %d at offset of %d bits (shift %d) (total %d bytes)\n", x, bitoffset, shift, bytesout);
+			// 8 bit colour + 3-bit length
 			i = bitoffset / 8; shift = bitoffset % 8;
 			x = buf[i] << shift;
 			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
-			bitoffset += 11;
-			//printf("(don't know how to decode: input 2 with method 2)\n");
-			//printf("(hit a problem)\n");
-			//bitoffset -= 2;
-			//break;
+			char colour = x;
+			bitoffset += 8;
+			i = bitoffset / 8; shift = bitoffset % 8;
+			x = buf[i] << shift;
+			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
+			unsigned int length = (x >> 5) + 1;
+			for (unsigned int j = 0; j < length; j++) {
+				data[bytesout] = colour;
+				bytesout++;
+			}
+			bitoffset += 3;
 		} else {
-			// set the colour for the runs? 6 bits is 64 colours..
-			printf("read a 3 at offset of %d bits (total %d bytes)\n", bitoffset, bytesout);
-			//bitoffset += 6;
-			bitoffset += 16;
+			// 8 bit colour + 8-bit length
 			i = bitoffset / 8; shift = bitoffset % 8;
 			x = buf[i] << shift;
 			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
-			printf("new colour?: %d\n", x >> 2);
+			char colour = x;
+			bitoffset += 8;
+			i = bitoffset / 8; shift = bitoffset % 8;
+			x = buf[i] << shift;
+			if (shift > 0 && i + 1 < size - 12) x += (buf[i + 1] >> (8 - shift));
+			unsigned int length = x + 1;
+			for (unsigned int j = 0; j < length; j++) {
+				data[bytesout] = colour;
+				bytesout++;
+			}
+			bitoffset += 8;
 		}
 	}
-	if (bitoffset >= 8 * (size - 12)) {
-		printf("this was decoded! output %d bytes\n", bytesout);
-		//assert(bytesout == targetsize);
-		assert(bytesout <= targetsize);
-	} else if (unknown3 == 0xd) {
-		printf("decode failed\n");
-	} else if (unknown3 == 0x0) {
-		printf("weird encoding\n");
-	}
+	assert(bitoffset >= 8 * (size - 12));
+	assert(bytesout == targetsize);
+
+	sprites.push_back(data);
+	widths.push_back(width);
+	heights.push_back(height);
+
+	bool dump = false;
 	if (dump) {
 		/*for (unsigned int i = 0; i < size - 12; i++) {
 		  if (i % 16 == 0) printf("\n");

@@ -57,7 +57,7 @@ Common::Error UnityEngine::init() {
 	if (!data) {
 		error("couldn't open data file");
 	}
-	Common::ArchiveMemberList list;
+	/*Common::ArchiveMemberList list;
 	data->listMembers(list);
 	for (Common::ArchiveMemberList::const_iterator file = list.begin(); file != list.end(); ++file) {
 		Common::String filename = (*file)->getName();
@@ -67,11 +67,8 @@ Common::Error UnityEngine::init() {
 			printf("trying '%s'\n", filename.c_str());
 			Sprite spr(ourstr);
 		}
-	}
+	}*/
 	SearchMan.add("sttngzip", data);
-	//Common::SeekableReadStream *ourstr = openFile("w5s4blk2.spr");
-	//Common::SeekableReadStream *ourstr = openFile("w6s6flcp.spr");
-	//Sprite spr(ourstr);
 
 	return Common::kNoError;
 }
@@ -93,6 +90,12 @@ Common::Error UnityEngine::run() {
 	_gfx->setBackgroundImage("sb004001.scr");
 	_gfx->drawBackgroundImage();
 	_gfx->drawMRG("awayteam.mrg", 0);
+
+	Common::SeekableReadStream *ourstr = openFile("picard.spt");
+	Sprite spr(ourstr);
+	printf("picard has %d sprites\n", spr.widths.size());
+	_system->copyRectToScreen(spr.sprites[10], spr.widths[10], 40, 40, spr.widths[10], spr.heights[10]);
+	//_system->copyRectToScreen(spr.sprites[20], spr.widths[20], 140, 40, spr.widths[20], spr.heights[20]);
 
 	Common::Event event;
 	while (!shouldQuit()) {
