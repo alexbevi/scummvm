@@ -69,6 +69,9 @@ Common::Error UnityEngine::init() {
 		}
 	}
 	SearchMan.add("sttngzip", data);
+	//Common::SeekableReadStream *ourstr = openFile("w5s4blk2.spr");
+	//Common::SeekableReadStream *ourstr = openFile("w6s6flcp.spr");
+	//Sprite spr(ourstr);
 
 	return Common::kNoError;
 }

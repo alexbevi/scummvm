@@ -13,6 +13,8 @@ protected:
 	void readBlock();
 	void parseBlock(char blockType[4], uint32 size);
 
+	void readCompressedImage(uint32 size);
+
 	bool _isSprite;
 };
 
