@@ -73,6 +73,43 @@ Common::Error UnityEngine::init() {
 	return Common::kNoError;
 }
 
+void UnityEngine::openLocation(unsigned int location, unsigned int screen) {
+	Common::String filename = Common::String::printf("sl%03d.scr", location);
+	Common::SeekableReadStream *locstream = openFile(filename);
+
+	uint16 num_entries = locstream->readUint16LE();
+	Common::Array<uint32> offsets;
+	offsets.reserve(num_entries);
+	for (unsigned int i = 0; i < num_entries; i++) {
+		uint32 id = locstream->readUint32LE();
+		assert(id == i + 1); // XXX
+		uint32 offset = locstream->readUint32LE();
+		offsets.push_back(offset);
+	}
+
+	if (screen > num_entries) {
+		error("no such screen %d in location %d (only %d screens)", screen, location, num_entries);
+	}
+
+	locstream->seek(offsets[screen - 1]);
+
+	byte length = locstream->readByte();
+	char background[length + 1];
+	locstream->read(background, length);
+	background[length] = 0;
+
+	_gfx->setBackgroundImage(background);
+
+	length = locstream->readByte();
+	char polygons[length + 1];
+	locstream->read(polygons, length);
+	polygons[length] = 0;
+
+	polygonsFilename = polygons;
+
+	delete locstream;
+}
+
 Common::Error UnityEngine::run() {
 	init();
 
@@ -87,8 +124,8 @@ Common::Error UnityEngine::run() {
 
 	//_snd->playSpeech("02140000.vac");
 
-	_gfx->setBackgroundImage("sb004001.scr");
-	_gfx->drawBackgroundImage();
+	openLocation(4, 1);
+
 	_gfx->drawMRG("awayteam.mrg", 0);
 
 	Common::SeekableReadStream *ourstr = openFile("picard.spr");
@@ -117,10 +154,13 @@ Common::Error UnityEngine::run() {
 					break;
 			}
 		}
+
 		_gfx->drawBackgroundImage();
+		_gfx->drawBackgroundPolys(polygonsFilename);
+
 		spr.update();
 		_gfx->drawSprite(&spr, 150, 150);
-		_gfx->drawBackgroundPolys("st004001.scr");
+
 		_system->updateScreen();
 	}
 

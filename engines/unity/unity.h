@@ -24,6 +24,9 @@ protected:
 	Graphics *_gfx;
 	Sound *_snd;
 	Common::Archive *data;
+
+	Common::String polygonsFilename;
+	void openLocation(unsigned int location, unsigned int screen);
 };
 
 } // Unity

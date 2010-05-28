@@ -154,6 +154,7 @@ void Graphics::drawBackgroundPolys(Common::String filename) {
 		// something == 4: some kind of full-screen poly?
 		renderPolygonEdge(points, something == 4 ? 254 : 162 + i);
 	}
+	delete mrgStream;
 }
 
 void Graphics::renderPolygonEdge(Common::Array<Common::Point> &points, byte colour) {
