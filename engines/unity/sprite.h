@@ -1,5 +1,11 @@
+#ifndef _SPRITE_H
+#define _SPRITE_H
+
 #include "common/stream.h"
 #include "common/array.h"
+
+// XXX: is this always true?
+#define COLOUR_BLANK 13
 
 namespace Unity {
 
@@ -111,4 +117,6 @@ protected:
 };
 
 } // Unity
+
+#endif
 

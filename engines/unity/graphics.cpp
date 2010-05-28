@@ -1,6 +1,7 @@
 #include "graphics.h"
 #include "sprite.h"
 #include "common/system.h"
+#include "graphics/surface.h"
 
 namespace Unity {
 
@@ -87,18 +88,39 @@ void Graphics::drawBackgroundImage() {
 	_vm->_system->copyRectToScreen(backgroundPixels, backgroundWidth, 0, 0, backgroundWidth, backgroundHeight);
 }
 
-void Graphics::drawSprite(SpritePlayer *sprite, unsigned int x, unsigned int y) {
+// XXX: default transparent is a hack (see header file)
+void Graphics::blit(byte *data, int x, int y, unsigned int width, unsigned int height, byte transparent) {
+	// TODO: work with internal buffer and dirty-rectangling?
+	::Graphics::Surface *surf = _vm->_system->lockScreen();
+	// XXX: this code hasn't had any thought
+	int startx = 0, starty = 0;
+	if (x < 0) startx = -x;
+	if (y < 0) starty = -y;
+	unsigned int usewidth = width, useheight = height;
+	if (x - startx + width > surf->w) usewidth = surf->w - (x - startx);
+	if (y - starty + height > surf->h) useheight = surf->h - (y - starty);
+	for (unsigned int xpos = startx; xpos < usewidth; xpos++) {
+		for (unsigned int ypos = starty; ypos < useheight; ypos++) {
+			byte pixel = data[xpos + ypos*width];
+			if (pixel != transparent)
+				*((byte *)surf->getBasePtr(x + (int)xpos, y + (int)ypos)) = pixel;
+		}
+	}
+
+	_vm->_system->unlockScreen();
+}
+
+void Graphics::drawSprite(SpritePlayer *sprite, int x, int y) {
 	assert(sprite);
 	// XXX: this doesn't work properly, either
 	unsigned int width = sprite->getCurrentWidth();
 	unsigned int height = sprite->getCurrentHeight();
-	_vm->_system->copyRectToScreen(sprite->getCurrentData(), width,
-		x + sprite->getXPos(), y + sprite->getYPos(), width, height);
+	blit(sprite->getCurrentData(), x + sprite->getXPos(), y + sprite->getYPos(), width, height);
 	if (sprite->speaking()) {
 		// XXX: this doesn't work properly, SpritePlayer side probably needs work too
 		unsigned int m_width = sprite->getSpeechWidth();
 		unsigned int m_height = sprite->getSpeechHeight();
-		_vm->_system->copyRectToScreen(sprite->getSpeechData(), m_width,
+		blit(sprite->getSpeechData(),
 			x + width/2 - m_width/2 + sprite->getMouthXPos(),
 			y + height - m_height + sprite->getMouthYPos(), m_width, m_height);
 	}

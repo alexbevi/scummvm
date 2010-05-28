@@ -250,9 +250,6 @@ void Sprite::readCompressedImage(uint32 size, SpriteEntrySprite *img) {
 	delete[] buf;
 }
 
-// XXX: is this always true?
-#define COLOUR_BLANK 225
-
 void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsigned int width, unsigned int height) {
 	/*
 	 * unknown4 == 0x1 method:
