@@ -61,7 +61,8 @@ void Sprite::readBlock() {
 }
 
 void Sprite::parseBlock(char blockType[4], uint32 size) {
-	//printf("sprite parser: trying block type %c%c%c%c\n", blockType[3], blockType[2], blockType[1], blockType[0]);
+	//printf("sprite parser: trying block type %c%c%c%c at %d\n",
+	//	blockType[3], blockType[2], blockType[1], blockType[0], _stream->pos() - 8);
 	if (!strncmp(blockType, SPRT, 4)) {
 		// start of a sprite
 		_isSprite = true;
@@ -76,13 +77,17 @@ void Sprite::parseBlock(char blockType[4], uint32 size) {
 		// list of blocks
 		uint32 start = _stream->pos();
 		uint32 num_entries = _stream->readUint32LE();
-		while (num_entries--)
-			uint32 unknown = _stream->readUint32LE(); // TODO
+		while (num_entries--) {
+			// offset is relative to start of this block (start - 8)
+			uint32 offset = _stream->readUint32LE();
+		}
 		while ((uint32)_stream->pos() < start + size) {
 			readBlock();
 		}
 	} else if (!strncmp(blockType, TIME, 4)) {
-		uint32 unknown = _stream->readUint32LE(); // TODO
+		// TODO: example values are 388, 777, 4777, 288, 666, 3188, 2188, 700, 200000, 1088, 272..
+		uint32 unknown = _stream->readUint32LE();
+		//printf("TIME: %d\n", unknown);
 	} else if (!strncmp(blockType, COMP, 4)) {
 		// compressed image data
 		readCompressedImage(size);
@@ -90,26 +95,32 @@ void Sprite::parseBlock(char blockType[4], uint32 size) {
 		// palette (256*3 bytes, each 0-63)
 		_stream->skip(size); // TODO
 	} else if (!strncmp(blockType, POSN, 4)) {
-		// TODO: guesses!
+		// TODO
 		uint32 xpos = _stream->readUint32LE();
 		uint32 ypos = _stream->readUint32LE();
 	} else if (!strncmp(blockType, STAT, 4)) {
+		// TODO
 		return;
 	} else if (!strncmp(blockType, PAUS, 4)) {
+		// TODO
 		return;
 	} else if (!strncmp(blockType, EXIT, 4)) {
+		// TODO
 		return;
 	} else if (!strncmp(blockType, MARK, 4)) {
+		// TODO
 		return;
 	} else if (!strncmp(blockType, SETF, 4)) {
-		// set flag?
-		uint32 unknown = _stream->readUint32LE(); // TODO
+		// TODO: set flag?
+		uint32 unknown = _stream->readUint32LE();
+		assert(unknown <= 4); // 0, 1, 2, 3 or 4
 	} else if (!strncmp(blockType, RAND, 4)) {
-		// TODO: pick between two blocks randomly or something?
+		// TODO: these don't seem to be integers
 		uint32 unknown1 = _stream->readUint32LE(); // TODO
 		uint32 unknown2 = _stream->readUint32LE(); // TODO
 	} else if (!strncmp(blockType, JUMP, 4)) {
-		uint32 unknown = _stream->readUint32LE(); // TODO
+		// TODO: this is target anim id from the LIST, i guess?
+		uint32 target = _stream->readUint32LE();
 	} else if (!strncmp(blockType, SCOM, 4)) {
 		// TODO: ???
 		_stream->skip(size); // TODO
@@ -117,28 +128,37 @@ void Sprite::parseBlock(char blockType[4], uint32 size) {
 		// TODO: audio?!
 		_stream->skip(size); // TODO
 	} else if (!strncmp(blockType, SNDW, 4)) {
+		// TODO
 		return;
 	} else if (!strncmp(blockType, SNDF, 4)) {
-		uint32 unknown1 = _stream->readUint32LE(); // TODO
-		uint32 unknown2 = _stream->readUint32LE(); // TODO
-		assert(unknown2 == 0);
+		// TODO: unknown is always 75, 95 or 100. volume?
+		uint32 unknown = _stream->readUint32LE();
+		uint32 empty = _stream->readUint32LE();
+		assert(empty == 0);
+
 		char name[16];
 		_stream->read(name, 16);
-		//printf("name '%s'\n", name);
 	} else if (!strncmp(blockType, PLAY, 4)) {
+		// TODO
 		return;
 	} else if (!strncmp(blockType, MASK, 4)) {
+		// TODO
 		return;
 	} else if (!strncmp(blockType, RPOS, 4)) {
-		uint32 unknown1 = _stream->readUint32LE(); // TODO
-		uint32 unknown2 = _stream->readUint32LE(); // TODO
+		// TODO
+		int32 adjustx = _stream->readSint32LE();
+		int32 adjusty = _stream->readSint32LE();
 	} else if (!strncmp(blockType, MPOS, 4)) {
-		uint32 unknown1 = _stream->readUint32LE(); // TODO
-		uint32 unknown2 = _stream->readUint32LE(); // TODO
+		// TODO
+		int32 adjustx = _stream->readSint32LE();
+		int32 adjusty = _stream->readSint32LE();
 	} else if (!strncmp(blockType, SILE, 4)) {
+		// TODO
 		return;
 	} else if (!strncmp(blockType, OBJS, 4)) {
-		uint32 unknown = _stream->readUint32LE(); // TODO
+		// TODO
+		uint32 unknown = _stream->readUint32LE();
+		assert(unknown == 1 || (unknown >= 3 && unknown <= 7)); // always 1, 3, 4, 5, 6 or 7
 	} else {
 		error("unknown sprite block type %c%c%c%c", blockType[3], blockType[2], blockType[1], blockType[0]);
 	}
@@ -164,14 +184,14 @@ void Sprite::readCompressedImage(uint32 size) {
 	if (unknown3 == 0x0) {
 		// TODO: unknown3 == 0x0 is unknown method!
 		// this isn't used by any images i care about right now
-		printf("unknown compressed format!\n");
+		warning("unknown compressed format");
 		_stream->skip(size - 12);
 		return;
 	}
 	assert(unknown3 == 0xd);
 
-	printf("compressed image, size 0x%x x 0x%x (%d), actual size %d, param1 0x%x, param2 0x%x\n",
-		width, height, width * height, size - 12, unknown3, unknown4);
+	//printf("compressed image, size 0x%x x 0x%x (%d), actual size %d, param1 0x%x, param2 0x%x\n",
+	//	width, height, width * height, size - 12, unknown3, unknown4);
 
 	uint32 targetsize = width * height;
 	byte *data = new byte[targetsize + 2]; // TODO: +2 is stupid hack for overruns
@@ -323,7 +343,7 @@ void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsig
 		}
 	}
 
-	printf("tried for %d, got %d\n", width * height, bytesout);
+	//printf("tried for %d, got %d\n", width * height, bytesout);
 
 	// TODO: why are we overrunning? not detecting the end?
 	assert(bytesout >= width * height);
