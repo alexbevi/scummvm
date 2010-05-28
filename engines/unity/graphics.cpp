@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include "sprite.h"
 #include "common/system.h"
 
 namespace Unity {
@@ -44,7 +45,6 @@ void Graphics::drawMRG(Common::String filename, unsigned int entry) {
 
 	// TODO: positioning
 	_vm->_system->copyRectToScreen(pixels, width, 0, 400, width, height);
-	_vm->_system->updateScreen();
 
 	delete[] pixels;
 	delete mrgStream;
@@ -85,7 +85,13 @@ void Graphics::drawBackgroundImage() {
 	assert(backgroundPixels);
 
 	_vm->_system->copyRectToScreen(backgroundPixels, backgroundWidth, 0, 0, backgroundWidth, backgroundHeight);
-	_vm->_system->updateScreen();
+}
+
+void Graphics::drawSprite(Sprite *sprite) {
+	assert(sprite);
+	unsigned int width = sprite->getCurrentWidth();
+	unsigned int height = sprite->getCurrentHeight();
+	_vm->_system->copyRectToScreen(sprite->getCurrentData(), width, sprite->xpos, sprite->ypos, width, height);
 }
 
 }

@@ -2,6 +2,8 @@
 
 namespace Unity {
 
+class Sprite;
+
 class Graphics {
 public:
 	Graphics(UnityEngine *engine);
@@ -11,6 +13,7 @@ public:
 	void drawMRG(Common::String filename, unsigned int entry);
 	void setBackgroundImage(Common::String filename);
 	void drawBackgroundImage();
+	void drawSprite(Sprite *sprite);
 
 protected:
 	UnityEngine *_vm;

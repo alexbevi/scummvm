@@ -93,9 +93,12 @@ Common::Error UnityEngine::run() {
 
 	Common::SeekableReadStream *ourstr = openFile("picard.spr");
 	Sprite spr(ourstr);
-	printf("picard has %d sprites\n", spr.widths.size());
-	unsigned int i = 0;
-	//_system->copyRectToScreen(spr.sprites[20], spr.widths[20], 140, 40, spr.widths[20], spr.heights[20]);
+	printf("picard has %d animations\n", spr.numAnims());
+	spr.xpos = 50;
+	spr.ypos = 50;
+	unsigned int i = 29;
+	spr.startAnim(i);
+	unsigned int lastCheck = _system->getMillis();
 
 	Common::Event event;
 	while (!shouldQuit()) {
@@ -110,9 +113,15 @@ Common::Error UnityEngine::run() {
 			}
 		}
 		_gfx->drawBackgroundImage();
-		_system->copyRectToScreen(spr.sprites[i], spr.widths[i], 40, 40, spr.widths[i], spr.heights[i]);
-		i++;
-		i %= spr.widths.size();
+		if (lastCheck + 4000 < _system->getMillis()) {
+			printf("trying anim %d\n", i);
+			lastCheck = _system->getMillis();
+			i++;
+			i %= spr.numAnims();
+			spr.startAnim(i);
+		}
+		spr.update();
+		_gfx->drawSprite(&spr);
 		_system->updateScreen();
 	}
 

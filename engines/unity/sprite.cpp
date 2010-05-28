@@ -32,6 +32,9 @@ const char RGBP[4] = {'P', 'B', 'G', 'R' };
 Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 	assert(_stream);
 
+	current_entry = ~0;
+	current_sprite = 0;
+	wait_start = 0;
 	_isSprite = false;
 
 	readBlock();
@@ -42,10 +45,77 @@ Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 }
 
 Sprite::~Sprite() {
-	delete _stream;	
+	delete _stream;
+	for (unsigned int i = 0; i < entries.size(); i++) {
+		if (entries[i]->type == se_Sprite)
+			delete[] ((SpriteEntrySprite *)entries[i])->data;
+		delete entries[i];
+	}
 }
 
-void Sprite::readBlock() {
+void Sprite::startAnim(unsigned int a) {
+	assert(a < indexes.size());
+	current_entry = indexes[a];
+	current_sprite = 0;
+	wait_start = 0;
+}
+
+unsigned int Sprite::getCurrentWidth() {
+	assert(current_sprite);
+	return current_sprite->width;
+}
+
+unsigned int Sprite::getCurrentHeight() {
+	assert(current_sprite);
+	return current_sprite->height;
+}
+
+byte *Sprite::getCurrentData() {
+	assert(current_sprite);
+	return current_sprite->data;
+}
+
+void Sprite::update() {
+	while (true) {
+		assert(current_entry < entries.size());
+		SpriteEntry *e = entries[current_entry];
+		if (!e) {
+			// TODO: don't let this happen
+			current_entry++;
+			continue;
+		}
+		switch (e->type) {
+		case se_None:
+			current_entry++;
+			break;
+		case se_Sprite:
+			current_sprite = (SpriteEntrySprite *)e;
+			current_entry++;
+			break;
+		case se_Wait:
+			if (!wait_start) {
+				wait_start = g_system->getMillis();
+				return;
+			}
+			// TODO: is /2 correct?
+			if (wait_start + ((SpriteEntryWait *)e)->wait/2 < g_system->getMillis()) {
+				wait_start = 0;
+				current_entry++;
+				continue;
+			}
+			return;
+		case se_Jump:
+			current_entry = indexes[((SpriteEntryJump *)e)->target];
+			break;
+		case se_Exit:
+			return;
+		default:
+			assert(false);
+		}
+	}
+}
+
+SpriteEntry *Sprite::readBlock() {
 	assert(!_stream->eos());
 
 	uint32 start = _stream->pos();
@@ -55,12 +125,14 @@ void Sprite::readBlock() {
 	_stream->read(buf, 4);
 	uint32 size = _stream->readUint32LE();
 	assert(size >= 8);
-	parseBlock(buf, size - 8);
+	SpriteEntry *block = parseBlock(buf, size - 8);
 
 	assert((uint32)_stream->pos() == start + size);
+
+	return block;
 }
 
-void Sprite::parseBlock(char blockType[4], uint32 size) {
+SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 	//printf("sprite parser: trying block type %c%c%c%c at %d\n",
 	//	blockType[3], blockType[2], blockType[1], blockType[0], _stream->pos() - 8);
 	if (!strncmp(blockType, SPRT, 4)) {
@@ -77,20 +149,37 @@ void Sprite::parseBlock(char blockType[4], uint32 size) {
 		// list of blocks
 		uint32 start = _stream->pos();
 		uint32 num_entries = _stream->readUint32LE();
+
+		assert(indexes.empty()); // we assume there's only ever one LIST
+		indexes.resize(num_entries);
+
+		Common::Array<uint32> offsets;
+		offsets.reserve(num_entries);
+
 		while (num_entries--) {
-			// offset is relative to start of this block (start - 8)
 			uint32 offset = _stream->readUint32LE();
+			// offset is relative to start of this block (start - 8)
+			offsets.push_back(offset + start - 8);
 		}
+
+		unsigned int i = 0;
 		while ((uint32)_stream->pos() < start + size) {
-			readBlock();
+			if (i < offsets.size() && (uint32)_stream->pos() == offsets[i]) {
+				indexes[i] = entries.size();
+				i++;
+			}
+			entries.push_back(readBlock());
 		}
+		assert(i == offsets.size());
 	} else if (!strncmp(blockType, TIME, 4)) {
 		// TODO: example values are 388, 777, 4777, 288, 666, 3188, 2188, 700, 200000, 1088, 272..
-		uint32 unknown = _stream->readUint32LE();
-		//printf("TIME: %d\n", unknown);
+		uint32 time = _stream->readUint32LE();
+		return new SpriteEntryWait(time);
 	} else if (!strncmp(blockType, COMP, 4)) {
 		// compressed image data
-		readCompressedImage(size);
+		SpriteEntrySprite *img = new SpriteEntrySprite;
+		readCompressedImage(size, img);
+		return img;
 	} else if (!strncmp(blockType, RGBP, 4)) {
 		// palette (256*3 bytes, each 0-63)
 		_stream->skip(size); // TODO
@@ -100,16 +189,12 @@ void Sprite::parseBlock(char blockType[4], uint32 size) {
 		uint32 ypos = _stream->readUint32LE();
 	} else if (!strncmp(blockType, STAT, 4)) {
 		// TODO
-		return;
 	} else if (!strncmp(blockType, PAUS, 4)) {
 		// TODO
-		return;
 	} else if (!strncmp(blockType, EXIT, 4)) {
 		// TODO
-		return;
 	} else if (!strncmp(blockType, MARK, 4)) {
 		// TODO
-		return;
 	} else if (!strncmp(blockType, SETF, 4)) {
 		// TODO: set flag?
 		uint32 unknown = _stream->readUint32LE();
@@ -119,8 +204,8 @@ void Sprite::parseBlock(char blockType[4], uint32 size) {
 		uint32 unknown1 = _stream->readUint32LE(); // TODO
 		uint32 unknown2 = _stream->readUint32LE(); // TODO
 	} else if (!strncmp(blockType, JUMP, 4)) {
-		// TODO: this is target anim id from the LIST, i guess?
 		uint32 target = _stream->readUint32LE();
+		return new SpriteEntryJump(target);
 	} else if (!strncmp(blockType, SCOM, 4)) {
 		// TODO: ???
 		_stream->skip(size); // TODO
@@ -129,7 +214,6 @@ void Sprite::parseBlock(char blockType[4], uint32 size) {
 		_stream->skip(size); // TODO
 	} else if (!strncmp(blockType, SNDW, 4)) {
 		// TODO
-		return;
 	} else if (!strncmp(blockType, SNDF, 4)) {
 		// TODO: unknown is always 75, 95 or 100. volume?
 		uint32 unknown = _stream->readUint32LE();
@@ -140,10 +224,8 @@ void Sprite::parseBlock(char blockType[4], uint32 size) {
 		_stream->read(name, 16);
 	} else if (!strncmp(blockType, PLAY, 4)) {
 		// TODO
-		return;
 	} else if (!strncmp(blockType, MASK, 4)) {
 		// TODO
-		return;
 	} else if (!strncmp(blockType, RPOS, 4)) {
 		// TODO
 		int32 adjustx = _stream->readSint32LE();
@@ -154,7 +236,6 @@ void Sprite::parseBlock(char blockType[4], uint32 size) {
 		int32 adjusty = _stream->readSint32LE();
 	} else if (!strncmp(blockType, SILE, 4)) {
 		// TODO
-		return;
 	} else if (!strncmp(blockType, OBJS, 4)) {
 		// TODO
 		uint32 unknown = _stream->readUint32LE();
@@ -162,22 +243,34 @@ void Sprite::parseBlock(char blockType[4], uint32 size) {
 	} else {
 		error("unknown sprite block type %c%c%c%c", blockType[3], blockType[2], blockType[1], blockType[0]);
 	}
+	return NULL; // TODO: discarding data
 }
 
 #define NEXT_BITS() i = bitoffset / 8; shift = bitoffset % 8; \
 		x = buf[i] << shift; \
 		if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
 
-void Sprite::readCompressedImage(uint32 size) {
-	uint32 width = _stream->readUint32LE();
-	uint32 height = _stream->readUint32LE();
+void Sprite::readCompressedImage(uint32 size, SpriteEntrySprite *img) {
+	img->width = _stream->readUint32LE();
+	img->height = _stream->readUint32LE();
+	img->data = NULL;
 
 	uint16 unknown3 = _stream->readUint16LE();
 	uint16 unknown4 = _stream->readUint16LE();
+	uint32 old_pos = 0;
 	if (unknown4 == 0x3) {
-		// 4 bytes - reference to elsewhere?
 		assert(size == 16);
-		_stream->skip(size - 12);
+		// reference to the sprite block which is ref bytes behind the start of this block
+		uint32 ref = _stream->readUint32LE();
+
+		// TODO: XXX: replace this hack with something that shares sprite data
+		old_pos = _stream->pos();
+		// 4 for ref field, 12 for header, 4 to catch size
+		_stream->seek(-(int)ref - 4 - 12 - 4, SEEK_CUR);
+		uint32 new_size = _stream->readUint32LE();
+		readCompressedImage(new_size - 8, img);
+		printf("done\n");
+		_stream->seek(old_pos);
 		return;
 	}
 	assert(unknown4 == 0x1 || unknown4 == 0x2);
@@ -193,23 +286,20 @@ void Sprite::readCompressedImage(uint32 size) {
 	//printf("compressed image, size 0x%x x 0x%x (%d), actual size %d, param1 0x%x, param2 0x%x\n",
 	//	width, height, width * height, size - 12, unknown3, unknown4);
 
-	uint32 targetsize = width * height;
-	byte *data = new byte[targetsize + 2]; // TODO: +2 is stupid hack for overruns
+	uint32 targetsize = img->width * img->height;
+	img->data = new byte[targetsize + 2]; // TODO: +2 is stupid hack for overruns
 
 	byte *buf = new byte[size - 12];
 	_stream->read(buf, size - 12);
 
 	// so, unknown3 == 0xd, unknown4 is 0x1 or 0x2: time to decode the image
 	if (unknown4 == 0x1) {
-		decodeSpriteTypeOne(buf, size - 12, data, width, height);
+		decodeSpriteTypeOne(buf, size - 12, img->data, img->width, img->height);
 	} else {
-		decodeSpriteTypeTwo(buf, size - 12, data, targetsize);
+		decodeSpriteTypeTwo(buf, size - 12, img->data, targetsize);
 	}
 
 	delete[] buf;
-	sprites.push_back(data);
-	widths.push_back(width);
-	heights.push_back(height);
 }
 
 // XXX: is this always true?
