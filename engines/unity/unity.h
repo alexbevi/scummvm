@@ -4,6 +4,7 @@
 #include "engines/engine.h"
 #include "common/stream.h"
 #include "common/archive.h"
+#include "common/rect.h"
 
 namespace Unity {
 
@@ -25,7 +26,9 @@ protected:
 	Sound *_snd;
 	Common::Archive *data;
 
+	Common::Point entrypoints[4];
 	Common::String polygonsFilename;
+
 	void openLocation(unsigned int location, unsigned int screen);
 };
 

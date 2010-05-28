@@ -93,6 +93,7 @@ void UnityEngine::openLocation(unsigned int location, unsigned int screen) {
 
 	locstream->seek(offsets[screen - 1]);
 
+	// XXX: null-terminated in file?
 	byte length = locstream->readByte();
 	char background[length + 1];
 	locstream->read(background, length);
@@ -100,12 +101,22 @@ void UnityEngine::openLocation(unsigned int location, unsigned int screen) {
 
 	_gfx->setBackgroundImage(background);
 
+	// XXX: null-terminated in file?
 	length = locstream->readByte();
 	char polygons[length + 1];
 	locstream->read(polygons, length);
 	polygons[length] = 0;
 
 	polygonsFilename = polygons;
+
+	byte num_entrances = locstream->readByte();
+	// TODO: don't ignore all but the first entrance
+	// XXX: read this properly
+	uint16 unknown = locstream->readUint16BE(); // 0001, 0101, 0201, ...
+	for (unsigned int i = 0; i < 4; i++) {
+		entrypoints[i].x = locstream->readUint16LE();
+		entrypoints[i].y = locstream->readUint16LE();
+	}
 
 	delete locstream;
 }
@@ -128,12 +139,13 @@ Common::Error UnityEngine::run() {
 
 	_gfx->drawMRG("awayteam.mrg", 0);
 
-	Common::SeekableReadStream *ourstr = openFile("picard.spr");
-	Sprite sprite(ourstr);
-	SpritePlayer spr(&sprite);
-	printf("picard has %d animations\n", spr.numAnims());
-	unsigned int i = 0;
-	spr.startAnim(i);
+	Common::Array<SpritePlayer *> sprites;
+	sprites.push_back(new SpritePlayer(new Sprite(openFile("picard.spr"))));
+	sprites.push_back(new SpritePlayer(new Sprite(openFile("data.spr"))));
+	sprites.push_back(new SpritePlayer(new Sprite(openFile("laforge.spr"))));
+	sprites.push_back(new SpritePlayer(new Sprite(openFile("troi.spr"))));
+	unsigned int anim = 26;
+	for (unsigned int i = 0; i < sprites.size(); i++) sprites[i]->startAnim(anim);
 
 	Common::Event event;
 	while (!shouldQuit()) {
@@ -144,10 +156,10 @@ Common::Error UnityEngine::run() {
 					break;
 
 				case Common::EVENT_KEYUP:
-					printf("trying anim %d\n", i);
-					i++;
-					i %= spr.numAnims();
-					spr.startAnim(i);
+					printf("trying anim %d\n", anim);
+					anim++;
+					anim %= sprites[0]->numAnims();
+					for (unsigned int i = 0; i < sprites.size(); i++) sprites[i]->startAnim(anim);
 					break;
 
 				default:
@@ -158,8 +170,10 @@ Common::Error UnityEngine::run() {
 		_gfx->drawBackgroundImage();
 		_gfx->drawBackgroundPolys(polygonsFilename);
 
-		spr.update();
-		_gfx->drawSprite(&spr, 150, 150);
+		for (unsigned int i = 0; i < sprites.size(); i++) {
+			sprites[i]->update();
+			_gfx->drawSprite(sprites[i], entrypoints[i].x, entrypoints[i].y);
+		}
 
 		_system->updateScreen();
 	}

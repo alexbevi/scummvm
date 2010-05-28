@@ -115,7 +115,7 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y) {
 	// XXX: this doesn't work properly, either
 	unsigned int width = sprite->getCurrentWidth();
 	unsigned int height = sprite->getCurrentHeight();
-	blit(sprite->getCurrentData(), x + sprite->getXPos(), y + sprite->getYPos(), width, height);
+	blit(sprite->getCurrentData(), x - width/2 + sprite->getXPos(), y - height + sprite->getYPos(), width, height);
 	if (sprite->speaking()) {
 		// XXX: this doesn't work properly, SpritePlayer side probably needs work too
 		unsigned int m_width = sprite->getSpeechWidth();
