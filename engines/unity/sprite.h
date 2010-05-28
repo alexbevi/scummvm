@@ -6,9 +6,14 @@ namespace Unity {
 
 enum SpriteEntryType {
 	se_None,
+	se_SpeechSprite,
 	se_Sprite,
+	se_RandomWait,
 	se_Wait,
+	se_Pause,
 	se_Jump,
+	se_RelPos,
+	se_MouthPos,
 	se_Exit
 };
 
@@ -32,6 +37,16 @@ struct SpriteEntryWait : public SpriteEntry {
 struct SpriteEntryJump : public SpriteEntry {
 	unsigned int target;
 	SpriteEntryJump(unsigned int _t) : SpriteEntry(se_Jump), target(_t) { }
+};
+
+struct SpriteEntryRelPos : public SpriteEntry {
+	int adjustx, adjusty;
+	SpriteEntryRelPos(int _ax, int _ay) : SpriteEntry(se_RelPos), adjustx(_ax), adjusty(_ay) { }
+};
+
+struct SpriteEntryMouthPos : public SpriteEntry {
+	int adjustx, adjusty;
+	SpriteEntryMouthPos(int _ax, int _ay) : SpriteEntry(se_MouthPos), adjustx(_ax), adjusty(_ay) { }
 };
 
 class Sprite {

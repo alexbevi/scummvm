@@ -56,7 +56,7 @@ Sprite::~Sprite() {
 void Sprite::startAnim(unsigned int a) {
 	assert(a < indexes.size());
 	current_entry = indexes[a];
-	current_sprite = 0;
+	//current_sprite = 0; XXX: animations which are just speech sprites cause issues
 	wait_start = 0;
 }
 
@@ -79,11 +79,7 @@ void Sprite::update() {
 	while (true) {
 		assert(current_entry < entries.size());
 		SpriteEntry *e = entries[current_entry];
-		if (!e) {
-			// TODO: don't let this happen
-			current_entry++;
-			continue;
-		}
+		assert(e);
 		switch (e->type) {
 		case se_None:
 			current_entry++;
@@ -92,13 +88,32 @@ void Sprite::update() {
 			current_sprite = (SpriteEntrySprite *)e;
 			current_entry++;
 			break;
+		case se_SpeechSprite:
+			// TODO
+			current_entry++;
+			break;
+		case se_RelPos:
+			// TODO
+			current_entry++;
+			break;
+		case se_MouthPos:
+			// TODO
+			current_entry++;
+			break;
+		case se_Pause:
+			return;
+		case se_RandomWait:
+			// XXX: need to make this work
+			current_entry++;
+			return;
 		case se_Wait:
 			if (!wait_start) {
 				wait_start = g_system->getMillis();
 				return;
 			}
-			// TODO: is /2 correct?
-			if (wait_start + ((SpriteEntryWait *)e)->wait/2 < g_system->getMillis()) {
+			// TODO: is /4 correct?
+			// example values are 388, 777, 4777, 288, 666, 3188, 2188, 700, 200000, 1088, 272..
+			if (wait_start + ((SpriteEntryWait *)e)->wait/4 < g_system->getMillis()) {
 				wait_start = 0;
 				current_entry++;
 				continue;
@@ -108,6 +123,8 @@ void Sprite::update() {
 			current_entry = indexes[((SpriteEntryJump *)e)->target];
 			break;
 		case se_Exit:
+			// XXX: check this
+			error("reached EXIT in a sprite");
 			return;
 		default:
 			assert(false);
@@ -172,7 +189,7 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		}
 		assert(i == offsets.size());
 	} else if (!strncmp(blockType, TIME, 4)) {
-		// TODO: example values are 388, 777, 4777, 288, 666, 3188, 2188, 700, 200000, 1088, 272..
+		// presumably a wait between frames, see update()
 		uint32 time = _stream->readUint32LE();
 		return new SpriteEntryWait(time);
 	} else if (!strncmp(blockType, COMP, 4)) {
@@ -190,25 +207,36 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 	} else if (!strncmp(blockType, STAT, 4)) {
 		// TODO
 	} else if (!strncmp(blockType, PAUS, 4)) {
-		// TODO
+		// pause animation
+		return new SpriteEntry(se_Pause);
 	} else if (!strncmp(blockType, EXIT, 4)) {
-		// TODO
+		// ???
+		return new SpriteEntry(se_Exit);
 	} else if (!strncmp(blockType, MARK, 4)) {
 		// TODO
+		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, SETF, 4)) {
 		// TODO: set flag?
 		uint32 unknown = _stream->readUint32LE();
 		assert(unknown <= 4); // 0, 1, 2, 3 or 4
+
+		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, RAND, 4)) {
 		// TODO: these don't seem to be integers
 		uint32 unknown1 = _stream->readUint32LE(); // TODO
 		uint32 unknown2 = _stream->readUint32LE(); // TODO
+
+		return new SpriteEntry(se_RandomWait); // XXX
 	} else if (!strncmp(blockType, JUMP, 4)) {
+		// a jump to an animation
 		uint32 target = _stream->readUint32LE();
 		return new SpriteEntryJump(target);
 	} else if (!strncmp(blockType, SCOM, 4)) {
-		// TODO: ???
-		_stream->skip(size); // TODO
+		// compressed image data representing speech
+		SpriteEntrySprite *img = new SpriteEntrySprite;
+		img->type = se_SpeechSprite;
+		readCompressedImage(size, img);
+		return img;
 	} else if (!strncmp(blockType, DIGI, 4)) {
 		// TODO: audio?!
 		_stream->skip(size); // TODO
@@ -222,18 +250,23 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 
 		char name[16];
 		_stream->read(name, 16);
+		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, PLAY, 4)) {
 		// TODO
 	} else if (!strncmp(blockType, MASK, 4)) {
 		// TODO
 	} else if (!strncmp(blockType, RPOS, 4)) {
-		// TODO
+		// relative position change(?)
 		int32 adjustx = _stream->readSint32LE();
 		int32 adjusty = _stream->readSint32LE();
+
+		return new SpriteEntryRelPos(adjustx, adjusty);
 	} else if (!strncmp(blockType, MPOS, 4)) {
-		// TODO
+		// mouth position (relative to parent)
 		int32 adjustx = _stream->readSint32LE();
 		int32 adjusty = _stream->readSint32LE();
+
+		return new SpriteEntryMouthPos(adjustx, adjusty);
 	} else if (!strncmp(blockType, SILE, 4)) {
 		// TODO
 	} else if (!strncmp(blockType, OBJS, 4)) {
@@ -269,7 +302,6 @@ void Sprite::readCompressedImage(uint32 size, SpriteEntrySprite *img) {
 		_stream->seek(-(int)ref - 4 - 12 - 4, SEEK_CUR);
 		uint32 new_size = _stream->readUint32LE();
 		readCompressedImage(new_size - 8, img);
-		printf("done\n");
 		_stream->seek(old_pos);
 		return;
 	}
