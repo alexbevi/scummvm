@@ -1,7 +1,5 @@
 #include "sprite.h"
 
-#include "common/system.h"
-
 namespace Unity {
 
 // thereotically an exhaustive list of the block types in the SPR files
@@ -32,9 +30,6 @@ const char RGBP[4] = {'P', 'B', 'G', 'R' };
 Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 	assert(_stream);
 
-	current_entry = ~0;
-	current_sprite = 0;
-	wait_start = 0;
 	_isSprite = false;
 
 	readBlock();
@@ -50,85 +45,6 @@ Sprite::~Sprite() {
 		if (entries[i]->type == se_Sprite)
 			delete[] ((SpriteEntrySprite *)entries[i])->data;
 		delete entries[i];
-	}
-}
-
-void Sprite::startAnim(unsigned int a) {
-	assert(a < indexes.size());
-	current_entry = indexes[a];
-	//current_sprite = 0; XXX: animations which are just speech sprites cause issues
-	wait_start = 0;
-}
-
-unsigned int Sprite::getCurrentWidth() {
-	assert(current_sprite);
-	return current_sprite->width;
-}
-
-unsigned int Sprite::getCurrentHeight() {
-	assert(current_sprite);
-	return current_sprite->height;
-}
-
-byte *Sprite::getCurrentData() {
-	assert(current_sprite);
-	return current_sprite->data;
-}
-
-void Sprite::update() {
-	while (true) {
-		assert(current_entry < entries.size());
-		SpriteEntry *e = entries[current_entry];
-		assert(e);
-		switch (e->type) {
-		case se_None:
-			current_entry++;
-			break;
-		case se_Sprite:
-			current_sprite = (SpriteEntrySprite *)e;
-			current_entry++;
-			break;
-		case se_SpeechSprite:
-			// TODO
-			current_entry++;
-			break;
-		case se_RelPos:
-			// TODO
-			current_entry++;
-			break;
-		case se_MouthPos:
-			// TODO
-			current_entry++;
-			break;
-		case se_Pause:
-			return;
-		case se_RandomWait:
-			// XXX: need to make this work
-			current_entry++;
-			return;
-		case se_Wait:
-			if (!wait_start) {
-				wait_start = g_system->getMillis();
-				return;
-			}
-			// TODO: is /4 correct?
-			// example values are 388, 777, 4777, 288, 666, 3188, 2188, 700, 200000, 1088, 272..
-			if (wait_start + ((SpriteEntryWait *)e)->wait/4 < g_system->getMillis()) {
-				wait_start = 0;
-				current_entry++;
-				continue;
-			}
-			return;
-		case se_Jump:
-			current_entry = indexes[((SpriteEntryJump *)e)->target];
-			break;
-		case se_Exit:
-			// XXX: check this
-			error("reached EXIT in a sprite");
-			return;
-		default:
-			assert(false);
-		}
 	}
 }
 

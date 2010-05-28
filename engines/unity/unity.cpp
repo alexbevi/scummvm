@@ -92,13 +92,11 @@ Common::Error UnityEngine::run() {
 	_gfx->drawMRG("awayteam.mrg", 0);
 
 	Common::SeekableReadStream *ourstr = openFile("picard.spr");
-	Sprite spr(ourstr);
+	Sprite sprite(ourstr);
+	SpritePlayer spr(&sprite);
 	printf("picard has %d animations\n", spr.numAnims());
-	spr.xpos = 50;
-	spr.ypos = 50;
-	unsigned int i = 29;
+	unsigned int i = 0;
 	spr.startAnim(i);
-	unsigned int lastCheck = _system->getMillis();
 
 	Common::Event event;
 	while (!shouldQuit()) {
@@ -108,20 +106,20 @@ Common::Error UnityEngine::run() {
 					_system->quit();
 					break;
 
+				case Common::EVENT_KEYUP:
+					printf("trying anim %d\n", i);
+					i++;
+					i %= spr.numAnims();
+					spr.startAnim(i);
+					break;
+
 				default:
 					break;
 			}
 		}
 		_gfx->drawBackgroundImage();
-		if (lastCheck + 4000 < _system->getMillis()) {
-			printf("trying anim %d\n", i);
-			lastCheck = _system->getMillis();
-			i++;
-			i %= spr.numAnims();
-			spr.startAnim(i);
-		}
 		spr.update();
-		_gfx->drawSprite(&spr);
+		_gfx->drawSprite(&spr, 150, 150);
 		_system->updateScreen();
 	}
 

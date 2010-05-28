@@ -1,6 +1,5 @@
 #include "common/stream.h"
-
-#include "common/array.h" // XXX
+#include "common/array.h"
 
 namespace Unity {
 
@@ -54,23 +53,12 @@ public:
 	Sprite(Common::SeekableReadStream *_str);
 	~Sprite();
 
-	unsigned int xpos, ypos;
-
-	void startAnim(unsigned int a);
+	SpriteEntry *getEntry(unsigned int entry) { return entries[entry]; }
+	unsigned int getIndexFor(unsigned int anim) { return indexes[anim]; }
 	unsigned int numAnims() { return indexes.size(); }
-	void update();
-
-	unsigned int getCurrentHeight();
-	unsigned int getCurrentWidth();
-	byte *getCurrentData();
 
 protected:
 	Common::SeekableReadStream *_stream;
-
-	unsigned int current_entry;
-	SpriteEntrySprite *current_sprite;
-
-	unsigned int wait_start;
 
 	Common::Array<unsigned int> indexes;
 	Common::Array<SpriteEntry *> entries;
@@ -83,6 +71,43 @@ protected:
 	void decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsigned int targetsize);
 
 	bool _isSprite;
+};
+
+class SpritePlayer {
+public:
+	SpritePlayer(Sprite *spr);
+	~SpritePlayer();
+
+	void startAnim(unsigned int a);
+	unsigned int numAnims() { return sprite->numAnims(); }
+	void update();
+
+	unsigned int getCurrentHeight();
+	unsigned int getCurrentWidth();
+	byte *getCurrentData();
+
+	bool speaking();
+	unsigned int getSpeechHeight();
+	unsigned int getSpeechWidth();
+	byte *getSpeechData();
+
+	int getXPos() { return xpos; }
+	int getYPos() { return ypos; }
+	int getMouthXPos() { return m_xpos; }
+	int getMouthYPos() { return m_ypos; }
+
+protected:
+	Sprite *sprite;
+
+	int xpos, ypos;
+	int next_xpos, next_ypos;
+	int m_xpos, m_ypos;
+	int next_m_xpos, next_m_ypos;
+
+	unsigned int current_entry;
+	SpriteEntrySprite *current_sprite, *current_speechsprite;
+
+	unsigned int wait_start;
 };
 
 } // Unity

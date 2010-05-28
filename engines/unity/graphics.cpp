@@ -87,11 +87,21 @@ void Graphics::drawBackgroundImage() {
 	_vm->_system->copyRectToScreen(backgroundPixels, backgroundWidth, 0, 0, backgroundWidth, backgroundHeight);
 }
 
-void Graphics::drawSprite(Sprite *sprite) {
+void Graphics::drawSprite(SpritePlayer *sprite, unsigned int x, unsigned int y) {
 	assert(sprite);
+	// XXX: this doesn't work properly, either
 	unsigned int width = sprite->getCurrentWidth();
 	unsigned int height = sprite->getCurrentHeight();
-	_vm->_system->copyRectToScreen(sprite->getCurrentData(), width, sprite->xpos, sprite->ypos, width, height);
+	_vm->_system->copyRectToScreen(sprite->getCurrentData(), width,
+		x + sprite->getXPos(), y + sprite->getYPos(), width, height);
+	if (sprite->speaking()) {
+		// XXX: this doesn't work properly, SpritePlayer side probably needs work too
+		unsigned int m_width = sprite->getSpeechWidth();
+		unsigned int m_height = sprite->getSpeechHeight();
+		_vm->_system->copyRectToScreen(sprite->getSpeechData(), m_width,
+			x + width/2 - m_width/2 + sprite->getMouthXPos(),
+			y + height - m_height + sprite->getMouthYPos(), m_width, m_height);
+	}
 }
 
 }

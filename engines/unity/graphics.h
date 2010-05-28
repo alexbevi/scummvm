@@ -2,7 +2,7 @@
 
 namespace Unity {
 
-class Sprite;
+class SpritePlayer;
 
 class Graphics {
 public:
@@ -13,7 +13,7 @@ public:
 	void drawMRG(Common::String filename, unsigned int entry);
 	void setBackgroundImage(Common::String filename);
 	void drawBackgroundImage();
-	void drawSprite(Sprite *sprite);
+	void drawSprite(SpritePlayer *sprite, unsigned int x, unsigned int y);
 
 protected:
 	UnityEngine *_vm;
