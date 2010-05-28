@@ -116,12 +116,15 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 	} else if (!strncmp(blockType, RGBP, 4)) {
 		// palette (256*3 bytes, each 0-63)
 		_stream->skip(size); // TODO
+		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, POSN, 4)) {
 		// TODO
 		uint32 xpos = _stream->readUint32LE();
 		uint32 ypos = _stream->readUint32LE();
+		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, STAT, 4)) {
 		// TODO
+		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, PAUS, 4)) {
 		// pause animation
 		return new SpriteEntry(se_Pause);
@@ -156,8 +159,10 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 	} else if (!strncmp(blockType, DIGI, 4)) {
 		// TODO: audio?!
 		_stream->skip(size); // TODO
+		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, SNDW, 4)) {
 		// TODO
+		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, SNDF, 4)) {
 		// TODO: unknown is always 75, 95 or 100. volume?
 		uint32 unknown = _stream->readUint32LE();
@@ -169,8 +174,10 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, PLAY, 4)) {
 		// TODO
+		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, MASK, 4)) {
 		// TODO
+		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, RPOS, 4)) {
 		// relative position change(?)
 		int32 adjustx = _stream->readSint32LE();
@@ -185,10 +192,12 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		return new SpriteEntryMouthPos(adjustx, adjusty);
 	} else if (!strncmp(blockType, SILE, 4)) {
 		// TODO
+		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, OBJS, 4)) {
 		// TODO
 		uint32 unknown = _stream->readUint32LE();
 		assert(unknown == 1 || (unknown >= 3 && unknown <= 7)); // always 1, 3, 4, 5, 6 or 7
+		return new SpriteEntry(se_None); // XXX
 	} else {
 		error("unknown sprite block type %c%c%c%c", blockType[3], blockType[2], blockType[1], blockType[0]);
 	}
