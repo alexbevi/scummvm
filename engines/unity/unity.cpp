@@ -120,6 +120,7 @@ Common::Error UnityEngine::run() {
 		_gfx->drawBackgroundImage();
 		spr.update();
 		_gfx->drawSprite(&spr, 150, 150);
+		_gfx->drawBackgroundPolys("st004001.scr");
 		_system->updateScreen();
 	}
 

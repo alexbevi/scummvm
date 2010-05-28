@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "sprite.h"
+#include "common/rect.h"
 
 namespace Unity {
 
@@ -15,6 +16,8 @@ public:
 	void setBackgroundImage(Common::String filename);
 	void drawBackgroundImage();
 	void drawSprite(SpritePlayer *sprite, int x, int y);
+	void drawBackgroundPolys(Common::String filename);
+	void renderPolygonEdge(Common::Array<Common::Point> &points, byte colour);
 
 protected:
 	void blit(byte *data, int x, int y, unsigned int width, unsigned int height, byte transparent = COLOUR_BLANK);

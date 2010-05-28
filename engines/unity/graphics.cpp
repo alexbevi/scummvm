@@ -126,5 +126,46 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y) {
 	}
 }
 
+void Graphics::drawBackgroundPolys(Common::String filename) {
+	Common::SeekableReadStream *mrgStream = _vm->openFile(filename);
+
+	uint16 num_entries = mrgStream->readUint16LE();
+	Common::Array<uint32> offsets;
+	for (unsigned int i = 0; i < num_entries; i++) {
+		uint32 id = mrgStream->readUint32LE();
+		uint32 offset = mrgStream->readUint32LE();
+		offsets.push_back(offset);
+	}
+
+	for (unsigned int i = 0; i < num_entries; i++) {
+		Common::Array<Common::Point> points;
+		assert(mrgStream->seek(offsets[i]));
+		byte something = mrgStream->readByte();
+		assert(something == 1 || something == 4);
+		uint16 something2 = mrgStream->readUint16LE();
+		assert(something2 == 0);
+		byte count = mrgStream->readByte();
+		for (unsigned int j = 0; j < count; j++) {
+			uint16 x = mrgStream->readUint16LE();
+			uint16 y = mrgStream->readUint16LE();
+			uint16 something3 = mrgStream->readUint16LE();
+			points.push_back(Common::Point(x, y));
+		}
+		// something == 4: some kind of full-screen poly?
+		renderPolygonEdge(points, something == 4 ? 254 : 162 + i);
+	}
 }
+
+void Graphics::renderPolygonEdge(Common::Array<Common::Point> &points, byte colour) {
+	::Graphics::Surface *surf = _vm->_system->lockScreen();
+	for (unsigned int i = 0; i < points.size(); i++) {
+		if (i + 1 < points.size())
+			surf->drawLine(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, colour);
+		else
+			surf->drawLine(points[i].x, points[i].y, points[0].x, points[0].y, colour);
+	}
+	_vm->_system->unlockScreen();
+}
+
+} // Unity
 
