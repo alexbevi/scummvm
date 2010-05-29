@@ -139,8 +139,7 @@ void SpritePlayer::update() {
 			old_entry = current_entry;
 			break;
 		case se_Exit:
-			// XXX: check this
-			error("reached EXIT in a sprite");
+			// XXX: what to do here? this does happen (COMP followed by EXIT)
 			return;
 		default:
 			assert(false);
