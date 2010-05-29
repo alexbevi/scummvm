@@ -11,6 +11,11 @@ namespace Unity {
 class Graphics;
 class Sound;
 
+struct Screen {
+	Common::Array<Common::Array<Common::Point> > entrypoints;
+	Common::String polygonsFilename;
+};
+
 class UnityEngine : public Engine {
 public:
 	UnityEngine(class OSystem *syst);
@@ -26,8 +31,7 @@ protected:
 	Sound *_snd;
 	Common::Archive *data;
 
-	Common::Point entrypoints[4];
-	Common::String polygonsFilename;
+	Screen current_screen;
 
 	void openLocation(unsigned int location, unsigned int screen);
 };

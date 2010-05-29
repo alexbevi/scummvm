@@ -78,20 +78,18 @@ void UnityEngine::openLocation(unsigned int location, unsigned int screen) {
 	Common::SeekableReadStream *locstream = openFile(filename);
 
 	uint16 num_entries = locstream->readUint16LE();
-	Common::Array<uint32> offsets;
-	offsets.reserve(num_entries);
+	Common::HashMap<uint32, uint32> offsets;
 	for (unsigned int i = 0; i < num_entries; i++) {
 		uint32 id = locstream->readUint32LE();
-		assert(id == i + 1); // XXX
 		uint32 offset = locstream->readUint32LE();
-		offsets.push_back(offset);
+		offsets[id] = offset;
 	}
 
 	if (screen > num_entries) {
 		error("no such screen %d in location %d (only %d screens)", screen, location, num_entries);
 	}
 
-	locstream->seek(offsets[screen - 1]);
+	locstream->seek(offsets[screen]);
 
 	// XXX: null-terminated in file?
 	byte length = locstream->readByte();
@@ -107,15 +105,20 @@ void UnityEngine::openLocation(unsigned int location, unsigned int screen) {
 	locstream->read(polygons, length);
 	polygons[length] = 0;
 
-	polygonsFilename = polygons;
+	current_screen.polygonsFilename = polygons;
 
+	current_screen.entrypoints.clear();
 	byte num_entrances = locstream->readByte();
-	// TODO: don't ignore all but the first entrance
-	// XXX: read this properly
-	uint16 unknown = locstream->readUint16BE(); // 0001, 0101, 0201, ...
-	for (unsigned int i = 0; i < 4; i++) {
-		entrypoints[i].x = locstream->readUint16LE();
-		entrypoints[i].y = locstream->readUint16LE();
+	for (unsigned int e = 0; e < num_entrances; e++) {
+		Common::Array<Common::Point> entrypoints;
+		// XXX: read this properly
+		uint16 unknown = locstream->readUint16BE(); // 0001, 0101, 0201, ...
+		entrypoints.resize(4);
+		for (unsigned int i = 0; i < 4; i++) {
+			entrypoints[i].x = locstream->readUint16LE();
+			entrypoints[i].y = locstream->readUint16LE();
+		}
+		current_screen.entrypoints.push_back(entrypoints);
 	}
 
 	delete locstream;
@@ -135,7 +138,9 @@ Common::Error UnityEngine::run() {
 
 	//_snd->playSpeech("02140000.vac");
 
-	openLocation(4, 1);
+	unsigned int curr_loc = 4;
+	unsigned int curr_screen = 1;
+	openLocation(curr_loc, curr_screen);
 
 	_gfx->drawMRG("awayteam.mrg", 0);
 
@@ -162,17 +167,22 @@ Common::Error UnityEngine::run() {
 					for (unsigned int i = 0; i < sprites.size(); i++) sprites[i]->startAnim(anim);
 					break;
 
+				case Common::EVENT_LBUTTONUP:
+					curr_screen++;
+					openLocation(curr_loc, curr_screen);
+					break;
+
 				default:
 					break;
 			}
 		}
 
 		_gfx->drawBackgroundImage();
-		_gfx->drawBackgroundPolys(polygonsFilename);
+		_gfx->drawBackgroundPolys(current_screen.polygonsFilename);
 
 		for (unsigned int i = 0; i < sprites.size(); i++) {
 			sprites[i]->update();
-			_gfx->drawSprite(sprites[i], entrypoints[i].x, entrypoints[i].y);
+			_gfx->drawSprite(sprites[i], current_screen.entrypoints[0][i].x, current_screen.entrypoints[0][i].y);
 		}
 
 		_system->updateScreen();
