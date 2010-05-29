@@ -92,14 +92,23 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		while (num_entries--) {
 			uint32 offset = _stream->readUint32LE();
 			// offset is relative to start of this block (start - 8)
-			offsets.push_back(offset + start - 8);
+			if (offset != 0) offset += start - 8;
+			offsets.push_back(offset);
 		}
 
 		unsigned int i = 0;
 		while ((uint32)_stream->pos() < start + size) {
-			if (i < offsets.size() && (uint32)_stream->pos() == offsets[i]) {
-				indexes[i] = entries.size();
-				i++;
+			while (i < offsets.size()) {
+				if ((uint32)_stream->pos() == offsets[i]) {
+					indexes[i] = entries.size();
+					i++;
+				} else if (offsets[i] == 0) {
+					indexes[i] = ~0; // XXX
+					i++;
+				} else {
+					assert(_stream->pos() < offsets[i]);
+					break;
+				}
 			}
 			entries.push_back(readBlock());
 		}
