@@ -46,6 +46,7 @@ protected:
 
 	void loadSpriteFilenames();
 	void openLocation(unsigned int location, unsigned int screen);
+	void loadObject(unsigned int location, unsigned int screen, unsigned int id);
 };
 
 } // Unity

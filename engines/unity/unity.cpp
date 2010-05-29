@@ -122,6 +122,91 @@ void UnityEngine::openLocation(unsigned int location, unsigned int screen) {
 	}
 
 	delete locstream;
+
+	// TODO: what do we do with all the objects?
+	// for now, we just delete all but the away team
+	for (unsigned int i = 4; i < objects.size(); i++) {
+		delete objects[i].sprite;
+	}
+	objects.resize(4);
+
+	filename = Common::String::printf("w%02x%02xobj.bst", location, screen);
+	locstream = openFile(filename);
+
+	// TODO: is there data we need here in w_XXstrt.bst?
+	while (true) {
+		byte unknown1 = locstream->readByte(); // XXX
+		if (locstream->eos()) break;
+		byte unknown2 = locstream->readByte(); // XXX
+
+		byte id = locstream->readByte();
+		assert(id == unknown1);
+		byte _screen = locstream->readByte();
+		assert(_screen == screen);
+		byte _location = locstream->readByte();
+		assert(_location == location);
+
+		byte unknown4 = locstream->readByte();
+		assert(unknown4 == 0);
+
+		char _name[30];
+		locstream->read(_name, 30);
+		char _desc[260];
+		locstream->read(_desc, 260);
+		//printf("reading obj '%s' (%s)\n", _name, _desc);
+
+		loadObject(location, screen, id);
+	}
+	// bytes: XX YY XX screen loc 00 <14 bytes for name> <130 bytes for description>
+
+	delete locstream;
+}
+
+void UnityEngine::loadObject(unsigned int location, unsigned int screen, unsigned int id) {
+	Common::String filename = Common::String::printf("o_%02x%02x%02x.bst", location, screen,id);
+	Common::SeekableReadStream *objstream = openFile(filename);
+
+	uint32 header = objstream->readUint32LE();
+	assert(header == 0x01281100); // magic header value?
+
+	byte _id = objstream->readByte();
+	byte _screen = objstream->readByte();
+	byte _location = objstream->readByte();
+
+	byte unknown1 = objstream->readByte();
+	assert(unknown1 == 0);
+	byte unknown2 = objstream->readByte(); // XXX
+	byte unknown3 = objstream->readByte(); // XXX
+
+	// XXX: do something with these!
+	int16 width = objstream->readSint16LE();
+	int16 height = objstream->readSint16LE();
+	int16 world_x = objstream->readSint16LE();
+	int16 world_y = objstream->readSint16LE();
+	int16 world_z = objstream->readSint16LE();
+	int16 universe_x = objstream->readSint16LE();
+	int16 universe_y = objstream->readSint16LE();
+	int16 universe_z = objstream->readSint16LE();
+
+	uint16 unknown4 = objstream->readUint16LE(); // XXX
+	uint16 unknown5 = objstream->readUint16LE(); // XXX
+
+	uint16 sprite_id = objstream->readUint16LE();
+	if (sprite_id != 0xffff && sprite_id != 0xfffe) {
+		// TODO: this is so terribly, terribly wrong, and we should be storing *all* objects anyway
+		Common::String filename = getSpriteFilename(sprite_id);
+		SpritePlayer *sprite = new SpritePlayer(new Sprite(openFile(filename)));
+		Object obj;
+		obj.sprite = sprite;
+		obj.sprite->startAnim(0); // XXX
+		obj.x = world_x;
+		obj.y = world_y;
+		objects.push_back(obj);
+	}
+
+	// XXX: lots more
+
+	delete objstream;
 }
 
 Common::Error UnityEngine::run() {
