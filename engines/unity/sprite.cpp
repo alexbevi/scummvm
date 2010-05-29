@@ -36,7 +36,7 @@ Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 	assert(_isSprite);
 
 	// make sure we read everything
-	assert(_str->pos() == _str->size() - 1);
+	assert(_str->pos() == _str->size());
 }
 
 Sprite::~Sprite() {
