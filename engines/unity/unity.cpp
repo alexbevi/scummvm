@@ -131,10 +131,11 @@ Common::Error UnityEngine::run() {
 	_gfx->init();
 	_snd->init();
 
+	loadSpriteFilenames();
+
 	// XXX: this mouse cursor is borrowed from SCI
 	CursorMan.replaceCursor(sciMouseCursor, 11, 16, 1, 1, 0);
 	CursorMan.showMouse(true);
-	_system->updateScreen();
 
 	//_snd->playSpeech("02140000.vac");
 
@@ -145,10 +146,10 @@ Common::Error UnityEngine::run() {
 	_gfx->drawMRG("awayteam.mrg", 0);
 
 	Common::Array<SpritePlayer *> sprites;
-	sprites.push_back(new SpritePlayer(new Sprite(openFile("picard.spr"))));
-	sprites.push_back(new SpritePlayer(new Sprite(openFile("data.spr"))));
-	sprites.push_back(new SpritePlayer(new Sprite(openFile("laforge.spr"))));
-	sprites.push_back(new SpritePlayer(new Sprite(openFile("troi.spr"))));
+	for (unsigned int i = 0; i < 4; i++) {
+		Common::String filename = getSpriteFilename(i);
+		sprites.push_back(new SpritePlayer(new Sprite(openFile(filename))));
+	}
 	unsigned int anim = 26;
 	for (unsigned int i = 0; i < sprites.size(); i++) sprites[i]->startAnim(anim);
 
@@ -195,6 +196,32 @@ Common::SeekableReadStream *UnityEngine::openFile(Common::String filename) {
 	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(filename);
 	if (!stream) error("couldn't open '%s'", filename.c_str());
 	return stream;
+}
+
+void UnityEngine::loadSpriteFilenames() {
+	Common::SeekableReadStream *stream = openFile("sprite.lst");
+
+	uint32 num_sprites = stream->readUint32LE();
+	sprite_filenames.reserve(num_sprites);
+
+	for (unsigned int i = 0; i < num_sprites; i++) {
+		char buf[9]; // DOS filenames, so 9 should really be enough
+		for (unsigned int j = 0; j < 9; j++) {
+			char c = stream->readByte();
+			buf[j] = c;
+			if (c == 0) break;
+			assert (j != 8);
+		}
+		sprite_filenames.push_back(buf);
+	}
+
+	delete stream;
+}
+
+Common::String UnityEngine::getSpriteFilename(unsigned int id) {
+	assert(id != 0xffff && id != 0xfffe);
+	assert(id < sprite_filenames.size());
+	return sprite_filenames[id] + ".spr";
 }
 
 } // Unity

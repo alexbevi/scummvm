@@ -25,6 +25,7 @@ public:
 	Common::Error run();
 
 	Common::SeekableReadStream *openFile(Common::String filename);
+	Common::String getSpriteFilename(unsigned int id);
 
 protected:
 	Graphics *_gfx;
@@ -33,6 +34,9 @@ protected:
 
 	Screen current_screen;
 
+	Common::Array<Common::String> sprite_filenames;
+
+	void loadSpriteFilenames();
 	void openLocation(unsigned int location, unsigned int screen);
 };
 
