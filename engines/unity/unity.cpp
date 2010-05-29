@@ -213,6 +213,12 @@ void UnityEngine::loadObject(unsigned int location, unsigned int screen, unsigne
 	delete objstream;
 }
 
+struct DrawOrderComparison {
+	bool operator() (const Object *a, const Object *b) {
+		return a->y < b->y;
+	}
+};
+
 Common::Error UnityEngine::run() {
 	init();
 
@@ -281,12 +287,17 @@ Common::Error UnityEngine::run() {
 		}
 
 		_gfx->drawBackgroundImage();
-		_gfx->drawBackgroundPolys(current_screen.polygonsFilename);
+		//_gfx->drawBackgroundPolys(current_screen.polygonsFilename);
 
+		Common::Array<Object *> to_draw;
 		for (unsigned int i = 0; i < objects.size(); i++) {
 			objects[i]->sprite->update();
-			// TODO: sort drawing by y
-			_gfx->drawSprite(objects[i]->sprite, objects[i]->x, objects[i]->y);
+			to_draw.push_back(objects[i]);
+		}
+
+		Common::sort(to_draw.begin(), to_draw.end(), DrawOrderComparison());
+		for (unsigned int i = 0; i < to_draw.size(); i++) {
+			_gfx->drawSprite(to_draw[i]->sprite, to_draw[i]->x, to_draw[i]->y);
 		}
 
 		_system->updateScreen();
