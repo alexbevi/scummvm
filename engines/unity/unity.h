@@ -10,6 +10,13 @@ namespace Unity {
 
 class Graphics;
 class Sound;
+class SpritePlayer;
+
+struct Object {
+	unsigned int x;
+	unsigned int y;
+	SpritePlayer *sprite;
+};
 
 struct Screen {
 	Common::Array<Common::Array<Common::Point> > entrypoints;
@@ -34,6 +41,7 @@ protected:
 
 	Screen current_screen;
 
+	Common::Array<Object> objects;
 	Common::Array<Common::String> sprite_filenames;
 
 	void loadSpriteFilenames();

@@ -139,19 +139,27 @@ Common::Error UnityEngine::run() {
 
 	//_snd->playSpeech("02140000.vac");
 
+	// beam in an away team
+	for (unsigned int i = 0; i < 4; i++) {
+		Common::String filename = getSpriteFilename(i);
+		SpritePlayer *sprite = new SpritePlayer(new Sprite(openFile(filename)));
+		Object obj;
+		obj.sprite = sprite;
+		objects.push_back(obj);
+	}
+	unsigned int anim = 26;
+	for (unsigned int i = 0; i < 4; i++) objects[i].sprite->startAnim(anim);
+
 	unsigned int curr_loc = 4;
 	unsigned int curr_screen = 1;
 	openLocation(curr_loc, curr_screen);
-
-	_gfx->drawMRG("awayteam.mrg", 0);
-
-	Common::Array<SpritePlayer *> sprites;
 	for (unsigned int i = 0; i < 4; i++) {
-		Common::String filename = getSpriteFilename(i);
-		sprites.push_back(new SpritePlayer(new Sprite(openFile(filename))));
+		objects[i].x = current_screen.entrypoints[0][i].x;
+		objects[i].y = current_screen.entrypoints[0][i].y;
 	}
-	unsigned int anim = 26;
-	for (unsigned int i = 0; i < sprites.size(); i++) sprites[i]->startAnim(anim);
+
+	// draw UI
+	_gfx->drawMRG("awayteam.mrg", 0);
 
 	Common::Event event;
 	while (!shouldQuit()) {
@@ -164,13 +172,18 @@ Common::Error UnityEngine::run() {
 				case Common::EVENT_KEYUP:
 					printf("trying anim %d\n", anim);
 					anim++;
-					anim %= sprites[0]->numAnims();
-					for (unsigned int i = 0; i < sprites.size(); i++) sprites[i]->startAnim(anim);
+					anim %= objects[0].sprite->numAnims();
+					for (unsigned int i = 0; i < 4; i++)
+						objects[i].sprite->startAnim(anim);
 					break;
 
 				case Common::EVENT_LBUTTONUP:
 					curr_screen++;
 					openLocation(curr_loc, curr_screen);
+					for (unsigned int i = 0; i < 4; i++) {
+						objects[i].x = current_screen.entrypoints[0][i].x;
+						objects[i].y = current_screen.entrypoints[0][i].y;
+					}
 					break;
 
 				default:
@@ -181,9 +194,10 @@ Common::Error UnityEngine::run() {
 		_gfx->drawBackgroundImage();
 		_gfx->drawBackgroundPolys(current_screen.polygonsFilename);
 
-		for (unsigned int i = 0; i < sprites.size(); i++) {
-			sprites[i]->update();
-			_gfx->drawSprite(sprites[i], current_screen.entrypoints[0][i].x, current_screen.entrypoints[0][i].y);
+		for (unsigned int i = 0; i < objects.size(); i++) {
+			objects[i].sprite->update();
+			// TODO: sort drawing by y
+			_gfx->drawSprite(objects[i].sprite, objects[i].x, objects[i].y);
 		}
 
 		_system->updateScreen();
