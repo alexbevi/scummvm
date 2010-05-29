@@ -138,20 +138,31 @@ void Graphics::drawBackgroundPolys(Common::String filename) {
 
 	for (unsigned int i = 0; i < num_entries; i++) {
 		Common::Array<Common::Point> points;
+		Common::Array<uint16> distances;
 		assert(mrgStream->seek(offsets[i]));
 		byte something = mrgStream->readByte();
-		assert(something == 1 || something == 4);
+		assert(something == 0 || something == 1 || something == 3 || something == 4);
 		uint16 something2 = mrgStream->readUint16LE();
 		assert(something2 == 0);
 		byte count = mrgStream->readByte();
 		for (unsigned int j = 0; j < count; j++) {
 			uint16 x = mrgStream->readUint16LE();
 			uint16 y = mrgStream->readUint16LE();
-			uint16 something3 = mrgStream->readUint16LE();
+			// 0-256, higher is nearer (larger characters);
+			// (maybe 0 means not shown at all?)
+			uint16 distance = mrgStream->readUint16LE();
+			assert(distance <= 0x100);
+			distances.push_back(distance);
 			points.push_back(Common::Point(x, y));
 		}
-		// something == 4: some kind of full-screen poly?
-		renderPolygonEdge(points, something == 4 ? 254 : 162 + i);
+		// something == 0: not walkable by default? (i.e. script-enabled)
+		// something == 3: ??
+		// something == 4: seems to usually cover almost the whole screen..
+		byte colour = 160 + distances[0]/36;
+		if (something == 4) colour = 254; // green
+		else if (something == 0) colour = 225; // brown
+		else if (something == 3) colour = 224; // grayish
+		renderPolygonEdge(points, colour);
 	}
 	delete mrgStream;
 }
