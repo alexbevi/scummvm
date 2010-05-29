@@ -112,7 +112,6 @@ void Graphics::blit(byte *data, int x, int y, unsigned int width, unsigned int h
 
 void Graphics::drawSprite(SpritePlayer *sprite, int x, int y) {
 	assert(sprite);
-	// XXX: this doesn't work properly, either
 	unsigned int width = sprite->getCurrentWidth();
 	unsigned int height = sprite->getCurrentHeight();
 	blit(sprite->getCurrentData(), x - width/2 + sprite->getXPos(), y - height + sprite->getYPos(), width, height);
@@ -121,8 +120,8 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y) {
 		unsigned int m_width = sprite->getSpeechWidth();
 		unsigned int m_height = sprite->getSpeechHeight();
 		blit(sprite->getSpeechData(),
-			x + width/2 - m_width/2 + sprite->getMouthXPos(),
-			y + height - m_height + sprite->getMouthYPos(), m_width, m_height);
+			x - m_width/2 + sprite->getXPos() + sprite->getMouthXPos(),
+			y - height + m_height + sprite->getYPos() + sprite->getMouthYPos(), m_width, m_height);
 	}
 }
 

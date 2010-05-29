@@ -79,8 +79,8 @@ void SpritePlayer::update() {
 		case se_SpeechSprite:
 			current_speechsprite = (SpriteEntrySprite *)e;
 			// XXX: don't understand how this works :(
-			m_xpos = next_xpos;
-			m_ypos = next_ypos;
+			m_xpos = next_m_xpos;
+			m_ypos = next_m_ypos;
 			current_entry++;
 			break;
 		case se_RelPos:
