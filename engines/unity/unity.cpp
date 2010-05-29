@@ -126,7 +126,8 @@ void UnityEngine::openLocation(unsigned int location, unsigned int screen) {
 	// TODO: what do we do with all the objects?
 	// for now, we just delete all but the away team
 	for (unsigned int i = 4; i < objects.size(); i++) {
-		delete objects[i].sprite;
+		delete objects[i]->sprite;
+		delete objects[i];
 	}
 	objects.resize(4);
 
@@ -195,12 +196,12 @@ void UnityEngine::loadObject(unsigned int location, unsigned int screen, unsigne
 	if (sprite_id != 0xffff && sprite_id != 0xfffe) {
 		// TODO: this is so terribly, terribly wrong, and we should be storing *all* objects anyway
 		Common::String filename = getSpriteFilename(sprite_id);
-		SpritePlayer *sprite = new SpritePlayer(new Sprite(openFile(filename)));
-		Object obj;
-		obj.sprite = sprite;
-		obj.sprite->startAnim(0); // XXX
-		obj.x = world_x;
-		obj.y = world_y;
+		Object *obj = new Object;
+		SpritePlayer *sprite = new SpritePlayer(new Sprite(openFile(filename)), obj);
+		obj->sprite = sprite;
+		obj->sprite->startAnim(0); // XXX
+		obj->x = world_x;
+		obj->y = world_y;
 		objects.push_back(obj);
 	}
 
@@ -227,20 +228,20 @@ Common::Error UnityEngine::run() {
 	// beam in an away team
 	for (unsigned int i = 0; i < 4; i++) {
 		Common::String filename = getSpriteFilename(i);
-		SpritePlayer *sprite = new SpritePlayer(new Sprite(openFile(filename)));
-		Object obj;
-		obj.sprite = sprite;
+		Object *obj = new Object;
+		SpritePlayer *sprite = new SpritePlayer(new Sprite(openFile(filename)), obj);
+		obj->sprite = sprite;
 		objects.push_back(obj);
 	}
 	unsigned int anim = 26;
-	for (unsigned int i = 0; i < 4; i++) objects[i].sprite->startAnim(anim);
+	for (unsigned int i = 0; i < 4; i++) objects[i]->sprite->startAnim(anim);
 
 	unsigned int curr_loc = 4;
 	unsigned int curr_screen = 1;
 	openLocation(curr_loc, curr_screen);
 	for (unsigned int i = 0; i < 4; i++) {
-		objects[i].x = current_screen.entrypoints[0][i].x;
-		objects[i].y = current_screen.entrypoints[0][i].y;
+		objects[i]->x = current_screen.entrypoints[0][i].x;
+		objects[i]->y = current_screen.entrypoints[0][i].y;
 	}
 
 	// draw UI
@@ -257,17 +258,17 @@ Common::Error UnityEngine::run() {
 				case Common::EVENT_KEYUP:
 					printf("trying anim %d\n", anim);
 					anim++;
-					anim %= objects[0].sprite->numAnims();
+					anim %= objects[0]->sprite->numAnims();
 					for (unsigned int i = 0; i < 4; i++)
-						objects[i].sprite->startAnim(anim);
+						objects[i]->sprite->startAnim(anim);
 					break;
 
 				case Common::EVENT_LBUTTONUP:
 					curr_screen++;
 					openLocation(curr_loc, curr_screen);
 					for (unsigned int i = 0; i < 4; i++) {
-						objects[i].x = current_screen.entrypoints[0][i].x;
-						objects[i].y = current_screen.entrypoints[0][i].y;
+						objects[i]->x = current_screen.entrypoints[0][i].x;
+						objects[i]->y = current_screen.entrypoints[0][i].y;
 					}
 					break;
 
@@ -280,9 +281,9 @@ Common::Error UnityEngine::run() {
 		_gfx->drawBackgroundPolys(current_screen.polygonsFilename);
 
 		for (unsigned int i = 0; i < objects.size(); i++) {
-			objects[i].sprite->update();
+			objects[i]->sprite->update();
 			// TODO: sort drawing by y
-			_gfx->drawSprite(objects[i].sprite, objects[i].x, objects[i].y);
+			_gfx->drawSprite(objects[i]->sprite, objects[i]->x, objects[i]->y);
 		}
 
 		_system->updateScreen();

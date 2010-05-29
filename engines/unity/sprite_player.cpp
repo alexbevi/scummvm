@@ -1,16 +1,17 @@
+#include "unity.h"
 #include "sprite.h"
 #include "common/system.h"
 
 namespace Unity {
 
-SpritePlayer::SpritePlayer(Sprite *spr) : sprite(spr) {
+SpritePlayer::SpritePlayer(Sprite *spr, Object *par) : sprite(spr), parent(par) {
 	current_entry = ~0;
 	current_sprite = 0;
 	current_speechsprite = 0;
 	wait_start = 0;
 
-	next_xpos = xpos = 0;
-	next_ypos = ypos = 0;
+	next_xadjust = xadjust = 0;
+	next_yadjust = yadjust = 0;
 	next_m_xpos = m_xpos = 0;
 	next_m_ypos = m_ypos = 0;
 }
@@ -24,7 +25,7 @@ void SpritePlayer::startAnim(unsigned int a) {
 	//current_sprite = 0; XXX: animations which are just speech sprites cause issues
 	current_speechsprite = 0; // XXX: good?
 	wait_start = 0;
-	next_xpos = xpos; next_ypos = ypos;
+	next_xadjust = xadjust; next_yadjust = yadjust;
 }
 
 unsigned int SpritePlayer::getCurrentWidth() {
@@ -74,8 +75,8 @@ void SpritePlayer::update() {
 		case se_Sprite:
 			current_sprite = (SpriteEntrySprite *)e;
 			// XXX: don't understand how this works either
-			xpos = next_xpos;
-			ypos = next_ypos;
+			xadjust = next_xadjust;
+			yadjust = next_yadjust;
 			current_entry++;
 			break;
 		case se_SpeechSprite:
@@ -85,11 +86,19 @@ void SpritePlayer::update() {
 			m_ypos = next_m_ypos;
 			current_entry++;
 			break;
+		case se_Position:
+			current_entry++;
+			{
+				SpriteEntryPosition *p = (SpriteEntryPosition *)e;
+				parent->x = p->newx;
+				parent->y = p->newy;
+			}
+			break;
 		case se_RelPos:
 			{
 				SpriteEntryRelPos *p = (SpriteEntryRelPos *)e;
-				next_xpos = p->adjustx;
-				next_ypos = p->adjusty;
+				next_xadjust = p->adjustx;
+				next_yadjust = p->adjusty;
 			}
 			current_entry++;
 			break;

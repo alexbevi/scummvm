@@ -17,6 +17,7 @@ enum SpriteEntryType {
 	se_Wait,
 	se_Pause,
 	se_Jump,
+	se_Position,
 	se_RelPos,
 	se_MouthPos,
 	se_Exit
@@ -42,6 +43,11 @@ struct SpriteEntryWait : public SpriteEntry {
 struct SpriteEntryJump : public SpriteEntry {
 	unsigned int target;
 	SpriteEntryJump(unsigned int _t) : SpriteEntry(se_Jump), target(_t) { }
+};
+
+struct SpriteEntryPosition : public SpriteEntry {
+	int newx, newy;
+	SpriteEntryPosition(int _ax, int _ay) : SpriteEntry(se_Position), newx(_ax), newy(_ay) { }
 };
 
 struct SpriteEntryRelPos : public SpriteEntry {
@@ -79,9 +85,11 @@ protected:
 	bool _isSprite;
 };
 
+class Object;
+
 class SpritePlayer {
 public:
-	SpritePlayer(Sprite *spr);
+	SpritePlayer(Sprite *spr, Object *par);
 	~SpritePlayer();
 
 	void startAnim(unsigned int a);
@@ -97,16 +105,17 @@ public:
 	unsigned int getSpeechWidth();
 	byte *getSpeechData();
 
-	int getXPos() { return xpos; }
-	int getYPos() { return ypos; }
+	int getXAdjust() { return xadjust; }
+	int getYAdjust() { return yadjust; }
 	int getMouthXPos() { return m_xpos; }
 	int getMouthYPos() { return m_ypos; }
 
 protected:
 	Sprite *sprite;
+	Object *parent;
 
-	int xpos, ypos;
-	int next_xpos, next_ypos;
+	int xadjust, yadjust;
+	int next_xadjust, next_yadjust;
 	int m_xpos, m_ypos;
 	int next_m_xpos, next_m_ypos;
 

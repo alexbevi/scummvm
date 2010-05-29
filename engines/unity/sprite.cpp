@@ -127,10 +127,10 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		_stream->skip(size); // TODO
 		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, POSN, 4)) {
-		// TODO
+		// change position of sprite/object?
 		uint32 xpos = _stream->readUint32LE();
 		uint32 ypos = _stream->readUint32LE();
-		return new SpriteEntry(se_None); // XXX
+		return new SpriteEntryPosition(xpos, ypos);
 	} else if (!strncmp(blockType, STAT, 4)) {
 		// TODO
 		return new SpriteEntry(se_None); // XXX

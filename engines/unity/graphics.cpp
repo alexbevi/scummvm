@@ -117,14 +117,14 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y) {
 	assert(sprite);
 	unsigned int width = sprite->getCurrentWidth();
 	unsigned int height = sprite->getCurrentHeight();
-	blit(sprite->getCurrentData(), x - width/2 + sprite->getXPos(), y - height + sprite->getYPos(), width, height);
+	blit(sprite->getCurrentData(), x - width/2 + sprite->getXAdjust(), y - height + sprite->getYAdjust(), width, height);
 	if (sprite->speaking()) {
 		// XXX: this doesn't work properly, SpritePlayer side probably needs work too
 		unsigned int m_width = sprite->getSpeechWidth();
 		unsigned int m_height = sprite->getSpeechHeight();
 		blit(sprite->getSpeechData(),
-			x - m_width/2 + sprite->getXPos() + sprite->getMouthXPos(),
-			y - height + m_height + sprite->getYPos() + sprite->getMouthYPos(), m_width, m_height);
+			x - m_width/2 + sprite->getXAdjust() + sprite->getMouthXPos(),
+			y - height + m_height + sprite->getYAdjust() + sprite->getMouthYPos(), m_width, m_height);
 	}
 }
 

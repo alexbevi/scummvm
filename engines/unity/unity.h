@@ -41,7 +41,7 @@ protected:
 
 	Screen current_screen;
 
-	Common::Array<Object> objects;
+	Common::Array<Object *> objects;
 	Common::Array<Common::String> sprite_filenames;
 
 	void loadSpriteFilenames();
