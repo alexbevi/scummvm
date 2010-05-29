@@ -34,9 +34,12 @@ void Graphics::drawMRG(Common::String filename, unsigned int entry) {
 
 	uint16 num_entries = mrgStream->readUint16LE();
 	assert(entry < num_entries);
-	assert(mrgStream->seek(entry * 4, SEEK_CUR));
+	bool r;
+	r = mrgStream->seek(entry * 4, SEEK_CUR);
+	assert(r);
 	uint32 offset = mrgStream->readUint32LE();
-	assert(mrgStream->seek(offset, SEEK_SET));
+	r = mrgStream->seek(offset, SEEK_SET);
+	assert(r);
 
 	uint16 width = mrgStream->readUint16LE();
 	uint16 height = mrgStream->readUint16LE();
@@ -139,7 +142,8 @@ void Graphics::drawBackgroundPolys(Common::String filename) {
 	for (unsigned int i = 0; i < num_entries; i++) {
 		Common::Array<Common::Point> points;
 		Common::Array<uint16> distances;
-		assert(mrgStream->seek(offsets[i]));
+		bool r = mrgStream->seek(offsets[i]);
+		assert(r);
 		byte something = mrgStream->readByte();
 		assert(something == 0 || something == 1 || something == 3 || something == 4);
 		uint16 something2 = mrgStream->readUint16LE();
