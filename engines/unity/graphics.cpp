@@ -100,8 +100,8 @@ void Graphics::blit(byte *data, int x, int y, unsigned int width, unsigned int h
 	if (x < 0) startx = -x;
 	if (y < 0) starty = -y;
 	unsigned int usewidth = width, useheight = height;
-	if (x - startx + width > surf->w) usewidth = surf->w - (x - startx);
-	if (y - starty + height > surf->h) useheight = surf->h - (y - starty);
+	if (x + width > surf->w) usewidth = surf->w - x;
+	if (y + height > surf->h) useheight = surf->h - y;
 	for (unsigned int xpos = startx; xpos < usewidth; xpos++) {
 		for (unsigned int ypos = starty; ypos < useheight; ypos++) {
 			byte pixel = data[xpos + ypos*width];
