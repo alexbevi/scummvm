@@ -4,11 +4,11 @@
 
 namespace Unity {
 
-SpritePlayer::SpritePlayer(Sprite *spr, Object *par) : sprite(spr), parent(par) {
+SpritePlayer::SpritePlayer(Sprite *spr, Object *par, UnityEngine *vm) : sprite(spr), parent(par), _vm(vm) {
 	current_entry = ~0;
 	current_sprite = 0;
 	current_speechsprite = 0;
-	wait_start = 0;
+	wait_target = 0;
 
 	next_xadjust = xadjust = 0;
 	next_yadjust = yadjust = 0;
@@ -24,7 +24,7 @@ void SpritePlayer::startAnim(unsigned int a) {
 	assert(current_entry != ~0);
 	//current_sprite = 0; XXX: animations which are just speech sprites cause issues
 	current_speechsprite = 0; // XXX: good?
-	wait_start = 0;
+	wait_target = 0;
 	next_xadjust = xadjust; next_yadjust = yadjust;
 }
 
@@ -113,18 +113,23 @@ void SpritePlayer::update() {
 		case se_Pause:
 			return;
 		case se_RandomWait:
-			// XXX: need to make this work
-			current_entry++;
-			return;
-		case se_Wait:
-			if (!wait_start) {
-				wait_start = g_system->getMillis();
+			if (!wait_target) {
+				unsigned int wait = _vm->_rnd.getRandomNumberRng(
+					((SpriteEntryRandomWait *)e)->lower, ((SpriteEntryRandomWait *)e)->upper);
+				// TODO: is /6 correct? see below
+				wait_target = g_system->getMillis() + wait/6;
 				return;
 			}
-			// TODO: is /4 correct?
-			// example values are 388, 777, 4777, 288, 666, 3188, 2188, 700, 200000, 1088, 272..
-			if (wait_start + ((SpriteEntryWait *)e)->wait/4 < g_system->getMillis()) {
-				wait_start = 0;
+			// fall through
+		case se_Wait:
+			if (!wait_target) {
+				// TODO: is /6 correct? just a guess, so almost certainly not
+				// example values are 388, 777, 4777, 288, 666, 3188, 2188, 700, 200000, 1088, 272..
+				wait_target = g_system->getMillis() + ((SpriteEntryWait *)e)->wait/6;
+				return;
+			}
+			if (wait_target < g_system->getMillis()) {
+				wait_target = 0;
 				current_entry++;
 				continue;
 			}

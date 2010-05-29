@@ -5,6 +5,7 @@
 #include "common/stream.h"
 #include "common/archive.h"
 #include "common/rect.h"
+#include "common/random.h"
 
 namespace Unity {
 
@@ -33,6 +34,8 @@ public:
 
 	Common::SeekableReadStream *openFile(Common::String filename);
 	Common::String getSpriteFilename(unsigned int id);
+
+	Common::RandomSource _rnd;
 
 protected:
 	Graphics *_gfx;

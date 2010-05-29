@@ -12,6 +12,7 @@
 #include "common/file.h"
 #include "common/archive.h"
 #include "graphics/cursorman.h"
+#include "common/EventRecorder.h"
 
 namespace Unity {
 
@@ -50,6 +51,8 @@ UnityEngine::~UnityEngine() {
 }
 
 Common::Error UnityEngine::init() {
+	g_eventRec.registerRandomSource(_rnd, "unity");
+
 	_gfx = new Graphics(this);
 	_snd = new Sound(this);
 
@@ -195,9 +198,9 @@ void UnityEngine::loadObject(unsigned int location, unsigned int screen, unsigne
 	uint16 sprite_id = objstream->readUint16LE();
 	if (sprite_id != 0xffff && sprite_id != 0xfffe) {
 		// TODO: this is so terribly, terribly wrong, and we should be storing *all* objects anyway
-		Common::String filename = getSpriteFilename(sprite_id);
+		Common::String sprfilename = getSpriteFilename(sprite_id);
 		Object *obj = new Object;
-		SpritePlayer *sprite = new SpritePlayer(new Sprite(openFile(filename)), obj);
+		SpritePlayer *sprite = new SpritePlayer(new Sprite(openFile(sprfilename)), obj, this);
 		obj->sprite = sprite;
 		obj->sprite->startAnim(0); // XXX
 		obj->x = world_x;
@@ -229,7 +232,7 @@ Common::Error UnityEngine::run() {
 	for (unsigned int i = 0; i < 4; i++) {
 		Common::String filename = getSpriteFilename(i);
 		Object *obj = new Object;
-		SpritePlayer *sprite = new SpritePlayer(new Sprite(openFile(filename)), obj);
+		SpritePlayer *sprite = new SpritePlayer(new Sprite(openFile(filename)), obj, this);
 		obj->sprite = sprite;
 		objects.push_back(obj);
 	}

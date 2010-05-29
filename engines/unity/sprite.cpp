@@ -106,7 +106,7 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 					indexes[i] = ~0; // XXX
 					i++;
 				} else {
-					assert(_stream->pos() < offsets[i]);
+					assert((uint32)_stream->pos() < offsets[i]);
 					break;
 				}
 			}
@@ -150,11 +150,11 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 
 		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, RAND, 4)) {
-		// TODO: these don't seem to be integers
-		uint32 unknown1 = _stream->readUint32LE(); // TODO
-		uint32 unknown2 = _stream->readUint32LE(); // TODO
-
-		return new SpriteEntry(se_RandomWait); // XXX
+		// wait for a random time
+		uint32 upper = _stream->readUint32LE();
+		uint32 lower = _stream->readUint32LE();
+		if (lower > upper) SWAP(upper, lower);
+		return new SpriteEntryRandomWait(lower, upper);
 	} else if (!strncmp(blockType, JUMP, 4)) {
 		// a jump to an animation
 		uint32 target = _stream->readUint32LE();

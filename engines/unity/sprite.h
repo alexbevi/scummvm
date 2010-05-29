@@ -40,6 +40,11 @@ struct SpriteEntryWait : public SpriteEntry {
 	SpriteEntryWait(unsigned int _w) : SpriteEntry(se_Wait), wait(_w) { }
 };
 
+struct SpriteEntryRandomWait : public SpriteEntry {
+	unsigned int lower, upper;
+	SpriteEntryRandomWait(unsigned int _l, unsigned int _u) : SpriteEntry(se_RandomWait), lower(_l), upper(_u) { }
+};
+
 struct SpriteEntryJump : public SpriteEntry {
 	unsigned int target;
 	SpriteEntryJump(unsigned int _t) : SpriteEntry(se_Jump), target(_t) { }
@@ -85,11 +90,12 @@ protected:
 	bool _isSprite;
 };
 
+class UnityEngine;
 class Object;
 
 class SpritePlayer {
 public:
-	SpritePlayer(Sprite *spr, Object *par);
+	SpritePlayer(Sprite *spr, Object *par, UnityEngine *vm);
 	~SpritePlayer();
 
 	void startAnim(unsigned int a);
@@ -113,6 +119,7 @@ public:
 protected:
 	Sprite *sprite;
 	Object *parent;
+	UnityEngine *_vm;
 
 	int xadjust, yadjust;
 	int next_xadjust, next_yadjust;
@@ -122,7 +129,7 @@ protected:
 	unsigned int current_entry;
 	SpriteEntrySprite *current_sprite, *current_speechsprite;
 
-	unsigned int wait_start;
+	unsigned int wait_target;
 };
 
 } // Unity
