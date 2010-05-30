@@ -244,11 +244,7 @@ Common::Error UnityEngine::run() {
 
 	// beam in an away team
 	for (unsigned int i = 0; i < 4; i++) {
-		Common::String filename = getSpriteFilename(i);
-		Object *obj = new Object;
-		SpritePlayer *sprite = new SpritePlayer(new Sprite(openFile(filename)), obj, this);
-		obj->sprite = sprite;
-		objects.push_back(obj);
+		loadObject(0, 0, i);
 	}
 	unsigned int anim = 26;
 	for (unsigned int i = 0; i < 4; i++) objects[i]->sprite->startAnim(anim);
