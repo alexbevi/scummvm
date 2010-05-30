@@ -138,6 +138,7 @@ void UnityEngine::openLocation(unsigned int location, unsigned int screen) {
 	locstream = openFile(filename);
 
 	// TODO: is there data we need here in w_XXstrt.bst?
+	// (seems to be only trigger activations)
 	while (true) {
 		uint16 counter = locstream->readUint16LE();
 		if (locstream->eos()) break;
@@ -193,7 +194,14 @@ void UnityEngine::loadObject(unsigned int location, unsigned int screen, unsigne
 	uint16 unknown5 = objstream->readUint16LE(); // XXX
 
 	uint16 sprite_id = objstream->readUint16LE();
-	if (sprite_id != 0xffff && sprite_id != 0xfffe) {
+
+	uint16 unknown6 = objstream->readUint16LE(); // XXX
+	uint16 unknown7 = objstream->readUint16LE(); // XXX
+
+	uint8 flags = objstream->readByte();
+
+	// XXX: no idea if 0x20 is correct for active, but it seems so
+	if ((flags & 0x20) == 0x20 && sprite_id != 0xffff && sprite_id != 0xfffe) {
 		// TODO: this is so terribly, terribly wrong, and we should be storing *all* objects anyway
 		Common::String sprfilename = getSpriteFilename(sprite_id);
 		Object *obj = new Object;
