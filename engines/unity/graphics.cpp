@@ -2,21 +2,31 @@
 #include "sprite.h"
 #include "common/system.h"
 #include "graphics/surface.h"
+#include "graphics/cursorman.h"
 
 namespace Unity {
 
 Graphics::Graphics(UnityEngine *_engine) : _vm(_engine) {
 	basePalette = palette = 0;
-	backgroundPixels = 0;
+	background.data = 0;
 }
 
 Graphics::~Graphics() {
 	delete[] basePalette;
 	delete[] palette;
-	delete[] backgroundPixels;
+	for (unsigned int i = 0; i < cursors.size(); i++)
+		delete[] cursors[i].data;
+	for (unsigned int i = 0; i < wait_cursors.size(); i++)
+		delete[] wait_cursors[i].data;
+	delete[] background.data;
 }
 
 void Graphics::init() {
+	loadPalette();
+	loadCursors();
+}
+
+void Graphics::loadPalette() {
 	// read the standard palette entries
 	basePalette = new byte[128 * 4];
 	Common::SeekableReadStream *palStream = _vm->openFile("STANDARD.PAL");
@@ -27,6 +37,43 @@ void Graphics::init() {
 		basePalette[i * 4 + 3] = 0;
 	}
 	delete palStream;
+}
+
+void Graphics::loadCursors() {
+	Common::SeekableReadStream *stream = _vm->openFile("cursor.dat");
+	while (stream->pos() != stream->size()) {
+		Image img;
+		img.width = stream->readUint16LE();
+		img.height = stream->readUint16LE();
+		img.data = new byte[img.width * img.height];
+		stream->read(img.data, img.width * img.height);
+		cursors.push_back(img);
+	}
+	delete stream;
+	stream = _vm->openFile("waitcurs.dat");
+	while (stream->pos() != stream->size()) {
+		Image img;
+		img.width = stream->readUint16LE();
+		img.height = stream->readUint16LE();
+		img.data = new byte[img.width * img.height];
+		stream->read(img.data, img.width * img.height);
+		wait_cursors.push_back(img);
+	}
+	delete stream;
+}
+
+void Graphics::setCursor(unsigned int id, bool wait) {
+	Image *img;
+	if (wait) {
+		assert(id < wait_cursors.size());
+		img = &wait_cursors[id];
+	} else {
+		assert(id < cursors.size());
+		img = &cursors[id];
+	}
+	// TODO: hotspot?
+	CursorMan.replaceCursor(img->data, img->width, img->height, img->width/2, img->height/2, COLOUR_BLANK);
+	CursorMan.showMouse(true);
 }
 
 void Graphics::drawMRG(Common::String filename, unsigned int entry) {
@@ -76,19 +123,19 @@ void Graphics::setBackgroundImage(Common::String filename) {
 	_vm->_system->setPalette(palette, 0, 256);
 
 	// some of the files seem to be 480 high, but just padded with black
-	backgroundWidth = 640;
-	backgroundHeight = 400;
+	background.width = 640;
+	background.height = 400;
 
-	delete[] backgroundPixels;
-	backgroundPixels = new byte[backgroundWidth * backgroundHeight];
-	scrStream->read(backgroundPixels, backgroundWidth * backgroundHeight);
+	delete[] background.data;
+	background.data = new byte[background.width * background.height];
+	scrStream->read(background.data, background.width * background.height);
 	delete scrStream;
 }
 
 void Graphics::drawBackgroundImage() {
-	assert(backgroundPixels);
+	assert(background.data);
 
-	_vm->_system->copyRectToScreen(backgroundPixels, backgroundWidth, 0, 0, backgroundWidth, backgroundHeight);
+	_vm->_system->copyRectToScreen(background.data, background.width, 0, 0, background.width, background.height);
 }
 
 // XXX: default transparent is a hack (see header file)

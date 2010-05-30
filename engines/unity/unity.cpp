@@ -237,6 +237,9 @@ Common::Error UnityEngine::run() {
 	CursorMan.replaceCursor(sciMouseCursor, 11, 16, 1, 1, 0);
 	CursorMan.showMouse(true);
 
+	// and we stomp over it anyway, but this only good for some situations :)
+	_gfx->setCursor(0, false);
+
 	//_snd->playSpeech("02140000.vac");
 
 	// beam in an away team
