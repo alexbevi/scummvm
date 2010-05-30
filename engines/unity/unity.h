@@ -13,10 +13,20 @@ class Graphics;
 class Sound;
 class SpritePlayer;
 
+struct Description {
+	Common::String text;
+	uint32 entry_id;
+	uint32 voice_group, voice_subgroup, voice_id;
+};
+
 struct Object {
-	unsigned int x;
-	unsigned int y;
+	byte world, screen, id;
+	unsigned int x, y;
+	unsigned int width, height;
+	bool active;
 	SpritePlayer *sprite;
+
+	Common::Array<Description> descriptions;
 };
 
 struct Screen {
@@ -35,6 +45,8 @@ public:
 	Common::SeekableReadStream *openFile(Common::String filename);
 	Common::String getSpriteFilename(unsigned int id);
 
+	Object *objectAt(unsigned int x, unsigned int y);
+
 	Common::RandomSource _rnd;
 
 protected:
@@ -48,8 +60,9 @@ protected:
 	Common::Array<Common::String> sprite_filenames;
 
 	void loadSpriteFilenames();
-	void openLocation(unsigned int location, unsigned int screen);
-	void loadObject(unsigned int location, unsigned int screen, unsigned int id);
+	void openLocation(unsigned int world, unsigned int screen);
+	void loadObject(unsigned int world, unsigned int screen, unsigned int id);
+	void readBlock(byte type, Object *obj, Common::SeekableReadStream *objstream);
 };
 
 } // Unity
