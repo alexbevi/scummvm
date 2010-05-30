@@ -139,12 +139,11 @@ void UnityEngine::openLocation(unsigned int location, unsigned int screen) {
 
 	// TODO: is there data we need here in w_XXstrt.bst?
 	while (true) {
-		byte unknown1 = locstream->readByte(); // XXX
+		uint16 counter = locstream->readUint16LE();
 		if (locstream->eos()) break;
-		byte unknown2 = locstream->readByte(); // XXX
 
 		byte id = locstream->readByte();
-		assert(id == unknown1);
+		assert(id == counter);
 		byte _screen = locstream->readByte();
 		assert(_screen == screen);
 		byte _location = locstream->readByte();
@@ -153,15 +152,13 @@ void UnityEngine::openLocation(unsigned int location, unsigned int screen) {
 		byte unknown4 = locstream->readByte();
 		assert(unknown4 == 0);
 
-		char _name[30];
+		char _name[30], _desc[260];
 		locstream->read(_name, 30);
-		char _desc[260];
 		locstream->read(_desc, 260);
 		//printf("reading obj '%s' (%s)\n", _name, _desc);
 
 		loadObject(location, screen, id);
 	}
-	// bytes: XX YY XX screen loc 00 <14 bytes for name> <130 bytes for description>
 
 	delete locstream;
 }
