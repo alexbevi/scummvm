@@ -251,7 +251,6 @@ void UnityEngine::loadObject(unsigned int world, unsigned int screen, unsigned i
 	uint16 unknown24 = objstream->readUint16LE(); // XXX
 	uint16 unknown25 = objstream->readUint16LE(); // XXX
 	uint16 unknown26 = objstream->readUint16LE(); // XXX
-	assert(unknown26 == 0xffff);
 	uint16 unknown27 = objstream->readUint16LE(); // XXX
 	assert(unknown27 == 0x0);
 
