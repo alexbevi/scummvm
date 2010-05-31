@@ -102,6 +102,8 @@ public:
 	unsigned int numAnims() { return sprite->numAnims(); }
 	void update();
 
+	bool valid() { return current_sprite != 0; }
+
 	unsigned int getCurrentHeight();
 	unsigned int getCurrentWidth();
 	byte *getCurrentData();

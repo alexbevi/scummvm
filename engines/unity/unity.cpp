@@ -444,6 +444,10 @@ Common::Error UnityEngine::run() {
 		for (unsigned int i = 0; i < objects.size(); i++) {
 			if (objects[i]->sprite && objects[i]->active) {
 				objects[i]->sprite->update();
+
+				// TODO
+				if (!objects[i]->sprite->valid()) { warning("invalid sprite?"); continue; }
+
 				to_draw.push_back(objects[i]);
 			}
 		}
