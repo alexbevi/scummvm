@@ -35,6 +35,7 @@ public:
 protected:
 	int readBlockHeader(Common::SeekableReadStream *objstream);
 	void readBlock(int type, Common::SeekableReadStream *objstream);
+	void readDescriptionBlock(Common::SeekableReadStream *objstream);
 };
 
 } // Unity

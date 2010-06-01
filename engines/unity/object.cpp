@@ -131,6 +131,8 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 		readBlock(blockType, objstream);
 	}
 
+	assert(descriptions.size() == description_count);
+
 	delete objstream;
 }
 
@@ -145,12 +147,26 @@ int Object::readBlockHeader(Common::SeekableReadStream *objstream) {
 }
 
 void Object::readBlock(int type, Common::SeekableReadStream *objstream) {
-	if (type != 0x1) {
-		// XXX: too lazy to implement the rest right now, ensure EOS
-		objstream->seek(objstream->size());
-		return;
-	}
+	switch (type) {
+		case 0x00:
+			error("header block type encountered after header");
 
+		case 0x01:
+			readDescriptionBlock(objstream);
+			break;
+
+		case 0x40:
+			// should only occur immediately after description block, handled there
+			error("voice entry block encountered outside description");
+
+		default:
+			// XXX: too lazy to implement the rest right now, ensure EOS
+			objstream->seek(objstream->size());
+			break;
+	}
+}
+
+void Object::readDescriptionBlock(Common::SeekableReadStream *objstream) {
 	VERIFY_LENGTH(0xa5);
 
 	byte entry_for = objstream->readByte();
@@ -167,7 +183,7 @@ void Object::readBlock(int type, Common::SeekableReadStream *objstream) {
 	// XXX: is this just corrupt entries and there should be a null byte here?
 	byte unknown2 = objstream->readByte();
 
-	type = readBlockHeader(objstream);
+	int type = readBlockHeader(objstream);
 	assert(type == 0x40);
 	VERIFY_LENGTH(0x0c);
 
