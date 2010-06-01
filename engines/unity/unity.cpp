@@ -109,7 +109,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 	locstream->read(polygons, length);
 	polygons[length] = 0;
 
-	current_screen.polygonsFilename = polygons;
+	loadScreenPolys(polygons);
 
 	current_screen.entrypoints.clear();
 	byte num_entrances = locstream->readByte();
@@ -165,6 +165,52 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 	}
 
 	delete locstream;
+}
+
+void UnityEngine::loadScreenPolys(Common::String filename) {
+	Common::SeekableReadStream *mrgStream = openFile(filename);
+
+	uint16 num_entries = mrgStream->readUint16LE();
+	Common::Array<uint32> offsets;
+	offsets.reserve(num_entries);
+	for (unsigned int i = 0; i < num_entries; i++) {
+		uint32 id = mrgStream->readUint32LE();
+		uint32 offset = mrgStream->readUint32LE();
+		offsets.push_back(offset);
+	}
+
+	current_screen.polygons.clear();
+	current_screen.polygons.reserve(num_entries);
+	for (unsigned int i = 0; i < num_entries; i++) {
+		ScreenPolygon poly;
+
+		bool r = mrgStream->seek(offsets[i]);
+		assert(r);
+
+		poly.type = mrgStream->readByte();
+		assert(poly.type == 0 || poly.type == 1 || poly.type == 3 || poly.type == 4);
+
+		uint16 something2 = mrgStream->readUint16LE();
+		assert(something2 == 0);
+
+		byte count = mrgStream->readByte();
+		for (unsigned int j = 0; j < count; j++) {
+			uint16 x = mrgStream->readUint16LE();
+			uint16 y = mrgStream->readUint16LE();
+
+			// 0-256, higher is nearer (larger characters);
+			// (maybe 0 means not shown at all?)
+			uint16 distance = mrgStream->readUint16LE();
+			assert(distance <= 0x100);
+
+			poly.distances.push_back(distance);
+			poly.points.push_back(Common::Point(x, y));
+		}
+
+		current_screen.polygons.push_back(poly);
+	}
+
+	delete mrgStream;
 }
 
 struct DrawOrderComparison {
@@ -294,7 +340,7 @@ Common::Error UnityEngine::run() {
 		}
 
 		_gfx->drawBackgroundImage();
-		//_gfx->drawBackgroundPolys(current_screen.polygonsFilename);
+		_gfx->drawBackgroundPolys(current_screen.polygons);
 
 		Common::Array<Object *> to_draw;
 		for (unsigned int i = 0; i < objects.size(); i++) {

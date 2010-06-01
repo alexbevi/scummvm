@@ -14,9 +14,17 @@ class Sound;
 class SpritePlayer;
 class Object;
 
+struct ScreenPolygon {
+	byte type;
+
+	Common::Array<Common::Point> points;
+	Common::Array<uint16> distances;
+};
+
 struct Screen {
 	Common::Array<Common::Array<Common::Point> > entrypoints;
-	Common::String polygonsFilename;
+
+	Common::Array<ScreenPolygon> polygons;
 };
 
 class UnityEngine : public Engine {
@@ -46,6 +54,7 @@ protected:
 
 	void loadSpriteFilenames();
 	void openLocation(unsigned int world, unsigned int screen);
+	void loadScreenPolys(Common::String filename);
 };
 
 } // Unity
