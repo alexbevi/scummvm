@@ -24,7 +24,7 @@ public:
 
 	void drawMRG(Common::String filename, unsigned int entry);
 	void drawBackgroundImage();
-	void drawSprite(SpritePlayer *sprite, int x, int y);
+	void drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale = 256);
 	void drawBackgroundPolys(Common::Array<struct ScreenPolygon> &polys);
 	void renderPolygonEdge(Common::Array<Common::Point> &points, byte colour);
 

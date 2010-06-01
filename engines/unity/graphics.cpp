@@ -166,13 +166,39 @@ void Graphics::blit(byte *data, int x, int y, unsigned int width, unsigned int h
 	_vm->_system->unlockScreen();
 }
 
-void Graphics::drawSprite(SpritePlayer *sprite, int x, int y) {
+// TODO: replace this with something that doesn't suck :)
+static void hackyImageScale(byte *src, unsigned int width, unsigned int height,
+	byte *dest, unsigned int destwidth, unsigned int destheight) {
+	for (unsigned int x = 0; x < destwidth; x++) {
+		for (unsigned int y = 0; y < destheight; y++) {
+			unsigned int srcpixel = ((y * height) / destheight) * width + (x * width) / destwidth;
+			dest[y * destwidth + x] = src[srcpixel];
+		}
+	}
+}
+
+void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale) {
 	assert(sprite);
+	byte *data = sprite->getCurrentData();
 	unsigned int width = sprite->getCurrentWidth();
 	unsigned int height = sprite->getCurrentHeight();
-	blit(sprite->getCurrentData(), x - width/2 + sprite->getXAdjust(), y - height + sprite->getYAdjust(), width, height);
+	//int xadjust = sprite->getXAdjust(), yadjust = sprite->getYAdjust();
+
+	if (scale < 256) {
+		unsigned int newwidth = (width * scale) / 256;
+		unsigned int newheight = (height * scale) / 256;
+		// TODO: alloca probably isn't too portable
+		byte *tempbuf = (byte *)alloca(newwidth * newheight);
+		hackyImageScale(data, width, height, tempbuf, newwidth, newheight);
+		width = newwidth;
+		height = newheight;
+		data = tempbuf;
+	}
+
+	blit(data, x - width/2 + sprite->getXAdjust(), y - height + sprite->getYAdjust(), width, height);
 	if (sprite->speaking()) {
 		// XXX: this doesn't work properly, SpritePlayer side probably needs work too
+		// XXX: scaling
 		unsigned int m_width = sprite->getSpeechWidth();
 		unsigned int m_height = sprite->getSpeechHeight();
 		blit(sprite->getSpeechData(),
