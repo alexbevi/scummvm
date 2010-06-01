@@ -46,8 +46,6 @@ protected:
 
 	void loadSpriteFilenames();
 	void openLocation(unsigned int world, unsigned int screen);
-	void loadObject(unsigned int world, unsigned int screen, unsigned int id);
-	void readBlock(byte type, Object *obj, Common::SeekableReadStream *objstream);
 };
 
 } // Unity

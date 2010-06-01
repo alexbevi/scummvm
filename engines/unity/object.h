@@ -4,8 +4,13 @@
 #include "common/array.h"
 #include "common/str.h"
 
+namespace Common {
+	class SeekableReadStream;
+}
+
 namespace Unity {
 
+class UnityEngine;
 class SpritePlayer;
 
 struct Description {
@@ -14,7 +19,8 @@ struct Description {
 	uint32 voice_group, voice_subgroup, voice_id;
 };
 
-struct Object {
+class Object {
+public:
 	byte world, screen, id;
 	unsigned int x, y;
 	unsigned int width, height;
@@ -22,6 +28,11 @@ struct Object {
 	SpritePlayer *sprite;
 
 	Common::Array<Description> descriptions;
+
+	void loadObject(UnityEngine *_vm, unsigned int world, unsigned int screen, unsigned int id);
+
+protected:
+	void readBlock(byte type, Common::SeekableReadStream *objstream);
 };
 
 } // Unity

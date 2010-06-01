@@ -4,6 +4,7 @@ MODULE_OBJS := \
 	debug.o \
 	detection.o \
 	graphics.o \
+	object.o \
 	sound.o \
 	sprite.o \
 	sprite_player.o \
