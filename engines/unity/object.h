@@ -32,7 +32,8 @@ public:
 	void loadObject(UnityEngine *_vm, unsigned int world, unsigned int screen, unsigned int id);
 
 protected:
-	void readBlock(byte type, Common::SeekableReadStream *objstream);
+	int readBlockHeader(Common::SeekableReadStream *objstream);
+	void readBlock(int type, Common::SeekableReadStream *objstream);
 };
 
 } // Unity

@@ -6,12 +6,19 @@
 
 namespace Unity {
 
+#define VERIFY_LENGTH(x) do { uint16 block_length = objstream->readUint16LE(); assert(block_length == x); } while (0)
+
+enum {
+	OBJFLAG_ACTIVE = 0x20
+};
+
 void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int for_screen, unsigned int for_id) {
 	Common::String filename = Common::String::printf("o_%02x%02x%02x.bst", for_world, for_screen, for_id);
 	Common::SeekableReadStream *objstream = _vm->openFile(filename);
 
-	uint32 header = objstream->readUint32LE();
-	assert(header == 0x01281100); // magic header value?
+	int type = readBlockHeader(objstream);
+	assert(type == 0x00);
+	VERIFY_LENGTH(0x128);
 
 	id = objstream->readByte();
 	assert(id == for_id);
@@ -20,8 +27,9 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 	world = objstream->readByte();
 	assert(world == for_world);
 
-	byte unknown1 = objstream->readByte();
-	assert(unknown1 == 0);
+	byte zerobyte = objstream->readByte();
+	assert(zerobyte == 0);
+
 	byte unknown2 = objstream->readByte(); // XXX
 	byte unknown3 = objstream->readByte(); // XXX
 
@@ -55,8 +63,7 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 	uint16 unknown7 = objstream->readUint16LE(); // XXX
 
 	uint8 flags = objstream->readByte();
-	// XXX: no idea if 0x20 is correct for active, but it seems so
-	active = (flags & 0x20) == 0x20;
+	active = (flags & OBJFLAG_ACTIVE) != 0;
 
 	byte unknown9 = objstream->readByte();
 	uint16 unknown10 = objstream->readUint16LE(); // XXX
@@ -101,27 +108,32 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 		assert(unknowna == 0x0);
 	}
 
-	byte blockType = objstream->readByte();
-	while (!objstream->eos()) {
+	int blockType;
+	while ((blockType = readBlockHeader(objstream)) != -1) {
 		readBlock(blockType, objstream);
-		blockType = objstream->readByte();
 	}
 
 	delete objstream;
 }
 
-void Object::readBlock(byte type, Common::SeekableReadStream *objstream) {
+int Object::readBlockHeader(Common::SeekableReadStream *objstream) {
+	byte type = objstream->readByte();
+	if (objstream->eos()) return -1;
+
 	byte header = objstream->readByte();
 	assert(header == 0x11);
 
+	return type;
+}
+
+void Object::readBlock(int type, Common::SeekableReadStream *objstream) {
 	if (type != 0x1) {
 		// XXX: too lazy to implement the rest right now, ensure EOS
 		objstream->seek(objstream->size());
 		return;
 	}
 
-	uint16 block_length = objstream->readUint16LE();
-	assert(block_length == 0xa5);
+	VERIFY_LENGTH(0xa5);
 
 	byte entry_for = objstream->readByte();
 
@@ -137,13 +149,9 @@ void Object::readBlock(byte type, Common::SeekableReadStream *objstream) {
 	// XXX: is this just corrupt entries and there should be a null byte here?
 	byte unknown2 = objstream->readByte();
 
-	// XXX: this is totally a seperate block, but we'll cheat for now
-	type = objstream->readByte();
+	type = readBlockHeader(objstream);
 	assert(type == 0x40);
-	header = objstream->readByte();
-	assert(header == 0x11);
-	block_length = objstream->readUint16LE();
-	assert(block_length == 0x0c);
+	VERIFY_LENGTH(0x0c);
 
 	Description desc;
 	desc.text = text;
