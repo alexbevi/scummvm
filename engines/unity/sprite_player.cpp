@@ -1,6 +1,7 @@
 #include "unity.h"
 #include "sprite.h"
 #include "common/system.h"
+#include "object.h"
 
 namespace Unity {
 

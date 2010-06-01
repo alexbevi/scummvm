@@ -12,22 +12,7 @@ namespace Unity {
 class Graphics;
 class Sound;
 class SpritePlayer;
-
-struct Description {
-	Common::String text;
-	uint32 entry_id;
-	uint32 voice_group, voice_subgroup, voice_id;
-};
-
-struct Object {
-	byte world, screen, id;
-	unsigned int x, y;
-	unsigned int width, height;
-	bool active;
-	SpritePlayer *sprite;
-
-	Common::Array<Description> descriptions;
-};
+class Object;
 
 struct Screen {
 	Common::Array<Common::Array<Common::Point> > entrypoints;

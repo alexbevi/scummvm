@@ -2,6 +2,7 @@
 #include "graphics.h"
 #include "sound.h"
 #include "sprite.h"
+#include "object.h"
 
 #include "common/fs.h"
 #include "common/config-manager.h"
