@@ -9,7 +9,15 @@ namespace Unity {
 #define VERIFY_LENGTH(x) do { uint16 block_length = objstream->readUint16LE(); assert(block_length == x); } while (0)
 
 enum {
+	// XXX
 	OBJFLAG_ACTIVE = 0x20
+};
+
+enum {
+	OBJWALKTYPE_NORMAL = 0x0,
+	OBJWALKTYPE_SCALED = 0x1, // scaled with walkable polygons (e.g. characters)
+	OBJWALKTYPE_TS = 0x2, // transition square
+	OBJWALKTYPE_AS = 0x3
 };
 
 void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int for_screen, unsigned int for_id) {
@@ -41,13 +49,13 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 	x = world_x;
 	y = world_y;
 
-	// XXX: do something with these!
+	// TODO: do something with these!
 	int16 world_z = objstream->readSint16LE();
 	int16 universe_x = objstream->readSint16LE();
 	int16 universe_y = objstream->readSint16LE();
 	int16 universe_z = objstream->readSint16LE();
 
-	// XXX: this doesn't work properly (see DrawOrderComparison)
+	// TODO: this doesn't work properly (see DrawOrderComparison)
 	z_adjust = objstream->readUint16LE();
 
 	uint16 unknown5 = objstream->readUint16LE(); // XXX
@@ -64,15 +72,21 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 	uint16 unknown6 = objstream->readUint16LE(); // XXX
 	uint16 unknown7 = objstream->readUint16LE(); // XXX
 
-	uint8 flags = objstream->readByte();
-	active = (flags & OBJFLAG_ACTIVE) != 0;
+	uint8 objflags = objstream->readByte();
+	active = (objflags & OBJFLAG_ACTIVE) != 0;
 
-	byte unknown9 = objstream->readByte();
-	uint16 unknown10 = objstream->readUint16LE(); // XXX
-	uint16 unknown11 = objstream->readUint16LE(); // XXX
+	byte state = objstream->readByte();
 
-	byte unknown12 = objstream->readByte();
-	byte unknown13 = objstream->readByte();
+	uint8 unknown8 = objstream->readByte(); // XXX: block count
+	uint8 unknown9 = objstream->readByte(); // XXX: same
+	uint8 unknown10 = objstream->readByte(); // XXX: same
+
+	uint8 unknown11 = objstream->readByte();
+	assert(unknown11 == 0);
+
+	byte objwalktype = objstream->readByte();
+	assert(objwalktype <= OBJWALKTYPE_AS);
+	byte description_count = objstream->readByte();
 
 	char _name[20];
 	objstream->read(_name, 20);
@@ -89,12 +103,13 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 	char _str[100];
 	objstream->read(_str, 100);
 
-	uint16 unknown18 = objstream->readUint16LE(); // XXX
-	assert(unknown18 == 0x0);
-	uint16 unknown19 = objstream->readUint16LE(); // XXX
-	assert(unknown19 == 0x0);
-	uint16 unknown20 = objstream->readUint16LE(); // XXX
-	assert(unknown20 == 0x0);
+	uint16 zero16;
+	zero16 = objstream->readUint16LE();
+	assert(zero16 == 0x0);
+	zero16 = objstream->readUint16LE();
+	assert(zero16 == 0x0);
+	zero16 = objstream->readUint16LE();
+	assert(zero16 == 0x0);
 
 	uint16 unknown21 = objstream->readUint16LE(); // XXX
 	uint32 unknown22 = objstream->readUint32LE(); // XXX
@@ -102,12 +117,13 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 	uint16 unknown24 = objstream->readUint16LE(); // XXX
 	uint16 unknown25 = objstream->readUint16LE(); // XXX
 	uint16 unknown26 = objstream->readUint16LE(); // XXX
-	uint16 unknown27 = objstream->readUint16LE(); // XXX
-	assert(unknown27 == 0x0);
+
+	zero16 = objstream->readUint16LE();
+	assert(zero16 == 0x0);
 
 	for (unsigned int i = 0; i < 21; i++) {
-		uint32 unknowna = objstream->readUint32LE(); // XXX
-		assert(unknowna == 0x0);
+		uint32 padding = objstream->readUint32LE();
+		assert(padding == 0x0);
 	}
 
 	int blockType;
