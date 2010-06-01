@@ -169,7 +169,10 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 struct DrawOrderComparison {
 	bool operator() (const Object *a, const Object *b) {
-		return a->y < b->y;
+		int ay = a->y, by = b->y;
+		if (a->z_adjust != 0xffff) ay += a->z_adjust;
+		if (b->z_adjust != 0xffff) by += b->z_adjust;
+		return ay < by;
 	}
 };
 

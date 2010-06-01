@@ -47,7 +47,9 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 	int16 universe_y = objstream->readSint16LE();
 	int16 universe_z = objstream->readSint16LE();
 
-	uint16 unknown4 = objstream->readUint16LE(); // XXX
+	// XXX: this doesn't work properly (see DrawOrderComparison)
+	z_adjust = objstream->readUint16LE();
+
 	uint16 unknown5 = objstream->readUint16LE(); // XXX
 
 	uint16 sprite_id = objstream->readUint16LE();

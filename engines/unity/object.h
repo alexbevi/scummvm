@@ -24,6 +24,7 @@ public:
 	byte world, screen, id;
 	unsigned int x, y;
 	unsigned int width, height;
+	uint16 z_adjust;
 	bool active;
 	SpritePlayer *sprite;
 
