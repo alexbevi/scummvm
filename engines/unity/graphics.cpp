@@ -182,20 +182,18 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 	byte *data = sprite->getCurrentData();
 	unsigned int width = sprite->getCurrentWidth();
 	unsigned int height = sprite->getCurrentHeight();
-	//int xadjust = sprite->getXAdjust(), yadjust = sprite->getYAdjust();
+	unsigned int bufwidth = width, bufheight = height;
 
 	if (scale < 256) {
-		unsigned int newwidth = (width * scale) / 256;
-		unsigned int newheight = (height * scale) / 256;
+		bufwidth = (width * scale) / 256;
+		bufheight = (height * scale) / 256;
 		// TODO: alloca probably isn't too portable
-		byte *tempbuf = (byte *)alloca(newwidth * newheight);
-		hackyImageScale(data, width, height, tempbuf, newwidth, newheight);
-		width = newwidth;
-		height = newheight;
+		byte *tempbuf = (byte *)alloca(bufwidth * bufheight);
+		hackyImageScale(data, width, height, tempbuf, bufwidth, bufheight);
 		data = tempbuf;
 	}
 
-	blit(data, x - width/2 + sprite->getXAdjust(), y - height + sprite->getYAdjust(), width, height);
+	blit(data, x - ((width/2 + sprite->getXAdjust())*(int)scale)/256, y - ((height + sprite->getYAdjust())*(int)scale)/256, bufwidth, bufheight);
 	if (sprite->speaking()) {
 		// XXX: this doesn't work properly, SpritePlayer side probably needs work too
 		// XXX: scaling
@@ -205,6 +203,15 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 			x - m_width/2 + sprite->getXAdjust() + sprite->getMouthXPos(),
 			y - height + m_height + sprite->getYAdjust() + sprite->getMouthYPos(), m_width, m_height);
 	}
+
+	// plot cross at (x, y) loc
+	::Graphics::Surface *surf = _vm->_system->lockScreen();
+	*((byte *)surf->getBasePtr(x-1, y)) = 254;
+	*((byte *)surf->getBasePtr(x+1, y)) = 254;
+	*((byte *)surf->getBasePtr(x, y)) = 254;
+	*((byte *)surf->getBasePtr(x, y-1)) = 254;
+	*((byte *)surf->getBasePtr(x, y+1)) = 254;
+	_vm->_system->unlockScreen();
 }
 
 void Graphics::drawBackgroundPolys(Common::Array<ScreenPolygon> &polys) {
@@ -217,7 +224,13 @@ void Graphics::drawBackgroundPolys(Common::Array<ScreenPolygon> &polys) {
 		if (poly.type == 4) colour = 254; // green
 		else if (poly.type == 0) colour = 225; // brown
 		else if (poly.type == 3) colour = 224; // grayish
-		renderPolygonEdge(poly.points, colour);
+		for (unsigned int j = 0; j < poly.triangles.size(); j++) {
+			Common::Array<Common::Point> points;
+			points.push_back(poly.triangles[j].points[0]);
+			points.push_back(poly.triangles[j].points[1]);
+			points.push_back(poly.triangles[j].points[2]);
+			renderPolygonEdge(points, colour);
+		}
 	}
 }
 

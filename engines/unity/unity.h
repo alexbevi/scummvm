@@ -14,11 +14,21 @@ class Sound;
 class SpritePlayer;
 class Object;
 
+struct Triangle {
+	Common::Point points[3];
+	uint16 distances[3];
+};
+
 struct ScreenPolygon {
+	unsigned int id;
 	byte type;
 
 	Common::Array<Common::Point> points;
 	Common::Array<uint16> distances;
+
+	Common::Array<Triangle> triangles;
+
+	bool insideTriangle(unsigned int x, unsigned int y, unsigned int &triangle);
 };
 
 struct Screen {

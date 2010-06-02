@@ -172,9 +172,11 @@ void UnityEngine::loadScreenPolys(Common::String filename) {
 
 	uint16 num_entries = mrgStream->readUint16LE();
 	Common::Array<uint32> offsets;
+	Common::Array<uint32> ids;
 	offsets.reserve(num_entries);
 	for (unsigned int i = 0; i < num_entries; i++) {
 		uint32 id = mrgStream->readUint32LE();
+		ids.push_back(id);
 		uint32 offset = mrgStream->readUint32LE();
 		offsets.push_back(offset);
 	}
@@ -187,6 +189,7 @@ void UnityEngine::loadScreenPolys(Common::String filename) {
 		bool r = mrgStream->seek(offsets[i]);
 		assert(r);
 
+		poly.id = ids[i];
 		poly.type = mrgStream->readByte();
 		assert(poly.type == 0 || poly.type == 1 || poly.type == 3 || poly.type == 4);
 
@@ -207,10 +210,39 @@ void UnityEngine::loadScreenPolys(Common::String filename) {
 			poly.points.push_back(Common::Point(x, y));
 		}
 
+		for (unsigned int p = 2; p < poly.points.size(); p++) {
+			// make a list of triangle vertices (0, p - 1, p)
+			// this makes the code easier to understand for now
+			Triangle tri;
+			tri.points[0] = poly.points[0];
+			tri.distances[0] = poly.distances[0];
+			tri.points[1] = poly.points[p - 1];
+			tri.distances[1] = poly.distances[p - 1];
+			tri.points[2] = poly.points[p];
+			tri.distances[2] = poly.distances[p];
+			poly.triangles.push_back(tri);
+		}
+
 		current_screen.polygons.push_back(poly);
 	}
 
 	delete mrgStream;
+}
+
+#define DIRECTION(x, y, x1, y1, x2, y2) (((int)y - y1)*(x2 - x1) - ((int)x - x1)*(y2 - y1))
+
+bool ScreenPolygon::insideTriangle(unsigned int x, unsigned int y, unsigned int &triangle) {
+	for (unsigned int i = 0; i < triangles.size(); i++) {
+		int direction = DIRECTION(x, y, triangles[i].points[0].x, triangles[i].points[0].y, triangles[i].points[1].x, triangles[i].points[1].y);
+		bool neg = direction < 0;
+		direction = DIRECTION(x, y, triangles[i].points[1].x, triangles[i].points[1].y, triangles[i].points[2].x, triangles[i].points[2].y);
+		if ((direction < 0) != neg) continue;
+		direction = DIRECTION(x, y, triangles[i].points[2].x, triangles[i].points[2].y, triangles[i].points[0].x, triangles[i].points[0].y);
+		if ((direction < 0) != neg) continue;
+		triangle = i;
+		return true;
+	}
+	return false;
 }
 
 struct DrawOrderComparison {
@@ -356,7 +388,26 @@ Common::Error UnityEngine::run() {
 
 		Common::sort(to_draw.begin(), to_draw.end(), DrawOrderComparison());
 		for (unsigned int i = 0; i < to_draw.size(); i++) {
-			_gfx->drawSprite(to_draw[i]->sprite, to_draw[i]->x, to_draw[i]->y);
+			// XXX: this is obviously a temporary hack
+			unsigned int scale = 256;
+			if (to_draw[i]->scaled) {
+				unsigned int j;
+				unsigned int x = to_draw[i]->x, y = to_draw[i]->y;
+				for (j = 0; j < current_screen.polygons.size(); j++) {
+					ScreenPolygon &poly = current_screen.polygons[j];
+					if (poly.type != 1) continue;
+
+					unsigned int triangle;
+					if (poly.insideTriangle(x, y, triangle)) {
+						// TODO: interpolation
+						scale = poly.triangles[triangle].distances[0];
+						break;
+					}
+				}
+				if (j == current_screen.polygons.size())
+					warning("couldn't find poly for walkable at (%d, %d)", x, y);
+			}
+			_gfx->drawSprite(to_draw[i]->sprite, to_draw[i]->x, to_draw[i]->y, scale);
 		}
 
 		_system->updateScreen();

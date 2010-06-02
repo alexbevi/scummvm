@@ -26,6 +26,7 @@ public:
 	unsigned int width, height;
 	uint16 z_adjust;
 	bool active;
+	bool scaled; // XXX
 	SpritePlayer *sprite;
 
 	Common::Array<Description> descriptions;

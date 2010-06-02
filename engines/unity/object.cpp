@@ -86,6 +86,7 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 
 	byte objwalktype = objstream->readByte();
 	assert(objwalktype <= OBJWALKTYPE_AS);
+	scaled = (objwalktype == OBJWALKTYPE_SCALED); // XXX
 	byte description_count = objstream->readByte();
 
 	char _name[20];
