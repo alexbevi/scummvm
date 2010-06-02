@@ -343,27 +343,40 @@ Common::Error UnityEngine::run() {
 
 				case Common::EVENT_LBUTTONUP: {
 					Object *obj = objectAt(event.mouse.x, event.mouse.y);
-					if (obj && obj->descriptions.size()) {
-						// TODO: this is very wrong, of course :)
-						Description &desc = obj->descriptions[0];
-						Common::String file;
-						file = Common::String::printf("%02x%02x%02x%02x.vac",
-							desc.voice_group, desc.entry_id, desc.voice_subgroup,
-							desc.voice_id);
+					if (!obj) break;
+
+					// TODO: this is very wrong, of course :)
+
+					// use only Picard's entry for now
+					unsigned int i = 0;
+					while (i < obj->descriptions.size() &&
+						obj->descriptions[i].entry_id != 0) i++;
+					if (i == obj->descriptions.size()) break;
+
+					Description &desc = obj->descriptions[i];
+
+					// TODO: this is broken
+					// for these in-area files, it's sometimes %02x%c%1x%02x%02x.vac ?!
+					// where %c is 'l' or 't' - i haven't worked out why yet
+
+					Common::String file;
+					file = Common::String::printf("%02x%c%1x%02x%02x.vac",
+						desc.voice_group, 'l', desc.voice_subgroup,
+						desc.entry_id, desc.voice_id);
+
+					if (!SearchMan.hasFile(file)) {
+						file = Common::String::printf("%02x%c%1x%02x%02x.vac",
+							desc.voice_group, 't', desc.voice_subgroup,
+							desc.entry_id, desc.voice_id);
+
 						if (!SearchMan.hasFile(file)) {
-							// TODO: this is broken
-							// for these in-area files, it's sometimes %02x%c%1x%02x%02x.vac ?!
-							// where %c is 'l' or 't' - i haven't worked out why yet
-							file = Common::String::printf("%02x%c%1x%02x%02x.vac",
-								desc.voice_group, 'l', desc.voice_subgroup,
-								desc.entry_id, desc.voice_id);
-							if (!SearchMan.hasFile(file))
-								file = Common::String::printf("%02x%c%1x%02x%02x.vac",
-								desc.voice_group, 't', desc.voice_subgroup,
-								desc.entry_id, desc.voice_id);
+							file = Common::String::printf("%02x%02x%02x%02x.vac",
+								desc.voice_group, desc.entry_id,
+								desc.voice_subgroup, desc.voice_id);
 						}
-						_snd->playSpeech(file);
 					}
+
+					_snd->playSpeech(file);
 					} break;
 
 				default:
