@@ -22,7 +22,7 @@ SpritePlayer::~SpritePlayer() {
 
 void SpritePlayer::startAnim(unsigned int a) {
 	current_entry = sprite->getIndexFor(a);
-	assert(current_entry != ~0);
+	assert(current_entry != (unsigned int)~0);
 	//current_sprite = 0; XXX: animations which are just speech sprites cause issues
 	current_speechsprite = 0; // XXX: good?
 	wait_target = 0;
@@ -137,7 +137,7 @@ void SpritePlayer::update() {
 			return;
 		case se_Jump:
 			current_entry = sprite->getIndexFor(((SpriteEntryJump *)e)->target);
-			assert(current_entry != ~0);
+			assert(current_entry != (unsigned int)~0);
 			if (old_entry == current_entry) {
 				// XXX: work out why this happens: missing handling?
 				error("sprite file in infinite loop");

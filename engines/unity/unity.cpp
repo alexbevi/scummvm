@@ -97,7 +97,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 	// XXX: null-terminated in file?
 	byte length = locstream->readByte();
-	char background[length + 1];
+	char *background = (char *)alloca(length + 1);
 	locstream->read(background, length);
 	background[length] = 0;
 
@@ -105,7 +105,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 	// XXX: null-terminated in file?
 	length = locstream->readByte();
-	char polygons[length + 1];
+	char *polygons = (char *)alloca(length + 1);
 	locstream->read(polygons, length);
 	polygons[length] = 0;
 
@@ -257,7 +257,7 @@ struct DrawOrderComparison {
 Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		if (!objects[i]->active) continue;
-		if (objects[i]->width == ~0) continue;
+		if (objects[i]->width == (unsigned int)~0) continue;
 
 		// TODO: should we be doing this like this, or keeping track of original coords, or what?
 		if (objects[i]->x - objects[i]->width/2 > x) continue;
