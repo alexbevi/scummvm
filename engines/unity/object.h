@@ -13,6 +13,9 @@ namespace Unity {
 class UnityEngine;
 class SpritePlayer;
 
+struct EntryList {
+};
+
 struct Description {
 	Common::String text;
 	uint32 entry_id;
@@ -30,12 +33,16 @@ public:
 	SpritePlayer *sprite;
 
 	Common::Array<Description> descriptions;
+	EntryList use_entries, get_entries, look_entries, timer_entries;
 
 	void loadObject(UnityEngine *_vm, unsigned int world, unsigned int screen, unsigned int id);
 
 protected:
 	int readBlockHeader(Common::SeekableReadStream *objstream);
 	void readBlock(int type, Common::SeekableReadStream *objstream);
+	void readEntryList(Common::SeekableReadStream *objstream, EntryList &entries);
+	void readEntry(int type, Common::SeekableReadStream *objstream, EntryList &entries);
+	void readDescriptions(Common::SeekableReadStream *objstream);
 	void readDescriptionBlock(Common::SeekableReadStream *objstream);
 };
 
