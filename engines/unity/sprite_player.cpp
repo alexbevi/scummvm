@@ -112,6 +112,7 @@ void SpritePlayer::update() {
 			current_entry++;
 			break;
 		case se_Pause:
+		case se_Exit:
 			return;
 		case se_RandomWait:
 			if (!wait_target) {
@@ -144,9 +145,6 @@ void SpritePlayer::update() {
 			}
 			old_entry = current_entry;
 			break;
-		case se_Exit:
-			// XXX: what to do here? this does happen (COMP followed by EXIT)
-			return;
 		default:
 			assert(false);
 		}
