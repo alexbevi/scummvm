@@ -20,6 +20,7 @@ enum SpriteEntryType {
 	se_Position,
 	se_RelPos,
 	se_MouthPos,
+	se_Mark,
 	se_Exit
 };
 
@@ -113,25 +114,34 @@ public:
 	unsigned int getSpeechWidth();
 	byte *getSpeechData();
 
-	int getXAdjust() { return xadjust; }
-	int getYAdjust() { return yadjust; }
-	int getMouthXPos() { return m_xpos; }
-	int getMouthYPos() { return m_ypos; }
+	int getXPos() { return normal.xpos; }
+	int getYPos() { return normal.ypos; }
+	int getXAdjust() { return normal.xadjust; }
+	int getYAdjust() { return normal.yadjust; }
+	int getSpeechXPos() { return speech.xpos; }
+	int getSpeechYPos() { return speech.ypos; }
+	int getSpeechXAdjust() { return speech.xadjust; }
+	int getSpeechYAdjust() { return speech.yadjust; }
 
 protected:
 	Sprite *sprite;
 	Object *parent;
 	UnityEngine *_vm;
 
-	int xadjust, yadjust;
-	int next_xadjust, next_yadjust;
-	int m_xpos, m_ypos;
-	int next_m_xpos, next_m_ypos;
+	struct PosInfo {
+		int xpos, ypos;
+		int xadjust, yadjust;
+	};
+
+	PosInfo normal, speech;
+	bool was_speech;
 
 	unsigned int current_entry;
 	SpriteEntrySprite *current_sprite, *current_speechsprite;
 
 	unsigned int wait_target;
+
+	void resetState();
 };
 
 } // Unity

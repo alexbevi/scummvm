@@ -142,7 +142,7 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		return new SpriteEntry(se_Exit);
 	} else if (!strncmp(blockType, MARK, 4)) {
 		// TODO
-		return new SpriteEntry(se_None); // XXX
+		return new SpriteEntry(se_Mark);
 	} else if (!strncmp(blockType, SETF, 4)) {
 		// TODO: set flag?
 		uint32 unknown = _stream->readUint32LE();

@@ -193,15 +193,42 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 		data = tempbuf;
 	}
 
-	blit(data, x - ((width/2 + sprite->getXAdjust())*(int)scale)/256, y - ((height + sprite->getYAdjust())*(int)scale)/256, bufwidth, bufheight);
+	// XXX: what's the sane behaviour here?
+	unsigned int targetx = x;
+	if (sprite->getXPos() != 0) targetx = sprite->getXPos();
+	unsigned int targety = y;
+	if (sprite->getYPos() != 0) targety = sprite->getYPos();
+
+	//printf("target x %d, y %d, adjustx %d, adjusty %d\n", sprite->getXPos(), sprite->getYPos(),
+	//	sprite->getXAdjust(), sprite->getYAdjust());
+	blit(data, targetx - ((width/2 + sprite->getXAdjust())*(int)scale)/256, targety - ((height + sprite->getYAdjust())*(int)scale)/256, bufwidth, bufheight);
 	if (sprite->speaking()) {
 		// XXX: this doesn't work properly, SpritePlayer side probably needs work too
-		// XXX: scaling
+		data = sprite->getSpeechData();
 		unsigned int m_width = sprite->getSpeechWidth();
 		unsigned int m_height = sprite->getSpeechHeight();
+		bufwidth = m_width;
+		bufwidth = m_height;
+
+		if (scale < 256) {
+			bufwidth = (m_width * scale) / 256;
+			bufheight = (m_height * scale) / 256;
+			// TODO: alloca probably isn't too portable
+			byte *tempbuf = (byte *)alloca(bufwidth * bufheight);
+			hackyImageScale(data, m_width, m_height, tempbuf, bufwidth, bufheight);
+			data = tempbuf;
+		}
+
+		// XXX: what's the sane behaviour here?
+		if (sprite->getSpeechXPos() != 0) targetx = sprite->getSpeechXPos();
+		if (sprite->getSpeechYPos() != 0) targety = sprite->getSpeechYPos();
+
+		//printf("speech target x %d, y %d, adjustx %d, adjusty %d\n",
+		//	sprite->getSpeechXPos(), sprite->getSpeechYPos(),
+		//	sprite->getSpeechXAdjust(), sprite->getSpeechYAdjust());
 		blit(sprite->getSpeechData(),
-			x - m_width/2 + sprite->getXAdjust() + sprite->getMouthXPos(),
-			y - height + m_height + sprite->getYAdjust() + sprite->getMouthYPos(), m_width, m_height);
+			targetx - ((m_width/2 + sprite->getSpeechXAdjust())*(int)scale)/256,
+			targety - (((int)m_height - sprite->getSpeechYAdjust())*(int)scale)/256, m_width, m_height);
 	}
 
 	// plot cross at (x, y) loc

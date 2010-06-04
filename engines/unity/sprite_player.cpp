@@ -11,22 +11,31 @@ SpritePlayer::SpritePlayer(Sprite *spr, Object *par, UnityEngine *vm) : sprite(s
 	current_speechsprite = 0;
 	wait_target = 0;
 
-	next_xadjust = xadjust = 0;
-	next_yadjust = yadjust = 0;
-	next_m_xpos = m_xpos = 0;
-	next_m_ypos = m_ypos = 0;
+	normal.xpos = normal.ypos = 0;
+	normal.xadjust = normal.yadjust = 0;
+	speech.xpos = speech.ypos = 0;
+	speech.xadjust = speech.yadjust = 0;
+
+	was_speech = false;
 }
 
 SpritePlayer::~SpritePlayer() {
 }
 
+void SpritePlayer::resetState() {
+	was_speech = false;
+	normal.xadjust = normal.yadjust = 0;
+	speech.xadjust = speech.yadjust = 0;
+
+	current_speechsprite = 0; // XXX: good?
+	wait_target = 0;
+}
+
 void SpritePlayer::startAnim(unsigned int a) {
 	current_entry = sprite->getIndexFor(a);
 	assert(current_entry != (unsigned int)~0);
-	//current_sprite = 0; XXX: animations which are just speech sprites cause issues
-	current_speechsprite = 0; // XXX: good?
-	wait_target = 0;
-	next_xadjust = xadjust; next_yadjust = yadjust;
+
+	resetState();
 }
 
 unsigned int SpritePlayer::getCurrentWidth() {
@@ -76,44 +85,56 @@ void SpritePlayer::update() {
 		case se_Sprite:
 			current_sprite = (SpriteEntrySprite *)e;
 			// XXX: don't understand how this works either
-			xadjust = next_xadjust;
-			yadjust = next_yadjust;
+			was_speech = false;
 			current_entry++;
 			break;
 		case se_SpeechSprite:
 			current_speechsprite = (SpriteEntrySprite *)e;
 			// XXX: don't understand how this works :(
-			m_xpos = next_m_xpos;
-			m_ypos = next_m_ypos;
+			was_speech = true;
 			current_entry++;
 			break;
 		case se_Position:
 			current_entry++;
 			{
 				SpriteEntryPosition *p = (SpriteEntryPosition *)e;
-				parent->x = p->newx;
-				parent->y = p->newy;
+				if (was_speech) {
+					speech.xpos = p->newx;
+					speech.ypos = p->newy;
+				} else {
+					normal.xpos = p->newx;
+					normal.ypos = p->newy;
+				}
 			}
 			break;
 		case se_RelPos:
 			{
 				SpriteEntryRelPos *p = (SpriteEntryRelPos *)e;
-				next_xadjust = p->adjustx;
-				next_yadjust = p->adjusty;
+				if (was_speech) {
+					speech.xadjust = p->adjustx;
+					speech.yadjust = p->adjusty;
+				} else {
+					normal.xadjust = p->adjustx;
+					normal.yadjust = p->adjusty;
+				}
 			}
 			current_entry++;
 			break;
 		case se_MouthPos:
 			{
 				SpriteEntryMouthPos *p = (SpriteEntryMouthPos *)e;
-				next_m_xpos = p->adjustx;
-				next_m_ypos = p->adjusty;
+				// TODO: okay, this isn't MouthPos :-) what is it?
+				// set on characters, drones, cable, welds..
 			}
 			current_entry++;
 			break;
 		case se_Pause:
 		case se_Exit:
 			return;
+		case se_Mark:
+			// XXX: do something here
+			current_entry++;
+			break;
 		case se_RandomWait:
 			if (!wait_target) {
 				unsigned int wait = _vm->_rnd.getRandomNumberRng(
@@ -144,6 +165,7 @@ void SpritePlayer::update() {
 				error("sprite file in infinite loop");
 			}
 			old_entry = current_entry;
+			resetState();
 			break;
 		default:
 			assert(false);
