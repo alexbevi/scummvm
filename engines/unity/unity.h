@@ -65,6 +65,9 @@ protected:
 	void loadSpriteFilenames();
 	void openLocation(unsigned int world, unsigned int screen);
 	void loadScreenPolys(Common::String filename);
+
+	void startBridge();
+	void startAwayTeam(unsigned int world, unsigned int screen);
 };
 
 } // Unity

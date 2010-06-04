@@ -270,6 +270,50 @@ Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 	return 0;
 }
 
+void UnityEngine::startBridge() {
+	const char *bridge_sprites[9] = {
+		"brdgldor.spr", // Left Door (conference room)
+		"brdgdoor.spr", // Door
+		"brdgworf.spr", // Worf
+		"brdgtroi.spr", // Troi
+		"brdgdata.spr", // Data
+		"brdgrikr.spr", // Riker
+		"brdgpica.spr", // Picard
+		"brdgtitl.spr", // Episode Title
+		0 };
+
+	for (unsigned int i = 0; bridge_sprites[i] != 0; i++) {
+		Object *obj = new Object;
+		obj->x = obj->y = 0;
+		obj->z_adjust = 0xffff;
+		obj->active = true;
+		obj->scaled = false;
+		obj->sprite = new SpritePlayer(new Sprite(openFile(bridge_sprites[i])), obj, this);;
+		obj->sprite->startAnim(0);
+		objects.push_back(obj);
+	}
+
+	_gfx->setBackgroundImage("bridge.rm");
+}
+
+void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
+	// beam in an away team
+	for (unsigned int i = 0; i < 4; i++) {
+		Object *obj = new Object;
+		obj->loadObject(this, 0, 0, i);
+		objects.push_back(obj);
+	}
+
+	openLocation(world, screen);
+	for (unsigned int i = 0; i < 4; i++) {
+		objects[i]->x = current_screen.entrypoints[0][i].x;
+		objects[i]->y = current_screen.entrypoints[0][i].y;
+	}
+
+	// draw UI
+	_gfx->drawMRG("awayteam.mrg", 0);
+}
+
 Common::Error UnityEngine::run() {
 	init();
 
@@ -286,27 +330,12 @@ Common::Error UnityEngine::run() {
 	// and we stomp over it anyway, but this only good for some situations :)
 	_gfx->setCursor(0, false);
 
-	//_snd->playSpeech("02140000.vac");
-
-	// beam in an away team
-	for (unsigned int i = 0; i < 4; i++) {
-		Object *obj = new Object;
-		obj->loadObject(this, 0, 0, i);
-		objects.push_back(obj);
-	}
-	unsigned int anim = 26;
-	for (unsigned int i = 0; i < 4; i++) objects[i]->sprite->startAnim(anim);
-
 	unsigned int curr_loc = 4;
 	unsigned int curr_screen = 1;
-	openLocation(curr_loc, curr_screen);
-	for (unsigned int i = 0; i < 4; i++) {
-		objects[i]->x = current_screen.entrypoints[0][i].x;
-		objects[i]->y = current_screen.entrypoints[0][i].y;
-	}
+	startAwayTeam(curr_loc, curr_screen);
 
-	// draw UI
-	_gfx->drawMRG("awayteam.mrg", 0);
+	unsigned int anim = 26;
+	for (unsigned int i = 0; i < 4; i++) objects[i]->sprite->startAnim(anim);
 
 	Common::Event event;
 	while (!shouldQuit()) {
