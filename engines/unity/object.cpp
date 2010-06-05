@@ -39,31 +39,37 @@ enum {
 	// TODO: 0x26, 0x27 for CHOICE
 
 	BLOCK_CONV_RESPONSE = 0x28,
-	// TODO: 0x29
-	// 0x30, 0x31 unused?
+	BLOCK_CONV_WHOCANSAY = 0x29,
+	BLOCK_CONV_CHANGEACT = 0x30,
+	// TODO: 0x31
 	// TODO: 0x32
 	// TODO: 0x33
 	BLOCK_CONV_ENTRY = 0x34,
-	// TODO: 0x35
+	BLOCK_CONV_RESULT = 0x35,
 
-	// TODO: 0x36
-	// TODO: 0x37
-	// TODO: 0x38
+	BLOCK_PHASER_STUN = 0x36,
+	BLOCK_PHASER_GTP = 0x37,
+	BLOCK_PHASER_KILL = 0x38,
 	BLOCK_PHASER_RECORD = 0x39,
 
 	BLOCK_SPEECH_INFO = 0x40
 };
 
 enum {
-	// XXX
-	OBJFLAG_ACTIVE = 0x20
+	OBJFLAG_WALK = 0x01,
+	OBJFLAG_USE = 0x02,
+	OBJFLAG_TALK = 0x04,
+	OBJFLAG_GET = 0x08,
+	OBJFLAG_LOOK = 0x10,
+	OBJFLAG_ACTIVE = 0x20,
+	OBJFLAG_INVENTORY = 0x40
 };
 
 enum {
 	OBJWALKTYPE_NORMAL = 0x0,
 	OBJWALKTYPE_SCALED = 0x1, // scaled with walkable polygons (e.g. characters)
 	OBJWALKTYPE_TS = 0x2, // transition square
-	OBJWALKTYPE_AS = 0x3
+	OBJWALKTYPE_AS = 0x3 // action square
 };
 
 void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int for_screen, unsigned int for_id) {
