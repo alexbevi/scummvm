@@ -314,6 +314,39 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 	_gfx->drawMRG("awayteam.mrg", 0);
 }
 
+void UnityEngine::startupScreen() {
+	// play two animations (both logo anim followed by text) from one file
+	SpritePlayer *p = new SpritePlayer(new Sprite(openFile("legaleze.spr")), 0, this);
+	unsigned int anim = 0;
+	p->startAnim(anim);
+	while (true) {
+		Common::Event event;
+		bool escape = false;
+		while (_eventMan->pollEvent(event)) {
+			if (event.type == Common::EVENT_KEYUP) {
+				// note that the original game didn't allow escape
+				// until the first animation was done
+				escape = true;
+			}
+		}
+		if (escape) break;
+
+		p->update();
+		if (!p->playing()) {
+			// TODO: should pause for some period of time after each anim
+			if (anim == 0) {
+				anim = 1;
+				p->startAnim(anim);
+			}
+			else
+				break;
+		}
+		_gfx->drawSprite(p, 0, 0, 256);
+		_system->updateScreen();
+	}
+	delete p;
+}
+
 Common::Error UnityEngine::run() {
 	init();
 
