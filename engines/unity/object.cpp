@@ -8,6 +8,13 @@ namespace Unity {
 
 #define VERIFY_LENGTH(x) do { uint16 block_length = objstream->readUint16LE(); assert(block_length == x); } while (0)
 
+objectID readObjectID(Common::SeekableReadStream *stream) {
+	objectID r;
+	stream->read(&r, 4);
+	assert(r.unused == 0);
+	return r;
+}
+
 enum {
 	BLOCK_OBJ_HEADER = 0x0,
 	BLOCK_DESCRIPTION = 0x1,
@@ -81,15 +88,10 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 		error("bad block type %x encountered at start of object", type);
 	VERIFY_LENGTH(0x128);
 
-	id = objstream->readByte();
-	assert(id == for_id);
-	screen = objstream->readByte();
-	assert(screen == for_screen);
-	world = objstream->readByte();
-	assert(world == for_world);
-
-	byte zerobyte = objstream->readByte();
-	assert(zerobyte == 0);
+	id = readObjectID(objstream);
+	assert(id.id == for_id);
+	assert(id.screen == for_screen);
+	assert(id.world == for_world);
 
 	byte unknown2 = objstream->readByte(); // XXX
 	byte unknown3 = objstream->readByte(); // XXX

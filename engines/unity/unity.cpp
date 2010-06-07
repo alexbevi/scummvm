@@ -144,15 +144,10 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 		uint16 counter = locstream->readUint16LE();
 		if (locstream->eos()) break;
 
-		byte id = locstream->readByte();
-		assert(id == counter);
-		byte _screen = locstream->readByte();
-		assert(_screen == screen);
-		byte _world = locstream->readByte();
-		assert(_world == world);
-
-		byte unknown4 = locstream->readByte();
-		assert(unknown4 == 0);
+		objectID id = readObjectID(locstream);
+		assert(id.id == counter);
+		assert(id.screen == screen);
+		assert(id.world == world);
 
 		char _name[30], _desc[260];
 		locstream->read(_name, 30);
@@ -160,7 +155,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 		//printf("reading obj '%s' (%s)\n", _name, _desc);
 
 		Object *obj = new Object;
-		obj->loadObject(this, world, screen, id);
+		obj->loadObject(this, id.world, id.screen, id.id);
 		objects.push_back(obj);
 	}
 

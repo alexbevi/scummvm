@@ -13,6 +13,15 @@ namespace Unity {
 class UnityEngine;
 class SpritePlayer;
 
+struct objectID {
+	byte id;
+	byte screen;
+	byte world;
+	byte unused;
+};
+
+objectID readObjectID(Common::SeekableReadStream *stream);
+
 struct EntryList {
 };
 
@@ -24,7 +33,7 @@ struct Description {
 
 class Object {
 public:
-	byte world, screen, id;
+	objectID id;
 	unsigned int x, y;
 	unsigned int width, height;
 	uint16 z_adjust;
