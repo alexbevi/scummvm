@@ -26,6 +26,7 @@ const char MPOS[4] = {'S', 'O', 'P', 'M' };
 const char SILE[4] = {'E', 'L', 'I', 'S' };
 const char OBJS[4] = {'S', 'J', 'B', 'O' };
 const char RGBP[4] = {'P', 'B', 'G', 'R' };
+const char BSON[4] = {'N', 'O', 'S', 'B' };
 
 Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 	assert(_stream);
@@ -207,6 +208,9 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		uint32 unknown = _stream->readUint32LE();
 		assert(unknown == 1 || (unknown >= 3 && unknown <= 7)); // always 1, 3, 4, 5, 6 or 7
 		return new SpriteEntry(se_None); // XXX
+	} else if (!strncmp(blockType, BSON, 4)) {
+		// used only in legaleze.spr
+		return new SpriteEntry(se_None); // XXX
 	} else {
 		error("unknown sprite block type %c%c%c%c", blockType[3], blockType[2], blockType[1], blockType[0]);
 	}
@@ -247,7 +251,8 @@ void Sprite::readCompressedImage(uint32 size, SpriteEntrySprite *img) {
 		_stream->skip(size - 12);
 		return;
 	}
-	assert(unknown3 == 0xd);
+	// legaleze.spr uses 0xed
+	assert(unknown3 == 0xd || unknown3 == 0xed);
 
 	//printf("compressed image, size 0x%x x 0x%x (%d), actual size %d, param1 0x%x, param2 0x%x\n",
 	//	width, height, width * height, size - 12, unknown3, unknown4);
