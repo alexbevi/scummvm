@@ -72,6 +72,11 @@ byte *SpritePlayer::getSpeechData() {
 	return current_speechsprite->data;
 }
 
+bool SpritePlayer::playing() {
+	SpriteEntry *e = sprite->getEntry(current_entry);
+	assert(e);
+	return !(e->type == se_Pause || e->type == se_Exit);
+}
 
 void SpritePlayer::update() {
 	unsigned int old_entry = ~0;
