@@ -68,7 +68,7 @@ private:
 	// MIDI-Related Variables
 	MidiParser *_midiParser;
 	MidiDriver *_midiDriver;
-	MidiDriverType _midiDriverType;	
+	uint32 _midiDevice;	
 };
 
 }

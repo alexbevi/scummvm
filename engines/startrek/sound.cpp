@@ -43,8 +43,9 @@ Sound::Sound(StarTrekEngine *vm) : _vm(vm) {
 		else
 			_midiParser = MidiParser::createParser_XMIDI();
 			
-		_midiDriverType = MidiDriver::detectMusicDriver(MDT_PCSPK|MDT_ADLIB|MDT_MIDI);
-		_midiDriver = MidiDriver::createMidi(_midiDriverType);
+		_midiDevice = MidiDriver::detectDevice(MDT_PCSPK|MDT_ADLIB|MDT_MIDI);
+		printf("device = %d\n", _midiDevice);
+		_midiDriver = MidiDriver::createMidi(_midiDevice);
 		_midiDriver->open();
 		_midiParser->setMidiDriver(_midiDriver);
 		_midiParser->setTimerRate(_midiDriver->getBaseTempo());
@@ -95,11 +96,11 @@ void Sound::playSMFSound(const char *baseSoundName) {
 	
 	soundName += '.';
 	
-	switch (_midiDriverType) {
-		case MD_MT32:
+	switch (MidiDriver::getMusicType(_midiDevice)) {
+		case MT_MT32:
 			soundName += "ROL";
 			break;
-		case MD_PCSPK:
+		case MT_PCSPK:
 			return; // Not supported...
 		default:
 			soundName += "ADL";
@@ -122,11 +123,11 @@ void Sound::playXMIDISound(const char *baseSoundName) {
 	
 	soundName += '.';
 	
-	switch (_midiDriverType) {
-		case MD_MT32:
+	switch (MidiDriver::getMusicType(_midiDevice)) {
+		case MT_MT32:
 			soundName += "MT";
 			break;
-		case MD_PCSPK:
+		case MT_PCSPK:
 			soundName += "PC";
 			break;
 		default:
