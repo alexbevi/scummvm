@@ -180,9 +180,7 @@ void KomEngine::gameLoop() {
 	// Main game loop
 	while (_gameLoopState == GAMELOOP_RUNNING) {
 
-		if (_debugger->isAttached()) {
-			_debugger->onFrame();
-		}
+		_debugger->onFrame();
 
 		if (_game->player()->sleepTimer == 0)
 			_input->loopInput();
