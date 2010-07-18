@@ -212,7 +212,7 @@ bool Interpreter::manageEvents() {
 	Common::Event event;
 
 	// Handle display of debugger if it's active
-	if (isAttached() && (g_system->getMillis() >= (_priorDebugTicks + GARGOYLE_FRAME_DELAY))) {
+	if ((g_system->getMillis() >= (_priorDebugTicks + GARGOYLE_FRAME_DELAY))) {
 		_priorDebugTicks = g_system->getMillis();
 		onFrame();
 	}
