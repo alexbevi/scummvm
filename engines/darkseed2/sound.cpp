@@ -174,7 +174,7 @@ bool Sound::playAIF(Common::SeekableReadStream &aif, int *id,
 	aif.seek(0);
 
 	// Load AIF
-	Audio::AudioStream *aifStream = Audio::makeAIFFStream(aif);
+	Audio::AudioStream *aifStream = Audio::makeAIFFStream(&aif, DisposeAfterUse::NO);
 	if (!aifStream)
 		return false;
 

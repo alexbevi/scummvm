@@ -88,6 +88,8 @@ public:
 
 	/** Return the sprite's palette. */
 	const Palette &getPalette() const;
+	/** Set the sprite's palette */
+	void setPalette(const Palette &palette);
 
 	/** Create a new sprite with the specified dimensions. */
 	void create(int32 width, int32 height);

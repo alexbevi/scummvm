@@ -208,8 +208,6 @@ private:
 
 	/** Initialize the game palette. */
 	void initPalette();
-	/** Apply the game palette. */
-	void applyGamePalette();
 
 	/** Redraw the dirty screen areas. */
 	void redraw();

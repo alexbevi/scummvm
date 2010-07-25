@@ -48,8 +48,6 @@ Movie::Movie(Audio::Mixer &mixer, Graphics &graphics, Cursors &cursors, Sound &s
 	_doubling = false;
 	_cursorVisible = false;
 
-	_buffer = 0;
-
 	_x = 0;
 	_y = 0;
 
@@ -83,8 +81,6 @@ bool Movie::play(const Common::String &avi, int32 x, int32 y) {
 	_area = Common::Rect(_aviDecoder->getWidth(), _aviDecoder->getHeight());
 	_screen.create(_aviDecoder->getWidth(), _aviDecoder->getHeight());
 
-	_buffer = new byte[_aviDecoder->getWidth() * _aviDecoder->getHeight()];
-
 	_graphics->enterMovieMode();
 
 	_x = x;
@@ -117,29 +113,26 @@ void Movie::updateStatus() {
 	if (!isPlaying())
 		return;
 
-	// TODO: Apparently, the AVI decoder is useless ATM when playing 8bpp videos while in 16bpp mode.
-	//       It directly applies the palette to the O_System, but that ignores palettes when not in
-	//       a paletted mode. Great. \o/
-	warning("Playing movie \"%s\"", _fileName.c_str());
-	stop();
-	return;
-
-	if (_aviDecoder->getCurFrame() >= _aviDecoder->getFrameCount()) {
+	if (_aviDecoder->endOfVideo()) {
 		stop();
 		return;
 	}
 
-	_aviDecoder->decodeNextFrame();
-	_aviDecoder->copyFrameToBuffer(_buffer, 0, 0, _aviDecoder->getWidth());
+	::Graphics::Surface *frame = _aviDecoder->decodeNextFrame();
 
-	_screen.copyFrom(_buffer, true);
+	if (frame)
+		_screen.copyFrom((byte *)frame->pixels, false);
+
+	if (_aviDecoder->hasDirtyPalette()) {
+		Palette newPalette;
+		newPalette.copyFrom(_aviDecoder->getPalette(), 256);
+		_screen.setPalette(newPalette);
+	}
 
 	_graphics->requestRedraw(_area);
 }
 
 void Movie::redraw(Sprite &sprite, Common::Rect area) {
-	return;
-
 	if (!_area.intersects(area))
 		return;
 
@@ -157,7 +150,7 @@ uint32 Movie::getFrameWaitTime() const {
 	if (!isPlaying())
 		return 0;
 
-	return _aviDecoder->getFrameWaitTime();
+	return _aviDecoder->getTimeToNextFrame();
 }
 
 void Movie::stop() {
@@ -173,10 +166,7 @@ void Movie::stop() {
 
 	_screen.clear();
 
-	delete[] _buffer;
-	_buffer = 0;
-
-	_aviDecoder->closeFile();
+	_aviDecoder->close();
 
 	_graphics->leaveMovieMode();
 }

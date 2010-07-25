@@ -158,6 +158,10 @@ const ::Graphics::Surface &Sprite::getTrueColor() const {
 	return _surfaceTrueColor;
 }
 
+void Sprite::setPalette(const Palette &palette) {
+	_palette = palette;
+}
+
 const Palette &Sprite::getPalette() const {
 	return _palette;
 }

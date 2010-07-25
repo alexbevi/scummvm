@@ -223,7 +223,6 @@ void Graphics::clearScreen() {
 
 void Graphics::clearPalette() {
 	_gamePalette.clear();
-	applyGamePalette();
 }
 
 void Graphics::setPalette(const Palette &pal) {
@@ -236,7 +235,6 @@ void Graphics::enterMovieMode() {
 }
 
 void Graphics::leaveMovieMode() {
-	applyGamePalette();
 	dirtyAll();
 }
 
@@ -261,16 +259,6 @@ void Graphics::initPalette() {
 	_gamePalette[0] = 0;
 	_gamePalette[1] = 0;
 	_gamePalette[2] = 0;
-
-	applyGamePalette();
-}
-
-void Graphics::applyGamePalette() {
-	byte pal[1024];
-
-	_gamePalette.makeSystemCompatible(pal);
-
-	g_system->setPalette(pal, 0, 256);
 }
 
 void Graphics::talk(const TextLine &textLine) {

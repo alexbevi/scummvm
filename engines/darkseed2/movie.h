@@ -96,7 +96,6 @@ private:
 	/** The AVI decoder. */
 	::Graphics::AviDecoder *_aviDecoder;
 
-	byte  *_buffer; ///< The current frame's buffer.
 	Sprite _screen; ///< The current frame's sprite.
 };
 

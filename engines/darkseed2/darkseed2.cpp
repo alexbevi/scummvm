@@ -201,8 +201,8 @@ bool DarkSeed2Engine::getScreenResolution(int32 &width, int32 &height) const {
 }
 
 bool DarkSeed2Engine::init(int32 width, int32 height) {
-	MidiDriverType midiDriver = MidiDriver::detectMusicDriver(MDT_MIDI | MDT_ADLIB | MDT_PREFER_MIDI);
-	bool native_mt32 = ((midiDriver == MD_MT32) || ConfMan.getBool("native_mt32"));
+	uint32 midiDriver = MidiDriver::detectDevice(MDT_MIDI | MDT_ADLIB | MDT_PREFER_GM);
+	bool native_mt32 = ((MidiDriver::getMusicType(midiDriver) == MT_MT32) || ConfMan.getBool("native_mt32"));
 
 	_midiDriver = MidiDriver::createMidi(midiDriver);
 
