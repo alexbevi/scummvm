@@ -97,7 +97,7 @@ void Game::enterLocation(uint16 locId) {
 		_vm->ambientStart(locId);
 
 	sprintf(filename, "%s%db.flc", locName.c_str(), loc->xtend + _player.isNight);
-	_vm->screen()->loadBackground((locDir + filename).c_str());
+	_vm->screen()->loadBackground(locDir + filename);
 
 	// TODO - init some other flic var
 	_vm->_flicLoaded = 2;
@@ -105,7 +105,7 @@ void Game::enterLocation(uint16 locId) {
 	filename[strlen(filename) - 6] = '0';
 	filename[strlen(filename) - 5] = 'm';
 	Graphics::FlicDecoder mask;
-	_vm->screen()->loadMask((locDir + filename).c_str());
+	_vm->screen()->loadMask(locDir + filename);
 
 	Database *db = _vm->database();
 

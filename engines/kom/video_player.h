@@ -27,7 +27,7 @@
 #define KOM_VIDEO_PLAYER_H
 
 #include "common/events.h"
-#include "graphics/video/video_player.h"
+#include "graphics/video/video_decoder.h"
 #include "graphics/video/smk_decoder.h"
 #include "graphics/video/flic_decoder.h"
 

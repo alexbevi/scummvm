@@ -30,6 +30,7 @@
 #include "common/fs.h"
 #include "common/list.h"
 #include "common/rect.h"
+#include "common/str.h"
 
 #include "kom/kom.h"
 #include "kom/font.h"
@@ -83,11 +84,11 @@ public:
 	void drawPanel(const byte *panelData);
 	void updatePanelOnScreen();
 
-	void loadBackground(const char *filename);
+	void loadBackground(const Common::String &filename);
 	void updateBackground();
 	void drawBackground();
-	void pauseBackground(bool pause) { _backgroundPaused = pause; }
-	void loadMask(const char *filename);
+	void pauseBackground(bool pause) { _roomBackgroundFlic.pauseVideo(pause); }
+	void loadMask(const Common::String &filename);
 
 	void drawInventory(Inventory *inv);
 
@@ -139,11 +140,11 @@ private:
 	uint8 *_screenBuf;
 	uint8 *_panelBuf;
 	uint8 *_mouseBuf;
-	FlicDecoder _roomBackground;
-	FlicDecoder _mask;
+	FlicDecoder _roomBackgroundFlic;
+	FlicDecoder _roomMaskFlic;
+	Graphics::Surface *_roomBackground;
+	Graphics::Surface *_roomMask;
 	Font *_font;
-	uint32 _roomBackgroundTime;
-	bool _backgroundPaused;
 	bool _backgroundRedraw;
 
 	bool _freshScreen;

@@ -99,7 +99,7 @@ bool VideoPlayer::playVideo(char *filename) {
 
 	_vm->_system->fillScreen(0);
 
-	while (_player->getCurFrame() < _player->getFrameCount() && !_skipVideo && !_vm->shouldQuit()) {
+	while (!_player->endOfVideo() && !_skipVideo && !_vm->shouldQuit()) {
 		processEvents();
 		processFrame();
 	}
@@ -109,7 +109,7 @@ bool VideoPlayer::playVideo(char *filename) {
 	if (_skipVideo)
 		_vm->sound()->stopHandle(_soundHandle);
 
-	_player->closeFile();
+	_player->close();
 
 	if (_background) {
 		delete[] _background;
@@ -126,16 +126,22 @@ bool VideoPlayer::playVideo(char *filename) {
 }
 
 void VideoPlayer::processFrame() {
-	_player->decodeNextFrame();
+	Graphics::Surface *frame = _player->decodeNextFrame();
 
 	Graphics::Surface *screen = _vm->_system->lockScreen();
 
+	if (_player->hasDirtyPalette()) {
+		_player->setSystemPalette();
+	}
+
 	if (!_background) {
-		_player->copyFrameToBuffer((byte *)screen->pixels, 0, 0, SCREEN_W);
+		for (uint16 y = 0; y < frame->h; y++)
+			memcpy((byte *)screen->pixels + y * screen->pitch, (byte *)frame->pixels + y * frame->pitch, frame->w);
+
 	} else {
 		memcpy((byte *)screen->pixels, _background, SCREEN_W * (SCREEN_H - PANEL_H));
 		for (int i = 0; i < SCREEN_W * (SCREEN_H - PANEL_H); i++) {
-			byte color = _player->getPixel(i);
+			byte color = ((byte *)frame->pixels)[i];
 			if (color != 0)
 				((byte *)screen->pixels)[i] = color;
 		}
@@ -143,18 +149,11 @@ void VideoPlayer::processFrame() {
 
 	_vm->_system->unlockScreen();
 
-	uint32 waitTime = _player->getFrameWaitTime();
-
-	if (!waitTime) {
-		warning("dropped frame %i", _player->getCurFrame());
-		return;
-	}
-
 	// Update the screen
 	_vm->_system->updateScreen();
 
 	// Wait before showing the next frame
-	_vm->_system->delayMillis(waitTime);
+	_vm->_system->delayMillis(_player->getTimeToNextFrame());
 }
 
 } // End of namespace Kom

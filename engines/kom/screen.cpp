@@ -90,6 +90,9 @@ Screen::Screen(KomEngine *vm, OSystem *system)
 	_orangeColorSet = new ColorSet("kom/oneoffs/sepia_or.cl");
 	_greenColorSet = new ColorSet("kom/oneoffs/sepia_gr.cl");
 
+	_roomMask = 0;
+	_roomBackground = 0;
+
 	_font = new Font("kom/oneoffs/packfont.fnt");
 
 	_dirtyRects = new List<Rect>();
@@ -290,9 +293,9 @@ void Screen::drawDirtyRects() {
 		// No need to save a prev, since the background reports
 		// all changes
 
-		if (_roomBackground.isVideoLoaded()) {
-			copyRectListToScreen(_roomBackground.getDirtyRects());
-			_roomBackground.clearDirtyRects();
+		if (_roomBackgroundFlic.isVideoLoaded()) {
+			copyRectListToScreen(_roomBackgroundFlic.getDirtyRects());
+			_roomBackgroundFlic.clearDirtyRects();
 		}
 
 		// Copy dirty rects to screen
@@ -424,7 +427,7 @@ void Screen::drawActorFrame0(const int8 *data, uint16 width, uint16 height, int1
 
 		for (int j = 0; j < visibleWidth; ++j) {
 			if (lineBuffer[sourcePixel] != 0
-			    && (targetLine >= SCREEN_H - PANEL_H || _mask.getPixel(targetPixel) >= maskDepth)) {
+			    && (targetLine >= SCREEN_H - PANEL_H || ((byte *)_roomMask->pixels)[targetPixel] >= maskDepth)) {
 					_screenBuf[targetPixel] = lineBuffer[sourcePixel];
 			}
 
@@ -850,11 +853,9 @@ void Screen::updatePanelOnScreen() {
 	_system->updateScreen();
 }
 
-void Screen::loadBackground(const char *filename) {
-	_roomBackground.closeFile();
-	_roomBackground.loadFile(filename);
-	_roomBackgroundTime = 0;
-	_backgroundPaused = false;
+void Screen::loadBackground(const Common::String &filename) {
+	_roomBackgroundFlic.close();
+	_roomBackgroundFlic.loadFile(filename);
 	_backgroundRedraw = false;
 
 	// Redraw everything
@@ -864,16 +865,14 @@ void Screen::loadBackground(const char *filename) {
 }
 
 void Screen::updateBackground() {
-	if (_roomBackground.isVideoLoaded()) {
-		if (_system->getMillis() >= _roomBackgroundTime) {
-			_roomBackgroundTime = _system->getMillis() + _roomBackground.getFrameDelay() / 100;
+	if (_roomBackgroundFlic.isVideoLoaded()) {
+		if (!_roomBackgroundFlic.isPaused() && _roomBackgroundFlic.getTimeToNextFrame() == 0) {
 
-			if (!_backgroundPaused)
-				_roomBackground.decodeNextFrame();
+			_roomBackground = _roomBackgroundFlic.decodeNextFrame();
 
-			if (_roomBackground.paletteChanged()) {
+			if (_roomBackgroundFlic.hasDirtyPalette()) {
 				byte rgbaPalette[4 * 128];
-				const byte *rgbPalette = _roomBackground.getPalette();
+				const byte *rgbPalette = _roomBackgroundFlic.getPalette();
 				for (int i = 0; i < 128; i++) {
 					rgbaPalette[i * 4 + 0] = rgbPalette[(i + 128) * 3 + 0];
 					rgbaPalette[i * 4 + 1] = rgbPalette[(i + 128) * 3 + 1];
@@ -889,14 +888,16 @@ void Screen::updateBackground() {
 }
 
 void Screen::drawBackground() {
-	if (_roomBackground.isVideoLoaded()) {
-		_roomBackground.copyFrameToBuffer(_screenBuf, 0, 0, SCREEN_W);
+	if (_roomBackgroundFlic.isVideoLoaded()) {
+		for (uint16 y = 0; y < _roomBackground->h; y++)
+			memcpy(_screenBuf + y * SCREEN_W, (byte *)_roomBackground->pixels + y * _roomBackground->pitch, _roomBackground->w);
 	}
 }
 
-void Screen::loadMask(const char *filename) {
-	_mask.loadFile(filename);
-	_mask.decodeNextFrame();
+void Screen::loadMask(const Common::String &filename) {
+	_roomMaskFlic.loadFile(filename);
+	_roomMask = 0;
+	_roomMask = _roomMaskFlic.decodeNextFrame();
 }
 
 void Screen::drawInventory(Inventory *inv) {
@@ -1425,7 +1426,7 @@ byte *Screen::createZoomBlur(int x, int y) {
 		sourceOffset = tempOffset;
 
 		for (int j = 0; j < 108; j++) {
-			byte color = _roomBackground.getPixel(sourceOffset);
+			byte color = ((byte *)_roomBackground->pixels)[sourceOffset];
 			sourceOffset++;
 
 			*surface = color;
