@@ -1,10 +1,10 @@
 Index: base/plugins.cpp
 ===================================================================
---- base/plugins.cpp	(revision 39101)
+--- base/plugins.cpp	(revision 51517)
 +++ base/plugins.cpp	(working copy)
 @@ -115,6 +115,9 @@
- 		#if PLUGIN_ENABLED_STATIC(IGOR)
- 		LINK_PLUGIN(IGOR)
+ 		#if PLUGIN_ENABLED_STATIC(GROOVIE)
+ 		LINK_PLUGIN(GROOVIE)
  		#endif
 +		#if PLUGIN_ENABLED_STATIC(KOM)
 +		LINK_PLUGIN(KOM)
@@ -14,22 +14,22 @@ Index: base/plugins.cpp
  		#endif
 Index: configure
 ===================================================================
---- configure	(revision 39101)
+--- configure	(revision 51517)
 +++ configure	(working copy)
-@@ -94,6 +94,7 @@
+@@ -88,6 +88,7 @@
  add_engine gob "Gobli*ns" yes
- add_engine groovie "Groovie" yes
- add_engine igor "Igor: Objective Uikokahonia" no
+ add_engine groovie "Groovie" yes "groovie2"
+ add_engine groovie2 "Groovie 2 games" no
 +add_engine kom "Kingdom O' Magic" no
  add_engine kyra "Legend of Kyrandia" yes "lol"
  add_engine lol "Lands of Lore" no
  add_engine lure "Lure of the Temptress" yes
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 39101)
+--- engines/engines.mk	(revision 51517)
 +++ engines/engines.mk	(working copy)
-@@ -52,6 +52,11 @@
- MODULES += engines/igor
+@@ -60,6 +60,11 @@
+ endif
  endif
  
 +ifdef ENABLE_KOM
