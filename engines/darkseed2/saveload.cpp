@@ -190,8 +190,8 @@ bool SaveLoad::removeSave(const Common::String &base, int slot) {
 	return saveMan->removeSavefile(file);
 }
 
-bool SaveLoad::skipThumbnailHeader(Common::SeekableReadStream &in) {
-	return ::Graphics::skipThumbnailHeader(in);
+bool SaveLoad::skipThumbnail(Common::SeekableReadStream &in) {
+	return ::Graphics::skipThumbnail(in);
 }
 
 bool SaveLoad::saveThumbnail(Common::WriteStream &out) {

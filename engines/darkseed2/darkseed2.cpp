@@ -365,7 +365,7 @@ Common::Error DarkSeed2Engine::loadGameState(int slot) {
 	if (!file)
 		return Common::kUnknownError;
 
-	if (!SaveLoad::skipThumbnailHeader(*file))
+	if (!SaveLoad::skipThumbnail(*file))
 		return Common::kUnknownError;
 
 	Common::Serializer serializer(file, 0);

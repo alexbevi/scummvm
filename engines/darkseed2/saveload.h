@@ -84,7 +84,7 @@ public:
 	static bool removeSave(const Common::String &base, int slot);
 
 	// Thumbnails
-	static bool skipThumbnailHeader(Common::SeekableReadStream &in);
+	static bool skipThumbnail(Common::SeekableReadStream &in);
 	static bool saveThumbnail(Common::WriteStream &out);
 
 	/** Properly sync a time stamp. */
