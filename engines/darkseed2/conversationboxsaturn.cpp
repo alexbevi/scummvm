@@ -97,6 +97,7 @@ void ConversationBoxSaturn::notifyClicked(int32 x, int32 y) {
 	if (!_inited)
 		return;
 
+	stop();
 }
 
 void ConversationBoxSaturn::updateStatus() {
