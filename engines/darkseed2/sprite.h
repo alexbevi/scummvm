@@ -99,7 +99,7 @@ public:
 	/** Copy from another sprite. */
 	void copyFrom(const Sprite &sprite);
 	/** Copy from a buffer. */
-	void copyFrom(const byte *sprite, bool system = false);
+	void copyFrom(const byte *sprite, uint8 bpp = 1, bool system = false);
 
 	/** Load a sprite from an image file. */
 	bool loadFromImage(Resources &resources, const Common::String &image);

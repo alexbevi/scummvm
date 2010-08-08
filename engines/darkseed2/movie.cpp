@@ -121,7 +121,7 @@ void Movie::updateStatus() {
 	::Graphics::Surface *frame = _aviDecoder->decodeNextFrame();
 
 	if (frame)
-		_screen.copyFrom((byte *)frame->pixels, false);
+		_screen.copyFrom((byte *)frame->pixels, frame->bytesPerPixel, false);
 
 	if (_aviDecoder->hasDirtyPalette()) {
 		Palette newPalette;

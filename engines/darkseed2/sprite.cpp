@@ -90,11 +90,17 @@ void Sprite::copyFrom(const Sprite &sprite) {
 	_scaleInverse = sprite._scaleInverse;
 }
 
-void Sprite::copyFrom(const byte *sprite, bool system) {
-	memcpy(_surfacePaletted.pixels, sprite, _surfacePaletted.w * _surfacePaletted.h);
-	memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
+void Sprite::copyFrom(const byte *sprite, uint8 bpp, bool system) {
+	if (bpp == 1) {
+		memcpy(_surfacePaletted.pixels, sprite, _surfacePaletted.w * _surfacePaletted.h);
+		memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
 
-	convertToTrueColor(system);
+		convertToTrueColor(system);
+	} else {
+		memcpy(_surfaceTrueColor.pixels, sprite, _surfacePaletted.w * _surfacePaletted.h * 2);
+
+		memset(_transparencyMap, 0, _surfacePaletted.w * _surfacePaletted.h);
+	}
 }
 
 bool Sprite::exists() const {
