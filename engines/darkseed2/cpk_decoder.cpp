@@ -73,6 +73,8 @@ bool SegaFILMDecoder::load(Common::SeekableReadStream *stream) {
 	_stream->readByte(); // Unknown
 	uint16 audioFrequency = _stream->readUint16BE();
 
+	_stream->skip(6);
+
 	// STAB Chunk
 	if (_stream->readUint32BE() != MKID_BE('STAB'))
 		return false;
@@ -206,8 +208,10 @@ void SegaFILMDecoder::close() {
 	reset();
 
 	if (_audioStream) {
-		_audioStream->finish();
-		_audioStream = 0; // freed by the Mixer
+		if (g_system->getMixer()->isSoundHandleActive(_audioStreamHandle))
+			g_system->getMixer()->stopHandle(_audioStreamHandle);
+
+		_audioStream = 0;
 	}
 
 	delete _codec; _codec = 0;
