@@ -28,6 +28,7 @@
 #include "common/serializer.h"
 
 #include "graphics/video/avi_decoder.h"
+#include "engines/darkseed2/cpk_decoder.h"
 
 #include "engines/darkseed2/movie.h"
 #include "engines/darkseed2/resources.h"
@@ -51,35 +52,64 @@ Movie::Movie(Audio::Mixer &mixer, Graphics &graphics, Cursors &cursors, Sound &s
 	_x = 0;
 	_y = 0;
 
-	_aviDecoder = new ::Graphics::AviDecoder(_mixer, Audio::Mixer::kSFXSoundType);
+	_decoder = 0;
+	//ecoder = new ::Graphics::AviDecoder(_mixer, Audio::Mixer::kSFXSoundType);
 }
 
 Movie::~Movie() {
 	stop();
-	delete _aviDecoder;
+	delete _decoder;
 }
 
 bool Movie::isPlaying() const {
-	return _aviDecoder->isVideoLoaded();
+	return _decoder && _decoder->isVideoLoaded();
 }
 
-bool Movie::play(const Common::String &avi, int32 x, int32 y) {
+::Graphics::VideoDecoder *Movie::createDecoder(const Common::String &file) const {
+	Common::String realFile;
+
+	realFile = Resources::addExtension(file, "AVI");
+	if (Common::File::exists(realFile)) {
+		::Graphics::VideoDecoder *decoder = new ::Graphics::AviDecoder(_mixer, Audio::Mixer::kSFXSoundType);
+
+		if (!decoder->loadFile(realFile)) {
+			delete decoder;
+			return 0;
+		}
+
+		return decoder;
+	}
+
+	realFile = Resources::addExtension(file, "CPK");
+	if (Common::File::exists(realFile)) {
+		::Graphics::VideoDecoder *decoder = new SegaFILMDecoder();
+
+		if (!decoder->loadFile(realFile)) {
+			delete decoder;
+			return 0;
+		}
+
+		return decoder;
+	}
+
+	return 0;
+}
+
+bool Movie::play(const Common::String &file, int32 x, int32 y) {
 	// Sanity checks
 	assert((x >= 0) && (y >= 0) && (x <= 0x7FFF) & (y <= 0x7FFF));
 
-	debugC(-1, kDebugMovie, "Playing movie \"%s\"", avi.c_str());
+	debugC(-1, kDebugMovie, "Playing movie \"%s\"", file.c_str());
 
 	stop();
 
 	_sound->pauseAll(true);
 
-	if (!_aviDecoder->loadFile(Resources::addExtension(avi, "AVI").c_str())) {
-		stop();
+	if (!(_decoder = createDecoder(file)))
 		return false;
-	}
 
-	_area = Common::Rect(_aviDecoder->getWidth(), _aviDecoder->getHeight());
-	_screen.create(_aviDecoder->getWidth(), _aviDecoder->getHeight());
+	_area = Common::Rect(_decoder->getWidth(), _decoder->getHeight());
+	_screen.create(_decoder->getWidth(), _decoder->getHeight());
 
 	_graphics->enterMovieMode();
 
@@ -89,7 +119,7 @@ bool Movie::play(const Common::String &avi, int32 x, int32 y) {
 	// Check for doubling
 	_doubling = false;
 	if (_doubleHalfSizedVideos)
-		if ((_aviDecoder->getWidth() == 320) && (_aviDecoder->getHeight() == 240))
+		if ((_decoder->getWidth() == 320) && (_decoder->getHeight() == 240))
 			_doubling = true;
 
 	if (_doubling) {
@@ -104,7 +134,7 @@ bool Movie::play(const Common::String &avi, int32 x, int32 y) {
 	_cursorVisible = _cursors->isVisible();
 	_cursors->setVisible(false);
 
-	_fileName = avi;
+	_fileName = file;
 
 	return true;
 }
@@ -113,19 +143,19 @@ void Movie::updateStatus() {
 	if (!isPlaying())
 		return;
 
-	if (_aviDecoder->endOfVideo()) {
+	if (_decoder->endOfVideo()) {
 		stop();
 		return;
 	}
 
-	::Graphics::Surface *frame = _aviDecoder->decodeNextFrame();
+	::Graphics::Surface *frame = _decoder->decodeNextFrame();
 
 	if (frame)
 		_screen.copyFrom((byte *)frame->pixels, frame->bytesPerPixel, false);
 
-	if (_aviDecoder->hasDirtyPalette()) {
+	if (_decoder->hasDirtyPalette()) {
 		Palette newPalette;
-		newPalette.copyFrom(_aviDecoder->getPalette(), 256);
+		newPalette.copyFrom(_decoder->getPalette(), 256);
 		_screen.setPalette(newPalette);
 	}
 
@@ -150,7 +180,7 @@ uint32 Movie::getFrameWaitTime() const {
 	if (!isPlaying())
 		return 0;
 
-	return _aviDecoder->getTimeToNextFrame();
+	return _decoder->getTimeToNextFrame();
 }
 
 void Movie::stop() {
@@ -166,9 +196,12 @@ void Movie::stop() {
 
 	_screen.clear();
 
-	_aviDecoder->close();
+	_decoder->close();
 
 	_graphics->leaveMovieMode();
+
+	delete _decoder;
+	_decoder = 0;
 }
 
 bool Movie::saveLoad(Common::Serializer &serializer, Resources &resources) {

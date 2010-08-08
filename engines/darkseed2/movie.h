@@ -39,7 +39,7 @@ namespace Common {
 }
 
 namespace Graphics {
-	class AviDecoder;
+	class VideoDecoder;
 }
 
 namespace DarkSeed2 {
@@ -57,7 +57,7 @@ public:
 	bool isPlaying() const;
 
 	/** Play that movie. */
-	bool play(const Common::String &avi, int32 x = 0, int32 y = 0);
+	bool play(const Common::String &file, int32 x = 0, int32 y = 0);
 
 	/** Stop playing that movie. */
 	void stop();
@@ -93,10 +93,12 @@ private:
 	bool _doubling;      ///< Double the video's resolution?
 	bool _cursorVisible; ///< Was the cursor visible at the start?
 
-	/** The AVI decoder. */
-	::Graphics::AviDecoder *_aviDecoder;
+	/** The video decoder. */
+	::Graphics::VideoDecoder *_decoder;
 
 	Sprite _screen; ///< The current frame's sprite.
+
+	::Graphics::VideoDecoder *createDecoder(const Common::String &file) const;
 };
 
 } // End of namespace DarkSeed2

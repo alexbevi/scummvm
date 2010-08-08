@@ -29,6 +29,7 @@ MODULE_OBJS := \
 	conversationboxsaturn.o \
 	inventory.o \
 	inventorybox.o \
+	cpk_decoder.o \
 	movie.o \
 	pathfinder.o \
 	mike.o \
