@@ -119,7 +119,8 @@ bool Movie::play(const Common::String &file, int32 x, int32 y) {
 	// Check for doubling
 	_doubling = false;
 	if (_doubleHalfSizedVideos)
-		if ((_decoder->getWidth() == 320) && (_decoder->getHeight() == 240))
+		if ((_decoder->getWidth() == 320) && (_decoder->getHeight() == 240) &&
+		    (g_system->getWidth() == 640) && (g_system->getHeight() == 480))
 			_doubling = true;
 
 	if (_doubling) {
