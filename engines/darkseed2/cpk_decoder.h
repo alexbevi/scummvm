@@ -48,7 +48,8 @@ struct SampleTableEntry {
 
 class SegaFILMDecoder : public ::Graphics::VideoDecoder {
 public:
-	SegaFILMDecoder();
+	SegaFILMDecoder(Audio::Mixer *mixer,
+			Audio::Mixer::SoundType soundType = Audio::Mixer::kPlainSoundType);
 	~SegaFILMDecoder();
 
 	bool load(Common::SeekableReadStream *stream);
@@ -64,6 +65,9 @@ public:
 	uint32 getTimeToNextFrame() const;
 
 protected:
+	Audio::Mixer *_mixer;
+	Audio::Mixer::SoundType _soundType;
+
 	Common::SeekableReadStream *_stream;
 
 	Audio::QueuingAudioStream *_audioStream;

@@ -82,7 +82,7 @@ bool Movie::isPlaying() const {
 
 	realFile = Resources::addExtension(file, "CPK");
 	if (Common::File::exists(realFile)) {
-		::Graphics::VideoDecoder *decoder = new SegaFILMDecoder();
+		::Graphics::VideoDecoder *decoder = new SegaFILMDecoder(_mixer, Audio::Mixer::kSFXSoundType);
 
 		if (!decoder->loadFile(realFile)) {
 			delete decoder;

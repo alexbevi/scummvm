@@ -32,10 +32,10 @@
 
 namespace DarkSeed2 {
 
-SegaFILMDecoder::SegaFILMDecoder() : _stream(0) {
-	_sampleTable = 0;
-	_audioStream = 0;
-	_codec = 0;
+SegaFILMDecoder::SegaFILMDecoder(Audio::Mixer *mixer, Audio::Mixer::SoundType soundType) :
+	_mixer(mixer), _soundType(soundType), _stream(0), _sampleTable(0), _audioStream(0), _codec(0) {
+
+	assert(_mixer);
 }
 
 SegaFILMDecoder::~SegaFILMDecoder() {
@@ -112,7 +112,7 @@ bool SegaFILMDecoder::load(Common::SeekableReadStream *stream) {
 			_audioFlags |= Audio::FLAG_16BITS;
 
 		_audioStream = Audio::makeQueuingAudioStream(audioFrequency, audioChannels == 2);
-		g_system->getMixer()->playStream(Audio::Mixer::kPlainSoundType, &_audioStreamHandle, _audioStream);
+		_mixer->playStream(_soundType, &_audioStreamHandle, _audioStream);
 	}
 
 	return true;
@@ -196,7 +196,7 @@ uint32 SegaFILMDecoder::getTimeToNextFrame() const {
 
 uint32 SegaFILMDecoder::getElapsedTime() const {
 	if (_audioStream)
-		return g_system->getMixer()->getSoundElapsedTime(_audioStreamHandle);
+		return _mixer->getSoundElapsedTime(_audioStreamHandle);
 
 	return ::Graphics::VideoDecoder::getElapsedTime();
 }
@@ -208,8 +208,8 @@ void SegaFILMDecoder::close() {
 	reset();
 
 	if (_audioStream) {
-		if (g_system->getMixer()->isSoundHandleActive(_audioStreamHandle))
-			g_system->getMixer()->stopHandle(_audioStreamHandle);
+		if (_mixer->isSoundHandleActive(_audioStreamHandle))
+			_mixer->stopHandle(_audioStreamHandle);
 
 		_audioStream = 0;
 	}
