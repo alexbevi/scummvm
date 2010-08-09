@@ -82,7 +82,7 @@ protected:
 	uint32 _nextFrameStartTime;
 
 	uint32 _frameCount;
-	::Graphics::CinepakDecoder *_codec;
+	::Graphics::Codec *_codec;
 	uint16 _width, _height;
 };
 

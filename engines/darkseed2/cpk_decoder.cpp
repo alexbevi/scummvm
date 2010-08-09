@@ -25,12 +25,59 @@
 
 #include "common/scummsys.h"
 #include "common/endian.h"
+#include "common/system.h"
 
 #include "sound/decoders/raw.h"
 
 #include "engines/darkseed2/cpk_decoder.h"
 
 namespace DarkSeed2 {
+
+// For raw video, it seems to always be 24bpp RGB
+// We just convert to the current screen format for ease of use
+class SegaFilmRawCodec : public ::Graphics::Codec {
+public:
+	SegaFilmRawCodec(uint16 width, uint16 height, byte bitsPerPixel) {
+		_pixelFormat = g_system->getScreenFormat();
+		_surface = new Graphics::Surface();
+		_surface->create(width, height, _pixelFormat.bytesPerPixel);
+		_bitsPerPixel = bitsPerPixel;
+	}
+
+	~SegaFilmRawCodec() {
+		_surface->free();
+		delete _surface;
+	}
+
+	::Graphics::Surface *decodeImage(Common::SeekableReadStream *stream) {
+		if (_bitsPerPixel != 24) {
+			warning("Unhandled %d bpp", _bitsPerPixel);
+			return 0;
+		}
+
+		if (stream->size() != _surface->w * _surface->h * (_bitsPerPixel >> 3)) {
+			warning("Mismatched raw video size");
+			return 0;
+		}
+
+		for (int32 i = 0; i < _surface->w * _surface->h; i++) {
+			byte r = stream->readByte();
+			byte g = stream->readByte();
+			byte b = stream->readByte();
+
+			*((uint16 *)_surface->pixels + i) = _pixelFormat.RGBToColor(r, g, b);
+		}
+
+		return _surface;
+	}
+
+	::Graphics::PixelFormat getPixelFormat() const { return _pixelFormat; }
+
+private:
+	::Graphics::Surface *_surface;
+	byte _bitsPerPixel;
+	::Graphics::PixelFormat _pixelFormat;
+};
 
 SegaFILMDecoder::SegaFILMDecoder(Audio::Mixer *mixer, Audio::Mixer::SoundType soundType) :
 	_mixer(mixer), _soundType(soundType), _stream(0), _sampleTable(0), _audioStream(0), _codec(0) {
@@ -64,10 +111,10 @@ bool SegaFILMDecoder::load(Common::SeekableReadStream *stream) {
 		return false;
 
 	/* uint32 fdscChunkSize = */ _stream->readUint32BE();
-	/* uint32 videoCodec = */ _stream->readUint32BE(); // Always Cinepak, so it doesn't matter
+	uint32 codecTag = _stream->readUint32BE();
 	_height = _stream->readUint32BE();
 	_width = _stream->readUint32BE();
-	_stream->readByte(); // Unknown
+	byte bitsPerPixel = _stream->readByte();
 	byte audioChannels = _stream->readByte();
 	byte audioSampleSize = _stream->readByte();
 	_stream->readByte(); // Unknown
@@ -100,8 +147,15 @@ bool SegaFILMDecoder::load(Common::SeekableReadStream *stream) {
 			_frameCount++;
 	}
 
-	// Create the Cinepak decoder
-	_codec = new ::Graphics::CinepakDecoder();
+	// Create the Cinepak decoder, if we're using it
+	if (codecTag == MKID_BE('cvid'))
+		_codec = new ::Graphics::CinepakDecoder();
+	else if (codecTag == MKID_BE('raw '))
+		_codec = new SegaFilmRawCodec(_width, _height, bitsPerPixel);
+	else if (codecTag != 0) {
+		warning("Unknown Sega FILM codec tag '%s'", tag2str(codecTag));
+		return false;
+	}
 
 	// Create the audio stream if audio is present
 	if (audioSampleSize != 0) {
