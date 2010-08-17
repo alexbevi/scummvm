@@ -1,10 +1,10 @@
 Index: base/plugins.cpp
 ===================================================================
---- base/plugins.cpp	(revision 51517)
+--- base/plugins.cpp	(revision 52170)
 +++ base/plugins.cpp	(working copy)
-@@ -115,6 +115,9 @@
- 		#if PLUGIN_ENABLED_STATIC(GROOVIE)
- 		LINK_PLUGIN(GROOVIE)
+@@ -118,6 +118,9 @@
+ 		#if PLUGIN_ENABLED_STATIC(HUGO)
+ 		LINK_PLUGIN(HUGO)
  		#endif
 +		#if PLUGIN_ENABLED_STATIC(KOM)
 +		LINK_PLUGIN(KOM)
@@ -14,22 +14,22 @@ Index: base/plugins.cpp
  		#endif
 Index: configure
 ===================================================================
---- configure	(revision 51517)
+--- configure	(revision 52170)
 +++ configure	(working copy)
-@@ -88,6 +88,7 @@
- add_engine gob "Gobli*ns" yes
+@@ -89,6 +89,7 @@
  add_engine groovie "Groovie" yes "groovie2"
  add_engine groovie2 "Groovie 2 games" no
+ add_engine hugo "Hugo Trilogy" no
 +add_engine kom "Kingdom O' Magic" no
  add_engine kyra "Legend of Kyrandia" yes "lol"
  add_engine lol "Lands of Lore" no
  add_engine lure "Lure of the Temptress" yes
 Index: engines/engines.mk
 ===================================================================
---- engines/engines.mk	(revision 51517)
+--- engines/engines.mk	(revision 52170)
 +++ engines/engines.mk	(working copy)
-@@ -60,6 +60,11 @@
- endif
+@@ -65,6 +65,11 @@
+ MODULES += engines/hugo
  endif
  
 +ifdef ENABLE_KOM
