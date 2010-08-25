@@ -125,8 +125,10 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		return img;
 	} else if (!strncmp(blockType, RGBP, 4)) {
 		// palette (256*3 bytes, each 0-63)
-		_stream->skip(size); // TODO
-		return new SpriteEntry(se_None); // XXX
+		SpriteEntryPalette *pal = new SpriteEntryPalette;
+		assert(size == sizeof(pal->palette));
+		_stream->read(pal->palette, size);
+		return pal;
 	} else if (!strncmp(blockType, POSN, 4)) {
 		// change position of sprite/object?
 		uint32 xpos = _stream->readUint32LE();

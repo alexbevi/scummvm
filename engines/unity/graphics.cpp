@@ -184,6 +184,24 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 	unsigned int height = sprite->getCurrentHeight();
 	unsigned int bufwidth = width, bufheight = height;
 
+	byte *newpal = sprite->getPalette();
+	if (newpal) {
+		// new palette; used for things like the intro animation
+		printf("new sprite-embedded palette\n");
+
+		delete[] palette;
+		palette = new byte[256 * 4];
+
+		for (uint16 i = 0; i < 256; i++) {
+			palette[i * 4] = *(newpal++) * 4;
+			palette[i * 4 + 1] = *(newpal++) * 4;
+			palette[i * 4 + 2] = *(newpal++) * 4;
+			palette[i * 4 + 3] = 0;
+		}
+
+		_vm->_system->setPalette(palette, 0, 256);
+	}
+
 	if (scale < 256) {
 		bufwidth = (width * scale) / 256;
 		bufheight = (height * scale) / 256;

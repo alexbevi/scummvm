@@ -7,8 +7,9 @@ namespace Unity {
 
 SpritePlayer::SpritePlayer(Sprite *spr, Object *par, UnityEngine *vm) : sprite(spr), parent(par), _vm(vm) {
 	current_entry = ~0;
-	current_sprite = 0;
-	current_speechsprite = 0;
+	current_sprite = NULL;
+	current_speechsprite = NULL;
+	current_palette = NULL;
 	wait_target = 0;
 
 	normal.xpos = normal.ypos = 0;
@@ -27,7 +28,7 @@ void SpritePlayer::resetState() {
 	normal.xadjust = normal.yadjust = 0;
 	speech.xadjust = speech.yadjust = 0;
 
-	current_speechsprite = 0; // XXX: good?
+	current_speechsprite = NULL; // XXX: good?
 	wait_target = 0;
 }
 
@@ -72,6 +73,14 @@ byte *SpritePlayer::getSpeechData() {
 	return current_speechsprite->data;
 }
 
+byte *SpritePlayer::getPalette() {
+	if (!current_palette) return NULL;
+
+	byte *palette = current_palette->palette;
+	current_palette = NULL;
+	return palette;
+}
+
 bool SpritePlayer::playing() {
 	SpriteEntry *e = sprite->getEntry(current_entry);
 	assert(e);
@@ -97,6 +106,10 @@ void SpritePlayer::update() {
 			current_speechsprite = (SpriteEntrySprite *)e;
 			// XXX: don't understand how this works :(
 			was_speech = true;
+			current_entry++;
+			break;
+		case se_Palette:
+			current_palette = (SpriteEntryPalette *)e;
 			current_entry++;
 			break;
 		case se_Position:

@@ -13,6 +13,7 @@ enum SpriteEntryType {
 	se_None,
 	se_SpeechSprite,
 	se_Sprite,
+	se_Palette,
 	se_RandomWait,
 	se_Wait,
 	se_Pause,
@@ -34,6 +35,11 @@ struct SpriteEntrySprite : public SpriteEntry {
 	unsigned int height;
 	byte *data;
 	SpriteEntrySprite() : SpriteEntry(se_Sprite) { }
+};
+
+struct SpriteEntryPalette : public SpriteEntry {
+	byte palette[256*3];
+	SpriteEntryPalette() : SpriteEntry(se_Palette) { }
 };
 
 struct SpriteEntryWait : public SpriteEntry {
@@ -115,6 +121,8 @@ public:
 	unsigned int getSpeechWidth();
 	byte *getSpeechData();
 
+	byte *getPalette();
+
 	int getXPos() { return normal.xpos; }
 	int getYPos() { return normal.ypos; }
 	int getXAdjust() { return normal.xadjust; }
@@ -139,6 +147,7 @@ protected:
 
 	unsigned int current_entry;
 	SpriteEntrySprite *current_sprite, *current_speechsprite;
+	SpriteEntryPalette *current_palette;
 
 	unsigned int wait_target;
 
