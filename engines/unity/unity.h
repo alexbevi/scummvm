@@ -36,6 +36,8 @@ protected:
 
 	void openLocation(unsigned int world, unsigned int screen);
 
+	void checkEvents();
+	void drawObjects();
 	void processTriggers();
 
 	void startupScreen();

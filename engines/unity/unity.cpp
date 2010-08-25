@@ -302,9 +302,131 @@ void UnityEngine::processTriggers() {
 	}
 }
 
-Common::Error UnityEngine::run() {
+// TODO
+unsigned int curr_loc = 4;
+unsigned int curr_screen = 1;
+unsigned int anim = 26;
+
+void UnityEngine::checkEvents() {
 	Common::Array<Object *> &objects = data.objects;
 
+	Common::Event event;
+	while (_eventMan->pollEvent(event)) {
+		switch (event.type) {
+			case Common::EVENT_QUIT:
+				_system->quit();
+				break;
+
+			case Common::EVENT_KEYUP:
+				printf("trying anim %d\n", anim);
+				anim++;
+				anim %= objects[0]->sprite->numAnims();
+				for (unsigned int i = 0; i < 4; i++)
+					objects[i]->sprite->startAnim(anim);
+				break;
+
+			case Common::EVENT_RBUTTONUP:
+				curr_screen++;
+				openLocation(curr_loc, curr_screen);
+				for (unsigned int i = 0; i < 4; i++) {
+					objects[i]->x = current_screen.entrypoints[0][i].x;
+					objects[i]->y = current_screen.entrypoints[0][i].y;
+				}
+				break;
+
+			case Common::EVENT_MOUSEMOVE:
+				if (objectAt(event.mouse.x, event.mouse.y)) {
+					_gfx->setCursor(1, false);
+				} else {
+					_gfx->setCursor(0, false);
+				}
+				break;
+
+			case Common::EVENT_LBUTTONUP: {
+				Object *obj = objectAt(event.mouse.x, event.mouse.y);
+				if (!obj) break;
+
+				// TODO: this is very wrong, of course :)
+
+				// use only Picard's entry for now
+				unsigned int i = 0;
+				while (i < obj->descriptions.size() &&
+				obj->descriptions[i].entry_id != 0) i++;
+				if (i == obj->descriptions.size()) break;
+
+				Description &desc = obj->descriptions[i];
+
+				// TODO: this is broken
+				// for these in-area files, it's sometimes %02x%c%1x%02x%02x.vac ?!
+				// where %c is 'l' or 't' - i haven't worked out why yet
+
+				Common::String file;
+				file = Common::String::printf("%02x%c%1x%02x%02x.vac",
+					desc.voice_group, 'l', desc.voice_subgroup,
+					desc.entry_id, desc.voice_id);
+
+				if (!SearchMan.hasFile(file)) {
+					file = Common::String::printf("%02x%c%1x%02x%02x.vac",
+						desc.voice_group, 't', desc.voice_subgroup,
+						desc.entry_id, desc.voice_id);
+
+					if (!SearchMan.hasFile(file)) {
+						file = Common::String::printf("%02x%02x%02x%02x.vac",
+							desc.voice_group, desc.entry_id,
+							desc.voice_subgroup, desc.voice_id);
+					}
+				}
+
+				_snd->playSpeech(file);
+				} break;
+
+			default:
+				break;
+		}
+	}
+}
+
+void UnityEngine::drawObjects() {
+	Common::Array<Object *> &objects = data.objects;
+
+	Common::Array<Object *> to_draw;
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		if (objects[i]->sprite && objects[i]->active) {
+			objects[i]->sprite->update();
+
+			// TODO
+			if (!objects[i]->sprite->valid()) { warning("invalid sprite?"); continue; }
+
+			to_draw.push_back(objects[i]);
+		}
+	}
+
+	Common::sort(to_draw.begin(), to_draw.end(), DrawOrderComparison());
+	for (unsigned int i = 0; i < to_draw.size(); i++) {
+		// XXX: this is obviously a temporary hack
+		unsigned int scale = 256;
+		if (to_draw[i]->scaled) {
+			unsigned int j;
+			unsigned int x = to_draw[i]->x, y = to_draw[i]->y;
+			for (j = 0; j < current_screen.polygons.size(); j++) {
+				ScreenPolygon &poly = current_screen.polygons[j];
+				if (poly.type != 1) continue;
+
+				unsigned int triangle;
+				if (poly.insideTriangle(x, y, triangle)) {
+					// TODO: interpolation
+					scale = poly.triangles[triangle].distances[0];
+					break;
+				}
+			}
+			if (j == current_screen.polygons.size())
+				warning("couldn't find poly for walkable at (%d, %d)", x, y);
+		}
+		_gfx->drawSprite(to_draw[i]->sprite, to_draw[i]->x, to_draw[i]->y, scale);
+	}
+}
+
+Common::Error UnityEngine::run() {
 	init();
 
 	initGraphics(640, 480, true);
@@ -323,129 +445,20 @@ Common::Error UnityEngine::run() {
 	// and we stomp over it anyway, but this only good for some situations :)
 	_gfx->setCursor(0, false);
 
-	unsigned int curr_loc = 4;
-	unsigned int curr_screen = 1;
 	startAwayTeam(curr_loc, curr_screen);
 
-	unsigned int anim = 26;
-	for (unsigned int i = 0; i < 4; i++) objects[i]->sprite->startAnim(anim);
+	for (unsigned int i = 0; i < 4; i++) data.objects[i]->sprite->startAnim(anim);
 
-	Common::Event event;
 	while (!shouldQuit()) {
-		while (_eventMan->pollEvent(event)) {
-			switch (event.type) {
-				case Common::EVENT_QUIT:
-					_system->quit();
-					break;
-
-				case Common::EVENT_KEYUP:
-					printf("trying anim %d\n", anim);
-					anim++;
-					anim %= objects[0]->sprite->numAnims();
-					for (unsigned int i = 0; i < 4; i++)
-						objects[i]->sprite->startAnim(anim);
-					break;
-
-				case Common::EVENT_RBUTTONUP:
-					curr_screen++;
-					openLocation(curr_loc, curr_screen);
-					for (unsigned int i = 0; i < 4; i++) {
-						objects[i]->x = current_screen.entrypoints[0][i].x;
-						objects[i]->y = current_screen.entrypoints[0][i].y;
-					}
-					break;
-
-				case Common::EVENT_MOUSEMOVE:
-					if (objectAt(event.mouse.x, event.mouse.y)) {
-						_gfx->setCursor(1, false);
-					} else {
-						_gfx->setCursor(0, false);
-					}
-					break;
-
-				case Common::EVENT_LBUTTONUP: {
-					Object *obj = objectAt(event.mouse.x, event.mouse.y);
-					if (!obj) break;
-
-					// TODO: this is very wrong, of course :)
-
-					// use only Picard's entry for now
-					unsigned int i = 0;
-					while (i < obj->descriptions.size() &&
-						obj->descriptions[i].entry_id != 0) i++;
-					if (i == obj->descriptions.size()) break;
-
-					Description &desc = obj->descriptions[i];
-
-					// TODO: this is broken
-					// for these in-area files, it's sometimes %02x%c%1x%02x%02x.vac ?!
-					// where %c is 'l' or 't' - i haven't worked out why yet
-
-					Common::String file;
-					file = Common::String::printf("%02x%c%1x%02x%02x.vac",
-						desc.voice_group, 'l', desc.voice_subgroup,
-						desc.entry_id, desc.voice_id);
-
-					if (!SearchMan.hasFile(file)) {
-						file = Common::String::printf("%02x%c%1x%02x%02x.vac",
-							desc.voice_group, 't', desc.voice_subgroup,
-							desc.entry_id, desc.voice_id);
-
-						if (!SearchMan.hasFile(file)) {
-							file = Common::String::printf("%02x%02x%02x%02x.vac",
-								desc.voice_group, desc.entry_id,
-								desc.voice_subgroup, desc.voice_id);
-						}
-					}
-
-					_snd->playSpeech(file);
-					} break;
-
-				default:
-					break;
-			}
-		}
+		checkEvents();
 
 		processTriggers();
 
 		_gfx->drawBackgroundImage();
+
 		_gfx->drawBackgroundPolys(current_screen.polygons);
 
-		Common::Array<Object *> to_draw;
-		for (unsigned int i = 0; i < objects.size(); i++) {
-			if (objects[i]->sprite && objects[i]->active) {
-				objects[i]->sprite->update();
-
-				// TODO
-				if (!objects[i]->sprite->valid()) { warning("invalid sprite?"); continue; }
-
-				to_draw.push_back(objects[i]);
-			}
-		}
-
-		Common::sort(to_draw.begin(), to_draw.end(), DrawOrderComparison());
-		for (unsigned int i = 0; i < to_draw.size(); i++) {
-			// XXX: this is obviously a temporary hack
-			unsigned int scale = 256;
-			if (to_draw[i]->scaled) {
-				unsigned int j;
-				unsigned int x = to_draw[i]->x, y = to_draw[i]->y;
-				for (j = 0; j < current_screen.polygons.size(); j++) {
-					ScreenPolygon &poly = current_screen.polygons[j];
-					if (poly.type != 1) continue;
-
-					unsigned int triangle;
-					if (poly.insideTriangle(x, y, triangle)) {
-						// TODO: interpolation
-						scale = poly.triangles[triangle].distances[0];
-						break;
-					}
-				}
-				if (j == current_screen.polygons.size())
-					warning("couldn't find poly for walkable at (%d, %d)", x, y);
-			}
-			_gfx->drawSprite(to_draw[i]->sprite, to_draw[i]->x, to_draw[i]->y, scale);
-		}
+		drawObjects();
 
 		_system->updateScreen();
 	}
