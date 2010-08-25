@@ -112,7 +112,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 	data.loadScreenPolys(polygons);
 
-	current_screen.entrypoints.clear();
+	data.current_screen.entrypoints.clear();
 	byte num_entrances = locstream->readByte();
 	for (unsigned int e = 0; e < num_entrances; e++) {
 		Common::Array<Common::Point> entrypoints;
@@ -123,7 +123,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 			entrypoints[i].x = locstream->readUint16LE();
 			entrypoints[i].y = locstream->readUint16LE();
 		}
-		current_screen.entrypoints.push_back(entrypoints);
+		data.current_screen.entrypoints.push_back(entrypoints);
 	}
 
 	delete locstream;
@@ -242,8 +242,8 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 
 	openLocation(world, screen);
 	for (unsigned int i = 0; i < 4; i++) {
-		data.objects[i]->x = current_screen.entrypoints[0][i].x;
-		data.objects[i]->y = current_screen.entrypoints[0][i].y;
+		data.objects[i]->x = data.current_screen.entrypoints[0][i].x;
+		data.objects[i]->y = data.current_screen.entrypoints[0][i].y;
 	}
 
 	// draw UI
@@ -329,8 +329,8 @@ void UnityEngine::checkEvents() {
 				curr_screen++;
 				openLocation(curr_loc, curr_screen);
 				for (unsigned int i = 0; i < 4; i++) {
-					objects[i]->x = current_screen.entrypoints[0][i].x;
-					objects[i]->y = current_screen.entrypoints[0][i].y;
+					objects[i]->x = data.current_screen.entrypoints[0][i].x;
+					objects[i]->y = data.current_screen.entrypoints[0][i].y;
 				}
 				break;
 
@@ -408,8 +408,8 @@ void UnityEngine::drawObjects() {
 		if (to_draw[i]->scaled) {
 			unsigned int j;
 			unsigned int x = to_draw[i]->x, y = to_draw[i]->y;
-			for (j = 0; j < current_screen.polygons.size(); j++) {
-				ScreenPolygon &poly = current_screen.polygons[j];
+			for (j = 0; j < data.current_screen.polygons.size(); j++) {
+				ScreenPolygon &poly = data.current_screen.polygons[j];
 				if (poly.type != 1) continue;
 
 				unsigned int triangle;
@@ -419,7 +419,7 @@ void UnityEngine::drawObjects() {
 					break;
 				}
 			}
-			if (j == current_screen.polygons.size())
+			if (j == data.current_screen.polygons.size())
 				warning("couldn't find poly for walkable at (%d, %d)", x, y);
 		}
 		_gfx->drawSprite(to_draw[i]->sprite, to_draw[i]->x, to_draw[i]->y, scale);
@@ -456,7 +456,7 @@ Common::Error UnityEngine::run() {
 
 		_gfx->drawBackgroundImage();
 
-		_gfx->drawBackgroundPolys(current_screen.polygons);
+		_gfx->drawBackgroundPolys(data.current_screen.polygons);
 
 		drawObjects();
 

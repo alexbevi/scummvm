@@ -32,8 +32,6 @@ protected:
 	Graphics *_gfx;
 	Sound *_snd;
 
-	Screen current_screen;
-
 	void openLocation(unsigned int world, unsigned int screen);
 
 	void checkEvents();
