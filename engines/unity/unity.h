@@ -13,6 +13,7 @@ class Graphics;
 class Sound;
 class SpritePlayer;
 class Object;
+class Trigger;
 
 struct Triangle {
 	Common::Point points[3];
@@ -59,8 +60,12 @@ protected:
 
 	Screen current_screen;
 
+	Common::Array<Trigger *> triggers;
 	Common::Array<Object *> objects;
 	Common::Array<Common::String> sprite_filenames;
+
+	void loadTriggers();
+	void processTriggers();
 
 	void loadSpriteFilenames();
 	void openLocation(unsigned int world, unsigned int screen);

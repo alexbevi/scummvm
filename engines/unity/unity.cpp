@@ -342,6 +342,140 @@ void UnityEngine::startupScreen() {
 	delete p;
 }
 
+enum {
+	TRIGGERTYPE_NORMAL = 0x0,
+	TRIGGERTYPE_TIMER = 0x1,
+	TRIGGERTYPE_PROXIMITY = 0x2,
+	TRIGGERTYPE_UNUSED = 0x3
+};
+
+struct Trigger {
+	uint32 type;
+	uint32 id;
+	objectID target;
+	bool enabled;
+	byte unknown_a, unknown_b;
+	uint32 timer_start;
+
+	// timer
+	uint32 target_time;
+
+	// proximity
+	uint16 dist;
+	objectID from, to;
+	byte unknown1, unknown2;
+
+	Trigger() : target_time(0) { }
+	bool tick() {
+		if (!enabled) return false;
+
+		switch (type) {
+			case TRIGGERTYPE_NORMAL: return true;
+			case TRIGGERTYPE_TIMER: return timerTick();
+			case TRIGGERTYPE_PROXIMITY: return proximityTick();
+			case TRIGGERTYPE_UNUSED: return false;
+		}
+
+		abort();
+	}
+
+protected:
+	bool timerTick() {
+		bool ticked = false;
+		if (target_time && g_system->getMillis() >= target_time) {
+			target_time = 0;
+			ticked = true;
+		}
+		if (!target_time) {
+			target_time = g_system->getMillis() + (timer_start * 1000);
+		}
+		return ticked;
+	}
+
+	bool proximityTick() {
+		return false; // TODO
+	}
+};
+
+void UnityEngine::loadTriggers() {
+	Common::SeekableReadStream *triggerstream = openFile("trigger.dat");
+
+	while (true) {
+		uint32 id = triggerstream->readUint32LE();
+		if (triggerstream->eos()) break;
+
+		Trigger *trigger = new Trigger;
+		triggers.push_back(trigger);
+		trigger->id = id;
+
+		uint16 unused = triggerstream->readUint16LE();
+		assert(unused == 0xffff);
+
+		trigger->unknown_a = triggerstream->readByte(); // XXX
+
+		byte unused2 = triggerstream->readByte();
+		assert(unused2 == 0xff);
+
+		trigger->type = triggerstream->readUint32LE();
+		assert(trigger->type <= 3);
+		trigger->target = readObjectID(triggerstream);
+		byte enabled = triggerstream->readByte();
+		assert(enabled == 0 || enabled == 1);
+		trigger->enabled = (enabled == 1);
+
+		trigger->unknown_b = triggerstream->readByte(); // XXX
+
+		unused = triggerstream->readUint16LE();
+		assert(unused == 0xffff);
+
+		trigger->timer_start = triggerstream->readUint32LE();
+
+		switch (trigger->type) {
+			case TRIGGERTYPE_TIMER:
+				{
+					uint32 zero = triggerstream->readUint32LE();
+					assert(zero == 0);
+					zero = triggerstream->readUint32LE();
+					assert(zero == 0);
+				}
+				break;
+
+			case TRIGGERTYPE_PROXIMITY:
+				{
+					trigger->dist = triggerstream->readUint16LE();
+					unused = triggerstream->readUint16LE();
+					assert(unused == 0xffff);
+					trigger->from = readObjectID(triggerstream);
+					trigger->to = readObjectID(triggerstream);
+					trigger->unknown1 = triggerstream->readByte();
+					assert(trigger->unknown1 == 0 || trigger->unknown1 == 1);
+					trigger->unknown2 = triggerstream->readByte();
+					assert(trigger->unknown2 == 0 || trigger->unknown2 == 1);
+					unused = triggerstream->readUint16LE();
+					assert(unused == 0xffff);
+				}
+				break;
+
+			case TRIGGERTYPE_UNUSED:
+				{
+					uint32 zero = triggerstream->readUint32LE();
+					assert(zero == 0);
+				}
+				break;
+		}
+	}
+
+	delete triggerstream;
+}
+
+void UnityEngine::processTriggers() {
+	for (unsigned int i = 0; i < triggers.size(); i++) {
+		if (triggers[i]->tick()) {
+			printf("should run trigger %x\n", triggers[i]->id);
+		}
+	}
+}
+
 Common::Error UnityEngine::run() {
 	init();
 
@@ -349,6 +483,7 @@ Common::Error UnityEngine::run() {
 	_gfx->init();
 	_snd->init();
 
+	loadTriggers();
 	loadSpriteFilenames();
 
 	// XXX: this mouse cursor is borrowed from SCI
@@ -440,6 +575,8 @@ Common::Error UnityEngine::run() {
 					break;
 			}
 		}
+
+		processTriggers();
 
 		_gfx->drawBackgroundImage();
 		_gfx->drawBackgroundPolys(current_screen.polygons);
