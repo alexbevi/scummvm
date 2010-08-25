@@ -314,6 +314,7 @@ void UnityEngine::startupScreen() {
 	SpritePlayer *p = new SpritePlayer(new Sprite(openFile("legaleze.spr")), 0, this);
 	unsigned int anim = 0;
 	p->startAnim(anim);
+	uint32 waiting = 0;
 	while (true) {
 		Common::Event event;
 		bool escape = false;
@@ -330,13 +331,21 @@ void UnityEngine::startupScreen() {
 
 		p->update();
 		if (!p->playing()) {
-			// TODO: should pause for some period of time after each anim
-			if (anim == 0) {
+			if (!waiting) {
+				// arbitary 4 second wait, not sure how long the original waits
+				waiting = g_system->getMillis() + 4000;
+			} else if (g_system->getMillis() < waiting) {
+				// delay for 1/10th sec while waiting
+				g_system->delayMillis(100);
+			} else if (anim == 0) {
+				waiting = 0;
+				// play second animation
 				anim = 1;
 				p->startAnim(anim);
-			}
-			else
+			} else {
+				// all done!
 				break;
+			}
 		}
 		_gfx->drawSprite(p, 0, 0, 256);
 		_system->updateScreen();
