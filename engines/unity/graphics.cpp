@@ -150,7 +150,7 @@ void Graphics::drawString(unsigned int x, unsigned int y, Common::String text, u
 	}
 }
 
-void Graphics::drawMRG(Common::String filename, unsigned int entry) {
+void Graphics::drawMRG(Common::String filename, unsigned int entry, unsigned int x, unsigned int y) {
 	Common::SeekableReadStream *mrgStream = _vm->data.openFile(filename);
 
 	uint16 num_entries = mrgStream->readUint16LE();
@@ -168,8 +168,8 @@ void Graphics::drawMRG(Common::String filename, unsigned int entry) {
 	byte *pixels = new byte[width * height];
 	mrgStream->read(pixels, width * height);
 
-	// TODO: positioning
-	_vm->_system->copyRectToScreen(pixels, width, 0, 400, width, height);
+	// TODO: positioning/clipping?
+	_vm->_system->copyRectToScreen(pixels, width, x, y, width, height);
 
 	delete[] pixels;
 	delete mrgStream;

@@ -23,7 +23,7 @@ public:
 	void setBackgroundImage(Common::String filename);
 
 	void drawString(unsigned int x, unsigned int y, Common::String text, unsigned int font);
-	void drawMRG(Common::String filename, unsigned int entry);
+	void drawMRG(Common::String filename, unsigned int entry, unsigned int x, unsigned int y);
 	void drawBackgroundImage();
 	void drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale = 256);
 	void drawBackgroundPolys(Common::Array<struct ScreenPolygon> &polys);

@@ -207,7 +207,7 @@ Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 }
 
 void UnityEngine::startBridge() {
-	const char *bridge_sprites[9] = {
+	const char *bridge_sprites[10] = {
 		"brdgldor.spr", // Left Door (conference room)
 		"brdgdoor.spr", // Door
 		"brdgworf.spr", // Worf
@@ -216,6 +216,7 @@ void UnityEngine::startBridge() {
 		"brdgrikr.spr", // Riker
 		"brdgpica.spr", // Picard
 		"brdgtitl.spr", // Episode Title
+		"advice.spr", // advice button in UI :(
 		0 };
 
 	for (unsigned int i = 0; bridge_sprites[i] != 0; i++) {
@@ -247,7 +248,7 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 	}
 
 	// draw UI
-	_gfx->drawMRG("awayteam.mrg", 0);
+	_gfx->drawMRG("awayteam.mrg", 0, 0, 400);
 }
 
 void UnityEngine::startupScreen() {
@@ -426,6 +427,40 @@ void UnityEngine::drawObjects() {
 	}
 }
 
+void UnityEngine::drawBridgeUI() {
+	// the advice button is drawn as a sprite (see startBridge), sigh
+
+	// sensor.mrg
+	// 4 sprites: "bridge" in/out and "viewscreen" in/out
+
+	// draw viewscreen button
+	_gfx->drawMRG("sensor.mrg", 3, 484, 426);
+
+	// transp.mrg
+	// 0-5: up arrows (normal, hilight, grayed) + down arrows
+	// 5-11: seek arrows (normal, hilight, grayed): 3 left then 3 right
+	// 11-17: 6 transporter room stuff?
+	// 18-19: normal admin menu, hilighted admin menu
+	// 20: some grey thing
+
+	// draw grayed up/down arrows
+	_gfx->drawMRG("transp.mrg", 2, 117, 426);
+	_gfx->drawMRG("transp.mrg", 5, 117, 450);
+
+	// display text (TODO: list of visited sectors)
+	char buffer[30];
+	const char *sector_name = "M'kyru"; // TODO
+	snprintf(buffer, 30, "SECTOR: %s", sector_name);
+	_gfx->drawString(9, 395, buffer, 2);
+	unsigned int warp_hi = 0, warp_lo = 0; // TODO
+	snprintf(buffer, 30, "WARP: %d.%d", warp_hi, warp_lo);
+	_gfx->drawString(168, 395, buffer, 2);
+
+	/*for (unsigned int i = 0; i < 21; i++) {
+		_gfx->drawMRG("dialog.mrg", i, 50 * (1 + i/10), 30 * (i%10));
+	}*/
+}
+
 Common::Error UnityEngine::run() {
 	init();
 
@@ -460,6 +495,8 @@ Common::Error UnityEngine::run() {
 		_gfx->drawBackgroundPolys(data.current_screen.polygons);
 
 		drawObjects();
+
+		drawBridgeUI();
 
 		_system->updateScreen();
 	}

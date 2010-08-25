@@ -41,6 +41,8 @@ protected:
 	void startupScreen();
 	void startBridge();
 	void startAwayTeam(unsigned int world, unsigned int screen);
+
+	void drawBridgeUI();
 };
 
 } // Unity
