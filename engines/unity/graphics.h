@@ -22,6 +22,7 @@ public:
 	void setCursor(unsigned int id, bool wait);
 	void setBackgroundImage(Common::String filename);
 
+	void drawString(unsigned int x, unsigned int y, Common::String text, unsigned int font);
 	void drawMRG(Common::String filename, unsigned int entry);
 	void drawBackgroundImage();
 	void drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale = 256);
@@ -31,6 +32,7 @@ public:
 protected:
 	void loadPalette();
 	void loadCursors();
+	void loadFonts();
 
 	void blit(byte *data, int x, int y, unsigned int width, unsigned int height, byte transparent = COLOUR_BLANK);
 

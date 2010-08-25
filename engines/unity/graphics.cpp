@@ -24,6 +24,7 @@ Graphics::~Graphics() {
 void Graphics::init() {
 	loadPalette();
 	loadCursors();
+	loadFonts();
 }
 
 void Graphics::loadPalette() {
@@ -74,6 +75,79 @@ void Graphics::setCursor(unsigned int id, bool wait) {
 	// TODO: hotspot?
 	CursorMan.replaceCursor(img->data, img->width, img->height, img->width/2, img->height/2, COLOUR_BLANK);
 	CursorMan.showMouse(true);
+}
+
+struct Font {
+	byte start, end;
+	uint16 size;
+	byte glyphpitch, glyphheight;
+	byte *data, *widths;
+};
+
+Font fonts[10]; // TODO: store in class, free data
+
+void Graphics::loadFonts() {
+	for (unsigned int num = 0; num < 10; num++) {
+		char filename[10];
+		snprintf(filename, 10, "font%d.fon", num);
+		Common::SeekableReadStream *fontStream = _vm->openFile(filename);
+
+		byte unknown = fontStream->readByte();
+		assert(unknown == 1);
+
+		fonts[num].glyphheight = fontStream->readByte();
+		fonts[num].start = fontStream->readByte();
+		fonts[num].end = fontStream->readByte();
+		fonts[num].size = fontStream->readUint16LE() - 1;
+
+		unsigned int num_glyphs = fonts[num].end - fonts[num].start + 1;
+		uint16 size = fonts[num].size;
+
+		byte unknown2 = fontStream->readByte();
+		assert(unknown2 == 0);
+
+		byte unknown3 = fontStream->readByte();
+		assert(unknown3 == 0 || unknown3 == 1);
+		if (unknown3 == 0) {
+			// TODO: not sure what's going on with these
+			fonts[num].data = NULL;
+			continue;
+		}
+
+		fonts[num].glyphpitch = fontStream->readByte();
+		assert(size == fonts[num].glyphpitch * ((unknown3 == 0) ? 1 : fonts[num].glyphheight));
+
+		fonts[num].data = new byte[num_glyphs * size];
+		fonts[num].widths = new byte[num_glyphs];
+
+		for (unsigned int i = 0; i < num_glyphs; i++) {
+			fonts[num].widths[i] = fontStream->readByte();
+			fontStream->read(fonts[num].data + (i * size), size);
+		}
+		// (TODO: sometimes files have exactly one more char on the end?)
+
+		delete fontStream;
+	}
+}
+
+void Graphics::drawString(unsigned int x, unsigned int y, Common::String text, unsigned int font) {
+	assert(fonts[font].data);
+
+	for (unsigned int i = 0; i < text.size(); i++) {
+		unsigned char c = text[i];
+		if (c < fonts[font].start || c > fonts[font].end) {
+			printf("WARNING: can't render character %x in font %d: not between %x and %x\n",
+				c, font, fonts[font].start, fonts[font].end);
+			continue;
+		}
+		c -= fonts[font].start;
+
+		// TODO: clipping
+		_vm->_system->copyRectToScreen(fonts[font].data + (c * fonts[font].size),
+			fonts[font].glyphpitch, x, y, fonts[font].widths[c], fonts[font].glyphheight);
+		// TODO: clipping
+		x += fonts[font].widths[c];
+	}
 }
 
 void Graphics::drawMRG(Common::String filename, unsigned int entry) {
