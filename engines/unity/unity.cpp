@@ -319,9 +319,11 @@ void UnityEngine::startupScreen() {
 		bool escape = false;
 		while (_eventMan->pollEvent(event)) {
 			if (event.type == Common::EVENT_KEYUP) {
-				// note that the original game didn't allow escape
-				// until the first animation was done
-				escape = true;
+				if (event.kbd.keycode == Common::KEYCODE_ESCAPE) {
+					// note that the original game didn't allow escape
+					// until the first animation was done
+					escape = true;
+				}
 			}
 		}
 		if (escape) break;
@@ -485,6 +487,8 @@ Common::Error UnityEngine::run() {
 
 	loadTriggers();
 	loadSpriteFilenames();
+
+	startupScreen();
 
 	// XXX: this mouse cursor is borrowed from SCI
 	CursorMan.replaceCursor(sciMouseCursor, 11, 16, 1, 1, 0);
