@@ -3,6 +3,7 @@
 #include "sound.h"
 #include "sprite.h"
 #include "object.h"
+#include "trigger.h"
 
 #include "common/fs.h"
 #include "common/config-manager.h"
@@ -48,7 +49,7 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst) {
 UnityEngine::~UnityEngine() {
 	delete _snd;
 	delete _gfx;
-	delete data;
+	delete data.data;
 }
 
 Common::Error UnityEngine::init() {
@@ -57,8 +58,8 @@ Common::Error UnityEngine::init() {
 	_gfx = new Graphics(this);
 	_snd = new Sound(this);
 
-	data = Common::makeZipArchive("STTNG.ZIP");
-	if (!data) {
+	data.data = Common::makeZipArchive("STTNG.ZIP");
+	if (!data.data) {
 		error("couldn't open data file");
 	}
 	/*Common::ArchiveMemberList list;
@@ -72,14 +73,14 @@ Common::Error UnityEngine::init() {
 			Sprite spr(ourstr);
 		}
 	}*/
-	SearchMan.add("sttngzip", data);
+	SearchMan.add("sttngzip", data.data);
 
 	return Common::kNoError;
 }
 
 void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 	Common::String filename = Common::String::printf("sl%03d.scr", world);
-	Common::SeekableReadStream *locstream = openFile(filename);
+	Common::SeekableReadStream *locstream = data.openFile(filename);
 
 	uint16 num_entries = locstream->readUint16LE();
 	Common::HashMap<uint32, uint32> offsets;
@@ -109,7 +110,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 	locstream->read(polygons, length);
 	polygons[length] = 0;
 
-	loadScreenPolys(polygons);
+	data.loadScreenPolys(polygons);
 
 	current_screen.entrypoints.clear();
 	byte num_entrances = locstream->readByte();
@@ -129,14 +130,14 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 	// TODO: what do we do with all the objects?
 	// for now, we just delete all but the away team
-	for (unsigned int i = 4; i < objects.size(); i++) {
-		delete objects[i]->sprite;
-		delete objects[i];
+	for (unsigned int i = 4; i < data.objects.size(); i++) {
+		delete data.objects[i]->sprite;
+		delete data.objects[i];
 	}
-	objects.resize(4);
+	data.objects.resize(4);
 
 	filename = Common::String::printf("w%02x%02xobj.bst", world, screen);
-	locstream = openFile(filename);
+	locstream = data.openFile(filename);
 
 	// TODO: is there data we need here in w_XXstrt.bst?
 	// (seems to be only trigger activations)
@@ -156,72 +157,10 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 		Object *obj = new Object;
 		obj->loadObject(this, id.world, id.screen, id.id);
-		objects.push_back(obj);
+		data.objects.push_back(obj);
 	}
 
 	delete locstream;
-}
-
-void UnityEngine::loadScreenPolys(Common::String filename) {
-	Common::SeekableReadStream *mrgStream = openFile(filename);
-
-	uint16 num_entries = mrgStream->readUint16LE();
-	Common::Array<uint32> offsets;
-	Common::Array<uint32> ids;
-	offsets.reserve(num_entries);
-	for (unsigned int i = 0; i < num_entries; i++) {
-		uint32 id = mrgStream->readUint32LE();
-		ids.push_back(id);
-		uint32 offset = mrgStream->readUint32LE();
-		offsets.push_back(offset);
-	}
-
-	current_screen.polygons.clear();
-	current_screen.polygons.reserve(num_entries);
-	for (unsigned int i = 0; i < num_entries; i++) {
-		ScreenPolygon poly;
-
-		bool r = mrgStream->seek(offsets[i]);
-		assert(r);
-
-		poly.id = ids[i];
-		poly.type = mrgStream->readByte();
-		assert(poly.type == 0 || poly.type == 1 || poly.type == 3 || poly.type == 4);
-
-		uint16 something2 = mrgStream->readUint16LE();
-		assert(something2 == 0);
-
-		byte count = mrgStream->readByte();
-		for (unsigned int j = 0; j < count; j++) {
-			uint16 x = mrgStream->readUint16LE();
-			uint16 y = mrgStream->readUint16LE();
-
-			// 0-256, higher is nearer (larger characters);
-			// (maybe 0 means not shown at all?)
-			uint16 distance = mrgStream->readUint16LE();
-			assert(distance <= 0x100);
-
-			poly.distances.push_back(distance);
-			poly.points.push_back(Common::Point(x, y));
-		}
-
-		for (unsigned int p = 2; p < poly.points.size(); p++) {
-			// make a list of triangle vertices (0, p - 1, p)
-			// this makes the code easier to understand for now
-			Triangle tri;
-			tri.points[0] = poly.points[0];
-			tri.distances[0] = poly.distances[0];
-			tri.points[1] = poly.points[p - 1];
-			tri.distances[1] = poly.distances[p - 1];
-			tri.points[2] = poly.points[p];
-			tri.distances[2] = poly.distances[p];
-			poly.triangles.push_back(tri);
-		}
-
-		current_screen.polygons.push_back(poly);
-	}
-
-	delete mrgStream;
 }
 
 #define DIRECTION(x, y, x1, y1, x2, y2) (((int)y - y1)*(x2 - x1) - ((int)x - x1)*(y2 - y1))
@@ -250,6 +189,8 @@ struct DrawOrderComparison {
 };
 
 Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
+	Common::Array<Object *> &objects = data.objects;
+
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		if (!objects[i]->active) continue;
 		if (objects[i]->width == (unsigned int)~0) continue;
@@ -283,9 +224,9 @@ void UnityEngine::startBridge() {
 		obj->z_adjust = 0xffff;
 		obj->active = true;
 		obj->scaled = false;
-		obj->sprite = new SpritePlayer(new Sprite(openFile(bridge_sprites[i])), obj, this);;
+		obj->sprite = new SpritePlayer(new Sprite(data.openFile(bridge_sprites[i])), obj, this);;
 		obj->sprite->startAnim(0);
-		objects.push_back(obj);
+		data.objects.push_back(obj);
 	}
 
 	_gfx->setBackgroundImage("bridge.rm");
@@ -296,13 +237,13 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 	for (unsigned int i = 0; i < 4; i++) {
 		Object *obj = new Object;
 		obj->loadObject(this, 0, 0, i);
-		objects.push_back(obj);
+		data.objects.push_back(obj);
 	}
 
 	openLocation(world, screen);
 	for (unsigned int i = 0; i < 4; i++) {
-		objects[i]->x = current_screen.entrypoints[0][i].x;
-		objects[i]->y = current_screen.entrypoints[0][i].y;
+		data.objects[i]->x = current_screen.entrypoints[0][i].x;
+		data.objects[i]->y = current_screen.entrypoints[0][i].y;
 	}
 
 	// draw UI
@@ -311,7 +252,7 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 
 void UnityEngine::startupScreen() {
 	// play two animations (both logo anim followed by text) from one file
-	SpritePlayer *p = new SpritePlayer(new Sprite(openFile("legaleze.spr")), 0, this);
+	SpritePlayer *p = new SpritePlayer(new Sprite(data.openFile("legaleze.spr")), 0, this);
 	unsigned int anim = 0;
 	p->startAnim(anim);
 	uint32 waiting = 0;
@@ -353,149 +294,25 @@ void UnityEngine::startupScreen() {
 	delete p;
 }
 
-enum {
-	TRIGGERTYPE_NORMAL = 0x0,
-	TRIGGERTYPE_TIMER = 0x1,
-	TRIGGERTYPE_PROXIMITY = 0x2,
-	TRIGGERTYPE_UNUSED = 0x3
-};
-
-struct Trigger {
-	uint32 type;
-	uint32 id;
-	objectID target;
-	bool enabled;
-	byte unknown_a, unknown_b;
-	uint32 timer_start;
-
-	// timer
-	uint32 target_time;
-
-	// proximity
-	uint16 dist;
-	objectID from, to;
-	byte unknown1, unknown2;
-
-	Trigger() : target_time(0) { }
-	bool tick() {
-		if (!enabled) return false;
-
-		switch (type) {
-			case TRIGGERTYPE_NORMAL: return true;
-			case TRIGGERTYPE_TIMER: return timerTick();
-			case TRIGGERTYPE_PROXIMITY: return proximityTick();
-			case TRIGGERTYPE_UNUSED: return false;
-		}
-
-		abort();
-	}
-
-protected:
-	bool timerTick() {
-		bool ticked = false;
-		if (target_time && g_system->getMillis() >= target_time) {
-			target_time = 0;
-			ticked = true;
-		}
-		if (!target_time) {
-			target_time = g_system->getMillis() + (timer_start * 1000);
-		}
-		return ticked;
-	}
-
-	bool proximityTick() {
-		return false; // TODO
-	}
-};
-
-void UnityEngine::loadTriggers() {
-	Common::SeekableReadStream *triggerstream = openFile("trigger.dat");
-
-	while (true) {
-		uint32 id = triggerstream->readUint32LE();
-		if (triggerstream->eos()) break;
-
-		Trigger *trigger = new Trigger;
-		triggers.push_back(trigger);
-		trigger->id = id;
-
-		uint16 unused = triggerstream->readUint16LE();
-		assert(unused == 0xffff);
-
-		trigger->unknown_a = triggerstream->readByte(); // XXX
-
-		byte unused2 = triggerstream->readByte();
-		assert(unused2 == 0xff);
-
-		trigger->type = triggerstream->readUint32LE();
-		assert(trigger->type <= 3);
-		trigger->target = readObjectID(triggerstream);
-		byte enabled = triggerstream->readByte();
-		assert(enabled == 0 || enabled == 1);
-		trigger->enabled = (enabled == 1);
-
-		trigger->unknown_b = triggerstream->readByte(); // XXX
-
-		unused = triggerstream->readUint16LE();
-		assert(unused == 0xffff);
-
-		trigger->timer_start = triggerstream->readUint32LE();
-
-		switch (trigger->type) {
-			case TRIGGERTYPE_TIMER:
-				{
-					uint32 zero = triggerstream->readUint32LE();
-					assert(zero == 0);
-					zero = triggerstream->readUint32LE();
-					assert(zero == 0);
-				}
-				break;
-
-			case TRIGGERTYPE_PROXIMITY:
-				{
-					trigger->dist = triggerstream->readUint16LE();
-					unused = triggerstream->readUint16LE();
-					assert(unused == 0xffff);
-					trigger->from = readObjectID(triggerstream);
-					trigger->to = readObjectID(triggerstream);
-					trigger->unknown1 = triggerstream->readByte();
-					assert(trigger->unknown1 == 0 || trigger->unknown1 == 1);
-					trigger->unknown2 = triggerstream->readByte();
-					assert(trigger->unknown2 == 0 || trigger->unknown2 == 1);
-					unused = triggerstream->readUint16LE();
-					assert(unused == 0xffff);
-				}
-				break;
-
-			case TRIGGERTYPE_UNUSED:
-				{
-					uint32 zero = triggerstream->readUint32LE();
-					assert(zero == 0);
-				}
-				break;
-		}
-	}
-
-	delete triggerstream;
-}
-
 void UnityEngine::processTriggers() {
-	for (unsigned int i = 0; i < triggers.size(); i++) {
-		if (triggers[i]->tick()) {
-			printf("should run trigger %x\n", triggers[i]->id);
+	for (unsigned int i = 0; i < data.triggers.size(); i++) {
+		if (data.triggers[i]->tick()) {
+			printf("should run trigger %x\n", data.triggers[i]->id);
 		}
 	}
 }
 
 Common::Error UnityEngine::run() {
+	Common::Array<Object *> &objects = data.objects;
+
 	init();
 
 	initGraphics(640, 480, true);
 	_gfx->init();
 	_snd->init();
 
-	loadTriggers();
-	loadSpriteFilenames();
+	data.loadTriggers();
+	data.loadSpriteFilenames();
 
 	startupScreen();
 
@@ -634,38 +451,6 @@ Common::Error UnityEngine::run() {
 	}
 
 	return Common::kNoError;
-}
-
-Common::SeekableReadStream *UnityEngine::openFile(Common::String filename) {
-	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(filename);
-	if (!stream) error("couldn't open '%s'", filename.c_str());
-	return stream;
-}
-
-void UnityEngine::loadSpriteFilenames() {
-	Common::SeekableReadStream *stream = openFile("sprite.lst");
-
-	uint32 num_sprites = stream->readUint32LE();
-	sprite_filenames.reserve(num_sprites);
-
-	for (unsigned int i = 0; i < num_sprites; i++) {
-		char buf[9]; // DOS filenames, so 9 should really be enough
-		for (unsigned int j = 0; j < 9; j++) {
-			char c = stream->readByte();
-			buf[j] = c;
-			if (c == 0) break;
-			assert (j != 8);
-		}
-		sprite_filenames.push_back(buf);
-	}
-
-	delete stream;
-}
-
-Common::String UnityEngine::getSpriteFilename(unsigned int id) {
-	assert(id != 0xffff && id != 0xfffe);
-	assert(id < sprite_filenames.size());
-	return sprite_filenames[id] + ".spr";
 }
 
 } // Unity

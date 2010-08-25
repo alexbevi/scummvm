@@ -30,7 +30,7 @@ void Graphics::init() {
 void Graphics::loadPalette() {
 	// read the standard palette entries
 	basePalette = new byte[128 * 4];
-	Common::SeekableReadStream *palStream = _vm->openFile("STANDARD.PAL");
+	Common::SeekableReadStream *palStream = _vm->data.openFile("STANDARD.PAL");
 	for (uint16 i = 0; i < 128; i++) {
 		basePalette[i * 4] = palStream->readByte();
 		basePalette[i * 4 + 1] = palStream->readByte();
@@ -41,7 +41,7 @@ void Graphics::loadPalette() {
 }
 
 void Graphics::loadCursors() {
-	Common::SeekableReadStream *stream = _vm->openFile("cursor.dat");
+	Common::SeekableReadStream *stream = _vm->data.openFile("cursor.dat");
 	while (stream->pos() != stream->size()) {
 		Image img;
 		img.width = stream->readUint16LE();
@@ -51,7 +51,7 @@ void Graphics::loadCursors() {
 		cursors.push_back(img);
 	}
 	delete stream;
-	stream = _vm->openFile("waitcurs.dat");
+	stream = _vm->data.openFile("waitcurs.dat");
 	while (stream->pos() != stream->size()) {
 		Image img;
 		img.width = stream->readUint16LE();
@@ -90,7 +90,7 @@ void Graphics::loadFonts() {
 	for (unsigned int num = 0; num < 10; num++) {
 		char filename[10];
 		snprintf(filename, 10, "font%d.fon", num);
-		Common::SeekableReadStream *fontStream = _vm->openFile(filename);
+		Common::SeekableReadStream *fontStream = _vm->data.openFile(filename);
 
 		byte unknown = fontStream->readByte();
 		assert(unknown == 1);
@@ -151,7 +151,7 @@ void Graphics::drawString(unsigned int x, unsigned int y, Common::String text, u
 }
 
 void Graphics::drawMRG(Common::String filename, unsigned int entry) {
-	Common::SeekableReadStream *mrgStream = _vm->openFile(filename);
+	Common::SeekableReadStream *mrgStream = _vm->data.openFile(filename);
 
 	uint16 num_entries = mrgStream->readUint16LE();
 	assert(entry < num_entries);
@@ -179,7 +179,7 @@ void Graphics::setBackgroundImage(Common::String filename) {
 	delete[] palette;
 	palette = new byte[256 * 4];
 
-	Common::SeekableReadStream *scrStream = _vm->openFile(filename);
+	Common::SeekableReadStream *scrStream = _vm->data.openFile(filename);
 	for (uint16 i = 0; i < 128; i++) {
 		palette[i * 4] = scrStream->readByte();
 		palette[i * 4 + 1] = scrStream->readByte();
