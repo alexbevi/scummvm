@@ -251,11 +251,11 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 
 	// plot cross at (x, y) loc
 	::Graphics::Surface *surf = _vm->_system->lockScreen();
-	*((byte *)surf->getBasePtr(x-1, y)) = 254;
-	*((byte *)surf->getBasePtr(x+1, y)) = 254;
+	if (x != 0) *((byte *)surf->getBasePtr(x-1, y)) = 254;
+	if (x != 640-1 ) *((byte *)surf->getBasePtr(x+1, y)) = 254;
 	*((byte *)surf->getBasePtr(x, y)) = 254;
-	*((byte *)surf->getBasePtr(x, y-1)) = 254;
-	*((byte *)surf->getBasePtr(x, y+1)) = 254;
+	if (y != 0) *((byte *)surf->getBasePtr(x, y-1)) = 254;
+	if (y != 480-1) *((byte *)surf->getBasePtr(x, y+1)) = 254;
 	_vm->_system->unlockScreen();
 }
 
