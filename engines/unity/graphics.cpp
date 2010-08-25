@@ -198,7 +198,7 @@ void Graphics::setBackgroundImage(Common::String filename) {
 
 	// some of the files seem to be 480 high, but just padded with black
 	background.width = 640;
-	background.height = 400;
+	background.height = 480;
 
 	delete[] background.data;
 	background.data = new byte[background.width * background.height];
@@ -232,10 +232,10 @@ void Graphics::blit(byte *data, int x, int y, unsigned int width, unsigned int h
 	}
 
 	// XXX: remove this, or make it an option?
-	surf->drawLine(x, y, x + width, y, 1);
+	/*surf->drawLine(x, y, x + width, y, 1);
 	surf->drawLine(x, y + height, x + width, y + height, 1);
 	surf->drawLine(x, y, x, y + height, 1);
-	surf->drawLine(x + width, y, x + width, y + height, 1);
+	surf->drawLine(x + width, y, x + width, y + height, 1);*/
 
 	_vm->_system->unlockScreen();
 }

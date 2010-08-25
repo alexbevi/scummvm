@@ -445,9 +445,10 @@ Common::Error UnityEngine::run() {
 	// and we stomp over it anyway, but this only good for some situations :)
 	_gfx->setCursor(0, false);
 
-	startAwayTeam(curr_loc, curr_screen);
+	//startAwayTeam(curr_loc, curr_screen);
+	//for (unsigned int i = 0; i < 4; i++) data.objects[i]->sprite->startAnim(anim);
 
-	for (unsigned int i = 0; i < 4; i++) data.objects[i]->sprite->startAnim(anim);
+	startBridge();
 
 	while (!shouldQuit()) {
 		checkEvents();
