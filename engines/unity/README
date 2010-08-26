@@ -1,0 +1,6 @@
+This is an experimental, non-functional ScummVM engine for the adventure game
+Star Trek: The Next Generation - A Final Unity. You'll need to manually add it
+to the ScummVM build files in order to build it.
+
+Don't expect this to ever be finished. :) But any help/contributions would be
+welcome. You can generally find me in #scummvm on irc.freenode.net.
