@@ -25,5 +25,14 @@ void Sound::playSpeech(Common::String name) {
 	_vm->_mixer->playStream(Audio::Mixer::kSpeechSoundType, _soundHandle, sampleStream);
 }
 
+void Sound::playAudioBuffer(unsigned int length, byte *data) {
+	Common::MemoryReadStream *audioFileStream = new Common::MemoryReadStream(data, length);
+	Audio::AudioStream *sampleStream = Audio::makeADPCMStream(
+		audioFileStream, DisposeAfterUse::YES, 0, Audio::kADPCMIma,
+		22050, 1);
+	if (!sampleStream) error("couldn't make sample stream");
+	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, _soundHandle, sampleStream);
+}
+
 }
 

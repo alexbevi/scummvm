@@ -22,6 +22,7 @@ enum SpriteEntryType {
 	se_RelPos,
 	se_MouthPos,
 	se_Mark,
+	se_Audio,
 	se_Exit
 };
 
@@ -70,6 +71,12 @@ struct SpriteEntryRelPos : public SpriteEntry {
 struct SpriteEntryMouthPos : public SpriteEntry {
 	int adjustx, adjusty;
 	SpriteEntryMouthPos(int _ax, int _ay) : SpriteEntry(se_MouthPos), adjustx(_ax), adjusty(_ay) { }
+};
+
+struct SpriteEntryAudio : public SpriteEntry {
+	unsigned int length;
+	byte *data;
+	SpriteEntryAudio() : SpriteEntry(se_Audio) { }
 };
 
 class Sprite {

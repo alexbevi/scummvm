@@ -2,6 +2,7 @@
 #include "sprite.h"
 #include "common/system.h"
 #include "object.h"
+#include "sound.h"
 
 namespace Unity {
 
@@ -184,6 +185,11 @@ void SpritePlayer::update() {
 			}
 			old_entry = current_entry;
 			resetState();
+			break;
+		case se_Audio:
+			_vm->_snd->playAudioBuffer(((SpriteEntryAudio *)e)->length,
+					((SpriteEntryAudio *)e)->data);
+			current_entry++;
 			break;
 		default:
 			assert(false);

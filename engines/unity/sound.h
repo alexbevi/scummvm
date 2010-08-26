@@ -9,6 +9,7 @@ public:
 	~Sound();
 
 	void init();
+	void playAudioBuffer(unsigned int length, byte *data);
 	void playSpeech(Common::String name);
 
 protected:

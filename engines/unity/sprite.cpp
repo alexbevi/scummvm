@@ -45,6 +45,8 @@ Sprite::~Sprite() {
 	for (unsigned int i = 0; i < entries.size(); i++) {
 		if (entries[i]->type == se_Sprite)
 			delete[] ((SpriteEntrySprite *)entries[i])->data;
+		else if (entries[i]->type == se_Audio)
+			delete[] ((SpriteEntryAudio *)entries[i])->data;
 		delete entries[i];
 	}
 }
@@ -169,9 +171,12 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		readCompressedImage(size, img);
 		return img;
 	} else if (!strncmp(blockType, DIGI, 4)) {
-		// TODO: audio?!
-		_stream->skip(size); // TODO
-		return new SpriteEntry(se_None); // XXX
+		// audio?! :(
+		SpriteEntryAudio *aud = new SpriteEntryAudio;
+		aud->length = size;
+		aud->data = new byte[size];
+		_stream->read(aud->data, size);
+		return aud;
 	} else if (!strncmp(blockType, SNDW, 4)) {
 		// TODO
 		return new SpriteEntry(se_None); // XXX

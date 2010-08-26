@@ -28,9 +28,10 @@ public:
 
 	UnityData data;
 
+	Sound *_snd;
+
 protected:
 	Graphics *_gfx;
-	Sound *_snd;
 
 	void openLocation(unsigned int world, unsigned int screen);
 
