@@ -26,7 +26,7 @@ struct Trigger {
 	// proximity
 	uint16 dist;
 	objectID from, to;
-	byte unknown1, unknown2;
+	bool reversed, instant;
 
 	Trigger() : target_time(0) { }
 	bool tick();

@@ -29,7 +29,12 @@ bool Trigger::timerTick() {
 }
 
 bool Trigger::proximityTick() {
-	return false; // TODO
+	// TODO: check distance between 'from' and 'to'..
+	// if 'reversed' set, check >=, otherwise check <=
+
+	// the initial run-away trigger (dist 0) is only fired once you entered astrogation(!)
+	// this is because 'instant' is set to false; set it to true, and it will fire at once
+	return false;
 }
 
 } // Unity

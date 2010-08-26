@@ -118,10 +118,12 @@ void UnityData::loadTriggers() {
 					assert(unused == 0xffff);
 					trigger->from = readObjectID(triggerstream);
 					trigger->to = readObjectID(triggerstream);
-					trigger->unknown1 = triggerstream->readByte();
-					assert(trigger->unknown1 == 0 || trigger->unknown1 == 1);
-					trigger->unknown2 = triggerstream->readByte();
-					assert(trigger->unknown2 == 0 || trigger->unknown2 == 1);
+					byte unknown1 = triggerstream->readByte();
+					assert(unknown1 == 0 || unknown1 == 1);
+					trigger->reversed = (unknown1 == 0);
+					byte unknown2 = triggerstream->readByte();
+					assert(unknown2 == 0 || unknown2 == 1);
+					trigger->instant = (unknown2 == 1);
 					unused = triggerstream->readUint16LE();
 					assert(unused == 0xffff);
 				}
