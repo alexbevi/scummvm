@@ -292,6 +292,7 @@ void UnityEngine::startupScreen() {
 		_gfx->drawSprite(p, 0, 0, 256);
 		_system->updateScreen();
 	}
+	_mixer->stopAll();
 	delete p;
 }
 
