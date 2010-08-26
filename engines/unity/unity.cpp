@@ -431,8 +431,90 @@ void UnityEngine::drawObjects() {
 	}
 }
 
+void UnityEngine::drawDialogWindow() {
+	// dialog.mrg
+
+	MRGFile mrg;
+	Common::Array<uint16> &widths = mrg.widths;
+	Common::Array<uint16> &heights = mrg.heights;
+	_gfx->loadMRG("dialog.mrg",  &mrg);
+	assert(widths.size() == 31);
+
+	bool use_thick_frame = false;
+	unsigned int base = (use_thick_frame ? 17 : 0);
+
+	objectID picard = {0, 0, 0};
+	Common::String icon_sprite = data.getIconSprite(picard); // TODO
+
+	// TODO: de-hardcode
+	unsigned int x = 100;
+	unsigned int y = 280;
+	unsigned int width = 300;
+	unsigned int height = 70;
+
+	unsigned int real_x1 = x - 10;
+	unsigned int real_x2 = x + width + 10;
+	unsigned int real_y1 = y - 20;
+	unsigned int real_y2 = y + height + 20;
+
+	real_y1 -= widths[base+4];
+	real_y2 += widths[base+5];
+	real_x1 -= widths[base+6];
+	real_x2 += widths[base+7];
+
+	// icon frame goes on LEFT side, up/down buttons on RIGHT side, both in centre
+	// TODO: version without icon
+	// text border is pretty small if there's no icon frame, otherwise includes that space..
+	real_x1 -= widths[8] / 2;
+	real_x1 += 8;
+
+	// black background inside the border
+	_gfx->fillRect(0, real_x1 + widths[base+0], real_y1 + heights[base+0], real_x2 - widths[base+3], real_y2 - heights[base+3]);
+
+	for (unsigned int border_x = real_x1; border_x + widths[base+4] < real_x2; border_x += widths[base+4])
+		_gfx->drawMRG(&mrg, base+4, border_x, real_y1);
+	for (unsigned int border_x = real_x1; border_x + widths[base+5] < real_x2; border_x += widths[base+5])
+		_gfx->drawMRG(&mrg, base+5, border_x, real_y2 - widths[base+5]);
+	for (unsigned int border_y = real_y1; border_y + heights[base+6] < real_y2; border_y += heights[base+6])
+		_gfx->drawMRG(&mrg, base+6, real_x1, border_y);
+	for (unsigned int border_y = real_y1; border_y + heights[base+7] < real_y2; border_y += heights[base+7])
+		_gfx->drawMRG(&mrg, base+7, real_x2 - widths[base+7], border_y);
+	_gfx->drawMRG(&mrg, base+0, real_x1, real_y1);
+	_gfx->drawMRG(&mrg, base+1, real_x2 - widths[base+7], real_y1);
+	_gfx->drawMRG(&mrg, base+2, real_x1, real_y2 - heights[base+5]);
+	_gfx->drawMRG(&mrg, base+3, real_x2 - widths[base+7], real_y2 - heights[base+5]);
+
+	_gfx->drawMRG(&mrg, 8, real_x1 - (widths[8] / 2) + (widths[base+6]/2), (real_y1+real_y2)/2 - (heights[8]/2));
+	// TODO: don't recreate the player every time, animations don't work this way
+	SpritePlayer *icon_player = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
+	icon_player->startAnim(0);
+	icon_player->update();
+	_gfx->drawSprite(icon_player, real_x1 + (widths[base+6]/2) + 1, (real_y1+real_y2)/2 + (heights[8]/2) - 4);
+	delete icon_player;
+
+	// font 2 is normal, font 3 is highlighted
+	_gfx->drawString(x, y, "Captain's log supplemental. We must set", 2);
+	_gfx->drawString(x, y + 24, "out at once, in search of UMBRELLAS.", 2);
+	_gfx->drawString(x, y + 48, "Wish us luck.", 2);
+
+	// dialog window FRAME:
+	// 0 is top left, 1 is top right, 2 is bottom left, 3 is bottom right
+	// 4 is top, 5 is bottom, 6 is left, 7 is right?
+	// 8 is icon frame (for left side), 9 is hilight box, 10 is not-hilight box
+	// 11/12/13 up buttons (normal/highlight/grayed), 14/15/16 down buttons
+
+	// options (lift, conference room, etc) window FRAME:
+	// 17 top left, 18 top right, 19 bottom left, 20 bottom right, 21 top padding, 22 bottom padding,
+	// 23 left padding, 24 right padding? then the buttons again, but for this mode: 25-30
+
+	/*for (unsigned int i = 0; i < 31; i++) {
+		_gfx->drawMRG("dialog.mrg", i, 50 * (1 + i/10), 30 * (i%10));
+	}*/
+}
+
 void UnityEngine::drawBridgeUI() {
 	// the advice button is drawn as a sprite (see startBridge), sigh
+	// TODO: draw icons there if there's no subtitles
 
 	// sensor.mrg
 	// 4 sprites: "bridge" in/out and "viewscreen" in/out
@@ -505,6 +587,7 @@ Common::Error UnityEngine::run() {
 		drawObjects();
 
 		drawBridgeUI();
+		drawDialogWindow();
 
 		_system->updateScreen();
 	}

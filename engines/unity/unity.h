@@ -43,6 +43,7 @@ protected:
 	void startBridge();
 	void startAwayTeam(unsigned int world, unsigned int screen);
 
+	void drawDialogWindow();
 	void drawBridgeUI();
 };
 
