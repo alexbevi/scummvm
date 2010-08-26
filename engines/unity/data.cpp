@@ -171,5 +171,19 @@ Common::String UnityData::getSpriteFilename(unsigned int id) {
 	return sprite_filenames[id] + ".spr";
 }
 
+void UnityData::loadSectorNames() {
+	Common::SeekableReadStream *stream = openFile("sector.ast");
+
+	for (unsigned int i = 0; i < 8*8*8; i++) {
+		sector_names.push_back(stream->readLine());
+	}
+}
+
+Common::String UnityData::getSectorName(unsigned int x, unsigned int y, unsigned int z) {
+	// sectors are 20*20*20, there are 8*8*8 sectors total, work out the index
+	unsigned int sector_id = (x/20) + (y/20)*(8) + (z/20)*(8*8);
+	return sector_names[sector_id];
+}
+
 } // Unity
 

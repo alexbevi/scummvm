@@ -449,16 +449,14 @@ void UnityEngine::drawBridgeUI() {
 
 	// display text (TODO: list of visited sectors)
 	char buffer[30];
-	const char *sector_name = "M'kyru"; // TODO
-	snprintf(buffer, 30, "SECTOR: %s", sector_name);
+
+	Common::String sector_name = data.getSectorName(90, 90, 90); // TODO
+	snprintf(buffer, 30, "SECTOR: %s", sector_name.c_str());
 	_gfx->drawString(9, 395, buffer, 2);
+
 	unsigned int warp_hi = 0, warp_lo = 0; // TODO
 	snprintf(buffer, 30, "WARP: %d.%d", warp_hi, warp_lo);
 	_gfx->drawString(168, 395, buffer, 2);
-
-	/*for (unsigned int i = 0; i < 21; i++) {
-		_gfx->drawMRG("dialog.mrg", i, 50 * (1 + i/10), 30 * (i%10));
-	}*/
 }
 
 Common::Error UnityEngine::run() {
@@ -470,6 +468,7 @@ Common::Error UnityEngine::run() {
 
 	data.loadTriggers();
 	data.loadSpriteFilenames();
+	data.loadSectorNames();
 
 	startupScreen();
 

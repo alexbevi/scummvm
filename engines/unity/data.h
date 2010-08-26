@@ -48,11 +48,15 @@ public:
 	Common::Array<Trigger *> triggers;
 	Common::Array<Object *> objects;
 	Common::Array<Common::String> sprite_filenames;
+	Common::Array<Common::String> sector_names;
 
 	void loadTriggers();
 
 	void loadSpriteFilenames();
 	void loadScreenPolys(Common::String filename);
+
+	void loadSectorNames();
+	Common::String getSectorName(unsigned int x, unsigned int y, unsigned int z);
 };
 
 } // Unity
