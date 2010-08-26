@@ -41,6 +41,8 @@ public:
 	void drawBackgroundPolys(Common::Array<struct ScreenPolygon> &polys);
 	void renderPolygonEdge(Common::Array<Common::Point> &points, byte colour);
 
+	void fillRect(byte colour, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2);
+
 protected:
 	void loadPalette();
 	void loadCursors();

@@ -373,5 +373,12 @@ void Graphics::renderPolygonEdge(Common::Array<Common::Point> &points, byte colo
 	_vm->_system->unlockScreen();
 }
 
+void Graphics::fillRect(byte colour, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2) {
+	::Graphics::Surface *surf = _vm->_system->lockScreen();
+	Common::Rect r(x1, y1, x2, y2);
+	surf->fillRect(r, colour);
+	_vm->_system->unlockScreen();
+}
+
 } // Unity
 
