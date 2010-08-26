@@ -9,6 +9,7 @@ MODULE_OBJS := \
 	sound.o \
 	sprite.o \
 	sprite_player.o \
+	trigger.o \
 	unity.o
 
 # This module can be built as a plugin
