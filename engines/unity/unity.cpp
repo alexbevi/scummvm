@@ -248,7 +248,9 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 	}
 
 	// draw UI
-	_gfx->drawMRG("awayteam.mrg", 0, 0, 400);
+	MRGFile mrg;
+	_gfx->loadMRG("awayteam.mrg", &mrg);
+	_gfx->drawMRG(&mrg, 0, 0, 400);
 }
 
 void UnityEngine::startupScreen() {
@@ -435,7 +437,9 @@ void UnityEngine::drawBridgeUI() {
 	// 4 sprites: "bridge" in/out and "viewscreen" in/out
 
 	// draw viewscreen button
-	_gfx->drawMRG("sensor.mrg", 3, 484, 426);
+	MRGFile mrg;
+	_gfx->loadMRG("sensor.mrg", &mrg);
+	_gfx->drawMRG(&mrg, 3, 484, 426);
 
 	// transp.mrg
 	// 0-5: up arrows (normal, hilight, grayed) + down arrows
@@ -445,8 +449,10 @@ void UnityEngine::drawBridgeUI() {
 	// 20: some grey thing
 
 	// draw grayed up/down arrows
-	_gfx->drawMRG("transp.mrg", 2, 117, 426);
-	_gfx->drawMRG("transp.mrg", 5, 117, 450);
+	MRGFile tmrg;
+	_gfx->loadMRG("transp.mrg", &tmrg);
+	_gfx->drawMRG(&tmrg, 2, 117, 426);
+	_gfx->drawMRG(&tmrg, 5, 117, 450);
 
 	// display text (TODO: list of visited sectors)
 	char buffer[30];

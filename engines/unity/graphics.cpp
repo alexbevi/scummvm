@@ -150,29 +150,38 @@ void Graphics::drawString(unsigned int x, unsigned int y, Common::String text, u
 	}
 }
 
-void Graphics::drawMRG(Common::String filename, unsigned int entry, unsigned int x, unsigned int y) {
+void Graphics::loadMRG(Common::String filename, MRGFile *mrg) {
 	Common::SeekableReadStream *mrgStream = _vm->data.openFile(filename);
-
 	uint16 num_entries = mrgStream->readUint16LE();
-	assert(entry < num_entries);
-	bool r;
-	r = mrgStream->seek(entry * 4, SEEK_CUR);
-	assert(r);
-	uint32 offset = mrgStream->readUint32LE();
-	r = mrgStream->seek(offset, SEEK_SET);
-	assert(r);
 
-	uint16 width = mrgStream->readUint16LE();
-	uint16 height = mrgStream->readUint16LE();
+	Common::Array<uint32> offsets;
+	for (unsigned int i = 0; i < num_entries; i++) {
+		offsets.push_back(mrgStream->readUint32LE());
+	}
 
-	byte *pixels = new byte[width * height];
-	mrgStream->read(pixels, width * height);
+	for (unsigned int i = 0; i < num_entries; i++) {
+		bool r = mrgStream->seek(offsets[i], SEEK_SET);
+		assert(r);
+
+		uint16 width = mrgStream->readUint16LE();
+		uint16 height = mrgStream->readUint16LE();
+		byte *pixels = new byte[width * height];
+		mrgStream->read(pixels, width * height);
+
+		mrg->heights.push_back(height);
+		mrg->widths.push_back(width);
+		mrg->data.push_back(pixels);
+	}
+
+	delete mrgStream;
+}
+
+void Graphics::drawMRG(MRGFile *mrg, unsigned int entry, unsigned int x, unsigned int y) {
+	assert(entry < mrg->data.size());
 
 	// TODO: positioning/clipping?
-	_vm->_system->copyRectToScreen(pixels, width, x, y, width, height);
-
-	delete[] pixels;
-	delete mrgStream;
+	_vm->_system->copyRectToScreen(mrg->data[entry], mrg->widths[entry], x, y,
+		mrg->widths[entry], mrg->heights[entry]);
 }
 
 void Graphics::setBackgroundImage(Common::String filename) {
