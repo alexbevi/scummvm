@@ -469,6 +469,7 @@ Common::Error UnityEngine::run() {
 	data.loadTriggers();
 	data.loadSpriteFilenames();
 	data.loadSectorNames();
+	data.loadIconSprites();
 
 	startupScreen();
 

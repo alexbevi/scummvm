@@ -177,12 +177,56 @@ void UnityData::loadSectorNames() {
 	for (unsigned int i = 0; i < 8*8*8; i++) {
 		sector_names.push_back(stream->readLine());
 	}
+
+	delete stream;
 }
 
 Common::String UnityData::getSectorName(unsigned int x, unsigned int y, unsigned int z) {
 	// sectors are 20*20*20, there are 8*8*8 sectors total, work out the index
 	unsigned int sector_id = (x/20) + (y/20)*(8) + (z/20)*(8*8);
 	return sector_names[sector_id];
+}
+
+void UnityData::loadIconSprites() {
+	Common::SeekableReadStream *stream = openFile("icon.map");
+
+	while (!stream->eos() && !stream->err()) {
+		Common::String line = stream->readLine();
+
+		Common::String id;
+		Common::String str;
+		for (unsigned int i = 0; i < line.size(); i++) {
+			if (line[i] == '#') {
+				break;
+			} else if (line[i] == ' ' && !id.size()) {
+				id = str;
+				str.clear();
+			} else {
+				str += line[i];
+			}
+		}
+		str.trim();
+		if (!str.size()) continue; // commented-out or blank line
+
+		char *parseEnd;
+		uint32 identifier = strtol(id.c_str(), &parseEnd, 16);
+		if (*parseEnd != 0) {
+			warning("failed to parse '%s' from icon.map", line.c_str());
+			continue;
+		}
+
+		// irritatingly, they use '0' to disable things, but object 0 is Picard..
+		if (icon_sprites.contains(identifier)) continue;
+
+		icon_sprites[identifier] = str;
+	}
+
+	delete stream;
+}
+
+Common::String UnityData::getIconSprite(objectID id) {
+	uint32 identifier = id.id + (id.screen << 8) + (id.world << 16);
+	return icon_sprites[identifier];
 }
 
 } // Unity

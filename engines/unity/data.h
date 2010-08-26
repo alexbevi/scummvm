@@ -5,6 +5,8 @@
 #include "common/archive.h"
 #include "common/rect.h"
 
+#include "object.h"
+
 namespace Unity {
 
 class Graphics;
@@ -49,6 +51,7 @@ public:
 	Common::Array<Object *> objects;
 	Common::Array<Common::String> sprite_filenames;
 	Common::Array<Common::String> sector_names;
+	Common::HashMap<uint32, Common::String> icon_sprites;
 
 	void loadTriggers();
 
@@ -57,6 +60,8 @@ public:
 
 	void loadSectorNames();
 	Common::String getSectorName(unsigned int x, unsigned int y, unsigned int z);
+	void loadIconSprites();
+	Common::String getIconSprite(objectID id);
 };
 
 } // Unity
