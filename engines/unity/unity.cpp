@@ -423,7 +423,7 @@ void UnityEngine::drawObjects() {
 			objects[i]->sprite->update();
 
 			// TODO
-			if (!objects[i]->sprite->valid()) { warning("invalid sprite?"); continue; }
+			if (!objects[i]->sprite->valid()) { /*warning("invalid sprite?");*/ continue; }
 
 			to_draw.push_back(objects[i]);
 		}
