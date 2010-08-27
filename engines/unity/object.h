@@ -18,6 +18,8 @@ struct objectID {
 	byte screen;
 	byte world;
 	byte unused;
+	objectID(): id(255), screen(255), world(255), unused(0) { }
+	objectID(byte i, byte s, byte w) : id(i), screen(s), world(w), unused(0) { }
 };
 
 objectID readObjectID(Common::SeekableReadStream *stream);
