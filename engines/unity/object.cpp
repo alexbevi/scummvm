@@ -51,7 +51,7 @@ enum {
 	// TODO: 0x31
 	// TODO: 0x32
 	// TODO: 0x33
-	BLOCK_CONV_ENTRY = 0x34,
+	BLOCK_CONV_TEXT = 0x34,
 	BLOCK_CONV_RESULT = 0x35,
 
 	BLOCK_PHASER_STUN = 0x36,
@@ -192,7 +192,7 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 	delete objstream;
 }
 
-int Object::readBlockHeader(Common::SeekableReadStream *objstream) {
+int readBlockHeader(Common::SeekableReadStream *objstream) {
 	byte type = objstream->readByte();
 	if (objstream->eos()) return -1;
 
@@ -210,19 +210,19 @@ void Object::readBlock(int type, Common::SeekableReadStream *objstream) {
 			break;
 
 		case BLOCK_USE_ENTRIES:
-			readEntryList(objstream, use_entries);
+			use_entries.readEntryList(objstream);
 			break;
 
 		case BLOCK_GET_ENTRIES:
-			readEntryList(objstream, get_entries);
+			get_entries.readEntryList(objstream);
 			break;
 
 		case BLOCK_LOOK_ENTRIES:
-			readEntryList(objstream, look_entries);
+			look_entries.readEntryList(objstream);
 			break;
 
 		case BLOCK_TIMER_ENTRIES:
-			readEntryList(objstream, timer_entries);
+			timer_entries.readEntryList(objstream);
 			break;
 
 		default:
@@ -231,7 +231,7 @@ void Object::readBlock(int type, Common::SeekableReadStream *objstream) {
 	}
 }
 
-void Object::readEntryList(Common::SeekableReadStream *objstream, EntryList &entries) {
+void EntryList::readEntryList(Common::SeekableReadStream *objstream) {
 	byte num_entries = objstream->readByte();
 
 	for (unsigned int i = 0; i < num_entries; i++) {
@@ -244,6 +244,7 @@ void Object::readEntryList(Common::SeekableReadStream *objstream, EntryList &ent
 		assert(header == 9);
 
 		// XXX: seeking over important data!
+		// this seems to be offsets etc, unimportant?
 		objstream->seek(0xac, SEEK_CUR);
 
 		while (true) {
@@ -252,12 +253,60 @@ void Object::readEntryList(Common::SeekableReadStream *objstream, EntryList &ent
 			if (type == BLOCK_END_ENTRY)
 				break;
 
-			readEntry(type, objstream, entries);
+			readEntry(type, objstream);
 		}
 	}
 }
 
-void Object::readEntry(int type, Common::SeekableReadStream *objstream, EntryList &entries) {
+void ConditionBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0xd8, SEEK_CUR); // XXX
+}
+
+void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0x103, SEEK_CUR); // XXX
+}
+
+void ReactionBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0x85, SEEK_CUR); // XXX
+}
+
+void CommandBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0x82, SEEK_CUR); // XXX
+}
+
+void ScreenBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0x8e, SEEK_CUR); // XXX
+}
+
+void PathBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0x179, SEEK_CUR); // XXX
+}
+
+void GeneralBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0x79, SEEK_CUR); // XXX
+}
+
+void ConversationBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0x7a, SEEK_CUR); // XXX
+}
+
+void BeamBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0x9d, SEEK_CUR); // XXX
+}
+
+void TriggerBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0x76, SEEK_CUR); // XXX
+}
+
+void CommunicateBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0x7a, SEEK_CUR); // XXX
+}
+
+void ChoiceBlock::readFrom(Common::SeekableReadStream *objstream) {
+	objstream->seek(0x109, SEEK_CUR); // XXX
+}
+
+void EntryList::readEntry(int type, Common::SeekableReadStream *objstream) {
 	uint16 header;
 
 	switch (type) {
@@ -265,7 +314,12 @@ void Object::readEntry(int type, Common::SeekableReadStream *objstream, EntryLis
 			VERIFY_LENGTH(0xda);
 			header = objstream->readUint16LE();
 			assert(header == 9);
-			objstream->seek(0xd8, SEEK_CUR); // XXX
+
+			{
+			ConditionBlock *block = new ConditionBlock();
+			block->readFrom(objstream);
+			entries.push_back(block);
+			}
 			break;
 
 		case BLOCK_ALTER:
@@ -273,7 +327,10 @@ void Object::readEntry(int type, Common::SeekableReadStream *objstream, EntryLis
 				VERIFY_LENGTH(0x105);
 				header = objstream->readUint16LE();
 				assert(header == 9);
-				objstream->seek(0x103, SEEK_CUR); // XXX
+
+				AlterBlock *block = new AlterBlock();
+				block->readFrom(objstream);
+				entries.push_back(block);
 
 				type = readBlockHeader(objstream);
 				if (type == BLOCK_END_BLOCK)
@@ -288,7 +345,10 @@ void Object::readEntry(int type, Common::SeekableReadStream *objstream, EntryLis
 				VERIFY_LENGTH(0x87);
 				header = objstream->readUint16LE();
 				assert(header == 9);
-				objstream->seek(0x85, SEEK_CUR); // XXX
+
+				ReactionBlock *block = new ReactionBlock();
+				block->readFrom(objstream);
+				entries.push_back(block);
 
 				type = readBlockHeader(objstream);
 				if (type == BLOCK_END_BLOCK)
@@ -303,7 +363,10 @@ void Object::readEntry(int type, Common::SeekableReadStream *objstream, EntryLis
 				VERIFY_LENGTH(0x84);
 				header = objstream->readUint16LE();
 				assert(header == 9);
-				objstream->seek(0x82, SEEK_CUR); // XXX
+
+				CommandBlock *block = new CommandBlock();
+				block->readFrom(objstream);
+				entries.push_back(block);
 
 				type = readBlockHeader(objstream);
 				if (type == BLOCK_END_BLOCK)
@@ -317,21 +380,33 @@ void Object::readEntry(int type, Common::SeekableReadStream *objstream, EntryLis
 			VERIFY_LENGTH(0x90);
 			header = objstream->readUint16LE();
 			assert(header == 9);
-			objstream->seek(0x8e, SEEK_CUR); // XXX
+			{
+			ScreenBlock *block = new ScreenBlock();
+			block->readFrom(objstream);
+			entries.push_back(block);
+			}
 			break;
 
 		case BLOCK_PATH:
 			VERIFY_LENGTH(0x17b);
 			header = objstream->readUint16LE();
 			assert(header == 9);
-			objstream->seek(0x179, SEEK_CUR); // XXX
+			{
+			PathBlock *block = new PathBlock();
+			block->readFrom(objstream);
+			entries.push_back(block);
+			}
 			break;
 
 		case BLOCK_GENERAL:
 			VERIFY_LENGTH(0x7b);
 			header = objstream->readUint16LE();
 			assert(header == 9);
-			objstream->seek(0x79, SEEK_CUR); // XXX
+			{
+			GeneralBlock *block = new GeneralBlock();
+			block->readFrom(objstream);
+			entries.push_back(block);
+			}
 			break;
 
 		case BLOCK_CONVERSATION:
@@ -339,7 +414,10 @@ void Object::readEntry(int type, Common::SeekableReadStream *objstream, EntryLis
 				VERIFY_LENGTH(0x7c);
 				header = objstream->readUint16LE();
 				assert(header == 9);
-				objstream->seek(0x7a, SEEK_CUR); // XXX
+
+				ConversationBlock *block = new ConversationBlock();
+				block->readFrom(objstream);
+				entries.push_back(block);
 
 				type = readBlockHeader(objstream);
 				if (type == BLOCK_END_BLOCK)
@@ -353,7 +431,11 @@ void Object::readEntry(int type, Common::SeekableReadStream *objstream, EntryLis
 			VERIFY_LENGTH(0x9f);
 			header = objstream->readUint16LE();
 			assert(header == 9);
-			objstream->seek(0x9d, SEEK_CUR); // XXX
+			{
+			BeamBlock *block = new BeamBlock();
+			block->readFrom(objstream);
+			entries.push_back(block);
+			}
 			break;
 
 		case BLOCK_TRIGGER:
@@ -361,7 +443,10 @@ void Object::readEntry(int type, Common::SeekableReadStream *objstream, EntryLis
 				VERIFY_LENGTH(0x78);
 				header = objstream->readUint16LE();
 				assert(header == 9);
-				objstream->seek(0x76, SEEK_CUR); // XXX
+
+				TriggerBlock *block = new TriggerBlock();
+				block->readFrom(objstream);
+				entries.push_back(block);
 
 				type = readBlockHeader(objstream);
 				if (type == BLOCK_END_BLOCK)
@@ -375,29 +460,36 @@ void Object::readEntry(int type, Common::SeekableReadStream *objstream, EntryLis
 			VERIFY_LENGTH(0x7c);
 			header = objstream->readUint16LE();
 			assert(header == 9);
-			objstream->seek(0x7a, SEEK_CUR); // XXX
+			{
+			CommunicateBlock *block = new CommunicateBlock();
+			block->readFrom(objstream);
+			entries.push_back(block);
+			}
 			break;
 
 		case BLOCK_CHOICE:
 			VERIFY_LENGTH(0x10b);
 			header = objstream->readUint16LE();
 			assert(header == 9);
-			objstream->seek(0x109, SEEK_CUR); // XXX
+			{
+			ChoiceBlock *block = new ChoiceBlock();
+			block->readFrom(objstream);
+			entries.push_back(block);
 
 			while (true) {
 				type = readBlockHeader(objstream);
 				if (type == BLOCK_END_BLOCK)
 					break;
-				// XXX: decode these properly
-				EntryList temp;
+
 				if (type == 0x26) {
 					type = readBlockHeader(objstream);
-					readEntry(type, objstream, temp);
+					block->unknown1.readEntry(type, objstream);
 				} else if (type == 0x27) {
 					type = readBlockHeader(objstream);
-					readEntry(type, objstream, temp);
+					block->unknown2.readEntry(type, objstream);
 				} else
 					error("bad block type %x encountered while parsing choices", type);
+			}
 			}
 			break;
 
@@ -456,6 +548,12 @@ void Object::readDescriptionBlock(Common::SeekableReadStream *objstream) {
 	desc.voice_subgroup = objstream->readUint32LE();
 
 	descriptions.push_back(desc);
+}
+
+EntryList::~EntryList() {
+	for (unsigned int i = 0; i < entries.size(); i++) {
+		delete entries[i];
+	}
 }
 
 } // Unity
