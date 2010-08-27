@@ -118,6 +118,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 		Common::Array<Common::Point> entrypoints;
 		// XXX: read this properly
 		uint16 unknown = locstream->readUint16BE(); // 0001, 0101, 0201, ...
+		(void)unknown;
 		entrypoints.resize(4);
 		for (unsigned int i = 0; i < 4; i++) {
 			entrypoints[i].x = locstream->readUint16LE();
