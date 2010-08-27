@@ -134,11 +134,12 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 	// TODO: what do we do with all the objects?
 	// for now, we just delete all but the away team
-	for (unsigned int i = 4; i < data.objects.size(); i++) {
-		delete data.objects[i]->sprite;
-		delete data.objects[i];
+	for (unsigned int i = 4; i < data.current_screen.objects.size(); i++) {
+		delete data.current_screen.objects[i]->sprite;
+		data.current_screen.objects[i]->sprite = NULL;
 	}
-	data.objects.resize(4);
+	// TODO: delete everything, re-copy
+	data.current_screen.objects.resize(4);
 
 	filename = Common::String::printf("w%02x%02xobj.bst", world, screen);
 	locstream = data.openFile(filename);
@@ -159,9 +160,9 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 		locstream->read(_desc, 260);
 		//printf("reading obj '%s' (%s)\n", _name, _desc);
 
-		Object *obj = new Object;
-		obj->loadObject(this, id.world, id.screen, id.id);
-		data.objects.push_back(obj);
+		Object *obj = data.getObject(id);
+		obj->loadSprite(this);
+		data.current_screen.objects.push_back(obj);
 	}
 
 	delete locstream;
@@ -193,7 +194,7 @@ struct DrawOrderComparison {
 };
 
 Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
-	Common::Array<Object *> &objects = data.objects;
+	Common::Array<Object *> &objects = data.current_screen.objects;
 
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		if (!objects[i]->active) continue;
@@ -231,7 +232,7 @@ void UnityEngine::startBridge() {
 		obj->scaled = false;
 		obj->sprite = new SpritePlayer(new Sprite(data.openFile(bridge_sprites[i])), obj, this);;
 		obj->sprite->startAnim(0);
-		data.objects.push_back(obj);
+		data.current_screen.objects.push_back(obj);
 	}
 
 	_gfx->setBackgroundImage("bridge.rm");
@@ -240,15 +241,16 @@ void UnityEngine::startBridge() {
 void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 	// beam in an away team
 	for (unsigned int i = 0; i < 4; i++) {
-		Object *obj = new Object;
-		obj->loadObject(this, 0, 0, i);
-		data.objects.push_back(obj);
+		objectID objid(0, 0, i);
+		Object *obj = data.getObject(objid);
+		obj->loadSprite(this);
+		data.current_screen.objects.push_back(obj);
 	}
 
 	openLocation(world, screen);
 	for (unsigned int i = 0; i < 4; i++) {
-		data.objects[i]->x = data.current_screen.entrypoints[0][i].x;
-		data.objects[i]->y = data.current_screen.entrypoints[0][i].y;
+		data.current_screen.objects[i]->x = data.current_screen.entrypoints[0][i].x;
+		data.current_screen.objects[i]->y = data.current_screen.entrypoints[0][i].y;
 	}
 
 	// draw UI
@@ -360,7 +362,7 @@ unsigned int curr_screen = 1;
 unsigned int anim = 26;
 
 void UnityEngine::checkEvents() {
-	Common::Array<Object *> &objects = data.objects;
+	Common::Array<Object *> &objects = data.current_screen.objects;
 
 	Common::Event event;
 	while (_eventMan->pollEvent(event)) {
@@ -413,7 +415,7 @@ void UnityEngine::checkEvents() {
 }
 
 void UnityEngine::drawObjects() {
-	Common::Array<Object *> &objects = data.objects;
+	Common::Array<Object *> &objects = data.current_screen.objects;
 
 	Common::Array<Object *> to_draw;
 	for (unsigned int i = 0; i < objects.size(); i++) {
@@ -588,7 +590,7 @@ Common::Error UnityEngine::run() {
 	_gfx->setCursor(0, false);
 
 	//startAwayTeam(curr_loc, curr_screen);
-	//for (unsigned int i = 0; i < 4; i++) data.objects[i]->sprite->startAnim(anim);
+	//for (unsigned int i = 0; i < 4; i++) data.current_screen.objects[i]->sprite->startAnim(anim);
 
 	startBridge();
 

@@ -11,6 +11,7 @@ namespace Common {
 namespace Unity {
 
 class UnityEngine;
+class UnityData;
 class SpritePlayer;
 
 struct objectID {
@@ -117,12 +118,14 @@ public:
 	uint16 z_adjust;
 	bool active;
 	bool scaled; // XXX
+	uint16 sprite_id;
 	SpritePlayer *sprite;
 
 	Common::Array<Description> descriptions;
 	EntryList use_entries, get_entries, look_entries, timer_entries;
 
-	void loadObject(UnityEngine *_vm, unsigned int world, unsigned int screen, unsigned int id);
+	void loadObject(UnityData &data, unsigned int world, unsigned int screen, unsigned int id);
+	void loadSprite(UnityEngine *vm);
 
 protected:
 	void readBlock(int type, Common::SeekableReadStream *objstream);

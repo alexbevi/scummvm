@@ -6,6 +6,13 @@
 
 namespace Unity {
 
+UnityData::~UnityData() {
+	for (Common::HashMap<uint32, Object *>::iterator i = objects.begin();
+		i != objects.end(); i++) {
+		delete i->_value;
+	}
+}
+
 void UnityData::loadScreenPolys(Common::String filename) {
 	Common::SeekableReadStream *mrgStream = openFile(filename);
 
@@ -229,6 +236,17 @@ void UnityData::loadIconSprites() {
 Common::String UnityData::getIconSprite(objectID id) {
 	uint32 identifier = id.id + (id.screen << 8) + (id.world << 16);
 	return icon_sprites[identifier];
+}
+
+Object *UnityData::getObject(objectID id) {
+	uint32 identifier = id.id + (id.screen << 8) + (id.world << 16);
+	if (objects.contains(identifier)) {
+		return objects[identifier];
+	}
+	Object *obj = new Object;
+	obj->loadObject(*this, id.world, id.screen, id.id);
+	objects[identifier] = obj;
+	return obj;
 }
 
 } // Unity

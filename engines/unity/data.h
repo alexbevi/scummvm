@@ -36,10 +36,13 @@ struct Screen {
 	Common::Array<Common::Array<Common::Point> > entrypoints;
 
 	Common::Array<ScreenPolygon> polygons;
+	Common::Array<Object *> objects;
 };
 
 struct UnityData {
 public:
+	~UnityData();
+
 	Common::SeekableReadStream *openFile(Common::String filename);
 	Common::String getSpriteFilename(unsigned int id);
 
@@ -48,12 +51,14 @@ public:
 	Screen current_screen;
 
 	Common::Array<Trigger *> triggers;
-	Common::Array<Object *> objects;
+	Common::HashMap<uint32, Object *> objects;
 	Common::Array<Common::String> sprite_filenames;
 	Common::Array<Common::String> sector_names;
 	Common::HashMap<uint32, Common::String> icon_sprites;
 
 	void loadTriggers();
+
+	Object *getObject(objectID id);
 
 	void loadSpriteFilenames();
 	void loadScreenPolys(Common::String filename);

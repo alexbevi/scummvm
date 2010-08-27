@@ -79,9 +79,9 @@ enum {
 	OBJWALKTYPE_AS = 0x3 // action square
 };
 
-void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int for_screen, unsigned int for_id) {
+void Object::loadObject(UnityData &data, unsigned int for_world, unsigned int for_screen, unsigned int for_id) {
 	Common::String filename = Common::String::printf("o_%02x%02x%02x.bst", for_world, for_screen, for_id);
-	Common::SeekableReadStream *objstream = _vm->data.openFile(filename);
+	Common::SeekableReadStream *objstream = data.openFile(filename);
 
 	int type = readBlockHeader(objstream);
 	if (type != BLOCK_OBJ_HEADER)
@@ -115,14 +115,8 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 
 	uint16 unknown5 = objstream->readUint16LE(); // XXX
 
-	uint16 sprite_id = objstream->readUint16LE();
-	if (sprite_id != 0xffff && sprite_id != 0xfffe) {
-		Common::String sprfilename = _vm->data.getSpriteFilename(sprite_id);
-		sprite = new SpritePlayer(new Sprite(_vm->data.openFile(sprfilename)), this, _vm);
-		sprite->startAnim(0); // XXX
-	} else {
-		sprite = 0;
-	}
+	sprite_id = objstream->readUint16LE();
+	sprite = NULL;
 
 	uint16 unknown6 = objstream->readUint16LE(); // XXX
 	uint16 unknown7 = objstream->readUint16LE(); // XXX
@@ -190,6 +184,16 @@ void Object::loadObject(UnityEngine *_vm, unsigned int for_world, unsigned int f
 	assert(descriptions.size() == description_count);
 
 	delete objstream;
+}
+
+void Object::loadSprite(UnityEngine *_vm) {
+	if (sprite) return;
+
+	if (sprite_id == 0xffff || sprite_id == 0xfffe) return;
+
+	Common::String sprfilename = _vm->data.getSpriteFilename(sprite_id);
+	sprite = new SpritePlayer(new Sprite(_vm->data.openFile(sprfilename)), this, _vm);
+	sprite->startAnim(0); // XXX
 }
 
 int readBlockHeader(Common::SeekableReadStream *objstream) {
