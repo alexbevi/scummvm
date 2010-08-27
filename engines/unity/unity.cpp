@@ -44,12 +44,15 @@ static const byte sciMouseCursor[] = {
 };
 
 UnityEngine::UnityEngine(OSystem *syst) : Engine(syst) {
+	in_dialog = false;
+	icon = NULL;
 }
 
 UnityEngine::~UnityEngine() {
 	delete _snd;
 	delete _gfx;
 	delete data.data;
+	delete icon;
 }
 
 Common::Error UnityEngine::init() {
@@ -308,6 +311,49 @@ void UnityEngine::processTriggers() {
 	}
 }
 
+void UnityEngine::handleLook(Object *obj) {
+	// TODO: this is very wrong, of course :)
+
+	// use only Picard's entry for now
+	unsigned int i = 0;
+	while (i < obj->descriptions.size() &&
+			obj->descriptions[i].entry_id != 0) i++;
+	if (i == obj->descriptions.size()) return;
+
+	Description &desc = obj->descriptions[i];
+	in_dialog = true;
+	dialog_text = desc.text;
+	speaker = objectID(0, 0, 0);
+	Common::String icon_sprite = data.getIconSprite(speaker);
+
+	if (icon) delete icon;
+	icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
+	icon->startAnim(2); // speaking
+
+	// TODO: this is broken
+	// for these in-area files, it's sometimes %02x%c%1x%02x%02x.vac ?!
+	// where %c is 'l' or 't' - i haven't worked out why yet
+
+	Common::String file;
+	file = Common::String::printf("%02x%c%1x%02x%02x.vac",
+		desc.voice_group, 'l', desc.voice_subgroup,
+		desc.entry_id, desc.voice_id);
+
+	if (!SearchMan.hasFile(file)) {
+		file = Common::String::printf("%02x%c%1x%02x%02x.vac",
+			desc.voice_group, 't', desc.voice_subgroup,
+			desc.entry_id, desc.voice_id);
+
+		if (!SearchMan.hasFile(file)) {
+			file = Common::String::printf("%02x%02x%02x%02x.vac",
+				desc.voice_group, desc.entry_id,
+				desc.voice_subgroup, desc.voice_id);
+		}
+	}
+
+	_snd->playSpeech(file);
+}
+
 // TODO
 unsigned int curr_loc = 4;
 unsigned int curr_screen = 1;
@@ -349,42 +395,16 @@ void UnityEngine::checkEvents() {
 				break;
 
 			case Common::EVENT_LBUTTONUP: {
+				if (in_dialog) {
+					in_dialog = false;
+					break;
+				}
+
 				Object *obj = objectAt(event.mouse.x, event.mouse.y);
 				if (!obj) break;
 
-				// TODO: this is very wrong, of course :)
-
-				// use only Picard's entry for now
-				unsigned int i = 0;
-				while (i < obj->descriptions.size() &&
-				obj->descriptions[i].entry_id != 0) i++;
-				if (i == obj->descriptions.size()) break;
-
-				Description &desc = obj->descriptions[i];
-
-				// TODO: this is broken
-				// for these in-area files, it's sometimes %02x%c%1x%02x%02x.vac ?!
-				// where %c is 'l' or 't' - i haven't worked out why yet
-
-				Common::String file;
-				file = Common::String::printf("%02x%c%1x%02x%02x.vac",
-					desc.voice_group, 'l', desc.voice_subgroup,
-					desc.entry_id, desc.voice_id);
-
-				if (!SearchMan.hasFile(file)) {
-					file = Common::String::printf("%02x%c%1x%02x%02x.vac",
-						desc.voice_group, 't', desc.voice_subgroup,
-						desc.entry_id, desc.voice_id);
-
-					if (!SearchMan.hasFile(file)) {
-						file = Common::String::printf("%02x%02x%02x%02x.vac",
-							desc.voice_group, desc.entry_id,
-							desc.voice_subgroup, desc.voice_id);
-					}
-				}
-
-				_snd->playSpeech(file);
-				} break;
+				handleLook(obj);
+			} break;
 
 			default:
 				break;
@@ -444,9 +464,6 @@ void UnityEngine::drawDialogWindow() {
 	bool use_thick_frame = false;
 	unsigned int base = (use_thick_frame ? 17 : 0);
 
-	objectID picard = {0, 0, 0};
-	Common::String icon_sprite = data.getIconSprite(picard); // TODO
-
 	// TODO: de-hardcode
 	unsigned int x = 100;
 	unsigned int y = 280;
@@ -486,17 +503,16 @@ void UnityEngine::drawDialogWindow() {
 	_gfx->drawMRG(&mrg, base+3, real_x2 - widths[base+7], real_y2 - heights[base+5]);
 
 	_gfx->drawMRG(&mrg, 8, real_x1 - (widths[8] / 2) + (widths[base+6]/2), (real_y1+real_y2)/2 - (heights[8]/2));
-	// TODO: don't recreate the player every time, animations don't work this way
-	SpritePlayer *icon_player = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
-	icon_player->startAnim(0);
-	icon_player->update();
-	_gfx->drawSprite(icon_player, real_x1 + (widths[base+6]/2) + 1, (real_y1+real_y2)/2 + (heights[8]/2) - 4);
-	delete icon_player;
+
+	if (icon) {
+		icon->update();
+		_gfx->drawSprite(icon, real_x1 + (widths[base+6]/2) + 1, (real_y1+real_y2)/2 + (heights[8]/2) - 4);
+	}
 
 	// font 2 is normal, font 3 is highlighted
-	_gfx->drawString(x, y, "Captain's log supplemental. We must set", 2);
-	_gfx->drawString(x, y + 24, "out at once, in search of UMBRELLAS.", 2);
-	_gfx->drawString(x, y + 48, "Wish us luck.", 2);
+	_gfx->drawString(x, y, width, height, dialog_text, 2);
+	//_gfx->drawString(x, y + 24, "out at once, in search of UMBRELLAS.", 2);
+	//_gfx->drawString(x, y + 48, "Wish us luck.", 2);
 
 	// dialog window FRAME:
 	// 0 is top left, 1 is top right, 2 is bottom left, 3 is bottom right
@@ -543,11 +559,11 @@ void UnityEngine::drawBridgeUI() {
 
 	Common::String sector_name = data.getSectorName(90, 90, 90); // TODO
 	snprintf(buffer, 30, "SECTOR: %s", sector_name.c_str());
-	_gfx->drawString(9, 395, buffer, 2);
+	_gfx->drawString(9, 395, 9999, 9999, buffer, 2);
 
 	unsigned int warp_hi = 0, warp_lo = 0; // TODO
 	snprintf(buffer, 30, "WARP: %d.%d", warp_hi, warp_lo);
-	_gfx->drawString(168, 395, buffer, 2);
+	_gfx->drawString(168, 395, 9999, 9999, buffer, 2);
 }
 
 Common::Error UnityEngine::run() {
@@ -588,7 +604,9 @@ Common::Error UnityEngine::run() {
 		drawObjects();
 
 		drawBridgeUI();
-		drawDialogWindow();
+
+		if (in_dialog)
+			drawDialogWindow();
 
 		_system->updateScreen();
 	}

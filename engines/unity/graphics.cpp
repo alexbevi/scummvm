@@ -130,8 +130,11 @@ void Graphics::loadFonts() {
 	}
 }
 
-void Graphics::drawString(unsigned int x, unsigned int y, Common::String text, unsigned int font) {
+void Graphics::drawString(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Common::String text, unsigned int font) {
 	assert(fonts[font].data);
+
+	unsigned int currx = x;
+	unsigned int curry = y;
 
 	for (unsigned int i = 0; i < text.size(); i++) {
 		unsigned char c = text[i];
@@ -142,11 +145,17 @@ void Graphics::drawString(unsigned int x, unsigned int y, Common::String text, u
 		}
 		c -= fonts[font].start;
 
+		if (currx + fonts[font].widths[c] > x + width) {
+			currx = x;
+			curry += fonts[font].glyphheight + 4;
+		}
+
 		// TODO: clipping
 		_vm->_system->copyRectToScreen(fonts[font].data + (c * fonts[font].size),
-			fonts[font].glyphpitch, x, y, fonts[font].widths[c], fonts[font].glyphheight);
+			fonts[font].glyphpitch, currx, curry, fonts[font].widths[c],
+			fonts[font].glyphheight);
 		// TODO: clipping
-		x += fonts[font].widths[c];
+		currx += fonts[font].widths[c];
 	}
 }
 

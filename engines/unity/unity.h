@@ -30,6 +30,11 @@ public:
 
 	Sound *_snd;
 
+	bool in_dialog;
+	Common::String dialog_text;
+	objectID speaker;
+	SpritePlayer *icon;
+
 protected:
 	Graphics *_gfx;
 
@@ -45,6 +50,8 @@ protected:
 
 	void drawDialogWindow();
 	void drawBridgeUI();
+
+	void handleLook(Object *obj);
 };
 
 } // Unity
