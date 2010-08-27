@@ -148,6 +148,15 @@ void UnityData::loadTriggers() {
 	delete triggerstream;
 }
 
+Trigger *UnityData::getTrigger(uint32 id) {
+	for (unsigned int i = 0; i < triggers.size(); i++) {
+		if (triggers[i]->id == id)
+			return triggers[i];
+	}
+
+	return NULL;
+}
+
 Common::SeekableReadStream *UnityData::openFile(Common::String filename) {
 	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(filename);
 	if (!stream) error("couldn't open '%s'", filename.c_str());

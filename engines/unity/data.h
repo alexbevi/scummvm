@@ -57,6 +57,7 @@ public:
 	Common::HashMap<uint32, Common::String> icon_sprites;
 
 	void loadTriggers();
+	Trigger *getTrigger(uint32 id);
 
 	Object *getObject(objectID id);
 

@@ -35,6 +35,8 @@ int readBlockHeader(Common::SeekableReadStream *objstream);
 
 class Entry {
 public:
+	virtual bool check(UnityEngine *_vm) { return true; }
+	virtual void execute(UnityEngine *_vm) = 0;
 	virtual ~Entry() { }
 };
 
@@ -45,66 +47,86 @@ public:
 
 	void readEntryList(Common::SeekableReadStream *objstream);
 	void readEntry(int type, Common::SeekableReadStream *objstream);
+
+	void execute(UnityEngine *_vm);
 };
 
 class ConditionBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	bool check(UnityEngine *_vm);
+	void execute(UnityEngine *_vm);
 };
 
 class AlterBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm);
 };
 
 class ReactionBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm);
 };
 
 class CommandBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm);
 };
 
 class ScreenBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm);
 };
 
 class PathBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm);
 };
 
 class GeneralBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm);
 };
 
 class ConversationBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm);
 };
 
 class BeamBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm);
 };
 
 class TriggerBlock : public Entry {
+protected:
+	uint32 trigger_id;
+	bool instant_disable, enable_trigger;
+
 public:
+	bool check(UnityEngine *_vm);
+	void execute(UnityEngine *_vm);
 	void readFrom(Common::SeekableReadStream *stream);
 };
 
 class CommunicateBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm);
 };
 
 class ChoiceBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm);
 
 	EntryList unknown1; // 0x26
 	EntryList unknown2; // 0x27

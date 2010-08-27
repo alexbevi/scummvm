@@ -1,6 +1,7 @@
 #include "object.h"
 #include "unity.h"
 #include "sprite.h"
+#include "trigger.h"
 
 #include "common/stream.h"
 
@@ -299,7 +300,36 @@ void BeamBlock::readFrom(Common::SeekableReadStream *objstream) {
 }
 
 void TriggerBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0x76, SEEK_CUR); // XXX
+	objstream->seek(3, SEEK_CUR); // XXX: object id
+
+	byte unknown, flag;
+	uint32 unknown32;
+
+	unknown = objstream->readByte();
+	assert(unknown == 0);
+
+	byte unknown1 = objstream->readByte(); // XXX
+	byte unknown2 = objstream->readByte(); // XXX
+	byte unknown3 = objstream->readByte(); // XXX
+	unknown = objstream->readByte();
+	assert(unknown == 0x4b);
+
+	flag = objstream->readByte();
+	assert(flag == 0 || flag == 1);
+	instant_disable = (flag == 1);
+
+	unknown32 = objstream->readUint32LE();
+	assert(unknown32 == 0xffffffff);
+
+	trigger_id = objstream->readUint32LE();
+
+	flag = objstream->readByte();
+	enable_trigger = (flag == 1);
+
+	for (unsigned int i = 0; i < 25; i++) {
+		unknown32 = objstream->readUint32LE();
+		assert(unknown32 == 0);
+	}
 }
 
 void CommunicateBlock::readFrom(Common::SeekableReadStream *objstream) {
@@ -558,6 +588,81 @@ EntryList::~EntryList() {
 	for (unsigned int i = 0; i < entries.size(); i++) {
 		delete entries[i];
 	}
+}
+
+void EntryList::execute(UnityEngine *_vm) {
+	for (unsigned int i = 0; i < entries.size(); i++) {
+		if (!entries[i]->check(_vm)) return;
+	}
+	for (unsigned int i = 0; i < entries.size(); i++) {
+		entries[i]->execute(_vm);
+	}
+}
+
+bool ConditionBlock::check(UnityEngine *_vm) {
+	warning("unimplemented: ConditionBlock::check");
+	return true;
+}
+
+void ConditionBlock::execute(UnityEngine *_vm) {
+	// nothing to do
+}
+
+void AlterBlock::execute(UnityEngine *_vm) {
+	warning("unimplemented: AlterBlock::execute");
+}
+
+void ReactionBlock::execute(UnityEngine *_vm) {
+	warning("unimplemented: ReactionBlock::execute");
+}
+
+void CommandBlock::execute(UnityEngine *_vm) {
+	warning("unimplemented: CommandBlock::execute");
+}
+
+void ScreenBlock::execute(UnityEngine *_vm) {
+	warning("unimplemented: ScreenBlock::execute");
+}
+
+void PathBlock::execute(UnityEngine *_vm) {
+	warning("unimplemented: PathBlock::execute");
+}
+
+void GeneralBlock::execute(UnityEngine *_vm) {
+	warning("unimplemented: GeneralBlock::execute");
+}
+
+void ConversationBlock::execute(UnityEngine *_vm) {
+	warning("unimplemented: ConversationBlock::execute");
+}
+
+void BeamBlock::execute(UnityEngine *_vm) {
+	warning("unimplemented: BeamBlock::execute");
+}
+
+bool TriggerBlock::check(UnityEngine *_vm) {
+	// This is here because I don't understand how the original engine
+	// does the "disable everything a trigger did" trick (see, for example,
+	// the Initial Log trigger which sabotages itself at startup).
+	if (instant_disable) {
+		execute(_vm);
+		return false;
+	}
+	return true;
+}
+
+void TriggerBlock::execute(UnityEngine *_vm) {
+	Trigger *trigger = _vm->data.getTrigger(trigger_id);
+
+	trigger->enabled = enable_trigger;
+}
+
+void CommunicateBlock::execute(UnityEngine *_vm) {
+	warning("unimplemented: CommunicateBlock::execute");
+}
+
+void ChoiceBlock::execute(UnityEngine *_vm) {
+	warning("unimplemented: ChoiceBlock::execute");
 }
 
 } // Unity

@@ -307,7 +307,8 @@ void UnityEngine::startupScreen() {
 void UnityEngine::processTriggers() {
 	for (unsigned int i = 0; i < data.triggers.size(); i++) {
 		if (data.triggers[i]->tick()) {
-			printf("should run trigger %x\n", data.triggers[i]->id);
+			Object *target = data.getObject(data.triggers[i]->target);
+			target->use_entries.execute(this);
 			break;
 		}
 	}
