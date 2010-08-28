@@ -743,5 +743,79 @@ void ChoiceBlock::execute(UnityEngine *_vm) {
 	warning("unimplemented: ChoiceBlock::execute");
 }
 
+void WhoCanSayBlock::readFrom(Common::SeekableReadStream *stream) {
+	printf("reading whocansay\n");
+
+	stream->seek(0xa, SEEK_CUR); // XXX
+}
+
+void TextBlock::readFrom(Common::SeekableReadStream *stream) {
+	printf("reading text\n");
+
+	stream->seek(0x10f, SEEK_CUR); // XXX
+}
+
+void Response::readFrom(Common::SeekableReadStream *stream) {
+	printf("reading response\n");
+
+	stream->seek(0x138, SEEK_CUR); // XXX
+
+	int type;
+	while ((type = readBlockHeader(stream)) != -1) {
+		switch (type) {
+			case BLOCK_END_BLOCK:
+				return;
+
+			case BLOCK_CONV_WHOCANSAY:
+				while (true) {
+					WhoCanSayBlock *block = new WhoCanSayBlock();
+					block->readFrom(stream);
+					blocks.push_back(block);
+
+					type = readBlockHeader(stream);
+					if (type == BLOCK_END_BLOCK)
+						break;
+					if (type != BLOCK_CONV_WHOCANSAY)
+						error("bad block type %x encountered while parsing whocansay", type);
+				}
+				break;
+
+			case BLOCK_CONV_TEXT:
+				while (true) {
+					TextBlock *block = new TextBlock();
+					block->readFrom(stream);
+					blocks.push_back(block);
+
+					type = readBlockHeader(stream);
+					if (type == BLOCK_END_BLOCK)
+						break;
+					if (type != BLOCK_CONV_TEXT)
+						error("bad block type %x encountered while parsing text", type);
+				}
+				break;
+
+
+			default:
+				error("bad block type %x encountered while parsing response", type);
+		}
+	}
+
+	error("didn't find a BLOCK_END_BLOCK for a BLOCK_CONV_RESPONSE");
+}
+
+void Conversation::loadConversation(UnityData &data, unsigned int world, unsigned int id) {
+	Common::String filename = Common::String::printf("w%03xc%03d.bst", world, id);
+	Common::SeekableReadStream *stream = data.openFile(filename);
+
+	int blockType;
+	while ((blockType = readBlockHeader(stream)) != -1) {
+		assert(blockType == BLOCK_CONV_RESPONSE);
+		responses.push_back(Response());
+		responses[responses.size()-1].readFrom(stream);
+	}
+
+	delete stream;
+}
+
 } // Unity
 

@@ -163,6 +163,47 @@ protected:
 	void readDescriptionBlock(Common::SeekableReadStream *objstream);
 };
 
+class ResponseBlock {
+public:
+	virtual ~ResponseBlock() { }
+};
+
+class WhoCanSayBlock : public ResponseBlock {
+public:
+	void readFrom(Common::SeekableReadStream *stream);
+};
+
+class ChangeActorBlock : public ResponseBlock {
+public:
+	void readFrom(Common::SeekableReadStream *stream);
+};
+
+class ResultBlock : public ResponseBlock {
+public:
+	EntryList entries;
+
+	void readFrom(Common::SeekableReadStream *stream);
+};
+
+class TextBlock : public ResponseBlock {
+public:
+	void readFrom(Common::SeekableReadStream *stream);
+};
+
+class Response {
+public:
+	Common::Array<ResponseBlock *> blocks;
+
+	void readFrom(Common::SeekableReadStream *stream);
+};
+
+class Conversation {
+public:
+	Common::Array<Response> responses;
+
+	void loadConversation(UnityData &data, unsigned int world, unsigned int id);
+};
+
 } // Unity
 
 #endif
