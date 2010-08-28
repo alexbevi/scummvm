@@ -143,6 +143,8 @@ public:
 	uint16 sprite_id;
 	SpritePlayer *sprite;
 
+	Common::String name;
+
 	Common::Array<Description> descriptions;
 	EntryList use_entries, get_entries, look_entries, timer_entries;
 

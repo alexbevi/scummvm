@@ -141,6 +141,7 @@ void Object::loadObject(UnityData &data, unsigned int for_world, unsigned int fo
 
 	char _name[20];
 	objstream->read(_name, 20);
+	name = _name;
 
 	for (unsigned int i = 0; i < 6; i++) {
 		uint16 unknowna = objstream->readUint16LE(); // XXX
