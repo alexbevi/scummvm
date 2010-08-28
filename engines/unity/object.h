@@ -192,16 +192,20 @@ public:
 
 class Response {
 public:
+	uint16 id, state;
+	Common::String text;
 	Common::Array<ResponseBlock *> blocks;
 
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm);
 };
 
 class Conversation {
 public:
-	Common::Array<Response> responses;
+	Common::Array<Response *> responses;
 
 	void loadConversation(UnityData &data, unsigned int world, unsigned int id);
+	void execute(UnityEngine *_vm, unsigned int response);
 };
 
 } // Unity

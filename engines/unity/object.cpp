@@ -285,7 +285,10 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 	byte unknown2 = objstream->readByte();
 
 	unknown32 = objstream->readUint32LE();
-	assert(unknown32 == 0xffffffff);
+	// TODO: probably individual bytes?
+	(void)unknown32;
+	// always 0xffffffff inside objects..
+	//assert(unknown32 == 0xffffffff);
 
 	target = readObjectID(objstream);
 
@@ -370,7 +373,10 @@ void TriggerBlock::readFrom(Common::SeekableReadStream *objstream) {
 	instant_disable = (flag == 1);
 
 	unknown32 = objstream->readUint32LE();
-	assert(unknown32 == 0xffffffff);
+	// TODO: probably individual bytes?
+	(void)unknown32;
+	// always 0xffffffff inside objects..
+	//assert(unknown32 == 0xffffffff);
 
 	trigger_id = objstream->readUint32LE();
 
@@ -681,7 +687,22 @@ void AlterBlock::execute(UnityEngine *_vm) {
 
 	if (alter_hail.size()) {
 		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): alter_hail: %s", obj->name.c_str(), alter_hail.c_str());
+		warning("AlterBlock::execute (%s): alter_hail: %s", obj->name.c_str(), alter_hail.c_str());
+
+		// TODO: do this properly..
+		bool immediate = (alter_hail[0] == '1');
+		assert((immediate && alter_hail.size() > 1 && alter_hail[1] == '@') ||
+			(!immediate && alter_hail[0] == '@'));
+
+		int conversation, response;
+		if (sscanf(alter_hail.begin() + (immediate ? 2 : 1), "%d,%d", &conversation, &response) != 2) {
+			error("failed to parse hail '%s'", alter_hail.c_str());
+		}
+
+		Conversation conv;
+		// TODO: de-hardcode 0x5f, somehow
+		conv.loadConversation(_vm->data, 0x5f, conversation);
+		conv.execute(_vm, response);
 	}
 
 	if (!did_something) {
@@ -744,21 +765,31 @@ void ChoiceBlock::execute(UnityEngine *_vm) {
 }
 
 void WhoCanSayBlock::readFrom(Common::SeekableReadStream *stream) {
-	printf("reading whocansay\n");
-
 	stream->seek(0xa, SEEK_CUR); // XXX
 }
 
 void TextBlock::readFrom(Common::SeekableReadStream *stream) {
-	printf("reading text\n");
-
 	stream->seek(0x10f, SEEK_CUR); // XXX
 }
 
-void Response::readFrom(Common::SeekableReadStream *stream) {
-	printf("reading response\n");
+void ChangeActorBlock::readFrom(Common::SeekableReadStream *stream) {
+	stream->seek(0xa, SEEK_CUR); // XXX
+}
 
-	stream->seek(0x138, SEEK_CUR); // XXX
+void ResultBlock::readFrom(Common::SeekableReadStream *stream) {
+	entries.readEntryList(stream);
+}
+
+void Response::readFrom(Common::SeekableReadStream *stream) {
+	id = stream->readUint16LE();
+	state = stream->readUint16LE();
+
+	char buf[256];
+	stream->read(buf, 255);
+	buf[255] = 0;
+	text = buf;
+
+	stream->seek(0x35, SEEK_CUR); // XXX
 
 	int type;
 	while ((type = readBlockHeader(stream)) != -1) {
@@ -794,6 +825,31 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 				}
 				break;
 
+			case BLOCK_CONV_CHANGEACT:
+			case 0x31: // XXX
+			case 0x32: // XXX
+			case 0x33: // XXX
+				while (true) {
+					ChangeActorBlock *block = new ChangeActorBlock();
+					block->readFrom(stream);
+					blocks.push_back(block);
+
+					int oldtype = type; // XXX
+					type = readBlockHeader(stream);
+					if (type == BLOCK_END_BLOCK)
+						break;
+					if (type != oldtype)
+						error("bad block type %x encountered while parsing changeactor", type);
+				}
+				break;
+
+			case BLOCK_CONV_RESULT:
+				{
+				ResultBlock *block = new ResultBlock();
+				block->readFrom(stream);
+				blocks.push_back(block);
+				break;
+				}
 
 			default:
 				error("bad block type %x encountered while parsing response", type);
@@ -810,11 +866,37 @@ void Conversation::loadConversation(UnityData &data, unsigned int world, unsigne
 	int blockType;
 	while ((blockType = readBlockHeader(stream)) != -1) {
 		assert(blockType == BLOCK_CONV_RESPONSE);
-		responses.push_back(Response());
-		responses[responses.size()-1].readFrom(stream);
+		Response *r = new Response();
+		r->readFrom(stream);
+		responses.push_back(r);
 	}
 
 	delete stream;
+}
+
+void Response::execute(UnityEngine *_vm) {
+	if (text.size()) {
+		_vm->in_dialog = true;
+		_vm->dialog_text = text;
+	}
+
+	for (unsigned int i = 0; i < blocks.size(); i++) {
+		// XXX
+	}
+}
+
+void Conversation::execute(UnityEngine *_vm, unsigned int response) {
+	for (unsigned int i = 0; i < responses.size(); i++) {
+		if (responses[i]->id == response) {
+			// TODO: handle multiple states
+			if (responses[i]->state == 0) {
+				responses[i]->execute(_vm);
+				return;
+			}
+		}
+	}
+
+	error("couldn't find response %d\n", response);
 }
 
 } // Unity
