@@ -12,7 +12,7 @@ namespace Unity {
 objectID readObjectID(Common::SeekableReadStream *stream) {
 	objectID r;
 	stream->read(&r, 4);
-	assert(r.unused == 0);
+	assert(r.unused == 0 || r.unused == 0xff);
 	return r;
 }
 
