@@ -59,6 +59,12 @@ public:
 };
 
 class AlterBlock : public Entry {
+protected:
+	objectID target;
+	byte alter_flags, alter_reset;
+	uint16 x_pos, y_pos;
+	Common::String alter_name, alter_hail;
+
 public:
 	void readFrom(Common::SeekableReadStream *stream);
 	void execute(UnityEngine *_vm);

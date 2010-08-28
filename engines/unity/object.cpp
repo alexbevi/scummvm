@@ -269,7 +269,57 @@ void ConditionBlock::readFrom(Common::SeekableReadStream *objstream) {
 }
 
 void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0x103, SEEK_CUR); // XXX
+	objstream->seek(3, SEEK_CUR); // XXX: object id
+
+	uint16 unknown16;
+	uint32 unknown32;
+
+	// counters for offset within parent blocks (inner/outer)
+	byte counter1 = objstream->readByte();
+	byte counter2 = objstream->readByte();
+	byte counter3 = objstream->readByte();
+	byte counter4 = objstream->readByte();
+	(void)counter1; (void)counter2; (void)counter3; (void)counter4;
+
+	byte unknown1 = objstream->readByte();
+	byte unknown2 = objstream->readByte();
+
+	unknown32 = objstream->readUint32LE();
+	assert(unknown32 == 0xffffffff);
+
+	target = readObjectID(objstream);
+
+	alter_flags = objstream->readByte();
+	alter_reset = objstream->readByte();
+
+	uint16 unknown3 = objstream->readUint16LE();
+
+	unknown16 = objstream->readUint16LE();
+	assert(unknown16 == 0xffff);
+
+	uint16 unknown4 = objstream->readUint16LE();
+	byte unknown5 = objstream->readByte();
+	byte unknown6 = objstream->readByte();
+
+	x_pos = objstream->readUint16LE();
+	y_pos = objstream->readUint16LE();
+
+	uint16 unknown7 = objstream->readUint16LE();
+
+	unknown16 = objstream->readUint16LE();
+	assert(unknown16 == 0xffff);
+	unknown32 = objstream->readUint32LE();
+	assert(unknown32 == 0xffffffff);
+
+	char text[101];
+	objstream->read(text, 20);
+	text[20] = 0;
+	alter_name = text;
+	objstream->read(text, 100);
+	text[100] = 0;
+	alter_hail = text;
+
+	objstream->seek(0x64, SEEK_CUR); // XXX
 }
 
 void ReactionBlock::readFrom(Common::SeekableReadStream *objstream) {
@@ -610,7 +660,34 @@ void ConditionBlock::execute(UnityEngine *_vm) {
 }
 
 void AlterBlock::execute(UnityEngine *_vm) {
-	warning("unimplemented: AlterBlock::execute");
+	Object *obj = _vm->data.getObject(target);
+
+	bool did_something = false; // just for debugging
+
+	if (alter_flags || alter_reset) {
+		did_something = true;
+		warning("unimplemented: AlterBlock::execute (%s): alter_flags", obj->name.c_str());
+	}
+
+	if (x_pos != 0xffff) {
+		did_something = true;
+		warning("unimplemented: AlterBlock::execute (%s): position", obj->name.c_str());
+	}
+
+	if (alter_name.size()) {
+		did_something = true;
+		warning("unimplemented: AlterBlock::execute (%s): alter_name: %s", obj->name.c_str(), alter_name.c_str());
+	}
+
+	if (alter_hail.size()) {
+		did_something = true;
+		warning("unimplemented: AlterBlock::execute (%s): alter_hail: %s", obj->name.c_str(), alter_hail.c_str());
+	}
+
+	if (!did_something) {
+		// TODO: all the other unknowns we don't read yet
+		warning("unimplemented: AlterBlock::execute (%s)", obj->name.c_str());
+	}
 }
 
 void ReactionBlock::execute(UnityEngine *_vm) {
