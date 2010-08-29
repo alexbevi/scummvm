@@ -317,8 +317,18 @@ void UnityEngine::processTriggers() {
 void UnityEngine::setSpeaker(objectID s) {
 	speaker = s;
 
+	if (icon) {
+		delete icon;
+		icon = NULL;
+	}
+
 	Common::String icon_sprite = data.getIconSprite(speaker);
-	if (icon) delete icon;
+	if (!icon_sprite.size()) {
+		warning("couldn't find icon sprite for %02x%02x%02x", speaker.world,
+			speaker.screen, speaker.id);
+		return;
+	}
+
 	icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
 	icon->startAnim(2); // speaking
 }
