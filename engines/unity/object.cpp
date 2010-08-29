@@ -661,11 +661,14 @@ void Object::setHail(const Common::String &str) {
 		// run the conversation immediately, don't change anything
 		runHail(str);
 	} else {
+		printf("hail of %s changed from '%s' to '%s'\n", name.c_str(), hail_string.c_str(), str.c_str());
 		hail_string = str;
 	}
 }
 
 void Object::runHail(const Common::String &hail) {
+	printf("%s running hail '%s'\n", name.c_str(), hail.c_str());
+
 	if (hail.size() < 2) {
 		error("failed to parse hail '%s'", hail.c_str());
 	}
@@ -736,8 +739,6 @@ void AlterBlock::execute(UnityEngine *_vm) {
 
 	if (alter_hail.size()) {
 		did_something = true;
-		warning("AlterBlock::execute (%s): alter_hail: %s", obj->name.c_str(), alter_hail.c_str());
-
 		obj->setHail(alter_hail);
 	}
 
