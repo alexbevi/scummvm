@@ -141,7 +141,8 @@ public:
 class Object {
 public:
 	objectID id;
-	unsigned int x, y;
+	unsigned int x, y, z;
+	unsigned int universe_x, universe_y, universe_z;
 	unsigned int width, height;
 	uint16 z_adjust;
 	bool active;

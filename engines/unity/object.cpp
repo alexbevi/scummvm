@@ -103,14 +103,14 @@ void Object::loadObject(UnityData &data, unsigned int for_world, unsigned int fo
 
 	int16 world_x = objstream->readSint16LE();
 	int16 world_y = objstream->readSint16LE();
+	int16 world_z = objstream->readSint16LE();
 	x = world_x;
 	y = world_y;
+	z = world_z;
 
-	// TODO: do something with these!
-	int16 world_z = objstream->readSint16LE();
-	int16 universe_x = objstream->readSint16LE();
-	int16 universe_y = objstream->readSint16LE();
-	int16 universe_z = objstream->readSint16LE();
+	universe_x = objstream->readSint16LE();
+	universe_y = objstream->readSint16LE();
+	universe_z = objstream->readSint16LE();
 
 	// TODO: this doesn't work properly (see DrawOrderComparison)
 	z_adjust = objstream->readUint16LE();
