@@ -144,6 +144,17 @@ void Graphics::calculateStringBoundary(unsigned int maxwidth, Common::Array<unsi
 	unsigned int last_good_char = 0, last_good_x = 0;
 
 	for (unsigned int i = 0; i < text.size(); i++) {
+		if (text[i] == '\n') {
+			// original engine probably doesn't handle newlines, but this is convenient
+			widths.push_back(currx);
+			starts.push_back(i + 1);
+
+			last_good_char = i + 1;
+			currx = last_good_x = 0;
+			curry += f.glyphheight + FONT_VERT_SPACING;
+			continue;
+		}
+
 		unsigned char c = text[i];
 		if (c < f.start || c > f.end) {
 			printf("WARNING: can't render character %x in font %d: not between %x and %x\n",
@@ -217,6 +228,8 @@ void Graphics::drawString(unsigned int x, unsigned int y, unsigned int width, un
 		}
 
 		assert(j + 1 == starts.size() || i < starts[j + 1]);
+
+		if (text[i] == '\n') continue;
 
 		unsigned char c = text[i];
 		if (c < f.start || c > f.end) {
