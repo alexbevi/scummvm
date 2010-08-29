@@ -153,8 +153,10 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	uint16 unknown14 = objstream->readUint16LE(); // XXX
 	uint16 unknown15 = objstream->readUint16LE(); // XXX
 
-	char _str[100];
+	char _str[101];
 	objstream->read(_str, 100);
+	_str[100] = 0;
+	hail_string = _str;
 
 	uint16 zero16;
 	zero16 = objstream->readUint16LE();
