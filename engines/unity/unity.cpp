@@ -611,8 +611,6 @@ Common::Error UnityEngine::run() {
 	while (!shouldQuit()) {
 		checkEvents();
 
-		processTriggers();
-
 		_gfx->drawBackgroundImage();
 
 		_gfx->drawBackgroundPolys(data.current_screen.polygons);
@@ -621,8 +619,11 @@ Common::Error UnityEngine::run() {
 
 		drawBridgeUI();
 
-		if (in_dialog)
+		if (in_dialog) {
 			drawDialogWindow();
+		} else {
+			processTriggers();
+		}
 
 		_system->updateScreen();
 	}
