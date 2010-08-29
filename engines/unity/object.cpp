@@ -838,6 +838,21 @@ void TextBlock::readFrom(Common::SeekableReadStream *stream) {
 
 void TextBlock::execute(UnityEngine *_vm, Object *speaker) {
 	warning("unimplemented: TextBlock::execute");
+
+	if (text.size()) {
+		_vm->dialog_text = text;
+
+		// TODO: this is not good
+		_vm->setSpeaker(speaker->id);
+
+		uint32 entry_id = speaker->id.id; // TODO: work out correct entry for actor
+		Common::String file;
+		file = Common::String::printf("%02x%02x%02x%02x.vac",
+			voice_group, entry_id, voice_subgroup, voice_id);
+		_vm->_snd->playSpeech(file);
+
+		_vm->runDialog();
+	}
 }
 
 const char *change_actor_names[4] = { "unknown1", "set response", "add choice", "unknown2" };
