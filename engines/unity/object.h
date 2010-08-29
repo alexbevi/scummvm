@@ -193,8 +193,11 @@ public:
 class Response {
 public:
 	uint16 id, state;
-	Common::String text;
 	Common::Array<ResponseBlock *> blocks;
+
+	Common::String text;
+	uint32 voice_id, voice_group;
+	uint16 voice_subgroup;
 
 	void readFrom(Common::SeekableReadStream *stream);
 	void execute(UnityEngine *_vm);

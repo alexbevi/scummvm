@@ -2,6 +2,7 @@
 #include "unity.h"
 #include "sprite.h"
 #include "trigger.h"
+#include "sound.h"
 
 #include "common/stream.h"
 
@@ -795,7 +796,24 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	buf[255] = 0;
 	text = buf;
 
-	stream->seek(0x35, SEEK_CUR); // XXX
+	unsigned char buffer[0x2b];
+	stream->read(buffer, 0x2b); // XXX
+	for (unsigned int i = 0; i < 0x2b; i++) printf("%02x ", (unsigned int)buffer[i]);
+	printf("\n");
+
+	voice_id = stream->readUint32LE();
+	voice_group = stream->readUint32LE();
+	voice_subgroup = stream->readUint16LE();
+	uint32 entry_id = 0; // TODO: work out correct entry for actor
+
+	printf("response %d, %d", id, state);
+	if (text.size()) {
+		printf(": text '%s'", text.c_str());
+		if (voice_id != 0xffffffff) {
+			printf(" (%02x%02x%02x%02x.vac)", voice_group, entry_id, voice_subgroup, voice_id);
+		}
+	}
+	printf("\n");
 
 	int type;
 	while ((type = readBlockHeader(stream)) != -1) {
@@ -884,6 +902,12 @@ void Response::execute(UnityEngine *_vm) {
 	if (text.size()) {
 		_vm->in_dialog = true;
 		_vm->dialog_text = text;
+
+		uint32 entry_id = 0; // TODO: work out correct entry for actor
+		Common::String file;
+		file = Common::String::printf("%02x%02x%02x%02x.vac",
+			voice_group, entry_id, voice_subgroup, voice_id);
+		_vm->_snd->playSpeech(file);
 	}
 
 	for (unsigned int i = 0; i < blocks.size(); i++) {
