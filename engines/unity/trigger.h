@@ -29,11 +29,11 @@ struct Trigger {
 	bool reversed, instant;
 
 	Trigger() : target_time(0) { }
-	bool tick();
+	bool tick(UnityEngine *_vm);
 
 protected:
-	bool timerTick();
-	bool proximityTick();
+	bool timerTick(UnityEngine *_vm);
+	bool proximityTick(UnityEngine *_vm);
 };
 
 } // Unity
