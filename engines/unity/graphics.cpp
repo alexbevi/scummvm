@@ -130,32 +130,121 @@ void Graphics::loadFonts() {
 	}
 }
 
-void Graphics::drawString(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Common::String text, unsigned int font) {
-	assert(fonts[font].data);
+#define FONT_VERT_SPACING 8
+
+void Graphics::calculateStringBoundary(unsigned int maxwidth, Common::Array<unsigned int> &widths,
+	Common::Array<unsigned int> &starts, unsigned int &height,
+	const Common::String text, unsigned int font) {
+	Font &f = fonts[font];
+	assert(f.data);
+
+	starts.push_back(0);
+
+	unsigned int currx = 0, curry = 0;
+	unsigned int last_good_char = 0, last_good_x = 0;
+
+	for (unsigned int i = 0; i < text.size(); i++) {
+		unsigned char c = text[i];
+		if (c < f.start || c > f.end) {
+			printf("WARNING: can't render character %x in font %d: not between %x and %x\n",
+				c, font, f.start, f.end);
+			continue;
+		}
+		c -= f.start;
+
+		if (currx + f.widths[c] > maxwidth) {
+			if (text[i] == ' ') {
+				// we can skip this space..
+
+				// end of text?
+				if (i + 1 == text.size())
+					continue;
+
+				widths.push_back(currx);
+				starts.push_back(i + 1);
+			} else {
+				// backtrack to last line split
+				assert(last_good_char > 0);
+				assert(last_good_x != 0);
+
+				widths.push_back(last_good_x);
+				starts.push_back(last_good_char);
+
+				i = last_good_char - 1;
+			}
+
+			// reset
+			last_good_char = i + 1;
+			currx = last_good_x = 0;
+			curry += f.glyphheight + FONT_VERT_SPACING;
+
+			continue;
+		}
+
+		if (text[i] == ' ') {
+			last_good_char = i + 1; // TODO: cope with multiple spaces?
+			last_good_x = currx;
+		}
+
+		currx += f.widths[c];
+	}
+
+	height = curry + f.glyphheight;
+	widths.push_back(currx);
+}
+
+void Graphics::drawString(unsigned int x, unsigned int y, unsigned int width, unsigned int maxheight,
+	Common::String text, unsigned int font) {
+	Font &f = fonts[font];
+	assert(f.data);
+
+	unsigned int height; // unused
+	Common::Array<unsigned int> widths, starts;
+	calculateStringBoundary(width, widths, starts, height, text, font);
 
 	unsigned int currx = x;
 	unsigned int curry = y;
 
+	unsigned int j = 0;
 	for (unsigned int i = 0; i < text.size(); i++) {
+		if (j + 1 < starts.size() && i == starts[j + 1]) {
+			// next line
+			j++;
+			i = starts[j];
+
+			currx = x;
+			curry += f.glyphheight + FONT_VERT_SPACING;
+		}
+
+		assert(j + 1 == starts.size() || i < starts[j + 1]);
+
 		unsigned char c = text[i];
-		if (c < fonts[font].start || c > fonts[font].end) {
+		if (c < f.start || c > f.end) {
 			printf("WARNING: can't render character %x in font %d: not between %x and %x\n",
-				c, font, fonts[font].start, fonts[font].end);
+				c, font, f.start, f.end);
 			continue;
 		}
-		c -= fonts[font].start;
+		c -= f.start;
 
-		if (currx + fonts[font].widths[c] > x + width) {
-			currx = x;
-			curry += fonts[font].glyphheight + 4;
+		// maybe we don't need to render anything..
+		if (text[i] == ' ') {
+			// end of text?
+			if (i + 1 == text.size())
+				continue;
+			// next char is on a new line?
+			if (j + 1 < starts.size() && i + 1 == starts[j + 1])
+				continue;
 		}
 
+		assert (currx + f.widths[c] <= x + widths[j]);
+		assert (currx + f.widths[c] <= x + width);
+
 		// TODO: clipping
-		_vm->_system->copyRectToScreen(fonts[font].data + (c * fonts[font].size),
-			fonts[font].glyphpitch, currx, curry, fonts[font].widths[c],
-			fonts[font].glyphheight);
+		_vm->_system->copyRectToScreen(f.data + (c * f.size),
+			f.glyphpitch, currx, curry, f.widths[c],
+			f.glyphheight);
 		// TODO: clipping
-		currx += fonts[font].widths[c];
+		currx += f.widths[c];
 	}
 }
 

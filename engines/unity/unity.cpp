@@ -470,8 +470,17 @@ void UnityEngine::drawDialogWindow() {
 	// TODO: de-hardcode
 	unsigned int x = 100;
 	unsigned int y = 280;
-	unsigned int width = 300;
-	unsigned int height = 70;
+
+	// calculate required bounding box
+	// TODO: some kind of scrolling
+	Common::Array<unsigned int> strwidths, starts;
+	unsigned int height;
+	_gfx->calculateStringBoundary(320, strwidths, starts, height, dialog_text, 2);
+	unsigned int width = 0;
+	for (unsigned int i = 0; i < strwidths.size(); i++) {
+		if (strwidths[i] > width)
+			width = strwidths[i];
+	}
 
 	unsigned int real_x1 = x - 10;
 	unsigned int real_x2 = x + width + 10;

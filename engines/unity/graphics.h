@@ -34,7 +34,8 @@ public:
 
 	void loadMRG(Common::String filename, MRGFile *mrg);
 
-	void drawString(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Common::String text, unsigned int font);
+	void calculateStringBoundary(unsigned int maxwidth, Common::Array<unsigned int> &widths, Common::Array<unsigned int> &starts, unsigned int &height, const Common::String text, unsigned int font);
+	void drawString(unsigned int x, unsigned int y, unsigned int width, unsigned int maxheight, const Common::String text, unsigned int font);
 	void drawMRG(MRGFile *mrg, unsigned int entry, unsigned int x, unsigned int y);
 	void drawBackgroundImage();
 	void drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale = 256);
