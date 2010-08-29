@@ -252,8 +252,8 @@ Object *UnityData::getObject(objectID id) {
 	if (objects.contains(identifier)) {
 		return objects[identifier];
 	}
-	Object *obj = new Object;
-	obj->loadObject(*this, id.world, id.screen, id.id);
+	Object *obj = new Object(_vm);
+	obj->loadObject(id.world, id.screen, id.id);
 	objects[identifier] = obj;
 	return obj;
 }

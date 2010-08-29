@@ -43,7 +43,7 @@ static const byte sciMouseCursor[] = {
 	3,3,3,3,3,3,0,1,1,0,3
 };
 
-UnityEngine::UnityEngine(OSystem *syst) : Engine(syst) {
+UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	in_dialog = false;
 	icon = NULL;
 }
@@ -161,7 +161,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 		//printf("reading obj '%s' (%s)\n", _name, _desc);
 
 		Object *obj = data.getObject(id);
-		obj->loadSprite(this);
+		obj->loadSprite();
 		data.current_screen.objects.push_back(obj);
 	}
 
@@ -225,7 +225,7 @@ void UnityEngine::startBridge() {
 		0 };
 
 	for (unsigned int i = 0; bridge_sprites[i] != 0; i++) {
-		Object *obj = new Object;
+		Object *obj = new Object(this);
 		obj->x = obj->y = 0;
 		obj->z_adjust = 0xffff;
 		obj->active = true;
@@ -243,7 +243,7 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 	for (unsigned int i = 0; i < 4; i++) {
 		objectID objid(0, 0, i);
 		Object *obj = data.getObject(objid);
-		obj->loadSprite(this);
+		obj->loadSprite();
 		data.current_screen.objects.push_back(obj);
 	}
 

@@ -150,15 +150,22 @@ public:
 	uint16 sprite_id;
 	SpritePlayer *sprite;
 
-	Common::String name;
+	Common::String name, hail_string;
 
 	Common::Array<Description> descriptions;
 	EntryList use_entries, get_entries, look_entries, timer_entries;
 
-	void loadObject(UnityData &data, unsigned int world, unsigned int screen, unsigned int id);
-	void loadSprite(UnityEngine *vm);
+	Object(UnityEngine *p) : _vm(p) { }
+
+	void loadObject(unsigned int world, unsigned int screen, unsigned int id);
+	void loadSprite();
+
+	void setHail(const Common::String &str);
+	void runHail(const Common::String &hail);
 
 protected:
+	UnityEngine *_vm;
+
 	void readBlock(int type, Common::SeekableReadStream *objstream);
 	void readDescriptions(Common::SeekableReadStream *objstream);
 	void readDescriptionBlock(Common::SeekableReadStream *objstream);

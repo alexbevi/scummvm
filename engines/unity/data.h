@@ -39,8 +39,12 @@ struct Screen {
 	Common::Array<Object *> objects;
 };
 
-struct UnityData {
+class UnityData {
+protected:
+	class UnityEngine *_vm;
+
 public:
+	UnityData(UnityEngine *p) : _vm(p) { }
 	~UnityData();
 
 	Common::SeekableReadStream *openFile(Common::String filename);

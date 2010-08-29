@@ -81,9 +81,9 @@ enum {
 	OBJWALKTYPE_AS = 0x3 // action square
 };
 
-void Object::loadObject(UnityData &data, unsigned int for_world, unsigned int for_screen, unsigned int for_id) {
+void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigned int for_id) {
 	Common::String filename = Common::String::printf("o_%02x%02x%02x.bst", for_world, for_screen, for_id);
-	Common::SeekableReadStream *objstream = data.openFile(filename);
+	Common::SeekableReadStream *objstream = _vm->data.openFile(filename);
 
 	int type = readBlockHeader(objstream);
 	if (type != BLOCK_OBJ_HEADER)
@@ -189,7 +189,7 @@ void Object::loadObject(UnityData &data, unsigned int for_world, unsigned int fo
 	delete objstream;
 }
 
-void Object::loadSprite(UnityEngine *_vm) {
+void Object::loadSprite() {
 	if (sprite) return;
 
 	if (sprite_id == 0xffff || sprite_id == 0xfffe) return;
@@ -648,6 +648,46 @@ void Object::readDescriptionBlock(Common::SeekableReadStream *objstream) {
 	descriptions.push_back(desc);
 }
 
+void Object::setHail(const Common::String &str) {
+	if (!str.size()) {
+		hail_string.clear();
+		return;
+	}
+
+	bool immediate = (str[0] == '1');
+	if (immediate) {
+		// run the conversation immediately, don't change anything
+		runHail(str);
+	} else {
+		hail_string = str;
+	}
+}
+
+void Object::runHail(const Common::String &hail) {
+	if (hail.size() < 2) {
+		error("failed to parse hail '%s'", hail.c_str());
+	}
+
+	bool immediate = (hail[0] == '1');
+	if ((immediate && hail[1] != '@') || (!immediate && hail[0] != '@')) {
+		// TODO: handle plain strings?
+		error("failed to parse hail (no @?) '%s'", hail.c_str());
+	}
+
+	int conversation, response;
+	if (sscanf(hail.begin() + (immediate ? 2 : 1), "%d,%d",
+		&conversation, &response) != 2) {
+		// TODO: handle further parameters (@%d,%d,%d)
+		error("failed to parse hail '%s'", hail.c_str());
+	}
+
+	// TODO: keep these in data
+	Conversation conv;
+	// TODO: de-hardcode 0x5f, somehow
+	conv.loadConversation(_vm->data, 0x5f, conversation);
+	conv.execute(_vm, this, response);
+}
+
 EntryList::~EntryList() {
 	for (unsigned int i = 0; i < entries.size(); i++) {
 		delete entries[i];
@@ -696,23 +736,7 @@ void AlterBlock::execute(UnityEngine *_vm) {
 		did_something = true;
 		warning("AlterBlock::execute (%s): alter_hail: %s", obj->name.c_str(), alter_hail.c_str());
 
-		// TODO: do this properly..
-		bool immediate = (alter_hail[0] == '1');
-		assert((immediate && alter_hail.size() > 1 && alter_hail[1] == '@') ||
-			(!immediate && alter_hail[0] == '@'));
-
-		// TODO: nuh-uh
-		if (immediate) {
-			int conversation, response;
-			if (sscanf(alter_hail.begin() + (immediate ? 2 : 1), "%d,%d", &conversation, &response) != 2) {
-				error("failed to parse hail '%s'", alter_hail.c_str());
-			}
-
-			Conversation conv;
-			// TODO: de-hardcode 0x5f, somehow
-			conv.loadConversation(_vm->data, 0x5f, conversation);
-			conv.execute(_vm, obj, response);
-		}
+		obj->setHail(alter_hail);
 	}
 
 	if (!did_something) {
