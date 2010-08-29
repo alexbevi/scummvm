@@ -20,27 +20,27 @@ namespace Unity {
 
 /**
  * A black and white SCI-style arrow cursor (11x16).
- * 0 = Transparent.
- * 1 = Black (#000000 in 24-bit RGB).
- * 2 = White (#FFFFFF in 24-bit RGB).
+ * 3 = Transparent.
+ * 0 = Black (#000000 in 24-bit RGB).
+ * 1 = White (#FFFFFF in 24-bit RGB).
  */
 static const byte sciMouseCursor[] = {
-	1,1,0,0,0,0,0,0,0,0,0,
-	1,2,1,0,0,0,0,0,0,0,0,
-	1,2,2,1,0,0,0,0,0,0,0,
-	1,2,2,2,1,0,0,0,0,0,0,
-	1,2,2,2,2,1,0,0,0,0,0,
-	1,2,2,2,2,2,1,0,0,0,0,
-	1,2,2,2,2,2,2,1,0,0,0,
-	1,2,2,2,2,2,2,2,1,0,0,
-	1,2,2,2,2,2,2,2,2,1,0,
-	1,2,2,2,2,2,2,2,2,2,1,
-	1,2,2,2,2,2,1,0,0,0,0,
-	1,2,1,0,1,2,2,1,0,0,0,
-	1,1,0,0,1,2,2,1,0,0,0,
-	0,0,0,0,0,1,2,2,1,0,0,
-	0,0,0,0,0,1,2,2,1,0,0,
-	0,0,0,0,0,0,1,2,2,1,0
+	0,0,3,3,3,3,3,3,3,3,3,
+	0,1,0,3,3,3,3,3,3,3,3,
+	0,1,1,0,3,3,3,3,3,3,3,
+	0,1,1,1,0,3,3,3,3,3,3,
+	0,1,1,1,1,0,3,3,3,3,3,
+	0,1,1,1,1,1,0,3,3,3,3,
+	0,1,1,1,1,1,1,0,3,3,3,
+	0,1,1,1,1,1,1,1,0,3,3,
+	0,1,1,1,1,1,1,1,1,0,3,
+	0,1,1,1,1,1,1,1,1,1,0,
+	0,1,1,1,1,1,0,3,3,3,3,
+	0,1,0,3,0,1,1,0,3,3,3,
+	0,0,3,3,0,1,1,0,3,3,3,
+	3,3,3,3,3,0,1,1,0,3,3,
+	3,3,3,3,3,0,1,1,0,3,3,
+	3,3,3,3,3,3,0,1,1,0,3
 };
 
 UnityEngine::UnityEngine(OSystem *syst) : Engine(syst) {
@@ -394,11 +394,11 @@ void UnityEngine::checkEvents() {
 				break;
 
 			case Common::EVENT_MOUSEMOVE:
-				if (objectAt(event.mouse.x, event.mouse.y)) {
+				/*if (objectAt(event.mouse.x, event.mouse.y)) {
 					_gfx->setCursor(1, false);
 				} else {
 					_gfx->setCursor(0, false);
-				}
+				}*/
 				break;
 
 			case Common::EVENT_LBUTTONUP: {
@@ -597,11 +597,11 @@ Common::Error UnityEngine::run() {
 	startupScreen();
 
 	// XXX: this mouse cursor is borrowed from SCI
-	CursorMan.replaceCursor(sciMouseCursor, 11, 16, 1, 1, 0);
+	CursorMan.replaceCursor(sciMouseCursor, 11, 16, 1, 1, 3);
 	CursorMan.showMouse(true);
 
 	// and we stomp over it anyway, but this only good for some situations :)
-	_gfx->setCursor(0, false);
+	//_gfx->setCursor(0, false);
 
 	//startAwayTeam(curr_loc, curr_screen);
 	//for (unsigned int i = 0; i < 4; i++) data.current_screen.objects[i]->sprite->startAnim(anim);
