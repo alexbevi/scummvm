@@ -39,6 +39,7 @@ public:
 	Common::Array<unsigned int> dialog_choice_responses;
 	Common::Array<unsigned int> dialog_choice_states;
 
+	void runDialogChoice();
 	void runDialog();
 
 protected:

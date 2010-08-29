@@ -1037,25 +1037,28 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 	}
 
 	if (_vm->dialog_choice_responses.size()) {
-		// TODO: tsk, don't arbitarily take the first one :)
-		if (_vm->dialog_choice_responses.size() != 1)
-			warning("multiple responses not yet handled");
-
-		_vm->current_conversation.execute(_vm, speaker, _vm->dialog_choice_responses[0], _vm->dialog_choice_states[0]);
+		if (_vm->dialog_choice_responses.size() > 1) {
+			_vm->runDialogChoice();
+		} else {
+			_vm->current_conversation.execute(_vm, speaker, _vm->dialog_choice_responses[0], _vm->dialog_choice_states[0]);
+		}
 	}
 }
 
-void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state) {
+Response *Conversation::getResponse(unsigned int response, unsigned int state) {
 	for (unsigned int i = 0; i < responses.size(); i++) {
 		if (responses[i]->id == response) {
 			if (responses[i]->state == state) {
-				responses[i]->execute(_vm, speaker);
-				return;
+				return responses[i];
 			}
 		}
 	}
 
 	error("couldn't find response %d\n", response);
+}
+
+void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state) {
+	getResponse(response, state)->execute(_vm, speaker);
 }
 
 } // Unity

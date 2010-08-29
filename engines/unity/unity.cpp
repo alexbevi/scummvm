@@ -635,6 +635,22 @@ Common::Error UnityEngine::run() {
 	return Common::kNoError;
 }
 
+void UnityEngine::runDialogChoice() {
+	assert(dialog_choice_responses.size() > 1);
+
+	dialog_text.clear();
+	for (unsigned int i = 0; i < dialog_choice_responses.size(); i++) {
+		Response *r = current_conversation.getResponse(dialog_choice_responses[i],
+			dialog_choice_states[i]);
+		dialog_text += r->text + "\n\n";
+	}
+	runDialog();
+
+	// TODO: don't always run the first choice, actually offer a choice? :)
+	Object *speakerobj = data.getObject(objectID(0, 0, 0)); // TODO: this is starting to be crazy
+	current_conversation.execute(this, speakerobj, dialog_choice_responses[0], dialog_choice_states[0]);
+}
+
 void UnityEngine::runDialog() {
 	in_dialog = true;
 
