@@ -880,6 +880,12 @@ void ChangeActorBlock::readFrom(Common::SeekableReadStream *stream, int _type) {
 
 void ChangeActorBlock::execute(UnityEngine *_vm, Object *speaker) {
 	warning("unimplemented: ChangeActorBlock::execute");
+
+	if (type == BLOCK_CONV_CHANGEACT_CHOICE) {
+		// TODO: terrible hack
+		_vm->dialog_choice_responses.push_back(response_id);
+		_vm->dialog_choice_states.push_back(state_id);
+	}
 }
 
 void ResultBlock::readFrom(Common::SeekableReadStream *stream) {
@@ -1023,8 +1029,19 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 		_vm->runDialog();
 	}
 
+	_vm->dialog_choice_responses.clear();
+	_vm->dialog_choice_states.clear();
+
 	for (unsigned int i = 0; i < blocks.size(); i++) {
 		blocks[i]->execute(_vm, speaker);
+	}
+
+	if (_vm->dialog_choice_responses.size()) {
+		// TODO: tsk, don't arbitarily take the first one :)
+		if (_vm->dialog_choice_responses.size() != 1)
+			warning("multiple responses not yet handled");
+
+		_vm->current_conversation.execute(_vm, speaker, _vm->dialog_choice_responses[0], _vm->dialog_choice_states[0]);
 	}
 }
 

@@ -35,6 +35,10 @@ public:
 	Conversation current_conversation;
 	void setSpeaker(objectID s);
 
+	// TODO: horrible hack
+	Common::Array<unsigned int> dialog_choice_responses;
+	Common::Array<unsigned int> dialog_choice_states;
+
 	void runDialog();
 
 protected:
