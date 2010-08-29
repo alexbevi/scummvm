@@ -612,23 +612,40 @@ Common::Error UnityEngine::run() {
 		checkEvents();
 
 		_gfx->drawBackgroundImage();
-
 		_gfx->drawBackgroundPolys(data.current_screen.polygons);
 
 		drawObjects();
-
 		drawBridgeUI();
 
-		if (in_dialog) {
-			drawDialogWindow();
-		} else {
-			processTriggers();
-		}
+		assert(!in_dialog);
+
+		processTriggers();
 
 		_system->updateScreen();
 	}
 
 	return Common::kNoError;
+}
+
+void UnityEngine::runDialog() {
+	in_dialog = true;
+
+	while (in_dialog) {
+		checkEvents();
+
+		_gfx->drawBackgroundImage();
+		_gfx->drawBackgroundPolys(data.current_screen.polygons);
+
+		drawObjects();
+		drawBridgeUI();
+
+		drawDialogWindow();
+
+		_system->updateScreen();
+	}
+
+	// TODO: stupid hack until we actually keep the sound handle
+	_mixer->stopAll();
 }
 
 } // Unity

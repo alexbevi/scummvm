@@ -993,15 +993,18 @@ void Conversation::loadConversation(UnityData &data, unsigned int world, unsigne
 
 void Response::execute(UnityEngine *_vm, Object *speaker) {
 	if (text.size()) {
-		_vm->in_dialog = true;
 		_vm->dialog_text = text;
-		_vm->setSpeaker(speaker->id);
+
+		// TODO: this is not good
+		_vm->setSpeaker(objectID(0, 0, 0));
 
 		uint32 entry_id = 0; // TODO: work out correct entry for actor
 		Common::String file;
 		file = Common::String::printf("%02x%02x%02x%02x.vac",
 			voice_group, entry_id, voice_subgroup, voice_id);
 		_vm->_snd->playSpeech(file);
+
+		_vm->runDialog();
 	}
 
 	for (unsigned int i = 0; i < blocks.size(); i++) {

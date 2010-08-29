@@ -34,6 +34,8 @@ public:
 	Common::String dialog_text;
 	void setSpeaker(objectID s);
 
+	void runDialog();
+
 protected:
 	Graphics *_gfx;
 
