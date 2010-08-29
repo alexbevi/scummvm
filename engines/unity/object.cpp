@@ -49,10 +49,10 @@ enum {
 
 	BLOCK_CONV_RESPONSE = 0x28,
 	BLOCK_CONV_WHOCANSAY = 0x29,
-	BLOCK_CONV_CHANGEACT = 0x30,
-	// TODO: 0x31
-	// TODO: 0x32
-	// TODO: 0x33
+	BLOCK_CONV_CHANGEACT_UNKNOWN1 = 0x30,
+	BLOCK_CONV_CHANGEACT_SET = 0x31,
+	BLOCK_CONV_CHANGEACT_CHOICE = 0x32,
+	BLOCK_CONV_CHANGEACT_UNKNOWN2 = 0x33,
 	BLOCK_CONV_TEXT = 0x34,
 	BLOCK_CONV_RESULT = 0x35,
 
@@ -804,8 +804,27 @@ void TextBlock::readFrom(Common::SeekableReadStream *stream) {
 	}
 }
 
-void ChangeActorBlock::readFrom(Common::SeekableReadStream *stream) {
-	stream->seek(0xa, SEEK_CUR); // XXX
+const char *change_actor_names[4] = { "unknown1", "set response", "add choice", "unknown2" };
+
+void ChangeActorBlock::readFrom(Common::SeekableReadStream *stream, int _type) {
+	uint16 unknown = stream->readUint16LE();
+	assert(unknown == 8);
+
+	assert(_type >= BLOCK_CONV_CHANGEACT_UNKNOWN1 &&
+		_type <= BLOCK_CONV_CHANGEACT_UNKNOWN2);
+	type = _type;
+
+	response_id = stream->readUint16LE();
+	state_id = stream->readUint16LE();
+
+	byte unknown4 = stream->readByte();
+	byte unknown5 = stream->readByte();
+	uint16 unknown6 = stream->readUint16LE();
+	assert(unknown6 == 0 || (unknown6 >= 7 && unknown6 <= 12));
+
+	printf("%s: response %d, state %d; unknowns: %x, %x, %x\n",
+		change_actor_names[type - BLOCK_CONV_CHANGEACT_UNKNOWN1],
+		response_id, state_id, unknown4, unknown5, unknown6);
 }
 
 void ResultBlock::readFrom(Common::SeekableReadStream *stream) {
@@ -880,13 +899,13 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 				}
 				break;
 
-			case BLOCK_CONV_CHANGEACT:
-			case 0x31: // XXX
-			case 0x32: // XXX
-			case 0x33: // XXX
+			case BLOCK_CONV_CHANGEACT_UNKNOWN1:
+			case BLOCK_CONV_CHANGEACT_CHOICE:
+			case BLOCK_CONV_CHANGEACT_UNKNOWN2:
+			case BLOCK_CONV_CHANGEACT_SET:
 				while (true) {
 					ChangeActorBlock *block = new ChangeActorBlock();
-					block->readFrom(stream);
+					block->readFrom(stream, type);
 					blocks.push_back(block);
 
 					int oldtype = type; // XXX

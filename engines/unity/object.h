@@ -176,7 +176,10 @@ public:
 
 class ChangeActorBlock : public ResponseBlock {
 public:
-	void readFrom(Common::SeekableReadStream *stream);
+	int type;
+	uint16 response_id, state_id;
+
+	void readFrom(Common::SeekableReadStream *stream, int _type);
 };
 
 class ResultBlock : public ResponseBlock {
