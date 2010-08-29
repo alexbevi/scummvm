@@ -894,13 +894,12 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	voice_id = stream->readUint32LE();
 	voice_group = stream->readUint32LE();
 	voice_subgroup = stream->readUint16LE();
-	uint32 entry_id = 0; // TODO: work out correct entry for actor
 
 	printf("response %d, %d", id, state);
 	if (text.size()) {
 		printf(": text '%s'", text.c_str());
 		if (voice_id != 0xffffffff) {
-			printf(" (%02x%02x%02x%02x.vac)", voice_group, entry_id, voice_subgroup, voice_id);
+			printf(" (%02x??%02x%02x.vac)", voice_group, voice_subgroup, voice_id);
 		}
 	}
 	printf("\n");
