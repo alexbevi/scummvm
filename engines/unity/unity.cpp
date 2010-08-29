@@ -537,8 +537,6 @@ void UnityEngine::drawDialogWindow() {
 
 	// font 2 is normal, font 3 is highlighted
 	_gfx->drawString(x, y, width, height, dialog_text, 2);
-	//_gfx->drawString(x, y + 24, "out at once, in search of UMBRELLAS.", 2);
-	//_gfx->drawString(x, y + 48, "Wish us luck.", 2);
 
 	// dialog window FRAME:
 	// 0 is top left, 1 is top right, 2 is bottom left, 3 is bottom right
