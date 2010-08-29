@@ -230,7 +230,7 @@ public:
 	Common::Array<Response *> responses;
 
 	void loadConversation(UnityData &data, unsigned int world, unsigned int id);
-	void execute(UnityEngine *_vm, Object *speaker, unsigned int response);
+	void execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state);
 };
 
 } // Unity

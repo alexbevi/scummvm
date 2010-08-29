@@ -32,6 +32,7 @@ public:
 
 	bool in_dialog;
 	Common::String dialog_text;
+	Conversation current_conversation;
 	void setSpeaker(objectID s);
 
 	void runDialog();

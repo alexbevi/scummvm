@@ -679,7 +679,7 @@ void Object::runHail(const Common::String &hail) {
 		error("failed to parse hail (no @?) '%s'", hail.c_str());
 	}
 
-	int conversation, response;
+	int conversation, response, state = 0;
 	if (sscanf(hail.begin() + (immediate ? 2 : 1), "%d,%d",
 		&conversation, &response) != 2) {
 		// TODO: handle further parameters (@%d,%d,%d)
@@ -690,7 +690,8 @@ void Object::runHail(const Common::String &hail) {
 	Conversation conv;
 	// TODO: de-hardcode 0x5f, somehow
 	conv.loadConversation(_vm->data, 0x5f, conversation);
-	conv.execute(_vm, this, response);
+	_vm->current_conversation = conv;
+	_vm->current_conversation.execute(_vm, this, response, state);
 }
 
 EntryList::~EntryList() {
@@ -1012,11 +1013,10 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 	}
 }
 
-void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response) {
+void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state) {
 	for (unsigned int i = 0; i < responses.size(); i++) {
 		if (responses[i]->id == response) {
-			// TODO: handle multiple states
-			if (responses[i]->state == 0) {
+			if (responses[i]->state == state) {
 				responses[i]->execute(_vm, speaker);
 				return;
 			}
