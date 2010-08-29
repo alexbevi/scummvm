@@ -199,6 +199,8 @@ public:
 	uint16 id, state;
 	Common::Array<ResponseBlock *> blocks;
 
+	objectID target;
+
 	Common::String text;
 	uint32 voice_id, voice_group;
 	uint16 voice_subgroup;

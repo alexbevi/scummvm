@@ -818,10 +818,12 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	buf[255] = 0;
 	text = buf;
 
-	unsigned char buffer[0x2b];
-	stream->read(buffer, 0x2b); // XXX
-	for (unsigned int i = 0; i < 0x2b; i++) printf("%02x ", (unsigned int)buffer[i]);
-	printf("\n");
+	unsigned char buffer[0x1d + 0xa];
+	stream->read(buffer, 0x1d); // XXX
+
+	target = readObjectID(stream);
+
+	stream->read(buffer + 0x1d, 0xa); // XXX
 
 	voice_id = stream->readUint32LE();
 	voice_group = stream->readUint32LE();
@@ -837,10 +839,14 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	}
 	printf("\n");
 
+	for (unsigned int i = 0; i < sizeof(buffer); i++) printf("%02x ", (unsigned int)buffer[i]);
+	printf("\n");
+
 	int type;
 	while ((type = readBlockHeader(stream)) != -1) {
 		switch (type) {
 			case BLOCK_END_BLOCK:
+				printf("\n");
 				return;
 
 			case BLOCK_CONV_WHOCANSAY:
