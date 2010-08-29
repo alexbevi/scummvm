@@ -310,9 +310,15 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 	uint16 unknown7 = objstream->readUint16LE();
 
 	unknown16 = objstream->readUint16LE();
-	assert(unknown16 == 0xffff);
+	// always 0xffff inside objects..
+	(void)unknown16;
+	//assert(unknown16 == 0xffff);
+
 	unknown32 = objstream->readUint32LE();
-	assert(unknown32 == 0xffffffff);
+	// TODO: probably individual bytes or two uint16s?
+	(void)unknown32;
+	// always 0xffffffff inside objects..
+	//assert(unknown32 == 0xffffffff);
 
 	char text[101];
 	objstream->read(text, 20);
