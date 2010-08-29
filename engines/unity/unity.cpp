@@ -314,6 +314,15 @@ void UnityEngine::processTriggers() {
 	}
 }
 
+void UnityEngine::setSpeaker(objectID s) {
+	speaker = s;
+
+	Common::String icon_sprite = data.getIconSprite(speaker);
+	if (icon) delete icon;
+	icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
+	icon->startAnim(2); // speaking
+}
+
 void UnityEngine::handleLook(Object *obj) {
 	// TODO: this is very wrong, of course :)
 
@@ -326,12 +335,7 @@ void UnityEngine::handleLook(Object *obj) {
 	Description &desc = obj->descriptions[i];
 	in_dialog = true;
 	dialog_text = desc.text;
-	speaker = objectID(0, 0, 0);
-	Common::String icon_sprite = data.getIconSprite(speaker);
-
-	if (icon) delete icon;
-	icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
-	icon->startAnim(2); // speaking
+	setSpeaker(objectID(0, 0, 0));
 
 	// TODO: this is broken
 	// for these in-area files, it's sometimes %02x%c%1x%02x%02x.vac ?!

@@ -206,7 +206,7 @@ public:
 	uint16 voice_subgroup;
 
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm);
+	void execute(UnityEngine *_vm, Object *speaker);
 };
 
 class Conversation {
@@ -214,7 +214,7 @@ public:
 	Common::Array<Response *> responses;
 
 	void loadConversation(UnityData &data, unsigned int world, unsigned int id);
-	void execute(UnityEngine *_vm, unsigned int response);
+	void execute(UnityEngine *_vm, Object *speaker, unsigned int response);
 };
 
 } // Unity

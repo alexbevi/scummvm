@@ -32,11 +32,13 @@ public:
 
 	bool in_dialog;
 	Common::String dialog_text;
-	objectID speaker;
-	SpritePlayer *icon;
+	void setSpeaker(objectID s);
 
 protected:
 	Graphics *_gfx;
+
+	objectID speaker;
+	SpritePlayer *icon;
 
 	void openLocation(unsigned int world, unsigned int screen);
 

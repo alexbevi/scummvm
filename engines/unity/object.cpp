@@ -701,15 +701,18 @@ void AlterBlock::execute(UnityEngine *_vm) {
 		assert((immediate && alter_hail.size() > 1 && alter_hail[1] == '@') ||
 			(!immediate && alter_hail[0] == '@'));
 
-		int conversation, response;
-		if (sscanf(alter_hail.begin() + (immediate ? 2 : 1), "%d,%d", &conversation, &response) != 2) {
-			error("failed to parse hail '%s'", alter_hail.c_str());
-		}
+		// TODO: nuh-uh
+		if (immediate) {
+			int conversation, response;
+			if (sscanf(alter_hail.begin() + (immediate ? 2 : 1), "%d,%d", &conversation, &response) != 2) {
+				error("failed to parse hail '%s'", alter_hail.c_str());
+			}
 
-		Conversation conv;
-		// TODO: de-hardcode 0x5f, somehow
-		conv.loadConversation(_vm->data, 0x5f, conversation);
-		conv.execute(_vm, response);
+			Conversation conv;
+			// TODO: de-hardcode 0x5f, somehow
+			conv.loadConversation(_vm->data, 0x5f, conversation);
+			conv.execute(_vm, obj, response);
+		}
 	}
 
 	if (!did_something) {
@@ -926,10 +929,11 @@ void Conversation::loadConversation(UnityData &data, unsigned int world, unsigne
 	delete stream;
 }
 
-void Response::execute(UnityEngine *_vm) {
+void Response::execute(UnityEngine *_vm, Object *speaker) {
 	if (text.size()) {
 		_vm->in_dialog = true;
 		_vm->dialog_text = text;
+		_vm->setSpeaker(speaker->id);
 
 		uint32 entry_id = 0; // TODO: work out correct entry for actor
 		Common::String file;
@@ -943,12 +947,12 @@ void Response::execute(UnityEngine *_vm) {
 	}
 }
 
-void Conversation::execute(UnityEngine *_vm, unsigned int response) {
+void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response) {
 	for (unsigned int i = 0; i < responses.size(); i++) {
 		if (responses[i]->id == response) {
 			// TODO: handle multiple states
 			if (responses[i]->state == 0) {
-				responses[i]->execute(_vm);
+				responses[i]->execute(_vm, speaker);
 				return;
 			}
 		}
