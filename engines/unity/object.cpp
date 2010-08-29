@@ -776,7 +776,29 @@ void WhoCanSayBlock::readFrom(Common::SeekableReadStream *stream) {
 }
 
 void TextBlock::readFrom(Common::SeekableReadStream *stream) {
-	stream->seek(0x10f, SEEK_CUR); // XXX
+	uint16 unknown = stream->readUint16LE();
+	assert(unknown == 0x10d);
+
+	char buf[256];
+	stream->read(buf, 255);
+	buf[255] = 0;
+	text = buf;
+
+	stream->read(buf, 4);
+	assert(buf[0] == 0 && buf[1] == 0 && buf[2] == 0 && buf[3] == 0);
+
+	voice_id = stream->readUint32LE();
+	voice_group = stream->readUint32LE();
+	voice_subgroup = stream->readUint16LE();
+	uint32 entry_id = 0; // TODO: work out correct entry for actor
+
+	if (text.size()) {
+		printf("text '%s'", text.c_str());
+		if (voice_id != 0xffffffff) {
+			printf(" (%02x%02x%02x%02x.vac)", voice_group, entry_id, voice_subgroup, voice_id);
+		}
+		printf("\n");
+	}
 }
 
 void ChangeActorBlock::readFrom(Common::SeekableReadStream *stream) {

@@ -187,6 +187,10 @@ public:
 
 class TextBlock : public ResponseBlock {
 public:
+	Common::String text;
+	uint32 voice_id, voice_group;
+	uint16 voice_subgroup;
+
 	void readFrom(Common::SeekableReadStream *stream);
 };
 
