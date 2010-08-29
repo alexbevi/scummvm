@@ -173,12 +173,14 @@ protected:
 
 class ResponseBlock {
 public:
+	virtual void execute(UnityEngine *_vm, Object *speaker) = 0;
 	virtual ~ResponseBlock() { }
 };
 
 class WhoCanSayBlock : public ResponseBlock {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm, Object *speaker);
 };
 
 class ChangeActorBlock : public ResponseBlock {
@@ -187,6 +189,7 @@ public:
 	uint16 response_id, state_id;
 
 	void readFrom(Common::SeekableReadStream *stream, int _type);
+	void execute(UnityEngine *_vm, Object *speaker);
 };
 
 class ResultBlock : public ResponseBlock {
@@ -194,6 +197,7 @@ public:
 	EntryList entries;
 
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm, Object *speaker);
 };
 
 class TextBlock : public ResponseBlock {
@@ -203,6 +207,7 @@ public:
 	uint16 voice_subgroup;
 
 	void readFrom(Common::SeekableReadStream *stream);
+	void execute(UnityEngine *_vm, Object *speaker);
 };
 
 class Response {

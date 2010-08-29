@@ -805,6 +805,10 @@ void WhoCanSayBlock::readFrom(Common::SeekableReadStream *stream) {
 	stream->seek(0xa, SEEK_CUR); // XXX
 }
 
+void WhoCanSayBlock::execute(UnityEngine *_vm, Object *speaker) {
+	warning("unimplemented: WhoCanSayBlock::execute");
+}
+
 void TextBlock::readFrom(Common::SeekableReadStream *stream) {
 	uint16 unknown = stream->readUint16LE();
 	assert(unknown == 0x10d);
@@ -831,6 +835,10 @@ void TextBlock::readFrom(Common::SeekableReadStream *stream) {
 	}
 }
 
+void TextBlock::execute(UnityEngine *_vm, Object *speaker) {
+	warning("unimplemented: TextBlock::execute");
+}
+
 const char *change_actor_names[4] = { "unknown1", "set response", "add choice", "unknown2" };
 
 void ChangeActorBlock::readFrom(Common::SeekableReadStream *stream, int _type) {
@@ -854,8 +862,17 @@ void ChangeActorBlock::readFrom(Common::SeekableReadStream *stream, int _type) {
 		response_id, state_id, unknown4, unknown5, unknown6);
 }
 
+void ChangeActorBlock::execute(UnityEngine *_vm, Object *speaker) {
+	warning("unimplemented: ChangeActorBlock::execute");
+}
+
 void ResultBlock::readFrom(Common::SeekableReadStream *stream) {
 	entries.readEntryList(stream);
+}
+
+void ResultBlock::execute(UnityEngine *_vm, Object *speaker) {
+	warning("unimplemented: ResultBlock::execute");
+	entries.execute(_vm);
 }
 
 void Response::readFrom(Common::SeekableReadStream *stream) {
@@ -989,7 +1006,7 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 	}
 
 	for (unsigned int i = 0; i < blocks.size(); i++) {
-		// XXX
+		blocks[i]->execute(_vm, speaker);
 	}
 }
 
