@@ -56,6 +56,7 @@
 #define getPosition()   _engine->getPositionManager()
 #define getResource()   _engine->getResourceManager()
 #define getSave()       _engine->getSavegameManager()
+#define getSegment()    _engine->getSegmentManager()
 #define getSound()      _engine->getSoundManager()
 #define getText()       _engine->getTextManager()
 #define getWork()       _engine->getWorkManager()
@@ -66,9 +67,5 @@
 #define CEL2SCR(val) (uint16)HIWORD(val)
 #define SCR2CEL(val) ((uint32)val << 16 ) | 0
 #define DSCR2CEL(val) (uint64)(val * 65536.0)
-
-// Offsets
-#define SEGMENTDATA(segment, offset) (segment[1] + offset);
-
 
 #endif // LIATH_HELPERS_H

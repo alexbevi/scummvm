@@ -63,6 +63,7 @@ class PositionManager;
 class ProgressManager;
 class ResourceManager;
 class SavegameManager;
+class SegmentManager;
 class SoundManager;
 class TextManager;
 class WorkManager;
@@ -97,6 +98,7 @@ public:
 	PositionManager   *getPositionManager()   const { return _positionMan; }
 	ResourceManager   *getResourceManager()   const { return _resMan; }
 	SavegameManager   *getSavegameManager()   const { return _saveMan; }
+	SegmentManager    *getSegmentManager()    const { return _segmentMan; }
 	SoundManager      *getSoundManager()      const { return _soundMan; }
 	TextManager       *getTextManager()       const { return _textMan; }
 	WorkManager       *getWorkManager()       const { return _workMan; }
@@ -124,6 +126,7 @@ private:
 	ProgressManager   *_progressMan;
 	ResourceManager   *_resMan;
 	SavegameManager   *_saveMan;
+	SegmentManager    *_segmentMan;
 	SoundManager      *_soundMan;
 	TextManager       *_textMan;
 	WorkManager       *_workMan;

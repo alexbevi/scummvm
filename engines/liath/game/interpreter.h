@@ -39,7 +39,7 @@ public:
 	Interpreter(LiathEngine *engine);
 	~Interpreter();
 
-	int interpret(ObjectIndex *pIndex, Common::Array<FileData *> *segment);
+	int interpret(ObjectIndex *pObjectIndex, Segment segment);
 
 private:
 	LiathEngine* _engine;

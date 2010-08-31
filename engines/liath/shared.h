@@ -26,6 +26,7 @@
 #ifndef LIATH_SHARED_H
 #define LIATH_SHARED_H
 
+#include "common/array.h"
 #include "common/rect.h"
 #include "common/scummsys.h"
 
@@ -35,13 +36,19 @@ namespace Liath {
 // Types
 //////////////////////////////////////////////////////////////////////////
 typedef void *FileData;
-typedef uint32 *Segment;
-typedef int HeroIndex;
+typedef uint32 HeroIndex;
 typedef uint32 ObjectIndex;
 
 //////////////////////////////////////////////////////////////////////////
 // Enumerations
 //////////////////////////////////////////////////////////////////////////
+enum SegmentType {
+	kSegmentGame,
+	kSegmentAction,
+	kSegmentHero,
+	kSegmentExpression
+};
+
 enum ActionIndex {
 	kActionNone = 0
 };
@@ -225,17 +232,38 @@ enum Opcode {
 };
 
 //////////////////////////////////////////////////////////////////////////
+// Segment
+//////////////////////////////////////////////////////////////////////////
+struct SegmentData {
+	void *data;
+	size_t size;
+
+	SegmentData() {
+		data = NULL;
+		size = 0;
+	}
+
+	~SegmentData() {
+		if (data)
+			free(data);
+
+		data = NULL;
+	}
+};
+
+typedef Common::Array<SegmentData *> SegmentDef;
+typedef Common::Array<SegmentData *> *Segment;
+
+//////////////////////////////////////////////////////////////////////////
 // Parameters
 //////////////////////////////////////////////////////////////////////////
 struct OpcodeParameters {
 	ObjectIndex objectIndex;
 	Opcode opcode;
+	byte field_5;
 };
 
 struct OpcodeParametersDBDD : OpcodeParameters {
-	ObjectIndex objectIndex;
-	Opcode opcode;
-	byte   field_5;
 	uint32 param;
 	byte   param2;
 	uint32 param3;
@@ -246,18 +274,12 @@ struct OpcodeParametersDBDD : OpcodeParameters {
 };
 
 struct OpcodeParametersDWDD : OpcodeParameters {
-	ObjectIndex objectIndex;
-	Opcode opcode;
-	byte   field_5;
 	uint32 param;
 	int16  param2;
 	int16  param3;
 };
 
 struct OpcodeParametersBDDD : OpcodeParameters {
-	ObjectIndex objectIndex;
-	Opcode opcode;
-	byte   field_5;
 	byte   param;
 	uint32 param2;
 	uint32 param3;
@@ -266,9 +288,6 @@ struct OpcodeParametersBDDD : OpcodeParameters {
 };
 
 struct OpcodeParametersDefault : OpcodeParameters {
-	ObjectIndex objectIndex;
-	Opcode opcode;
-	byte   field_5;
 	uint32 param;
 	uint32 param2;
 	uint32 param3;
@@ -289,19 +308,6 @@ struct OpcodeParametersDefault : OpcodeParameters {
 //////////////////////////////////////////////////////////////////////////
 // Structures
 //////////////////////////////////////////////////////////////////////////
-struct GameData {
-	uint32 field_0;
-	uint32 field_4;
-	uint32 objectIndexes;
-	uint32 countHero;
-	uint32 Param;
-	uint32 GParam;
-	uint32 action;
-	uint32 nTimer;
-	uint32 paletteData;
-};
-
-
 struct Hero;
 
 struct Object {

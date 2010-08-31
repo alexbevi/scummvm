@@ -28,6 +28,7 @@
 #include "liath/game/action.h"
 #include "liath/game/game.h"
 #include "liath/game/hero.h"
+#include "liath/game/segment.h"
 #include "liath/game/work.h"
 
 #include "liath/helpers.h"
@@ -69,7 +70,7 @@ int32 ExpressionManager::expression(uint32 offset, uint32 count) {
 		error("ExpressionManager::expression: Invalid count!");
 
 	// Get the expression array
-	Expression *expressions = (Expression *)SEGMENTDATA(_expressionSegment, offset);
+	Expression *expressions = (Expression *)getSegment()->getData(kSegmentExpression, offset);
 	Work *work = getWork()->getCurrent();
 
 	for (uint index = 0; index < count; index++) {

@@ -37,6 +37,7 @@
 #include "liath/game/position.h"
 #include "liath/game/progress.h"
 #include "liath/game/savegame.h"
+#include "liath/game/segment.h"
 #include "liath/game/sound.h"
 #include "liath/game/text.h"
 #include "liath/game/position.h"
@@ -57,11 +58,12 @@ LiathEngine::LiathEngine(OSystem *syst, const ADGameDescription *gd) :
 	_play(NULL),
 	_actionMan(NULL), _arrayMan(NULL), _expressionMan(NULL), _gameMan(NULL),
 	_graphicsMan(NULL), _heroMan(NULL), _mouseMan(NULL), _positionMan(NULL),
-	_progressMan(NULL), _resMan(NULL), _saveMan(NULL), _soundMan(NULL),
-	_textMan(NULL), _workMan(NULL) {
+	_progressMan(NULL), _resMan(NULL), _saveMan(NULL), _segmentMan(NULL),
+	_soundMan(NULL), _textMan(NULL), _workMan(NULL) {
 
 	// Adding the default directories
 	const Common::FSNode gameDataDir(ConfMan.get("path"));
+	SearchMan.remove("Chuvak.mul");
 	SearchMan.addSubDirectoryMatching(gameDataDir, "cut");
 	SearchMan.addSubDirectoryMatching(gameDataDir, "data");
 	SearchMan.addSubDirectoryMatching(gameDataDir, "dialog");
@@ -96,6 +98,7 @@ LiathEngine::~LiathEngine() {
 	delete _progressMan;
 	delete _resMan;
 	delete _saveMan;
+	delete _segmentMan;
 	delete _soundMan;
 	delete _textMan;
 	delete _workMan;
@@ -132,6 +135,7 @@ Common::Error LiathEngine::run() {
 	_progressMan   = new ProgressManager(this);
 	_resMan        = new ResourceManager();
 	_saveMan       = new SavegameManager(this);
+	_segmentMan    = new SegmentManager(this);
 	_soundMan      = new SoundManager(this);
 	_textMan       = new TextManager(this);
 	_workMan       = new WorkManager(this);
@@ -139,7 +143,6 @@ Common::Error LiathEngine::run() {
 	// Setup data
 	_resMan->readPathFile();
 	_resMan->readMultiData();
-
 
 	_play->playGame(kActionNone);
 

@@ -26,6 +26,7 @@
 #include "liath/play.h"
 
 #include "liath/game/action.h"
+#include "liath/game/segment.h"
 #include "liath/game/interpreter.h"
 
 #include "liath/helpers.h"
@@ -53,10 +54,11 @@ void Play::playGame(ActionIndex action) {
 
 	// TODO allocate different data (shadow, make, etc.)
 
-	// Read game data
-	_gameSegment = getResource()->readData("Game", 1);
+	// Read game segment
+	getSegment()->load(kSegmentGame, 1);
 
 
+	uint32 *gameData = getSegment()->getData(kSegmentGame, 2);
 	// TODO update game data and set different objects
 
 	// TODO setup current action
@@ -69,9 +71,10 @@ void Play::playGame(ActionIndex action) {
 
 	// Load text palette
 
-	ObjectIndex *index = 0; //= (!_gameData->objectIndexes) ? 0 : _gameData->objectIndexes[_gameSegment->size() - 1];
+	// Run the interpreter
+	ObjectIndex *pObjectIndex = (!gameData[2]) ? 0 : getSegment()->getData(kSegmentGame, gameData[2]);
 
-	_interpreter->interpret(index, _gameSegment);
+	_interpreter->interpret(pObjectIndex, getSegment()->get(kSegmentGame));
 	while (getAction()->getCurrentAction())
 		playAction();
 

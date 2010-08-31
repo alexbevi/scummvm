@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef LIATH_PLAY_H
-#define LIATH_PLAY_H
+#ifndef LIATH_SEGMENT_H
+#define LIATH_SEGMENT_H
 
 #include "liath/shared.h"
 
@@ -34,24 +34,32 @@ namespace Liath {
 
 class LiathEngine;
 
-class Interpreter;
-
-class Play {
+class SegmentManager {
 public:
+	SegmentManager(LiathEngine *engine);
+	~SegmentManager();
 
-	Play(LiathEngine *engine);
-	~Play();
+	void load(SegmentType type, uint32 index);
+	void release(Segment segment);
 
-	void playGame(ActionIndex action);
+	// Accessors
+	uint32 *getData(SegmentType type, uint32 offset);
+
+	Segment get(SegmentType type) { return *getSegmentByType(type); }
+	void set(SegmentType type, Segment segment) { *getSegmentByType(type) = segment; }
 
 private:
 	LiathEngine* _engine;
 
-	Interpreter *_interpreter;
+	// Segments
+	Segment _gameSegment;
+	Segment _actSegment;
+	Segment _heroSegment;
+	Segment _exprSegment;
 
-	void playAction();
+	Segment *getSegmentByType(SegmentType type);
 };
 
 } // End of namespace Liath
 
-#endif // LIATH_PLAY_H
+#endif // LIATH_SEGMENT_H

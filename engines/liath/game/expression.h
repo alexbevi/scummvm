@@ -78,7 +78,6 @@ private:
 
 	LiathEngine* _engine;
 
-	Segment _expressionSegment;
 	Common::Queue<int32> _queue;
 
 	// Helpers for cleaner looking code
