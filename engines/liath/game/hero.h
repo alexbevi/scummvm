@@ -79,8 +79,8 @@ public:
 	OpcodeRet hearVar(OpcodeParameters *parameters);
 
 	// Accessors
-	Hero *get(HeroIndex index) { return _heros[index]; }
-	uint32 *getData(HeroIndex index, uint32 offset);
+	Hero *get(HeroIndex index);
+	uint32 *getData(HeroIndex index, uint32 offset) { return get(index)->getData(offset); }
 
 private:
 	LiathEngine* _engine;

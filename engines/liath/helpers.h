@@ -32,8 +32,8 @@
 
 //#define LOBYTE(b)           ((b) & 0xFF)
 //#define HIBYTE(b)           (((b) >> 8) & 0xFF)
-//#define LOWORD(l)           ((l) & 0xffff)
-//#define HIWORD(l)           (((l) >> 16) & 0xffff)
+#define LOWORD(l)           ((l) & 0xffff)
+#define HIWORD(l)           (((l) >> 16) & 0xffff)
 
 // Parameters
 #define EXPOSE_PARAMS(type) type *params = (type *)parameters
@@ -62,5 +62,13 @@
 
 // Operations
 #define DSI2INT(val) ((val) >> 16)
+#define INT2DSI(val) ((val) << 16)
+#define CEL2SCR(val) (uint16)HIWORD(val)
+#define SCR2CEL(val) ((uint32)val << 16 ) | 0
+#define DSCR2CEL(val) (uint64)(val * 65536.0)
+
+// Offsets
+#define SEGMENTDATA(segment, offset) (segment[1] + offset);
+
 
 #endif // LIATH_HELPERS_H

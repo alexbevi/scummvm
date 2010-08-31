@@ -43,12 +43,47 @@ public:
 	// Opcodes
 	OpcodeRet expression(OpcodeParameters *parameters);
 
-	int expression(int offset, int count);
+	int32 expression(uint32 offset, uint32 count);
 
 private:
+	enum Operation {
+		kOperationHeroWorkVar = 1,
+		kOperationGlobalVar = 2,
+		kOperationHeroVar = 3,
+		kOperation4 = 4,
+		kOperation5 = 5,
+		kOperation6 = 6,
+		kOperation11 = 11,
+		kOperation12 = 12,
+		kOperation13 = 13,
+		kOperationPlus = 16,
+		kOperationMinus = 17,
+		kOperationMultiply = 18,
+		kOperationDivide = 19,
+		kOperationEqual = 20,
+		kOperationInferior = 21,
+		kOperationSuperior = 22,
+		kOperationInferiorOrEqual = 23,
+		kOperationSuperiorOrEqual = 24,
+		kOperationDifferent = 25,
+		kOperationInvert = 26,
+	};
+
+	struct Expression {
+		Operation operation;
+		uint32 field_1;
+		uint32 field_5;
+		uint32 field_9;
+	};
+
 	LiathEngine* _engine;
 
-	Common::Queue<int> _queue;
+	Segment _expressionSegment;
+	Common::Queue<int32> _queue;
+
+	// Helpers for cleaner looking code
+	void push(int32 val) { _queue.push(val); }
+	int32 pop() { return _queue.pop(); }
 };
 
 } // End of namespace Liath

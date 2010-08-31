@@ -34,7 +34,8 @@ namespace Liath {
 //////////////////////////////////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////////////////////////////////
-typedef void* FileData;
+typedef void *FileData;
+typedef uint32 *Segment;
 typedef int HeroIndex;
 typedef uint32 ObjectIndex;
 
@@ -303,9 +304,20 @@ struct GameData {
 
 struct Hero;
 
+struct Object {
+	uint32 field_0;
+
+	uint16 field_41;
+	uint16 field_43;
+};
+
 struct Work {
 	// Work *next;
-
+	uint32 field_35;
+	uint32 field_39;
+	uint32 field_3D;
+	uint32 field_41;
+	uint32 field_45;
 	byte field_57;
 	bool isObjectIndexSet;
 	bool field_59;
@@ -313,15 +325,14 @@ struct Work {
 	HeroIndex heroIndex;
 	uint16 field_60;
 	uint16 field_62;
-	//Object *object;
+	Object *object;
 	uint16 field_68;
 	//Sprite *sprite;
 
 	uint16 field_76;
-	Hero *hero;
 
-
-	byte field_88;
+	byte status;
+	uint32 time;
 
 	uint16 field_A9;
 	uint16 field_AB;
@@ -332,7 +343,8 @@ struct Work {
 	uint16 field_B5;
 	uint16 field_B7;
 
-	uint32 time;
+
+	uint32 field_DC;
 	uint32 field_FE;
 
 
@@ -378,6 +390,10 @@ struct Hero {
 		work = NULL;
 		field_20 = 0;
 		field_24 = 0;
+	}
+
+	uint32 *getData(uint32 offset) {
+		error("Hero::getData: not implemented!");
 	}
 };
 

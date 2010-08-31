@@ -171,8 +171,8 @@ OpcodeRet WorkManager::cont(OpcodeParameters *parameters) {
 	Hero *hero = getHero()->get(params->param ? params->param : _currentWork->heroIndex);
 	Work *work = params->param ? hero->work : _currentWork;
 
-	if (work && work->field_88 == 2) {
-		work->field_88 = 0;
+	if (work && work->status == 2) {
+		work->status = 0;
 		work->isObjectIndexSet = work->field_59;
 	} else if (hero->data->field_1C == 2) {
 		hero->data->field_1C = 4;
