@@ -358,8 +358,44 @@ void GeneralBlock::readFrom(Common::SeekableReadStream *objstream) {
 	objstream->seek(0x79, SEEK_CUR); // XXX
 }
 
+bool valid_screen_id(uint16 screen_id) {
+	return screen_id == 0x5f || screen_id == 0x10 || (screen_id >= 2 && screen_id <= 7);
+}
+
 void ConversationBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0x7a, SEEK_CUR); // XXX
+	objstream->seek(3, SEEK_CUR); // XXX: object id
+
+	// counters for offset within parent blocks (inner/outer)
+	byte counter1 = objstream->readByte();
+	byte counter2 = objstream->readByte();
+	byte counter3 = objstream->readByte();
+	byte counter4 = objstream->readByte();
+	(void)counter1; (void)counter2; (void)counter3; (void)counter4;
+
+	byte unknown4 = objstream->readByte();
+	assert(unknown4 == 0x49);
+	byte unknown5 = objstream->readByte();
+	assert(unknown5 == 0 || unknown5 == 1);
+
+	uint32 unknown6 = objstream->readUint32LE();
+	// TODO: probably individual bytes?
+	(void)unknown6;
+	// always 0xffffffff inside objects..
+	//assert(unknown6 == 0xffffffff);
+
+	screen_id = objstream->readUint16LE();
+	assert(screen_id == 0xffff || valid_screen_id(screen_id));
+	conversation_id = objstream->readUint16LE();
+	response_id = objstream->readUint16LE();
+	state_id = objstream->readUint16LE();
+
+	action_id = objstream->readUint16LE();
+	assert(action_id == 2 || action_id == 3 || action_id == 4); // XXX: what are these?
+
+	for (unsigned int i = 0; i < 0x63; i++) {
+		byte zero = objstream->readByte();
+		assert(zero == 0);
+	}
 }
 
 void BeamBlock::readFrom(Common::SeekableReadStream *objstream) {
