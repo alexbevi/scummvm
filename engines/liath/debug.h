@@ -54,7 +54,11 @@ public:
 private:
 	LiathEngine *_engine;
 
-	bool cmd_clear(int argc, const char **argv);
+	bool cmdHelp(int argc, const char **argv);
+
+	bool cmdListFiles(int argc, const char **argv);
+
+	bool cmdClear(int argc, const char **argv);
 
 	void resetCommand();
 	void copyCommand(int argc, const char **argv);

@@ -25,6 +25,8 @@
 
 #include "liath/resource.h"
 
+#include "liath/data/archive.h"
+
 #include "liath/debug.h"
 
 #include "common/archive.h"
@@ -35,11 +37,87 @@ namespace Liath {
 ResourceManager::ResourceManager() {}
 
 ResourceManager::~ResourceManager() {
+	for (ArchiveCache::iterator i = _archives.begin(); i != _archives.end(); ++i)
+		delete i->_value;
+
+	_archives.clear();
+
 	_files.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Archives
+// Archive
+//////////////////////////////////////////////////////////////////////////
+
+bool ResourceManager::hasFile(const Common::String &name) {
+	// Files can be either part of a MUL archive or in one of the data folders
+
+	if (_files.find(name) != _files.end())
+		return true;
+
+	return SearchMan.hasFile(name);
+}
+
+int ResourceManager::listMembers(Common::ArchiveMemberList &list) {
+	int numMembers = 0;
+
+	for (FileMap::const_iterator i = _files.begin(); i != _files.end(); ++i) {
+		list.push_back(Common::ArchiveMemberList::value_type(new Common::GenericArchiveMember(i->_key, this)));
+		numMembers++;
+	}
+
+	Common::ArchiveMemberList files;
+	numMembers += SearchMan.listMembers(files);
+
+	for (Common::ArchiveMemberList::iterator i = files.begin(); i != files.end(); ++i) {
+		list.push_back(Common::ArchiveMemberList::value_type(new Common::GenericArchiveMember((*i)->getName(), this)));
+	}
+
+	return numMembers;
+}
+
+Common::ArchiveMemberPtr ResourceManager::getMember(const Common::String &name) {
+	if (!hasFile(name))
+		return Common::ArchiveMemberPtr();
+
+	return Common::ArchiveMemberPtr(new Common::GenericArchiveMember(name, this));
+}
+
+Common::SeekableReadStream *ResourceManager::createReadStreamForMember(const Common::String &name) const {
+	// Load a normal file
+	if (_files.find(name) == _files.end()) {
+		Common::File *file = new Common::File();
+		if (!file->open(name)) {
+			delete file;
+			return NULL;
+		}
+
+		return file;
+	}
+
+	// Get the archive file from the cache
+	Common::String archiveName = _files[name].archiveName;
+
+	// FIXME
+	//if (!_archives.contains(archiveName))
+		//_archives[archiveName] = new MultiArchive(archiveName);
+
+	// Load the file from the archive
+	MultiArchive *archive = new MultiArchive(archiveName); //_archives[archiveName];
+	if (!archive->hasFile(name)) {
+		delete archive;
+		return NULL;
+	}
+
+	Common::SeekableReadStream *stream = archive->createReadStreamForMember(name);
+
+	delete archive;
+
+	return stream;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Path data
 //////////////////////////////////////////////////////////////////////////
 
 /**
@@ -86,22 +164,24 @@ void ResourceManager::readPathFile() {
 			const char *sep2 = strchr(p, ':');
 
 			// Extract the name/path pair
-			FilePath *path = new FilePath();
+			FilePath path;
 			Common::String filename(t, sep);
-			path->directory = Common::String(sep2 + 1);
+			path.folderName = Common::String(sep2 + 1);
 
 			// Convert media type
 			Common::String media(p, sep2);
 			if (media == "cd")
-				path->type = kMediaCd;
+				path.type = kMediaCd;
 			else if (media == "hd")
-				path->type = kMediaHd;
+				path.type = kMediaHd;
 			else
 				error("ResourceManager::readPathFile: Invalid media type (was:%s)", media.c_str());
 
 			_files[filename] = path;
 		}
 	}
+
+	debugC(2, kLiathDebugResource, "Loaded %d file paths", _files.size());
 
 	delete pathFile;
 }
@@ -115,6 +195,8 @@ void ResourceManager::readMultiData() {
 	if (!multigenFile->open("multigen.dat"))
 		error("ResourceManager::readMultiData: Could not open multigen.dat file!");
 
+	uint32 count = 0;
+
 	while (!multigenFile->eos() && !multigenFile->err()) {
 
 		char name[20];
@@ -126,12 +208,16 @@ void ResourceManager::readMultiData() {
 			char archive[20];
 			multigenFile->read(&archive, sizeof(archive));
 
-			_files[name]->archive = Common::String(archive);
-			_files[name]->indicator = multigenFile->readUint16LE();
+			_files[name].archiveName = Common::String(archive);
+			_files[name].indicator = multigenFile->readUint16LE();
 
 			//debugC(kLiathDebugResource, "%s - %s", &name, (*path)->toString().c_str());
+
+			count++;
 		}
 	}
+
+	debugC(2, kLiathDebugResource, "Updated %d file paths with archive name", count);
 
 	delete multigenFile;
 }

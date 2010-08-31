@@ -23,23 +23,16 @@
  *
  */
 
-#ifndef LIATH_RESOURCE_H
-#define LIATH_RESOURCE_H
-
-#include "liath/shared.h"
+#ifndef LIATH_ARCHIVE
+#define LIATH_ARCHIVE
 
 #include "common/archive.h"
-#include "common/hashmap.h"
-#include "common/str.h"
 
 namespace Liath {
 
-class MultiArchive;
-
-class ResourceManager : public Common::Archive {
+class MultiArchive : public Common::Archive {
 public:
-	ResourceManager();
-	~ResourceManager();
+	MultiArchive(const Common::String &path);
 
 	// Archive
 	bool hasFile(const Common::String &name);
@@ -47,42 +40,19 @@ public:
 	Common::ArchiveMemberPtr getMember(const Common::String &name);
 	Common::SeekableReadStream *createReadStreamForMember(const Common::String &name) const;
 
-	// Path data
-	void readPathFile();
-	void readMultiData();
-
-	// Read/Write
-	Common::Array<FileData *> *readData(Common::String name, uint32 index);
-
 private:
-	enum MediaType {
-		kMediaCd,
-		kMediaHd
+	// File entry
+	struct FileEntry {
+		uint32 offset;          ///< Offset
+		uint32 size;            ///< Size
 	};
 
-	struct FilePath {
-		MediaType      type;
-		Common::String archiveName;
-		Common::String folderName;
-		int16 indicator;
+	typedef Common::HashMap<Common::String, FileEntry> FileMap;
 
-		FilePath() {
-			type = kMediaCd;
-			indicator = 0;
-		}
-
-		Common::String toString() {
-			return Common::String::printf("FilePath:  type=%d, archive=%s, directory=%s, indicator=%d", type, archiveName.c_str(), folderName.c_str(), indicator);
-		}
-	};
-
-	typedef Common::HashMap<Common::String, FilePath> FileMap;
-	typedef Common::HashMap<Common::String, MultiArchive *> ArchiveCache;
-
-	ArchiveCache _archives;
-	FileMap      _files;
+	FileMap _files;             ///< List of files
+	Common::String _filename;   ///< Filename of the archive
 };
 
 } // End of namespace Liath
 
-#endif // LIATH_RESOURCE_H
+#endif // LIATH_ARCHIVE

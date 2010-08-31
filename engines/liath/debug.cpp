@@ -28,8 +28,6 @@
 #include "liath/liath.h"
 #include "liath/resource.h"
 
-#include "graphics/video/avi_decoder.h"
-
 #include "common/debug-channels.h"
 #include "common/events.h"
 
@@ -37,8 +35,14 @@ namespace Liath {
 
 Debugger::Debugger(LiathEngine *engine) : _engine(engine), _command(NULL), _numParams(0), _commandParams(NULL) {
 
+	//////////////////////////////////////////////////////////////////////////
 	// Register the debugger commands
-	DCmd_Register("clear",     WRAP_METHOD(Debugger, cmd_clear));
+
+	// General
+	DCmd_Register("help",      WRAP_METHOD(Debugger, cmdHelp));
+
+	// Data
+	DCmd_Register("ls",        WRAP_METHOD(Debugger, cmdListFiles));
 
 	resetCommand();
 }
@@ -88,7 +92,40 @@ void Debugger::callCommand() {
 		(*_command)(_numParams, const_cast<const char **>(_commandParams));
 }
 
-bool Debugger::cmd_clear(int argc, const char **) {
+bool Debugger::cmdHelp(int, const char **) {
+	DebugPrintf("Debug flags\n");
+	DebugPrintf("-----------\n");
+	DebugPrintf(" debugflag_list - Lists the available debug flags and their status\n");
+	DebugPrintf(" debugflag_enable - Enables a debug flag\n");
+	DebugPrintf(" debugflag_disable - Disables a debug flag\n");
+	DebugPrintf("\n");
+	DebugPrintf("Commands\n");
+	DebugPrintf("--------\n");
+	DebugPrintf(" ls - list files in the archive\n");
+	DebugPrintf("\n");
+	DebugPrintf(" clear - clear the screen\n");
+	DebugPrintf("\n");
+	return true;
+}
+
+bool Debugger::cmdListFiles(int argc, const char **argv) {
+	if (argc == 2) {
+		Common::String filter(const_cast<char *>(argv[1]));
+
+		Common::ArchiveMemberList list;
+		int count = _engine->getResourceManager()->listMatchingMembers(list, filter);
+
+		DebugPrintf("Number of matches: %d\n", count);
+		for (Common::ArchiveMemberList::iterator it = list.begin(); it != list.end(); ++it)
+			DebugPrintf(" %s\n", (*it)->getName().c_str());
+	} else {
+		DebugPrintf("Syntax: ls <filter> (use * for all)\n");
+	}
+
+	return true;
+}
+
+bool Debugger::cmdClear(int argc, const char **) {
 	if (argc == 1) {
 		/*askForRedraw();
 		redrawScreen();*/
