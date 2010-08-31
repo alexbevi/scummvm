@@ -473,6 +473,19 @@ void UnityEngine::handleAwayTeamMouseMove(unsigned int x, unsigned int y) {
 }
 
 void UnityEngine::handleBridgeMouseClick(unsigned int x, unsigned int y) {
+	for (unsigned int i = 0; i < data.bridge_items.size(); i++) {
+		BridgeItem &item = data.bridge_items[i];
+		if (x < item.x) continue;
+		if (y < item.y) continue;
+		if (x > item.x + item.width) continue;
+		if (y > item.y + item.height) continue;
+
+		// TODO: handle non-actors
+		if (item.id.world == 0) continue;
+
+		Object *obj = data.getObject(item.id);
+		obj->runHail(obj->hail_string);
+	}
 }
 
 void UnityEngine::handleAwayTeamMouseClick(unsigned int x, unsigned int y) {
