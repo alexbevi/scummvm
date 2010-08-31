@@ -184,14 +184,9 @@ Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 }
 
 void UnityEngine::startBridge() {
-	const char *bridge_sprites[10] = {
+	const char *bridge_sprites[5] = {
 		"brdgldor.spr", // Left Door (conference room)
 		"brdgdoor.spr", // Door
-		"brdgworf.spr", // Worf
-		"brdgtroi.spr", // Troi
-		"brdgdata.spr", // Data
-		"brdgrikr.spr", // Riker
-		"brdgpica.spr", // Picard
 		"brdgtitl.spr", // Episode Title
 		"advice.spr", // advice button in UI :(
 		0 };
@@ -202,8 +197,24 @@ void UnityEngine::startBridge() {
 		obj->z_adjust = 0xffff;
 		obj->active = true;
 		obj->scaled = false;
-		obj->sprite = new SpritePlayer(new Sprite(data.openFile(bridge_sprites[i])), obj, this);;
+		obj->sprite = new SpritePlayer(new Sprite(data.openFile(bridge_sprites[i])), obj, this);
 		obj->sprite->startAnim(0);
+		data.current_screen.objects.push_back(obj);
+	}
+
+	for (unsigned int i = 0; i < data.bridge_objects.size(); i++) {
+		Object *obj = new Object(this);
+		// TODO: correct?
+		obj->x = data.bridge_objects[i].x;
+		obj->y = data.bridge_objects[i].y;
+		obj->z_adjust = 0xffff;
+		obj->active = true;
+		obj->scaled = false;
+		obj->sprite = new SpritePlayer(new Sprite(data.openFile(data.bridge_objects[i].filename)), obj, this);
+		obj->sprite->startAnim(0);
+		printf("%s: %d, %d\n", data.bridge_objects[i].filename.c_str(),
+			data.bridge_objects[i].unknown1,
+			data.bridge_objects[i].unknown2);
 		data.current_screen.objects.push_back(obj);
 	}
 
@@ -622,6 +633,8 @@ void UnityEngine::drawBridgeUI() {
 
 	// display text (TODO: list of visited sectors)
 	char buffer[30];
+
+	// TODO: sane max width/heights
 
 	Common::String sector_name = data.getSectorName(90, 90, 90); // TODO
 	snprintf(buffer, 30, "SECTOR: %s", sector_name.c_str());

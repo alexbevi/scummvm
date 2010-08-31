@@ -30,10 +30,9 @@ struct BridgeItem {
 struct BridgeObject {
 	objectID id;
 	Common::String filename;
-	uint32 unknown1;
+	uint32 x, y;
+	int32 unknown1;
 	uint32 unknown2;
-	uint32 unknown3;
-	uint32 unknown4;
 };
 
 #define NUM_BRIDGE_SCREEN_ENTRIES 3

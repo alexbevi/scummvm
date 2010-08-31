@@ -304,10 +304,10 @@ void UnityData::loadBridgeData() {
 		BridgeObject obj;
 		obj.id = readObjectID(stream);
 		uint32 desc_offset = stream->readUint32LE();
+		obj.x = stream->readUint32LE();
+		obj.y = stream->readUint32LE();
 		obj.unknown1 = stream->readUint32LE();
 		obj.unknown2 = stream->readUint32LE();
-		obj.unknown3 = stream->readUint32LE();
-		obj.unknown4 = stream->readUint32LE();
 		obj.filename = readStringFromOffset(stream, DATA_SEGMENT_OFFSET + desc_offset);
 		bridge_objects.push_back(obj);
 
