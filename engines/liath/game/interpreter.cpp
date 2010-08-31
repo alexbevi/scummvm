@@ -35,6 +35,7 @@
 #include "liath/game/position.h"
 #include "liath/game/progress.h"
 #include "liath/game/savegame.h"
+#include "liath/game/segment.h"
 #include "liath/game/sound.h"
 #include "liath/game/text.h"
 #include "liath/game/work.h"
@@ -54,8 +55,54 @@ Interpreter::~Interpreter() {
 //////////////////////////////////////////////////////////////////////////
 // Interpreter
 //////////////////////////////////////////////////////////////////////////
-int Interpreter::interpret(ObjectIndex *pIndex, Common::Array<FileData *> *segment) {
-	error("Interpreter::interpret: Not implemented!");
+int Interpreter::interpret(ObjectIndex *pObjectIndex, Segment segment) {
+	getSegment()->set(kSegmentExpression, segment);
+
+	while (pObjectIndex) {
+
+		ObjectIndex objectIndex = *pObjectIndex;
+		OpcodeParameters *parameters = objectIndex ? (OpcodeParameters *)getSegment()->getData(kSegmentExpression, objectIndex) : NULL;
+
+		if (parameters) {
+
+			for (;;) {
+				switch (run(parameters, objectIndex)) {
+				default:
+				case kOpcodeRetDefault:
+					objectIndex = parameters->objectIndex;
+					parameters = objectIndex ? (OpcodeParameters *)getSegment()->getData(kSegmentExpression, objectIndex) : NULL;
+
+					if (!parameters)
+						goto update_index;
+					break;
+
+				case kOpcodeRetNextOffset:
+					if (pObjectIndex[2])
+						pObjectIndex = pObjectIndex[2] ? (ObjectIndex *)getSegment()->getData(kSegmentExpression, pObjectIndex[2]) : NULL;
+					else
+						goto update_index;
+					break;
+
+				case kOpcodeRetExit:
+					return 0;
+
+				case kOpcodeRetExitSuccess:
+				case kOpcodeRetExitSuccess2:
+					return 2;
+				}
+			}
+		} else {
+update_index:
+			if (pObjectIndex[3])
+				pObjectIndex = (ObjectIndex *)getSegment()->getData(kSegmentExpression, pObjectIndex[3]);
+			else if (pObjectIndex[1])
+				pObjectIndex = (ObjectIndex *)getSegment()->getData(kSegmentExpression, pObjectIndex[1]);
+			else
+				pObjectIndex = NULL;
+		}
+	}
+
+	return 1;
 }
 
 OpcodeRet Interpreter::run(OpcodeParameters *parameters, ObjectIndex index) {
