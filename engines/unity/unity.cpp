@@ -349,7 +349,6 @@ void UnityEngine::handleLook(Object *obj) {
 	if (i == obj->descriptions.size()) return;
 
 	Description &desc = obj->descriptions[i];
-	in_dialog = true;
 	dialog_text = desc.text;
 	setSpeaker(objectID(0, 0, 0));
 
@@ -375,6 +374,8 @@ void UnityEngine::handleLook(Object *obj) {
 	}
 
 	_snd->playSpeech(file);
+
+	runDialog();
 }
 
 // TODO
