@@ -208,6 +208,8 @@ void UnityEngine::startBridge() {
 	}
 
 	_gfx->setBackgroundImage("bridge.rm");
+	on_bridge = true;
+	handleBridgeMouseMove(0, 0);
 }
 
 void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
@@ -227,10 +229,8 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 		data.current_screen.objects[i]->y = data.current_screen.entrypoints[0][i].y;
 	}
 
-	// draw UI
-	MRGFile mrg;
-	_gfx->loadMRG("awayteam.mrg", &mrg);
-	_gfx->drawMRG(&mrg, 0, 0, 400);
+	on_bridge = false;
+	handleAwayTeamMouseMove(0, 0);
 }
 
 void UnityEngine::startupScreen() {
@@ -362,11 +362,13 @@ void UnityEngine::checkEvents() {
 				break;
 
 			case Common::EVENT_KEYUP:
-				printf("trying anim %d\n", anim);
-				anim++;
-				anim %= objects[0]->sprite->numAnims();
-				for (unsigned int i = 0; i < 4; i++)
-					objects[i]->sprite->startAnim(anim);
+				if (!on_bridge) {
+					printf("trying anim %d\n", anim);
+					anim++;
+					anim %= objects[0]->sprite->numAnims();
+					for (unsigned int i = 0; i < 4; i++)
+						objects[i]->sprite->startAnim(anim);
+				}
 				break;
 
 			case Common::EVENT_RBUTTONUP:
@@ -394,29 +396,79 @@ void UnityEngine::checkEvents() {
 				break;
 
 			case Common::EVENT_MOUSEMOVE:
-				/*if (objectAt(event.mouse.x, event.mouse.y)) {
-					_gfx->setCursor(1, false);
+				if (in_dialog) {
+					break;
+				}
+
+				if (on_bridge) {
+					handleBridgeMouseMove(event.mouse.x, event.mouse.y);
 				} else {
-					_gfx->setCursor(0, false);
-				}*/
+					handleAwayTeamMouseMove(event.mouse.x, event.mouse.y);
+				}
 				break;
 
-			case Common::EVENT_LBUTTONUP: {
+			case Common::EVENT_LBUTTONUP:
 				if (in_dialog) {
 					in_dialog = false;
 					break;
 				}
 
-				Object *obj = objectAt(event.mouse.x, event.mouse.y);
-				if (!obj) break;
-
-				handleLook(obj);
-			} break;
+				if (on_bridge) {
+					handleBridgeMouseClick(event.mouse.x, event.mouse.y);
+				} else {
+					handleAwayTeamMouseClick(event.mouse.x, event.mouse.y);
+				}
+				break;
 
 			default:
 				break;
 		}
 	}
+}
+
+void UnityEngine::handleBridgeMouseMove(unsigned int x, unsigned int y) {
+	status_text.clear();
+
+	for (unsigned int i = 0; i < data.bridge_items.size(); i++) {
+		BridgeItem &item = data.bridge_items[i];
+		if (x < item.x) continue;
+		if (y < item.y) continue;
+		if (x > item.x + item.width) continue;
+		if (y > item.y + item.height) continue;
+
+		status_text = item.description;
+
+		// TODO: this is kinda random :)
+		if (item.unknown1 < 0x32)
+			_gfx->setCursor(3, false);
+		else
+			_gfx->setCursor(5, false);
+
+		return;
+	}
+
+	_gfx->setCursor(0xffffffff, false);
+}
+
+void UnityEngine::handleAwayTeamMouseMove(unsigned int x, unsigned int y) {
+	Object *obj = objectAt(x, y);
+	if (obj) {
+		status_text = obj->name; // TODO
+		_gfx->setCursor(1, false);
+	} else {
+		status_text.clear();
+		_gfx->setCursor(0, false);
+	}
+}
+
+void UnityEngine::handleBridgeMouseClick(unsigned int x, unsigned int y) {
+}
+
+void UnityEngine::handleAwayTeamMouseClick(unsigned int x, unsigned int y) {
+	Object *obj = objectAt(x, y);
+	if (!obj) return;
+
+	handleLook(obj);
 }
 
 void UnityEngine::drawObjects() {
@@ -578,6 +630,21 @@ void UnityEngine::drawBridgeUI() {
 	unsigned int warp_hi = 0, warp_lo = 0; // TODO
 	snprintf(buffer, 30, "WARP: %d.%d", warp_hi, warp_lo);
 	_gfx->drawString(168, 395, 9999, 9999, buffer, 2);
+
+	snprintf(buffer, 30, "%s", status_text.c_str());
+	Common::Array<unsigned int> strwidths, starts; unsigned int height;
+	_gfx->calculateStringBoundary(110, strwidths, starts, height, buffer, 2);
+	// draw centered, with 544 being the centre
+	_gfx->drawString(544 - strwidths[0]/2, 393, strwidths[0], 9999, buffer, 2);
+}
+
+void UnityEngine::drawAwayTeamUI() {
+	// draw UI
+	MRGFile mrg;
+	_gfx->loadMRG("awayteam.mrg", &mrg);
+	_gfx->drawMRG(&mrg, 0, 0, 400);
+
+	// TODO
 }
 
 Common::Error UnityEngine::run() {
@@ -606,7 +673,8 @@ Common::Error UnityEngine::run() {
 		_gfx->drawBackgroundPolys(data.current_screen.polygons);
 
 		drawObjects();
-		drawBridgeUI();
+		if (on_bridge) drawBridgeUI();
+		else drawAwayTeamUI();
 
 		assert(!in_dialog);
 
@@ -644,7 +712,8 @@ void UnityEngine::runDialog() {
 		_gfx->drawBackgroundPolys(data.current_screen.polygons);
 
 		drawObjects();
-		drawBridgeUI();
+		if (on_bridge) drawBridgeUI();
+		else drawAwayTeamUI();
 
 		drawDialogWindow();
 

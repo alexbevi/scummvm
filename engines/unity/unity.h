@@ -30,6 +30,9 @@ public:
 
 	Sound *_snd;
 
+	bool on_bridge;
+	Common::String status_text;
+
 	bool in_dialog;
 	Common::String dialog_text;
 	Conversation current_conversation;
@@ -51,6 +54,11 @@ protected:
 	void openLocation(unsigned int world, unsigned int screen);
 
 	void checkEvents();
+	void handleBridgeMouseMove(unsigned int x, unsigned int y);
+	void handleAwayTeamMouseMove(unsigned int x, unsigned int y);
+	void handleBridgeMouseClick(unsigned int x, unsigned int y);
+	void handleAwayTeamMouseClick(unsigned int x, unsigned int y);
+
 	void drawObjects();
 	void processTriggers();
 
@@ -59,6 +67,7 @@ protected:
 	void startAwayTeam(unsigned int world, unsigned int screen);
 
 	void drawDialogWindow();
+	void drawAwayTeamUI();
 	void drawBridgeUI();
 
 	void handleLook(Object *obj);
