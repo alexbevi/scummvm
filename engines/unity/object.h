@@ -152,6 +152,8 @@ public:
 
 	Common::String name, hail_string;
 
+	Common::String identify();
+
 	Common::Array<Description> descriptions;
 	EntryList use_entries, get_entries, look_entries, timer_entries;
 

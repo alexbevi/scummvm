@@ -81,6 +81,10 @@ enum {
 	OBJWALKTYPE_AS = 0x3 // action square
 };
 
+Common::String Object::identify() {
+	return Common::String::printf("%s (%02x%02x%02x)", name.c_str(), id.world, id.screen, id.id);
+}
+
 void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigned int for_id) {
 	Common::String filename = Common::String::printf("o_%02x%02x%02x.bst", for_world, for_screen, for_id);
 	Common::SeekableReadStream *objstream = _vm->data.openFile(filename);
@@ -735,7 +739,8 @@ void AlterBlock::execute(UnityEngine *_vm) {
 
 	if (alter_name.size()) {
 		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): alter_name: %s", obj->name.c_str(), alter_name.c_str());
+		printf("altering name of %s to %s\n", obj->identify().c_str(), alter_name.c_str());
+		obj->name = alter_name;
 	}
 
 	if (alter_hail.size()) {
