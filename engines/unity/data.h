@@ -6,6 +6,7 @@
 #include "common/rect.h"
 
 #include "object.h"
+#include "origdata.h"
 
 namespace Unity {
 
@@ -47,31 +48,43 @@ public:
 	UnityData(UnityEngine *p) : _vm(p) { }
 	~UnityData();
 
+	// data file access
+	Common::Archive *data, *instdata;
 	Common::SeekableReadStream *openFile(Common::String filename);
-	Common::String getSpriteFilename(unsigned int id);
 
-	Common::Archive *data;
-
+	// current away team screen
 	Screen current_screen;
+	void loadScreenPolys(Common::String filename);
 
+	// triggers
 	Common::Array<Trigger *> triggers;
-	Common::HashMap<uint32, Object *> objects;
-	Common::Array<Common::String> sprite_filenames;
-	Common::Array<Common::String> sector_names;
-	Common::HashMap<uint32, Common::String> icon_sprites;
-
 	void loadTriggers();
 	Trigger *getTrigger(uint32 id);
 
+	// all objects
+	Common::HashMap<uint32, Object *> objects;
 	Object *getObject(objectID id);
 
+	// sprite filenames
+	Common::Array<Common::String> sprite_filenames;
 	void loadSpriteFilenames();
-	void loadScreenPolys(Common::String filename);
+	Common::String getSpriteFilename(unsigned int id);
 
+	// sector names
+	Common::Array<Common::String> sector_names;
 	void loadSectorNames();
 	Common::String getSectorName(unsigned int x, unsigned int y, unsigned int z);
+
+	// icon sprites
+	Common::HashMap<uint32, Common::String> icon_sprites;
 	void loadIconSprites();
 	Common::String getIconSprite(objectID id);
+
+	// hardcoded bridge data
+	Common::Array<BridgeItem> bridge_items;
+	Common::Array<BridgeObject> bridge_objects;
+	Common::Array<BridgeScreenEntry> bridge_screen_entries;
+	void loadBridgeData();
 };
 
 } // Unity

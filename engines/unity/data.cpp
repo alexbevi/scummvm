@@ -258,5 +258,75 @@ Object *UnityData::getObject(objectID id) {
 	return obj;
 }
 
+Common::String readStringFromOffset(Common::SeekableReadStream *stream, int32 offset) {
+	bool r = stream->seek(offset, SEEK_SET);
+	assert(r);
+
+	Common::String s;
+	byte b;
+	while ((b = stream->readByte()) != 0) {
+		s += (char)b;
+	}
+
+	return s;
+}
+
+void UnityData::loadBridgeData() {
+	// TODO: check md5sum/etc
+	Common::SeekableReadStream *stream = openFile("sttng.ovl");
+
+	int32 offset = DATA_SEGMENT_OFFSET + BRIDGE_ITEM_OFFSET;
+
+	for (unsigned int i = 0; i < NUM_BRIDGE_ITEMS; i++) {
+		bool r = stream->seek(offset, SEEK_SET);
+		assert(r);
+
+		BridgeItem item;
+		uint32 desc_offset = stream->readUint32LE();
+		item.id = readObjectID(stream);
+		item.x = stream->readUint32LE();
+		item.y = stream->readUint32LE();
+		item.width = stream->readUint32LE();
+		item.height = stream->readUint32LE();
+		item.unknown1 = stream->readUint32LE();
+		item.unknown2 = stream->readUint32LE();
+		item.unknown3 = stream->readUint32LE();
+		item.description = readStringFromOffset(stream, DATA_SEGMENT_OFFSET + desc_offset);
+		bridge_items.push_back(item);
+
+		offset += BRIDGE_ITEM_SIZE;
+	}
+
+	for (unsigned int i = 0; i < NUM_BRIDGE_OBJECTS; i++) {
+		bool r = stream->seek(offset, SEEK_SET);
+		assert(r);
+
+		BridgeObject obj;
+		obj.id = readObjectID(stream);
+		uint32 desc_offset = stream->readUint32LE();
+		obj.unknown1 = stream->readUint32LE();
+		obj.unknown2 = stream->readUint32LE();
+		obj.unknown3 = stream->readUint32LE();
+		obj.unknown4 = stream->readUint32LE();
+		obj.filename = readStringFromOffset(stream, DATA_SEGMENT_OFFSET + desc_offset);
+		bridge_objects.push_back(obj);
+
+		offset += BRIDGE_OBJECT_SIZE;
+	}
+
+	for (unsigned int i = 0; i < NUM_BRIDGE_SCREEN_ENTRIES; i++) {
+		bool r = stream->seek(offset, SEEK_SET);
+		assert(r);
+
+		BridgeScreenEntry entry;
+		uint32 desc_offset = stream->readUint32LE();
+		entry.unknown = stream->readUint32LE();
+		entry.text = readStringFromOffset(stream, DATA_SEGMENT_OFFSET + desc_offset);
+		bridge_screen_entries.push_back(entry);
+
+		offset += BRIDGE_SCREEN_ENTRY_SIZE;
+	}
+}
+
 } // Unity
 

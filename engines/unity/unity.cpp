@@ -78,6 +78,12 @@ Common::Error UnityEngine::init() {
 	}*/
 	SearchMan.add("sttngzip", data.data);
 
+	data.instdata = Common::makeZipArchive("STTNGINS.ZIP");
+	if (!data.instdata) {
+		error("couldn't open data file");
+	}
+	SearchMan.add("sttnginszip", data.instdata);
+
 	return Common::kNoError;
 }
 
@@ -601,6 +607,7 @@ Common::Error UnityEngine::run() {
 	data.loadSpriteFilenames();
 	data.loadSectorNames();
 	data.loadIconSprites();
+	data.loadBridgeData();
 
 	startupScreen();
 
