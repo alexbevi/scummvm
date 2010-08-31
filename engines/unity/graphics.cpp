@@ -232,7 +232,11 @@ void Graphics::calculateStringBoundary(unsigned int maxwidth, Common::Array<unsi
 		currx += f.widths[c];
 	}
 
-	height = curry + f.glyphheight;
+	height = curry;
+	if (last_good_x != currx) {
+		height += f.glyphheight;
+	}
+
 	widths.push_back(currx);
 }
 
@@ -258,6 +262,7 @@ void Graphics::drawString(unsigned int x, unsigned int y, unsigned int width, un
 			currx = x;
 			curry += f.glyphheight + FONT_VERT_SPACING;
 		}
+		if (curry + f.glyphheight - y > maxheight) return;
 
 		assert(j + 1 == starts.size() || i < starts[j + 1]);
 

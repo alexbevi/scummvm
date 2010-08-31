@@ -556,6 +556,7 @@ void UnityEngine::drawDialogWindow() {
 	Common::Array<unsigned int> strwidths, starts;
 	unsigned int height;
 	_gfx->calculateStringBoundary(320, strwidths, starts, height, dialog_text, 2);
+	if (height > 160) height = 160;
 	unsigned int width = 0;
 	for (unsigned int i = 0; i < strwidths.size(); i++) {
 		if (strwidths[i] > width)
