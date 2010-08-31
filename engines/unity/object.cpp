@@ -847,10 +847,9 @@ void TextBlock::execute(UnityEngine *_vm, Object *speaker) {
 	if (text.size()) {
 		_vm->dialog_text = text;
 
-		// TODO: this is not good
 		_vm->setSpeaker(speaker->id);
 
-		uint32 entry_id = speaker->id.id; // TODO: work out correct entry for actor
+		uint32 entry_id = speaker->id.id;
 		Common::String file;
 		file = Common::String::printf("%02x%02x%02x%02x.vac",
 			voice_group, entry_id, voice_subgroup, voice_id);
@@ -1025,11 +1024,16 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 		// TODO: this is not good
 		_vm->setSpeaker(objectID(0, 0, 0));
 
-		uint32 entry_id = 0; // TODO: work out correct entry for actor
-		Common::String file;
-		file = Common::String::printf("%02x%02x%02x%02x.vac",
-			voice_group, entry_id, voice_subgroup, voice_id);
-		_vm->_snd->playSpeech(file);
+		// TODO: 0xcc some marks invalid entries, but should we check something else?
+		// (the text is invalid too, but i display it, to make it clear we failed..)
+
+		if (voice_group != 0xcc) {
+			uint32 entry_id = 0; // TODO: work out correct entry for actor
+			Common::String file;
+			file = Common::String::printf("%02x%02x%02x%02x.vac",
+				voice_group, entry_id, voice_subgroup, voice_id);
+			_vm->_snd->playSpeech(file);
+		}
 
 		_vm->runDialog();
 	}
@@ -1037,8 +1041,13 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 	_vm->dialog_choice_responses.clear();
 	_vm->dialog_choice_states.clear();
 
+	Object *targetobj = speaker;
+	if (target.id != 0xff) {
+		targetobj = _vm->data.getObject(target);
+	}
+
 	for (unsigned int i = 0; i < blocks.size(); i++) {
-		blocks[i]->execute(_vm, speaker);
+		blocks[i]->execute(_vm, targetobj);
 	}
 
 	if (_vm->dialog_choice_responses.size()) {
