@@ -138,15 +138,6 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 	delete locstream;
 
-	// TODO: what do we do with all the objects?
-	// for now, we just delete all but the away team
-	for (unsigned int i = 4; i < data.current_screen.objects.size(); i++) {
-		delete data.current_screen.objects[i]->sprite;
-		data.current_screen.objects[i]->sprite = NULL;
-	}
-	// TODO: delete everything, re-copy
-	data.current_screen.objects.resize(4);
-
 	filename = Common::String::printf("w%02x%02xobj.bst", world, screen);
 	locstream = data.openFile(filename);
 
@@ -245,9 +236,11 @@ void UnityEngine::startBridge() {
 }
 
 void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
+	data.current_screen.objects.clear();
+
 	// beam in an away team
 	for (unsigned int i = 0; i < 4; i++) {
-		objectID objid(0, 0, i);
+		objectID objid(i, 0, 0);
 		Object *obj = data.getObject(objid);
 		obj->loadSprite();
 		data.current_screen.objects.push_back(obj);
@@ -380,7 +373,7 @@ void UnityEngine::handleLook(Object *obj) {
 
 // TODO
 unsigned int curr_loc = 4;
-unsigned int curr_screen = 1;
+unsigned int curr_screen = 0;
 unsigned int anim = 26;
 
 void UnityEngine::checkEvents() {
@@ -403,11 +396,26 @@ void UnityEngine::checkEvents() {
 
 			case Common::EVENT_RBUTTONUP:
 				curr_screen++;
-				openLocation(curr_loc, curr_screen);
-				for (unsigned int i = 0; i < 4; i++) {
-					objects[i]->x = data.current_screen.entrypoints[0][i].x;
-					objects[i]->y = data.current_screen.entrypoints[0][i].y;
+				switch (curr_loc) {
+					case 2: if (curr_screen == 2) curr_screen++;
+						else if (curr_screen == 14) curr_screen++;
+						else if (curr_screen == 21) { curr_loc++; curr_screen = 1; }
+						break;
+					case 3:	if (curr_screen == 11) { curr_loc++; curr_screen = 1; }
+						break;
+					case 4: if (curr_screen == 13) { curr_loc++; curr_screen = 1; }
+						break;
+					case 5: if (curr_screen == 11) curr_screen++;
+						else if (curr_screen == 14) { curr_loc++; curr_screen = 1; }
+						break;
+					case 6: if (curr_screen == 16) { curr_loc++; curr_screen = 1; }
+						break;
+					case 7: if (curr_screen == 5) { curr_loc = 2; curr_screen = 1; }
+						break;
+					default:error("huh?");
 				}
+				printf("moving to %d/%d\n", curr_loc, curr_screen);
+				startAwayTeam(curr_loc, curr_screen);
 				break;
 
 			case Common::EVENT_MOUSEMOVE:
