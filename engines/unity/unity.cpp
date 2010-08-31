@@ -18,31 +18,6 @@
 
 namespace Unity {
 
-/**
- * A black and white SCI-style arrow cursor (11x16).
- * 3 = Transparent.
- * 0 = Black (#000000 in 24-bit RGB).
- * 1 = White (#FFFFFF in 24-bit RGB).
- */
-static const byte sciMouseCursor[] = {
-	0,0,3,3,3,3,3,3,3,3,3,
-	0,1,0,3,3,3,3,3,3,3,3,
-	0,1,1,0,3,3,3,3,3,3,3,
-	0,1,1,1,0,3,3,3,3,3,3,
-	0,1,1,1,1,0,3,3,3,3,3,
-	0,1,1,1,1,1,0,3,3,3,3,
-	0,1,1,1,1,1,1,0,3,3,3,
-	0,1,1,1,1,1,1,1,0,3,3,
-	0,1,1,1,1,1,1,1,1,0,3,
-	0,1,1,1,1,1,1,1,1,1,0,
-	0,1,1,1,1,1,0,3,3,3,3,
-	0,1,0,3,0,1,1,0,3,3,3,
-	0,0,3,3,0,1,1,0,3,3,3,
-	3,3,3,3,3,0,1,1,0,3,3,
-	3,3,3,3,3,0,1,1,0,3,3,
-	3,3,3,3,3,3,0,1,1,0,3
-};
-
 UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	in_dialog = false;
 	icon = NULL;
@@ -620,15 +595,7 @@ Common::Error UnityEngine::run() {
 
 	startupScreen();
 
-	// XXX: this mouse cursor is borrowed from SCI
-	CursorMan.replaceCursor(sciMouseCursor, 11, 16, 1, 1, 3);
-	CursorMan.showMouse(true);
-
-	// and we stomp over it anyway, but this only good for some situations :)
-	//_gfx->setCursor(0, false);
-
-	//startAwayTeam(curr_loc, curr_screen);
-	//for (unsigned int i = 0; i < 4; i++) data.current_screen.objects[i]->sprite->startAnim(anim);
+	_gfx->setCursor(0xffffffff, false);
 
 	startBridge();
 

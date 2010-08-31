@@ -6,6 +6,31 @@
 
 namespace Unity {
 
+/**
+ * A black and white SCI-style arrow cursor (11x16).
+ * 3 = Transparent.
+ * 0 = Black (#000000 in 24-bit RGB).
+ * 1 = White (#FFFFFF in 24-bit RGB).
+ */
+static const byte sciMouseCursor[] = {
+	0,0,3,3,3,3,3,3,3,3,3,
+	0,1,0,3,3,3,3,3,3,3,3,
+	0,1,1,0,3,3,3,3,3,3,3,
+	0,1,1,1,0,3,3,3,3,3,3,
+	0,1,1,1,1,0,3,3,3,3,3,
+	0,1,1,1,1,1,0,3,3,3,3,
+	0,1,1,1,1,1,1,0,3,3,3,
+	0,1,1,1,1,1,1,1,0,3,3,
+	0,1,1,1,1,1,1,1,1,0,3,
+	0,1,1,1,1,1,1,1,1,1,0,
+	0,1,1,1,1,1,0,3,3,3,3,
+	0,1,0,3,0,1,1,0,3,3,3,
+	0,0,3,3,0,1,1,0,3,3,3,
+	3,3,3,3,3,0,1,1,0,3,3,
+	3,3,3,3,3,0,1,1,0,3,3,
+	3,3,3,3,3,3,0,1,1,0,3
+};
+
 Graphics::Graphics(UnityEngine *_engine) : _vm(_engine) {
 	basePalette = palette = 0;
 	background.data = 0;
@@ -64,6 +89,13 @@ void Graphics::loadCursors() {
 }
 
 void Graphics::setCursor(unsigned int id, bool wait) {
+	if (id == 0xffffffff) {
+		// XXX: this mouse cursor is borrowed from SCI
+		CursorMan.replaceCursor(sciMouseCursor, 11, 16, 1, 1, 3);
+		CursorMan.showMouse(true);
+		return;
+	}
+
 	Image *img;
 	if (wait) {
 		assert(id < wait_cursors.size());
