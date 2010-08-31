@@ -832,6 +832,7 @@ bool TriggerBlock::check(UnityEngine *_vm) {
 void TriggerBlock::execute(UnityEngine *_vm) {
 	Trigger *trigger = _vm->data.getTrigger(trigger_id);
 
+	printf("triggerBlock: trying to set trigger %x to %d\n", trigger_id, enable_trigger);
 	trigger->enabled = enable_trigger;
 }
 
