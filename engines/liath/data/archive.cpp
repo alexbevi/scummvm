@@ -45,7 +45,7 @@ MultiArchive::MultiArchive(const Common::String &path) {
 	debugC(2, kLiathDebugResource, "Opened archive: %s", path.c_str());
 
 	// Skip signature, compiled file name and other data
-	archive->seek(336);
+	archive->seek(336, SEEK_SET);
 
 	// TODO what is that field for?
 	uint32 arg = archive->readUint32LE();
@@ -53,7 +53,7 @@ MultiArchive::MultiArchive(const Common::String &path) {
 		return;
 
 	// Go to start of file entries
-	archive->seek(4);
+	archive->seek(4, SEEK_CUR);
 
 	do {
 		char name[20];
@@ -62,19 +62,24 @@ MultiArchive::MultiArchive(const Common::String &path) {
 		archive->read(&name, sizeof(char) * 20);
 
 		Common::String filename(name);
-		filename.toLowercase();
+		filename.trim();
 
 		if (filename == "")
 			break;
 
-		archive->seek(12);
+		archive->seek(12, SEEK_CUR);
 		entry.size = archive->readUint32LE();
-		archive->seek(4);
+		archive->seek(4, SEEK_CUR);
 		entry.offset = archive->readUint32LE();
-		archive->seek(12);
+		archive->seek(8, SEEK_CUR);
 
 		// Add to file map
 		_files[filename] = entry;
+
+		if (_files.size() >= 500) {
+			debugC(2, kLiathDebugResource, "ERROR: MultiArchive: read behind the end of file map (%s)!", path.c_str());
+			break;
+		}
 
 		//debugC(9, kLastExpressDebugResource, "File entry: %s (offset:%d - Size: %d - HD: %u)", &name, entry.offset, entry.size, entry.isOnHD);
 	} while (!archive->eos() && !archive->err());

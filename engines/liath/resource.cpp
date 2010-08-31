@@ -96,14 +96,14 @@ Common::SeekableReadStream *ResourceManager::createReadStreamForMember(const Com
 	}
 
 	// Get the archive file from the cache
-	Common::String archiveName = _files[name].archiveName;
+	Common::String file = _files[name].archiveName;
 
 	// FIXME
 	//if (!_archives.contains(archiveName))
 		//_archives[archiveName] = new MultiArchive(archiveName);
 
 	// Load the file from the archive
-	MultiArchive *archive = new MultiArchive(archiveName); //_archives[archiveName];
+	MultiArchive *archive = new MultiArchive(file); //_archives[archiveName];
 	if (!archive->hasFile(name)) {
 		delete archive;
 		return NULL;
@@ -166,7 +166,11 @@ void ResourceManager::readPathFile() {
 			// Extract the name/path pair
 			FilePath path;
 			Common::String filename(t, sep);
+			filename.toLowercase();
+			filename.trim();
+
 			path.folderName = Common::String(sep2 + 1);
+			path.folderName.trim();
 
 			// Convert media type
 			Common::String media(p, sep2);
@@ -202,16 +206,21 @@ void ResourceManager::readMultiData() {
 		char name[20];
 		multigenFile->read(&name, sizeof(name));
 
+		Common::String filename(name);
+		filename.toLowercase();
+		filename.trim();
+
 		// Search for existing FilePath and update archive
-		if (_files.contains(name)) {
+		if (_files.contains(filename)) {
 			// Found an existing file with that name
 			char archive[20];
 			multigenFile->read(&archive, sizeof(archive));
 
 			_files[name].archiveName = Common::String(archive);
+			_files[name].archiveName.trim();
 			_files[name].indicator = multigenFile->readUint16LE();
 
-			//debugC(kLiathDebugResource, "%s - %s", &name, (*path)->toString().c_str());
+			//debugC(kLiathDebugResource, "%s - %s", filename.c_str(), _files[name].archiveName.c_str());
 
 			count++;
 		}
@@ -220,13 +229,6 @@ void ResourceManager::readMultiData() {
 	debugC(2, kLiathDebugResource, "Updated %d file paths with archive name", count);
 
 	delete multigenFile;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Data
-//////////////////////////////////////////////////////////////////////////
-Common::Array<FileData *> *ResourceManager::readData(Common::String name, uint32 index) {
-	error("ResourceManager::readData: Not implemented!");
 }
 
 } // End of namespace Liath

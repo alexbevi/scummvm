@@ -51,9 +51,6 @@ public:
 	void readPathFile();
 	void readMultiData();
 
-	// Read/Write
-	Common::Array<FileData *> *readData(Common::String name, uint32 index);
-
 private:
 	enum MediaType {
 		kMediaCd,
