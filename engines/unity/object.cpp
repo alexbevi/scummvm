@@ -396,10 +396,12 @@ void PathBlock::readFrom(Common::SeekableReadStream *objstream) {
 void GeneralBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x48);
 
-	uint16 unknown6 = objstream->readUint16LE(); // XXX
+	movie_id = objstream->readUint16LE();
+
 	uint16 unknown7 = objstream->readUint16LE(); // XXX
 	uint16 unknown8 = objstream->readUint16LE(); // XXX
 	uint16 unknown9 = objstream->readUint16LE(); // XXX
+	printf("general block: %04x, %04x, %04x\n", unknown7, unknown8, unknown9);
 
 	for (unsigned int i = 0; i < 0x64; i++) {
 		byte zero = objstream->readByte();
@@ -830,6 +832,14 @@ void PathBlock::execute(UnityEngine *_vm) {
 
 void GeneralBlock::execute(UnityEngine *_vm) {
 	warning("unimplemented: GeneralBlock::execute");
+
+	if (movie_id != 0xffff) {
+		assert(_vm->data.movie_filenames.contains(movie_id));
+
+		warning("unimplemented: play movie %d (%s: '%s')", movie_id,
+			_vm->data.movie_filenames[movie_id].c_str(),
+			_vm->data.movie_descriptions[movie_id].c_str());
+	}
 }
 
 void ConversationBlock::execute(UnityEngine *_vm) {

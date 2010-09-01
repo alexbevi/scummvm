@@ -103,6 +103,9 @@ public:
 };
 
 class GeneralBlock : public Entry {
+protected:
+	uint16 movie_id;
+
 public:
 	void readFrom(Common::SeekableReadStream *stream);
 	void execute(UnityEngine *_vm);
