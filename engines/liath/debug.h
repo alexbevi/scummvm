@@ -57,12 +57,15 @@ private:
 	bool cmdHelp(int argc, const char **argv);
 
 	bool cmdListFiles(int argc, const char **argv);
+	bool cmdDumpArchive(int argc, const char **argv);
 
 	bool cmdClear(int argc, const char **argv);
 
 	void resetCommand();
 	void copyCommand(int argc, const char **argv);
 	int getNumber(const char *arg) const;
+
+	void dumpFile(Common::String filename);
 
 	Debuglet *_command;
 	int _numParams;

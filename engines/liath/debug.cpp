@@ -25,11 +25,28 @@
 
 #include "liath/debug.h"
 
+#include "liath/data/archive.h"
+
 #include "liath/liath.h"
 #include "liath/resource.h"
 
 #include "common/debug-channels.h"
 #include "common/events.h"
+#include "common/file.h"
+#include "common/stream.h"
+
+#define DEBUG
+#ifdef DEBUG
+// For mkdir
+#ifdef WIN32
+#include <direct.h>
+#else
+#include <unistd.h>
+#endif
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
 
 namespace Liath {
 
@@ -43,6 +60,7 @@ Debugger::Debugger(LiathEngine *engine) : _engine(engine), _command(NULL), _numP
 
 	// Data
 	DCmd_Register("ls",        WRAP_METHOD(Debugger, cmdListFiles));
+	DCmd_Register("dump",      WRAP_METHOD(Debugger, cmdDumpArchive));
 
 	resetCommand();
 }
@@ -101,7 +119,8 @@ bool Debugger::cmdHelp(int, const char **) {
 	DebugPrintf("\n");
 	DebugPrintf("Commands\n");
 	DebugPrintf("--------\n");
-	DebugPrintf(" ls - list files in the archive\n");
+	DebugPrintf(" ls   - list files in the archive\n");
+	DebugPrintf(" dump - dump the files from an archive\n");
 	DebugPrintf("\n");
 	DebugPrintf(" clear - clear the screen\n");
 	DebugPrintf("\n");
@@ -123,6 +142,90 @@ bool Debugger::cmdListFiles(int argc, const char **argv) {
 	}
 
 	return true;
+}
+
+bool Debugger::cmdDumpArchive(int argc, const char **argv) {
+#ifdef DEBUG
+	if (argc == 2) {
+		Common::String filename(const_cast<char *>(argv[1]));
+
+		if (filename == "*") {
+			Common::ArchiveMemberList list;
+			int count = _engine->getResourceManager()->listMatchingMembers(list, "*.mul");
+
+			DebugPrintf("Dumping %d archives\n", count);
+			for (Common::ArchiveMemberList::iterator it = list.begin(); it != list.end(); ++it)
+				dumpFile((*it)->getName());
+		} else
+			dumpFile(filename);
+	} else {
+		DebugPrintf("Syntax: dump <filename>.mul (use * to dump all archives) \n");
+	}
+	#else
+		DebugPrintf("dump is not supported release mode!\n");
+	#endif
+
+	return true;
+}
+
+void Debugger::dumpFile(Common::String filename) {
+#define CREATE_FOLDER(name) { \
+	folder += name; \
+	int ret = mkdir(folder.c_str()); \
+	if (ret == -1 && errno != EEXIST) { \
+	DebugPrintf("Cannot create folder: %s", folder.c_str()); \
+	return; \
+	} \
+}
+
+	filename.toLowercase();
+	if (!filename.contains(".mul"))
+		filename += ".mul";
+
+	if (!_engine->getResourceManager()->hasFile(filename)) {
+		DebugPrintf("Cannot find file: %s\n", filename.c_str());
+		return;
+	}
+
+	// Load MUL archive
+	MultiArchive *archive = new MultiArchive(filename);
+	Common::ArchiveMemberList list;
+	int count = archive->listMembers(list);
+
+	// Get the current working folder
+	char buffer[512];
+	getcwd((char *)&buffer, 512);
+	Common::String folder(buffer);
+
+	// Create folders for dumping data
+	CREATE_FOLDER("/dumps/");
+	CREATE_FOLDER("/liath/");
+	CREATE_FOLDER(filename.c_str());
+
+	// Dump all members
+	DebugPrintf("Dumping %d files from archive %s\n", count, filename.c_str());
+	for (Common::ArchiveMemberList::iterator it = list.begin(); it != list.end(); ++it) {
+		Common::String name = (*it)->getName();
+		Common::SeekableReadStream *stream = archive->createReadStreamForMember(name);
+
+		byte *data = (byte *)calloc(stream->size(), 1);
+		stream->read(data, stream->size());
+
+		Common::DumpFile out;
+		if (out.open(Common::String("dumps/liath/") + filename + "/" + name)) {
+			out.write(data, stream->size());
+			out.close();
+		}
+
+		free(data);
+
+		delete stream;
+
+		DebugPrintf("  - %s\n", name.c_str());
+	}
+
+	DebugPrintf("\n");
+#undef CREATE_FOLDER
 }
 
 bool Debugger::cmdClear(int argc, const char **) {
