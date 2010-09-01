@@ -803,9 +803,13 @@ void EntryList::readEntry(int type, Common::SeekableReadStream *objstream) {
 
 				if (type == 0x26) {
 					type = readBlockHeader(objstream);
+					// XXX: horrible
+					block->unknown1.list.push_back(new Common::Array<Entry *>());
 					block->unknown1.readEntry(type, objstream);
 				} else if (type == 0x27) {
 					type = readBlockHeader(objstream);
+					// XXX: horrible
+					block->unknown2.list.push_back(new Common::Array<Entry *>());
 					block->unknown2.readEntry(type, objstream);
 				} else
 					error("bad block type %x encountered while parsing choices", type);
