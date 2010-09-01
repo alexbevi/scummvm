@@ -49,9 +49,9 @@ enum {
 
 	BLOCK_CONV_RESPONSE = 0x28,
 	BLOCK_CONV_WHOCANSAY = 0x29,
-	BLOCK_CONV_CHANGEACT_UNKNOWN1 = 0x30,
+	BLOCK_CONV_CHANGEACT_DISABLE = 0x30,
 	BLOCK_CONV_CHANGEACT_SET = 0x31,
-	BLOCK_CONV_CHANGEACT_CHOICE = 0x32,
+	BLOCK_CONV_CHANGEACT_ENABLE = 0x32,
 	BLOCK_CONV_CHANGEACT_UNKNOWN2 = 0x33,
 	BLOCK_CONV_TEXT = 0x34,
 	BLOCK_CONV_RESULT = 0x35,
@@ -928,13 +928,13 @@ void TextBlock::execute(UnityEngine *_vm, Object *speaker) {
 	}
 }
 
-const char *change_actor_names[4] = { "unknown1", "set response", "add choice", "unknown2" };
+const char *change_actor_names[4] = { "disable", "set response", "enable", "unknown2" };
 
-void ChangeActorBlock::readFrom(Common::SeekableReadStream *stream, int _type) {
+void ChangeActionBlock::readFrom(Common::SeekableReadStream *stream, int _type) {
 	uint16 unknown = stream->readUint16LE();
 	assert(unknown == 8);
 
-	assert(_type >= BLOCK_CONV_CHANGEACT_UNKNOWN1 &&
+	assert(_type >= BLOCK_CONV_CHANGEACT_DISABLE &&
 		_type <= BLOCK_CONV_CHANGEACT_UNKNOWN2);
 	type = _type;
 
@@ -947,14 +947,14 @@ void ChangeActorBlock::readFrom(Common::SeekableReadStream *stream, int _type) {
 	assert(unknown6 == 0 || (unknown6 >= 7 && unknown6 <= 12));
 
 	printf("%s: response %d, state %d; unknowns: %x, %x, %x\n",
-		change_actor_names[type - BLOCK_CONV_CHANGEACT_UNKNOWN1],
+		change_actor_names[type - BLOCK_CONV_CHANGEACT_DISABLE],
 		response_id, state_id, unknown4, unknown5, unknown6);
 }
 
-void ChangeActorBlock::execute(UnityEngine *_vm, Object *speaker) {
-	warning("unimplemented: ChangeActorBlock::execute");
+void ChangeActionBlock::execute(UnityEngine *_vm, Object *speaker) {
+	warning("unimplemented: ChangeActionBlock::execute");
 
-	if (type == BLOCK_CONV_CHANGEACT_CHOICE) {
+	if (type == BLOCK_CONV_CHANGEACT_ENABLE) {
 		// TODO: terrible hack
 		_vm->dialog_choice_responses.push_back(response_id);
 		_vm->dialog_choice_states.push_back(state_id);
@@ -1040,12 +1040,12 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 				}
 				break;
 
-			case BLOCK_CONV_CHANGEACT_UNKNOWN1:
-			case BLOCK_CONV_CHANGEACT_CHOICE:
+			case BLOCK_CONV_CHANGEACT_DISABLE:
+			case BLOCK_CONV_CHANGEACT_ENABLE:
 			case BLOCK_CONV_CHANGEACT_UNKNOWN2:
 			case BLOCK_CONV_CHANGEACT_SET:
 				while (true) {
-					ChangeActorBlock *block = new ChangeActorBlock();
+					ChangeActionBlock *block = new ChangeActionBlock();
 					block->readFrom(stream, type);
 					blocks.push_back(block);
 
@@ -1054,7 +1054,7 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 					if (type == BLOCK_END_BLOCK)
 						break;
 					if (type != oldtype)
-						error("bad block type %x encountered while parsing changeactor", type);
+						error("bad block type %x encountered while parsing changeaction", type);
 				}
 				break;
 

@@ -199,7 +199,7 @@ public:
 	void execute(UnityEngine *_vm, Object *speaker);
 };
 
-class ChangeActorBlock : public ResponseBlock {
+class ChangeActionBlock : public ResponseBlock {
 public:
 	int type;
 	uint16 response_id, state_id;
