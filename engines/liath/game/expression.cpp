@@ -53,7 +53,7 @@ OpcodeRet ExpressionManager::expression(OpcodeParameters *parameters) {
 
 	int expr = expression(params->param2, params->param1);
 
-	bool ret = params->field_5 ? (bool)expr : (expr < 1);
+	bool ret = params->test ? (bool)expr : (expr < 1);
 
 	if (!ret)
 		return kOpcodeRetNextOffset;

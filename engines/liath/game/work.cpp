@@ -46,7 +46,7 @@ WorkManager::~WorkManager() {
 OpcodeRet WorkManager::cel(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	return RET(_currentWork->field_76 == params->param1, params->field_5);
+	return RET(_currentWork->field_76 == params->param1, params->test);
 }
 
 OpcodeRet WorkManager::celExt(OpcodeParameters *parameters) {
@@ -98,7 +98,7 @@ OpcodeRet WorkManager::celExt(OpcodeParameters *parameters) {
 	}
 
 	Work *work = getHero()->get(heroIndex)->work;
-	return RET(work && work->field_68 == val && work->field_76 == params->param1, params->field_5);
+	return RET(work && work->field_68 == val && work->field_76 == params->param1, params->test);
 }
 
 OpcodeRet WorkManager::startObj(ObjectIndex object) {

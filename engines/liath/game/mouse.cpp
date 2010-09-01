@@ -102,13 +102,13 @@ OpcodeRet MouseManager::press(OpcodeParameters *parameters) {
 	if (_pressMouse) {
 		if (_pressMouse == (bool)params->param1) {
 			_pressMouse = true;
-			return RET(true, params->field_5);
+			return RET(true, params->test);
 		} else {
-			return RET(false, params->field_5);
+			return RET(false, params->test);
 		}
 	}
 
-	return RET(false, params->field_5);
+	return RET(false, params->test);
 }
 
 OpcodeRet MouseManager::scroll(OpcodeParameters *parameters) {

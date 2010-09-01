@@ -142,7 +142,7 @@ OpcodeRet GameManager::rnd(OpcodeParameters *parameters) {
 
 	uint32 val = (params->param1 ? _engine->getRandom().getRandomNumber(params->param1): 0);
 
-	return getReturnValue(val + 1 == params->param1, params->field_5);
+	return getReturnValue(val + 1 == params->param1, params->test);
 }
 
 OpcodeRet GameManager::global(OpcodeParameters *parameters) {

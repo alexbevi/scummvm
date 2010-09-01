@@ -62,10 +62,10 @@ OpcodeRet ActionManager::start(OpcodeParameters *parameters) {
 	if (params->objectIndex == kParamClearAvi) {
 		_aviFilename = "";
 	} else {
-		_aviFilename = Common::String::printf("%s", &params->field_16);
-		_aviType = params->field_2A;
-		_avsX = params->field_2B;
-		_avsY = params->field_2D;
+		_aviFilename = Common::String::printf("%s", &params->param5);
+		_aviType = params->param13;
+		_avsX = params->param14;
+		_avsY = params->param15;
 	}
 
 	if (*GLOBAL(121) == 131072 || *GLOBAL(121) == 65536)
@@ -87,8 +87,8 @@ OpcodeRet ActionManager::startHeroVariable(OpcodeParameters *parameters) {
 	if (params->objectIndex == kParamClearAvi) {
 		_aviFilename = "";
 	} else {
-		_aviFilename = Common::String::printf("%s", &params->field_16);
-		_aviType = params->field_2A;
+		_aviFilename = Common::String::printf("%s", &params->param5);
+		_aviType = params->param13;
 	}
 
 	_action = (ActionIndex)*getHero()->getData(params->param2, params->param3);
@@ -102,8 +102,8 @@ OpcodeRet ActionManager::startVariable(OpcodeParameters *parameters) {
 	if (params->objectIndex == kParamClearAvi) {
 		_aviFilename = "";
 	} else {
-		_aviFilename = Common::String::printf("%s", &params->field_16);
-		_aviType = params->field_2A;
+		_aviFilename = Common::String::printf("%s", &params->param5);
+		_aviType = params->param13;
 	}
 
 	_action = (ActionIndex)*getHero()->getData(getWork()->getCurrent()->heroIndex, params->param3);
@@ -114,7 +114,7 @@ OpcodeRet ActionManager::startVariable(OpcodeParameters *parameters) {
 OpcodeRet ActionManager::curAction(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	return RET(_previousAction == (ActionIndex)params->param1, params->field_5);
+	return RET(_previousAction == (ActionIndex)params->param1, params->test);
 }
 
 OpcodeRet ActionManager::number(OpcodeParameters *parameters) {

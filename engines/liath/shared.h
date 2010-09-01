@@ -273,7 +273,7 @@ struct GameData {
 struct OpcodeParameters {
 	uint32 objectIndex;
 	byte opcode;
-	byte field_5;
+	byte test;
 } PACKED_STRUCT;
 
 struct OpcodeParametersDBDD : OpcodeParameters {
@@ -289,7 +289,7 @@ struct OpcodeParametersDBDD : OpcodeParameters {
 struct OpcodeParametersDWDD : OpcodeParameters {
 	uint32 param1;
 	int16  param2;
-	int16  param3;
+	//int16  param3;
 } PACKED_STRUCT;
 
 struct OpcodeParametersBDDD : OpcodeParameters {
@@ -298,6 +298,27 @@ struct OpcodeParametersBDDD : OpcodeParameters {
 	uint32 param3;
 	uint32 param4;
 	uint32 param5;
+	uint32 param6;
+	uint32 param7;
+	uint32 param8;
+	uint32 param9;
+	uint32 param10;
+	uint32 param11;
+	uint32 param12;
+	uint32 param13;
+	uint32 param14;
+	uint32 param15;
+	uint32 param16;
+	uint32 param17;
+	uint32 param18;
+	uint32 param19;
+	uint32 param20;
+	uint32 param21;
+	uint32 param22;
+	uint32 param23;
+	uint32 param24;
+	uint32 param25;
+	uint32 param26;
 } PACKED_STRUCT;
 
 struct OpcodeParametersWWWW : OpcodeParameters {
@@ -323,17 +344,17 @@ struct OpcodeParametersDefault : OpcodeParameters {
 	uint32 param2;
 	uint32 param3;
 	uint32 param4;
-	byte   field_16;
-	uint32 field_17;
-	uint32 field_1B;
-	byte   field_1F;
-	uint32 field_20;
-	uint32 field_24;
-	byte   field_28;
-	byte   field_29;
-	byte   field_2A;
-	int16  field_2B;
-	int16  field_2D;
+	byte   param5;
+	uint32 param6;
+	uint32 param7;
+	byte   param8;
+	uint32 param9;
+	uint32 param10;
+	byte   param11;
+	byte   param12;
+	byte   param13;
+	int16  param14;
+	int16  param15;
 } PACKED_STRUCT;
 
 //////////////////////////////////////////////////////////////////////////

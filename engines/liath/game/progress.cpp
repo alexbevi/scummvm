@@ -48,7 +48,7 @@ ProgressManager::~ProgressManager() {
 OpcodeRet ProgressManager::init(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersWWWW);
 
-	debugC(kLiathDebugInterpreter, "  count: %d - data = [%d, 0, %d, %d, %d, 0, %d, %d, %d, 0, 0]",
+	debugC(kLiathDebugInterpreter, "  count: %d - data = [%d, 0, %d, %d, %d, 0, %d, %d, %d, 0, 0]\n",
 		   params->param1, params->param3, params->param5, params->param7, params->param9,
 		   params->param11, params->param13, params->param15);
 

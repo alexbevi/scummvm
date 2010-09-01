@@ -103,37 +103,37 @@ OpcodeRet HeroManager::start(OpcodeParameters *parameters, Work *work, void *unk
 OpcodeRet HeroManager::startExt(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	switch (params->field_16) {
+	switch (params->param5) {
 	default:
 		break;
 
 	case kOriginGlobal:
-		params->param2 = *GLOBAL(params->field_1B);
+		params->param2 = *GLOBAL(params->param7);
 		break;
 
 	case kOriginHero:
-		params->param2 = *getData(params->field_17, params->field_1B);
+		params->param2 = *getData(params->param6, params->param7);
 		break;
 
 	case kOriginHeroWork:
-		params->param2 = *getData(getWork()->getCurrent()->heroIndex, params->field_1B);
+		params->param2 = *getData(getWork()->getCurrent()->heroIndex, params->param7);
 		break;
 	}
 
-	switch (params->field_1F) {
+	switch (params->param8) {
 	default:
 		break;
 
 	case kOriginGlobal:
-		params->param1 = *GLOBAL(params->field_24);
+		params->param1 = *GLOBAL(params->param10);
 		break;
 
 	case kOriginHero:
-		params->param1 = *getData(params->field_20, params->field_24);
+		params->param1 = *getData(params->param9, params->param10);
 		break;
 
 	case kOriginHeroWork:
-		params->param1 = *getData(getWork()->getCurrent()->heroIndex, params->field_24);
+		params->param1 = *getData(getWork()->getCurrent()->heroIndex, params->param10);
 		break;
 	}
 
@@ -313,7 +313,7 @@ OpcodeRet HeroManager::quitVar(OpcodeParameters *parameters) {
 OpcodeRet HeroManager::auto2hero(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	return RET(auto2((OpcodeParameters *)params) == kOpcodeRetNextOffset, params->field_5);
+	return RET(auto2((OpcodeParameters *)params) == kOpcodeRetNextOffset, params->test);
 }
 
 OpcodeRet HeroManager::auto2heroGlobal(OpcodeParameters *parameters) {
@@ -388,7 +388,7 @@ OpcodeRet HeroManager::hearGlobal(OpcodeParameters *parameters) {
 	if (ret != kOpcodeRetNextOffset)
 		ret = kOpcodeRetDefault;
 
-	return (OpcodeRet)(params->field_5 ? ret : -ret);
+	return (OpcodeRet)(params->test ? ret : -ret);
 }
 
 OpcodeRet HeroManager::hearHeroVar(OpcodeParameters *parameters) {
@@ -401,7 +401,7 @@ OpcodeRet HeroManager::hearHeroVar(OpcodeParameters *parameters) {
 	if (ret != kOpcodeRetNextOffset)
 		ret = kOpcodeRetDefault;
 
-	return (OpcodeRet)(params->field_5 ? ret : -ret);
+	return (OpcodeRet)(params->test ? ret : -ret);
 }
 
 OpcodeRet HeroManager::hearVar(OpcodeParameters *parameters) {
@@ -414,7 +414,7 @@ OpcodeRet HeroManager::hearVar(OpcodeParameters *parameters) {
 	if (ret != kOpcodeRetNextOffset)
 		ret = kOpcodeRetDefault;
 
-	return (OpcodeRet)(params->field_5 ? ret : -ret);
+	return (OpcodeRet)(params->test ? ret : -ret);
 }
 
 //////////////////////////////////////////////////////////////////////////
