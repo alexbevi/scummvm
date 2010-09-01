@@ -174,9 +174,9 @@ OpcodeRet WorkManager::cont(OpcodeParameters *parameters) {
 	if (work && work->status == 2) {
 		work->status = 0;
 		work->isObjectIndexSet = work->field_59;
-	} else if (hero->data->field_1C == 2) {
-		hero->data->field_1C = 4;
-		hero->data->field_20 = hero->data->field_24;
+	} else if (hero->object->field_1C == 2) {
+		hero->object->field_1C = 4;
+		hero->object->field_20 = hero->object->field_24;
 	}
 
 	return kOpcodeRetDefault;

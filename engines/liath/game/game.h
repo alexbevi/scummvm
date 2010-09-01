@@ -32,11 +32,15 @@ namespace Liath {
 
 class LiathEngine;
 
+class Interpreter;
+
 class GameManager {
 public:
 
 	GameManager(LiathEngine *engine);
 	~GameManager();
+
+	void playGame(ActionIndex action);
 
 	// Opcodes
 	OpcodeRet rnd(OpcodeParameters *parameters);
@@ -53,6 +57,26 @@ public:
 
 private:
 	LiathEngine* _engine;
+
+	// Interpreter
+	Interpreter *_interpreter;
+
+	// Data
+	uint32 *_gInt;
+	uint32 *_gQuit;
+	uint32 _param;
+	uint32 _gParam;
+	int32 _timer;
+	uint32 _oldTimer;
+	ActionIndex _action;
+	uint32 _countHero;
+	uint32 _countVar;
+
+	// Global area
+	uint32 *_globalVar;
+
+	void load(ActionIndex action, GameData *data);
+	void playAction();
 };
 
 } // End of namespace Liath

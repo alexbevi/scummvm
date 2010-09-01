@@ -25,8 +25,6 @@
 
 #include "liath/liath.h"
 
-#include "liath/play.h"
-
 #include "liath/game/action.h"
 #include "liath/game/array.h"
 #include "liath/game/expression.h"
@@ -55,7 +53,6 @@ namespace Liath {
 
 LiathEngine::LiathEngine(OSystem *syst, const ADGameDescription *gd) :
     Engine(syst), _gameDescription(gd), _debugger(NULL),
-	_play(NULL),
 	_actionMan(NULL), _arrayMan(NULL), _expressionMan(NULL), _gameMan(NULL),
 	_graphicsMan(NULL), _heroMan(NULL), _mouseMan(NULL), _positionMan(NULL),
 	_progressMan(NULL), _resMan(NULL), _saveMan(NULL), _segmentMan(NULL),
@@ -84,8 +81,6 @@ LiathEngine::LiathEngine(OSystem *syst, const ADGameDescription *gd) :
 LiathEngine::~LiathEngine() {
 	// Delete the remaining objects
 	delete _debugger;
-
-	delete _play;
 
 	delete _actionMan;
 	delete _arrayMan;
@@ -120,9 +115,6 @@ Common::Error LiathEngine::run() {
 	// Create debugger. It requires GFX to be initialized
 	_debugger = new Debugger(this);
 
-	// Create game objects
-	_play = new Play(this);
-
 	// Create managers
 	_actionMan     = new ActionManager(this);
 	_arrayMan      = new ArrayManager(this);
@@ -144,7 +136,7 @@ Common::Error LiathEngine::run() {
 	_resMan->readPathFile();
 	_resMan->readMultiData();
 
-	_play->playGame(kActionNone);
+	_gameMan->playGame(kActionNone);
 
 	while (!shouldQuit()) {
 		// Execute stored commands

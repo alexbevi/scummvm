@@ -39,6 +39,8 @@ public:
 	HeroManager(LiathEngine *engine);
 	~HeroManager();
 
+	void loadData(uint32 count, size_t size);
+
 	// Opcodes
 	OpcodeRet start(OpcodeParameters *parameters, Work *work, void *unkown);
 	OpcodeRet startExt(OpcodeParameters *parameters);
@@ -83,13 +85,17 @@ public:
 	uint32 *getData(HeroIndex index, uint32 offset) { return get(index)->getData(offset); }
 
 private:
+	typedef void *HeroStorage;
+	typedef Common::Array<HeroStorage> Heros;
+
 	LiathEngine* _engine;
+
+	// Storage
+	Heros _heros;
 
 	// Current saved hero
 	HeroIndex  _heroIndex;
 	OpcodeParameters _heroParams;
-
-	Common::Array<Hero*> _heros;
 
 	// Opcode helpers
 	OpcodeRet quit(HeroIndex heroIndex);

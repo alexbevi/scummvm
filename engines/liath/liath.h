@@ -50,8 +50,6 @@ namespace Liath {
 
 class Debugger;
 
-class Play;
-
 class ActionManager;
 class ArrayManager;
 class ExpressionManager;
@@ -83,9 +81,6 @@ public:
 	// Misc
 	Common::RandomSource getRandom() const {return _random; }
 
-	// Game
-	Play              *getPlay()            { return _play; }
-
 	// Managers
 	ActionManager     *getActionManager()     const { return _actionMan; }
 	ArrayManager      *getArrayManager()      const { return _arrayMan; }
@@ -110,9 +105,6 @@ private:
 	// Misc
 	Debugger *_debugger;
 	Common::RandomSource _random;
-
-	// Game
-	Play            *_play;
 
 	// Managers
 	ActionManager     *_actionMan;

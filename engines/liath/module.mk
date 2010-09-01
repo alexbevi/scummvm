@@ -20,7 +20,6 @@ MODULE_OBJS := \
 	debug.o \
 	detection.o \
 	liath.o \
-	play.o \
 	resource.o
 
 # This module can be built as a plugin

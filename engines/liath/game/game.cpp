@@ -25,24 +25,118 @@
 
 #include "liath/game/game.h"
 
+#include "liath/game/action.h"
 #include "liath/game/expression.h"
+#include "liath/game/game.h"
+#include "liath/game/graphics.h"
+#include "liath/game/hero.h"
+#include "liath/game/interpreter.h"
+#include "liath/game/segment.h"
+#include "liath/game/sound.h"
 
 #include "liath/helpers.h"
 #include "liath/liath.h"
+#include "liath/resource.h"
 
 namespace Liath {
 
-GameManager::GameManager(LiathEngine *engine) : _engine(engine) {}
+GameManager::GameManager(LiathEngine *engine) : _engine(engine) {
+	_interpreter = new Interpreter(_engine);
+
+	_gInt = NULL;
+	_gQuit = NULL;
+	_param = 0;
+	_gParam = 0;
+	_timer = -1;
+	_oldTimer = 0;
+	_action = kActionNone;
+	_countHero = 0;
+	_countVar = 0;
+
+	// Global var area
+	_globalVar = NULL;
+}
 
 GameManager::~GameManager() {
 	// Zero-out passed pointers
 	_engine = NULL;
+
+	delete _interpreter;
+
+	// Free global vars
+	if (_globalVar)
+		free(_globalVar);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Game playing
+//////////////////////////////////////////////////////////////////////////
+void GameManager::playGame(ActionIndex action) {
+
+	// TODO allocate different data (shadow, make, etc.)
+
+	// Read game segment
+	getSegment()->load(kSegmentGame, 1);
+
+	// Load game data
+	GameData *gameData = (GameData *)getSegment()->getData(kSegmentGame, 2);
+	getGame()->load(action, gameData);
+
+	// Run the interpreter
+	ObjectIndex *pObjectIndex = gameData->objectIndexOffset ? getSegment()->getData(kSegmentGame, gameData->objectIndexOffset) : NULL;
+	_interpreter->interpret(pObjectIndex, getSegment()->get(kSegmentGame));
+
+	while (getAction()->getCurrentAction())
+		playAction();
+
+	// TODO cleanup heros
+
+	// TODO cleanup sound data
+
+	// TODO cleanup palette and text data
+
+	// TODO cleanup other data
+}
+
+void GameManager::playAction() {
+	error("GameManager::playAction: Not implemented!");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Loading
+//////////////////////////////////////////////////////////////////////////
+void GameManager::load(ActionIndex action, GameData *gameData) {
+	// Setup interpreter data & param values
+	_gInt  = gameData->gIntOffset ? getSegment()->getData(kSegmentGame, gameData->gIntOffset) : NULL;
+	_gQuit = gameData->gQuitOffset ? getSegment()->getData(kSegmentGame, gameData->gQuitOffset) : NULL;
+	_param = gameData->gParam + 1;
+	_gParam = gameData->gParam;
+
+	if (_timer == -1)
+		_timer = gameData->timer;
+	_oldTimer = gameData->timer;
+
+	// Setup current action
+	_action = action ? action : (ActionIndex)gameData->action;
+
+	// Setup hero objects & load hero data
+	_countHero = gameData->countHero;
+	_countVar = _param + 14;
+	getHero()->loadData(_countHero, 4 * _countVar);
+
+	// Setup global var area
+	_globalVar = (uint32 *)calloc(4 * _gParam, 1);
+
+	// Load sound data
+	getSound()->loadData();
+
+	// Load palettes
+	getGraphics()->loadData();
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Opcodes
 //////////////////////////////////////////////////////////////////////////
-
 OpcodeRet GameManager::rnd(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 

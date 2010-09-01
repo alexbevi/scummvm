@@ -97,7 +97,7 @@ void SegmentManager::load(SegmentType type, uint32 index) {
 		size_t size = stream->readUint32LE();
 
 		// Allocate memory
-		void *data = malloc(size);
+		void *data = calloc(size, 1);
 		memset(data, 0, size);
 
 		stream->read(data, size);
@@ -120,6 +120,9 @@ void SegmentManager::load(SegmentType type, uint32 index) {
 uint32 *SegmentManager::getData(SegmentType type, uint32 offset) {
 	SegmentDef seg = **getSegmentByType(type);
 	SegmentData *data = seg[1];
+
+	if (data == NULL || data->data == NULL || data->size == NULL)
+		error("SegmentManager::getData: Invalid segment data (type: %d, offset: %d)", type, offset);
 
 	if (offset >= data->size)
 		error("SegmentManager::getData: Invalid offset (was: %d, max: %d)", offset, data->size);

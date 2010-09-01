@@ -29,8 +29,11 @@
 #include "liath/game/expression.h"
 #include "liath/game/work.h"
 
+#include "liath/resource.h"
 #include "liath/helpers.h"
 #include "liath/liath.h"
+
+#include "common/stream.h"
 
 namespace Liath {
 
@@ -39,6 +42,47 @@ HeroManager::HeroManager(LiathEngine *engine) : _engine(engine), _heroIndex(0) {
 HeroManager::~HeroManager() {
 	// Zero-out passed pointers
 	_engine = NULL;
+
+	// Clear hero storage
+	for (Heros::iterator it = _heros.begin(); it != _heros.end(); it++) {
+		if (*it)
+			free(*it);
+
+		*it = NULL;
+	}
+
+	_heros.clear();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Loading
+//////////////////////////////////////////////////////////////////////////
+void HeroManager::loadData(uint32 count, size_t size) {
+	// Open hero data file
+	Common::SeekableReadStream *stream = getResource()->createReadStreamForMember("game0001.dat");
+	if (!stream)
+		error("HeroManager::loadData: Invalid hero data stream!");
+
+	// Go to the hero data
+	stream->seek(stream->size() - 38 * count, SEEK_SET);
+
+	// Setup hero data area
+	for (uint32 i = 0; i <= count + 1; i++) {
+		HeroStorage heroData = calloc(size + 38, 1);
+		memset(heroData, 0, size + 38);
+
+		if (i > 0)
+			stream->read(heroData, 38);
+
+		_heros.push_back(heroData);
+	}
+
+	delete stream;
+
+	// Setup hero objects
+	Hero *lastHero = get(count + 1);
+	for (uint i = 0; i < count + 1; ++i)
+		get(i)->object = (HeroObject *)(lastHero->getData(size * i));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -46,16 +90,15 @@ HeroManager::~HeroManager() {
 //////////////////////////////////////////////////////////////////////////
 
 Hero *HeroManager::get(HeroIndex index) {
-	if (index >= (uint32)_heros.size())
+	if (index >= _heros.size())
 		error("Hero::get: Invalid index (was:%d, max:%d)", index, _heros.size() - 1);
 
-	return _heros[index];
+	return (Hero *)_heros[index];
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Opcodes
 //////////////////////////////////////////////////////////////////////////
-
 OpcodeRet HeroManager::start(OpcodeParameters *parameters, Work *work, void *unkown) {
 	error("HeroManager::start: Not implemented!");
 }

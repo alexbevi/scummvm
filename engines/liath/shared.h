@@ -35,7 +35,6 @@ namespace Liath {
 //////////////////////////////////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////////////////////////////////
-typedef void *FileData;
 typedef uint32 HeroIndex;
 typedef uint32 ObjectIndex;
 
@@ -255,8 +254,24 @@ typedef Common::Array<SegmentData *> SegmentDef;
 typedef Common::Array<SegmentData *> *Segment;
 
 //////////////////////////////////////////////////////////////////////////
+// Game data
+//////////////////////////////////////////////////////////////////////////
+
+struct GameData {
+	uint32 gIntOffset;
+	uint32 gQuitOffset;
+	uint32 objectIndexOffset;
+	uint32 countHero;
+	uint32 param;
+	uint32 gParam;
+	uint32 action;
+	uint32 timer;
+	uint32 paletteOffset;
+};
+//////////////////////////////////////////////////////////////////////////
 // Parameters
 //////////////////////////////////////////////////////////////////////////
+
 struct OpcodeParameters {
 	ObjectIndex objectIndex;
 	Opcode opcode;
@@ -360,7 +375,7 @@ struct Work {
 	uint32 yScroll;
 };
 
-struct HeroData {
+struct HeroObject {
 	uint32 field_0;
 	uint32 field_4;
 	uint32 field_8;
@@ -374,32 +389,21 @@ struct HeroData {
 };
 
 struct Hero {
-	HeroData *data;
+	HeroObject *object;
 	uint32 field_4;
 	uint32 field_8;
-	uint32 *segment;
+	Segment *segment;
 	uint32 field_10;
 	uint32 field_14;
 	uint32 field_18;
+	HeroIndex index;
 	Work *work;
-	uint32 field_20;
-	uint32 field_24;
-
-	Hero() {
-		data = NULL;
-		field_4 = 0;
-		field_8 = 0;
-		segment = NULL;
-		field_10 = 0;
-		field_14 = 0;
-		field_18 = 0;
-		work = NULL;
-		field_20 = 0;
-		field_24 = 0;
-	}
+	uint16 colorRed;
+	uint16 colorGreen;
+	uint16 colorBlue;
 
 	uint32 *getData(uint32 offset) {
-		error("Hero::getData: not implemented!");
+		return (uint32 *)((byte *)this + offset);
 	}
 };
 

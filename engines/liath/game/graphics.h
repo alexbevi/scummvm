@@ -38,6 +38,8 @@ public:
 	GraphicsManager(LiathEngine *engine);
 	~GraphicsManager();
 
+	void loadData();
+
 	// Opcodes
 	OpcodeRet redraw(OpcodeParameters *parameters);
 	OpcodeRet xscroll(OpcodeParameters *parameters);
