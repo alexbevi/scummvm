@@ -591,7 +591,30 @@ void TriggerBlock::readFrom(Common::SeekableReadStream *objstream) {
 void CommunicateBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x4c);
 
-	objstream->seek(0x6d, SEEK_CUR); // XXX
+	target = readObjectID(objstream);
+
+	if (target.id == 0xff) {
+		assert(target.screen == 0xff);
+		assert(target.world == 0xff);
+		assert(target.unused == 0xff);
+
+		// XXX
+		uint16 unknown1 = objstream->readUint16LE();
+		uint16 unknown2 = objstream->readUint16LE();
+		uint16 unknown3 = objstream->readUint16LE();
+		uint16 unknown4 = objstream->readUint16LE();
+		assert(unknown4 == 0);
+	} else {
+		conversation_id = objstream->readUint32LE();
+		response_id = objstream->readUint32LE();
+	}
+
+	for (unsigned int i = 0; i < 24; i++) {
+		uint32 unknown32 = objstream->readUint32LE();
+		assert(unknown32 == 0);
+	}
+	byte unknown = objstream->readByte();
+	assert(unknown == 0);
 }
 
 void ChoiceBlock::readFrom(Common::SeekableReadStream *objstream) {
@@ -1026,6 +1049,18 @@ void TriggerBlock::execute(UnityEngine *_vm) {
 
 void CommunicateBlock::execute(UnityEngine *_vm) {
 	warning("unimplemented: CommunicateBlock::execute");
+
+	if (target.id == 0xff) return; // XXX: TODO
+
+	// TODO: this is meant to appear on the viewscreen, i assume
+	printf("communicate: %d, %d\n", conversation_id, response_id);
+
+	Object *targ = _vm->data.getObject(target);
+
+	// TODO: de-hardcode 0x5f, somehow
+	_vm->current_conversation = _vm->data.getConversation(0x5f, conversation_id);
+	// TODO: wtf is response_id?
+	_vm->current_conversation->execute(_vm, targ, 0);
 }
 
 void ChoiceBlock::execute(UnityEngine *_vm) {

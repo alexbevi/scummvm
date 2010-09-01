@@ -148,6 +148,10 @@ public:
 };
 
 class CommunicateBlock : public Entry {
+protected:
+	objectID target;
+	uint32 conversation_id, response_id;
+
 public:
 	void readFrom(Common::SeekableReadStream *stream);
 	void execute(UnityEngine *_vm);
