@@ -11,6 +11,14 @@ UnityData::~UnityData() {
 		i != objects.end(); i++) {
 		delete i->_value;
 	}
+	for (Common::HashMap<unsigned int, Common::HashMap<unsigned int, Conversation *>*>::iterator i = conversations.begin();
+		i != conversations.end(); i++) {
+		for (Common::HashMap<unsigned int, Conversation *>::iterator j = i->_value->begin();
+			j != i->_value->end(); i++) {
+			delete j->_value;
+		}
+		delete i->_value;
+	}
 }
 
 void UnityData::loadScreenPolys(Common::String filename) {
@@ -373,6 +381,17 @@ void UnityData::loadBridgeData() {
 
 		offset += BRIDGE_SCREEN_ENTRY_SIZE;
 	}
+}
+
+Conversation *UnityData::getConversation(unsigned int world, unsigned int id) {
+	if (!conversations.contains(world)) {
+		conversations[world] = new Common::HashMap<unsigned int, Conversation *>();
+	}
+	if (!conversations[world]->contains(id)) {
+		(*conversations[world])[id] = new Conversation();
+		(*conversations[world])[id]->loadConversation(*this, world, id);
+	}
+	return (*conversations[world])[id];
 }
 
 } // Unity

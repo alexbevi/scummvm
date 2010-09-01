@@ -90,6 +90,9 @@ public:
 	Common::Array<BridgeObject> bridge_objects;
 	Common::Array<BridgeScreenEntry> bridge_screen_entries;
 	void loadBridgeData();
+
+	Common::HashMap<unsigned int, Common::HashMap<unsigned int, Conversation *>*> conversations;
+	Conversation *getConversation(unsigned int world, unsigned int id);
 };
 
 } // Unity

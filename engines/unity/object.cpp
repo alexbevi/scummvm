@@ -81,6 +81,12 @@ enum {
 	OBJWALKTYPE_AS = 0x3 // action square
 };
 
+enum {
+	RESPONSE_ENABLED = 0x2,
+	RESPONSE_DISABLED = 0x3,
+	RESPONSE_UNKNOWN1 = 0x4
+};
+
 // TODO: these are 'sanity checks' for verifying global state
 bool g_debug_loading_object = false;
 objectID g_debug_object_id;
@@ -423,11 +429,10 @@ void ConversationBlock::readFrom(Common::SeekableReadStream *objstream) {
 	response_id = objstream->readUint16LE();
 	state_id = objstream->readUint16LE();
 
-	// this probably indicates what to change?
 	action_id = objstream->readUint16LE();
-	assert(action_id == 2 || action_id == 3 || action_id == 4); // XXX: what are these?
+	assert(action_id == RESPONSE_ENABLED || action_id == RESPONSE_DISABLED ||
+		action_id == RESPONSE_UNKNOWN1);
 
-	// padding
 	for (unsigned int i = 0; i < 0x63; i++) {
 		byte zero = objstream->readByte();
 		assert(zero == 0);
@@ -743,19 +748,16 @@ void Object::runHail(const Common::String &hail) {
 		error("failed to parse hail (no @?) '%s'", hail.c_str());
 	}
 
-	int conversation, response, state = 0;
+	int conversation, response;
 	if (sscanf(hail.begin() + (immediate ? 2 : 1), "%d,%d",
 		&conversation, &response) != 2) {
 		// TODO: handle further parameters (@%d,%d,%d)
 		error("failed to parse hail '%s'", hail.c_str());
 	}
 
-	// TODO: keep these in data
-	Conversation conv;
 	// TODO: de-hardcode 0x5f, somehow
-	conv.loadConversation(_vm->data, 0x5f, conversation);
-	_vm->current_conversation = conv;
-	_vm->current_conversation.execute(_vm, this, response, state);
+	_vm->current_conversation = _vm->data.getConversation(0x5f, conversation);
+	_vm->current_conversation->execute(_vm, this, response);
 }
 
 EntryList::~EntryList() {
@@ -954,6 +956,9 @@ void ChangeActionBlock::readFrom(Common::SeekableReadStream *stream, int _type) 
 void ChangeActionBlock::execute(UnityEngine *_vm, Object *speaker) {
 	warning("unimplemented: ChangeActionBlock::execute");
 
+	Response *resp = _vm->current_conversation->getResponse(response_id, state_id);
+	resp->response_state = type;
+
 	if (type == BLOCK_CONV_CHANGEACT_ENABLE) {
 		// TODO: terrible hack
 		_vm->dialog_choice_responses.push_back(response_id);
@@ -982,12 +987,34 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	buf[255] = 0;
 	text = buf;
 
-	unsigned char buffer[0x1d + 0xa];
-	stream->read(buffer, 0x1d); // XXX
+	response_state = stream->readByte();
+	assert(response_state == RESPONSE_ENABLED || response_state == RESPONSE_DISABLED ||
+		response_state == RESPONSE_UNKNOWN1);
+
+	uint16 unknown1 = stream->readUint16LE();
+	uint16 unknown2 = stream->readUint16LE();
+	//printf("(%04x, %04x), ", unknown1, unknown2);
+	assert(unknown2 == 0 || (unknown2 >= 7 && unknown2 <= 11) || unknown2 == 0xffff);
+
+	unknown1 = stream->readUint16LE();
+	//printf("(%04x), ", unknown1);
+
+	next_situation = stream->readUint16LE();
+
+	for (unsigned int i = 0; i < 5; i++) {
+		uint16 unknown1 = stream->readUint16LE();
+		uint16 unknown2 = stream->readUint16LE();
+		//printf("(%04x, %04x), ", unknown1, unknown2);
+		assert(unknown2 == 0 || (unknown2 >= 7 && unknown2 <= 11) || unknown2 == 0xffff);
+	}
 
 	target = readObjectID(stream);
 
-	stream->read(buffer + 0x1d, 0xa); // XXX
+	uint16 unknown3 = stream->readUint16LE();
+	uint16 unknown4 = stream->readUint16LE();
+	uint16 unknown5 = stream->readUint16LE();
+	uint16 unknown6 = stream->readUint16LE();
+	uint16 unknown7 = stream->readUint16LE();
 
 	voice_id = stream->readUint32LE();
 	voice_group = stream->readUint32LE();
@@ -1126,9 +1153,25 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 		if (_vm->dialog_choice_responses.size() > 1) {
 			_vm->runDialogChoice();
 		} else {
-			_vm->current_conversation.execute(_vm, speaker, _vm->dialog_choice_responses[0], _vm->dialog_choice_states[0]);
+			_vm->current_conversation->execute(_vm, speaker, _vm->dialog_choice_responses[0], _vm->dialog_choice_states[0]);
+		}
+	} else {
+		if (next_situation != 0xffff) {
+			_vm->current_conversation->execute(_vm, speaker, next_situation);
 		}
 	}
+}
+
+Response *Conversation::getEnabledResponse(unsigned int response) {
+	for (unsigned int i = 0; i < responses.size(); i++) {
+		if (responses[i]->id == response) {
+			if (responses[i]->response_state == RESPONSE_ENABLED) {
+				return responses[i];
+			}
+		}
+	}
+
+	error("couldn't find active response %d\n", response);
 }
 
 Response *Conversation::getResponse(unsigned int response, unsigned int state) {
@@ -1140,7 +1183,11 @@ Response *Conversation::getResponse(unsigned int response, unsigned int state) {
 		}
 	}
 
-	error("couldn't find response %d\n", response);
+	error("couldn't find response %d/%d\n", response, state);
+}
+
+void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response) {
+	getEnabledResponse(response)->execute(_vm, speaker);
 }
 
 void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state) {

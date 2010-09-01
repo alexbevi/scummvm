@@ -231,6 +231,9 @@ public:
 	uint16 id, state;
 	Common::Array<ResponseBlock *> blocks;
 
+	byte response_state;
+
+	uint16 next_situation;
 	objectID target;
 
 	Common::String text;
@@ -247,6 +250,8 @@ public:
 
 	void loadConversation(UnityData &data, unsigned int world, unsigned int id);
 	Response *getResponse(unsigned int response, unsigned int state);
+	Response *getEnabledResponse(unsigned int response);
+	void execute(UnityEngine *_vm, Object *speaker, unsigned int response);
 	void execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state);
 };
 

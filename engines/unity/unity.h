@@ -35,8 +35,9 @@ public:
 
 	bool in_dialog;
 	Common::String dialog_text;
-	Conversation current_conversation;
 	void setSpeaker(objectID s);
+
+	Conversation *current_conversation;
 
 	// TODO: horrible hack
 	Common::Array<unsigned int> dialog_choice_responses;
