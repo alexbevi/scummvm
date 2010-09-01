@@ -51,7 +51,7 @@ public:
 class EntryList {
 public:
 	~EntryList();
-	Common::Array<Entry *> entries;
+	Common::Array<Common::Array<Entry *>*> list;
 
 	void readEntryList(Common::SeekableReadStream *objstream);
 	void readEntry(int type, Common::SeekableReadStream *objstream);

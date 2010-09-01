@@ -274,6 +274,9 @@ void EntryList::readEntryList(Common::SeekableReadStream *objstream) {
 		// this seems to be offsets etc, unimportant?
 		objstream->seek(0xac, SEEK_CUR);
 
+		// XXX: horrible
+		list.push_back(new Common::Array<Entry *>());
+
 		while (true) {
 			type = readBlockHeader(objstream);
 
@@ -556,6 +559,9 @@ void ChoiceBlock::readFrom(Common::SeekableReadStream *objstream) {
 
 void EntryList::readEntry(int type, Common::SeekableReadStream *objstream) {
 	uint16 header;
+
+	// XXX: horrible
+	Common::Array<Entry *> &entries = *list[list.size() -1 ];
 
 	switch (type) {
 		case BLOCK_CONDITION:
@@ -840,17 +846,27 @@ void Object::runHail(const Common::String &hail) {
 }
 
 EntryList::~EntryList() {
-	for (unsigned int i = 0; i < entries.size(); i++) {
-		delete entries[i];
+	for (unsigned int i = 0; i < list.size(); i++) {
+		for (unsigned int j = 0; j < list[i]->size(); j++) {
+			delete (*list[i])[j];
+		}
+		delete list[i];
 	}
 }
 
 void EntryList::execute(UnityEngine *_vm) {
-	for (unsigned int i = 0; i < entries.size(); i++) {
-		if (!entries[i]->check(_vm)) return;
-	}
-	for (unsigned int i = 0; i < entries.size(); i++) {
-		entries[i]->execute(_vm);
+	for (unsigned int i = 0; i < list.size(); i++) {
+		bool run = true;
+		for (unsigned int j = 0; j < list[i]->size(); j++) {
+			if (!(*list[i])[j]->check(_vm)) {
+				run = false;
+				break;
+			}
+		}
+		if (!run) continue;
+		for (unsigned int j = 0; j < list[i]->size(); j++) {
+			(*list[i])[j]->execute(_vm);
+		}
 	}
 }
 
