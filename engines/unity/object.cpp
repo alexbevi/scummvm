@@ -81,6 +81,11 @@ enum {
 	OBJWALKTYPE_AS = 0x3 // action square
 };
 
+// TODO: these are 'sanity checks' for verifying global state
+bool g_debug_loading_object = false;
+objectID g_debug_object_id;
+unsigned int g_debug_conv_response, g_debug_conv_state;
+
 Common::String Object::identify() {
 	return Common::String::printf("%s (%02x%02x%02x)", name.c_str(), id.world, id.screen, id.id);
 }
@@ -187,7 +192,10 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 
 	int blockType;
 	while ((blockType = readBlockHeader(objstream)) != -1) {
+		g_debug_object_id = id;
+		g_debug_loading_object = true;
 		readBlock(blockType, objstream);
+		g_debug_loading_object = false;
 	}
 
 	assert(descriptions.size() == description_count);
@@ -271,31 +279,54 @@ void EntryList::readEntryList(Common::SeekableReadStream *objstream) {
 	}
 }
 
+void Entry::readHeaderFrom(Common::SeekableReadStream *stream, byte header_type) {
+	// in objects: this is the object id
+	// in states: 'id' is the state id, the rest are zero?
+	internal_obj.id = stream->readByte();
+	internal_obj.screen = stream->readByte();
+	internal_obj.world = stream->readByte();
+	if (g_debug_loading_object) {
+		assert(internal_obj.id == g_debug_object_id.id);
+		assert(internal_obj.screen == g_debug_object_id.screen);
+		assert(internal_obj.world == g_debug_object_id.world);
+	} else {
+		assert(internal_obj.id == g_debug_conv_state);
+		assert(internal_obj.screen == 0);
+		assert(internal_obj.world == 0);
+	}
+
+	// counters for offset within parent blocks (inner/outer)
+	counter1 = stream->readByte();
+	counter2 = stream->readByte();
+	counter3 = stream->readByte();
+	counter4 = stream->readByte();
+
+	// misc header stuff
+	byte h_type = stream->readByte();
+	assert(h_type == header_type);
+
+	// not sure, but see usage in TriggerBlock
+	unknown_flag = stream->readByte();
+	assert(unknown_flag == 0 || unknown_flag == 1 || unknown_flag == 0xff);
+
+	// the state/response of this conversation block?, or 0xffff in an object
+	response_counter = stream->readUint16LE();
+	state_counter = stream->readUint16LE();
+	if (g_debug_loading_object) {
+		assert(response_counter == 0xffff);
+		assert(state_counter == 0xffff);
+	} else {
+		assert(response_counter == g_debug_conv_response);
+		assert(state_counter == g_debug_conv_state);
+	}
+}
+
 void ConditionBlock::readFrom(Common::SeekableReadStream *objstream) {
 	objstream->seek(0xd8, SEEK_CUR); // XXX
 }
 
 void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(3, SEEK_CUR); // XXX: object id
-
-	uint16 unknown16;
-	uint32 unknown32;
-
-	// counters for offset within parent blocks (inner/outer)
-	byte counter1 = objstream->readByte();
-	byte counter2 = objstream->readByte();
-	byte counter3 = objstream->readByte();
-	byte counter4 = objstream->readByte();
-	(void)counter1; (void)counter2; (void)counter3; (void)counter4;
-
-	byte unknown1 = objstream->readByte();
-	byte unknown2 = objstream->readByte();
-
-	unknown32 = objstream->readUint32LE();
-	// TODO: probably individual bytes?
-	(void)unknown32;
-	// always 0xffffffff inside objects..
-	//assert(unknown32 == 0xffffffff);
+	readHeaderFrom(objstream, 0x43);
 
 	target = readObjectID(objstream);
 
@@ -304,7 +335,7 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 
 	uint16 unknown3 = objstream->readUint16LE();
 
-	unknown16 = objstream->readUint16LE();
+	uint16 unknown16 = objstream->readUint16LE();
 	assert(unknown16 == 0xffff);
 
 	uint16 unknown4 = objstream->readUint16LE();
@@ -321,7 +352,7 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 	(void)unknown16;
 	//assert(unknown16 == 0xffff);
 
-	unknown32 = objstream->readUint32LE();
+	uint32 unknown32 = objstream->readUint32LE();
 	// TODO: probably individual bytes or two uint16s?
 	(void)unknown32;
 	// always 0xffffffff inside objects..
@@ -339,23 +370,41 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 }
 
 void ReactionBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0x85, SEEK_CUR); // XXX
+	readHeaderFrom(objstream, 0x44);
+
+	objstream->seek(0x78, SEEK_CUR); // XXX
 }
 
 void CommandBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0x82, SEEK_CUR); // XXX
+	readHeaderFrom(objstream, 0x45);
+
+	objstream->seek(0x75, SEEK_CUR); // XXX
 }
 
 void ScreenBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0x8e, SEEK_CUR); // XXX
+	readHeaderFrom(objstream, 0x46);
+
+	objstream->seek(0x81, SEEK_CUR); // XXX
 }
 
 void PathBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0x179, SEEK_CUR); // XXX
+	readHeaderFrom(objstream, 0x47);
+
+	objstream->seek(0x16c, SEEK_CUR); // XXX
 }
 
 void GeneralBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0x79, SEEK_CUR); // XXX
+	readHeaderFrom(objstream, 0x48);
+
+	uint16 unknown6 = objstream->readUint16LE(); // XXX
+	uint16 unknown7 = objstream->readUint16LE(); // XXX
+	uint16 unknown8 = objstream->readUint16LE(); // XXX
+	uint16 unknown9 = objstream->readUint16LE(); // XXX
+
+	for (unsigned int i = 0; i < 0x64; i++) {
+		byte zero = objstream->readByte();
+		assert(zero == 0);
+	}
 }
 
 bool valid_screen_id(uint16 screen_id) {
@@ -363,35 +412,20 @@ bool valid_screen_id(uint16 screen_id) {
 }
 
 void ConversationBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(3, SEEK_CUR); // XXX: object id
+	readHeaderFrom(objstream, 0x49);
 
-	// counters for offset within parent blocks (inner/outer)
-	byte counter1 = objstream->readByte();
-	byte counter2 = objstream->readByte();
-	byte counter3 = objstream->readByte();
-	byte counter4 = objstream->readByte();
-	(void)counter1; (void)counter2; (void)counter3; (void)counter4;
-
-	byte unknown4 = objstream->readByte();
-	assert(unknown4 == 0x49);
-	byte unknown5 = objstream->readByte();
-	assert(unknown5 == 0 || unknown5 == 1);
-
-	uint32 unknown6 = objstream->readUint32LE();
-	// TODO: probably individual bytes?
-	(void)unknown6;
-	// always 0xffffffff inside objects..
-	//assert(unknown6 == 0xffffffff);
-
+	// the details of the conversation to modify?
 	screen_id = objstream->readUint16LE();
 	assert(screen_id == 0xffff || valid_screen_id(screen_id));
 	conversation_id = objstream->readUint16LE();
 	response_id = objstream->readUint16LE();
 	state_id = objstream->readUint16LE();
 
+	// this probably indicates what to change?
 	action_id = objstream->readUint16LE();
 	assert(action_id == 2 || action_id == 3 || action_id == 4); // XXX: what are these?
 
+	// padding
 	for (unsigned int i = 0; i < 0x63; i++) {
 		byte zero = objstream->readByte();
 		assert(zero == 0);
@@ -399,51 +433,39 @@ void ConversationBlock::readFrom(Common::SeekableReadStream *objstream) {
 }
 
 void BeamBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0x9d, SEEK_CUR); // XXX
+	readHeaderFrom(objstream, 0x4a);
+
+	objstream->seek(0x90, SEEK_CUR); // XXX
 }
 
 void TriggerBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(3, SEEK_CUR); // XXX: object id
+	readHeaderFrom(objstream, 0x4b);
 
-	byte unknown, flag;
-	uint32 unknown32;
-
-	unknown = objstream->readByte();
-	assert(unknown == 0);
-
-	byte unknown1 = objstream->readByte(); // XXX
-	byte unknown2 = objstream->readByte(); // XXX
-	byte unknown3 = objstream->readByte(); // XXX
-	unknown = objstream->readByte();
-	assert(unknown == 0x4b);
-
-	flag = objstream->readByte();
-	assert(flag == 0 || flag == 1);
-	instant_disable = (flag == 1);
-
-	unknown32 = objstream->readUint32LE();
-	// TODO: probably individual bytes?
-	(void)unknown32;
-	// always 0xffffffff inside objects..
-	//assert(unknown32 == 0xffffffff);
+	// TODO: is this really some kind of 'priority'?
+	assert(unknown_flag == 0 || unknown_flag == 1);
+	instant_disable = (unknown_flag == 1);
 
 	trigger_id = objstream->readUint32LE();
 
-	flag = objstream->readByte();
+	byte flag = objstream->readByte();
 	enable_trigger = (flag == 1);
 
 	for (unsigned int i = 0; i < 25; i++) {
-		unknown32 = objstream->readUint32LE();
+		uint32 unknown32 = objstream->readUint32LE();
 		assert(unknown32 == 0);
 	}
 }
 
 void CommunicateBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0x7a, SEEK_CUR); // XXX
+	readHeaderFrom(objstream, 0x4c);
+
+	objstream->seek(0x6d, SEEK_CUR); // XXX
 }
 
 void ChoiceBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0x109, SEEK_CUR); // XXX
+	readHeaderFrom(objstream, 0x4d);
+
+	objstream->seek(0xfc, SEEK_CUR); // XXX
 }
 
 void EntryList::readEntry(int type, Common::SeekableReadStream *objstream) {
@@ -941,6 +963,9 @@ void ResultBlock::execute(UnityEngine *_vm, Object *speaker) {
 void Response::readFrom(Common::SeekableReadStream *stream) {
 	id = stream->readUint16LE();
 	state = stream->readUint16LE();
+
+	g_debug_conv_state = state;
+	g_debug_conv_response = id;
 
 	char buf[256];
 	stream->read(buf, 255);

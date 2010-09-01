@@ -34,6 +34,14 @@ struct Description {
 int readBlockHeader(Common::SeekableReadStream *objstream);
 
 class Entry {
+protected:
+	objectID internal_obj;
+	byte counter1, counter2, counter3, counter4;
+	uint16 state_counter, response_counter;
+	byte unknown_flag;
+
+	void readHeaderFrom(Common::SeekableReadStream *stream, byte header_type);
+
 public:
 	virtual bool check(UnityEngine *_vm) { return true; }
 	virtual void execute(UnityEngine *_vm) = 0;
