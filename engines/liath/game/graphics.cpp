@@ -53,7 +53,7 @@ void GraphicsManager::loadData() {
 OpcodeRet GraphicsManager::redraw(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	if (!params->param1 && _hMemBackgroundExt || params->param1)
+	if ((!params->param1 && _hMemBackgroundExt) || params->param1)
 		drawBMP(params->param1);
 
 	return kOpcodeRetDefault;

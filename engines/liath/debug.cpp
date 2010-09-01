@@ -38,14 +38,20 @@
 #define DEBUG
 #ifdef DEBUG
 // For mkdir
+
 #ifdef WIN32
 #include <direct.h>
+#include <sys/stat.h>
+#define my_mkdir(folder, mode) mkdir(folder)
 #else
 #include <unistd.h>
+#define my_mkdir(folder, mode) mkdir(folder, mode)
 #endif
+
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
 #endif
 
 namespace Liath {
@@ -161,9 +167,10 @@ bool Debugger::cmdDumpArchive(int argc, const char **argv) {
 	} else {
 		DebugPrintf("Syntax: dump <filename>.mul (use * to dump all archives) \n");
 	}
-	#else
-		DebugPrintf("dump is not supported release mode!\n");
-	#endif
+
+#else
+	DebugPrintf("dump is not supported release mode!\n");
+#endif
 
 	return true;
 }
@@ -171,7 +178,7 @@ bool Debugger::cmdDumpArchive(int argc, const char **argv) {
 void Debugger::dumpFile(Common::String filename) {
 #define CREATE_FOLDER(name) { \
 	folder += name; \
-	int ret = mkdir(folder.c_str()); \
+	int ret = my_mkdir(folder.c_str(), 600); \
 	if (ret == -1 && errno != EEXIST) { \
 	DebugPrintf("Cannot create folder: %s", folder.c_str()); \
 	return; \

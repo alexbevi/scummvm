@@ -66,7 +66,7 @@ private:
 		kOperationInferiorOrEqual = 23,
 		kOperationSuperiorOrEqual = 24,
 		kOperationDifferent = 25,
-		kOperationInvert = 26,
+		kOperationInvert = 26
 	};
 
 	struct Expression {

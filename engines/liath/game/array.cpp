@@ -71,10 +71,10 @@ OpcodeRet ArrayManager::init(OpcodeParameters *parameters) {
 	array->dataCount = count;
 	array->field_22 = 0;
 
-	array->field_2[0]  = DSI2INT(EXPR(params->param4,  params->param5));
-	array->field_2[1]  = DSI2INT(EXPR(params->param6,  params->param7));
-	array->field_2[2]  = DSI2INT(EXPR(params->param8,  params->param9));
-	array->field_2[3]  = DSI2INT(EXPR(params->param10, params->param11));
+	array->field_2[0] = DSI2INT(EXPR(params->param4,  params->param5));
+	array->field_2[1] = DSI2INT(EXPR(params->param6,  params->param7));
+	array->field_2[2] = DSI2INT(EXPR(params->param8,  params->param9));
+	array->field_2[3] = DSI2INT(EXPR(params->param10, params->param11));
 	array->field_2[4] = DSI2INT(EXPR(params->param12, params->param13));
 	array->field_2[5] = DSI2INT(EXPR(params->param14, params->param15));
 
@@ -96,7 +96,7 @@ OpcodeRet ArrayManager::img(OpcodeParameters *parameters) {
 	// Compute array index
 	int32 index = getGame()->getValue((ParamOrigin)params->param1, params->param2, params->param3) - 1;
 
-	debugC(kLiathDebugInterpreter, "  index: %d - value(origin: %d, heroIndex: %d, offset: %d, value: %d)\n", index, params->param1, params->param2, params->param3);
+	debugC(kLiathDebugInterpreter, "  index: %d - value(origin: %d, heroIndex: %d, offset: %d)\n", index, params->param1, params->param2, params->param3);
 
 	if (index < 0 || index >= 10)
 		return kOpcodeRetNext;

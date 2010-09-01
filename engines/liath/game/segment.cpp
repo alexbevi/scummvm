@@ -121,11 +121,11 @@ uint32 *SegmentManager::getData(SegmentType type, uint32 offset) {
 	SegmentDef seg = **getSegmentByType(type);
 	SegmentData *data = seg[1];
 
-	if (data == NULL || data->data == NULL || data->size == NULL)
+	if (data == NULL || data->data == NULL || data->size == 0)
 		error("SegmentManager::getData: Invalid segment data (type: %d, offset: %d)", type, offset);
 
 	if (offset >= data->size)
-		error("SegmentManager::getData: Invalid offset (was: %d, max: %d)", offset, data->size);
+		error("SegmentManager::getData: Invalid offset (was: %d, max: %d)", offset, (uint32)data->size);
 
 	return (uint32 *)((byte *)data->data + offset);
 }
