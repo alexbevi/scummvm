@@ -80,6 +80,11 @@ public:
 	void loadIconSprites();
 	Common::String getIconSprite(objectID id);
 
+	// movie info
+	Common::HashMap<unsigned int, Common::String> movie_filenames;
+	Common::HashMap<unsigned int, Common::String> movie_descriptions;
+	void loadMovieInfo();
+
 	// hardcoded bridge data
 	Common::Array<BridgeItem> bridge_items;
 	Common::Array<BridgeObject> bridge_objects;

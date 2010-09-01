@@ -686,6 +686,7 @@ Common::Error UnityEngine::run() {
 	data.loadSectorNames();
 	data.loadIconSprites();
 	data.loadBridgeData();
+	data.loadMovieInfo();
 
 	startupScreen();
 

@@ -247,6 +247,53 @@ Common::String UnityData::getIconSprite(objectID id) {
 	return icon_sprites[identifier];
 }
 
+void UnityData::loadMovieInfo() {
+	Common::SeekableReadStream *stream = openFile("movie.map");
+
+	while (!stream->eos() && !stream->err()) {
+		Common::String line = stream->readLine();
+
+		Common::String id;
+		Common::String filename;
+		Common::String str;
+		for (unsigned int i = 0; i < line.size(); i++) {
+			if (line[i] == '#') {
+				break;
+			} else if (line[i] == ' ' && !str.size()) {
+				// swallow spaces
+			} else if (line[i] == ' ' && !id.size()) {
+				id = str;
+				str.clear();
+			} else if (line[i] == ' ' && !filename.size()) {
+				filename = str;
+				str.clear();
+			} else {
+				str += line[i];
+			}
+		}
+		id.trim();
+		if (!id.size()) continue; // commented-out or blank line
+
+		assert(filename.size());
+
+		char *parseEnd;
+		uint32 identifier = strtol(id.c_str(), &parseEnd, 10);
+		if (*parseEnd != 0) {
+			error("failed to parse '%s' from movie.map", line.c_str());
+			continue;
+		}
+
+		if (movie_filenames.contains(identifier)) {
+			error("there are multiple movie.map entries for %d", identifier);
+		}
+
+		movie_filenames[identifier] = filename;
+		movie_descriptions[identifier] = str;
+	}
+
+	delete stream;
+}
+
 Object *UnityData::getObject(objectID id) {
 	uint32 identifier = id.id + (id.screen << 8) + (id.world << 16);
 	if (objects.contains(identifier)) {
