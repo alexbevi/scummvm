@@ -33,6 +33,7 @@
 #include "liath/game/interpreter.h"
 #include "liath/game/segment.h"
 #include "liath/game/sound.h"
+#include "liath/game/work.h"
 
 #include "liath/helpers.h"
 #include "liath/liath.h"
@@ -49,7 +50,6 @@ GameManager::GameManager(LiathEngine *engine) : _engine(engine) {
 	_gParam = 0;
 	_timer = -1;
 	_oldTimer = 0;
-	_action = kActionNone;
 	_countHero = 0;
 	_countVar = 0;
 
@@ -117,7 +117,7 @@ void GameManager::load(ActionIndex action, GameData *gameData) {
 	_oldTimer = gameData->timer;
 
 	// Setup current action
-	_action = action ? action : (ActionIndex)gameData->action;
+	getAction()->setCurrentAction(action ? action : (ActionIndex)gameData->action);
 
 	// Setup hero objects & load hero data
 	_countHero = gameData->countHero;
@@ -156,16 +156,61 @@ OpcodeRet GameManager::global(OpcodeParameters *parameters) {
 }
 
 OpcodeRet GameManager::key(OpcodeParameters *parameters) {
-	error("Play::key: Not implemented!");
+	error("GameManager::key: Not implemented!");
 }
 
 OpcodeRet GameManager::bkey(OpcodeParameters *parameters) {
-	error("Play::bkey: Not implemented!");
+	error("GameManager::bkey: Not implemented!");
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Helper Functions
 //////////////////////////////////////////////////////////////////////////
+void GameManager::letValue(ParamOrigin type, HeroIndex index, uint32 offset, uint32 val) {
+	switch (type) {
+	default:
+		break;
+
+	case kOriginGlobal:
+		*GLOBAL(offset) = val;
+		break;
+
+	case kOriginHero:
+		if (getHero()->get(index))
+			*getHero()->getData(index, offset) = val;
+		break;
+
+	case kOriginHeroWork:
+		if (getHero()->get(getWork()->getCurrent()->heroIndex))
+			*getHero()->getData(getWork()->getCurrent()->heroIndex, offset) = val;
+		break;
+	}
+}
+
+int32 GameManager::getValue(ParamOrigin type, HeroIndex index, uint32 offset) {
+	switch (type) {
+	default:
+		return 0;
+
+	case kOriginGlobal:
+		return *GLOBAL(offset);
+
+	case kOriginHero:
+		if (getHero()->get(index))
+			return *getHero()->getData(index, offset);
+		else
+			return 0;
+
+	case kOriginHeroWork:
+		if (getHero()->get(getWork()->getCurrent()->heroIndex))
+			return *getHero()->getData(getWork()->getCurrent()->heroIndex, offset);
+		else
+			return 0;
+
+	case kOriginParam:
+		return index;
+	}
+}
 
 int32 *GameManager::getGlobal(uint32 offset) {
 	return (int32 *)((byte *)_globalVar + offset);
@@ -173,9 +218,9 @@ int32 *GameManager::getGlobal(uint32 offset) {
 
 OpcodeRet GameManager::getReturnValue(int val, bool testValue) {
 	if (val)
-		return (testValue ? kOpcodeRetDefault : kOpcodeRetNextOffset);
+		return (testValue ? kOpcodeRetDefault : kOpcodeRetNext);
 	else
-		return (testValue ? kOpcodeRetNextOffset : kOpcodeRetDefault);
+		return (testValue ? kOpcodeRetNext : kOpcodeRetDefault);
 }
 
 } // End of namespace Liath

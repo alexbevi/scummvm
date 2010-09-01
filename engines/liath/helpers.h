@@ -66,7 +66,7 @@
 #define INT2DSI(val) ((val) << 16)
 #define CEL2SCR(val) (uint16)HIWORD(val)
 #define SCR2CEL(val) ((uint32)val << 16 ) | 0
-#define DSCR2CEL(val) (uint64)(val * 65536.0)
+#define DSCR2CEL(val) (float)(val * 65536.0)
 
 //////////////////////////////////////////////////////////////////////////
 // Cleanup

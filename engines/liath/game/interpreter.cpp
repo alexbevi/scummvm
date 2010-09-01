@@ -319,7 +319,7 @@ int Interpreter::interpret(ObjectIndex *pObjectIndex, Segment segment) {
 						goto update_index;
 					break;
 
-				case kOpcodeRetNextOffset:
+				case kOpcodeRetNext:
 					if (pObjectIndex[2])
 						pObjectIndex = pObjectIndex[2] ? (ObjectIndex *)getSegment()->getData(kSegmentExpression, pObjectIndex[2]) : NULL;
 					else

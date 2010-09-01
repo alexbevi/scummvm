@@ -103,7 +103,7 @@ OpcodeRet WorkManager::celExt(OpcodeParameters *parameters) {
 
 OpcodeRet WorkManager::startObj(ObjectIndex object) {
 	if (_currentWork->isObjectIndexSet)
-		return kOpcodeRetNextOffset;
+		return kOpcodeRetNext;
 
 	_currentWork->isObjectIndexSet = true;
 	_currentWork->objectIndex = object;

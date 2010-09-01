@@ -50,7 +50,7 @@ public:
 
 	// Functions
 	void letValue(ParamOrigin type, HeroIndex index, uint32 offset, uint32 val);
-	uint32 getValue(ParamOrigin type, HeroIndex index, uint32 offset);
+	int32 getValue(ParamOrigin type, HeroIndex index, uint32 offset);
 
 	int32 *getGlobal(uint32 offset);
 	OpcodeRet getReturnValue(int val, bool testValue);
@@ -68,7 +68,6 @@ private:
 	uint32 _gParam;
 	int32 _timer;
 	uint32 _oldTimer;
-	ActionIndex _action;
 	uint32 _countHero;
 	uint32 _countVar;
 

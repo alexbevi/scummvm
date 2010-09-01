@@ -55,7 +55,10 @@ public:
 private:
 	LiathEngine* _engine;
 
-	Array *emptyNumberArray();
+	// Array storage
+	Array _data[10];
+
+	Array *getFirstEmptyArray();
 };
 
 } // End of namespace Liath

@@ -64,7 +64,7 @@ enum ParamOrigin {
 };
 
 enum OpcodeRet {
-	kOpcodeRetNextOffset   = -1,
+	kOpcodeRetNext         = -1,
 	kOpcodeRetExit         = 0,
 	kOpcodeRetDefault      = 1,
 	kOpcodeRetExitSuccess  = 2,
@@ -289,7 +289,6 @@ struct OpcodeParametersDBDD : OpcodeParameters {
 struct OpcodeParametersDWDD : OpcodeParameters {
 	uint32 param1;
 	int16  param2;
-	//int16  param3;
 } PACKED_STRUCT;
 
 struct OpcodeParametersBDDD : OpcodeParameters {
@@ -319,6 +318,31 @@ struct OpcodeParametersBDDD : OpcodeParameters {
 	uint32 param24;
 	uint32 param25;
 	uint32 param26;
+} PACKED_STRUCT;
+
+struct OpcodeParametersBDDD2 : OpcodeParameters {
+	byte   param1;
+	uint32 param2;
+	uint32 param3;
+	uint32 param4;
+	uint32 param5;
+	uint32 param6;
+	uint32 param7;
+	int16  param8;
+	uint32 param9;
+	uint32 param10;
+	uint32 param11;
+	uint32 param12;
+	uint32 param13;
+	uint32 param14;
+	uint32 param15;
+	uint32 param16;
+	uint32 param17;
+	uint32 param18;
+	uint32 param19;
+	uint32 param20;
+	uint32 param21;
+	uint32 param22;
 } PACKED_STRUCT;
 
 struct OpcodeParametersWWWW : OpcodeParameters {
@@ -475,10 +499,6 @@ struct MouseBox {
 	//Segment *segment;
 } PACKED_STRUCT;
 
-struct Array {
-
-} PACKED_STRUCT;
-
 struct Progress {
 	byte field_0;
 	byte field_1;
@@ -492,6 +512,38 @@ struct Progress {
 		field_2 = 2;
 		field_3 = 3;
 		field_4 = 4;
+	}
+} PACKED_STRUCT;
+
+//////////////////////////////////////////////////////////////////////////
+// Array
+//////////////////////////////////////////////////////////////////////////
+
+struct ArrayData {
+	byte data[28];
+};
+
+// Array entry (102 bytes)
+struct Array {
+	uint16 field_0;
+	uint32 field_2[6];
+	uint32 field_1A;
+	uint32 dataCount;
+	uint32 field_22;
+	uint32 field_26;
+	byte field_2A[16];
+	uint32 field_3A; // boolean
+	byte field_3E[12];
+	uint32 unused;
+	uint32 *imgData;
+	uint32 imgSize;
+	uint32 field_56;
+	uint32 field_5A;
+	uint32 field_5E;
+	ArrayData *data;
+
+	uint32 *getData(uint32 offset) {
+		return (uint32 *)((byte *)this + offset);
 	}
 } PACKED_STRUCT;
 
