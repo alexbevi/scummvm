@@ -1022,7 +1022,12 @@ void GeneralBlock::execute(UnityEngine *_vm) {
 }
 
 void ConversationBlock::execute(UnityEngine *_vm) {
-	warning("unimplemented: ConversationBlock::execute");
+	warning("unimplemented: ConversationBlock::execute: screen %02x, @%d,%d,%d: action %d",
+		screen_id, conversation_id, response_id, state_id, action_id);
+
+	Conversation *conv = _vm->data.getConversation(screen_id, conversation_id);
+	Response *resp = conv->getResponse(response_id, state_id);
+	resp->response_state = action_id;
 }
 
 void BeamBlock::execute(UnityEngine *_vm) {
