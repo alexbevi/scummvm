@@ -75,9 +75,13 @@ public:
 class AlterBlock : public Entry {
 protected:
 	objectID target;
-	byte alter_flags, alter_reset;
+	byte alter_flags, alter_reset, alter_state;
 	uint16 x_pos, y_pos;
 	Common::String alter_name, alter_hail;
+
+	uint32 voice_id;
+	uint32 voice_group;
+	uint16 voice_subgroup;
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);

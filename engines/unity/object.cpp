@@ -431,14 +431,15 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 	uint16 unknown16 = objstream->readUint16LE();
 	assert(unknown16 == 0xffff);
 
-	uint16 unknown4 = objstream->readUint16LE();
+	byte unknown4 = objstream->readByte();
 	byte unknown5 = objstream->readByte();
-	byte unknown6 = objstream->readByte();
+	alter_state = objstream->readByte(); // set state..
+	byte unknown7 = objstream->readByte();
 
 	x_pos = objstream->readUint16LE();
 	y_pos = objstream->readUint16LE();
 
-	uint16 unknown7 = objstream->readUint16LE();
+	uint16 unknown8 = objstream->readUint16LE();
 
 	unknown16 = objstream->readUint16LE();
 	// always 0xffff inside objects..
@@ -459,7 +460,49 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 	text[100] = 0;
 	alter_hail = text;
 
-	objstream->seek(0x64, SEEK_CUR); // XXX
+	unknown32 = objstream->readUint32LE();
+	assert(unknown32 == 0xffffffff);
+
+	voice_id = objstream->readUint32LE();
+	voice_group = objstream->readUint32LE();
+	voice_subgroup = objstream->readUint16LE();
+
+	byte unknown11 = objstream->readByte();
+	byte unknown12 = objstream->readByte();
+
+	/*printf("AlterBlock: on %02x%02x%02x (flags %02x, %02x), %04x, %02x, %02x, %02x, %02x ",
+		target.world, target.screen, target.id, alter_flags, alter_reset,
+		unknown3, unknown4, unknown5, alter_state, unknown7);
+	if (alter_name.size()) {
+		printf("name to '%s', ", alter_name.c_str());
+	}
+	if (alter_hail.size()) {
+		printf("hail to '%s', ", alter_hail.c_str());
+	}
+	if (x_pos != 0xffff) {
+		printf("loc (%04x, %04x) ", x_pos, y_pos);
+	}
+	printf("%04x, ", unknown8);
+	if (voice_group == 0xcc) printf("disable voice, ");
+	else if (voice_group != 0xffffffff) printf("voice to %x/%x/%x, ", voice_group, voice_subgroup, voice_id);
+	printf("%02x, %02x\n", unknown11, unknown12);*/
+
+	/*assert(voice_group == 0xcc || // disable voice
+		(voice_group == 0xffffffff && voice_subgroup == 0xffff) || // no change
+		(voice_group != 0xffffffff && voice_subgroup != 0xffff));*/ // change voice
+	// the voice_subgroup is not always changed..
+	assert(voice_group != 0xffffffff || voice_subgroup == 0xffff);
+	// .. neither is the voice_id
+	assert(voice_group != 0xffffffff || voice_id == 0xffffffff);
+
+	assert(unknown11 == 0xff || unknown11 == 0 || unknown11 == 1 || unknown11 == 2 || unknown11 == 3);
+	assert(unknown12 == 0xff || unknown12 == 0 || unknown12 == 1);
+
+	// zeros
+	for (unsigned int i = 0; i < 21; i++) {
+		unknown32 = objstream->readUint32LE();
+		assert(unknown32 == 0);
+	}
 }
 
 void ReactionBlock::readFrom(Common::SeekableReadStream *objstream) {
@@ -904,6 +947,21 @@ void AlterBlock::execute(UnityEngine *_vm) {
 	if (alter_hail.size()) {
 		did_something = true;
 		obj->setHail(alter_hail);
+	}
+
+	if (voice_group != 0xffffffff) {
+		did_something = true;
+		// TODO
+		warning("unimplemented: AlterBlock::execute (%s): voice %x/%x", obj->name.c_str(), voice_group, voice_subgroup);
+		if (voice_id != 0xffffffff) {
+			// also TODO :)
+		}
+	}
+
+	if (alter_state != 0xff) {
+		did_something = true;
+		// TODO
+		warning("unimplemented: AlterBlock::execute (%s): state %x", obj->name.c_str(), alter_state);
 	}
 
 	if (!did_something) {
