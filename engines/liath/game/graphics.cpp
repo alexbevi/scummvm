@@ -53,8 +53,8 @@ void GraphicsManager::loadData() {
 OpcodeRet GraphicsManager::redraw(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	if (!params->param && _hMemBackgroundExt || params->param)
-		drawBMP(params->param);
+	if (!params->param1 && _hMemBackgroundExt || params->param1)
+		drawBMP(params->param1);
 
 	return kOpcodeRetDefault;
 }
@@ -62,7 +62,7 @@ OpcodeRet GraphicsManager::redraw(OpcodeParameters *parameters) {
 OpcodeRet GraphicsManager::xscroll(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	getWork()->getCurrent()->xScroll += DSI2INT(EXPR(params->param, params->param2));
+	getWork()->getCurrent()->xScroll += DSI2INT(EXPR(params->param1, params->param2));
 
 	return kOpcodeRetDefault;
 }
@@ -70,7 +70,7 @@ OpcodeRet GraphicsManager::xscroll(OpcodeParameters *parameters) {
 OpcodeRet GraphicsManager::yscroll(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	getWork()->getCurrent()->yScroll += DSI2INT(EXPR(params->param, params->param2));
+	getWork()->getCurrent()->yScroll += DSI2INT(EXPR(params->param1, params->param2));
 
 	return kOpcodeRetDefault;
 }

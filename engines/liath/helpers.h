@@ -30,6 +30,8 @@
 // Misc helpers
 //////////////////////////////////////////////////////////////////////////
 
+#define SAFE_DELETE(_p) { if(_p) { delete (_p); (_p) = NULL; } }
+
 //#define LOBYTE(b)           ((b) & 0xFF)
 //#define HIBYTE(b)           (((b) >> 8) & 0xFF)
 #define LOWORD(l)           ((l) & 0xffff)

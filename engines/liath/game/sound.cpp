@@ -78,7 +78,7 @@ OpcodeRet SoundManager::stopMidi() {
 OpcodeRet SoundManager::volume(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDWDD);
 
-	setLevel((SoundManager::SoundType)params->param, 140 * params->param2 - 15);
+	setLevel((SoundManager::SoundType)params->param1, 140 * params->param2 - 15);
 
 	return kOpcodeRetDefault;
 }

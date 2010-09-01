@@ -64,7 +64,7 @@ OpcodeRet MouseManager::commandNumberBox(OpcodeParameters *parameters) {
 
 	int32 result = numberBox(params->param4, params->param5);
 
-	switch (params->param) {
+	switch (params->param1) {
 	default:
 		break;
 
@@ -100,7 +100,7 @@ OpcodeRet MouseManager::press(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
 	if (_pressMouse) {
-		if (_pressMouse == (bool)params->param) {
+		if (_pressMouse == (bool)params->param1) {
 			_pressMouse = true;
 			return RET(true, params->field_5);
 		} else {

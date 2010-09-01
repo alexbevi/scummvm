@@ -45,6 +45,250 @@
 
 namespace Liath {
 
+const char *g_opcodes[] = {
+	"None",
+	"1",
+	"Key",
+	"MyRandom",
+	"4",
+	"5",                         // 5
+	"6",
+	"7",
+	"8",
+	"9",
+	"10",                        // 10
+	"11",
+	"12",
+	"13",
+	"14",
+	"15",                        // 15
+	"16",
+	"HeroVar",
+	"HeroSys",
+	"Var",
+	"Sys",                       // 20
+	"Global",
+	"Expression",
+	"Cel",
+	"CelExt",
+	"25",                        // 25
+	"26",
+	"27",
+	"28",
+	"29",
+	"Look",                      // 30
+	"Pers",
+	"Dist",
+	"PassVar",
+	"ExitGame",
+	"ExitHero",                  // 35
+	"36",
+	"37",
+	"38",
+	"39",
+	"40",                        // 40
+	"41",
+	"42",
+	"43",
+	"CurAction",
+	"StartAction",               // 45
+	"StartActionGlobal",
+	"StartActionHeroVar",
+	"StartActionVar",
+	"StartObject",
+	"StartObject2",              // 50
+	"StartObject3",
+	"StartObject4",
+	"StartHero",
+	"StartHeroExt",
+	"ResetHero",                 // 55
+	"56",
+	"57",
+	"58",
+	"59",
+	"60",                        // 60
+	"61",
+	"62",
+	"63",
+	"64",
+	"65",                        // 65
+	"66",
+	"67",
+	"68",
+	"69",
+	"70",                        // 70
+	"71",
+	"72",
+	"73",
+	"74",
+	"75",                        // 75
+	"76",
+	"77",
+	"78",
+	"79",
+	"80",                        // 80
+	"81",
+	"82",
+	"Unfreeze",
+	"Unfreeze2",
+	"UnfreezeGlobal",
+	"UnfreezeHeroVar",           // 85
+	"UnfreezeVar",
+	"Freeze",
+	"Freeze2",
+	"FreezeGlobal",
+	"FreezeHeroVar",             // 90
+	"FreezeVar",
+	"Stop",
+	"Stop2",
+	"StopGlobal",
+	"StopHeroVar",              // 95
+	"StopVar",
+	"Continue",
+	"Continue2",
+	"ContinueGlobal",
+	"ContinueHeroVar",           // 100
+	"ContinueVar",
+	"102",
+	"103",
+	"104",
+	"105",                        // 105
+	"106",
+	"107",
+	"108",
+	"109",
+	"110",                        // 110
+	"111",
+	"112",
+	"113",
+	"114",
+	"115",                        // 115
+	"116",
+	"117",
+	"118",
+	"119",
+	"120",                        // 120
+	"121",
+	"122",
+	"123",
+	"124",
+	"125",                        // 125
+	"126",
+	"127",
+	"128",
+	"129",
+	"130",                        // 130
+	"131",
+	"132",
+	"133",
+	"134",
+	"135",                        // 135
+	"QuitHero",
+	"QuitGlobal",
+	"QuitHeroVar",
+	"QuitVar",
+	"HeroVarGlobal",             // 140
+	"HeroVarHeroVar",
+	"HeroVarVar",
+	"PlayWave",
+	"PlayMidi",
+	"PlayMidiLoop",              // 145
+	"StopMidi",
+	"AutoStart",
+	"AutoStop",
+	"149",
+	"150",                       // 150
+	"Auto2Hero",
+	"152",
+	"Auto2HeroGlobal",
+	"Auto2HeroHeroVar",
+	"Auto2HeroVar",              // 155
+	"Barrier",
+	"157",
+	"158",
+	"HearGlobal",
+	"HearHeroVar",
+	"HearVar",                   // 160
+	"161",
+	"Face2Hero",
+	"Face2HeroGlobal",
+	"Face2HeroHeroVar",
+	"Face2HeroVar",              // 165
+	"HPers",
+	"Feel",
+	"Barrier2",
+	"Barrier3",
+	"170",                       // 170
+	"171",
+	"SaveTop",
+	"EndTop",
+	"GlassIncrement",
+	"GlassDecrement",            // 175
+	"TypeMouse",
+	"KeyMouse",
+	"Bkey",
+	"AutoCheck",
+	"Barrier4",                  // 180
+	"AddMouseBox",
+	"PushMouse",
+	"PopMouse",
+	"Redraw",
+	"PushHerous",                // 185
+	"PopHerous",
+	"HTime",
+	"PlayAvsStopMusic",
+	"DelMouseBox",
+	"PlayMusic",                 // 190
+	"StopMusic",
+	"CommandNumberBox",
+	"Cash",
+	"194",
+	"SaveGame",                  // 195
+	"LoadGame",
+	"TextOut",
+	"TextQuit",
+	"TextExit",
+	"TextChange",                // 200
+	"PlayAvs",
+	"SaveHero",
+	"LoadHero",
+	"NumberAct",
+	"TextCheck",                 // 205
+	"ArrayInit",
+	"ArrayAdd",
+	"ArrayDel",
+	"ArrayKill",
+	"ArrayClear",                // 210
+	"ArrayGet",
+	"ArraySize",
+	"ArrayTGet",
+	"ArrayCur",
+	"ArraySetCur",               // 215
+	"ArrayGetScroll",
+	"HDark",
+	"ArrayImg",
+	"CheckLimits",
+	"XScroll",                   // 220
+	"YScroll",
+	"CheckMouse",
+	"MousePress",
+	"SetBg",
+	"SetHeroRGB",                // 225
+	"ArrayGetNumber",
+	"ResetMouse",
+	"MouseScroll",
+	"VolMusic",
+	"GStopMusic",                // 230
+	"PlayMusicEffects",
+	"ProgressInit ",
+	"ProgressSet",
+	"ProgressGet",
+	"ProgressHelp",              // 235
+	"Restart"
+};
+
+#define OPCODE_NAME(opcode) (opcode > 237 ? Common::String::printf("%d", opcode).c_str() : g_opcodes[opcode])
+
 Interpreter::Interpreter(LiathEngine *engine) : _engine(engine) {}
 
 Interpreter::~Interpreter() {
@@ -106,6 +350,8 @@ update_index:
 }
 
 OpcodeRet Interpreter::run(OpcodeParameters *parameters, ObjectIndex index) {
+	debugC(kLiathDebugInterpreter, "Executing opcode: %s (%02d)", OPCODE_NAME(parameters->opcode), parameters->opcode);
+
 	switch (parameters->opcode) {
 	default:
 		return kOpcodeRetDefault;

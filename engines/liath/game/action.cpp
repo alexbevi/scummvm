@@ -57,7 +57,7 @@ OpcodeRet ActionManager::exitGame(OpcodeParameters *parameters) {
 OpcodeRet ActionManager::start(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	_action = (ActionIndex)params->param;
+	_action = (ActionIndex)params->param1;
 
 	if (params->objectIndex == kParamClearAvi) {
 		_aviFilename = "";
@@ -114,13 +114,13 @@ OpcodeRet ActionManager::startVariable(OpcodeParameters *parameters) {
 OpcodeRet ActionManager::curAction(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	return RET(_previousAction == (ActionIndex)params->param, params->field_5);
+	return RET(_previousAction == (ActionIndex)params->param1, params->field_5);
 }
 
 OpcodeRet ActionManager::number(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersBDDD);
 
-	switch (params->param) {
+	switch (params->param1) {
 	default:
 		break;
 

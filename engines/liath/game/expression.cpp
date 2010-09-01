@@ -49,7 +49,9 @@ ExpressionManager::~ExpressionManager() {
 OpcodeRet ExpressionManager::expression(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	int expr = expression(params->param2, params->param);
+	debugC(kLiathDebugInterpreter, "  Expression: %d - Count: %d\n", params->param2, params->param1);
+
+	int expr = expression(params->param2, params->param1);
 
 	bool ret = params->field_5 ? (bool)expr : (expr < 1);
 

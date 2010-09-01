@@ -225,9 +225,7 @@ enum Opcode {
 	kOpcodeProgressSet          = 233,
 	kOpcodeProgressGet          = 234,
 	kOpcodeProgressHelp         = 235,
-	kOpcodeRestart              = 236,
-
-	kOpcodeInvalid
+	kOpcodeRestart              = 236
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -253,10 +251,10 @@ struct SegmentData {
 typedef Common::Array<SegmentData *> SegmentDef;
 typedef Common::Array<SegmentData *> *Segment;
 
+#include "common/pack-start.h"
 //////////////////////////////////////////////////////////////////////////
 // Game data
 //////////////////////////////////////////////////////////////////////////
-
 struct GameData {
 	uint32 gIntOffset;
 	uint32 gQuitOffset;
@@ -267,43 +265,43 @@ struct GameData {
 	uint32 action;
 	uint32 timer;
 	uint32 paletteOffset;
-};
+} PACKED_STRUCT;
+
 //////////////////////////////////////////////////////////////////////////
 // Parameters
 //////////////////////////////////////////////////////////////////////////
-
 struct OpcodeParameters {
-	ObjectIndex objectIndex;
-	Opcode opcode;
+	uint32 objectIndex;
+	byte opcode;
 	byte field_5;
-};
+} PACKED_STRUCT;
 
 struct OpcodeParametersDBDD : OpcodeParameters {
-	uint32 param;
+	uint32 param1;
 	byte   param2;
 	uint32 param3;
 	uint32 param4;
 	byte   param5;
 	uint32 param6;
 	uint32 param7;
-};
+} PACKED_STRUCT;
 
 struct OpcodeParametersDWDD : OpcodeParameters {
-	uint32 param;
+	uint32 param1;
 	int16  param2;
 	int16  param3;
-};
+} PACKED_STRUCT;
 
 struct OpcodeParametersBDDD : OpcodeParameters {
-	byte   param;
+	byte   param1;
 	uint32 param2;
 	uint32 param3;
 	uint32 param4;
 	uint32 param5;
-};
+} PACKED_STRUCT;
 
 struct OpcodeParametersDefault : OpcodeParameters {
-	uint32 param;
+	uint32 param1;
 	uint32 param2;
 	uint32 param3;
 	uint32 param4;
@@ -318,7 +316,7 @@ struct OpcodeParametersDefault : OpcodeParameters {
 	byte   field_2A;
 	int16  field_2B;
 	int16  field_2D;
-};
+} PACKED_STRUCT;
 
 //////////////////////////////////////////////////////////////////////////
 // Structures
@@ -330,7 +328,7 @@ struct Object {
 
 	uint16 field_41;
 	uint16 field_43;
-};
+} PACKED_STRUCT;
 
 struct Work {
 	// Work *next;
@@ -373,7 +371,7 @@ struct Work {
 
 	uint32 xScroll;
 	uint32 yScroll;
-};
+} PACKED_STRUCT;
 
 struct HeroObject {
 	uint32 field_0;
@@ -386,7 +384,7 @@ struct HeroObject {
 	uint32 field_1C;
 	uint32 field_20;
 	uint32 field_24;
-};
+} PACKED_STRUCT;
 
 struct Hero {
 	HeroObject *object;
@@ -403,9 +401,9 @@ struct Hero {
 	uint16 colorBlue;
 
 	uint32 *getData(uint32 offset) {
-		return (uint32 *)((byte *)this + offset);
+		return (uint32 *)((byte *)object + offset);
 	}
-};
+} PACKED_STRUCT;
 
 struct MouseBox {
 	uint32 field_0;
@@ -436,11 +434,13 @@ struct MouseBox {
 	uint32 field_62;
 	uint32 field_66;
 	//Segment *segment;
-};
+} PACKED_STRUCT;
 
 struct Array {
 
-};
+} PACKED_STRUCT;
+
+#include "common/pack-end.h"
 
 } // End of namespace Liath
 

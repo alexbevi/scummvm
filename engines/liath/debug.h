@@ -31,13 +31,14 @@
 namespace Liath {
 
 enum {
-	kLiathDebugAll      = 1 << 0,
-	kLiathDebugGraphics = 1 << 1,
-	kLiathDebugResource = 1 << 2,
-	kLiathDebugSound    = 1 << 3,
-	kLiathDebugSavegame = 1 << 4,
-	kLiathDebugLogic    = 1 << 5,
-	kLiathDebugUnknown  = 1 << 6
+	kLiathDebugAll         = 1 << 0,
+	kLiathDebugGraphics    = 1 << 1,
+	kLiathDebugResource    = 1 << 2,
+	kLiathDebugSound       = 1 << 3,
+	kLiathDebugSavegame    = 1 << 4,
+	kLiathDebugLogic       = 1 << 5,
+	kLiathDebugInterpreter = 1 << 6,
+	kLiathDebugUnknown     = 1 << 7
 	// the current limitation is 32 debug levels (1 << 31 is the last one)
 };
 

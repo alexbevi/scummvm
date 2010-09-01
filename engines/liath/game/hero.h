@@ -85,13 +85,11 @@ public:
 	uint32 *getData(HeroIndex index, uint32 offset) { return get(index)->getData(offset); }
 
 private:
-	typedef void *HeroStorage;
-	typedef Common::Array<HeroStorage> Heros;
-
 	LiathEngine* _engine;
 
 	// Storage
-	Heros _heros;
+	Common::Array<Hero *> _heros;
+	void *_storage;
 
 	// Current saved hero
 	HeroIndex  _heroIndex;
