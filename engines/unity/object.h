@@ -60,6 +60,12 @@ public:
 };
 
 class ConditionBlock : public Entry {
+protected:
+	objectID target[2];
+
+	objectID condition[5];
+	byte state_check[5];
+
 public:
 	void readFrom(Common::SeekableReadStream *stream);
 	bool check(UnityEngine *_vm);

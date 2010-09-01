@@ -327,8 +327,92 @@ void Entry::readHeaderFrom(Common::SeekableReadStream *stream, byte header_type)
 	}
 }
 
+bool valid_world_id(uint16 world_id) {
+	return world_id == 0x5f || world_id == 0x10 || world_id == 0 || (world_id >= 2 && world_id <= 7);
+}
+
 void ConditionBlock::readFrom(Common::SeekableReadStream *objstream) {
-	objstream->seek(0xd8, SEEK_CUR); // XXX
+	readHeaderFrom(objstream, 0xff);
+
+	target[0] = readObjectID(objstream);
+	assert(target[0].world == 0xff || valid_world_id(target[0].world));
+	target[1] = readObjectID(objstream);
+	assert(target[1].world == 0xff || valid_world_id(target[1].world));
+
+	if (target[0].world != 0xff)
+		printf("targ 0: %02x%02x%02x\n", target[0].world, target[0].screen, target[0].id);
+	if (target[1].world != 0xff)
+		printf("targ 1: %02x%02x%02x\n", target[1].world, target[1].screen, target[1].id);
+
+	for (unsigned int i = 0; i < 5; i++) {
+		condition[i] = readObjectID(objstream);
+		assert(condition[i].world == 0xff || valid_world_id(condition[i].world));
+
+		printf("cond %d: ", i);
+		if (condition[i].world != 0xff)
+			printf("%02x%02x%02x ", condition[i].world, condition[i].screen, condition[i].id);
+
+		uint16 unknown1 = objstream->readUint16LE();
+		uint16 unknown2 = objstream->readUint16LE();
+		uint16 unknown3 = objstream->readUint16LE();
+		uint16 unknown4 = objstream->readUint16LE();
+		uint16 unknown5 = objstream->readUint16LE();
+		uint16 unknown6 = objstream->readUint16LE();
+		byte unknown7 = objstream->readByte();
+		byte unknown8 = objstream->readByte();
+		state_check[i] = objstream->readByte();
+
+		if (unknown1 != 0xffff) printf("unknown1: %04x ", unknown1);
+		if (unknown2 != 0xffff) printf("unknown2: %04x ", unknown2);
+		if (unknown3 != 0xffff) printf("unknown3: %04x ", unknown3);
+		if (unknown4 != 0xffff) printf("unknown4: %04x ", unknown4);
+
+		if (unknown5 != 0xffff) printf("unknown5: %04x ", unknown5);
+		if (unknown6 != 0xffff) printf("unknown6: %04x ", unknown6);
+
+		if (unknown7 != 0xff) printf("unknown7: %02x ", unknown7);
+		if (unknown8 != 0xff) printf("unknown8: %02x ", unknown8);
+		if (state_check[i] != 0xff) printf("state check: %x ", state_check[i]);
+
+		printf("\n");
+
+		switch (i) {
+			case 0:
+			case 1:
+				assert(unknown4 == 0xffff);
+				assert(unknown5 == 0xffff);
+				assert(unknown6 == 0xffff);
+				break;
+			case 2:
+			case 3:
+				assert(unknown1 == 0xffff);
+				assert(unknown2 == 0xffff);
+				assert(unknown3 == 0xffff);
+				assert(unknown4 == 0xffff);
+				assert(unknown5 == 0xffff);
+				assert(unknown6 == 0xffff);
+				break;
+			case 4:
+				// can only check 4 condition objects, so
+				// this is perhaps something else entirely
+				assert(condition[i].world == 0xff);
+				assert(unknown1 == 0xffff);
+				assert(unknown4 == 0xffff);
+				/*
+				byte unknown6 = objstream->readByte();
+				assert(unknown36 == 0);
+				byte unknown7 = objstream->readByte();
+				uint16 unknown8 = objstream->readUint16LE();
+				byte unknown9 = objstream->readByte();
+				*/
+				break;
+		}
+	}
+
+	for (unsigned int i = 0; i < 25; i++) {
+		uint32 zero = objstream->readUint32LE();
+		assert(zero == 0);
+	}
 }
 
 void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
@@ -415,16 +499,11 @@ void GeneralBlock::readFrom(Common::SeekableReadStream *objstream) {
 	}
 }
 
-bool valid_screen_id(uint16 screen_id) {
-	return screen_id == 0x5f || screen_id == 0x10 || (screen_id >= 2 && screen_id <= 7);
-}
-
 void ConversationBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x49);
 
-	// the details of the conversation to modify?
 	screen_id = objstream->readUint16LE();
-	assert(screen_id == 0xffff || valid_screen_id(screen_id));
+	assert(screen_id == 0xffff || valid_world_id(screen_id));
 	conversation_id = objstream->readUint16LE();
 	response_id = objstream->readUint16LE();
 	state_id = objstream->readUint16LE();
@@ -781,7 +860,8 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 }
 
 void ConditionBlock::execute(UnityEngine *_vm) {
-	// nothing to do
+	// nothing to do?
+	warning("unimplemented: ConditionBlock::execute");
 }
 
 void AlterBlock::execute(UnityEngine *_vm) {
