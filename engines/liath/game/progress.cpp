@@ -25,15 +25,20 @@
 
 #include "liath/game/progress.h"
 
+#include "liath/helpers.h"
 #include "liath/liath.h"
 
 namespace Liath {
 
-ProgressManager::ProgressManager(LiathEngine *engine) : _engine(engine) {}
+ProgressManager::ProgressManager(LiathEngine *engine) : _engine(engine) {
+	memset(&_data, 0, 11 * sizeof(int16));
+}
 
 ProgressManager::~ProgressManager() {
 	// Zero-out passed pointers
 	_engine = NULL;
+
+	CLEAR_ARRAY(Progress, _progress);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -41,7 +46,32 @@ ProgressManager::~ProgressManager() {
 //////////////////////////////////////////////////////////////////////////
 
 OpcodeRet ProgressManager::init(OpcodeParameters *parameters) {
-	error("ProgressManager::init: Not implemented!");
+	EXPOSE_PARAMS(OpcodeParametersWWWW);
+
+	debugC(kLiathDebugInterpreter, "  count: %d - data = [%d, 0, %d, %d, %d, 0, %d, %d, %d, 0, 0]",
+		   params->param1, params->param3, params->param5, params->param7, params->param9,
+		   params->param11, params->param13, params->param15);
+
+	// Clear previous array
+	CLEAR_ARRAY(Progress, _progress);
+
+	// Number of progress instances to create
+	uint16 count = params->param1;
+	for (int i = 0; i < count; i++)
+		_progress.push_back(new Progress());
+
+	// Initialize global progress
+	_data[0] = params->param3;
+	_data[2] = params->param5;
+	_data[3] = params->param7;
+	_data[4] = params->param9;
+	_data[6] = params->param11;
+	_data[7] = params->param13;
+	_data[8] = params->param15;
+	_data[9] = 0;
+	_data[10] = 0;
+
+	return kOpcodeRetDefault;
 }
 
 OpcodeRet ProgressManager::set(OpcodeParameters *parameters) {

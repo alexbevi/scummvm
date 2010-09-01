@@ -45,6 +45,7 @@
 
 namespace Liath {
 
+// Name of all opcodes
 const char *g_opcodes[] = {
 	"None",
 	"1",
@@ -128,7 +129,6 @@ const char *g_opcodes[] = {
 	"79",
 	"80",                        // 80
 	"81",
-	"82",
 	"Unfreeze",
 	"Unfreeze2",
 	"UnfreezeGlobal",
@@ -205,7 +205,6 @@ const char *g_opcodes[] = {
 	"Auto2HeroVar",              // 155
 	"Barrier",
 	"157",
-	"158",
 	"HearGlobal",
 	"HearHeroVar",
 	"HearVar",                   // 160

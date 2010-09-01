@@ -300,6 +300,24 @@ struct OpcodeParametersBDDD : OpcodeParameters {
 	uint32 param5;
 } PACKED_STRUCT;
 
+struct OpcodeParametersWWWW : OpcodeParameters {
+	uint16 param1;
+	uint16 param2;
+	uint16 param3;
+	uint16 param4;
+	uint16 param5;
+	uint16 param6;
+	uint16 param7;
+	uint16 param8;
+	uint16 param9;
+	uint16 param10;
+	uint16 param11;
+	uint16 param12;
+	uint16 param13;
+	uint16 param14;
+	uint16 param15;
+} PACKED_STRUCT;
+
 struct OpcodeParametersDefault : OpcodeParameters {
 	uint32 param1;
 	uint32 param2;
@@ -438,6 +456,22 @@ struct MouseBox {
 
 struct Array {
 
+} PACKED_STRUCT;
+
+struct Progress {
+	byte field_0;
+	byte field_1;
+	byte field_2;
+	byte field_3;
+	byte field_4;
+
+	Progress() {
+		field_0 = 0;
+		field_1 = 1;
+		field_2 = 2;
+		field_3 = 3;
+		field_4 = 4;
+	}
 } PACKED_STRUCT;
 
 #include "common/pack-end.h"

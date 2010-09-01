@@ -46,6 +46,9 @@ public:
 
 private:
 	LiathEngine* _engine;
+
+	int16 _data[11];
+	Common::Array<Progress *> _progress;
 };
 
 } // End of namespace Liath

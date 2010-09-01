@@ -49,7 +49,7 @@ ExpressionManager::~ExpressionManager() {
 OpcodeRet ExpressionManager::expression(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	debugC(kLiathDebugInterpreter, "  Expression: %d - Count: %d\n", params->param2, params->param1);
+	debugC(kLiathDebugInterpreter, "  expression: %d - count: %d\n", params->param2, params->param1);
 
 	int expr = expression(params->param2, params->param1);
 

@@ -30,8 +30,6 @@
 // Misc helpers
 //////////////////////////////////////////////////////////////////////////
 
-#define SAFE_DELETE(_p) { if(_p) { delete (_p); (_p) = NULL; } }
-
 //#define LOBYTE(b)           ((b) & 0xFF)
 //#define HIBYTE(b)           (((b) >> 8) & 0xFF)
 #define LOWORD(l)           ((l) & 0xffff)
@@ -69,5 +67,17 @@
 #define CEL2SCR(val) (uint16)HIWORD(val)
 #define SCR2CEL(val) ((uint32)val << 16 ) | 0
 #define DSCR2CEL(val) (uint64)(val * 65536.0)
+
+//////////////////////////////////////////////////////////////////////////
+// Cleanup
+//////////////////////////////////////////////////////////////////////////
+
+#define SAFE_DELETE(_p) { if(_p) { delete (_p); (_p) = NULL; } }
+
+#define CLEAR_ARRAY(type, name) { \
+	for (Common::Array<type *>::iterator it = name.begin(); it != name.end(); it++) \
+		SAFE_DELETE(*it); \
+	name.clear(); \
+}
 
 #endif // LIATH_HELPERS_H

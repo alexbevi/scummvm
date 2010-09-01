@@ -44,10 +44,7 @@ HeroManager::~HeroManager() {
 	_engine = NULL;
 
 	// Clear hero storage
-	for (Common::Array<Hero *>::iterator it = _heros.begin(); it != _heros.end(); it++)
-		SAFE_DELETE(*it);
-
-	_heros.clear();
+	CLEAR_ARRAY(Hero, _heros);
 
 	if (_storage)
 		free(_storage);
@@ -221,7 +218,7 @@ OpcodeRet HeroManager::unfreezeVar(OpcodeParameters *parameters) {
 OpcodeRet HeroManager::herovar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	debugC(kLiathDebugInterpreter, "  HeroIndex: %d / Offset: %d  -  Expression: %d - Count: %d\n", params->param1, params->param2, params->param4, params->param3);
+	debugC(kLiathDebugInterpreter, "  heroIndex: %d / offset: %d  -  expression: %d - count: %d\n", params->param1, params->param2, params->param4, params->param3);
 
 	*getData(params->param1, params->param2) = EXPR(params->param4, params->param3);
 

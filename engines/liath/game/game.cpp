@@ -148,6 +148,8 @@ OpcodeRet GameManager::rnd(OpcodeParameters *parameters) {
 OpcodeRet GameManager::global(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
+	debugC(kLiathDebugInterpreter, "  global: %d  -  expression: %d - count: %d\n", params->param1, params->param3, params->param2);
+
 	*getGlobal(params->param1) = EXPR(params->param3, params->param2);
 
 	return kOpcodeRetDefault;
@@ -165,8 +167,8 @@ OpcodeRet GameManager::bkey(OpcodeParameters *parameters) {
 // Helper Functions
 //////////////////////////////////////////////////////////////////////////
 
-int *GameManager::getGlobal(uint32 offset) {
-	error("Play::getGlobal: Not implemented!");
+int32 *GameManager::getGlobal(uint32 offset) {
+	return (int32 *)((byte *)_globalVar + offset);
 }
 
 OpcodeRet GameManager::getReturnValue(int val, bool testValue) {

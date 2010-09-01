@@ -52,7 +52,7 @@ public:
 	void letValue(ParamOrigin type, HeroIndex index, uint32 offset, uint32 val);
 	uint32 getValue(ParamOrigin type, HeroIndex index, uint32 offset);
 
-	int *getGlobal(uint32 offset);
+	int32 *getGlobal(uint32 offset);
 	OpcodeRet getReturnValue(int val, bool testValue);
 
 private:
@@ -73,7 +73,7 @@ private:
 	uint32 _countVar;
 
 	// Global area
-	uint32 *_globalVar;
+	void *_globalVar;
 
 	void load(ActionIndex action, GameData *data);
 	void playAction();
