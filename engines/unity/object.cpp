@@ -1036,7 +1036,35 @@ void ReactionBlock::execute(UnityEngine *_vm) {
 }
 
 void CommandBlock::execute(UnityEngine *_vm) {
-	warning("unimplemented: CommandBlock::execute");
+	printf("CommandBlock: %02x%02x%02x/%02x%02x%02x/%02x%02x%02x, %02x, %02x, command %d\n",
+		target[0].world, target[0].screen, target[0].id,
+		target[1].world, target[1].screen, target[1].id,
+		target[2].world, target[2].screen, target[2].id,
+		unknown1, unknown2, command_id);
+
+	switch (command_id) {
+		case 5: {
+			// target[0] target (e.g. Pentara), target[1] source (e.g. Picard)
+			Object *targ = _vm->data.getObject(target[0]);
+			Object *src = _vm->data.getObject(target[1]);
+			// TODO..
+			warning("unimplemented: CommandBlock::execute: TALK (on %s)", targ->identify().c_str());
+			targ->runHail(targ->hail_string);
+			}
+			break;
+
+		case 6: {
+			Object *targ = _vm->data.getObject(target[0]);
+			Object *src = _vm->data.getObject(target[1]);
+			// TODO..
+			warning("unimplemented: CommandBlock::execute: USE (on %s)", targ->identify().c_str());
+			targ->use_entries.execute(_vm);
+			}
+			break;
+
+		default:
+			warning("unimplemented: CommandBlock::execute (type %x)", command_id);
+	}
 }
 
 void ScreenBlock::execute(UnityEngine *_vm) {
