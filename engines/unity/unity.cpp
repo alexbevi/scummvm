@@ -319,7 +319,11 @@ void UnityEngine::setSpeaker(objectID s) {
 	}
 
 	icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
-	icon->startAnim(2); // speaking
+	if (icon->numAnims() < 3) {
+		icon->startAnim(0); // static
+	} else {
+		icon->startAnim(2); // speaking
+	}
 }
 
 void UnityEngine::handleLook(Object *obj) {
