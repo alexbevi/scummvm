@@ -213,9 +213,9 @@ void UnityEngine::startBridge() {
 		obj->scaled = false;
 		obj->sprite = new SpritePlayer(new Sprite(data.openFile(data.bridge_objects[i].filename)), obj, this);
 		obj->sprite->startAnim(0);
-		printf("%s: %d, %d\n", data.bridge_objects[i].filename.c_str(),
+		/*printf("%s: %d, %d\n", data.bridge_objects[i].filename.c_str(),
 			data.bridge_objects[i].unknown1,
-			data.bridge_objects[i].unknown2);
+			data.bridge_objects[i].unknown2);*/
 		data.current_screen.objects.push_back(obj);
 	}
 
@@ -294,6 +294,7 @@ void UnityEngine::processTriggers() {
 	for (unsigned int i = 0; i < data.triggers.size(); i++) {
 		if (data.triggers[i]->tick(this)) {
 			Object *target = data.getObject(data.triggers[i]->target);
+			printf("running trigger %x (target %s)\n", data.triggers[i]->id, target->identify().c_str());
 			target->use_entries.execute(this);
 			break;
 		}
@@ -651,7 +652,11 @@ void UnityEngine::drawBridgeUI() {
 
 	// TODO: sane max width/heights
 
-	Common::String sector_name = data.getSectorName(90, 90, 90); // TODO
+	// TODO: the location doesn't actually seem to come from this object
+	Object *ship = data.getObject(objectID(0x00, 0x01, 0x5f));
+
+	// TODO: updates while warping, etc
+	Common::String sector_name = data.getSectorName(ship->universe_x, ship->universe_y, ship->universe_z);
 	snprintf(buffer, 30, "SECTOR: %s", sector_name.c_str());
 	_gfx->drawString(9, 395, 9999, 9999, buffer, 2);
 
