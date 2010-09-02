@@ -124,6 +124,9 @@ public:
 class GeneralBlock : public Entry {
 protected:
 	uint16 movie_id;
+	uint16 unknown1;
+	uint16 unknown2;
+	uint16 unknown3;
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
