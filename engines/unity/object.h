@@ -64,6 +64,14 @@ protected:
 	objectID target[2];
 
 	objectID condition[5];
+	uint16 unknown1[5];
+	uint16 unknown2[5];
+	uint16 unknown3[5];
+	uint16 unknown4[5];
+	uint16 unknown5[5];
+	uint16 unknown6[5];
+	byte unknown7[5];
+	byte unknown8[5];
 	byte state_check[5];
 
 public:

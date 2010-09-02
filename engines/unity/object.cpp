@@ -343,30 +343,30 @@ void ConditionBlock::readFrom(Common::SeekableReadStream *objstream) {
 	target[1] = readObjectID(objstream);
 	assert(target[1].world == 0xff || valid_world_id(target[1].world));
 
-	if (target[0].world != 0xff)
+	/*if (target[0].world != 0xff)
 		printf("targ 0: %02x%02x%02x\n", target[0].world, target[0].screen, target[0].id);
 	if (target[1].world != 0xff)
-		printf("targ 1: %02x%02x%02x\n", target[1].world, target[1].screen, target[1].id);
+		printf("targ 1: %02x%02x%02x\n", target[1].world, target[1].screen, target[1].id);*/
 
 	for (unsigned int i = 0; i < 5; i++) {
 		condition[i] = readObjectID(objstream);
 		assert(condition[i].world == 0xff || valid_world_id(condition[i].world));
 
-		printf("cond %d: ", i);
+		/*printf("cond %d: ", i);
 		if (condition[i].world != 0xff)
-			printf("%02x%02x%02x ", condition[i].world, condition[i].screen, condition[i].id);
+			printf("%02x%02x%02x ", condition[i].world, condition[i].screen, condition[i].id);*/
 
-		uint16 unknown1 = objstream->readUint16LE();
-		uint16 unknown2 = objstream->readUint16LE();
-		uint16 unknown3 = objstream->readUint16LE();
-		uint16 unknown4 = objstream->readUint16LE();
-		uint16 unknown5 = objstream->readUint16LE();
-		uint16 unknown6 = objstream->readUint16LE();
-		byte unknown7 = objstream->readByte();
-		byte unknown8 = objstream->readByte();
+		unknown1[i] = objstream->readUint16LE();
+		unknown2[i] = objstream->readUint16LE();
+		unknown3[i] = objstream->readUint16LE();
+		unknown4[i] = objstream->readUint16LE();
+		unknown5[i] = objstream->readUint16LE();
+		unknown6[i] = objstream->readUint16LE();
+		unknown7[i] = objstream->readByte();
+		unknown8[i] = objstream->readByte();
 		state_check[i] = objstream->readByte();
 
-		if (unknown1 != 0xffff) printf("unknown1: %04x ", unknown1);
+		/*if (unknown1 != 0xffff) printf("unknown1: %04x ", unknown1);
 		if (unknown2 != 0xffff) printf("unknown2: %04x ", unknown2);
 		if (unknown3 != 0xffff) printf("unknown3: %04x ", unknown3);
 		if (unknown4 != 0xffff) printf("unknown4: %04x ", unknown4);
@@ -378,30 +378,30 @@ void ConditionBlock::readFrom(Common::SeekableReadStream *objstream) {
 		if (unknown8 != 0xff) printf("unknown8: %02x ", unknown8);
 		if (state_check[i] != 0xff) printf("state check: %x ", state_check[i]);
 
-		printf("\n");
+		printf("\n");*/
 
 		switch (i) {
 			case 0:
 			case 1:
-				assert(unknown4 == 0xffff);
-				assert(unknown5 == 0xffff);
-				assert(unknown6 == 0xffff);
+				assert(unknown4[i] == 0xffff);
+				assert(unknown5[i] == 0xffff);
+				assert(unknown6[i] == 0xffff);
 				break;
 			case 2:
 			case 3:
-				assert(unknown1 == 0xffff);
-				assert(unknown2 == 0xffff);
-				assert(unknown3 == 0xffff);
-				assert(unknown4 == 0xffff);
-				assert(unknown5 == 0xffff);
-				assert(unknown6 == 0xffff);
+				assert(unknown1[i] == 0xffff);
+				assert(unknown2[i] == 0xffff);
+				assert(unknown3[i] == 0xffff);
+				assert(unknown4[i] == 0xffff);
+				assert(unknown5[i] == 0xffff);
+				assert(unknown6[i] == 0xffff);
 				break;
 			case 4:
 				// can only check 4 condition objects, so
 				// this is perhaps something else entirely
 				assert(condition[i].world == 0xff);
-				assert(unknown1 == 0xffff);
-				assert(unknown4 == 0xffff);
+				assert(unknown1[i] == 0xffff);
+				assert(unknown4[i] == 0xffff);
 				/*
 				byte unknown6 = objstream->readByte();
 				assert(unknown36 == 0);
