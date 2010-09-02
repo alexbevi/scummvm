@@ -200,6 +200,8 @@ public:
 	unsigned int width, height;
 	uint16 z_adjust;
 	bool active;
+	byte state;
+
 	bool scaled; // XXX
 	uint16 sprite_id;
 	SpritePlayer *sprite;

@@ -138,10 +138,11 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	uint16 unknown6 = objstream->readUint16LE(); // XXX
 	uint16 unknown7 = objstream->readUint16LE(); // XXX
 
+	// XXX: save!!
 	uint8 objflags = objstream->readByte();
 	active = (objflags & OBJFLAG_ACTIVE) != 0;
 
-	byte state = objstream->readByte();
+	state = objstream->readByte();
 
 	uint8 unknown8 = objstream->readByte(); // XXX: block count
 	uint8 unknown9 = objstream->readByte(); // XXX: same
@@ -978,7 +979,7 @@ void AlterBlock::execute(UnityEngine *_vm) {
 
 	if (alter_state != 0xff) {
 		did_something = true;
-		// TODO: alter the state
+		obj->state = alter_state;
 		warning("unimplemented: AlterBlock::execute (%s): state %x", obj->identify().c_str(), alter_state);
 	}
 
