@@ -570,17 +570,13 @@ void CommunicateBlock::readFrom(Common::SeekableReadStream *objstream) {
 		assert(target.screen == 0xff);
 		assert(target.world == 0xff);
 		assert(target.unused == 0xff);
-
-		// XXX
-		uint16 unknown1 = objstream->readUint16LE();
-		uint16 unknown2 = objstream->readUint16LE();
-		uint16 unknown3 = objstream->readUint16LE();
-		uint16 unknown4 = objstream->readUint16LE();
-		assert(unknown4 == 0);
-	} else {
-		conversation_id = objstream->readUint32LE();
-		response_id = objstream->readUint32LE();
 	}
+
+	conversation_id = objstream->readUint16LE();
+	unknown1 = objstream->readUint16LE();
+	unknown2 = objstream->readUint16LE();
+	uint16 unknown4 = objstream->readUint16LE();
+	assert(unknown4 == 0);
 
 	for (unsigned int i = 0; i < 24; i++) {
 		uint32 unknown32 = objstream->readUint32LE();
@@ -1084,17 +1080,26 @@ void TriggerBlock::execute(UnityEngine *_vm) {
 void CommunicateBlock::execute(UnityEngine *_vm) {
 	warning("unimplemented: CommunicateBlock::execute");
 
-	if (target.id == 0xff) return; // XXX: TODO
+	printf("communicate: at %02x%02x%02x, %04x, %04x, %04x\n", target.world, target.screen, target.id, conversation_id, unknown1, unknown2);
 
-	// TODO: this is meant to appear on the viewscreen, i assume
-	printf("communicate: %d, %d\n", conversation_id, response_id);
+	// TODO: does unknown2 indicate viewscreen vs bridge or what?
+	if (unknown1 == 0xffff) return; // XXX: TODO
 
-	Object *targ = _vm->data.getObject(target);
+	Object *targ;
+	// TODO: not Picard!! what are we meant to do here?
+	if (target.id == 0xff)
+		targ = _vm->data.getObject(objectID(0, 0, 0));
+	else
+		targ = _vm->data.getObject(target);
 
 	// TODO: de-hardcode 0x5f, somehow
 	_vm->current_conversation = _vm->data.getConversation(0x5f, conversation_id);
-	// TODO: wtf is response_id?
-	_vm->current_conversation->execute(_vm, targ, 0);
+
+	// original engine simply ignores this when there are no enabled situations, it seems
+	// (TODO: check what happens when there is no such situation at all)
+	if (_vm->current_conversation->getEnabledResponse(unknown1)) {
+		_vm->current_conversation->execute(_vm, targ, unknown1);
+	}
 }
 
 void ChoiceBlock::execute(UnityEngine *_vm) {

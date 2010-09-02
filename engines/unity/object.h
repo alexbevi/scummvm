@@ -162,7 +162,8 @@ public:
 class CommunicateBlock : public Entry {
 protected:
 	objectID target;
-	uint32 conversation_id, response_id;
+	uint16 conversation_id;
+	uint16 unknown1, unknown2;
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
