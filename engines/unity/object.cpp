@@ -1102,7 +1102,15 @@ void ChoiceBlock::execute(UnityEngine *_vm) {
 }
 
 void WhoCanSayBlock::readFrom(Common::SeekableReadStream *stream) {
-	stream->seek(0xa, SEEK_CUR); // XXX
+	uint16 unknown = stream->readUint16LE();
+	assert(unknown == 8);
+
+	// XXX
+	objectID whocansay = readObjectID(stream);
+	byte unknown1 = stream->readByte();
+	byte unknown2 = stream->readByte();
+	byte unknown3 = stream->readByte();
+	byte unknown4 = stream->readByte();
 }
 
 void WhoCanSayBlock::execute(UnityEngine *_vm, Object *speaker) {
