@@ -935,7 +935,58 @@ void EntryList::execute(UnityEngine *_vm) {
 }
 
 bool ConditionBlock::check(UnityEngine *_vm) {
-	warning("unimplemented: ConditionBlock::check");
+	warning("unimplemented: ConditionBlock::check: %02x%02x%02x, %02x%02x%02x",
+		target[0].world, target[0].screen, target[0].id,
+		target[1].world, target[1].screen, target[1].id);
+
+	// TODO: this isn't complete
+	for (unsigned int i = 0; i < 4; i++) {
+		if (condition[i].world == 0xff) continue;
+
+		Object *obj = _vm->data.getObject(condition[i]);
+		printf("checking state of %s", obj->identify().c_str());
+		if (unknown1[i] != 0xffff) {
+			printf(" (is unknown1 %x?)", unknown1[i]);
+		}
+		if (unknown2[i] != 0xffff) {
+			printf(" (is unknown2 %x?)", unknown2[i]);
+		}
+		if (unknown3[i] != 0xffff) {
+			printf(" (is unknown3 %x?)", unknown3[i]);
+		}
+		if (unknown4[i] != 0xffff) {
+			printf(" (is unknown4 %x?)", unknown4[i]);
+		}
+		if (unknown5[i] != 0xffff) {
+			printf(" (is unknown5 %x?)", unknown5[i]);
+		}
+		if (unknown6[i] != 0xffff) {
+			printf(" (is unknown6 %x?)", unknown6[i]);
+		}
+		if (unknown7[i] != 0xff) {
+			printf(" (is unknown7 %x?)", unknown7[i]);
+		}
+		if (unknown8[i] != 0xffff) {
+			printf(" (is unknown8 %x?)", unknown8[i]);
+		}
+		if (state_check[i] != 0xff) {
+			printf(" (is state %x?)", state_check[i]);
+			if (obj->state != state_check[i]) {
+				printf(" -- nope!\n");
+				return false;
+			}
+			// XXX: definitely don't commit this ;p
+			/*if (condition[i].id == 7 && state_check[i] == 1) { }
+			else if (condition[i].id == 8 && state_check[i] == 0) { }
+			else if (condition[i].id == 0xc && state_check[i] == 0) { }
+			else if (condition[i].id == 0x13 && state_check[i] == 0) { }
+			else if (condition[i].id == 0x28 && state_check[i] == 1) { }
+			else if (condition[i].id == 0x31 && state_check[i] == 0) { }
+			else { printf(" -- nope!\n"); return false; }*/
+		}
+		printf("\n");
+	}
+
 	return true;
 }
 
