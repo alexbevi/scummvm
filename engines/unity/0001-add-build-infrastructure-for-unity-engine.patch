@@ -1,0 +1,53 @@
+From a4bc861696f5fdd7379acbb483801224988ed60d Mon Sep 17 00:00:00 2001
+From: Alyssa Milburn <fuzzie@fuzzie.org>
+Date: Wed, 26 May 2010 00:57:25 +0200
+Subject: [PATCH] add build infrastructure for unity engine
+
+---
+ base/plugins.cpp   |    3 +++
+ configure          |    1 +
+ engines/engines.mk |    5 +++++
+ 3 files changed, 9 insertions(+), 0 deletions(-)
+
+diff --git a/base/plugins.cpp b/base/plugins.cpp
+index b1273b2..014614c 100644
+--- a/base/plugins.cpp
++++ b/base/plugins.cpp
+@@ -166,6 +166,9 @@ public:
+ 		#if PLUGIN_ENABLED_STATIC(TUCKER)
+ 		LINK_PLUGIN(TUCKER)
+ 		#endif
++		#if PLUGIN_ENABLED_STATIC(UNITY)
++		LINK_PLUGIN(UNITY)
++		#endif
+ 
+ 		// Music plugins
+ 		// TODO: Use defines to disable or enable each MIDI driver as a
+diff --git a/configure b/configure
+index ab33fee..cfc1868 100755
+--- a/configure
++++ b/configure
+@@ -109,6 +109,7 @@ add_engine teenagent "Teen Agent" yes
+ add_engine tinsel "Tinsel" yes
+ add_engine touche "Touche: The Adventures of the Fifth Musketeer" yes
+ add_engine tucker "Bud Tucker in Double Trouble" yes
++add_engine unity "A Final Unity" no
+ 
+ 
+ #
+diff --git a/engines/engines.mk b/engines/engines.mk
+index e542ffd..cb24b6e 100644
+--- a/engines/engines.mk
++++ b/engines/engines.mk
+@@ -161,3 +161,8 @@ DEFINES += -DENABLE_TUCKER=$(ENABLE_TUCKER)
+ MODULES += engines/tucker
+ endif
+ 
++ifdef ENABLE_UNITY
++DEFINES += -DENABLE_UNITY=$(ENABLE_UNITY)
++MODULES += engines/unity
++endif
++
+-- 
+1.6.3.3
+
