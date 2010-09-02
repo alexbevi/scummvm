@@ -273,6 +273,7 @@ public:
 class Conversation {
 public:
 	Common::Array<Response *> responses;
+	unsigned int our_world, our_id;
 
 	void loadConversation(UnityData &data, unsigned int world, unsigned int id);
 	Response *getResponse(unsigned int response, unsigned int state);

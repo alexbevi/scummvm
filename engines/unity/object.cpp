@@ -1328,6 +1328,10 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 }
 
 void Conversation::loadConversation(UnityData &data, unsigned int world, unsigned int id) {
+	assert(!responses.size());
+	our_world = world;
+	our_id = id;
+
 	Common::String filename = Common::String::printf("w%03xc%03d.bst", world, id);
 	Common::SeekableReadStream *stream = data.openFile(filename);
 
@@ -1398,7 +1402,7 @@ Response *Conversation::getEnabledResponse(unsigned int response) {
 		}
 	}
 
-	error("couldn't find active response %d\n", response);
+	return NULL;
 }
 
 Response *Conversation::getResponse(unsigned int response, unsigned int state) {
@@ -1410,15 +1414,23 @@ Response *Conversation::getResponse(unsigned int response, unsigned int state) {
 		}
 	}
 
-	error("couldn't find response %d/%d\n", response, state);
+	return NULL;
 }
 
 void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response) {
-	getEnabledResponse(response)->execute(_vm, speaker);
+	printf("running situation (%02x) @%d,%d\n", our_world, our_id, response);
+
+	Response *resp = getEnabledResponse(response);
+	if (!resp) error("couldn't find active response %d", response);
+	resp->execute(_vm, speaker);
 }
 
 void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state) {
-	getResponse(response, state)->execute(_vm, speaker);
+	printf("running situation (%02x) @%d,%d,%d\n", our_world, our_id, response, state);
+
+	Response *resp = getResponse(response, state);
+	if (!resp) error("couldn't find response %d/%d", response, state);
+	resp->execute(_vm, speaker);
 }
 
 } // Unity
