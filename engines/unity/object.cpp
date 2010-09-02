@@ -305,6 +305,7 @@ void Entry::readHeaderFrom(Common::SeekableReadStream *stream, byte header_type)
 	}
 
 	// counters for offset within parent blocks (inner/outer)
+	// TODO: add g_debug checks for these
 	counter1 = stream->readByte();
 	counter2 = stream->readByte();
 	counter3 = stream->readByte();
@@ -885,13 +886,13 @@ void Object::setHail(const Common::String &str) {
 		// run the conversation immediately, don't change anything
 		runHail(str);
 	} else {
-		printf("hail of %s changed from '%s' to '%s'\n", name.c_str(), hail_string.c_str(), str.c_str());
+		printf("hail of %s changed from '%s' to '%s'\n", identify().c_str(), hail_string.c_str(), str.c_str());
 		hail_string = str;
 	}
 }
 
 void Object::runHail(const Common::String &hail) {
-	printf("%s running hail '%s'\n", name.c_str(), hail.c_str());
+	printf("%s running hail '%s'\n", identify().c_str(), hail.c_str());
 
 	if (hail.size() < 2) {
 		error("failed to parse hail '%s'", hail.c_str());
@@ -925,7 +926,9 @@ EntryList::~EntryList() {
 }
 
 void EntryList::execute(UnityEngine *_vm) {
+	printf("\n");
 	for (unsigned int i = 0; i < list.size(); i++) {
+		printf("EntryList::execute: block %d of %d (size %d)\n", i + 1, list.size(), list[i]->size());
 		bool run = true;
 		for (unsigned int j = 0; j < list[i]->size(); j++) {
 			if (!(*list[i])[j]->check(_vm)) {
@@ -938,6 +941,7 @@ void EntryList::execute(UnityEngine *_vm) {
 			(*list[i])[j]->execute(_vm);
 		}
 	}
+	printf("EntryList::execute: ran %d blocks\n\n", list.size());
 }
 
 bool ConditionBlock::check(UnityEngine *_vm) {
@@ -947,7 +951,6 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 
 void ConditionBlock::execute(UnityEngine *_vm) {
 	// nothing to do?
-	warning("unimplemented: ConditionBlock::execute");
 }
 
 void AlterBlock::execute(UnityEngine *_vm) {
@@ -957,12 +960,14 @@ void AlterBlock::execute(UnityEngine *_vm) {
 
 	if (alter_flags || alter_reset) {
 		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): alter_flags", obj->name.c_str());
+		// TODO: change flags?
+		warning("unimplemented: AlterBlock::execute (%s): alter_flags %x, %x", obj->identify().c_str(), alter_flags, alter_reset);
 	}
 
-	if (x_pos != 0xffff) {
+	if (x_pos != 0xffff || y_pos != 0xffff) {
 		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): position", obj->name.c_str());
+		// TODO: move target?
+		warning("unimplemented: AlterBlock::execute (%s): position (%x, %x)", obj->identify().c_str(), x_pos, y_pos);
 	}
 
 	if (alter_name.size()) {
@@ -976,13 +981,10 @@ void AlterBlock::execute(UnityEngine *_vm) {
 		obj->setHail(alter_hail);
 	}
 
-	if (voice_group != 0xffffffff) {
+	if (voice_group != 0xffffffff || voice_subgroup != 0xffff || voice_id != 0xffffffff) {
 		did_something = true;
-		// TODO
-		warning("unimplemented: AlterBlock::execute (%s): voice %x/%x", obj->name.c_str(), voice_group, voice_subgroup);
-		if (voice_id != 0xffffffff) {
-			// also TODO :)
-		}
+		// TODO: alter voice for the description?
+		warning("unimplemented: AlterBlock::execute (%s): voice %x/%x/%x", obj->identify().c_str(), voice_group, voice_subgroup, voice_id);
 	}
 
 	if (alter_state != 0xff) {
@@ -992,13 +994,12 @@ void AlterBlock::execute(UnityEngine *_vm) {
 	}
 
 	if (!did_something) {
-		// TODO: all the other unknowns we don't read yet
-		warning("unimplemented: AlterBlock::execute (%s)", obj->name.c_str());
+		warning("empty AlterBlock::execute (%s)?", obj->identify().c_str());
 	}
 }
 
 void ReactionBlock::execute(UnityEngine *_vm) {
-	warning("unimplemented: ReactionBlock::execute");
+	error("unimplemented: ReactionBlock::execute");
 }
 
 void CommandBlock::execute(UnityEngine *_vm) {
@@ -1006,11 +1007,11 @@ void CommandBlock::execute(UnityEngine *_vm) {
 }
 
 void ScreenBlock::execute(UnityEngine *_vm) {
-	warning("unimplemented: ScreenBlock::execute");
+	error("unimplemented: ScreenBlock::execute");
 }
 
 void PathBlock::execute(UnityEngine *_vm) {
-	warning("unimplemented: PathBlock::execute");
+	error("unimplemented: PathBlock::execute");
 }
 
 void GeneralBlock::execute(UnityEngine *_vm) {
@@ -1019,7 +1020,8 @@ void GeneralBlock::execute(UnityEngine *_vm) {
 	if (movie_id != 0xffff) {
 		assert(_vm->data.movie_filenames.contains(movie_id));
 
-		warning("unimplemented: play movie %d (%s: '%s')", movie_id,
+		// TODO
+		printf("GeneralBlock: play movie %d (%s: '%s')\n", movie_id,
 			_vm->data.movie_filenames[movie_id].c_str(),
 			_vm->data.movie_descriptions[movie_id].c_str());
 	}
@@ -1035,7 +1037,7 @@ void ConversationBlock::execute(UnityEngine *_vm) {
 }
 
 void BeamBlock::execute(UnityEngine *_vm) {
-	warning("unimplemented: BeamBlock::execute");
+	error("unimplemented: BeamBlock::execute");
 }
 
 bool TriggerBlock::check(UnityEngine *_vm) {
@@ -1073,7 +1075,7 @@ void CommunicateBlock::execute(UnityEngine *_vm) {
 }
 
 void ChoiceBlock::execute(UnityEngine *_vm) {
-	warning("unimplemented: ChoiceBlock::execute");
+	error("unimplemented: ChoiceBlock::execute");
 }
 
 void WhoCanSayBlock::readFrom(Common::SeekableReadStream *stream) {
@@ -1081,7 +1083,8 @@ void WhoCanSayBlock::readFrom(Common::SeekableReadStream *stream) {
 }
 
 void WhoCanSayBlock::execute(UnityEngine *_vm, Object *speaker) {
-	warning("unimplemented: WhoCanSayBlock::execute");
+	// TODO
+	//warning("unimplemented: WhoCanSayBlock::execute");
 }
 
 void TextBlock::readFrom(Common::SeekableReadStream *stream) {
@@ -1198,6 +1201,7 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	//printf("(%04x), ", unknown1);
 
 	next_situation = stream->readUint16LE();
+	//printf("(next %04x), ", next_situation);
 
 	for (unsigned int i = 0; i < 5; i++) {
 		uint16 unknown1 = stream->readUint16LE();
@@ -1218,6 +1222,9 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	voice_group = stream->readUint32LE();
 	voice_subgroup = stream->readUint16LE();
 
+	/*
+	printf("%x: ", response_state);
+	printf("%04x -- (%04x, %04x, %04x, %04x)\n", unknown3, unknown4, unknown5, unknown6, unknown7);
 	printf("response %d, %d", id, state);
 	if (text.size()) {
 		printf(": text '%s'", text.c_str());
@@ -1226,15 +1233,13 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 		}
 	}
 	printf("\n");
-
-	for (unsigned int i = 0; i < sizeof(buffer); i++) printf("%02x ", (unsigned int)buffer[i]);
-	printf("\n");
+	*/
 
 	int type;
 	while ((type = readBlockHeader(stream)) != -1) {
 		switch (type) {
 			case BLOCK_END_BLOCK:
-				printf("\n");
+				//printf("\n");
 				return;
 
 			case BLOCK_CONV_WHOCANSAY:
@@ -1320,6 +1325,7 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 
 		// TODO: this is not good
 		_vm->setSpeaker(objectID(0, 0, 0));
+		printf("%s says '%s'\n", "Picard", text.c_str());
 
 		// TODO: 0xcc some marks invalid entries, but should we check something else?
 		// (the text is invalid too, but i display it, to make it clear we failed..)
