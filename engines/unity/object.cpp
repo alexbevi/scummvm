@@ -1132,35 +1132,52 @@ void TextBlock::readFrom(Common::SeekableReadStream *stream) {
 	buf[255] = 0;
 	text = buf;
 
+	// make sure it's all zeros?
+	unsigned int i = 255;
+	while (buf[i] == 0) i--;
+	//assert(strlen(buf) == i + 1); XXX: work out what's going on here
+
 	stream->read(buf, 4);
-	assert(buf[0] == 0 && buf[1] == 0 && buf[2] == 0 && buf[3] == 0);
 
 	voice_id = stream->readUint32LE();
 	voice_group = stream->readUint32LE();
 	voice_subgroup = stream->readUint16LE();
-	uint32 entry_id = 0; // TODO: work out correct entry for actor
 
-	if (text.size()) {
+	/*if (text.size()) {
 		printf("text '%s'", text.c_str());
 		if (voice_id != 0xffffffff) {
-			printf(" (%02x%02x%02x%02x.vac)", voice_group, entry_id, voice_subgroup, voice_id);
+			printf(" (%02x??%02x%02x.vac)", voice_group, voice_subgroup, voice_id);
 		}
 		printf("\n");
-	}
+	} else {
+		// these fields look like they could mean something else?
+		printf("no text: %x, %x, %x\n", voice_group, voice_subgroup, voice_id);
+	}*/
+
+	// XXX: work out what's going on here
+	if (!(buf[0] == 0 && buf[1] == 0 && buf[2] == 0 && buf[3] == 0))
+		printf("text is weird: %02x, %02x, %02x, %02x\n", buf[0], buf[1], buf[2], buf[3]);
 }
 
 void TextBlock::execute(UnityEngine *_vm, Object *speaker) {
-	warning("unimplemented: TextBlock::execute");
-
 	if (text.size()) {
 		_vm->dialog_text = text;
 
 		_vm->setSpeaker(speaker->id);
+		printf("%s says '%s'\n", speaker->identify().c_str(), text.c_str());
 
 		uint32 entry_id = speaker->id.id;
+		if (speaker->id.world != 0x0)
+			entry_id = 0xff; // XXX: hack (for Pentara, Daenub, etc)
+
 		Common::String file;
 		file = Common::String::printf("%02x%02x%02x%02x.vac",
 			voice_group, entry_id, voice_subgroup, voice_id);
+		if (!SearchMan.hasFile(file)) {
+			// TODO: wtf?
+			file = Common::String::printf("%02x%02x%02x%02x.vac",
+				voice_group, voice_subgroup, entry_id, voice_id);
+		}
 		_vm->_snd->playSpeech(file);
 
 		_vm->runDialog();
@@ -1375,6 +1392,12 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 			Common::String file;
 			file = Common::String::printf("%02x%02x%02x%02x.vac",
 				voice_group, entry_id, voice_subgroup, voice_id);
+			if (!SearchMan.hasFile(file)) {
+				// TODO: wtf?
+				file = Common::String::printf("%02x%02x%02x%02x.vac",
+					voice_group, voice_subgroup, entry_id, voice_id);
+			}
+
 			_vm->_snd->playSpeech(file);
 		}
 
