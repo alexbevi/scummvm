@@ -22,6 +22,8 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	in_dialog = false;
 	icon = NULL;
 	current_conversation = NULL;
+	next_situation = 0xffffffff;
+	next_state = 0xffffffff;
 }
 
 UnityEngine::~UnityEngine() {
@@ -712,6 +714,19 @@ Common::Error UnityEngine::run() {
 
 		assert(!in_dialog);
 
+		while (next_situation != 0xffffffff) {
+			assert(current_conversation);
+			Response *resp;
+			if (next_state != 0xffffffff)
+				resp = current_conversation->getResponse(next_situation, next_state);
+			else
+				resp = current_conversation->getEnabledResponse(next_situation);
+			next_situation = 0xffffffff;
+			next_state = 0xffffffff;
+			// TODO: not always Picard! :(
+			resp->execute(this, data.getObject(objectID(0, 0, 0)));
+		}
+
 		processTriggers();
 
 		_system->updateScreen();
@@ -733,8 +748,8 @@ void UnityEngine::runDialogChoice() {
 	runDialog();
 
 	// TODO: don't always run the first choice, actually offer a choice? :)
-	Object *speakerobj = data.getObject(objectID(0, 0, 0)); // TODO: this is starting to be crazy
-	current_conversation->execute(this, speakerobj, dialog_choice_responses[0], dialog_choice_states[0]);
+	next_situation = dialog_choice_responses[0];
+	next_state = dialog_choice_states[0];
 }
 
 void UnityEngine::runDialog() {

@@ -1147,7 +1147,8 @@ void CommunicateBlock::execute(UnityEngine *_vm) {
 	// original engine simply ignores this when there are no enabled situations, it seems
 	// (TODO: check what happens when there is no such situation at all)
 	if (_vm->current_conversation->getEnabledResponse(unknown1)) {
-		_vm->current_conversation->execute(_vm, targ, unknown1);
+		// this overrides any existing conversations.. possibly that is a good thing
+		_vm->next_situation = unknown1;
 	}
 }
 
@@ -1488,7 +1489,8 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 			_vm->runDialogChoice();
 		} else {
 			printf("continuing with conversation, using single choice\n");
-			_vm->current_conversation->execute(_vm, speaker, _vm->dialog_choice_responses[0], _vm->dialog_choice_states[0]);
+			_vm->next_situation = _vm->dialog_choice_responses[0];
+			_vm->next_state = _vm->dialog_choice_states[0];
 		}
 	} else {
 		printf("end of conversation\n");

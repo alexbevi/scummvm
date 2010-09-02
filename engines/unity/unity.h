@@ -42,6 +42,7 @@ public:
 	// TODO: horrible hack
 	Common::Array<unsigned int> dialog_choice_responses;
 	Common::Array<unsigned int> dialog_choice_states;
+	unsigned int next_situation, next_state;
 
 	void runDialogChoice();
 	void runDialog();
