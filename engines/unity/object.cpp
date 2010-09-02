@@ -1202,21 +1202,23 @@ void ChangeActionBlock::readFrom(Common::SeekableReadStream *stream, int _type) 
 	uint16 unknown6 = stream->readUint16LE();
 	assert(unknown6 == 0 || (unknown6 >= 7 && unknown6 <= 12));
 
-	printf("%s: response %d, state %d; unknowns: %x, %x, %x\n",
+	/*printf("%s: response %d, state %d; unknowns: %x, %x, %x\n",
 		change_actor_names[type - BLOCK_CONV_CHANGEACT_DISABLE],
-		response_id, state_id, unknown4, unknown5, unknown6);
+		response_id, state_id, unknown4, unknown5, unknown6);*/
 }
 
 void ChangeActionBlock::execute(UnityEngine *_vm, Object *speaker) {
-	warning("unimplemented: ChangeActionBlock::execute");
+	warning("unimplemented: ChangeActionBlock::execute: %s on %d,%d",
+		change_actor_names[type - BLOCK_CONV_CHANGEACT_DISABLE],
+		response_id, state_id);
 
 	Response *resp = _vm->current_conversation->getResponse(response_id, state_id);
-	resp->response_state = type;
 
+	// TODO: terrible hack
 	if (type == BLOCK_CONV_CHANGEACT_ENABLE) {
-		// TODO: terrible hack
-		_vm->dialog_choice_responses.push_back(response_id);
-		_vm->dialog_choice_states.push_back(state_id);
+		resp->response_state = RESPONSE_ENABLED;
+	} else {
+		resp->response_state = RESPONSE_DISABLED;
 	}
 }
 
@@ -1404,28 +1406,43 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 		_vm->runDialog();
 	}
 
-	_vm->dialog_choice_responses.clear();
-	_vm->dialog_choice_states.clear();
-
 	Object *targetobj = speaker;
 	if (target.id != 0xff) {
 		targetobj = _vm->data.getObject(target);
 	}
 
+	printf("***begin execute***\n");
 	for (unsigned int i = 0; i < blocks.size(); i++) {
 		blocks[i]->execute(_vm, targetobj);
 	}
+	printf("***end execute***\n");
 
-	if (_vm->dialog_choice_responses.size()) {
+	_vm->dialog_choice_responses.clear();
+	_vm->dialog_choice_states.clear();
+	if (next_situation != 0xffff) {
+		Common::Array<Response *> &responses = _vm->current_conversation->responses;
+		for (unsigned int i = 0; i < responses.size(); i++) {
+			if (responses[i]->id == next_situation) {
+				if (responses[i]->response_state == RESPONSE_ENABLED) {
+					_vm->dialog_choice_responses.push_back(responses[i]->id);
+					_vm->dialog_choice_states.push_back(responses[i]->state);
+				}
+			}
+		}
+
+		if (!_vm->dialog_choice_responses.size()) {
+			error("didn't find a next situation");
+		}
+
 		if (_vm->dialog_choice_responses.size() > 1) {
+			printf("continuing with conversation, using choices\n");
 			_vm->runDialogChoice();
 		} else {
+			printf("continuing with conversation, using single choice\n");
 			_vm->current_conversation->execute(_vm, speaker, _vm->dialog_choice_responses[0], _vm->dialog_choice_states[0]);
 		}
 	} else {
-		if (next_situation != 0xffff) {
-			_vm->current_conversation->execute(_vm, speaker, next_situation);
-		}
+		printf("end of conversation\n");
 	}
 }
 
