@@ -427,31 +427,25 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 	alter_flags = objstream->readByte();
 	alter_reset = objstream->readByte();
 
-	uint16 unknown3 = objstream->readUint16LE();
+	unknown3 = objstream->readUint16LE();
 
 	uint16 unknown16 = objstream->readUint16LE();
 	assert(unknown16 == 0xffff);
 
-	byte unknown4 = objstream->readByte();
-	byte unknown5 = objstream->readByte();
+	unknown4 = objstream->readByte();
+	unknown5 = objstream->readByte();
 	alter_state = objstream->readByte(); // set state..
-	byte unknown7 = objstream->readByte();
+	unknown7 = objstream->readByte();
 
 	x_pos = objstream->readUint16LE();
 	y_pos = objstream->readUint16LE();
 
-	uint16 unknown8 = objstream->readUint16LE();
+	unknown8 = objstream->readUint16LE();
 
-	unknown16 = objstream->readUint16LE();
-	// always 0xffff inside objects..
-	(void)unknown16;
-	//assert(unknown16 == 0xffff);
-
-	uint32 unknown32 = objstream->readUint32LE();
-	// TODO: probably individual bytes or two uint16s?
-	(void)unknown32;
-	// always 0xffffffff inside objects..
-	//assert(unknown32 == 0xffffffff);
+	// these are always 0xffff inside objects..
+	universe_x = objstream->readUint16LE();
+	universe_y = objstream->readUint16LE();
+	universe_z = objstream->readUint16LE();
 
 	char text[101];
 	objstream->read(text, 20);
@@ -461,41 +455,20 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 	text[100] = 0;
 	alter_hail = text;
 
-	unknown32 = objstream->readUint32LE();
+	uint32 unknown32 = objstream->readUint32LE();
 	assert(unknown32 == 0xffffffff);
 
 	voice_id = objstream->readUint32LE();
 	voice_group = objstream->readUint32LE();
 	voice_subgroup = objstream->readUint16LE();
-
-	byte unknown11 = objstream->readByte();
-	byte unknown12 = objstream->readByte();
-
-	/*printf("AlterBlock: on %02x%02x%02x (flags %02x, %02x), %04x, %02x, %02x, %02x, %02x ",
-		target.world, target.screen, target.id, alter_flags, alter_reset,
-		unknown3, unknown4, unknown5, alter_state, unknown7);
-	if (alter_name.size()) {
-		printf("name to '%s', ", alter_name.c_str());
-	}
-	if (alter_hail.size()) {
-		printf("hail to '%s', ", alter_hail.c_str());
-	}
-	if (x_pos != 0xffff) {
-		printf("loc (%04x, %04x) ", x_pos, y_pos);
-	}
-	printf("%04x, ", unknown8);
-	if (voice_group == 0xcc) printf("disable voice, ");
-	else if (voice_group != 0xffffffff) printf("voice to %x/%x/%x, ", voice_group, voice_subgroup, voice_id);
-	printf("%02x, %02x\n", unknown11, unknown12);*/
-
-	/*assert(voice_group == 0xcc || // disable voice
-		(voice_group == 0xffffffff && voice_subgroup == 0xffff) || // no change
-		(voice_group != 0xffffffff && voice_subgroup != 0xffff));*/ // change voice
 	// the voice_subgroup is not always changed..
 	assert(voice_group != 0xffffffff || voice_subgroup == 0xffff);
 	// .. neither is the voice_id
 	assert(voice_group != 0xffffffff || voice_id == 0xffffffff);
 
+	unknown11 = objstream->readByte();
+	unknown12 = objstream->readByte();
+	// checks
 	assert(unknown11 == 0xff || unknown11 == 0 || unknown11 == 1 || unknown11 == 2 || unknown11 == 3);
 	assert(unknown12 == 0xff || unknown12 == 0 || unknown12 == 1);
 
@@ -989,8 +962,52 @@ void AlterBlock::execute(UnityEngine *_vm) {
 
 	if (alter_state != 0xff) {
 		did_something = true;
-		// TODO
-		warning("unimplemented: AlterBlock::execute (%s): state %x", obj->name.c_str(), alter_state);
+		// TODO: alter the state
+		warning("unimplemented: AlterBlock::execute (%s): state %x", obj->identify().c_str(), alter_state);
+	}
+
+	if (unknown3 != 0xffff) {
+		did_something = true;
+		warning("unimplemented: AlterBlock::execute (%s): unknown3 %x", obj->identify().c_str(), unknown3);
+	}
+
+	if (unknown4 != 0xff) {
+		did_something = true;
+		warning("unimplemented: AlterBlock::execute (%s): unknown4 %x", obj->identify().c_str(), unknown4);
+	}
+
+	if (unknown5 != 0xff) {
+		did_something = true;
+		warning("unimplemented: AlterBlock::execute (%s): unknown5 %x", obj->identify().c_str(), unknown5);
+	}
+
+	if (unknown7 != 0) {
+		did_something = true;
+		warning("unimplemented: AlterBlock::execute (%s): unknown7 %x", obj->identify().c_str(), unknown7);
+	}
+
+	if (unknown8 != 0xffff) {
+		did_something = true;
+		warning("unimplemented: AlterBlock::execute (%s): unknown8 %x", obj->identify().c_str(), unknown8);
+	}
+
+	if (universe_x != 0xffff || universe_y != 0xffff || universe_z != 0xffff) {
+		did_something = true;
+		// TODO: for the Enterprise, at least, go into astrogation and start warp to this universe location
+		obj->universe_x = universe_x;
+		obj->universe_y = universe_y;
+		obj->universe_z = universe_z;
+		warning("unimplemented: AlterBlock::execute (%s): to universe loc %x, %x, %x", obj->identify().c_str(), universe_x, universe_y, universe_z);
+	}
+
+	if (unknown11 != 0xff) {
+		did_something = true;
+		warning("unimplemented: AlterBlock::execute (%s): unknown11 %x", obj->identify().c_str(), unknown11);
+	}
+
+	if (unknown12 != 0xff) {
+		did_something = true;
+		warning("unimplemented: AlterBlock::execute (%s): unknown12 %x", obj->identify().c_str(), unknown12);
 	}
 
 	if (!did_something) {

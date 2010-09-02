@@ -79,6 +79,15 @@ protected:
 	uint16 x_pos, y_pos;
 	Common::String alter_name, alter_hail;
 
+	uint16 unknown3;
+	byte unknown4;
+	byte unknown5;
+	byte unknown7;
+	uint16 unknown8;
+	byte unknown11;
+	byte unknown12;
+	uint16 universe_x, universe_y, universe_z;
+
 	uint32 voice_id;
 	uint32 voice_group;
 	uint16 voice_subgroup;
