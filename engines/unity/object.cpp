@@ -488,7 +488,28 @@ void ReactionBlock::readFrom(Common::SeekableReadStream *objstream) {
 void CommandBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x45);
 
-	objstream->seek(0x75, SEEK_CUR); // XXX
+	target[0] = readObjectID(objstream);
+	target[1] = readObjectID(objstream);
+	target[2] = readObjectID(objstream);
+
+	// both usually 0xffff (but not an object?)
+	unknown1 = objstream->readUint16LE();
+	unknown2 = objstream->readUint16LE();
+
+	command_id = objstream->readUint32LE();
+
+	/*
+	 * 2/3 are about items? GET? DROP? INV?
+	 * 4 is WALK?
+	 * 5 is TALK?
+	 * 6 is USE?
+	 */
+	assert(command_id >= 2 && command_id <= 6);
+
+	for (unsigned int i = 0; i < 97; i++) {
+		byte unknown = objstream->readByte();
+		assert(unknown == 0);
+	}
 }
 
 void ScreenBlock::readFrom(Common::SeekableReadStream *objstream) {

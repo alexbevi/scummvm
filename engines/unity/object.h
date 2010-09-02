@@ -112,6 +112,11 @@ public:
 };
 
 class CommandBlock : public Entry {
+protected:
+	objectID target[3];
+	uint16 unknown1, unknown2;
+	uint32 command_id;
+
 public:
 	void readFrom(Common::SeekableReadStream *stream);
 	void execute(UnityEngine *_vm);
