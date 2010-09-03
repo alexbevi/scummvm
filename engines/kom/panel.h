@@ -41,6 +41,8 @@ public:
 
 	void update();
 	void showLoading(bool isLoading);
+	void suppressLoading() { _suppressLoading++; }
+	void allowLoading() { if (_suppressLoading > 0) _suppressLoading--; }
 	void setLocationDesc(const char *desc);
 	void setActionDesc(const char *desc);
 	void setHotspotDesc(const char *desc);
@@ -63,7 +65,7 @@ private:
 	bool _isEnabled;
 	bool _isLoading;
 	bool _isDirty;
-	uint8 _noLoading; // FIXME - do I really want to implement this "loading" timer thingy?
+	int _suppressLoading;
 
 	char *_locationDesc;
 	char *_actionDesc;

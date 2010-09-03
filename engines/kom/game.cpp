@@ -179,6 +179,8 @@ void Game::enterLocation(uint16 locId) {
 	_vm->panel()->setActionDesc("");
 	_vm->panel()->setHotspotDesc("");
 	_vm->panel()->showLoading(false);
+	_vm->panel()->suppressLoading();
+	_vm->panel()->suppressLoading();
 }
 
 void Game::hitExit(uint16 charId, bool something) {
@@ -1717,6 +1719,7 @@ void Game::doActionPlayVideo(const char *name) {
 	if (pauseAmbient)
 		_vm->ambientPause(true);
 
+	_vm->panel()->suppressLoading();
 	_vm->screen()->showMouseCursor(false);
 	_videoPlayer->playVideo(filename);
 	_vm->screen()->showMouseCursor(true);
@@ -2419,6 +2422,8 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 		if ((mode & 1) == 0 && *objectNum >= 0 &&
 		    _vm->database()->getObj(*objectNum)->isUseImmediate)
 			*objectNum = *objectType = -1;
+
+		_vm->panel()->suppressLoading();
 
 		if (*objectNum == -1 && inInventory) {
 			inInventory = false;

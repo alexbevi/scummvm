@@ -264,6 +264,9 @@ void Screen::processGraphics(int mode) {
 
 	updateActionStrings();
 
+	_vm->panel()->showLoading(false);
+	_vm->panel()->allowLoading();
+
 	if (mode > 0 && _vm->panel()->isDirty())
 		_vm->panel()->update();
 

@@ -176,6 +176,7 @@ void KomEngine::gameLoop() {
 	_gameLoopTimer = 0;
 	_gameLoopState = GAMELOOP_RUNNING;
 	_flicLoaded = 2;
+	_panel->suppressLoading();
 
 	// Main game loop
 	while (_gameLoopState == GAMELOOP_RUNNING) {
