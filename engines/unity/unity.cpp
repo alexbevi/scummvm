@@ -332,13 +332,25 @@ void UnityEngine::setSpeaker(objectID s) {
 }
 
 void UnityEngine::handleLook(Object *obj) {
+	if (obj->flags & OBJFLAG_LOOK) {
+		obj->look_entries.execute(this);
+	}
+
 	// TODO: this is very wrong, of course :)
 
 	// use only Picard's entry for now
 	unsigned int i = 0;
 	while (i < obj->descriptions.size() &&
 			obj->descriptions[i].entry_id != 0) i++;
-	if (i == obj->descriptions.size()) return;
+	if (i == obj->descriptions.size()) {
+		// TODO: bad place?
+		if (next_situation == 0xffffffff) {
+			// TODO: hard-coded :( @95,34,xy...
+			current_conversation = data.getConversation(0x5f, 34);
+			next_situation = 0x1; // default to failed look
+		}
+		return;
+	}
 
 	Description &desc = obj->descriptions[i];
 	dialog_text = desc.text;
