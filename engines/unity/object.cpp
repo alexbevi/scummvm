@@ -874,16 +874,20 @@ void Object::runHail(const Common::String &hail) {
 		error("failed to parse hail (no @?) '%s'", hail.c_str());
 	}
 
-	int conversation, response;
-	if (sscanf(hail.begin() + (immediate ? 2 : 1), "%d,%d",
-		&conversation, &response) != 2) {
-		// TODO: handle further parameters (@%d,%d,%d)
-		error("failed to parse hail '%s'", hail.c_str());
+	int world, conversation, situation;
+	if (sscanf(hail.begin() + (immediate ? 2 : 1), "%d,%d,%d",
+		&world, &conversation, &situation) != 3) {
+		// try two-parameter form (with default world)
+		world = _vm->data.current_screen.world;
+		if (sscanf(hail.begin() + (immediate ? 2 : 1), "%d,%d",
+			&conversation, &situation) != 2) {
+			error("failed to parse hail '%s'", hail.c_str());
+		}
 	}
 
-	// TODO: de-hardcode 0x5f, somehow
-	_vm->current_conversation = _vm->data.getConversation(0x5f, conversation);
-	_vm->current_conversation->execute(_vm, this, response);
+	_vm->current_conversation = _vm->data.getConversation(world, conversation);
+	//_vm->current_conversation->execute(_vm, this, situation);
+	_vm->next_situation = situation;
 }
 
 EntryList::~EntryList() {
@@ -1173,8 +1177,7 @@ void CommunicateBlock::execute(UnityEngine *_vm) {
 	else
 		targ = _vm->data.getObject(target);
 
-	// TODO: de-hardcode 0x5f, somehow
-	_vm->current_conversation = _vm->data.getConversation(0x5f, conversation_id);
+	_vm->current_conversation = _vm->data.getConversation(_vm->data.current_screen.world, conversation_id);
 
 	// original engine simply ignores this when there are no enabled situations, it seems
 	// (TODO: check what happens when there is no such situation at all)

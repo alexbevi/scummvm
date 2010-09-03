@@ -34,6 +34,8 @@ struct ScreenPolygon {
 };
 
 struct Screen {
+	unsigned int world, screen;
+
 	Common::Array<Common::Array<Common::Point> > entrypoints;
 
 	Common::Array<ScreenPolygon> polygons;

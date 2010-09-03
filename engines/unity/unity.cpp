@@ -187,6 +187,9 @@ Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 }
 
 void UnityEngine::startBridge() {
+	data.current_screen.world = 0x5f;
+	data.current_screen.screen = 0xff;
+
 	const char *bridge_sprites[5] = {
 		"brdgldor.spr", // Left Door (conference room)
 		"brdgdoor.spr", // Door
@@ -228,6 +231,8 @@ void UnityEngine::startBridge() {
 
 void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 	data.current_screen.objects.clear();
+	data.current_screen.world = world;
+	data.current_screen.screen = screen;
 
 	// beam in an away team
 	for (unsigned int i = 0; i < 4; i++) {
