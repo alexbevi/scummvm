@@ -857,6 +857,11 @@ void Screen::drawPanel(const byte *panelData) {
 }
 
 void Screen::updatePanelOnScreen() {
+	// Don't update the panel if text is scrolling
+	// TODO: actually check if subtitles are enabled
+	if (_vm->game()->isNarratorPlaying())
+		return;
+
 	_system->copyRectToScreen(_screenBuf + SCREEN_W * (SCREEN_H - PANEL_H),
 		SCREEN_W, 0, SCREEN_H - PANEL_H, SCREEN_W, PANEL_H);
 	_system->updateScreen();
