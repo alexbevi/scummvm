@@ -330,7 +330,7 @@ void Actor::display() {
 			case 0:
 			default:
 				_vm->screen()->drawActorFrame0((int8 *)(_framesData + frameStream.pos()),
-					width, height, xStart, yStart, xStart + scaledWidth, yStart + scaledHeight, _maskDepth);
+					width, height, xStart, yStart, xStart + scaledWidth - 1, yStart + scaledHeight - 1, _maskDepth);
 				break;
 			}
 		}

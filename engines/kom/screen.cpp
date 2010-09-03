@@ -349,18 +349,24 @@ void Screen::clearScreen() {
 static byte lineBuffer[SCREEN_W];
 
 void Screen::drawActorFrame0(const int8 *data, uint16 width, uint16 height, int16 xStart, int16 yStart,
-                            uint16 xEnd, uint16 yEnd, int maskDepth) {
+                            int16 xEnd, int16 yEnd, int maskDepth) {
 
 	uint16 startLine = 0;
 	uint16 startCol = 0;
+	int32 colSkip = 0;
+	int32 rowSkip = 0;
+	div_t d;
+
+	if (xStart > xEnd)
+		SWAP(xStart, xEnd);
+
+	if (yStart > yEnd)
+		SWAP(yStart, yEnd);
 
 	int16 visibleWidth = xEnd - xStart;
 	int16 scaledWidth = visibleWidth;
 	int16 visibleHeight = yEnd - yStart;
 	int16 scaledHeight = visibleHeight;
-	int32 colSkip = 0;
-	int32 rowSkip = 0;
-	div_t d;
 
 	//printf("drawActorFrame(%hu, %hu, %hd, %hd, %hu, %hu)\n", width, height, xStart, yStart, xEnd, yEnd);
 
