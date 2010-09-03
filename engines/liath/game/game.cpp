@@ -64,8 +64,7 @@ GameManager::~GameManager() {
 	delete _interpreter;
 
 	// Free global vars
-	if (_globalVar)
-		free(_globalVar);
+	SAFE_FREE(_globalVar);
 }
 
 //////////////////////////////////////////////////////////////////////////

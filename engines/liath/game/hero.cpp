@@ -46,8 +46,7 @@ HeroManager::~HeroManager() {
 	// Clear hero storage
 	CLEAR_ARRAY(Hero, _heros);
 
-	if (_storage)
-		free(_storage);
+	SAFE_FREE(_storage);
 }
 
 //////////////////////////////////////////////////////////////////////////

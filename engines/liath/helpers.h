@@ -73,6 +73,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #define SAFE_DELETE(_p) { if(_p) { delete (_p); (_p) = NULL; } }
+#define SAFE_FREE(_p) { if(_p) { free (_p); (_p) = NULL; } }
 
 #define CLEAR_ARRAY(type, name) { \
 	for (Common::Array<type *>::iterator it = name.begin(); it != name.end(); it++) \

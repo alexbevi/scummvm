@@ -60,7 +60,6 @@ LiathEngine::LiathEngine(OSystem *syst, const ADGameDescription *gd) :
 
 	// Adding the default directories
 	const Common::FSNode gameDataDir(ConfMan.get("path"));
-	SearchMan.remove("Chuvak.mul");
 	SearchMan.addSubDirectoryMatching(gameDataDir, "cut");
 	SearchMan.addSubDirectoryMatching(gameDataDir, "data");
 	SearchMan.addSubDirectoryMatching(gameDataDir, "dialog");
