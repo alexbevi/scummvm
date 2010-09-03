@@ -713,8 +713,11 @@ Common::Error UnityEngine::run() {
 		_gfx->drawBackgroundPolys(data.current_screen.polygons);
 
 		drawObjects();
-		if (on_bridge) drawBridgeUI();
-		else drawAwayTeamUI();
+		if (on_bridge) {
+			drawBridgeUI();
+		} else {
+			drawAwayTeamUI();
+		}
 
 		assert(!in_dialog);
 
@@ -758,6 +761,7 @@ void UnityEngine::runDialogChoice() {
 
 void UnityEngine::runDialog() {
 	in_dialog = true;
+	_gfx->setCursor(0xffffffff, false);
 
 	while (in_dialog) {
 		checkEvents();
@@ -766,16 +770,22 @@ void UnityEngine::runDialog() {
 		_gfx->drawBackgroundPolys(data.current_screen.polygons);
 
 		drawObjects();
-		if (on_bridge) drawBridgeUI();
-		else drawAwayTeamUI();
+		if (on_bridge) {
+			drawBridgeUI();
+		} else {
+			drawAwayTeamUI();
+		}
 
 		drawDialogWindow();
+		if (icon && icon->playing() && !_snd->speechPlaying()) {
+			icon->startAnim(0); // static
+		}
 
 		_system->updateScreen();
 	}
 
-	// TODO: stupid hack until we actually keep the sound handle
-	_mixer->stopAll();
+	// TODO: reset cursor
+	_snd->stopSpeech();
 }
 
 } // Unity
