@@ -14,6 +14,24 @@ class UnityEngine;
 class UnityData;
 class SpritePlayer;
 
+enum {
+	OBJFLAG_WALK = 0x01,
+	OBJFLAG_USE = 0x02,
+	OBJFLAG_TALK = 0x04,
+	OBJFLAG_GET = 0x08,
+	OBJFLAG_LOOK = 0x10,
+	OBJFLAG_ACTIVE = 0x20,
+	OBJFLAG_INVENTORY = 0x40,
+	OBJFLAG_STUNNED = 0x80
+};
+
+enum {
+	OBJWALKTYPE_NORMAL = 0x0,
+	OBJWALKTYPE_SCALED = 0x1, // scaled with walkable polygons (e.g. characters)
+	OBJWALKTYPE_TS = 0x2, // transition square
+	OBJWALKTYPE_AS = 0x3 // action square
+};
+
 struct objectID {
 	byte id;
 	byte screen;
@@ -199,10 +217,10 @@ public:
 	unsigned int universe_x, universe_y, universe_z;
 	unsigned int width, height;
 	uint16 z_adjust;
-	bool active;
+	byte flags;
 	byte state;
+	byte objwalktype;
 
-	bool scaled; // XXX
 	uint16 sprite_id;
 	SpritePlayer *sprite;
 

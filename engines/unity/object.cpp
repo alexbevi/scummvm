@@ -65,23 +65,6 @@ enum {
 };
 
 enum {
-	OBJFLAG_WALK = 0x01,
-	OBJFLAG_USE = 0x02,
-	OBJFLAG_TALK = 0x04,
-	OBJFLAG_GET = 0x08,
-	OBJFLAG_LOOK = 0x10,
-	OBJFLAG_ACTIVE = 0x20,
-	OBJFLAG_INVENTORY = 0x40
-};
-
-enum {
-	OBJWALKTYPE_NORMAL = 0x0,
-	OBJWALKTYPE_SCALED = 0x1, // scaled with walkable polygons (e.g. characters)
-	OBJWALKTYPE_TS = 0x2, // transition square
-	OBJWALKTYPE_AS = 0x3 // action square
-};
-
-enum {
 	RESPONSE_ENABLED = 0x2,
 	RESPONSE_DISABLED = 0x3,
 	RESPONSE_UNKNOWN1 = 0x4
@@ -138,10 +121,7 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	uint16 unknown6 = objstream->readUint16LE(); // XXX
 	uint16 unknown7 = objstream->readUint16LE(); // XXX
 
-	// XXX: save!!
-	uint8 objflags = objstream->readByte();
-	active = (objflags & OBJFLAG_ACTIVE) != 0;
-
+	flags = objstream->readByte();
 	state = objstream->readByte();
 
 	uint8 unknown8 = objstream->readByte(); // XXX: block count
@@ -151,9 +131,9 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	uint8 unknown11 = objstream->readByte();
 	assert(unknown11 == 0);
 
-	byte objwalktype = objstream->readByte();
+	objwalktype = objstream->readByte();
 	assert(objwalktype <= OBJWALKTYPE_AS);
-	scaled = (objwalktype == OBJWALKTYPE_SCALED); // XXX
+
 	byte description_count = objstream->readByte();
 
 	char _name[20];

@@ -172,7 +172,7 @@ Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 	Common::Array<Object *> &objects = data.current_screen.objects;
 
 	for (unsigned int i = 0; i < objects.size(); i++) {
-		if (!objects[i]->active) continue;
+		if (!(objects[i]->flags & OBJFLAG_ACTIVE)) continue;
 		if (objects[i]->width == (unsigned int)~0) continue;
 
 		// TODO: should we be doing this like this, or keeping track of original coords, or what?
@@ -198,8 +198,8 @@ void UnityEngine::startBridge() {
 		Object *obj = new Object(this);
 		obj->x = obj->y = 0;
 		obj->z_adjust = 0xffff;
-		obj->active = true;
-		obj->scaled = false;
+		obj->flags = OBJFLAG_ACTIVE;
+		obj->objwalktype = OBJWALKTYPE_NORMAL;
 		obj->sprite = new SpritePlayer(new Sprite(data.openFile(bridge_sprites[i])), obj, this);
 		obj->sprite->startAnim(0);
 		data.current_screen.objects.push_back(obj);
@@ -211,8 +211,8 @@ void UnityEngine::startBridge() {
 		obj->x = data.bridge_objects[i].x;
 		obj->y = data.bridge_objects[i].y;
 		obj->z_adjust = 0xffff;
-		obj->active = true;
-		obj->scaled = false;
+		obj->flags = OBJFLAG_ACTIVE;
+		obj->objwalktype = OBJWALKTYPE_NORMAL;
 		obj->sprite = new SpritePlayer(new Sprite(data.openFile(data.bridge_objects[i].filename)), obj, this);
 		obj->sprite->startAnim(0);
 		/*printf("%s: %d, %d\n", data.bridge_objects[i].filename.c_str(),
@@ -508,7 +508,7 @@ void UnityEngine::drawObjects() {
 
 	Common::Array<Object *> to_draw;
 	for (unsigned int i = 0; i < objects.size(); i++) {
-		if (objects[i]->sprite && objects[i]->active) {
+		if (objects[i]->sprite && (objects[i]->flags & OBJFLAG_ACTIVE)) {
 			objects[i]->sprite->update();
 
 			// TODO
@@ -522,7 +522,7 @@ void UnityEngine::drawObjects() {
 	for (unsigned int i = 0; i < to_draw.size(); i++) {
 		// XXX: this is obviously a temporary hack
 		unsigned int scale = 256;
-		if (to_draw[i]->scaled) {
+		if (to_draw[i]->objwalktype == OBJWALKTYPE_SCALED) {
 			unsigned int j;
 			unsigned int x = to_draw[i]->x, y = to_draw[i]->y;
 			for (j = 0; j < data.current_screen.polygons.size(); j++) {
