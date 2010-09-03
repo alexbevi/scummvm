@@ -345,6 +345,18 @@ struct OpcodeParametersBDDD2 : OpcodeParameters {
 	uint32 param22;
 } PACKED_STRUCT;
 
+struct OpcodeParametersBDDB : OpcodeParameters {
+	byte   param1;
+	uint32 param2;
+	uint32 param3;
+	byte param4;
+	uint32 param5;
+	uint32 param6;
+	byte param7;
+	uint32 param8;
+	uint32 param9;
+};
+
 struct OpcodeParametersWWWW : OpcodeParameters {
 	uint16 param1;
 	uint16 param2;
@@ -520,7 +532,14 @@ struct Progress {
 //////////////////////////////////////////////////////////////////////////
 
 struct ArrayData {
-	byte data[28];
+	uint32 field_0;
+	uint32 field_1;
+	uint32 field_2;
+	uint32 field_3;
+	uint32 field_4;
+	uint32 field_5;
+	uint32 field_6;
+	uint32 field_7;
 };
 
 // Array entry (102 bytes)
@@ -530,7 +549,7 @@ struct Array {
 	uint32 field_1A;
 	uint32 dataCount;
 	uint32 field_22;
-	uint32 field_26;
+	uint32 dataCursor;
 	byte field_2A[16];
 	uint32 field_3A; // boolean
 	byte field_3E[12];

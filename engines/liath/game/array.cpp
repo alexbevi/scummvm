@@ -35,14 +35,34 @@
 
 namespace Liath {
 
+/**
+ * Constructor.
+ *
+ * @param engine The engine instance.
+ */
 ArrayManager::ArrayManager(LiathEngine *engine) : _engine(engine) {
 	memset(&_data, 0, sizeof(Array) * 10);
 }
 
+/**
+ * Destructor.
+ */
 ArrayManager::~ArrayManager() {
 	// Zero-out passed pointers
 	_engine = NULL;
 }
+
+/**
+ * Gets the array entry and check for the presence of data
+ */
+#define GET_ARRAY_ENTRY() \
+	int32 index = getGame()->getValue((ParamOrigin)params->param1, params->param2, params->param3) - 1; \
+	debugC(kLiathDebugInterpreter, "  index: %d - value(origin: %d, heroIndex: %d, offset: %d)\n", index, params->param1, params->param2, params->param3); \
+	if (index < 0 || index >= 10) \
+		return kOpcodeRetNext; \
+	Array *array = &_data[index]; \
+	if (!array->data || array->field_0 != index + 1) \
+		return kOpcodeRetNext;
 
 //////////////////////////////////////////////////////////////////////////
 // Opcodes
@@ -93,19 +113,7 @@ OpcodeRet ArrayManager::init(OpcodeParameters *parameters) {
 OpcodeRet ArrayManager::img(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersBDDD2);
 
-	// Compute array index
-	int32 index = getGame()->getValue((ParamOrigin)params->param1, params->param2, params->param3) - 1;
-
-	debugC(kLiathDebugInterpreter, "  index: %d - value(origin: %d, heroIndex: %d, offset: %d)\n", index, params->param1, params->param2, params->param3);
-
-	if (index < 0 || index >= 10)
-		return kOpcodeRetNext;
-
-	Array *array = &_data[index];
-
-	// Check presence of data
-	if (!array->data || array->field_0 != index + 1)
-		return kOpcodeRetNext;
+	GET_ARRAY_ENTRY();
 
 	// Update array data
 	array->field_56 = params->param9;
@@ -141,28 +149,82 @@ OpcodeRet ArrayManager::add(OpcodeParameters *parameters) {
 	error("ArrayManager::add: Not implemented!");
 }
 
+
+OpcodeRet ArrayManager::getNumber(OpcodeParameters *parameters) {
+	EXPOSE_PARAMS(OpcodeParametersBDDB);
+
+	GET_ARRAY_ENTRY();
+
+	int32 val = getGame()->getValue((ParamOrigin)params->param4, params->param5, params->param6);
+
+	if (!val)
+		return kOpcodeRetNext;
+
+	// Get index
+	uint32 dataIndex;
+	for (dataIndex = 0; (dataIndex < array->field_22 && array->data[dataIndex].field_0 != (uint32)val); ++dataIndex);
+
+	if (dataIndex >= array->field_22)
+		return kOpcodeRetNext;
+
+	getGame()->letValue((ParamOrigin)params->param7, params->param8, params->param9, INT2DSI(dataIndex + 1));
+
+	return kOpcodeRetDefault;
+}
+
 OpcodeRet ArrayManager::del(OpcodeParameters *parameters) {
 	error("ArrayManager::del: Not implemented!");
 }
 
 OpcodeRet ArrayManager::kill(OpcodeParameters *parameters) {
-	error("ArrayManager::kill: Not implemented!");
+	EXPOSE_PARAMS(OpcodeParametersBDDB);
+
+	GET_ARRAY_ENTRY();
+
+	if (array->field_22 >= array->dataCount)
+		return kOpcodeRetNext;
+
+	// Free data & clear content
+	free(array->data);
+
+	memset(array, 0, sizeof(Array));
+
+	return kOpcodeRetDefault;
 }
 
 OpcodeRet ArrayManager::clear(OpcodeParameters *parameters) {
-	error("ArrayManager::clear: Not implemented!");
+	EXPOSE_PARAMS(OpcodeParametersBDDB);
+
+	GET_ARRAY_ENTRY();
+
+	if (array->field_22 >= array->dataCount)
+		return kOpcodeRetNext;
+
+	// Clear data
+	memset(array->data, 0, sizeof(ArrayData) * array->dataCount);
+
+	return kOpcodeRetDefault;
 }
 
 OpcodeRet ArrayManager::get(OpcodeParameters *parameters) {
 	error("ArrayManager::get: Not implemented!");
 }
 
-OpcodeRet ArrayManager::getNumber(OpcodeParameters *parameters) {
-	error("ArrayManager::getNumber: Not implemented!");
+OpcodeRet ArrayManager::getScroll(OpcodeParameters *parameters) {
+	error("ArrayManager::getScroll: Not implemented!");
 }
 
 OpcodeRet ArrayManager::size(OpcodeParameters *parameters) {
-	error("ArrayManager::size: Not implemented!");
+	EXPOSE_PARAMS(OpcodeParametersBDDB);
+
+	GET_ARRAY_ENTRY();
+
+	if (array->field_22 >= array->dataCount)
+		return kOpcodeRetNext;
+
+	getGame()->letValue((ParamOrigin)params->param4, params->param5, params->param6, INT2DSI(array->field_22));
+
+	return kOpcodeRetDefault;
 }
 
 OpcodeRet ArrayManager::tget(OpcodeParameters *parameters) {
@@ -170,15 +232,37 @@ OpcodeRet ArrayManager::tget(OpcodeParameters *parameters) {
 }
 
 OpcodeRet ArrayManager::cur(OpcodeParameters *parameters) {
-	error("ArrayManager::cur: Not implemented!");
+	EXPOSE_PARAMS(OpcodeParametersBDDB);
+
+	GET_ARRAY_ENTRY();
+
+
+
+	if (array->field_22 >= array->dataCount)
+		return kOpcodeRetNext;
+
+	if (getGame()->getValue((ParamOrigin)params->param4, params->param5, params->param6) == (int32)array->data[array->dataCursor].field_0)
+		return RET(1, params->test);
+	else
+		return RET(0, params->test);
 }
 
-OpcodeRet ArrayManager::setcur(OpcodeParameters *parameters) {
-	error("ArrayManager::setcur: Not implemented!");
-}
+OpcodeRet ArrayManager::setCur(OpcodeParameters *parameters) {
+	EXPOSE_PARAMS(OpcodeParametersBDDD);
 
-OpcodeRet ArrayManager::getScroll(OpcodeParameters *parameters) {
-	error("ArrayManager::getScroll: Not implemented!");
+	GET_ARRAY_ENTRY();
+
+	if (array->field_22 >= array->dataCount)
+		return kOpcodeRetNext;
+
+	int32 val = DSI2INT(EXPR(params->param4, params->param5));
+
+	if (val >= (int32)(array->field_22 + 1))
+		return kOpcodeRetNext;
+
+	array->dataCursor = val - 1;
+
+	return kOpcodeRetDefault;
 }
 
 //////////////////////////////////////////////////////////////////////////

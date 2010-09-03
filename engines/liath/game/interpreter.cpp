@@ -509,7 +509,7 @@ OpcodeRet Interpreter::run(OpcodeParameters *parameters, ObjectIndex index) {
 		return getArray()->cur(parameters);
 
 	case kOpcodeArraySetCur:
-		return getArray()->setcur(parameters);
+		return getArray()->setCur(parameters);
 
 	case kOpcodeHTime:
 		return getWork()->htime(parameters);

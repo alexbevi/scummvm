@@ -49,7 +49,7 @@ public:
 	OpcodeRet size(OpcodeParameters *parameters);
 	OpcodeRet tget(OpcodeParameters *parameters);
 	OpcodeRet cur(OpcodeParameters *parameters);
-	OpcodeRet setcur(OpcodeParameters *parameters);
+	OpcodeRet setCur(OpcodeParameters *parameters);
 	OpcodeRet getScroll(OpcodeParameters *parameters);
 
 private:
