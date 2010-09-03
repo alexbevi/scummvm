@@ -1714,6 +1714,13 @@ void Game::doActionPlayVideo(const char *name) {
 				1 - _vm->game()->player()->isNight);
 	}
 
+	// Fail silently when a video isn't found.
+	// For example, when talking to the disco king, DIS00T is
+	// supposed to play, but it doesn't exist
+	if (!Common::File::exists(filename)) {
+		return;
+	}
+
 	_vm->screen()->clearScreen();
 
 	if (pauseAmbient)
