@@ -523,8 +523,8 @@ void GeneralBlock::readFrom(Common::SeekableReadStream *objstream) {
 void ConversationBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x49);
 
-	screen_id = objstream->readUint16LE();
-	assert(screen_id == 0xffff || valid_world_id(screen_id));
+	world_id = objstream->readUint16LE();
+	assert(world_id == 0xffff || valid_world_id(world_id));
 	conversation_id = objstream->readUint16LE();
 	response_id = objstream->readUint16LE();
 	state_id = objstream->readUint16LE();
@@ -1132,10 +1132,13 @@ void GeneralBlock::execute(UnityEngine *_vm) {
 }
 
 void ConversationBlock::execute(UnityEngine *_vm) {
-	warning("unimplemented: ConversationBlock::execute: screen %02x, @%d,%d,%d: action %d",
-		screen_id, conversation_id, response_id, state_id, action_id);
+	warning("unimplemented: ConversationBlock::execute: @0x%02x,%d,%d,%d: action %d",
+		world_id, conversation_id, response_id, state_id, action_id);
 
-	Conversation *conv = _vm->data.getConversation(screen_id, conversation_id);
+	uint16 world = world_id;
+	if (world == 0xffff) world = _vm->data.current_screen.world;
+
+	Conversation *conv = _vm->data.getConversation(world, conversation_id);
 	Response *resp = conv->getResponse(response_id, state_id);
 	resp->response_state = action_id;
 }

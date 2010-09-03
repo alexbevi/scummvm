@@ -166,7 +166,7 @@ public:
 
 class ConversationBlock : public Entry {
 protected:
-	uint16 screen_id, conversation_id, response_id, state_id, action_id;
+	uint16 world_id, conversation_id, response_id, state_id, action_id;
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
