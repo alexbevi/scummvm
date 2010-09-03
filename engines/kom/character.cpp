@@ -439,6 +439,7 @@ void Character::setScopeX(int16 scope) {
 			}
 
 			// Figure out if the prefix directory is 3 or 4 characters long
+			// and if the filename has a day/night variant
 			char prefix[5];
 			strncpy(prefix, name.c_str(), 4);
 			prefix[4] = '\0';
@@ -447,9 +448,17 @@ void Character::setScopeX(int16 scope) {
 					name.c_str(), _vm->game()->player()->isNight);
 
 			if (!Common::File::exists(filename)) {
-				prefix[3] = '\0';
-				sprintf(filename, "%s%s/%s%d.act", spritesDir.c_str(), prefix,
-						name.c_str(), _vm->game()->player()->isNight);
+				filename[strlen(filename) - 5] = '0' + 1 - _vm->game()->player()->isNight;
+
+				if (!Common::File::exists(filename)) {
+					prefix[3] = '\0';
+					sprintf(filename, "%s%s/%s%d.act", spritesDir.c_str(), prefix,
+							name.c_str(), _vm->game()->player()->isNight);
+
+					if (!Common::File::exists(filename)) {
+						filename[strlen(filename) - 5] = '0' + 1 - _vm->game()->player()->isNight;
+					}
+				}
 			}
 
 			_vm->panel()->showLoading(true);
