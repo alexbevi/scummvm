@@ -24,6 +24,7 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	current_conversation = NULL;
 	next_situation = 0xffffffff;
 	next_state = 0xffffffff;
+	beam_world = 0;
 }
 
 UnityEngine::~UnityEngine() {

@@ -53,6 +53,8 @@ public:
 	Common::Array<unsigned int> dialog_choice_states;
 	unsigned int next_situation, next_state;
 
+	uint16 beam_world, beam_screen;
+
 	void runDialogChoice();
 	void runDialog();
 

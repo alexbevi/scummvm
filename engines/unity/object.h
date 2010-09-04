@@ -179,6 +179,11 @@ public:
 };
 
 class BeamBlock : public Entry {
+protected:
+	uint16 world_id;
+	uint16 unknown1;
+	uint16 unknown3;
+	uint16 screen_id;
 public:
 	void readFrom(Common::SeekableReadStream *stream);
 	void execute(UnityEngine *_vm);

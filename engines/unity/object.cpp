@@ -532,7 +532,49 @@ void ConversationBlock::readFrom(Common::SeekableReadStream *objstream) {
 void BeamBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x4a);
 
-	objstream->seek(0x90, SEEK_CUR); // XXX
+	// world id, or 00 to kill?
+	world_id = objstream->readUint16LE();
+
+	// unused?
+	unknown1 = objstream->readUint16LE();
+	assert(unknown1 == 0xffff || unknown1 == 1 || unknown1 == 4);
+
+	uint16 unknown2 = objstream->readUint16LE();
+	assert(unknown2 == 0xffff);
+	unknown2 = objstream->readUint16LE();
+	assert(unknown2 == 0xffff);
+	unknown2 = objstream->readUint16LE();
+	assert(unknown2 == 0xffff);
+
+	// unused?
+	unknown3 = objstream->readUint16LE();
+	assert(unknown3 == 0 || unknown3 == 0xffff);
+
+	unknown2 = objstream->readUint16LE();
+	assert(unknown2 == 0xffff);
+	unknown2 = objstream->readUint16LE();
+	assert(unknown2 == 0xffff);
+	unknown2 = objstream->readUint16LE();
+	assert(unknown2 == 0xffff);
+
+	screen_id = objstream->readUint16LE();
+	assert(screen_id <= 4 || screen_id == 0xffff);
+
+	// from here this is all unused junk, i think
+	uint16 unknown5 = objstream->readUint16LE();
+	uint16 unknown6 = objstream->readUint16LE();
+	assert(unknown5 == 0xffff || unknown5 == 0 || unknown5 == 0x60);
+	assert(unknown6 == 0xffff || unknown6 == 0x20 || unknown6 == 0x1b);
+	for (unsigned int i = 0; i < 3; i++) {
+		unknown2 = objstream->readUint16LE();
+		assert(unknown2 == 0x0);
+		uint32 unknown32 = objstream->readUint32LE();
+		assert(unknown32 == 0xffffffff);
+	}
+	for (unsigned int i = 0; i < 51; i++) {
+		unknown2 = objstream->readUint16LE();
+		assert(unknown2 == 0x0);
+	}
 }
 
 void TriggerBlock::readFrom(Common::SeekableReadStream *objstream) {
@@ -1291,7 +1333,10 @@ void ConversationBlock::execute(UnityEngine *_vm) {
 }
 
 void BeamBlock::execute(UnityEngine *_vm) {
-	error("unimplemented: BeamBlock::execute");
+	debug(1, "BeamBlock::execute with %04x, %04x", world_id, screen_id);
+
+	_vm->beam_world = world_id;
+	_vm->beam_screen = screen_id;
 }
 
 bool TriggerBlock::check(UnityEngine *_vm) {
