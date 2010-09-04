@@ -79,18 +79,23 @@ public:
 
 class ConditionBlock : public Entry {
 protected:
-	objectID target[2];
+	objectID target;
+	objectID WhoCan;
 
-	objectID condition[5];
-	uint16 unknown1[5];
-	uint16 unknown2[5];
-	uint16 unknown3[5];
-	uint16 unknown4[5];
-	uint16 unknown5[5];
-	uint16 unknown6[5];
-	byte unknown7[5];
-	byte unknown8[5];
-	byte state_check[5];
+	uint16 how_close_dist, how_close_x, how_close_y;
+	uint16 skill_check;
+	byte unknown_a, unknown_b, unknown_c;
+
+	objectID condition[4];
+	uint16 check_x[4];
+	uint16 check_y[4];
+	uint16 check_unknown[4];
+	uint16 check_univ_x[4];
+	uint16 check_univ_y[4];
+	uint16 check_univ_z[4];
+	byte check_screen[4];
+	byte check_status[4];
+	byte check_state[4];
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);

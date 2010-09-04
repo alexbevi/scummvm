@@ -321,80 +321,68 @@ bool valid_world_id(uint16 world_id) {
 void ConditionBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0xff);
 
-	target[0] = readObjectID(objstream);
-	assert(target[0].world == 0xff || valid_world_id(target[0].world));
-	target[1] = readObjectID(objstream);
-	assert(target[1].world == 0xff || valid_world_id(target[1].world));
+	// target
+	target = readObjectID(objstream);
+	assert(target.world == 0xff || valid_world_id(target.world));
 
-	/*if (target[0].world != 0xff)
-		printf("targ 0: %02x%02x%02x\n", target[0].world, target[0].screen, target[0].id);
-	if (target[1].world != 0xff)
-		printf("targ 1: %02x%02x%02x\n", target[1].world, target[1].screen, target[1].id);*/
+	// WhoCan?
+	WhoCan = readObjectID(objstream);
+	assert(WhoCan.world == 0xff || valid_world_id(WhoCan.world));
 
-	for (unsigned int i = 0; i < 5; i++) {
+	for (unsigned int i = 0; i < 4; i++) {
 		condition[i] = readObjectID(objstream);
 		assert(condition[i].world == 0xff || valid_world_id(condition[i].world));
 
-		/*printf("cond %d: ", i);
-		if (condition[i].world != 0xff)
-			printf("%02x%02x%02x ", condition[i].world, condition[i].screen, condition[i].id);*/
-
-		unknown1[i] = objstream->readUint16LE();
-		unknown2[i] = objstream->readUint16LE();
-		unknown3[i] = objstream->readUint16LE();
-		unknown4[i] = objstream->readUint16LE();
-		unknown5[i] = objstream->readUint16LE();
-		unknown6[i] = objstream->readUint16LE();
-		unknown7[i] = objstream->readByte();
-		unknown8[i] = objstream->readByte();
-		state_check[i] = objstream->readByte();
-
-		/*if (unknown1 != 0xffff) printf("unknown1: %04x ", unknown1);
-		if (unknown2 != 0xffff) printf("unknown2: %04x ", unknown2);
-		if (unknown3 != 0xffff) printf("unknown3: %04x ", unknown3);
-		if (unknown4 != 0xffff) printf("unknown4: %04x ", unknown4);
-
-		if (unknown5 != 0xffff) printf("unknown5: %04x ", unknown5);
-		if (unknown6 != 0xffff) printf("unknown6: %04x ", unknown6);
-
-		if (unknown7 != 0xff) printf("unknown7: %02x ", unknown7);
-		if (unknown8 != 0xff) printf("unknown8: %02x ", unknown8);
-		if (state_check[i] != 0xff) printf("state check: %x ", state_check[i]);
-
-		printf("\n");*/
+		check_x[i] = objstream->readUint16LE();
+		check_y[i] = objstream->readUint16LE();
+		check_unknown[i] = objstream->readUint16LE(); // unused check_z?
+		check_univ_x[i] = objstream->readUint16LE();
+		check_univ_y[i] = objstream->readUint16LE();
+		check_univ_z[i] = objstream->readUint16LE();
+		check_screen[i] = objstream->readByte();
+		check_status[i] = objstream->readByte();
+		check_state[i] = objstream->readByte();
 
 		switch (i) {
 			case 0:
 			case 1:
-				assert(unknown4[i] == 0xffff);
-				assert(unknown5[i] == 0xffff);
-				assert(unknown6[i] == 0xffff);
+				assert(check_univ_x[i] == 0xffff);
+				assert(check_univ_y[i] == 0xffff);
+				assert(check_univ_z[i] == 0xffff);
 				break;
 			case 2:
 			case 3:
-				assert(unknown1[i] == 0xffff);
-				assert(unknown2[i] == 0xffff);
-				assert(unknown3[i] == 0xffff);
-				assert(unknown4[i] == 0xffff);
-				assert(unknown5[i] == 0xffff);
-				assert(unknown6[i] == 0xffff);
-				break;
-			case 4:
-				// can only check 4 condition objects, so
-				// this is perhaps something else entirely
-				assert(condition[i].world == 0xff);
-				assert(unknown1[i] == 0xffff);
-				assert(unknown4[i] == 0xffff);
-				/*
-				byte unknown6 = objstream->readByte();
-				assert(unknown36 == 0);
-				byte unknown7 = objstream->readByte();
-				uint16 unknown8 = objstream->readUint16LE();
-				byte unknown9 = objstream->readByte();
-				*/
+				assert(check_x[i] == 0xffff);
+				assert(check_y[i] == 0xffff);
+				assert(check_unknown[i] == 0xffff);
+				assert(check_univ_x[i] == 0xffff);
+				assert(check_univ_y[i] == 0xffff);
+				assert(check_univ_z[i] == 0xffff);
 				break;
 		}
 	}
+
+	uint16 unknown1 = objstream->readUint16LE();
+	assert(unknown1 == 0xffff);
+	uint16 unknown2 = objstream->readUint16LE();
+	assert(unknown2 == 0xffff);
+	uint16 unknown3 = objstream->readUint16LE();
+	assert(unknown3 == 0xffff);
+
+	how_close_x = objstream->readUint16LE();
+	how_close_y = objstream->readUint16LE();
+
+	uint16 unknown4 = objstream->readUint16LE();
+	assert(unknown4 == 0xffff);
+
+	how_close_dist = objstream->readUint16LE();
+
+	skill_check = objstream->readUint16LE();
+
+	// XXX: counter value/start/flag?
+	unknown_a = objstream->readByte();
+	unknown_b = objstream->readByte();
+	unknown_c = objstream->readByte();
 
 	for (unsigned int i = 0; i < 25; i++) {
 		uint32 zero = objstream->readUint32LE();
@@ -922,56 +910,98 @@ void EntryList::execute(UnityEngine *_vm) {
 
 bool ConditionBlock::check(UnityEngine *_vm) {
 	warning("unimplemented: ConditionBlock::check: %02x%02x%02x, %02x%02x%02x",
-		target[0].world, target[0].screen, target[0].id,
-		target[1].world, target[1].screen, target[1].id);
+		target.world, target.screen, target.id,
+		WhoCan.world, WhoCan.screen, WhoCan.id);
 
-	// TODO: this isn't complete
+	if (target.world == 0xff && target.screen == 0xff && target.id != 0xfe) {
+		// TODO: fail if source was passed in
+	} else if (target.world != 0xff && target.screen != 0xff && target.id != 0xff) {
+		// TODO: fail if source != target
+	}
+
+	if (target.world == 0x0 && target.screen == 0x70) {
+		// XXX: TODO: for now, we always return false for item usage
+		return false;
+	}
+
+	if (how_close_dist != 0xffff) {
+		// TODO: fail if `who' object doesn't exist?
+		uint16 x = how_close_x;
+		uint16 y = how_close_y;
+		if (x == 0xffff) {
+			// TODO: if source has OBJFLAG_INVENTORY, take `who' position
+			// otherwise, take source position
+		}
+		// TODO: if squared distance between `who' and x/y > how_close_dist*how_close_dist {
+		//	run walk action with `who', return false
+		// }
+		// TODO: (wth? checking `who' vs `who'?)
+	}
+
+	// TODO: check WhoCan actually, well, can :)
+	// (make sure to check for 000010)
+
+	// TODO: if counter {
+	//	counter_flag = 1;
+	//	if (counter_check == 1) {
+	//		if (counter_val) { counter_val--; return false; }
+	//	} else if (counter_check == 0) {
+	//		if (counter_val <= 0) { return false; }
+	//	}
+	//	counter_val--;
+	// }
+
 	for (unsigned int i = 0; i < 4; i++) {
+		// TODO: some special handling of check_x/check_y for invalid obj?
 		if (condition[i].world == 0xff) continue;
 
 		Object *obj = _vm->data.getObject(condition[i]);
 		printf("checking state of %s", obj->identify().c_str());
-		if (unknown1[i] != 0xffff) {
-			printf(" (is unknown1 %x?)", unknown1[i]);
-		}
-		if (unknown2[i] != 0xffff) {
-			printf(" (is unknown2 %x?)", unknown2[i]);
-		}
-		if (unknown3[i] != 0xffff) {
-			printf(" (is unknown3 %x?)", unknown3[i]);
-		}
-		if (unknown4[i] != 0xffff) {
-			printf(" (is unknown4 %x?)", unknown4[i]);
-		}
-		if (unknown5[i] != 0xffff) {
-			printf(" (is unknown5 %x?)", unknown5[i]);
-		}
-		if (unknown6[i] != 0xffff) {
-			printf(" (is unknown6 %x?)", unknown6[i]);
-		}
-		if (unknown7[i] != 0xff) {
-			printf(" (is unknown7 %x?)", unknown7[i]);
-		}
-		if (unknown8[i] != 0xffff) {
-			printf(" (is unknown8 %x?)", unknown8[i]);
-		}
-		if (state_check[i] != 0xff) {
-			printf(" (is state %x?)", state_check[i]);
-			if (obj->state != state_check[i]) {
+
+		if (check_x[i] != 0xffff) {
+			printf(" (is x/y %x/%x?)", check_x[i], check_y[i]);
+			if (obj->x != check_x[i] || obj->y != check_y[i]) {
 				printf(" -- nope!\n");
 				return false;
 			}
-			// XXX: definitely don't commit this ;p
-			/*if (condition[i].id == 7 && state_check[i] == 1) { }
-			else if (condition[i].id == 8 && state_check[i] == 0) { }
-			else if (condition[i].id == 0xc && state_check[i] == 0) { }
-			else if (condition[i].id == 0x13 && state_check[i] == 0) { }
-			else if (condition[i].id == 0x28 && state_check[i] == 1) { }
-			else if (condition[i].id == 0x31 && state_check[i] == 0) { }
-			else { printf(" -- nope!\n"); return false; }*/
 		}
+
+		// (check_unknown unused?)
+
+		if (check_univ_x[i] != 0xffff) {
+			printf(" (is universe x/y/z %x/%x/%x?)", check_univ_x[i], check_univ_y[i], check_univ_z[i]);
+			if (obj->universe_x != check_univ_x[i] || obj->universe_y != check_univ_y[i] ||
+				obj->universe_z != check_univ_z[i]) {
+				printf(" -- nope!\n");
+				return false;
+			}
+		}
+
+		if (check_screen[i] != 0xff) {
+			printf(" (is screen %x?)", check_screen[i]);
+			// TODO: (this is 'current screen', i think different from the other thing)
+		}
+
+		if (check_status[i] != 0xff) {
+			printf(" (is status %x?)", check_status[i]);
+			// TODO: if 1, check whether in away team (<0x10) or inventory (flag)
+			// if 0, check whether *not* in inventory
+		}
+
+		if (check_state[i] != 0xff) {
+			printf(" (is state %x?)", check_state[i]);
+			if (obj->state != check_state[i]) {
+				printf(" -- nope!\n");
+				return false;
+			}
+		}
+
+		// TODO: check whether active or not
+
 		printf("\n");
 	}
+
+	// TODO: stupid hardcoded tricorder sound
 
 	return true;
 }
