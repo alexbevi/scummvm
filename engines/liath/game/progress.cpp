@@ -25,8 +25,13 @@
 
 #include "liath/game/progress.h"
 
+#include "liath/game/game.h"
+
 #include "liath/helpers.h"
 #include "liath/liath.h"
+#include "liath/resource.h"
+
+#include "common/rational.h"
 
 namespace Liath {
 
@@ -75,15 +80,63 @@ OpcodeRet ProgressManager::init(OpcodeParameters *parameters) {
 }
 
 OpcodeRet ProgressManager::set(OpcodeParameters *parameters) {
-	error("ProgressManager::set: Not implemented!");
+	EXPOSE_PARAMS(OpcodeParametersWWWW);
+
+	if (_progress.size() == 0)
+		return kOpcodeRetDefault;
+
+	int16 index = params->param1;
+	if (index < 0 || (uint32)index >= _progress.size() || _progress[index]->field_0)
+		return kOpcodeRetDefault;
+
+	_data[9] += _data[0];
+	++_data[10];
+
+	_progress[index]->field_0 = 1;
+
+	return kOpcodeRetDefault;
 }
 
+
 OpcodeRet ProgressManager::get(OpcodeParameters *parameters) {
-	error("ProgressManager::get: Not implemented!");
+	EXPOSE_PARAMS(OpcodeParametersBDDB);
+
+	if (_progress.size() == 0)
+		return kOpcodeRetDefault;
+
+	getGame()->letValue((ParamOrigin)params->param1, params->param2, params->param3, INT2DSI(_data[9]));
+	getGame()->letValue((ParamOrigin)params->param4, params->param5, params->param6, INT2DSI(Common::Rational(51 * _data[10], _progress.size()).toInt()));
+
+	return kOpcodeRetDefault;
 }
 
 OpcodeRet ProgressManager::help(OpcodeParameters *parameters) {
-	error("ProgressManager::help: Not implemented!");
+	EXPOSE_PARAMS(OpcodeParametersWWBD);
+
+	if (_progress.size() == 0 || params->param1 < 1 || params->param1 > 3) {
+		getGame()->letValue((ParamOrigin)params->param3, params->param4, params->param5, INT2DSI(0));
+		return kOpcodeRetDefault;
+	}
+
+	// Get index of first empty progress entry
+	uint32 index;
+	for (index = 0; index < _progress.size() && _progress[index]->field_0; ++index);
+
+	Message message;
+	int messageIndex = _data[params->param1] + index;
+	if (index == _progress.size() || !getResource()->readMessage(&messageIndex, &message)) {
+		getGame()->letValue((ParamOrigin)params->param3, params->param4, params->param5, INT2DSI(0));
+		return kOpcodeRetDefault;
+	}
+
+	if (!message.field_B1)
+		_data[9] += _data[params->param1] * *_progress[index]->getData(params->param1);
+
+	*_progress[index]->getData(params->param1) = 0;
+
+	getGame()->letValue((ParamOrigin)params->param3, params->param4, params->param5, INT2DSI(messageIndex));
+
+	return kOpcodeRetDefault;
 }
 
 } // End of namespace Liath

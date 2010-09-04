@@ -355,7 +355,7 @@ struct OpcodeParametersBDDB : OpcodeParameters {
 	byte param7;
 	uint32 param8;
 	uint32 param9;
-};
+} PACKED_STRUCT;
 
 struct OpcodeParametersWWWW : OpcodeParameters {
 	uint16 param1;
@@ -375,6 +375,14 @@ struct OpcodeParametersWWWW : OpcodeParameters {
 	uint16 param15;
 } PACKED_STRUCT;
 
+struct OpcodeParametersWWBD : OpcodeParameters {
+	uint16 param1;
+	uint16 param2;
+	byte param3;
+	uint32 param4;
+	uint32 param5;
+} PACKED_STRUCT;
+
 struct OpcodeParametersDefault : OpcodeParameters {
 	uint32 param1;
 	uint32 param2;
@@ -391,6 +399,50 @@ struct OpcodeParametersDefault : OpcodeParameters {
 	byte   param13;
 	int16  param14;
 	int16  param15;
+} PACKED_STRUCT;
+
+//////////////////////////////////////////////////////////////////////////
+// Message
+//////////////////////////////////////////////////////////////////////////
+struct Message {
+	uint16 field_0;
+	uint16 field_2;
+	uint16 field_4;
+	uint16 field_6;
+	uint16 field_8;
+	uint16 field_A;
+	uint32 field_C;
+	byte field_10;
+	byte field_11;
+	uint32 field_12;
+	byte field_16;
+	uint32 field_17;
+	uint32 field_1B;
+	uint32 field_1F;
+	uint32 field_23;
+	uint32 field_27;
+	uint32 field_2B;
+	uint32 field_2F;
+	uint16 field_33;
+	byte field_35;
+	uint16 field_36;
+	uint32 field_38;
+	uint32 field_3C;
+	uint32 field_40;
+	uint32 field_44;
+	uint32 field_48;
+	uint32 field_4C;
+	uint32 field_50;
+	uint16 field_54;
+	uint16 field_56;
+	byte field_58;
+	uint32 field_59;
+	byte field_5D;
+	uint16 field_5E;
+	uint32 field_60[20];
+	byte field_B0;
+	byte field_B1;
+	uint16 field_B2;
 } PACKED_STRUCT;
 
 //////////////////////////////////////////////////////////////////////////
@@ -524,6 +576,10 @@ struct Progress {
 		field_2 = 2;
 		field_3 = 3;
 		field_4 = 4;
+	}
+
+	uint32 *getData(uint32 offset) {
+		return (uint32 *)((byte *)this + offset);
 	}
 } PACKED_STRUCT;
 

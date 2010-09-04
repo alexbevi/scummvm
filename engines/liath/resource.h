@@ -51,6 +51,9 @@ public:
 	void readPathFile();
 	void readMultiData();
 
+	// Message
+	bool readMessage(int *pIndex, Message *message);
+
 private:
 	enum MediaType {
 		kMediaCd,
