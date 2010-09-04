@@ -1265,17 +1265,25 @@ void WhoCanSayBlock::readFrom(Common::SeekableReadStream *stream) {
 	uint16 unknown = stream->readUint16LE();
 	assert(unknown == 8);
 
+	whocansay = readObjectID(stream);
 	// XXX
-	objectID whocansay = readObjectID(stream);
 	byte unknown1 = stream->readByte();
 	byte unknown2 = stream->readByte();
 	byte unknown3 = stream->readByte();
 	byte unknown4 = stream->readByte();
 }
 
-void WhoCanSayBlock::execute(UnityEngine *_vm, Object *speaker) {
+void WhoCanSayBlock::execute(UnityEngine *_vm, objectID &speaker) {
 	// TODO
+	debug(1, "WhoCanSay: %02x%02x%02x", whocansay.world, whocansay.screen, whocansay.id);
 	//warning("unimplemented: WhoCanSayBlock::execute");
+
+	if (speaker.id == 0xff) {
+		if (whocansay.id == 0x10)
+			speaker = objectID(0, 0, 0);
+		else
+			speaker = whocansay;
+	}
 }
 
 void TextBlock::readFrom(Common::SeekableReadStream *stream) {
@@ -1456,7 +1464,7 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 				while (true) {
 					WhoCanSayBlock *block = new WhoCanSayBlock();
 					block->readFrom(stream);
-					blocks.push_back(block);
+					whocansayblocks.push_back(block);
 
 					type = readBlockHeader(stream);
 					if (type == BLOCK_END_BLOCK)
@@ -1534,18 +1542,28 @@ void Conversation::loadConversation(UnityData &data, unsigned int world, unsigne
 }
 
 void Response::execute(UnityEngine *_vm, Object *speaker) {
+	// TODO: this should be checked BEFORE we pick a response object,
+	// since there are usually different responses for different people
+	objectID ourselves;
+	for (unsigned int i = 0; i < whocansayblocks.size(); i++) {
+		whocansayblocks[i]->execute(_vm, ourselves);
+	}
+	if (ourselves.world == 0xff) {
+		error("no-one could speak!");
+	}
+
 	if (text.size()) {
 		_vm->dialog_text = text;
 
-		// TODO: this is not good
-		_vm->setSpeaker(objectID(0, 0, 0));
+		// TODO: this is VERy not good
+		_vm->setSpeaker(ourselves);
 		debug(1, "%s says '%s'", "Picard", text.c_str());
 
 		// TODO: 0xcc some marks invalid entries, but should we check something else?
 		// (the text is invalid too, but i display it, to make it clear we failed..)
 
 		if (voice_group != 0xcc) {
-			uint32 entry_id = 0; // TODO: work out correct entry for actor
+			uint32 entry_id = ourselves.id; // TODO: work out correct entry for actor
 			Common::String file;
 			file = Common::String::printf("%02x%02x%02x%02x.vac",
 				voice_group, entry_id, voice_subgroup, voice_id);

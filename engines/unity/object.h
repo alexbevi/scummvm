@@ -258,10 +258,13 @@ public:
 	virtual ~ResponseBlock() { }
 };
 
-class WhoCanSayBlock : public ResponseBlock {
+class WhoCanSayBlock {
+protected:
+	objectID whocansay;
+
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm, Object *speaker);
+	void execute(UnityEngine *_vm, objectID &speaker);
 };
 
 class ChangeActionBlock : public ResponseBlock {
@@ -295,6 +298,7 @@ class Response {
 public:
 	uint16 id, state;
 	Common::Array<ResponseBlock *> blocks;
+	Common::Array<WhoCanSayBlock *> whocansayblocks;
 
 	byte response_state;
 
