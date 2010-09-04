@@ -85,6 +85,7 @@ public:
 	~Sprite();
 
 	SpriteEntry *getEntry(unsigned int entry) { return entries[entry]; }
+	unsigned int numEntries() { return entries.size(); }
 	unsigned int getIndexFor(unsigned int anim) { return indexes[anim]; }
 	unsigned int numAnims() { return indexes.size(); }
 

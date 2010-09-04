@@ -398,14 +398,14 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 	alter_flags = objstream->readByte();
 	alter_reset = objstream->readByte();
 
-	unknown3 = objstream->readUint16LE();
+	alter_timer = objstream->readUint16LE(); // set timer..
 
 	uint16 unknown16 = objstream->readUint16LE();
 	assert(unknown16 == 0xffff);
 
-	unknown4 = objstream->readByte();
-	unknown5 = objstream->readByte();
-	alter_state = objstream->readByte(); // set state..
+	alter_anim = objstream->readUint16LE();
+	alter_state = objstream->readByte();
+
 	unknown7 = objstream->readByte();
 
 	x_pos = objstream->readUint16LE();
@@ -1050,19 +1050,43 @@ void AlterBlock::execute(UnityEngine *_vm) {
 		warning("unimplemented: AlterBlock::execute (%s): state %x", obj->identify().c_str(), alter_state);
 	}
 
-	if (unknown3 != 0xffff) {
+	if (alter_timer != 0xffff) {
 		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): unknown3 %x", obj->identify().c_str(), unknown3);
+		warning("unimplemented: AlterBlock::execute (%s): timer %x", obj->identify().c_str(), alter_timer);
 	}
 
-	if (unknown4 != 0xff) {
+	if (alter_anim != 0xffff) {
 		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): unknown4 %x", obj->identify().c_str(), unknown4);
-	}
+		warning("unimplemented: AlterBlock::execute (%s): anim %04x", obj->identify().c_str(), alter_anim);
 
-	if (unknown5 != 0xff) {
-		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): unknown5 %x", obj->identify().c_str(), unknown5);
+		uint16 anim_id = alter_anim;
+
+		if (anim_id >= 31000) {
+			// TODO (some magic with (alter_anim - 31000))
+			// (this sets a different animation type - index?)
+			// this doesn't run ANY of the code below
+			error("whargle: %04x\n", alter_anim);
+		} else if (anim_id >= 29000) {
+			if (alter_anim < 30000) {
+				// TODO: some other magic?
+				error("whargle whurgle: %04x\n", alter_anim);
+			}
+			// TODO: ?!?
+			anim_id -= 30000;
+		}
+
+		if (obj->sprite) {
+			if (obj->sprite->numAnims() <= anim_id) {
+				// use the Chodak transporter bar gauge, for example
+				warning("animation %d exceeds %d?!", anim_id, obj->sprite->numAnims());
+			} else {
+				obj->sprite->startAnim(anim_id);
+			}
+		} else if (obj->id.world == 0x5f && obj->id.screen == 1 && obj->id.id == 0) {
+			// TODO: special handling for the Enterprise
+		} else {
+			warning("no sprite?!");
+		}
 	}
 
 	if (unknown7 != 0) {

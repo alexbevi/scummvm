@@ -110,9 +110,9 @@ protected:
 	uint16 x_pos, y_pos;
 	Common::String alter_name, alter_hail;
 
-	uint16 unknown3;
-	byte unknown4;
-	byte unknown5;
+	uint16 alter_timer;
+	uint16 alter_anim;
+
 	byte unknown7;
 	uint16 unknown8;
 	byte unknown11;
