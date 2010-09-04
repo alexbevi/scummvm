@@ -37,7 +37,9 @@
 
 namespace Liath {
 
-HeroManager::HeroManager(LiathEngine *engine) : _engine(engine), _heroIndex(0), _storage(NULL) {}
+HeroManager::HeroManager(LiathEngine *engine) : _engine(engine), _storage(NULL) {
+	memset(&_heroParams, 0, sizeof(_heroParams));
+}
 
 HeroManager::~HeroManager() {
 	// Zero-out passed pointers
@@ -148,11 +150,31 @@ OpcodeRet HeroManager::exit(OpcodeParameters *parameters) {
 }
 
 OpcodeRet HeroManager::save(OpcodeParameters *parameters) {
-	error("HeroManager::save_hero: Not implemented!");
+	EXPOSE_PARAMS(OpcodeParametersDefault);
+
+	Work *work = getWork()->get(params->param1);
+
+	if (work->field_C)
+		return kOpcodeRetDefault;
+
+	// Update hero params
+	_heroParams.param1 = work->field_68;
+	_heroParams.param2 = work->heroIndex;
+	_heroParams.param3 = work->field_76;
+	_heroParams.param10 = work->field_35;
+	_heroParams.param12 = work->field_39;
+	_heroParams.param14 = work->field_3D;
+	_heroParams.param16 = work->field_41;
+	_heroParams.param18 = work->field_45;
+	_heroParams.param20 = work->field_34;
+	_heroParams.param21 = 1;
+	_heroParams.param22 = work->field_FA;
+
+	return kOpcodeRetDefault;
 }
 
 OpcodeRet HeroManager::load() {
-	if (searchHeroForLoad(_heroIndex))
+	if (getWork()->get(_heroParams.param2))
 		reset(&_heroParams, NULL);
 	else
 		start(&_heroParams, NULL, NULL);
@@ -430,14 +452,6 @@ OpcodeRet HeroManager::auto2(OpcodeParameters *parameters) {
 
 OpcodeRet HeroManager::hear(OpcodeParameters *parameters) {
 	error("HeroManager::auto2: Not implemented!");
-}
-
-Work *HeroManager::searchHeroForSave(HeroIndex index) {
-	error("WorkManager::searchHeroForSave: not implemented!");
-}
-
-bool HeroManager::searchHeroForLoad(HeroIndex index) {
-	error("WorkManager::searchHeroForLoad: not implemented!");
 }
 
 } // End of namespace Liath

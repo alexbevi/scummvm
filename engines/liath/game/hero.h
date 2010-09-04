@@ -85,6 +85,33 @@ public:
 	uint32 *getData(HeroIndex index, uint32 offset) { return get(index)->getData(offset); }
 
 private:
+#include "common/pack-start.h"
+	struct OpcodeParametersHero : OpcodeParameters {
+		uint32 param1;
+		uint32 param2;
+		uint32 param3;
+		uint32 param4;
+		uint32 param5;
+		uint32 param6;
+		uint32 param7;
+		uint32 param8;
+		uint16 param9;
+		uint32 param10;
+		uint32 param11;
+		uint32 param12;
+		uint32 param13;
+		uint32 param14;
+		uint32 param15;
+		uint32 param16;
+		uint32 param17;
+		uint32 param18;
+		uint32 param19;
+		byte param20;
+		byte param21;
+		uint32 param22;
+	} PACKED_STRUCT;
+#include "common/pack-end.h"
+
 	LiathEngine* _engine;
 
 	// Storage
@@ -92,17 +119,12 @@ private:
 	void *_storage;
 
 	// Current saved hero
-	HeroIndex  _heroIndex;
-	OpcodeParameters _heroParams;
+	OpcodeParametersHero _heroParams;
 
 	// Opcode helpers
 	OpcodeRet quit(HeroIndex heroIndex);
 	OpcodeRet auto2(OpcodeParameters *parameters);
 	OpcodeRet hear(OpcodeParameters *parameters);
-
-	// Saving/loading
-	Work *searchHeroForSave(HeroIndex index);
-	bool  searchHeroForLoad(HeroIndex index);
 };
 
 } // End of namespace Liath

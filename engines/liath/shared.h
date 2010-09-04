@@ -459,6 +459,8 @@ struct Object {
 
 struct Work {
 	// Work *next;
+	uint32 field_C;
+	byte field_34;
 	uint32 field_35;
 	uint32 field_39;
 	uint32 field_3D;
@@ -491,6 +493,7 @@ struct Work {
 
 
 	uint32 field_DC;
+	uint32 field_FA;
 	uint32 field_FE;
 
 

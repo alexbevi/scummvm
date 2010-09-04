@@ -41,7 +41,7 @@ WorkManager::~WorkManager() {
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Functions
+// Opcodes
 //////////////////////////////////////////////////////////////////////////
 OpcodeRet WorkManager::cel(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
@@ -221,5 +221,16 @@ OpcodeRet WorkManager::endtop() {
 	return kOpcodeRetDefault;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Accessors
+//////////////////////////////////////////////////////////////////////////
+
+Work *WorkManager::get(HeroIndex index) {
+	for (Common::Array<Work *>::iterator it = _works.begin(); it != _works.end(); it++)
+		if ((*it)->heroIndex == index)
+			return (*it);
+
+	return NULL;
+}
 
 } // End of namespace Liath

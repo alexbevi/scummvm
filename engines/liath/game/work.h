@@ -63,6 +63,8 @@ public:
 
 	Work *getCurrent() { return _currentWork; }
 
+	Work *get(HeroIndex index);
+
 private:
 	LiathEngine* _engine;
 
