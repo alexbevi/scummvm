@@ -173,6 +173,7 @@ Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		if (!(objects[i]->flags & OBJFLAG_ACTIVE)) continue;
+		if (objects[i]->flags & OBJFLAG_INVENTORY) continue;
 		if (objects[i]->width == (unsigned int)~0) continue;
 
 		// TODO: should we be doing this like this, or keeping track of original coords, or what?
@@ -630,7 +631,10 @@ void UnityEngine::drawObjects() {
 
 	Common::Array<Object *> to_draw;
 	for (unsigned int i = 0; i < objects.size(); i++) {
-		if (objects[i]->sprite && (objects[i]->flags & OBJFLAG_ACTIVE)) {
+		if (objects[i]->sprite) {
+			if (!(objects[i]->flags & OBJFLAG_ACTIVE)) continue;
+			if (objects[i]->flags & OBJFLAG_INVENTORY) continue;
+
 			objects[i]->sprite->update();
 
 			// TODO
