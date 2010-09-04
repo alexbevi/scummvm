@@ -402,7 +402,7 @@ void UnityEngine::handleUse(Object *obj) {
 
 void UnityEngine::handleTalk(Object *obj) {
 	if (obj->flags & OBJFLAG_TALK) {
-		obj->runHail(obj->hail_string);
+		obj->runHail(obj->talk_string);
 	} else {
 		if (next_situation == 0xffffffff) {
 			// TODO: hard-coded :( @95,34,xy...
@@ -602,7 +602,7 @@ void UnityEngine::handleBridgeMouseClick(unsigned int x, unsigned int y) {
 		if (item.id.world == 0) continue;
 
 		Object *obj = data.getObject(item.id);
-		obj->runHail(obj->hail_string);
+		obj->runHail(obj->talk_string);
 	}
 }
 

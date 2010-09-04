@@ -229,7 +229,7 @@ public:
 	uint16 sprite_id;
 	SpritePlayer *sprite;
 
-	Common::String name, hail_string;
+	Common::String name, talk_string;
 
 	Common::String identify();
 
@@ -241,7 +241,8 @@ public:
 	void loadObject(unsigned int world, unsigned int screen, unsigned int id);
 	void loadSprite();
 
-	void setHail(const Common::String &str);
+	void setTalkString(const Common::String &str);
+	void changeTalkString(const Common::String &str);
 	void runHail(const Common::String &hail);
 
 protected:

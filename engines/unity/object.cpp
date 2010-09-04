@@ -152,7 +152,7 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	char _str[101];
 	objstream->read(_str, 100);
 	_str[100] = 0;
-	hail_string = _str;
+	setTalkString(_str);
 
 	uint16 zero16;
 	zero16 = objstream->readUint16LE();
@@ -835,24 +835,38 @@ void Object::readDescriptionBlock(Common::SeekableReadStream *objstream) {
 	descriptions.push_back(desc);
 }
 
-void Object::setHail(const Common::String &str) {
+void Object::changeTalkString(const Common::String &str) {
+	bool immediate = (str.size() && str[0] == '1');
+	if (immediate) {
+		// run the conversation immediately, don't change anything
+		// TODO: voice stuff
+		runHail(str);
+	} else {
+		debug(1, "talk string of %s changing from '%s' to '%s'", identify().c_str(),
+			talk_string.c_str(), str.c_str());
+		setTalkString(str);
+	}
+}
+
+void Object::setTalkString(const Common::String &str) {
 	if (!str.size()) {
-		hail_string.clear();
+		talk_string.clear();
 		return;
 	}
 
-	bool immediate = (str[0] == '1');
-	if (immediate) {
-		// run the conversation immediately, don't change anything
-		runHail(str);
-	} else {
-		debug(1, "hail of %s changed from '%s' to '%s'", identify().c_str(), hail_string.c_str(), str.c_str());
-		hail_string = str;
-	}
+	if (str[0] == '1') error("unexpected immediate talk string '%s'", str);
+
+	// TODO: 'abc     ---hello---' should be stripped to 'abchello'
+	// (skip two sets of dashes, then spaces)
+
+	talk_string = str;
 }
 
 void Object::runHail(const Common::String &hail) {
 	debug(1, "%s running hail '%s'", identify().c_str(), hail.c_str());
+
+	// TODO: check OBJFLAG_ACTIVE?
+	// TODO: use source of change if an away team member
 
 	if (hail.size() < 2) {
 		error("failed to parse hail '%s'", hail.c_str());
@@ -860,8 +874,16 @@ void Object::runHail(const Common::String &hail) {
 
 	bool immediate = (hail[0] == '1');
 	if ((immediate && hail[1] != '@') || (!immediate && hail[0] != '@')) {
-		// TODO: handle plain strings?
-		error("failed to parse hail (no @?) '%s'", hail.c_str());
+		_vm->dialog_text = hail.c_str() + (immediate ? 1 : 0);
+
+		// TODO: this is VERY not good
+		_vm->setSpeaker(id);
+		debug(1, "%s says '%s'", identify().c_str(), hail.c_str());
+
+		_vm->runDialog();
+
+		// text, not a proper hail
+		return;
 	}
 
 	int world, conversation, situation;
@@ -1013,22 +1035,78 @@ void ConditionBlock::execute(UnityEngine *_vm) {
 }
 
 void AlterBlock::execute(UnityEngine *_vm) {
-	Object *obj = _vm->data.getObject(target);
+	Object *obj;
+	if (target.world == 0 && target.screen == 0 && target.id == 0x10) {
+		// TODO: selected away team member?
+		obj = _vm->data.getObject(objectID(0, 0, 0));
+	} else {
+		obj = _vm->data.getObject(target);
+	}
 
 	bool did_something = false; // just for debugging
 
 	if (alter_flags || alter_reset) {
 		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): alter_flags %x, %x", obj->identify().c_str(), alter_flags, alter_reset);
 
-		// TODO: change flags?
+		// magical flags!
+
+		if (alter_reset & 0x01) {
+			// activate
+			debug(1, "AlterBlock::execute (%s): activating", obj->identify().c_str());
+			obj->flags |= OBJFLAG_ACTIVE;
+		}
+		if (alter_reset & ~0x01) {
+			warning("unimplemented: AlterBlock::execute (%s): alter_reset %x", obj->identify().c_str(), alter_reset);
+		}
+
+		if (alter_flags & 0x1) {
+			// TODO: talk?
+			warning("unimplemented: AlterBlock::execute (%s): alter_flag 1", obj->identify().c_str());
+		}
+		if (alter_flags & 0x02) {
+			error("invalid AlterBlock flag 0x02");
+		}
+		if (alter_flags & 0x4) {
+			// drop
+			debug(1, "AlterBlock::execute (%s): dropping", obj->identify().c_str());
+			obj->flags &= ~OBJFLAG_INVENTORY;
+		}
+		if (alter_flags & 0x8) {
+			// get
+			debug(1, "AlterBlock::execute (%s): getting", obj->identify().c_str());
+			if (!(obj->flags & OBJFLAG_INVENTORY)) {
+				obj->flags |= (OBJFLAG_ACTIVE | OBJFLAG_INVENTORY);
+			}
+		}
+		if (alter_flags & 0x10) {
+			// unstun
+			debug(1, "AlterBlock::execute (%s): unstunning", obj->identify().c_str());
+			// TODO: special behaviour on away team?
+			obj->flags &= ~OBJFLAG_STUNNED;
+		}
+		if (alter_flags & 0x20) {
+			// stun
+			debug(1, "AlterBlock::execute (%s): stunning", obj->identify().c_str());
+			// TODO: special behaviour on away team?
+			obj->flags |= OBJFLAG_STUNNED;
+		}
+		if (alter_flags & 0x40) {
+			// TODO: ?? (anim change?)
+			warning("unimplemented: AlterBlock::execute (%s): alter_flag 0x40", obj->identify().c_str());
+		}
+		if (alter_flags & 0x80) {
+			// deactivate
+			debug(1, "AlterBlock::execute (%s): deactivating", obj->identify().c_str());
+			obj->flags &= ~(OBJFLAG_ACTIVE | OBJFLAG_INVENTORY);
+		}
 	}
 
-	if (x_pos != 0xffff || y_pos != 0xffff) {
+	if (x_pos != 0xffff && y_pos != 0xffff) {
 		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): position (%x, %x)", obj->identify().c_str(), x_pos, y_pos);
+		debug(1, "AlterBlock::execute (%s): position (%x, %x)", obj->identify().c_str(), x_pos, y_pos);
 
-		// TODO: move target?
+		obj->x = x_pos;
+		obj->y = y_pos;
 	}
 
 	if (alter_name.size()) {
@@ -1041,7 +1119,7 @@ void AlterBlock::execute(UnityEngine *_vm) {
 	if (alter_hail.size()) {
 		did_something = true;
 
-		obj->setHail(alter_hail);
+		obj->changeTalkString(alter_hail);
 	}
 
 	if (voice_group != 0xffffffff || voice_subgroup != 0xffff || voice_id != 0xffffffff) {
@@ -1154,7 +1232,7 @@ void CommandBlock::execute(UnityEngine *_vm) {
 			Object *src = _vm->data.getObject(target[1]);
 			// TODO..
 			debug(1, "CommandBlock::execute: TALK (on %s)", targ->identify().c_str());
-			targ->runHail(targ->hail_string);
+			targ->runHail(targ->talk_string);
 			}
 			break;
 
