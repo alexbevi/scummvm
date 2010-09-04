@@ -1370,7 +1370,7 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	uint16 unknown1 = stream->readUint16LE();
 	uint16 unknown2 = stream->readUint16LE();
 	//printf("(%04x, %04x), ", unknown1, unknown2);
-	assert(unknown2 == 0 || (unknown2 >= 7 && unknown2 <= 13) || unknown2 == 0xffff);
+	assert(unknown2 == 0 || (unknown2 >= 7 && unknown2 <= 15) || unknown2 == 0xffff);
 
 	unknown1 = stream->readUint16LE();
 	//printf("(%04x), ", unknown1);
@@ -1382,7 +1382,7 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 		uint16 unknown1 = stream->readUint16LE();
 		uint16 unknown2 = stream->readUint16LE();
 		//printf("(%04x, %04x), ", unknown1, unknown2);
-		assert(unknown2 == 0 || (unknown2 >= 7 && unknown2 <= 13) || unknown2 == 0xffff);
+		assert(unknown2 == 0 || (unknown2 >= 7 && unknown2 <= 15) || unknown2 == 0xffff);
 	}
 
 	target = readObjectID(stream);
