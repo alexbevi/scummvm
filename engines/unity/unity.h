@@ -14,6 +14,13 @@ class SpritePlayer;
 class Object;
 class Trigger;
 
+enum AwayTeamMode {
+	mode_Look,
+	mode_Use,
+	mode_Walk,
+	mode_Talk
+};
+
 class UnityEngine : public Engine {
 public:
 	UnityEngine(class OSystem *syst);
@@ -31,6 +38,8 @@ public:
 	Sound *_snd;
 
 	bool on_bridge;
+	AwayTeamMode mode;
+
 	Common::String status_text;
 
 	bool in_dialog;
@@ -73,6 +82,11 @@ protected:
 	void drawBridgeUI();
 
 	void handleLook(Object *obj);
+	void handleUse(Object *obj);
+	void handleWalk(Object *obj);
+	void handleTalk(Object *obj);
+
+	void DebugNextScreen();
 };
 
 } // Unity

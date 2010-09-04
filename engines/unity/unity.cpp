@@ -234,11 +234,14 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 	data.current_screen.world = world;
 	data.current_screen.screen = screen;
 
+	mode = mode_Look;
+
 	// beam in an away team
 	for (unsigned int i = 0; i < 4; i++) {
 		objectID objid(i, 0, 0);
 		Object *obj = data.getObject(objid);
 		obj->loadSprite();
+		obj->sprite->startAnim(26);
 		data.current_screen.objects.push_back(obj);
 	}
 
@@ -382,10 +385,64 @@ void UnityEngine::handleLook(Object *obj) {
 	runDialog();
 }
 
+void UnityEngine::handleUse(Object *obj) {
+	if (obj->flags & OBJFLAG_GET) {
+		obj->get_entries.execute(this);
+	} else if (obj->flags & OBJFLAG_USE) {
+		obj->use_entries.execute(this);
+	} else {
+		if (next_situation == 0xffffffff) {
+			// TODO: hard-coded :( @95,34,xy...
+			current_conversation = data.getConversation(0x5f, 34);
+			next_situation = 0x2; // failed use?
+		}
+	}
+}
+
+void UnityEngine::handleTalk(Object *obj) {
+	if (obj->flags & OBJFLAG_TALK) {
+		obj->runHail(obj->hail_string);
+	} else {
+		if (next_situation == 0xffffffff) {
+			// TODO: hard-coded :( @95,34,xy...
+			current_conversation = data.getConversation(0x5f, 34);
+			next_situation = 0x3; // failed talk?
+		}
+	}
+}
+
+void UnityEngine::handleWalk(Object *obj) {
+	(void)obj; // TODO
+}
+
 // TODO
 unsigned int curr_loc = 4;
 unsigned int curr_screen = 0;
 unsigned int anim = 26;
+
+void UnityEngine::DebugNextScreen() {
+	curr_screen++;
+	switch (curr_loc) {
+	case 2: if (curr_screen == 2) curr_screen++;
+		else if (curr_screen == 14) curr_screen++;
+		else if (curr_screen == 21) { curr_loc++; curr_screen = 1; }
+		break;
+	case 3:	if (curr_screen == 11) { curr_loc++; curr_screen = 1; }
+		break;
+	case 4: if (curr_screen == 13) { curr_loc++; curr_screen = 1; }
+		break;
+	case 5: if (curr_screen == 11) curr_screen++;
+		else if (curr_screen == 14) { curr_loc++; curr_screen = 1; }
+		break;
+	case 6: if (curr_screen == 16) { curr_loc++; curr_screen = 1; }
+		break;
+	case 7: if (curr_screen == 5) { curr_loc = 2; curr_screen = 1; }
+		break;
+	default:error("huh?");
+	}
+	printf("moving to %d/%d\n", curr_loc, curr_screen);
+	startAwayTeam(curr_loc, curr_screen);
+}
 
 void UnityEngine::checkEvents() {
 	Common::Array<Object *> &objects = data.current_screen.objects;
@@ -398,37 +455,43 @@ void UnityEngine::checkEvents() {
 				break;
 
 			case Common::EVENT_KEYUP:
-				if (!on_bridge) {
-					printf("trying anim %d\n", anim);
-					anim++;
-					anim %= objects[0]->sprite->numAnims();
-					for (unsigned int i = 0; i < 4; i++)
-						objects[i]->sprite->startAnim(anim);
+				switch (event.kbd.keycode) {
+				case Common::KEYCODE_n:
+					if (!on_bridge) {
+						printf("trying anim %d\n", anim);
+						anim++;
+						anim %= objects[0]->sprite->numAnims();
+						for (unsigned int i = 0; i < 4; i++)
+							objects[i]->sprite->startAnim(anim);
+					}
+					break;
+				case Common::KEYCODE_SPACE:
+					DebugNextScreen();
+					break;
+				default:
+					break;
 				}
 				break;
 
 			case Common::EVENT_RBUTTONUP:
-				curr_screen++;
-				switch (curr_loc) {
-					case 2: if (curr_screen == 2) curr_screen++;
-						else if (curr_screen == 14) curr_screen++;
-						else if (curr_screen == 21) { curr_loc++; curr_screen = 1; }
-						break;
-					case 3:	if (curr_screen == 11) { curr_loc++; curr_screen = 1; }
-						break;
-					case 4: if (curr_screen == 13) { curr_loc++; curr_screen = 1; }
-						break;
-					case 5: if (curr_screen == 11) curr_screen++;
-						else if (curr_screen == 14) { curr_loc++; curr_screen = 1; }
-						break;
-					case 6: if (curr_screen == 16) { curr_loc++; curr_screen = 1; }
-						break;
-					case 7: if (curr_screen == 5) { curr_loc = 2; curr_screen = 1; }
-						break;
-					default:error("huh?");
+				if (on_bridge) break;
+
+				// cycle through away team modes
+				switch (mode) {
+				case mode_Look:
+					mode = mode_Use;
+					break;
+				case mode_Use:
+					mode = mode_Walk;
+					break;
+				case mode_Walk:
+					mode = mode_Talk;
+					break;
+				case mode_Talk:
+					mode = mode_Look;
+					break;
 				}
-				printf("moving to %d/%d\n", curr_loc, curr_screen);
-				startAwayTeam(curr_loc, curr_screen);
+				handleAwayTeamMouseMove(0, 0); // TODO
 				break;
 
 			case Common::EVENT_MOUSEMOVE:
@@ -489,11 +552,40 @@ void UnityEngine::handleBridgeMouseMove(unsigned int x, unsigned int y) {
 void UnityEngine::handleAwayTeamMouseMove(unsigned int x, unsigned int y) {
 	Object *obj = objectAt(x, y);
 	if (obj) {
-		status_text = obj->name; // TODO
-		_gfx->setCursor(1, false);
+		switch (mode) {
+		case mode_Look:
+			status_text = "Look at " + obj->name;
+			_gfx->setCursor(1, false);
+			break;
+		case mode_Use:
+			status_text = "Use " + obj->name;
+			_gfx->setCursor(3, false);
+			break;
+		case mode_Walk:
+			status_text = "Walk to " + obj->name;
+			_gfx->setCursor(7, false);
+			break;
+		case mode_Talk:
+			status_text = "Talk to " + obj->name;
+			_gfx->setCursor(5, false);
+			break;
+		}
 	} else {
 		status_text.clear();
-		_gfx->setCursor(0, false);
+		switch (mode) {
+		case mode_Look:
+			_gfx->setCursor(0, false);
+			break;
+		case mode_Use:
+			_gfx->setCursor(2, false);
+			break;
+		case mode_Walk:
+			_gfx->setCursor(6, false);
+			break;
+		case mode_Talk:
+			_gfx->setCursor(4, false);
+			break;
+		}
 	}
 }
 
@@ -517,7 +609,20 @@ void UnityEngine::handleAwayTeamMouseClick(unsigned int x, unsigned int y) {
 	Object *obj = objectAt(x, y);
 	if (!obj) return;
 
-	handleLook(obj);
+	switch (mode) {
+	case mode_Look:
+		handleLook(obj);
+		break;
+	case mode_Use:
+		handleUse(obj);
+		break;
+	case mode_Walk:
+		handleWalk(obj);
+		break;
+	case mode_Talk:
+		handleTalk(obj);
+		break;
+	}
 }
 
 void UnityEngine::drawObjects() {
@@ -699,6 +804,8 @@ void UnityEngine::drawAwayTeamUI() {
 	MRGFile mrg;
 	_gfx->loadMRG("awayteam.mrg", &mrg);
 	_gfx->drawMRG(&mrg, 0, 0, 400);
+
+	_gfx->drawString(0, 403, 9999, 9999, status_text.c_str(), 2);
 
 	// TODO
 }
