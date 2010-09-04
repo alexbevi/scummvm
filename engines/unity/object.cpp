@@ -296,9 +296,11 @@ void Entry::readHeaderFrom(Common::SeekableReadStream *stream, byte header_type)
 	byte h_type = stream->readByte();
 	assert(h_type == header_type);
 
-	// not sure, but see usage in TriggerBlock
-	unknown_flag = stream->readByte();
-	assert(unknown_flag == 0 || unknown_flag == 1 || unknown_flag == 0xff);
+	// see usage in TriggerBlock
+	// see also use in 060102, where the first LOOK (with this flag) shouldn't run
+	// (wipe pending conversations/actions when encountered?)
+	stop_here = stream->readByte();
+	assert(stop_here == 0 || stop_here == 1 || stop_here == 0xff);
 
 	// the state/response of this conversation block?, or 0xffff in an object
 	response_counter = stream->readUint16LE();
@@ -549,8 +551,8 @@ void TriggerBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x4b);
 
 	// TODO: is this really some kind of 'priority'?
-	assert(unknown_flag == 0 || unknown_flag == 1);
-	instant_disable = (unknown_flag == 1);
+	assert(stop_here == 0 || stop_here == 1);
+	instant_disable = (stop_here == 1);
 
 	trigger_id = objstream->readUint32LE();
 

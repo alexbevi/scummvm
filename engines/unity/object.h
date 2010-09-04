@@ -56,7 +56,7 @@ protected:
 	objectID internal_obj;
 	byte counter1, counter2, counter3, counter4;
 	uint16 state_counter, response_counter;
-	byte unknown_flag;
+	byte stop_here;
 
 	void readHeaderFrom(Common::SeekableReadStream *stream, byte header_type);
 
