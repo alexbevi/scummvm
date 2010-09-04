@@ -21,7 +21,7 @@ void Sound::init() {
 }
 
 void Sound::playSpeech(Common::String name) {
-	printf("playing speech: %s\n", name.c_str());
+	debug(1, "playing speech: %s", name.c_str());
 	stopSpeech();
 	Common::SeekableReadStream *audioFileStream = _vm->data.openFile(name);
 	Audio::AudioStream *sampleStream = Audio::makeADPCMStream(

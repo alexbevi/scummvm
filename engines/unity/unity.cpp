@@ -304,7 +304,7 @@ void UnityEngine::processTriggers() {
 	for (unsigned int i = 0; i < data.triggers.size(); i++) {
 		if (data.triggers[i]->tick(this)) {
 			Object *target = data.getObject(data.triggers[i]->target);
-			printf("running trigger %x (target %s)\n", data.triggers[i]->id, target->identify().c_str());
+			debug(1, "running trigger %x (target %s)", data.triggers[i]->id, target->identify().c_str());
 			target->use_entries.execute(this);
 			break;
 		}
@@ -634,7 +634,7 @@ void UnityEngine::drawObjects() {
 			objects[i]->sprite->update();
 
 			// TODO
-			if (!objects[i]->sprite->valid()) { /*warning("invalid sprite?");*/ continue; }
+			if (!objects[i]->sprite->valid()) { debug(2, "invalid sprite?"); continue; }
 
 			to_draw.push_back(objects[i]);
 		}
@@ -659,7 +659,7 @@ void UnityEngine::drawObjects() {
 				}
 			}
 			if (j == data.current_screen.polygons.size())
-				warning("couldn't find poly for walkable at (%d, %d)", x, y);
+				debug(2, "couldn't find poly for walkable at (%d, %d)", x, y);
 		}
 		_gfx->drawSprite(to_draw[i]->sprite, to_draw[i]->x, to_draw[i]->y, scale);
 	}

@@ -846,13 +846,13 @@ void Object::setHail(const Common::String &str) {
 		// run the conversation immediately, don't change anything
 		runHail(str);
 	} else {
-		printf("hail of %s changed from '%s' to '%s'\n", identify().c_str(), hail_string.c_str(), str.c_str());
+		debug(1, "hail of %s changed from '%s' to '%s'", identify().c_str(), hail_string.c_str(), str.c_str());
 		hail_string = str;
 	}
 }
 
 void Object::runHail(const Common::String &hail) {
-	printf("%s running hail '%s'\n", identify().c_str(), hail.c_str());
+	debug(1, "%s running hail '%s'", identify().c_str(), hail.c_str());
 
 	if (hail.size() < 2) {
 		error("failed to parse hail '%s'", hail.c_str());
@@ -890,9 +890,9 @@ EntryList::~EntryList() {
 }
 
 void EntryList::execute(UnityEngine *_vm) {
-	printf("\n");
+	debug(1, "");
 	for (unsigned int i = 0; i < list.size(); i++) {
-		printf("EntryList::execute: block %d of %d (size %d)\n", i + 1, list.size(), list[i]->size());
+		debug(1, "EntryList::execute: block %d of %d (size %d)", i + 1, list.size(), list[i]->size());
 		bool run = true;
 		for (unsigned int j = 0; j < list[i]->size(); j++) {
 			if (!(*list[i])[j]->check(_vm)) {
@@ -905,11 +905,12 @@ void EntryList::execute(UnityEngine *_vm) {
 			(*list[i])[j]->execute(_vm);
 		}
 	}
-	printf("EntryList::execute: ran %d blocks\n\n", list.size());
+	debug(1, "EntryList::execute: ran %d blocks", list.size());
+	debug(1, "");
 }
 
 bool ConditionBlock::check(UnityEngine *_vm) {
-	warning("unimplemented: ConditionBlock::check: %02x%02x%02x, %02x%02x%02x",
+	debug(1, "ConditionBlock::check: %02x%02x%02x, %02x%02x%02x",
 		target.world, target.screen, target.id,
 		WhoCan.world, WhoCan.screen, WhoCan.id);
 
@@ -921,6 +922,7 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 
 	if (target.world == 0x0 && target.screen == 0x70) {
 		// XXX: TODO: for now, we always return false for item usage
+		warning("unimplemented: ConditionCheck: ignoring item usage check");
 		return false;
 	}
 
@@ -1017,37 +1019,43 @@ void AlterBlock::execute(UnityEngine *_vm) {
 
 	if (alter_flags || alter_reset) {
 		did_something = true;
-		// TODO: change flags?
 		warning("unimplemented: AlterBlock::execute (%s): alter_flags %x, %x", obj->identify().c_str(), alter_flags, alter_reset);
+
+		// TODO: change flags?
 	}
 
 	if (x_pos != 0xffff || y_pos != 0xffff) {
 		did_something = true;
-		// TODO: move target?
 		warning("unimplemented: AlterBlock::execute (%s): position (%x, %x)", obj->identify().c_str(), x_pos, y_pos);
+
+		// TODO: move target?
 	}
 
 	if (alter_name.size()) {
 		did_something = true;
-		printf("altering name of %s to %s\n", obj->identify().c_str(), alter_name.c_str());
+		debug(1, "altering name of %s to %s", obj->identify().c_str(), alter_name.c_str());
+
 		obj->name = alter_name;
 	}
 
 	if (alter_hail.size()) {
 		did_something = true;
+
 		obj->setHail(alter_hail);
 	}
 
 	if (voice_group != 0xffffffff || voice_subgroup != 0xffff || voice_id != 0xffffffff) {
 		did_something = true;
-		// TODO: alter voice for the description?
 		warning("unimplemented: AlterBlock::execute (%s): voice %x/%x/%x", obj->identify().c_str(), voice_group, voice_subgroup, voice_id);
+
+		// TODO: alter voice for the description?
 	}
 
 	if (alter_state != 0xff) {
 		did_something = true;
+		debug(1, "AlterBlock::execute (%s): state %x", obj->identify().c_str(), alter_state);
+
 		obj->state = alter_state;
-		warning("unimplemented: AlterBlock::execute (%s): state %x", obj->identify().c_str(), alter_state);
 	}
 
 	if (alter_timer != 0xffff) {
@@ -1057,7 +1065,7 @@ void AlterBlock::execute(UnityEngine *_vm) {
 
 	if (alter_anim != 0xffff) {
 		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): anim %04x", obj->identify().c_str(), alter_anim);
+		debug(1, "AlterBlock::execute (%s): anim %04x", obj->identify().c_str(), alter_anim);
 
 		uint16 anim_id = alter_anim;
 
@@ -1065,11 +1073,11 @@ void AlterBlock::execute(UnityEngine *_vm) {
 			// TODO (some magic with (alter_anim - 31000))
 			// (this sets a different animation type - index?)
 			// this doesn't run ANY of the code below
-			error("whargle: %04x\n", alter_anim);
+			error("whargle: %04x", alter_anim);
 		} else if (anim_id >= 29000) {
 			if (alter_anim < 30000) {
 				// TODO: some other magic?
-				error("whargle whurgle: %04x\n", alter_anim);
+				error("whargle whurgle: %04x", alter_anim);
 			}
 			// TODO: ?!?
 			anim_id -= 30000;
@@ -1084,6 +1092,7 @@ void AlterBlock::execute(UnityEngine *_vm) {
 			}
 		} else if (obj->id.world == 0x5f && obj->id.screen == 1 && obj->id.id == 0) {
 			// TODO: special handling for the Enterprise
+			warning("unimplemented: Enterprise animation changes");
 		} else {
 			warning("no sprite?!");
 		}
@@ -1101,11 +1110,15 @@ void AlterBlock::execute(UnityEngine *_vm) {
 
 	if (universe_x != 0xffff || universe_y != 0xffff || universe_z != 0xffff) {
 		did_something = true;
-		// TODO: for the Enterprise, at least, go into astrogation and start warp to this universe location
+		debug(1, "AlterBlock::execute (%s): warp to universe loc %x, %x, %x", obj->identify().c_str(), universe_x, universe_y, universe_z);
+
+		if (obj->id.world == 0x5f && obj->id.screen == 1 && obj->id.id == 0) {
+			// TODO: go into astrogation and start warp to this universe location
+			warning("unimplemented: Enterprise warp");
+		}
 		obj->universe_x = universe_x;
 		obj->universe_y = universe_y;
 		obj->universe_z = universe_z;
-		warning("unimplemented: AlterBlock::execute (%s): to universe loc %x, %x, %x", obj->identify().c_str(), universe_x, universe_y, universe_z);
 	}
 
 	if (unknown11 != 0xff) {
@@ -1128,7 +1141,7 @@ void ReactionBlock::execute(UnityEngine *_vm) {
 }
 
 void CommandBlock::execute(UnityEngine *_vm) {
-	printf("CommandBlock: %02x%02x%02x/%02x%02x%02x/%02x%02x%02x, %02x, %02x, command %d\n",
+	debug(1, "CommandBlock: %02x%02x%02x/%02x%02x%02x/%02x%02x%02x, %02x, %02x, command %d",
 		target[0].world, target[0].screen, target[0].id,
 		target[1].world, target[1].screen, target[1].id,
 		target[2].world, target[2].screen, target[2].id,
@@ -1140,7 +1153,7 @@ void CommandBlock::execute(UnityEngine *_vm) {
 			Object *targ = _vm->data.getObject(target[0]);
 			Object *src = _vm->data.getObject(target[1]);
 			// TODO..
-			warning("unimplemented: CommandBlock::execute: TALK (on %s)", targ->identify().c_str());
+			debug(1, "CommandBlock::execute: TALK (on %s)", targ->identify().c_str());
 			targ->runHail(targ->hail_string);
 			}
 			break;
@@ -1149,7 +1162,7 @@ void CommandBlock::execute(UnityEngine *_vm) {
 			Object *targ = _vm->data.getObject(target[0]);
 			Object *src = _vm->data.getObject(target[1]);
 			// TODO..
-			warning("unimplemented: CommandBlock::execute: USE (on %s)", targ->identify().c_str());
+			debug(1, "CommandBlock::execute: USE (on %s)", targ->identify().c_str());
 			targ->use_entries.execute(_vm);
 			}
 			break;
@@ -1181,14 +1194,14 @@ void GeneralBlock::execute(UnityEngine *_vm) {
 		assert(_vm->data.movie_filenames.contains(movie_id));
 
 		// TODO
-		printf("GeneralBlock: play movie %d (%s: '%s')\n", movie_id,
+		debug(1, "GeneralBlock: play movie %d (%s: '%s')", movie_id,
 			_vm->data.movie_filenames[movie_id].c_str(),
 			_vm->data.movie_descriptions[movie_id].c_str());
 	}
 }
 
 void ConversationBlock::execute(UnityEngine *_vm) {
-	warning("unimplemented: ConversationBlock::execute: @0x%02x,%d,%d,%d: action %d",
+	debug(1, "ConversationBlock::execute: @0x%02x,%d,%d,%d: action %d",
 		world_id, conversation_id, response_id, state_id, action_id);
 
 	uint16 world = world_id;
@@ -1217,14 +1230,12 @@ bool TriggerBlock::check(UnityEngine *_vm) {
 void TriggerBlock::execute(UnityEngine *_vm) {
 	Trigger *trigger = _vm->data.getTrigger(trigger_id);
 
-	printf("triggerBlock: trying to set trigger %x to %d\n", trigger_id, enable_trigger);
+	debug(1, "triggerBlock: trying to set trigger %x to %d", trigger_id, enable_trigger);
 	trigger->enabled = enable_trigger;
 }
 
 void CommunicateBlock::execute(UnityEngine *_vm) {
-	warning("unimplemented: CommunicateBlock::execute");
-
-	printf("communicate: at %02x%02x%02x, %04x, %04x, %04x\n", target.world, target.screen, target.id, conversation_id, unknown1, unknown2);
+	debug(1, "CommunicateBlock::execute: at %02x%02x%02x, %04x, %04x, %04x", target.world, target.screen, target.id, conversation_id, unknown1, unknown2);
 
 	// TODO: does unknown2 indicate viewscreen vs bridge or what?
 	if (unknown1 == 0xffff) return; // XXX: TODO
@@ -1300,7 +1311,7 @@ void TextBlock::readFrom(Common::SeekableReadStream *stream) {
 
 	// XXX: work out what's going on here
 	if (!(buf[0] == 0 && buf[1] == 0 && buf[2] == 0 && buf[3] == 0))
-		printf("text is weird: %02x, %02x, %02x, %02x\n", buf[0], buf[1], buf[2], buf[3]);
+		warning("text is weird: %02x, %02x, %02x, %02x", buf[0], buf[1], buf[2], buf[3]);
 }
 
 void TextBlock::execute(UnityEngine *_vm, Object *speaker) {
@@ -1308,7 +1319,7 @@ void TextBlock::execute(UnityEngine *_vm, Object *speaker) {
 		_vm->dialog_text = text;
 
 		_vm->setSpeaker(speaker->id);
-		printf("%s says '%s'\n", speaker->identify().c_str(), text.c_str());
+		debug(1, "%s says '%s'", speaker->identify().c_str(), text.c_str());
 
 		uint32 entry_id = speaker->id.id;
 		if (speaker->id.world != 0x0)
@@ -1352,7 +1363,7 @@ void ChangeActionBlock::readFrom(Common::SeekableReadStream *stream, int _type) 
 }
 
 void ChangeActionBlock::execute(UnityEngine *_vm, Object *speaker) {
-	warning("unimplemented: ChangeActionBlock::execute: %s on %d,%d",
+	debug(1, "ChangeActionBlock::execute: %s on %d,%d",
 		change_actor_names[type - BLOCK_CONV_CHANGEACT_DISABLE],
 		response_id, state_id);
 
@@ -1371,7 +1382,7 @@ void ResultBlock::readFrom(Common::SeekableReadStream *stream) {
 }
 
 void ResultBlock::execute(UnityEngine *_vm, Object *speaker) {
-	warning("unimplemented: ResultBlock::execute");
+	debug(1, "ResultBlock::execute");
 	entries.execute(_vm);
 }
 
@@ -1528,7 +1539,7 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 
 		// TODO: this is not good
 		_vm->setSpeaker(objectID(0, 0, 0));
-		printf("%s says '%s'\n", "Picard", text.c_str());
+		debug(1, "%s says '%s'", "Picard", text.c_str());
 
 		// TODO: 0xcc some marks invalid entries, but should we check something else?
 		// (the text is invalid too, but i display it, to make it clear we failed..)
@@ -1555,11 +1566,11 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 		targetobj = _vm->data.getObject(target);
 	}
 
-	printf("***begin execute***\n");
+	debug(1, "***begin execute***");
 	for (unsigned int i = 0; i < blocks.size(); i++) {
 		blocks[i]->execute(_vm, targetobj);
 	}
-	printf("***end execute***\n");
+	debug(1, "***end execute***");
 
 	_vm->dialog_choice_responses.clear();
 	_vm->dialog_choice_states.clear();
@@ -1579,15 +1590,15 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 		}
 
 		if (_vm->dialog_choice_responses.size() > 1) {
-			printf("continuing with conversation, using choices\n");
+			debug(1, "continuing with conversation, using choices");
 			_vm->runDialogChoice();
 		} else {
-			printf("continuing with conversation, using single choice\n");
+			debug(1, "continuing with conversation, using single choice");
 			_vm->next_situation = _vm->dialog_choice_responses[0];
 			_vm->next_state = _vm->dialog_choice_states[0];
 		}
 	} else {
-		printf("end of conversation\n");
+		debug(1, "end of conversation");
 	}
 }
 
@@ -1616,7 +1627,7 @@ Response *Conversation::getResponse(unsigned int response, unsigned int state) {
 }
 
 void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response) {
-	printf("running situation (%02x) @%d,%d\n", our_world, our_id, response);
+	debug(1, "running situation (%02x) @%d,%d", our_world, our_id, response);
 
 	Response *resp = getEnabledResponse(response);
 	if (!resp) error("couldn't find active response %d", response);
@@ -1624,7 +1635,7 @@ void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int respo
 }
 
 void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state) {
-	printf("running situation (%02x) @%d,%d,%d\n", our_world, our_id, response, state);
+	debug("1, running situation (%02x) @%d,%d,%d", our_world, our_id, response, state);
 
 	Response *resp = getResponse(response, state);
 	if (!resp) error("couldn't find response %d/%d", response, state);
