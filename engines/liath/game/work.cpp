@@ -41,6 +41,23 @@ WorkManager::~WorkManager() {
 }
 
 //////////////////////////////////////////////////////////////////////////
+// Loading
+//////////////////////////////////////////////////////////////////////////
+void WorkManager::unload() {
+	for (Common::Array<Work *>::iterator it = _works.begin(); it != _works.end(); it++) {
+		Work *work = (*it);
+
+		if (work->status == 1) {
+			SAFE_FREE(work->object->field_18);
+			SAFE_FREE(work->field_84);
+			SAFE_FREE(work->field_80);
+		}
+
+		SAFE_FREE(work->field_7C);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
 // Opcodes
 //////////////////////////////////////////////////////////////////////////
 OpcodeRet WorkManager::cel(OpcodeParameters *parameters) {

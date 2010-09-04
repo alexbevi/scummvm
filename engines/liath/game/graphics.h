@@ -38,7 +38,8 @@ public:
 	GraphicsManager(LiathEngine *engine);
 	~GraphicsManager();
 
-	void loadData();
+	void load();
+	void unload();
 
 	// Opcodes
 	OpcodeRet redraw(OpcodeParameters *parameters);

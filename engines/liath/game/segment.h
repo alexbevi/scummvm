@@ -40,7 +40,8 @@ public:
 	~SegmentManager();
 
 	void load(SegmentType type, uint32 index);
-	void release(Segment segment);
+	void unload(Segment segment);
+	void unload(SegmentType type) { unload(*getSegmentByType(type)); }
 
 	// Accessors
 	uint32 *getData(SegmentType type, uint32 offset);

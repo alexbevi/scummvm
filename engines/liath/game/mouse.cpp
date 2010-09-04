@@ -39,7 +39,23 @@ MouseManager::MouseManager(LiathEngine *engine) : _engine(engine), _count(0), _p
 MouseManager::~MouseManager() {
 	// Zero-out passed pointers
 	_engine = NULL;
+
+	unload();
 }
+
+//////////////////////////////////////////////////////////////////////////
+// Loading
+//////////////////////////////////////////////////////////////////////////
+void MouseManager::unload() {
+	for (Common::Array<MouseBox *>::iterator it = _boxes.begin(); it != _boxes.end(); it++)
+		SAFE_DELETE(*it);
+
+	_boxes.clear();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Opcodes
+//////////////////////////////////////////////////////////////////////////
 
 OpcodeRet MouseManager::push() {
 	for (Common::Array<MouseBox *>::iterator i = _boxes.begin(); i != _boxes.end(); ++i)

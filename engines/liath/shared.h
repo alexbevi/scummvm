@@ -446,13 +446,13 @@ struct Message {
 } PACKED_STRUCT;
 
 //////////////////////////////////////////////////////////////////////////
-// Structures
+// Hero & Work
 //////////////////////////////////////////////////////////////////////////
 struct Hero;
 
 struct Object {
 	uint32 field_0;
-
+	uint32 *field_18;
 	uint16 field_41;
 	uint16 field_43;
 } PACKED_STRUCT;
@@ -479,6 +479,9 @@ struct Work {
 
 	uint16 field_76;
 
+	uint32 *field_7C;
+	uint32 *field_80;
+	uint32 *field_84;
 	byte status;
 	uint32 time;
 

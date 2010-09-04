@@ -54,7 +54,7 @@ HeroManager::~HeroManager() {
 //////////////////////////////////////////////////////////////////////////
 // Loading
 //////////////////////////////////////////////////////////////////////////
-void HeroManager::loadData(uint32 count, size_t varSize) {
+void HeroManager::load(uint32 count, size_t varSize) {
 	// Open hero data file
 	Common::SeekableReadStream *stream = getResource()->createReadStreamForMember("game0001.dat");
 	if (!stream)
@@ -81,6 +81,11 @@ void HeroManager::loadData(uint32 count, size_t varSize) {
 	// Setup hero objects
 	for (uint i = 0; i < count + 1; ++i)
 		get(i)->object = (HeroObject *)((byte *)_storage + i * varSize);
+}
+
+void HeroManager::unload() {
+	for (uint index = 1; index < _heros.size(); index++)
+		remove(index);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -436,6 +441,14 @@ OpcodeRet HeroManager::hearVar(OpcodeParameters *parameters) {
 		ret = kOpcodeRetDefault;
 
 	return (OpcodeRet)(params->test ? ret : -ret);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Public functions
+//////////////////////////////////////////////////////////////////////////
+
+void HeroManager::remove(HeroIndex index) {
+	error("HeroManager::remove: Not implemented!");
 }
 
 //////////////////////////////////////////////////////////////////////////

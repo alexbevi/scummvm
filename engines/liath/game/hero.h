@@ -39,7 +39,8 @@ public:
 	HeroManager(LiathEngine *engine);
 	~HeroManager();
 
-	void loadData(uint32 count, size_t size);
+	void load(uint32 count, size_t size);
+	void unload();
 
 	// Opcodes
 	OpcodeRet start(OpcodeParameters *parameters, Work *work, void *unkown);
@@ -79,6 +80,9 @@ public:
 	OpcodeRet hearGlobal(OpcodeParameters *parameters);
 	OpcodeRet hearHeroVar(OpcodeParameters *parameters);
 	OpcodeRet hearVar(OpcodeParameters *parameters);
+
+	// Utils
+	void remove(HeroIndex index);
 
 	// Accessors
 	Hero *get(HeroIndex index);

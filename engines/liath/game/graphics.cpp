@@ -43,8 +43,12 @@ GraphicsManager::~GraphicsManager() {
 //////////////////////////////////////////////////////////////////////////
 // Loading
 //////////////////////////////////////////////////////////////////////////
-void GraphicsManager::loadData() {
-	warning("GraphicsManager::loadData: Not implemented!");
+void GraphicsManager::load() {
+	warning("GraphicsManager::load: Not implemented!");
+}
+
+void GraphicsManager::unload() {
+	warning("GraphicsManager::unload: Not implemented!");
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -75,6 +75,7 @@ private:
 	void *_globalVar;
 
 	void load(ActionIndex action, GameData *data);
+	void unload();
 	void playAction();
 };
 

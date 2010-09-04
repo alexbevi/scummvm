@@ -31,6 +31,7 @@
 #include "liath/game/graphics.h"
 #include "liath/game/hero.h"
 #include "liath/game/interpreter.h"
+#include "liath/game/mouse.h"
 #include "liath/game/segment.h"
 #include "liath/game/sound.h"
 #include "liath/game/work.h"
@@ -88,13 +89,9 @@ void GameManager::playGame(ActionIndex action) {
 	while (getAction()->getCurrentAction())
 		playAction();
 
-	// TODO cleanup heros
-
-	// TODO cleanup sound data
-
-	// TODO cleanup palette and text data
-
-	// TODO cleanup other data
+	// Cleanup
+	getSegment()->unload(kSegmentGame);
+	getGame()->unload();
 }
 
 void GameManager::playAction() {
@@ -121,16 +118,25 @@ void GameManager::load(ActionIndex action, GameData *gameData) {
 	// Setup hero objects & load hero data
 	_countHero = gameData->countHero;
 	_countVar = _param + 14;
-	getHero()->loadData(_countHero, 4 * _countVar);
+	getHero()->load(_countHero, 4 * _countVar);
 
 	// Setup global var area
 	_globalVar = (uint32 *)calloc(4 * _gParam, 1);
 
 	// Load sound data
-	getSound()->loadData();
+	getSound()->load();
 
 	// Load palettes
-	getGraphics()->loadData();
+	getGraphics()->load();
+}
+
+void GameManager::unload() {
+	getHero()->unload();
+	SAFE_FREE(_globalVar)
+	getSound()->unload();
+	getGraphics()->unload();
+	getWork()->unload();
+	getMouse()->unload();
 }
 
 //////////////////////////////////////////////////////////////////////////

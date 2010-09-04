@@ -40,7 +40,7 @@ SegmentManager::~SegmentManager() {
 	// Zero-out passed pointers
 	_engine = NULL;
 
-	release(_gameSegment);
+	unload(_gameSegment);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -149,11 +149,11 @@ Segment *SegmentManager::getSegmentByType(SegmentType type) {
 	}
 }
 
-void SegmentManager::release(Segment segment) {
+void SegmentManager::unload(Segment segment) {
 	SegmentDef seg = *segment;
 
 	for (SegmentDef::iterator it = seg.begin(); it != seg.end(); it++)
-		delete *it;
+		SAFE_DELETE(*it);
 
 	seg.clear();
 }

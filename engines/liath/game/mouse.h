@@ -40,6 +40,8 @@ public:
 	MouseManager(LiathEngine *engine);
 	~MouseManager();
 
+	void unload();
+
 	// Opcodes
 	OpcodeRet commandNumberBox(OpcodeParameters *parameters);
 	OpcodeRet push();
@@ -62,6 +64,7 @@ private:
 	Common::Array<MouseBox *> _boxes;
 
 	uint32 numberBox(uint32 param1, uint32 param2);
+
 };
 
 } // End of namespace Liath

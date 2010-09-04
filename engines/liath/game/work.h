@@ -40,6 +40,8 @@ public:
 	WorkManager(LiathEngine *engine);
 	~WorkManager();
 
+	void unload();
+
 	// Opcodes
 	OpcodeRet startObj(ObjectIndex index);
 	OpcodeRet cel(OpcodeParameters *parameters);

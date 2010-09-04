@@ -43,7 +43,8 @@ public:
 	SoundManager(LiathEngine *engine);
 	~SoundManager();
 
-	void loadData();
+	void load();
+	void unload();
 
 	// Opcodes
 	OpcodeRet cash(OpcodeParameters *parameters);
