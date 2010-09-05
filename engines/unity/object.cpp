@@ -1009,6 +1009,7 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 		//	run walk action with `who', return false
 		// }
 		// TODO: (wth? checking `who' vs `who'?)
+		warning("unimplemented: ConditionCheck: ignoring HowClose");
 	}
 
 	// TODO: check WhoCan actually, well, can :)
@@ -1545,7 +1546,7 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	uint16 unknown1 = stream->readUint16LE();
 	uint16 unknown2 = stream->readUint16LE();
 	//printf("(%04x, %04x), ", unknown1, unknown2);
-	assert(unknown2 == 0 || (unknown2 >= 7 && unknown2 <= 15) || unknown2 == 0xffff);
+	assert(unknown2 == 0 || (unknown2 >= 6 && unknown2 <= 15) || unknown2 == 0xffff);
 
 	unknown1 = stream->readUint16LE();
 	//printf("(%04x), ", unknown1);
@@ -1557,7 +1558,7 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 		uint16 unknown1 = stream->readUint16LE();
 		uint16 unknown2 = stream->readUint16LE();
 		//printf("(%04x, %04x), ", unknown1, unknown2);
-		assert(unknown2 == 0 || (unknown2 >= 7 && unknown2 <= 15) || unknown2 == 0xffff);
+		assert(unknown2 == 0 || (unknown2 >= 6 && unknown2 <= 15) || unknown2 == 0xffff);
 	}
 
 	target = readObjectID(stream);
@@ -1685,6 +1686,9 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 	}
 
 	if (text.size()) {
+		// TODO: response escape strings
+		// (search backwards between two '@'s, format: '0' + %c, %1x, %02x)
+
 		_vm->dialog_text = text;
 
 		// TODO: this is VERy not good
@@ -1736,7 +1740,9 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 		}
 
 		if (!_vm->dialog_choice_responses.size()) {
-			error("didn't find a next situation");
+			// see first conversation in space station
+			warning("didn't find a next situation");
+			return;
 		}
 
 		if (_vm->dialog_choice_responses.size() > 1) {

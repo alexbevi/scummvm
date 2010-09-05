@@ -874,6 +874,10 @@ Common::Error UnityEngine::run() {
 				resp = current_conversation->getEnabledResponse(next_situation);
 			next_situation = 0xffffffff;
 			next_state = 0xffffffff;
+			if (!resp) {
+				warning("failed to find a next situation!");
+				break;
+			}
 			// TODO: not always Picard! :(
 			resp->execute(this, data.getObject(objectID(0, 0, 0)));
 		}
