@@ -59,6 +59,8 @@ public:
 private:
 	LiathEngine* _engine;
 
+	Common::Array<Common::String> _waves;
+
 	uint32 _musicLevel;
 	uint32 _effectsLevel;
 	uint32 _dialogLevel;

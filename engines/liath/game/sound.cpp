@@ -27,6 +27,7 @@
 
 #include "liath/helpers.h"
 #include "liath/liath.h"
+#include "liath/resource.h"
 
 namespace Liath {
 
@@ -41,7 +42,24 @@ SoundManager::~SoundManager() {
 // Loading
 //////////////////////////////////////////////////////////////////////////
 void SoundManager::load() {
-	warning("SoundManager::load: Not implemented!");
+	// Load the file stream
+	Common::SeekableReadStream *stream = getResource()->createReadStreamForMember("wave.dat");
+	if (!stream)
+		error("SoundManager::load: File not found (wave.dat)!");
+
+	// Get the number of entries
+	stream->seek(256, SEEK_SET);
+	uint32 count = stream->readUint32LE();
+
+	// Read each entry
+	stream->seek(280, SEEK_SET);
+	for (int i = 0; i < count; i++) {
+		char name[280];
+
+		stream->read(&name, 280);
+
+		_waves.push_back(Common::String(name));
+	}
 }
 
 void SoundManager::unload() {
