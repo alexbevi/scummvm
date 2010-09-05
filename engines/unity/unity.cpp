@@ -25,6 +25,7 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	next_situation = 0xffffffff;
 	next_state = 0xffffffff;
 	beam_world = 0;
+	mode = mode_Look;
 }
 
 UnityEngine::~UnityEngine() {
@@ -236,8 +237,6 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 	data.current_screen.world = world;
 	data.current_screen.screen = screen;
 
-	mode = mode_Look;
-
 	// beam in an away team
 	for (unsigned int i = 0; i < 4; i++) {
 		objectID objid(i, 0, 0);
@@ -429,7 +428,16 @@ void UnityEngine::handleTalk(Object *obj) {
 }
 
 void UnityEngine::handleWalk(Object *obj) {
-	(void)obj; // TODO
+	if (obj->transition.world != 0xff) {
+		obj = data.getObject(obj->transition);
+		if (!obj) error("couldn't find transition object");
+
+		// TODO
+		obj->use_entries.execute(this);
+		return;
+	}
+
+	// TODO
 }
 
 // TODO
@@ -576,11 +584,27 @@ void UnityEngine::handleAwayTeamMouseMove(unsigned int x, unsigned int y) {
 			break;
 		case mode_Use:
 			status_text = "Use " + obj->name;
+			if (obj->talk_string.size() && obj->talk_string[obj->talk_string.size() - 1] == '-') {
+				// handle custom USE strings
+				// TODO: this doesn't really belong here (and isn't right anyway?)
+				status_text.clear();
+				unsigned int i = obj->talk_string.size() - 1;
+				while (obj->talk_string[i] == '-' && i > 0) {
+					i--;
+				}
+				while (obj->talk_string[i] != '-' && obj->talk_string[i] != ' ' && i > 0) {
+					status_text = obj->talk_string[i] + status_text; i--;
+				}
+				status_text = status_text + " " + obj->name;
+			}
 			_gfx->setCursor(3, false);
 			break;
 		case mode_Walk:
 			status_text = "Walk to " + obj->name;
-			_gfx->setCursor(7, false);
+			if (obj->cursor_flag == 1) // TODO
+				_gfx->setCursor(8 + obj->cursor_id, false);
+			else
+				_gfx->setCursor(7, false);
 			break;
 		case mode_Talk:
 			status_text = "Talk to " + obj->name;
