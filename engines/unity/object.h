@@ -230,6 +230,15 @@ public:
 	byte flags;
 	byte state;
 	byte objwalktype;
+	uint16 skills;
+	uint16 timer;
+
+	uint32 curr_world;
+	uint16 curr_screen;
+
+	objectID transition;
+	byte cursor_flag;
+	byte cursor_id;
 
 	uint16 sprite_id;
 	SpritePlayer *sprite;

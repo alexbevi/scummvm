@@ -140,14 +140,17 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	objstream->read(_name, 20);
 	name = _name;
 
-	for (unsigned int i = 0; i < 6; i++) {
+	for (unsigned int i = 0; i < 5; i++) {
 		uint16 unknowna = objstream->readUint16LE(); // XXX
 		byte unknownb = objstream->readByte();
 		byte unknownc = objstream->readByte();
+		if (i == 0) {
+			transition = readObjectID(objstream);
+		}
 	}
 
-	uint16 unknown14 = objstream->readUint16LE(); // XXX
-	uint16 unknown15 = objstream->readUint16LE(); // XXX
+	skills = objstream->readUint16LE();
+	timer = objstream->readUint16LE();
 
 	char _str[101];
 	objstream->read(_str, 100);
@@ -164,9 +167,13 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 
 	uint16 unknown21 = objstream->readUint16LE(); // XXX
 	uint32 unknown22 = objstream->readUint32LE(); // XXX
-	uint32 unknown23 = objstream->readUint32LE(); // XXX
-	uint16 unknown24 = objstream->readUint16LE(); // XXX
-	uint16 unknown25 = objstream->readUint16LE(); // XXX
+
+	curr_world = objstream->readUint32LE();
+	curr_screen = objstream->readUint16LE();
+
+	cursor_id = objstream->readByte();
+	cursor_flag = objstream->readByte();
+
 	uint16 unknown26 = objstream->readUint16LE(); // XXX
 
 	zero16 = objstream->readUint16LE();
@@ -896,7 +903,7 @@ void Object::setTalkString(const Common::String &str) {
 		return;
 	}
 
-	if (str[0] == '1') error("unexpected immediate talk string '%s'", str);
+	if (str[0] == '1') error("unexpected immediate talk string '%s'", str.c_str());
 
 	// TODO: 'abc     ---hello---' should be stripped to 'abchello'
 	// (skip two sets of dashes, then spaces)
