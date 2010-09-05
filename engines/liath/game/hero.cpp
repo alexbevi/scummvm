@@ -33,8 +33,6 @@
 #include "liath/helpers.h"
 #include "liath/liath.h"
 
-#include "common/stream.h"
-
 namespace Liath {
 
 HeroManager::HeroManager(LiathEngine *engine) : _engine(engine), _storage(NULL) {
@@ -114,15 +112,15 @@ OpcodeRet HeroManager::startExt(OpcodeParameters *parameters) {
 		break;
 
 	case kOriginGlobal:
-		params->param2 = *GLOBAL(params->param7);
+		params->param2 = GLOBAL(params->param7);
 		break;
 
 	case kOriginHero:
-		params->param2 = *getData(params->param6, params->param7);
+		params->param2 = getData(params->param6, params->param7);
 		break;
 
 	case kOriginHeroWork:
-		params->param2 = *getData(getWork()->getCurrent()->heroIndex, params->param7);
+		params->param2 = getData(getWork()->getCurrent()->heroIndex, params->param7);
 		break;
 	}
 
@@ -131,15 +129,15 @@ OpcodeRet HeroManager::startExt(OpcodeParameters *parameters) {
 		break;
 
 	case kOriginGlobal:
-		params->param1 = *GLOBAL(params->param10);
+		params->param1 = GLOBAL(params->param10);
 		break;
 
 	case kOriginHero:
-		params->param1 = *getData(params->param9, params->param10);
+		params->param1 = getData(params->param9, params->param10);
 		break;
 
 	case kOriginHeroWork:
-		params->param1 = *getData(getWork()->getCurrent()->heroIndex, params->param10);
+		params->param1 = getData(getWork()->getCurrent()->heroIndex, params->param10);
 		break;
 	}
 
@@ -198,21 +196,21 @@ OpcodeRet HeroManager::freeze(OpcodeParameters *parameters) {
 OpcodeRet HeroManager::freezeGlobal(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *GLOBAL(params->param3);
+	params->param1 = GLOBAL(params->param3);
 	return freeze((OpcodeParameters *)params);
 }
 
 OpcodeRet HeroManager::freezeHeroVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *getData(params->param2, params->param3);
+	params->param1 = getData(params->param2, params->param3);
 	return freeze((OpcodeParameters *)params);
 }
 
 OpcodeRet HeroManager::freezeVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *getData(getWork()->getCurrent()->heroIndex, params->param3);
+	params->param1 = getData(getWork()->getCurrent()->heroIndex, params->param3);
 	return freeze((OpcodeParameters *)params);
 }
 
@@ -223,21 +221,21 @@ OpcodeRet HeroManager::unfreeze(OpcodeParameters *parameters) {
 OpcodeRet HeroManager::unfreezeGlobal(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *GLOBAL(params->param3);
+	params->param1 = GLOBAL(params->param3);
 	return unfreeze((OpcodeParameters *)params);
 }
 
 OpcodeRet HeroManager::unfreezeHeroVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *getData(params->param2, params->param3);
+	params->param1 = getData(params->param2, params->param3);
 	return unfreeze((OpcodeParameters *)params);
 }
 
 OpcodeRet HeroManager::unfreezeVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *getData(getWork()->getCurrent()->heroIndex, params->param3);
+	params->param1 = getData(getWork()->getCurrent()->heroIndex, params->param3);
 	return unfreeze((OpcodeParameters *)params);
 }
 
@@ -246,7 +244,7 @@ OpcodeRet HeroManager::herovar(OpcodeParameters *parameters) {
 
 	debugC(kLiathDebugInterpreter, "  heroIndex: %d / offset: %d  -  expression: %d - count: %d\n", params->param1, params->param2, params->param4, params->param3);
 
-	*getData(params->param1, params->param2) = EXPR(params->param4, params->param3);
+	setData(params->param1, params->param2, EXPR(params->param4, params->param3));
 
 	return kOpcodeRetDefault;
 }
@@ -270,7 +268,7 @@ OpcodeRet HeroManager::heroSys(OpcodeParameters *parameters) {
 OpcodeRet HeroManager::var(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	*getData(getWork()->getCurrent()->heroIndex, params->param1) = EXPR(params->param3, params->param2);
+	setData(getWork()->getCurrent()->heroIndex, params->param1, EXPR(params->param3, params->param2));
 
 	return kOpcodeRetDefault;
 }
@@ -278,7 +276,7 @@ OpcodeRet HeroManager::var(OpcodeParameters *parameters) {
 OpcodeRet HeroManager::sys(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	*getData(getWork()->getCurrent()->heroIndex, params->param1) = EXPR(params->param3, params->param2);
+	setData(getWork()->getCurrent()->heroIndex, params->param1, EXPR(params->param3, params->param2));
 
 	switch (params->param1) {
 	default:
@@ -321,19 +319,19 @@ OpcodeRet HeroManager::quitHero(OpcodeParameters *parameters) {
 OpcodeRet HeroManager::quitGlobal(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	return quit(*GLOBAL(params->param3));
+	return quit(GLOBAL(params->param3));
 }
 
 OpcodeRet HeroManager::quitHeroVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	return quit(*getData(params->param2, params->param3));
+	return quit(getData(params->param2, params->param3));
 }
 
 OpcodeRet HeroManager::quitVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	return quit(*getData(getWork()->getCurrent()->heroIndex, params->param3));
+	return quit(getData(getWork()->getCurrent()->heroIndex, params->param3));
 }
 
 OpcodeRet HeroManager::auto2hero(OpcodeParameters *parameters) {
@@ -345,21 +343,21 @@ OpcodeRet HeroManager::auto2hero(OpcodeParameters *parameters) {
 OpcodeRet HeroManager::auto2heroGlobal(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *GLOBAL(params->param2);
+	params->param1 = GLOBAL(params->param2);
 	return auto2((OpcodeParameters *)params);
 }
 
 OpcodeRet HeroManager::auto2heroHeroVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *getData(params->param1, params->param2);
+	params->param1 = getData(params->param1, params->param2);
 	return auto2((OpcodeParameters *)params);
 }
 
 OpcodeRet HeroManager::auto2heroVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *getData(getWork()->getCurrent()->heroIndex, params->param2);
+	params->param1 = getData(getWork()->getCurrent()->heroIndex, params->param2);
 	return auto2((OpcodeParameters *)params);
 }
 
@@ -370,10 +368,10 @@ OpcodeRet HeroManager::face2hero(OpcodeParameters *parameters) {
 OpcodeRet HeroManager::face2heroGlobal(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *GLOBAL(params->param2);
+	params->param1 = GLOBAL(params->param2);
 
 	if (face2hero((OpcodeParameters *)params) != -1)
-		*GLOBAL(params->param2) = -1;
+		SETGLOBAL(params->param2, -1);
 
 	return kOpcodeRetDefault;
 }
@@ -383,10 +381,10 @@ OpcodeRet HeroManager::face2heroHeroVar(OpcodeParameters *parameters) {
 
 	uint32 param = params->param1;
 
-	params->param1 = *getData(params->param1, params->param2);
+	params->param1 = getData(params->param1, params->param2);
 
 	if (face2hero((OpcodeParameters *)params) != -1)
-		*GLOBAL(params->param2) = -1;
+		SETGLOBAL(params->param2, -1);
 
 	params->param1 = param;
 
@@ -396,10 +394,10 @@ OpcodeRet HeroManager::face2heroHeroVar(OpcodeParameters *parameters) {
 OpcodeRet HeroManager::face2heroVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *getData(getWork()->getCurrent()->heroIndex, params->param2);
+	params->param1 = getData(getWork()->getCurrent()->heroIndex, params->param2);
 
 	if (face2hero((OpcodeParameters *)params) != -1)
-		*GLOBAL(params->param2) = -1;
+		SETGLOBAL(params->param2, -1);
 
 	return kOpcodeRetDefault;
 }
@@ -409,7 +407,7 @@ OpcodeRet HeroManager::hearGlobal(OpcodeParameters *parameters) {
 
 	OpcodeRet ret = hear((OpcodeParameters *)params);
 
-	*GLOBAL(params->param2) = ret;
+	SETGLOBAL(params->param2,  ret);
 
 	if (ret != kOpcodeRetNext)
 		ret = kOpcodeRetDefault;
@@ -422,7 +420,7 @@ OpcodeRet HeroManager::hearHeroVar(OpcodeParameters *parameters) {
 
 	OpcodeRet ret = hear((OpcodeParameters *)params);
 
-	*getData(params->param1, params->param2) = ret;
+	setData(params->param1, params->param2, ret);
 
 	if (ret != kOpcodeRetNext)
 		ret = kOpcodeRetDefault;
@@ -435,7 +433,7 @@ OpcodeRet HeroManager::hearVar(OpcodeParameters *parameters) {
 
 	OpcodeRet ret = hear((OpcodeParameters *)params);
 
-	*getData(getWork()->getCurrent()->heroIndex, params->param2) = ret;
+	setData(getWork()->getCurrent()->heroIndex, params->param2, ret);
 
 	if (ret != kOpcodeRetNext)
 		ret = kOpcodeRetDefault;

@@ -100,12 +100,12 @@ OpcodeRet ArrayManager::init(OpcodeParameters *parameters) {
 
 	array->field_1A = params->param18;
 
-	*array->getData(42) = DSI2INT(EXPR(params->param19, params->param20));
-	*array->getData(46) = DSI2INT(EXPR(params->param21,  params->param22));
-	*array->getData(50) = DSI2INT(EXPR(params->param23,  params->param24));
-	*array->getData(54) = DSI2INT(EXPR(params->param25,  params->param26));
+	array->setData(42, DSI2INT(EXPR(params->param19, params->param20)));
+	array->setData(46, DSI2INT(EXPR(params->param21, params->param22)));
+	array->setData(50, DSI2INT(EXPR(params->param23, params->param24)));
+	array->setData(54, DSI2INT(EXPR(params->param25, params->param26)));
 
-	array->field_3A = (*array->getData(42) != *array->getData(50)) ? 1 : 0;
+	array->field_3A = (array->getData(42) != array->getData(50)) ? 1 : 0;
 
 	return kOpcodeRetDefault;
 }
@@ -118,12 +118,12 @@ OpcodeRet ArrayManager::img(OpcodeParameters *parameters) {
 	// Update array data
 	array->field_56 = params->param9;
 
-	*array->getData(31) = DSI2INT(EXPR(params->param11, params->param12));
-	*array->getData(32) = DSI2INT(EXPR(params->param13, params->param14));
-	*array->getData(33) = DSI2INT(EXPR(params->param15, params->param16));
-	*array->getData(34) = DSI2INT(EXPR(params->param17, params->param18));
-	*array->getData(35) = DSI2INT(EXPR(params->param19, params->param20));
-	*array->getData(36) = DSI2INT(EXPR(params->param21, params->param22));
+	array->setData(31, DSI2INT(EXPR(params->param11, params->param12)));
+	array->setData(32, DSI2INT(EXPR(params->param13, params->param14)));
+	array->setData(33, DSI2INT(EXPR(params->param15, params->param16)));
+	array->setData(34, DSI2INT(EXPR(params->param17, params->param18)));
+	array->setData(35, DSI2INT(EXPR(params->param19, params->param20)));
+	array->setData(36, DSI2INT(EXPR(params->param21, params->param22)));
 
 	int32 diff = array->field_2[2] - array->field_2[0] + 1;
 
@@ -132,7 +132,7 @@ OpcodeRet ArrayManager::img(OpcodeParameters *parameters) {
 	rat *= array->dataCount;
 
 	int32 count = ceil(rat.toDouble());
-	int32 val = *array->getData(34) - *array->getData(32) +  array->field_2[5] * count + *array->getData(36) * (count - 1) + 1;
+	int32 val = array->getData(34) - array->getData(32) +  array->field_2[5] * count + array->getData(36) * (count - 1) + 1;
 
 	array->field_5A = diff;
 	array->field_5E = val;

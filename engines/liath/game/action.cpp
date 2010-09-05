@@ -68,8 +68,8 @@ OpcodeRet ActionManager::start(OpcodeParameters *parameters) {
 		_avsY = params->param15;
 	}
 
-	if (*GLOBAL(121) == 131072 || *GLOBAL(121) == 65536)
-		*GLOBAL(121) = 196608;
+	if (GLOBAL(121) == 131072 || GLOBAL(121) == 65536)
+		SETGLOBAL(121, 196608);
 
 	return kOpcodeRetExit;
 }
@@ -77,7 +77,7 @@ OpcodeRet ActionManager::start(OpcodeParameters *parameters) {
 OpcodeRet ActionManager::startGlobal(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	_action = (ActionIndex)*GLOBAL(params->param4);
+	_action = (ActionIndex)GLOBAL(params->param4);
 	return kOpcodeRetExit;
 }
 
@@ -91,7 +91,7 @@ OpcodeRet ActionManager::startHeroVariable(OpcodeParameters *parameters) {
 		_aviType = params->param13;
 	}
 
-	_action = (ActionIndex)*getHero()->getData(params->param2, params->param3);
+	_action = (ActionIndex)getHero()->getData(params->param2, params->param3);
 
 	return kOpcodeRetExit;
 }
@@ -106,7 +106,7 @@ OpcodeRet ActionManager::startVariable(OpcodeParameters *parameters) {
 		_aviType = params->param13;
 	}
 
-	_action = (ActionIndex)*getHero()->getData(getWork()->getCurrent()->heroIndex, params->param3);
+	_action = (ActionIndex)getHero()->getData(getWork()->getCurrent()->heroIndex, params->param3);
 
 	return kOpcodeRetExit;
 }
@@ -125,15 +125,15 @@ OpcodeRet ActionManager::number(OpcodeParameters *parameters) {
 		break;
 
 	case kOriginGlobal:
-		*GLOBAL(params->param3) = _previousAction;
+		SETGLOBAL(params->param3, _previousAction);
 		break;
 
 	case kOriginHero:
-		*getHero()->getData(params->param3, params->param4) = _previousAction;
+		getHero()->setData(params->param3, params->param4, _previousAction);
 		break;
 
 	case kOriginHeroWork:
-		*getHero()->getData(getWork()->getCurrent()->heroIndex, params->param4) = _previousAction;
+		getHero()->setData(getWork()->getCurrent()->heroIndex, params->param4, _previousAction);
 		break;
 	}
 

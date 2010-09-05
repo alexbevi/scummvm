@@ -52,7 +52,8 @@ public:
 	void letValue(ParamOrigin type, HeroIndex index, uint32 offset, uint32 val);
 	int32 getValue(ParamOrigin type, HeroIndex index, uint32 offset);
 
-	int32 *getGlobal(uint32 offset);
+	int32 getGlobal(uint32 offset);
+	void setGlobal(uint32 offset, int32 val);
 	OpcodeRet getReturnValue(int val, bool testValue);
 
 private:
@@ -70,6 +71,7 @@ private:
 	uint32 _oldTimer;
 	uint32 _countHero;
 	uint32 _countVar;
+	uint32 _shadow;
 
 	// Global area
 	void *_globalVar;

@@ -33,7 +33,6 @@
 #include "common/debug-channels.h"
 #include "common/events.h"
 #include "common/file.h"
-#include "common/stream.h"
 
 #define DEBUG
 #ifdef DEBUG

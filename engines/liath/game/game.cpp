@@ -72,9 +72,6 @@ GameManager::~GameManager() {
 // Game playing
 //////////////////////////////////////////////////////////////////////////
 void GameManager::playGame(ActionIndex action) {
-
-	// TODO allocate different data (shadow, make, etc.)
-
 	// Read game segment
 	getSegment()->load(kSegmentGame, 1);
 
@@ -83,7 +80,7 @@ void GameManager::playGame(ActionIndex action) {
 	getGame()->load(action, gameData);
 
 	// Run the interpreter
-	ObjectIndex *pObjectIndex = gameData->objectIndexOffset ? getSegment()->getData(kSegmentGame, gameData->objectIndexOffset) : NULL;
+	ObjectIndex *pObjectIndex = gameData->objectIndexOffset ? (uint32 *)getSegment()->getData(kSegmentGame, gameData->objectIndexOffset) : NULL;
 	_interpreter->interpret(pObjectIndex, getSegment()->get(kSegmentGame));
 
 	while (getAction()->getCurrentAction())
@@ -91,6 +88,7 @@ void GameManager::playGame(ActionIndex action) {
 
 	// Cleanup
 	getSegment()->unload(kSegmentGame);
+
 	getGame()->unload();
 }
 
@@ -103,8 +101,8 @@ void GameManager::playAction() {
 //////////////////////////////////////////////////////////////////////////
 void GameManager::load(ActionIndex action, GameData *gameData) {
 	// Setup interpreter data & param values
-	_gInt  = gameData->gIntOffset ? getSegment()->getData(kSegmentGame, gameData->gIntOffset) : NULL;
-	_gQuit = gameData->gQuitOffset ? getSegment()->getData(kSegmentGame, gameData->gQuitOffset) : NULL;
+	_gInt  = gameData->gIntOffset ? (uint32 *)getSegment()->getData(kSegmentGame, gameData->gIntOffset) : NULL;
+	_gQuit = gameData->gQuitOffset ? (uint32 *)getSegment()->getData(kSegmentGame, gameData->gQuitOffset) : NULL;
 	_param = gameData->gParam + 1;
 	_gParam = gameData->gParam;
 
@@ -126,7 +124,7 @@ void GameManager::load(ActionIndex action, GameData *gameData) {
 	// Load sound data
 	getSound()->load();
 
-	// Load palettes
+	// Load palettes & graphic data
 	getGraphics()->load();
 }
 
@@ -155,7 +153,7 @@ OpcodeRet GameManager::global(OpcodeParameters *parameters) {
 
 	debugC(kLiathDebugInterpreter, "  global: %d  -  expression: %d - count: %d\n", params->param1, params->param3, params->param2);
 
-	*getGlobal(params->param1) = EXPR(params->param3, params->param2);
+	setGlobal(params->param1, EXPR(params->param3, params->param2));
 
 	return kOpcodeRetDefault;
 }
@@ -177,17 +175,17 @@ void GameManager::letValue(ParamOrigin type, HeroIndex index, uint32 offset, uin
 		break;
 
 	case kOriginGlobal:
-		*GLOBAL(offset) = val;
+		SETGLOBAL(offset, val);
 		break;
 
 	case kOriginHero:
 		if (getHero()->get(index))
-			*getHero()->getData(index, offset) = val;
+			getHero()->setData(index, offset, val);
 		break;
 
 	case kOriginHeroWork:
 		if (getHero()->get(getWork()->getCurrent()->heroIndex))
-			*getHero()->getData(getWork()->getCurrent()->heroIndex, offset) = val;
+			getHero()->setData(getWork()->getCurrent()->heroIndex, offset, val);
 		break;
 	}
 }
@@ -198,17 +196,17 @@ int32 GameManager::getValue(ParamOrigin type, HeroIndex index, uint32 offset) {
 		return 0;
 
 	case kOriginGlobal:
-		return *GLOBAL(offset);
+		return GLOBAL(offset);
 
 	case kOriginHero:
 		if (getHero()->get(index))
-			return *getHero()->getData(index, offset);
+			return getHero()->getData(index, offset);
 		else
 			return 0;
 
 	case kOriginHeroWork:
 		if (getHero()->get(getWork()->getCurrent()->heroIndex))
-			return *getHero()->getData(getWork()->getCurrent()->heroIndex, offset);
+			return getHero()->getData(getWork()->getCurrent()->heroIndex, offset);
 		else
 			return 0;
 
@@ -217,8 +215,12 @@ int32 GameManager::getValue(ParamOrigin type, HeroIndex index, uint32 offset) {
 	}
 }
 
-int32 *GameManager::getGlobal(uint32 offset) {
-	return (int32 *)((byte *)_globalVar + offset);
+int32 GameManager::getGlobal(uint32 offset) {
+	return (int32)READ_UINT32((byte *)_globalVar + offset);
+}
+
+void GameManager::setGlobal(uint32 offset, int32 val) {
+	return WRITE_UINT32((byte *)_globalVar + offset, (uint32)val);
 }
 
 OpcodeRet GameManager::getReturnValue(int val, bool testValue) {

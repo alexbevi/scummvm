@@ -85,15 +85,15 @@ OpcodeRet MouseManager::commandNumberBox(OpcodeParameters *parameters) {
 		break;
 
 	case kOriginGlobal:
-		*GLOBAL(params->param3) = result;
+		SETGLOBAL(params->param3, result);
 		break;
 
 	case kOriginHero:
-		*getHero()->getData(params->param2, params->param3) = result;
+		getHero()->setData(params->param2, params->param3, result);
 		break;
 
 	case kOriginHeroWork:
-		*getHero()->getData(getWork()->getCurrent()->heroIndex, params->param3) = result;
+		getHero()->setData(getWork()->getCurrent()->heroIndex, params->param3, result);
 		break;
 	}
 

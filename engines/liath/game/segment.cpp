@@ -29,8 +29,6 @@
 #include "liath/liath.h"
 #include "liath/resource.h"
 
-#include "common/stream.h"
-
 namespace Liath {
 
 SegmentManager::SegmentManager(LiathEngine *engine) : _engine(engine) ,
@@ -117,7 +115,7 @@ void SegmentManager::load(SegmentType type, uint32 index) {
 // Helper functions
 //////////////////////////////////////////////////////////////////////////
 
-uint32 *SegmentManager::getData(SegmentType type, uint32 offset) {
+uint32 SegmentManager::getData(SegmentType type, uint32 offset) {
 	SegmentDef seg = **getSegmentByType(type);
 	SegmentData *data = seg[1];
 
@@ -127,7 +125,7 @@ uint32 *SegmentManager::getData(SegmentType type, uint32 offset) {
 	if (offset >= data->size)
 		error("SegmentManager::getData: Invalid offset (was: %d, max: %d)", offset, (uint32)data->size);
 
-	return (uint32 *)((byte *)data->data + offset);
+	return READ_UINT32((byte *)data->data + offset);
 }
 
 Segment *SegmentManager::getSegmentByType(SegmentType type) {

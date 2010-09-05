@@ -83,21 +83,21 @@ int32 ExpressionManager::expression(uint32 offset, uint32 count) {
 			error("ExpressionManager::expression: Invalid operation!");
 
 		case kOperationHeroWorkVar:
-			push(*getHero()->getData(work->heroIndex, expr.field_5));
+			push(getHero()->getData(work->heroIndex, expr.field_5));
 			break;
 
 		case kOperationGlobalVar:
-			push(*GLOBAL(expr.field_5));
+			push(GLOBAL(expr.field_5));
 			break;
 
 		case kOperationHeroVar:
-			push(*getHero()->getData(expr.field_1, expr.field_5));
+			push(getHero()->getData(expr.field_1, expr.field_5));
 			break;
 
 		case kOperation4:
 			switch (expr.field_5) {
 			default:
-				push(*getHero()->getData(work->heroIndex, expr.field_5));
+				push(getHero()->getData(work->heroIndex, expr.field_5));
 				break;
 
 			case 0:
@@ -152,7 +152,7 @@ int32 ExpressionManager::expression(uint32 offset, uint32 count) {
 			if (hero->work) {
 				switch (expr.field_5) {
 				default:
-					push(*hero->getData(expr.field_5));
+					push(hero->getData(expr.field_5));
 					break;
 
 				case 0:
@@ -200,7 +200,7 @@ int32 ExpressionManager::expression(uint32 offset, uint32 count) {
 					break;
 				}
 			} else {
-				push(*hero->getData(expr.field_5));
+				push(hero->getData(expr.field_5));
 			}
 			break;
 		}
@@ -214,17 +214,17 @@ int32 ExpressionManager::expression(uint32 offset, uint32 count) {
 		case kOperation13: {
 			Hero *hero;
 			if (expr.operation == kOperation11) {
-				hero = getHero()->get(*GLOBAL(expr.field_5));
+				hero = getHero()->get(GLOBAL(expr.field_5));
 			} else if (expr.operation == kOperation12) {
-				hero = getHero()->get(*getHero()->getData(expr.field_1, expr.field_5));
+				hero = getHero()->get(getHero()->getData(expr.field_1, expr.field_5));
 			} else {
-				hero = getHero()->get(*getHero()->getData(work->heroIndex, expr.field_5));
+				hero = getHero()->get(getHero()->getData(work->heroIndex, expr.field_5));
 			}
 
 			if (expr.field_9 < 14 && hero->work) {
 				switch (expr.field_9) {
 				default:
-					push(*hero->getData(expr.field_9));
+					push(hero->getData(expr.field_9));
 					break;
 
 				case 0:
@@ -272,7 +272,7 @@ int32 ExpressionManager::expression(uint32 offset, uint32 count) {
 					break;
 				}
 			} else {
-				push(*hero->getData(expr.field_9));
+				push(hero->getData(expr.field_9));
 			}
 			break;
 		}

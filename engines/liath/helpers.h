@@ -39,9 +39,10 @@
 #define EXPOSE_PARAMS(type) type *params = (type *)parameters
 
 // Misc
-#define GLOBAL(val)         getGame()->getGlobal(val)
-#define EXPR(offset, count) getExpression()->expression(offset, count)
-#define RET(val1, val2)     getGame()->getReturnValue(val1, val2)
+#define GLOBAL(global)         getGame()->getGlobal(global)
+#define SETGLOBAL(global, val) getGame()->setGlobal(global, val)
+#define EXPR(offset, count)    getExpression()->expression(offset, count)
+#define RET(val1, val2)        getGame()->getReturnValue(val1, val2)
 
 
 // Shared objects

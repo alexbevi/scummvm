@@ -77,15 +77,15 @@ OpcodeRet WorkManager::celExt(OpcodeParameters *parameters) {
 		break;
 
 	case kOriginGlobal:
-		heroIndex = *GLOBAL(params->param4);
+		heroIndex = GLOBAL(params->param4);
 		break;
 
 	case kOriginHero:
-		heroIndex = *getHero()->getData(params->param3, params->param4);
+		heroIndex = getHero()->getData(params->param3, params->param4);
 		break;
 
 	case kOriginHeroWork:
-		heroIndex = *getHero()->getData(_currentWork->heroIndex, params->param4);
+		heroIndex = getHero()->getData(_currentWork->heroIndex, params->param4);
 		break;
 
 	case kOriginParam:
@@ -98,15 +98,15 @@ OpcodeRet WorkManager::celExt(OpcodeParameters *parameters) {
 		break;
 
 	case kOriginGlobal:
-		val = *GLOBAL(params->param7);
+		val = GLOBAL(params->param7);
 		break;
 
 	case kOriginHero:
-		val = *getHero()->getData(params->param6, params->param7);
+		val = getHero()->getData(params->param6, params->param7);
 		break;
 
 	case kOriginHeroWork:
-		val = *getHero()->getData(_currentWork->heroIndex, params->param7);
+		val = getHero()->getData(_currentWork->heroIndex, params->param7);
 		break;
 
 	case kOriginParam:
@@ -164,21 +164,21 @@ OpcodeRet WorkManager::stop(OpcodeParameters *parameters) {
 OpcodeRet WorkManager::stopGlobal(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *GLOBAL(params->param3);
+	params->param1 = GLOBAL(params->param3);
 	return stop((OpcodeParameters *)params);
 }
 
 OpcodeRet WorkManager::stopHeroVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *getHero()->getData(params->param2, params->param3);
+	params->param1 = getHero()->getData(params->param2, params->param3);
 	return stop((OpcodeParameters *)params);
 }
 
 OpcodeRet WorkManager::stopVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *getHero()->getData(_currentWork->heroIndex, params->param3);
+	params->param1 = getHero()->getData(_currentWork->heroIndex, params->param3);
 	return stop((OpcodeParameters *)params);
 }
 
@@ -202,21 +202,21 @@ OpcodeRet WorkManager::cont(OpcodeParameters *parameters) {
 OpcodeRet WorkManager::contGlobal(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *GLOBAL(params->param3);
+	params->param1 = GLOBAL(params->param3);
 	return cont((OpcodeParameters *)params);
 }
 
 OpcodeRet WorkManager::contHeroVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *getHero()->getData(params->param2, params->param3);
+	params->param1 = getHero()->getData(params->param2, params->param3);
 	return cont((OpcodeParameters *)params);
 }
 
 OpcodeRet WorkManager::contVar(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	params->param1 = *getHero()->getData(_currentWork->heroIndex, params->param3);
+	params->param1 = getHero()->getData(_currentWork->heroIndex, params->param3);
 	return cont((OpcodeParameters *)params);
 }
 

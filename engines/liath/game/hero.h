@@ -86,7 +86,8 @@ public:
 
 	// Accessors
 	Hero *get(HeroIndex index);
-	uint32 *getData(HeroIndex index, uint32 offset) { return get(index)->getData(offset); }
+	uint32 getData(HeroIndex index, uint32 offset) { return get(index)->getData(offset); }
+	void setData(HeroIndex index, uint32 offset, uint32 val) { get(index)->setData(offset, val); }
 
 private:
 #include "common/pack-start.h"

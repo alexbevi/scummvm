@@ -130,9 +130,9 @@ OpcodeRet ProgressManager::help(OpcodeParameters *parameters) {
 	}
 
 	if (!message.field_B1)
-		_data[9] += _data[params->param1] * *_progress[index]->getData(params->param1);
+		_data[9] += _data[params->param1] * _progress[index]->getData(params->param1);
 
-	*_progress[index]->getData(params->param1) = 0;
+	_progress[index]->setData(params->param1, 0);
 
 	getGame()->letValue((ParamOrigin)params->param3, params->param4, params->param5, INT2DSI(messageIndex));
 

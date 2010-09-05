@@ -27,6 +27,7 @@
 #define LIATH_SHARED_H
 
 #include "common/array.h"
+#include "common/endian.h"
 #include "common/rect.h"
 #include "common/scummsys.h"
 
@@ -533,8 +534,12 @@ struct Hero {
 	uint16 colorGreen;
 	uint16 colorBlue;
 
-	uint32 *getData(uint32 offset) {
-		return (uint32 *)((byte *)object + offset);
+	uint32 getData(uint32 offset) {
+		return READ_UINT32((byte *)object + offset);
+	}
+
+	void setData(uint32 offset, uint32 val) {
+		WRITE_UINT32((byte *)object + offset, val);
 	}
 } PACKED_STRUCT;
 
@@ -584,8 +589,12 @@ struct Progress {
 		field_4 = 4;
 	}
 
-	uint32 *getData(uint32 offset) {
-		return (uint32 *)((byte *)this + offset);
+	uint32 getData(uint32 offset) {
+		return READ_UINT32((byte *)this + offset);
+	}
+
+	void setData(uint32 offset, uint32 val) {
+		WRITE_UINT32((byte *)this + offset, val);
 	}
 } PACKED_STRUCT;
 
@@ -623,8 +632,12 @@ struct Array {
 	uint32 field_5E;
 	ArrayData *data;
 
-	uint32 *getData(uint32 offset) {
-		return (uint32 *)((byte *)this + offset);
+	uint32 getData(uint32 offset) {
+		return READ_UINT32((byte *)this + offset);
+	}
+
+	void setData(uint32 offset, uint32 val) {
+		WRITE_UINT32((byte *)this + offset, val);
 	}
 } PACKED_STRUCT;
 
