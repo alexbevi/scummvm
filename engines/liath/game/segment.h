@@ -44,7 +44,7 @@ public:
 	void unload(SegmentType type) { unload(*getSegmentByType(type)); }
 
 	// Accessors
-	uint32 getData(SegmentType type, uint32 offset);
+	uint32 *getData(SegmentType type, uint32 offset);
 
 	Segment get(SegmentType type) { return *getSegmentByType(type); }
 	void set(SegmentType type, Segment segment) { *getSegmentByType(type) = segment; }
