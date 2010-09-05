@@ -74,6 +74,7 @@ protected:
 
 	void drawObjects();
 	void processTriggers();
+	void processTimers();
 
 	void startupScreen();
 	void startBridge();

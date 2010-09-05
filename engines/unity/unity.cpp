@@ -313,6 +313,21 @@ void UnityEngine::processTriggers() {
 	}
 }
 
+void UnityEngine::processTimers() {
+	Common::Array<Object *> &objects = data.current_screen.objects;
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		if (!(objects[i]->flags & OBJFLAG_ACTIVE)) continue;
+		if (objects[i]->timer == 0xffff) continue;
+		if (objects[i]->timer == 0) continue;
+
+		objects[i]->timer--;
+		if (objects[i]->timer == 0) {
+			debug(1, "running timer on %s", objects[i]->identify().c_str());
+			objects[i]->timer_entries.execute(this);
+		}
+	}
+}
+
 void UnityEngine::setSpeaker(objectID s) {
 	speaker = s;
 
@@ -864,6 +879,7 @@ Common::Error UnityEngine::run() {
 		}
 
 		processTriggers();
+		processTimers();
 
 		_system->updateScreen();
 	}

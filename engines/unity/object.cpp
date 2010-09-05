@@ -1187,7 +1187,9 @@ void AlterBlock::execute(UnityEngine *_vm) {
 
 	if (alter_timer != 0xffff) {
 		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): timer %x", obj->identify().c_str(), alter_timer);
+		debug(1, "AlterBlock::execute (%s): timer %x", obj->identify().c_str(), alter_timer);
+
+		obj->timer = alter_timer;
 	}
 
 	if (alter_anim != 0xffff) {
