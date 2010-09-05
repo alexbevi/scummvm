@@ -23,7 +23,7 @@ enum {
 	BLOCK_USE_ENTRIES = 0x2,
 	BLOCK_GET_ENTRIES = 0x3,
 	BLOCK_LOOK_ENTRIES = 0x4,
-	BLOCK_TIMER_ENTRIES = 0x5, // XXX: maybe :)
+	BLOCK_TIMER_ENTRIES = 0x5,
 
 	BLOCK_CONDITION = 0x6,
 	BLOCK_ALTER = 0x7,
@@ -34,11 +34,12 @@ enum {
 	// 0x12 unused?
 	BLOCK_GENERAL = 0x13,
 	BLOCK_CONVERSATION = 0x14,
-	BLOCK_BEAM = 0x15,
+	BLOCK_BEAMDOWN = 0x15,
 	BLOCK_TRIGGER = 0x16,
 	BLOCK_COMMUNICATE = 0x17,
 	BLOCK_CHOICE = 0x18,
 	// 0x19, 0x20, 0x21, 0x22 unused?
+	// (planet, computer, game, encounter?)
 
 	BLOCK_END_ENTRY = 0x23,
 	BLOCK_BEGIN_ENTRY = 0x24,
@@ -757,7 +758,7 @@ void EntryList::readEntry(int type, Common::SeekableReadStream *objstream) {
 			}
 			break;
 
-		case BLOCK_BEAM:
+		case BLOCK_BEAMDOWN:
 			VERIFY_LENGTH(0x9f);
 			header = objstream->readUint16LE();
 			assert(header == 9);
