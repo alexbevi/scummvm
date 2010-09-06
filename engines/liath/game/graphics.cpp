@@ -33,6 +33,8 @@
 #include "liath/liath.h"
 #include "liath/resource.h"
 
+#include "common/system.h"
+
 namespace Liath {
 
 GraphicsManager::GraphicsManager(LiathEngine *engine) : _engine(engine),
@@ -42,6 +44,8 @@ GraphicsManager::GraphicsManager(LiathEngine *engine) : _engine(engine),
 GraphicsManager::~GraphicsManager() {
 	// Zero-out passed pointers
 	_engine = NULL;
+
+	unload();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -52,8 +56,6 @@ void GraphicsManager::load(uint32 paletteOffset) {
 	// Initialize palette
 	if (paletteOffset)
 		setPalette((char *)getSegment()->getData(kSegmentGame, paletteOffset));
-
-	setPalette("logo.pal");
 
 	// Load text palettes
 	_textPalette = malloc(768);
@@ -69,10 +71,10 @@ void GraphicsManager::load(uint32 paletteOffset) {
 }
 
 void GraphicsManager::unload() {
+	CLEAR_ARRAY(PaletteEntry, _palette);
 
 	SAFE_FREE(_textPalette);
 	SAFE_FREE(_textPalette2);
-
 	SAFE_FREE(_colorTable);
 
 	// Recompute color table
@@ -136,15 +138,29 @@ void GraphicsManager::setPalette(Common::String paletteName) {
 		return;
 
 	// Set the screen palette
-	//g_system->setPalette(dummy_palette, 0, 3);
-	warning("GraphicsManager::setPalette: Not implemented!");
+	byte *palette = toSystemPalette(_palette);
+	g_system->setPalette(palette, 0, 3);
+	free(palette);
 }
 
-void GraphicsManager::makeSoftTable(int16 maxSize) {
-	warning("GraphicsManager::makeSoftTable: Not implemented!");
+void GraphicsManager::makeSoftTable(uint16 maxSize) {
+	for (uint i = 0; i < 3; i++) {
+
+		if (i >= maxSize) {
+			if (_softTable[i])
+				free(_softTable[i]);
+
+			continue;
+		}
+
+		if (!_softTable[i])
+			_softTable[i] = (uint32 *)malloc(131074);
+	}
 }
 
 bool GraphicsManager::loadBackgroundPalette(Common::String paletteName) {
+	CLEAR_ARRAY(PaletteEntry, _palette);
+
 	Common::SeekableReadStream *stream = getResource()->createReadStreamForMember(paletteName);
 	if (!stream) {
 		warning("GraphicsManager::loadBackgroundPalette: File not found (%s)!", paletteName.c_str());
@@ -176,6 +192,10 @@ bool GraphicsManager::loadBackgroundPalette(Common::String paletteName) {
 	// TODO update palette on a certain action
 
 	return true;
+}
+
+byte *GraphicsManager::toSystemPalette(Common::Array<PaletteEntry *> _palette) {
+	error("GraphicsManager::makeSoftTable: Not implemented!");
 }
 
 } // End of namespace Liath

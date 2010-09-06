@@ -71,13 +71,16 @@ private:
 
 	void *_hMemBackgroundExt;
 
+	uint32 *_softTable[3];
+
 	void drawBMP(bool doSetBackground);
 
-	void makeSoftTable(int16 maxSize);
+	void makeSoftTable(uint16 maxSize);
 	void clearSoftTable() { makeSoftTable(0); }
 
 	void setPalette(Common::String paletteName);
 	bool loadBackgroundPalette( Common::String paletteName );
+	byte *toSystemPalette(Common::Array<PaletteEntry *> _palette);
 };
 
 } // End of namespace Liath
