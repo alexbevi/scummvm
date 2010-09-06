@@ -53,13 +53,15 @@ void SoundManager::load() {
 
 	// Read each entry
 	stream->seek(280, SEEK_SET);
-	for (int i = 0; i < count; i++) {
+	for (uint i = 0; i < count; i++) {
 		char name[280];
 
 		stream->read(&name, 280);
 
 		_waves.push_back(Common::String(name));
 	}
+
+	delete stream;
 }
 
 void SoundManager::unload() {

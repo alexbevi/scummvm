@@ -71,10 +71,10 @@ void HeroManager::load(uint32 count, size_t varSize) {
 		_heros.push_back(hero);
 	}
 
+	delete stream;
+
 	// ALlocate storage for hero variables
 	_storage = calloc((count + 1) * varSize, 1);
-
-	delete stream;
 
 	// Setup hero objects
 	for (uint i = 0; i < count + 1; ++i)
