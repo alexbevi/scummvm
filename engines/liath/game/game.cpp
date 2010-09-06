@@ -125,7 +125,7 @@ void GameManager::load(ActionIndex action, GameData *gameData) {
 	getSound()->load();
 
 	// Load palettes & graphic data
-	getGraphics()->load();
+	getGraphics()->load(gameData->paletteOffset);
 }
 
 void GameManager::unload() {

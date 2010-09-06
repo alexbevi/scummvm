@@ -71,7 +71,6 @@ private:
 	uint32 _oldTimer;
 	uint32 _countHero;
 	uint32 _countVar;
-	uint32 _shadow;
 
 	// Global area
 	void *_globalVar;

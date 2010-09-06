@@ -38,7 +38,7 @@ public:
 	GraphicsManager(LiathEngine *engine);
 	~GraphicsManager();
 
-	void load();
+	void load(uint32 paletteOffset);
 	void unload();
 
 	// Opcodes
@@ -51,11 +51,33 @@ public:
 	OpcodeRet look(OpcodeParameters *parameters);
 
 private:
+	struct PaletteEntry {
+		byte red;
+		byte green;
+		byte blue;
+		byte flags;
+	};
+
 	LiathEngine* _engine;
+
+	// Palettes
+	Common::Array<PaletteEntry *> _palette;
+	void *_textPalette;
+	void *_textPalette2;
+
+	void *_colorTable;
+
+	uint32 _shadow;
 
 	void *_hMemBackgroundExt;
 
 	void drawBMP(bool doSetBackground);
+
+	void makeSoftTable(int16 maxSize);
+	void clearSoftTable() { makeSoftTable(0); }
+
+	void setPalette(Common::String paletteName);
+	bool loadBackgroundPalette( Common::String paletteName );
 };
 
 } // End of namespace Liath
