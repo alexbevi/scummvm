@@ -190,6 +190,8 @@ Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 }
 
 void UnityEngine::startBridge() {
+	data.current_screen.objects.clear();
+	data.current_screen.polygons.clear();
 	data.current_screen.world = 0x5f;
 	data.current_screen.screen = 0xff;
 
@@ -441,11 +443,15 @@ void UnityEngine::handleWalk(Object *obj) {
 }
 
 // TODO
-unsigned int curr_loc = 4;
-unsigned int curr_screen = 0;
 unsigned int anim = 26;
 
 void UnityEngine::DebugNextScreen() {
+	unsigned int &curr_loc = data.current_screen.world;
+	unsigned int &curr_screen = data.current_screen.screen;
+
+	// start in first screen
+	if (curr_loc == 0x5f) { curr_loc = 2; curr_screen = 0; }
+
 	curr_screen++;
 	switch (curr_loc) {
 	case 2: if (curr_screen == 2) curr_screen++;
