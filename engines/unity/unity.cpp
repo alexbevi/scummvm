@@ -20,6 +20,7 @@ namespace Unity {
 
 UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	in_dialog = false;
+	dialog_choosing = false;
 	icon = NULL;
 	current_conversation = NULL;
 	next_situation = 0xffffffff;
@@ -715,33 +716,16 @@ void UnityEngine::drawObjects() {
 	}
 }
 
-void UnityEngine::drawDialogWindow() {
+void UnityEngine::drawDialogFrameAround(unsigned int x, unsigned int y, unsigned int width,
+	unsigned int height, bool use_thick_frame, bool with_icon) {
 	// dialog.mrg
-
 	MRGFile mrg;
 	Common::Array<uint16> &widths = mrg.widths;
 	Common::Array<uint16> &heights = mrg.heights;
 	_gfx->loadMRG("dialog.mrg",  &mrg);
 	assert(widths.size() == 31);
 
-	bool use_thick_frame = false;
 	unsigned int base = (use_thick_frame ? 17 : 0);
-
-	// TODO: de-hardcode
-	unsigned int x = 100;
-	unsigned int y = 280;
-
-	// calculate required bounding box
-	// TODO: some kind of scrolling
-	Common::Array<unsigned int> strwidths, starts;
-	unsigned int height;
-	_gfx->calculateStringBoundary(320, strwidths, starts, height, dialog_text, 2);
-	if (height > 160) height = 160;
-	unsigned int width = 0;
-	for (unsigned int i = 0; i < strwidths.size(); i++) {
-		if (strwidths[i] > width)
-			width = strwidths[i];
-	}
 
 	unsigned int real_x1 = x - 10;
 	unsigned int real_x2 = x + width + 10;
@@ -754,36 +738,84 @@ void UnityEngine::drawDialogWindow() {
 	real_x2 += widths[base+7];
 
 	// icon frame goes on LEFT side, up/down buttons on RIGHT side, both in centre
-	// TODO: version without icon
-	// text border is pretty small if there's no icon frame, otherwise includes that space..
-	real_x1 -= widths[8] / 2;
-	real_x1 += 8;
+
+	if (with_icon) {
+		// text border is pretty small if there's no icon frame, otherwise includes that space..
+		real_x1 -= widths[8] / 2;
+		real_x1 += 8;
+	}
 
 	// black background inside the border
-	_gfx->fillRect(0, real_x1 + widths[base+0], real_y1 + heights[base+0], real_x2 - widths[base+3], real_y2 - heights[base+3]);
+	_gfx->fillRect(0, real_x1 + widths[base+4], real_y1 + heights[base+6], real_x2 - widths[base+5], real_y2 - heights[base+7]);
 
 	for (unsigned int border_x = real_x1; border_x + widths[base+4] < real_x2; border_x += widths[base+4])
 		_gfx->drawMRG(&mrg, base+4, border_x, real_y1);
 	for (unsigned int border_x = real_x1; border_x + widths[base+5] < real_x2; border_x += widths[base+5])
-		_gfx->drawMRG(&mrg, base+5, border_x, real_y2 - widths[base+5]);
+		_gfx->drawMRG(&mrg, base+5, border_x, real_y2 - heights[base+5]);
 	for (unsigned int border_y = real_y1; border_y + heights[base+6] < real_y2; border_y += heights[base+6])
 		_gfx->drawMRG(&mrg, base+6, real_x1, border_y);
 	for (unsigned int border_y = real_y1; border_y + heights[base+7] < real_y2; border_y += heights[base+7])
 		_gfx->drawMRG(&mrg, base+7, real_x2 - widths[base+7], border_y);
 	_gfx->drawMRG(&mrg, base+0, real_x1, real_y1);
-	_gfx->drawMRG(&mrg, base+1, real_x2 - widths[base+7], real_y1);
-	_gfx->drawMRG(&mrg, base+2, real_x1, real_y2 - heights[base+5]);
-	_gfx->drawMRG(&mrg, base+3, real_x2 - widths[base+7], real_y2 - heights[base+5]);
+	_gfx->drawMRG(&mrg, base+1, real_x2 - widths[base+1], real_y1);
+	_gfx->drawMRG(&mrg, base+2, real_x1, real_y2 - heights[base+2]);
+	_gfx->drawMRG(&mrg, base+3, real_x2 - widths[base+3], real_y2 - heights[base+3]);
 
-	_gfx->drawMRG(&mrg, 8, real_x1 - (widths[8] / 2) + (widths[base+6]/2), (real_y1+real_y2)/2 - (heights[8]/2));
+	if (with_icon && icon) {
+		_gfx->drawMRG(&mrg, 8, real_x1 - (widths[8] / 2) + (widths[base+6]/2), (real_y1+real_y2)/2 - (heights[8]/2));
 
-	if (icon) {
 		icon->update();
 		_gfx->drawSprite(icon, real_x1 + (widths[base+6]/2) + 1, (real_y1+real_y2)/2 + (heights[8]/2) - 4);
 	}
+}
 
-	// font 2 is normal, font 3 is highlighted
-	_gfx->drawString(x, y, width, height, dialog_text, 2);
+void UnityEngine::drawDialogWindow() {
+	// TODO: de-hardcode
+	unsigned int x = 100;
+	unsigned int y = 280;
+
+	// calculate required bounding box
+	// TODO: some kind of scrolling
+	unsigned int width = 0;
+	unsigned int height = 0;
+
+	Common::Array<unsigned int> heights;
+	if (!choice_list.size()) {
+		unsigned int newheight = 0;
+		_gfx->calculateStringMaxBoundary(width, newheight, dialog_text, 2);
+		height += newheight;
+	} else {
+		for (unsigned int i = 0; i < choice_list.size(); i++) {
+			Common::String our_str = choice_list[i];
+			if (i != choice_list.size() - 1) our_str += "\n";
+			unsigned int newheight = 0;
+			_gfx->calculateStringMaxBoundary(width, newheight, our_str, 2);
+			heights.push_back(newheight);
+			height += newheight;
+		}
+	}
+	if (height > 160) height = 160;
+
+	bool show_icon = choice_list.size() == 0;
+	bool thick_frame = choice_list.size() != 0 && (!dialog_choosing);
+	drawDialogFrameAround(x, y, width, height, thick_frame, show_icon);
+
+	if (!choice_list.size()) {
+		_gfx->drawString(x, y, width, height, dialog_text, 2);
+	} else {
+		// note this code changes y/height as it goes..
+		for (unsigned int i = 0; i < choice_list.size(); i++) {
+			// font 2 is normal, font 3 is highlighted
+			bool selected = (i == 0); // TODO
+
+			Common::String our_str = choice_list[i];
+			if (i != choice_list.size() - 1) our_str += "\n";
+			_gfx->drawString(x, y, width, height, our_str, selected ? 3 : 2);
+			if (heights[i] > height) break;
+			y += heights[i];
+			height -= heights[i];
+		}
+	}
 
 	// dialog window FRAME:
 	// 0 is top left, 1 is top right, 2 is bottom left, 3 is bottom right
@@ -926,12 +958,19 @@ void UnityEngine::runDialogChoice() {
 	assert(dialog_choice_responses.size() > 1);
 
 	dialog_text.clear();
+	assert(!choice_list.size());
+	choice_list.clear();
+	dialog_choosing = true;
+
 	for (unsigned int i = 0; i < dialog_choice_responses.size(); i++) {
 		Response *r = current_conversation->getResponse(dialog_choice_responses[i],
 			dialog_choice_states[i]);
-		dialog_text += r->text + "\n\n";
+		choice_list.push_back(r->text + "\n");
 	}
 	runDialog();
+
+	choice_list.clear();
+	dialog_choosing = false;
 
 	// TODO: don't always run the first choice, actually offer a choice? :)
 	next_situation = dialog_choice_responses[0];

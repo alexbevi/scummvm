@@ -43,7 +43,9 @@ public:
 	Common::String status_text;
 
 	bool in_dialog;
+	bool dialog_choosing;
 	Common::String dialog_text;
+	Common::Array<Common::String> choice_list;
 	void setSpeaker(objectID s);
 
 	Conversation *current_conversation;
@@ -79,6 +81,9 @@ protected:
 	void startupScreen();
 	void startBridge();
 	void startAwayTeam(unsigned int world, unsigned int screen);
+
+	void drawDialogFrameAround(unsigned int x, unsigned int y, unsigned int width,
+		unsigned int height, bool use_thick_frame, bool with_icon);
 
 	void drawDialogWindow();
 	void drawAwayTeamUI();
