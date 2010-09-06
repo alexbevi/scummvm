@@ -645,11 +645,55 @@ void UnityEngine::handleBridgeMouseClick(unsigned int x, unsigned int y) {
 		if (x > item.x + item.width) continue;
 		if (y > item.y + item.height) continue;
 
-		// TODO: handle non-actors
-		if (item.id.world == 0) continue;
+		debug(1, "user clicked bridge item %d", i);
+		if (item.id.world != 0) {
+			// bridge crew member
+			Object *obj = data.getObject(item.id);
+			obj->runHail(obj->talk_string);
+		} else {
+			switch (i) {
+				case 0: // conference lounge
+					// TODO
+					break;
+				case 1: // turbolift (menu)
+					dialog_text.clear();
+					assert(!choice_list.size());
+					choice_list.clear();
+					assert(!dialog_choosing);
 
-		Object *obj = data.getObject(item.id);
-		obj->runHail(obj->talk_string);
+					for (unsigned int j = 0; j < data.bridge_screen_entries.size(); j++) {
+						choice_list.push_back(data.bridge_screen_entries[j].text);
+					}
+					runDialog();
+
+					// TODO: do this properly
+					if (beam_world != 0) {
+						startAwayTeam(beam_world, beam_screen);
+					}
+
+					choice_list.clear();
+					break;
+				case 2: // comms
+					// TODO
+					break;
+				case 3: // tactical
+					// TODO
+					break;
+				case 4: // astrogation
+					// TODO
+					break;
+				case 5: // computer
+					// TODO
+					break;
+				case 10: // replay conversation
+					// TODO
+					break;
+				default:
+					error("unknown bridge item");
+			}
+		}
+
+		return;
 	}
 }
 
