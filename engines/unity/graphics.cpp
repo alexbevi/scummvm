@@ -162,6 +162,16 @@ void Graphics::loadFonts() {
 	}
 }
 
+void Graphics::calculateStringMaxBoundary(unsigned int &width, unsigned int &height,
+	Common::String str, unsigned int font) {
+	Common::Array<unsigned int> strwidths, starts;
+	calculateStringBoundary(320, strwidths, starts, height, str, font);
+	for (unsigned int i = 0; i < strwidths.size(); i++) {
+		if (strwidths[i] > width)
+			width = strwidths[i];
+	}
+}
+
 #define FONT_VERT_SPACING 8
 
 void Graphics::calculateStringBoundary(unsigned int maxwidth, Common::Array<unsigned int> &widths,
