@@ -29,13 +29,18 @@
 #include "liath/liath.h"
 #include "liath/resource.h"
 
+#include "sound/decoders/wave.h"
+
 namespace Liath {
 
-SoundManager::SoundManager(LiathEngine *engine) : _engine(engine) {}
+SoundManager::SoundManager(LiathEngine *engine) : _engine(engine) {
+	_mixer = g_system->getMixer();
+}
 
 SoundManager::~SoundManager() {
 	// Zero-out passed pointers
 	_engine = NULL;
+	_mixer = NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -79,8 +84,29 @@ OpcodeRet SoundManager::playWave(OpcodeParameters *parameters) {
 	error("SoundManager::playWave: Not implemented!");
 }
 
-OpcodeRet SoundManager::playMusic(OpcodeParameters *parameters, bool doAdjustEffects) {
-	error("SoundManager::playMusic: Not implemented!");
+OpcodeRet SoundManager::playMusic(OpcodeParameters *parameters, bool useEffectLevel) {
+	Common::String filename = Common::String::printf("%s", (char *)&parameters->params);
+
+	// TODO get the first empty entry
+	MusicEntry *entry = getMusicEntry(filename);
+	entry->name = filename;
+
+	// Open audio stream
+	Common::SeekableReadStream *stream = getResource()->createReadStreamForMember(entry->name);
+	if (!stream)
+		return kOpcodeRetDefault;
+
+	Audio::RewindableAudioStream *waveStream = Audio::makeWAVStream(stream, DisposeAfterUse::YES);
+	if (waveStream) {
+
+		entry->attenuation = (parameters->getDword(256) < 1) ? 1 : 2 * parameters->getDword(256);
+		entry->level = Common::Rational(useEffectLevel ? _effectsLevel + 4000 : _musicLevel + 4000, entry->attenuation);
+		entry->volume = -4000;
+
+		// TODO identify other fields
+
+		_mixer->playStream(Audio::Mixer::kMusicSoundType, entry->handle, (Audio::AudioStream *)waveStream, -1, entry->attenuation ? entry->volume : 0);
+	}
 
 	return kOpcodeRetDefault;
 }
@@ -130,6 +156,36 @@ void SoundManager::setLevel(SoundType type, uint32 level) {
 		_dialogLevel = level;
 		break;
 	}
+}
+
+/**
+ * Get the first entry with an unactive handle
+ *
+ * Also checks for an existing entry for that file and if it exists and does not have an active handle, returns null
+ *
+ *
+ * @param filename Filename of the music file.
+ *
+ * @return null if it fails, else the music entry.
+ */
+SoundManager::MusicEntry *SoundManager::getMusicEntry(const Common::String &filename) {
+	MusicEntry *entry = NULL;
+
+	for (int i = 0; i < sizeof(_musicEntries); i++) {
+
+		// Get the first empty entry
+		if (!entry && (!_musicEntries[i].handle || !_mixer->isSoundHandleActive(*_musicEntries[i].handle)))
+			entry = &_musicEntries[i];
+
+		// Check the filename
+		if (entry->name == filename && (!_musicEntries[i].handle || !_mixer->isSoundHandleActive(*_musicEntries[i].handle)))
+			return NULL;
+	}
+
+	if (entry)
+		entry->reset();
+
+	return entry;
 }
 
 } // End of namespace Liath

@@ -28,6 +28,11 @@
 
 #include "liath/shared.h"
 
+#include "liath/helpers.h"
+#include "common/rational.h"
+
+#include "sound/mixer.h"
+
 namespace Liath {
 
 class LiathEngine;
@@ -49,7 +54,7 @@ public:
 	// Opcodes
 	OpcodeRet cash(OpcodeParameters *parameters);
 	OpcodeRet playWave(OpcodeParameters *parameters);
-	OpcodeRet playMusic(OpcodeParameters *parameters, bool doAdjustEffects);
+	OpcodeRet playMusic(OpcodeParameters *parameters, bool useEffectLevel);
 	OpcodeRet stopMusic(OpcodeParameters *parameters);
 	OpcodeRet gstopMusic(OpcodeParameters *parameters);
 	OpcodeRet playMidi(OpcodeParameters *parameters, bool doLoop);
@@ -57,15 +62,46 @@ public:
 	OpcodeRet volume(OpcodeParameters *parameters);
 
 private:
+	struct MusicEntry {
+		Common::String name;
+		Audio::SoundHandle *handle;
+		Common::Rational level;   // in dB
+		int32 volume;  // in dB
+		int32 attenuation;
+
+		MusicEntry() {
+			handle = NULL;
+			reset();
+		}
+
+		~MusicEntry() {
+			SAFE_DELETE(handle);
+		}
+
+		void reset() {
+			name = "";
+			SAFE_DELETE(handle);
+			handle = new Audio::SoundHandle();
+			level = 0;
+			volume = 0;
+			attenuation = 0;
+		}
+	};
+
 	LiathEngine* _engine;
+	Audio::Mixer *_mixer;
 
 	Common::Array<Common::String> _waves;
+
+	MusicEntry _musicEntries[10];
 
 	uint32 _musicLevel;
 	uint32 _effectsLevel;
 	uint32 _dialogLevel;
 
 	void setLevel(SoundType type, uint32 level);
+
+	MusicEntry *getMusicEntry(const Common::String &filename);
 };
 
 } // End of namespace Liath
