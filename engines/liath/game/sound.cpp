@@ -102,11 +102,9 @@ OpcodeRet SoundManager::stopMidi() {
 }
 
 OpcodeRet SoundManager::volume(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDWDD);
+	debugC(kLiathDebugInterpreter, "  sound type: %d / level: %d\n", parameters->getDword(0), parameters->getWord(4));
 
-	debugC(kLiathDebugInterpreter, "  sound type: %d / level: %d\n", params->param1, params->param2);
-
-	setLevel((SoundManager::SoundType)params->param1, 140 * params->param2 - 15);
+	setLevel((SoundManager::SoundType)parameters->getWord(0), 140 * parameters->getDword(4) - 15);
 
 	return kOpcodeRetDefault;
 }

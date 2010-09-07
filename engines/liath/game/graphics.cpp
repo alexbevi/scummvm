@@ -85,26 +85,26 @@ void GraphicsManager::unload() {
 // Opcodes
 //////////////////////////////////////////////////////////////////////////
 OpcodeRet GraphicsManager::redraw(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
-
-	if ((!params->param1 && _hMemBackgroundExt) || params->param1)
-		drawBMP(params->param1);
+	if ((!parameters->getDword(0) && _hMemBackgroundExt) || parameters->getDword(0))
+		drawBMP(parameters->getDword(0));
 
 	return kOpcodeRetDefault;
 }
 
 OpcodeRet GraphicsManager::xscroll(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	uint32 scroll = DSI2INT(EXPR(parameters->getDword(0), parameters->getDword(4)));
+	getWork()->getCurrent()->xScroll += scroll;
 
-	getWork()->getCurrent()->xScroll += DSI2INT(EXPR(params->param1, params->param2));
+	debugC(kLiathDebugInterpreter, "  xscroll += %d [expr(%d, %d)]\n", scroll, parameters->getDword(0), parameters->getDword(4));
 
 	return kOpcodeRetDefault;
 }
 
 OpcodeRet GraphicsManager::yscroll(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	uint32 scroll = DSI2INT(EXPR(parameters->getDword(0), parameters->getDword(4)));
+	getWork()->getCurrent()->yScroll += scroll;
 
-	getWork()->getCurrent()->yScroll += DSI2INT(EXPR(params->param1, params->param2));
+	debugC(kLiathDebugInterpreter, "  yscroll += %d [expr(%d, %d)]\n", scroll, parameters->getDword(0), parameters->getDword(4));
 
 	return kOpcodeRetDefault;
 }

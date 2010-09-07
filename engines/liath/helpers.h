@@ -35,9 +35,6 @@
 #define LOWORD(l)           ((l) & 0xffff)
 #define HIWORD(l)           (((l) >> 16) & 0xffff)
 
-// Parameters
-#define EXPOSE_PARAMS(type) type *params = (type *)parameters
-
 // Misc
 #define GLOBAL(global)         getGame()->getGlobal(global)
 #define SETGLOBAL(global, val) getGame()->setGlobal(global, val)

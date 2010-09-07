@@ -284,140 +284,38 @@ struct OpcodeParameters {
 	uint32 objectIndex;
 	byte opcode;
 	byte test;
-} PACKED_STRUCT;
+	byte params;
 
-struct OpcodeParametersDBDD : OpcodeParameters {
-	uint32 param1;
-	byte   param2;
-	uint32 param3;
-	uint32 param4;
-	byte   param5;
-	uint32 param6;
-	uint32 param7;
-} PACKED_STRUCT;
+	OpcodeParameters() {
+		objectIndex = 0;
+		opcode = 0;
+		test = 0;
+		params = NULL;
+	}
 
-struct OpcodeParametersDWDD : OpcodeParameters {
-	uint32 param1;
-	int16  param2;
-} PACKED_STRUCT;
+	uint32 getDword(uint32 offset) {
+		return READ_UINT32(&params + offset);
+	}
 
-struct OpcodeParametersBDDD : OpcodeParameters {
-	byte   param1;
-	uint32 param2;
-	uint32 param3;
-	uint32 param4;
-	uint32 param5;
-	uint32 param6;
-	uint32 param7;
-	uint32 param8;
-	uint32 param9;
-	uint32 param10;
-	uint32 param11;
-	uint32 param12;
-	uint32 param13;
-	uint32 param14;
-	uint32 param15;
-	uint32 param16;
-	uint32 param17;
-	uint32 param18;
-	uint32 param19;
-	uint32 param20;
-	uint32 param21;
-	uint32 param22;
-	uint32 param23;
-	uint32 param24;
-	uint32 param25;
-	uint32 param26;
-} PACKED_STRUCT;
+	void setDword(uint32 offset, uint32 val) {
+		WRITE_UINT32(&params + offset, val);
+	}
 
-struct OpcodeParametersBDDD2 : OpcodeParameters {
-	byte   param1;
-	uint32 param2;
-	uint32 param3;
-	uint32 param4;
-	uint32 param5;
-	uint32 param6;
-	uint32 param7;
-	int16  param8;
-	uint32 param9;
-	uint32 param10;
-	uint32 param11;
-	uint32 param12;
-	uint32 param13;
-	uint32 param14;
-	uint32 param15;
-	uint32 param16;
-	uint32 param17;
-	uint32 param18;
-	uint32 param19;
-	uint32 param20;
-	uint32 param21;
-	uint32 param22;
-} PACKED_STRUCT;
+	uint16 getWord(uint32 offset) {
+		return READ_UINT16(&params + offset);
+	}
 
-struct OpcodeParametersBDDB : OpcodeParameters {
-	byte   param1;
-	uint32 param2;
-	uint32 param3;
-	byte param4;
-	uint32 param5;
-	uint32 param6;
-	byte param7;
-	uint32 param8;
-	uint32 param9;
-} PACKED_STRUCT;
+	void setWord(uint32 offset, uint16 val) {
+		WRITE_UINT16(&params + offset, val);
+	}
 
-struct OpcodeParametersWWWW : OpcodeParameters {
-	uint16 param1;
-	uint16 param2;
-	uint16 param3;
-	uint16 param4;
-	uint16 param5;
-	uint16 param6;
-	uint16 param7;
-	uint16 param8;
-	uint16 param9;
-	uint16 param10;
-	uint16 param11;
-	uint16 param12;
-	uint16 param13;
-	uint16 param14;
-	uint16 param15;
-} PACKED_STRUCT;
+	byte getByte(uint32 offset) {
+		return *(byte *)(&params + offset);
+	}
 
-struct OpcodeParametersWWBD : OpcodeParameters {
-	uint16 param1;
-	uint16 param2;
-	byte param3;
-	uint32 param4;
-	uint32 param5;
-} PACKED_STRUCT;
-
-struct OpcodeParametersWWDW : OpcodeParameters {
-	uint16 param1;
-	uint16 param2;
-	uint32 param3;
-	uint16 param4;
-	uint16 param5;
-} PACKED_STRUCT;
-
-
-struct OpcodeParametersDefault : OpcodeParameters {
-	uint32 param1;
-	uint32 param2;
-	uint32 param3;
-	uint32 param4;
-	byte   param5;
-	uint32 param6;
-	uint32 param7;
-	byte   param8;
-	uint32 param9;
-	uint32 param10;
-	byte   param11;
-	byte   param12;
-	byte   param13;
-	int16  param14;
-	int16  param15;
+	void setByte(uint32 offset, byte val) {
+		*(byte *)(&params + offset) = val;
+	}
 } PACKED_STRUCT;
 
 //////////////////////////////////////////////////////////////////////////

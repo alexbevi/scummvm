@@ -76,26 +76,12 @@ OpcodeRet MouseManager::pop() {
 }
 
 OpcodeRet MouseManager::commandNumberBox(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersBDDD);
+	int32 result = numberBox(parameters->getDword(9), parameters->getDword(13));
 
-	int32 result = numberBox(params->param4, params->param5);
-
-	switch (params->param1) {
-	default:
-		break;
-
-	case kOriginGlobal:
-		SETGLOBAL(params->param3, result);
-		break;
-
-	case kOriginHero:
-		getHero()->setData(params->param2, params->param3, result);
-		break;
-
-	case kOriginHeroWork:
-		getHero()->setData(getWork()->getCurrent()->heroIndex, params->param3, result);
-		break;
-	}
+	getGame()->letValue((ParamOrigin)parameters->getByte(0),
+	                    parameters->getDword(1),
+	                    parameters->getDword(5),
+	                    result);
 
 	return kOpcodeRetDefault;
 }
@@ -113,18 +99,16 @@ OpcodeRet MouseManager::key(OpcodeParameters *parameters) {
 }
 
 OpcodeRet MouseManager::press(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
-
 	if (_pressMouse) {
-		if (_pressMouse == (bool)params->param1) {
+		if (_pressMouse == (bool)parameters->getDword(0)) {
 			_pressMouse = true;
-			return RET(true, params->test);
+			return RET(true, parameters->test);
 		} else {
-			return RET(false, params->test);
+			return RET(false, parameters->test);
 		}
 	}
 
-	return RET(false, params->test);
+	return RET(false, parameters->test);
 }
 
 OpcodeRet MouseManager::scroll(OpcodeParameters *parameters) {

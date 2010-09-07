@@ -56,8 +56,8 @@ ArrayManager::~ArrayManager() {
  * Gets the array entry and check for the presence of data
  */
 #define GET_ARRAY_ENTRY() \
-	int32 index = getGame()->getValue((ParamOrigin)params->param1, params->param2, params->param3) - 1; \
-	debugC(kLiathDebugInterpreter, "  index: %d - value(origin: %d, heroIndex: %d, offset: %d)\n", index, params->param1, params->param2, params->param3); \
+	int32 index = getGame()->getValue((ParamOrigin)parameters->getByte(0), parameters->getDword(1), parameters->getDword(5)) - 1; \
+	debugC(kLiathDebugInterpreter, "  index: %d - value(origin: %d, heroIndex: %d, offset: %d)\n", index, parameters->getByte(0), parameters->getDword(1), parameters->getDword(5)); \
 	if (index < 0 || index >= 10) \
 		return kOpcodeRetNext; \
 	Array *array = &_data[index]; \
@@ -68,21 +68,19 @@ ArrayManager::~ArrayManager() {
 // Opcodes
 //////////////////////////////////////////////////////////////////////////
 OpcodeRet ArrayManager::init(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersBDDD);
-
 	Array *array = getFirstEmptyArray();
 	if (!array)
 		return kOpcodeRetDefault;
 
-	getGame()->letValue((ParamOrigin)params->param1, params->param2, params->param3, array->field_0);
+	getGame()->letValue((ParamOrigin)parameters->getByte(0), parameters->getDword(1), parameters->getDword(5), array->field_0);
 
 	// Allocate array data
-	uint32 count = DSI2INT(EXPR(params->param16, params->param17));
+	uint32 count = DSI2INT(EXPR(parameters->getDword(57), parameters->getDword(61)));
 	array->data = (ArrayData *)calloc(28 * count, 1);
 	memset(array->data, 0, 28 * count);
 
-	debugC(kLiathDebugInterpreter, "  value(origin: %d, heroIndex: %d, offset: %d, value: %d)", params->param1, params->param2, params->param3, array->field_0);
-	debugC(kLiathDebugInterpreter, "  dataCount: %d (expression: %d - count: %d)\n", count, params->param16, params->param17);
+	debugC(kLiathDebugInterpreter, "  value(origin: %d, heroIndex: %d, offset: %d, value: %d)", parameters->getByte(0), parameters->getDword(1), parameters->getDword(5), array->field_0);
+	debugC(kLiathDebugInterpreter, "  dataCount: %d (expression: %d - count: %d)\n", count, parameters->getDword(57), parameters->getDword(61));
 
 	if (!array->data)
 		return kOpcodeRetNext;
@@ -91,19 +89,19 @@ OpcodeRet ArrayManager::init(OpcodeParameters *parameters) {
 	array->dataCount = count;
 	array->field_22 = 0;
 
-	array->field_2[0] = DSI2INT(EXPR(params->param4,  params->param5));
-	array->field_2[1] = DSI2INT(EXPR(params->param6,  params->param7));
-	array->field_2[2] = DSI2INT(EXPR(params->param8,  params->param9));
-	array->field_2[3] = DSI2INT(EXPR(params->param10, params->param11));
-	array->field_2[4] = DSI2INT(EXPR(params->param12, params->param13));
-	array->field_2[5] = DSI2INT(EXPR(params->param14, params->param15));
+	array->field_2[0] = DSI2INT(EXPR(parameters->getDword(9),  parameters->getDword(13)));
+	array->field_2[1] = DSI2INT(EXPR(parameters->getDword(17), parameters->getDword(21)));
+	array->field_2[2] = DSI2INT(EXPR(parameters->getDword(25), parameters->getDword(29)));
+	array->field_2[3] = DSI2INT(EXPR(parameters->getDword(33), parameters->getDword(37)));
+	array->field_2[4] = DSI2INT(EXPR(parameters->getDword(41), parameters->getDword(45)));
+	array->field_2[5] = DSI2INT(EXPR(parameters->getDword(49), parameters->getDword(53)));
 
-	array->field_1A = params->param18;
+	array->field_1A = parameters->getDword(65);
 
-	array->setData(42, DSI2INT(EXPR(params->param19, params->param20)));
-	array->setData(46, DSI2INT(EXPR(params->param21, params->param22)));
-	array->setData(50, DSI2INT(EXPR(params->param23, params->param24)));
-	array->setData(54, DSI2INT(EXPR(params->param25, params->param26)));
+	array->setData(42, DSI2INT(EXPR(parameters->getDword(69), parameters->getDword(73))));
+	array->setData(46, DSI2INT(EXPR(parameters->getDword(77), parameters->getDword(81))));
+	array->setData(50, DSI2INT(EXPR(parameters->getDword(85), parameters->getDword(89))));
+	array->setData(54, DSI2INT(EXPR(parameters->getDword(93), parameters->getDword(97))));
 
 	array->field_3A = (array->getData(42) != array->getData(50)) ? 1 : 0;
 
@@ -111,19 +109,17 @@ OpcodeRet ArrayManager::init(OpcodeParameters *parameters) {
 }
 
 OpcodeRet ArrayManager::img(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersBDDD2);
-
 	GET_ARRAY_ENTRY();
 
 	// Update array data
-	array->field_56 = params->param9;
+	array->field_56 = parameters->getDword(27);
 
-	array->setData(31, DSI2INT(EXPR(params->param11, params->param12)));
-	array->setData(32, DSI2INT(EXPR(params->param13, params->param14)));
-	array->setData(33, DSI2INT(EXPR(params->param15, params->param16)));
-	array->setData(34, DSI2INT(EXPR(params->param17, params->param18)));
-	array->setData(35, DSI2INT(EXPR(params->param19, params->param20)));
-	array->setData(36, DSI2INT(EXPR(params->param21, params->param22)));
+	array->setData(31, DSI2INT(EXPR(parameters->getDword(35), parameters->getDword(39))));
+	array->setData(32, DSI2INT(EXPR(parameters->getDword(43), parameters->getDword(47))));
+	array->setData(33, DSI2INT(EXPR(parameters->getDword(57), parameters->getDword(55))));
+	array->setData(34, DSI2INT(EXPR(parameters->getDword(59), parameters->getDword(63))));
+	array->setData(35, DSI2INT(EXPR(parameters->getDword(67), parameters->getDword(71))));
+	array->setData(36, DSI2INT(EXPR(parameters->getDword(75), parameters->getDword(79))));
 
 	int32 diff = array->field_2[2] - array->field_2[0] + 1;
 
@@ -151,11 +147,9 @@ OpcodeRet ArrayManager::add(OpcodeParameters *parameters) {
 
 
 OpcodeRet ArrayManager::getNumber(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersBDDB);
-
 	GET_ARRAY_ENTRY();
 
-	int32 val = getGame()->getValue((ParamOrigin)params->param4, params->param5, params->param6);
+	int32 val = getGame()->getValue((ParamOrigin)parameters->getByte(9), parameters->getDword(10), parameters->getDword(14));
 
 	if (!val)
 		return kOpcodeRetNext;
@@ -167,7 +161,7 @@ OpcodeRet ArrayManager::getNumber(OpcodeParameters *parameters) {
 	if (dataIndex >= array->field_22)
 		return kOpcodeRetNext;
 
-	getGame()->letValue((ParamOrigin)params->param7, params->param8, params->param9, INT2DSI(dataIndex + 1));
+	getGame()->letValue((ParamOrigin)parameters->getByte(18), parameters->getDword(19), parameters->getDword(23), INT2DSI(dataIndex + 1));
 
 	return kOpcodeRetDefault;
 }
@@ -177,8 +171,6 @@ OpcodeRet ArrayManager::del(OpcodeParameters *parameters) {
 }
 
 OpcodeRet ArrayManager::kill(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersBDDB);
-
 	GET_ARRAY_ENTRY();
 
 	if (array->field_22 >= array->dataCount)
@@ -193,8 +185,6 @@ OpcodeRet ArrayManager::kill(OpcodeParameters *parameters) {
 }
 
 OpcodeRet ArrayManager::clear(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersBDDB);
-
 	GET_ARRAY_ENTRY();
 
 	if (array->field_22 >= array->dataCount)
@@ -215,14 +205,12 @@ OpcodeRet ArrayManager::getScroll(OpcodeParameters *parameters) {
 }
 
 OpcodeRet ArrayManager::size(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersBDDB);
-
 	GET_ARRAY_ENTRY();
 
 	if (array->field_22 >= array->dataCount)
 		return kOpcodeRetNext;
 
-	getGame()->letValue((ParamOrigin)params->param4, params->param5, params->param6, INT2DSI(array->field_22));
+	getGame()->letValue((ParamOrigin)parameters->getByte(9), parameters->getDword(10), parameters->getDword(14), INT2DSI(array->field_22));
 
 	return kOpcodeRetDefault;
 }
@@ -232,30 +220,24 @@ OpcodeRet ArrayManager::tget(OpcodeParameters *parameters) {
 }
 
 OpcodeRet ArrayManager::cur(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersBDDB);
-
 	GET_ARRAY_ENTRY();
-
-
 
 	if (array->field_22 >= array->dataCount)
 		return kOpcodeRetNext;
 
-	if (getGame()->getValue((ParamOrigin)params->param4, params->param5, params->param6) == (int32)array->data[array->dataCursor].field_0)
-		return RET(1, params->test);
+	if (getGame()->getValue((ParamOrigin)parameters->getByte(9), parameters->getDword(10), parameters->getDword(14)) == (int32)array->data[array->dataCursor].field_0)
+		return RET(1, parameters->test);
 	else
-		return RET(0, params->test);
+		return RET(0, parameters->test);
 }
 
 OpcodeRet ArrayManager::setCur(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersBDDD);
-
 	GET_ARRAY_ENTRY();
 
 	if (array->field_22 >= array->dataCount)
 		return kOpcodeRetNext;
 
-	int32 val = DSI2INT(EXPR(params->param4, params->param5));
+	int32 val = DSI2INT(EXPR(parameters->getDword(9), parameters->getDword(13)));
 
 	if (val >= (int32)(array->field_22 + 1))
 		return kOpcodeRetNext;

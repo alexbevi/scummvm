@@ -61,61 +61,57 @@ void WorkManager::unload() {
 // Opcodes
 //////////////////////////////////////////////////////////////////////////
 OpcodeRet WorkManager::cel(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
-
-	return RET(_currentWork->field_76 == params->param1, params->test);
+	return RET(_currentWork->field_76 == parameters->getDword(0), parameters->test);
 }
 
 OpcodeRet WorkManager::celExt(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDBDD);
-
 	HeroIndex heroIndex = 0;
 	uint32 val = 0;
 
-	switch (params->param2) {
+	switch (parameters->getByte(4)) {
 	default:
 		break;
 
 	case kOriginGlobal:
-		heroIndex = GLOBAL(params->param4);
+		heroIndex = GLOBAL(parameters->getDword(9));
 		break;
 
 	case kOriginHero:
-		heroIndex = getHero()->getData(params->param3, params->param4);
+		heroIndex = getHero()->getData(parameters->getDword(5), parameters->getDword(9));
 		break;
 
 	case kOriginHeroWork:
-		heroIndex = getHero()->getData(_currentWork->heroIndex, params->param4);
+		heroIndex = getHero()->getData(_currentWork->heroIndex, parameters->getDword(9));
 		break;
 
 	case kOriginParam:
-		heroIndex = params->param3;
+		heroIndex = parameters->getDword(5);
 		break;
 	}
 
-	switch (params->param5) {
+	switch (parameters->getByte(13)) {
 	default:
 		break;
 
 	case kOriginGlobal:
-		val = GLOBAL(params->param7);
+		val = GLOBAL(parameters->getDword(18));
 		break;
 
 	case kOriginHero:
-		val = getHero()->getData(params->param6, params->param7);
+		val = getHero()->getData(parameters->getDword(14), parameters->getDword(18));
 		break;
 
 	case kOriginHeroWork:
-		val = getHero()->getData(_currentWork->heroIndex, params->param7);
+		val = getHero()->getData(_currentWork->heroIndex, parameters->getDword(18));
 		break;
 
 	case kOriginParam:
-		val = params->param7;
+		val = parameters->getDword(18);
 		break;
 	}
 
 	Work *work = getHero()->get(heroIndex)->work;
-	return RET(work && work->field_68 == val && work->field_76 == params->param1, params->test);
+	return RET(work && work->field_68 == val && work->field_76 == parameters->getDword(0), parameters->test);
 }
 
 OpcodeRet WorkManager::startObj(ObjectIndex object) {
@@ -129,18 +125,14 @@ OpcodeRet WorkManager::startObj(ObjectIndex object) {
 }
 
 OpcodeRet WorkManager::htime(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
-
-	_currentWork->time = params->param1;
-	_currentWork->field_FE = params->param1;
+	_currentWork->time = parameters->getDword(0);
+	_currentWork->field_FE = parameters->getDword(0);
 
 	return kOpcodeRetDefault;
 }
 
 OpcodeRet WorkManager::hdark(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersBDDD);
-
-	_currentWork->field_579 = params->param1;
+	_currentWork->field_579 = parameters->getByte(0);
 
 	return kOpcodeRetDefault;
 }
@@ -162,31 +154,26 @@ OpcodeRet WorkManager::stop(OpcodeParameters *parameters) {
 }
 
 OpcodeRet WorkManager::stopGlobal(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	parameters->setDword(0, GLOBAL(parameters->getDword(8)));
 
-	params->param1 = GLOBAL(params->param3);
-	return stop((OpcodeParameters *)params);
+	return stop(parameters);
 }
 
 OpcodeRet WorkManager::stopHeroVar(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	parameters->setDword(0, getHero()->getData(parameters->getDword(4), parameters->getDword(8)));
 
-	params->param1 = getHero()->getData(params->param2, params->param3);
-	return stop((OpcodeParameters *)params);
+	return stop(parameters);
 }
 
 OpcodeRet WorkManager::stopVar(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	parameters->setDword(0, getHero()->getData(_currentWork->heroIndex, parameters->getDword(8)));
 
-	params->param1 = getHero()->getData(_currentWork->heroIndex, params->param3);
-	return stop((OpcodeParameters *)params);
+	return stop(parameters);
 }
 
 OpcodeRet WorkManager::cont(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
-
-	Hero *hero = getHero()->get(params->param1 ? params->param1 : _currentWork->heroIndex);
-	Work *work = params->param1 ? hero->work : _currentWork;
+	Hero *hero = getHero()->get(parameters->getDword(0) ? parameters->getDword(0) : _currentWork->heroIndex);
+	Work *work = parameters->getDword(0) ? hero->work : _currentWork;
 
 	if (work && work->status == 2) {
 		work->status = 0;
@@ -200,24 +187,21 @@ OpcodeRet WorkManager::cont(OpcodeParameters *parameters) {
 }
 
 OpcodeRet WorkManager::contGlobal(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	parameters->setDword(0, GLOBAL(parameters->getDword(8)));
 
-	params->param1 = GLOBAL(params->param3);
-	return cont((OpcodeParameters *)params);
+	return cont(parameters);
 }
 
 OpcodeRet WorkManager::contHeroVar(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	parameters->setDword(0, getHero()->getData(parameters->getDword(4), parameters->getDword(8)));
 
-	params->param1 = getHero()->getData(params->param2, params->param3);
-	return cont((OpcodeParameters *)params);
+	return cont(parameters);
 }
 
 OpcodeRet WorkManager::contVar(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	parameters->setDword(0, getHero()->getData(_currentWork->heroIndex, parameters->getDword(8)));
 
-	params->param1 = getHero()->getData(_currentWork->heroIndex, params->param3);
-	return cont((OpcodeParameters *)params);
+	return cont(parameters);
 }
 
 OpcodeRet WorkManager::glass(OpcodeParameters *parameters, bool doIncrement) {

@@ -226,19 +226,17 @@ void GameManager::unload() {
 // Opcodes
 //////////////////////////////////////////////////////////////////////////
 OpcodeRet GameManager::rnd(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	debugC(kLiathDebugInterpreter, " value: %d\n", parameters->getDword(0));
 
-	uint32 val = (params->param1 ? _engine->getRandom().getRandomNumber(params->param1): 0);
+	uint32 val = (parameters->getDword(0) ? _engine->getRandom().getRandomNumber(parameters->getDword(0)): 0);
 
-	return getReturnValue(val + 1 == params->param1, params->test);
+	return getReturnValue(val + 1 == parameters->getDword(0), parameters->test);
 }
 
 OpcodeRet GameManager::global(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	debugC(kLiathDebugInterpreter, "  global: %d  -  expression: %d - count: %d\n", parameters->getDword(0), parameters->getDword(8), parameters->getDword(4));
 
-	debugC(kLiathDebugInterpreter, "  global: %d  -  expression: %d - count: %d\n", params->param1, params->param3, params->param2);
-
-	setGlobal(params->param1, EXPR(params->param3, params->param2));
+	setGlobal(parameters->getDword(0), EXPR(parameters->getDword(8), parameters->getDword(4)));
 
 	return kOpcodeRetDefault;
 }
@@ -275,9 +273,12 @@ void GameManager::letValue(ParamOrigin type, HeroIndex index, uint32 offset, uin
 	}
 }
 
-int32 GameManager::getValue(ParamOrigin type, HeroIndex index, uint32 offset) {
+int32 GameManager::getValue(ParamOrigin type, HeroIndex index, uint32 offset, bool handleUnknownParams, bool handleOriginParam) {
 	switch (type) {
 	default:
+		if (!handleUnknownParams)
+			error("GameManager::getValue: Invalid type encountered!");
+
 		return 0;
 
 	case kOriginGlobal:
@@ -296,6 +297,9 @@ int32 GameManager::getValue(ParamOrigin type, HeroIndex index, uint32 offset) {
 			return 0;
 
 	case kOriginParam:
+		if (!handleOriginParam)
+			error("GameManager::getValue: kOriginParam encountered!");
+
 		return index;
 	}
 }

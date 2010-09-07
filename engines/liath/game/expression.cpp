@@ -47,13 +47,11 @@ ExpressionManager::~ExpressionManager() {
 // Opcodes
 //////////////////////////////////////////////////////////////////////////
 OpcodeRet ExpressionManager::expression(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	debugC(kLiathDebugInterpreter, "  expression: %d - count: %d\n", parameters->getDword(4), parameters->getDword(0));
 
-	debugC(kLiathDebugInterpreter, "  expression: %d - count: %d\n", params->param2, params->param1);
+	int expr = expression(parameters->getDword(4), parameters->getDword(0));
 
-	int expr = expression(params->param2, params->param1);
-
-	bool ret = params->test ? (bool)expr : (expr < 1);
+	bool ret = parameters->test ? (bool)expr : (expr < 1);
 
 	if (!ret)
 		return kOpcodeRetNext;

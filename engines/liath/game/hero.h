@@ -87,35 +87,34 @@ public:
 	// Accessors
 	Hero *get(HeroIndex index);
 	uint32 getData(HeroIndex index, uint32 offset) { return get(index)->getData(offset); }
-	void setData(HeroIndex index, uint32 offset, uint32 val) { get(index)->setData(offset, val); }
+	void setData(HeroIndex index, uint32 offset, int32 val) { get(index)->setData(offset, (uint32)val); }
 
 private:
-#include "common/pack-start.h"
-	struct OpcodeParametersHero : OpcodeParameters {
-		uint32 param1;
-		uint32 param2;
-		uint32 param3;
-		uint32 param4;
-		uint32 param5;
-		uint32 param6;
-		uint32 param7;
-		uint32 param8;
-		uint16 param9;
-		uint32 param10;
-		uint32 param11;
-		uint32 param12;
-		uint32 param13;
-		uint32 param14;
-		uint32 param15;
-		uint32 param16;
-		uint32 param17;
-		uint32 param18;
-		uint32 param19;
-		byte param20;
-		byte param21;
-		uint32 param22;
-	} PACKED_STRUCT;
-#include "common/pack-end.h"
+	struct OpcodeParametersHero {
+		uint32 objectIndex;
+		byte opcode;
+		byte test;
+		byte params[80];
+
+		OpcodeParametersHero() {
+			objectIndex = 0;
+			opcode = 0;
+			test = 0;
+			memset(&params, 0, 80);
+		}
+
+		uint32 getDword(uint32 offset) {
+			return READ_UINT32(&params + offset);
+		}
+
+		void setDword(uint32 offset, uint32 val) {
+			WRITE_UINT32(&params + offset, val);
+		}
+
+		void setByte(uint32 offset, byte val) {
+			*(byte *)(&params + offset) = val;
+		}
+	};
 
 	LiathEngine* _engine;
 

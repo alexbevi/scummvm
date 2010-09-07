@@ -50,7 +50,7 @@ public:
 
 	// Functions
 	void letValue(ParamOrigin type, HeroIndex index, uint32 offset, uint32 val);
-	int32 getValue(ParamOrigin type, HeroIndex index, uint32 offset);
+	int32 getValue(ParamOrigin type, HeroIndex index, uint32 offset, bool handleUnknownParams = true, bool handleOriginParam = true);
 
 	int32 getGlobal(uint32 offset);
 	void setGlobal(uint32 offset, int32 val);

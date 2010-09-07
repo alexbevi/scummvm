@@ -63,17 +63,15 @@ OpcodeRet ActionManager::exitGame(OpcodeParameters *parameters) {
 }
 
 OpcodeRet ActionManager::start(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	_currentAction = (ActionIndex)parameters->getDword(0);
 
-	_currentAction = (ActionIndex)params->param1;
-
-	if (params->objectIndex == kParamClearAvi) {
+	if (parameters->objectIndex == kParamClearAvi) {
 		_aviFilename = "";
 	} else {
-		_aviFilename = Common::String::printf("%s", &params->param5);
-		_aviType = params->param13;
-		_avsX = params->param14;
-		_avsY = params->param15;
+		_aviFilename = Common::String::printf("%s", &parameters->params + 16);
+		_aviType = parameters->getByte(36);
+		_avsX = parameters->getWord(37);
+		_avsY = parameters->getWord(39);
 	}
 
 	if (GLOBAL(121) == 131072 || GLOBAL(121) == 65536)
@@ -83,67 +81,47 @@ OpcodeRet ActionManager::start(OpcodeParameters *parameters) {
 }
 
 OpcodeRet ActionManager::startGlobal(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
+	_currentAction = (ActionIndex)GLOBAL(parameters->getDword(12));
 
-	_currentAction = (ActionIndex)GLOBAL(params->param4);
 	return kOpcodeRetExit;
 }
 
 OpcodeRet ActionManager::startHeroVariable(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
-
-	if (params->objectIndex == kParamClearAvi) {
+	if (parameters->objectIndex == kParamClearAvi) {
 		_aviFilename = "";
 	} else {
-		_aviFilename = Common::String::printf("%s", &params->param5);
-		_aviType = params->param13;
+		_aviFilename = Common::String::printf("%s", &parameters->params + 16);
+		_aviType = parameters->getByte(36);
 	}
 
-	_currentAction = (ActionIndex)getHero()->getData(params->param2, params->param3);
+	_currentAction = (ActionIndex)getHero()->getData(parameters->getDword(4), parameters->getDword(8));
 
 	return kOpcodeRetExit;
 }
 
 OpcodeRet ActionManager::startVariable(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
-
-	if (params->objectIndex == kParamClearAvi) {
+	if (parameters->objectIndex == kParamClearAvi) {
 		_aviFilename = "";
 	} else {
-		_aviFilename = Common::String::printf("%s", &params->param5);
-		_aviType = params->param13;
+		_aviFilename = Common::String::printf("%s", (&parameters->params + 16));
+		_aviType = parameters->getByte(36);
 	}
 
-	_currentAction = (ActionIndex)getHero()->getData(getWork()->getCurrent()->heroIndex, params->param3);
+	_currentAction = (ActionIndex)getHero()->getData(getWork()->getCurrent()->heroIndex, parameters->getDword(8));
 
 	return kOpcodeRetExit;
 }
 
 OpcodeRet ActionManager::curAction(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersDefault);
-
-	return RET(_previousAction == (ActionIndex)params->param1, params->test);
+	return RET(_previousAction == (ActionIndex)parameters->getDword(0), parameters->test);
 }
 
 OpcodeRet ActionManager::number(OpcodeParameters *parameters) {
-	EXPOSE_PARAMS(OpcodeParametersBDDD);
 
-	switch (params->param1) {
-	default:
-		break;
-
-	case kOriginGlobal:
-		SETGLOBAL(params->param3, _previousAction);
-		break;
-
-	case kOriginHero:
-		getHero()->setData(params->param3, params->param4, _previousAction);
-		break;
-
-	case kOriginHeroWork:
-		getHero()->setData(getWork()->getCurrent()->heroIndex, params->param4, _previousAction);
-		break;
-	}
+	getGame()->letValue((ParamOrigin)parameters->getByte(0),
+	                    parameters->getDword(1),
+	                    parameters->getDword(5),
+	                    _previousAction);
 
 	return kOpcodeRetDefault;
 }
