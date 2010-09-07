@@ -85,7 +85,8 @@ Common::ArchiveMemberPtr ResourceManager::getMember(const Common::String &name) 
 
 Common::SeekableReadStream *ResourceManager::createReadStreamForMember(const Common::String &name) const {
 	// Load a normal file
-	if (_files.find(name) == _files.end()) {
+	//  - if the archive name is empty, also try to open the file directly
+	if (_files.find(name) == _files.end() || _files[name].archiveName.empty()) {
 		Common::File *file = new Common::File();
 		if (!file->open(name)) {
 			delete file;
