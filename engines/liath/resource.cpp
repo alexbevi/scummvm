@@ -34,15 +34,18 @@
 
 namespace Liath {
 
-ResourceManager::ResourceManager() {}
+ResourceManager::ResourceManager() {
+	_archiveCache = new ArchiveMap();
+}
 
 ResourceManager::~ResourceManager() {
-	for (ArchiveCache::iterator i = _archives.begin(); i != _archives.end(); ++i)
-		delete i->_value;
+	for (ArchiveMap::iterator it = _archiveCache->begin(); it != _archiveCache->end(); it++)
+		delete it->_value;
 
-	_archives.clear();
+	_archiveCache->clear();
+	delete _archiveCache;
 
-	_files.clear();
+	_fileMap.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -52,7 +55,7 @@ ResourceManager::~ResourceManager() {
 bool ResourceManager::hasFile(const Common::String &name) {
 	// Files can be either part of a MUL archive or in one of the data folders
 
-	if (_files.find(name) != _files.end())
+	if (_fileMap.find(name) != _fileMap.end())
 		return true;
 
 	return SearchMan.hasFile(name);
@@ -61,7 +64,7 @@ bool ResourceManager::hasFile(const Common::String &name) {
 int ResourceManager::listMembers(Common::ArchiveMemberList &list) {
 	int numMembers = 0;
 
-	for (FileMap::const_iterator i = _files.begin(); i != _files.end(); ++i) {
+	for (FileMap::const_iterator i = _fileMap.begin(); i != _fileMap.end(); ++i) {
 		list.push_back(Common::ArchiveMemberList::value_type(new Common::GenericArchiveMember(i->_key, this)));
 		numMembers++;
 	}
@@ -86,7 +89,7 @@ Common::ArchiveMemberPtr ResourceManager::getMember(const Common::String &name) 
 Common::SeekableReadStream *ResourceManager::createReadStreamForMember(const Common::String &name) const {
 	// Load a normal file
 	//  - if the archive name is empty, also try to open the file directly
-	if (_files.find(name) == _files.end() || _files[name].archiveName.empty()) {
+	if (_fileMap.find(name) == _fileMap.end() || _fileMap[name].archiveName.empty()) {
 		Common::File *file = new Common::File();
 		if (!file->open(name)) {
 			delete file;
@@ -97,22 +100,16 @@ Common::SeekableReadStream *ResourceManager::createReadStreamForMember(const Com
 	}
 
 	// Get the archive file from the cache
-	Common::String file = _files[name].archiveName;
-
-	// FIXME
-	//if (!_archives.contains(archiveName))
-		//_archives[archiveName] = new MultiArchive(archiveName);
+	Common::String archiveName = _fileMap[name].archiveName;
+	if (!_archiveCache->contains(archiveName))
+		_archiveCache->setVal(archiveName, (Common::Archive *)(new MultiArchive(archiveName)));
 
 	// Load the file from the archive
-	MultiArchive *archive = new MultiArchive(file); //_archives[archiveName];
-	if (!archive->hasFile(name)) {
-		delete archive;
+	Common::Archive *archive = _archiveCache->getVal(archiveName);
+	if (!archive->hasFile(name))
 		return NULL;
-	}
 
 	Common::SeekableReadStream *stream = archive->createReadStreamForMember(name);
-
-	delete archive;
 
 	return stream;
 }
@@ -192,11 +189,11 @@ void ResourceManager::readPathFile() {
 			else
 				error("ResourceManager::readPathFile: Invalid media type (was:%s)", media.c_str());
 
-			_files[filename] = path;
+			_fileMap[filename] = path;
 		}
 	}
 
-	debugC(2, kLiathDebugResource, "Loaded %d file paths", _files.size());
+	debugC(2, kLiathDebugResource, "Loaded %d file paths", _fileMap.size());
 
 	delete pathFile;
 }
@@ -222,14 +219,14 @@ void ResourceManager::readMultiData() {
 		filename.trim();
 
 		// Search for existing FilePath and update archive
-		if (_files.contains(filename)) {
+		if (_fileMap.contains(filename)) {
 			// Found an existing file with that name
 			char archive[20];
 			multigenFile->read(&archive, sizeof(archive));
 
-			_files[name].archiveName = Common::String(archive);
-			_files[name].archiveName.trim();
-			_files[name].cd = (CdNumber)multigenFile->readUint16LE();
+			_fileMap[name].archiveName = Common::String(archive);
+			_fileMap[name].archiveName.trim();
+			_fileMap[name].cd = (CdNumber)multigenFile->readUint16LE();
 
 			//debugC(kLiathDebugResource, "%s - %s", filename.c_str(), _files[name].archiveName.c_str());
 
@@ -243,10 +240,10 @@ void ResourceManager::readMultiData() {
 }
 
 CdNumber ResourceManager::getCd(const Common::String &filename) {
-	if (!_files.contains(filename))
+	if (!_fileMap.contains(filename))
 		return kCdNone;
 
-	return _files[filename].cd;
+	return _fileMap[filename].cd;
 }
 
 } // End of namespace Liath

@@ -35,8 +35,6 @@
 
 namespace Liath {
 
-class MultiArchive;
-
 class ResourceManager : public Common::Archive {
 public:
 	ResourceManager();
@@ -78,11 +76,11 @@ private:
 		}
 	};
 
-	typedef Common::HashMap<Common::String, FilePath> FileMap;
-	typedef Common::HashMap<Common::String, MultiArchive *> ArchiveCache;
+	typedef Common::HashMap<Common::String, FilePath, Common::CaseSensitiveString_Hash, Common::CaseSensitiveString_EqualTo> FileMap;
+	typedef Common::HashMap<Common::String, Common::Archive *, Common::CaseSensitiveString_Hash, Common::CaseSensitiveString_EqualTo> ArchiveMap;
 
-	ArchiveCache _archives;
-	FileMap      _files;
+	ArchiveMap *_archiveCache;
+	FileMap    _fileMap;
 };
 
 } // End of namespace Liath
