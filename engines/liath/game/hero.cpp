@@ -56,7 +56,7 @@ void HeroManager::load(uint32 count, size_t varSize) {
 	// Open hero data file
 	Common::SeekableReadStream *stream = getResource()->createReadStreamForMember("game0001.dat");
 	if (!stream)
-		error("HeroManager::loadData: Invalid hero data stream!");
+		error("HeroManager::loadData: Invalid game data stream!");
 
 	// Go to the hero data
 	stream->seek(stream->size() - 38 * count, SEEK_SET);

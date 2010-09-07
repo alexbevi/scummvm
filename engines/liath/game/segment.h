@@ -39,7 +39,7 @@ public:
 	SegmentManager(LiathEngine *engine);
 	~SegmentManager();
 
-	void load(SegmentType type, uint32 index);
+	Common::String load(SegmentType type, uint32 index);
 	void unload(Segment segment);
 	void unload(SegmentType type) { unload(*getSegmentByType(type)); }
 

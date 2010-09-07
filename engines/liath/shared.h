@@ -39,9 +39,17 @@ namespace Liath {
 typedef uint32 HeroIndex;
 typedef uint32 ObjectIndex;
 
+typedef uint32 WorkInfo;
+
 //////////////////////////////////////////////////////////////////////////
 // Enumerations
 //////////////////////////////////////////////////////////////////////////
+enum CdNumber {
+	kCdNone = 0,
+	kCd1,
+	kCd2
+};
+
 enum SegmentType {
 	kSegmentGame,
 	kSegmentAction,
@@ -50,7 +58,8 @@ enum SegmentType {
 };
 
 enum ActionIndex {
-	kActionNone = 0
+	kActionNone = 0,
+	kAction1
 };
 
 enum ParamValue {
@@ -384,6 +393,15 @@ struct OpcodeParametersWWBD : OpcodeParameters {
 	uint32 param5;
 } PACKED_STRUCT;
 
+struct OpcodeParametersWWDW : OpcodeParameters {
+	uint16 param1;
+	uint16 param2;
+	uint32 param3;
+	uint16 param4;
+	uint16 param5;
+} PACKED_STRUCT;
+
+
 struct OpcodeParametersDefault : OpcodeParameters {
 	uint32 param1;
 	uint32 param2;
@@ -444,6 +462,27 @@ struct Message {
 	byte field_B0;
 	byte field_B1;
 	uint16 field_B2;
+} PACKED_STRUCT;
+
+//////////////////////////////////////////////////////////////////////////
+// Action
+//////////////////////////////////////////////////////////////////////////
+
+struct Action {
+	byte type;
+	byte field_1;
+	byte field_2;
+	byte field_3;
+	uint32 field_4;
+	uint32 field_8;
+	uint32 backgroundOffset;
+	uint32 field_10;
+	uint32 field_14;
+	uint32 field_18;
+	uint32 objectIndex;
+	uint32 field_20[38];
+	byte field_B8;
+	uint32 field_B9;
 } PACKED_STRUCT;
 
 //////////////////////////////////////////////////////////////////////////

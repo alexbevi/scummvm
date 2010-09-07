@@ -27,6 +27,7 @@
 
 #include "liath/game/game.h"
 #include "liath/game/hero.h"
+#include "liath/game/segment.h"
 #include "liath/game/work.h"
 
 #include "liath/helpers.h"
@@ -35,9 +36,8 @@
 namespace Liath {
 
 ActionManager::ActionManager(LiathEngine *engine) : _engine(engine),
-	_action(kActionNone), _previousAction(kActionNone),
-	_aviType(0), _avsX(0), _avsY(0)
-{
+	_currentAction(kActionNone), _previousAction(kActionNone),
+	_aviType(0), _avsX(0), _avsY(0) {
 
 }
 
@@ -46,18 +46,26 @@ ActionManager::~ActionManager() {
 	_engine = NULL;
 }
 
+
 //////////////////////////////////////////////////////////////////////////
-// Functions
+// Data
+//////////////////////////////////////////////////////////////////////////
+void ActionManager::load() {
+	_name = getSegment()->load(kSegmentAction, _currentAction);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Opcodes
 //////////////////////////////////////////////////////////////////////////
 OpcodeRet ActionManager::exitGame(OpcodeParameters *parameters) {
-	_action = kActionNone;
+	_currentAction = kActionNone;
 	return kOpcodeRetExit;
 }
 
 OpcodeRet ActionManager::start(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	_action = (ActionIndex)params->param1;
+	_currentAction = (ActionIndex)params->param1;
 
 	if (params->objectIndex == kParamClearAvi) {
 		_aviFilename = "";
@@ -77,7 +85,7 @@ OpcodeRet ActionManager::start(OpcodeParameters *parameters) {
 OpcodeRet ActionManager::startGlobal(OpcodeParameters *parameters) {
 	EXPOSE_PARAMS(OpcodeParametersDefault);
 
-	_action = (ActionIndex)GLOBAL(params->param4);
+	_currentAction = (ActionIndex)GLOBAL(params->param4);
 	return kOpcodeRetExit;
 }
 
@@ -91,7 +99,7 @@ OpcodeRet ActionManager::startHeroVariable(OpcodeParameters *parameters) {
 		_aviType = params->param13;
 	}
 
-	_action = (ActionIndex)getHero()->getData(params->param2, params->param3);
+	_currentAction = (ActionIndex)getHero()->getData(params->param2, params->param3);
 
 	return kOpcodeRetExit;
 }
@@ -106,7 +114,7 @@ OpcodeRet ActionManager::startVariable(OpcodeParameters *parameters) {
 		_aviType = params->param13;
 	}
 
-	_action = (ActionIndex)getHero()->getData(getWork()->getCurrent()->heroIndex, params->param3);
+	_currentAction = (ActionIndex)getHero()->getData(getWork()->getCurrent()->heroIndex, params->param3);
 
 	return kOpcodeRetExit;
 }
@@ -138,6 +146,28 @@ OpcodeRet ActionManager::number(OpcodeParameters *parameters) {
 	}
 
 	return kOpcodeRetDefault;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Functions
+//////////////////////////////////////////////////////////////////////////
+
+void ActionManager::playVideo() {
+	if (_aviFilename.empty())
+		return;
+
+	if (_aviType)
+		playAvs(_avsX, _avsY, 0);
+	else
+		playAvi();
+}
+
+void ActionManager::playAvi() {
+	error("ActionManager::playAvi: Not implemented!");
+}
+
+void ActionManager::playAvs(int16 x, int16 y, int param3) {
+	error("ActionManager::playAvs: Not implemented!");
 }
 
 } // End of namespace Liath

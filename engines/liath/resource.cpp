@@ -120,10 +120,10 @@ Common::SeekableReadStream *ResourceManager::createReadStreamForMember(const Com
 // Message
 //////////////////////////////////////////////////////////////////////////
 
-bool ResourceManager::readMessage(int *pIndex, Message *message) {
+bool ResourceManager::readMessage(uint32 *pIndex, Message *message) {
 	warning("ResourceManager::readMessage: Not implemented!");
 
-	return false;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -228,7 +228,7 @@ void ResourceManager::readMultiData() {
 
 			_files[name].archiveName = Common::String(archive);
 			_files[name].archiveName.trim();
-			_files[name].indicator = multigenFile->readUint16LE();
+			_files[name].cd = (CdNumber)multigenFile->readUint16LE();
 
 			//debugC(kLiathDebugResource, "%s - %s", filename.c_str(), _files[name].archiveName.c_str());
 
@@ -239,6 +239,13 @@ void ResourceManager::readMultiData() {
 	debugC(2, kLiathDebugResource, "Updated %d file paths with archive name", count);
 
 	delete multigenFile;
+}
+
+CdNumber ResourceManager::getCd(const Common::String &filename) {
+	if (!_files.contains(filename))
+		return kCdNone;
+
+	return _files[filename].cd;
 }
 
 } // End of namespace Liath

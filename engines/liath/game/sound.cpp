@@ -81,6 +81,8 @@ OpcodeRet SoundManager::playWave(OpcodeParameters *parameters) {
 
 OpcodeRet SoundManager::playMusic(OpcodeParameters *parameters, bool doAdjustEffects) {
 	error("SoundManager::playMusic: Not implemented!");
+
+	return kOpcodeRetDefault;
 }
 
 OpcodeRet SoundManager::stopMusic(OpcodeParameters *parameters) {

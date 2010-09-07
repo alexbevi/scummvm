@@ -44,7 +44,7 @@ SegmentManager::~SegmentManager() {
 //////////////////////////////////////////////////////////////////////////
 // Data
 //////////////////////////////////////////////////////////////////////////
-void SegmentManager::load(SegmentType type, uint32 index) {
+Common::String SegmentManager::load(SegmentType type, uint32 index) {
 	Common::String name;
 	switch (type) {
 	default:
@@ -72,8 +72,9 @@ void SegmentManager::load(SegmentType type, uint32 index) {
 	if (!stream)
 		error("SegmentManager::load: Invalid stream!");
 
-	// Skip signature
-	stream->seek(9);
+	// Read signature/name
+	char segmentName[9];
+	stream->read(&segmentName, 9);
 
 	// Read the number of segment data streams
 	byte count = stream->readByte();
@@ -109,6 +110,8 @@ void SegmentManager::load(SegmentType type, uint32 index) {
 	*getSegmentByType(type) = segment;
 
 	delete stream;
+
+	return Common::String(segmentName);
 }
 
 //////////////////////////////////////////////////////////////////////////

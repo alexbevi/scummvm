@@ -123,7 +123,7 @@ OpcodeRet ProgressManager::help(OpcodeParameters *parameters) {
 	for (index = 0; index < _progress.size() && _progress[index]->field_0; ++index);
 
 	Message message;
-	int messageIndex = _data[params->param1] + index;
+	uint32 messageIndex = _data[params->param1] + index;
 	if (index == _progress.size() || !getResource()->readMessage(&messageIndex, &message)) {
 		getGame()->letValue((ParamOrigin)params->param3, params->param4, params->param5, INT2DSI(0));
 		return kOpcodeRetDefault;

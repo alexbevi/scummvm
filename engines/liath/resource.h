@@ -51,9 +51,10 @@ public:
 	// Path data
 	void readPathFile();
 	void readMultiData();
+	CdNumber getCd(const Common::String &filename);
 
 	// Message
-	bool readMessage(int *pIndex, Message *message);
+	bool readMessage(uint32 *pIndex, Message *message);
 
 private:
 	enum MediaType {
@@ -65,15 +66,15 @@ private:
 		MediaType      type;
 		Common::String archiveName;
 		Common::String folderName;
-		int16 indicator;
+		CdNumber       cd;
 
 		FilePath() {
 			type = kMediaCd;
-			indicator = 0;
+			cd = kCdNone;
 		}
 
 		Common::String toString() {
-			return Common::String::printf("FilePath:  type=%d, archive=%s, directory=%s, indicator=%d", type, archiveName.c_str(), folderName.c_str(), indicator);
+			return Common::String::printf("FilePath:  type=%d, archive=%s, directory=%s, indicator=%d", type, archiveName.c_str(), folderName.c_str(), cd);
 		}
 	};
 

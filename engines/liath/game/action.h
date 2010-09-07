@@ -40,6 +40,9 @@ public:
 	ActionManager(LiathEngine *engine);
 	~ActionManager();
 
+	// Data
+	void load();
+
 	// Opcodes
 	OpcodeRet exitGame(OpcodeParameters *parameters);
 	OpcodeRet start(OpcodeParameters *parameters);
@@ -49,19 +52,34 @@ public:
 	OpcodeRet number(OpcodeParameters *parameters);
 	OpcodeRet curAction(OpcodeParameters *parameters);
 
-	ActionIndex getCurrentAction() { return _action; }
-	void setCurrentAction(ActionIndex action) { _action = action; }
+	// Accessors
+	ActionIndex getCurrentAction() { return _currentAction; }
+	void setCurrentAction(ActionIndex action) { _currentAction = action; }
+
+	void setName(const Common::String &name) { _name = name; }
+	const Common::String getName() { return _name; }
+
+	void setFullname(const Common::String &fullname) { _fullname = fullname; }
+	const Common::String getFullname() { return _fullname; }
+
+	// Functions
+	void playVideo();
 
 private:
 	LiathEngine* _engine;
 
-	ActionIndex     _action;
+	Common::String  _name;
+	Common::String  _fullname;
+	ActionIndex     _currentAction;
 	ActionIndex     _previousAction;
 
 	Common::String _aviFilename;
 	byte _aviType;
 	int16 _avsX;
 	int16 _avsY;
+
+	void playAvi();
+	void playAvs(int16 x, int16 y, int param3);
 };
 
 } // End of namespace Liath

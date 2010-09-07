@@ -75,9 +75,15 @@ private:
 	// Global area
 	void *_globalVar;
 
+	// Variables
+	CdNumber _currentCd;
+	ActionIndex _currentAction;
+	WorkInfo *_currentWorkInfo;
+
 	void load(ActionIndex action, GameData *data);
 	void unload();
 	void playAction();
+	void processAction();
 };
 
 } // End of namespace Liath

@@ -64,13 +64,16 @@ public:
 	OpcodeRet endtop();
 
 	Work *getCurrent() { return _currentWork; }
-
 	Work *get(HeroIndex index);
+
+	void setWorkInfo(WorkInfo *info) { _info = info; }
+	WorkInfo *getWorkInfo() { return _info; }
 
 private:
 	LiathEngine* _engine;
 
 	Work* _currentWork;
+	WorkInfo *_info;
 
 	Common::Array<Work *> _works;
 };

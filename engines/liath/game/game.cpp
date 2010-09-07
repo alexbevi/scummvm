@@ -56,6 +56,11 @@ GameManager::GameManager(LiathEngine *engine) : _engine(engine) {
 
 	// Global var area
 	_globalVar = NULL;
+
+	// Variables
+	_currentCd = kCdNone;
+	_currentAction = kActionNone;
+	_currentWorkInfo = NULL;
 }
 
 GameManager::~GameManager() {
@@ -93,7 +98,87 @@ void GameManager::playGame(ActionIndex action) {
 }
 
 void GameManager::playAction() {
-	error("GameManager::playAction: Not implemented!");
+
+	// Setup action & background
+	//_exitAction = 0;
+	//_bg = bg;
+
+	// TODO Set cursor
+
+	// Replace current action && work info
+	if (_currentAction) {
+		getAction()->setCurrentAction(_currentAction);
+		getWork()->setWorkInfo(_currentWorkInfo);
+		_currentWorkInfo = NULL;
+	}
+
+
+	Common::String actionFile = Common::String::printf("act%04d.dat", getAction()->getCurrentAction());
+	CdNumber cd = getResource()->getCd(actionFile);
+
+	if (!cd || cd == _currentCd)
+		goto label_load;
+
+	Action *action;
+	for (;;) {
+		_currentAction = getAction()->getCurrentAction();
+		getAction()->setCurrentAction(kAction1);
+
+		_currentWorkInfo = getWork()->getWorkInfo();
+		getWork()->setWorkInfo(NULL);
+
+		setGlobal(999, SCR2CEL(cd));
+
+		actionFile = Common::String::printf("act%04d.dat", getAction()->getCurrentAction());
+		cd = getResource()->getCd(actionFile);
+
+label_load:
+		getAction()->load();
+		action = (Action *)getSegment()->getData(kSegmentAction, 2);
+
+		if (!action->backgroundOffset)
+			break;
+
+		if (getAction()->getCurrentAction() == 1)
+			break;
+
+		if (_currentAction) {
+			error("GameManager::playAction: Not implemented!");
+		}
+
+		_currentCd = getResource()->getCd((char *)getSegment()->getData(kSegmentAction, action->backgroundOffset));
+
+		if (!cd || cd == _currentCd) {
+			if (action->backgroundOffset) {
+				if (getResource()->hasFile((char *)getSegment()->getData(kSegmentAction, action->backgroundOffset)))
+					break;
+			}
+		}
+	}
+
+	Message message;
+	bool hasMessage = getResource()->readMessage(&action->field_B9, &message);
+
+	if (hasMessage) {
+		getAction()->setFullname(getAction()->getName());
+	} else {
+		// TODO check in message.str
+
+		error("GameManager::playAction: Message reading not implemented!");
+	}
+
+	getAction()->playVideo();
+
+
+	warning("GameManager::playAction: Not implemented!");
+
+	ObjectIndex *pObjectIndex = (action->objectIndex ? getSegment()->getData(kSegmentAction, action->objectIndex) : NULL);
+	if (_interpreter->interpret(pObjectIndex, getSegment()->get(kSegmentAction)))
+		processAction();
+}
+
+void GameManager::processAction() {
+	error("GameManager::processAction: Not implemented!");
 }
 
 //////////////////////////////////////////////////////////////////////////
