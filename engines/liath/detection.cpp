@@ -34,7 +34,7 @@ static const char *directoryGlobs[] = {
 
 static const PlainGameDescriptor liathGames[] = {
 	// Games
-	{"liath", "WordSpiral - Liath"},
+	{"liath", "WorldSpiral - Liath"},
 	{0, 0}
 };
 
@@ -133,7 +133,7 @@ public:
 	}
 
 	const char *getOriginalCopyright() const {
-		return "Liath Engine / DS:SI (C) 1998 AMBER Company";
+		return "Liath Engine / DS:SI (C) 1998 Amber Company";
 	}
 
 	bool createInstance(OSystem *syst, Engine **engine, const ADGameDescription *gd) const;
