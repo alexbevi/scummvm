@@ -21,7 +21,7 @@ namespace Unity {
 UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	in_dialog = false;
 	dialog_choosing = false;
-	icon = NULL;
+	_icon = NULL;
 	current_conversation = NULL;
 	next_situation = 0xffffffff;
 	next_state = 0xffffffff;
@@ -33,7 +33,7 @@ UnityEngine::~UnityEngine() {
 	delete _snd;
 	delete _gfx;
 	delete data.data;
-	delete icon;
+	delete _icon;
 }
 
 Common::Error UnityEngine::init() {
@@ -338,25 +338,25 @@ void UnityEngine::processTimers() {
 }
 
 void UnityEngine::setSpeaker(objectID s) {
-	speaker = s;
+	_speaker = s;
 
-	if (icon) {
-		delete icon;
-		icon = NULL;
+	if (_icon) {
+		delete _icon;
+		_icon = NULL;
 	}
 
-	Common::String icon_sprite = data.getIconSprite(speaker);
+	Common::String icon_sprite = data.getIconSprite(_speaker);
 	if (!icon_sprite.size()) {
-		warning("couldn't find icon sprite for %02x%02x%02x", speaker.world,
-			speaker.screen, speaker.id);
+		warning("couldn't find icon sprite for %02x%02x%02x", _speaker.world,
+			_speaker.screen, _speaker.id);
 		return;
 	}
 
-	icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
-	if (icon->numAnims() < 3) {
-		icon->startAnim(0); // static
+	_icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
+	if (_icon->numAnims() < 3) {
+		_icon->startAnim(0); // static
 	} else {
-		icon->startAnim(2); // speaking
+		_icon->startAnim(2); // speaking
 	}
 }
 
@@ -804,11 +804,11 @@ void UnityEngine::drawDialogFrameAround(unsigned int x, unsigned int y, unsigned
 	_gfx->drawMRG(&mrg, base+2, real_x1, real_y2 - heights[base+2]);
 	_gfx->drawMRG(&mrg, base+3, real_x2 - widths[base+3], real_y2 - heights[base+3]);
 
-	if (with_icon && icon) {
+	if (with_icon && _icon) {
 		_gfx->drawMRG(&mrg, 8, real_x1 - (widths[8] / 2) + (widths[base+6]/2), (real_y1+real_y2)/2 - (heights[8]/2));
 
-		icon->update();
-		_gfx->drawSprite(icon, real_x1 + (widths[base+6]/2) + 1, (real_y1+real_y2)/2 + (heights[8]/2) - 4);
+		_icon->update();
+		_gfx->drawSprite(_icon, real_x1 + (widths[base+6]/2) + 1, (real_y1+real_y2)/2 + (heights[8]/2) - 4);
 	}
 }
 
@@ -1043,8 +1043,8 @@ void UnityEngine::runDialog() {
 		}
 
 		drawDialogWindow();
-		if (icon && icon->playing() && !_snd->speechPlaying()) {
-			icon->startAnim(0); // static
+		if (_icon && _icon->playing() && !_snd->speechPlaying()) {
+			_icon->startAnim(0); // static
 		}
 
 		_system->updateScreen();

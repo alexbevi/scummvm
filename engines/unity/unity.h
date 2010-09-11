@@ -78,8 +78,8 @@ public:
 	Common::String voiceFileFor(byte voice_group, byte voice_subgroup, objectID speaker, byte voice_id, char type = 0);
 
 protected:
-	objectID speaker;
-	SpritePlayer *icon;
+	objectID _speaker;
+	SpritePlayer *_icon;
 
 	void openLocation(unsigned int world, unsigned int screen);
 
