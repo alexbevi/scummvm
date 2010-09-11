@@ -146,6 +146,29 @@ public:
 };
 
 class ScreenBlock : public Entry {
+protected:
+	byte new_screen;
+	byte unknown2;
+	byte unknown3;
+	uint16 unknown4;
+	uint16 unknown5;
+	uint16 unknown6;
+	byte unknown7;
+	byte unknown8;
+	uint16 unknown9;
+	byte unknown10;
+	byte unknown11;
+	byte unknown12;
+	uint16 unknown13;
+	byte unknown14;
+	byte unknown15;
+	uint16 unknown16;
+	uint16 unknown17;
+	byte unknown18;
+	byte unknown19;
+	byte unknown20;
+	uint16 unknown21;
+
 public:
 	void readFrom(Common::SeekableReadStream *stream);
 	void execute(UnityEngine *_vm);

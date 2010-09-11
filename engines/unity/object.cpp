@@ -495,7 +495,42 @@ void CommandBlock::readFrom(Common::SeekableReadStream *objstream) {
 void ScreenBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x46);
 
-	objstream->seek(0x81, SEEK_CUR); // XXX
+	new_screen = objstream->readByte();
+
+	unknown2 = objstream->readByte();
+	unknown3 = objstream->readByte();
+	unknown4 = objstream->readUint16LE();
+	unknown5 = objstream->readUint16LE();
+
+	unknown6 = objstream->readUint16LE();
+	unknown7 = objstream->readByte();
+	unknown8 = objstream->readByte();
+
+	unknown9 = objstream->readUint16LE();
+	unknown10 = objstream->readByte();
+
+	unknown11 = objstream->readByte();
+	unknown12 = objstream->readByte();
+	unknown13 = objstream->readUint16LE();
+
+	unknown14 = objstream->readByte();
+	unknown15 = objstream->readByte();
+	unknown16 = objstream->readUint16LE();
+
+	uint32 unknown32 = objstream->readUint32LE();
+	assert(unknown32 == 0xffffffff);
+
+	unknown17 = objstream->readUint16LE();
+	unknown18 = objstream->readByte();
+	unknown19 = objstream->readByte();
+	unknown20 = objstream->readByte();
+
+	unknown21 = objstream->readUint16LE();
+
+	for (unsigned int i = 0; i < 24; i++) {
+		uint32 zero = objstream->readUint32LE();
+		assert(zero == 0);
+	}
 }
 
 void PathBlock::readFrom(Common::SeekableReadStream *objstream) {
@@ -1349,7 +1384,39 @@ void CommandBlock::execute(UnityEngine *_vm) {
 }
 
 void ScreenBlock::execute(UnityEngine *_vm) {
-	error("unimplemented: ScreenBlock::execute");
+	if (new_screen != 0xff) {
+		debug(1, "ScreenBlock::execute: new screen: %02x", new_screen);
+		_vm->startAwayTeam(_vm->data.current_screen.world, new_screen);
+	} else
+		warning("unimplemented: ScreenBlock::execute");
+
+	if (unknown2 != 0xff) printf ("2: %02x ", unknown2);
+	if (unknown3 != 0xff) printf ("3: %02x ", unknown3);
+	if (unknown4 != 0xffff) printf ("4: %04x ", unknown4);
+
+	if (unknown5 != 0xffff) {
+		// TODO: this is just a guess
+		debug(1, "ScreenBlock::execute: unknown5 (back to bridge?): %02x", unknown5);
+		_vm->startBridge();
+	}
+
+	if (unknown6 != 0xffff) printf ("6: %04x ", unknown6);
+	if (unknown7 != 0xff) printf ("7: %02x ", unknown7);
+	if (unknown8 != 0xff) printf ("8: %02x ", unknown8);
+	if (unknown9 != 0xffff) printf ("9: %04x ", unknown9);
+	if (unknown10 != 0xff) printf ("10: %02x ", unknown10);
+	if (unknown11 != 0xff) printf ("11: %02x ", unknown11);
+	if (unknown12 != 0xff) printf ("12: %02x ", unknown12);
+	if (unknown13 != 0xffff) printf ("13: %04x ", unknown13);
+	if (unknown14 != 0xff) printf ("14: %02x ", unknown14);
+	if (unknown15 != 0xff) printf ("15: %02x ", unknown15);
+	if (unknown16 != 0xffff) printf ("16: %04x ", unknown16);
+	if (unknown17 != 0xffff) printf ("17: %04x ", unknown17);
+	if (unknown18 != 0xff) printf ("18: %02x ", unknown18);
+	if (unknown19 != 0xff) printf ("19: %02x ", unknown19);
+	if (unknown20 != 0xff) printf ("20: %02x ", unknown20);
+	if (unknown21 != 0xffff) printf ("21: %04x ", unknown21);
+	printf("\n");
 }
 
 void PathBlock::execute(UnityEngine *_vm) {
