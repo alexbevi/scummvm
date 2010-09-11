@@ -1022,10 +1022,12 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 		target.world, target.screen, target.id,
 		WhoCan.world, WhoCan.screen, WhoCan.id);
 
-	if (target.world == 0xff && target.screen == 0xff && target.id != 0xfe) {
+	if (target.world == 0xff && target.screen == 0xff && target.id == 0xfe) {
 		// TODO: fail if source was passed in
+		warning("unimplemented: ConditionCheck: ignoring source check");
 	} else if (target.world != 0xff && target.screen != 0xff && target.id != 0xff) {
 		// TODO: fail if source != target
+		warning("unimplemented: ConditionCheck: ignoring source/target check");
 	}
 
 	if (target.world == 0x0 && target.screen == 0x70) {
@@ -1062,6 +1064,7 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 	//	counter_val--;
 	// }
 
+	bool did_something = false;
 	for (unsigned int i = 0; i < 4; i++) {
 		// TODO: some special handling of check_x/check_y for invalid obj?
 		if (condition[i].world == 0xff) continue;
@@ -1069,7 +1072,53 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 		Object *obj = _vm->data.getObject(condition[i]);
 		printf("checking state of %s", obj->identify().c_str());
 
+		if (check_state[i] != 0xff) {
+			printf(" (is state %x?)", check_state[i]);
+			if (obj->state != check_state[i]) {
+				printf(" -- nope!\n");
+				return false;
+			}
+		}
+
+		if (!(obj->flags & OBJFLAG_ACTIVE)) {
+			if (check_screen[i] == 0xfe) {
+				// check for inactive
+				return true;
+			}
+
+			if (check_state[i] == 0xff) {
+				printf(" (object inactive!)\n");
+				return false;
+			}
+		}
+
+		// TODO: check whether stunned or not?
+
+		if (check_status[i] != 0xff) {
+			did_something = true;
+
+			if (check_status[i]) {
+				if (obj->id.world == 0 && obj->id.screen == 0 && obj->id.id < 0x10) {
+					// TODO: check whether in away team
+					printf(" (in away team?)");
+				} else {
+					printf(" (in inventory?)");
+					if (!(obj->flags & OBJFLAG_INVENTORY)) {
+						printf(" -- nope!\n");
+						return false;
+					}
+				}
+			} else {
+				printf(" (not in inventory?)");
+				if (obj->flags & OBJFLAG_INVENTORY) {
+					printf(" -- it is!\n");
+					return false;
+				}
+			}
+		}
+
 		if (check_x[i] != 0xffff) {
+			did_something = true;
 			printf(" (is x/y %x/%x?)", check_x[i], check_y[i]);
 			if (obj->x != check_x[i] || obj->y != check_y[i]) {
 				printf(" -- nope!\n");
@@ -1080,6 +1129,7 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 		// (check_unknown unused?)
 
 		if (check_univ_x[i] != 0xffff) {
+			did_something = true;
 			printf(" (is universe x/y/z %x/%x/%x?)", check_univ_x[i], check_univ_y[i], check_univ_z[i]);
 			if (obj->universe_x != check_univ_x[i] || obj->universe_y != check_univ_y[i] ||
 				obj->universe_z != check_univ_z[i]) {
@@ -1089,25 +1139,10 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 		}
 
 		if (check_screen[i] != 0xff) {
+			did_something = true;
 			printf(" (is screen %x?)", check_screen[i]);
 			// TODO: (this is 'current screen', i think different from the other thing)
 		}
-
-		if (check_status[i] != 0xff) {
-			printf(" (is status %x?)", check_status[i]);
-			// TODO: if 1, check whether in away team (<0x10) or inventory (flag)
-			// if 0, check whether *not* in inventory
-		}
-
-		if (check_state[i] != 0xff) {
-			printf(" (is state %x?)", check_state[i]);
-			if (obj->state != check_state[i]) {
-				printf(" -- nope!\n");
-				return false;
-			}
-		}
-
-		// TODO: check whether active or not
 
 		printf("\n");
 	}
