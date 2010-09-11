@@ -644,17 +644,14 @@ void CommunicateBlock::readFrom(Common::SeekableReadStream *objstream) {
 	}
 
 	conversation_id = objstream->readUint16LE();
-	unknown1 = objstream->readUint16LE();
-	unknown2 = objstream->readUint16LE();
-	uint16 unknown4 = objstream->readUint16LE();
-	assert(unknown4 == 0);
+	situation_id = objstream->readUint16LE();
+	hail_type = objstream->readByte();
+	assert(hail_type <= 0x10);
 
-	for (unsigned int i = 0; i < 24; i++) {
+	for (unsigned int i = 0; i < 25; i++) {
 		uint32 unknown32 = objstream->readUint32LE();
 		assert(unknown32 == 0);
 	}
-	byte unknown = objstream->readByte();
-	assert(unknown == 0);
 }
 
 void ChoiceBlock::readFrom(Common::SeekableReadStream *objstream) {
@@ -918,6 +915,7 @@ void Object::changeTalkString(const Common::String &str) {
 	bool immediate = (str.size() && str[0] == '1');
 	if (immediate) {
 		// run the conversation immediately, don't change anything
+		// TODO: this should be *queued* to be run once we're done (or be wiped by fail)
 		// TODO: voice stuff
 		runHail(str);
 	} else {
@@ -1458,25 +1456,84 @@ void TriggerBlock::execute(UnityEngine *_vm) {
 }
 
 void CommunicateBlock::execute(UnityEngine *_vm) {
-	debug(1, "CommunicateBlock::execute: at %02x%02x%02x, %04x, %04x, %04x", target.world, target.screen, target.id, conversation_id, unknown1, unknown2);
-
-	// TODO: does unknown2 indicate viewscreen vs bridge or what?
-	if (unknown1 == 0xffff) return; // XXX: TODO
+	debug(1, "CommunicateBlock::execute: at %02x%02x%02x, %04x, %04x, %02x", target.world, target.screen, target.id, conversation_id, situation_id, hail_type);
 
 	Object *targ;
 	// TODO: not Picard!! what are we meant to do here?
-	if (target.id == 0xff)
+	if (target.id == 0xff) {
 		targ = _vm->data.getObject(objectID(0, 0, 0));
-	else
+	} else {
 		targ = _vm->data.getObject(target);
+	}
 
-	_vm->current_conversation = _vm->data.getConversation(_vm->data.current_screen.world, conversation_id);
+	if (hail_type != 0xff && hail_type != 0x7 && hail_type != 0x8) {
+		if (target.id != 0xff) {
+			// must be a non-immediate hail
+			if (!targ->talk_string.size() || targ->talk_string[0] != '@')
+				error("'%s' is not a valid hail string (during Communicate)",
+					targ->talk_string.c_str());
 
-	// original engine simply ignores this when there are no enabled situations, it seems
-	// (TODO: check what happens when there is no such situation at all)
-	if (_vm->current_conversation->getEnabledResponse(unknown1)) {
-		// this overrides any existing conversations.. possibly that is a good thing
-		_vm->next_situation = unknown1;
+			// TODO: use hail_type
+			targ->runHail(targ->talk_string);
+			return;
+		}
+	}
+
+	switch (hail_type) {
+	case 0:
+		// 0: we are being hailed (on screen)
+	case 1:
+		// 1: subspace frequency (open channels)
+	case 2:
+		// 2: hailed by planet (on screen)
+	case 3:
+		// 3: beacon (open channels)
+		warning("unhandled optional hail (%02x)", hail_type);
+		break;
+	case 4:
+		// 4: delayed conversation? (forced 0x5f)
+	case 5:
+		// 5: delayed conversation? (forced 0x5f)
+	case 6:
+		// 6: immediate conversation
+	case 7:
+		// 7: delayed conversation, oddness with 0xFE and 0x00/0x5F checks
+		//    (elsewhere: special case conversation 99?!?)
+		// on-viewscreen?
+	case 8:
+		// 8: delayed conversation? (forced 0x5f)
+		_vm->current_conversation = _vm->data.getConversation(_vm->data.current_screen.world,
+			conversation_id);
+
+		// original engine simply ignores this when there are no enabled situations, it seems
+		// (TODO: check what happens when there is no such situation at all)
+		if (_vm->current_conversation->getEnabledResponse(situation_id)) {
+			// this overrides any existing conversations.. possibly that is a good thing
+			_vm->next_situation = situation_id;
+		} else _vm->next_situation = 0xffffffff;
+		break;
+
+	case 9:
+		// 9: reset conversation to none
+	case 0xa:
+		// a: reset conversation to none
+	case 0xb:
+		// b: magicB + some storing of obj screen/id + wiping of that obj + reset conversation?
+		// (back to bridge?)
+	case 0xc:
+		// c: magicB + reset conversation?
+		// (some bridge change?)
+	case 0xd:
+		// d: reset conversation (but not obj) + magic?
+		// (some bridge change? more complex than the others)
+	case 0xe:
+		// e: do nothing?
+	case 0xf:
+		// f: magicF + reset conversation?
+		// (some *different* bridge change?)
+	case 0x10:
+		// 0x10: magicB + reset conversation + magic?
+		warning("unhandled special hail (%02x)", hail_type);
 	}
 }
 

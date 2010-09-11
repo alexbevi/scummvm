@@ -228,7 +228,8 @@ class CommunicateBlock : public Entry {
 protected:
 	objectID target;
 	uint16 conversation_id;
-	uint16 unknown1, unknown2;
+	uint16 situation_id;
+	byte hail_type;
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
