@@ -390,6 +390,8 @@ void FVFDecoder::decodeVideoFrame(uint16 *frame, unsigned int len) {
 	decodeVideoFrameData(frame, len);
 
 	if (flags & 0x1) {
+		was_front = front_buffer;
+		was_colour_front = colour_front_buffer;
 		// allow the first frame to iteratively render
 		for (unsigned int i = 0; i < 15; i++) {
 			decodeVideoFrameData(frame, len);
