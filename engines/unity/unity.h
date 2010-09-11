@@ -36,6 +36,7 @@ public:
 	UnityData data;
 
 	Sound *_snd;
+	Graphics *_gfx;
 
 	bool on_bridge;
 	AwayTeamMode mode;
@@ -60,9 +61,12 @@ public:
 	void runDialogChoice();
 	void runDialog();
 
-protected:
-	Graphics *_gfx;
+	void startBridge();
+	void startAwayTeam(unsigned int world, unsigned int screen);
 
+	Common::String voiceFileFor(byte voice_group, byte voice_subgroup, objectID speaker, byte voice_id, char type = 0);
+
+protected:
 	objectID speaker;
 	SpritePlayer *icon;
 
@@ -79,8 +83,6 @@ protected:
 	void processTimers();
 
 	void startupScreen();
-	void startBridge();
-	void startAwayTeam(unsigned int world, unsigned int screen);
 
 	void drawDialogFrameAround(unsigned int x, unsigned int y, unsigned int width,
 		unsigned int height, bool use_thick_frame, bool with_icon);

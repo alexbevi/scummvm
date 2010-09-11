@@ -1509,18 +1509,8 @@ void TextBlock::execute(UnityEngine *_vm, Object *speaker) {
 		_vm->setSpeaker(speaker->id);
 		debug(1, "%s says '%s'", speaker->identify().c_str(), text.c_str());
 
-		uint32 entry_id = speaker->id.id;
-		if (speaker->id.world != 0x0)
-			entry_id = 0xff; // XXX: hack (for Pentara, Daenub, etc)
-
-		Common::String file;
-		file = Common::String::printf("%02x%02x%02x%02x.vac",
-			voice_group, entry_id, voice_subgroup, voice_id);
-		if (!SearchMan.hasFile(file)) {
-			// TODO: wtf?
-			file = Common::String::printf("%02x%02x%02x%02x.vac",
-				voice_group, voice_subgroup, entry_id, voice_id);
-		}
+		Common::String file = _vm->voiceFileFor(voice_group, voice_subgroup,
+			speaker->id, voice_id);
 		_vm->_snd->playSpeech(file);
 
 		_vm->runDialog();
@@ -1746,15 +1736,8 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 		// (the text is invalid too, but i display it, to make it clear we failed..)
 
 		if (voice_group != 0xcc) {
-			uint32 entry_id = ourselves.id; // TODO: work out correct entry for actor
-			Common::String file;
-			file = Common::String::printf("%02x%02x%02x%02x.vac",
-				voice_group, entry_id, voice_subgroup, voice_id);
-			if (!SearchMan.hasFile(file)) {
-				// TODO: wtf?
-				file = Common::String::printf("%02x%02x%02x%02x.vac",
-					voice_group, voice_subgroup, entry_id, voice_id);
-			}
+			Common::String file = _vm->voiceFileFor(voice_group, voice_subgroup,
+				ourselves, voice_id);
 
 			_vm->_snd->playSpeech(file);
 		}

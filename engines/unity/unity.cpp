@@ -378,30 +378,31 @@ void UnityEngine::handleLook(Object *obj) {
 	dialog_text = desc.text;
 	setSpeaker(objectID(0, 0, 0));
 
-	// TODO: this is broken
-	// for these in-area files, it's sometimes %02x%c%1x%02x%02x.vac ?!
-	// where %c is 'l' or 't' - i haven't worked out why yet
-
-	Common::String file;
-	file = Common::String::printf("%02x%c%1x%02x%02x.vac",
-		desc.voice_group, 'l', desc.voice_subgroup,
-		desc.entry_id, desc.voice_id);
-
-	if (!SearchMan.hasFile(file)) {
-		file = Common::String::printf("%02x%c%1x%02x%02x.vac",
-			desc.voice_group, 't', desc.voice_subgroup,
-			desc.entry_id, desc.voice_id);
-
-		if (!SearchMan.hasFile(file)) {
-			file = Common::String::printf("%02x%02x%02x%02x.vac",
-				desc.voice_group, desc.entry_id,
-				desc.voice_subgroup, desc.voice_id);
-		}
-	}
-
+	// 'l' for look :)
+	Common::String file = voiceFileFor(desc.voice_group, desc.voice_subgroup, objectID(desc.entry_id, 0, 0), desc.voice_id, 'l');
 	_snd->playSpeech(file);
 
 	runDialog();
+}
+
+Common::String UnityEngine::voiceFileFor(byte voice_group, byte voice_subgroup, objectID speaker, byte voice_id, char type) {
+	if (speaker.world != 0 || speaker.screen != 0 || speaker.id > 9) {
+		speaker.id = 0xff;
+	}
+
+	if (voice_group == 0xfe) {
+		return Common::String::printf("%02x%02x%02x%02x.vac",
+			voice_group, speaker.id,
+			voice_subgroup, voice_id);
+	} else if (type) {
+		return Common::String::printf("%02x%c%1x%02x%02x.vac",
+			voice_group, type, voice_subgroup,
+			speaker.id, voice_id);
+	} else {
+		return Common::String::printf("%02x%02x%02x%02x.vac",
+			voice_group, voice_subgroup,
+			speaker.id, voice_id);
+	}
 }
 
 void UnityEngine::handleUse(Object *obj) {
