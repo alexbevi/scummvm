@@ -305,9 +305,6 @@ void Entry::readHeaderFrom(Common::SeekableReadStream *stream, byte header_type)
 	byte h_type = stream->readByte();
 	assert(h_type == header_type);
 
-	// see usage in TriggerBlock
-	// see also use in 060102, where the first LOOK (with this flag) shouldn't run
-	// (wipe pending conversations/actions when encountered?)
 	stop_here = stream->readByte();
 	assert(stop_here == 0 || stop_here == 1 || stop_here == 0xff);
 
@@ -623,10 +620,6 @@ void BeamBlock::readFrom(Common::SeekableReadStream *objstream) {
 
 void TriggerBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x4b);
-
-	// TODO: is this really some kind of 'priority'?
-	assert(stop_here == 0 || stop_here == 1);
-	instant_disable = (stop_here == 1);
 
 	trigger_id = objstream->readUint32LE();
 
@@ -999,6 +992,7 @@ EntryList::~EntryList() {
 
 void EntryList::execute(UnityEngine *_vm) {
 	debug(1, "");
+	bool stophere = false;
 	for (unsigned int i = 0; i < list.size(); i++) {
 		debug(1, "EntryList::execute: block %d of %d (size %d)", i + 1, list.size(), list[i]->size());
 		bool run = true;
@@ -1011,9 +1005,15 @@ void EntryList::execute(UnityEngine *_vm) {
 		if (!run) continue;
 		for (unsigned int j = 0; j < list[i]->size(); j++) {
 			(*list[i])[j]->execute(_vm);
+			if ((*list[i])[j]->stop_here) {
+				stophere = true;
+				debug(1, "EntryList::execute: stopped at entry %d of %d", j + 1, list[i]->size());
+				break;
+			}
 		}
+		if (stophere) break;
 	}
-	debug(1, "EntryList::execute: ran %d blocks", list.size());
+	debug(1, "EntryList::execute: done with %d blocks", list.size());
 	debug(1, "");
 }
 
@@ -1448,17 +1448,6 @@ void BeamBlock::execute(UnityEngine *_vm) {
 
 	_vm->beam_world = world_id;
 	_vm->beam_screen = screen_id;
-}
-
-bool TriggerBlock::check(UnityEngine *_vm) {
-	// This is here because I don't understand how the original engine
-	// does the "disable everything a trigger did" trick (see, for example,
-	// the Initial Log trigger which sabotages itself at startup).
-	if (instant_disable) {
-		execute(_vm);
-		return false;
-	}
-	return true;
 }
 
 void TriggerBlock::execute(UnityEngine *_vm) {

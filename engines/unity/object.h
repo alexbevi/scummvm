@@ -52,6 +52,8 @@ struct Description {
 int readBlockHeader(Common::SeekableReadStream *objstream);
 
 class Entry {
+	friend class EntryList; // (temporary) hack for stop_here
+
 protected:
 	objectID internal_obj;
 	byte counter1, counter2, counter3, counter4;
@@ -215,10 +217,9 @@ public:
 class TriggerBlock : public Entry {
 protected:
 	uint32 trigger_id;
-	bool instant_disable, enable_trigger;
+	bool enable_trigger;
 
 public:
-	bool check(UnityEngine *_vm);
 	void execute(UnityEngine *_vm);
 	void readFrom(Common::SeekableReadStream *stream);
 };
