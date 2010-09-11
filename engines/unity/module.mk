@@ -4,6 +4,7 @@ MODULE_OBJS := \
 	data.o \
 	debug.o \
 	detection.o \
+	fvf_decoder.o \
 	graphics.o \
 	object.o \
 	sound.o \
