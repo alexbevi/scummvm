@@ -952,6 +952,11 @@ Common::Error UnityEngine::run() {
 
 	startupScreen();
 
+	// TODO: are the indexes identical in all versions?
+	_gfx->playMovie(data.movie_filenames[0]);
+	_gfx->playMovie(data.movie_filenames[4]);
+	// TODO: add #3 to the 'already played' list
+
 	_gfx->setCursor(0xffffffff, false);
 
 	startBridge();

@@ -3,6 +3,7 @@
 #include "common/system.h"
 #include "graphics/surface.h"
 #include "graphics/cursorman.h"
+#include "fvf_decoder.h"
 
 namespace Unity {
 
@@ -536,6 +537,81 @@ void Graphics::fillRect(byte colour, unsigned int x1, unsigned int y1, unsigned 
 	Common::Rect r(x1, y1, x2, y2);
 	surf->fillRect(r, colour);
 	_vm->_system->unlockScreen();
+}
+
+void Graphics::playMovie(Common::String filename) {
+	Common::SeekableReadStream *intro_movie = _vm->data.openFile(filename);
+
+	::Graphics::VideoDecoder *videoDecoder = new FVFDecoder(g_system->getMixer());
+	if (!videoDecoder->load(intro_movie)) error("failed to load movie %s", filename.c_str());
+
+	bool skipVideo = false;
+
+	::Graphics::PixelFormat format = videoDecoder->getPixelFormat();
+	unsigned int vidwidth = videoDecoder->getWidth();
+	unsigned int vidheight = videoDecoder->getHeight();
+	unsigned int vidbpp = format.bytesPerPixel;
+
+	g_system->beginGFXTransaction();
+	g_system->initSize(vidwidth*2, vidheight*2, &format);
+	g_system->endGFXTransaction();
+
+	byte *vidpixels = (byte *)alloca(vidwidth*2 * vidheight*2 * vidbpp);
+
+	g_system->showMouse(false);
+
+	while (!g_engine->shouldQuit() && !videoDecoder->endOfVideo() && !skipVideo) {
+		if (videoDecoder->needsUpdate()) {
+			::Graphics::Surface *frame = videoDecoder->decodeNextFrame();
+			if (frame) {
+				// TODO: this is some very slow 2x scaling
+				unsigned int x = 0, y = 0;
+
+				byte *in = (byte *)frame->pixels, *out = vidpixels;
+				for (unsigned int i = 0; i < vidheight; i++) {
+					for (unsigned int j = 0; j < vidwidth; j++) {
+						// first pixel, on two lines
+						memcpy(out, in, vidbpp);
+						memcpy(out + vidwidth*2*vidbpp, in, vidbpp);
+						out += vidbpp;
+						// second pixel, on two lines
+						memcpy(out, in, vidbpp);
+						memcpy(out + vidwidth*2*vidbpp, in, vidbpp);
+						out += vidbpp;
+
+						in += vidbpp;
+					}
+					// every other line already handled
+					out += vidwidth * 2 * vidbpp;
+				}
+
+				g_system->copyRectToScreen(vidpixels, vidwidth*2*vidbpp,
+					x, y, vidwidth*2, vidheight*2);
+
+				g_system->updateScreen();
+			}
+		}
+
+		Common::Event event;
+		while (g_system->getEventManager()->pollEvent(event)) {
+			if (event.type == Common::EVENT_KEYDOWN && event.kbd.keycode == Common::KEYCODE_ESCAPE) {
+				skipVideo = true;
+			}
+		}
+
+		if (!videoDecoder->needsUpdate())
+			g_system->delayMillis(10);
+	}
+
+	g_system->beginGFXTransaction();
+	g_system->initSize(640, 480);
+	g_system->endGFXTransaction();
+	g_system->showMouse(true);
+	if (palette) {
+		_vm->_system->setPalette(palette, 0, 256);
+	}
+
+	delete videoDecoder;
 }
 
 } // Unity

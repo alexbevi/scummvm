@@ -3,6 +3,7 @@
 #include "sprite.h"
 #include "trigger.h"
 #include "sound.h"
+#include "graphics.h"
 
 #include "common/stream.h"
 
@@ -1368,10 +1369,11 @@ void GeneralBlock::execute(UnityEngine *_vm) {
 	if (movie_id != 0xffff) {
 		assert(_vm->data.movie_filenames.contains(movie_id));
 
-		// TODO
 		debug(1, "GeneralBlock: play movie %d (%s: '%s')", movie_id,
 			_vm->data.movie_filenames[movie_id].c_str(),
 			_vm->data.movie_descriptions[movie_id].c_str());
+
+		_vm->_gfx->playMovie(_vm->data.movie_filenames[movie_id]);
 	}
 }
 
