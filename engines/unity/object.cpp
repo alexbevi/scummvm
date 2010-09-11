@@ -1801,6 +1801,11 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 
 	Object *targetobj = speaker;
 	if (target.id != 0xff) {
+		if (target.world == 0 && target.screen == 0 && (target.id == 0x20 || target.id == 0x23)) {
+			// TODO: super hack
+			warning("weird target: this is meant to be the Enterprise?");
+			target.id = 0;
+		}
 		targetobj = _vm->data.getObject(target);
 	}
 
