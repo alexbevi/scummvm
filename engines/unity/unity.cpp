@@ -27,6 +27,7 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	next_state = 0xffffffff;
 	beam_world = 0;
 	mode = mode_Look;
+	_current_away_team_member = NULL;
 }
 
 UnityEngine::~UnityEngine() {
@@ -196,6 +197,9 @@ void UnityEngine::startBridge() {
 	data.current_screen.world = 0x5f;
 	data.current_screen.screen = 0xff;
 
+	_current_away_team_member = NULL;
+	_away_team_members.clear();
+
 	const char *bridge_sprites[5] = {
 		"brdgldor.spr", // Left Door (conference room)
 		"brdgdoor.spr", // Door
@@ -247,6 +251,14 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 		obj->loadSprite();
 		obj->sprite->startAnim(26);
 		data.current_screen.objects.push_back(obj);
+	}
+	if (!_away_team_members.size()) {
+		_current_away_team_member = data.current_screen.objects[0];
+		for (unsigned int i = 0; i < 4; i++) {
+			_away_team_members.push_back(data.current_screen.objects[0]);
+		}
+	} else {
+		assert(_current_away_team_member);
 	}
 
 	openLocation(world, screen);
@@ -367,10 +379,9 @@ void UnityEngine::handleLook(Object *obj) {
 
 	// TODO: this is very wrong, of course :)
 
-	// use only Picard's entry for now
 	unsigned int i = 0;
 	while (i < obj->descriptions.size() &&
-			obj->descriptions[i].entry_id != 0) i++;
+			obj->descriptions[i].entry_id != _current_away_team_member->id.id) i++;
 	if (i == obj->descriptions.size()) {
 		// TODO: bad place?
 		if (next_situation == 0xffffffff) {
@@ -978,18 +989,20 @@ Common::Error UnityEngine::run() {
 		while (next_situation != 0xffffffff) {
 			assert(current_conversation);
 			Response *resp;
+			// TODO: not always Picard! :(
+			objectID speaker = objectID(0, 0, 0);
+			if (_current_away_team_member) speaker = _current_away_team_member->id;
 			if (next_state != 0xffffffff)
 				resp = current_conversation->getResponse(next_situation, next_state);
 			else
-				resp = current_conversation->getEnabledResponse(next_situation);
+				resp = current_conversation->getEnabledResponse(next_situation, speaker);
 			next_situation = 0xffffffff;
 			next_state = 0xffffffff;
 			if (!resp) {
 				warning("failed to find a next situation!");
 				break;
 			}
-			// TODO: not always Picard! :(
-			resp->execute(this, data.getObject(objectID(0, 0, 0)));
+			resp->execute(this, data.getObject(speaker));
 		}
 
 		processTriggers();

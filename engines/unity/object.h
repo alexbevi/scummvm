@@ -303,8 +303,8 @@ protected:
 	objectID whocansay;
 
 public:
+	bool match(objectID speaker);
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm, objectID &speaker);
 };
 
 class ChangeActionBlock : public ResponseBlock {
@@ -349,6 +349,7 @@ public:
 	uint32 voice_id, voice_group;
 	uint16 voice_subgroup;
 
+	bool validFor(objectID speaker);
 	void readFrom(Common::SeekableReadStream *stream);
 	void execute(UnityEngine *_vm, Object *speaker);
 };
@@ -360,7 +361,7 @@ public:
 
 	void loadConversation(UnityData &data, unsigned int world, unsigned int id);
 	Response *getResponse(unsigned int response, unsigned int state);
-	Response *getEnabledResponse(unsigned int response);
+	Response *getEnabledResponse(unsigned int response, objectID speaker);
 	void execute(UnityEngine *_vm, Object *speaker, unsigned int response);
 	void execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state);
 };

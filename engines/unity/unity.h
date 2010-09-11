@@ -50,6 +50,9 @@ public:
 	bool on_bridge;
 	AwayTeamMode mode;
 
+	Object *_current_away_team_member;
+	Common::Array<Object *> _away_team_members;
+
 	Common::String status_text;
 
 	bool in_dialog;

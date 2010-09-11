@@ -1507,7 +1507,8 @@ void CommunicateBlock::execute(UnityEngine *_vm) {
 
 		// original engine simply ignores this when there are no enabled situations, it seems
 		// (TODO: check what happens when there is no such situation at all)
-		if (_vm->current_conversation->getEnabledResponse(situation_id)) {
+		// TODO: which speaker?? not Picard :(
+		if (_vm->current_conversation->getEnabledResponse(situation_id, objectID(0, 0, 0))) {
 			// this overrides any existing conversations.. possibly that is a good thing
 			_vm->next_situation = situation_id;
 		} else _vm->next_situation = 0xffffffff;
@@ -1551,19 +1552,6 @@ void WhoCanSayBlock::readFrom(Common::SeekableReadStream *stream) {
 	byte unknown2 = stream->readByte();
 	byte unknown3 = stream->readByte();
 	byte unknown4 = stream->readByte();
-}
-
-void WhoCanSayBlock::execute(UnityEngine *_vm, objectID &speaker) {
-	// TODO
-	debug(1, "WhoCanSay: %02x%02x%02x", whocansay.world, whocansay.screen, whocansay.id);
-	//warning("unimplemented: WhoCanSayBlock::execute");
-
-	if (speaker.id == 0xff) {
-		if (whocansay.id == 0x10)
-			speaker = objectID(0, 0, 0);
-		else
-			speaker = whocansay;
-	}
 }
 
 void TextBlock::readFrom(Common::SeekableReadStream *stream) {
@@ -1811,17 +1799,27 @@ void Conversation::loadConversation(UnityData &data, unsigned int world, unsigne
 	delete stream;
 }
 
-void Response::execute(UnityEngine *_vm, Object *speaker) {
-	// TODO: this should be checked BEFORE we pick a response object,
-	// since there are usually different responses for different people
-	objectID ourselves;
+bool WhoCanSayBlock::match(objectID speaker) {
+	if (speaker.world != whocansay.world) return false;
+	if (speaker.screen != whocansay.screen) return false;
+
+	// "any away team member"
+	if (whocansay.world == 0 && whocansay.screen == 0 && whocansay.id == 0x10) return true;
+
+	if (speaker.id != whocansay.id) return false;
+
+	return true;
+}
+
+bool Response::validFor(objectID speaker) {
 	for (unsigned int i = 0; i < whocansayblocks.size(); i++) {
-		whocansayblocks[i]->execute(_vm, ourselves);
-	}
-	if (ourselves.world == 0xff) {
-		error("no-one could speak!");
+		if (whocansayblocks[i]->match(speaker)) return true;
 	}
 
+	return false;
+}
+
+void Response::execute(UnityEngine *_vm, Object *speaker) {
 	if (text.size()) {
 		// TODO: response escape strings
 		// (search backwards between two '@'s, format: '0' + %c, %1x, %02x)
@@ -1829,7 +1827,7 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 		_vm->dialog_text = text;
 
 		// TODO: this is VERy not good
-		_vm->setSpeaker(ourselves);
+		_vm->setSpeaker(speaker->id);
 		debug(1, "%s says '%s'", "Picard", text.c_str());
 
 		// TODO: 0xcc some marks invalid entries, but should we check something else?
@@ -1837,7 +1835,7 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 
 		if (voice_group != 0xcc) {
 			Common::String file = _vm->voiceFileFor(voice_group, voice_subgroup,
-				ourselves, voice_id);
+				speaker->id, voice_id);
 
 			_vm->_snd->playSpeech(file);
 		}
@@ -1868,8 +1866,10 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 		for (unsigned int i = 0; i < responses.size(); i++) {
 			if (responses[i]->id == next_situation) {
 				if (responses[i]->response_state == RESPONSE_ENABLED) {
-					_vm->dialog_choice_responses.push_back(responses[i]->id);
-					_vm->dialog_choice_states.push_back(responses[i]->state);
+					if (responses[i]->validFor(speaker->id)) {
+						_vm->dialog_choice_responses.push_back(responses[i]->id);
+						_vm->dialog_choice_states.push_back(responses[i]->state);
+					}
 				}
 			}
 		}
@@ -1893,13 +1893,12 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 	}
 }
 
-Response *Conversation::getEnabledResponse(unsigned int response) {
+Response *Conversation::getEnabledResponse(unsigned int response, objectID speaker) {
 	for (unsigned int i = 0; i < responses.size(); i++) {
-		if (responses[i]->id == response) {
-			if (responses[i]->response_state == RESPONSE_ENABLED) {
-				return responses[i];
-			}
-		}
+		if (responses[i]->id != response) continue;
+		if (responses[i]->response_state != RESPONSE_ENABLED) continue;
+		if (speaker.id != 0xff && !responses[i]->validFor(speaker)) continue;
+		return responses[i];
 	}
 
 	return NULL;
@@ -1920,7 +1919,8 @@ Response *Conversation::getResponse(unsigned int response, unsigned int state) {
 void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response) {
 	debug(1, "running situation (%02x) @%d,%d", our_world, our_id, response);
 
-	Response *resp = getEnabledResponse(response);
+	// TODO: not Picard
+	Response *resp = getEnabledResponse(response, objectID(0, 0, 0));
 	if (!resp) error("couldn't find active response %d", response);
 	resp->execute(_vm, speaker);
 }
