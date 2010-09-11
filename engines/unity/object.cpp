@@ -1240,14 +1240,18 @@ void AlterBlock::execute(UnityEngine *_vm) {
 			// TODO (some magic with (alter_anim - 31000))
 			// (this sets a different animation type - index?)
 			// this doesn't run ANY of the code below
-			error("whargle: %04x", alter_anim);
+			anim_id -= 31000;
+			error("very weird animation id %04x (%d)", alter_anim, anim_id);
 		} else if (anim_id >= 29000) {
 			if (alter_anim < 30000) {
+				anim_id = 30000 - alter_anim;
 				// TODO: some other magic?
-				error("whargle whurgle: %04x", alter_anim);
+				// (try going into the third area of Allanor: 020412 tries this on the drone)
+				warning("weird animation id %04x (%d)", alter_anim, anim_id);
+			} else {
+				// TODO: ?!?
+				anim_id -= 30000;
 			}
-			// TODO: ?!?
-			anim_id -= 30000;
 		}
 
 		if (obj->sprite) {
