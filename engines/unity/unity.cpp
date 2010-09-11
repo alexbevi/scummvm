@@ -309,13 +309,20 @@ void UnityEngine::processTriggers() {
 		if (data.triggers[i]->tick(this)) {
 			Object *target = data.getObject(data.triggers[i]->target);
 			debug(1, "running trigger %x (target %s)", data.triggers[i]->id, target->identify().c_str());
-			target->use_entries.execute(this);
+			performAction(ACTION_USE, target);
 			break;
 		}
 	}
 }
 
 void UnityEngine::processTimers() {
+	// TODO: stupid hack to only run this so often
+	// TODO: is it correct to do this 0x123 thing here?
+	static uint32 last_time = 0;
+	if (last_time && ((last_time + 0x123) > g_system->getMillis()))
+		return;
+	last_time = g_system->getMillis();
+
 	Common::Array<Object *> &objects = data.current_screen.objects;
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		if (!(objects[i]->flags & OBJFLAG_ACTIVE)) continue;
@@ -325,7 +332,7 @@ void UnityEngine::processTimers() {
 		objects[i]->timer--;
 		if (objects[i]->timer == 0) {
 			debug(1, "running timer on %s", objects[i]->identify().c_str());
-			objects[i]->timer_entries.execute(this);
+			performAction(ACTION_TIMER, objects[i]);
 		}
 	}
 }
@@ -407,9 +414,9 @@ Common::String UnityEngine::voiceFileFor(byte voice_group, byte voice_subgroup, 
 
 void UnityEngine::handleUse(Object *obj) {
 	if (obj->flags & OBJFLAG_GET) {
-		obj->get_entries.execute(this);
+		performAction(ACTION_GET, obj);
 	} else if (obj->flags & OBJFLAG_USE) {
-		obj->use_entries.execute(this);
+		performAction(ACTION_USE, obj);
 	} else {
 		if (next_situation == 0xffffffff) {
 			// TODO: hard-coded :( @95,34,xy...
@@ -432,16 +439,7 @@ void UnityEngine::handleTalk(Object *obj) {
 }
 
 void UnityEngine::handleWalk(Object *obj) {
-	if (obj->transition.world != 0xff) {
-		obj = data.getObject(obj->transition);
-		if (!obj) error("couldn't find transition object");
-
-		// TODO
-		obj->use_entries.execute(this);
-		return;
-	}
-
-	// TODO
+	performAction(ACTION_WALK, obj);
 }
 
 // TODO
@@ -1055,6 +1053,76 @@ void UnityEngine::runDialog() {
 	// TODO: reset cursor
 	_snd->stopSpeech();
 }
+
+void UnityEngine::performAction(ActionType action_id, Object *target, objectID other, objectID who) {
+	switch (action_id) {
+		case ACTION_USE: {
+			if (!target) error("USE requires a target");
+
+			// TODO..
+			debug(1, "CommandBlock::execute: USE (on %s)", target->identify().c_str());
+			target->use_entries.execute(this);
+			}
+			break;
+
+		case ACTION_GET:
+			if (!target) error("GET requires a target");
+
+			debug(1, "CommandBlock::execute: GET (on %s)", target->identify().c_str());
+			target->get_entries.execute(this);
+			break;
+
+		case ACTION_LOOK:
+			if (target)
+				warning("unimplemented: CommandBlock::execute: LOOK (on %s)", target->identify().c_str());
+			else
+				warning("unimplemented: CommandBlock::execute: LOOK");
+			// TODO
+			break;
+
+		case ACTION_TIMER:
+			if (!target) error("TIMER requires a target");
+
+			debug(1, "CommandBlock::execute: TIMER (on %s)", target->identify().c_str());
+			target->timer_entries.execute(this);
+			break;
+
+		case ACTION_WALK:
+			if (target) {
+				debug(1, "CommandBlock::execute: WALK (on %s)", target->identify().c_str());
+				if (target->transition.world != 0xff) {
+					Object *obj = data.getObject(target->transition);
+					if (!obj) error("couldn't find transition object");
+
+					// TODO: this is a silly hack
+					performAction(ACTION_USE, obj);
+					break;
+				}
+
+				warning("unimplemented: CommandBlock::execute: WALK (on %s)", target->identify().c_str());
+
+				// TODO
+			} else {
+				warning("unimplemented: CommandBlock::execute: WALK");
+				// TODO
+			}
+			break;
+
+		case ACTION_TALK:
+			{
+			if (!target) error("we don't handle TALK without a valid target, should we?");
+			// target is target (e.g. Pentara), other is source (e.g. Picard)
+			// TODO..
+			debug(1, "CommandBlock::execute: TALK (on %s)", target->identify().c_str());
+			target->runHail(target->talk_string);
+			}
+			break;
+
+		default:
+			error("unknown action type %x", action_id);
+	}
+}
+
 
 } // Unity
 

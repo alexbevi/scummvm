@@ -21,6 +21,15 @@ enum AwayTeamMode {
 	mode_Talk
 };
 
+enum ActionType {
+	ACTION_USE = 0,
+	ACTION_GET = 1,
+	ACTION_LOOK = 2,
+	ACTION_TIMER = 3,
+	ACTION_WALK = 4,
+	ACTION_TALK = 5
+};
+
 class UnityEngine : public Engine {
 public:
 	UnityEngine(class OSystem *syst);
@@ -63,6 +72,8 @@ public:
 
 	void startBridge();
 	void startAwayTeam(unsigned int world, unsigned int screen);
+
+	void performAction(ActionType action, Object *target, objectID other = objectID(), objectID who = objectID());
 
 	Common::String voiceFileFor(byte voice_group, byte voice_subgroup, objectID speaker, byte voice_id, char type = 0);
 
