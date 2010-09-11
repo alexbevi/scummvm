@@ -456,12 +456,15 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 	// XXX: what's the sane behaviour here?
 	unsigned int targetx = x;
 	if (sprite->getXPos() != 0) targetx = sprite->getXPos();
+	targetx -= (sprite->getXAdjust()*(int)scale)/256;
 	unsigned int targety = y;
 	if (sprite->getYPos() != 0) targety = sprite->getYPos();
+	targety -= (sprite->getYAdjust()*(int)scale)/256;
 
 	//printf("target x %d, y %d, adjustx %d, adjusty %d\n", sprite->getXPos(), sprite->getYPos(),
 	//	sprite->getXAdjust(), sprite->getYAdjust());
-	blit(data, targetx - ((width/2 + sprite->getXAdjust())*(int)scale)/256, targety - ((height + sprite->getYAdjust())*(int)scale)/256, bufwidth, bufheight);
+	blit(data, targetx - ((width/2)*(int)scale)/256, targety - ((height)*(int)scale)/256, bufwidth, bufheight);
+
 	if (sprite->speaking()) {
 		// XXX: this doesn't work properly, SpritePlayer side probably needs work too
 		data = sprite->getSpeechData();
@@ -492,13 +495,13 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 	}
 
 	// plot cross at (x, y) loc
-	::Graphics::Surface *surf = _vm->_system->lockScreen();
-	if (x != 0) *((byte *)surf->getBasePtr(x-1, y)) = 254;
-	if (x != 640-1 ) *((byte *)surf->getBasePtr(x+1, y)) = 254;
-	*((byte *)surf->getBasePtr(x, y)) = 254;
-	if (y != 0) *((byte *)surf->getBasePtr(x, y-1)) = 254;
-	if (y != 480-1) *((byte *)surf->getBasePtr(x, y+1)) = 254;
-	_vm->_system->unlockScreen();
+	/*::Graphics::Surface *surf = _vm->_system->lockScreen();
+	if (targetx != 0) *((byte *)surf->getBasePtr(targetx-1, targety)) = 254;
+	if (targetx != 640-1 ) *((byte *)surf->getBasePtr(targetx+1, targety)) = 254;
+	*((byte *)surf->getBasePtr(targetx, targety)) = 254;
+	if (targety != 0) *((byte *)surf->getBasePtr(targetx, targety-1)) = 254;
+	if (targety != 480-1) *((byte *)surf->getBasePtr(targetx, targety+1)) = 254;
+	_vm->_system->unlockScreen();*/
 }
 
 void Graphics::drawBackgroundPolys(Common::Array<ScreenPolygon> &polys) {
