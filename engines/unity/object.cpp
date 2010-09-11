@@ -1314,13 +1314,13 @@ void CommandBlock::execute(UnityEngine *_vm) {
 		target[2].world, target[2].screen, target[2].id,
 		unknown1, unknown2, command_id);
 
-	unsigned int action_id;
+	ActionType action_id;
 	switch (command_id) {
-		case 2: action_id = 2; break;
-		case 3: action_id = 1; break;
-		case 4: action_id = 4; break;
-		case 5: action_id = 5; break;
-		case 6: action_id = 0; break;
+		case 2: action_id = ACTION_LOOK; break;
+		case 3: action_id = ACTION_GET; break;
+		case 4: action_id = ACTION_WALK; break;
+		case 5: action_id = ACTION_TALK; break;
+		case 6: action_id = ACTION_USE; break;
 		default: error("unknown command type %x", command_id);
 	}
 
@@ -1328,59 +1328,7 @@ void CommandBlock::execute(UnityEngine *_vm) {
 	if (target[0].world != 0xff)
 		targ = _vm->data.getObject(target[0]);
 
-	switch (action_id) {
-		case 0: {
-			if (!targ) error("USE requires a target");
-
-			Object *src = _vm->data.getObject(target[1]);
-			// TODO..
-			debug(1, "CommandBlock::execute: USE (on %s)", targ->identify().c_str());
-			targ->use_entries.execute(_vm);
-			}
-			break;
-
-		case 1:
-			if (!targ) error("GET requires a target");
-			debug(1, "CommandBlock::execute: GET (on %s)", targ->identify().c_str());
-			targ->get_entries.execute(_vm);
-			break;
-
-		case 2:
-			if (targ)
-				warning("unimplemented: CommandBlock::execute: LOOK (on %s)", targ->identify().c_str());
-			else
-				warning("unimplemented: CommandBlock::execute: LOOK");
-			// TODO
-			break;
-
-		case 3:
-			if (!targ) error("TIMER requires a target");
-			debug(1, "CommandBlock::execute: TIMER (on %s)", targ->identify().c_str());
-			targ->timer_entries.execute(_vm);
-			break;
-
-		case 4:
-			if (targ)
-				warning("unimplemented: CommandBlock::execute: WALK (on %s)", targ->identify().c_str());
-			else
-				warning("unimplemented: CommandBlock::execute: WALK");
-			// TODO
-			break;
-
-		case 5:
-			{
-			if (!targ) error("we don't handle TALK without a valid target, should we?");
-			// target[0] target (e.g. Pentara), target[1] source (e.g. Picard)
-			Object *src = _vm->data.getObject(target[1]);
-			// TODO..
-			debug(1, "CommandBlock::execute: TALK (on %s)", targ->identify().c_str());
-			targ->runHail(targ->talk_string);
-			}
-			break;
-
-		default:
-			error("unknown action type %x", action_id);
-	}
+	_vm->performAction(action_id, targ, target[1], target[2]);
 }
 
 void ScreenBlock::execute(UnityEngine *_vm) {
