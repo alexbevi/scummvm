@@ -61,16 +61,16 @@ public:
 	Common::Array<Common::String> choice_list;
 	void setSpeaker(objectID s);
 
-	Conversation *current_conversation;
-
 	// TODO: horrible hack
-	Common::Array<unsigned int> dialog_choice_responses;
+	unsigned int dialog_choice_situation;
 	Common::Array<unsigned int> dialog_choice_states;
-	unsigned int next_situation, next_state;
+
+	Conversation *_next_conversation;
+	unsigned int _next_situation;
 
 	uint16 beam_world, beam_screen;
 
-	void runDialogChoice();
+	unsigned int runDialogChoice(Conversation *conversation);
 	void runDialog();
 
 	void startBridge();

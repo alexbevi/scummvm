@@ -14,6 +14,8 @@ class UnityEngine;
 class UnityData;
 class SpritePlayer;
 
+class Conversation;
+
 enum {
 	OBJFLAG_WALK = 0x01,
 	OBJFLAG_USE = 0x02,
@@ -294,7 +296,7 @@ protected:
 
 class ResponseBlock {
 public:
-	virtual void execute(UnityEngine *_vm, Object *speaker) = 0;
+	virtual void execute(UnityEngine *_vm, Object *speaker, Conversation *src) = 0;
 	virtual ~ResponseBlock() { }
 };
 
@@ -313,7 +315,7 @@ public:
 	uint16 response_id, state_id;
 
 	void readFrom(Common::SeekableReadStream *stream, int _type);
-	void execute(UnityEngine *_vm, Object *speaker);
+	void execute(UnityEngine *_vm, Object *speaker, Conversation *src);
 };
 
 class ResultBlock : public ResponseBlock {
@@ -321,10 +323,10 @@ public:
 	EntryList entries;
 
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm, Object *speaker);
+	void execute(UnityEngine *_vm, Object *speaker, Conversation *src);
 };
 
-class TextBlock : public ResponseBlock {
+class TextBlock {
 public:
 	Common::String text;
 	uint32 voice_id, voice_group;
@@ -338,6 +340,7 @@ class Response {
 public:
 	uint16 id, state;
 	Common::Array<ResponseBlock *> blocks;
+	Common::Array<TextBlock *> textblocks;
 	Common::Array<WhoCanSayBlock *> whocansayblocks;
 
 	byte response_state;
@@ -351,7 +354,7 @@ public:
 
 	bool validFor(objectID speaker);
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm, Object *speaker);
+	void execute(UnityEngine *_vm, Object *speaker, Conversation *src);
 };
 
 class Conversation {
@@ -362,8 +365,8 @@ public:
 	void loadConversation(UnityData &data, unsigned int world, unsigned int id);
 	Response *getResponse(unsigned int response, unsigned int state);
 	Response *getEnabledResponse(unsigned int response, objectID speaker);
-	void execute(UnityEngine *_vm, Object *speaker, unsigned int response);
-	void execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state);
+	void execute(UnityEngine *_vm, Object *speaker, unsigned int situation);
+	//void execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state);
 };
 
 } // Unity

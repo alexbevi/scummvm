@@ -22,9 +22,8 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	in_dialog = false;
 	dialog_choosing = false;
 	_icon = NULL;
-	current_conversation = NULL;
-	next_situation = 0xffffffff;
-	next_state = 0xffffffff;
+	_next_conversation = NULL;
+	_next_situation = 0xffffffff;
 	beam_world = 0;
 	mode = mode_Look;
 	_current_away_team_member = NULL;
@@ -383,11 +382,11 @@ void UnityEngine::handleLook(Object *obj) {
 	while (i < obj->descriptions.size() &&
 			obj->descriptions[i].entry_id != _current_away_team_member->id.id) i++;
 	if (i == obj->descriptions.size()) {
-		// TODO: bad place?
-		if (next_situation == 0xffffffff) {
+		// TODO: bad place? THIS IS VERY WRONG NOW
+		if (_next_situation == 0xffffffff) {
 			// TODO: hard-coded :( @95,34,xy...
-			current_conversation = data.getConversation(0x5f, 34);
-			next_situation = 0x1; // default to failed look
+			_next_conversation = data.getConversation(0x5f, 34);
+			_next_situation = 0x1; // default to failed look
 		}
 		return;
 	}
@@ -429,10 +428,11 @@ void UnityEngine::handleUse(Object *obj) {
 	} else if (obj->flags & OBJFLAG_USE) {
 		performAction(ACTION_USE, obj);
 	} else {
-		if (next_situation == 0xffffffff) {
+		// TODO: bad place? THIS IS VERY WRONG NOW
+		if (_next_situation == 0xffffffff) {
 			// TODO: hard-coded :( @95,34,xy...
-			current_conversation = data.getConversation(0x5f, 34);
-			next_situation = 0x2; // failed use?
+			_next_conversation = data.getConversation(0x5f, 34);
+			_next_situation = 0x2; // failed use?
 		}
 	}
 }
@@ -441,10 +441,11 @@ void UnityEngine::handleTalk(Object *obj) {
 	if (obj->flags & OBJFLAG_TALK) {
 		obj->runHail(obj->talk_string);
 	} else {
-		if (next_situation == 0xffffffff) {
+		// TODO: bad place? THIS IS VERY WRONG NOW
+		if (_next_situation == 0xffffffff) {
 			// TODO: hard-coded :( @95,34,xy...
-			current_conversation = data.getConversation(0x5f, 34);
-			next_situation = 0x3; // failed talk?
+			_next_conversation = data.getConversation(0x5f, 34);
+			_next_situation = 0x3; // failed talk?
 		}
 	}
 }
@@ -986,23 +987,15 @@ Common::Error UnityEngine::run() {
 
 		assert(!in_dialog);
 
-		while (next_situation != 0xffffffff) {
-			assert(current_conversation);
-			Response *resp;
+		while (_next_situation != 0xffffffff) {
+			assert(_next_conversation);
+			unsigned int situation = _next_situation;
+			_next_situation = 0xffffffff;
+
 			// TODO: not always Picard! :(
 			objectID speaker = objectID(0, 0, 0);
 			if (_current_away_team_member) speaker = _current_away_team_member->id;
-			if (next_state != 0xffffffff)
-				resp = current_conversation->getResponse(next_situation, next_state);
-			else
-				resp = current_conversation->getEnabledResponse(next_situation, speaker);
-			next_situation = 0xffffffff;
-			next_state = 0xffffffff;
-			if (!resp) {
-				warning("failed to find a next situation!");
-				break;
-			}
-			resp->execute(this, data.getObject(speaker));
+			_next_conversation->execute(this, data.getObject(speaker), situation);
 		}
 
 		processTriggers();
@@ -1014,18 +1007,19 @@ Common::Error UnityEngine::run() {
 	return Common::kNoError;
 }
 
-void UnityEngine::runDialogChoice() {
-	assert(current_conversation);
-	assert(dialog_choice_responses.size() > 1);
+unsigned int UnityEngine::runDialogChoice(Conversation *conversation) {
+	assert(conversation);
+	assert(dialog_choice_states.size() > 1);
 
 	dialog_text.clear();
 	assert(!choice_list.size());
 	choice_list.clear();
 	dialog_choosing = true;
 
-	for (unsigned int i = 0; i < dialog_choice_responses.size(); i++) {
-		Response *r = current_conversation->getResponse(dialog_choice_responses[i],
+	for (unsigned int i = 0; i < dialog_choice_states.size(); i++) {
+		Response *r = conversation->getResponse(dialog_choice_situation,
 			dialog_choice_states[i]);
+		assert(r);
 		choice_list.push_back(r->text + "\n");
 	}
 	runDialog();
@@ -1034,8 +1028,7 @@ void UnityEngine::runDialogChoice() {
 	dialog_choosing = false;
 
 	// TODO: don't always run the first choice, actually offer a choice? :)
-	next_situation = dialog_choice_responses[0];
-	next_state = dialog_choice_states[0];
+	return dialog_choice_states[0];
 }
 
 void UnityEngine::runDialog() {

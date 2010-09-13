@@ -974,9 +974,12 @@ void Object::runHail(const Common::String &hail) {
 		}
 	}
 
-	_vm->current_conversation = _vm->data.getConversation(world, conversation);
-	//_vm->current_conversation->execute(_vm, this, situation);
-	_vm->next_situation = situation;
+	// TODO: not always Picard! :(
+	objectID speaker = objectID(0, 0, 0);
+	if (_vm->_current_away_team_member) speaker = _vm->_current_away_team_member->id;
+
+	Conversation *conv = _vm->data.getConversation(world, conversation);
+	conv->execute(_vm, _vm->data.getObject(speaker), situation);
 }
 
 EntryList::~EntryList() {
@@ -1502,16 +1505,16 @@ void CommunicateBlock::execute(UnityEngine *_vm) {
 		// on-viewscreen?
 	case 8:
 		// 8: delayed conversation? (forced 0x5f)
-		_vm->current_conversation = _vm->data.getConversation(_vm->data.current_screen.world,
+		_vm->_next_conversation = _vm->data.getConversation(_vm->data.current_screen.world,
 			conversation_id);
 
 		// original engine simply ignores this when there are no enabled situations, it seems
 		// (TODO: check what happens when there is no such situation at all)
 		// TODO: which speaker?? not Picard :(
-		if (_vm->current_conversation->getEnabledResponse(situation_id, objectID(0, 0, 0))) {
+		if (_vm->_next_conversation->getEnabledResponse(situation_id, objectID(0, 0, 0))) {
 			// this overrides any existing conversations.. possibly that is a good thing
-			_vm->next_situation = situation_id;
-		} else _vm->next_situation = 0xffffffff;
+			_vm->_next_situation = situation_id;
+		} else _vm->_next_situation = 0xffffffff;
 		break;
 
 	case 9:
@@ -1628,12 +1631,13 @@ void ChangeActionBlock::readFrom(Common::SeekableReadStream *stream, int _type) 
 		response_id, state_id, unknown4, unknown5, unknown6);*/
 }
 
-void ChangeActionBlock::execute(UnityEngine *_vm, Object *speaker) {
+void ChangeActionBlock::execute(UnityEngine *_vm, Object *speaker, Conversation *src) {
 	debug(1, "ChangeActionBlock::execute: %s on %d,%d",
 		change_actor_names[type - BLOCK_CONV_CHANGEACT_DISABLE],
 		response_id, state_id);
 
-	Response *resp = _vm->current_conversation->getResponse(response_id, state_id);
+	Response *resp = src->getResponse(response_id, state_id);
+	if (!resp) error("ChangeAction couldn't find state %d of situation %d", state_id, response_id);
 
 	// TODO: terrible hack
 	if (type == BLOCK_CONV_CHANGEACT_ENABLE) {
@@ -1647,8 +1651,9 @@ void ResultBlock::readFrom(Common::SeekableReadStream *stream) {
 	entries.readEntryList(stream);
 }
 
-void ResultBlock::execute(UnityEngine *_vm, Object *speaker) {
+void ResultBlock::execute(UnityEngine *_vm, Object *speaker, Conversation *src) {
 	debug(1, "ResultBlock::execute");
+	(void)src;
 	entries.execute(_vm);
 }
 
@@ -1736,7 +1741,7 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 				while (true) {
 					TextBlock *block = new TextBlock();
 					block->readFrom(stream);
-					blocks.push_back(block);
+					textblocks.push_back(block);
 
 					type = readBlockHeader(stream);
 					if (type == BLOCK_END_BLOCK)
@@ -1819,7 +1824,7 @@ bool Response::validFor(objectID speaker) {
 	return false;
 }
 
-void Response::execute(UnityEngine *_vm, Object *speaker) {
+void Response::execute(UnityEngine *_vm, Object *speaker, Conversation *src) {
 	if (text.size()) {
 		// TODO: response escape strings
 		// (search backwards between two '@'s, format: '0' + %c, %1x, %02x)
@@ -1853,44 +1858,14 @@ void Response::execute(UnityEngine *_vm, Object *speaker) {
 		targetobj = _vm->data.getObject(target);
 	}
 
+	assert(textblocks.size() == 1); // TODO: make this not an array?
+	textblocks[0]->execute(_vm, targetobj);
+
 	debug(1, "***begin execute***");
 	for (unsigned int i = 0; i < blocks.size(); i++) {
-		blocks[i]->execute(_vm, targetobj);
+		blocks[i]->execute(_vm, targetobj, src);
 	}
 	debug(1, "***end execute***");
-
-	_vm->dialog_choice_responses.clear();
-	_vm->dialog_choice_states.clear();
-	if (next_situation != 0xffff) {
-		Common::Array<Response *> &responses = _vm->current_conversation->responses;
-		for (unsigned int i = 0; i < responses.size(); i++) {
-			if (responses[i]->id == next_situation) {
-				if (responses[i]->response_state == RESPONSE_ENABLED) {
-					if (responses[i]->validFor(speaker->id)) {
-						_vm->dialog_choice_responses.push_back(responses[i]->id);
-						_vm->dialog_choice_states.push_back(responses[i]->state);
-					}
-				}
-			}
-		}
-
-		if (!_vm->dialog_choice_responses.size()) {
-			// see first conversation in space station
-			warning("didn't find a next situation");
-			return;
-		}
-
-		if (_vm->dialog_choice_responses.size() > 1) {
-			debug(1, "continuing with conversation, using choices");
-			_vm->runDialogChoice();
-		} else {
-			debug(1, "continuing with conversation, using single choice");
-			_vm->next_situation = _vm->dialog_choice_responses[0];
-			_vm->next_state = _vm->dialog_choice_states[0];
-		}
-	} else {
-		debug(1, "end of conversation");
-	}
 }
 
 Response *Conversation::getEnabledResponse(unsigned int response, objectID speaker) {
@@ -1916,22 +1891,63 @@ Response *Conversation::getResponse(unsigned int response, unsigned int state) {
 	return NULL;
 }
 
-void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response) {
-	debug(1, "running situation (%02x) @%d,%d", our_world, our_id, response);
+void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int situation) {
+	debug(1, "running situation (%02x) @%d,%d", situation, our_world, our_id);
 
-	// TODO: not Picard
-	Response *resp = getEnabledResponse(response, objectID(0, 0, 0));
-	if (!resp) error("couldn't find active response %d", response);
-	resp->execute(_vm, speaker);
+	uint16 state = 0xffff;
+	while (situation != 0xffff) {
+		Response *resp;
+		if (state == 0xffff) {
+			resp = getEnabledResponse(situation, speaker->id);
+		} else {
+			resp = getResponse(situation, state);
+		}
+		if (!resp) error("couldn't find active response for situation %d", situation);
+
+		resp->execute(_vm, speaker, this);
+
+		_vm->dialog_choice_states.clear();
+		if (resp->next_situation != 0xffff) {
+			situation = resp->next_situation;
+			_vm->dialog_choice_situation = situation; // XXX: hack
+
+			for (unsigned int i = 0; i < responses.size(); i++) {
+				if (responses[i]->id == situation) {
+					if (responses[i]->response_state == RESPONSE_ENABLED) {
+						if (responses[i]->validFor(speaker->id)) {
+							_vm->dialog_choice_states.push_back(responses[i]->state);
+						}
+					}
+				}
+			}
+
+			if (!_vm->dialog_choice_states.size()) {
+				// see first conversation in space station
+				warning("didn't find a next situation");
+				return;
+			}
+
+			if (_vm->dialog_choice_states.size() > 1) {
+				debug(1, "continuing with conversation, using choices");
+				state = _vm->runDialogChoice(this);
+			} else {
+				debug(1, "continuing with conversation, using single choice");
+				state = _vm->dialog_choice_states[0];
+			}
+		} else {
+			debug(1, "end of conversation");
+			return;
+		}
+	}
 }
 
-void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state) {
+/*void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state) {
 	debug("1, running situation (%02x) @%d,%d,%d", our_world, our_id, response, state);
 
 	Response *resp = getResponse(response, state);
 	if (!resp) error("couldn't find response %d/%d", response, state);
 	resp->execute(_vm, speaker);
-}
+}*/
 
 } // Unity
 
