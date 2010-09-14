@@ -1146,7 +1146,11 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 		if (check_screen[i] != 0xff) {
 			did_something = true;
 			printf(" (is screen %x?)", check_screen[i]);
-			// TODO: (this is 'current screen', i think different from the other thing)
+
+			if (obj->curr_screen != check_screen[i]) {
+				printf(" -- nope!\n");
+				return false;
+			}
 		}
 
 		printf("\n");

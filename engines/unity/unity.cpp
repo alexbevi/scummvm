@@ -290,9 +290,16 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 	for (unsigned int i = 0; i < 4; i++) {
 		objectID objid(i, 0, 0);
 		Object *obj = data.getObject(objid);
+		obj->curr_screen = screen;
 		obj->loadSprite();
 		obj->sprite->startAnim(26);
 		data.current_screen.objects.push_back(obj);
+	}
+	// XXX: stupid hack to make sure the rest of the away team is off-screen
+	for (unsigned int i = 4; i < 9; i++) {
+		objectID objid(i, 0, 0);
+		Object *obj = data.getObject(objid);
+		obj->curr_screen = 0;
 	}
 	if (!_away_team_members.size()) {
 		_current_away_team_member = data.current_screen.objects[0];
