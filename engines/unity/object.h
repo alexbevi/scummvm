@@ -250,27 +250,36 @@ public:
 class Object {
 public:
 	objectID id;
+	byte curr_screen;
+
 	unsigned int x, y, z;
 	unsigned int universe_x, universe_y, universe_z;
 	unsigned int width, height;
-	uint16 z_adjust;
+	int16 y_adjust;
+	uint32 region_id;
+
 	byte flags;
 	byte state;
-	byte objwalktype;
+
 	uint16 skills;
 	uint16 timer;
 
-	uint32 curr_world;
-	uint16 curr_screen;
-
+	byte objwalktype;
 	objectID transition;
+
 	byte cursor_flag;
 	byte cursor_id;
 
+	uint16 anim_index;
 	uint16 sprite_id;
 	SpritePlayer *sprite;
 
-	Common::String name, talk_string;
+	Common::String name;
+
+	Common::String talk_string;
+	uint32 voice_id;
+	uint32 voice_group;
+	uint16 voice_subgroup;
 
 	Common::String identify();
 

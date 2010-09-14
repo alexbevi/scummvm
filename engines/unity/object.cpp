@@ -95,58 +95,57 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	assert(id.screen == for_screen);
 	assert(id.world == for_world);
 
-	byte unknown2 = objstream->readByte(); // XXX
-	byte unknown3 = objstream->readByte(); // XXX
+	curr_screen = objstream->readByte();
+
+	byte unknown3 = objstream->readByte(); // XXX: unused?
 
 	width = objstream->readSint16LE();
 	height = objstream->readSint16LE();
 
-	int16 world_x = objstream->readSint16LE();
-	int16 world_y = objstream->readSint16LE();
-	int16 world_z = objstream->readSint16LE();
-	x = world_x;
-	y = world_y;
-	z = world_z;
-
+	x = objstream->readSint16LE();
+	y = objstream->readSint16LE();
+	z = objstream->readSint16LE();
 	universe_x = objstream->readSint16LE();
 	universe_y = objstream->readSint16LE();
 	universe_z = objstream->readSint16LE();
 
 	// TODO: this doesn't work properly (see DrawOrderComparison)
-	z_adjust = objstream->readUint16LE();
+	y_adjust = objstream->readSint16LE();
 
-	uint16 unknown5 = objstream->readUint16LE(); // XXX
+	anim_index = objstream->readUint16LE();
 
 	sprite_id = objstream->readUint16LE();
 	sprite = NULL;
 
-	uint16 unknown6 = objstream->readUint16LE(); // XXX
-	uint16 unknown7 = objstream->readUint16LE(); // XXX
+	region_id = objstream->readUint32LE();
 
 	flags = objstream->readByte();
 	state = objstream->readByte();
 
-	uint8 unknown8 = objstream->readByte(); // XXX: block count
-	uint8 unknown9 = objstream->readByte(); // XXX: same
-	uint8 unknown10 = objstream->readByte(); // XXX: same
+	uint8 use_count = objstream->readByte();
+	uint8 get_count = objstream->readByte();
+	uint8 look_count = objstream->readByte();
 
-	uint8 unknown11 = objstream->readByte();
+	uint8 unknown11 = objstream->readByte(); // XXX
 	assert(unknown11 == 0);
 
 	objwalktype = objstream->readByte();
 	assert(objwalktype <= OBJWALKTYPE_AS);
 
-	byte description_count = objstream->readByte();
+	uint8 description_count = objstream->readByte();
 
 	char _name[20];
 	objstream->read(_name, 20);
 	name = _name;
 
+	// pointers for DESCRIPTION, USE, LOOK, WALK and TIME,
+	// which we probably don't care about?
 	for (unsigned int i = 0; i < 5; i++) {
-		uint16 unknowna = objstream->readUint16LE(); // XXX
+		uint16 unknowna = objstream->readUint16LE();
 		byte unknownb = objstream->readByte();
 		byte unknownc = objstream->readByte();
 		if (i == 0) {
+			// but we do want to snaffle this, lurking in the middle
 			transition = readObjectID(objstream);
 		}
 	}
@@ -159,24 +158,25 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	_str[100] = 0;
 	setTalkString(_str);
 
-	uint16 zero16;
-	zero16 = objstream->readUint16LE();
-	assert(zero16 == 0x0);
-	zero16 = objstream->readUint16LE();
-	assert(zero16 == 0x0);
-	zero16 = objstream->readUint16LE();
+	uint16 unknown19 = objstream->readUint16LE(); // XXX
+	assert(unknown19 == 0x0);
+	uint16 unknown20 = objstream->readUint16LE(); // XXX
+	assert(unknown20 == 0x0);
+
+	uint16 zero16 = objstream->readUint16LE();
 	assert(zero16 == 0x0);
 
-	uint16 unknown21 = objstream->readUint16LE(); // XXX
-	uint32 unknown22 = objstream->readUint32LE(); // XXX
+	uint16 unknown21 = objstream->readUint16LE(); // XXX: unused?
 
-	curr_world = objstream->readUint32LE();
-	curr_screen = objstream->readUint16LE();
+	voice_id = objstream->readUint32LE();
+	voice_group = objstream->readUint32LE();
+	voice_subgroup = objstream->readUint16LE();
 
 	cursor_id = objstream->readByte();
 	cursor_flag = objstream->readByte();
 
-	uint16 unknown26 = objstream->readUint16LE(); // XXX
+	byte unknown26 = objstream->readByte(); // XXX
+	byte unknown27 = objstream->readByte(); // XXX
 
 	zero16 = objstream->readUint16LE();
 	assert(zero16 == 0x0);
@@ -195,6 +195,10 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	}
 
 	assert(descriptions.size() == description_count);
+	assert(use_entries.list.size() == use_count);
+	assert(get_entries.list.size() == get_count);
+	assert(look_entries.list.size() == look_count);
+	assert(timer_entries.list.size() <= 1); // timers can only have one result
 
 	delete objstream;
 }

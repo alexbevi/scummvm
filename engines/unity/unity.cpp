@@ -165,8 +165,8 @@ bool ScreenPolygon::insideTriangle(unsigned int x, unsigned int y, unsigned int 
 struct DrawOrderComparison {
 	bool operator() (const Object *a, const Object *b) {
 		int ay = a->y, by = b->y;
-		if (a->z_adjust != 0xffff) ay += a->z_adjust;
-		if (b->z_adjust != 0xffff) by += b->z_adjust;
+		if (a->y_adjust != -1) ay += a->y_adjust;
+		if (b->y_adjust != -1) by += b->y_adjust;
 		return ay < by;
 	}
 };
@@ -209,7 +209,7 @@ void UnityEngine::startBridge() {
 	for (unsigned int i = 0; bridge_sprites[i] != 0; i++) {
 		Object *obj = new Object(this);
 		obj->x = obj->y = 0;
-		obj->z_adjust = 0xffff;
+		obj->y_adjust = -1;
 		obj->flags = OBJFLAG_ACTIVE;
 		obj->objwalktype = OBJWALKTYPE_NORMAL;
 		obj->sprite = new SpritePlayer(new Sprite(data.openFile(bridge_sprites[i])), obj, this);
@@ -222,7 +222,7 @@ void UnityEngine::startBridge() {
 		// TODO: correct?
 		obj->x = data.bridge_objects[i].x;
 		obj->y = data.bridge_objects[i].y;
-		obj->z_adjust = 0xffff;
+		obj->y_adjust = -1;
 		obj->flags = OBJFLAG_ACTIVE;
 		obj->objwalktype = OBJWALKTYPE_NORMAL;
 		obj->sprite = new SpritePlayer(new Sprite(data.openFile(data.bridge_objects[i].filename)), obj, this);
