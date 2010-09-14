@@ -1116,7 +1116,7 @@ void UnityEngine::performAction(ActionType action_id, Object *target, objectID o
 			if (!target) error("USE requires a target");
 
 			// TODO..
-			debug(1, "CommandBlock::execute: USE (on %s)", target->identify().c_str());
+			debug(1, "performAction: USE (on %s)", target->identify().c_str());
 			target->use_entries.execute(this);
 			}
 			break;
@@ -1124,28 +1124,28 @@ void UnityEngine::performAction(ActionType action_id, Object *target, objectID o
 		case ACTION_GET:
 			if (!target) error("GET requires a target");
 
-			debug(1, "CommandBlock::execute: GET (on %s)", target->identify().c_str());
+			debug(1, "performAction: GET (on %s)", target->identify().c_str());
 			target->get_entries.execute(this);
 			break;
 
 		case ACTION_LOOK:
 			if (target)
-				warning("unimplemented: CommandBlock::execute: LOOK (on %s)", target->identify().c_str());
+				warning("unimplemented: performAction: LOOK (on %s)", target->identify().c_str());
 			else
-				warning("unimplemented: CommandBlock::execute: LOOK");
+				warning("unimplemented: performAction: LOOK");
 			// TODO
 			break;
 
 		case ACTION_TIMER:
 			if (!target) error("TIMER requires a target");
 
-			debug(1, "CommandBlock::execute: TIMER (on %s)", target->identify().c_str());
+			debug(1, "performAction: TIMER (on %s)", target->identify().c_str());
 			target->timer_entries.execute(this);
 			break;
 
 		case ACTION_WALK:
 			if (target) {
-				debug(1, "CommandBlock::execute: WALK (on %s)", target->identify().c_str());
+				debug(1, "performAction: WALK (on %s)", target->identify().c_str());
 				if (target->transition.world != 0xff) {
 					Object *obj = data.getObject(target->transition);
 					if (!obj) error("couldn't find transition object");
@@ -1155,11 +1155,11 @@ void UnityEngine::performAction(ActionType action_id, Object *target, objectID o
 					break;
 				}
 
-				warning("unimplemented: CommandBlock::execute: WALK (on %s)", target->identify().c_str());
+				warning("unimplemented: performAction: WALK (on %s)", target->identify().c_str());
 
 				// TODO
 			} else {
-				warning("unimplemented: CommandBlock::execute: WALK");
+				warning("unimplemented: performAction: WALK");
 				// TODO
 			}
 			break;
@@ -1169,13 +1169,13 @@ void UnityEngine::performAction(ActionType action_id, Object *target, objectID o
 			if (!target) error("we don't handle TALK without a valid target, should we?");
 			// target is target (e.g. Pentara), other is source (e.g. Picard)
 			// TODO..
-			debug(1, "CommandBlock::execute: TALK (on %s)", target->identify().c_str());
+			debug(1, "performAction: TALK (on %s)", target->identify().c_str());
 			target->runHail(target->talk_string);
 			}
 			break;
 
 		default:
-			error("unknown action type %x", action_id);
+			error("performAction: unknown action type %x", action_id);
 	}
 }
 
