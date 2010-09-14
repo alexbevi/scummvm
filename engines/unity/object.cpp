@@ -1111,8 +1111,13 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 
 			if (check_status[i]) {
 				if (obj->id.world == 0 && obj->id.screen == 0 && obj->id.id < 0x10) {
-					// TODO: check whether in away team
 					printf(" (in away team?)");
+					if (Common::find(_vm->_away_team_members.begin(),
+						_vm->_away_team_members.end(),
+						obj) == _vm->_away_team_members.end()) {
+						printf(" -- nope!\n");
+						return false;
+					}
 				} else {
 					printf(" (in inventory?)");
 					if (!(obj->flags & OBJFLAG_INVENTORY)) {
@@ -1121,6 +1126,7 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 					}
 				}
 			} else {
+				// note that there is no inverse away team check
 				printf(" (not in inventory?)");
 				if (obj->flags & OBJFLAG_INVENTORY) {
 					printf(" -- it is!\n");
