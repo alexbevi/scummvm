@@ -88,7 +88,9 @@ protected:
 
 	uint16 how_close_dist, how_close_x, how_close_y;
 	uint16 skill_check;
-	byte unknown_a, unknown_b, unknown_c;
+
+	uint16 counter_value;
+	byte counter_when;
 
 	objectID condition[4];
 	uint16 check_x[4];

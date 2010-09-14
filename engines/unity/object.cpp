@@ -389,10 +389,8 @@ void ConditionBlock::readFrom(Common::SeekableReadStream *objstream) {
 
 	skill_check = objstream->readUint16LE();
 
-	// XXX: counter value/start/flag?
-	unknown_a = objstream->readByte();
-	unknown_b = objstream->readByte();
-	unknown_c = objstream->readByte();
+	counter_value = objstream->readUint16LE();
+	counter_when = objstream->readByte();
 
 	for (unsigned int i = 0; i < 25; i++) {
 		uint32 zero = objstream->readUint32LE();
@@ -1058,6 +1056,26 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 
 	// TODO: check WhoCan actually, well, can :)
 	// (make sure to check for 000010)
+
+	if (counter_when != 0xff) {
+		// counter_flag = 1;
+
+		if (counter_when == 1) {
+			// do when
+			if (counter_value) {
+				counter_value--;
+				printf("counter: not yet\n");
+				return false;
+			}
+		} else if (counter_when == 0) {
+			// do until
+			if (counter_value == 0xffff) {
+				printf("counter: not any more\n");
+				return false;
+			}
+		}
+		counter_value--;
+	}
 
 	// TODO: if counter {
 	//	counter_flag = 1;
