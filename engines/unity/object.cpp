@@ -1074,7 +1074,14 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 		// TODO: some special handling of check_x/check_y for invalid obj?
 		if (condition[i].world == 0xff) continue;
 
-		Object *obj = _vm->data.getObject(condition[i]);
+		Object *obj;
+		if (condition[i].world == 0 && condition[i].screen == 0 && condition[i].id == 0x10) {
+			printf("(got away team member) ");
+			// TODO: what to do if not on away team?
+			obj = _vm->_current_away_team_member;
+		} else {
+			obj = _vm->data.getObject(condition[i]);
+		}
 		printf("checking state of %s", obj->identify().c_str());
 
 		if (check_state[i] != 0xff) {
