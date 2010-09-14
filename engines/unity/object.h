@@ -314,7 +314,7 @@ protected:
 	objectID whocansay;
 
 public:
-	bool match(objectID speaker);
+	bool match(UnityEngine *_vm, objectID speaker);
 	void readFrom(Common::SeekableReadStream *stream);
 };
 
@@ -361,7 +361,7 @@ public:
 	uint32 voice_id, voice_group;
 	uint16 voice_subgroup;
 
-	bool validFor(objectID speaker);
+	bool validFor(UnityEngine *_vm, objectID speaker);
 	void readFrom(Common::SeekableReadStream *stream);
 	void execute(UnityEngine *_vm, Object *speaker, Conversation *src);
 };
@@ -373,7 +373,7 @@ public:
 
 	void loadConversation(UnityData &data, unsigned int world, unsigned int id);
 	Response *getResponse(unsigned int response, unsigned int state);
-	Response *getEnabledResponse(unsigned int response, objectID speaker);
+	Response *getEnabledResponse(UnityEngine *_vm, unsigned int response, objectID speaker);
 	void execute(UnityEngine *_vm, Object *speaker, unsigned int situation);
 	//void execute(UnityEngine *_vm, Object *speaker, unsigned int response, unsigned int state);
 };

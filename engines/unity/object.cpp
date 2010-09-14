@@ -1532,7 +1532,7 @@ void CommunicateBlock::execute(UnityEngine *_vm) {
 		// original engine simply ignores this when there are no enabled situations, it seems
 		// (TODO: check what happens when there is no such situation at all)
 		// TODO: which speaker?? not Picard :(
-		if (_vm->_next_conversation->getEnabledResponse(situation_id, objectID(0, 0, 0))) {
+		if (_vm->_next_conversation->getEnabledResponse(_vm, situation_id, objectID(0, 0, 0))) {
 			// this overrides any existing conversations.. possibly that is a good thing
 			_vm->_next_situation = situation_id;
 		} else _vm->_next_situation = 0xffffffff;
@@ -1825,21 +1825,29 @@ void Conversation::loadConversation(UnityData &data, unsigned int world, unsigne
 	delete stream;
 }
 
-bool WhoCanSayBlock::match(objectID speaker) {
+bool WhoCanSayBlock::match(UnityEngine *_vm, objectID speaker) {
 	if (speaker.world != whocansay.world) return false;
 	if (speaker.screen != whocansay.screen) return false;
 
-	// "any away team member"
-	if (whocansay.world == 0 && whocansay.screen == 0 && whocansay.id == 0x10) return true;
+	if (whocansay.world == 0 && whocansay.screen == 0 && whocansay.id == 0x10) {
+		// any away team member
+		// TODO: do we really need to check this?
+		if (Common::find(_vm->_away_team_members.begin(),
+			_vm->_away_team_members.end(),
+			_vm->data.getObject(speaker)) == _vm->_away_team_members.end()) {
+			return false;
+		}
+		return true;
+	}
 
 	if (speaker.id != whocansay.id) return false;
 
 	return true;
 }
 
-bool Response::validFor(objectID speaker) {
+bool Response::validFor(UnityEngine *_vm, objectID speaker) {
 	for (unsigned int i = 0; i < whocansayblocks.size(); i++) {
-		if (whocansayblocks[i]->match(speaker)) return true;
+		if (whocansayblocks[i]->match(_vm, speaker)) return true;
 	}
 
 	return false;
@@ -1889,11 +1897,11 @@ void Response::execute(UnityEngine *_vm, Object *speaker, Conversation *src) {
 	debug(1, "***end execute***");
 }
 
-Response *Conversation::getEnabledResponse(unsigned int response, objectID speaker) {
+Response *Conversation::getEnabledResponse(UnityEngine *_vm, unsigned int response, objectID speaker) {
 	for (unsigned int i = 0; i < responses.size(); i++) {
 		if (responses[i]->id != response) continue;
 		if (responses[i]->response_state != RESPONSE_ENABLED) continue;
-		if (speaker.id != 0xff && !responses[i]->validFor(speaker)) continue;
+		if (speaker.id != 0xff && !responses[i]->validFor(_vm, speaker)) continue;
 		return responses[i];
 	}
 
@@ -1919,7 +1927,7 @@ void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int situa
 	while (situation != 0xffff) {
 		Response *resp;
 		if (state == 0xffff) {
-			resp = getEnabledResponse(situation, speaker->id);
+			resp = getEnabledResponse(_vm, situation, speaker->id);
 		} else {
 			resp = getResponse(situation, state);
 		}
@@ -1935,7 +1943,7 @@ void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int situa
 			for (unsigned int i = 0; i < responses.size(); i++) {
 				if (responses[i]->id == situation) {
 					if (responses[i]->response_state == RESPONSE_ENABLED) {
-						if (responses[i]->validFor(speaker->id)) {
+						if (responses[i]->validFor(_vm, speaker->id)) {
 							_vm->dialog_choice_states.push_back(responses[i]->state);
 						}
 					}
