@@ -149,6 +149,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 	locstream->seek(45 * screen);
 	if (locstream->eos()) error("no startup entry for screen %x (world %x)", screen, world);
 
+	// TODO: use these
 	uint16 advice_id = locstream->readUint16LE();
 	uint16 advice_timer = locstream->readUint16LE();
 
@@ -281,7 +282,7 @@ void UnityEngine::startBridge() {
 	handleBridgeMouseMove(0, 0);
 }
 
-void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
+void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte entrance) {
 	data.current_screen.objects.clear();
 	data.current_screen.world = world;
 	data.current_screen.screen = screen;
@@ -311,9 +312,17 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen) {
 	}
 
 	openLocation(world, screen);
+	if (entrance == 0xff) {
+		// TODO: don't display sprites?
+		entrance = 0;
+	}
+	if (entrance >= data.current_screen.entrypoints.size()) {
+		error("entrance %d beyond the %d entrances to screen %x/%x", entrance,
+			data.current_screen.entrypoints.size(), world, screen);
+	}
 	for (unsigned int i = 0; i < 4; i++) {
-		data.current_screen.objects[i]->x = data.current_screen.entrypoints[0][i].x;
-		data.current_screen.objects[i]->y = data.current_screen.entrypoints[0][i].y;
+		data.current_screen.objects[i]->x = data.current_screen.entrypoints[entrance][i].x;
+		data.current_screen.objects[i]->y = data.current_screen.entrypoints[entrance][i].y;
 	}
 
 	on_bridge = false;

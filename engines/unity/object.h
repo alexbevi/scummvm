@@ -153,27 +153,25 @@ public:
 
 class ScreenBlock : public Entry {
 protected:
+	uint16 new_world;
 	byte new_screen;
-	byte unknown2;
-	byte unknown3;
-	uint16 unknown4;
-	uint16 unknown5;
+	byte new_entrance;
+
+	byte advice_screen;
+	uint16 new_advice_id;
+	uint16 new_advice_timer;
+
 	uint16 unknown6;
-	byte unknown7;
+	uint32 unknown7;
 	byte unknown8;
-	uint16 unknown9;
-	byte unknown10;
-	byte unknown11;
-	byte unknown12;
+	uint32 unknown9;
+	uint32 unknown10;
+	uint16 unknown11;
+	uint16 unknown12;
 	uint16 unknown13;
 	byte unknown14;
 	byte unknown15;
-	uint16 unknown16;
-	uint16 unknown17;
-	byte unknown18;
-	byte unknown19;
-	byte unknown20;
-	uint16 unknown21;
+	byte unknown16;
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);

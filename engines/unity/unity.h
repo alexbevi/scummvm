@@ -74,7 +74,7 @@ public:
 	void runDialog();
 
 	void startBridge();
-	void startAwayTeam(unsigned int world, unsigned int screen);
+	void startAwayTeam(unsigned int world, unsigned int screen, byte entrance = 0);
 
 	void performAction(ActionType action, Object *target, objectID other = objectID(), objectID who = objectID());
 

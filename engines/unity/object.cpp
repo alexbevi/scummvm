@@ -495,36 +495,27 @@ void ScreenBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x46);
 
 	new_screen = objstream->readByte();
-
-	unknown2 = objstream->readByte();
-	unknown3 = objstream->readByte();
-	unknown4 = objstream->readUint16LE();
-	unknown5 = objstream->readUint16LE();
+	new_entrance = objstream->readByte();
+	advice_screen = objstream->readByte();
+	new_advice_id = objstream->readUint16LE();
+	new_world = objstream->readUint16LE();
 
 	unknown6 = objstream->readUint16LE();
-	unknown7 = objstream->readByte();
+	unknown7 = objstream->readUint32LE();
 	unknown8 = objstream->readByte();
+	unknown9 = objstream->readUint32LE();
+	unknown10 = objstream->readUint32LE();
+	unknown11 = objstream->readUint16LE();
+	assert(unknown11 == 0xffff);
+	unknown12 = objstream->readUint16LE();
+	assert(unknown12 == 0xffff);
 
-	unknown9 = objstream->readUint16LE();
-	unknown10 = objstream->readByte();
-
-	unknown11 = objstream->readByte();
-	unknown12 = objstream->readByte();
 	unknown13 = objstream->readUint16LE();
-
 	unknown14 = objstream->readByte();
 	unknown15 = objstream->readByte();
-	unknown16 = objstream->readUint16LE();
+	unknown16 = objstream->readByte();
 
-	uint32 unknown32 = objstream->readUint32LE();
-	assert(unknown32 == 0xffffffff);
-
-	unknown17 = objstream->readUint16LE();
-	unknown18 = objstream->readByte();
-	unknown19 = objstream->readByte();
-	unknown20 = objstream->readByte();
-
-	unknown21 = objstream->readUint16LE();
+	new_advice_timer = objstream->readUint16LE();
 
 	for (unsigned int i = 0; i < 24; i++) {
 		uint32 zero = objstream->readUint32LE();
@@ -1412,37 +1403,53 @@ void CommandBlock::execute(UnityEngine *_vm) {
 
 void ScreenBlock::execute(UnityEngine *_vm) {
 	if (new_screen != 0xff) {
-		debug(1, "ScreenBlock::execute: new screen: %02x", new_screen);
-		_vm->startAwayTeam(_vm->data.current_screen.world, new_screen);
+		debug(1, "ScreenBlock::execute: new screen: %02x, entrance %02x", new_screen, new_entrance);
+
+		byte entrance = new_entrance;
+		// TODO: if new_entrance not -1 and matches 0x40, weird stuff with away team?
+		// (forcing into source region, etc)
+		if (entrance != 0xff) entrance &= ~0x40;
+		// TODO: 0x80 can be set too.. see exit from first Unity Device screen
+		if (entrance != 0xff) entrance &= ~0x80;
+
+		_vm->startAwayTeam(_vm->data.current_screen.world, new_screen, entrance);
 	} else
 		warning("unimplemented: ScreenBlock::execute");
 
-	if (unknown2 != 0xff) printf ("2: %02x ", unknown2);
-	if (unknown3 != 0xff) printf ("3: %02x ", unknown3);
-	if (unknown4 != 0xffff) printf ("4: %04x ", unknown4);
+	if (advice_screen == 0xff) {
+		if (new_advice_id != 0xffff) {
+			// TODO: live change of new_advice_id and new_advice_timer for current screen right now
+		}
+	} else {
+		// TODO: set new_advice_id for target screen
+		if (new_advice_timer != 0xffff) {
+			// TODO: set new_advice_timer for target screen
+		}
+	}
 
-	if (unknown5 != 0xffff) {
+	if (new_world != 0xffff) {
 		// TODO: this is just a guess
-		debug(1, "ScreenBlock::execute: unknown5 (back to bridge?): %02x", unknown5);
+		debug(1, "ScreenBlock::execute: new_world (back to bridge?): %04x", new_world);
 		_vm->startBridge();
 	}
 
+	// TODO: screen to bump?
 	if (unknown6 != 0xffff) printf ("6: %04x ", unknown6);
-	if (unknown7 != 0xff) printf ("7: %02x ", unknown7);
+
+	// unused??
+	if (unknown7 != 0xffffffff) printf ("7: %08x ", unknown7);
 	if (unknown8 != 0xff) printf ("8: %02x ", unknown8);
-	if (unknown9 != 0xffff) printf ("9: %04x ", unknown9);
-	if (unknown10 != 0xff) printf ("10: %02x ", unknown10);
-	if (unknown11 != 0xff) printf ("11: %02x ", unknown11);
-	if (unknown12 != 0xff) printf ("12: %02x ", unknown12);
+	if (unknown9 != 0xffffffff) printf ("9: %08x ", unknown9);
+	if (unknown10 != 0xffffffff) printf ("10: %08x ", unknown10);
+	if (unknown11 != 0xffff) printf ("11: %04x ", unknown11);
+	if (unknown12 != 0xffff) printf ("12: %04x ", unknown12);
+
+	// TODO: screen id + changes for screen?
 	if (unknown13 != 0xffff) printf ("13: %04x ", unknown13);
 	if (unknown14 != 0xff) printf ("14: %02x ", unknown14);
 	if (unknown15 != 0xff) printf ("15: %02x ", unknown15);
-	if (unknown16 != 0xffff) printf ("16: %04x ", unknown16);
-	if (unknown17 != 0xffff) printf ("17: %04x ", unknown17);
-	if (unknown18 != 0xff) printf ("18: %02x ", unknown18);
-	if (unknown19 != 0xff) printf ("19: %02x ", unknown19);
-	if (unknown20 != 0xff) printf ("20: %02x ", unknown20);
-	if (unknown21 != 0xffff) printf ("21: %04x ", unknown21);
+	if (unknown16 != 0xff) printf ("16: %02x ", unknown16);
+
 	printf("\n");
 }
 
