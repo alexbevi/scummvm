@@ -122,8 +122,6 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 	filename = Common::String::printf("w%02x%02xobj.bst", world, screen);
 	locstream = data.openFile(filename);
 
-	// TODO: is there data we need here in w_XXstrt.bst?
-	// (seems to be only trigger activations)
 	while (true) {
 		uint16 counter = locstream->readUint16LE();
 		if (locstream->eos()) break;
@@ -141,6 +139,51 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 		Object *obj = data.getObject(id);
 		obj->loadSprite();
 		data.current_screen.objects.push_back(obj);
+	}
+
+	delete locstream;
+
+	filename = Common::String::printf("w_%02dstrt.bst", world);
+	locstream = data.openFile(filename);
+
+	locstream->seek(45 * screen);
+	if (locstream->eos()) error("no startup entry for screen %x (world %x)", screen, world);
+
+	uint16 advice_id = locstream->readUint16LE();
+	uint16 advice_timer = locstream->readUint16LE();
+
+	byte unknown1 = locstream->readByte();
+	byte unknown2 = locstream->readByte();
+
+	uint16 startup_screen = locstream->readUint16LE();
+	objectID target = readObjectID(locstream);
+	byte action_type = locstream->readByte();
+	objectID who = readObjectID(locstream);
+	objectID other = readObjectID(locstream);
+	uint32 unknown3 = locstream->readUint32LE();
+	uint16 unknown4 = locstream->readUint16LE();
+	uint16 unknown5 = locstream->readUint16LE();
+	byte unknown6 = locstream->readByte();
+
+	if (startup_screen != 0xffff) {
+		assert(startup_screen == screen);
+		if (target.id != 0xff) {
+			// TODO: only fire this on first load
+			ActionType action_id;
+			switch (action_type) {
+			case 0: action_id = ACTION_USE; break;
+			case 1: action_id = ACTION_GET; break;
+			case 2: action_id = ACTION_LOOK; break;
+			case 3: action_id = ACTION_GET; break;
+			case 4: action_id = ACTION_WALK; break;
+			case 5: action_id = ACTION_TALK; break;
+			case 6: action_id = ACTION_USE; break;
+			default: error("unknown action type %x when starting screen %x of world %x",
+				action_type, screen, world);
+			}
+			// TODO: run delayed
+			performAction(action_id, data.getObject(target), other, who);
+		}
 	}
 
 	delete locstream;
