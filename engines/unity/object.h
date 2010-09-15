@@ -135,6 +135,15 @@ public:
 };
 
 class ReactionBlock : public Entry {
+protected:
+	objectID target;
+	uint16 dest_world, dest_screen, dest_entrance;
+	byte target_type;
+	byte action_type;
+	byte damage_amount;
+	byte beam_type;
+	uint16 dest_x, dest_y, dest_unknown;
+
 public:
 	void readFrom(Common::SeekableReadStream *stream);
 	void execute(UnityEngine *_vm);

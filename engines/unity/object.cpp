@@ -461,7 +461,33 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 void ReactionBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x44);
 
-	objstream->seek(0x78, SEEK_CUR); // XXX
+	target = readObjectID(objstream);
+	dest_world = objstream->readUint16LE();
+	dest_screen = objstream->readUint16LE();
+	dest_entrance = objstream->readUint16LE();
+	target_type = objstream->readByte();
+	action_type = objstream->readByte();
+	damage_amount = objstream->readByte();
+	beam_type = objstream->readByte();
+	dest_x = objstream->readUint16LE();
+	dest_y = objstream->readUint16LE();
+	dest_unknown = objstream->readUint16LE();
+
+	assert(target_type >= 1 && target_type <= 7);
+	if (target_type != 6) {
+		assert(target.id == 0xff);
+	} else {
+		assert(target.id != 0xff);
+	}
+	if (damage_amount == 0) {
+		assert(action_type <= 3);
+		// otherwise it can be 0, 1 or ff, but afaik just junk
+	}
+
+	for (unsigned int i = 0; i < 100; i++) {
+		byte unknown = objstream->readByte();
+		assert(unknown == 0);
+	}
 }
 
 void CommandBlock::readFrom(Common::SeekableReadStream *objstream) {
@@ -1374,7 +1400,70 @@ void AlterBlock::execute(UnityEngine *_vm) {
 }
 
 void ReactionBlock::execute(UnityEngine *_vm) {
-	error("unimplemented: ReactionBlock::execute");
+	warning("unimplemented: ReactionBlock::execute");
+
+	Common::Array<Object *> objects;
+
+	switch (target_type - 1) {
+	case 0: // who from context
+		// TODO
+		break;
+
+	case 2: // all away team members (plus stunned members on current screen?)
+		// TODO
+		break;
+
+	case 5: // provided object
+		// TODO: force onto current screen?
+		objects.push_back(_vm->data.getObject(target));
+		break;
+
+	case 6: // random away team member
+		// TODO
+		break;
+
+	default: error("bad reaction target type %d", target_type);
+	}
+
+	if (damage_amount == 0) {
+		switch (action_type) {
+		case 0: // stun all
+			// TODO: set health to 1 below minimum
+			break;
+
+		case 1: // kill all
+			// TODO: set health to 0
+			break;
+
+			// TODO: for below, beam_type is 0 for normal (teffect/beamout/beamin),
+			// 1 for shodak (chodbeam/acid/acid)
+
+		case 2: // beam in all to dest_x/dest_y
+			// TODO:
+			break;
+
+		case 3: if (dest_world == 0) {
+				// TODO: beam out to ship
+			} else {
+				// TODO: ensure that dest_world is 0xffff or current world, since
+				// you can't beam between worlds
+
+				if (dest_entrance == 0xffff) error("no destination entrance in reaction");
+
+				// TODO: if dest_screen is current screen, beam in to dest_entrance
+				// TODO: else, beam out to dest_entrance
+			}
+			break;
+		default: error("bad reaction action type %d", action_type);
+		}
+	} else if (damage_amount == 0x7f) {
+		// heal all objects to 1 above minimum health
+		// TODO
+	} else {
+		// do damage_amount of damage to all objects
+		// TODO
+		// TODO: if beam_type is set, do phaser effects too
+	}
 }
 
 void CommandBlock::execute(UnityEngine *_vm) {
