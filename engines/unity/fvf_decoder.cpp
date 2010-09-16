@@ -375,7 +375,7 @@ inline unsigned int FVFDecoder::GetOddPixelOffset(unsigned int in) {
 void FVFDecoder::decodeVideoFrame(uint16 *frame, unsigned int len) {
 	debug(1, "FVF: decoding video frame");
 
-	uint16 flags = *(frame + 1); // +4
+	uint16 flags = READ_LE_UINT16(frame + 1); // +4
 
 	if (flags & 0x8) {
 		// unused in the game?
@@ -423,6 +423,9 @@ void FVFDecoder::decodeVideoFrame(uint16 *frame, unsigned int len) {
 					byte colour1, colour2;
 					colour1 = *(src_col_ptr + 0);
 					colour2 = *(src_col_ptr + 160);
+#if defined(SCUMM_BIG_ENDIAN)
+					SWAP(colour1, colour2);
+#endif
 					*(targ + 0) = colour2;
 					*(targ + 1) = *srcdata++;
 					*(targ + 2) = colour1;
@@ -433,6 +436,9 @@ void FVFDecoder::decodeVideoFrame(uint16 *frame, unsigned int len) {
 					src_col_ptr++;
 					colour1 = *(src_col_ptr + 0);
 					colour2 = *(src_col_ptr + 160);
+#if defined(SCUMM_BIG_ENDIAN)
+					SWAP(colour1, colour2);
+#endif
 					*(targ + 6) = colour2;
 					*(targ + 7) = *srcdata++;
 					*(targ + 8) = colour1;
@@ -470,7 +476,7 @@ void FVFDecoder::decodeVideoFrameData(uint16 *frame, unsigned int len) {
 	byte *our_colour_front_buffer = colour_front_buffer;
 	byte *our_colour_back_buffer = colour_back_buffer;
 
-	uint16 flags = *(frame + 1);
+	uint16 flags = READ_LE_UINT16(frame + 1);
 
 	if ((flags & 0x1) || (flags & 0x4)) {
 		// swap buffers
@@ -486,11 +492,11 @@ void FVFDecoder::decodeVideoFrameData(uint16 *frame, unsigned int len) {
 	byte *end_of_data = (byte *)frame + len;
 
 	// move some data (always 0 or 16 words?) into the storage
-	uint16 storage_count = *(frame + 2);
+	uint16 storage_count = READ_LE_UINT16(frame + 2);
 	if (storage_count) debug(2, "FVF: placing %d words into storage", storage_count);
 	uint16 *storage_ptr = (uint16 *)storage;
 	while (storage_count--) {
-		*storage_ptr = *(uint16*)data;
+		*storage_ptr = (int16)READ_LE_UINT16(data);
 
 		storage_ptr++;
 		data += 2;
@@ -524,7 +530,7 @@ void FVFDecoder::decodeVideoFrameData(uint16 *frame, unsigned int len) {
 		case 2:
 		case 3:
 			{
-			uint32 info = *((uint32*)data);
+			uint32 info = READ_LE_UINT32(data);
 			uint32 modifier = (info << 5) & 0x7F00;
 			uint32 src_block = (info >> 9) & 0x7FFE;
 			data += 3;
@@ -640,7 +646,7 @@ void FVFDecoder::decodeVideoFrameData(uint16 *frame, unsigned int len) {
 				data++;
 				uint32 modifier = *data; // remember, this is a byte
 				data++;
-				uint16 src_block = *((uint16*)data);
+				uint16 src_block = READ_LE_UINT16(data);
 				data += 2;
 
 				bool recursive = (modifier & 0x80) == 0x80;
@@ -707,7 +713,7 @@ void FVFDecoder::decodeVideoFrameData(uint16 *frame, unsigned int len) {
 				case 1:
 				case 2:
 				case 3: {
-					uint32 info = *((uint32*)data);
+					uint32 info = READ_LE_UINT32(data);
 					data += 3;
 
 					uint32 recursive_modifier = (info << 5) & 0x7F00; // 32767 - 255
@@ -751,6 +757,7 @@ void FVFDecoder::decodeVideoFrameData(uint16 *frame, unsigned int len) {
 				case 5: {
 					byte info = (*data >> 3) & 0x1f;
 					data++;
+					// TODO: is this hackery strictly necessary? fix endianism/alignment
 					int16 recursive_offset2 = *(int16 *)((byte *)storage + info);
 
 					unsigned int recursive_offset_dest = block_id_to_offset[temp_block_id];
@@ -782,7 +789,7 @@ void FVFDecoder::decodeVideoFrameData(uint16 *frame, unsigned int len) {
 				} break;
 
 			case 12: {
-				uint32 info = *((uint32*)data);
+				uint32 info = READ_LE_UINT32(data);
 				info &= 0xFFFFFF;
 				info >>= 8;
 				if (*data & 0x80) { // bit 7
@@ -817,14 +824,14 @@ void FVFDecoder::decodeVideoFrameData(uint16 *frame, unsigned int len) {
 
 				data++;
 
-				uint16 offset = *(uint16*)data;
+				uint16 offset = READ_LE_UINT16(data);
 				data += 2;
 
-				uint16 info = *(uint16*)data;
+				uint16 info = READ_LE_UINT16(data);
 				data += 2;
 				*(uint16*)(our_front_buffer + offset) = info;
 
-				info = *(uint16*)data;
+				info = READ_LE_UINT16(data);
 				*(uint16*)(our_front_buffer + offset + 320) = info;
 				data += 2;
 
