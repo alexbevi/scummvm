@@ -34,6 +34,30 @@ enum {
 	OBJWALKTYPE_AS = 0x3 // action square
 };
 
+enum {
+	RESULT_FAILOTHER = 0x2, // failed to match other object
+	RESULT_WALKING = 0x4, // had to start walking
+	RESULT_FAILSKILL = 0x8, // skill level too low
+	RESULT_NOTARGET = 0x10, // couldn't find target
+	RESULT_OTHERPOS = 0x20, // other object wasn't in position (unused?)
+	RESULT_FAILPOS = 0x40, // something wasn't in position
+	RESULT_AWAYTEAM = 0x80, // not in away team
+	RESULT_INVENTORY = 0x100, // something was/wasn't in inventory
+	RESULT_INACTIVE = 0x200, // something was inactive
+	RESULT_FAILSCREEN = 0x400, // something wasn't on right screen
+	RESULT_STOPPED = 0x800, // stop here
+	RESULT_FAILSTATE = 0x1000, // something didn't have right state
+	RESULT_MATCHOTHER = 0x2000, // successfully matched other object
+	RESULT_EMPTYTALK = 0x4000, // talk string was empty
+	RESULT_DIDSOMETHING = 0x8000, // a result was actually executed
+	RESULT_COUNTER_DOWHEN = 0x10000, // wasn't time for DO WHEN yet
+	RESULT_COUNTER_DOUNTIL = 0x20000, // all done with DO UNTIL
+	RESULT_STUNNED = 0x40000, // something was stunned
+	RESULT_FAILPHASER = 0x80000 // couldn't phaser object
+};
+
+typedef unsigned int ResultType;
+
 struct objectID {
 	byte id;
 	byte screen;
@@ -41,9 +65,32 @@ struct objectID {
 	byte unused;
 	objectID(): id(255), screen(255), world(255), unused(0) { }
 	objectID(byte i, byte s, byte w) : id(i), screen(s), world(w), unused(0) { }
+	bool operator == (const objectID &o) const {
+		return id == o.id && screen == o.screen && world == o.world;
+	}
+	bool operator != (const objectID &o) const {
+		return id != o.id || screen != o.screen || world != o.world;
+	}
 };
 
 objectID readObjectID(Common::SeekableReadStream *stream);
+
+enum ActionType {
+	ACTION_USE = 0,
+	ACTION_GET = 1,
+	ACTION_LOOK = 2,
+	ACTION_TIMER = 3,
+	ACTION_WALK = 4,
+	ACTION_TALK = 5
+};
+
+struct Action {
+	ActionType action_type;
+	class Object *target;
+	objectID who;
+	objectID other;
+	unsigned int x, y;
+};
 
 struct Description {
 	Common::String text;
@@ -65,8 +112,8 @@ protected:
 	void readHeaderFrom(Common::SeekableReadStream *stream, byte header_type);
 
 public:
-	virtual bool check(UnityEngine *_vm) { return true; }
-	virtual void execute(UnityEngine *_vm) = 0;
+	virtual ResultType check(UnityEngine *_vm, Action *context) { return 0; }
+	virtual ResultType execute(UnityEngine *_vm, Action *context) = 0;
 	virtual ~Entry() { }
 };
 
@@ -78,7 +125,7 @@ public:
 	void readEntryList(Common::SeekableReadStream *objstream);
 	void readEntry(int type, Common::SeekableReadStream *objstream);
 
-	void execute(UnityEngine *_vm);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class ConditionBlock : public Entry {
@@ -105,8 +152,8 @@ protected:
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	bool check(UnityEngine *_vm);
-	void execute(UnityEngine *_vm);
+	ResultType check(UnityEngine *_vm, Action *context);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class AlterBlock : public Entry {
@@ -119,7 +166,8 @@ protected:
 	uint16 alter_timer;
 	uint16 alter_anim;
 
-	byte unknown7;
+	byte play_description;
+
 	uint16 unknown8;
 	byte unknown11;
 	byte unknown12;
@@ -131,7 +179,7 @@ protected:
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class ReactionBlock : public Entry {
@@ -146,7 +194,7 @@ protected:
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class CommandBlock : public Entry {
@@ -157,7 +205,7 @@ protected:
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class ScreenBlock : public Entry {
@@ -184,13 +232,13 @@ protected:
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class PathBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class GeneralBlock : public Entry {
@@ -202,7 +250,7 @@ protected:
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class ConversationBlock : public Entry {
@@ -211,7 +259,7 @@ protected:
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class BeamBlock : public Entry {
@@ -222,7 +270,7 @@ protected:
 	uint16 screen_id;
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class TriggerBlock : public Entry {
@@ -231,8 +279,8 @@ protected:
 	bool enable_trigger;
 
 public:
-	void execute(UnityEngine *_vm);
 	void readFrom(Common::SeekableReadStream *stream);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class CommunicateBlock : public Entry {
@@ -244,13 +292,13 @@ protected:
 
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm);
+	ResultType execute(UnityEngine *_vm, Action *context);
 };
 
 class ChoiceBlock : public Entry {
 public:
 	void readFrom(Common::SeekableReadStream *stream);
-	void execute(UnityEngine *_vm);
+	ResultType execute(UnityEngine *_vm, Action *context);
 
 	EntryList unknown1; // 0x26
 	EntryList unknown2; // 0x27

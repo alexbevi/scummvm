@@ -183,7 +183,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 				action_type, screen, world);
 			}
 			// TODO: run delayed
-			performAction(action_id, data.getObject(target), other, who);
+			performAction(action_id, data.getObject(target), who, other);
 		}
 	}
 
@@ -379,6 +379,7 @@ void UnityEngine::processTriggers() {
 		if (data.triggers[i]->tick(this)) {
 			Object *target = data.getObject(data.triggers[i]->target);
 			debug(1, "running trigger %x (target %s)", data.triggers[i]->id, target->identify().c_str());
+			// TODO: should trigger be who?
 			performAction(ACTION_USE, target);
 			break;
 		}
@@ -402,6 +403,7 @@ void UnityEngine::processTimers() {
 		objects[i]->timer--;
 		if (objects[i]->timer == 0) {
 			debug(1, "running timer on %s", objects[i]->identify().c_str());
+			// TODO: should who be the timer?
 			performAction(ACTION_TIMER, objects[i]);
 		}
 	}
@@ -431,28 +433,29 @@ void UnityEngine::setSpeaker(objectID s) {
 }
 
 void UnityEngine::handleLook(Object *obj) {
-	if (obj->flags & OBJFLAG_LOOK) {
-		obj->look_entries.execute(this);
-	}
+	// TODO: correct?
+	if (performAction(ACTION_LOOK, obj, _current_away_team_member->id) & RESULT_DIDSOMETHING) return;
 
+	playDescriptionFor(obj);
+}
+
+void UnityEngine::playDescriptionFor(Object *obj) {
 	// TODO: this is very wrong, of course :)
 
 	unsigned int i = 0;
 	while (i < obj->descriptions.size() &&
 			obj->descriptions[i].entry_id != _current_away_team_member->id.id) i++;
 	if (i == obj->descriptions.size()) {
-		// TODO: bad place? THIS IS VERY WRONG NOW
-		if (_next_situation == 0xffffffff) {
-			// TODO: hard-coded :( @95,34,xy...
-			_next_conversation = data.getConversation(0x5f, 34);
-			_next_situation = 0x1; // default to failed look
-		}
+		// TODO: should we just run this directly?
+		// TODO: hard-coded :( @95,34,xy...
+		_next_conversation = data.getConversation(0x5f, 34);
+		_next_situation = 0x1; // default to failed look
 		return;
 	}
 
 	Description &desc = obj->descriptions[i];
 	dialog_text = desc.text;
-	setSpeaker(objectID(0, 0, 0));
+	setSpeaker(_current_away_team_member->id);
 
 	// 'l' for look :)
 	Common::String file = voiceFileFor(desc.voice_group, desc.voice_subgroup, objectID(desc.entry_id, 0, 0), desc.voice_id, 'l');
@@ -482,35 +485,27 @@ Common::String UnityEngine::voiceFileFor(byte voice_group, byte voice_subgroup, 
 }
 
 void UnityEngine::handleUse(Object *obj) {
-	if (obj->flags & OBJFLAG_GET) {
-		performAction(ACTION_GET, obj);
-	} else if (obj->flags & OBJFLAG_USE) {
-		performAction(ACTION_USE, obj);
-	} else {
-		// TODO: bad place? THIS IS VERY WRONG NOW
-		if (_next_situation == 0xffffffff) {
-			// TODO: hard-coded :( @95,34,xy...
-			_next_conversation = data.getConversation(0x5f, 34);
-			_next_situation = 0x2; // failed use?
-		}
-	}
+	// TODO: correct?
+	if (performAction(ACTION_USE, obj, _current_away_team_member->id) & RESULT_DIDSOMETHING) return;
+
+	// TODO: should we just run this directly?
+	// TODO: hard-coded :( @95,34,xy...
+	_next_conversation = data.getConversation(0x5f, 34);
+	_next_situation = 0x2; // failed use?
 }
 
 void UnityEngine::handleTalk(Object *obj) {
-	if (obj->flags & OBJFLAG_TALK) {
-		obj->runHail(obj->talk_string);
-	} else {
-		// TODO: bad place? THIS IS VERY WRONG NOW
-		if (_next_situation == 0xffffffff) {
-			// TODO: hard-coded :( @95,34,xy...
-			_next_conversation = data.getConversation(0x5f, 34);
-			_next_situation = 0x3; // failed talk?
-		}
-	}
+	// TODO: correct?
+	if (performAction(ACTION_TALK, obj, _current_away_team_member->id) & RESULT_DIDSOMETHING) return;
+
+	// TODO: should we just run this directly?
+	// TODO: hard-coded :( @95,34,xy...
+	_next_conversation = data.getConversation(0x5f, 34);
+	_next_situation = 0x3; // failed talk?
 }
 
 void UnityEngine::handleWalk(Object *obj) {
-	performAction(ACTION_WALK, obj);
+	performAction(ACTION_WALK, obj, _current_away_team_member->id);
 }
 
 // TODO
@@ -1119,37 +1114,47 @@ void UnityEngine::runDialog() {
 	_snd->stopSpeech();
 }
 
-void UnityEngine::performAction(ActionType action_id, Object *target, objectID other, objectID who) {
-	switch (action_id) {
-		case ACTION_USE: {
+ResultType UnityEngine::performAction(ActionType action_type, Object *target, objectID who, objectID other) {
+	Action context;
+	context.action_type = action_type;
+	context.target = target;
+	context.who = who;
+	context.other = other;
+	context.x = 0xffffffff; // TODO
+	context.y = 0xffffffff; // TODO
+
+	switch (action_type) {
+		case ACTION_USE:
 			if (!target) error("USE requires a target");
 
 			// TODO..
 			debug(1, "performAction: USE (on %s)", target->identify().c_str());
-			target->use_entries.execute(this);
-			}
+			return target->use_entries.execute(this, &context);
 			break;
 
 		case ACTION_GET:
 			if (!target) error("GET requires a target");
 
 			debug(1, "performAction: GET (on %s)", target->identify().c_str());
-			target->get_entries.execute(this);
+			return target->get_entries.execute(this, &context);
 			break;
 
 		case ACTION_LOOK:
-			if (target)
-				warning("unimplemented: performAction: LOOK (on %s)", target->identify().c_str());
-			else
+			if (target) {
+				debug(1, "performAction: LOOK (on %s)", target->identify().c_str());
+				return target->look_entries.execute(this, &context);
+				break;
+			} else {
 				warning("unimplemented: performAction: LOOK");
-			// TODO
+				// TODO
+			}
 			break;
 
 		case ACTION_TIMER:
 			if (!target) error("TIMER requires a target");
 
 			debug(1, "performAction: TIMER (on %s)", target->identify().c_str());
-			target->timer_entries.execute(this);
+			return target->timer_entries.execute(this, &context);
 			break;
 
 		case ACTION_WALK:
@@ -1160,8 +1165,7 @@ void UnityEngine::performAction(ActionType action_id, Object *target, objectID o
 					if (!obj) error("couldn't find transition object");
 
 					// TODO: this is a silly hack
-					performAction(ACTION_USE, obj);
-					break;
+					return performAction(ACTION_USE, obj);
 				}
 
 				warning("unimplemented: performAction: WALK (on %s)", target->identify().c_str());
@@ -1174,18 +1178,23 @@ void UnityEngine::performAction(ActionType action_id, Object *target, objectID o
 			break;
 
 		case ACTION_TALK:
-			{
 			if (!target) error("we don't handle TALK without a valid target, should we?");
 			// target is target (e.g. Pentara), other is source (e.g. Picard)
 			// TODO..
 			debug(1, "performAction: TALK (on %s)", target->identify().c_str());
-			target->runHail(target->talk_string);
+			if (!target->talk_string.size()) {
+				return RESULT_EMPTYTALK;
+			} else {
+				target->runHail(target->talk_string);
+				return RESULT_DIDSOMETHING; // TODO: ??
 			}
 			break;
 
 		default:
-			error("performAction: unknown action type %x", action_id);
+			error("performAction: unknown action type %x", action_type);
 	}
+
+	return 0;
 }
 
 

@@ -414,7 +414,7 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 	alter_anim = objstream->readUint16LE();
 	alter_state = objstream->readByte();
 
-	unknown7 = objstream->readByte();
+	play_description = objstream->readByte();
 
 	x_pos = objstream->readUint16LE();
 	y_pos = objstream->readUint16LE();
@@ -1010,50 +1010,61 @@ EntryList::~EntryList() {
 	}
 }
 
-void EntryList::execute(UnityEngine *_vm) {
+ResultType EntryList::execute(UnityEngine *_vm, Action *context) {
 	debug(1, "");
-	bool stophere = false;
+	ResultType r = 0;
 	for (unsigned int i = 0; i < list.size(); i++) {
 		debug(1, "EntryList::execute: block %d of %d (size %d)", i + 1, list.size(), list[i]->size());
 		bool run = true;
+		r &= (RESULT_WALKING | RESULT_MATCHOTHER | RESULT_DIDSOMETHING);
 		for (unsigned int j = 0; j < list[i]->size(); j++) {
-			if (!(*list[i])[j]->check(_vm)) {
+			r |= (*list[i])[j]->check(_vm, context);
+			if (r & ~(RESULT_MATCHOTHER | RESULT_DIDSOMETHING)) {
 				run = false;
 				break;
 			}
 		}
 		if (!run) continue;
 		for (unsigned int j = 0; j < list[i]->size(); j++) {
-			(*list[i])[j]->execute(_vm);
+			r |= (*list[i])[j]->execute(_vm, context);
+			r |= RESULT_DIDSOMETHING;
 			if ((*list[i])[j]->stop_here) {
-				stophere = true;
+				r |= RESULT_STOPPED;
 				debug(1, "EntryList::execute: stopped at entry %d of %d", j + 1, list[i]->size());
 				break;
 			}
 		}
-		if (stophere) break;
+		if (r & RESULT_STOPPED) break;
 	}
 	debug(1, "EntryList::execute: done with %d blocks", list.size());
 	debug(1, "");
+	return r;
 }
 
-bool ConditionBlock::check(UnityEngine *_vm) {
+ResultType ConditionBlock::check(UnityEngine *_vm, Action *context) {
 	debug(1, "ConditionBlock::check: %02x%02x%02x, %02x%02x%02x",
 		target.world, target.screen, target.id,
 		WhoCan.world, WhoCan.screen, WhoCan.id);
 
-	if (target.world == 0xff && target.screen == 0xff && target.id == 0xfe) {
-		// TODO: fail if source was passed in
-		warning("unimplemented: ConditionCheck: ignoring source check");
-	} else if (target.world != 0xff && target.screen != 0xff && target.id != 0xff) {
-		// TODO: fail if source != target
-		warning("unimplemented: ConditionCheck: ignoring source/target check");
-	}
+	ResultType r = 0;
 
-	if (target.world == 0x0 && target.screen == 0x70) {
-		// XXX: TODO: for now, we always return false for item usage
-		warning("unimplemented: ConditionCheck: ignoring item usage check");
-		return false;
+	if (target.world == 0xff && target.screen == 0xff && target.id == 0xfe) {
+		// fail if other was passed in
+		printf("(checking if other was set) ");
+		if (context->other.id != 0xff) {
+			printf("-- it was!\n");
+			return RESULT_FAILOTHER;
+		}
+	} else if (target.world != 0xff && target.screen != 0xff && target.id != 0xff) {
+		// fail if source != other
+		printf("(checking if target %02x%02x%02x matches other %02x%02x%02x) ",
+			target.world, target.screen, target.id,
+			context->other.world, context->other.screen, context->other.id);
+		if (target != context->other) {
+			printf("-- it doesn't!\n");
+			return RESULT_FAILOTHER;
+		}
+		r |= RESULT_MATCHOTHER;
 	}
 
 	if (how_close_dist != 0xffff) {
@@ -1065,14 +1076,24 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 			// otherwise, take source position
 		}
 		// TODO: if squared distance between `who' and x/y > how_close_dist*how_close_dist {
-		//	run walk action with `who', return false
+		//	run walk action with `who', return RESULT_WALKING|RESULT_DIDSOMETHING
 		// }
 		// TODO: (wth? checking `who' vs `who'?)
 		warning("unimplemented: ConditionCheck: ignoring HowClose");
 	}
 
-	// TODO: check WhoCan actually, well, can :)
-	// (make sure to check for 000010)
+	if ((WhoCan.id != 0xff) &&
+		!((WhoCan.world == 0) && (WhoCan.screen) == 0 && (WhoCan.id == 0x10))) {
+		printf("(checking if WhoCan %02x%02x%02x matches who %02x%02x%02x) ",
+			WhoCan.world, WhoCan.screen, WhoCan.id,
+			context->who.world, context->who.screen, context->who.id);
+		if (WhoCan != context->who) {
+			printf(" -- nope\n");
+			return r | RESULT_AWAYTEAM;
+		}
+	}
+
+	// TODO: skill level of who or RESULT_FAILSKILL
 
 	if (counter_when != 0xff) {
 		// counter_flag = 1;
@@ -1082,27 +1103,17 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 			if (counter_value) {
 				counter_value--;
 				printf("counter: not yet\n");
-				return false;
+				return r | RESULT_COUNTER_DOWHEN;
 			}
 		} else if (counter_when == 0) {
 			// do until
 			if (counter_value == 0xffff) {
 				printf("counter: not any more\n");
-				return false;
+				return r | RESULT_COUNTER_DOUNTIL;
 			}
 		}
 		counter_value--;
 	}
-
-	// TODO: if counter {
-	//	counter_flag = 1;
-	//	if (counter_check == 1) {
-	//		if (counter_val) { counter_val--; return false; }
-	//	} else if (counter_check == 0) {
-	//		if (counter_val <= 0) { return false; }
-	//	}
-	//	counter_val--;
-	// }
 
 	bool did_something = false;
 	for (unsigned int i = 0; i < 4; i++) {
@@ -1123,19 +1134,19 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 			printf(" (is state %x?)", check_state[i]);
 			if (obj->state != check_state[i]) {
 				printf(" -- nope!\n");
-				return false;
+				return r | RESULT_FAILSTATE;
 			}
 		}
 
 		if (!(obj->flags & OBJFLAG_ACTIVE)) {
 			if (check_screen[i] == 0xfe) {
 				// check for inactive
-				return true;
+				return r;
 			}
 
 			if (check_state[i] == 0xff) {
 				printf(" (object inactive!)\n");
-				return false;
+				return r | RESULT_INACTIVE;
 			}
 		}
 
@@ -1151,13 +1162,13 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 						_vm->_away_team_members.end(),
 						obj) == _vm->_away_team_members.end()) {
 						printf(" -- nope!\n");
-						return false;
+						return r | RESULT_AWAYTEAM;
 					}
 				} else {
 					printf(" (in inventory?)");
 					if (!(obj->flags & OBJFLAG_INVENTORY)) {
 						printf(" -- nope!\n");
-						return false;
+						return r | RESULT_INVENTORY;
 					}
 				}
 			} else {
@@ -1165,7 +1176,7 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 				printf(" (not in inventory?)");
 				if (obj->flags & OBJFLAG_INVENTORY) {
 					printf(" -- it is!\n");
-					return false;
+					return r | RESULT_INVENTORY;
 				}
 			}
 		}
@@ -1175,7 +1186,7 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 			printf(" (is x/y %x/%x?)", check_x[i], check_y[i]);
 			if (obj->x != check_x[i] || obj->y != check_y[i]) {
 				printf(" -- nope!\n");
-				return false;
+				return r | RESULT_FAILPOS;
 			}
 		}
 
@@ -1187,7 +1198,7 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 			if (obj->universe_x != check_univ_x[i] || obj->universe_y != check_univ_y[i] ||
 				obj->universe_z != check_univ_z[i]) {
 				printf(" -- nope!\n");
-				return false;
+				return r | RESULT_FAILPOS;
 			}
 		}
 
@@ -1197,7 +1208,7 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 
 			if (obj->curr_screen != check_screen[i]) {
 				printf(" -- nope!\n");
-				return false;
+				return r | RESULT_FAILSCREEN;
 			}
 		}
 
@@ -1206,17 +1217,19 @@ bool ConditionBlock::check(UnityEngine *_vm) {
 
 	// TODO: stupid hardcoded tricorder sound
 
-	return true;
+	return r;
 }
 
-void ConditionBlock::execute(UnityEngine *_vm) {
-	// nothing to do?
+ResultType ConditionBlock::execute(UnityEngine *_vm, Action *context) {
+	return 0; // nothing to do
 }
 
-void AlterBlock::execute(UnityEngine *_vm) {
+ResultType AlterBlock::execute(UnityEngine *_vm, Action *context) {
+	debug(1, "Alter: on %02x%02x%02x", target.world, target.screen, target.id);
+
 	Object *obj;
 	if (target.world == 0 && target.screen == 0 && target.id == 0x10) {
-		// TODO: selected away team member?
+		// TODO: use 'who' from context
 		obj = _vm->data.getObject(objectID(0, 0, 0));
 	} else {
 		obj = _vm->data.getObject(target);
@@ -1361,9 +1374,10 @@ void AlterBlock::execute(UnityEngine *_vm) {
 		}
 	}
 
-	if (unknown7 != 0) {
+	if (play_description != 0) {
 		did_something = true;
-		warning("unimplemented: AlterBlock::execute (%s): unknown7 %x", obj->identify().c_str(), unknown7);
+		// TODO: is the value of play_description meaningful?
+		_vm->playDescriptionFor(obj);
 	}
 
 	if (unknown8 != 0xffff) {
@@ -1397,9 +1411,11 @@ void AlterBlock::execute(UnityEngine *_vm) {
 	if (!did_something) {
 		warning("empty AlterBlock::execute (%s)?", obj->identify().c_str());
 	}
+
+	return 0;
 }
 
-void ReactionBlock::execute(UnityEngine *_vm) {
+ResultType ReactionBlock::execute(UnityEngine *_vm, Action *context) {
 	warning("unimplemented: ReactionBlock::execute");
 
 	Common::Array<Object *> objects;
@@ -1464,9 +1480,11 @@ void ReactionBlock::execute(UnityEngine *_vm) {
 		// TODO
 		// TODO: if beam_type is set, do phaser effects too
 	}
+
+	return 0;
 }
 
-void CommandBlock::execute(UnityEngine *_vm) {
+ResultType CommandBlock::execute(UnityEngine *_vm, Action *context) {
 	debug(1, "CommandBlock: %02x%02x%02x/%02x%02x%02x/%02x%02x%02x, %02x, %02x, command %d",
 		target[0].world, target[0].screen, target[0].id,
 		target[1].world, target[1].screen, target[1].id,
@@ -1488,9 +1506,11 @@ void CommandBlock::execute(UnityEngine *_vm) {
 		targ = _vm->data.getObject(target[0]);
 
 	_vm->performAction(action_id, targ, target[1], target[2]);
+
+	return 0;
 }
 
-void ScreenBlock::execute(UnityEngine *_vm) {
+ResultType ScreenBlock::execute(UnityEngine *_vm, Action *context) {
 	if (new_screen != 0xff) {
 		debug(1, "ScreenBlock::execute: new screen: %02x, entrance %02x", new_screen, new_entrance);
 
@@ -1540,13 +1560,17 @@ void ScreenBlock::execute(UnityEngine *_vm) {
 	if (unknown16 != 0xff) printf ("16: %02x ", unknown16);
 
 	printf("\n");
+
+	return 0;
 }
 
-void PathBlock::execute(UnityEngine *_vm) {
-	error("unimplemented: PathBlock::execute");
+ResultType PathBlock::execute(UnityEngine *_vm, Action *context) {
+	warning("unimplemented: PathBlock::execute");
+
+	return 0;
 }
 
-void GeneralBlock::execute(UnityEngine *_vm) {
+ResultType GeneralBlock::execute(UnityEngine *_vm, Action *context) {
 	if (unknown1 != 0xffff) {
 		warning("unimplemented: GeneralBlock::execute: unknown1 %04x", unknown1);
 	}
@@ -1565,9 +1589,11 @@ void GeneralBlock::execute(UnityEngine *_vm) {
 
 		_vm->_gfx->playMovie(_vm->data.movie_filenames[movie_id]);
 	}
+
+	return 0;
 }
 
-void ConversationBlock::execute(UnityEngine *_vm) {
+ResultType ConversationBlock::execute(UnityEngine *_vm, Action *context) {
 	debug(1, "ConversationBlock::execute: @0x%02x,%d,%d,%d: action %d",
 		world_id, conversation_id, response_id, state_id, action_id);
 
@@ -1577,23 +1603,29 @@ void ConversationBlock::execute(UnityEngine *_vm) {
 	Conversation *conv = _vm->data.getConversation(world, conversation_id);
 	Response *resp = conv->getResponse(response_id, state_id);
 	resp->response_state = action_id;
+
+	return 0;
 }
 
-void BeamBlock::execute(UnityEngine *_vm) {
+ResultType BeamBlock::execute(UnityEngine *_vm, Action *context) {
 	debug(1, "BeamBlock::execute with %04x, %04x", world_id, screen_id);
 
 	_vm->beam_world = world_id;
 	_vm->beam_screen = screen_id;
+
+	return 0;
 }
 
-void TriggerBlock::execute(UnityEngine *_vm) {
+ResultType TriggerBlock::execute(UnityEngine *_vm, Action *context) {
 	Trigger *trigger = _vm->data.getTrigger(trigger_id);
 
 	debug(1, "triggerBlock: trying to set trigger %x to %d", trigger_id, enable_trigger);
 	trigger->enabled = enable_trigger;
+
+	return 0;
 }
 
-void CommunicateBlock::execute(UnityEngine *_vm) {
+ResultType CommunicateBlock::execute(UnityEngine *_vm, Action *context) {
 	debug(1, "CommunicateBlock::execute: at %02x%02x%02x, %04x, %04x, %02x", target.world, target.screen, target.id, conversation_id, situation_id, hail_type);
 
 	Object *targ;
@@ -1613,7 +1645,7 @@ void CommunicateBlock::execute(UnityEngine *_vm) {
 
 			// TODO: use hail_type
 			targ->runHail(targ->talk_string);
-			return;
+			return 0;
 		}
 	}
 
@@ -1674,10 +1706,14 @@ void CommunicateBlock::execute(UnityEngine *_vm) {
 		// 0x10: magicB + reset conversation + magic?
 		warning("unhandled special hail (%02x)", hail_type);
 	}
+
+	return 0;
 }
 
-void ChoiceBlock::execute(UnityEngine *_vm) {
-	error("unimplemented: ChoiceBlock::execute");
+ResultType ChoiceBlock::execute(UnityEngine *_vm, Action *context) {
+	warning("unimplemented: ChoiceBlock::execute");
+
+	return 0;
 }
 
 void WhoCanSayBlock::readFrom(Common::SeekableReadStream *stream) {
@@ -1789,7 +1825,16 @@ void ResultBlock::readFrom(Common::SeekableReadStream *stream) {
 void ResultBlock::execute(UnityEngine *_vm, Object *speaker, Conversation *src) {
 	debug(1, "ResultBlock::execute");
 	(void)src;
-	entries.execute(_vm);
+
+	// TODO: what are we meant to provide for context here?
+	Action context;
+	context.action_type = ACTION_TALK;
+	context.target = speaker;
+	context.who = speaker->id;
+	context.other = objectID();
+	context.x = 0xffffffff;
+	context.y = 0xffffffff;
+	entries.execute(_vm, &context);
 }
 
 void Response::readFrom(Common::SeekableReadStream *stream) {
