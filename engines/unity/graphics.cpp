@@ -456,14 +456,18 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 	// XXX: what's the sane behaviour here?
 	unsigned int targetx = x;
 	if (sprite->getXPos() != 0) targetx = sprite->getXPos();
-	targetx -= (sprite->getXAdjust()*(int)scale)/256;
+	//targetx -= (sprite->getXAdjust()*(int)scale)/256;
 	unsigned int targety = y;
 	if (sprite->getYPos() != 0) targety = sprite->getYPos();
-	targety -= (sprite->getYAdjust()*(int)scale)/256;
+	//targety -= (sprite->getYAdjust()*(int)scale)/256;
 
 	//printf("target x %d, y %d, adjustx %d, adjusty %d\n", sprite->getXPos(), sprite->getYPos(),
 	//	sprite->getXAdjust(), sprite->getYAdjust());
-	blit(data, targetx - ((width/2)*(int)scale)/256, targety - ((height)*(int)scale)/256, bufwidth, bufheight);
+	blit(data,
+		targetx - ((sprite->getXAdjust() + bufwidth/2)*(int)scale)/256,
+		targety - ((sprite->getYAdjust() + bufheight)*(int)scale)/256,
+		bufwidth,
+		bufheight);
 
 	if (sprite->speaking()) {
 		// XXX: this doesn't work properly, SpritePlayer side probably needs work too
@@ -471,7 +475,7 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 		unsigned int m_width = sprite->getSpeechWidth();
 		unsigned int m_height = sprite->getSpeechHeight();
 		bufwidth = m_width;
-		bufwidth = m_height;
+		bufheight = m_height;
 
 		if (scale < 256) {
 			bufwidth = (m_width * scale) / 256;
@@ -483,15 +487,19 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 		}
 
 		// XXX: what's the sane behaviour here?
+		targetx = x;
 		if (sprite->getSpeechXPos() != 0) targetx = sprite->getSpeechXPos();
+		targety = y;
 		if (sprite->getSpeechYPos() != 0) targety = sprite->getSpeechYPos();
 
 		//printf("speech target x %d, y %d, adjustx %d, adjusty %d\n",
 		//	sprite->getSpeechXPos(), sprite->getSpeechYPos(),
 		//	sprite->getSpeechXAdjust(), sprite->getSpeechYAdjust());
-		blit(sprite->getSpeechData(),
-			targetx - ((m_width/2 + sprite->getSpeechXAdjust())*(int)scale)/256,
-			targety - (((int)m_height - sprite->getSpeechYAdjust())*(int)scale)/256, m_width, m_height);
+		blit(data,
+			(int)targetx - ((-sprite->getSpeechXAdjust() + (int)bufwidth/2)*(int)scale)/256,
+			(int)targety - ((-sprite->getSpeechYAdjust() + (int)bufheight)*(int)scale)/256,
+			bufwidth,
+			bufheight);
 	}
 
 	// plot cross at (x, y) loc

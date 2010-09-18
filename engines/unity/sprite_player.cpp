@@ -19,17 +19,16 @@ SpritePlayer::SpritePlayer(Sprite *spr, Object *par, UnityEngine *vm) : sprite(s
 	speech.xadjust = speech.yadjust = 0;
 
 	was_speech = false;
+	was_marked = false;
 }
 
 SpritePlayer::~SpritePlayer() {
 }
 
 void SpritePlayer::resetState() {
-	was_speech = false;
 	normal.xadjust = normal.yadjust = 0;
 	speech.xadjust = speech.yadjust = 0;
 
-	current_speechsprite = NULL; // XXX: good?
 	wait_target = 0;
 }
 
@@ -101,24 +100,42 @@ void SpritePlayer::update() {
 		case se_None:
 			current_entry++;
 			break;
+
 		case se_Sprite:
 			current_sprite = (SpriteEntrySprite *)e;
 			// XXX: don't understand how this works either
 			was_speech = false;
+			current_speechsprite = NULL;
+
 			current_entry++;
+
+			e = sprite->getEntry(current_entry);
+			if (e->type == se_Sprite || e->type == se_SpeechSprite) return;
 			break;
+
 		case se_SpeechSprite:
+			if (!was_marked) {
+				error("no marked data during sprite playback");
+			}
+
 			current_speechsprite = (SpriteEntrySprite *)e;
 			// XXX: don't understand how this works :(
+			if (!was_speech) {
+				speech = marked;
+			}
 			was_speech = true;
+
 			current_entry++;
+			e = sprite->getEntry(current_entry);
+			if (e->type == se_Sprite || e->type == se_SpeechSprite) return;
 			break;
+
 		case se_Palette:
 			current_palette = (SpriteEntryPalette *)e;
 			current_entry++;
 			break;
+
 		case se_Position:
-			current_entry++;
 			{
 				SpriteEntryPosition *p = (SpriteEntryPosition *)e;
 				if (was_speech) {
@@ -129,7 +146,9 @@ void SpritePlayer::update() {
 					normal.ypos = p->newy;
 				}
 			}
+			current_entry++;
 			break;
+
 		case se_RelPos:
 			{
 				SpriteEntryRelPos *p = (SpriteEntryRelPos *)e;
@@ -143,6 +162,7 @@ void SpritePlayer::update() {
 			}
 			current_entry++;
 			break;
+
 		case se_MouthPos:
 			{
 				SpriteEntryMouthPos *p = (SpriteEntryMouthPos *)e;
@@ -151,19 +171,34 @@ void SpritePlayer::update() {
 			}
 			current_entry++;
 			break;
+
 		case se_Pause:
 		case se_Exit:
 			return;
+
 		case se_Mark:
 			// XXX: do something here
+			was_marked = true;
+			marked = normal;
 			current_entry++;
 			break;
+
+		case se_Mask:
+			warning("sprite mask mode not implemented");
+			current_entry++;
+			break;
+
+		case se_Static:
+			warning("sprite static mode not implemented");
+			current_entry++;
+			break;
+
 		case se_RandomWait:
 			if (!wait_target) {
-				unsigned int wait = _vm->_rnd.getRandomNumberRng(
-					((SpriteEntryRandomWait *)e)->lower, ((SpriteEntryRandomWait *)e)->upper);
+				unsigned int wait = _vm->_rnd.getRandomNumberRng(0,
+					((SpriteEntryRandomWait *)e)->rand_amt);
 				// TODO: is /6 correct? see below
-				wait_target = g_system->getMillis() + wait/6;
+				wait_target = g_system->getMillis() + ((SpriteEntryRandomWait *)e)->base/6 + wait/6;
 				return;
 			}
 			// fall through
@@ -180,6 +215,7 @@ void SpritePlayer::update() {
 				continue;
 			}
 			return;
+
 		case se_Jump:
 			current_entry = sprite->getIndexFor(((SpriteEntryJump *)e)->target);
 			assert(current_entry != (unsigned int)~0);
@@ -190,13 +226,30 @@ void SpritePlayer::update() {
 			old_entry = current_entry;
 			resetState();
 			break;
+
 		case se_Audio:
 			_vm->_snd->playAudioBuffer(((SpriteEntryAudio *)e)->length,
 					((SpriteEntryAudio *)e)->data);
 			current_entry++;
 			break;
+
+		case se_WaitForSound:
+			warning("sprite waiting for sound not implemented");
+			current_entry++;
+			break;
+
+		case se_Silent:
+			warning("sprite silencing not implemented");
+			current_entry++;
+			break;
+
+		case se_StateSet:
+			warning("sprite state setting not implemented");
+			current_entry++;
+			break;
+
 		default:
-			assert(false);
+			error("internal error: bad sprite player entry");
 		}
 	}
 }

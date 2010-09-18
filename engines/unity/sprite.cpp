@@ -118,6 +118,7 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		assert(i == offsets.size());
 	} else if (!strncmp(blockType, TIME, 4)) {
 		// presumably a wait between frames, see update()
+		assert(size == 4);
 		uint32 time = _stream->readUint32LE();
 		return new SpriteEntryWait(time);
 	} else if (!strncmp(blockType, COMP, 4)) {
@@ -137,31 +138,37 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		uint32 ypos = _stream->readUint32LE();
 		return new SpriteEntryPosition(xpos, ypos);
 	} else if (!strncmp(blockType, STAT, 4)) {
-		// TODO
-		return new SpriteEntry(se_None); // XXX
+		// switch to static mode
+		assert(size == 0);
+		return new SpriteEntry(se_Static);
 	} else if (!strncmp(blockType, PAUS, 4)) {
 		// pause animation
+		assert(size == 0);
 		return new SpriteEntry(se_Pause);
 	} else if (!strncmp(blockType, EXIT, 4)) {
-		// ???
+		// pause animation
+		assert(size == 0);
 		return new SpriteEntry(se_Exit);
 	} else if (!strncmp(blockType, MARK, 4)) {
-		// TODO
+		// TODO: store info
+		assert(size == 0);
 		return new SpriteEntry(se_Mark);
 	} else if (!strncmp(blockType, SETF, 4)) {
 		// TODO: set flag?
+		assert(size == 4);
 		uint32 unknown = _stream->readUint32LE();
 		assert(unknown <= 4); // 0, 1, 2, 3 or 4
 
 		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, RAND, 4)) {
 		// wait for a random time
-		uint32 upper = _stream->readUint32LE();
-		uint32 lower = _stream->readUint32LE();
-		if (lower > upper) SWAP(upper, lower);
-		return new SpriteEntryRandomWait(lower, upper);
+		assert(size == 8);
+		uint32 rand_amt = _stream->readUint32LE();
+		uint32 base = _stream->readUint32LE();
+		return new SpriteEntryRandomWait(rand_amt, base);
 	} else if (!strncmp(blockType, JUMP, 4)) {
 		// a jump to an animation
+		assert(size == 4);
 		uint32 target = _stream->readUint32LE();
 		return new SpriteEntryJump(target);
 	} else if (!strncmp(blockType, SCOM, 4)) {
@@ -178,8 +185,9 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		_stream->read(aud->data, size);
 		return aud;
 	} else if (!strncmp(blockType, SNDW, 4)) {
-		// TODO
-		return new SpriteEntry(se_None); // XXX
+		// wait for sound to finish
+		assert(size == 0);
+		return new SpriteEntry(se_WaitForSound);
 	} else if (!strncmp(blockType, SNDF, 4)) {
 		// TODO: unknown is always 75, 95 or 100. volume?
 		uint32 unknown = _stream->readUint32LE();
@@ -190,33 +198,39 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		_stream->read(name, 16);
 		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, PLAY, 4)) {
-		// TODO
+		// TODO: play sound
+		assert(size == 0);
 		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, MASK, 4)) {
-		// TODO
-		return new SpriteEntry(se_None); // XXX
+		// switch to mask mode
+		assert(size == 0);
+		return new SpriteEntry(se_Mask);
 	} else if (!strncmp(blockType, RPOS, 4)) {
 		// relative position change(?)
+		assert(size == 8);
 		int32 adjustx = _stream->readSint32LE();
 		int32 adjusty = _stream->readSint32LE();
 
 		return new SpriteEntryRelPos(adjustx, adjusty);
 	} else if (!strncmp(blockType, MPOS, 4)) {
 		// mouth position (relative to parent)
+		assert(size == 8);
 		int32 adjustx = _stream->readSint32LE();
 		int32 adjusty = _stream->readSint32LE();
 
 		return new SpriteEntryMouthPos(adjustx, adjusty);
 	} else if (!strncmp(blockType, SILE, 4)) {
-		// TODO
-		return new SpriteEntry(se_None); // XXX
+		// stop+reset sound
+		assert(size == 0);
+		return new SpriteEntry(se_Silent);
 	} else if (!strncmp(blockType, OBJS, 4)) {
-		// TODO
-		uint32 unknown = _stream->readUint32LE();
-		assert(unknown == 1 || (unknown >= 3 && unknown <= 7)); // always 1, 3, 4, 5, 6 or 7
-		return new SpriteEntry(se_None); // XXX
+		// set parent object state
+		assert(size == 4);
+		uint32 state = _stream->readUint32LE();
+		return new SpriteEntryStateSet(state);
 	} else if (!strncmp(blockType, BSON, 4)) {
 		// used only in legaleze.spr
+		assert(size == 0);
 		return new SpriteEntry(se_None); // XXX
 	} else {
 		error("unknown sprite block type %c%c%c%c", blockType[3], blockType[2], blockType[1], blockType[0]);

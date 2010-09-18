@@ -22,7 +22,12 @@ enum SpriteEntryType {
 	se_RelPos,
 	se_MouthPos,
 	se_Mark,
+	se_Mask,
+	se_Static,
 	se_Audio,
+	se_WaitForSound,
+	se_Silent,
+	se_StateSet,
 	se_Exit
 };
 
@@ -49,8 +54,8 @@ struct SpriteEntryWait : public SpriteEntry {
 };
 
 struct SpriteEntryRandomWait : public SpriteEntry {
-	unsigned int lower, upper;
-	SpriteEntryRandomWait(unsigned int _l, unsigned int _u) : SpriteEntry(se_RandomWait), lower(_l), upper(_u) { }
+	unsigned int rand_amt, base;
+	SpriteEntryRandomWait(unsigned int _r, unsigned int _b) : SpriteEntry(se_RandomWait), rand_amt(_r), base(_b) { }
 };
 
 struct SpriteEntryJump : public SpriteEntry {
@@ -77,6 +82,11 @@ struct SpriteEntryAudio : public SpriteEntry {
 	unsigned int length;
 	byte *data;
 	SpriteEntryAudio() : SpriteEntry(se_Audio) { }
+};
+
+struct SpriteEntryStateSet : public SpriteEntry {
+	uint32 state;
+	SpriteEntryStateSet(uint32 _s) : SpriteEntry(se_StateSet), state(_s) { }
 };
 
 class Sprite {
@@ -150,8 +160,8 @@ protected:
 		int xadjust, yadjust;
 	};
 
-	PosInfo normal, speech;
-	bool was_speech;
+	PosInfo normal, speech, marked;
+	bool was_speech, was_marked;
 
 	unsigned int current_entry;
 	SpriteEntrySprite *current_sprite, *current_speechsprite;
