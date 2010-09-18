@@ -464,8 +464,8 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 	//printf("target x %d, y %d, adjustx %d, adjusty %d\n", sprite->getXPos(), sprite->getYPos(),
 	//	sprite->getXAdjust(), sprite->getYAdjust());
 	blit(data,
-		targetx - ((sprite->getXAdjust() + bufwidth/2)*(int)scale)/256,
-		targety - ((sprite->getYAdjust() + bufheight)*(int)scale)/256,
+		(int)targetx - ((-sprite->getXAdjust() + (int)width/2)*(int)scale)/256,
+		(int)targety - ((-sprite->getYAdjust() + (int)height)*(int)scale)/256,
 		bufwidth,
 		bufheight);
 
@@ -496,8 +496,8 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 		//	sprite->getSpeechXPos(), sprite->getSpeechYPos(),
 		//	sprite->getSpeechXAdjust(), sprite->getSpeechYAdjust());
 		blit(data,
-			(int)targetx - ((-sprite->getSpeechXAdjust() + (int)bufwidth/2)*(int)scale)/256,
-			(int)targety - ((-sprite->getSpeechYAdjust() + (int)bufheight)*(int)scale)/256,
+			(int)targetx - ((-sprite->getSpeechXAdjust() + (int)m_width/2)*(int)scale)/256,
+			(int)targety - ((-sprite->getSpeechYAdjust() + (int)m_height)*(int)scale)/256,
 			bufwidth,
 			bufheight);
 	}
