@@ -2,6 +2,7 @@
 #include "sprite.h"
 #include "object.h"
 #include "common/system.h"
+#include "common/macresman.h"
 #include "trigger.h"
 
 namespace Unity {
@@ -326,81 +327,280 @@ Common::String readStringFromOffset(Common::SeekableReadStream *stream, int32 of
 	return s;
 }
 
-void UnityData::loadDOSData() {
+uint32 getPEFArgument(Common::SeekableReadStream *stream, unsigned int &pos) {
+	uint32 r = 0;
+	byte num_entries = 0;
+	while (true) {
+		num_entries++;
+
+		byte in = stream->readByte();
+		pos++;
+
+		if (num_entries == 5) {
+			r <<= 4;
+		} else {
+			r <<= 7;
+		}
+		r += (in & 0x7f);
+		if (!(in & 0x80)) return r;
+
+		if (num_entries == 5) error("bad argument in PEF");
+	}
+}
+
+// so, the data segment in a PEF is compressed! whoo!
+Common::SeekableReadStream *decompressPEFDataSegment(Common::SeekableReadStream *stream, unsigned int segment_id) {
+	uint32 tag1 = stream->readUint32BE();
+	if (tag1 != MKID_BE('Joy!')) error("bad PEF tag1");
+	uint32 tag2 = stream->readUint32BE();
+	if (tag2 != MKID_BE('peff')) error("bad PEF tag2");
+	uint32 architecture = stream->readUint32BE();
+	if (architecture != MKID_BE('pwpc')) error("PEF header is not powerpc");
+	uint32 formatVersion = stream->readUint32BE();
+	if (formatVersion != 1) error("PEF header is not version 1");
+	stream->skip(16); // dateTimeStamp, oldDefVersion, oldImpVersion, currentVersion
+	uint16 sectionCount = stream->readUint16BE();
+	stream->skip(6); // instSectionCount, reservedA
+
+	if (segment_id >= sectionCount) error("not enough segments in PEF");
+
+	stream->skip(28 * segment_id);
+
+	stream->skip(8); // nameOffset, defaultAddress
+	uint32 totalSize = stream->readUint32BE();
+	uint32 unpackedSize = stream->readUint32BE();
+	uint32 packedSize = stream->readUint32BE();
+	assert(unpackedSize <= totalSize);
+	assert(packedSize <= unpackedSize);
+	uint32 containerOffset = stream->readUint32BE();
+	byte sectionKind = stream->readByte();
+	switch (sectionKind) {
+	case 2: break; // pattern-initialized data
+	default: error("unsupported PEF sectionKind %d", sectionKind);
+	}
+
+	debug(1, "unpacking PEF segment of size %d (total %d, packed %d) at 0x%x", unpackedSize, totalSize, packedSize, containerOffset);
+
+	bool r = stream->seek(containerOffset, SEEK_SET);
+	assert(r);
+
+	// note that we don't bother with the zero-initialised section..
+	byte *data = (byte *)malloc(unpackedSize);
+
+	// unpack the data
+	byte *targ = data;
+	unsigned int pos = 0;
+	while (pos < packedSize) {
+		byte next = stream->readByte();
+		byte opcode = next >> 5;
+		uint32 count = next & 0x1f;
+		pos++;
+
+		if (count == 0) {
+			count = getPEFArgument(stream, pos);
+		}
+
+		switch (opcode) {
+		case 0: // Zero
+			memset(targ, 0, count);
+			targ += count;
+			break;
+
+		case 1: // blockCopy
+			stream->read(targ, count);
+			targ += count;
+			pos += count;
+			break;
+
+		case 2:	{ // repeatedBlock
+				uint32 repeatCount = getPEFArgument(stream, pos);
+
+				byte *src = targ;
+				stream->read(src, count);
+				targ += count;
+				pos += count;
+
+				for (unsigned int i = 0; i < repeatCount; i++) {
+					memcpy(targ, src, count);
+					targ += count;
+				}
+			} break;
+
+		case 3: { // interleaveRepeatBlockWithBlockCopy
+				uint32 customSize = getPEFArgument(stream, pos);
+				uint32 repeatCount = getPEFArgument(stream, pos);
+
+				byte *commonData = targ;
+				stream->read(commonData, count);
+				targ += count;
+				pos += count;
+
+				for (unsigned int i = 0; i < repeatCount; i++) {
+					stream->read(targ, customSize);
+					targ += customSize;
+					pos += customSize;
+
+					memcpy(targ, commonData, count);
+					targ += count;
+				}
+			} break;
+
+		case 4: { // interleaveRepeatBlockWithZero
+				uint32 customSize = getPEFArgument(stream, pos);
+				uint32 repeatCount = getPEFArgument(stream, pos);
+
+				for (unsigned int i = 0; i < repeatCount; i++) {
+					memset(targ, 0, count);
+					targ += count;
+
+					stream->read(targ, customSize);
+					targ += customSize;
+					pos += customSize;
+				}
+				memset(targ, 0, count);
+				targ += count;
+			} break;
+
+		default: error("unknown opcode %d in PEF pattern-initialized section", opcode);
+		}
+	}
+
+	if (pos != packedSize) error("failed to parse PEF pattern-initialized section (parsed %d of %d)", pos, packedSize);
+	if (targ != data + unpackedSize) error("failed to unpack PEF pattern-initialized section");
+
+	delete stream;
+	return new Common::MemoryReadStream(data, unpackedSize, DisposeAfterUse::YES);
+}
+
+void UnityData::loadExecutableData() {
 	// TODO: check md5sum/etc
-	Common::SeekableReadStream *stream = openFile("sttng.ovl");
+	Common::SeekableReadStream *stream;
+	Common::MacResManager macres;
+	bool isMac = false;
+	if (SearchMan.hasFile("sttng.ovlXXX")) {
+		stream = openFile("sttng.ovl");
+	} else {
+		if (!macres.open("\"A Final Unity\""))
+			error("couldn't find sttng.ovl (DOS) or \"A Final Unity\" (Mac)");
+		isMac = true;
+		// we use the powerpc data segment, in the data fork
+		stream = decompressPEFDataSegment(macres.getDataFork(), 1);
+	}
 
 	// bridge data
 	int32 offset = DATA_SEGMENT_OFFSET_DOS + BRIDGE_ITEM_OFFSET_DOS;
+	if (isMac) offset = BRIDGE_ITEM_OFFSET_MAC;
 
 	for (unsigned int i = 0; i < NUM_BRIDGE_ITEMS; i++) {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
 		BridgeItem item;
-		uint32 desc_offset = stream->readUint32LE();
-		item.id = readObjectID(stream);
-		item.x = stream->readUint32LE();
-		item.y = stream->readUint32LE();
-		item.width = stream->readUint32LE();
-		item.height = stream->readUint32LE();
-		item.unknown1 = stream->readUint32LE();
-		item.unknown2 = stream->readUint32LE();
-		item.unknown3 = stream->readUint32LE();
-		item.description = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + desc_offset);
+		if (isMac) {
+			uint32 desc_offset = stream->readUint32BE();
+			item.id = readObjectIDBE(stream); // XXX
+			item.x = stream->readUint32BE();
+			item.y = stream->readUint32BE();
+			item.width = stream->readUint32BE();
+			item.height = stream->readUint32BE();
+			item.unknown1 = stream->readUint32BE();
+			item.unknown2 = stream->readUint32BE();
+			item.unknown3 = stream->readUint32BE();
+			item.description = readStringFromOffset(stream, desc_offset);
+		} else {
+			uint32 desc_offset = stream->readUint32LE();
+			item.id = readObjectID(stream);
+			item.x = stream->readUint32LE();
+			item.y = stream->readUint32LE();
+			item.width = stream->readUint32LE();
+			item.height = stream->readUint32LE();
+			item.unknown1 = stream->readUint32LE();
+			item.unknown2 = stream->readUint32LE();
+			item.unknown3 = stream->readUint32LE();
+			item.description = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + desc_offset);
+		}
 		bridge_items.push_back(item);
 
 		offset += BRIDGE_ITEM_SIZE;
 	}
 
+	if (isMac) offset = BRIDGE_OBJECT_OFFSET_MAC;
 	for (unsigned int i = 0; i < NUM_BRIDGE_OBJECTS; i++) {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
 		BridgeObject obj;
-		obj.id = readObjectID(stream);
-		uint32 desc_offset = stream->readUint32LE();
-		obj.x = stream->readUint32LE();
-		obj.y = stream->readUint32LE();
-		obj.unknown1 = stream->readUint32LE();
-		obj.unknown2 = stream->readUint32LE();
-		obj.filename = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + desc_offset);
+		if (isMac) {
+			obj.id = readObjectIDBE(stream);
+			uint32 desc_offset = stream->readUint32BE();
+			obj.x = stream->readUint32BE();
+			obj.y = stream->readUint32BE();
+			obj.unknown1 = stream->readUint32BE();
+			obj.unknown2 = stream->readUint32BE();
+			obj.filename = readStringFromOffset(stream, desc_offset);
+		} else {
+			obj.id = readObjectID(stream);
+			uint32 desc_offset = stream->readUint32LE();
+			obj.x = stream->readUint32LE();
+			obj.y = stream->readUint32LE();
+			obj.unknown1 = stream->readUint32LE();
+			obj.unknown2 = stream->readUint32LE();
+			obj.filename = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + desc_offset);
+		}
 		bridge_objects.push_back(obj);
 
 		offset += BRIDGE_OBJECT_SIZE;
 	}
 
+	if (isMac) offset = BRIDGE_SCREEN_ENTRY_OFFSET_MAC;
 	for (unsigned int i = 0; i < NUM_BRIDGE_SCREEN_ENTRIES; i++) {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
 		BridgeScreenEntry entry;
-		uint32 desc_offset = stream->readUint32LE();
-		entry.unknown = stream->readUint32LE();
-		entry.text = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + desc_offset);
+		if (isMac) {
+			uint32 desc_offset = stream->readUint32BE();
+			entry.unknown = stream->readUint32BE();
+			entry.text = readStringFromOffset(stream, desc_offset);
+		} else {
+			uint32 desc_offset = stream->readUint32LE();
+			entry.unknown = stream->readUint32LE();
+			entry.text = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + desc_offset);
+		}
 		bridge_screen_entries.push_back(entry);
 
 		offset += BRIDGE_SCREEN_ENTRY_SIZE;
 	}
 
 	offset = DATA_SEGMENT_OFFSET_DOS + FAIL_HAIL_OFFSET_DOS;
+	if (isMac) offset = FAIL_HAIL_OFFSET_MAC;
 	while (true) {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
-		FailHailEntry entry;
 
-		entry.action_id = stream->readUint32LE();
-		if (entry.action_id == 0xffffffff) break;
-		entry.source = readObjectID(stream);
-		entry.fail_flag = stream->readUint32LE();
-		uint32 hail_offset = stream->readUint32LE();
-		entry.hail = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + hail_offset);
+		FailHailEntry entry;
+		if (isMac) {
+			entry.action_id = stream->readUint32BE();
+			if (entry.action_id == 0xffffffff) break;
+			entry.source = readObjectIDBE(stream);
+			entry.fail_flag = stream->readUint32BE();
+			uint32 hail_offset = stream->readUint32BE();
+			entry.hail = readStringFromOffset(stream, hail_offset);
+		} else {
+			entry.action_id = stream->readUint32LE();
+			if (entry.action_id == 0xffffffff) break;
+			entry.source = readObjectID(stream);
+			entry.fail_flag = stream->readUint32LE();
+			uint32 hail_offset = stream->readUint32LE();
+			entry.hail = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + hail_offset);
+		}
 		fail_hail_entries.push_back(entry);
 
 		offset += FAIL_HAIL_ENTRY_SIZE;
 	}
 
 	offset = DATA_SEGMENT_OFFSET_DOS + AWAY_TEAM_DATA_OFFSET_DOS;
+	if (isMac) offset = AWAY_TEAM_DATA_OFFSET_MAC;
 	for (unsigned int i = 0; i < NUM_AWAY_TEAM_DATA; i++) {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
@@ -408,18 +608,29 @@ void UnityData::loadDOSData() {
 		AwayTeamScreenData entry;
 		bool reading_members = true;
 		for (unsigned int j = 0; j < 5; j++) {
-			objectID default_member = readObjectID(stream);
+			objectID default_member;
+			if (isMac) default_member = readObjectIDBE(stream);
+			else default_member = readObjectID(stream);
+
 			if (!reading_members) continue;
 			if (default_member.id == 0xff) { reading_members = false; continue; }
 			if (j == 4) error("too many default away team members");
 			entry.default_members.push_back(default_member);
 		}
 
-		uint32 allowed_inv_offset = stream->readUint32LE();
-		r = stream->seek(DATA_SEGMENT_OFFSET_DOS + allowed_inv_offset, SEEK_SET);
-		assert(r);
+		if (isMac) {
+			uint32 allowed_inv_offset = stream->readUint32BE();
+			r = stream->seek(allowed_inv_offset, SEEK_SET);
+			assert(r);
+		} else {
+			uint32 allowed_inv_offset = stream->readUint32LE();
+			r = stream->seek(DATA_SEGMENT_OFFSET_DOS + allowed_inv_offset, SEEK_SET);
+			assert(r);
+		}
 		while (true) {
-			objectID allowed_inv = readObjectID(stream);
+			objectID allowed_inv;
+			if (isMac) allowed_inv = readObjectIDBE(stream);
+			else allowed_inv = readObjectID(stream);
 			if (allowed_inv.id == 0xff) break;
 			entry.inventory_items.push_back(allowed_inv);
 		}
@@ -429,67 +640,108 @@ void UnityData::loadDOSData() {
 	}
 
 	offset = DATA_SEGMENT_OFFSET_DOS + TRANSPORTER_SPRITE_NAMES_OFFSET_DOS;
+	if (isMac) offset = TRANSPORTER_SPRITE_NAMES_OFFSET_MAC;
 	for (unsigned int i = 0; i < NUM_TRANSPORTER_SPRITE_NAMES; i++) {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
-		uint32 sprite_name_offset = stream->readUint32LE();
-		transporter_sprite_names.push_back(readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + sprite_name_offset));
+		if (isMac) {
+			uint32 sprite_name_offset = stream->readUint32BE();
+			transporter_sprite_names.push_back(readStringFromOffset(stream, sprite_name_offset));
+		} else {
+			uint32 sprite_name_offset = stream->readUint32LE();
+			transporter_sprite_names.push_back(readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + sprite_name_offset));
+		}
 		offset += 4;
 	}
 
 	offset = DATA_SEGMENT_OFFSET_DOS + PRESET_SOUND_OFFSET_DOS;
+	if (isMac) offset = PRESET_SOUND_OFFSET_MAC;
 	for (unsigned int i = 0; i < NUM_PRESET_SOUNDS; i++) {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
-		uint32 preset_sound_id = stream->readUint32LE();
-		uint32 preset_sound_offset = stream->readUint32LE();
-		if (preset_sounds.contains(preset_sound_id)) error("duplicate sound id %d", preset_sound_id);
-		preset_sounds[preset_sound_id] = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + preset_sound_offset);
+		if (isMac) {
+			uint32 preset_sound_id = stream->readUint32BE();
+			uint32 preset_sound_offset = stream->readUint32BE();
+			if (preset_sounds.contains(preset_sound_id)) error("duplicate sound id %d", preset_sound_id);
+			preset_sounds[preset_sound_id] = readStringFromOffset(stream, preset_sound_offset);
+		} else {
+			uint32 preset_sound_id = stream->readUint32LE();
+			uint32 preset_sound_offset = stream->readUint32LE();
+			if (preset_sounds.contains(preset_sound_id)) error("duplicate sound id %d", preset_sound_id);
+			preset_sounds[preset_sound_id] = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + preset_sound_offset);
+		}
 
 		offset += 8;
 	}
 
 	offset = DATA_SEGMENT_OFFSET_DOS + ADVICE_NAMES_OFFSET_DOS;
+	if (isMac) offset = ADVICE_NAMES_OFFSET_MAC;
 	for (unsigned int i = 0; i < NUM_ADVICE_NAMES; i++) {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
-		uint32 advice_offset = stream->readUint32LE();
-		uint32 advice_id = stream->readUint32LE();
-		if (advice_names.contains(advice_id)) error("duplicate advice id %d", advice_id);
-		advice_names[advice_id] = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + advice_offset);
+		if (isMac) {
+			uint32 advice_offset = stream->readUint32BE();
+			uint32 advice_id = stream->readUint32BE();
+			if (advice_names.contains(advice_id)) error("duplicate advice id %d", advice_id);
+			advice_names[advice_id] = readStringFromOffset(stream, advice_offset);
+		} else {
+			uint32 advice_offset = stream->readUint32LE();
+			uint32 advice_id = stream->readUint32LE();
+			if (advice_names.contains(advice_id)) error("duplicate advice id %d", advice_id);
+			advice_names[advice_id] = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + advice_offset);
+		}
 
 		offset += 8;
 	}
 
-	offset = DATA_SEGMENT_OFFSET_DOS + ACTION_DEFAULT_STRINGS_OFFSET;
+	offset = DATA_SEGMENT_OFFSET_DOS + ACTION_DEFAULT_STRINGS_OFFSET_DOS;
+	if (isMac) offset = ACTION_DEFAULT_STRINGS_OFFSET_MAC;
 	for (unsigned int i = 0; i < 4; i++) {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
-		uint32 action_offset = stream->readUint32LE();
-		action_strings.push_back(readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + action_offset));
+		if (isMac) {
+			uint32 action_offset = stream->readUint32BE();
+			action_strings.push_back(readStringFromOffset(stream, action_offset));
+		} else {
+			uint32 action_offset = stream->readUint32LE();
+			action_strings.push_back(readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + action_offset));
+		}
+
 		offset += 4;
 	}
 
-	offset = DATA_SEGMENT_OFFSET_DOS + BACKGROUND_SOUND_DEFAULTS_OFFSET;
+	offset = DATA_SEGMENT_OFFSET_DOS + BACKGROUND_SOUND_DEFAULTS_OFFSET_DOS;
+	if (isMac) offset = BACKGROUND_SOUND_DEFAULTS_OFFSET_MAC;
 	for (unsigned int i = 0; i < NUM_BACKGROUND_SOUND_DEFAULTS; i++) {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
 		BackgroundSoundDefault entry;
-		uint32 format_offset = stream->readUint32LE();
-		entry.first = stream->readUint32LE();
-		entry.last = stream->readUint32LE();
-		if (format_offset != 0) {
-			entry.format_string = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + format_offset);
+		if (isMac) {
+			uint32 format_offset = stream->readUint32BE();
+			entry.first = stream->readUint32BE();
+			entry.last = stream->readUint32BE();
+			if (format_offset != 0) {
+				entry.format_string = readStringFromOffset(stream, format_offset);
+			}
+		} else {
+			uint32 format_offset = stream->readUint32LE();
+			entry.first = stream->readUint32LE();
+			entry.last = stream->readUint32LE();
+			if (format_offset != 0) {
+				entry.format_string = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + format_offset);
+			}
 		}
 		background_sound_defaults.push_back(entry);
 
 		offset += BACKGROUND_SOUND_DEFAULT_ENTRY_SIZE;
 	}
+
+	delete stream;
 }
 
 Conversation *UnityData::getConversation(unsigned int world, unsigned int id) {

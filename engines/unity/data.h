@@ -98,7 +98,7 @@ public:
 	Common::HashMap<uint32, Common::String> advice_names;
 	Common::Array<Common::String> action_strings;
 	Common::Array<BackgroundSoundDefault> background_sound_defaults;
-	void loadDOSData();
+	void loadExecutableData();
 
 	Common::HashMap<unsigned int, Common::HashMap<unsigned int, Conversation *>*> conversations;
 	Conversation *getConversation(unsigned int world, unsigned int id);

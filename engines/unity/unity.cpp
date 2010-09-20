@@ -1012,7 +1012,7 @@ Common::Error UnityEngine::run() {
 	data.loadSpriteFilenames();
 	data.loadSectorNames();
 	data.loadIconSprites();
-	data.loadBridgeData();
+	data.loadExecutableData();
 	data.loadMovieInfo();
 
 	startupScreen();
