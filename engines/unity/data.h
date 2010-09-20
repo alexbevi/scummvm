@@ -87,11 +87,18 @@ public:
 	Common::HashMap<unsigned int, Common::String> movie_descriptions;
 	void loadMovieInfo();
 
-	// hardcoded bridge data
+	// hardcoded data
 	Common::Array<BridgeItem> bridge_items;
 	Common::Array<BridgeObject> bridge_objects;
 	Common::Array<BridgeScreenEntry> bridge_screen_entries;
-	void loadBridgeData();
+	Common::Array<FailHailEntry> fail_hail_entries;
+	Common::Array<AwayTeamScreenData> away_team_screen_data;
+	Common::Array<Common::String> transporter_sprite_names;
+	Common::HashMap<uint32, Common::String> preset_sounds;
+	Common::HashMap<uint32, Common::String> advice_names;
+	Common::Array<Common::String> action_strings;
+	Common::Array<BackgroundSoundDefault> background_sound_defaults;
+	void loadDOSData();
 
 	Common::HashMap<unsigned int, Common::HashMap<unsigned int, Conversation *>*> conversations;
 	Conversation *getConversation(unsigned int world, unsigned int id);

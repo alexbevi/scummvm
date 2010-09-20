@@ -326,11 +326,12 @@ Common::String readStringFromOffset(Common::SeekableReadStream *stream, int32 of
 	return s;
 }
 
-void UnityData::loadBridgeData() {
+void UnityData::loadDOSData() {
 	// TODO: check md5sum/etc
 	Common::SeekableReadStream *stream = openFile("sttng.ovl");
 
-	int32 offset = DATA_SEGMENT_OFFSET + BRIDGE_ITEM_OFFSET;
+	// bridge data
+	int32 offset = DATA_SEGMENT_OFFSET_DOS + BRIDGE_ITEM_OFFSET_DOS;
 
 	for (unsigned int i = 0; i < NUM_BRIDGE_ITEMS; i++) {
 		bool r = stream->seek(offset, SEEK_SET);
@@ -346,7 +347,7 @@ void UnityData::loadBridgeData() {
 		item.unknown1 = stream->readUint32LE();
 		item.unknown2 = stream->readUint32LE();
 		item.unknown3 = stream->readUint32LE();
-		item.description = readStringFromOffset(stream, DATA_SEGMENT_OFFSET + desc_offset);
+		item.description = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + desc_offset);
 		bridge_items.push_back(item);
 
 		offset += BRIDGE_ITEM_SIZE;
@@ -363,7 +364,7 @@ void UnityData::loadBridgeData() {
 		obj.y = stream->readUint32LE();
 		obj.unknown1 = stream->readUint32LE();
 		obj.unknown2 = stream->readUint32LE();
-		obj.filename = readStringFromOffset(stream, DATA_SEGMENT_OFFSET + desc_offset);
+		obj.filename = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + desc_offset);
 		bridge_objects.push_back(obj);
 
 		offset += BRIDGE_OBJECT_SIZE;
@@ -376,10 +377,118 @@ void UnityData::loadBridgeData() {
 		BridgeScreenEntry entry;
 		uint32 desc_offset = stream->readUint32LE();
 		entry.unknown = stream->readUint32LE();
-		entry.text = readStringFromOffset(stream, DATA_SEGMENT_OFFSET + desc_offset);
+		entry.text = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + desc_offset);
 		bridge_screen_entries.push_back(entry);
 
 		offset += BRIDGE_SCREEN_ENTRY_SIZE;
+	}
+
+	offset = DATA_SEGMENT_OFFSET_DOS + FAIL_HAIL_OFFSET_DOS;
+	while (true) {
+		bool r = stream->seek(offset, SEEK_SET);
+		assert(r);
+		FailHailEntry entry;
+
+		entry.action_id = stream->readUint32LE();
+		if (entry.action_id == 0xffffffff) break;
+		entry.source = readObjectID(stream);
+		entry.fail_flag = stream->readUint32LE();
+		uint32 hail_offset = stream->readUint32LE();
+		entry.hail = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + hail_offset);
+		fail_hail_entries.push_back(entry);
+
+		offset += FAIL_HAIL_ENTRY_SIZE;
+	}
+
+	offset = DATA_SEGMENT_OFFSET_DOS + AWAY_TEAM_DATA_OFFSET_DOS;
+	for (unsigned int i = 0; i < NUM_AWAY_TEAM_DATA; i++) {
+		bool r = stream->seek(offset, SEEK_SET);
+		assert(r);
+
+		AwayTeamScreenData entry;
+		bool reading_members = true;
+		for (unsigned int j = 0; j < 5; j++) {
+			objectID default_member = readObjectID(stream);
+			if (!reading_members) continue;
+			if (default_member.id == 0xff) { reading_members = false; continue; }
+			if (j == 4) error("too many default away team members");
+			entry.default_members.push_back(default_member);
+		}
+
+		uint32 allowed_inv_offset = stream->readUint32LE();
+		r = stream->seek(DATA_SEGMENT_OFFSET_DOS + allowed_inv_offset, SEEK_SET);
+		assert(r);
+		while (true) {
+			objectID allowed_inv = readObjectID(stream);
+			if (allowed_inv.id == 0xff) break;
+			entry.inventory_items.push_back(allowed_inv);
+		}
+		away_team_screen_data.push_back(entry);
+
+		offset += (5 + 1) * 4;
+	}
+
+	offset = DATA_SEGMENT_OFFSET_DOS + TRANSPORTER_SPRITE_NAMES_OFFSET_DOS;
+	for (unsigned int i = 0; i < NUM_TRANSPORTER_SPRITE_NAMES; i++) {
+		bool r = stream->seek(offset, SEEK_SET);
+		assert(r);
+
+		uint32 sprite_name_offset = stream->readUint32LE();
+		transporter_sprite_names.push_back(readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + sprite_name_offset));
+		offset += 4;
+	}
+
+	offset = DATA_SEGMENT_OFFSET_DOS + PRESET_SOUND_OFFSET_DOS;
+	for (unsigned int i = 0; i < NUM_PRESET_SOUNDS; i++) {
+		bool r = stream->seek(offset, SEEK_SET);
+		assert(r);
+
+		uint32 preset_sound_id = stream->readUint32LE();
+		uint32 preset_sound_offset = stream->readUint32LE();
+		if (preset_sounds.contains(preset_sound_id)) error("duplicate sound id %d", preset_sound_id);
+		preset_sounds[preset_sound_id] = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + preset_sound_offset);
+
+		offset += 8;
+	}
+
+	offset = DATA_SEGMENT_OFFSET_DOS + ADVICE_NAMES_OFFSET_DOS;
+	for (unsigned int i = 0; i < NUM_ADVICE_NAMES; i++) {
+		bool r = stream->seek(offset, SEEK_SET);
+		assert(r);
+
+		uint32 advice_offset = stream->readUint32LE();
+		uint32 advice_id = stream->readUint32LE();
+		if (advice_names.contains(advice_id)) error("duplicate advice id %d", advice_id);
+		advice_names[advice_id] = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + advice_offset);
+
+		offset += 8;
+	}
+
+	offset = DATA_SEGMENT_OFFSET_DOS + ACTION_DEFAULT_STRINGS_OFFSET;
+	for (unsigned int i = 0; i < 4; i++) {
+		bool r = stream->seek(offset, SEEK_SET);
+		assert(r);
+
+		uint32 action_offset = stream->readUint32LE();
+		action_strings.push_back(readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + action_offset));
+		offset += 4;
+	}
+
+	offset = DATA_SEGMENT_OFFSET_DOS + BACKGROUND_SOUND_DEFAULTS_OFFSET;
+	for (unsigned int i = 0; i < NUM_BACKGROUND_SOUND_DEFAULTS; i++) {
+		bool r = stream->seek(offset, SEEK_SET);
+		assert(r);
+
+		BackgroundSoundDefault entry;
+		uint32 format_offset = stream->readUint32LE();
+		entry.first = stream->readUint32LE();
+		entry.last = stream->readUint32LE();
+		if (format_offset != 0) {
+			entry.format_string = readStringFromOffset(stream, DATA_SEGMENT_OFFSET_DOS + format_offset);
+		}
+		background_sound_defaults.push_back(entry);
+
+		offset += BACKGROUND_SOUND_DEFAULT_ENTRY_SIZE;
 	}
 }
 
