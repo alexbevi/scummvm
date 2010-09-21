@@ -18,6 +18,16 @@ objectID readObjectID(Common::SeekableReadStream *stream) {
 	return r;
 }
 
+objectID readObjectIDBE(Common::SeekableReadStream *stream) {
+	objectID r;
+	stream->read(&r.unused, 1);
+	stream->read(&r.world, 1);
+	stream->read(&r.screen, 1);
+	stream->read(&r.id, 1);
+	assert(r.unused == 0 || r.unused == 0xff);
+	return r;
+}
+
 enum {
 	BLOCK_OBJ_HEADER = 0x0,
 	BLOCK_DESCRIPTION = 0x1,

@@ -74,6 +74,7 @@ struct objectID {
 };
 
 objectID readObjectID(Common::SeekableReadStream *stream);
+objectID readObjectIDBE(Common::SeekableReadStream *stream);
 
 enum ActionType {
 	ACTION_USE = 0,
