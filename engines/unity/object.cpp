@@ -524,18 +524,12 @@ void CommandBlock::readFrom(Common::SeekableReadStream *objstream) {
 	target[1] = readObjectID(objstream);
 	target[2] = readObjectID(objstream);
 
-	// both usually 0xffff (but not an object?)
-	unknown1 = objstream->readUint16LE();
-	unknown2 = objstream->readUint16LE();
+	// both usually 0xffff
+	target_x = objstream->readUint16LE();
+	target_y = objstream->readUint16LE();
 
 	command_id = objstream->readUint32LE();
 
-	/*
-	 * 2/3 are about items? GET? DROP? INV?
-	 * 4 is WALK?
-	 * 5 is TALK?
-	 * 6 is USE?
-	 */
 	assert(command_id >= 2 && command_id <= 6);
 
 	for (unsigned int i = 0; i < 97; i++) {
@@ -1539,11 +1533,11 @@ ResultType ReactionBlock::execute(UnityEngine *_vm, Action *context) {
 }
 
 ResultType CommandBlock::execute(UnityEngine *_vm, Action *context) {
-	debug(1, "CommandBlock: %02x%02x%02x/%02x%02x%02x/%02x%02x%02x, %02x, %02x, command %d",
+	debug(1, "CommandBlock: %02x%02x%02x/%02x%02x%02x/%02x%02x%02x, (%d, %d), command %d",
 		target[0].world, target[0].screen, target[0].id,
 		target[1].world, target[1].screen, target[1].id,
 		target[2].world, target[2].screen, target[2].id,
-		unknown1, unknown2, command_id);
+		target_x, target_y, command_id);
 
 	ActionType action_id;
 	switch (command_id) {
@@ -1559,7 +1553,7 @@ ResultType CommandBlock::execute(UnityEngine *_vm, Action *context) {
 	if (target[0].world != 0xff)
 		targ = _vm->data.getObject(target[0]);
 
-	_vm->performAction(action_id, targ, target[1], target[2]);
+	_vm->performAction(action_id, targ, target[1], target[2], target_x, target_y);
 
 	return 0;
 }

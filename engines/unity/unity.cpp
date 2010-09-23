@@ -1130,14 +1130,15 @@ void UnityEngine::runDialog() {
 	_snd->stopSpeech();
 }
 
-ResultType UnityEngine::performAction(ActionType action_type, Object *target, objectID who, objectID other) {
+ResultType UnityEngine::performAction(ActionType action_type, Object *target, objectID who, objectID other,
+	unsigned int target_x, unsigned int target_y) {
 	Action context;
 	context.action_type = action_type;
 	context.target = target;
 	context.who = who;
 	context.other = other;
-	context.x = 0xffffffff; // TODO
-	context.y = 0xffffffff; // TODO
+	context.x = target_x;
+	context.y = target_y;
 
 	switch (action_type) {
 		case ACTION_USE:

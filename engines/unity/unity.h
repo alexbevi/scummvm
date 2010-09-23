@@ -83,7 +83,7 @@ public:
 	void startBridge();
 	void startAwayTeam(unsigned int world, unsigned int screen, byte entrance = 0);
 
-	ResultType performAction(ActionType action_type, Object *target, objectID who = objectID(), objectID other = objectID());
+	ResultType performAction(ActionType action_type, Object *target, objectID who = objectID(), objectID other = objectID(), unsigned int target_x = 0xffff, unsigned int target_y = 0xffff);
 
 	void playDescriptionFor(Object *obj);
 	Common::String voiceFileFor(byte voice_group, byte voice_subgroup, objectID speaker, byte voice_id, char type = 0);

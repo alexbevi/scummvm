@@ -217,7 +217,7 @@ public:
 class CommandBlock : public Entry {
 protected:
 	objectID target[3];
-	uint16 unknown1, unknown2;
+	uint16 target_x, target_y;
 	uint32 command_id;
 
 public:
