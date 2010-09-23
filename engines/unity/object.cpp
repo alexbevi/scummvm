@@ -73,7 +73,8 @@ enum {
 
 	BLOCK_END_BLOCK = 0x25,
 
-	// TODO: 0x26, 0x27 for CHOICE
+	BLOCK_CHOICE1 = 0x26,
+	BLOCK_CHOICE2 = 0x27,
 
 	BLOCK_CONV_RESPONSE = 0x28,
 	BLOCK_CONV_WHOCANSAY = 0x29,
@@ -702,7 +703,34 @@ void CommunicateBlock::readFrom(Common::SeekableReadStream *objstream) {
 void ChoiceBlock::readFrom(Common::SeekableReadStream *objstream) {
 	readHeaderFrom(objstream, 0x4d);
 
-	objstream->seek(0xfc, SEEK_CUR); // XXX
+	// TODO: x/y?
+	_unknown1 = objstream->readUint16LE();
+	_unknown2 = objstream->readUint16LE();
+
+	char buffer[101];
+	buffer[100] = 0;
+	objstream->read(buffer, 100);
+	_questionstring = buffer;
+
+	buffer[16] = 0;
+	objstream->read(buffer, 16);
+	_choicestring[0] = buffer;
+	objstream->read(buffer, 16);
+	_choicestring[1] = buffer;
+
+	_object = readObjectID(objstream);
+
+	// offsets and counts for the choices, it seems; we don't need this
+	uint32 offset1 = objstream->readUint32LE();
+	uint32 offset2 = objstream->readUint32LE();
+	uint16 count1 = objstream->readUint16LE();
+	uint16 count2 = objstream->readUint16LE();
+	(void)offset1; (void)offset2; (void)count1; (void)count2;
+
+	for (unsigned int i = 0; i < 25; i++) {
+		uint32 unknown32 = objstream->readUint32LE();
+		assert(unknown32 == 0);
+	}
 }
 
 void EntryList::readEntry(int type, Common::SeekableReadStream *objstream) {
@@ -883,16 +911,16 @@ void EntryList::readEntry(int type, Common::SeekableReadStream *objstream) {
 				if (type == BLOCK_END_BLOCK)
 					break;
 
-				if (type == 0x26) {
+				if (type == BLOCK_CHOICE1) {
 					type = readBlockHeader(objstream);
 					// XXX: horrible
-					block->unknown1.list.push_back(new Common::Array<Entry *>());
-					block->unknown1.readEntry(type, objstream);
-				} else if (type == 0x27) {
+					block->_choice[0].list.push_back(new Common::Array<Entry *>());
+					block->_choice[0].readEntry(type, objstream);
+				} else if (type == BLOCK_CHOICE2) {
 					type = readBlockHeader(objstream);
 					// XXX: horrible
-					block->unknown2.list.push_back(new Common::Array<Entry *>());
-					block->unknown2.readEntry(type, objstream);
+					block->_choice[1].list.push_back(new Common::Array<Entry *>());
+					block->_choice[1].readEntry(type, objstream);
 				} else
 					error("bad block type %x encountered while parsing choices", type);
 			}

@@ -317,8 +317,11 @@ public:
 	void readFrom(Common::SeekableReadStream *stream);
 	ResultType execute(UnityEngine *_vm, Action *context);
 
-	EntryList unknown1; // 0x26
-	EntryList unknown2; // 0x27
+	uint16 _unknown1, _unknown2;
+	objectID _object;
+	Common::String _questionstring;
+	Common::String _choicestring[2];
+	EntryList _choice[2];
 };
 
 class Object {
