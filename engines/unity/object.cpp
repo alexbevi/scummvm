@@ -1310,12 +1310,22 @@ ResultType AlterBlock::execute(UnityEngine *_vm, Action *context) {
 			// drop
 			debug(1, "AlterBlock::execute (%s): dropping", obj->identify().c_str());
 			obj->flags &= ~OBJFLAG_INVENTORY;
+
+			if (Common::find(_vm->_inventory_items.begin(),
+				_vm->_inventory_items.end(), obj) != _vm->_inventory_items.end()) {
+				_vm->removeFromInventory(obj);
+			}
 		}
 		if (alter_flags & 0x8) {
 			// get
 			debug(1, "AlterBlock::execute (%s): getting", obj->identify().c_str());
 			if (!(obj->flags & OBJFLAG_INVENTORY)) {
 				obj->flags |= (OBJFLAG_ACTIVE | OBJFLAG_INVENTORY);
+			}
+
+			if (Common::find(_vm->_inventory_items.begin(),
+				_vm->_inventory_items.end(), obj) == _vm->_inventory_items.end()) {
+				_vm->addToInventory(obj);
 			}
 		}
 		if (alter_flags & 0x10) {

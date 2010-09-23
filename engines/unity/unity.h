@@ -58,7 +58,13 @@ public:
 	AwayTeamMode mode;
 
 	Object *_current_away_team_member;
+	SpritePlayer *_current_away_team_icon;
 	Common::Array<Object *> _away_team_members;
+	Common::Array<Object *> _inventory_items;
+	Common::Array<SpritePlayer *> _inventory_icons;
+	unsigned int _inventory_index;
+	void addToInventory(Object *obj);
+	void removeFromInventory(Object *obj);
 
 	Common::String status_text;
 

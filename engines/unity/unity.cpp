@@ -43,6 +43,8 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	beam_world = 0;
 	mode = mode_Look;
 	_current_away_team_member = NULL;
+	_current_away_team_icon = NULL;
+	_inventory_index = 0;
 }
 
 UnityEngine::~UnityEngine() {
@@ -50,6 +52,7 @@ UnityEngine::~UnityEngine() {
 	delete _gfx;
 	delete data.data;
 	delete _icon;
+	delete _current_away_team_icon;
 }
 
 Common::Error UnityEngine::init() {
@@ -257,8 +260,16 @@ void UnityEngine::startBridge() {
 	data.current_screen.screen = 0xff;
 
 	_current_away_team_member = NULL;
+	delete _current_away_team_icon;
+	_current_away_team_icon = NULL;
 	_away_team_members.clear();
+	_inventory_items.clear();
+	for (unsigned int i = 0; i < _inventory_icons.size(); i++) {
+		delete _inventory_icons[i];
+	}
+	_inventory_icons.clear();
 
+	// TODO: episode title should only appear once
 	const char *bridge_sprites[5] = {
 		"brdgldor.spr", // Left Door (conference room)
 		"brdgdoor.spr", // Door
@@ -298,33 +309,93 @@ void UnityEngine::startBridge() {
 	handleBridgeMouseMove(0, 0);
 }
 
+void UnityEngine::addToInventory(Object *obj) {
+	assert(_inventory_items.size() == _inventory_icons.size());
+	if (Common::find(_inventory_items.begin(), _inventory_items.end(), obj) != _inventory_items.end()) {
+		error("trying to add %s to inventory but it's already there", obj->identify().c_str());
+	}
+
+	obj->flags |= OBJFLAG_INVENTORY;
+
+	_inventory_items.push_back(obj);
+
+	Common::String icon_sprite = data.getIconSprite(obj->id);
+	if (!icon_sprite.size()) {
+		error("couldn't find icon sprite for inventory item %s", obj->identify().c_str());
+	}
+	SpritePlayer *icon = NULL;
+	icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
+	icon->startAnim(0); // static
+	_inventory_icons.push_back(icon);
+}
+
+void UnityEngine::removeFromInventory(Object *obj) {
+	obj->flags &= ~OBJFLAG_INVENTORY;
+
+	unsigned int i;
+	for (i = 0; i < _inventory_items.size(); i++) {
+		if (_inventory_items[i] == obj) {
+			_inventory_items.remove_at(i);
+			break;
+		}
+	}
+	if (i == _inventory_items.size()) {
+		error("sync error while trying to remove %s from inventory", obj->identify().c_str());
+	}
+	delete _inventory_icons[i];
+	_inventory_icons.remove_at(i);
+
+	assert(_inventory_items.size() == _inventory_icons.size());
+}
+
 void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte entrance) {
 	data.current_screen.objects.clear();
 	data.current_screen.world = world;
 	data.current_screen.screen = screen;
 
-	// beam in an away team
-	for (unsigned int i = 0; i < 4; i++) {
-		objectID objid(i, 0, 0);
-		Object *obj = data.getObject(objid);
-		obj->curr_screen = screen;
-		obj->loadSprite();
-		obj->sprite->startAnim(26);
-		data.current_screen.objects.push_back(obj);
-	}
-	// XXX: stupid hack to make sure the rest of the away team is off-screen
-	for (unsigned int i = 4; i < 9; i++) {
-		objectID objid(i, 0, 0);
-		Object *obj = data.getObject(objid);
-		obj->curr_screen = 0;
-	}
 	if (!_away_team_members.size()) {
-		_current_away_team_member = data.current_screen.objects[0];
+		// TODO: move this somewhere sensible!
 		for (unsigned int i = 0; i < 4; i++) {
-			_away_team_members.push_back(data.current_screen.objects[0]);
+			objectID objid(i, 0, 0);
+			Object *obj = data.getObject(objid);
+			obj->loadSprite();
+			_away_team_members.push_back(obj);
+		}
+		_current_away_team_member = _away_team_members[0];
+
+		Common::String icon_sprite = data.getIconSprite(_current_away_team_member->id);
+		if (!icon_sprite.size()) {
+			error("couldn't find icon sprite for away team member %s",
+				_current_away_team_member->identify().c_str());
+		}
+		_current_away_team_icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
+		_current_away_team_icon->startAnim(0); // static
+
+		for (unsigned int i = 0; i < 5; i++) {
+			if (i == 2) continue; // TODO: handle communicator
+			objectID objid(i, 0x70, 0);
+			Object *obj = data.getObject(objid);
+			if (!(obj->flags & OBJFLAG_ACTIVE)) continue;
+			addToInventory(obj);
 		}
 	} else {
 		assert(_current_away_team_member);
+	}
+
+	// beam in the away team
+	for (unsigned int i = 0; i < 9; i++) {
+		objectID objid(i, 0, 0);
+		Object *obj = data.getObject(objid);
+		if (Common::find(_away_team_members.begin(), _away_team_members.end(), obj)
+			== _away_team_members.end()) {
+			// XXX: stupid hack to make sure the rest of the away team is off-screen
+			obj->curr_screen = 0;
+		} else {
+			obj->curr_screen = screen;
+			obj->loadSprite();
+			obj->sprite->startAnim(26);
+			data.current_screen.objects.push_back(obj);
+		}
 	}
 
 	openLocation(world, screen);
