@@ -1083,9 +1083,56 @@ void UnityEngine::drawAwayTeamUI() {
 	_gfx->loadMRG("awayteam.mrg", &mrg);
 	_gfx->drawMRG(&mrg, 0, 0, 400);
 
+	// notes on the UI elements not used here:
+	// 1 has the normal admin menu, 2 the selected one
+	// 22 is an empty phaser bar and 12 has an empty grey panel
+
+	// away team member icon
+	assert(_current_away_team_icon);
+	_current_away_team_icon->update();
+	_gfx->drawSprite(_current_away_team_icon, 75, 476);
+
+	// away team member health bar
+	_gfx->drawMRG(&mrg, 23, 100, 426);
+
+	// mode icons
+	_gfx->drawMRG(&mrg, 13 + (mode == mode_Look ? 1 : 0), 108, 424);
+	_gfx->drawMRG(&mrg, 19 + (mode == mode_Use ? 1 : 0), 149, 424);
+	_gfx->drawMRG(&mrg, 17 + (mode == mode_Talk ? 1 : 0), 108, 451);
+	// TODO: 21 is disabled walk?
+	_gfx->drawMRG(&mrg, 15 + (mode == mode_Walk ? 1 : 0), 149, 451);
+
+	// status text
 	_gfx->drawString(0, 403, 9999, 9999, status_text.c_str(), 2);
 
-	// TODO
+	// inventory
+	for (unsigned int i = 0; i < 6; i++) {
+		unsigned int index = _inventory_index + i;
+		if (index >= _inventory_icons.size()) break;
+
+		// TODO: unverified coords
+		unsigned int x;
+		switch (i) {
+		case 0: x = 267; break;
+		case 1: x = 320; break;
+		case 2: x = 373; break;
+		case 3: x = 499; break;
+		case 4: x = 552; break;
+		case 5: x = 605; break;
+		}
+		unsigned int y = 475;
+
+		SpritePlayer *icon = _inventory_icons[index];
+		icon->update();
+		_gfx->drawSprite(icon, x, y);
+	}
+
+	// TODO: inventory scrolling
+	// 6/7/8 is left (normal/hilight/greyed)
+	// 9/10/11 is right (normal/hilight/greyed)
+
+	// TODO: phaser selection
+	// 3/4/5 is the low/medium/high phaser selection
 }
 
 Common::Error UnityEngine::run() {
