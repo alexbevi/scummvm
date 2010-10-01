@@ -180,6 +180,7 @@ void Debugger::dumpFile(Common::String filename) {
 	int ret = my_mkdir(folder.c_str(), 600); \
 	if (ret == -1 && errno != EEXIST) { \
 	DebugPrintf("Cannot create folder: %s", folder.c_str()); \
+	delete archive; \
 	return; \
 	} \
 }
@@ -214,12 +215,12 @@ void Debugger::dumpFile(Common::String filename) {
 		Common::String name = (*it)->getName();
 		Common::SeekableReadStream *stream = archive->createReadStreamForMember(name);
 
-		byte *data = (byte *)calloc(stream->size(), 1);
-		stream->read(data, stream->size());
+		byte *data = (byte *)calloc((uint32)stream->size(), 1);
+		stream->read(data, (uint32)stream->size());
 
 		Common::DumpFile out;
 		if (out.open(Common::String("dumps/liath/") + filename + "/" + name)) {
-			out.write(data, stream->size());
+			out.write(data, (uint32)stream->size());
 			out.close();
 		}
 
@@ -231,6 +232,9 @@ void Debugger::dumpFile(Common::String filename) {
 	}
 
 	DebugPrintf("\n");
+
+	delete archive;
+
 #undef CREATE_FOLDER
 }
 

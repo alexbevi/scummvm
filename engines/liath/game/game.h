@@ -84,6 +84,7 @@ private:
 	void unload();
 	void playAction();
 	void processAction();
+	void loadGameStartHero();
 };
 
 } // End of namespace Liath

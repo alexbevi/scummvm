@@ -102,6 +102,8 @@ Hero *HeroManager::get(HeroIndex index) {
 //////////////////////////////////////////////////////////////////////////
 OpcodeRet HeroManager::start(OpcodeParameters *parameters, Work *work, void *unkown) {
 	error("HeroManager::start: Not implemented!");
+
+	return kOpcodeRetDefault;
 }
 
 OpcodeRet HeroManager::startExt(OpcodeParameters *parameters) {

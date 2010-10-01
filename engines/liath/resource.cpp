@@ -177,8 +177,10 @@ void ResourceManager::readPathFile() {
 			filename.toLowercase();
 			filename.trim();
 
-			path.folderName = Common::String(sep2 + 1);
-			path.folderName.trim();
+			if (sep2 != NULL) {
+				path.folderName = Common::String(sep2 + 1);
+				path.folderName.trim();
+			}
 
 			// Convert media type
 			Common::String media(p, sep2);

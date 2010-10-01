@@ -298,13 +298,13 @@ Interpreter::~Interpreter() {
 //////////////////////////////////////////////////////////////////////////
 // Interpreter
 //////////////////////////////////////////////////////////////////////////
-int Interpreter::interpret(ObjectIndex *pObjectIndex, Segment segment) {
+int Interpreter::interpret(ObjectIndex *pObjectIndex, Segment segment) const {
 	getSegment()->set(kSegmentExpression, segment);
 
 	while (pObjectIndex) {
 
 		ObjectIndex objectIndex = *pObjectIndex;
-		OpcodeParameters *parameters = objectIndex ? (OpcodeParameters *)getSegment()->getData(kSegmentExpression, objectIndex) : NULL;
+		OpcodeParameters *parameters = (objectIndex ? (OpcodeParameters *)getSegment()->getData(kSegmentExpression, objectIndex) : NULL);
 
 		if (parameters) {
 
@@ -313,7 +313,7 @@ int Interpreter::interpret(ObjectIndex *pObjectIndex, Segment segment) {
 				default:
 				case kOpcodeRetDefault:
 					objectIndex = parameters->objectIndex;
-					parameters = objectIndex ? (OpcodeParameters *)getSegment()->getData(kSegmentExpression, objectIndex) : NULL;
+					parameters = (objectIndex ? (OpcodeParameters *)getSegment()->getData(kSegmentExpression, objectIndex) : NULL);
 
 					if (!parameters)
 						goto update_index;
@@ -321,7 +321,7 @@ int Interpreter::interpret(ObjectIndex *pObjectIndex, Segment segment) {
 
 				case kOpcodeRetNext:
 					if (pObjectIndex[2])
-						pObjectIndex = pObjectIndex[2] ? (ObjectIndex *)getSegment()->getData(kSegmentExpression, pObjectIndex[2]) : NULL;
+						pObjectIndex = (pObjectIndex[2] ? (ObjectIndex *)getSegment()->getData(kSegmentExpression, pObjectIndex[2]) : NULL);
 					else
 						goto update_index;
 					break;
@@ -348,7 +348,7 @@ update_index:
 	return 1;
 }
 
-OpcodeRet Interpreter::run(OpcodeParameters *parameters, ObjectIndex index) {
+OpcodeRet Interpreter::run(OpcodeParameters *parameters, ObjectIndex index) const {
 	debugC(kLiathDebugInterpreter, "Executing opcode: %s (%02d)", OPCODE_NAME(parameters->opcode), parameters->opcode);
 
 	switch (parameters->opcode) {

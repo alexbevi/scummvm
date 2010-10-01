@@ -39,13 +39,13 @@ public:
 	Interpreter(LiathEngine *engine);
 	~Interpreter();
 
-	int interpret(ObjectIndex *pObjectIndex, Segment segment);
+	int interpret(ObjectIndex *pObjectIndex, Segment segment) const;
 
 private:
 	LiathEngine* _engine;
 
 	// Interpreter
-	OpcodeRet run(OpcodeParameters *parameters, ObjectIndex index);
+	OpcodeRet run(OpcodeParameters *parameters, ObjectIndex index) const;
 };
 
 } // End of namespace Liath

@@ -87,6 +87,8 @@ OpcodeRet SoundManager::playWave(OpcodeParameters *parameters) {
 OpcodeRet SoundManager::playMusic(OpcodeParameters *parameters, bool useEffectLevel) {
 	Common::String filename = Common::String::printf("%s", (char *)&parameters->params);
 
+	debugC(kLiathDebugInterpreter, "  filename: %s  -  attenuation: %d\n", filename.c_str(), parameters->getDword(256));
+
 	// TODO get the first empty entry
 	MusicEntry *entry = getMusicEntry(filename);
 	entry->name = filename;
@@ -171,7 +173,7 @@ void SoundManager::setLevel(SoundType type, uint32 level) {
 SoundManager::MusicEntry *SoundManager::getMusicEntry(const Common::String &filename) {
 	MusicEntry *entry = NULL;
 
-	for (int i = 0; i < sizeof(_musicEntries); i++) {
+	for (uint i = 0; i < sizeof(_musicEntries); i++) {
 
 		// Get the first empty entry
 		if (!entry && (!_musicEntries[i].handle || !_mixer->isSoundHandleActive(*_musicEntries[i].handle)))

@@ -170,6 +170,11 @@ label_load:
 	getAction()->playVideo();
 
 
+	if (_currentWorkInfo) {
+		loadGameStartHero();
+		processAction();
+		return;
+	}
 	warning("GameManager::playAction: Not implemented!");
 
 	ObjectIndex *pObjectIndex = (action->objectIndex ? getSegment()->getData(kSegmentAction, action->objectIndex) : NULL);
@@ -179,6 +184,10 @@ label_load:
 
 void GameManager::processAction() {
 	error("GameManager::processAction: Not implemented!");
+}
+
+void GameManager::loadGameStartHero() {
+	error("GameManager::loadGameStartHero: Not implemented!");
 }
 
 //////////////////////////////////////////////////////////////////////////

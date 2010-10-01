@@ -150,6 +150,11 @@ Segment *SegmentManager::getSegmentByType(SegmentType type) {
 	}
 }
 
+/**
+ * Unloads segment data
+ *
+ * @param segment The segment to unload
+ */
 void SegmentManager::unload(Segment segment) {
 	SegmentDef seg = *segment;
 
