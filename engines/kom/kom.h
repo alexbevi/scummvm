@@ -40,6 +40,14 @@
 #include "kom/game.h"
 #include "kom/font.h"
 
+/**
+ * This is the namespace of the Kom engine.
+ *
+ * Status of this engine: ???
+ *
+ * Games using this engine:
+ * - Kingdom O' Magic
+ */
 namespace Kom {
 
 class Screen;
