@@ -1424,9 +1424,9 @@ ResultType AlterBlock::execute(UnityEngine *_vm, Action *context) {
 			} else {
 				obj->sprite->startAnim(anim_id);
 			}
-		} else if (obj->id.world == 0x5f && obj->id.screen == 1 && obj->id.id == 0) {
-			// TODO: special handling for the Enterprise
-			warning("unimplemented: Enterprise animation changes");
+		} else if (obj->id == objectID(0, 1, 0x5f)) {
+			// sprite change on the Enterprise
+			_vm->_viewscreen_sprite_id = alter_anim;
 		} else {
 			warning("no sprite?!");
 		}

@@ -83,6 +83,8 @@ public:
 
 	uint16 beam_world, beam_screen;
 
+	unsigned int _viewscreen_sprite_id;
+
 	unsigned int runDialogChoice(Conversation *conversation);
 	void runDialog();
 

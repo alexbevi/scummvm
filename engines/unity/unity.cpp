@@ -45,6 +45,7 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	_current_away_team_member = NULL;
 	_current_away_team_icon = NULL;
 	_inventory_index = 0;
+	_viewscreen_sprite_id = ~0; // should be set by startup scripts
 }
 
 UnityEngine::~UnityEngine() {
@@ -439,8 +440,9 @@ void UnityEngine::startupScreen() {
 		p->update();
 		if (!p->playing()) {
 			if (!waiting) {
-				// arbitary 4 second wait, not sure how long the original waits
-				waiting = g_system->getMillis() + 4000;
+				// arbitary 4 second wait, original waits until background
+				// load is done (i.e. 0s on modern systems)
+				waiting = g_system->getMillis() + 2000;
 			} else if (g_system->getMillis() < waiting) {
 				// delay for 1/10th sec while waiting
 				g_system->delayMillis(100);
