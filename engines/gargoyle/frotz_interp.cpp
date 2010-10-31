@@ -186,7 +186,7 @@ static ZCodeFn ext_opcodes[0x1e] = {
 /**
  * Support function that encapsulates a check for EOF as well as a readByte()
  */
-int inline fgetc(Common::InSaveFile *f) {
+int inline fgetb(Common::InSaveFile *f) {
 	if (f->eos())
 		return EOF;
 	return f->readByte();
@@ -1399,11 +1399,11 @@ void FrotzInterpreter::replay_close(void) {
 int FrotzInterpreter::replay_code(void) {
 	int c;
 
-	if ((c = fgetc(pfp)) == '[') {
+	if ((c = fgetb(pfp)) == '[') {
 		int c2;
 		c = 0;
 
-		while ((c2 = fgetc(pfp)) != EOF && c2 >= '0' && c2 <= '9')
+		while ((c2 = fgetb(pfp)) != EOF && c2 >= '0' && c2 <= '9')
 			c = 10 * c + c2 - '0';
 
 		return (c2 == ']') ? c : EOF;
@@ -1448,7 +1448,7 @@ zword FrotzInterpreter::replay_read_key(void) {
 
 	key = replay_char();
 
-	if (fgetc(pfp) != '\n') {
+	if (fgetb(pfp) != '\n') {
 		replay_close();
 		return ZC_BAD;
 	} else 
@@ -1472,7 +1472,7 @@ zword FrotzInterpreter::replay_read_input(zchar *buf) {
 
 	*buf = 0;
 
-	if (fgetc (pfp) != '\n') {
+	if (fgetb(pfp) != '\n') {
 		replay_close();
 		return ZC_BAD;
 	} else 
