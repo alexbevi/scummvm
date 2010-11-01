@@ -85,7 +85,7 @@ OpcodeRet SoundManager::playWave(OpcodeParameters *parameters) {
 }
 
 OpcodeRet SoundManager::playMusic(OpcodeParameters *parameters, bool useEffectLevel) {
-	Common::String filename = Common::String::printf("%s", (char *)&parameters->params);
+	Common::String filename = Common::String::format("%s", (char *)&parameters->params);
 
 	debugC(kLiathDebugInterpreter, "  filename: %s  -  attenuation: %d\n", filename.c_str(), parameters->getDword(256));
 

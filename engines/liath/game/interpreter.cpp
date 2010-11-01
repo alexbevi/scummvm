@@ -286,7 +286,7 @@ const char *g_opcodes[] = {
 	"Restart"
 };
 
-#define OPCODE_NAME(opcode) (opcode > 237 ? Common::String::printf("%d", opcode).c_str() : g_opcodes[opcode])
+#define OPCODE_NAME(opcode) (opcode > 237 ? Common::String::format("%d", opcode).c_str() : g_opcodes[opcode])
 
 Interpreter::Interpreter(LiathEngine *engine) : _engine(engine) {}
 

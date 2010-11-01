@@ -63,7 +63,7 @@ Common::String SegmentManager::load(SegmentType type, uint32 index) {
 		break;
 	}
 
-	Common::String filename = Common::String::printf("%s%04d.dat", name.c_str(), index);
+	Common::String filename = Common::String::format("%s%04d.dat", name.c_str(), index);
 	if (!getResource()->hasFile(filename))
 		error("SegmentManager::load: File not found (%s)!", filename.c_str());
 

@@ -68,7 +68,7 @@ OpcodeRet ActionManager::start(OpcodeParameters *parameters) {
 	if (parameters->objectIndex == kParamClearAvi) {
 		_aviFilename = "";
 	} else {
-		_aviFilename = Common::String::printf("%s", &parameters->params + 16);
+		_aviFilename = Common::String::format("%s", &parameters->params + 16);
 		_aviType = parameters->getByte(36);
 		_avsX = parameters->getWord(37);
 		_avsY = parameters->getWord(39);
@@ -90,7 +90,7 @@ OpcodeRet ActionManager::startHeroVariable(OpcodeParameters *parameters) {
 	if (parameters->objectIndex == kParamClearAvi) {
 		_aviFilename = "";
 	} else {
-		_aviFilename = Common::String::printf("%s", &parameters->params + 16);
+		_aviFilename = Common::String::format("%s", &parameters->params + 16);
 		_aviType = parameters->getByte(36);
 	}
 
@@ -103,7 +103,7 @@ OpcodeRet ActionManager::startVariable(OpcodeParameters *parameters) {
 	if (parameters->objectIndex == kParamClearAvi) {
 		_aviFilename = "";
 	} else {
-		_aviFilename = Common::String::printf("%s", (&parameters->params + 16));
+		_aviFilename = Common::String::format("%s", (&parameters->params + 16));
 		_aviType = parameters->getByte(36);
 	}
 

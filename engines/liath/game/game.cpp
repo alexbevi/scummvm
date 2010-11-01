@@ -113,7 +113,7 @@ void GameManager::playAction() {
 	}
 
 
-	Common::String actionFile = Common::String::printf("act%04d.dat", getAction()->getCurrentAction());
+	Common::String actionFile = Common::String::format("act%04d.dat", getAction()->getCurrentAction());
 	CdNumber cd = getResource()->getCd(actionFile);
 
 	if (!cd || cd == _currentCd)
@@ -129,7 +129,7 @@ void GameManager::playAction() {
 
 		setGlobal(999, SCR2CEL(cd));
 
-		actionFile = Common::String::printf("act%04d.dat", getAction()->getCurrentAction());
+		actionFile = Common::String::format("act%04d.dat", getAction()->getCurrentAction());
 		cd = getResource()->getCd(actionFile);
 
 label_load:

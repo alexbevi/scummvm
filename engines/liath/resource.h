@@ -72,7 +72,7 @@ private:
 		}
 
 		Common::String toString() {
-			return Common::String::printf("FilePath:  type=%d, archive=%s, directory=%s, indicator=%d", type, archiveName.c_str(), folderName.c_str(), cd);
+			return Common::String::format("FilePath:  type=%d, archive=%s, directory=%s, indicator=%d", type, archiveName.c_str(), folderName.c_str(), cd);
 		}
 	};
 
