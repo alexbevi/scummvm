@@ -633,7 +633,7 @@ bool Events::roomGo(const Common::String &room) {
 
 void Events::setNextRoom(uint32 room) {
 	if (!((_state == kStateIntro1) || (_state == kStateIntro2) || (_state == kStateIntro3))) {
-		Common::String nextRoom = Common::String::printf("%04d", room);
+		Common::String nextRoom = Common::String::format("%04d", room);
 
 		if (nextRoom != _vm->_graphics->getRoom().getName()) {
 			debugC(-1, kDebugGameflow, "Room transition %s->%s", _nextRoom.c_str(), nextRoom.c_str());
@@ -648,7 +648,7 @@ bool Events::cameFrom(uint32 room) const {
 	if (room == 0)
 		return true;
 
-	return _lastRoom == Common::String::printf("%04d", room);
+	return _lastRoom == Common::String::format("%04d", room);
 }
 
 void Events::setLoading(bool load) {

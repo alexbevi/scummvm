@@ -148,7 +148,7 @@ const Common::String &DATFile::getName() const {
 }
 
 Common::String DATFile::getSignature() const {
-	return Common::String::printf("%s:%d", _name.c_str(), getLineNumber());
+	return Common::String::format("%s:%d", _name.c_str(), getLineNumber());
 }
 
 int DATFile::argCount(const Common::String &arguments) {

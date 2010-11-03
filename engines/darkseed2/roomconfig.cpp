@@ -538,7 +538,7 @@ bool RoomConfigSprite::parseSequence(const Common::String &args) {
 
 	_sequenceString.clear();
 	for (Common::Array<int32>::const_iterator it = _sequence.begin(); it != _sequence.end(); ++it)
-		_sequenceString += Common::String::printf("%d ", *it);
+		_sequenceString += Common::String::format("%d ", *it);
 	_sequenceString.trim();
 
 	return true;

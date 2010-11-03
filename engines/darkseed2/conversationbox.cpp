@@ -376,7 +376,7 @@ void ConversationBox::speakerVariable(uint8 speaker, bool on) {
 	if (!_inited)
 		return;
 
-	Common::String speakerVar = Common::String::printf("SysTalking%d", speaker);
+	Common::String speakerVar = Common::String::format("SysTalking%d", speaker);
 
 	_variables->set(speakerVar, on ? 1 : 0);
 }

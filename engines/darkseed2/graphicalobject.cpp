@@ -357,7 +357,7 @@ bool Animation::load(Resources &resources, const Common::String &base) {
 	// Find the frame with the biggest number that still exists
 	uint8 count = 0;
 	for (int i = 99; i > 0; i--) {
-		if (resources.hasResource(Resources::addExtension(base + Common::String::printf("%02d", i),
+		if (resources.hasResource(Resources::addExtension(base + Common::String::format("%02d", i),
 						formats.getImageExtension(formats.getImageType())))) {
 			count = i;
 			break;
@@ -390,7 +390,7 @@ bool Animation::load(Resources &resources, const Common::String &base) {
 	_frames.resize(count);
 	for (int i = 0; i < count; i++) {
 		// Open every frame in sequence
-		Common::String bmp = base + Common::String::printf("%02d", i + 1);
+		Common::String bmp = base + Common::String::format("%02d", i + 1);
 
 		SpriteObject *object = new SpriteObject;
 		if (!object->loadFromImage(resources, bmp)) {
