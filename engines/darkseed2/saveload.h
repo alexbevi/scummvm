@@ -33,6 +33,7 @@
 #include "common/serializer.h"
 
 #include "engines/game.h"
+#include "engines/savestate.h"
 
 namespace DarkSeed2 {
 
