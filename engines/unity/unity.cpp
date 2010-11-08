@@ -89,7 +89,7 @@ Common::Error UnityEngine::init() {
 }
 
 void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
-	Common::String filename = Common::String::printf("sl%03d.scr", world);
+	Common::String filename = Common::String::format("sl%03d.scr", world);
 	Common::SeekableReadStream *locstream = data.openFile(filename);
 
 	uint16 num_entries = locstream->readUint16LE();
@@ -139,7 +139,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 	delete locstream;
 
-	filename = Common::String::printf("w%02x%02xobj.bst", world, screen);
+	filename = Common::String::format("w%02x%02xobj.bst", world, screen);
 	locstream = data.openFile(filename);
 
 	while (true) {
@@ -163,7 +163,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 	delete locstream;
 
-	filename = Common::String::printf("w_%02dstrt.bst", world);
+	filename = Common::String::format("w_%02dstrt.bst", world);
 	locstream = data.openFile(filename);
 
 	locstream->seek(45 * screen);
@@ -559,15 +559,15 @@ Common::String UnityEngine::voiceFileFor(byte voice_group, byte voice_subgroup, 
 	}
 
 	if (voice_group == 0xfe) {
-		return Common::String::printf("%02x%02x%02x%02x.vac",
+		return Common::String::format("%02x%02x%02x%02x.vac",
 			voice_group, speaker.id,
 			voice_subgroup, voice_id);
 	} else if (type) {
-		return Common::String::printf("%02x%c%1x%02x%02x.vac",
+		return Common::String::format("%02x%c%1x%02x%02x.vac",
 			voice_group, type, voice_subgroup,
 			speaker.id, voice_id);
 	} else {
-		return Common::String::printf("%02x%02x%02x%02x.vac",
+		return Common::String::format("%02x%02x%02x%02x.vac",
 			voice_group, voice_subgroup,
 			speaker.id, voice_id);
 	}

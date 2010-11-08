@@ -105,11 +105,11 @@ objectID g_debug_object_id;
 unsigned int g_debug_conv_response, g_debug_conv_state;
 
 Common::String Object::identify() {
-	return Common::String::printf("%s (%02x%02x%02x)", name.c_str(), id.world, id.screen, id.id);
+	return Common::String::format("%s (%02x%02x%02x)", name.c_str(), id.world, id.screen, id.id);
 }
 
 void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigned int for_id) {
-	Common::String filename = Common::String::printf("o_%02x%02x%02x.bst", for_world, for_screen, for_id);
+	Common::String filename = Common::String::format("o_%02x%02x%02x.bst", for_world, for_screen, for_id);
 	Common::SeekableReadStream *objstream = _vm->data.openFile(filename);
 
 	int type = readBlockHeader(objstream);
@@ -2028,7 +2028,7 @@ void Conversation::loadConversation(UnityData &data, unsigned int world, unsigne
 	our_world = world;
 	our_id = id;
 
-	Common::String filename = Common::String::printf("w%03xc%03d.bst", world, id);
+	Common::String filename = Common::String::format("w%03xc%03d.bst", world, id);
 	Common::SeekableReadStream *stream = data.openFile(filename);
 
 	int blockType;
