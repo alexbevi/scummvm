@@ -330,9 +330,8 @@ bool FrotzInterpreter::validateFile(const Common::FSNode &file, char *target, ch
 	}
 
 	// Get an MD5 for the file and scan through the Z-code game list
-	char md5Str[32 + 1];
-
-	if (!Common::md5_file_string(*rs, md5Str, 5000)) {
+	Common::String md5Str = Common::computeStreamMD5AsString(*rs, 5000);
+	if (md5Str.empty()) {
 		delete rs;
 		if (blorbFile) delete blorbFile;
 		return false;
@@ -341,7 +340,7 @@ bool FrotzInterpreter::validateFile(const Common::FSNode &file, char *target, ch
 	// Scan through the list for the MD5 of the game
 	for (const FrotzGameEntry *gs = &frotz_games[0]; gs->target; ++gs) {
 		const char * const*md5P = gs->md5;
-		while ((*md5P != NULL) && (strcmp(*md5P, md5Str) != 0))
+		while ((*md5P != NULL) && (strcmp(*md5P, md5Str.c_str()) != 0))
 			++md5P;
 
 		if (*md5P) {
