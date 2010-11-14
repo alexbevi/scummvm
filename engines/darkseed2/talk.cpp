@@ -110,10 +110,6 @@ const TextLine &TalkLine::getTXT() const {
 	return *_txt;
 }
 
-SoundType TalkLine::getSoundType() const {
-	return _resources->getVersionFormats().getSoundType();
-}
-
 const Common::String &TalkLine::getResourceName() const {
 	return _resource;
 }
@@ -169,7 +165,7 @@ TalkManager::~TalkManager() {
 bool TalkManager::talkInternal(const TalkLine &talkLine) {
 	if (talkLine.hasWAV()) {
 		// Sound
-		if (!_sound->playSound(talkLine.getWAV(), talkLine.getSoundType(), &_curTalk, Audio::Mixer::kSpeechSoundType)) {
+		if (!_sound->playSound(talkLine.getWAV(), &_curTalk, Audio::Mixer::kSpeechSoundType)) {
 			warning("TalkManager::talk(): WAV playing failed");
 			return false;
 		}

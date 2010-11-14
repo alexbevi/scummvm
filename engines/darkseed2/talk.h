@@ -75,8 +75,6 @@ public:
 	/** Get the line's TXT. */
 	const TextLine &getTXT() const;
 
-	SoundType getSoundType() const;
-
 private:
 	Resources *_resources;
 

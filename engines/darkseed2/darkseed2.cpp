@@ -253,6 +253,8 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 		_resources->setGameVersion(kGameVersionWindows, getLanguage());
 	}
 
+	_sound->init(_resources->getVersionFormats().getSoundType());
+
 	if (!_cursors->load()) {
 		warning("DarkSeed2Engine::init(): Couldn't load cursors");
 		return false;

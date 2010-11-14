@@ -49,9 +49,12 @@ public:
 	Sound(Audio::Mixer &mixer, Variables &variables);
 	~Sound();
 
-	bool playSound(Resources &resources, const Common::String &sound, int *id = 0,
+	/** Set the sound type */
+	void init(SoundType soundType);
+
+	bool playSound(const Resource &resource, int *id = 0,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
-	bool playSound(const Resource &resource, SoundType soundType, int *id = 0,
+	bool playSound(Resources &resources, const Common::String &stream, int *id = 0,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 
 	void playDummySound(int &id, uint32 length, Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
@@ -97,6 +100,7 @@ private:
 
 	Audio::Mixer *_mixer;
 	Variables *_variables;
+	SoundType _soundType;
 
 	int _id; ///< The next ID.
 
@@ -106,19 +110,10 @@ private:
 	SoundChannel *findEmptyChannel();
 	SoundChannel *findChannel(int id);
 
-	bool playWAV(Common::SeekableReadStream &wav, int *id = 0,
+	bool playSound(Common::SeekableReadStream &stream, int *id = 0,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType, bool autoFree = false);
-	bool playWAV(const Resource &resource, int *id = 0,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
-	bool playWAV(Resources &resources, const Common::String &wav, int *id = 0,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 
-	bool playAIF(Common::SeekableReadStream &wav, int *id = 0,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
-	bool playAIF(const Resource &resource, int *id = 0,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
-	bool playAIF(Resources &resources, const Common::String &wav, int *id = 0,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+	Audio::AudioStream *createAudioStream(Common::SeekableReadStream &stream, bool autoFree = false);
 };
 
 } // End of namespace DarkSeed2

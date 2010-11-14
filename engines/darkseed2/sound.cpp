@@ -40,6 +40,7 @@ namespace DarkSeed2 {
 Sound::Sound(Audio::Mixer &mixer, Variables &variables) {
 	_mixer     = &mixer;
 	_variables = &variables;
+	_soundType = kSoundTypeWAV;
 
 	_id = 0;
 
@@ -54,32 +55,39 @@ Sound::~Sound() {
 	stopAll();
 }
 
+void Sound::init(SoundType soundType) {
+	_soundType = soundType;
+}
+
 bool Sound::playSound(Resources &resources, const Common::String &sound, int *id,
 		Audio::Mixer::SoundType type) {
 
-	switch (resources.getVersionFormats().getSoundType()) {
-		case kSoundTypeWAV:
-			return playWAV(resources, sound, id, type);
+	Common::String fileName = Resources::addExtension(sound,
+			resources.getVersionFormats().getSoundExtension(_soundType));
 
-		case kSoundTypeAIF:
-			return playAIF(resources, sound, id, type);
+	debugC(-1, kDebugSound, "Playing sound \"%s\"", fileName.c_str());
+
+	if (!resources.hasResource(fileName))
+		return false;
+
+	Resource *resource = resources.getResource(fileName);
+
+	uint32 size = resource->getSize();
+
+	Common::SeekableReadStream *stream = resource->getStream().readStream(size);
+
+	delete resource;
+
+	if (!playSound(*stream, id, type, true)) {
+		delete stream;
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
-bool Sound::playSound(const Resource &resource, SoundType soundType, int *id,
-		Audio::Mixer::SoundType type) {
-
-	switch (soundType) {
-		case kSoundTypeWAV:
-			return playWAV(resource, id, type);
-
-		case kSoundTypeAIF:
-			return playAIF(resource, id, type);
-	}
-
-	return false;
+bool Sound::playSound(const Resource &resource, int *id, Audio::Mixer::SoundType type) {
+	return playSound(resource.getStream(), id, type);
 }
 
 void Sound::playDummySound(int &id, uint32 length, Audio::Mixer::SoundType type) {
@@ -97,21 +105,20 @@ void Sound::playDummySound(int &id, uint32 length, Audio::Mixer::SoundType type)
 	channel->dummyPlaysUntil = g_system->getMillis() + length;
 }
 
-bool Sound::playWAV(Common::SeekableReadStream &wav, int *id,
+bool Sound::playSound(Common::SeekableReadStream &stream, int *id,
 		Audio::Mixer::SoundType type, bool autoFree) {
 
 	SoundChannel *channel = findEmptyChannel();
 	if (!channel) {
-		warning("Sound::playWAV(): Sound::playWAV(): All channels occupied");
+		warning("Sound::playSound(): All channels occupied");
 		return false;
 	}
 
-	wav.seek(0);
+	stream.seek(0);
 
-	// Load WAV
-	DisposeAfterUse::Flag dispose = autoFree ? DisposeAfterUse::YES : DisposeAfterUse::NO;
-	Audio::AudioStream *wavStream = Audio::makeWAVStream(&wav, dispose);
-	if (!wavStream)
+	// Load audio stream
+	Audio::AudioStream *audioStream = createAudioStream(stream, autoFree);
+	if (!audioStream)
 		return false;
 
 	channel->id = _id++;
@@ -121,95 +128,7 @@ bool Sound::playWAV(Common::SeekableReadStream &wav, int *id,
 		*id = channel->id;
 
 	// Play it
-	_mixer->playStream(type, &channel->handle, wavStream, channel->id);
-
-	return true;
-}
-
-bool Sound::playWAV(const Resource &resource, int *id, Audio::Mixer::SoundType type) {
-
-	return playWAV(resource.getStream(), id, type);
-}
-
-bool Sound::playWAV(Resources &resources, const Common::String &wav, int *id,
-		Audio::Mixer::SoundType type) {
-
-	Common::String wavFile = Resources::addExtension(wav,
-			resources.getVersionFormats().getSoundExtension(kSoundTypeWAV));
-
-	debugC(-1, kDebugSound, "Playing WAV \"%s\"", wavFile.c_str());
-
-	if (!resources.hasResource(wavFile))
-		return false;
-
-	Resource *resWAV = resources.getResource(wavFile);
-
-	uint32 size = resWAV->getSize();
-
-	byte *data = (byte *) malloc(size);
-	resWAV->getStream().read(data, size);
-
-	delete resWAV;
-
-	Common::MemoryReadStream *stream =
-	 new Common::MemoryReadStream(data, size, DisposeAfterUse::YES);
-
-	if (!playWAV(*stream, id, type, true)) {
-		delete stream;
-		return false;
-	}
-
-	return true;
-}
-
-bool Sound::playAIF(Common::SeekableReadStream &aif, int *id,
-		Audio::Mixer::SoundType type) {
-
-	SoundChannel *channel = findEmptyChannel();
-	if (!channel) {
-		warning("Sound::playAIF(): Sound::playWAV(): All channels occupied");
-		return false;
-	}
-
-	aif.seek(0);
-
-	// Load AIF
-	Audio::AudioStream *aifStream = Audio::makeAIFFStream(&aif, DisposeAfterUse::NO);
-	if (!aifStream)
-		return false;
-
-	channel->id = _id++;
-	channel->speech = type == Audio::Mixer::kSpeechSoundType;
-
-	if (id)
-		*id = channel->id;
-
-	// Play it
-	_mixer->playStream(type, &channel->handle, aifStream, channel->id);
-
-	return true;
-}
-
-bool Sound::playAIF(const Resource &resource, int *id, Audio::Mixer::SoundType type) {
-
-	return playAIF(resource.getStream(), id, type);
-}
-
-bool Sound::playAIF(Resources &resources, const Common::String &aif, int *id,
-		Audio::Mixer::SoundType type) {
-
-	Common::String aifFile = Resources::addExtension(aif,
-			resources.getVersionFormats().getSoundExtension(kSoundTypeAIF));
-
-	debugC(-1, kDebugSound, "Playing AIF \"%s\"", aifFile.c_str());
-
-	if (!resources.hasResource(aifFile))
-		return false;
-
-	Resource *resAIF = resources.getResource(aifFile);
-
-	if (!playAIF(resAIF->getStream(), id, type))
-		return false;
+	_mixer->playStream(type, &channel->handle, audioStream, channel->id);
 
 	return true;
 }
@@ -332,6 +251,19 @@ void Sound::updateStatus() {
 
 		}
 	}
+}
+
+Audio::AudioStream *Sound::createAudioStream(Common::SeekableReadStream &stream, bool autoFree) {
+	DisposeAfterUse::Flag dispose = autoFree ? DisposeAfterUse::YES : DisposeAfterUse::NO;
+
+	switch (_soundType) {
+	case kSoundTypeWAV:
+		return Audio::makeWAVStream(&stream, dispose);
+	case kSoundTypeAIF:
+		return Audio::makeAIFFStream(&stream, dispose);
+	}
+
+	return 0;
 }
 
 } // End of namespace DarkSeed2
