@@ -163,9 +163,6 @@ private:
 	/** Read the resources section of the index file. */
 	bool readIndexResources(Common::File &indexFile);
 
-	/** Read an initial.idx/initial.glu pair. */
-	bool readInitial(Common::SeekableReadStream &idxFile, Common::SeekableReadStream &glueFile);
-
 	/** Index the glue where this resource can be found. */
 	bool indexParentArchive(Res &res);
 
