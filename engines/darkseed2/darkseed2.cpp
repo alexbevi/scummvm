@@ -212,26 +212,26 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 	debug(-1, "Creating subclasses...");
 
 	_options        = new Options();
-
-	if (isWindowsPC())
-		_cursors        = new Cursors(kExecutable);
-	else
-		_cursors        = new Cursors();
-
 	_variables      = new Variables(*_rnd);
 	_scriptRegister = new ScriptRegister();
 	_resources      = new Resources();
 	_fontMan        = new FontManager(*_resources);
 	_sound          = new Sound(*_mixer, *_variables);
 	_music          = new Music(*_mixer, *_midiDriver);
+
+	// The cursors need to be created after Resources but before Graphics
+	if (isWindowsPC())
+		_cursors    = new CursorsWindows(kExecutable);
+	else if (isSaturn())
+		_cursors    = new CursorsSaturn(*_resources);
+
 	_graphics       = new Graphics(width, height, *_resources, *_variables, *_cursors, *_fontMan);
 	_talkMan        = new TalkManager(_resources->getVersionFormats(), *_sound, *_graphics, *_fontMan);
 	_mike           = new Mike(*_resources, *_variables, *_graphics);
 	_movie          = new Movie(*_mixer, *_graphics, *_cursors, *_sound);
-
-	_roomConfMan = new RoomConfigManager(*this);
-	_inter       = new ScriptInterpreter(*this);
-	_events      = new Events(*this);
+	_roomConfMan    = new RoomConfigManager(*this);
+	_inter          = new ScriptInterpreter(*this);
+	_events         = new Events(*this);
 
 	syncSoundSettings();
 
@@ -244,12 +244,6 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 		}
 
 		_resources->setGameVersion(kGameVersionSaturn, getLanguage());
-
-		if (!_cursors->loadSaturnCursors(*_resources)) {
-			warning("DarkSeed2Engine::init(): Couldn't load cursors");
-			return false;
-		}
-
 	} else if (isWindowsPC()) {
 		if (!_resources->index(kResourceIndex)) {
 			warning("DarkSeed2Engine::init(): Couldn't index resources");
@@ -257,6 +251,11 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 		}
 
 		_resources->setGameVersion(kGameVersionWindows, getLanguage());
+	}
+
+	if (!_cursors->load()) {
+		warning("DarkSeed2Engine::init(): Couldn't load cursors");
+		return false;
 	}
 
 	if (!_fontMan->init(_resources->getVersionFormats().getGameVersion(), getLanguage())) {

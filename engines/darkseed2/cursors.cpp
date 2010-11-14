@@ -34,20 +34,30 @@
 
 namespace DarkSeed2 {
 
-#include "engines/darkseed2/cursordata.h"
-
-const char *Cursors::_saturnCursors[] = {
-	"c4Ways"  , "cArrow"  , "cBCard"  , "cBGun"   , "cCamera" ,
-	"cChanger", "cCTicket", "cCWrench", "cDCard"  , "cDFood"  ,
-	"cDPhoto" , "cEgoMGR" , "cGKey"   , "cHand"   , "cJGun"   ,
-	"cKeyCh"  , "cLetter" , "cLight"  , "cLook"   , "cLookAt" ,
-	"cMagnet" , "cNPaper" , "cPhoneBk", "cPills"  , "cQuarter",
-	"cRingC"  , "cRPhoto" , "crplush" , "cRTicket", "cScroll" ,
-	"cSword"  , "cTargetC", "cTplush" , "cUseIt"  , "cWheelC" ,
-	"cWplush" , "cXBow"
+static const byte staticCursorPointerData[] = {
+	1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0,
+	1, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0,
+	1, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0,
+	1, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0,
+	1, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0,
+	1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0,
+	1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0,
+	1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1,
+	1, 2, 2, 2, 1, 2, 2, 1, 0, 0, 0, 0,
+	1, 2, 2, 1, 1, 2, 2, 1, 0, 0, 0, 0,
+	1, 2, 1, 0, 1, 1, 2, 2, 1, 0, 0, 0,
+	1, 1, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0,
+	1, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0,
+	0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0,
+	0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0
 };
 
-Cursors::Cursors(const Common::String &exe) {
+Cursors::Cursors() {
 	Palette palette;
 
 	palette.resize(3);
@@ -65,27 +75,19 @@ Cursors::Cursors(const Common::String &exe) {
 
 	ImgConv.registerStandardPalette(palette);
 
-	// Loading the default pointer cursor from static memory
-	_defaultResource = new NECursor;
-
-	_defaultResource->setDimensions(staticCursorPointer.width   , staticCursorPointer.height  );
-	_defaultResource->setHotspot   (staticCursorPointer.hotspotX, staticCursorPointer.hotspotY);
-	_defaultResource->setData      (staticCursorPointer.data    , staticCursorPointer.dataSize);
-
-	bool loaded;
-
 	Cursor def;
+	def.name     = "cArrow";
+	def.width    = 12;
+	def.height   = 20;
+	def.hotspotX = 0;
+	def.hotspotY = 0;
 
-	loaded = loadFromResource(def, *_defaultResource);
-	assert(loaded);
+	def.sprite = new Sprite();
+	def.sprite->create(def.width, def.height);
+	def.sprite->setPalette(palette);
+	def.sprite->copyFrom(staticCursorPointerData, 1);
 
 	_cursors.setVal("cArrow", def);
-
-	if (!exe.empty()) {
-		// Loading the rest of the cursors out of the EXE resource table
-		loaded = loadFromNEEXE(exe);
-		assert(loaded);
-	}
 
 	_visible = true;
 
@@ -93,42 +95,8 @@ Cursors::Cursors(const Common::String &exe) {
 }
 
 Cursors::~Cursors() {
-	clearCursors();
-}
-
-void Cursors::clearCursors() {
-	delete _defaultResource;
-	_defaultResource = 0;
-
 	for (CursorMap::iterator it = _cursors.begin(); it != _cursors.end(); ++it)
 		delete it->_value.sprite;
-
-	_cursors.clear();
-}
-
-bool Cursors::loadSaturnCursors(Resources &resources) {
-	clearCursors();
-
-	for (int i = 0; i < ARRAYSIZE(_saturnCursors); i++) {
-		Cursor cursor;
-
-		cursor.sprite = new Sprite;
-
-		if (!cursor.sprite->loadFromSaturnCursor(resources, _saturnCursors[i])) {
-			delete cursor.sprite;
-			return false;
-		}
-
-		cursor.name     = _saturnCursors[i];
-		cursor.width    = cursor.sprite->getWidth();
-		cursor.height   = cursor.sprite->getHeight();
-		cursor.hotspotX = cursor.sprite->getFeetX();
-		cursor.hotspotY = cursor.sprite->getFeetY();
-
-		_cursors.setVal(cursor.name, cursor);
-	}
-
-	return true;
 }
 
 void Cursors::assertCursorProperties() {
@@ -181,11 +149,25 @@ const Common::String &Cursors::getCurrentCursor() const {
 	return _currentCursor;
 }
 
-bool Cursors::loadFromNEEXE(const Common::String &exe) {
+bool Cursors::saveLoad(Common::Serializer &serializer, Resources &resources) {
+	SaveLoad::sync(serializer, _visible);
+	SaveLoad::sync(serializer, _currentCursor);
+	return true;
+}
+
+bool Cursors::loading(Resources &resources) {
+	assertCursorProperties();
+	return true;
+}
+
+CursorsWindows::CursorsWindows(const Common::String &exeName) : Cursors(), _exeName(exeName) {
+}
+
+bool CursorsWindows::load() {
 	NEResources resources;
 
 	// Load the resources from the EXE
-	if (!resources.loadFromEXE(exe))
+	if (!resources.loadFromEXE(_exeName))
 		return false;
 
 	// Convert cursor resources to usable cursors
@@ -209,7 +191,7 @@ bool Cursors::loadFromNEEXE(const Common::String &exe) {
 	return true;
 }
 
-bool Cursors::loadFromResource(Cursor &cursor, const NECursor &resource) {
+bool CursorsWindows::loadFromResource(Cursor &cursor, const NECursor &resource) {
 	// Load image
 	cursor.sprite = new Sprite;
 	if (!cursor.sprite->loadFromCursorResource(resource)) {
@@ -225,14 +207,40 @@ bool Cursors::loadFromResource(Cursor &cursor, const NECursor &resource) {
 	return true;
 }
 
-bool Cursors::saveLoad(Common::Serializer &serializer, Resources &resources) {
-	SaveLoad::sync(serializer, _visible);
-	SaveLoad::sync(serializer, _currentCursor);
-	return true;
+CursorsSaturn::CursorsSaturn(Resources &resources) : Cursors(), _resources(&resources) {
 }
 
-bool Cursors::loading(Resources &resources) {
-	assertCursorProperties();
+const char *CursorsSaturn::_saturnCursors[] = {
+	"c4Ways"  , "cArrow"  , "cBCard"  , "cBGun"   , "cCamera" ,
+	"cChanger", "cCTicket", "cCWrench", "cDCard"  , "cDFood"  ,
+	"cDPhoto" , "cEgoMGR" , "cGKey"   , "cHand"   , "cJGun"   ,
+	"cKeyCh"  , "cLetter" , "cLight"  , "cLook"   , "cLookAt" ,
+	"cMagnet" , "cNPaper" , "cPhoneBk", "cPills"  , "cQuarter",
+	"cRingC"  , "cRPhoto" , "crplush" , "cRTicket", "cScroll" ,
+	"cSword"  , "cTargetC", "cTplush" , "cUseIt"  , "cWheelC" ,
+	"cWplush" , "cXBow"
+};
+
+bool CursorsSaturn::load() {
+	for (int i = 0; i < ARRAYSIZE(_saturnCursors); i++) {
+		Cursor cursor;
+
+		cursor.sprite = new Sprite;
+
+		if (!cursor.sprite->loadFromSaturnCursor(*_resources, _saturnCursors[i])) {
+			delete cursor.sprite;
+			return false;
+		}
+
+		cursor.name     = _saturnCursors[i];
+		cursor.width    = cursor.sprite->getWidth();
+		cursor.height   = cursor.sprite->getHeight();
+		cursor.hotspotX = cursor.sprite->getFeetX();
+		cursor.hotspotY = cursor.sprite->getFeetY();
+
+		_cursors.setVal(cursor.name, cursor);
+	}
+
 	return true;
 }
 

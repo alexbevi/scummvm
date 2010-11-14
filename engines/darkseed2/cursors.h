@@ -50,11 +50,11 @@ public:
 		Sprite *sprite;      ///< The cursor's sprite.
 	};
 
-	Cursors(const Common::String &exe = "");
-	~Cursors();
+	Cursors();
+	virtual ~Cursors();
 
-	/** Load cursors found in the Sega Saturn version. */
-	bool loadSaturnCursors(Resources &resources);
+	/** Load cursors */
+	virtual bool load() = 0;
 
 	/** Make sure the class's information on the cursor is in sync with the sytem's. */
 	void assertCursorProperties();
@@ -79,25 +79,37 @@ protected:
 	bool saveLoad(Common::Serializer &serializer, Resources &resources);
 	bool loading(Resources &resources);
 
-private:
-	static const char *_saturnCursors[];
-
 	typedef Common::HashMap<Common::String, Cursor, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> CursorMap;
-
-	NECursor *_defaultResource; ///< NE Resource of the default pointer cursor.
 
 	bool _visible; ///< Is the cursor visible?
 	Common::String _currentCursor; ///< The name of the current cursor.
 
 	CursorMap _cursors; ///< The available cursors.
+};
 
-	/** Clear all cursors. */
-	void clearCursors();
+class CursorsWindows : public Cursors {
+public:
+	CursorsWindows(const Common::String &exeName);
 
-	/** Load cursors from a NE EXE. */
-	bool loadFromNEEXE(const Common::String &exe);
+	bool load();
+
+private:
+	Common::String _exeName; ///< Name of the NE EXE
+
 	/** Load a cursor from a NE resource. */
 	bool loadFromResource(Cursor &cursor, const NECursor &resource);
+};
+
+class CursorsSaturn : public Cursors {
+public:
+	CursorsSaturn(Resources &resources);
+
+	bool load();
+
+private:
+	Resources *_resources;
+
+	static const char *_saturnCursors[];
 };
 
 } // End of namespace DarkSeed2
