@@ -85,6 +85,9 @@ public:
 	/** Index all availabe PGF resources. */
 	bool indexPGF(const char *initalIndex, const char *initialGlue);
 
+	/** Index all available Mac resources. */
+	bool indexMacResources();
+
 	/** Clear all resource information. */
 	void clear();
 

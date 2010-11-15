@@ -112,6 +112,16 @@ private:
 	static const char *_saturnCursors[];
 };
 
+class CursorsMac : public Cursors {
+public:
+	CursorsMac(Common::MacResManager &exeResFork);
+
+	bool load();
+
+private:
+	Common::MacResManager *_exeResFork;
+};
+
 } // End of namespace DarkSeed2
 
 #endif // DARKSEED2_CURSORS_H

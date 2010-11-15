@@ -31,7 +31,7 @@ namespace DarkSeed2 {
 
 const char *VersionFormats::kImageExtensions[]   = {"BMP", "RGB", "BDP", "256"};
 const char *VersionFormats::kWalkMapExtensions[] = {"BMP", "MAP"};
-const char *VersionFormats::kSoundExtensions[]   = {"WAV", "AIF"};
+const char *VersionFormats::kSoundExtensions[]   = {"WAV", "AIF", ""};
 
 VersionFormats::VersionFormats() {
 	_gameVersion = kGameVersionWindows;

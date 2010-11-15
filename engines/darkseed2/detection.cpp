@@ -119,6 +119,20 @@ static const DS2GameDescription gameDescriptions[] = {
 			GUIO_NOSPEECH
 		},
 	},
+	{ // English Macintosh Version
+		{
+			"darkseed2",
+			"",
+			{
+				{"talk", 0, "ce38a357045b3e84b1a3af62c573a551", 968351},
+				{"action", 0, "2def454ca83cc0b73d08aca30af9a074", 1920561}
+			},
+			EN_ANY,
+			kPlatformMacintosh,
+			ADGF_MACRESFORK,
+			GUIO_NOSPEECH
+		},
+	},
 	{ AD_TABLE_END_MARKER }
 };
 

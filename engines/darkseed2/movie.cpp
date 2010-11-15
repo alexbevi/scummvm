@@ -92,6 +92,12 @@ bool Movie::isPlaying() const {
 		return decoder;
 	}
 
+	realFile = Common::String("movies/") + Resources::addExtension(file, "MooV");
+	if (Common::File::exists(realFile)) {
+		warning("STUB: Movie::createDecoder(): QuickTime");
+		return 0;
+	}
+
 	return 0;
 }
 

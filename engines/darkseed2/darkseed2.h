@@ -36,6 +36,7 @@ class MidiDriver;
 namespace Common {
 	class Serializer;
 	class RandomSource;
+	class MacResManager;
 }
 
 namespace DarkSeed2 {
@@ -106,8 +107,9 @@ public:
 	/** Show the load dialog. */
 	bool doLoadDialog();
 
-	bool isWindowsPC    () const;
+	bool isWindowsPC() const;
 	bool isSaturn() const;
+	bool isMac() const;
 
 private:
 	struct SaveMeta {
@@ -125,6 +127,9 @@ private:
 
 	uint32 _engineStartTime;
 	uint32 _playTime;
+
+	// Mac Resource Forks
+	Common::MacResManager *_macExeResFork;
 
 	/** Clear all subsystems */
 	void clearAll();

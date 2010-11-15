@@ -31,6 +31,7 @@
 #include "common/config-manager.h"
 #include "common/EventRecorder.h"
 #include "common/debug-channels.h"
+#include "common/macresman.h"
 
 #include "engines/util.h"
 
@@ -107,6 +108,7 @@ DarkSeed2Engine::DarkSeed2Engine(OSystem *syst, const DS2GameDescription *gameDe
 	_roomConfMan    = 0;
 	_inter          = 0;
 	_events         = 0;
+	_macExeResFork  = 0;
 
 	_rnd = new Common::RandomSource();
 	g_eventRec.registerRandomSource(*_rnd, "ds2");
@@ -141,6 +143,8 @@ DarkSeed2Engine::~DarkSeed2Engine() {
 	delete _midiDriver;
 
 	delete _rnd;
+
+	delete _macExeResFork;
 }
 
 Common::Error DarkSeed2Engine::run() {
@@ -186,7 +190,7 @@ void DarkSeed2Engine::syncSoundSettings() {
 }
 
 bool DarkSeed2Engine::getScreenResolution(int32 &width, int32 &height) const {
-	if (isWindowsPC()) {
+	if (isWindowsPC() || isMac()) {
 		width  = 640;
 		height = 480;
 		return true;
@@ -211,6 +215,15 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 
 	debug(-1, "Creating subclasses...");
 
+	if (isMac()) {
+		// Open up the Mac resource fork for the executable
+		_macExeResFork = new Common::MacResManager();
+		if (!_macExeResFork->open("Dark Seed II/Dark Seed II")) {
+			warning("Could not open 'Dark Seed II'");
+			return false;
+		}
+	}
+
 	_options        = new Options();
 	_variables      = new Variables(*_rnd);
 	_scriptRegister = new ScriptRegister();
@@ -224,6 +237,8 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 		_cursors    = new CursorsWindows(kExecutable);
 	else if (isSaturn())
 		_cursors    = new CursorsSaturn(*_resources);
+	else if (isMac())
+		_cursors    = new CursorsMac(*_macExeResFork);
 
 	_graphics       = new Graphics(width, height, *_resources, *_variables, *_cursors, *_fontMan);
 	_talkMan        = new TalkManager(_resources->getVersionFormats(), *_sound, *_graphics, *_fontMan);
@@ -251,6 +266,11 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 		}
 
 		_resources->setGameVersion(kGameVersionWindows, getLanguage());
+	} else if (isMac()) {
+		if (!_resources->indexMacResources()) {
+			warning("DarkSeed2Engine::init(): Indexing Mac resources not yet supported");
+			return false;
+		}
 	}
 
 	_sound->init(_resources->getVersionFormats().getSoundType());
@@ -272,7 +292,15 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 
 	debug(-1, "Initializing game variables...");
 
-	if (!_variables->loadFromIDX(*_resources, kVariableIndex)) {
+	if (isMac()) {
+		Common::SeekableReadStream *stream = _macExeResFork->getResource(kVariableIndex);
+		if (!_variables->loadFromIDX(*stream)) {
+			delete stream;
+			warning("DarkSeed2Engine::init(): Couldn't load initial variables values");
+			return false;
+		}
+		delete stream;
+	} else if (!_variables->loadFromIDX(*_resources, kVariableIndex)) {
 		warning("DarkSeed2Engine::init(): Couldn't load initial variables values");
 		return false;
 	}
@@ -347,6 +375,10 @@ bool DarkSeed2Engine::isWindowsPC() const {
 bool DarkSeed2Engine::isSaturn() const {
 	// TODO: kPlatformSaturn
 	return getPlatform() == Common::kPlatformUnknown;
+}
+
+bool DarkSeed2Engine::isMac() const {
+	return getPlatform() == Common::kPlatformMacintosh;
 }
 
 bool DarkSeed2Engine::canLoadGameStateCurrently() {

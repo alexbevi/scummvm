@@ -29,6 +29,7 @@
 #include "sound/audiostream.h"
 #include "sound/decoders/wave.h"
 #include "sound/decoders/aiff.h"
+#include "sound/decoders/mac_snd.h"
 
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/options.h"
@@ -261,6 +262,8 @@ Audio::AudioStream *Sound::createAudioStream(Common::SeekableReadStream &stream,
 		return Audio::makeWAVStream(&stream, dispose);
 	case kSoundTypeAIF:
 		return Audio::makeAIFFStream(&stream, dispose);
+	case kSoundTypeSND:
+		return Audio::makeMacSndStream(&stream, dispose);
 	}
 
 	return 0;

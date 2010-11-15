@@ -52,7 +52,8 @@ enum WalkMapType {
 
 enum SoundType {
 	kSoundTypeWAV = 0, ///< WAV sounds.
-	kSoundTypeAIF = 1  ///< AIF sounds.
+	kSoundTypeAIF = 1, ///< AIF sounds.
+	kSoundTypeSND = 2  ///< Mac SND sounds.
 };
 
 class VersionFormats {

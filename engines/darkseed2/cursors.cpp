@@ -23,6 +23,8 @@
  *
  */
 
+#include "common/macresman.h"
+
 #include "graphics/cursorman.h"
 
 #include "engines/darkseed2/cursors.h"
@@ -239,6 +241,59 @@ bool CursorsSaturn::load() {
 		cursor.hotspotY = cursor.sprite->getFeetY();
 
 		_cursors.setVal(cursor.name, cursor);
+	}
+
+	return true;
+}
+
+CursorsMac::CursorsMac(Common::MacResManager &exeResFork) : _exeResFork(&exeResFork) {
+}
+
+bool CursorsMac::load() {
+	Common::MacResIDArray idArray = _exeResFork->getResIDArray(MKID_BE('crsr'));
+
+	for (uint32 i = 0; i < idArray.size(); i++) {
+		Cursor cursor;
+
+		cursor.name = _exeResFork->getResName(MKID_BE('crsr'), idArray[i]);
+
+		if (cursor.name.empty())
+			continue;
+
+		Common::SeekableReadStream *stream = _exeResFork->getResource(MKID_BE('crsr'), idArray[i]);
+		uint32 streamSize = stream->size();
+		byte *data = new byte[streamSize];
+		stream->read(data, streamSize);
+		delete stream;
+
+		byte *cursorData, *rawPalette;
+		int keyColor, palSize;
+
+		Common::MacResManager::convertCrsrCursor(data, streamSize, &cursorData, &cursor.width, &cursor.height, &cursor.hotspotX, &cursor.hotspotY, &keyColor, true, &rawPalette, &palSize);
+
+		Palette palette;
+
+		palette.resize(MAX<int>(palSize, keyColor + 1));
+
+		for (int j = 0; j < palSize; j++) {
+			palette.get()[j * 3 + 0] = rawPalette[j * 4 + 0];
+			palette.get()[j * 3 + 1] = rawPalette[j * 4 + 1];
+			palette.get()[j * 3 + 2] = rawPalette[j * 4 + 2];
+		}
+
+		// Ensure the keyColor is transparent
+		palette.get()[keyColor * 3 + 0] = 0;
+		palette.get()[keyColor * 3 + 1] = 0;
+		palette.get()[keyColor * 3 + 2] = 255;
+
+		free(rawPalette);
+
+		cursor.sprite = new Sprite();
+		cursor.sprite->setPalette(palette);
+		cursor.sprite->create(cursor.width, cursor.height);
+		cursor.sprite->copyFrom(cursorData);
+
+		free(cursorData);
 	}
 
 	return true;

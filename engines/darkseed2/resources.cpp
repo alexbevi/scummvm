@@ -179,6 +179,18 @@ bool Resources::indexPGF(const char *initalIndex, const char *initialGlue) {
 	return true;
 }
 
+bool Resources::indexMacResources() {
+	// TODO: Index resource forks with 'snd ' resources in the sound folder (Voices/Sound Effects)
+	// TODO: Index the "action" resource fork with 'Sprt' resources (Animations)
+	// TODO: Index the "art" resource fork with 'PICT' resources (Inventory Images)
+	// TODO: Index the "music" resource fork with 'Tune' resources (QuickTime MIDI)
+	// TODO: Index the "talk" resource fork with 'TEXT' resources (Game Scripts)
+	// TODO: Index the "text" file (Subtitles)
+	// TODO: Index the "walk" file (Mike Walk Animations)
+	// TODO: Index files in the "rooms" folder (Room Images)
+	return false;
+}
+
 void Resources::clear() {
 	_resources.clear();
 	_archives.clear();
