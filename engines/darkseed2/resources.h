@@ -183,6 +183,69 @@ private:
 	uint32 _type;
 };
 
+class MacTextArchive : public Archive {
+public:
+	MacTextArchive() : Archive() {}
+	~MacTextArchive() {}
+
+	bool open(const Common::String &fileName, Archive *parentArchive = 0);
+	void index(ResourceMap &map);
+	Common::SeekableReadStream *getStream(const Common::String &fileName);
+
+private:
+	struct ResourceEntry {
+		Common::String fileName;
+		uint32 offset;
+		uint32 size;
+	};
+
+	Common::Array<ResourceEntry> _resources;
+
+	Common::File _file;
+};
+
+class MacWalkArchive : public Archive {
+public:
+	MacWalkArchive() : Archive() {}
+	~MacWalkArchive() {}
+
+	bool open(const Common::String &fileName, Archive *parentArchive = 0);
+	void index(ResourceMap &map);
+	Common::SeekableReadStream *getStream(const Common::String &fileName);
+
+private:
+	struct ResourceEntry {
+		Common::String fileName;
+		uint32 offset;
+		uint32 size;
+	};
+
+	Common::Array<ResourceEntry> _resources;
+
+	Common::File _file;
+};
+
+class MacRoomArchive : public Archive {
+public:
+	MacRoomArchive() : Archive() {}
+	~MacRoomArchive() {}
+
+	bool open(const Common::String &fileName, Archive *parentArchive = 0);
+	void index(ResourceMap &map);
+	Common::SeekableReadStream *getStream(const Common::String &fileName);
+
+private:
+	struct ResourceEntry {
+		Common::String fileName;
+		uint32 offset;
+		uint32 size;
+	};
+
+	Common::Array<ResourceEntry> _resources;
+
+	Common::File _file;
+};
+
 /** The resource manager. */
 class Resources {
 public:
@@ -235,6 +298,8 @@ private:
 
 	/** Add a Mac resource fork. */
 	bool addMacResourceFork(const Common::String &fileName, uint32 type);
+	/** Add a Mac room archive */
+	bool addMacRoomArchive(const Common::String &fileName);
 };
 
 } // End of namespace DarkSeed2

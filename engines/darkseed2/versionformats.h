@@ -34,7 +34,8 @@ class TextLine;
 
 enum GameVersion {
 	kGameVersionWindows = 0, ///< The Windows PC version.
-	kGameVersionSaturn  = 1  ///< The Sega Saturn version.
+	kGameVersionSaturn  = 1, ///< The Sega Saturn version.
+	kGameVersionMac     = 2  ///< The Mac version.
 };
 
 /** An image type. */

@@ -269,6 +269,8 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 			warning("DarkSeed2Engine::init(): Indexing Mac resources not yet supported");
 			return false;
 		}
+
+		_resources->setGameVersion(kGameVersionMac, getLanguage());
 	}
 
 	_sound->init(_resources->getVersionFormats().getSoundType());

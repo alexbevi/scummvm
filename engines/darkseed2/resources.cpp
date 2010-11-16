@@ -513,6 +513,192 @@ Common::SeekableReadStream *MacResourceForkArchive::getStream(const Common::Stri
 	return _resFork->getResource(fileName);
 }
 
+bool MacTextArchive::open(const Common::String &fileName, Archive *parentArchive) {
+	_fileName = fileName;
+	return Common::File::exists(fileName);
+}
+
+void MacTextArchive::index(ResourceMap &map) {
+	if (_isIndexed)
+		return;
+
+	if (!_file.isOpen())
+		assert(_file.open(_fileName));
+
+	debugC(3, kDebugResources, "Reading contents of Mac 'text' file");
+
+	_file.seek(0);
+
+	uint16 resCount = _file.readUint16BE();
+	_resources.resize(resCount);
+
+	debugC(4, kDebugResources, "Has %d resources", resCount);
+
+	for (uint32 i = 0; i < resCount; i++) {
+		byte buffer[9];
+
+		// Resource's file name
+		_file.read(buffer, 8);
+		buffer[8] = '\0';
+		Common::String resFile = (const char *)buffer;
+
+		// Add the .TXT extension
+		resFile += ".TXT";
+
+		map[resFile] = this;
+
+		_resources[i].fileName = resFile;
+		_resources[i].size = _file.readUint16BE();
+		_resources[i].offset = _file.readUint32BE();
+
+		debugC(5, kDebugResources, "Resource \"%s\", offset %d, size %d",
+				resFile.c_str(), _resources[i].offset, _resources[i].size);
+	}
+
+	_file.close();
+	_isIndexed = true;
+}
+
+Common::SeekableReadStream *MacTextArchive::getStream(const Common::String &fileName) {
+	for (uint32 i = 0; i < _resources.size(); i++) {
+		if (_resources[i].fileName.equalsIgnoreCase(fileName)) {
+			if (!_file.isOpen())
+				assert(_file.open(_fileName));
+			_file.seek(_resources[i].offset);
+			Common::SeekableReadStream *stream = _file.readStream(_resources[i].size);
+			_file.close();
+			return stream;
+		}
+	}
+
+	return 0;
+}
+
+bool MacWalkArchive::open(const Common::String &fileName, Archive *parentArchive) {
+	_fileName = fileName;
+	return Common::File::exists(fileName);
+}
+
+void MacWalkArchive::index(ResourceMap &map) {
+	if (_isIndexed)
+		return;
+
+	if (!_file.isOpen())
+		assert(_file.open(_fileName));
+
+	debugC(3, kDebugResources, "Reading contents of Mac 'walk' file");
+
+	_file.seek(0);
+
+	uint16 resCount = _file.readUint16BE() - 1;
+	_resources.resize(resCount);
+
+	debugC(4, kDebugResources, "Has %d resources", resCount);
+
+	for (uint32 i = 0; i < resCount; i++) {
+		byte buffer[9];
+
+		// Resource's file name
+		_file.read(buffer, 8);
+		buffer[8] = '\0';
+		Common::String resFile = (const char *)buffer;
+
+		map[resFile] = this;
+
+		_resources[i].fileName = resFile;
+		_resources[i].size = _file.readUint32BE();
+		_resources[i].offset = _file.readUint32BE();
+
+		debugC(5, kDebugResources, "Resource \"%s\", offset %d, size %d",
+				resFile.c_str(), _resources[i].offset, _resources[i].size);
+	}
+
+	_file.close();
+	_isIndexed = true;
+}
+
+Common::SeekableReadStream *MacWalkArchive::getStream(const Common::String &fileName) {
+	for (uint32 i = 0; i < _resources.size(); i++) {
+		if (_resources[i].fileName.equalsIgnoreCase(fileName)) {
+			if (!_file.isOpen())
+				assert(_file.open(_fileName));
+			_file.seek(_resources[i].offset);
+			Common::SeekableReadStream *stream = _file.readStream(_resources[i].size);
+			_file.close();
+			return stream;
+		}
+	}
+
+	return 0;
+}
+
+bool MacRoomArchive::open(const Common::String &fileName, Archive *parentArchive) {
+	_fileName = fileName;
+	return Common::File::exists(fileName);
+}
+
+void MacRoomArchive::index(ResourceMap &map) {
+	if (_isIndexed)
+		return;
+
+	if (!_file.isOpen())
+		assert(_file.open(_fileName));
+
+	debugC(3, kDebugResources, "Reading contents of Mac room file '%s'", _fileName.c_str());
+
+	_file.seek(0);
+
+	// The first two entries are always bad
+	uint16 resCount = _file.readUint16BE() - 2;
+
+	if (!resCount) {
+		// '001' has no files \o/
+		_isIndexed = true;
+		return;
+	}
+
+	_file.skip(2 * 16);
+	_resources.resize(resCount);
+
+	debugC(4, kDebugResources, "Has %d resources", resCount);
+
+	for (uint32 i = 0; i < resCount; i++) {
+		byte buffer[9];
+
+		// Resource's file name
+		_file.read(buffer, 8);
+		buffer[8] = '\0';
+		Common::String resFile = (const char *)buffer;
+
+		map[resFile] = this;
+
+		_resources[i].fileName = resFile;
+		_resources[i].size = _file.readUint32BE();
+		_resources[i].offset = _file.readUint32BE();
+
+		debugC(5, kDebugResources, "Resource \"%s\", offset %d, size %d",
+				resFile.c_str(), _resources[i].offset, _resources[i].size);
+	}
+
+	_file.close();
+	_isIndexed = true;
+}
+
+Common::SeekableReadStream *MacRoomArchive::getStream(const Common::String &fileName) {
+	for (uint32 i = 0; i < _resources.size(); i++) {
+		if (_resources[i].fileName.equalsIgnoreCase(fileName)) {
+			if (!_file.isOpen())
+				assert(_file.open(_fileName));
+			_file.seek(_resources[i].offset);
+			Common::SeekableReadStream *stream = _file.readStream(_resources[i].size);
+			_file.close();
+			return stream;
+		}
+	}
+
+	return 0;
+}
+
 Resources::Resources() {
 	clear();
 }
@@ -605,6 +791,20 @@ bool Resources::addMacResourceFork(const Common::String &fileName, uint32 type) 
 	return true;
 }
 
+bool Resources::addMacRoomArchive(const Common::String &fileName) {
+	Archive *archive = new MacRoomArchive();
+
+	if (!archive->open(fileName)) {
+		warning("Could not open '%s'", fileName.c_str());
+		delete archive;
+		return false;
+	}
+
+	archive->index(_resources);
+	_archives.push_back(archive);
+	return true;
+}
+
 bool Resources::indexMacResources() {
 	static const char* soundFiles[] = { "da", "db", "dc", "dd", "dg", "dh", "di", "dj", "dk", "dm",
 	                                    "dm2", "dn", "dn2", "do", "dp", "dr", "ds", "dt", "du", "se"};
@@ -632,10 +832,37 @@ bool Resources::indexMacResources() {
 	if (!addMacResourceFork("talk", MKID_BE('TEXT')))
 		return false;
 
-	// TODO: Index the "text" file (Subtitles)
-	// TODO: Index the "walk" file (Mike Walk Animations)
-	// TODO: Index files in the "rooms" folder (Room Images)
-	return false;
+	// "text" file (Subtitles)
+	Archive *archive = new MacTextArchive();
+	if (!archive->open("text")) {
+		warning("Could not open 'text'");
+		delete archive;
+		return false;
+	} else {
+		archive->index(_resources);
+		_archives.push_back(archive);
+	}
+
+	// "walk" file (Mike Walk Animations)
+	archive = new MacWalkArchive();
+	if (!archive->open("walk")) {
+		warning("Could not open 'walk'");
+		delete archive;
+		return false;
+	} else {
+		archive->index(_resources);
+		_archives.push_back(archive);
+	}
+
+	// Index files in the "rooms" folder (Room Images)
+	Common::ArchiveMemberList roomList;
+	SearchMan.listMatchingMembers(roomList, "rooms/*");
+
+	for (Common::ArchiveMemberList::const_iterator it = roomList.begin(); it != roomList.end(); it++)
+		if (!addMacRoomArchive("rooms/" + (*it)->getName()))
+			return false;
+
+	return true;
 }
 
 void Resources::clear() {

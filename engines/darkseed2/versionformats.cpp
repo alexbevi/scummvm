@@ -79,6 +79,18 @@ void VersionFormats::setGameVersion(GameVersion gameVersion) {
 		_speakerSeparator = new TextLine((const byte *) "\n", 1);
 		break;
 
+	case kGameVersionMac:
+		// TODO: _imageType
+		// TODO: _roomImageType
+		// TODO: _boxImageType
+		// TODO: _walkMapType
+		_soundType     = kSoundTypeSND;
+
+		_hotspotScale = 1;
+
+		// TODO: _speakerSeparator
+		break;
+
 	default:
 		warning("VersionFormats::setGameVersion(): Unknown game version");
 		assert(false);
