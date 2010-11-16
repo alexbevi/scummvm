@@ -294,6 +294,8 @@ bool CursorsMac::load() {
 		cursor.sprite->copyFrom(cursorData);
 
 		free(cursorData);
+
+		_cursors[cursor.name] = cursor;
 	}
 
 	return true;
