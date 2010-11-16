@@ -71,12 +71,8 @@ bool Sound::playSound(Resources &resources, const Common::String &sound, int *id
 	if (!resources.hasResource(fileName))
 		return false;
 
-	Resource *resource = resources.getResource(fileName);
-
-	uint32 size = resource->getSize();
-
-	Common::SeekableReadStream *stream = resource->getStream().readStream(size);
-
+	Common::SeekableReadStream *resource = resources.getResource(fileName);
+	Common::SeekableReadStream *stream = resource->readStream(resource->size());
 	delete resource;
 
 	if (!playSound(*stream, id, type, true)) {
@@ -85,10 +81,6 @@ bool Sound::playSound(Resources &resources, const Common::String &sound, int *id
 	}
 
 	return true;
-}
-
-bool Sound::playSound(const Resource &resource, int *id, Audio::Mixer::SoundType type) {
-	return playSound(resource.getStream(), id, type);
 }
 
 void Sound::playDummySound(int &id, uint32 length, Audio::Mixer::SoundType type) {

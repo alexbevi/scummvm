@@ -633,9 +633,9 @@ bool Sprite::loadFromBMP(Resources &resources, const Common::String &bmp) {
 	if (!resources.hasResource(bmpFile))
 		return false;
 
-	Resource *resBMP = resources.getResource(bmpFile);
+	Common::SeekableReadStream *resBMP = resources.getResource(bmpFile);
 
-	bool result = loadFromBMP(resBMP->getStream());
+	bool result = loadFromBMP(*resBMP);
 
 	delete resBMP;
 
@@ -650,9 +650,9 @@ bool Sprite::loadFromRGB(Resources &resources, const Common::String &rgb) {
 	if (!resources.hasResource(rgbFile))
 		return false;
 
-	Resource *resRGB = resources.getResource(rgbFile);
+	Common::SeekableReadStream *resRGB = resources.getResource(rgbFile);
 
-	bool result = loadFromRGB(resRGB->getStream());
+	bool result = loadFromRGB(*resRGB);
 
 	delete resRGB;
 
@@ -667,9 +667,9 @@ bool Sprite::loadFromBDP(Resources &resources, const Common::String &bdp) {
 	if (!resources.hasResource(bdpFile))
 		return false;
 
-	Resource *resBDP = resources.getResource(bdpFile);
+	Common::SeekableReadStream *resBDP = resources.getResource(bdpFile);
 
-	bool result = loadFromBDP(resBDP->getStream());
+	bool result = loadFromBDP(*resBDP);
 
 	delete resBDP;
 
@@ -684,9 +684,9 @@ bool Sprite::loadFrom256(Resources &resources, const Common::String &f256, int32
 	if (!resources.hasResource(f256File))
 		return false;
 
-	Resource *res256 = resources.getResource(f256File);
+	Common::SeekableReadStream *res256 = resources.getResource(f256File);
 
-	bool result = loadFrom256(res256->getStream(), width, height);
+	bool result = loadFrom256(*res256, width, height);
 
 	delete res256;
 
@@ -700,9 +700,9 @@ bool Sprite::loadFromSaturnCursor(Resources &resources, const Common::String &cu
 	if (!resources.hasResource(cursorFile))
 		return false;
 
-	Resource *resCursor = resources.getResource(cursorFile);
+	Common::SeekableReadStream *resCursor = resources.getResource(cursorFile);
 
-	bool result = loadFromSaturnCursor(resCursor->getStream());
+	bool result = loadFromSaturnCursor(*resCursor);
 
 	delete resCursor;
 

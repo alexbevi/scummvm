@@ -42,10 +42,9 @@ DATFile::Line::Line(const char *cmd, int cmdLen, const char *args) {
 	arguments.trim();
 }
 
-DATFile::DATFile(const Resource &dat) {
-	_name = dat.getName();
-
-	load(dat.getStream());
+DATFile::DATFile(const Common::String &fileName, Common::SeekableReadStream &stream) {
+	_name = fileName;
+	load(stream);
 }
 
 DATFile::~DATFile() {

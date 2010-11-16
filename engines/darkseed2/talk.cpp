@@ -56,17 +56,15 @@ TalkLine::TalkLine(Resources &resources, const Common::String &talkName) {
 
 	// Reading the text
 	if (_resources->hasResource(txtFile)) {
-		Resource *txt = _resources->getResource(txtFile);
+		Common::SeekableReadStream *txt = _resources->getResource(txtFile);
 
 		if (_resources->getVersionFormats().getLanguage() == Common::JA_JPN) {
-			_txt = new TextLine(txt->getStream());
+			_txt = new TextLine(*txt);
 		} else {
-			Common::SeekableReadStream &txtStream = txt->getStream();
-
 			Common::String str;
-			while (!txtStream.err() && !txtStream.eos()) {
-				Common::String line = txtStream.readLine();
-				if (line.empty() && txtStream.eos())
+			while (!txt->err() && !txt->eos()) {
+				Common::String line = txt->readLine();
+				if (line.empty() && txt->eos())
 					continue;
 
 				if (!str.empty())
@@ -96,7 +94,7 @@ bool TalkLine::hasTXT() const {
 	return _txt != 0;
 }
 
-const Resource &TalkLine::getWAV() const {
+Common::SeekableReadStream &TalkLine::getWAV() const {
 	if (!_wav)
 		error("Resource %s.WAV does not exist", _resource.c_str());
 

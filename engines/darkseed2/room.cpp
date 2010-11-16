@@ -238,11 +238,11 @@ bool Room::parse(Resources &resources,
 	_roomFile = room;
 	_objsFile = objects;
 
-	Resource *resRoom    = resources.getResource(room);
-	Resource *resObjects = resources.getResource(objects);
+	Common::SeekableReadStream *resRoom    = resources.getResource(room);
+	Common::SeekableReadStream *resObjects = resources.getResource(objects);
 
-	DATFile roomParser(*resRoom);
-	DATFile objectsParser(*resObjects);
+	DATFile roomParser(room, *resRoom);
+	DATFile objectsParser(objects, *resObjects);
 
 	bool result = parse(resources, roomParser, objectsParser);
 
@@ -464,11 +464,14 @@ bool Room::loading(Resources &resources) {
 
 	_entryScripts.clear();
 
-	Resource *resRoom    = resources.getResource(_roomFile);
-	Resource *resObjects = resources.getResource(_objsFile);
+	Common::SeekableReadStream *resRoom    = resources.getResource(_roomFile);
+	Common::SeekableReadStream *resObjects = resources.getResource(_objsFile);
 
-	DATFile roomParser(*resRoom);
-	DATFile objectsParser(*resObjects);
+	DATFile roomParser(_roomFile, *resRoom);
+	DATFile objectsParser(_objsFile, *resObjects);
+
+	delete resRoom;
+	delete resObjects;
 
 	Common::List<uint32>::const_iterator line;
 	for (line = _entryScriptLines.begin(); line != _entryScriptLines.end(); ++line) {

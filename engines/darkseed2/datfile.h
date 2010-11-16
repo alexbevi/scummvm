@@ -42,7 +42,7 @@ class Resource;
 
 class DATFile {
 public:
-	DATFile(const Resource &dat);
+	DATFile(const Common::String &fileName, Common::SeekableReadStream &stream);
 	~DATFile();
 
 	/** Reached the end? */

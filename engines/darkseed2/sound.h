@@ -52,8 +52,8 @@ public:
 	/** Set the sound type */
 	void init(SoundType soundType);
 
-	bool playSound(const Resource &resource, int *id = 0,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
+	bool playSound(Common::SeekableReadStream &stream, int *id = 0,
+			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType, bool autoFree = false);
 	bool playSound(Resources &resources, const Common::String &stream, int *id = 0,
 			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType);
 
@@ -109,9 +109,6 @@ private:
 
 	SoundChannel *findEmptyChannel();
 	SoundChannel *findChannel(int id);
-
-	bool playSound(Common::SeekableReadStream &stream, int *id = 0,
-			Audio::Mixer::SoundType type = Audio::Mixer::kSFXSoundType, bool autoFree = false);
 
 	Audio::AudioStream *createAudioStream(Common::SeekableReadStream &stream, bool autoFree = false);
 };

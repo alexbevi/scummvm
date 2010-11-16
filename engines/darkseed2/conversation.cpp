@@ -211,8 +211,8 @@ bool Conversation::parse(Resources &resources, const Common::String &convName) {
 		return false;
 	}
 
-	Resource *resource = resources.getResource(txtFile);
-	DATFile conversation(*resource);
+	Common::SeekableReadStream *resource = resources.getResource(txtFile);
+	DATFile conversation(txtFile, *resource);
 
 	bool result = parse(conversation, convName);
 

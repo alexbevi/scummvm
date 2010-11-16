@@ -181,9 +181,9 @@ bool Saturn2Byte::load(Resources &resources, const Common::String &file) {
 	if (!resources.hasResource(fonFile))
 		return false;
 
-	Resource *resFON = resources.getResource(fonFile);
+	Common::SeekableReadStream *resFON = resources.getResource(fonFile);
 
-	bool result = load(resFON->getStream());
+	bool result = load(*resFON);
 
 	delete resFON;
 

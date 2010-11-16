@@ -119,16 +119,12 @@ bool Variables::loadFromIDX(Common::SeekableReadStream &idx) {
 	return true;
 }
 
-bool Variables::loadFromIDX(const Resource &idx) {
-	return loadFromIDX(idx.getStream());
-}
-
 bool Variables::loadFromIDX(Resources &resources, const Common::String &idx) {
 	Common::String idxFile = Resources::addExtension(idx, "IDX");
 	if (!resources.hasResource(idxFile))
 		return false;
 
-	Resource *resIDX = resources.getResource(idxFile);
+	Common::SeekableReadStream *resIDX = resources.getResource(idxFile);
 
 	bool result = loadFromIDX(*resIDX);
 

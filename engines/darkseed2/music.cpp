@@ -65,10 +65,6 @@ bool Music::playMID(Common::SeekableReadStream &mid) {
 	return true;
 }
 
-bool Music::playMID(const Resource &resource) {
-	return playMID(resource.getStream());
-}
-
 bool Music::playMID(Resources &resources, const Common::String &mid) {
 	if (mid.empty()) {
 		// No file specified, stop playback
@@ -97,7 +93,7 @@ bool Music::playMID(Resources &resources, const Common::String &mid) {
 	if (!resources.hasResource(midFile))
 		return false;
 
-	Resource *resMID = resources.getResource(midFile);
+	Common::SeekableReadStream *resMID = resources.getResource(midFile);
 
 	bool result = playMID(*resMID);
 

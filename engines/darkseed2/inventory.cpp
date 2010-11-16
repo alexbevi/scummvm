@@ -175,9 +175,9 @@ bool Inventory::parse(Resources &resources, const Common::String &inv) {
 	if (!resources.hasResource(datFile))
 		return false;
 
-	Resource *resInv = resources.getResource(datFile);
+	Common::SeekableReadStream *resInv = resources.getResource(datFile);
 
-	DATFile invParser(*resInv);
+	DATFile invParser(datFile, *resInv);
 
 	bool result = parse(invParser);
 

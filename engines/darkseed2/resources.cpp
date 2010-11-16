@@ -32,577 +32,111 @@
 
 namespace DarkSeed2 {
 
-Resource::Resource(const Common::String &name, const byte *data, uint32 size) {
-	_name        = name;
-	_ownData     = 0;
-	_foreignData = data;
-	_size        = size;
-
-	_stream = new Common::MemoryReadStream(_foreignData, size);
+Archive::Archive() {
+	_isIndexed = false;
 }
 
-Resource::Resource(const Common::String &name, Common::ReadStream &stream, uint32 size) {
-	_name        = name;
-	_foreignData = 0;
-	_ownData     = new byte[size];
-	_size        = size;
-
-	uint32 nRead;
-
-	nRead = stream.read(_ownData, size);
-
-	assert(nRead == size);
-
-	_stream = new Common::MemoryReadStream(_ownData, size);
+GlueArchive::GlueArchive() : Archive() {
+	_file = 0;
 }
 
-Resource::~Resource() {
-	delete[] _ownData;
-	delete _stream;
+GlueArchive::~GlueArchive() {
+	delete _file;
 }
 
-const Common::String &Resource::getName() const {
-	return _name;
+bool GlueArchive::open(const Common::String &fileName, Archive *parentArchive) {
+	_fileName = fileName;
+	return Common::File::exists(fileName);
 }
 
-uint32 Resource::getSize() const {
-	return _size;
-}
+void GlueArchive::index(ResourceMap &map) {
+	if (_isIndexed)
+		return;
 
-const byte *Resource::getData() const {
-	if (_ownData)
-		return _ownData;
+	if (!_file) {
+		// Open up the file if we have not done so already
+		Common::File *file = new Common::File();
+		assert(file->open(_fileName));
+		_file = file;
 
-	return _foreignData;
-}
-
-Common::SeekableReadStream &Resource::getStream() const {
-	return *_stream;
-}
-
-
-Resources::Archive::Archive() : type(kArchiveTypeNone), data(0), stream(0), size(0), indexed(false) {
-}
-
-Resources::Archive::~Archive() {
-	delete stream;
-	delete[] data;
-}
-
-
-Resources::Res::Res() : archive(0), offset(0), size(0), exists(false), indexed(false) {
-}
-
-
-Resources::Resources() {
-	clear();
-}
-
-Resources::~Resources() {
-	clear();
-}
-
-void Resources::setGameVersion(GameVersion gameVersion, Common::Language language) {
-	_versionFormats.setGameVersion(gameVersion);
-	_versionFormats.setLanguage(language);
-}
-
-const VersionFormats &Resources::getVersionFormats() {
-	return _versionFormats;
-}
-
-bool Resources::index(const char *fileName) {
-	clear();
-
-	Common::File indexFile;
-
-	debugC(1, kDebugResources, "Resource index file \"%s\"", fileName);
-
-	if (!indexFile.open(fileName))
-		return false;
-
-	// Read the different sections of the index file
-	if (!readIndexHeader(indexFile))
-		return false;
-	if (!readIndexGlues(indexFile))
-		return false;
-	if (!readIndexResources(indexFile))
-		return false;
-
-	indexFile.close();
-
-	return true;
-}
-
-bool Resources::indexPGF(const char *initalIndex, const char *initialGlue) {
-	// Find all PGFs
-
-	Common::ArchiveMemberList pgfs;
-
-	SearchMan.listMatchingMembers(pgfs, "*.PGF");
-
-	_archiveCount = pgfs.size();
-
-	if (_archiveCount == 0)
-		return false;
-
-	// Indexing the initial index/glue pair
-
-	Common::File indexFile;
-	if (!indexFile.open(initalIndex)) {
-		warning("Resources::indexPGF(): Can't open initial index file \"%s\"", initalIndex);
-		return false;
+		if (isCompressed())
+			uncompressGlue();
 	}
 
-	_archiveCount++;
-	_archives.resize(_archiveCount);
+	debugC(3, kDebugResources, "Reading contents of glue file \"%s\"", _fileName.c_str());
 
-	_archives[0].type     = kArchiveTypePGF;
-	_archives[0].fileName = initialGlue;
+	_file->seek(0);
 
-	if (!readInitialIndexContents(indexFile, _archives[0]))
-		return false;
-
-	// Indexing all PGFs
-
-	Common::ArchiveMemberList::const_iterator it = pgfs.begin();
-	for (uint i = 1; it != pgfs.end(); ++it, ++i) {
-		Archive &archive = _archives[i];
-
-		archive.type     = kArchiveTypePGF;
-		archive.fileName = (*it)->getName();
-
-		if (!indexArchiveContents(archive))
-			return false;
-	}
-
-	return true;
-}
-
-bool Resources::indexMacResources() {
-	// TODO: Index resource forks with 'snd ' resources in the sound folder (Voices/Sound Effects)
-	// TODO: Index the "action" resource fork with 'Sprt' resources (Animations)
-	// TODO: Index the "art" resource fork with 'PICT' resources (Inventory Images)
-	// TODO: Index the "music" resource fork with 'Tune' resources (QuickTime MIDI)
-	// TODO: Index the "talk" resource fork with 'TEXT' resources (Game Scripts)
-	// TODO: Index the "text" file (Subtitles)
-	// TODO: Index the "walk" file (Mike Walk Animations)
-	// TODO: Index files in the "rooms" folder (Room Images)
-	return false;
-}
-
-void Resources::clear() {
-	_resources.clear();
-	_archives.clear();
-
-	_archiveCount = 0;
-	_resCount     = 0;
-}
-
-void Resources::clearUncompressedData() {
-	for (int i = 0; i < _archiveCount; i++) {
-		Archive &archive = _archives[i];
-
-		delete archive.stream;
-		delete[] archive.data;
-
-		archive.stream = 0;
-		archive.data   = 0;
-	}
-}
-
-bool Resources::readIndexHeader(Common::File &indexFile) {
-	_archiveCount = indexFile.readUint16LE();
-	_resCount  = indexFile.readUint16LE();
-
-	_archives.resize(_archiveCount);
-
-	debugC(1, kDebugResources, "Found %d glues and %d resources", _archiveCount, _resCount);
-
-	return true;
-}
-
-bool Resources::readIndexGlues(Common::File &indexFile) {
-	byte buffer[33];
-
-	// Read the names of all available glues
-	for (int i = 0; i < _archiveCount; i++) {
-		indexFile.read(buffer, 32);
-		indexFile.skip(32);
-
-		buffer[32] = '\0';
-
-		_archives[i].type     = kArchiveTypeGlue;
-		_archives[i].fileName = (const char *) buffer;
-
-		debugC(2, kDebugResources, "Glue file \"%s\"", _archives[i].fileName.c_str());
-	}
-
-	return true;
-}
-
-bool Resources::readIndexResources(Common::File &indexFile) {
-	byte buffer[13];
-
-	// Read information about all avaiable resources
-	for (uint32 i = 0; i < _resCount; i++) {
-		// In which glue is it found?
-		uint16 archive = indexFile.readUint16LE();
-
-		// File name
-		indexFile.read(buffer, 12);
-		buffer[12] = '\0';
-		Common::String resFile = (const char *) buffer;
-
-		if (archive >= _archiveCount) {
-			warning("Resources::readIndexResources(): Glue number out "
-					"of range for resource \"%s\" (%d vs. %d)",
-					resFile.c_str(), archive, _archiveCount);
-			return false;
-		}
-
-		Res resource;
-
-		// Unknown
-		indexFile.read(resource.unknown, 8);
-
-		resource.archive = &_archives[archive];
-
-		_resources.setVal(resFile, resource);
-
-		debugC(3, kDebugResources, "Resource \"%s\", in glue \"%s\"",
-				resFile.c_str(), resource.archive->fileName.c_str());
-	}
-
-	return true;
-}
-
-bool Resources::indexArchiveContents(Archive &archive) {
-	switch (archive.type) {
-	case kArchiveTypeGlue:
-		return indexGlueContents(archive);
-	case kArchiveTypePGF:
-		return indexPGFContents(archive);
-	default:
-		assert(false);
-		error("Resources::indexArchiveContents(): Unknown archive type %d", archive.type);
-	}
-
-	return false;
-}
-
-bool Resources::indexGlueContents(Archive &archive) {
-	if (archive.data || archive.stream)
-		// Already indexed
-		return true;
-
-	Common::File archiveFile;
-
-	if (!archiveFile.open(archive.fileName)) {
-		warning("Resources::indexGlueContents(): "
-				"Can't open glue file \"%s\"", archive.fileName.c_str());
-		return false;
-	}
-
-	if (isCompressedGlue(archiveFile)) {
-		// If the archive is compressed, uncompress it and keep it in memory
-
-		archive.data   = uncompressGlue(archiveFile, archive.size);
-		archive.stream = new Common::MemoryReadStream(archive.data, archive.size);
-
-		if (!archive.indexed)
-			if (!readGlueContents(*archive.stream, archive.fileName))
-				return false;
-
-	} else
-		if (!archive.indexed)
-			if (!readGlueContents(archiveFile, archive.fileName))
-				return false;
-
-	archive.indexed = true;
-
-	return true;
-}
-
-bool Resources::indexPGFContents(Archive &archive) {
-	if (archive.indexed)
-		// Already indexed
-		return true;
-
-	Common::File archiveFile;
-
-	if (!archiveFile.open(archive.fileName)) {
-		warning("Resources::indexPGFContents(): "
-				"Can't open PGF file \"%s\"", archive.fileName.c_str());
-		return false;
-	}
-
-	if (!readPGFContents(archiveFile, archive))
-		return false;
-
-	archive.indexed = true;
-
-	return true;
-}
-
-bool Resources::readGlueContents(Common::SeekableReadStream &glueFile, const Common::String &fileName) {
-	debugC(3, kDebugResources, "Reading contents of glue file \"%s\"", fileName.c_str());
-
-	glueFile.seek(0);
-
-	uint16 glueResCount = glueFile.readUint16LE();
+	uint16 glueResCount = _file->readUint16LE();
+	_resources.resize(glueResCount);
 
 	debugC(4, kDebugResources, "Has %d resources", glueResCount);
 
-	byte buffer[13];
-
-	for (int i = 0; i < glueResCount; i++) {
+	for (uint16 i = 0; i < glueResCount; i++) {
 		// Resource's file name
-		glueFile.read(buffer, 12);
+		byte buffer[13];
+		_file->read(buffer, 12);
 		buffer[12] = '\0';
-		Common::String resFile = (const char *) buffer;
+		Common::String resFile = (const char *)buffer;
 
 		// Was the resource also listed in the index file?
-		if (!_resources.contains(resFile)) {
-			warning("Resources::readGlueContents(): "
+		if (!map.contains(resFile)) {
+			warning("GlueArchive::index(): "
 					"Unindexed resource \"%s\" found", resFile.c_str());
-			glueFile.skip(8);
+			_file->skip(8);
 			continue;
 		}
 
-		Res &resource = _resources.getVal(resFile);
-
 		// Just to make sure that the resource is the really in the glue file it should be
-		assert(!strcmp(fileName.c_str(), resource.archive->fileName.c_str()));
+		assert(map[resFile] == this);
 
-		resource.exists = true;
-		resource.size   = glueFile.readUint32LE();
-		resource.offset = glueFile.readUint32LE();
+		_resources[i].fileName = resFile;
+		_resources[i].size = _file->readUint32LE();
+		_resources[i].offset = _file->readUint32LE();
 
 		debugC(5, kDebugResources, "Resource \"%s\", offset %d, size %d",
-				resFile.c_str(), resource.offset, resource.size);
+				resFile.c_str(), _resources[i].offset, _resources[i].size);
 	}
 
-	return true;
+	_isIndexed = true;
 }
 
-bool Resources::readPGFContents(Common::SeekableReadStream &pgfFile, Archive &archive) {
-	debugC(3, kDebugResources, "Reading contents of PGF file \"%s\"", archive.fileName.c_str());
+Common::SeekableReadStream *GlueArchive::getStream(const Common::String &fileName) {
+	if (!_file)
+		return 0;
 
-	pgfFile.seek(0);
-
-	uint32 pgfResCount = pgfFile.readUint32BE();
-
-	debugC(4, kDebugResources, "Has %d resources", pgfResCount);
-
-	_resCount += pgfResCount;
-
-	// Size of the index
-	uint32 startOffset = pgfResCount * (12 + 4 + 4) + 4;
-
-	for (uint32 i = 0; i < pgfResCount; i++)
-		if (!readBEResourcList(pgfFile, archive, startOffset))
-			return false;
-
-	return true;
-}
-
-bool Resources::readInitialIndexContents(Common::SeekableReadStream &indexFile, Archive &archive) {
-	debugC(3, kDebugResources, "Reading contents of glue file \"%s\"", archive.fileName.c_str());
-
-	indexFile.seek(0);
-
-	uint32 glueResCount = indexFile.readUint32BE();
-
-	debugC(4, kDebugResources, "Has %d resources", glueResCount);
-
-	for (uint32 i = 0; i < glueResCount; i++)
-		if (!readBEResourcList(indexFile, archive, 0))
-			return false;
-
-	archive.indexed = true;
-
-	return true;
-}
-
-bool Resources::readBEResourcList(Common::SeekableReadStream &file, Archive &archive, uint32 startOffset) {
-	byte buffer[13];
-
-	// Resource's file name
-	file.read(buffer, 12);
-	buffer[12] = '\0';
-	Common::String resFile = (const char *) buffer;
-
-	Res resource;
-
-	resource.archive = &archive;
-	resource.exists  = true;
-	resource.size    = file.readUint32BE();
-	resource.offset  = file.readUint32BE() + startOffset;
-
-	debugC(5, kDebugResources, "Resource \"%s\", offset %d, size %d",
-			resFile.c_str(), resource.offset, resource.size);
-
-	_resources.setVal(resFile, resource);
-
-	if (resFile.matchString("*.TND", true))
-		if (!indexTND(file, archive, resource))
-			return false;
-
-	return true;
-}
-
-bool Resources::indexTND(Common::SeekableReadStream &file, Archive &archive, Res &tnd) {
-	if (tnd.size == 0)
-		return true;
-
-	uint32 filePos = file.pos();
-
-	if (!file.seek(tnd.offset))
-		return false;
-
-	if (file.readUint32BE() != tnd.size)
-		return false;
-
-	uint32 txtCount = file.readUint32BE();
-
-	uint32 startOffset = tnd.offset + txtCount * 16 + 8;
-	for (uint32 i = 0; i < txtCount; i++) {
-		byte buffer[9];
-
-		file.read(buffer, 8);
-		buffer[8] = '\0';
-		Common::String txtFile = (const char *) buffer;
-
-		txtFile += ".TXT";
-
-		Res resource;
-
-		resource.archive = &archive;
-		resource.exists  = true;
-		resource.size    = file.readUint32BE();
-		resource.offset  = file.readUint32BE() + startOffset;
-
-		_resources.setVal(txtFile, resource);
+	for (uint32 i = 0; i < _resources.size(); i++) {
+		if (_resources[i].fileName.equalsIgnoreCase(fileName)) {
+			_file->seek(_resources[i].offset);
+			return _file->readStream(_resources[i].size);
+		}
 	}
 
-	file.seek(filePos);
-
-	return true;
+	return 0;
 }
 
-bool Resources::indexParentArchive(Res &res) {
-	if (res.indexed)
-		return true;
-
-	if (!res.archive) {
-		warning("Resources::indexParentArchive(): Resource has no parent archive");
-		return false;
-	}
-
-	if (!indexArchiveContents(*res.archive))
-		return false;
-
-	if (res.indexed) {
-		warning("Resources::indexParentArchive(): Resource not in parent archive");
-		return false;
-	}
-
-	return true;
+void GlueArchive::clearUncompressedData() {
+	delete _file;
+	_file = 0;
+	_isIndexed = false;
+	_resources.clear();
 }
 
-bool Resources::hasResource(const Common::String &resource) {
-	if (Common::File::exists(resource))
-		return true;
-
-	if (!_resources.contains(resource))
-		return false;
-
-	Res &res = _resources.getVal(resource);
-
-	if (!indexParentArchive(res))
-		return false;
-
-	return res.exists && (res.size != 0);
-}
-
-Resource *Resources::getResource(const Common::String &resource) {
-	debugC(3, kDebugResources, "Getting resource \"%s\"", resource.c_str());
-
-	Common::File plainFile;
-	if (plainFile.open(resource)) {
-		// Loading directly from file
-
-		return new Resource(resource, plainFile, plainFile.size());
-	}
-
-	if (!_resources.contains(resource))
-		error("Resources::getResource(): Resource \"%s\" does not exist",
-				resource.c_str());
-
-	Res &res = _resources.getVal(resource);
-
-	if (!indexParentArchive(res))
-		return false;
-
-	if (!res.exists || (res.size == 0))
-		error("Resources::getResource(): Resource \"%s\" not available",
-				resource.c_str());
-
-	if (res.archive->data) {
-		// Compressed archive, constructing new resource with direct data held in memory
-
-		if ((res.offset + res.size) > res.archive->size)
-			error("Resources::getResource(): Resource \"%s\" offset %d out of bounds",
-					resource.c_str(), res.offset);
-
-		return new Resource(resource, res.archive->data + res.offset, res.size);
-	}
-
-	// Uncompressed archive, constructing new resource with data from file
-
-	Common::File archiveFile;
-
-	if (!archiveFile.open(res.archive->fileName))
-		error("Resources::getResource(): Couldn't open archive file \"%s\"",
-				res.archive->fileName.c_str());
-
-	if (!archiveFile.seek(res.offset))
-		error("Resources::getResource(): Couldn't seek archive file \"%s\" to offset %d",
-				res.archive->fileName.c_str(), res.offset);
-
-	return new Resource(resource, archiveFile, res.size);
-}
-
-Common::String Resources::addExtension(const Common::String &name, const Common::String &extension) {
-	if (name.empty() || extension.empty())
-		return name;
-
-	const char *str = name.c_str();
-	const char *dot = strrchr(str, '.');
-
-	if (!dot)
-		return name + "." + extension;
-
-	return Common::String(str, dot + 1) + extension;
-}
-
-byte *Resources::uncompressGlue(Common::File &file, uint32 &size) const {
-	if (!file.seek(0))
-		error("Resources::uncompressGlue(): Can't seek glue file");
+void GlueArchive::uncompressGlue() {
+	if (!_file->seek(0))
+		error("GlueArchive::uncompressGlue(): Can't seek glue file");
 
 	byte inBuf[2048];
-	int nRead;
 
 	memset(inBuf, 0, 2048);
 
-	nRead = file.read(inBuf, 2048);
+	int nRead = _file->read(inBuf, 2048);
 
 	if (nRead != 2048)
-		error("Resources::uncompressGlue(): "
+		error("GlueArchive::uncompressGlue(): "
 				"Can't uncompress glue file: Need at least 2048 bytes");
 
-	size = READ_LE_UINT32(inBuf + 2044) + 128;
+	uint32 size = READ_LE_UINT32(inBuf + 2044) + 128;
 
 	// Sanity check
 	assert(size < (10*1024*1024));
@@ -626,13 +160,14 @@ byte *Resources::uncompressGlue(Common::File &file, uint32 &size) const {
 		oBuf += written;
 
 		memset(inBuf, 0, 2048);
-		nRead = file.read(inBuf, 2048);
+		nRead = _file->read(inBuf, 2048);
 	}
 
-	return outBuf;
+	delete _file;
+	_file = new Common::MemoryReadStream(outBuf, size, DisposeAfterUse::YES);
 }
 
-uint32 Resources::uncompressGlueChunk(byte *outBuf, const byte *inBuf, int n) const {
+uint32 GlueArchive::uncompressGlueChunk(byte *outBuf, const byte *inBuf, int n) const {
 	int countRead    = 0;
 	int countWritten = 0;
 
@@ -687,12 +222,12 @@ uint32 Resources::uncompressGlueChunk(byte *outBuf, const byte *inBuf, int n) co
 	return countWritten;
 }
 
-bool Resources::isCompressedGlue(Common::SeekableReadStream &stream) {
-	stream.seek(0);
+bool GlueArchive::isCompressed() {
+	_file->seek(0);
 
-	uint32 fSize = stream.size();
+	uint32 fSize = _file->size();
 
-	uint32 numRes = stream.readUint16LE();
+	uint32 numRes = _file->readUint16LE();
 
 	// The resource list has to fit
 	if (fSize <= (numRes * 22))
@@ -700,15 +235,15 @@ bool Resources::isCompressedGlue(Common::SeekableReadStream &stream) {
 
 	byte buffer[12];
 	while (numRes-- > 0) {
-		stream.read(buffer, 12);
+		_file->read(buffer, 12);
 
 		// Only these character are allowed in a resource file name
 		for (int i = 0; (i < 12) && (buffer[i] != 0); i++)
 			if (!isalnum(buffer[i]) && (buffer[i] != '.') && (buffer[i] != '_'))
 				return true;
 
-		uint32 size   = stream.readUint32LE();
-		uint32 offset = stream.readUint32LE();
+		uint32 size   = _file->readUint32LE();
+		uint32 offset = _file->readUint32LE();
 
 		// The resources have to fit
 		if ((size + offset) > fSize)
@@ -716,6 +251,437 @@ bool Resources::isCompressedGlue(Common::SeekableReadStream &stream) {
 	}
 
 	return false;
+}
+
+PGFArchive::~PGFArchive() {
+	for (uint32 i = 0; i < _subArchives.size(); i++)
+		delete _subArchives[i];
+}
+
+bool PGFArchive::open(const Common::String &fileName, Archive *parentArchive) {
+	_fileName = fileName;
+	return Common::File::exists(fileName);
+}
+
+void PGFArchive::index(ResourceMap &map) {
+	if (_isIndexed)
+		return;
+
+	if (!_file.isOpen())
+		assert(_file.open(_fileName));
+
+	debugC(3, kDebugResources, "Reading contents of PGF file \"%s\"", _fileName.c_str());
+
+	_file.seek(0);
+
+	uint32 resCount = _file.readUint32BE();
+	_resources.resize(resCount);
+
+	debugC(4, kDebugResources, "Has %d resources", resCount);
+
+	uint32 startOffset = resCount * (12 + 4 + 4) + 4;
+
+	for (uint32 i = 0; i < resCount; i++) {
+		byte buffer[13];
+
+		// Resource's file name
+		_file.read(buffer, 12);
+		buffer[12] = '\0';
+		Common::String resFile = (const char *)buffer;
+
+		map[resFile] = this;
+
+		_resources[i].fileName = resFile;
+		_resources[i].size = _file.readUint32BE();
+		_resources[i].offset = _file.readUint32BE() + startOffset;
+
+		debugC(5, kDebugResources, "Resource \"%s\", offset %d, size %d",
+				resFile.c_str(), _resources[i].offset, _resources[i].size);
+	}
+
+	// Now to index all TND files
+	for (uint32 i = 0; i < _resources.size(); i++) {
+		if (_resources[i].fileName.hasSuffix(".TND")) {
+			Archive *archive = new TNDArchive();
+			_subArchives.push_back(archive);
+
+			if (!archive->open(_resources[i].fileName, this))
+				error("Could not index TND");
+
+			archive->index(map);
+		}
+	}
+
+	_file.close();
+	_isIndexed = true;
+}
+
+Common::SeekableReadStream *PGFArchive::getStream(const Common::String &fileName) {
+	for (uint32 i = 0; i < _resources.size(); i++) {
+		if (_resources[i].fileName.equalsIgnoreCase(fileName)) {
+			if (_resources[i].size == 0)
+				return 0;
+			if (!_file.isOpen())
+				assert(_file.open(_fileName));
+			_file.seek(_resources[i].offset);
+			Common::SeekableReadStream *stream = _file.readStream(_resources[i].size);
+			_file.close();
+			return stream;
+		}
+	}
+
+	return 0;
+}
+
+TNDArchive::TNDArchive() : Archive() {
+	_file = 0;
+}
+
+TNDArchive::~TNDArchive() {
+	delete _file;
+}
+
+bool TNDArchive::open(const Common::String &fileName, Archive *parentArchive) {
+	if (!parentArchive)
+		return false;
+
+	_file = parentArchive->getStream(fileName);
+	if (!_file)
+		return true;
+
+	_fileName = fileName;
+
+	return _file->readUint32BE() == (uint32)_file->size();
+}
+
+void TNDArchive::index(ResourceMap &map) {
+	if (!_file || _isIndexed)
+		return;
+
+	uint32 txtCount = _file->readUint32BE();
+	uint32 startOffset = txtCount * 16 + 8;
+	_resources.resize(txtCount);
+
+	for (uint32 i = 0; i < txtCount; i++) {
+		byte buffer[9];
+
+		_file->read(buffer, 8);
+		buffer[8] = '\0';
+		Common::String txtFile = (const char *)buffer;
+
+		txtFile += ".TXT";
+
+		map[txtFile] = this;
+
+		_resources[i].fileName = txtFile;
+		_resources[i].size = _file->readUint32BE();
+		_resources[i].offset = _file->readUint32BE() + startOffset;
+	}
+
+	_isIndexed = true;
+}
+
+Common::SeekableReadStream *TNDArchive::getStream(const Common::String &fileName) {
+	if (!_file)
+		return 0;
+
+	for (uint32 i = 0; i < _resources.size(); i++) {
+		if (_resources[i].fileName.equalsIgnoreCase(fileName)) {
+			_file->seek(_resources[i].offset);
+			return _file->readStream(_resources[i].size);
+		}
+	}
+
+	return 0;
+}
+
+SaturnGlueArchive::~SaturnGlueArchive() {
+	for (uint32 i = 0; i < _subArchives.size(); i++)
+		delete _subArchives[i];
+}
+
+bool SaturnGlueArchive::open(const Common::String &fileName, Archive *parentArchive) {
+	if (!_indexFile.open(fileName + ".IDX"))
+		return false;
+
+	if (!_glueFile.open(fileName + ".GLU"))
+		return false;
+
+	_fileName = fileName + ".GLU";
+	return true;
+}
+
+void SaturnGlueArchive::index(ResourceMap &map) {
+	if (_isIndexed || !_indexFile.isOpen())
+		return;
+
+	debugC(3, kDebugResources, "Reading contents of glue file \"%s\"", _fileName.c_str());
+
+	uint32 glueResCount = _indexFile.readUint32BE();
+	_resources.resize(glueResCount);
+
+	debugC(4, kDebugResources, "Has %d resources", glueResCount);
+
+	for (uint32 i = 0; i < glueResCount; i++) {
+		byte buffer[13];
+
+		// Resource's file name
+		_indexFile.read(buffer, 12);
+		buffer[12] = '\0';
+		Common::String resFile = (const char *)buffer;
+
+		map[resFile] = this;
+
+		_resources[i].fileName = resFile;
+		_resources[i].size     = _indexFile.readUint32BE();
+		_resources[i].offset   = _indexFile.readUint32BE();
+
+		debugC(5, kDebugResources, "Resource \"%s\", offset %d, size %d",
+				resFile.c_str(), _resources[i].offset, _resources[i].size);
+	}
+
+	// Now to index all TND files
+	for (uint32 i = 0; i < _resources.size(); i++) {
+		if (_resources[i].fileName.hasSuffix(".TND")) {
+			Archive *archive = new TNDArchive();
+			_subArchives.push_back(archive);
+
+			if (!archive->open(_resources[i].fileName, this))
+				error("Could not index TND");
+
+			archive->index(map);
+		}
+	}
+
+	_isIndexed = true;
+	_indexFile.close();
+}
+
+Common::SeekableReadStream *SaturnGlueArchive::getStream(const Common::String &fileName) {
+	for (uint32 i = 0; i < _resources.size(); i++) {
+		if (_resources[i].fileName.equalsIgnoreCase(fileName)) {
+			_glueFile.seek(_resources[i].offset);
+			return _glueFile.readStream(_resources[i].size);
+		}
+	}
+
+	return 0;
+}
+
+Resources::Resources() {
+	clear();
+}
+
+Resources::~Resources() {
+	clear();
+}
+
+void Resources::setGameVersion(GameVersion gameVersion, Common::Language language) {
+	_versionFormats.setGameVersion(gameVersion);
+	_versionFormats.setLanguage(language);
+}
+
+const VersionFormats &Resources::getVersionFormats() {
+	return _versionFormats;
+}
+
+bool Resources::index(const char *fileName) {
+	debugC(1, kDebugResources, "Resource index file \"%s\"", fileName);
+
+	clear();
+
+	Common::File indexFile;
+
+	if (!indexFile.open(fileName))
+		return false;
+
+	uint16 resCount = 0;
+
+	// Read the different sections of the index file
+	if (!readIndexHeader(indexFile, resCount))
+		return false;
+	if (!readIndexGlues(indexFile))
+		return false;
+	if (!readIndexResources(indexFile, resCount))
+		return false;
+
+	return true;
+}
+
+bool Resources::indexPGF() {
+	// Find all PGFs
+
+	Common::ArchiveMemberList pgfs;
+
+	SearchMan.listMatchingMembers(pgfs, "*.PGF");
+
+	uint32 archiveCount = pgfs.size();
+
+	if (archiveCount == 0)
+		return false;
+
+	// Create the initial archive
+	_archives.resize(archiveCount + 1);
+	_archives[0] = new SaturnGlueArchive();
+
+	if (!_archives[0]->open("initial")) {
+		warning("Resources::indexPGF(): Can't open initial.[idx,glu] file");
+		return false;
+	}
+
+	_archives[0]->index(_resources);
+
+	// Indexing all PGFs
+
+	Common::ArchiveMemberList::const_iterator it = pgfs.begin();
+	for (uint i = 1; it != pgfs.end(); ++it, ++i) {
+		_archives[i] = new PGFArchive();
+
+		if (!_archives[i]->open((*it)->getName()))
+			return false;
+
+		_archives[i]->index(_resources);
+	}
+
+	return true;
+}
+
+// TODO: AFTER REFACTORING
+bool Resources::indexMacResources() {
+	// TODO: Index resource forks with 'snd ' resources in the sound folder (Voices/Sound Effects)
+	// TODO: Index the "action" resource fork with 'Sprt' resources (Animations)
+	// TODO: Index the "art" resource fork with 'PICT' resources (Inventory Images)
+	// TODO: Index the "music" resource fork with 'Tune' resources (QuickTime MIDI)
+	// TODO: Index the "talk" resource fork with 'TEXT' resources (Game Scripts)
+	// TODO: Index the "text" file (Subtitles)
+	// TODO: Index the "walk" file (Mike Walk Animations)
+	// TODO: Index files in the "rooms" folder (Room Images)
+	return false;
+}
+
+void Resources::clear() {
+	for (uint32 i = 0; i < _archives.size(); i++)
+		delete _archives[i];
+
+	_resources.clear();
+	_archives.clear();
+}
+
+void Resources::clearUncompressedData() {
+	for (uint32 i = 0; i < _archives.size(); i++)
+		_archives[i]->clearUncompressedData();
+}
+
+bool Resources::readIndexHeader(Common::File &indexFile, uint16 &resCount) {
+	uint16 archiveCount = indexFile.readUint16LE();
+	resCount  = indexFile.readUint16LE();
+
+	_archives.resize(archiveCount);
+
+	debugC(1, kDebugResources, "Found %d glues and %d resources", archiveCount, resCount);
+
+	return true;
+}
+
+bool Resources::readIndexGlues(Common::File &indexFile) {
+	byte buffer[33];
+
+	// Read the names of all available glues
+	for (uint32 i = 0; i < _archives.size(); i++) {
+		indexFile.read(buffer, 32);
+		indexFile.skip(32);
+
+		buffer[32] = '\0';
+
+		Common::String fileName = (const char *)buffer;
+
+		_archives[i] = new GlueArchive();
+
+		if (!_archives[i]->open(fileName)) {
+			warning("Could not open Glue file '%s'", fileName.c_str());
+			return false;
+		}
+
+		debugC(2, kDebugResources, "Glue file \"%s\"", fileName.c_str());
+	}
+
+	return true;
+}
+
+bool Resources::readIndexResources(Common::File &indexFile, uint16 resCount) {
+	byte buffer[13];
+
+	// Read information about all avaiable resources
+	for (uint32 i = 0; i < resCount; i++) {
+		// In which glue is it found?
+		uint16 archive = indexFile.readUint16LE();
+
+		// File name
+		indexFile.read(buffer, 12);
+		buffer[12] = '\0';
+		Common::String resFile = (const char *) buffer;
+
+		if (archive >= _archives.size()) {
+			warning("Resources::readIndexResources(): Glue number out "
+					"of range for resource \"%s\" (%d vs. %d)",
+					resFile.c_str(), archive, _archives.size());
+			return false;
+		}
+
+		_resources[resFile] = _archives[archive];
+
+		// Unknown
+		indexFile.skip(8);
+
+		debugC(3, kDebugResources, "Resource \"%s\", in glue \"%s\"",
+				resFile.c_str(), _archives[archive]->getFileName().c_str());
+	}
+
+	return true;
+}
+
+bool Resources::hasResource(const Common::String &resource) {
+	return Common::File::exists(resource) || _resources.contains(resource);
+}
+
+Common::SeekableReadStream *Resources::getResource(const Common::String &resource) {
+	debugC(3, kDebugResources, "Getting resource \"%s\"", resource.c_str());
+
+	// First try loading directly from the file
+	Common::File *plainFile = new Common::File();
+	if (plainFile->open(resource))
+		return plainFile;
+
+	delete plainFile;
+
+	if (!_resources.contains(resource))
+		error("Resources::getResource(): Resource \"%s\" does not exist",
+				resource.c_str());
+
+	Archive *archive = _resources[resource];
+
+	if (!archive->isIndexed())
+		archive->index(_resources);
+
+	Common::SeekableReadStream *stream = archive->getStream(resource);
+
+	if (!stream)
+		error("Resources::getResource(): Could not open resource '%s'", resource.c_str());
+
+	return stream;
+}
+
+Common::String Resources::addExtension(const Common::String &name, const Common::String &extension) {
+	if (name.empty() || extension.empty())
+		return name;
+
+	const char *str = name.c_str();
+	const char *dot = strrchr(str, '.');
+
+	if (!dot)
+		return name + "." + extension;
+
+	return Common::String(str, dot + 1) + extension;
 }
 
 } // End of namespace DarkSeed2

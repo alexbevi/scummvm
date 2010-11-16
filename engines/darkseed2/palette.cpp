@@ -142,9 +142,9 @@ bool Palette::loadFromPALRGBA(Resources &resources, const Common::String &palett
 	if (!resources.hasResource(palFile))
 		return false;
 
-	Resource *resPAL = resources.getResource(palFile);
+	Common::SeekableReadStream *resPAL = resources.getResource(palFile);
 
-	bool result = loadFromPALRGBA(resPAL->getStream());
+	bool result = loadFromPALRGBA(*resPAL);
 
 	delete resPAL;
 
@@ -156,9 +156,9 @@ bool Palette::loadFromPAL555(Resources &resources, const Common::String &palette
 	if (!resources.hasResource(palFile))
 		return false;
 
-	Resource *resPAL = resources.getResource(palFile);
+	Common::SeekableReadStream *resPAL = resources.getResource(palFile);
 
-	bool result = loadFromPAL555(resPAL->getStream());
+	bool result = loadFromPAL555(*resPAL);
 
 	delete resPAL;
 

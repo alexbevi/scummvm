@@ -69,8 +69,6 @@ namespace DarkSeed2 {
 // Files
 static const char *kExecutable    = "dark0001.exe";
 static const char *kResourceIndex = "gfile.hdr";
-static const char *kInitialIndex  = "initial.idx";
-static const char *kInitialGlue   = "initial.glu";
 static const char *kVariableIndex = "GAMEVAR";
 
 DarkSeed2Engine::DarkSeed2Engine(OSystem *syst, const DS2GameDescription *gameDesc) :
@@ -253,7 +251,7 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 	debug(-1, "Indexing resources...");
 
 	if (isSaturn()) {
-		if (!_resources->indexPGF(kInitialIndex, kInitialGlue)) {
+		if (!_resources->indexPGF()) {
 			warning("DarkSeed2Engine::init(): Couldn't index resources");
 			return false;
 		}

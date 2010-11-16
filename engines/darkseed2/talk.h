@@ -38,7 +38,6 @@ class Resources;
 class Graphics;
 
 class Options;
-class Resource;
 class Sound;
 class FontManager;
 
@@ -71,7 +70,7 @@ public:
 	bool hasTXT() const;
 
 	/** Get the line's WAV. */
-	const Resource &getWAV() const;
+	Common::SeekableReadStream &getWAV() const;
 	/** Get the line's TXT. */
 	const TextLine &getTXT() const;
 
@@ -83,7 +82,7 @@ private:
 	TextLine      *_speaker;    ///< The line's speaker.
 	uint8          _speakerNum; ///< The line's speaker's number.
 
-	Resource *_wav; ///< The WAV.
+	Common::SeekableReadStream *_wav; ///< The WAV.
 	TextLine *_txt; ///< The TXT.
 };
 
