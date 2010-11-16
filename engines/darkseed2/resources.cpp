@@ -648,9 +648,7 @@ void MacRoomArchive::index(ResourceMap &map) {
 
 	_file.seek(0);
 
-	// The first two entries are always bad
 	uint16 resCount = _file.readUint16BE();
-
 	_resources.resize(resCount);
 
 	debugC(4, kDebugResources, "Has %d resources", resCount);
