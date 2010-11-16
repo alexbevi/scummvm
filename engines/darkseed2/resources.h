@@ -39,6 +39,7 @@ namespace Common {
 	class ReadStream;
 	class SeekableReadStream;
 	class MemoryReadStream;
+	class MacResManager;
 }
 
 namespace DarkSeed2 {
@@ -168,6 +169,20 @@ private:
 	Common::Array<Archive *> _subArchives;
 };
 
+class MacResourceForkArchive : public Archive {
+public:
+	MacResourceForkArchive(uint32 type);
+	~MacResourceForkArchive();
+
+	bool open(const Common::String &fileName, Archive *parentArchive = 0);
+	void index(ResourceMap &map);
+	Common::SeekableReadStream *getStream(const Common::String &fileName);
+
+private:
+	Common::MacResManager *_resFork;
+	uint32 _type;
+};
+
 /** The resource manager. */
 class Resources {
 public:
@@ -217,6 +232,9 @@ private:
 	bool readIndexGlues(Common::File &indexFile);
 	/** Read the resources section of the index file. */
 	bool readIndexResources(Common::File &indexFile, uint16 resCount);
+
+	/** Add a Mac resource fork. */
+	bool addMacResourceFork(const Common::String &fileName, uint32 type);
 };
 
 } // End of namespace DarkSeed2

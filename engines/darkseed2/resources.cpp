@@ -27,6 +27,7 @@
 #include "common/file.h"
 
 #include "common/archive.h"
+#include "common/macresman.h"
 
 #include "engines/darkseed2/resources.h"
 
@@ -468,6 +469,50 @@ Common::SeekableReadStream *SaturnGlueArchive::getStream(const Common::String &f
 	return 0;
 }
 
+MacResourceForkArchive::MacResourceForkArchive(uint32 type) : Archive() {
+	_resFork = 0;
+	_type = type;
+}
+
+MacResourceForkArchive::~MacResourceForkArchive() {
+	delete _resFork;
+}
+
+bool MacResourceForkArchive::open(const Common::String &fileName, Archive *parentArchive) {
+	_resFork = new Common::MacResManager();
+
+	if (!_resFork->open(fileName)) {
+		delete _resFork;
+		_resFork = 0;
+		return false;
+	}
+
+	return true;
+}
+
+void MacResourceForkArchive::index(ResourceMap &map) {
+	if (_isIndexed)
+		return;
+
+	Common::MacResIDArray idArray = _resFork->getResIDArray(_type);
+
+	for (uint32 i = 0; i < idArray.size(); i++) {
+		Common::String fileName = _resFork->getResName(_type, idArray[i]);
+
+		if (!fileName.empty())
+			map[fileName] = this;
+	}
+
+	_isIndexed = true;
+}
+
+Common::SeekableReadStream *MacResourceForkArchive::getStream(const Common::String &fileName) {
+	if (!_resFork)
+		return 0;
+
+	return _resFork->getResource(fileName);
+}
+
 Resources::Resources() {
 	clear();
 }
@@ -546,13 +591,47 @@ bool Resources::indexPGF() {
 	return true;
 }
 
-// TODO: AFTER REFACTORING
+bool Resources::addMacResourceFork(const Common::String &fileName, uint32 type) {
+	Archive *archive = new MacResourceForkArchive(type);
+
+	if (!archive->open(fileName)) {
+		warning("Could not open '%s'", fileName.c_str());
+		delete archive;
+		return false;
+	}
+
+	archive->index(_resources);
+	_archives.push_back(archive);
+	return true;
+}
+
 bool Resources::indexMacResources() {
-	// TODO: Index resource forks with 'snd ' resources in the sound folder (Voices/Sound Effects)
-	// TODO: Index the "action" resource fork with 'Sprt' resources (Animations)
-	// TODO: Index the "art" resource fork with 'PICT' resources (Inventory Images)
-	// TODO: Index the "music" resource fork with 'Tune' resources (QuickTime MIDI)
-	// TODO: Index the "talk" resource fork with 'TEXT' resources (Game Scripts)
+	static const char* soundFiles[] = { "da", "db", "dc", "dd", "dg", "dh", "di", "dj", "dk", "dm",
+	                                    "dm2", "dn", "dn2", "do", "dp", "dr", "ds", "dt", "du", "se"};
+
+	clear();
+
+	// Resource forks with 'snd ' resources in the sound folder (Voices/Sound Effects)
+	for (int i = 0; i < ARRAYSIZE(soundFiles); i++)
+		if (!addMacResourceFork(Common::String("sounds/") + soundFiles[i], MKID_BE('snd ')))
+			return false;
+
+	// "action" resource fork with 'Sprt' resources (Animations)
+	if (!addMacResourceFork("action", MKID_BE('Sprt')))
+		return false;
+
+	// "art" resource fork with 'PICT' resources (Inventory Images)
+	if (!addMacResourceFork("art", MKID_BE('PICT')))
+		return false;
+
+	// "music" resource fork with 'Tune' resources (QuickTime MIDI)
+	if (!addMacResourceFork("music", MKID_BE('Tune')))
+		return false;
+
+	// "talk" resource fork with 'TEXT' resources (Game Scripts)
+	if (!addMacResourceFork("talk", MKID_BE('TEXT')))
+		return false;
+
 	// TODO: Index the "text" file (Subtitles)
 	// TODO: Index the "walk" file (Mike Walk Animations)
 	// TODO: Index files in the "rooms" folder (Room Images)
