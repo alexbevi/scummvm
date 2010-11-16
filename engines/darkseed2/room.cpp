@@ -378,13 +378,19 @@ bool Room::loadSprites(Resources &resources) {
 		return false;
 	}
 
-	if (resources.getVersionFormats().getWalkMapType() == kWalkMapTypeMAP) {
+	switch (resources.getVersionFormats().getWalkMapType()) {
+	case kWalkMapTypeMAP:
 		warning("TODO: Sega Saturn walk maps");
-	} else if (resources.getVersionFormats().getWalkMapType() == kWalkMapTypeBMP) {
+		break;
+	case kWalkMapTypeMac:
+		warning("TODO: Mac walk maps");
+		break;
+	case kWalkMapTypeBMP:
 		if (!_walkMap->loadFromImage(resources, _walkMapFile)) {
 			warning("Room::setup(): Can't load walk map");
 			return false;
 		}
+		break;
 	}
 
 	return true;

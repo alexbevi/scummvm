@@ -29,8 +29,8 @@
 
 namespace DarkSeed2 {
 
-const char *VersionFormats::kImageExtensions[]   = {"BMP", "RGB", "BDP", "256"};
-const char *VersionFormats::kWalkMapExtensions[] = {"BMP", "MAP"};
+const char *VersionFormats::kImageExtensions[]   = {"BMP", "RGB", "BDP", "256", "", "", ""};
+const char *VersionFormats::kWalkMapExtensions[] = {"BMP", "MAP", ""};
 const char *VersionFormats::kSoundExtensions[]   = {"WAV", "AIF", ""};
 
 VersionFormats::VersionFormats() {
@@ -80,10 +80,10 @@ void VersionFormats::setGameVersion(GameVersion gameVersion) {
 		break;
 
 	case kGameVersionMac:
-		// TODO: _imageType
-		// TODO: _roomImageType
-		// TODO: _boxImageType
-		// TODO: _walkMapType
+		_imageType     = kImageTypeMacUnk;
+		_roomImageType = kImageTypeMacRoom;
+		_boxImageType  = kImageTypePICT;
+		_walkMapType   = kWalkMapTypeMac;
 		_soundType     = kSoundTypeSND;
 
 		_hotspotScale = 1;

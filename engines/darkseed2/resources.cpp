@@ -649,15 +649,8 @@ void MacRoomArchive::index(ResourceMap &map) {
 	_file.seek(0);
 
 	// The first two entries are always bad
-	uint16 resCount = _file.readUint16BE() - 2;
+	uint16 resCount = _file.readUint16BE();
 
-	if (!resCount) {
-		// '001' has no files \o/
-		_isIndexed = true;
-		return;
-	}
-
-	_file.skip(2 * 16);
 	_resources.resize(resCount);
 
 	debugC(4, kDebugResources, "Has %d resources", resCount);
@@ -668,7 +661,16 @@ void MacRoomArchive::index(ResourceMap &map) {
 		// Resource's file name
 		_file.read(buffer, 8);
 		buffer[8] = '\0';
-		Common::String resFile = (const char *)buffer;
+
+		// The first two files have dummy names in the file. The first is always the
+		// walk map and the second is always the background image.
+		Common::String resFile;
+		if (i == 0)
+			resFile = Common::String::format("RMAP%04d", atoi(_fileName.c_str() + 6));
+		else if (i == 1)
+			resFile = Common::String::format("RM%04d", atoi(_fileName.c_str() + 6));
+		else
+			resFile = (const char *)buffer;
 
 		map[resFile] = this;
 

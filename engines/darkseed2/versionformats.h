@@ -40,15 +40,19 @@ enum GameVersion {
 
 /** An image type. */
 enum ImageType {
-	kImageTypeBMP = 0, ///< BMP images.
-	kImageTypeRGB = 1, ///< RGB images.
-	kImageTypeBDP = 2, ///< BDP images.
-	kImageType256 = 3  ///< 256 images.
+	kImageTypeBMP     = 0, ///< BMP images.
+	kImageTypeRGB     = 1, ///< RGB images.
+	kImageTypeBDP     = 2, ///< BDP images.
+	kImageType256     = 3, ///< 256 images.
+	kImageTypeMacRoom = 4, ///< Mac room background images
+	kImageTypeMacUnk  = 5, ///< Mac other images (???)
+	kImageTypePICT    = 6  ///< Mac PICT images
 };
 
 enum WalkMapType {
 	kWalkMapTypeBMP = 0, ///< Walk map in BMP image.
-	kWalkMapTypeMAP = 1  ///< Raw walk map data in a MAP file.
+	kWalkMapTypeMAP = 1, ///< Raw walk map data in a MAP file.
+	kWalkMapTypeMac = 2  ///< Raw walk map data (???)
 };
 
 enum SoundType {

@@ -280,7 +280,9 @@ bool Sprite::loadFromBoxImage(Resources &resources, const Common::String &image,
 
 	case kImageType256:
 		return loadFrom256(resources, image, width, height);
-		break;
+
+	default:
+		return false;
 	}
 
 	return false;
@@ -297,8 +299,8 @@ bool Sprite::loadFromImage(Resources &resources, const Common::String &image, Im
 	case kImageTypeBDP:
 		return loadFromBDP(resources, image);
 
-	case kImageType256:
-		break;
+	default:
+		return false;
 	}
 
 	return false;
