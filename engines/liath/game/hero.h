@@ -43,7 +43,7 @@ public:
 	void unload();
 
 	// Opcodes
-	OpcodeRet start(OpcodeParameters *parameters, Work *work, void *unkown);
+	OpcodeRet start(OpcodeParameters *parameters, Work **work, void *unkown);
 	OpcodeRet startExt(OpcodeParameters *parameters);
 	OpcodeRet reset(OpcodeParameters *parameters, void *unkown);
 	OpcodeRet exit(OpcodeParameters *parameters);

@@ -365,7 +365,6 @@ struct Message {
 //////////////////////////////////////////////////////////////////////////
 // Action
 //////////////////////////////////////////////////////////////////////////
-
 struct Action {
 	byte type;
 	byte field_1;
@@ -384,6 +383,13 @@ struct Action {
 } PACKED_STRUCT;
 
 //////////////////////////////////////////////////////////////////////////
+// Music
+//////////////////////////////////////////////////////////////////////////
+struct Music {
+	byte field_16D;
+} PACKED_STRUCT;
+
+//////////////////////////////////////////////////////////////////////////
 // Hero & Work
 //////////////////////////////////////////////////////////////////////////
 struct Hero;
@@ -393,6 +399,11 @@ struct Object {
 	uint32 *field_18;
 	uint16 field_41;
 	uint16 field_43;
+} PACKED_STRUCT;
+
+struct WorkHeroData {
+	int32 textIndex;
+	Music *music;
 } PACKED_STRUCT;
 
 struct Work {
@@ -440,6 +451,8 @@ struct Work {
 
 	byte field_579;
 
+	WorkHeroData *workHeroData;
+
 	uint32 xScroll;
 	uint32 yScroll;
 } PACKED_STRUCT;
@@ -455,6 +468,25 @@ struct HeroObject {
 	uint32 field_1C;
 	uint32 field_20;
 	uint32 field_24;
+} PACKED_STRUCT;
+
+struct HeroData {
+	uint32 data;
+	uint32 field_4;
+	uint32 field_8;
+	uint32 heroData;
+	uint32 hFileGLobal;
+	byte count;
+	uint32 heroGlobal;
+	uint32 wifGlobal;
+	uint32 wifData;
+	uint32 field_21;
+	uint16 field_25;
+	uint16 field_27;
+	uint16 field_29;
+	uint16 field_2B;
+	uint32 field_2D;
+	uint16 field_31;
 } PACKED_STRUCT;
 
 struct Hero {

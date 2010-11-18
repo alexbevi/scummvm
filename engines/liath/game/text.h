@@ -47,7 +47,15 @@ public:
 private:
 	LiathEngine* _engine;
 
+	char _arrayTextNumber[500];
 
+	// Opcode helpers
+	OpcodeRet exit(int32 val);
+
+
+	// Helper functions
+	int32 getFirstEmptyText();
+	void freeNumberText(int32 index);
 };
 
 } // End of namespace Liath

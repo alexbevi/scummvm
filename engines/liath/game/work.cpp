@@ -234,4 +234,12 @@ Work *WorkManager::get(HeroIndex index) {
 	return NULL;
 }
 
+Work *WorkManager::getFromTextIndex(int32 index) {
+	for (Common::Array<Work *>::iterator it = _works.begin(); it != _works.end(); it++)
+		if ((*it)->workHeroData && (*it)->workHeroData->textIndex == index)
+			return (*it);
+
+	return NULL;
+}
+
 } // End of namespace Liath

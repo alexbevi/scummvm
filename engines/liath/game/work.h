@@ -65,6 +65,7 @@ public:
 
 	Work *getCurrent() { return _currentWork; }
 	Work *get(HeroIndex index);
+	Work *getFromTextIndex(int32 index);
 
 	void setWorkInfo(WorkInfo *info) { _info = info; }
 	WorkInfo *getWorkInfo() { return _info; }

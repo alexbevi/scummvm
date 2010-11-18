@@ -50,6 +50,9 @@ public:
 	OpcodeRet setHeroRGB(OpcodeParameters *parameters);
 	OpcodeRet look(OpcodeParameters *parameters);
 
+	// Drawing functions
+	void intersecShowSpr(int spriteAddress);
+
 private:
 	struct PaletteEntry {
 		byte red;
