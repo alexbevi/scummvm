@@ -70,6 +70,9 @@ public:
 	void setWorkInfo(WorkInfo *info) { _info = info; }
 	WorkInfo *getWorkInfo() { return _info; }
 
+	// Helpers
+	void resetField_E00();
+
 private:
 	LiathEngine* _engine;
 

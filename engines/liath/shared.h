@@ -413,6 +413,10 @@ struct WorkData {
 	byte field_E00[6];
 	byte field_E06[768];
 	byte field_1106;
+
+	void resetField_E00() {
+		memset(&field_E00, 0, sizeof(field_E00));
+	}
 } PACKED_STRUCT;
 
 struct Work {

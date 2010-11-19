@@ -130,7 +130,7 @@ OpcodeRet HeroManager::start(OpcodeParameters *parameters, Work **pWork, WorkDat
 	work->field_10E = 0xBFF00000;
 	work->field_102 = 0;
 	work->field_106 = 0xBFF00000;
-	memset(&work->data.field_E00, 0, sizeof(work->data.field_E00));
+	work->data.resetField_E00();
 	work->data.field_1106 = 0;
 	work->field_16BF = 0;
 
@@ -138,6 +138,7 @@ OpcodeRet HeroManager::start(OpcodeParameters *parameters, Work **pWork, WorkDat
 	work->yScroll = GLOBAL(995) >> 16;
 
 	// Copy work data
+	// FIXME add copy operator
 	if (data) {
 		memcpy(&work->data.field_0, data->field_0, sizeof(data->field_0));
 		memcpy(&work->data.field_200, data->field_200, sizeof(data->field_200));

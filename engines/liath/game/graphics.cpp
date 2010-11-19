@@ -39,7 +39,7 @@ namespace Liath {
 
 GraphicsManager::GraphicsManager(LiathEngine *engine) : _engine(engine),
 	_textPalette(NULL), _textPalette2(NULL), _colorTable(NULL),
-	_shadow(0), _hMemBackgroundExt(NULL) {}
+	_shadow(0), _hMemBackgroundExt(NULL), _nBg(0), _nBg2(0) {}
 
 GraphicsManager::~GraphicsManager() {
 	// Zero-out passed pointers
@@ -114,7 +114,14 @@ OpcodeRet GraphicsManager::playAvs(OpcodeParameters *parameters, bool doStopMusi
 }
 
 OpcodeRet GraphicsManager::setBackground(OpcodeParameters *parameters) {
-	error("GraphicsManager::set_bg: Not implemented!");
+	uint32 index = DSI2INT(EXPR(parameters->getDword(0), parameters->getDword(4)));
+
+	if (_nBg != index)
+		getWork()->resetField_E00();
+
+	_nBg = index;
+
+	return (parameters->test ? kOpcodeRetNext : kOpcodeRetDefault);
 }
 
 OpcodeRet GraphicsManager::setHeroRGB(OpcodeParameters *parameters) {

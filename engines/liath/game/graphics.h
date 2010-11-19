@@ -76,6 +76,9 @@ private:
 
 	uint32 *_softTable[3];
 
+	uint32 _nBg;
+	uint32 _nBg2;
+
 	void drawBMP(bool doSetBackground);
 
 	void makeSoftTable(uint16 maxSize);

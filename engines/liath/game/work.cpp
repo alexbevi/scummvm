@@ -242,4 +242,12 @@ Work *WorkManager::getFromTextIndex(int32 index) {
 	return NULL;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Helpers
+//////////////////////////////////////////////////////////////////////////
+void WorkManager::resetField_E00() {
+	for (Common::Array<Work *>::iterator it = _works.begin(); it != _works.end(); it++)
+		(*it)->data.resetField_E00();
+}
+
 } // End of namespace Liath
