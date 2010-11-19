@@ -25,6 +25,8 @@
 
 #include "liath/game/sound.h"
 
+#include "liath/game/work.h"
+
 #include "liath/helpers.h"
 #include "liath/liath.h"
 #include "liath/resource.h"
@@ -38,6 +40,8 @@ SoundManager::SoundManager(LiathEngine *engine) : _engine(engine) {
 }
 
 SoundManager::~SoundManager() {
+	CLEAR_ARRAY(WaveEntry, _waves);
+
 	// Zero-out passed pointers
 	_engine = NULL;
 	_mixer = NULL;
@@ -59,11 +63,17 @@ void SoundManager::load() {
 	// Read each entry
 	stream->seek(280, SEEK_SET);
 	for (uint i = 0; i < count; i++) {
-		char name[280];
+		WaveEntry *entry = new WaveEntry();
 
-		stream->read(&name, 280);
+		// Read filename
+		char filename[256];
+		stream->read(&filename, 256);
+		entry->name = filename;
 
-		_waves.push_back(Common::String(name));
+		// Skip the rest of the fields (they are loaded from the actual wave file)
+		stream->skip(24);
+
+		_waves.push_back(entry);
 	}
 
 	delete stream;
@@ -81,7 +91,21 @@ OpcodeRet SoundManager::cash(OpcodeParameters *parameters) {
 }
 
 OpcodeRet SoundManager::playWave(OpcodeParameters *parameters) {
-	error("SoundManager::playWave: Not implemented!");
+	uint32 index = parameters->getDword(0);
+
+	if (index <= _waves.size() && _waves[index]->stream != NULL) {
+		_waves[index]->stream->rewind();
+
+		int32 volume = _effectsLevel;
+		convertVolume(volume);
+
+		_mixer->playStream(Audio::Mixer::kSFXSoundType, _waves[index]->handle, (Audio::AudioStream *)_waves[index]->stream, -1, volume, 0, DisposeAfterUse::NO);
+	}
+
+	getWork()->getCurrent()->field_EC = parameters->getWord(4);
+	getWork()->getCurrent()->field_EE = 2;
+
+	return kOpcodeRetDefault;
 }
 
 OpcodeRet SoundManager::playMusic(OpcodeParameters *parameters, bool useEffectLevel) {
@@ -100,14 +124,16 @@ OpcodeRet SoundManager::playMusic(OpcodeParameters *parameters, bool useEffectLe
 
 	Audio::RewindableAudioStream *waveStream = Audio::makeWAVStream(stream, DisposeAfterUse::YES);
 	if (waveStream) {
-
 		entry->attenuation = (parameters->getDword(256) < 1) ? 1 : 2 * parameters->getDword(256);
 		entry->level = Common::Rational(useEffectLevel ? _effectsLevel + 4000 : _musicLevel + 4000, entry->attenuation);
 		entry->volume = -4000;
 
+		int32 volume = (entry->attenuation ? entry->volume : 0);
+		convertVolume(volume);
+
 		// TODO identify other fields
 
-		_mixer->playStream(Audio::Mixer::kMusicSoundType, entry->handle, (Audio::AudioStream *)waveStream, -1, entry->attenuation ? entry->volume : 0);
+		_mixer->playStream(Audio::Mixer::kMusicSoundType, entry->handle, (Audio::AudioStream *)waveStream, -1, volume);
 	}
 
 	return kOpcodeRetDefault;
@@ -141,7 +167,7 @@ OpcodeRet SoundManager::volume(OpcodeParameters *parameters) {
 // Private functions
 //////////////////////////////////////////////////////////////////////////
 
-void SoundManager::setLevel(SoundType type, uint32 level) {
+void SoundManager::setLevel(SoundType type, int32 level) {
 	switch (type) {
 	default:
 		error("SoundManager::setVolume: Invalid volume type (was: %d, valid=1-3)", type);
@@ -188,6 +214,33 @@ SoundManager::MusicEntry *SoundManager::getMusicEntry(const Common::String &file
 		entry->reset();
 
 	return entry;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Conversion functions
+//
+// Those are from engines/agos/sound.cpp (FIXME: Move to common code?)
+//////////////////////////////////////////////////////////////////////////
+
+void SoundManager::convertVolume(int32 &vol) {
+	// DirectSound was originally used, which specifies volume
+	// and panning differently than ScummVM does, using a logarithmic scale
+	// rather than a linear one.
+	//
+	// Volume is a value between -10,000 and 0.
+	//
+	// In both cases, the -10,000 represents -100 dB. When panning, only
+	// one speaker's volume is affected - just like in ScummVM - with
+	// negative values affecting the left speaker, and positive values
+	// affecting the right speaker. Thus -10,000 means the left speaker is
+	// silent.
+
+	int32 v = CLIP(vol, -10000, 0);
+	if (v) {
+		vol = (int)((double)Audio::Mixer::kMaxChannelVolume * pow(10.0, (double)v / 2000.0) + 0.5);
+	} else {
+		vol = Audio::Mixer::kMaxChannelVolume;
+	}
 }
 
 } // End of namespace Liath

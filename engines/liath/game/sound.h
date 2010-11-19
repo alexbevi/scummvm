@@ -31,7 +31,11 @@
 #include "liath/helpers.h"
 #include "common/rational.h"
 
+#include "common/stream.h"
+
+#include "sound/audiostream.h"
 #include "sound/mixer.h"
+
 
 namespace Liath {
 
@@ -88,20 +92,56 @@ private:
 		}
 	};
 
-	LiathEngine* _engine;
+	struct WaveEntry {
+		Common::String name;   // 256
+		uint32 field_100;
+		Audio::RewindableAudioStream *stream;
+		uint32 field_108;
+		uint32 size;
+		uint32 field_110;
+		uint32 field_114;
+
+		// Sound handle (not part of the original struct)
+		Audio::SoundHandle *handle;
+
+		WaveEntry() {
+			field_100 = 0;
+			stream = NULL;
+			field_108 = 0;
+			size = 0;
+			field_110 = 0;
+			field_114 = 0;
+
+			handle = new Audio::SoundHandle();
+		}
+
+		~WaveEntry() {
+			SAFE_DELETE(stream);
+			SAFE_DELETE(handle);
+		}
+	};
+
+	LiathEngine  *_engine;
 	Audio::Mixer *_mixer;
 
-	Common::Array<Common::String> _waves;
+	Common::Array<WaveEntry *> _waves;
 
 	MusicEntry _musicEntries[10];
 
-	uint32 _musicLevel;
-	uint32 _effectsLevel;
-	uint32 _dialogLevel;
+	int32 _musicLevel;
+	int32 _effectsLevel;
+	int32 _dialogLevel;
 
-	void setLevel(SoundType type, uint32 level);
+	void setLevel(SoundType type, int32 level);
 
 	MusicEntry *getMusicEntry(const Common::String &filename);
+
+	/**
+	 * Convert volume.
+	 *
+	 * @param [in,out] vol The volume.
+	 */
+	static void convertVolume(int32 &vol);
 };
 
 } // End of namespace Liath

@@ -466,6 +466,10 @@ struct Work {
 
 
 	uint32 field_DC;
+
+	uint16 field_EC;
+	uint16 field_EE;
+
 	uint32 field_F2;
 	uint32 field_F6;
 	uint32 field_FA;
