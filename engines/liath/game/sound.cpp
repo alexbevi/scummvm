@@ -25,11 +25,12 @@
 
 #include "liath/game/sound.h"
 
+#include "liath/data/resource.h"
+
 #include "liath/game/work.h"
 
 #include "liath/helpers.h"
 #include "liath/liath.h"
-#include "liath/resource.h"
 
 #include "sound/decoders/wave.h"
 

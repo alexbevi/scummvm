@@ -25,6 +25,8 @@
 
 #include "liath/game/interpreter.h"
 
+#include "liath/data/segment.h"
+
 #include "liath/game/action.h"
 #include "liath/game/array.h"
 #include "liath/game/expression.h"
@@ -35,7 +37,6 @@
 #include "liath/game/position.h"
 #include "liath/game/progress.h"
 #include "liath/game/savegame.h"
-#include "liath/game/segment.h"
 #include "liath/game/sound.h"
 #include "liath/game/text.h"
 #include "liath/game/work.h"

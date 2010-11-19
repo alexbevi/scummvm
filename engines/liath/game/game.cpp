@@ -25,6 +25,9 @@
 
 #include "liath/game/game.h"
 
+#include "liath/data/resource.h"
+#include "liath/data/segment.h"
+
 #include "liath/game/action.h"
 #include "liath/game/expression.h"
 #include "liath/game/game.h"
@@ -32,13 +35,11 @@
 #include "liath/game/hero.h"
 #include "liath/game/interpreter.h"
 #include "liath/game/mouse.h"
-#include "liath/game/segment.h"
 #include "liath/game/sound.h"
 #include "liath/game/work.h"
 
 #include "liath/helpers.h"
 #include "liath/liath.h"
-#include "liath/resource.h"
 
 namespace Liath {
 

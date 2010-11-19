@@ -26,9 +26,9 @@
 #include "liath/debug.h"
 
 #include "liath/data/archive.h"
+#include "liath/data/resource.h"
 
 #include "liath/liath.h"
-#include "liath/resource.h"
 
 #include "common/debug-channels.h"
 #include "common/events.h"

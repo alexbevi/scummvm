@@ -23,11 +23,12 @@
  *
  */
 
-#include "liath/game/segment.h"
+#include "liath/data/segment.h"
+
+#include "liath/data/resource.h"
 
 #include "liath/helpers.h"
 #include "liath/liath.h"
-#include "liath/resource.h"
 
 namespace Liath {
 

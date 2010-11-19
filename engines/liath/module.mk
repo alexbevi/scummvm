@@ -2,6 +2,8 @@ MODULE := engines/liath
 
 MODULE_OBJS := \
 	data/archive.o \
+	data/resource.o \
+	data/segment.o \
 	game/action.o \
 	game/array.o \
 	game/expression.o \
@@ -13,14 +15,12 @@ MODULE_OBJS := \
 	game/position.o \
 	game/progress.o \
 	game/savegame.o \
-	game/segment.o \
 	game/sound.o \
 	game/text.o \
 	game/work.o \
 	debug.o \
 	detection.o \
-	liath.o \
-	resource.o
+	liath.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_LIATH), DYNAMIC_PLUGIN)

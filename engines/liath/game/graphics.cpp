@@ -25,13 +25,14 @@
 
 #include "liath/game/graphics.h"
 
+#include "liath/data/resource.h"
+#include "liath/data/segment.h"
+
 #include "liath/game/expression.h"
-#include "liath/game/segment.h"
 #include "liath/game/work.h"
 
 #include "liath/helpers.h"
 #include "liath/liath.h"
-#include "liath/resource.h"
 
 #include "common/system.h"
 

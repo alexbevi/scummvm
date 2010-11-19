@@ -23,7 +23,7 @@
  *
  */
 
-#include "liath/resource.h"
+#include "liath/data/resource.h"
 
 #include "liath/data/archive.h"
 

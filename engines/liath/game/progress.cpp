@@ -25,11 +25,12 @@
 
 #include "liath/game/progress.h"
 
+#include "liath/data/resource.h"
+
 #include "liath/game/game.h"
 
 #include "liath/helpers.h"
 #include "liath/liath.h"
-#include "liath/resource.h"
 
 #include "common/rational.h"
 

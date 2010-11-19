@@ -25,9 +25,10 @@
 
 #include "liath/game/action.h"
 
+#include "liath/data/segment.h"
+
 #include "liath/game/game.h"
 #include "liath/game/hero.h"
-#include "liath/game/segment.h"
 #include "liath/game/work.h"
 
 #include "liath/helpers.h"
