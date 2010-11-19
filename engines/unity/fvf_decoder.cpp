@@ -15,6 +15,7 @@
  */
 
 #include "fvf_decoder.h"
+#include "common/stream.h"
 
 #include "sound/decoders/raw.h"
 

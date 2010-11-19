@@ -18,6 +18,8 @@
 #include "sprite.h"
 #include "object.h"
 #include "common/system.h"
+#include "common/memstream.h"
+#include "common/substream.h"
 #include "common/macresman.h"
 #include "trigger.h"
 
