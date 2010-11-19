@@ -53,7 +53,7 @@ void WorkManager::unload() {
 			SAFE_FREE(work->field_80);
 		}
 
-		SAFE_FREE(work->field_7C);
+		// SAFE_FREE(work->hGlobal); // This is the hglobal (not need to free it)
 	}
 }
 

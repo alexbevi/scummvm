@@ -43,7 +43,7 @@ public:
 	void unload();
 
 	// Opcodes
-	OpcodeRet start(OpcodeParameters *parameters, Work **work, void *unkown);
+	OpcodeRet start(OpcodeParameters *parameters, Work **pWork, WorkData *data);
 	OpcodeRet startExt(OpcodeParameters *parameters);
 	OpcodeRet reset(OpcodeParameters *parameters, void *unkown);
 	OpcodeRet exit(OpcodeParameters *parameters);
@@ -82,6 +82,7 @@ public:
 	OpcodeRet hearVar(OpcodeParameters *parameters);
 
 	// Utils
+	void create(Hero *hero, byte *data1, byte *data2, byte *data3, byte *data4);
 	void remove(HeroIndex index);
 
 	// Accessors
@@ -124,6 +125,9 @@ private:
 
 	// Current saved hero
 	OpcodeParametersHero _heroParams;
+
+	// "Global" variables
+	uint32 _nHero;
 
 	// Opcode helpers
 	OpcodeRet quit(HeroIndex heroIndex);

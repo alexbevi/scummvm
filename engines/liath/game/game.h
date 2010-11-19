@@ -56,6 +56,9 @@ public:
 	void setGlobal(uint32 offset, int32 val);
 	OpcodeRet getReturnValue(int val, bool testValue);
 
+	// Accessors
+	int32 getTimer() { return _timer; }
+
 private:
 	LiathEngine* _engine;
 

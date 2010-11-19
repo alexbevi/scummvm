@@ -27,15 +27,17 @@
 
 #include "liath/game/game.h"
 #include "liath/game/expression.h"
+#include "liath/game/segment.h"
 #include "liath/game/work.h"
 
 #include "liath/resource.h"
 #include "liath/helpers.h"
 #include "liath/liath.h"
+#include "liath/shared.h"
 
 namespace Liath {
 
-HeroManager::HeroManager(LiathEngine *engine) : _engine(engine), _storage(NULL) {
+HeroManager::HeroManager(LiathEngine *engine) : _engine(engine), _storage(NULL), _nHero(0) {
 	memset(&_heroParams, 0, sizeof(_heroParams));
 }
 
@@ -100,8 +102,107 @@ Hero *HeroManager::get(HeroIndex index) {
 //////////////////////////////////////////////////////////////////////////
 // Opcodes
 //////////////////////////////////////////////////////////////////////////
-OpcodeRet HeroManager::start(OpcodeParameters *parameters, Work **work, void *unkown) {
+OpcodeRet HeroManager::start(OpcodeParameters *parameters, Work **pWork, WorkData *data) {
+	_nHero = parameters->getDword(4);
+
+	byte init[4];
+	memset(&init, 0, sizeof(init));
+	create(get(_nHero), &init[3], &init[2], &init[1], &init[0]);
+
+	Work *work = new Work();
+	work->heroIndex = _nHero;
+	work->oldHeroData = get(_nHero)->oldData;
+	work->field_578 = init[3];
+	work->field_579 = 0;
+	work->field_55 = init[2] ? 300 : 0;
+	work->field_34 = parameters->getDword(74);
+	work->field_68 = parameters->getWord(0);
+	work->field_76 = parameters->getWord(8);
+	// FIXME properly get data
+	//work->field_72 = (work->oldHeroData->field_8 + 41);
+	work->time = 0;
+	work->field_B1 = 10000;
+	work->field_F2 = 0;
+	work->field_F6 = 0;
+	work->field_FA = getGame()->getTimer();
+	work->field_FE = getGame()->getTimer();
+	work->field_10A = 0;
+	work->field_10E = 0xBFF00000;
+	work->field_102 = 0;
+	work->field_106 = 0xBFF00000;
+	memset(&work->data.field_E00, 0, sizeof(work->data.field_E00));
+	work->data.field_1106 = 0;
+	work->field_16BF = 0;
+
+	work->xScroll = 0;
+	work->yScroll = GLOBAL(995) >> 16;
+
+	// Copy work data
+	if (data) {
+		memcpy(&work->data.field_0, data->field_0, sizeof(data->field_0));
+		memcpy(&work->data.field_200, data->field_200, sizeof(data->field_200));
+		memcpy(&work->data.field_E00, data->field_E00, sizeof(data->field_E00));
+		memcpy(&work->data.field_E06, data->field_E06, sizeof(data->field_E06));
+		work->data.field_1106 = data->field_1106;
+	}
+
+	if (init[0]) {
+		error("HeroManager::start: Not implemented!");
+	}
+
+	if (work->field_34 & 2 || work->field_34 & 8) {
+		work->field_35 = 0;
+		work->field_39 = 0;
+		work->field_3D = 0;
+		work->field_41 = 0;
+		work->field_45 = 0;
+	} else {
+		if (init[1])
+			work->field_34 |= 0x20;
+
+		if (parameters->getByte(75) == 1) {
+			work->field_41 = parameters->getDword(58);
+			work->field_45 = parameters->getDword(66);
+			work->field_35 = parameters->getDword(34);
+			work->field_39 = parameters->getDword(42);
+			work->field_3D = parameters->getDword(50);
+			work->field_FA = parameters->getDword(76);
+			work->field_FE = parameters->getDword(76);
+		} else {
+			work->field_35 = EXPR(parameters->getDword(34), parameters->getDword(38));
+			work->field_39 = EXPR(parameters->getDword(42), parameters->getDword(46));
+			work->field_3D = EXPR(parameters->getDword(50), parameters->getDword(54));
+			work->field_41 = EXPR(parameters->getDword(58), parameters->getDword(62));
+			work->field_45 = EXPR(parameters->getDword(66), parameters->getDword(70));
+		}
+	}
+
+	//work->hGlobalHeroData = NULL;
+	work->workHeroData = NULL;
+
+	if (work->field_34 & 8) {
+		*pWork = work;
+
+		// Setup WorkHeroData
+		error("HeroManager::start: Not implemented!");
+	}
+
+	get(_nHero)->work = work;
+
 	error("HeroManager::start: Not implemented!");
+
+	// Check sprite count
+	// FIXME: wrong data for now
+	//Object *object = (Object *)(93 * work->field_68 + get(_nHero)->oldData->field_8);
+	//if (object->field_0 < work->field_76)
+	//	error("[HeroManager::start] Out of range SPRITE COUNT in the object!");
+
+	////getGame()->readObjectFromDisk()
+
+	//work->object = object;
+
+	/*getGame()->calcBoxObj(work);
+	getAction()->inskvant(work);*/
 
 	return kOpcodeRetDefault;
 }
@@ -383,6 +484,30 @@ OpcodeRet HeroManager::hearVar(OpcodeParameters *parameters) {
 //////////////////////////////////////////////////////////////////////////
 // Public functions
 //////////////////////////////////////////////////////////////////////////
+void HeroManager::create(Hero *hero, byte *data1, byte *data2, byte *data3, byte *data4) {
+	Hero *currentHero = get(hero->index);
+
+	if (!hero->oldData) {
+		HeroData *data = currentHero->data;
+		if (!data) {
+			data = new HeroData();
+
+			// Read hero data
+			/*getSegment()->load(kSegmentHero, hero->index);
+			data->heroData = (HeroData *)getSegment()->getData(kSegmentHero, hero->index);*/
+
+			/*if (data->heroData->)*/
+
+			warning("HeroManager::remove: Not implemented!");
+		}
+
+		currentHero->data = data;
+		hero->oldData = currentHero->data;
+		++currentHero->field_10;
+	}
+
+	++hero->field_14;
+}
 
 void HeroManager::remove(HeroIndex index) {
 	error("HeroManager::remove: Not implemented!");
@@ -391,7 +516,6 @@ void HeroManager::remove(HeroIndex index) {
 //////////////////////////////////////////////////////////////////////////
 // Private functions
 //////////////////////////////////////////////////////////////////////////
-
 OpcodeRet HeroManager::quit(HeroIndex heroIndex) {
 	error("HeroManager::quit: Not implemented!");
 }

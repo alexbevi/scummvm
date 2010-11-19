@@ -145,7 +145,6 @@ OpcodeRet ArrayManager::add(OpcodeParameters *parameters) {
 	error("ArrayManager::add: Not implemented!");
 }
 
-
 OpcodeRet ArrayManager::getNumber(OpcodeParameters *parameters) {
 	GET_ARRAY_ENTRY();
 

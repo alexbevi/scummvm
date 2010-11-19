@@ -393,6 +393,7 @@ struct Music {
 // Hero & Work
 //////////////////////////////////////////////////////////////////////////
 struct Hero;
+struct HeroData;
 
 struct Object {
 	uint32 field_0;
@@ -406,15 +407,31 @@ struct WorkHeroData {
 	Music *music;
 } PACKED_STRUCT;
 
+struct WorkData {
+	byte field_0[512];
+	byte field_200[3072];
+	byte field_E00[6];
+	byte field_E06[768];
+	byte field_1106;
+} PACKED_STRUCT;
+
 struct Work {
 	// Work *next;
+	uint16 field_2;
+	uint32 field_4;
+	uint32 field_8;
 	uint32 field_C;
+	uint32 field_10;
+	uint32 field_14;
+	uint32 field_18;
+	uint32 field_1C;
 	byte field_34;
 	uint32 field_35;
 	uint32 field_39;
 	uint32 field_3D;
 	uint32 field_41;
 	uint32 field_45;
+	int16 field_55;
 	byte field_57;
 	bool isObjectIndexSet;
 	bool field_59;
@@ -427,8 +444,8 @@ struct Work {
 	//Sprite *sprite;
 
 	uint16 field_76;
-
-	uint32 *field_7C;
+	HeroData *oldHeroData;
+	//uint32* hGlobal
 	uint32 *field_80;
 	uint32 *field_84;
 	byte status;
@@ -445,16 +462,32 @@ struct Work {
 
 
 	uint32 field_DC;
+	uint32 field_F2;
+	uint32 field_F6;
 	uint32 field_FA;
 	uint32 field_FE;
+	uint32 field_102;
+	uint32 field_106;
+	uint32 field_10A;
+	uint32 field_10E;
 
-
+	byte field_578;
 	byte field_579;
 
-	WorkHeroData *workHeroData;
 
+	WorkHeroData *workHeroData;
+	// uint32 *hGlobalWorkHeroData
+
+	WorkData data;
+	byte field_16BF;
+	byte field_16C0;
+	byte field_16C1;
+	byte field_16C2;
+	byte field_16C3;
 	uint32 xScroll;
 	uint32 yScroll;
+	uint32 field_16C8;
+	byte field_16CC;
 } PACKED_STRUCT;
 
 struct HeroObject {
@@ -471,28 +504,28 @@ struct HeroObject {
 } PACKED_STRUCT;
 
 struct HeroData {
-	uint32 data;
+	uint32 *data;
 	uint32 field_4;
 	uint32 field_8;
-	uint32 heroData;
+	Segment *segment;
 	uint32 hFileGLobal;
 	byte count;
 	uint32 heroGlobal;
 	uint32 wifGlobal;
 	uint32 wifData;
 	uint32 field_21;
-	uint16 field_25;
-	uint16 field_27;
-	uint16 field_29;
-	uint16 field_2B;
+	uint16 y;
+	uint16 x;
+	uint16 height;
+	uint16 width;
 	uint32 field_2D;
 	uint16 field_31;
 } PACKED_STRUCT;
 
 struct Hero {
 	HeroObject *object;
-	uint32 field_4;
-	uint32 field_8;
+	HeroData *oldData;
+	HeroData *data;
 	Segment *segment;
 	uint32 field_10;
 	uint32 field_14;
