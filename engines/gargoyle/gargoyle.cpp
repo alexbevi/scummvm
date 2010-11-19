@@ -34,6 +34,7 @@
 #include "common/config-manager.h"
 #include "common/debug-channels.h"
 #include "common/events.h"
+#include "common/memstream.h"
 #include "common/stream.h"
 #include "engines/engine.h"
 #include "engines/metaengine.h"
@@ -85,7 +86,7 @@ void Interpreter::setupBlorbFile() {
 	Common::File f;
 	if (!f.open(_engine.getFilename()))
 		error("Could not locate specified game file");
-	Common::MemoryReadStream *stream = f.readStream(12);
+	Common::SeekableReadStream *stream = f.readStream(12);
 	_blorbGameFile = BlorbFile::isBlorb(stream);
 	delete stream;
 

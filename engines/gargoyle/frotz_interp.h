@@ -242,7 +242,7 @@ private:
 	ZHeaderData _h;
 	ZSystem _os;
 	Common::RandomSource _rnd;
-	Common::MemoryReadStream *_gameFile;
+	Common::SeekableReadStream *_gameFile;
 	Graphics::Font *_gfxFont;
 
 	/*** Various data ***/

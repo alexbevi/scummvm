@@ -23,6 +23,7 @@
  *
  */
 
+#include "common/memstream.h"
 #include "gargoyle/frotz_interp.h"
 #include "graphics/scaler.h"
 #include "graphics/thumbnail.h"
