@@ -533,7 +533,6 @@ struct Hero {
 	Segment *segment;
 	uint32 field_10;
 	uint32 field_14;
-	uint32 field_18;
 	HeroIndex index;
 	Work *work;
 	uint16 colorRed;

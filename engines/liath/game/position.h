@@ -51,6 +51,28 @@ public:
 
 private:
 	LiathEngine* _engine;
+
+	struct FeelResult {
+		int32 res1;
+		int32 res2;
+		int32 res3;
+
+		FeelResult() {
+			res1 = -1;
+			res2 = -1;
+			res3 = -1;
+		}
+	};
+
+	// Helpers methods
+	bool checkLimit(ObjectIndex objectIndex, uint32 *a2, uint32 *a3);
+	void feeler(int32 expr1, int32 expr2, int32 expr3, FeelResult *result);
+	int32 calcDir(uint32 val, int32 expr1, FeelResult *result);
+	HeroIndex checkPers(OpcodeParameters *parameters);
+	int32 calcDist(Work *work, int32 *expr);
+	bool checkDistPers(Work *work);
+	bool checkHPers(HeroIndex heroIndex, int32 expr);
+
 };
 
 } // End of namespace Liath
