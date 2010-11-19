@@ -377,7 +377,7 @@ struct Action {
 	uint32 field_14;
 	uint32 field_18;
 	uint32 objectIndex;
-	uint32 field_20[38];
+	int32 field_20[38];
 	byte field_B8;
 	uint32 field_B9;
 } PACKED_STRUCT;

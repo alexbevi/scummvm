@@ -28,6 +28,7 @@
 #include "liath/data/resource.h"
 #include "liath/data/segment.h"
 
+#include "liath/game/action.h"
 #include "liath/game/expression.h"
 #include "liath/game/work.h"
 
@@ -131,6 +132,72 @@ OpcodeRet GraphicsManager::setHeroRGB(OpcodeParameters *parameters) {
 
 OpcodeRet GraphicsManager::look(OpcodeParameters *parameters) {
 	error("GraphicsManager::look: Not implemented!");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Drawing functions
+//////////////////////////////////////////////////////////////////////////
+void GraphicsManager::viewBackground() {
+	drawBMP(_bgBas);
+}
+
+void GraphicsManager::intersecShowSpr(int spriteAddress) {
+	error("GraphicsManager::intersecShowSpr: Not implemented!");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Coordinates
+//////////////////////////////////////////////////////////////////////////
+int32 GraphicsManager::PicX(int32 a1) {
+	Action *action = (Action *)getSegment()->getData(kSegmentAction, 2);
+
+	return (a1 * action->field_20[5]) + action->field_20[3] + (action->field_20[5] / 2) + 1;
+}
+
+int32 GraphicsManager::PicY(int32 a1) {
+	Action *action = (Action *)getSegment()->getData(kSegmentAction, 2);
+
+	return (a1 * action->field_20[7]) + action->field_20[4] + (action->field_20[7] / 2) + 1;
+}
+
+int32 GraphicsManager::XPic(int32 a1) {
+	Action *action = (Action *)getSegment()->getData(kSegmentAction, 2);
+
+	int32 val = (a1 - action->field_20[3]) / action->field_20[5];
+
+	return (val <= 0) ? 0 : val;
+}
+
+int32 GraphicsManager::YPic(int32 a1) {
+	Action *action = (Action *)getSegment()->getData(kSegmentAction, 2);
+
+	int32 val = (a1 - action->field_20[4]) / action->field_20[7];
+
+	return (val <= 0) ? 0 : val;
+}
+
+int32 GraphicsManager::HPic(int32 a1) {
+	Action *action = (Action *)getSegment()->getData(kSegmentAction, 2);
+
+	return a1 / action->field_20[9] + 1;
+}
+
+int32 GraphicsManager::LPic(int32 a1, int32 a2) {
+	Action *action = (Action *)getSegment()->getData(kSegmentAction, 2);
+
+	if (action->field_20[12] <= a1)
+		a1 = action->field_20[12] - 1;
+
+	if (a1 < 0)
+		a1 = 0;
+
+	if (action->field_20[13] <= a2)
+		a2 = action->field_20[13] - 1;
+
+	if (a2 < 0)
+		a2 = 0;
+
+	return a1 + a2 * action->field_20[12];
 }
 
 //////////////////////////////////////////////////////////////////////////

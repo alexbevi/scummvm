@@ -26,6 +26,7 @@
 #include "liath/game/mouse.h"
 
 #include "liath/game/game.h"
+#include "liath/game/graphics.h"
 #include "liath/game/hero.h"
 #include "liath/game/work.h"
 
@@ -134,7 +135,7 @@ OpcodeRet MouseManager::removeBox(OpcodeParameters *parameters) {
 //////////////////////////////////////////////////////////////////////////
 
 uint32 MouseManager::numberBox(uint32 param1, uint32 param2) {
-	error("MouseManager::numberBox: not implemented!");
+	return getGraphics()->LPic(getGraphics()->XPic(param1), getGraphics()->YPic(param2));
 }
 
 } // End of namespace Liath

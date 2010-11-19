@@ -51,7 +51,18 @@ public:
 	OpcodeRet look(OpcodeParameters *parameters);
 
 	// Drawing functions
+	void viewBackground();
 	void intersecShowSpr(int spriteAddress);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Coordinates calculation
+	int32 PicX(int32 a1);
+	int32 PicY(int32 a1);
+	int32 XPic(int32 a1);
+	int32 YPic(int32 a1);
+	int32 HPic(int32 a1);
+	int32 LPic(int32 a1, int32 a2);
+
 
 private:
 	struct PaletteEntry {
@@ -76,6 +87,7 @@ private:
 
 	uint32 *_softTable[3];
 
+	uint32 _bgBas;
 	uint32 _nBg;
 	uint32 _nBg2;
 
