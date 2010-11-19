@@ -63,7 +63,7 @@ static const ADGameDescription gameDescriptions[] = {
 			{"actions.mul", 0, "d5b7666e3a36728db6ca3688b305bee6", 1009189},
 		},
 		Common::EN_ANY,
-		Common::kPlatformWindows,
+		Common::kPlatformPC,
 		ADGF_NO_FLAGS,
 		Common::GUIO_NONE
 	},
@@ -77,7 +77,7 @@ static const ADGameDescription gameDescriptions[] = {
 			{"actions.mul", 0, "1f03d34988dc3c633f0c6a5d6b650b40", 1009189},
 		},
 		Common::EN_ANY,
-		Common::kPlatformWindows,
+		Common::kPlatformPC,
 		ADGF_NO_FLAGS,
 		Common::GUIO_NONE
 	},
@@ -91,7 +91,7 @@ static const ADGameDescription gameDescriptions[] = {
 			{"actions.mul", 0, "5ab96c427dab9621052db81f65723ab2", 1009546},
 		},
 		Common::EN_ANY,
-		Common::kPlatformWindows,
+		Common::kPlatformPC,
 		ADGF_NO_FLAGS,
 		Common::GUIO_NONE
 	},
