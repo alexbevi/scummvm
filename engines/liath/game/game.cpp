@@ -225,7 +225,7 @@ void GameManager::load(ActionIndex action, GameData *gameData) {
 
 void GameManager::unload() {
 	getHero()->unload();
-	SAFE_FREE(_globalVar)
+	SAFE_FREE(_globalVar);
 	getSound()->unload();
 	getGraphics()->unload();
 	getWork()->unload();

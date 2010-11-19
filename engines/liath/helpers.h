@@ -70,8 +70,8 @@
 // Cleanup
 //////////////////////////////////////////////////////////////////////////
 
-#define SAFE_DELETE(_p) { if(_p) { delete (_p); (_p) = NULL; } }
-#define SAFE_FREE(_p) { if(_p) { free (_p); (_p) = NULL; } }
+#define SAFE_DELETE(_p) do { delete (_p); (_p) = NULL; } while (false)
+#define SAFE_FREE(_p)   do { free (_p); (_p) = NULL; } while (false)
 
 #define CLEAR_ARRAY(type, name) { \
 	for (Common::Array<type *>::iterator it = name.begin(); it != name.end(); it++) \
