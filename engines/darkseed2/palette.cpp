@@ -25,7 +25,6 @@
 
 
 #include "common/algorithm.h"
-#include "common/stream.h"
 
 #include "engines/darkseed2/palette.h"
 #include "engines/darkseed2/resources.h"

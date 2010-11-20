@@ -31,6 +31,10 @@
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/versionformats.h"
 
+namespace Common {
+	class SeekableReadStream;
+}
+
 namespace DarkSeed2 {
 
 class VersionFormats;

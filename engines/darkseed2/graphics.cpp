@@ -23,7 +23,6 @@
  *
  */
 
-#include "common/stream.h"
 #include "common/serializer.h"
 
 #include "engines/darkseed2/graphics.h"

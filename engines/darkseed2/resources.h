@@ -36,9 +36,7 @@
 #include "engines/darkseed2/versionformats.h"
 
 namespace Common {
-	class ReadStream;
 	class SeekableReadStream;
-	class MemoryReadStream;
 	class MacResManager;
 }
 

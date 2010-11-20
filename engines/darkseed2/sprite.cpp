@@ -23,8 +23,6 @@
  *
  */
 
-#include "common/stream.h"
-
 #include "common/serializer.h"
 
 #include "graphics/surface.h"

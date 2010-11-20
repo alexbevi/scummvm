@@ -24,7 +24,6 @@
  */
 
 #include "common/types.h"
-#include "common/stream.h"
 #include "common/str-array.h"
 
 #include "graphics/fontman.h"

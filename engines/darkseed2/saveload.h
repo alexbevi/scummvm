@@ -28,12 +28,15 @@
 
 #include "common/str.h"
 #include "common/hashmap.h"
-#include "common/stream.h"
 #include "common/savefile.h"
 #include "common/serializer.h"
 
 #include "engines/game.h"
 #include "engines/savestate.h"
+
+namespace Common {
+	class SeekableReadStream;
+}
 
 namespace DarkSeed2 {
 

@@ -25,6 +25,7 @@
 
 #include "common/system.h"
 
+#include "graphics/surface.h"
 #include "graphics/thumbnail.h"
 
 #include "engines/darkseed2/saveload.h"

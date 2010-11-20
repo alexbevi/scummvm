@@ -27,12 +27,15 @@
 #define DARKSEED2_NECURSORS_H
 
 #include "common/str.h"
-#include "common/stream.h"
 #include "common/array.h"
 #include "common/list.h"
 #include "common/file.h"
 
 #include "engines/darkseed2/darkseed2.h"
+
+namespace Common {
+	class SeekableReadStream;
+}
 
 namespace DarkSeed2 {
 
@@ -78,7 +81,7 @@ private:
 	byte  *_data;     ///< The cursor's data.
 
 	/** A stream holding the cursor's data. */
-	Common::MemoryReadStream *_stream;
+	Common::SeekableReadStream *_stream;
 
 	/** Clear the cursor. */
 	void clear();

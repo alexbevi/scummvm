@@ -37,6 +37,10 @@
 #include "graphics/video/video_decoder.h"
 #include "graphics/video/codecs/cinepak.h"
 
+namespace Common {
+	class SeekableReadStream;
+}
+
 namespace DarkSeed2 {
 
 struct SampleTableEntry {

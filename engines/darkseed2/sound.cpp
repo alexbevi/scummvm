@@ -24,7 +24,6 @@
  */
 
 #include "common/types.h"
-#include "common/stream.h"
 
 #include "sound/audiostream.h"
 #include "sound/decoders/wave.h"

@@ -23,6 +23,8 @@
  *
  */
 
+#include "common/memstream.h"
+
 #include "engines/darkseed2/neresources.h"
 
 namespace DarkSeed2 {

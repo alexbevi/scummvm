@@ -23,7 +23,6 @@
  *
  */
 
-#include "common/stream.h"
 #include "common/util.h"
 
 #include "engines/darkseed2/datfile.h"

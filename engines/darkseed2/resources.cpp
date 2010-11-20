@@ -23,7 +23,7 @@
  *
  */
 
-#include "common/stream.h"
+#include "common/memstream.h"
 #include "common/file.h"
 
 #include "common/archive.h"
