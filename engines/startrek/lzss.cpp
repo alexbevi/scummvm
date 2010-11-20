@@ -25,6 +25,7 @@
 
 #include "startrek/lzss.h"
 #include "common/util.h"
+#include "common/memstream.h"
 
 namespace StarTrek {
 
