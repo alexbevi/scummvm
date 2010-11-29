@@ -24,6 +24,7 @@
  */
 
 #include "common/macresman.h"
+#include "common/ne_exe.h"
 
 #include "graphics/cursorman.h"
 
@@ -31,7 +32,6 @@
 #include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/palette.h"
-#include "engines/darkseed2/neresources.h"
 #include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
@@ -166,46 +166,60 @@ CursorsWindows::CursorsWindows(const Common::String &exeName) : Cursors(), _exeN
 }
 
 bool CursorsWindows::load() {
-	NEResources resources;
+	Common::NEResources resources;
 
 	// Load the resources from the EXE
 	if (!resources.loadFromEXE(_exeName))
 		return false;
 
 	// Convert cursor resources to usable cursors
-	const Common::Array<NECursorGroup> &cursorGroups = resources.getCursors();
-	Common::Array<NECursorGroup>::const_iterator cursorGroup;
+	const Common::Array<Common::NECursorGroup> &cursorGroups = resources.getCursors();
+	Common::Array<Common::NECursorGroup>::const_iterator cursorGroup;
 	for (cursorGroup = cursorGroups.begin(); cursorGroup != cursorGroups.end(); ++cursorGroup) {
 		if (cursorGroup->cursors.empty())
 			continue;
 
-		const NECursor &neCursor = cursorGroup->cursors[0];
+		const Common::NECursor *neCursor = cursorGroup->cursors[0];
 		Cursor cursor;
 
-		if (!loadFromResource(cursor, neCursor))
+		if (!loadFromResource(cursor, *neCursor))
 			return false;
 
-		cursor.name = cursorGroup->name;
+		cursor.name = cursorGroup->id.toString();
 
-		_cursors.setVal(cursorGroup->name, cursor);
+		_cursors.setVal(cursor.name, cursor);
 	}
 
 	return true;
 }
 
-bool CursorsWindows::loadFromResource(Cursor &cursor, const NECursor &resource) {
-	// Load image
-	cursor.sprite = new Sprite;
-	if (!cursor.sprite->loadFromCursorResource(resource)) {
-		delete cursor.sprite;
-		return false;
-	}
-
+bool CursorsWindows::loadFromResource(Cursor &cursor, const Common::NECursor &resource) {
 	// Copy properties
 	cursor.width    = resource.getWidth();
 	cursor.height   = resource.getHeight();
 	cursor.hotspotX = resource.getHotspotX();
 	cursor.hotspotY = resource.getHotspotY();
+
+	Palette palette;
+	palette.resize(256);
+
+	const byte *srcPalette = resource.getPalette();
+
+	for (int j = 0; j < 256; j++) {
+		palette.get()[j * 3 + 0] = srcPalette[j * 4 + 0];
+		palette.get()[j * 3 + 1] = srcPalette[j * 4 + 1];
+		palette.get()[j * 3 + 2] = srcPalette[j * 4 + 2];
+	}
+
+	// Ensure the key color is transparent
+	palette.get()[0] = 0;
+	palette.get()[1] = 0;
+	palette.get()[2] = 255;
+
+	cursor.sprite = new Sprite;
+	cursor.sprite->create(cursor.width, cursor.height);
+	cursor.sprite->setPalette(palette);
+	cursor.sprite->copyFrom(resource.getSurface());
 	return true;
 }
 
@@ -289,8 +303,8 @@ bool CursorsMac::load() {
 		free(rawPalette);
 
 		cursor.sprite = new Sprite();
-		cursor.sprite->setPalette(palette);
 		cursor.sprite->create(cursor.width, cursor.height);
+		cursor.sprite->setPalette(palette);
 		cursor.sprite->copyFrom(cursorData);
 
 		free(cursorData);

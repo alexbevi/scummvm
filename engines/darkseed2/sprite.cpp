@@ -33,7 +33,6 @@
 #include "engines/darkseed2/imageconverter.h"
 #include "engines/darkseed2/resources.h"
 #include "engines/darkseed2/cursors.h"
-#include "engines/darkseed2/neresources.h"
 #include "engines/darkseed2/saveload.h"
 
 namespace DarkSeed2 {
@@ -470,115 +469,6 @@ bool Sprite::loadFrom256(Common::SeekableReadStream &f256, int32 width, int32 he
 			*img++ = f256.readByte();
 		}
 	}
-
-	createTransparencyMap();
-	convertToTrueColor();
-
-	return true;
-}
-
-bool Sprite::loadFromCursorResource(const NECursor &cursor) {
-	int32 width  = cursor.getWidth();
-	int32 height = cursor.getHeight() * 2;
-
-	// Sanity checks
-	assert((width > 0) && (height > 0));
-
-	Common::SeekableReadStream &stream = cursor.getStream();
-
-	if (stream.size() <= 40)
-		return false;
-
-	// Check header size
-	if (stream.readUint32LE() != 40)
-		return false;
-
-	// Check dimensions
-	if (stream.readUint32LE() != ((uint32) width))
-		return false;
-	if (stream.readUint32LE() != ((uint32) height))
-		return false;
-
-	// Color planes
-	if (stream.readUint16LE() != 1)
-		return false;
-	// Bits per pixel
-	if (stream.readUint16LE() != 1)
-		return false;
-	// Compression
-	if (stream.readUint32LE() != 0)
-		return false;
-
-	// Image size + X resolution + Y resolution
-	stream.skip(4 + 4 + 4);
-
-	uint32 numColors = stream.readUint32LE();
-
-	if (numColors == 0)
-		numColors = 2;
-
-	if (numColors > 2)
-		return false;
-
-	// Assert that enough data is there for the whole cursor
-	if (((uint32) stream.size()) < (40 + numColors * 4 + ((width * height) / 8)))
-		return false;
-
-	// Height includes AND-mask and XOR-mask
-	height /= 2;
-
-	create(width, height);
-
-	_palette.resize(3);
-
-	// Standard palette: transparent, black, white
-	_palette.get()[0 * 3 + 0] = 0;
-	_palette.get()[0 * 3 + 1] = 0;
-	_palette.get()[0 * 3 + 2] = 255;
-	_palette.get()[1 * 3 + 0] = 0;
-	_palette.get()[1 * 3 + 1] = 0;
-	_palette.get()[1 * 3 + 2] = 0;
-	_palette.get()[2 * 3 + 0] = 255;
-	_palette.get()[2 * 3 + 1] = 255;
-	_palette.get()[2 * 3 + 2] = 255;
-
-	// Reading the palette
-	stream.seek(40);
-	for (uint32 i = 0 ; i < numColors; i++) {
-		_palette[(i + 1) * 3 + 2] = stream.readByte();
-		_palette[(i + 1) * 3 + 1] = stream.readByte();
-		_palette[(i + 1) * 3 + 0] = stream.readByte();
-		stream.skip(1);
-	}
-
-	// Reading the bitmap data
-	const byte *srcP = cursor.getData() + 40 + numColors * 4;
-	const byte *srcM = srcP + ((width * height) / 8);
-	byte *dest = (byte *) _surfacePaletted.getBasePtr(0, height - 1);
-	for (int32 i = 0; i < height; i++) {
-		byte *rowDest = dest;
-
-		for (int32 j = 0; j < (width / 8); j++) {
-			byte p = srcP[j];
-			byte m = srcM[j];
-
-			for (int k = 0; k < 8; k++, rowDest++, p <<= 1, m <<= 1) {
-				if ((m & 0x80) != 0x80) {
-					if ((p & 0x80) == 0x80)
-						*rowDest = 2;
-					else
-						*rowDest = 1;
-				} else
-					*rowDest = 0;
-			}
-		}
-
-		dest -= width;
-		srcP += width / 8;
-		srcM += width / 8;
-	}
-
-	_fromCursor = true;
 
 	createTransparencyMap();
 	convertToTrueColor();

@@ -46,8 +46,6 @@ namespace Common {
 
 namespace DarkSeed2 {
 
-class NECursor;
-
 class Resources;
 
 class Resource;
@@ -110,9 +108,6 @@ public:
 	/** Load a sprite from a box image file. */
 	bool loadFromBoxImage(Resources &resources, const Common::String &image,
 			int32 width = 0, int32 height = 0);
-
-	/** Load from a cursor resource embedded in an EXE file. */
-	bool loadFromCursorResource(const NECursor &cursor);
 
 	/** Load from a cursor found in the Sega Saturn version. */
 	bool loadFromSaturnCursor(Resources &resources, const Common::String &cursor);
