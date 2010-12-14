@@ -281,4 +281,57 @@ byte *GraphicsManager::toSystemPalette(Common::Array<PaletteEntry *> _palette) {
 	error("GraphicsManager::makeSoftTable: Not implemented!");
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Paths
+//////////////////////////////////////////////////////////////////////////
+uint32 GraphicsManager::isPath(uint32 boxIndex, int val) {
+	for (uint32 i = 1; i <= 9; i++)
+		if (_boxes[boxIndex]->field_50[i] == val)
+			return i;
+
+	return 0;
+}
+
+bool GraphicsManager::nextBox(uint32 pathIndex, uint32 currentBoxIndex, uint32 *nextBoxIndex, uint32 *data) {
+	if (!_boxes[currentBoxIndex]->field_8[pathIndex])
+		return false;
+
+	Action *action = (Action *)getSegment()->getData(kSegmentAction, 2);
+
+	*nextBoxIndex = _boxes[currentBoxIndex]->field_8[pathIndex];
+
+	if (*nextBoxIndex == currentBoxIndex)
+		return false;
+
+	if (*nextBoxIndex > currentBoxIndex) {
+		uint32 val = *nextBoxIndex - currentBoxIndex;
+
+		if (action->field_20[12] == val)
+			*data = 7;
+		else if (val == 1)
+			*data = 1;
+		else if (action->field_20[12] + 1 == val)
+			*data = 8;
+		else if (action->field_20[12] - 1 == val)
+			*data = 6;
+		else
+			return false;
+	} else {
+		uint32 val = currentBoxIndex - *nextBoxIndex;
+
+		if (action->field_20[12] == val)
+			*data = 3;
+		else if (val == 1)
+			*data = 5;
+		else if (action->field_20[12] + 1 == val)
+			*data = 4;
+		else if (action->field_20[12] - 1 == val)
+			*data = 2;
+		else
+			return false;
+	}
+
+	return true;
+}
+
 } // End of namespace Liath

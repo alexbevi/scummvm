@@ -74,7 +74,17 @@ private:
 		byte flags;
 	};
 
+	struct Box {
+		int32 field_0;
+		int32 field_4;
+		int32 field_8[18];
+		int32 field_50[18];
+	};
+
 	LiathEngine* _engine;
+
+	// Boxes
+	Common::Array<Box *> _boxes;
 
 	// Palettes
 	Common::Array<PaletteEntry *> _palette;
@@ -101,6 +111,12 @@ private:
 	void setPalette(Common::String paletteName);
 	bool loadBackgroundPalette( Common::String paletteName );
 	byte *toSystemPalette(Common::Array<PaletteEntry *> _palette);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Paths
+	//////////////////////////////////////////////////////////////////////////
+	uint32 isPath(uint32 boxIndex, int val);
+	bool nextBox(uint32 pathIndex, uint32 currentBoxIndex, uint32 *nextBoxIndex, uint32 *data);
 };
 
 } // End of namespace Liath
