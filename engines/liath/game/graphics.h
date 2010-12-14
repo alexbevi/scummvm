@@ -63,6 +63,8 @@ public:
 	int32 HPic(int32 a1);
 	int32 LPic(int32 a1, int32 a2);
 
+	Common::Point PicToScr(int32 pic);
+
 
 private:
 	struct PaletteEntry {

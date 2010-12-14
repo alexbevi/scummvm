@@ -200,6 +200,14 @@ int32 GraphicsManager::LPic(int32 a1, int32 a2) {
 	return a1 + a2 * action->field_20[12];
 }
 
+Common::Point GraphicsManager::PicToScr(int32 pic) {
+	Action *action = (Action *)getSegment()->getData(kSegmentAction, 2);
+
+	int32 p = pic / action->field_20[12];
+
+	return Common::Point(PicX(p - pic * action->field_20[12]), PicY(p));
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Private functions
 //////////////////////////////////////////////////////////////////////////
