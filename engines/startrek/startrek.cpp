@@ -286,10 +286,8 @@ void StarTrekEngine::playMovieMac(Common::String filename) {
 		error("Could not open '%s'", filename.c_str());
 
 	while (!qtDecoder->endOfVideo() && !shouldQuit()) {
-		qtDecoder->updateAudioBuffer();
-
 		if (qtDecoder->needsUpdate()) {
-			::Graphics::Surface *frame = qtDecoder->decodeNextFrame();
+			const ::Graphics::Surface *frame = qtDecoder->decodeNextFrame();
 
 			if (frame) {
 				_system->copyRectToScreen((byte *)frame->pixels, frame->pitch, 0, 0, frame->w, frame->h);
