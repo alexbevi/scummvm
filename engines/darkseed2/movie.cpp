@@ -155,7 +155,7 @@ void Movie::updateStatus() {
 		return;
 	}
 
-	::Graphics::Surface *frame = _decoder->decodeNextFrame();
+	const ::Graphics::Surface *frame = _decoder->decodeNextFrame();
 
 	if (frame)
 		_screen.copyFrom((byte *)frame->pixels, frame->bytesPerPixel, false);

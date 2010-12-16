@@ -49,7 +49,7 @@ public:
 		delete _surface;
 	}
 
-	::Graphics::Surface *decodeImage(Common::SeekableReadStream *stream) {
+	const ::Graphics::Surface *decodeImage(Common::SeekableReadStream *stream) {
 		if (_bitsPerPixel != 24) {
 			warning("Unhandled %d bpp", _bitsPerPixel);
 			return 0;
@@ -172,7 +172,7 @@ bool SegaFILMDecoder::load(Common::SeekableReadStream *stream) {
 	return true;
 }
 
-::Graphics::Surface *SegaFILMDecoder::decodeNextFrame() {
+const ::Graphics::Surface *SegaFILMDecoder::decodeNextFrame() {
 	if (endOfVideo())
 		return 0;
 
@@ -210,7 +210,7 @@ bool SegaFILMDecoder::load(Common::SeekableReadStream *stream) {
 			_sampleTablePosition++;
 		} else {
 			// We have a video frame!
-			::Graphics::Surface *surface = _codec->decodeImage(_stream->readStream(_sampleTable[_sampleTablePosition].length));
+			const ::Graphics::Surface *surface = _codec->decodeImage(_stream->readStream(_sampleTable[_sampleTablePosition].length));
 
 			// Add the frame's duration to the next frame start
 			_nextFrameStartTime += _sampleTable[_sampleTablePosition].sampleInfo2;
