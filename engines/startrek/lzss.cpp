@@ -37,30 +37,36 @@ Common::SeekableReadStream *decodeLZSS(Common::SeekableReadStream *indata, uint3
 	uint32 bufpos = 0;
 	byte *outLzssBufData = (byte *)malloc(uncompressedSize);
 
-	while (!indata->eos()) {
+	for (;;) {
 		byte flagbyte = indata->readByte();
+
+		if (indata->eos())
+			break;
+
 		for (byte i = 0; i < 8; i++) {
-			if (!indata->eos()) {
-				if ((flagbyte & (1 << i)) == 0) {
-					uint32 offsetlen = indata->readUint16LE();
+			if ((flagbyte & (1 << i)) == 0) {
+				uint32 offsetlen = indata->readUint16LE();
 
-					if (offsetlen == 0)
-						break;
+				if (indata->eos())
+					break;
 
-					uint32 length = (offsetlen & 0xF) + 3;
-					uint32 offset = (bufpos - (offsetlen >> 4)) & (N - 1);
-					for (uint32 j = 0; j < length; j++) {
-						byte tempa = histbuff[(offset + j) & (N - 1)];
-						outLzssBufData[outstreampos++] = tempa;
-						histbuff[bufpos] = tempa;
-						bufpos = (bufpos + 1) & (N - 1);
-					}
-				} else {
-					byte tempa = indata->readByte();
+				uint32 length = (offsetlen & 0xF) + 3;
+				uint32 offset = (bufpos - (offsetlen >> 4)) & (N - 1);
+				for (uint32 j = 0; j < length; j++) {
+					byte tempa = histbuff[(offset + j) & (N - 1)];
 					outLzssBufData[outstreampos++] = tempa;
 					histbuff[bufpos] = tempa;
 					bufpos = (bufpos + 1) & (N - 1);
 				}
+			} else {
+				byte tempa = indata->readByte();
+
+				if (indata->eos())
+					break;
+
+				outLzssBufData[outstreampos++] = tempa;
+				histbuff[bufpos] = tempa;
+				bufpos = (bufpos + 1) & (N - 1);
 			}
 		}
 	}
