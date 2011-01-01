@@ -126,7 +126,7 @@ bool VideoPlayer::playVideo(char *filename) {
 }
 
 void VideoPlayer::processFrame() {
-	Graphics::Surface *frame = _player->decodeNextFrame();
+	const Graphics::Surface *frame = _player->decodeNextFrame();
 
 	Graphics::Surface *screen = _vm->_system->lockScreen();
 

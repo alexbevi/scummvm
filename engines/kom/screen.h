@@ -142,8 +142,8 @@ private:
 	uint8 *_mouseBuf;
 	FlicDecoder _roomBackgroundFlic;
 	FlicDecoder _roomMaskFlic;
-	Graphics::Surface *_roomBackground;
-	Graphics::Surface *_roomMask;
+	const Graphics::Surface *_roomBackground;
+	const Graphics::Surface *_roomMask;
 	Font *_font;
 	bool _backgroundRedraw;
 
