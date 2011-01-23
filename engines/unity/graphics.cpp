@@ -569,7 +569,7 @@ void Graphics::fillRect(byte colour, unsigned int x1, unsigned int y1, unsigned 
 void Graphics::playMovie(Common::String filename) {
 	Common::SeekableReadStream *intro_movie = _vm->data.openFile(filename);
 
-	::Graphics::VideoDecoder *videoDecoder = new FVFDecoder(g_system->getMixer());
+	::Video::VideoDecoder *videoDecoder = new FVFDecoder(g_system->getMixer());
 	if (!videoDecoder->load(intro_movie)) error("failed to load movie %s", filename.c_str());
 
 	bool skipVideo = false;
@@ -589,7 +589,7 @@ void Graphics::playMovie(Common::String filename) {
 
 	while (!g_engine->shouldQuit() && !videoDecoder->endOfVideo() && !skipVideo) {
 		if (videoDecoder->needsUpdate()) {
-			::Graphics::Surface *frame = videoDecoder->decodeNextFrame();
+			const ::Graphics::Surface *frame = videoDecoder->decodeNextFrame();
 			if (frame) {
 				// TODO: this is some very slow 2x scaling
 				unsigned int x = 0, y = 0;

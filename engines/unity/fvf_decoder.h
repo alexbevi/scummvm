@@ -17,14 +17,14 @@
 #ifndef FVF_DECODER_H
 #define FVF_DECODER_H
 
-#include "graphics/video/video_decoder.h"
-#include "graphics/video/codecs/codec.h"
+#include "video/video_decoder.h"
+#include "video/codecs/codec.h"
 #include "sound/audiostream.h"
 #include "sound/mixer.h"
 
 namespace Unity {
 
-class FVFDecoder : public ::Graphics::FixedRateVideoDecoder {
+class FVFDecoder : public ::Video::FixedRateVideoDecoder {
 public:
 	FVFDecoder(Audio::Mixer *mixer,
 		Audio::Mixer::SoundType soundType = Audio::Mixer::kPlainSoundType);
