@@ -34,8 +34,8 @@
 #include "sound/audiostream.h"
 #include "sound/mixer.h"
 
-#include "graphics/video/video_decoder.h"
-#include "graphics/video/codecs/cinepak.h"
+#include "video/video_decoder.h"
+#include "video/codecs/cinepak.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -50,7 +50,7 @@ struct SampleTableEntry {
 	uint32 sampleInfo2;
 };
 
-class SegaFILMDecoder : public ::Graphics::VideoDecoder {
+class SegaFILMDecoder : public Video::VideoDecoder {
 public:
 	SegaFILMDecoder(Audio::Mixer *mixer,
 			Audio::Mixer::SoundType soundType = Audio::Mixer::kPlainSoundType);
@@ -86,7 +86,7 @@ protected:
 	uint32 _nextFrameStartTime;
 
 	uint32 _frameCount;
-	::Graphics::Codec *_codec;
+	Video::Codec *_codec;
 	uint16 _width, _height;
 };
 

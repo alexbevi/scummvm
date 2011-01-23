@@ -27,7 +27,7 @@
 
 #include "common/serializer.h"
 
-#include "graphics/video/avi_decoder.h"
+#include "video/avi_decoder.h"
 #include "engines/darkseed2/cpk_decoder.h"
 
 #include "engines/darkseed2/movie.h"
@@ -65,12 +65,12 @@ bool Movie::isPlaying() const {
 	return _decoder && _decoder->isVideoLoaded();
 }
 
-::Graphics::VideoDecoder *Movie::createDecoder(const Common::String &file) const {
+Video::VideoDecoder *Movie::createDecoder(const Common::String &file) const {
 	Common::String realFile;
 
 	realFile = Resources::addExtension(file, "AVI");
 	if (Common::File::exists(realFile)) {
-		::Graphics::VideoDecoder *decoder = new ::Graphics::AviDecoder(_mixer, Audio::Mixer::kSFXSoundType);
+		Video::VideoDecoder *decoder = new Video::AviDecoder(_mixer, Audio::Mixer::kSFXSoundType);
 
 		if (!decoder->loadFile(realFile)) {
 			delete decoder;
@@ -82,7 +82,7 @@ bool Movie::isPlaying() const {
 
 	realFile = Resources::addExtension(file, "CPK");
 	if (Common::File::exists(realFile)) {
-		::Graphics::VideoDecoder *decoder = new SegaFILMDecoder(_mixer, Audio::Mixer::kSFXSoundType);
+		Video::VideoDecoder *decoder = new SegaFILMDecoder(_mixer, Audio::Mixer::kSFXSoundType);
 
 		if (!decoder->loadFile(realFile)) {
 			delete decoder;

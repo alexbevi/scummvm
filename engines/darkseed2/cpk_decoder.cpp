@@ -35,7 +35,7 @@ namespace DarkSeed2 {
 
 // For raw video, it seems to always be 24bpp RGB
 // We just convert to the current screen format for ease of use
-class SegaFilmRawCodec : public ::Graphics::Codec {
+class SegaFilmRawCodec : public Video::Codec {
 public:
 	SegaFilmRawCodec(uint16 width, uint16 height, byte bitsPerPixel) {
 		_pixelFormat = g_system->getScreenFormat();
@@ -149,7 +149,7 @@ bool SegaFILMDecoder::load(Common::SeekableReadStream *stream) {
 
 	// Create the Cinepak decoder, if we're using it
 	if (codecTag == MKID_BE('cvid'))
-		_codec = new ::Graphics::CinepakDecoder();
+		_codec = new Video::CinepakDecoder();
 	else if (codecTag == MKID_BE('raw '))
 		_codec = new SegaFilmRawCodec(_width, _height, bitsPerPixel);
 	else if (codecTag != 0) {
@@ -252,7 +252,7 @@ uint32 SegaFILMDecoder::getElapsedTime() const {
 	if (_audioStream)
 		return _mixer->getSoundElapsedTime(_audioStreamHandle);
 
-	return ::Graphics::VideoDecoder::getElapsedTime();
+	return Video::VideoDecoder::getElapsedTime();
 }
 
 void SegaFILMDecoder::close() {

@@ -38,7 +38,7 @@ namespace Common {
 	class String;
 }
 
-namespace Graphics {
+namespace Video {
 	class VideoDecoder;
 }
 
@@ -94,11 +94,11 @@ private:
 	bool _cursorVisible; ///< Was the cursor visible at the start?
 
 	/** The video decoder. */
-	::Graphics::VideoDecoder *_decoder;
+	Video::VideoDecoder *_decoder;
 
 	Sprite _screen; ///< The current frame's sprite.
 
-	::Graphics::VideoDecoder *createDecoder(const Common::String &file) const;
+	Video::VideoDecoder *createDecoder(const Common::String &file) const;
 };
 
 } // End of namespace DarkSeed2
