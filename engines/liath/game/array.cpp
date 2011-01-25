@@ -255,7 +255,7 @@ Array *ArrayManager::getFirstEmptyArray() {
 		if (_data[i].data)
 			continue;
 
-		_data[i+1].field_0 = i + 1;
+		_data[i].field_0 = i + 1;
 
 		return &_data[i];
 	}

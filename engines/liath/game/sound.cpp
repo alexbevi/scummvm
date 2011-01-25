@@ -200,7 +200,7 @@ void SoundManager::setLevel(SoundType type, int32 level) {
 SoundManager::MusicEntry *SoundManager::getMusicEntry(const Common::String &filename) {
 	MusicEntry *entry = NULL;
 
-	for (uint i = 0; i < sizeof(_musicEntries); i++) {
+	for (uint i = 0; i < ARRAYSIZE(_musicEntries); i++) {
 
 		// Get the first empty entry
 		if (!entry && (!_musicEntries[i].handle || !_mixer->isSoundHandleActive(*_musicEntries[i].handle)))
