@@ -264,7 +264,7 @@ OpcodeRet HeroManager::passVariable(OpcodeParameters *parameters) {
 }
 
 OpcodeRet HeroManager::freeze(OpcodeParameters *parameters) {
-	error("HeroManager::freeze: Not implemented!");
+	return freeze((HeroIndex)parameters->getDword(0));
 }
 
 OpcodeRet HeroManager::freezeGlobal(OpcodeParameters *parameters) {
@@ -518,6 +518,10 @@ void HeroManager::remove(HeroIndex index) {
 //////////////////////////////////////////////////////////////////////////
 // Private functions
 //////////////////////////////////////////////////////////////////////////
+OpcodeRet HeroManager::freeze(HeroIndex heroIndex) {
+	error("HeroManager::freeze: Not implemented!");
+}
+
 OpcodeRet HeroManager::quit(HeroIndex heroIndex) {
 	error("HeroManager::quit: Not implemented!");
 }

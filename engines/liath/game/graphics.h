@@ -108,6 +108,8 @@ private:
 	void makeSoftTable(uint16 maxSize);
 	void clearSoftTable() { makeSoftTable(0); }
 
+	int addressSpr(int a1, int a2);
+
 	void setPalette(Common::String paletteName);
 	bool loadBackgroundPalette( Common::String paletteName );
 	byte *toSystemPalette(Common::Array<PaletteEntry *> _palette);

@@ -130,6 +130,7 @@ private:
 	uint32 _nHero;
 
 	// Opcode helpers
+	OpcodeRet freeze(HeroIndex heroIndex);
 	OpcodeRet quit(HeroIndex heroIndex);
 	OpcodeRet auto2(OpcodeParameters *parameters);
 	OpcodeRet hear(OpcodeParameters *parameters);
