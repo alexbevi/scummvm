@@ -250,4 +250,29 @@ void WorkManager::resetField_E00() {
 		(*it)->data.resetField_E00();
 }
 
+Work *WorkManager::seWork(Work* current) {
+	Common::Array<Work *>::iterator work = _works.begin();
+
+	// Get iterator starting at current work position
+	if (current != NULL) {
+		for (Common::Array<Work *>::iterator it = _works.begin(); it != _works.end(); it++)
+			if (*it == current) {
+				work = it;
+				break;
+			}
+	}
+
+	while (work != _works.end() && (*work)->field_32 > 0)
+		work++;
+
+	if (work == _works.end()) {
+		// TODO set variables
+		warning("[WorkManager::seWork] Missing variable set!");
+
+		return NULL;
+	}
+
+	return *work;
+}
+
 } // End of namespace Liath

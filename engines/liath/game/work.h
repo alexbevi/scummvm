@@ -72,6 +72,7 @@ public:
 
 	// Helpers
 	void resetField_E00();
+	Work *seWork(Work* current);
 
 private:
 	LiathEngine* _engine;

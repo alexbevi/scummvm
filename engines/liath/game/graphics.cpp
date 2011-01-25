@@ -304,7 +304,7 @@ bool GraphicsManager::nextBox(uint32 pathIndex, uint32 currentBoxIndex, uint32 *
 		return false;
 
 	if (*nextBoxIndex > currentBoxIndex) {
-		uint32 val = *nextBoxIndex - currentBoxIndex;
+		int32 val = *nextBoxIndex - currentBoxIndex;
 
 		if (action->field_20[12] == val)
 			*data = 7;
@@ -317,7 +317,7 @@ bool GraphicsManager::nextBox(uint32 pathIndex, uint32 currentBoxIndex, uint32 *
 		else
 			return false;
 	} else {
-		uint32 val = currentBoxIndex - *nextBoxIndex;
+		int32 val = currentBoxIndex - *nextBoxIndex;
 
 		if (action->field_20[12] == val)
 			*data = 3;

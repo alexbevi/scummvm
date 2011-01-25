@@ -429,6 +429,7 @@ struct Work {
 	uint32 field_14;
 	uint32 field_18;
 	uint32 field_1C;
+	int16 field_32;
 	byte field_34;
 	uint32 field_35;
 	uint32 field_39;
