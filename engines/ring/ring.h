@@ -48,6 +48,26 @@
  */
 namespace Ring {
 
+struct RingGameDescription;
+
+enum RingGameType {
+	GameTypeRing = 1
+};
+
+// Available languages
+enum {
+	LANG_ENG = 1 << 0,
+	LANG_FRA = 1 << 1,
+	LANG_GER = 1 << 2,
+	LANG_GRE = 1 << 3,
+	LANG_HEB = 1 << 4,
+	LANG_HOL = 1 << 5,
+	LANG_ITA = 1 << 6,
+	LANG_SLO = 1 << 7,
+	LANG_SPA = 1 << 8,
+	LANG_SWE = 1 << 9
+};
+
 class Debugger;
 
 class RingEngine : public Engine {
@@ -59,14 +79,14 @@ protected:
 	virtual Debugger *getDebugger() { return _debugger; }
 
 public:
-	RingEngine(OSystem *syst, const ADGameDescription *gd);
+	RingEngine(OSystem *syst, const RingGameDescription *gd);
 	~RingEngine();
 
 	// Misc
 	Common::RandomSource getRandom() const {return _random; }
 
 private:
-	const ADGameDescription *_gameDescription;
+	const RingGameDescription *_gameDescription;
 	Graphics::PixelFormat _pixelFormat;
 
 	// Misc

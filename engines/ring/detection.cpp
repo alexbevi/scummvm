@@ -27,6 +27,13 @@
 
 namespace Ring {
 
+struct RingGameDescription {
+	ADGameDescription desc;
+
+	int gameType;
+	uint32 features;
+};
+
 static const char *directoryGlobs[] = {
 	"DATA",
 	0
@@ -38,29 +45,34 @@ static const PlainGameDescriptor ringGames[] = {
 	{0, 0}
 };
 
-static const ADGameDescription gameDescriptions[] = {
+static const RingGameDescription gameDescriptions[] = {
 
 	// The Ring: The Legend of the Nibelungen (Windows DVD)
 	{
-		"liath",
-			"",
 		{
-			{"RING.EXE", 0, "", 0},
-			{"AS.AT2", 0, "", 0},
+			"ring",
+			"",
+			{
+				{"RING.EXE", 0, "10e21ce9cf937c56c5891113ac1cfcc2", 618496},
+				{"AS.AT2", 0, "5f65ee721fdf50bc074dd25bb28592fb", 1533273},
+			},
+			Common::UNK_LANG,
+			Common::kPlatformWindows,
+			ADGF_NO_FLAGS,
+			Common::GUIO_NONE
 		},
-		Common::EN_ANY,
-		Common::kPlatformWindows,
-		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GameTypeRing,
+		LANG_ENG | LANG_FRA | LANG_GER | LANG_GRE | LANG_HEB | LANG_HOL | LANG_ITA | LANG_SLO | LANG_SPA | LANG_SWE,
 	},
-	AD_TABLE_END_MARKER
+
+	{AD_TABLE_END_MARKER, 0, 0}
 };
 
 static const ADParams detectionParams = {
 	// Pointer to ADGameDescription or its superset structure
 	(const byte *)gameDescriptions,
 	// Size of that superset structure
-	sizeof(ADGameDescription),
+	sizeof(Ring::RingGameDescription),
 	// Number of bytes to compute MD5 sum for
 	5000,
 	// List of all engine targets
@@ -68,7 +80,7 @@ static const ADParams detectionParams = {
 	// Structure for autoupgrading obsolete targets
 	0,
 	// Name of single gameid (optional)
-	"liath",
+	"ring",
 	// List of files for file-based fallback detection (optional)
 	0,
 	// Flags
@@ -97,11 +109,20 @@ public:
 	bool createInstance(OSystem *syst, Engine **engine, const ADGameDescription *gd) const;
 };
 
-bool RingMetaEngine::createInstance(OSystem *syst, Engine **engine, const ADGameDescription *gd) const {
-	if (gd) {
-		*engine = new RingEngine(syst, (const ADGameDescription *)gd);
+bool RingMetaEngine::createInstance(OSystem *syst, Engine **engine, const ADGameDescription *desc) const {
+	const Ring::RingGameDescription *gd = (const Ring::RingGameDescription *)desc;
+
+	switch (gd->gameType) {
+	default:
+		error("Ring engine: unknown gameType");
+		break;
+
+	case Ring::GameTypeRing:
+		*engine = new Ring::RingEngine(syst, gd);
+		break;
 	}
-	return gd != 0;
+
+	return (gd != 0);
 }
 
 } // End of namespace Ring

@@ -33,7 +33,7 @@
 
 namespace Ring {
 
-RingEngine::RingEngine(OSystem *syst, const ADGameDescription *gd) :
+RingEngine::RingEngine(OSystem *syst, const RingGameDescription *gd) :
 	Engine(syst), _gameDescription(gd), _debugger(NULL) {
 
 	// Adding the default directories
