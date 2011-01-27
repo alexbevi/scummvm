@@ -23,14 +23,14 @@
  *
  */
 
-#include "ring/data/archive.h"
+#include "ring/graphics/image.h"
 
 namespace Ring {
 
-Archive::Archive() {
+Image::Image() {
 }
 
-Archive::~Archive() {
+Image::~Image() {
 }
 
 } // End of namespace Ring

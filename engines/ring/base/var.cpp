@@ -23,20 +23,14 @@
  *
  */
 
-#ifndef RING_ARCHIVE_H
-#define RING_ARCHIVE_H
+#include "ring/base/var.h"
 
 namespace Ring {
 
-class Archive {
-public:
-	Archive();
-	~Archive();
+Var::Var() {
+}
 
-private:
-
-};
+Var::~Var() {
+}
 
 } // End of namespace Ring
-
-#endif // RING_ARCHIVE_H
