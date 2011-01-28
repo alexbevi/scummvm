@@ -28,10 +28,10 @@
 
 namespace Ring {
 
-class Cursor {
+class CursorHandler {
 public:
-	Cursor();
-	~Cursor();
+	CursorHandler();
+	~CursorHandler();
 
 private:
 

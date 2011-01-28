@@ -27,10 +27,10 @@
 
 namespace Ring {
 
-Sound::Sound() {
+SoundHandler::SoundHandler() {
 }
 
-Sound::~Sound() {
+SoundHandler::~SoundHandler() {
 }
 
 } // End of namespace Ring

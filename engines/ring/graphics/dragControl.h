@@ -23,14 +23,20 @@
  *
  */
 
-#include "ring/base/cursor.h"
+#ifndef RING_DRAGCONTROL_H
+#define RING_DRAGCONTROL_H
 
 namespace Ring {
 
-CursorHandler::CursorHandler() {
-}
+class DragControl {
+public:
+	DragControl();
+	~DragControl();
 
-CursorHandler::~CursorHandler() {
-}
+private:
+
+};
 
 } // End of namespace Ring
+
+#endif // RING_DRAGCONTROL_H

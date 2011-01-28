@@ -23,14 +23,14 @@
  *
  */
 
-#include "ring/base/cursor.h"
+#include "ring/graphics/dragControl.h"
 
 namespace Ring {
 
-CursorHandler::CursorHandler() {
+DragControl::DragControl() {
 }
 
-CursorHandler::~CursorHandler() {
+DragControl::~DragControl() {
 }
 
 } // End of namespace Ring

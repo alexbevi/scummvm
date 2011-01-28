@@ -28,6 +28,24 @@
 
 namespace Ring {
 
+class Object {
+public:
+	Object();
+	~Object();
+
+private:
+
+};
+
+class ObjectInfo {
+public:
+	ObjectInfo();
+	~ObjectInfo();
+
+private:
+
+};
+
 class ObjectHandler {
 public:
 	ObjectHandler();

@@ -37,6 +37,15 @@ private:
 
 };
 
+class TimerHandler {
+public:
+	TimerHandler();
+	~TimerHandler();
+
+private:
+
+};
+
 } // End of namespace Ring
 
 #endif // RING_TIMER_H

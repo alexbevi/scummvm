@@ -28,10 +28,10 @@
 
 namespace Ring {
 
-class Sound {
+class SoundHandler {
 public:
-	Sound();
-	~Sound();
+	SoundHandler();
+	~SoundHandler();
 
 private:
 

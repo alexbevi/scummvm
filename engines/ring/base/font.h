@@ -28,10 +28,10 @@
 
 namespace Ring {
 
-class Font {
+class FontHandler {
 public:
-	Font();
-	~Font();
+	FontHandler();
+	~FontHandler();
 
 private:
 

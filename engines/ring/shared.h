@@ -35,6 +35,23 @@ namespace Ring {
 //////////////////////////////////////////////////////////////////////////
 // Enumerations
 //////////////////////////////////////////////////////////////////////////
+enum LoadFrom {
+	kLoadFromInvalid = 0,
+	kLoadFromCd      = 1,
+	kLoadFromDisk    = 2
+};
+
+enum Zone {
+	kZoneInvalid = 0,
+	kZoneSY      = 1,
+	kZoneNI      = 2,
+	kZoneRH      = 3,
+	kZoneFO      = 4,
+	kZoneRO      = 5,
+	kZoneWA      = 6,
+	kZoneAS      = 7,
+	kZoneN2      = 8
+};
 
 //////////////////////////////////////////////////////////////////////////
 // Types

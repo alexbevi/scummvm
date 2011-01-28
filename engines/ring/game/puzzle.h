@@ -28,6 +28,15 @@
 
 namespace Ring {
 
+class PuzzleInfo {
+public:
+	PuzzleInfo();
+	~PuzzleInfo();
+
+private:
+
+};
+
 class Puzzle {
 public:
 	Puzzle();

@@ -18,6 +18,7 @@ MODULE_OBJS := \
 	game/puzzle.o \
 	graphics/accessibility.o \
 	graphics/animation.o \
+	graphics/dragControl.o \
 	graphics/image.o \
 	graphics/movability.o \
 	graphics/presentation.o \

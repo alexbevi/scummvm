@@ -27,10 +27,10 @@
 
 namespace Ring {
 
-Font::Font() {
+FontHandler::FontHandler() {
 }
 
-Font::~Font() {
+FontHandler::~FontHandler() {
 }
 
 } // End of namespace Ring
