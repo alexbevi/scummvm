@@ -87,7 +87,8 @@ public:
 	Zone getZone() { return _zone; }
 	Common::String getZoneName() { return _zoneName; }
 	LanguageId getLanguage();
-	
+	Common::String getLanguageName();
+
 private:
 	RingEngine *_vm;
 
@@ -186,7 +187,6 @@ private:
 	void onZoneTimer(TimerId id);
 
 	// Accessors
-	Common::String getLanguageName();
 	uint32 getLanguageChannel();
 };
 

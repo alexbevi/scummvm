@@ -30,8 +30,6 @@
 
 namespace Ring {
 
-class Application;
-
 class Object {
 public:
 	Object();
@@ -68,8 +66,6 @@ public:
 	Common::String getName(ObjectId id);
 
 private:
-	Application *_application;
-
 	AssociativeArray<ObjectInfo> _objects;
 };
 

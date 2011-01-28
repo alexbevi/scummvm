@@ -28,18 +28,80 @@
 
 #include "ring/game/object.h"
 
+#include "ring/shared.h"
+
+#include "common/archive.h"
+
 namespace Ring {
+
+class Application;
+
+class Art : public Common::Archive {
+public:
+	Art();
+	~Art();
+
+	void init(const Common::String &path, Zone zone, LoadFrom loadFrom);
+
+	// Archive
+	bool hasFile(const Common::String &name);
+	int listMembers(Common::ArchiveMemberList &list);
+	Common::ArchiveMemberPtr getMember(const Common::String &name);
+	Common::SeekableReadStream *createReadStreamForMember(const Common::String &name) const;
+
+	// Accessors
+	LoadFrom getLoadFrom() { return _loadFrom; }
+	Zone getZone() { return _zone; }
+
+private:
+	// Art header
+	struct Header {
+		char format[8];
+		uint32 field_8;
+		uint32 count;
+		uint32 field_10;
+		uint32 field_14;
+		uint32 field_18;
+		uint32 field_1C;
+	};
+
+	// Record entry
+	struct Record {
+		uint32 offset;          ///< Offset
+		uint32 size;            ///< Size
+		uint32 field_FB;        ///< ???
+	};
+
+	typedef Common::HashMap<Common::String, Record> RecordMap;
+
+	RecordMap _records;             ///< List of files
+	Common::String _path;           ///< Path of the archive
+	Header _header;
+	Zone _zone;                     ///< The game zone
+	LoadFrom _loadFrom;
+};
 
 class ArtHandler : ObjectHandler {
 public:
-	ArtHandler();
+	ArtHandler(Application *application);
 	~ArtHandler();
 
-	void init();
 	void open(Zone zone, LoadFrom loadFrom);
 
-private:
+	/**
+	 * Removes all art entries that are not loaded from disk (ie. were on the CD in the original)
+	 */
+	void remove();
 
+	Common::SeekableReadStream *get(Common::String filename, Zone zone, LoadFrom loadFrom);
+
+private:
+	Application *_application;
+
+	Common::Array<Art *> _arts;
+
+	bool isPresent(Zone zone, LoadFrom loadFrom);
+	int32 getIndex(Zone zone, LoadFrom loadFrom);
 };
 
 } // End of namespace Ring

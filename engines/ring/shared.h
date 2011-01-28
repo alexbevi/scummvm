@@ -38,7 +38,10 @@ namespace Ring {
 enum LoadFrom {
 	kLoadFromInvalid = 0,
 	kLoadFromCd      = 1,
-	kLoadFromDisk    = 2
+	kLoadFromDisk    = 2,
+	kLoadFrom3       = 3,
+	kLoadFrom4       = 4,
+	kLoadFrom5       = 5
 };
 
 enum Zone {

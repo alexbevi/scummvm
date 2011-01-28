@@ -118,8 +118,7 @@ void Application::init() {
 		_field_58 = 102;
 
 	if (_field_58 == 102) {
-		_artHandler = new ArtHandler();
-		_artHandler->init();
+		_artHandler = new ArtHandler(this);
 		_artHandler->open(kZoneSY, kLoadFromDisk);
 	}
 
