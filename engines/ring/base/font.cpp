@@ -25,20 +25,63 @@
 
 #include "ring/base/font.h"
 
+#include "graphics/fonts/winfont.h"
+
+#include "ring/helpers.h"
+
 namespace Ring {
 
+//////////////////////////////////////////////////////////////////////////
+// Font
+//////////////////////////////////////////////////////////////////////////
+Font::Font(Id id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId) : BaseObject(id) {
+
+	// Setup font description
+	memset(&_description, 0, sizeof(_description));
+	_description.facename = facename;
+	_description.height = height;
+	_description.weight = smallWeight ? 400 : 700;
+	_description.underline = underline;
+	_description.italic = italic;
+	_description.strikeOut = strikeout;
+
+	switch (langId) {
+	default:
+		break;
+
+	case kLanguageGreek:
+		_description.charSet = 161;  // GREEK_CHARSET
+		break;
+
+	case kLanguageHebrew:
+		_description.charSet = 2;    // SYMBOL_CHARSET
+		break;
+	}
+
+	// Create font object
+	_font = new Graphics::WinFont();
+	if (!_font->loadFromFON(filename, Graphics::WinFontDirEntry(facename, height)))
+		error("Unable to load font %s, face %s size %d", filename.c_str(), facename.c_str(), height);
+}
+
+Font::~Font() {
+	delete _font;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// FontHandler
+//////////////////////////////////////////////////////////////////////////
 FontHandler::FontHandler() {
 }
 
 FontHandler::~FontHandler() {
 }
 
-void FontHandler::add(int32 a1, Common::String fontName, int32 a3, int32 a4, int32 a5, int32 a6, int32 a7) {
-	error("[FontHandler::add] Not implemented");
-}
+void FontHandler::add(Id id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId) {
+	if (_fonts.has(id))
+		error("[LanguageHandler::add] ID already exists (%d)", id);
 
-void FontHandler::addResource(Common::String filename) {
-	error("[FontHandler::addResource] Not implemented");
+	_fonts.push_back(Font(id, filename, facename, height, smallWeight, underline, italic, strikeout, langId));
 }
 
 } // End of namespace Ring

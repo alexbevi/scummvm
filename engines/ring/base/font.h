@@ -26,20 +26,55 @@
 #ifndef RING_FONT_H
 #define RING_FONT_H
 
-#include "common/system.h"
+#include "ring/shared.h"
+
+namespace Graphics {
+	class WinFont;
+}
 
 namespace Ring {
+
+class Font : public BaseObject {
+public:
+	Font() : BaseObject(0) {}
+	Font(Id id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
+	~Font();
+
+	Graphics::WinFont *getFont() { return _font; }
+
+private:
+	// Font description (see Windows LOGFONT structure)
+	struct FontDescription {
+		uint32 height;
+		uint32 width;
+		uint32 escapement;
+		uint32 orientation;
+		uint32 weight;
+		bool   italic;
+		bool   underline;
+		bool   strikeOut;
+		byte   charSet;
+		byte   outPrecision;
+		byte   clipPrecision;
+		byte   quality;
+		byte   pitchAndFamily;
+		Common::String facename;
+	};
+
+	FontDescription _description;
+	Graphics::WinFont *_font;
+	Common::String _filename;
+};
 
 class FontHandler {
 public:
 	FontHandler();
 	~FontHandler();
 
-	void add(int32 a1, Common::String fontName, int32 a3, int32 a4, int32 a5, int32 a6, int32 a7);
-	void addResource(Common::String filename);
+	void add(Id id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
 
 private:
-
+	AssociativeArray<Font> _fonts;
 };
 
 } // End of namespace Ring
