@@ -27,10 +27,10 @@
 
 namespace Ring {
 
-Preferences::Preferences() {
+PreferenceHandler::PreferenceHandler() {
 }
 
-Preferences::~Preferences() {
+PreferenceHandler::~PreferenceHandler() {
 }
 
 } // End of namespace Ring

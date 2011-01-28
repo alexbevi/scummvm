@@ -39,6 +39,7 @@ class LanguageHandler;
 class FontHandler;
 class ObjectHandler;
 class ObjectInfo;
+class PreferenceHandler;
 class Puzzle;
 class PuzzleInfo;
 class RingEngine;
@@ -69,6 +70,11 @@ private:
 	struct SoundConfiguration {
 		int soundChunck;
 		LoadFrom loadFrom;
+
+		SoundConfiguration() {
+			soundChunck = 9;
+			loadFrom = kLoadFromCd;
+		}
 	};
 
 	struct Configuration {
@@ -90,6 +96,22 @@ private:
 		bool artWA;
 		bool artFO;
 		bool checkLoadSave;
+
+		Configuration() {
+			runningFromDisk = false;
+			checkCD = 0;
+			artBAG = false;
+			artCURSOR = false;
+			artSY = false;
+			artAS = false;
+			artNI = false;
+			artN2 = false;
+			artRO = false;
+			artRH = false;
+			artWA = false;
+			artFO = false;
+			checkLoadSave = false;
+		}
 	};
 
 	// Application objects
@@ -102,33 +124,34 @@ private:
 	//Common::String              _currentDirectory
 	Configuration               _configuration;
 	uint32                      _field_54;
-	bool                        _field_58;
+	char                        _field_58;
 	CursorHandler              *_cursorHandler;
-	bool                        _field_5D;
+	char                        _field_5D;
 	uint32                      _field_5E;
 	SoundHandler               *_soundHandler;
 	uint32                      _field_66;
-	bool                        _field_6A;
+	char                        _field_6A;
 	Common::String              _zoneName;
 	Zone                        _zone;          // original uses byte
-	bool                        _field_6F;
+	char                        _field_6F;
 	uint32                      _field_70;
-	bool                        _field_74;
-	bool                        _field_75;
-	bool                        _field_76;
-	bool                        _field_77;
-	bool                        _field_78;
+	char                        _field_74;
+	char                        _field_75;
+	char                        _field_76;
+	char                        _field_77;
+	char                        _field_78;
 	Common::Array<ObjectInfo*>  _objectList;
 	Common::Array<PuzzleInfo*>  _puzzleList;
 	Puzzle                     *_puzzle;
 	Common::Array<Rotation*>    _rotationList;
-	uint32                      _field_89;
+	void*                       _field_89;
 	Bag                        *_bag;
 	TimerHandler               *_timerHandler;
 	Var                        *_var;
 	DragControl                *_dragControl;
 	ObjectHandler              *_objectHandler;
-	bool                        _field_A5;
+	PreferenceHandler          *_preferenceHandler;
+	char                        _field_A5;
 
 };
 

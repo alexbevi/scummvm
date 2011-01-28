@@ -28,10 +28,10 @@
 
 namespace Ring {
 
-class Preferences {
+class PreferenceHandler {
 public:
-	Preferences();
-	~Preferences();
+	PreferenceHandler();
+	~PreferenceHandler();
 
 private:
 
