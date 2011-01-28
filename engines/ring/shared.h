@@ -26,15 +26,59 @@
 #ifndef RING_SHARED_H
 #define RING_SHARED_H
 
-namespace Ring {
+#include "common/array.h"
+#include "common/serializer.h"
+#include "common/system.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Types
-//////////////////////////////////////////////////////////////////////////
+namespace Ring {
 
 //////////////////////////////////////////////////////////////////////////
 // Enumerations
 //////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+// Types
+//////////////////////////////////////////////////////////////////////////
+typedef uint32 ID;
+
+class BaseObject {
+public:
+	BaseObject(ID id) : _id(id) {}
+	virtual ~BaseObject();
+
+	ID getID() { return _id; }
+
+protected:
+	ID _id;
+};
+
+template<class T>
+class AssociativeArray : public Common::Array<T>, public Common::Serializable {
+public:
+	void saveLoadWithSerializer(Common::Serializer &s) {
+		uint32 size = this->size();
+		s.syncAsUint32LE(size);
+
+		for (uint32 i = 0; i < size; i++)
+			this[i].saveLoadWithSerializer(s);
+	}
+
+	T *get(ID id) {
+		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++)
+			if (((BaseObject)*i).getID() == id)
+				return i;
+
+		error("[AssociativeArray::get] No object has this ID (%d)", id);
+	}
+
+	bool has(ID id) {
+		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++)
+			if (((BaseObject)*i).getID() == id)
+				return true;
+
+		return false;
+	}
+};
 
 } // End of namespace Ring
 
