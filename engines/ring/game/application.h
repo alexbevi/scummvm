@@ -71,7 +71,7 @@ public:
 	void onMouseLeftButtonDown(Common::Event &evt);
 	void onMouseRightButtonUp(Common::Event &evt);
 	void onKeyDown(Common::Event &evt);
-	void onTimer(TimerID id);
+	void onTimer(TimerId id);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Zone
@@ -183,7 +183,7 @@ private:
 
 	// Event handling
 	void onMouseLeftButtonUp(Common::Event &evt);
-	void onZoneTimer(TimerID id);
+	void onZoneTimer(TimerId id);
 
 	// Accessors
 	Common::String getLanguageName();

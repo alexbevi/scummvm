@@ -87,7 +87,7 @@ void Var::saveLoadWithSerializer(Common::Serializer &s) {
 }
 
 template<typename T>
-void Var::define(AssociativeArray<VarEntry<T>> *array, ID id, T value) {
+void Var::define(AssociativeArray<VarEntry<T>> *array, Id id, T value) {
 	if (array->has(id))
 		error("[Var::define] ID already exists (%d)", id);
 
@@ -95,7 +95,7 @@ void Var::define(AssociativeArray<VarEntry<T>> *array, ID id, T value) {
 }
 
 template<typename T>
-T Var::get(AssociativeArray<VarEntry<T>> *array, ID id) {
+T Var::get(AssociativeArray<VarEntry<T>> *array, Id id) {
 	if (!array->has(id))
 		error("[Var::define] ID doesn't exists (%d)", id);
 
@@ -103,7 +103,7 @@ T Var::get(AssociativeArray<VarEntry<T>> *array, ID id) {
 }
 
 template<typename T>
-void Var::set(AssociativeArray<VarEntry<T>> *array, ID id, T value) {
+void Var::set(AssociativeArray<VarEntry<T>> *array, Id id, T value) {
 	if (!array->has(id))
 		error("[Var::define] ID doesn't exists (%d)", id);
 

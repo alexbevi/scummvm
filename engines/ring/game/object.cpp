@@ -25,6 +25,9 @@
 
 #include "ring/game/object.h"
 
+#include "common/archive.h"
+#include "common/tokenizer.h"
+
 namespace Ring {
 
 //////////////////////////////////////////////////////////////////////////
@@ -36,24 +39,64 @@ Object::~Object() {
 
 //////////////////////////////////////////////////////////////////////////
 // ObjectInfo
-ObjectInfo::ObjectInfo(){}
+//////////////////////////////////////////////////////////////////////////
+ObjectInfo::ObjectInfo() : BaseObject(kObjectInvalid) {
+}
 
-ObjectInfo::~ObjectInfo() {
+ObjectInfo::ObjectInfo(ObjectId id, Common::String language, Common::String name) :
+	BaseObject(id), _language(language), _name(name) {
 }
 
 //////////////////////////////////////////////////////////////////////////
 // ObjectHandler
-ObjectHandler::ObjectHandler(){}
+//////////////////////////////////////////////////////////////////////////
+void ObjectHandler::addFromFile(Common::String filename, Common::String language) {
+	// Open a stream to the configuration file
+	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember(filename);
+	if (!archive)
+		error("[ObjectHandler::addFromFile] Error opening objects file (%s)", filename.c_str());
 
-ObjectHandler::~ObjectHandler() {
+	// Read each object info
+	ObjectId id = kObjectInvalid;
+	while (!archive->eos() && !archive->err()) {
+
+		Common::String line = archive->readLine();
+		if (archive->eos() || archive->err())
+			break;
+
+		// Check object id
+		if (sscanf(line.c_str(), "%d", &id) == 1)
+			continue;
+
+		// Check language
+		if (!line.matchString(language + "*", true))
+			continue;
+
+		// Get object name
+		Common::StringTokenizer tokenizer(line, "#");
+		if (tokenizer.empty())
+			error("[ObjectHandler::addFromFile] Invalid line format (missing # separators)");
+
+		Common::String lang = tokenizer.nextToken();
+		if (tokenizer.empty())
+			error("[ObjectHandler::addFromFile] Invalid line format (missing object name)");
+
+		_objects.push_back(ObjectInfo(id, language, tokenizer.nextToken()));
+	}
 }
 
-void ObjectHandler::init() {
-	error("[ObjectHandler::init] Not implemented");
+Common::String ObjectHandler::getLanguage(ObjectId id) {
+	if (!_objects.has(id))
+		return "";
+
+	return _objects.get(id)->getLanguage();
 }
 
-void ObjectHandler::addObjectsFromFile(Common::String filename) {
-	error("[ObjectHandler::addObjectsFromFile] Not implemented");
+Common::String ObjectHandler::getName(ObjectId id) {
+	if (!_objects.has(id))
+		return "";
+
+	return _objects.get(id)->getName();
 }
 
 } // End of namespace Ring

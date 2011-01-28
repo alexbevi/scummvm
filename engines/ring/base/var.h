@@ -34,7 +34,7 @@ template<class T>
 class VarEntry : public BaseObject, Common::Serializable {
 public:
 	VarEntry() : BaseObject(0) {}
-	VarEntry(ID id, T value) : BaseObject(id), _value(value) {}
+	VarEntry(Id id, T value) : BaseObject(id), _value(value) {}
 
 	void set(T value) { _value = value; }
 	T get() { return _value; }
@@ -47,9 +47,9 @@ private:
 };
 
 #define DEFINE_FUNCTIONS(name, type, storage) \
-	void define##name(ID id, type value) { define(&storage, id, value); } \
-	type get##name(ID id) { return get(&storage, id); } \
-	void set##name(ID id, type value) { set(&storage, id, value); }
+	void define##name(Id id, type value) { define(&storage, id, value); } \
+	type get##name(Id id) { return get(&storage, id); } \
+	void set##name(Id id, type value) { set(&storage, id, value); }
 
 class Var : Common::Serializable {
 public:
@@ -76,13 +76,13 @@ private:
 	AssociativeArray<VarEntry<double>>         _floats;
 
 	template<typename T>
-	void define(AssociativeArray<VarEntry<T>> *array, ID id, T value);
+	void define(AssociativeArray<VarEntry<T>> *array, Id id, T value);
 
 	template<typename T>
-	T get(AssociativeArray<VarEntry<T>> *array, ID id);
+	T get(AssociativeArray<VarEntry<T>> *array, Id id);
 
 	template<typename T>
-	void set(AssociativeArray<VarEntry<T>> *array, ID id, T value);
+	void set(AssociativeArray<VarEntry<T>> *array, Id id, T value);
 };
 
 } // End of namespace Ring

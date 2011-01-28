@@ -44,7 +44,7 @@ public:
 	TimerHandler();
 	~TimerHandler();
 
-	void incrementFiredCount(TimerID id) { ++_fired; }
+	void incrementFiredCount(TimerId id) { ++_fired; }
 
 private:
 	uint32 _fired;

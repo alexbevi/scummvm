@@ -111,8 +111,7 @@ void Application::init() {
 
 	// Setup objects
 	_objectHandler = new ObjectHandler();
-	_objectHandler->init();
-	_objectHandler->addObjectsFromFile("aObj.ini");
+	_objectHandler->addFromFile("aObj.ini", getLanguageName());
 
 	// Setup art
 	if (_configuration.artBAG || _configuration.artCURSOR || _configuration.artSY)
@@ -361,7 +360,7 @@ void Application::onKeyDown(Common::Event &evt) {
 	error("[Application::onKeyDown] Not implemented");
 }
 
-void Application::onTimer(TimerID id) {
+void Application::onTimer(TimerId id) {
 	if (_field_6A)
 		return;
 
@@ -371,7 +370,7 @@ void Application::onTimer(TimerID id) {
 		_timerHandler->incrementFiredCount(id);
 }
 
-void Application::onZoneTimer(TimerID id) {
+void Application::onZoneTimer(TimerId id) {
 	error("[Application::onZoneTimer] Not implemented");
 }
 

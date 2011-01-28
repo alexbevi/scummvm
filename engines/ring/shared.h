@@ -67,23 +67,123 @@ enum LanguageId {
 	kLanguageSlovak  = 10
 };
 
-enum TimerID {
+enum TimerId {
 	kTimerInvalid = 0
+};
+
+enum ObjectId {
+	kObjectInvalid               = -1,
+	kObjectBrutality             = 10000,
+	kObjectGlug                  = 10001,
+	kObjectMinerals              = 10002,
+	kObjectMagicFrog             = 10302,
+	kObjectTile                  = 10303,
+	kObjectGold                  = 10304,
+	kObjectLogeTear              = 10305,
+	kObjectDivingHelmet          = 10503,
+	kObjectDivingHelmet2         = 10504,
+	kObjectAntiGCells            = 10505,
+	kObjectKeyIndifference       = 20004,
+	kObjectKeyMistrust           = 20005,
+	kObjectKeySelfishness        = 20006,
+	kObjectKeyDisgust            = 20007,
+	kObjectRedfish               = 20201,
+	kObjectDolphin               = 20202,
+	kObjectMedallion             = 20203,
+	kObjectAntiGCells2           = 20403,
+	kObjectPatience              = 30009,
+	kObjectMovementAndIntuition  = 30010,
+	kObjectLove                  = 30011,
+	kObjectImagination           = 30012,
+	kObjectDestruction           = 30013,
+	kObjectJudgementAndDirection = 30014,
+	kObjectWill                  = 30015,
+	kObjectBerries               = 30017,
+	kObjectSleepingBerries       = 30018,
+	kObjectWolfInstinct          = 30019,
+	kObjectHare                  = 30020,
+	kObjectIngot                 = 30021,
+	kObjectIngot2                = 30022,
+	kObjectIngot3                = 30023,
+	kObjectSleepingPotion        = 30025,
+	kObjectBow                   = 30026,
+	kObjectMould                 = 30029,
+	kObjectLogeTear2             = 30030,
+	kObjectBerriesJuice          = 30031,
+	kObjectSleepingPotion2       = 30032,
+	kObjectMeltedGold            = 30033,
+	kObjectMeltedSilver          = 30034,
+	kObjectMeltedCopper          = 30035,
+	kObjectMeltedLead            = 30036,
+	kObjectMeltedSteel           = 30037,
+	kObjectMeltedTin             = 30038,
+	kObjectQuicksilver           = 30039,
+	kObjectMetals                = 30041,
+	kObjectGolem                 = 30043,
+	kObjectFishingRod            = 30046,
+	kObjectFishingRodWithWorms   = 30047,
+	kObjectFish                  = 30048,
+	kObjectWorms                 = 30049,
+	kObjectBurningArrow          = 30053,
+	kObjectKey                   = 30054,
+	kObjectWolfBadge             = 30055,
+	kObjectWolfBrooch            = 30056,
+	kObjectNotung                = 30058,
+	kObjectRing                  = 40012,
+	kObjectCrown                 = 40013,
+	kObjectMagicLance            = 50000,
+	kObjectInk                   = 50101,
+	kObjectPaper                 = 50102,
+	kObjectStylet                = 50103,
+	kObjectInkedStylet           = 50104,
+	kObjectCounch                = 50200,
+	kObjectDeadLeaf              = 50201,
+	kObjectRopes                 = 50202,
+	kObjectCloud                 = 50203,
+	kObjectPhoenix               = 50300,
+	kObjectCounch1               = 50301,
+	kObjectBark                  = 50302,
+	kObjectGolem1                = 50400,
+	kObjectFeather               = 50401,
+	kObjectFlower                = 50402,
+	kObjectFronthead             = 50431,
+	kObjectBackhead              = 50432,
+	kObjectBelly                 = 50433,
+	kObjectRightArm              = 50434,
+	kObjectLeftArm               = 50435,
+	kObjectLegs                  = 50436,
+	kObjectHeart                 = 50437,
+	kObjectMagnet                = 50499,
+	kObjectTree                  = 50500,
+	kObjectDragonSword           = 50501,
+	kObjectApple                 = 50502,
+	kObjectTotems                = 50503,
+	kObjectThread                = 50504,
+	kObjectFire                  = 70000,
+	kObjectMagicFrog2            = 70302,
+	kObjectCage                  = 70303,
+	kObjectLogeTear3             = 70304,
+	kObjectCentaur               = 70500,
+	kObjectDragon                = 70501,
+	kObjectPhoenix1              = 70502,
+	kObjectChrysoberyl           = 70503,
+	kObjectDeath                 = 80020,
+	kObjectFirePower             = 40000
 };
 
 //////////////////////////////////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////////////////////////////////
-typedef uint32 ID;
+typedef int32 Id;
 
 class BaseObject {
 public:
-	BaseObject(ID id) : _id(id) {}
+	BaseObject(Id id) : _id(id) {}
 
-	ID getID() { return _id; }
+	Id getID() { return _id; }
 
 protected:
-	ID _id;
+	Id _id;
 };
 
 template<class T>
@@ -97,7 +197,7 @@ public:
 			this[i].saveLoadWithSerializer(s);
 	}
 
-	T *get(ID id) {
+	T *get(Id id) {
 		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++)
 			if (((BaseObject)*i).getID() == id)
 				return i;
@@ -105,7 +205,7 @@ public:
 		error("[AssociativeArray::get] No object has this ID (%d)", id);
 	}
 
-	bool has(ID id) {
+	bool has(Id id) {
 		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++)
 			if (((BaseObject)*i).getID() == id)
 				return true;

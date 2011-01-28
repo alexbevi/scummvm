@@ -30,6 +30,8 @@
 
 namespace Ring {
 
+class Application;
+
 class Object {
 public:
 	Object();
@@ -39,25 +41,36 @@ private:
 
 };
 
-class ObjectInfo {
+class ObjectInfo : public BaseObject {
 public:
 	ObjectInfo();
-	~ObjectInfo();
+	ObjectInfo(ObjectId id, Common::String language, Common::String name);
+	~ObjectInfo() {}
+
+	// Accessors
+	Common::String getLanguage() { return _language; }
+	Common::String getName() { return _name; }
 
 private:
-
+	Common::String _language;
+	Common::String _name;
 };
 
 class ObjectHandler {
 public:
-	ObjectHandler();
-	~ObjectHandler();
+	ObjectHandler() {}
+	~ObjectHandler() {}
 
-	void init();
-	void addObjectsFromFile(Common::String filename);
+	void addFromFile(Common::String filename, Common::String language);
+
+	// Accessors
+	Common::String getLanguage(ObjectId id);
+	Common::String getName(ObjectId id);
 
 private:
+	Application *_application;
 
+	AssociativeArray<ObjectInfo> _objects;
 };
 
 } // End of namespace Ring
