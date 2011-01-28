@@ -83,26 +83,157 @@ Application::~Application() {
 
 //////////////////////////////////////////////////////////////////////////
 // Initialization
+//////////////////////////////////////////////////////////////////////////
 void Application::init() {
-	error("[Application:init] Not implemented");
+
+	// Setup available languages
+	_languageHandler = new LanguageHandler();
+	_languageHandler->add(kLanguageEnglish, "ENG", "ENG", 1);
+	_languageHandler->add(kLanguageFrench,  "FRA", "FRA", 2);
+	_languageHandler->add(kLanguageGerman,  "GER", "GER", 3);
+	_languageHandler->add(kLanguageItalian, "ITA", "ITA", 1);
+	_languageHandler->add(kLanguageSpanish, "SPA", "SPA", 2);
+	_languageHandler->add(kLanguageSwedish, "SWE", "SWE", 1);
+	_languageHandler->add(kLanguageDutch,   "HOL", "HOL", 3);
+	_languageHandler->add(kLanguageHebrew,  "HEB", "HEB", 1);
+	_languageHandler->add(9, "GRE", "GRE", 1);
+	_languageHandler->add(10, "SLO", "SLO", 1);
+
+	loadConfiguration();
+
+	// Setup video
+	_video = new Video();
+	_video->init(); // TODO probably not needed as we initialize graphics at engine start
+	_video->sub_4028D0(0, 0);
+
+	// Setup objects
+	_objectHandler = new ObjectHandler();
+	_objectHandler->init();
+	_objectHandler->addObjectsFromFile("aObj.ini");
+
+	// Setup art
+	if (_configuration.artBAG || _configuration.artCURSOR || _configuration.artSY)
+		_field_58 = 102;
+
+	if (_field_58 == 102) {
+		_artHandler = new ArtHandler();
+		_artHandler->init();
+		_artHandler->open(kZoneSY, kLoadFromDisk);
+	}
+
+	_field_58 = 101;
+
+	// Setup fonts
+	_fontHandler = new FontHandler();
+	_fontHandler->addResource("arxrin.fon");
+
+	switch (getLanguage()) {
+	default:
+		_fontHandler->add(1, "ARX Pilgrim L", 12, 1, 2, 2, 2);
+		break;
+
+	case kLanguageHebrew:
+		_fontHandler->add(1, "ArxelHebrew", 12, 1, 2, 2, 2);
+		break;
+
+	case kLanguageGreek:
+		// FIXME replace by proper GUI font
+		_fontHandler->add(1, "Arial", 16, 1, 2, 2, 2);
+		break;
+	}
+
+	// Setup dialogs
+	_dialogHandler = new DialogHandler();
+	_dialogHandler->init(1, 200, 200, 30, 0, 0, 0, 461, 3);
+
+	// Setup cursors
+	_cursorHandler = new CursorHandler();
+
+	// Setup sound
+	_soundHandler = new SoundHandler();
+	_soundHandler->init();
+
+	// Setup data
+	_field_70 = 0;
+	_field_74 = 1;
+	_field_75 = 1;
+	_field_76 = 1;
+	_field_77 = 1;
+	_field_78 = 1;
+	_field_5D = 1;
+	_field_54 = 1;
+	_field_58 = 101;
+	_field_6F = 0;
+
+	_field_89 = NULL;
+
+	// Setup bag
+	if (_configuration.artBAG)
+		_field_58 = 102;
+
+	_bag= new Bag();
+	_bag->init();
+	_bag->sub_417D20(0, 0);
+	_bag->sub_417D40(18, 42, 44, 100);
+	_bag->sub_417D60(0, 0);
+	_bag->sub_417DD0(6);
+	_bag->sub_417D80(0, 24, 30, 448);
+	_bag->sub_417DA0(610, 24, 30, 448);
+	_bag->sub_4192A0(7, 48);
+	_bag->sub_4192C0(627, 48);
+	_bag->sub_417DE0(335, 8);
+	_bag->sub_419280(500);
+	_bag->loadBackground("bagbgr.tga", "", "bagarr.tga", "", "", "bagarr.tga", "", "menu_gur.tga", _field_58);
+	_bag->sub_4178C0();
+
+	_field_58 = 101;
+
+	// Setup timer
+	_timerHandler = new TimerHandler();
+
+	// Setup var
+	_var = new Var();
+
+	// Setup dragControl
+	_dragControl = new DragControl();
+	_dragControl->init();
+
+	// Setup preferences
+	_preferenceHandler = new PreferenceHandler();
+	_preferenceHandler->load();
+}
+
+void Application::loadConfiguration() {
+	error("[Application::loadConfiguration] Not implemented");
 }
 
 void Application::setupCursors() {
-	error("[Application:setupCursors] Not implemented");
+	error("[Application::setupCursors] Not implemented");
 }
 
 void Application::setupZones() {
-	error("[Application:setupZones] Not implemented");
+	error("[Application::setupZones] Not implemented");
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Startup
+//////////////////////////////////////////////////////////////////////////
 void Application::showStartupScreen() {
-	error("[Application:showStartupScreen] Not implemented");
+	error("[Application::showStartupScreen] Not implemented");
 }
 
 void Application::startMenu() {
-	error("[Application:startMenu] Not implemented");
+	error("[Application::startMenu] Not implemented");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Accessors
+//////////////////////////////////////////////////////////////////////////
+LanguageId Application::getLanguage() {
+	if (!_languageHandler)
+		error("[Application::getLanguage] languageHandler not initialized properly");
+
+	return _languageHandler->getLanguage();
 }
 
 } // End of namespace Ring

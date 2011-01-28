@@ -25,12 +25,22 @@
 
 #include "ring/graphics/video.h"
 
+#include "common/system.h"
+
 namespace Ring {
 
 Video::Video() {
 }
 
 Video::~Video() {
+}
+
+void Video::init() {
+	error("[Video::init] Not implemented");
+}
+
+void Video::sub_4028D0(int a1, int a2) {
+	error("[Video::sub_4028D0] Not implemented");
 }
 
 } // End of namespace Ring

@@ -33,6 +33,9 @@ public:
 	Video();
 	~Video();
 
+	void init();
+	void sub_4028D0(int a1, int a2);
+
 private:
 
 };

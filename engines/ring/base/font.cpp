@@ -33,4 +33,12 @@ FontHandler::FontHandler() {
 FontHandler::~FontHandler() {
 }
 
+void FontHandler::add(int32 a1, Common::String fontName, int32 a3, int32 a4, int32 a5, int32 a6, int32 a7) {
+	error("[FontHandler::add] Not implemented");
+}
+
+void FontHandler::addResource(Common::String filename) {
+	error("[FontHandler::addResource] Not implemented");
+}
+
 } // End of namespace Ring

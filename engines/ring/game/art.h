@@ -35,6 +35,9 @@ public:
 	ArtHandler();
 	~ArtHandler();
 
+	void init();
+	void open(Zone zone, LoadFrom loadFrom);
+
 private:
 
 };

@@ -26,6 +26,8 @@
 #ifndef RING_LANGUAGE_H
 #define RING_LANGUAGE_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class LanguageHandler {
@@ -33,7 +35,13 @@ public:
 	LanguageHandler();
 	~LanguageHandler();
 
+	void add(ID id, Common::String name, Common::String folder, uint channel);
+
+	// Accessors
+	LanguageId getLanguage() { return _language; }
+
 private:
+	LanguageId _language;
 
 };
 

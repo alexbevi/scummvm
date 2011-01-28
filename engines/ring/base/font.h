@@ -26,12 +26,17 @@
 #ifndef RING_FONT_H
 #define RING_FONT_H
 
+#include "common/system.h"
+
 namespace Ring {
 
 class FontHandler {
 public:
 	FontHandler();
 	~FontHandler();
+
+	void add(int32 a1, Common::String fontName, int32 a3, int32 a4, int32 a5, int32 a6, int32 a7);
+	void addResource(Common::String filename);
 
 private:
 

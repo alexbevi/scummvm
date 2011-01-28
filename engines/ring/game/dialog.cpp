@@ -32,4 +32,8 @@ DialogHandler::DialogHandler(){}
 DialogHandler::~DialogHandler() {
 }
 
+void DialogHandler::init(int32 a1, int32 a2, int32 a3, int32 a4, int32 a5, int32 a6, int32 a7, int32 a8, int32 a9) {
+	error("[DialogHandler::init] Not implemented");
+}
+
 } // End of namespace Ring

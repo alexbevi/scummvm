@@ -26,12 +26,28 @@
 #ifndef RING_BAG_H
 #define RING_BAG_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class Bag {
 public:
 	Bag();
 	~Bag();
+
+	void init();
+	void sub_417D20(int32 a1, int32 a2);
+	void sub_417D40(int32 a1, int32 a2, int32 a3, int32 a4);
+	void sub_417D60(int32 a1, int32 a2);
+	void sub_417DD0(int32 a1);
+	void sub_417D80(int32 a1, int32 a2, int32 a3, int32 a4);
+	void sub_417DA0(int32 a1, int32 a2, int32 a3, int32 a4);
+	void sub_4192A0(int32 a1, int32 a2);
+	void sub_4192C0(int32 a1, int32 a2);
+	void sub_417DE0(int32 a1, int32 a2);
+	void sub_419280(int32 a1);
+	void loadBackground(Common::String str1, Common::String str2, Common::String str3, Common::String str4, Common::String str5, Common::String str6, Common::String str7, Common::String str8, int a9);
+	void sub_4178C0();
 
 private:
 

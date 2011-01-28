@@ -26,6 +26,8 @@
 #ifndef RING_OBJECT_H
 #define RING_OBJECT_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class Object {
@@ -50,6 +52,9 @@ class ObjectHandler {
 public:
 	ObjectHandler();
 	~ObjectHandler();
+
+	void init();
+	void addObjectsFromFile(Common::String filename);
 
 private:
 

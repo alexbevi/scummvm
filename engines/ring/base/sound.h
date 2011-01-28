@@ -26,12 +26,16 @@
 #ifndef RING_SOUND_H
 #define RING_SOUND_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class SoundHandler {
 public:
 	SoundHandler();
 	~SoundHandler();
+
+	void init();
 
 private:
 

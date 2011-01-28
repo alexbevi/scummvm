@@ -53,6 +53,20 @@ enum Zone {
 	kZoneN2      = 8
 };
 
+enum LanguageId {
+	kLanguageInvalid = 0,
+	kLanguageEnglish = 1,
+	kLanguageFrench  = 2,
+	kLanguageGerman  = 3,
+	kLanguageItalian = 4,
+	kLanguageSpanish = 5,
+	kLanguageSwedish = 6,
+	kLanguageDutch   = 7,
+	kLanguageHebrew  = 8,
+	kLanguageGreek   = 9,
+	kLanguageSlovak  = 10
+};
+
 //////////////////////////////////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////////////////////////////////
@@ -61,7 +75,6 @@ typedef uint32 ID;
 class BaseObject {
 public:
 	BaseObject(ID id) : _id(id) {}
-	virtual ~BaseObject();
 
 	ID getID() { return _id; }
 

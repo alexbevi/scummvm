@@ -26,12 +26,16 @@
 #ifndef RING_PREFERENCES_H
 #define RING_PREFERENCES_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class PreferenceHandler {
 public:
 	PreferenceHandler();
 	~PreferenceHandler();
+
+	void load();
 
 private:
 

@@ -33,4 +33,9 @@ SoundHandler::SoundHandler() {
 SoundHandler::~SoundHandler() {
 }
 
+void SoundHandler::init() {
+	error("[SoundHandler::init] Not implemented");
+}
+
+
 } // End of namespace Ring

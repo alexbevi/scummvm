@@ -48,4 +48,12 @@ ObjectHandler::ObjectHandler(){}
 ObjectHandler::~ObjectHandler() {
 }
 
+void ObjectHandler::init() {
+	error("[ObjectHandler::init] Not implemented");
+}
+
+void ObjectHandler::addObjectsFromFile(Common::String filename) {
+	error("[ObjectHandler::addObjectsFromFile] Not implemented");
+}
+
 } // End of namespace Ring

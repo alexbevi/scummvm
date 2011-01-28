@@ -33,4 +33,8 @@ PreferenceHandler::PreferenceHandler() {
 PreferenceHandler::~PreferenceHandler() {
 }
 
+void PreferenceHandler::load() {
+	error("[PreferenceHandler::load] Not implemented");
+}
+
 } // End of namespace Ring

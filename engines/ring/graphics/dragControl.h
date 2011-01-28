@@ -26,12 +26,16 @@
 #ifndef RING_DRAGCONTROL_H
 #define RING_DRAGCONTROL_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class DragControl {
 public:
 	DragControl();
 	~DragControl();
+
+	void init();
 
 private:
 

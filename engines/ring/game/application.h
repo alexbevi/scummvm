@@ -63,6 +63,10 @@ public:
 	void showStartupScreen();
 	void startMenu();
 
+	//////////////////////////////////////////////////////////////////////////
+	// Accessors
+	LanguageId getLanguage();
+
 private:
 	RingEngine *_vm;
 
@@ -153,6 +157,7 @@ private:
 	PreferenceHandler          *_preferenceHandler;
 	char                        _field_A5;
 
+	void loadConfiguration();
 };
 
 } // End of namespace Ring

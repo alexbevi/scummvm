@@ -32,4 +32,12 @@ ArtHandler::ArtHandler() {}
 ArtHandler::~ArtHandler() {
 }
 
+void ArtHandler::init() {
+	error("[ArtHandler::init] Not implemented");
+}
+
+void ArtHandler::open(Zone zone, LoadFrom loadFrom) {
+	error("[ArtHandler::open] Not implemented");
+}
+
 } // End of namespace Ring

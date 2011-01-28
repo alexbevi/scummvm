@@ -33,4 +33,9 @@ DragControl::DragControl() {
 DragControl::~DragControl() {
 }
 
+void DragControl::init() {
+	error("[DragControl::init] Not implemented");
+}
+
+
 } // End of namespace Ring

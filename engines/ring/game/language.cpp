@@ -27,10 +27,14 @@
 
 namespace Ring {
 
-LanguageHandler::LanguageHandler() {
+LanguageHandler::LanguageHandler() : _language(kLanguageInvalid) {
 }
 
 LanguageHandler::~LanguageHandler() {
+}
+
+void LanguageHandler::add(ID id, Common::String name, Common::String folder, uint channel) {
+	error("[LanguageHandler::add] Not implemented");
 }
 
 } // End of namespace Ring
