@@ -25,6 +25,8 @@
 
 #include "ring/ring.h"
 
+#include "ring/game/application.h"
+
 #include "common/config-manager.h"
 #include "common/debug-channels.h"
 #include "common/EventRecorder.h"
@@ -34,12 +36,12 @@
 namespace Ring {
 
 RingEngine::RingEngine(OSystem *syst, const RingGameDescription *gd) :
-	Engine(syst), _gameDescription(gd), _debugger(NULL) {
+	Engine(syst), _gameDescription(gd), _debugger(NULL), _application(NULL) {
 
 	// Adding the default directories
 	const Common::FSNode gameDataDir(ConfMan.get("path"));
-	SearchMan.addSubDirectoryMatching(gameDataDir, "data");
-	
+	SearchMan.addSubDirectoryMatching(gameDataDir, "DATA");
+
 	// Initialize the custom debug levels
 	DebugMan.addDebugChannel(kRingDebugAll, "All", "Debug everything");
 	DebugMan.addDebugChannel(kRingDebugGraphics, "Graphics", "Debug graphics & video playback");
@@ -53,6 +55,9 @@ RingEngine::RingEngine(OSystem *syst, const RingGameDescription *gd) :
 }
 
 RingEngine::~RingEngine() {
+	// Delete application
+	delete _application;
+
 	// Delete the remaining objects
 	delete _debugger;
 
@@ -71,6 +76,18 @@ Common::Error RingEngine::run() {
 
 	// Create debugger. It requires GFX to be initialized
 	_debugger = new Debugger(this);
+
+	// Create application
+	_application = new Application(this);
+
+	// Init application
+	_application->init();
+	_application->setupCursors();
+	_application->setupZones();
+
+	// Start application
+	_application->showStartupScreen();
+	_application->startMenu();
 
 	while (!shouldQuit()) {
 		// Show the debugger if required
@@ -118,9 +135,8 @@ Common::Error RingEngine::run() {
 
 		// The event loop may have triggered the quit status. In this case,
 		// stop the execution.
-		if (shouldQuit()) {
+		if (shouldQuit())
 			continue;
-		}
 	}
 
 	return Common::kNoError;

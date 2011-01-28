@@ -68,6 +68,7 @@ enum {
 	LANG_SWE = 1 << 9
 };
 
+class Application;
 class Debugger;
 
 class RingEngine : public Engine {
@@ -92,6 +93,9 @@ private:
 	// Misc
 	Debugger *_debugger;
 	Common::RandomSource _random;
+
+	// Game
+	Application *_application;
 };
 
 } // End of namespace Ring

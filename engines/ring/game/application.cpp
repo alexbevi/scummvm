@@ -25,11 +25,37 @@
 
 #include "ring/game/application.h"
 
+#include "ring/ring.h"
+
 namespace Ring {
 
-Application::Application(){}
+Application::Application(RingEngine *engine) : _vm(engine) {}
 
 Application::~Application() {
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Initialization
+void Application::init() {
+	error("[Application:init] Not implemented");
+}
+
+void Application::setupCursors() {
+	error("[Application:setupCursors] Not implemented");
+}
+
+void Application::setupZones() {
+	error("[Application:setupZones] Not implemented");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Startup
+void Application::showStartupScreen() {
+	error("[Application:showStartupScreen] Not implemented");
+}
+
+void Application::startMenu() {
+	error("[Application:startMenu] Not implemented");
 }
 
 } // End of namespace Ring

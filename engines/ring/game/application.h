@@ -28,13 +28,24 @@
 
 namespace Ring {
 
+class RingEngine;
+
 class Application {
 public:
-	Application();
+	Application(RingEngine *engine);
 	~Application();
 
-private:
+	// Initialization
+	void init();
+	void setupCursors();
+	void setupZones();
 
+	// Startup
+	void showStartupScreen();
+	void startMenu();
+
+private:
+	RingEngine *_vm;
 };
 
 } // End of namespace Ring
