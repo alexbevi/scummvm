@@ -36,11 +36,11 @@ Video::~Video() {
 }
 
 void Video::init() {
-	error("[Video::init] Not implemented");
+	warning("[Video::init] Not implemented");
 }
 
 void Video::sub_4028D0(int a1, int a2) {
-	error("[Video::sub_4028D0] Not implemented");
+	warning("[Video::sub_4028D0] Not implemented");
 }
 
 } // End of namespace Ring

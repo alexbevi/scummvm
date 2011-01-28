@@ -87,7 +87,7 @@ public:
 	Zone getZone() { return _zone; }
 	Common::String getZoneName() { return _zoneName; }
 	LanguageId getLanguage();
-
+	
 private:
 	RingEngine *_vm;
 
@@ -184,6 +184,10 @@ private:
 	// Event handling
 	void onMouseLeftButtonUp(Common::Event &evt);
 	void onZoneTimer(TimerID id);
+
+	// Accessors
+	Common::String getLanguageName();
+	uint32 getLanguageChannel();
 };
 
 } // End of namespace Ring

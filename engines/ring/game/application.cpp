@@ -96,8 +96,8 @@ void Application::init() {
 	_languageHandler->add(kLanguageSwedish, "SWE", "SWE", 1);
 	_languageHandler->add(kLanguageDutch,   "HOL", "HOL", 3);
 	_languageHandler->add(kLanguageHebrew,  "HEB", "HEB", 1);
-	_languageHandler->add(kLanguageGreek, "GRE", "GRE", 1);
-	_languageHandler->add(kLanguageSlovak, "SLO", "SLO", 1);
+	_languageHandler->add(kLanguageGreek,   "GRE", "GRE", 1);
+	_languageHandler->add(kLanguageSlovak,  "SLO", "SLO", 1);
 
 	_field_5E = 0;
 
@@ -207,7 +207,114 @@ void Application::init() {
 }
 
 void Application::loadConfiguration() {
-	error("[Application::loadConfiguration] Not implemented");
+	// Open a stream to the configuration file
+	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember("fl.ini");
+	if (!archive)
+		error("[Application::loadConfiguration] Error opening configuration file (fl.ini)");
+
+	// Read the number of lines
+	Common::String firstLine = archive->readLine();
+	if (archive->eos() || archive->err())
+		error("[Application::loadConfiguration] Error reading file (eos or read error on first line)");
+
+	int32 numLines = 0;
+	if (sscanf(firstLine.c_str(), "%d", &numLines) != 1)
+		error("[Application::loadConfiguration] Error reading number of lines");
+
+	if (numLines > 0) {
+		for (int32 i = 0; i < numLines; i++) {
+			Common::String line = archive->readLine();
+			char token[255];
+			char val[255];
+
+			// Check for errors and end-of-file
+			if (archive->eos() || archive->err())
+				error("[Application::loadConfiguration] Error reading file (eos or read error)");
+
+			// Get token and value
+			if (sscanf(line.c_str(), "%s %s", &token, &val) != 2)
+				error("[Application::loadConfiguration] Error parsing configuration line (%d)", i + 2);
+
+			// Handle tokens
+			if (Common::String(token) == "CDPATH:") {
+
+				// TODO: Show a proper message box to explain that we need a full DVD copy and not an existing installation
+				if (Common::String(val) != "CDROM")
+					error("[Application::loadConfiguration] Disk installation detected! We need full DVD copy of the game");
+
+				_configuration.runningFromDisk = false;
+			}
+
+			if (Common::String(token) == "LANGUAGE:")
+				_languageHandler->setActiveLanguage(val);
+
+			if (Common::String(token) == "CHECKCD:")
+				_configuration.checkCD = atoi((char *)&val);
+
+			if (Common::String(token) == "SOUNDCHUNCK_BGRMUS:")
+				_configuration.backgroundMusic.soundChunck = atoi((char *)&val);
+
+			if (Common::String(token) == "LOADFROM_BGRMUS:")
+				_configuration.backgroundMusic.loadFrom = (LoadFrom)atoi((char *)&val);
+
+			if (Common::String(token) == "SOUNDCHUNCK_AMBMUS:")
+				_configuration.ambiantMusic.soundChunck = atoi((char *)&val);
+
+			if (Common::String(token) == "LOADFROM_AMBMUS:")
+				_configuration.ambiantMusic.loadFrom = (LoadFrom)atoi((char *)&val);
+
+			if (Common::String(token) == "SOUNDCHUNCK_AMBEFE:")
+				_configuration.ambiantEffect.soundChunck = atoi((char *)&val);
+
+			if (Common::String(token) == "LOADFROM_AMBEFE:")
+				_configuration.ambiantEffect.loadFrom = (LoadFrom)atoi((char *)&val);
+
+			if (Common::String(token) == "SOUNDCHUNCK_EFE:")
+				_configuration.effect.soundChunck = atoi((char *)&val);
+
+			if (Common::String(token) == "LOADFROM_EFE:")
+				_configuration.effect.loadFrom = (LoadFrom)atoi((char *)&val);
+
+			if (Common::String(token) == "SOUNDCHUNCK_DIA:")
+				_configuration.dialog.soundChunck = atoi((char *)&val);
+
+			if (Common::String(token) == "LOADFROM_DIA")
+				_configuration.dialog.loadFrom = (LoadFrom)atoi((char *)&val);
+
+			if (Common::String(token) == "ART_BAG:")
+				_configuration.artBAG = atoi((char *)&val);
+
+			if (Common::String(token) == "ART_CURSOR:")
+				_configuration.artCURSOR = atoi((char *)&val);
+
+			if (Common::String(token) == "ART_SY:")
+				_configuration.artSY = atoi((char *)&val);
+
+			if (Common::String(token) == "ART_AS:")
+				_configuration.artAS = atoi((char *)&val);
+
+			if (Common::String(token) == "ART_NI:")
+				_configuration.artNI = atoi((char *)&val);
+
+			if (Common::String(token) == "ART_N2:")
+				_configuration.artN2 = atoi((char *)&val);
+
+			if (Common::String(token) == "ART_RO:")
+				_configuration.artRO = atoi((char *)&val);
+
+			if (Common::String(token) == "ART_RH:")
+				_configuration.artRH = atoi((char *)&val);
+
+			if (Common::String(token) == "ART_WA:")
+				_configuration.artWA = atoi((char *)&val);
+
+			if (Common::String(token) == "ART_FO:")
+				_configuration.artFO = atoi((char *)&val);
+
+			if (Common::String(token) == "CHECKLOADSAVE:")
+				_configuration.checkLoadSave = atoi((char *)&val);
+		}
+	}
 }
 
 void Application::setupCursors() {
@@ -378,5 +485,18 @@ LanguageId Application::getLanguage() {
 
 	return _languageHandler->getLanguage();
 }
+
+Common::String Application::getLanguageName() {
+	LanguageId id = getLanguage();
+
+	return _languageHandler->getFolder(id);
+}
+
+uint32 Application::getLanguageChannel() {
+	LanguageId id = getLanguage();
+
+	return _languageHandler->getChannel(id);
+}
+
 
 } // End of namespace Ring
