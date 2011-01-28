@@ -26,6 +26,8 @@
 #ifndef RING_TIMER_H
 #define RING_TIMER_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class Timer {
@@ -42,8 +44,10 @@ public:
 	TimerHandler();
 	~TimerHandler();
 
-private:
+	void incrementFiredCount(TimerID id) { ++_fired; }
 
+private:
+	uint32 _fired;
 };
 
 } // End of namespace Ring

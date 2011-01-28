@@ -37,7 +37,7 @@ Timer::~Timer() {
 
 //////////////////////////////////////////////////////////////////////////
 // TimerHandler
-TimerHandler::TimerHandler() {
+TimerHandler::TimerHandler() : _fired(0) {
 }
 
 TimerHandler::~TimerHandler() {

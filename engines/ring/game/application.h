@@ -66,6 +66,14 @@ public:
 	void startMenu();
 
 	//////////////////////////////////////////////////////////////////////////
+	// Event handling
+	void onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed);
+	void onMouseLeftButtonDown(Common::Event &evt);
+	void onMouseRightButtonUp(Common::Event &evt);
+	void onKeyDown(Common::Event &evt);
+	void onTimer(TimerID id);
+
+	//////////////////////////////////////////////////////////////////////////
 	// Zone
 	Common::String getZone(Zone zone);
 	Common::String getZoneName(Zone zone);
@@ -77,6 +85,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
 	Zone getZone() { return _zone; }
+	Common::String getZoneName() { return _zoneName; }
 	LanguageId getLanguage();
 
 private:
@@ -167,9 +176,14 @@ private:
 	DragControl                *_dragControl;
 	ObjectHandler              *_objectHandler;
 	PreferenceHandler          *_preferenceHandler;
-	char                        _field_A5;
+	bool                        _controlNotPressed;
 
+	// Configuration
 	void loadConfiguration();
+
+	// Event handling
+	void onMouseLeftButtonUp(Common::Event &evt);
+	void onZoneTimer(TimerID id);
 };
 
 } // End of namespace Ring

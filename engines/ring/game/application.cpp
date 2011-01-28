@@ -54,7 +54,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_field_5E(0), _field_58(101), _field_66(0), _field_6A(0), _zone(kZoneInvalid),
 	_field_6F(0), _field_70(0), _puzzle(NULL), _field_89(NULL), _bag(NULL),
 	_timerHandler(NULL), _var(NULL), _dragControl(NULL), _objectHandler(NULL), _preferenceHandler(NULL),
-	_field_A5(0) {
+	_controlNotPressed(false) {
 }
 
 Application::~Application() {
@@ -99,6 +99,9 @@ void Application::init() {
 	_languageHandler->add(9, "GRE", "GRE", 1);
 	_languageHandler->add(10, "SLO", "SLO", 1);
 
+	_field_5E = 0;
+
+	// Load configuration
 	loadConfiguration();
 
 	// Setup video
@@ -224,6 +227,45 @@ void Application::showStartupScreen() {
 
 void Application::startMenu() {
 	error("[Application::startMenu] Not implemented");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Event handling
+//////////////////////////////////////////////////////////////////////////
+void Application::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
+	_controlNotPressed = !isControlPressed;
+
+	onMouseLeftButtonUp(evt);
+}
+
+void Application::onMouseLeftButtonUp(Common::Event &evt) {
+	error("[Application::onMouseLeftButtonUp] Not implemented");
+}
+
+void Application::onMouseLeftButtonDown(Common::Event &evt) {
+	error("[Application::onMouseLeftButtonDown] Not implemented");
+}
+
+void Application::onMouseRightButtonUp(Common::Event &evt) {
+	error("[Application::onMouseRightButtonUp] Not implemented");
+}
+
+void Application::onKeyDown(Common::Event &evt) {
+	error("[Application::onKeyDown] Not implemented");
+}
+
+void Application::onTimer(TimerID id) {
+	if (_field_6A)
+		return;
+
+	onZoneTimer(id);
+
+	if (_timerHandler)
+		_timerHandler->incrementFiredCount(id);
+}
+
+void Application::onZoneTimer(TimerID id) {
+	error("[Application::onZoneTimer] Not implemented");
 }
 
 //////////////////////////////////////////////////////////////////////////

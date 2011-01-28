@@ -96,6 +96,7 @@ private:
 
 	// Game
 	Application *_application;
+	bool _mouseButtonPressed;
 };
 
 } // End of namespace Ring

@@ -36,7 +36,8 @@
 namespace Ring {
 
 RingEngine::RingEngine(OSystem *syst, const RingGameDescription *gd) :
-	Engine(syst), _gameDescription(gd), _debugger(NULL), _application(NULL) {
+	Engine(syst), _gameDescription(gd), _debugger(NULL),
+	_application(NULL), _mouseButtonPressed(false) {
 
 	// Adding the default directories
 	const Common::FSNode gameDataDir(ConfMan.get("path"));
@@ -115,9 +116,22 @@ Common::Error RingEngine::run() {
 			case Common::EVENT_MOUSEMOVE:
 				break;
 
-			case Common::EVENT_LBUTTONDOWN:
 			case Common::EVENT_LBUTTONUP:
-			case Common::EVENT_RBUTTONDOWN:
+				_mouseButtonPressed = false;
+
+				// Check if CTRL is pressed
+				_application->onMouseLeftButtonUp(ev, (_eventMan->getModifierState() & Common::KBD_CTRL) != 0);
+				break;
+
+			case Common::EVENT_LBUTTONDOWN:
+				_mouseButtonPressed = true;
+
+				if (ev.mouse.y <= 464)
+					_application->onMouseLeftButtonDown(ev);
+				break;
+
+			case Common::EVENT_RBUTTONUP:
+				_application->onMouseRightButtonUp(ev);
 				break;
 
 			case Common::EVENT_QUIT:
