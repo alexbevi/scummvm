@@ -27,14 +27,54 @@
 
 namespace Ring {
 
+//////////////////////////////////////////////////////////////////////////
+// Language
+//////////////////////////////////////////////////////////////////////////
+Language::Language() : BaseObject(kLanguageInvalid), _channel(0) {
+}
+
+Language::Language(LanguageId id, Common::String name, Common::String folder, uint channel) :
+	BaseObject(id), _name(name), _folder(folder), _channel(channel) {
+}
+
+//////////////////////////////////////////////////////////////////////////
+// LanguageHandler
+//////////////////////////////////////////////////////////////////////////
 LanguageHandler::LanguageHandler() : _language(kLanguageInvalid) {
 }
 
-LanguageHandler::~LanguageHandler() {
+void LanguageHandler::add(LanguageId id, Common::String name, Common::String folder, uint channel) {
+	if (_languages.has(id))
+		error("[LanguageHandler::add] ID already exists (%d)", id);
+
+	_languages.push_back(Language(id, name, folder, channel));
 }
 
-void LanguageHandler::add(ID id, Common::String name, Common::String folder, uint channel) {
-	error("[LanguageHandler::add] Not implemented");
+void LanguageHandler::setActiveLanguage(Common::String name) {
+	if (_languages.empty())
+		error("[LanguageHandler::setActiveLanguage] No language available");
+
+	for (AssociativeArray<Language>::iterator i = _languages.begin(); i != _languages.end(); i++)
+		if (i->getName() == name) {
+			_language = (LanguageId)i->getID();
+			return;
+		}
+
+	error("[LanguageHandler::setActiveLanguage] Language doesn't exist (%s)", name.c_str());
+}
+
+Common::String LanguageHandler::getFolder(LanguageId id) {
+	if (!_languages.has(id))
+		error("[LanguageHandler::getFolder] ID doesn't exist (%d)", id);
+
+	return _languages.get(id)->getFolder();
+}
+
+uint32 LanguageHandler::getChannel(LanguageId id) {
+	if (!_languages.has(id))
+		error("[LanguageHandler::getChannel] ID doesn't exist (%d)", id);
+
+	return _languages.get(id)->getChannel();
 }
 
 } // End of namespace Ring

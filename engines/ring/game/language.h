@@ -30,19 +30,39 @@
 
 namespace Ring {
 
+class Language : public BaseObject {
+public:
+	Language();
+	Language(LanguageId id, Common::String name, Common::String folder, uint32 channel);
+	~Language() {}
+
+	// Accessors
+	Common::String getName() { return _name; }
+	Common::String getFolder() { return _folder; }
+	uint32 getChannel() { return _channel; }
+
+private:
+	Common::String _name;
+	Common::String _folder;
+	uint32 _channel;
+};
+
 class LanguageHandler {
 public:
 	LanguageHandler();
-	~LanguageHandler();
+	~LanguageHandler() {}
 
-	void add(ID id, Common::String name, Common::String folder, uint channel);
+	void add(LanguageId id, Common::String name, Common::String folder, uint channel);
+	void setActiveLanguage(Common::String name);
 
 	// Accessors
 	LanguageId getLanguage() { return _language; }
+	Common::String getFolder(LanguageId id);
+	uint32 getChannel(LanguageId id);
 
 private:
 	LanguageId _language;
-
+	AssociativeArray<Language> _languages;
 };
 
 } // End of namespace Ring

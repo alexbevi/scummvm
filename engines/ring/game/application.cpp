@@ -96,8 +96,8 @@ void Application::init() {
 	_languageHandler->add(kLanguageSwedish, "SWE", "SWE", 1);
 	_languageHandler->add(kLanguageDutch,   "HOL", "HOL", 3);
 	_languageHandler->add(kLanguageHebrew,  "HEB", "HEB", 1);
-	_languageHandler->add(9, "GRE", "GRE", 1);
-	_languageHandler->add(10, "SLO", "SLO", 1);
+	_languageHandler->add(kLanguageGreek, "GRE", "GRE", 1);
+	_languageHandler->add(kLanguageSlovak, "SLO", "SLO", 1);
 
 	_field_5E = 0;
 
