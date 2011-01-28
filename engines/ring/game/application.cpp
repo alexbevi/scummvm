@@ -227,6 +227,107 @@ void Application::startMenu() {
 }
 
 //////////////////////////////////////////////////////////////////////////
+// Zone
+//////////////////////////////////////////////////////////////////////////
+Common::String Application::getZone(Zone zone) {
+	switch (zone) {
+	default:
+		break;
+
+	case kZoneSY:
+		return "sy";
+
+	case kZoneNI:
+		return "ni";
+
+	case kZoneRH:
+		return "rh";
+
+	case kZoneFO:
+		return "fo";
+
+	case kZoneRO:
+		return "ro";
+
+	case kZoneWA:
+		return "wa";
+
+	case kZoneAS:
+		return "as";
+
+	case kZoneN2:
+		return "n2";
+	}
+
+	error("[Application::getZone] Invalid zone (%d)", zone);
+}
+
+Common::String Application::getZoneName(Zone zone) {
+	switch (zone) {
+	default:
+		break;
+
+	case kZoneSY:
+		return "";
+
+	case kZoneNI:
+	case kZoneRH:
+		return "Alberich";
+
+	case kZoneFO:
+		return "Siegmund";
+
+	case kZoneWA:
+		return "Brnnnhilde";
+
+	case kZoneAS:
+		return "Dril";
+
+	case kZoneRO:
+	case kZoneN2:
+		return "Loge";
+	}
+
+	error("[Application::getZoneName] Invalid zone (%d)", zone);
+}
+
+uint32 Application::getReadFrom(Zone zone) {
+	if (_field_58 == 101)
+		return 101;
+
+	switch (zone) {
+	default:
+		break;
+
+	case kZoneSY:
+		return _configuration.artSY ? 102 : 101;
+
+	case kZoneNI:
+		return _configuration.artNI ? 102 : 101;
+
+	case kZoneRH:
+		return _configuration.artRH ? 102 : 101;
+
+	case kZoneFO:
+		return _configuration.artFO ? 102 : 101;
+
+	case kZoneRO:
+		return _configuration.artRO ? 102 : 101;
+
+	case kZoneWA:
+		return _configuration.artWA ? 102 : 101;
+
+	case kZoneAS:
+		return _configuration.artAS ? 102 : 101;
+
+	case kZoneN2:
+		return _configuration.artN2 ? 102 : 101;
+	}
+
+	error("[Application::getReadFrom] Invalid zone (%d)", zone);
+}
+
+//////////////////////////////////////////////////////////////////////////
 // Accessors
 //////////////////////////////////////////////////////////////////////////
 LanguageId Application::getLanguage() {
