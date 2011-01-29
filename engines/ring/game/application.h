@@ -150,7 +150,7 @@ private:
 	//Common::String              _currentDirectory
 	Configuration               _configuration;
 	uint32                      _field_54;
-	char                        _field_58;
+	ArchiveType                 _archiveType;
 	CursorHandler              *_cursorHandler;
 	char                        _field_5D;
 	uint32                      _field_5E;

@@ -32,7 +32,7 @@ namespace Ring {
 
 //////////////////////////////////////////////////////////////////////////
 // Object
-Object::Object(){}
+Object::Object() {}
 
 Object::~Object() {
 }

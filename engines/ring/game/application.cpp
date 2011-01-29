@@ -51,7 +51,7 @@ namespace Ring {
 Application::Application(RingEngine *engine) : _vm(engine),
 	_video(NULL), _artHandler(NULL), _fontHandler(NULL), _dialogHandler(NULL), _languageHandler(NULL),
 	_field_54(1), _zoneName("A0"), _cursorHandler(NULL), _soundHandler(NULL), _field_5D(0),
-	_field_5E(0), _field_58(101), _field_66(0), _field_6A(0), _zone(kZoneInvalid),
+	_field_5E(0), _archiveType(kTypeFile), _field_66(0), _field_6A(0), _zone(kZoneInvalid),
 	_field_6F(0), _field_70(0), _puzzle(NULL), _field_89(NULL), _bag(NULL),
 	_timerHandler(NULL), _var(NULL), _dragControl(NULL), _objectHandler(NULL), _preferenceHandler(NULL),
 	_controlNotPressed(false) {
@@ -115,14 +115,14 @@ void Application::init() {
 
 	// Setup art
 	if (_configuration.artBAG || _configuration.artCURSOR || _configuration.artSY)
-		_field_58 = 102;
+		_archiveType = kTypeArchive;
 
-	if (_field_58 == 102) {
+	if (_archiveType == kTypeArchive) {
 		_artHandler = new ArtHandler(this);
 		_artHandler->open(kZoneSY, kLoadFromDisk);
 	}
 
-	_field_58 = 101;
+	_archiveType = kTypeFile;
 
 	// Setup fonts
 	_fontHandler = new FontHandler();
@@ -160,14 +160,14 @@ void Application::init() {
 	_field_78 = 1;
 	_field_5D = 1;
 	_field_54 = 1;
-	_field_58 = 101;
+	_archiveType = kTypeFile;
 	_field_6F = 0;
 
 	_field_89 = NULL;
 
 	// Setup bag
 	if (_configuration.artBAG)
-		_field_58 = 102;
+		_archiveType = kTypeArchive;
 
 	_bag= new Bag();
 	_bag->sub_417D20(0, 0);
@@ -180,10 +180,10 @@ void Application::init() {
 	_bag->sub_4192C0(627, 48);
 	_bag->sub_417DE0(335, 8);
 	_bag->sub_419280(500);
-	_bag->loadBackground("bagbgr.tga", "", "bagarr.tga", "", "", "bagarr.tga", "", "menu_gur.tga", _field_58);
+	_bag->loadBackground("bagbgr.tga", "", "bagarr.tga", "", "", "bagarr.tga", "", "menu_gur.tga", _archiveType);
 	_bag->sub_4178C0();
 
-	_field_58 = 101;
+	_archiveType = kTypeFile;
 
 	// Setup timer
 	_timerHandler = new TimerHandler();
@@ -435,36 +435,36 @@ Common::String Application::getZoneName(Zone zone) {
 }
 
 uint32 Application::getReadFrom(Zone zone) {
-	if (_field_58 == 101)
-		return 101;
+	if (_archiveType == kTypeFile)
+		return kTypeFile;
 
 	switch (zone) {
 	default:
 		break;
 
 	case kZoneSY:
-		return _configuration.artSY ? 102 : 101;
+		return _configuration.artSY ? kTypeArchive : kTypeFile;
 
 	case kZoneNI:
-		return _configuration.artNI ? 102 : 101;
+		return _configuration.artNI ? kTypeArchive : kTypeFile;
 
 	case kZoneRH:
-		return _configuration.artRH ? 102 : 101;
+		return _configuration.artRH ? kTypeArchive : kTypeFile;
 
 	case kZoneFO:
-		return _configuration.artFO ? 102 : 101;
+		return _configuration.artFO ? kTypeArchive : kTypeFile;
 
 	case kZoneRO:
-		return _configuration.artRO ? 102 : 101;
+		return _configuration.artRO ? kTypeArchive : kTypeFile;
 
 	case kZoneWA:
-		return _configuration.artWA ? 102 : 101;
+		return _configuration.artWA ? kTypeArchive : kTypeFile;
 
 	case kZoneAS:
-		return _configuration.artAS ? 102 : 101;
+		return _configuration.artAS ? kTypeArchive : kTypeFile;
 
 	case kZoneN2:
-		return _configuration.artN2 ? 102 : 101;
+		return _configuration.artN2 ? kTypeArchive : kTypeFile;
 	}
 
 	error("[Application::getReadFrom] Invalid zone (%d)", zone);

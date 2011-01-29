@@ -31,6 +31,7 @@
 namespace Ring {
 
 class Hotspot;
+class Image;
 class Object;
 
 class Bag {
@@ -53,7 +54,7 @@ public:
 	void sub_4192A0(int32 a1, int32 a2);
 	void sub_4192C0(int32 a1, int32 a2);
 
-	void loadBackground(Common::String str1, Common::String str2, Common::String str3, Common::String str4, Common::String str5, Common::String str6, Common::String str7, Common::String str8, int a9);
+	void loadBackground(Common::String str1, Common::String str2, Common::String str3, Common::String str4, Common::String str5, Common::String str6, Common::String str7, Common::String str8, ArchiveType filetype);
 
 private:
 
@@ -72,10 +73,10 @@ private:
 	uint32 _field_2C;
 	uint32 _field_30;
 	uint32 _field_34;
-	uint32 *_field_38;
-	uint32 *_field_3C;
-	uint32 *_field_40;
-	uint32 *_field_44;
+	Image *_image1;
+	Image *_image2;
+	Image *_image3;
+	Image *_image4;
 	uint32 _field_48;
 	uint32 _field_4C;
 	uint32 _field_50;
@@ -109,10 +110,12 @@ private:
 	uint32 _field_BD;
 	uint32 _field_C1;
 	uint32 _field_C5;
-	byte _field_C9;
+	ArchiveType _archiveType;
 	uint32 *_field_CA;
 	uint32 *_field_CE;
 	byte _field_D2;
+
+	void LoadImage(Common::String filename, Image *image, ArchiveType archiveType);
 };
 
 } // End of namespace Ring

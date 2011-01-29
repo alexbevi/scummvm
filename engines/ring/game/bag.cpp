@@ -28,6 +28,7 @@
 #include "ring/game/object.h"
 
 #include "ring/graphics/hotspot.h"
+#include "ring/graphics/image.h"
 
 #include "ring/helpers.h"
 
@@ -45,10 +46,10 @@ Bag::Bag() {
 	_field_2C = 0;
 	_field_30 = 0;
 	_field_34 = 0;
-	_field_38 = NULL;
-	_field_3C = NULL;
-	_field_40 = NULL;
-	_field_44 = NULL;
+	_image1 = NULL;
+	_image2 = NULL;
+	_image3 = NULL;
+	_image4 = NULL;
 	_field_48 = 0;
 	_field_4C = 0;
 	_field_50 = 0;
@@ -82,7 +83,7 @@ Bag::Bag() {
 	_field_BD = 0;
 	_field_C1 = 0;
 	_field_C5 = 90;
-	_field_C9 = 0;
+	_archiveType = kTypeInvalid;
 	_field_CA = NULL;
 	_field_CE = NULL;
 	_field_D2 = 0;
@@ -92,6 +93,11 @@ Bag::~Bag() {
 	CLEAR_ARRAY(Object, _objects);
 	CLEAR_ARRAY(Hotspot, _field_4);
 	CLEAR_ARRAY(uint32, _field_8);
+
+	delete _image1;
+	delete _image2;
+	delete _image3;
+	delete _image4;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -156,8 +162,14 @@ void Bag::sub_4192C0(int32 a1, int32 a2) {
 	_field_64 = a2;
 }
 
-void Bag::loadBackground(Common::String str1, Common::String str2, Common::String str3, Common::String str4, Common::String str5, Common::String str6, Common::String str7, Common::String str8, int a9) {
+void Bag::loadBackground(Common::String str1, Common::String str2, Common::String str3, Common::String str4, Common::String str5, Common::String str6, Common::String str7, Common::String str8, ArchiveType archiveType) {
+	_archiveType = archiveType;
+
 	error("[Bag::loadBackground] Not implemented");
+}
+
+void Bag::LoadImage(Common::String filename, Image *image, ArchiveType archiveType) {
+	error("[Bag::LoadImage] Not implemented");
 }
 
 } // End of namespace Ring
