@@ -19,6 +19,7 @@ MODULE_OBJS := \
 	graphics/accessibility.o \
 	graphics/animation.o \
 	graphics/dragControl.o \
+	graphics/hotspot.o \
 	graphics/image.o \
 	graphics/movability.o \
 	graphics/presentation.o \

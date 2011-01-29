@@ -150,7 +150,6 @@ void Application::init() {
 
 	// Setup sound
 	_soundHandler = new SoundHandler();
-	_soundHandler->init();
 
 	// Setup data
 	_field_70 = 0;
@@ -171,7 +170,6 @@ void Application::init() {
 		_field_58 = 102;
 
 	_bag= new Bag();
-	_bag->init();
 	_bag->sub_417D20(0, 0);
 	_bag->sub_417D40(18, 42, 44, 100);
 	_bag->sub_417D60(0, 0);
