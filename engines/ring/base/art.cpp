@@ -23,7 +23,7 @@
  *
  */
 
-#include "ring/game/art.h"
+#include "ring/base/art.h"
 
 #include "ring/game/application.h"
 

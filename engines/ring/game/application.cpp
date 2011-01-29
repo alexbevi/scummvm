@@ -25,6 +25,7 @@
 
 #include "ring/game/application.h"
 
+#include "ring/base/art.h"
 #include "ring/base/cursor.h"
 #include "ring/base/font.h"
 #include "ring/base/preferences.h"
@@ -32,7 +33,6 @@
 #include "ring/base/timer.h"
 #include "ring/base/var.h"
 
-#include "ring/game/art.h"
 #include "ring/game/bag.h"
 #include "ring/game/dialog.h"
 #include "ring/game/language.h"

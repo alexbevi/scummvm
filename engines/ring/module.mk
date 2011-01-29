@@ -1,6 +1,7 @@
 MODULE := engines/ring
 
 MODULE_OBJS := \
+	base/art.o \
 	base/cursor.o \
 	base/file.o \
 	base/font.o \
@@ -10,7 +11,6 @@ MODULE_OBJS := \
 	base/timer.o \
 	base/var.o \
 	game/application.o \
-	game/art.o \
 	game/bag.o \
 	game/dialog.o \
 	game/language.o \
