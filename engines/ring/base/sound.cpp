@@ -25,16 +25,35 @@
 
 #include "ring/base/sound.h"
 
+#include "ring/helpers.h"
+
 namespace Ring {
 
+//////////////////////////////////////////////////////////////////////////
+// SoundItem
+//////////////////////////////////////////////////////////////////////////
+SoundItem::SoundItem() {
+}
+
+SoundItem::~SoundItem() {
+}
+
+//////////////////////////////////////////////////////////////////////////
+// SoundHandler
+//////////////////////////////////////////////////////////////////////////
 SoundHandler::SoundHandler() {
+	_field_0 = 0;
+	_field_1 = 0;
+	_field_5 = 0;
+
+	_direction = -1.0;
 }
 
 SoundHandler::~SoundHandler() {
-}
-
-void SoundHandler::init() {
-	error("[SoundHandler::init] Not implemented");
+	CLEAR_ARRAY(SoundItem, _soundItems1);
+	CLEAR_ARRAY(SoundItem, _soundItems2);
+	CLEAR_ARRAY(SoundItem, _soundItems3);
+	CLEAR_ARRAY(SoundItem, _soundItems4);
 }
 
 

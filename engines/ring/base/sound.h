@@ -30,15 +30,31 @@
 
 namespace Ring {
 
+class SoundItem {
+public:
+	SoundItem();
+	~SoundItem();
+
+private:
+};
+
 class SoundHandler {
 public:
 	SoundHandler();
 	~SoundHandler();
 
-	void init();
-
 private:
+	// Data
+	bool _field_0;
+	uint32 _field_1;
+	uint32 _field_5;
+	Common::Array<SoundItem *> _soundItems1;
+	Common::Array<SoundItem *> _soundItems2;
+	Common::Array<SoundItem *> _soundItems3;
+	Common::Array<SoundItem *> _soundItems4;
 
+	// Sound direction? (-1.0 or 1.0)
+	float _direction;
 };
 
 } // End of namespace Ring
