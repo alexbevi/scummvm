@@ -25,15 +25,49 @@
 
 #include "ring/game/dialog.h"
 
+#include "ring/helpers.h"
+
 namespace Ring {
 
-DialogHandler::DialogHandler(){}
+//////////////////////////////////////////////////////////////////////////
+// Dialog
+//////////////////////////////////////////////////////////////////////////
+Dialog::Dialog() {
+}
+
+Dialog::~Dialog() {
+}
+
+//////////////////////////////////////////////////////////////////////////
+// DialogHandler
+//////////////////////////////////////////////////////////////////////////
+DialogHandler::DialogHandler() {
+	_field_0 = 0;
+	_field_4 = 0;
+	_field_8 = 0;
+	_field_C = 0;
+	_field_10 = 0;
+	_field_14 = 0;
+	_field_18 = 0;
+	_field_1C = 0;
+	_field_20 = 0;
+	_field_28 = 1;
+}
 
 DialogHandler::~DialogHandler() {
+	CLEAR_ARRAY(Dialog, _dialogs);
 }
 
 void DialogHandler::init(int32 a1, int32 a2, int32 a3, int32 a4, int32 a5, int32 a6, int32 a7, int32 a8, int32 a9) {
-	error("[DialogHandler::init] Not implemented");
+	_field_0 = a1;
+	_field_4 = a2;
+	_field_8 = a3;
+	_field_C = a4;
+	_field_10 = a5;
+	_field_14 = a6;
+	_field_18 = a7;
+	_field_1C = a8;
+	_field_20 = a9;
 }
 
 } // End of namespace Ring

@@ -30,6 +30,15 @@
 
 namespace Ring {
 
+class Dialog {
+public:
+	Dialog();
+	~Dialog();
+
+private:
+
+};
+
 class DialogHandler {
 public:
 	DialogHandler();
@@ -38,7 +47,17 @@ public:
 	void init(int32 a1, int32 a2, int32 a3, int32 a4, int32 a5, int32 a6, int32 a7, int32 a8, int32 a9);
 
 private:
-
+	uint32 _field_0;
+	uint32 _field_4;
+	uint32 _field_8;
+	uint32 _field_C;
+	uint32 _field_10;
+	uint32 _field_14;
+	uint32 _field_18;
+	uint32 _field_1C;
+	uint32 _field_20;
+	Common::Array<Dialog *> _dialogs;
+	uint32 _field_28;
 };
 
 } // End of namespace Ring
