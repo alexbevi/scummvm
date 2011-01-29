@@ -255,7 +255,8 @@ Array *ArrayManager::getFirstEmptyArray() {
 		if (_data[i].data)
 			continue;
 
-		_data[i].field_0 = i + 1;
+		// FIXME possible out of bounds access?
+		_data[i + 1].field_0 = i + 1;
 
 		return &_data[i];
 	}
