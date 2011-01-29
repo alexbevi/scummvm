@@ -27,9 +27,9 @@
 #define KOM_VIDEO_PLAYER_H
 
 #include "common/events.h"
-#include "graphics/video/video_decoder.h"
-#include "graphics/video/smk_decoder.h"
-#include "graphics/video/flic_decoder.h"
+#include "video/video_decoder.h"
+#include "video/smk_decoder.h"
+#include "video/flic_decoder.h"
 
 #include "kom/kom.h"
 #include "kom/sound.h"
@@ -38,7 +38,7 @@ namespace Kom {
 
 class KomEngine;
 
-class FlicDecoder : public Graphics::FlicDecoder {
+class FlicDecoder : public Video::FlicDecoder {
 	void setPalette(byte *pal) {}
 };
 
@@ -54,9 +54,9 @@ private:
 	bool _skipVideo;
 	KomEngine *_vm;
 	Common::EventManager *_eventMan;
-	Graphics::SmackerDecoder _smk;
+	Video::SmackerDecoder _smk;
 	FlicDecoder _flic;
-	Graphics::VideoDecoder *_player;
+	Video::VideoDecoder *_player;
 	byte *_background;
 	SoundHandle _soundHandle;
 };

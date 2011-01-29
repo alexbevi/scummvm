@@ -24,8 +24,8 @@
  */
 
 #include "graphics/surface.h"
-#include "graphics/video/flic_decoder.h"
-#include "graphics/video/smk_decoder.h"
+#include "video/flic_decoder.h"
+#include "video/smk_decoder.h"
 
 #include "kom/screen.h"
 #include "kom/video_player.h"

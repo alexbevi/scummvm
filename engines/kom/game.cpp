@@ -104,7 +104,7 @@ void Game::enterLocation(uint16 locId) {
 
 	filename[strlen(filename) - 6] = '0';
 	filename[strlen(filename) - 5] = 'm';
-	Graphics::FlicDecoder mask;
+	Video::FlicDecoder mask;
 	_vm->screen()->loadMask(locDir + filename);
 
 	Database *db = _vm->database();
