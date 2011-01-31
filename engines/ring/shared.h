@@ -185,6 +185,26 @@ enum ObjectId {
 	kObjectFirePower             = 40000
 };
 
+enum CursorId {
+	kCursorInvalid    = 0,
+	kCursorIdle       = 50,
+	kCursorBusy       = 51,
+	kCursorHotspot    = 52,
+	kCursorMove       = 53,
+	kCursorDefault    = 54,
+	kCursorBack       = 55,
+	kCursorMenuIdle   = 56,
+	kCursorMenuActive = 57,
+
+	kCursorHandSelection = 10000
+};
+
+enum CursorType {
+	kCursorTypeNormal   = 1,
+	kCursorTypeImage    = 3,
+	kCursorTypeAnimated = 4
+};
+
 //////////////////////////////////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////////////////////////////////

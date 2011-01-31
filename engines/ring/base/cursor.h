@@ -26,15 +26,55 @@
 #ifndef RING_CURSOR_H
 #define RING_CURSOR_H
 
+#include "ring/shared.h"
+
 namespace Ring {
+
+class CursorBase : public BaseObject {
+public:
+	CursorBase();
+	~CursorBase();
+
+	virtual void init(uint32 a1, Common::String name, uint32 a3, byte a4);
+	virtual void deinit() = 0;
+
+private:
+	uint32 _field_4;
+	Common::String _name;
+	uint32 _field_C;
+	uint32 _field_10;
+	uint32 _field_14;
+	byte _field_18;
+};
+
+class Cursor : public CursorBase {
+public:
+	Cursor();
+	~Cursor();
+
+	virtual void init(uint32 a1, Common::String name, uint32 a3, byte a4);
+	virtual void deinit();
+
+private:
+	uint32 _field_19; // HCURSOR
+	bool _isDefaultCursor;
+
+	void load();
+};
 
 class CursorHandler {
 public:
 	CursorHandler();
 	~CursorHandler();
 
-private:
+	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, ArchiveType archiveType);
+	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, ArchiveType archiveType);
+	void setOffset(CursorId id, Common::Point offset);
+	void select(CursorId id);
 
+private:
+	AssociativeArray<CursorBase *> _cursors;
+	uint32 _index;
 };
 
 } // End of namespace Ring
