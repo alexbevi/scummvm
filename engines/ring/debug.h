@@ -61,6 +61,8 @@ private:
 
 	bool cmdClear(int argc, const char **argv);
 
+	void dumpFile(Common::String filename);
+
 	int getNumber(const char *arg) const;
 };
 

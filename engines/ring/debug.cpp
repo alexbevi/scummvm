@@ -25,11 +25,60 @@
 
 #include "ring/debug.h"
 
+#include "ring/base/art.h"
+
 #include "ring/ring.h"
 
 #include "common/debug-channels.h"
 #include "common/events.h"
 #include "common/file.h"
+
+#define DEBUG
+#ifdef DEBUG
+// For mkdir
+
+#ifdef WIN32
+#include <direct.h>
+#include <sys/stat.h>
+#define my_mkdir(folder, mode) recursive_mkdir(folder)
+#else
+#include <unistd.h>
+#define my_mkdir(folder, mode) recursive_mkdir(folder, mode)
+#endif
+
+#include <errno.h>
+#include <sys/types.h>
+
+static int recursive_mkdir(const char *dir) {
+	char tmp[256];
+	char *p = NULL;
+	size_t len;
+
+	snprintf(tmp, sizeof(tmp),"%s",dir);
+	len = strlen(tmp);
+	if(tmp[len - 1] == '\\')
+		tmp[len - 1] = 0;
+	for(p = tmp + 1; *p; p++)
+		if(*p == '\\') {
+			*p = 0;
+#ifdef WIN32
+			int ret = mkdir(tmp);
+#else
+			int ret = mkdir(tmp, S_IRWXU);
+#endif
+			if (ret == -1 && errno != EEXIST)
+				return ret;
+
+			*p = '\\';
+		}
+#ifdef WIN32
+		return mkdir(tmp);
+#else
+		return mkdir(tmp, S_IRWXU);
+#endif
+}
+
+#endif
 
 namespace Ring {
 
@@ -78,14 +127,14 @@ bool Debugger::cmdListFiles(int argc, const char **argv) {
 	if (argc == 2) {
 		Common::String filter(const_cast<char *>(argv[1]));
 
-		//Common::ArchiveMemberList list;
-		//int count = _engine->getResourceManager()->listMatchingMembers(list, filter);
+		Common::ArchiveMemberList list;
+		int count = SearchMan.listMatchingMembers(list, filter);
 
-		//DebugPrintf("Number of matches: %d\n", count);
-		//for (Common::ArchiveMemberList::iterator it = list.begin(); it != list.end(); ++it)
-		//	DebugPrintf(" %s\n", (*it)->getName().c_str());
+		DebugPrintf("Number of matches: %d\n", count);
+		for (Common::ArchiveMemberList::iterator it = list.begin(); it != list.end(); ++it)
+			DebugPrintf(" %s\n", (*it)->getName().c_str());
 	} else {
-		DebugPrintf("Syntax: ls <filter> (use * for all)\n");
+		DebugPrintf("Syntax: ls <filter> (use * for all) (<archive>) \n");
 	}
 
 	return true;
@@ -98,7 +147,7 @@ bool Debugger::cmdDumpArchive(int argc, const char **argv) {
 
 		if (filename == "*") {
 			Common::ArchiveMemberList list;
-			int count = _engine->getResourceManager()->listMatchingMembers(list, "*.mul");
+			int count = SearchMan.listMatchingMembers(list, "*.at2");
 
 			DebugPrintf("Dumping %d archives\n", count);
 			for (Common::ArchiveMemberList::iterator it = list.begin(); it != list.end(); ++it)
@@ -106,7 +155,7 @@ bool Debugger::cmdDumpArchive(int argc, const char **argv) {
 		} else
 			dumpFile(filename);
 	} else {
-		DebugPrintf("Syntax: dump <filename>.mul (use * to dump all archives) \n");
+		DebugPrintf("Syntax: dump <filename>.at2 (use * to dump all archives) \n");
 	}
 
 #else
@@ -114,6 +163,96 @@ bool Debugger::cmdDumpArchive(int argc, const char **argv) {
 #endif
 
 	return true;
+}
+
+void Debugger::dumpFile(Common::String filename) {
+#ifdef DEBUG
+#define CREATE_FOLDER(name) { \
+	int ret = my_mkdir(name.c_str(), 600); \
+	if (ret == -1 && errno != EEXIST) { \
+		DebugPrintf("Cannot create folder: %s (error: %s)", name.c_str(), strerror(errno)); \
+		delete archive; \
+		return; \
+	} \
+}
+
+	filename.toLowercase();
+	if (!filename.contains(".at2"))
+		filename += ".at2";
+
+	if (!SearchMan.hasFile(filename)) {
+		DebugPrintf("Cannot find file: %s\n", filename.c_str());
+		return;
+	}
+
+	// Load MUL archive
+	Art *archive = new Art();
+	archive->init(filename, kZoneInvalid, kLoadFromInvalid);
+	Common::ArchiveMemberList list;
+	int count = archive->listMembers(list);
+
+	// Get the current working folder
+	char buffer[512];
+	getcwd((char *)&buffer, 512);
+	Common::String folder(buffer);
+
+	// HACK replace path separators
+	for (uint32 i = 0; i < filename.size(); i++) {
+		if (filename[i] == '/')
+			filename.setChar('\\', i);
+	}
+
+	// Create folder for dumping data
+	Common::String dumpPath = folder + "\\dumps\\ring\\" + filename;
+	CREATE_FOLDER(dumpPath);
+
+	// Dump all members
+	DebugPrintf("Dumping %d files from archive %s\n", count, filename.c_str());
+	for (Common::ArchiveMemberList::iterator it = list.begin(); it != list.end(); ++it) {
+		Common::String name = (*it)->getName();
+		Common::SeekableReadStream *stream = archive->createReadStreamForMember(name);
+
+		uint32 offset = 22;
+		stream->seek(offset);
+
+		byte *data = (byte *)calloc((uint32)stream->size() - offset, 1);
+		memset(data, 0, (uint32)stream->size() - offset);
+		stream->read(data, (uint32)stream->size() - offset);
+
+		Common::String outPath = dumpPath;
+		Common::String outFilename = name;
+
+		// Create path if needed
+		if (name.contains('\\')) {
+			// Compute path & filename
+			outFilename = lastPathComponent(name, '\\');
+			outPath = outPath + name;
+
+			for (uint j = 0; j < outFilename.size(); ++j)
+				outPath.deleteLastChar();
+
+			my_mkdir(outPath.c_str(), 600); \
+		}
+
+		Common::DumpFile out;
+		if (out.open(outPath + '\\' + outFilename)) {
+			out.write(data, (uint32)stream->size());
+			out.close();
+		}
+
+		free(data);
+
+		delete stream;
+
+		DebugPrintf("  - %s\n", name.c_str());
+	}
+
+	DebugPrintf("\n");
+
+	delete archive;
+
+#undef CREATE_FOLDER
+#endif
 }
 
 bool Debugger::cmdClear(int argc, const char **) {
