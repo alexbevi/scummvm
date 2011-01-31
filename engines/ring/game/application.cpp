@@ -38,6 +38,7 @@
 #include "ring/game/language.h"
 #include "ring/game/object.h"
 #include "ring/game/puzzle.h"
+#include "ring/game/saveload.h"
 
 #include "ring/graphics/dragControl.h"
 #include "ring/graphics/rotation.h"
@@ -56,6 +57,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_field_77(0),        _field_78(0),            _puzzle(NULL),        _field_89(NULL),      _bag(NULL),
 	_timerHandler(NULL), _var(NULL),              _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
 	_controlNotPressed(false) {
+	_saveLoad = new SaveLoad();
 }
 
 Application::~Application() {
@@ -79,6 +81,8 @@ Application::~Application() {
 	SAFE_DELETE(_dragControl);
 	SAFE_DELETE(_objectHandler);
 	SAFE_DELETE(_preferenceHandler);
+
+	SAFE_DELETE(_saveLoad);
 
 	// Zero-out passed pointers
 	_vm = NULL;
@@ -403,16 +407,15 @@ void Application::onZoneTimer(TimerId id) {
 // Zone
 //////////////////////////////////////////////////////////////////////////
 void Application::setupZone(Zone zone, uint32 a2)  {
-	bool load = false;
+	bool load = _saveLoad->isLoaded(a2);
 
-	warning("[Application::setupZone] Saved data check not implemented");
-
-	// TODO check saved data for zone and/or puzzle id
-
-	if (zone == 1) {
-		load = true;
-	} else {
-		error("[Application::setupZone] Zone CD check not implemented");
+	// Check saved data for zone and/or puzzle id
+	if (!load) {
+		if (zone == kZoneSY) {
+			load = true;
+		} else {
+			error("[Application::setupZone] Zone CD check not implemented");
+		}
 	}
 
 	resetPuzzle();
@@ -420,7 +423,7 @@ void Application::setupZone(Zone zone, uint32 a2)  {
 
 	_soundHandler->reset();
 
-	if (zone != 1)
+	if (zone != kZoneSY)
 		_artHandler->remove();
 
 	if (load) {
@@ -443,7 +446,83 @@ void Application::setZoneAndEnableBag(Zone zone) {
 }
 
 void Application::setZone(Zone zone, uint32 a2) {
-	error("[Application::setZone] Not implemented");
+	bool load = _saveLoad->isLoaded(a2);
+
+	if (zone != kZoneSY && !load) {
+		if (getReadFrom(zone) == kTypeArchive) {
+			if (!_artHandler)
+				error("[Application::setZone] Art handler is NULL");
+
+			_artHandler->open(zone, kLoadFromCd);
+		}
+	}
+
+	if (a2 == 1000) {
+		error("[Application::setZone] Not implemented (a2 == 1000)");
+	}
+
+	// Set zone
+	switch (zone) {
+	default:
+	case kZoneSY:
+		break;
+
+	case kZoneNI:
+		setZoneNI(zone, a2);
+		break;
+
+	case kZoneRH:
+		setZoneRH(zone, a2);
+		break;
+
+	case kZoneFO:
+		setZoneFO(zone, a2);
+		break;
+
+	case kZoneRO:
+		setZoneRO(zone, a2);
+		break;
+
+	case kZoneWA:
+		setZoneWA(zone, a2);
+		break;
+
+	case kZoneAS:
+		setZoneAS(zone, a2);
+		break;
+
+	case kZoneN2:
+		setZoneN2(zone, a2);
+		break;
+	}
+}
+
+void Application::setZoneNI(Zone zone, uint32 a2) {
+	error("[Application::setZoneNI] Not implemented");
+}
+
+void Application::setZoneRH(Zone zone, uint32 a2) {
+	error("[Application::setZoneRH] Not implemented");
+}
+
+void Application::setZoneFO(Zone zone, uint32 a2) {
+	error("[Application::setZoneFO] Not implemented");
+}
+
+void Application::setZoneRO(Zone zone, uint32 a2) {
+	error("[Application::setZoneRO] Not implemented");
+}
+
+void Application::setZoneWA(Zone zone, uint32 a2) {
+	error("[Application::setZoneWA] Not implemented");
+}
+
+void Application::setZoneAS(Zone zone, uint32 a2) {
+	error("[Application::setZoneAS] Not implemented");
+}
+
+void Application::setZoneN2(Zone zone, uint32 a2) {
+	error("[Application::setZoneN2] Not implemented");
 }
 
 Common::String Application::getZone(Zone zone) const {
@@ -548,7 +627,11 @@ uint32 Application::getReadFrom(Zone zone) const {
 // Puzzle
 //////////////////////////////////////////////////////////////////////////
 void Application::resetPuzzle() {
-	error("[Application::resetPuzzle] Not implemented");
+	SAFE_DELETE(_puzzle);
+	SAFE_DELETE(_field_89);
+
+	// TODO two calls missing
+	warning("[Application::resetPuzzle] Missing two function calls");
 }
 
 PuzzleId Application::getPuzzleId() {

@@ -16,6 +16,7 @@ MODULE_OBJS := \
 	game/language.o \
 	game/object.o \
 	game/puzzle.o \
+	game/saveload.o \
 	graphics/accessibility.o \
 	graphics/animation.o \
 	graphics/dragControl.o \

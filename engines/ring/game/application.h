@@ -44,6 +44,7 @@ class Puzzle;
 class PuzzleInfo;
 class RingEngine;
 class Rotation;
+class SaveLoad;
 class SoundHandler;
 class TimerHandler;
 class Var;
@@ -77,6 +78,13 @@ public:
 	// Zone
 	void setupZone(Zone zone, uint32 a2);
 	void setZone(Zone zone, uint32 a2);
+	void setZoneNI(Zone zone, uint32 a2);
+	void setZoneRH(Zone zone, uint32 a2);
+	void setZoneFO(Zone zone, uint32 a2);
+	void setZoneRO(Zone zone, uint32 a2);
+	void setZoneWA(Zone zone, uint32 a2);
+	void setZoneAS(Zone zone, uint32 a2);
+	void setZoneN2(Zone zone, uint32 a2);
 	void setZoneAndEnableBag(Zone zone);
 	Common::String getZone(Zone zone) const;
 	Common::String getZoneName(Zone zone) const;
@@ -200,6 +208,8 @@ private:
 	ObjectHandler              *_objectHandler;
 	PreferenceHandler          *_preferenceHandler;
 	bool                        _controlNotPressed;
+
+	SaveLoad                   *_saveLoad;
 
 	// Configuration
 	void loadConfiguration();
