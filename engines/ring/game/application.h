@@ -59,7 +59,7 @@ public:
 	// Initialization
 	void init();
 	void setup();
-	void setupZones();
+	void initZones();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Startup
@@ -85,6 +85,14 @@ public:
 	void setZoneWA(Zone zone, uint32 a2);
 	void setZoneAS(Zone zone, uint32 a2);
 	void setZoneN2(Zone zone, uint32 a2);
+	void initZoneSY();
+	void initZoneNI();
+	void initZoneRH();
+	void initZoneFO();
+	void initZoneRO();
+	void initZoneWA();
+	void initZoneAS();
+	void initZoneN2();
 	void setZoneAndEnableBag(Zone zone);
 	Common::String getZone(Zone zone) const;
 	Common::String getZoneName(Zone zone) const;

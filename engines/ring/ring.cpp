@@ -84,7 +84,7 @@ Common::Error RingEngine::run() {
 	// Init application
 	_application->init();
 	_application->setup();
-	_application->setupZones();
+	_application->initZones();
 
 	// Start application
 	_application->showStartupScreen();

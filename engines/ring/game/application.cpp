@@ -349,8 +349,42 @@ void Application::setup() {
 	_dialogHandler->setSubtitleBackgroundColor(Color(50, 50, 50));
 }
 
-void Application::setupZones() {
-	error("[Application::setupZones] Not implemented");
+void Application::initZones() {
+	_field_5D = 2;
+
+	_archiveType = _configuration.artSY ? kArchiveArt : kArchiveFile;
+	initZoneSY();
+
+	_field_5D = 1;
+
+	_archiveType = _configuration.artAS ? kArchiveArt : kArchiveFile;
+	initZoneAS();
+
+	_archiveType = _configuration.artNI ? kArchiveArt : kArchiveFile;
+	initZoneNI();
+
+	_archiveType = _configuration.artN2 ? kArchiveArt : kArchiveFile;
+	initZoneN2();
+
+	_archiveType = _configuration.artRO ? kArchiveArt : kArchiveFile;
+	initZoneRO();
+
+	_archiveType = _configuration.artRH ? kArchiveArt : kArchiveFile;
+	initZoneRH();
+
+	_archiveType = _configuration.artFO ? kArchiveArt : kArchiveFile;
+	initZoneFO();
+
+	_archiveType = _configuration.artWA ? kArchiveArt : kArchiveFile;
+	initZoneWA();
+
+	if (_configuration.artSY || _configuration.artAS || _configuration.artNI || _configuration.artN2
+	 || _configuration.artRO || _configuration.artRH || _configuration.artFO || _configuration.artWA)
+		_archiveType = kArchiveArt;
+	else
+		_archiveType = kArchiveFile;
+
+	_field_66 = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -523,6 +557,38 @@ void Application::setZoneAS(Zone zone, uint32 a2) {
 
 void Application::setZoneN2(Zone zone, uint32 a2) {
 	error("[Application::setZoneN2] Not implemented");
+}
+
+void Application::initZoneSY() {
+	error("[Application::initZoneSY] Not implemented");
+}
+
+void Application::initZoneNI() {
+	error("[Application::initZoneNI] Not implemented");
+}
+
+void Application::initZoneRH() {
+	error("[Application::initZoneRH] Not implemented");
+}
+
+void Application::initZoneFO() {
+	error("[Application::initZoneFO] Not implemented");
+}
+
+void Application::initZoneRO() {
+	error("[Application::initZoneRO] Not implemented");
+}
+
+void Application::initZoneWA() {
+	error("[Application::initZoneWA] Not implemented");
+}
+
+void Application::initZoneAS() {
+	error("[Application::initZoneAS] Not implemented");
+}
+
+void Application::initZoneN2() {
+	error("[Application::initZoneN2] Not implemented");
 }
 
 Common::String Application::getZone(Zone zone) const {
