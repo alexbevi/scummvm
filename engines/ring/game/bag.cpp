@@ -94,10 +94,18 @@ Bag::~Bag() {
 	CLEAR_ARRAY(Hotspot, _field_4);
 	CLEAR_ARRAY(uint32, _field_8);
 
-	delete _image1;
-	delete _image2;
-	delete _image3;
-	delete _image4;
+	SAFE_DELETE(_image1);
+	SAFE_DELETE(_image2);
+	SAFE_DELETE(_image3);
+	SAFE_DELETE(_image4);
+
+	SAFE_DELETE(_field_68);
+	SAFE_DELETE(_field_6C);
+	SAFE_DELETE(_field_70);
+	SAFE_DELETE(_field_84);
+	SAFE_DELETE(_field_A5);
+	SAFE_DELETE(_field_CA);
+	SAFE_DELETE(_field_CE);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -107,62 +115,62 @@ void Bag::sub_4178C0() {
 	error("[Bag::sub_4178C0] Not implemented");
 }
 
-void Bag::sub_417D20(int32 a1, int32 a2) {
+void Bag::sub_417D20(uint32 a1, uint32 a2) {
 	_field_1C = a1;
 	_field_20 = a2;
 }
 
-void Bag::sub_417D40(int32 a1, int32 a2, int32 a3, int32 a4) {
+void Bag::sub_417D40(uint32 a1, uint32 a2, uint32 a3, uint32 a4) {
 	_field_C = a1;
 	_field_10 = a2;
 	_field_14 = a3;
 	_field_18 = a4;
 }
 
-void Bag::sub_417D60(int32 a1, int32 a2) {
+void Bag::sub_417D60(uint32 a1, uint32 a2) {
 	_field_30 = a1;
 	_field_34 = a2;
 }
 
-void Bag::sub_417D80(int32 a1, int32 a2, int32 a3, int32 a4) {
+void Bag::sub_417D80(uint32 a1, uint32 a2, uint32 a3, uint32 a4) {
 	_field_48 = a1;
 	_field_4C = a2;
 	_field_50 = a3;
 	_field_54 = a4;
 }
 
-void Bag::sub_417DA0(int32 a1, int32 a2, int32 a3, int32 a4) {
+void Bag::sub_417DA0(uint32 a1, uint32 a2, uint32 a3, uint32 a4) {
 	_field_74 = a1;
 	_field_78 = a2;
 	_field_7C = a3;
 	_field_80 = a4;
 }
 
-void Bag::sub_417DD0(int32 a1) {
+void Bag::sub_417DD0(uint32 a1) {
 	_field_24 = a1;
 }
 
-void Bag::sub_417DE0(int32 a1, int32 a2) {
+void Bag::sub_417DE0(uint32 a1, uint32 a2) {
 	_field_88 = a1;
 	_field_8C = a2;
 }
 
-void Bag::sub_419280(int32 a1) {
+void Bag::sub_419280(uint32 a1) {
 	_field_9D = a1;
 	_ticks = g_system->getMillis();
 }
 
-void Bag::sub_4192A0(int32 a1, int32 a2) {
+void Bag::sub_4192A0(uint32 a1, uint32 a2) {
 	_field_58 = a1;
 	_field_5C = a2;
 }
 
-void Bag::sub_4192C0(int32 a1, int32 a2) {
+void Bag::sub_4192C0(uint32 a1, uint32 a2) {
 	_field_60 = a1;
 	_field_64 = a2;
 }
 
-void Bag::loadBackground(Common::String str1, Common::String str2, Common::String str3, Common::String str4, Common::String str5, Common::String str6, Common::String str7, Common::String str8, ArchiveType archiveType) {
+void Bag::loadBackground(Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, ArchiveType archiveType) {
 	_archiveType = archiveType;
 
 	error("[Bag::loadBackground] Not implemented");

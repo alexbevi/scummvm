@@ -128,6 +128,9 @@ ArtHandler::ArtHandler(Application *application) : _application(application) {
 
 ArtHandler::~ArtHandler() {
 	CLEAR_ARRAY(Art, _arts);
+
+	// Zero-out passed pointers
+	_application = NULL;
 }
 
 void ArtHandler::open(Zone zone, LoadFrom loadFrom) {
@@ -161,7 +164,7 @@ void ArtHandler::remove() {
 }
 
 Common::SeekableReadStream *ArtHandler::get(Common::String filename, Zone zone, LoadFrom loadFrom) {
-	uint32 index = getIndex(zone, loadFrom);
+	int32 index = getIndex(zone, loadFrom);
 
 	if (index == -1)
 		error("[ArtHandler::get] File for Zone %d and LoadFrom %d not opened!", zone, loadFrom);

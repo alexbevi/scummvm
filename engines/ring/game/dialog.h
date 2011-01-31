@@ -44,7 +44,7 @@ public:
 	DialogHandler();
 	~DialogHandler();
 
-	void init(int32 a1, int32 a2, int32 a3, int32 a4, int32 a5, int32 a6, int32 a7, int32 a8, int32 a9);
+	void init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9);
 
 private:
 	uint32 _field_0;

@@ -77,7 +77,7 @@ void ObjectHandler::addFromFile(Common::String filename, Common::String language
 		if (tokenizer.empty())
 			error("[ObjectHandler::addFromFile] Invalid line format (missing # separators)");
 
-		Common::String lang = tokenizer.nextToken();
+		tokenizer.nextToken();
 		if (tokenizer.empty())
 			error("[ObjectHandler::addFromFile] Invalid line format (missing object name)");
 

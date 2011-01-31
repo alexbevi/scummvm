@@ -51,14 +51,14 @@
 
 static int recursive_mkdir(const char *dir) {
 	char tmp[256];
-	char *p = NULL;
+	char *p;
 	size_t len;
 
 	snprintf(tmp, sizeof(tmp),"%s",dir);
 	len = strlen(tmp);
 	if(tmp[len - 1] == '\\')
 		tmp[len - 1] = 0;
-	for(p = tmp + 1; *p; p++)
+	for (p = tmp + 1; *p; p++) {
 		if(*p == '\\') {
 			*p = 0;
 #ifdef WIN32
@@ -71,10 +71,11 @@ static int recursive_mkdir(const char *dir) {
 
 			*p = '\\';
 		}
+	}
 #ifdef WIN32
-		return mkdir(tmp);
+	return mkdir(tmp);
 #else
-		return mkdir(tmp, S_IRWXU);
+	return mkdir(tmp, S_IRWXU);
 #endif
 }
 
@@ -215,9 +216,18 @@ void Debugger::dumpFile(Common::String filename) {
 		uint32 offset = 22;
 		stream->seek(offset);
 
-		byte *data = (byte *)calloc((uint32)stream->size() - offset, 1);
-		memset(data, 0, (uint32)stream->size() - offset);
-		stream->read(data, (uint32)stream->size() - offset);
+		uint32 size = (uint32)stream->size() - offset;
+
+		byte *data = (byte *)calloc(size, 1);
+		if (!data) {
+			DebugPrintf("Cannot allocated data for file %s (size: %d)", name.c_str(), size);
+			delete archive;
+			delete stream;
+			return;
+		}
+
+		memset(data, 0, size);
+		stream->read(data, size);
 
 		Common::String outPath = dumpPath;
 		Common::String outFilename = name;

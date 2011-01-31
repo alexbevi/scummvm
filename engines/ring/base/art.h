@@ -63,6 +63,16 @@ private:
 		uint32 field_14;
 		uint32 field_18;
 		uint32 field_1C;
+
+		Header() {
+			memset(&format, 0, sizeof(format));
+			field_8 = 0;
+			count = 0;
+			field_10 = 0;
+			field_14 = 0;
+			field_18 = 0;
+			field_1C = 0;
+		}
 	};
 
 	// Record entry

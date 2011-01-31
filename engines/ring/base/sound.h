@@ -45,7 +45,7 @@ public:
 
 private:
 	// Data
-	bool _field_0;
+	byte _field_0;
 	uint32 _field_1;
 	uint32 _field_5;
 	Common::Array<SoundItem *> _soundItems1;

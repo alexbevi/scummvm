@@ -42,19 +42,19 @@ public:
 	// Initialization
 	void sub_4178C0();
 
-	void sub_417D20(int32 a1, int32 a2);
-	void sub_417D40(int32 a1, int32 a2, int32 a3, int32 a4);
-	void sub_417D60(int32 a1, int32 a2);
-	void sub_417D80(int32 a1, int32 a2, int32 a3, int32 a4);
-	void sub_417DA0(int32 a1, int32 a2, int32 a3, int32 a4);
-	void sub_417DD0(int32 a1);
-	void sub_417DE0(int32 a1, int32 a2);
+	void sub_417D20(uint32 a1, uint32 a2);
+	void sub_417D40(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
+	void sub_417D60(uint32 a1, uint32 a2);
+	void sub_417D80(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
+	void sub_417DA0(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
+	void sub_417DD0(uint32 a1);
+	void sub_417DE0(uint32 a1, uint32 a2);
 
-	void sub_419280(int32 a1);
-	void sub_4192A0(int32 a1, int32 a2);
-	void sub_4192C0(int32 a1, int32 a2);
+	void sub_419280(uint32 a1);
+	void sub_4192A0(uint32 a1, uint32 a2);
+	void sub_4192C0(uint32 a1, uint32 a2);
 
-	void loadBackground(Common::String str1, Common::String str2, Common::String str3, Common::String str4, Common::String str5, Common::String str6, Common::String str7, Common::String str8, ArchiveType filetype);
+	void loadBackground(Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, ArchiveType filetype);
 
 private:
 

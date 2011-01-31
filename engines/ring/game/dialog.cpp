@@ -58,7 +58,7 @@ DialogHandler::~DialogHandler() {
 	CLEAR_ARRAY(Dialog, _dialogs);
 }
 
-void DialogHandler::init(int32 a1, int32 a2, int32 a3, int32 a4, int32 a5, int32 a6, int32 a7, int32 a8, int32 a9) {
+void DialogHandler::init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9) {
 	_field_0 = a1;
 	_field_4 = a2;
 	_field_8 = a3;

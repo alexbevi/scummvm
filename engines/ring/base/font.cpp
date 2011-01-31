@@ -27,8 +27,6 @@
 
 #include "graphics/fonts/winfont.h"
 
-#include "ring/helpers.h"
-
 namespace Ring {
 
 //////////////////////////////////////////////////////////////////////////
@@ -37,7 +35,6 @@ namespace Ring {
 Font::Font(Id id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId) : BaseObject(id) {
 
 	// Setup font description
-	memset(&_description, 0, sizeof(_description));
 	_description.facename = facename;
 	_description.height = height;
 	_description.weight = smallWeight ? 400 : 700;
@@ -60,8 +57,8 @@ Font::Font(Id id, Common::String filename, Common::String facename, uint32 heigh
 
 	// Create font object
 	_font = new Graphics::WinFont();
-	if (!_font->loadFromFON(filename, Graphics::WinFontDirEntry(facename, height)))
-		error("Unable to load font %s, face %s size %d", filename.c_str(), facename.c_str(), height);
+	if (!_font->loadFromFON(filename, Graphics::WinFontDirEntry(_description.facename, (uint16)_description.height)))
+		error("Unable to load font %s, face %s size %d", filename.c_str(), _description.facename.c_str(), _description.height);
 }
 
 Font::~Font() {

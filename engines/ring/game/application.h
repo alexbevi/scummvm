@@ -75,9 +75,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Zone
-	Common::String getZone(Zone zone);
-	Common::String getZoneName(Zone zone);
-	uint32 getReadFrom(Zone zone);
+	Common::String getZone(Zone zone) const;
+	Common::String getZoneName(Zone zone) const;
+	uint32 getReadFrom(Zone zone) const;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Helpers
@@ -170,7 +170,7 @@ private:
 	Common::Array<PuzzleInfo*>  _puzzleList;
 	Puzzle                     *_puzzle;
 	Common::Array<Rotation*>    _rotationList;
-	void*                       _field_89;
+	void                       *_field_89;
 	Bag                        *_bag;
 	TimerHandler               *_timerHandler;
 	Var                        *_var;

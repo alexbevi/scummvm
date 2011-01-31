@@ -59,6 +59,22 @@ private:
 		byte   quality;
 		byte   pitchAndFamily;
 		Common::String facename;
+
+		FontDescription() {
+			height = 0;
+			width = 0;
+			escapement = 0;
+			orientation = 0;
+			weight = 0;
+			italic = false;
+			underline = false;
+			strikeOut = false;
+			charSet = 0;
+			outPrecision = 0;
+			clipPrecision = 0;
+			quality = 0;
+			pitchAndFamily = 0;
+		}
 	};
 
 	FontDescription _description;

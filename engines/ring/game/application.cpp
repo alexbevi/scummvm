@@ -49,33 +49,36 @@
 namespace Ring {
 
 Application::Application(RingEngine *engine) : _vm(engine),
-	_video(NULL), _artHandler(NULL), _fontHandler(NULL), _dialogHandler(NULL), _languageHandler(NULL),
-	_field_54(1), _zoneName("A0"), _cursorHandler(NULL), _soundHandler(NULL), _field_5D(0),
-	_field_5E(0), _archiveType(kTypeFile), _field_66(0), _field_6A(0), _zone(kZoneInvalid),
-	_field_6F(0), _field_70(0), _puzzle(NULL), _field_89(NULL), _bag(NULL),
-	_timerHandler(NULL), _var(NULL), _dragControl(NULL), _objectHandler(NULL), _preferenceHandler(NULL),
+	_video(NULL),        _artHandler(NULL),       _fontHandler(NULL),   _dialogHandler(NULL), _languageHandler(NULL),
+	_field_54(1),        _archiveType(kTypeFile), _cursorHandler(NULL), _field_5D(0),         _field_5E(0),
+	_soundHandler(NULL), _field_66(0),            _field_6A(0),         _zoneName("A0"),      _zone(kZoneInvalid),
+	_field_6F(0),        _field_70(0),            _field_74(0),         _field_75(0),         _field_76(0),
+	_field_77(0),        _field_78(0),            _puzzle(NULL),        _field_89(NULL),      _bag(NULL),
+	_timerHandler(NULL), _var(NULL),              _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
 	_controlNotPressed(false) {
 }
 
 Application::~Application() {
 	// TODO delete global image buffer
 
-	SAFE_DELETE(_dragControl);
-	SAFE_DELETE(_var);
-	SAFE_DELETE(_timerHandler);
-	SAFE_DELETE(_field_89);
-	CLEAR_ARRAY(Rotation, _rotationList);
-	SAFE_DELETE(_puzzle);
-	CLEAR_ARRAY(PuzzleInfo, _puzzleList);
-	CLEAR_ARRAY(ObjectInfo, _objectList);
+	SAFE_DELETE(_video);
+	SAFE_DELETE(_artHandler);
+	SAFE_DELETE(_fontHandler);
+	SAFE_DELETE(_dialogHandler);
+	SAFE_DELETE(_languageHandler);
 	SAFE_DELETE(_cursorHandler);
 	SAFE_DELETE(_soundHandler);
-	SAFE_DELETE(_fontHandler);
-	SAFE_DELETE(_languageHandler);
-	SAFE_DELETE(_artHandler);
+	CLEAR_ARRAY(ObjectInfo, _objectList);
+	CLEAR_ARRAY(PuzzleInfo, _puzzleList);
+	SAFE_DELETE(_puzzle);
+	CLEAR_ARRAY(Rotation, _rotationList);
+	SAFE_DELETE(_field_89);
+	SAFE_DELETE(_bag);
+	SAFE_DELETE(_timerHandler);
+	SAFE_DELETE(_var);
+	SAFE_DELETE(_dragControl);
 	SAFE_DELETE(_objectHandler);
 	SAFE_DELETE(_preferenceHandler);
-	SAFE_DELETE(_video);
 
 	// Zero-out passed pointers
 	_vm = NULL;
@@ -201,6 +204,9 @@ void Application::init() {
 }
 
 void Application::loadConfiguration() {
+	if (!_languageHandler)
+		error("[Application::loadConfiguration] Language handler has not been initialized!");
+
 	// Open a stream to the configuration file
 	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember("fl.ini");
 	if (!archive)
@@ -226,7 +232,7 @@ void Application::loadConfiguration() {
 				error("[Application::loadConfiguration] Error reading file (eos or read error)");
 
 			// Get token and value
-			if (sscanf(line.c_str(), "%s %s", &token, &val) != 2)
+			if (sscanf(line.c_str(), "%s %s", (char *)&token, (char *)&val) != 2)
 				error("[Application::loadConfiguration] Error parsing configuration line (%d)", i + 2);
 
 			// Handle tokens
@@ -276,37 +282,37 @@ void Application::loadConfiguration() {
 				_configuration.dialog.loadFrom = (LoadFrom)atoi((char *)&val);
 
 			if (Common::String(token) == "ART_BAG:")
-				_configuration.artBAG = atoi((char *)&val);
+				_configuration.artBAG = (bool)atoi((char *)&val);
 
 			if (Common::String(token) == "ART_CURSOR:")
-				_configuration.artCURSOR = atoi((char *)&val);
+				_configuration.artCURSOR = (bool)atoi((char *)&val);
 
 			if (Common::String(token) == "ART_SY:")
-				_configuration.artSY = atoi((char *)&val);
+				_configuration.artSY = (bool)atoi((char *)&val);
 
 			if (Common::String(token) == "ART_AS:")
-				_configuration.artAS = atoi((char *)&val);
+				_configuration.artAS = (bool)atoi((char *)&val);
 
 			if (Common::String(token) == "ART_NI:")
-				_configuration.artNI = atoi((char *)&val);
+				_configuration.artNI = (bool)atoi((char *)&val);
 
 			if (Common::String(token) == "ART_N2:")
-				_configuration.artN2 = atoi((char *)&val);
+				_configuration.artN2 = (bool)atoi((char *)&val);
 
 			if (Common::String(token) == "ART_RO:")
-				_configuration.artRO = atoi((char *)&val);
+				_configuration.artRO = (bool)atoi((char *)&val);
 
 			if (Common::String(token) == "ART_RH:")
-				_configuration.artRH = atoi((char *)&val);
+				_configuration.artRH = (bool)atoi((char *)&val);
 
 			if (Common::String(token) == "ART_WA:")
-				_configuration.artWA = atoi((char *)&val);
+				_configuration.artWA = (bool)atoi((char *)&val);
 
 			if (Common::String(token) == "ART_FO:")
-				_configuration.artFO = atoi((char *)&val);
+				_configuration.artFO = (bool)atoi((char *)&val);
 
 			if (Common::String(token) == "CHECKLOADSAVE:")
-				_configuration.checkLoadSave = atoi((char *)&val);
+				_configuration.checkLoadSave = (bool)atoi((char *)&val);
 		}
 	}
 }
@@ -372,7 +378,7 @@ void Application::onZoneTimer(TimerId id) {
 //////////////////////////////////////////////////////////////////////////
 // Zone
 //////////////////////////////////////////////////////////////////////////
-Common::String Application::getZone(Zone zone) {
+Common::String Application::getZone(Zone zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -405,7 +411,7 @@ Common::String Application::getZone(Zone zone) {
 	error("[Application::getZone] Invalid zone (%d)", zone);
 }
 
-Common::String Application::getZoneName(Zone zone) {
+Common::String Application::getZoneName(Zone zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -434,7 +440,7 @@ Common::String Application::getZoneName(Zone zone) {
 	error("[Application::getZoneName] Invalid zone (%d)", zone);
 }
 
-uint32 Application::getReadFrom(Zone zone) {
+uint32 Application::getReadFrom(Zone zone) const {
 	if (_archiveType == kTypeFile)
 		return kTypeFile;
 
