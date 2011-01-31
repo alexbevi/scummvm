@@ -56,6 +56,12 @@ SoundHandler::~SoundHandler() {
 	CLEAR_ARRAY(SoundItem, _soundItems4);
 }
 
+void SoundHandler::reset() {
+	_field_0 = 0;
+	_field_1 = 0;
+	_field_5 = 0;
+}
+
 void SoundHandler::setReverseStereo(int32 reverseStereo) {
 	switch (reverseStereo) {
 	default:
@@ -70,6 +76,5 @@ void SoundHandler::setReverseStereo(int32 reverseStereo) {
 		break;
 	}
 }
-
 
 } // End of namespace Ring

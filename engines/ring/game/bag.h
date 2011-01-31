@@ -58,6 +58,10 @@ public:
 
 	void loadBackground(Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, ArchiveType filetype);
 
+	// Enable/Disable
+	void enable();
+	void disable();
+
 private:
 	Application *_application;
 
@@ -116,7 +120,7 @@ private:
 	ArchiveType _archiveType;
 	Image      *_imageErdaGun;
 	Image      *_imageErdaGur;
-	bool        _field_D2;
+	bool        _enabled;
 
 	void loadImage(Common::String filename, Image *image, ArchiveType archiveType);
 };

@@ -44,6 +44,7 @@ public:
 	~SoundHandler();
 
 	void setReverseStereo(int32 reverseStereo);
+	void reset();
 
 private:
 	// Data

@@ -90,7 +90,7 @@ Bag::Bag(Application *application) : _application(application) {
 	_archiveType = kTypeInvalid;
 	_imageErdaGun = NULL;
 	_imageErdaGur = NULL;
-	_field_D2 = false;
+	_enabled = false;
 }
 
 Bag::~Bag() {
@@ -140,7 +140,7 @@ void Bag::initHotspots() {
 	                                1003));
 
 	_hotspots.push_back(new Hotspot(Common::Rect(90, 0, 150, 30),
-	                                _field_D2,
+	                                _enabled,
 	                                1000,
 	                                1005,
 	                                1005));
@@ -241,6 +241,22 @@ void Bag::loadImage(Common::String filename, Image *image, ArchiveType archiveTy
 
 	if (!image->load(path, archiveType, 1, 2))
 		error("[Bag::LoadImage] Cannot load image: %s", path.c_str());
+}
+
+void Bag::enable() {
+	if (_hotspots.empty() || _hotspots.size() <= 3)
+		return;
+
+	_hotspots[3]->enable();
+	_enabled = true;
+}
+
+void Bag::disable() {
+	if (_hotspots.empty() || _hotspots.size() <= 3)
+		return;
+
+	_hotspots[3]->disable();
+	_enabled = false;
 }
 
 } // End of namespace Ring

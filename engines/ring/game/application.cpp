@@ -317,6 +317,9 @@ void Application::loadConfiguration() {
 }
 
 void Application::setup() {
+	// Set system zone
+	setupZone(kZoneSY, 0);
+
 	// Setup cursors
 	ArchiveType archiveType = (_configuration.artCURSOR ? kTypeArchive : kTypeFile);
 
@@ -399,6 +402,50 @@ void Application::onZoneTimer(TimerId id) {
 //////////////////////////////////////////////////////////////////////////
 // Zone
 //////////////////////////////////////////////////////////////////////////
+void Application::setupZone(Zone zone, uint32 a2)  {
+	bool load = false;
+
+	warning("[Application::setupZone] Saved data check not implemented");
+
+	// TODO check saved data for zone and/or puzzle id
+
+	if (zone == 1) {
+		load = true;
+	} else {
+		error("[Application::setupZone] Zone CD check not implemented");
+	}
+
+	resetPuzzle();
+	warning("[Application::setupZone] Missing function call");
+
+	_soundHandler->reset();
+
+	if (zone != 1)
+		_artHandler->remove();
+
+	if (load) {
+		setZoneAndEnableBag(zone);
+		setZone(zone, a2);
+	} else {
+		error("[Application::setupZone] CD check not implemented");
+	}
+}
+
+void Application::setZoneAndEnableBag(Zone zone) {
+	_zoneName = getZone(zone);
+	_zone = zone;
+
+	// Enable or disable bag
+	if (zone == kZoneSY || zone == kZoneAS)
+		_bag->disable();
+	else
+		_bag->enable();
+}
+
+void Application::setZone(Zone zone, uint32 a2) {
+	error("[Application::setZone] Not implemented");
+}
+
 Common::String Application::getZone(Zone zone) const {
 	switch (zone) {
 	default:
@@ -495,6 +542,13 @@ uint32 Application::getReadFrom(Zone zone) const {
 	}
 
 	error("[Application::getReadFrom] Invalid zone (%d)", zone);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Puzzle
+//////////////////////////////////////////////////////////////////////////
+void Application::resetPuzzle() {
+	warning("[Application::resetPuzzle] Not implemented");
 }
 
 //////////////////////////////////////////////////////////////////////////
