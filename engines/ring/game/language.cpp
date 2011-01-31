@@ -60,11 +60,12 @@ void LanguageHandler::setActiveLanguage(Common::String name) {
 	if (_languages.empty())
 		error("[LanguageHandler::setActiveLanguage] No language available");
 
-	for (AssociativeArray<Language *>::iterator i = _languages.begin(); i != _languages.end(); i++)
+	for (AssociativeArray<Language *>::iterator i = _languages.begin(); i != _languages.end(); i++) {
 		if ((*i)->getName() == name) {
-			_language = (LanguageId)(*i)->getID();
+			_language = (LanguageId)(*i)->getId();
 			return;
 		}
+	}
 
 	error("[LanguageHandler::setActiveLanguage] Language doesn't exist (%s)", name.c_str());
 }

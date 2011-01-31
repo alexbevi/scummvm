@@ -146,7 +146,7 @@ void Application::init() {
 
 	// Setup dialogs
 	_dialogHandler = new DialogHandler();
-	_dialogHandler->init(1, 200, 200, 30, 0, 0, 0, 461, 3);
+	_dialogHandler->init(1, Color(200, 200, 30), Color(0, 0, 0), 461, 3);
 
 	// Setup cursors
 	_cursorHandler = new CursorHandler();
@@ -316,8 +316,30 @@ void Application::loadConfiguration() {
 	}
 }
 
-void Application::setupCursors() {
-	error("[Application::setupCursors] Not implemented");
+void Application::setup() {
+	// Setup cursors
+	ArchiveType archiveType = (_configuration.artCURSOR ? kTypeArchive : kTypeFile);
+
+	_cursorHandler->add(kCursorDefault,       "",                kCursorTypeNormal,   1, 3, archiveType);
+	_cursorHandler->add(kCursorBusy,          "cur_busy",        kCursorTypeImage,    1, 3, archiveType);
+	_cursorHandler->add(kCursorHandSelection, "ni_handsel",      kCursorTypeImage,    1, 3, archiveType);
+	_cursorHandler->add(kCursorIdle,          "cur_idle",        kCursorTypeAnimated, 1, 15, 1095237632, 4, 3, archiveType);
+	_cursorHandler->add(kCursorMove,          "cur_muv",         kCursorTypeAnimated, 1, 20, 1095237632, 4, 3, archiveType);
+	_cursorHandler->add(kCursorHotspot,       "cur_hotspot",     kCursorTypeAnimated, 1, 19, 1095237632, 4, 3, archiveType);
+	_cursorHandler->add(kCursorBack,          "cur_back",        kCursorTypeImage,    1, 3, archiveType);
+	_cursorHandler->add(kCursorMenuIdle,      "cur_menuidle",    kCursorTypeNormal,   1, 3, archiveType);
+	_cursorHandler->add(kCursorMenuActive,    "cur_menuactive",  kCursorTypeImage,    1, 3, archiveType);
+
+	// Adjust offsets
+	_cursorHandler->setOffset(kCursorHandSelection, Common::Point(15, 15));
+	_cursorHandler->setOffset(kCursorIdle, Common::Point(10, 6));
+	_cursorHandler->setOffset(kCursorMove, Common::Point(10, 6));
+	_cursorHandler->setOffset(kCursorHotspot, Common::Point(10, 6));
+	_cursorHandler->setOffset(kCursorBack, Common::Point(10, 20));
+
+	// Setup subtitles
+	_dialogHandler->setSubtitleColor(Color(255, 255, 255));
+	_dialogHandler->setSubtitleBackgroundColor(Color(50, 50, 50));
 }
 
 void Application::setupZones() {
