@@ -25,6 +25,8 @@
 
 #include "ring/game/bag.h"
 
+#include "ring/base/text.h"
+
 #include "ring/game/object.h"
 
 #include "ring/graphics/hotspot.h"
@@ -46,7 +48,7 @@ Bag::Bag() {
 	_field_2C = 0;
 	_field_30 = 0;
 	_field_34 = 0;
-	_image1 = NULL;
+	_background = NULL;
 	_image2 = NULL;
 	_image3 = NULL;
 	_image4 = NULL;
@@ -58,14 +60,14 @@ Bag::Bag() {
 	_field_5C = 0;
 	_field_60 = 0;
 	_field_64 = 0;
-	_field_68 = NULL;
-	_field_6C = NULL;
-	_field_70 = NULL;
+	_image5 = NULL;
+	_image6 = NULL;
+	_image7 = NULL;
 	_field_74 = 0;
 	_field_78 = 0;
 	_field_7C = 0;
 	_field_80 = 0;
-	_field_84 = NULL;
+	_image8 = NULL;
 	_field_88 = 0;
 	_field_8C = 0;
 	_field_90 = 6;
@@ -74,7 +76,7 @@ Bag::Bag() {
 	_field_99 = 0;
 	_field_9D = 0;
 	_ticks = 0;
-	_field_A5 = NULL;
+	_text = NULL;
 	_field_A9 = 1;
 	_field_AD = 245;
 	_field_B1 = 235;
@@ -84,35 +86,72 @@ Bag::Bag() {
 	_field_C1 = 0;
 	_field_C5 = 90;
 	_archiveType = kTypeInvalid;
-	_field_CA = NULL;
-	_field_CE = NULL;
-	_field_D2 = 0;
+	_imageErdaGun = NULL;
+	_imageErdaGur = NULL;
+	_field_D2 = false;
 }
 
 Bag::~Bag() {
 	CLEAR_ARRAY(Object, _objects);
-	CLEAR_ARRAY(Hotspot, _field_4);
-	CLEAR_ARRAY(uint32, _field_8);
+	CLEAR_ARRAY(uint32, _field_4);
+	CLEAR_ARRAY(Hotspot, _hotspots);
 
-	SAFE_DELETE(_image1);
+	SAFE_DELETE(_background);
 	SAFE_DELETE(_image2);
 	SAFE_DELETE(_image3);
 	SAFE_DELETE(_image4);
-
-	SAFE_DELETE(_field_68);
-	SAFE_DELETE(_field_6C);
-	SAFE_DELETE(_field_70);
-	SAFE_DELETE(_field_84);
-	SAFE_DELETE(_field_A5);
-	SAFE_DELETE(_field_CA);
-	SAFE_DELETE(_field_CE);
+	SAFE_DELETE(_image5);
+	SAFE_DELETE(_image6);
+	SAFE_DELETE(_image7);
+	SAFE_DELETE(_image8);
+	SAFE_DELETE(_text);
+	SAFE_DELETE(_imageErdaGun);
+	SAFE_DELETE(_imageErdaGur);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Initialization
 //////////////////////////////////////////////////////////////////////////
-void Bag::sub_4178C0() {
-	error("[Bag::sub_4178C0] Not implemented");
+void Bag::initHotspots() {
+	_hotspots.push_back(new Hotspot(Common::Rect(_field_48 + _field_1C,
+	                                             _field_4C + _field_20,
+	                                             _field_48 + _field_1C + _field_50,
+	                                             _field_4C + _field_20 + _field_54),
+	                                false,
+	                                1000,
+	                                1001,
+	                                1001));
+
+	_hotspots.push_back(new Hotspot(Common::Rect(_field_1C + _field_74,
+	                                             _field_20 + _field_78,
+	                                             _field_1C + _field_74 + _field_7C,
+	                                             _field_20 + _field_78 + _field_80),
+	                                false,
+	                                1000,
+	                                1002,
+	                                1002));
+
+	_hotspots.push_back(new Hotspot(Common::Rect(200, 0, 640, 30),
+	                                true,
+	                                1000,
+	                                1003,
+	                                1003));
+
+	_hotspots.push_back(new Hotspot(Common::Rect(90, 0, 150, 30),
+	                                _field_D2,
+	                                1000,
+	                                1005,
+	                                1005));
+
+	for (uint32 i = 0; i < _field_24; ++i)
+		_hotspots.push_back(new Hotspot(Common::Rect(_field_C + i * _field_18 + _field_1C + 1,
+													 _field_20 + _field_10,
+													 _field_18 * (i + 1) - 1 + _field_C + _field_1C,
+													 _field_10 + _field_14 + 1 + _field_20),
+										false,
+										1000,
+										i,
+										1004));
 }
 
 void Bag::sub_417D20(uint32 a1, uint32 a2) {
@@ -170,14 +209,36 @@ void Bag::sub_4192C0(uint32 a1, uint32 a2) {
 	_field_64 = a2;
 }
 
-void Bag::loadBackground(Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, ArchiveType archiveType) {
+void Bag::loadBackground(Common::String filename1, Common::String, Common::String filename3, Common::String, Common::String, Common::String filename6, Common::String, Common::String filename8, ArchiveType archiveType) {
 	_archiveType = archiveType;
 
-	error("[Bag::loadBackground] Not implemented");
+	// Load images
+	loadImage(filename1, _background, archiveType);
+	loadImage(filename3, _image3, archiveType);
+	loadImage(filename6, _image6, archiveType);
+	loadImage(filename8, _image8, archiveType);
+	loadImage("erda_gun.tga", _imageErdaGun, archiveType);
+	loadImage("erda_gur.tga", _imageErdaGur, archiveType);
+
+	// Setup text
+	SAFE_DELETE(_text);
+	_text = new Text();
+	_text->init("", 0, 0, _field_A9, _field_AD, _field_B1, _field_B5, _field_B9, _field_BD, _field_C1);
 }
 
-void Bag::LoadImage(Common::String filename, Image *image, ArchiveType archiveType) {
-	error("[Bag::LoadImage] Not implemented");
+void Bag::loadImage(Common::String filename, Image *image, ArchiveType archiveType) {
+	Common::String path;
+
+	if (archiveType == kTypeFile)
+		path = Common::String::format("LIST/%s", filename.c_str());
+	else
+		path = Common::String::format("/LIST/%s", filename.c_str());
+
+	SAFE_DELETE(image);
+	image = new Image();
+
+	if (!image->load(path, archiveType, 1, 2))
+		error("[Bag::LoadImage] Cannot load image: %s", path.c_str());
 }
 
 } // End of namespace Ring

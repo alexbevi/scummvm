@@ -26,12 +26,16 @@
 #ifndef RING_TEXT_H
 #define RING_TEXT_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class Text {
 public:
 	Text();
 	~Text();
+
+	void init(Common::String text, uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9);
 
 private:
 

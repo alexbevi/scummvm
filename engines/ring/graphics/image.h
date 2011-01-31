@@ -26,12 +26,16 @@
 #ifndef RING_IMAGE_H
 #define RING_IMAGE_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class Image {
 public:
 	Image();
 	~Image();
+
+	bool load(Common::String path, ArchiveType type, uint32 a3, uint32 a4);
 
 private:
 

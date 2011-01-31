@@ -33,4 +33,8 @@ Text::Text() {
 Text::~Text() {
 }
 
+void Text::init(Common::String text, uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9) {
+	warning("[Text::init] not implemented (%s)", text.c_str());
+}
+
 } // End of namespace Ring

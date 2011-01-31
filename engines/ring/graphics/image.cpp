@@ -33,4 +33,10 @@ Image::Image() {
 Image::~Image() {
 }
 
+bool Image::load(Common::String path, ArchiveType type, uint32 a3, uint32 a4) {
+	warning("[Image::load] Not implemented (%s)", path.c_str());
+
+	return true;
+}
+
 } // End of namespace Ring

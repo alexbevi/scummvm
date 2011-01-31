@@ -26,17 +26,29 @@
 #ifndef RING_HOTSPOT_H
 #define RING_HOTSPOT_H
 
+#include "common/rect.h"
+
 namespace Ring {
 
 class RingEngine;
 
 class Hotspot {
 public:
-	Hotspot();
+	Hotspot(Common::Rect rect, bool enabled, uint32 a2, uint32 a3, uint32 a4);
 	~Hotspot();
 
-private:
+	void enable() { _enabled = true; }
+	void disable() { _enabled = false; }
+	bool isEnabled() { return _enabled; }
+	bool contains(Common::Point point);
 
+private:
+	Common::Rect _rect;
+	bool         _enabled;
+	uint32       _field_11;
+	uint32       _field_15;
+	uint32       _field_19;
+	int32        _field_1D;
 };
 
 } // End of namespace Ring

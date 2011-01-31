@@ -33,6 +33,7 @@ namespace Ring {
 class Hotspot;
 class Image;
 class Object;
+class Text;
 
 class Bag {
 public:
@@ -40,7 +41,7 @@ public:
 	~Bag();
 
 	// Initialization
-	void sub_4178C0();
+	void initHotspots();
 
 	void sub_417D20(uint32 a1, uint32 a2);
 	void sub_417D40(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
@@ -60,62 +61,62 @@ private:
 
 	// Bag data
 	Common::Array<Object *> _objects;
-	Common::Array<Hotspot*> _field_4;
-	Common::Array<uint32*> _field_8;
-	uint32 _field_C;
-	uint32 _field_10;
-	uint32 _field_14;
-	uint32 _field_18;
-	uint32 _field_1C;
-	uint32 _field_20;
-	uint32 _field_24;
-	uint32 _field_28;
-	uint32 _field_2C;
-	uint32 _field_30;
-	uint32 _field_34;
-	Image *_image1;
-	Image *_image2;
-	Image *_image3;
-	Image *_image4;
-	uint32 _field_48;
-	uint32 _field_4C;
-	uint32 _field_50;
-	uint32 _field_54;
-	uint32 _field_58;
-	uint32 _field_5C;
-	uint32 _field_60;
-	uint32 _field_64;
-	uint32 *_field_68;
-	uint32 *_field_6C;
-	uint32 *_field_70;
-	uint32 _field_74;
-	uint32 _field_78;
-	uint32 _field_7C;
-	uint32 _field_80;
-	uint32 *_field_84;
-	uint32 _field_88;
-	uint32 _field_8C;
-	uint32 _field_90;
-	byte _field_94;
-	uint32 _field_95;
-	uint32 _field_99;
-	uint32 _field_9D;
-	uint32 _ticks;
-	uint32 *_field_A5;
-	uint32 _field_A9;
-	uint32 _field_AD;
-	uint32 _field_B1;
-	uint32 _field_B5;
-	uint32 _field_B9;
-	uint32 _field_BD;
-	uint32 _field_C1;
-	uint32 _field_C5;
+	Common::Array<uint32*> _field_4;
+	Common::Array<Hotspot*> _hotspots;
+	uint32      _field_C;
+	uint32      _field_10;
+	uint32      _field_14;
+	uint32      _field_18;
+	uint32      _field_1C;
+	uint32      _field_20;
+	uint32      _field_24;
+	uint32      _field_28;
+	uint32      _field_2C;
+	uint32      _field_30;
+	uint32      _field_34;
+	Image      *_background;
+	Image      *_image2;
+	Image      *_image3;
+	Image      *_image4;
+	uint32      _field_48;
+	uint32      _field_4C;
+	uint32      _field_50;
+	uint32      _field_54;
+	uint32      _field_58;
+	uint32      _field_5C;
+	uint32      _field_60;
+	uint32      _field_64;
+	Image      *_image5;
+	Image      *_image6;
+	Image      *_image7;
+	uint32      _field_74;
+	uint32      _field_78;
+	uint32      _field_7C;
+	uint32      _field_80;
+	Image      *_image8;
+	uint32      _field_88;
+	uint32      _field_8C;
+	uint32      _field_90;
+	byte        _field_94;
+	uint32      _field_95;
+	uint32      _field_99;
+	uint32      _field_9D;
+	uint32      _ticks;
+	Text       *_text;
+	uint32      _field_A9;
+	uint32      _field_AD;
+	uint32      _field_B1;
+	uint32      _field_B5;
+	uint32      _field_B9;
+	uint32      _field_BD;
+	uint32      _field_C1;
+	uint32      _field_C5;
 	ArchiveType _archiveType;
-	uint32 *_field_CA;
-	uint32 *_field_CE;
-	byte _field_D2;
+	Image      *_imageErdaGun;
+	Image      *_imageErdaGur;
+	bool        _field_D2;
 
-	void LoadImage(Common::String filename, Image *image, ArchiveType archiveType);
+	void loadImage(Common::String filename, Image *image, ArchiveType archiveType);
 };
 
 } // End of namespace Ring

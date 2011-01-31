@@ -27,9 +27,20 @@
 
 namespace Ring {
 
-Hotspot::Hotspot() {}
+Hotspot::Hotspot(Common::Rect rect, bool enabled, uint32 a2, uint32 a3, uint32 a4) {
+	_rect = rect;
+	_enabled = enabled;
+	_field_11 = a2;
+	_field_15 = a3;
+	_field_19 = a4;
+	_field_1D = -1;
+}
 
 Hotspot::~Hotspot() {
+}
+
+bool Hotspot::contains(Common::Point point) {
+	return _enabled && _rect.contains(point);
 }
 
 } // End of namespace Ring

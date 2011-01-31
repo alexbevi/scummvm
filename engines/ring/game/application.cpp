@@ -184,7 +184,7 @@ void Application::init() {
 	_bag->sub_417DE0(335, 8);
 	_bag->sub_419280(500);
 	_bag->loadBackground("bagbgr.tga", "", "bagarr.tga", "", "", "bagarr.tga", "", "menu_gur.tga", _archiveType);
-	_bag->sub_4178C0();
+	_bag->initHotspots();
 
 	_archiveType = kTypeFile;
 
