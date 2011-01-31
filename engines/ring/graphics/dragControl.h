@@ -30,15 +30,34 @@
 
 namespace Ring {
 
+class Hotspot;
+
 class DragControl {
 public:
 	DragControl();
 	~DragControl();
 
-	void init();
-
 private:
-
+	uint32 _field_0;
+	uint32 _field_4;
+	uint32 _field_8;
+	uint32 _field_C;
+	uint32 _field_10;
+	uint32 _field_14;
+	uint32 _field_18;
+	uint32 _field_1C;
+	byte _field_20;
+	uint32 _field_21;
+	uint32 _field_25;
+	uint32 _field_29;
+	uint32 _field_2D;
+	uint32 _field_31;
+	uint32 _field_35;
+	uint32 _field_39;
+	uint32 _field_3D;
+	uint32 _field_41;
+	uint32 _field_45;
+	Hotspot *_hotspot;
 };
 
 } // End of namespace Ring
