@@ -25,6 +25,7 @@
 
 #include "ring/base/cursor.h"
 
+#include "ring/graphics/animation.h"
 #include "ring/graphics/image.h"
 
 #include "ring/helpers.h"
@@ -131,33 +132,35 @@ void CursorImage::dealloc() {
 // CursorAnimation
 //////////////////////////////////////////////////////////////////////////
 CursorAnimation::CursorAnimation() {
-
+	_image = new AnimationImage();
 }
 
 CursorAnimation::~CursorAnimation() {
 	deinit();
+	SAFE_DELETE(_image);
 }
 
 void CursorAnimation::init(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, ArchiveType archiveType) {
 	CursorBase::init(id, name, cursorType, a4);
 
-	error("[CursorAnimation::init] Not implemented");
+	_image->init(name, 1, 0, 0, 0, 3, a4, a5, 1, a6, a3, 0, a7, archiveType);
+	_image->setTicks(g_system->getMillis());
 }
 
 void CursorAnimation::deinit() {
-	error("[CursorAnimation::deinit] Not implemented");
+	_image->deinit();
 }
 
 void CursorAnimation::alloc() {
-	error("[CursorAnimation::alloc] Not implemented");
+	_image->alloc();
 }
 
 void CursorAnimation::dealloc() {
-	error("[CursorAnimation::dealloc] Not implemented");
+	_image->dealloc();
 }
 
 void CursorAnimation::draw() {
-	error("[CursorAnimation::dealloc] Not implemented");
+	_image->draw();
 }
 
 //////////////////////////////////////////////////////////////////////////

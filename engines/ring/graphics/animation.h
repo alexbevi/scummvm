@@ -26,12 +26,23 @@
 #ifndef RING_ANIMATION_H
 #define RING_ANIMATION_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class AnimationImage {
 public:
 	AnimationImage();
 	~AnimationImage();
+
+	void init(Common::String name, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, ArchiveType archiveType);
+	void deinit();
+	void alloc();
+	void dealloc();
+
+	void draw();
+
+	void setTicks(uint32 ticks);
 
 private:
 

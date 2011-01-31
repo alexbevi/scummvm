@@ -33,4 +33,31 @@ AnimationImage::AnimationImage() {
 AnimationImage::~AnimationImage() {
 }
 
+void AnimationImage::init(Common::String name, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, ArchiveType archiveType) {
+	warning("[AnimationImage::init] Not implemented");
+}
+
+void AnimationImage::deinit() {
+	warning("[AnimationImage::deinit] Not implemented");
+}
+
+void AnimationImage::alloc() {
+	warning("[AnimationImage::alloc] Not implemented");
+}
+
+void AnimationImage::dealloc() {
+	warning("[AnimationImage::dealloc] Not implemented");
+}
+
+void AnimationImage::draw() {
+	warning("[AnimationImage::draw] Not implemented");
+}
+
+void AnimationImage::setTicks(uint32 ticks) {
+	warning("[AnimationImage::setTicks] Not implemented");
+}
+
+
+
+
 } // End of namespace Ring
