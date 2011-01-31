@@ -27,10 +27,10 @@
 
 namespace Ring {
 
-Animation::Animation() {
+AnimationImage::AnimationImage() {
 }
 
-Animation::~Animation() {
+AnimationImage::~AnimationImage() {
 }
 
 } // End of namespace Ring

@@ -25,6 +25,10 @@
 
 #include "ring/game/object.h"
 
+#include "ring/graphics/accessibility.h"
+#include "ring/graphics/animation.h"
+#include "ring/graphics/presentation.h"
+
 #include "ring/helpers.h"
 
 #include "common/archive.h"
@@ -34,17 +38,54 @@ namespace Ring {
 
 //////////////////////////////////////////////////////////////////////////
 // Object
-Object::Object() {}
+Object::Object(ObjectId id, Common::String language, Common::String name, byte a5) : BaseObject(id) {
+	_language = language;
+	_name = name;
+	_field_C  = a5;
+	_field_15 = 0;;
+	_field_19 = 0;
+	_field_1D = 0;
+	_field_21 = 3;
+	_field_25 = 0;
+	_field_29 = 0;
+	_field_2D = 3;
+	_field_31 = 101;
+	_field_32 = 0;
+	_field_36 = 0;
+	_field_3A = 0;
+	_field_3E = 3;
+	_field_42 = 0;
+	_field_46 = 0;
+	_field_4A = 3;
+	_field_4E = 101;
+	_field_4F = 0;
+	_field_53 = 0;
+	_field_57 = 0;
+	_field_5B = 3;
+	_field_5F = 0;
+	_field_63 = 0;
+	_field_67 = 3;
+	_field_6B = 101;
+	_field_6C = 0;
+	_field_70 = 0;
+	_field_74 = 0;
+	_field_78 = 3;
+	_field_7C = 0;
+	_field_80 = 0;
+	_field_84 = 3;
+	_field_88 = 101;
+	_animationImage = NULL;
+}
 
 Object::~Object() {
+	CLEAR_ARRAY(Accessibility, _accessibilities);
+	CLEAR_ARRAY(Presentation, _presentations);
+	SAFE_DELETE(_animationImage);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // ObjectInfo
 //////////////////////////////////////////////////////////////////////////
-ObjectInfo::ObjectInfo() : BaseObject(kObjectInvalid) {
-}
-
 ObjectInfo::ObjectInfo(ObjectId id, Common::String language, Common::String name) :
 	BaseObject(id), _language(language), _name(name) {
 }

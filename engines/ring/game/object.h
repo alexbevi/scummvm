@@ -30,18 +30,58 @@
 
 namespace Ring {
 
-class Object {
+class Accessibility;
+class AnimationImage;
+class Presentation;
+
+class Object : public BaseObject {
 public:
-	Object();
+	Object(ObjectId id, Common::String language, Common::String name, byte a5);
 	~Object();
 
 private:
-
+	Common::String _language;
+	Common::String _name;
+	byte    _field_C;
+	Common::Array<Accessibility *> _accessibilities;
+	Common::Array<Presentation *> _presentations;
+	uint32  _field_15;
+	uint32  _field_19;
+	uint32  _field_1D;
+	uint32  _field_21;
+	uint32  _field_25;
+	uint32  _field_29;
+	uint32  _field_2D;
+	byte    _field_31;
+	uint32  _field_32;
+	uint32  _field_36;
+	uint32  _field_3A;
+	uint32  _field_3E;
+	uint32  _field_42;
+	uint32  _field_46;
+	uint32  _field_4A;
+	byte    _field_4E;
+	uint32  _field_4F;
+	uint32  _field_53;
+	uint32  _field_57;
+	uint32  _field_5B;
+	uint32  _field_5F;
+	uint32  _field_63;
+	uint32  _field_67;
+	byte    _field_6B;
+	uint32  _field_6C;
+	uint32  _field_70;
+	uint32  _field_74;
+	uint32  _field_78;
+	uint32  _field_7C;
+	uint32  _field_80;
+	uint32  _field_84;
+	byte    _field_88;
+	AnimationImage *_animationImage;
 };
 
 class ObjectInfo : public BaseObject {
 public:
-	ObjectInfo();
 	ObjectInfo(ObjectId id, Common::String language, Common::String name);
 	~ObjectInfo() {}
 

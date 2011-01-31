@@ -28,10 +28,10 @@
 
 namespace Ring {
 
-class Animation {
+class AnimationImage {
 public:
-	Animation();
-	~Animation();
+	AnimationImage();
+	~AnimationImage();
 
 private:
 
