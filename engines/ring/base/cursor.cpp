@@ -156,6 +156,10 @@ void CursorAnimation::dealloc() {
 	error("[CursorAnimation::dealloc] Not implemented");
 }
 
+void CursorAnimation::draw() {
+	error("[CursorAnimation::dealloc] Not implemented");
+}
+
 //////////////////////////////////////////////////////////////////////////
 // CursorHandler
 //////////////////////////////////////////////////////////////////////////
@@ -223,12 +227,32 @@ void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType,
 	_cursors.push_back(cursor);
 }
 
-void CursorHandler::setOffset(CursorId id, Common::Point offset) {
-	error("[CursorHandler::setOffset] Not implemented");
+void CursorHandler::draw() {
+	if (_cursors.empty())
+		error("[CursorHandler::draw] No cursor present");
+
+	_cursors[_index]->draw();
 }
 
 void CursorHandler::select(CursorId id) {
-	error("[CursorHandler::select] Not implemented");
+	if (!_cursors.has(id))
+		error("[CursorHandler::select] ID doesn't exist (%d)", id);
+
+	_index = _cursors.getIndex(id);
+}
+
+void CursorHandler::setOffset(CursorId id, Common::Point offset) {
+	if (!_cursors.has(id))
+		error("[CursorHandler::setOffset] ID doesn't exist (%d)", id);
+
+	_cursors.get(id)->setOffset(offset);
+}
+
+CursorType CursorHandler::getType() {
+	if (_cursors.empty())
+		error("[CursorHandler::getType] No cursor present");
+
+	return _cursors[_index]->getType();
 }
 
 } // End of namespace Ring

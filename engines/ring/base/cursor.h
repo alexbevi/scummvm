@@ -42,12 +42,16 @@ public:
 	virtual void deinit() = 0;
 	virtual void alloc() = 0;
 	virtual void dealloc() = 0;
+	virtual void draw() {}
 
 	// Accessors
 	void setName(Common::String name) { _name = name; }
 	Common::String getName() { return _name; }
 
 	void setOffset(Common::Point offset) { _offset = offset; }
+
+	void setType(CursorType type) { _type = type; }
+	CursorType getType() { return _type; }
 
 private:
 	Common::String _name;
@@ -100,6 +104,7 @@ public:
 	virtual void deinit();
 	virtual void alloc();
 	virtual void dealloc();
+	virtual void draw();
 
 private:
 
@@ -113,8 +118,12 @@ public:
 
 	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, ImageType imageType, ArchiveType archiveType);
 	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, ImageType imageType, ArchiveType archiveType);
-	void setOffset(CursorId id, Common::Point offset);
+	void removeByType();
+
+	void draw();
 	void select(CursorId id);
+	void setOffset(CursorId id, Common::Point offset);
+	CursorType getType();
 
 private:
 	AssociativeArray<CursorBase *> _cursors;

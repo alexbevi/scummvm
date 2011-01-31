@@ -275,6 +275,15 @@ public:
 		error("[AssociativeArray::get] No object has this ID (%d)", id);
 	}
 
+	uint32 getIndex(Id id) {
+		for (uint32 i = 0; i < this->size(); i++) {
+			if (((BaseObject *)(*this)[i])->getId() == id)
+				return i;
+		}
+
+		error("[AssociativeArray::getIndex] No object has this ID (%d)", id);
+	}
+
 	bool has(Id id) {
 		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++) {
 			if (((BaseObject*) *i)->getId() == id)
