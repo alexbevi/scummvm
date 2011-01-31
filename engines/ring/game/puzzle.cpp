@@ -37,7 +37,7 @@ PuzzleInfo::~PuzzleInfo() {
 
 //////////////////////////////////////////////////////////////////////////
 // Puzzle
-Puzzle::Puzzle() {
+Puzzle::Puzzle() : BaseObject(kPuzzleInvalid) {
 }
 
 Puzzle::~Puzzle() {

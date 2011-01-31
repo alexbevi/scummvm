@@ -257,16 +257,16 @@ void Application::loadConfiguration() {
 				_configuration.backgroundMusic.loadFrom = (LoadFrom)atoi((char *)&val);
 
 			if (Common::String(token) == "SOUNDCHUNCK_AMBMUS:")
-				_configuration.ambiantMusic.soundChunck = atoi((char *)&val);
+				_configuration.ambientMusic.soundChunck = atoi((char *)&val);
 
 			if (Common::String(token) == "LOADFROM_AMBMUS:")
-				_configuration.ambiantMusic.loadFrom = (LoadFrom)atoi((char *)&val);
+				_configuration.ambientMusic.loadFrom = (LoadFrom)atoi((char *)&val);
 
 			if (Common::String(token) == "SOUNDCHUNCK_AMBEFE:")
-				_configuration.ambiantEffect.soundChunck = atoi((char *)&val);
+				_configuration.ambientEffect.soundChunck = atoi((char *)&val);
 
 			if (Common::String(token) == "LOADFROM_AMBEFE:")
-				_configuration.ambiantEffect.loadFrom = (LoadFrom)atoi((char *)&val);
+				_configuration.ambientEffect.loadFrom = (LoadFrom)atoi((char *)&val);
 
 			if (Common::String(token) == "SOUNDCHUNCK_EFE:")
 				_configuration.effect.soundChunck = atoi((char *)&val);
@@ -548,7 +548,68 @@ uint32 Application::getReadFrom(Zone zone) const {
 // Puzzle
 //////////////////////////////////////////////////////////////////////////
 void Application::resetPuzzle() {
-	warning("[Application::resetPuzzle] Not implemented");
+	error("[Application::resetPuzzle] Not implemented");
+}
+
+PuzzleId Application::getPuzzleId() {
+	if (!_puzzle)
+		return kPuzzleInvalid;
+
+	return (PuzzleId)_puzzle->getId();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Object
+//////////////////////////////////////////////////////////////////////////
+void Application::addObject(ObjectId id, Common::String language, Common::String name, byte a5) {
+	error("[Application::addObject] Not implemented");
+}
+
+void Application::removeObject(ObjectId id) {
+	_objectList.remove(id);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Bag
+//////////////////////////////////////////////////////////////////////////
+void Application::addToBag(ObjectId id) {
+	if (id == kObjectNone)
+		error("[Application::removeFromBag] Invalid ID (%d)", id);
+
+	if (!_bag)
+		error("[Application::removeFromBag] bag is NULL");
+
+	if (!_objectList.has(id))
+		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
+
+	_bag->add(id);
+}
+
+void Application::removeFromBag(ObjectId id) {
+	if (!_bag)
+		error("[Application::removeFromBag] bag is NULL");
+
+	if (!_objectList.has(id))
+		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
+
+	_bag->remove(id);
+}
+
+void Application::removeAllFromBag() {
+	if (!_bag)
+		error("[Application::removeAllFromBag] bag is NULL");
+
+	_bag->removeAll();
+}
+
+bool Application::isInBag(ObjectId id) {
+	if (!_bag)
+		error("[Application::removeFromBag] bag is NULL");
+
+	if (!_objectList.has(id))
+		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
+
+	return _bag->has(id);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -62,6 +62,12 @@ public:
 	void enable();
 	void disable();
 
+	// Management
+	void add(ObjectId id);
+	void remove(ObjectId id);
+	void removeAll();
+	bool has(ObjectId id);
+
 private:
 	Application *_application;
 

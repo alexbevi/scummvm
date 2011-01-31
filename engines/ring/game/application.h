@@ -85,9 +85,20 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Puzzle
 	void resetPuzzle();
+	bool hasPuzzle() { return _puzzle != NULL; }
+	PuzzleId getPuzzleId();
 
 	//////////////////////////////////////////////////////////////////////////
-	// Helpers
+	// Object
+	void addObject(ObjectId id, Common::String language, Common::String name, byte a5);
+	void removeObject(ObjectId id);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Bag
+	void addToBag(ObjectId id);
+	void removeFromBag(ObjectId id);
+	void removeAllFromBag();
+	bool isInBag(ObjectId id);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
@@ -118,8 +129,8 @@ private:
 		bool runningFromDisk;
 		int checkCD;
 		SoundConfiguration backgroundMusic;
-		SoundConfiguration ambiantMusic;
-		SoundConfiguration ambiantEffect;
+		SoundConfiguration ambientMusic;
+		SoundConfiguration ambientEffect;
 		SoundConfiguration effect;
 		SoundConfiguration dialog;
 		bool artBAG;
@@ -177,7 +188,7 @@ private:
 	char                        _field_76;
 	char                        _field_77;
 	char                        _field_78;
-	Common::Array<ObjectInfo*>  _objectList;
+	AssociativeArray<ObjectInfo*>  _objectList;
 	Common::Array<PuzzleInfo*>  _puzzleList;
 	Puzzle                     *_puzzle;
 	Common::Array<Rotation*>    _rotationList;

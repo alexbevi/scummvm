@@ -91,6 +91,7 @@ enum DialogId {
 
 enum ObjectId {
 	kObjectInvalid               = -1,
+	kObjectNone                  = 0,
 	kObjectBrutality             = 10000,
 	kObjectGlug                  = 10001,
 	kObjectMinerals              = 10002,
@@ -209,6 +210,10 @@ enum CursorType {
 	kCursorTypeAnimated = 4
 };
 
+enum PuzzleId {
+	kPuzzleInvalid = 0
+};
+
 //////////////////////////////////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////////////////////////////////
@@ -269,6 +274,18 @@ public:
 		}
 
 		return false;
+	}
+
+	void remove(Id id) {
+		for (uint32 i = 0; i < this->size();) {
+			if (((BaseObject *)(*this)[i])->getId() == id) {
+				delete (*this)[i];
+				(*this)[i] = NULL;
+				this->remove_at(i);
+			} else {
+				++i;
+			}
+		}
 	}
 };
 

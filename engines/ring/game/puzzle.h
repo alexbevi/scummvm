@@ -26,6 +26,8 @@
 #ifndef RING_PUZZLE_H
 #define RING_PUZZLE_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class PuzzleInfo {
@@ -37,7 +39,7 @@ private:
 
 };
 
-class Puzzle {
+class Puzzle : public BaseObject {
 public:
 	Puzzle();
 	~Puzzle();

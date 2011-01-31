@@ -73,11 +73,11 @@ void Cursor::init(uint32 a1, Common::String name, uint32 a3, byte a4) {
 
 void Cursor::deinit() {
 	// TODO release cursor resources
-	warning("[Cursor::deinit] Not implemented");
+	error("[Cursor::deinit] Not implemented");
 }
 
 void Cursor::load() {
-	warning("[Cursor::load] Not implemented");
+	error("[Cursor::load] Not implemented");
 }
 
 //////////////////////////////////////////////////////////////////////////

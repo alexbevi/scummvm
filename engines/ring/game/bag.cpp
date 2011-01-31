@@ -243,6 +243,9 @@ void Bag::loadImage(Common::String filename, Image *image, ArchiveType archiveTy
 		error("[Bag::LoadImage] Cannot load image: %s", path.c_str());
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Enable/Disable
+//////////////////////////////////////////////////////////////////////////
 void Bag::enable() {
 	if (_hotspots.empty() || _hotspots.size() <= 3)
 		return;
@@ -258,5 +261,25 @@ void Bag::disable() {
 	_hotspots[3]->disable();
 	_enabled = false;
 }
+
+//////////////////////////////////////////////////////////////////////////
+// Management
+//////////////////////////////////////////////////////////////////////////
+void Bag::add(ObjectId id) {
+	error("[Bag::add] Not implemented");
+}
+
+void Bag::remove(ObjectId id) {
+	error("[Bag::remove] Not implemented");
+}
+
+void Bag::removeAll() {
+	error("[Bag::removeAll] Not implemented");
+}
+
+bool Bag::has(ObjectId id) {
+	error("[Bag::has] Not implemented");
+}
+
 
 } // End of namespace Ring
