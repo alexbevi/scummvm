@@ -156,10 +156,12 @@ void ArtHandler::open(Zone zone, LoadFrom loadFrom) {
 
 void ArtHandler::remove() {
 	for (uint i = 0; i < _arts.size();) {
-		if (_arts[i]->getLoadFrom() == kLoadFromCd)
+		if (_arts[i]->getLoadFrom() == kLoadFromCd) {
+			SAFE_DELETE(_arts[i]);
 			_arts.remove_at(i);
-		else
+		} else {
 			++i;
+		}
 	}
 }
 
