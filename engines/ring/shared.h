@@ -85,6 +85,10 @@ enum FontId {
 	kFontDefault = 1
 };
 
+enum DialogId {
+	kDialogInvalid = 0
+};
+
 enum ObjectId {
 	kObjectInvalid               = -1,
 	kObjectBrutality             = 10000,
@@ -210,11 +214,29 @@ enum CursorType {
 //////////////////////////////////////////////////////////////////////////
 typedef int32 Id;
 
+struct Color {
+	uint32 red;
+	uint32 green;
+	uint32 blue;
+
+	Color() {
+		red = 0;
+		green = 0;
+		blue = 0;
+	}
+
+	Color(uint32 r, uint g, uint32 b) {
+		red = r;
+		green = g;
+		blue = b;
+	}
+};
+
 class BaseObject {
 public:
 	BaseObject(Id id) : _id(id) {}
 
-	Id getID() { return _id; }
+	Id getId() { return _id; }
 
 protected:
 	Id _id;
@@ -233,7 +255,7 @@ public:
 
 	T get(Id id) {
 		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++) {
-			if (((BaseObject*) *i)->getID() == id)
+			if (((BaseObject*) *i)->getId() == id)
 				return *i;
 		}
 
@@ -242,7 +264,7 @@ public:
 
 	bool has(Id id) {
 		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++) {
-			if (((BaseObject*) *i)->getID() == id)
+			if (((BaseObject*) *i)->getId() == id)
 				return true;
 		}
 

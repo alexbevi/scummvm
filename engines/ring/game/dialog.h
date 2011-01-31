@@ -30,13 +30,21 @@
 
 namespace Ring {
 
-class Dialog {
+class Dialog : public BaseObject {
 public:
 	Dialog();
 	~Dialog();
 
-private:
+	void setTicks();
+	void hide();
 
+private:
+	uint32 _field_4;
+	uint32 _ticks;
+	uint32 _field_C;
+	uint32 _field_10;
+	uint32 _field_14;
+	byte _field_18;
 };
 
 class DialogHandler {
@@ -44,21 +52,27 @@ public:
 	DialogHandler();
 	~DialogHandler();
 
-	void init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9);
+	void init(uint32 a1, Color subtitlesColor, Color subtitlesBackgroundColor, uint32 a8, uint32 a9);
+
+	void addDialog(Dialog *dialog);
+	void removeDialog(DialogId id);
+
+	bool isPlaying(DialogId id);
+	bool isPlaying();
+
+	// Accessors
+	void setSubtitleColor(Color color) { _subtitleColor = color; }
+	void setSubtitleBackgroundColor(Color color) { _subtitlesBackgroundColor = color; }
 
 	void setField28(uint32 val) { _field_28 = val; }
 
 private:
 	uint32 _field_0;
-	uint32 _field_4;
-	uint32 _field_8;
-	uint32 _field_C;
-	uint32 _field_10;
-	uint32 _field_14;
-	uint32 _field_18;
+	Color _subtitleColor;
+	Color _subtitlesBackgroundColor;
 	uint32 _field_1C;
 	uint32 _field_20;
-	Common::Array<Dialog *> _dialogs;
+	AssociativeArray<Dialog *> _dialogs;
 	uint32 _field_28;
 };
 

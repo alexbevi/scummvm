@@ -32,10 +32,18 @@ namespace Ring {
 //////////////////////////////////////////////////////////////////////////
 // Dialog
 //////////////////////////////////////////////////////////////////////////
-Dialog::Dialog() {
+Dialog::Dialog() : BaseObject(kDialogInvalid) {
 }
 
 Dialog::~Dialog() {
+}
+
+void Dialog::setTicks() {
+	_ticks = g_system->getMillis();
+}
+
+void Dialog::hide() {
+	error("[Dialog::hide] No implemented");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -43,12 +51,6 @@ Dialog::~Dialog() {
 //////////////////////////////////////////////////////////////////////////
 DialogHandler::DialogHandler() {
 	_field_0 = 0;
-	_field_4 = 0;
-	_field_8 = 0;
-	_field_C = 0;
-	_field_10 = 0;
-	_field_14 = 0;
-	_field_18 = 0;
 	_field_1C = 0;
 	_field_20 = 0;
 	_field_28 = 1;
@@ -58,16 +60,41 @@ DialogHandler::~DialogHandler() {
 	CLEAR_ARRAY(Dialog, _dialogs);
 }
 
-void DialogHandler::init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9) {
+void DialogHandler::init(uint32 a1, Color subtitlesColor, Color subtitlesBackgroundColor, uint32 a8, uint32 a9) {
 	_field_0 = a1;
-	_field_4 = a2;
-	_field_8 = a3;
-	_field_C = a4;
-	_field_10 = a5;
-	_field_14 = a6;
-	_field_18 = a7;
+	_subtitleColor = subtitlesColor;
+	_subtitlesBackgroundColor = subtitlesBackgroundColor;
 	_field_1C = a8;
 	_field_20 = a9;
+}
+
+void DialogHandler::addDialog(Dialog *dialog) {
+	if (!dialog)
+		error("[DialogHandler::addDialog] dialog is NULL");
+
+	dialog->setTicks();
+
+	_dialogs.push_back(dialog);
+}
+
+void DialogHandler::removeDialog(DialogId id) {
+	for (uint32 i = 0; i < _dialogs.size();) {
+		if (_dialogs[i]->getId() == id) {
+			_dialogs[i]->hide();
+			SAFE_DELETE(_dialogs[i]);
+			_dialogs.remove_at(i);
+		} else {
+			++i;
+		}
+	}
+}
+
+bool DialogHandler::isPlaying(DialogId id) {
+	return _dialogs.has(id);
+}
+
+bool DialogHandler::isPlaying() {
+	return !_dialogs.empty();
 }
 
 } // End of namespace Ring
