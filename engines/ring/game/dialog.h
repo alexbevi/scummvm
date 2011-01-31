@@ -46,6 +46,8 @@ public:
 
 	void init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9);
 
+	void setField28(uint32 val) { _field_28 = val; }
+
 private:
 	uint32 _field_0;
 	uint32 _field_4;

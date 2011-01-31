@@ -56,5 +56,20 @@ SoundHandler::~SoundHandler() {
 	CLEAR_ARRAY(SoundItem, _soundItems4);
 }
 
+void SoundHandler::setReverseStereo(int32 reverseStereo) {
+	switch (reverseStereo) {
+	default:
+		error("[SoundHandler::setReverseStereo] Invalid argument value (%d)", reverseStereo);
+
+	case -1:
+		_direction = -1.0;
+		break;
+
+	case 1:
+		_direction = 1.0;
+		break;
+	}
+}
+
 
 } // End of namespace Ring

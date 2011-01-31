@@ -43,6 +43,8 @@ public:
 	SoundHandler();
 	~SoundHandler();
 
+	void setReverseStereo(int32 reverseStereo);
+
 private:
 	// Data
 	byte _field_0;

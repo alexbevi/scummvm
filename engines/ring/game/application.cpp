@@ -198,7 +198,7 @@ void Application::init() {
 	_dragControl = new DragControl();
 
 	// Setup preferences
-	_preferenceHandler = new PreferenceHandler();
+	_preferenceHandler = new PreferenceHandler(this);
 	_preferenceHandler->load();
 }
 

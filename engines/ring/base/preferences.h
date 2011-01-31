@@ -30,15 +30,27 @@
 
 namespace Ring {
 
+class Application;
+
 class PreferenceHandler {
 public:
-	PreferenceHandler();
+	PreferenceHandler(Application *application);
 	~PreferenceHandler();
 
 	void load();
+	void save();
 
 private:
+	Application *_application;
 
+	int32 _pref1;
+	int32 _pref2;
+	int32 _reverseStereo;
+	int32 _pref4;
+
+	void loadDefaults();
+	void set(int32 pref1, int32 pref2, int32 reverseStereo, int32 pref4);
+	void setup();
 };
 
 } // End of namespace Ring

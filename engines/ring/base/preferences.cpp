@@ -25,16 +25,76 @@
 
 #include "ring/base/preferences.h"
 
+#include "ring/base/sound.h"
+
+#include "ring/game/application.h"
+#include "ring/game/dialog.h"
+
+#include "common/archive.h"
+
 namespace Ring {
 
-PreferenceHandler::PreferenceHandler() {
+PreferenceHandler::PreferenceHandler(Application *application) : _application(application) {
+	_pref1 = 0;
+	_pref2 = 0;
+	_reverseStereo = 0;
+	_pref4 = 0;
 }
 
 PreferenceHandler::~PreferenceHandler() {
 }
 
 void PreferenceHandler::load() {
-	error("[PreferenceHandler::load] Not implemented");
+	loadDefaults();
+
+	warning("[PreferenceHandler::load] Loading from ScummVM preferences not implemented");
+}
+
+void PreferenceHandler::loadDefaults() {
+	// Open a stream to the configuration file
+	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember("aPre.ini");
+	if (!archive)
+		error("[PreferenceHandler::load] Error opening configuration file (aPre.ini)");
+
+	Common::String line = archive->readLine();
+	if (archive->err()) {
+		delete archive;
+		error("[PreferenceHandler::load] Error reading from file");
+	}
+
+	delete archive;
+
+	// Read preferences
+	int32 pref1;
+	int32 pref2;
+	int32 reverseStereo;
+	int32 pref4;
+	if (sscanf(line.c_str(), "%d %d %d %d", &pref1, &pref2, &reverseStereo, &pref4) != 4)
+		error("[PreferenceHandler::load] Invalid configuration format");
+
+	set(pref1, pref2, reverseStereo, pref4);
+	setup();
+}
+
+void PreferenceHandler::save() {
+	error("[PreferenceHandler::save] No implemented");
+}
+
+void PreferenceHandler::set(int32 pref1, int32 pref2, int32 reverseStereo, int32 pref4) {
+	_pref1 = pref1;
+	_pref2 = pref2;
+	_reverseStereo = reverseStereo;
+	_pref4 = pref4;
+}
+
+void PreferenceHandler::setup() {
+	warning("[PreferenceHandler::setup] Sound volume setup not implemented");
+
+	if (_application->getSoundHandler())
+		_application->getSoundHandler()->setReverseStereo(_reverseStereo);
+
+	if (_application->getDialogHandler())
+		_application->getDialogHandler()->setField28(_pref4 ? 1 : 0);
 }
 
 } // End of namespace Ring
