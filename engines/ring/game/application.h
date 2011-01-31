@@ -38,7 +38,7 @@ class DragControl;
 class LanguageHandler;
 class FontHandler;
 class ObjectHandler;
-class ObjectInfo;
+class Object;
 class PreferenceHandler;
 class Puzzle;
 class PuzzleInfo;
@@ -188,7 +188,7 @@ private:
 	char                        _field_76;
 	char                        _field_77;
 	char                        _field_78;
-	AssociativeArray<ObjectInfo*>  _objectList;
+	AssociativeArray<Object*>   _objectList;
 	Common::Array<PuzzleInfo*>  _puzzleList;
 	Puzzle                     *_puzzle;
 	Common::Array<Rotation*>    _rotationList;

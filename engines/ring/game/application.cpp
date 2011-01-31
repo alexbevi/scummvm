@@ -68,7 +68,7 @@ Application::~Application() {
 	SAFE_DELETE(_languageHandler);
 	SAFE_DELETE(_cursorHandler);
 	SAFE_DELETE(_soundHandler);
-	CLEAR_ARRAY(ObjectInfo, _objectList);
+	CLEAR_ARRAY(Object, _objectList);
 	CLEAR_ARRAY(PuzzleInfo, _puzzleList);
 	SAFE_DELETE(_puzzle);
 	CLEAR_ARRAY(Rotation, _rotationList);
@@ -562,7 +562,19 @@ PuzzleId Application::getPuzzleId() {
 // Object
 //////////////////////////////////////////////////////////////////////////
 void Application::addObject(ObjectId id, Common::String language, Common::String name, byte a5) {
-	error("[Application::addObject] Not implemented");
+	if (_objectList.has(id))
+		error("[Application::addObject] ID alredy exists (%d)", id);
+
+	// Compute language and name
+	Common::String processedLanguage = _objectHandler->getLanguage(id);
+	if (processedLanguage.empty())
+		processedLanguage = language;
+
+	Common::String processedName = _objectHandler->getName(id);
+	if (processedName.empty())
+		processedName = name;
+
+	_objectList.push_back(new Object(id, processedLanguage, processedName, a5));
 }
 
 void Application::removeObject(ObjectId id) {
