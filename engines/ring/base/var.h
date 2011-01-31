@@ -53,8 +53,8 @@ private:
 
 class Var : Common::Serializable {
 public:
-	Var() {}
-	~Var() {}
+	Var();
+	~Var();
 
 	void removeAll();
 
@@ -69,20 +69,20 @@ public:
 	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
-	AssociativeArray<VarEntry<byte>>           _bytes;
-	AssociativeArray<VarEntry<int16>>          _words;
-	AssociativeArray<VarEntry<int32>>          _dwords;
-	AssociativeArray<VarEntry<Common::String>> _strings;
-	AssociativeArray<VarEntry<double>>         _floats;
+	AssociativeArray<VarEntry<byte> *>           _bytes;
+	AssociativeArray<VarEntry<int16> *>          _words;
+	AssociativeArray<VarEntry<int32> *>          _dwords;
+	AssociativeArray<VarEntry<Common::String> *> _strings;
+	AssociativeArray<VarEntry<double> *>         _floats;
 
 	template<typename T>
-	void define(AssociativeArray<VarEntry<T>> *array, Id id, T value);
+	void define(AssociativeArray<VarEntry<T> *> *array, Id id, T value);
 
 	template<typename T>
-	T get(AssociativeArray<VarEntry<T>> *array, Id id);
+	T get(AssociativeArray<VarEntry<T> *> *array, Id id);
 
 	template<typename T>
-	void set(AssociativeArray<VarEntry<T>> *array, Id id, T value);
+	void set(AssociativeArray<VarEntry<T> *> *array, Id id, T value);
 };
 
 } // End of namespace Ring

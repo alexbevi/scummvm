@@ -89,6 +89,8 @@ public:
 	LanguageId getLanguage();
 	Common::String getLanguageName();
 
+	FontHandler *getFontHandler() { return _fontHandler; }
+
 private:
 	RingEngine *_vm;
 

@@ -131,16 +131,16 @@ void Application::init() {
 	_fontHandler = new FontHandler();
 	switch (getLanguage()) {
 	default:
-		_fontHandler->add(1, "arxrin.fon", "ARX Pilgrim L", 12, true, false, false, false, getLanguage());
+		_fontHandler->add(kFontDefault, "arxrin.fon", "ARX Pilgrim L", 12, true, false, false, false, getLanguage());
 		break;
 
 	case kLanguageHebrew:
-		_fontHandler->add(1, "arxrin.fon", "ArxelHebrew", 12, true, false, false, false, getLanguage());
+		_fontHandler->add(kFontDefault, "arxrin.fon", "ArxelHebrew", 12, true, false, false, false, getLanguage());
 		break;
 
 	case kLanguageGreek:
 		// FIXME replace by proper GUI font
-		_fontHandler->add(1, "arxrin.fon", "Arial", 16, true, false, false, false, getLanguage());
+		_fontHandler->add(kFontDefault, "arxrin.fon", "Arial", 16, true, false, false, false, getLanguage());
 		break;
 	}
 
@@ -172,7 +172,7 @@ void Application::init() {
 	if (_configuration.artBAG)
 		_archiveType = kTypeArchive;
 
-	_bag= new Bag();
+	_bag= new Bag(this);
 	_bag->sub_417D20(0, 0);
 	_bag->sub_417D40(18, 42, 44, 100);
 	_bag->sub_417D60(0, 0);

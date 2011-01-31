@@ -30,6 +30,7 @@
 
 namespace Ring {
 
+class Application;
 class Hotspot;
 class Image;
 class Object;
@@ -37,7 +38,7 @@ class Text;
 
 class Bag {
 public:
-	Bag();
+	Bag(Application *application);
 	~Bag();
 
 	// Initialization
@@ -58,6 +59,7 @@ public:
 	void loadBackground(Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, ArchiveType filetype);
 
 private:
+	Application *_application;
 
 	// Bag data
 	Common::Array<Object *> _objects;
@@ -103,7 +105,7 @@ private:
 	uint32      _field_9D;
 	uint32      _ticks;
 	Text       *_text;
-	uint32      _field_A9;
+	FontId      _fontId;
 	uint32      _field_AD;
 	uint32      _field_B1;
 	uint32      _field_B5;

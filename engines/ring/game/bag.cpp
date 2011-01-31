@@ -32,11 +32,13 @@
 #include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
 
+#include "ring/ring.h"
+
 #include "ring/helpers.h"
 
 namespace Ring {
 
-Bag::Bag() {
+Bag::Bag(Application *application) : _application(application) {
 	_field_C = 0;
 	_field_10 = 0;
 	_field_14 = 0;
@@ -77,7 +79,7 @@ Bag::Bag() {
 	_field_9D = 0;
 	_ticks = 0;
 	_text = NULL;
-	_field_A9 = 1;
+	_fontId = kFontDefault;
 	_field_AD = 245;
 	_field_B1 = 235;
 	_field_B5 = 50;
@@ -222,8 +224,8 @@ void Bag::loadBackground(Common::String filename1, Common::String, Common::Strin
 
 	// Setup text
 	SAFE_DELETE(_text);
-	_text = new Text();
-	_text->init("", 0, 0, _field_A9, _field_AD, _field_B1, _field_B5, _field_B9, _field_BD, _field_C1);
+	_text = new Text(_application);
+	_text->init("", 0, 0, _fontId, _field_AD, _field_B1, _field_B5, _field_B9, _field_BD, _field_C1);
 }
 
 void Bag::loadImage(Common::String filename, Image *image, ArchiveType archiveType) {

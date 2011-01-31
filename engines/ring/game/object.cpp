@@ -25,6 +25,8 @@
 
 #include "ring/game/object.h"
 
+#include "ring/helpers.h"
+
 #include "common/archive.h"
 #include "common/tokenizer.h"
 
@@ -50,6 +52,13 @@ ObjectInfo::ObjectInfo(ObjectId id, Common::String language, Common::String name
 //////////////////////////////////////////////////////////////////////////
 // ObjectHandler
 //////////////////////////////////////////////////////////////////////////
+ObjectHandler::ObjectHandler() {
+}
+
+ObjectHandler::~ObjectHandler() {
+	CLEAR_ARRAY(ObjectInfo, _objects);
+}
+
 void ObjectHandler::addFromFile(Common::String filename, Common::String language) {
 	// Open a stream to the configuration file
 	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember(filename);
@@ -81,7 +90,7 @@ void ObjectHandler::addFromFile(Common::String filename, Common::String language
 		if (tokenizer.empty())
 			error("[ObjectHandler::addFromFile] Invalid line format (missing object name)");
 
-		_objects.push_back(ObjectInfo(id, language, tokenizer.nextToken()));
+		_objects.push_back(new ObjectInfo(id, language, tokenizer.nextToken()));
 	}
 }
 

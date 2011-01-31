@@ -80,6 +80,11 @@ enum TimerId {
 	kTimerInvalid = 0
 };
 
+enum FontId {
+	kFontInvalid = 0,
+	kFontDefault = 1
+};
+
 enum ObjectId {
 	kObjectInvalid               = -1,
 	kObjectBrutality             = 10000,
@@ -206,18 +211,20 @@ public:
 			this[i].saveLoadWithSerializer(s);
 	}
 
-	T *get(Id id) {
-		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++)
-			if (((BaseObject)*i).getID() == id)
-				return i;
+	T get(Id id) {
+		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++) {
+			if (((BaseObject*) *i)->getID() == id)
+				return *i;
+		}
 
 		error("[AssociativeArray::get] No object has this ID (%d)", id);
 	}
 
 	bool has(Id id) {
-		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++)
-			if (((BaseObject)*i).getID() == id)
+		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++) {
+			if (((BaseObject*) *i)->getID() == id)
 				return true;
+		}
 
 		return false;
 	}

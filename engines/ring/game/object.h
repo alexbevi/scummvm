@@ -56,8 +56,8 @@ private:
 
 class ObjectHandler {
 public:
-	ObjectHandler() {}
-	~ObjectHandler() {}
+	ObjectHandler();
+	~ObjectHandler();
 
 	void addFromFile(Common::String filename, Common::String language);
 
@@ -66,7 +66,7 @@ public:
 	Common::String getName(ObjectId id);
 
 private:
-	AssociativeArray<ObjectInfo> _objects;
+	AssociativeArray<ObjectInfo *> _objects;
 };
 
 } // End of namespace Ring

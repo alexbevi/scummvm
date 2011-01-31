@@ -25,6 +25,8 @@
 
 #include "ring/base/var.h"
 
+#include "ring/helpers.h"
+
 namespace Ring {
 
 //////////////////////////////////////////////////////////////////////////
@@ -70,12 +72,19 @@ void VarEntry<Common::String>::saveLoadWithSerializer(Common::Serializer &s) {
 //////////////////////////////////////////////////////////////////////////
 /// Var
 //////////////////////////////////////////////////////////////////////////
+Var::Var() {
+}
+
+Var::~Var() {
+	removeAll();
+}
+
 void Var::removeAll() {
-	_bytes.clear();
-	_words.clear();
-	_dwords.clear();
-	_strings.clear();
-	_floats.clear();
+	CLEAR_ARRAY(VarEntry<byte>, _bytes);
+	CLEAR_ARRAY(VarEntry<int16>, _words);
+	CLEAR_ARRAY(VarEntry<int32>, _dwords);
+	CLEAR_ARRAY(VarEntry<Common::String>, _strings);
+	CLEAR_ARRAY(VarEntry<double>, _floats);
 }
 
 void Var::saveLoadWithSerializer(Common::Serializer &s) {
@@ -87,15 +96,15 @@ void Var::saveLoadWithSerializer(Common::Serializer &s) {
 }
 
 template<typename T>
-void Var::define(AssociativeArray<VarEntry<T>> *array, Id id, T value) {
+void Var::define(AssociativeArray<VarEntry<T> *> *array, Id id, T value) {
 	if (array->has(id))
 		error("[Var::define] ID already exists (%d)", id);
 
-	array->push_back(VarEntry<T>(id, value));
+	array->push_back(new VarEntry<T>(id, value));
 }
 
 template<typename T>
-T Var::get(AssociativeArray<VarEntry<T>> *array, Id id) {
+T Var::get(AssociativeArray<VarEntry<T> *> *array, Id id) {
 	if (!array->has(id))
 		error("[Var::define] ID doesn't exists (%d)", id);
 
@@ -103,7 +112,7 @@ T Var::get(AssociativeArray<VarEntry<T>> *array, Id id) {
 }
 
 template<typename T>
-void Var::set(AssociativeArray<VarEntry<T>> *array, Id id, T value) {
+void Var::set(AssociativeArray<VarEntry<T> *> *array, Id id, T value) {
 	if (!array->has(id))
 		error("[Var::define] ID doesn't exists (%d)", id);
 

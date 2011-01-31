@@ -25,16 +25,61 @@
 
 #include "ring/base/text.h"
 
+#include "ring/base/font.h"
+
+#include "ring/game/application.h"
+
+#include "graphics/fonts/winfont.h"
+
 namespace Ring {
 
-Text::Text() {
+Text::Text(Application *application) : _application(application) {
+	_fontId  = kFontInvalid;
+	_field_8  = 0;
+	_field_C  = 0;
+	_field_10 = 0;
+	_width = 0;
+	_height = 0;
+	_field_1C = 0;
+	_field_1D = 0;
+	_field_21 = 0;
 }
 
 Text::~Text() {
 }
 
-void Text::init(Common::String text, uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9) {
-	warning("[Text::init] not implemented (%s)", text.c_str());
+void Text::init(Common::String text, uint32 a1, uint32 a2, FontId fontId, byte a4, byte a5, byte a6, uint32 a7, uint32 a8, uint32 a9) {
+	_text = text;
+	_fontId = fontId;
+	_field_8 = a1;
+	_field_C = a2;
+	_field_10 = a4 | ((a5 | a6 << 4) << 8);
+
+	set(text);
+
+	if (a7 != -1 || a8 != -1 || a9 != -1) {
+		_field_1C = 0;
+		_field_21 = 0;
+		_field_1D = (byte)a7 | ((a8 | a9 << 4) << 8);
+	} else {
+		_field_1C = 1;
+		_field_1D = 0;
+		_field_21 = 0;
+	}
+}
+
+void Text::set(Common::String text) {
+	_text = text;
+
+	// Get the text font and calculate text dimensions
+	Graphics::WinFont *font = _application->getFontHandler()->getFont(_fontId);
+	if (font) {
+		_width = font->getStringWidth(text);
+		_height = font->getFontHeight();
+	} else {
+		_width = 0;
+		_height = 0;
+	}
 }
 
 } // End of namespace Ring

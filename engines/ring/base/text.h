@@ -30,15 +30,30 @@
 
 namespace Ring {
 
+class Application;
+
 class Text {
 public:
-	Text();
+	Text(Application *application);
 	~Text();
 
-	void init(Common::String text, uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9);
+	void init(Common::String text, uint32 a1, uint32 a2, FontId fontId, byte a4, byte a5, byte a6, uint32 a7, uint32 a8, uint32 a9);
+	void set(Common::String text);
 
 private:
+	Application *_application;
 
+	// Data
+	Common::String _text;
+	FontId _fontId;
+	uint32 _field_8;
+	uint32 _field_C;
+	uint32 _field_10;
+	uint32 _width;
+	uint32 _height;
+	byte _field_1C;
+	uint32 _field_1D;
+	uint32 _field_21;
 };
 
 } // End of namespace Ring

@@ -25,6 +25,8 @@
 
 #include "ring/game/language.h"
 
+#include "ring/helpers.h"
+
 namespace Ring {
 
 //////////////////////////////////////////////////////////////////////////
@@ -43,20 +45,24 @@ Language::Language(LanguageId id, Common::String name, Common::String folder, ui
 LanguageHandler::LanguageHandler() : _language(kLanguageInvalid) {
 }
 
+LanguageHandler::~LanguageHandler() {
+	CLEAR_ARRAY(Language, _languages);
+}
+
 void LanguageHandler::add(LanguageId id, Common::String name, Common::String folder, uint channel) {
 	if (_languages.has(id))
 		error("[LanguageHandler::add] ID already exists (%d)", id);
 
-	_languages.push_back(Language(id, name, folder, channel));
+	_languages.push_back(new Language(id, name, folder, channel));
 }
 
 void LanguageHandler::setActiveLanguage(Common::String name) {
 	if (_languages.empty())
 		error("[LanguageHandler::setActiveLanguage] No language available");
 
-	for (AssociativeArray<Language>::iterator i = _languages.begin(); i != _languages.end(); i++)
-		if (i->getName() == name) {
-			_language = (LanguageId)i->getID();
+	for (AssociativeArray<Language *>::iterator i = _languages.begin(); i != _languages.end(); i++)
+		if ((*i)->getName() == name) {
+			_language = (LanguageId)(*i)->getID();
 			return;
 		}
 

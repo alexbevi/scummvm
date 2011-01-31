@@ -36,8 +36,8 @@ namespace Ring {
 
 class Font : public BaseObject {
 public:
-	Font() : BaseObject(0) {}
-	Font(Id id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
+	Font() : BaseObject(kFontInvalid) {}
+	Font(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
 	~Font();
 
 	Graphics::WinFont *getFont() { return _font; }
@@ -87,10 +87,12 @@ public:
 	FontHandler();
 	~FontHandler();
 
-	void add(Id id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
+	void add(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
+
+	Graphics::WinFont *getFont(FontId id);
 
 private:
-	AssociativeArray<Font> _fonts;
+	AssociativeArray<Font *> _fonts;
 };
 
 } // End of namespace Ring

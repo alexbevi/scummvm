@@ -50,7 +50,7 @@ private:
 class LanguageHandler {
 public:
 	LanguageHandler();
-	~LanguageHandler() {}
+	~LanguageHandler();
 
 	void add(LanguageId id, Common::String name, Common::String folder, uint channel);
 	void setActiveLanguage(Common::String name);
@@ -62,7 +62,7 @@ public:
 
 private:
 	LanguageId _language;
-	AssociativeArray<Language> _languages;
+	AssociativeArray<Language *> _languages;
 };
 
 } // End of namespace Ring

@@ -25,6 +25,8 @@
 
 #include "ring/base/font.h"
 
+#include "ring/helpers.h"
+
 #include "graphics/fonts/winfont.h"
 
 namespace Ring {
@@ -32,7 +34,7 @@ namespace Ring {
 //////////////////////////////////////////////////////////////////////////
 // Font
 //////////////////////////////////////////////////////////////////////////
-Font::Font(Id id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId) : BaseObject(id) {
+Font::Font(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId) : BaseObject(id) {
 
 	// Setup font description
 	_description.facename = facename;
@@ -72,13 +74,21 @@ FontHandler::FontHandler() {
 }
 
 FontHandler::~FontHandler() {
+	CLEAR_ARRAY(Font, _fonts);
 }
 
-void FontHandler::add(Id id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId) {
+void FontHandler::add(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId) {
 	if (_fonts.has(id))
-		error("[LanguageHandler::add] ID already exists (%d)", id);
+		error("[FontHandler::add] ID already exists (%d)", id);
 
-	_fonts.push_back(Font(id, filename, facename, height, smallWeight, underline, italic, strikeout, langId));
+	_fonts.push_back(new Font(id, filename, facename, height, smallWeight, underline, italic, strikeout, langId));
+}
+
+Graphics::WinFont *FontHandler::getFont(FontId id) {
+	if (!_fonts.has(id))
+		error("[FontHandler::getFont] ID doesn't exists (%d)", id);
+
+	return _fonts.get(id)->getFont();
 }
 
 } // End of namespace Ring
