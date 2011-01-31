@@ -71,8 +71,8 @@ void Art::init(const Common::String &path, Zone zone, LoadFrom loadFrom) {
 		archive->read(&name, sizeof(char) * 243);
 
 		Record record;
-		record.size = archive->readUint32LE();
 		record.offset = archive->readUint32LE();
+		record.size = archive->readUint32LE();
 		record.field_FB = archive->readUint32LE();
 
 		// Add to file map
