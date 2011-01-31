@@ -37,8 +37,14 @@ public:
 
 	bool load(Common::String path, ArchiveType type, uint32 a3, uint32 a4);
 
-private:
+	void destroy();
 
+	bool isInitialized();
+
+	uint32 getBPP() { return _bpp; }
+
+private:
+	uint32 _bpp;
 };
 
 } // End of namespace Ring

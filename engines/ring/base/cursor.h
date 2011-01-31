@@ -30,30 +30,42 @@
 
 namespace Ring {
 
+class Image;
+
+//////////////////////////////////////////////////////////////////////////
 class CursorBase : public BaseObject {
 public:
 	CursorBase();
 	~CursorBase();
 
-	virtual void init(uint32 a1, Common::String name, uint32 a3, byte a4);
+	virtual void init(CursorId id, Common::String name, CursorType cursorType, byte a4);
 	virtual void deinit() = 0;
+	virtual void alloc() = 0;
+	virtual void dealloc() = 0;
+
+	// Accessors
+	void setName(Common::String name) { _name = name; }
+	Common::String getName() { return _name; }
+
+	void setOffset(Common::Point offset) { _offset = offset; }
 
 private:
-	uint32 _field_4;
 	Common::String _name;
-	uint32 _field_C;
-	uint32 _field_10;
-	uint32 _field_14;
+	CursorType _type;
+	Common::Point _offset;
 	byte _field_18;
 };
 
+//////////////////////////////////////////////////////////////////////////
 class Cursor : public CursorBase {
 public:
 	Cursor();
 	~Cursor();
 
-	virtual void init(uint32 a1, Common::String name, uint32 a3, byte a4);
+	virtual void init(CursorId id, Common::String name, CursorType cursorType, byte a4);
 	virtual void deinit();
+	virtual void alloc();
+	virtual void dealloc();
 
 private:
 	uint32 _field_19; // HCURSOR
@@ -62,13 +74,45 @@ private:
 	void load();
 };
 
+//////////////////////////////////////////////////////////////////////////
+class CursorImage : public CursorBase {
+public:
+	CursorImage();
+	~CursorImage();
+
+	void init(CursorId id, Common::String name, CursorType cursorType, byte a4, ArchiveType archiveType);
+	virtual void deinit();
+	virtual void alloc();
+	virtual void dealloc();
+
+private:
+	Image *_image;
+	ArchiveType _archiveType;
+};
+
+//////////////////////////////////////////////////////////////////////////
+class CursorAnimation : public CursorBase {
+public:
+	CursorAnimation();
+	~CursorAnimation();
+
+	void init(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, ArchiveType archiveType);
+	virtual void deinit();
+	virtual void alloc();
+	virtual void dealloc();
+
+private:
+
+};
+
+//////////////////////////////////////////////////////////////////////////
 class CursorHandler {
 public:
 	CursorHandler();
 	~CursorHandler();
 
-	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, ArchiveType archiveType);
-	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, ArchiveType archiveType);
+	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, ImageType imageType, ArchiveType archiveType);
+	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, ImageType imageType, ArchiveType archiveType);
 	void setOffset(CursorId id, Common::Point offset);
 	void select(CursorId id);
 

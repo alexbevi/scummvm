@@ -51,7 +51,7 @@ namespace Ring {
 
 Application::Application(RingEngine *engine) : _vm(engine),
 	_video(NULL),        _artHandler(NULL),       _fontHandler(NULL),   _dialogHandler(NULL), _languageHandler(NULL),
-	_field_54(1),        _archiveType(kTypeFile), _cursorHandler(NULL), _field_5D(0),         _field_5E(0),
+	_field_54(1),        _archiveType(kArchiveFile), _cursorHandler(NULL), _field_5D(0),         _field_5E(0),
 	_soundHandler(NULL), _field_66(0),            _field_6A(0),         _zoneName("A0"),      _zone(kZoneInvalid),
 	_field_6F(0),        _field_70(0),            _field_74(0),         _field_75(0),         _field_76(0),
 	_field_77(0),        _field_78(0),            _puzzle(NULL),        _field_89(NULL),      _bag(NULL),
@@ -122,14 +122,14 @@ void Application::init() {
 
 	// Setup art
 	if (_configuration.artBAG || _configuration.artCURSOR || _configuration.artSY)
-		_archiveType = kTypeArchive;
+		_archiveType = kArchiveArt;
 
-	if (_archiveType == kTypeArchive) {
+	if (_archiveType == kArchiveArt) {
 		_artHandler = new ArtHandler(this);
 		_artHandler->open(kZoneSY, kLoadFromDisk);
 	}
 
-	_archiveType = kTypeFile;
+	_archiveType = kArchiveFile;
 
 	// Setup fonts
 	_fontHandler = new FontHandler();
@@ -167,14 +167,14 @@ void Application::init() {
 	_field_78 = 1;
 	_field_5D = 1;
 	_field_54 = 1;
-	_archiveType = kTypeFile;
+	_archiveType = kArchiveFile;
 	_field_6F = 0;
 
 	_field_89 = NULL;
 
 	// Setup bag
 	if (_configuration.artBAG)
-		_archiveType = kTypeArchive;
+		_archiveType = kArchiveArt;
 
 	_bag= new Bag(this);
 	_bag->sub_417D20(0, 0);
@@ -190,7 +190,7 @@ void Application::init() {
 	_bag->loadBackground("bagbgr.tga", "", "bagarr.tga", "", "", "bagarr.tga", "", "menu_gur.tga", _archiveType);
 	_bag->initHotspots();
 
-	_archiveType = kTypeFile;
+	_archiveType = kArchiveFile;
 
 	// Setup timer
 	_timerHandler = new TimerHandler();
@@ -325,17 +325,17 @@ void Application::setup() {
 	setupZone(kZoneSY, 0);
 
 	// Setup cursors
-	ArchiveType archiveType = (_configuration.artCURSOR ? kTypeArchive : kTypeFile);
+	ArchiveType archiveType = (_configuration.artCURSOR ? kArchiveArt : kArchiveFile);
 
-	_cursorHandler->add(kCursorDefault,       "",                kCursorTypeNormal,   1, 3, archiveType);
-	_cursorHandler->add(kCursorBusy,          "cur_busy",        kCursorTypeImage,    1, 3, archiveType);
-	_cursorHandler->add(kCursorHandSelection, "ni_handsel",      kCursorTypeImage,    1, 3, archiveType);
-	_cursorHandler->add(kCursorIdle,          "cur_idle",        kCursorTypeAnimated, 1, 15, 1095237632, 4, 3, archiveType);
-	_cursorHandler->add(kCursorMove,          "cur_muv",         kCursorTypeAnimated, 1, 20, 1095237632, 4, 3, archiveType);
-	_cursorHandler->add(kCursorHotspot,       "cur_hotspot",     kCursorTypeAnimated, 1, 19, 1095237632, 4, 3, archiveType);
-	_cursorHandler->add(kCursorBack,          "cur_back",        kCursorTypeImage,    1, 3, archiveType);
-	_cursorHandler->add(kCursorMenuIdle,      "cur_menuidle",    kCursorTypeNormal,   1, 3, archiveType);
-	_cursorHandler->add(kCursorMenuActive,    "cur_menuactive",  kCursorTypeImage,    1, 3, archiveType);
+	_cursorHandler->add(kCursorDefault,       "",                kCursorTypeNormal,   1, kImageCursor, archiveType);
+	_cursorHandler->add(kCursorBusy,          "cur_busy",        kCursorTypeImage,    1, kImageCursor, archiveType);
+	_cursorHandler->add(kCursorHandSelection, "ni_handsel",      kCursorTypeImage,    1, kImageCursor, archiveType);
+	_cursorHandler->add(kCursorIdle,          "cur_idle",        kCursorTypeAnimated, 1, 15, 1095237632, 4, kImageCursor, archiveType);
+	_cursorHandler->add(kCursorMove,          "cur_muv",         kCursorTypeAnimated, 1, 20, 1095237632, 4, kImageCursor, archiveType);
+	_cursorHandler->add(kCursorHotspot,       "cur_hotspot",     kCursorTypeAnimated, 1, 19, 1095237632, 4, kImageCursor, archiveType);
+	_cursorHandler->add(kCursorBack,          "cur_back",        kCursorTypeImage,    1, kImageCursor, archiveType);
+	_cursorHandler->add(kCursorMenuIdle,      "cur_menuidle",    kCursorTypeNormal,   1, kImageCursor, archiveType);
+	_cursorHandler->add(kCursorMenuActive,    "cur_menuactive",  kCursorTypeImage,    1, kImageCursor, archiveType);
 
 	// Adjust offsets
 	_cursorHandler->setOffset(kCursorHandSelection, Common::Point(15, 15));
@@ -449,7 +449,7 @@ void Application::setZone(Zone zone, uint32 a2) {
 	bool load = _saveLoad->isLoaded(a2);
 
 	if (zone != kZoneSY && !load) {
-		if (getReadFrom(zone) == kTypeArchive) {
+		if (getReadFrom(zone) == kArchiveArt) {
 			if (!_artHandler)
 				error("[Application::setZone] Art handler is NULL");
 
@@ -588,36 +588,36 @@ Common::String Application::getZoneName(Zone zone) const {
 }
 
 uint32 Application::getReadFrom(Zone zone) const {
-	if (_archiveType == kTypeFile)
-		return kTypeFile;
+	if (_archiveType == kArchiveFile)
+		return kArchiveFile;
 
 	switch (zone) {
 	default:
 		break;
 
 	case kZoneSY:
-		return _configuration.artSY ? kTypeArchive : kTypeFile;
+		return _configuration.artSY ? kArchiveArt : kArchiveFile;
 
 	case kZoneNI:
-		return _configuration.artNI ? kTypeArchive : kTypeFile;
+		return _configuration.artNI ? kArchiveArt : kArchiveFile;
 
 	case kZoneRH:
-		return _configuration.artRH ? kTypeArchive : kTypeFile;
+		return _configuration.artRH ? kArchiveArt : kArchiveFile;
 
 	case kZoneFO:
-		return _configuration.artFO ? kTypeArchive : kTypeFile;
+		return _configuration.artFO ? kArchiveArt : kArchiveFile;
 
 	case kZoneRO:
-		return _configuration.artRO ? kTypeArchive : kTypeFile;
+		return _configuration.artRO ? kArchiveArt : kArchiveFile;
 
 	case kZoneWA:
-		return _configuration.artWA ? kTypeArchive : kTypeFile;
+		return _configuration.artWA ? kArchiveArt : kArchiveFile;
 
 	case kZoneAS:
-		return _configuration.artAS ? kTypeArchive : kTypeFile;
+		return _configuration.artAS ? kArchiveArt : kArchiveFile;
 
 	case kZoneN2:
-		return _configuration.artN2 ? kTypeArchive : kTypeFile;
+		return _configuration.artN2 ? kArchiveArt : kArchiveFile;
 	}
 
 	error("[Application::getReadFrom] Invalid zone (%d)", zone);

@@ -87,7 +87,7 @@ Bag::Bag(Application *application) : _application(application) {
 	_field_BD = 0;
 	_field_C1 = 0;
 	_field_C5 = 90;
-	_archiveType = kTypeInvalid;
+	_archiveType = kArchiveInvalid;
 	_imageErdaGun = NULL;
 	_imageErdaGur = NULL;
 	_enabled = false;
@@ -231,7 +231,7 @@ void Bag::loadBackground(Common::String filename1, Common::String, Common::Strin
 void Bag::loadImage(Common::String filename, Image *image, ArchiveType archiveType) {
 	Common::String path;
 
-	if (archiveType == kTypeFile)
+	if (archiveType == kArchiveFile)
 		path = Common::String::format("LIST/%s", filename.c_str());
 	else
 		path = Common::String::format("/LIST/%s", filename.c_str());

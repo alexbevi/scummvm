@@ -25,6 +25,8 @@
 
 #include "ring/base/cursor.h"
 
+#include "ring/graphics/image.h"
+
 #include "ring/helpers.h"
 
 namespace Ring {
@@ -33,22 +35,17 @@ namespace Ring {
 // CursorBase
 //////////////////////////////////////////////////////////////////////////
 CursorBase::CursorBase() : BaseObject(kCursorInvalid) {
-	_field_4  = 0;
-	_field_C  = 0;
-	_field_10 = 0;
-	_field_14 = 0;
+	_type = kCursorTypeInvalid;
 	_field_18 = 0;
 }
 
 CursorBase::~CursorBase() {
 }
 
-void CursorBase::init(uint32 a1, Common::String name, uint32 a3, byte a4) {
-	_field_4  = a1;
+void CursorBase::init(CursorId id, Common::String name, CursorType cursorType, byte a4) {
+	_id	 = id;
 	_name = name;
-	_field_C  = a3;
-	_field_10 = 0;
-	_field_14 = 0;
+	_type  = cursorType;
 	_field_18 = a4;
 }
 
@@ -64,11 +61,11 @@ Cursor::~Cursor() {
 	deinit();
 }
 
-void Cursor::init(uint32 a1, Common::String name, uint32 a3, byte a4) {
-	CursorBase::init(a1, name, a3, a4);
+void Cursor::init(CursorId id, Common::String name, CursorType cursorType, byte a4) {
+	CursorBase::init(id, name, cursorType, a4);
 
 	if (a4 == 1)
-		load();
+		alloc();
 }
 
 void Cursor::deinit() {
@@ -76,8 +73,87 @@ void Cursor::deinit() {
 	error("[Cursor::deinit] Not implemented");
 }
 
-void Cursor::load() {
-	error("[Cursor::load] Not implemented");
+void Cursor::alloc() {
+	warning("[Cursor::alloc] Not implemented (win32 resource)");
+}
+
+void Cursor::dealloc() {
+	error("[Cursor::dealloc] Not implemented");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// CursorImage
+//////////////////////////////////////////////////////////////////////////
+CursorImage::CursorImage() {
+	_image = NULL;
+}
+
+CursorImage::~CursorImage() {
+	deinit();
+}
+
+void CursorImage::init(CursorId id, Common::String name, CursorType cursorType, byte a4, ArchiveType archiveType) {
+	CursorBase::init(id, name, cursorType, a4);
+
+	_archiveType = archiveType;
+	_image = new Image();
+
+	if (a4 == 1)
+		alloc();
+}
+
+void CursorImage::deinit() {
+	SAFE_DELETE(_image);
+}
+
+void CursorImage::alloc() {
+	if (!_image)
+		return;
+
+	if (!_image->load(getName(), _archiveType, 1, 2))
+		error("[CursorImage::alloc] Cannot load image (%s)", getName().c_str());
+
+	if (_image->getBPP() != 32) {
+		dealloc();
+		error("[CursorImage::alloc] Only 32bpp TGA are supported as cursors images");
+	}
+}
+
+void CursorImage::dealloc() {
+	if (!_image)
+		return;
+
+	if (_image->isInitialized())
+		_image->destroy();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// CursorAnimation
+//////////////////////////////////////////////////////////////////////////
+CursorAnimation::CursorAnimation() {
+
+}
+
+CursorAnimation::~CursorAnimation() {
+	deinit();
+}
+
+void CursorAnimation::init(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, ArchiveType archiveType) {
+	CursorBase::init(id, name, cursorType, a4);
+
+	error("[CursorAnimation::init] Not implemented");
+}
+
+void CursorAnimation::deinit() {
+	error("[CursorAnimation::deinit] Not implemented");
+}
+
+void CursorAnimation::alloc() {
+	error("[CursorAnimation::alloc] Not implemented");
+}
+
+void CursorAnimation::dealloc() {
+	error("[CursorAnimation::dealloc] Not implemented");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -91,12 +167,60 @@ CursorHandler::~CursorHandler() {
 	CLEAR_ARRAY(CursorBase, _cursors);
 }
 
-void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, ArchiveType archiveType) {
-	add(id, name, cursorType, a3, 0, 0, 0, a4, archiveType);
+void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, ImageType imageType, ArchiveType archiveType) {
+	add(id, name, cursorType, a3, 0, 0, 0, imageType, archiveType);
 }
 
-void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, ArchiveType archiveType) {
-	error("[CursorHandler::add] Not implemented");
+void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, ImageType imageType, ArchiveType archiveType) {
+	if (_cursors.has(id))
+		error("[CursorHandler::add] ID already exists (%d)", id);
+
+	CursorBase *cursor = NULL;
+	switch (cursorType) {
+	default:
+		error("[CursorHandler::add] Invalid cursor type (%d)", cursorType);
+		break;
+
+	case kCursorTypeNormal:
+	case kCursorType2:
+		cursor = new Cursor();
+		cursor->init(id, name, cursorType, a3);
+		break;
+
+	case kCursorTypeImage: {
+		cursor = new CursorImage();
+
+		// Check archive type
+		if (archiveType != kArchiveFile && archiveType != kArchiveArt)
+			error("[CursorHandler::add] Invalid archive type (archiveType: %d)", archiveType);
+
+		Common::String path;
+		switch (imageType) {
+		default:
+			error("[CursorHandler::add] Cannot load image cursor (imageType: %d)", imageType);
+			break;
+
+		case kImageCursor:
+			path = Common::String::format("%sCURSOR/%s.tga", archiveType == kArchiveFile ? "" : "/", name.c_str());
+			break;
+
+		case kImageListIcon:
+			path = Common::String::format("%sLSTICON/%s.tga", archiveType == kArchiveFile ? "" : "/", name.c_str());
+			break;
+		}
+
+
+		((CursorImage *)cursor)->init(id, path, cursorType, a3, archiveType);
+		}
+		break;
+
+	case kCursorTypeAnimated:
+		cursor = new CursorAnimation();
+		((CursorAnimation *)cursor)->init(id, name, cursorType, a3, a4, a5, a6, imageType, archiveType);
+		break;
+	}
+
+	_cursors.push_back(cursor);
 }
 
 void CursorHandler::setOffset(CursorId id, Common::Point offset) {

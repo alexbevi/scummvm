@@ -36,9 +36,9 @@ namespace Ring {
 // Enumerations
 //////////////////////////////////////////////////////////////////////////
 enum ArchiveType {
-	kTypeInvalid = 0,
-	kTypeFile    = 101,
-	kTypeArchive = 102
+	kArchiveInvalid = 0,
+	kArchiveFile    = 101,
+	kArchiveArt     = 102
 };
 
 enum LoadFrom {
@@ -205,9 +205,16 @@ enum CursorId {
 };
 
 enum CursorType {
+	kCursorTypeInvalid  = 0,
 	kCursorTypeNormal   = 1,
+	kCursorType2        = 2,
 	kCursorTypeImage    = 3,
 	kCursorTypeAnimated = 4
+};
+
+enum ImageType {
+	kImageCursor   = 3,
+	kImageListIcon = 4
 };
 
 enum PuzzleId {
@@ -241,6 +248,7 @@ class BaseObject {
 public:
 	BaseObject(Id id) : _id(id) {}
 
+	void setId(Id id) { _id = id; }
 	Id getId() { return _id; }
 
 protected:

@@ -28,13 +28,24 @@
 namespace Ring {
 
 Image::Image() {
+	_bpp = 32; // HACK
 }
 
 Image::~Image() {
 }
 
+void Image::destroy() {
+	error("[Image::isInitialized] Not implemented");
+}
+
 bool Image::load(Common::String path, ArchiveType type, uint32 a3, uint32 a4) {
 	warning("[Image::load] Not implemented (%s)", path.c_str());
+
+	return true;
+}
+
+bool Image::isInitialized() {
+	warning("[Image::isInitialized] Not implemented");
 
 	return true;
 }
