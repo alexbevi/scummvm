@@ -32,7 +32,7 @@ namespace Ring {
 
 class Accessibility;
 class AnimationImage;
-class Presentation;
+class ObjectPresentation;
 
 class Object : public BaseObject {
 public:
@@ -44,7 +44,7 @@ private:
 	Common::String _name;
 	byte    _field_C;
 	Common::Array<Accessibility *> _accessibilities;
-	Common::Array<Presentation *> _presentations;
+	Common::Array<ObjectPresentation *> _presentations;
 	uint32  _field_15;
 	uint32  _field_19;
 	uint32  _field_1D;

@@ -28,10 +28,37 @@
 
 namespace Ring {
 
-class Presentation {
+class PresentationImage {
 public:
-	Presentation();
-	~Presentation();
+	PresentationImage();
+	~PresentationImage();
+
+private:
+
+};
+
+class Visual {
+public:
+	Visual();
+	~Visual();
+
+private:
+
+};
+
+class PresentationAnimation {
+public:
+	PresentationAnimation();
+	~PresentationAnimation();
+
+private:
+
+};
+
+class ObjectPresentation {
+public:
+	ObjectPresentation();
+	~ObjectPresentation();
 
 private:
 

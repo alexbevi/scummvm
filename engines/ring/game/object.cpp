@@ -79,7 +79,7 @@ Object::Object(ObjectId id, Common::String language, Common::String name, byte a
 
 Object::~Object() {
 	CLEAR_ARRAY(Accessibility, _accessibilities);
-	CLEAR_ARRAY(Presentation, _presentations);
+	CLEAR_ARRAY(ObjectPresentation, _presentations);
 	SAFE_DELETE(_animationImage);
 }
 

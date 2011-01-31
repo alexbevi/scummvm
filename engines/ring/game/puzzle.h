@@ -30,22 +30,31 @@
 
 namespace Ring {
 
-class PuzzleInfo {
-public:
-	PuzzleInfo();
-	~PuzzleInfo();
-
-private:
-
-};
+class Accessibility;
+class Movability;
+class PresentationAnimation;
+class PresentationImage;
+class SoundItem;
+class Text;
+class Visual;
 
 class Puzzle : public BaseObject {
 public:
-	Puzzle();
+	Puzzle(PuzzleId id);
 	~Puzzle();
 
 private:
-
+	uint32 _field_4;
+	Common::Array<Movability *>            _movabilities;
+	Common::Array<Accessibility *>         _accessibilities;
+	Common::Array<PresentationImage *>     _presentationImages;
+	Common::Array<PresentationAnimation *> _presentationAnimations;
+	Common::Array<Text *>                  _texts;
+	Common::Array<SoundItem *>             _soundItems;
+	Common::Array<Visual *>                _visuals;
+	uint32 _field_24;
+	byte   _field_28;
+	uint32 _field_29;
 };
 
 } // End of namespace Ring

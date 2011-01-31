@@ -92,6 +92,11 @@ enum DialogId {
 enum ObjectId {
 	kObjectInvalid               = -1,
 	kObjectNone                  = 0,
+	kObject1                     = 1,
+	kObject2                     = 2,
+	kObject3                     = 3,
+	kObject4                     = 4,
+	kObject6                     = 6,
 	kObjectBrutality             = 10000,
 	kObjectGlug                  = 10001,
 	kObjectMinerals              = 10002,
@@ -126,6 +131,7 @@ enum ObjectId {
 	kObjectIngot3                = 30023,
 	kObjectSleepingPotion        = 30025,
 	kObjectBow                   = 30026,
+	kObject30028                 = 30028,
 	kObjectMould                 = 30029,
 	kObjectLogeTear2             = 30030,
 	kObjectBerriesJuice          = 30031,
@@ -218,7 +224,14 @@ enum ImageType {
 };
 
 enum PuzzleId {
-	kPuzzleInvalid = 0
+	kPuzzleInvalid     = 0,
+	kPuzzle1           = 1,
+	kPuzzleMenu        = 90000,
+	kPuzzlePreferences = 90001,
+	kPuzzleLoad        = 90002,
+	kPuzzleSave        = 90003,
+	kPuzzleGameStats   = 90004,
+	kPuzzleInsertCd    = 90005
 };
 
 //////////////////////////////////////////////////////////////////////////
