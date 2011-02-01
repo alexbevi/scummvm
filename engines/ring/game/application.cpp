@@ -449,6 +449,49 @@ void Application::subtitleSetBackgroundColor(Color color) {
 }
 
 //////////////////////////////////////////////////////////////////////////
+// Bag
+//////////////////////////////////////////////////////////////////////////
+void Application::bagAdd(ObjectId id) {
+	if (id == kObjectNone)
+		error("[Application::removeFromBag] Invalid ID (%d)", id);
+
+	if (!_bag)
+		error("[Application::removeFromBag] bag is not initialized properly");
+
+	if (!_objectList.has(id))
+		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
+
+	_bag->add(id);
+}
+
+void Application::bagRemove(ObjectId id) {
+	if (!_bag)
+		error("[Application::removeFromBag] bag is not initialized properly");
+
+	if (!_objectList.has(id))
+		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
+
+	_bag->remove(id);
+}
+
+void Application::bagRemoveAll() {
+	if (!_bag)
+		error("[Application::removeAllFromBag] bag is not initialized properly");
+
+	_bag->removeAll();
+}
+
+bool Application::bagIsIn(ObjectId id) {
+	if (!_bag)
+		error("[Application::removeFromBag] bag is not initialized properly");
+
+	if (!_objectList.has(id))
+		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
+
+	return _bag->has(id);
+}
+
+//////////////////////////////////////////////////////////////////////////
 // Zone
 //////////////////////////////////////////////////////////////////////////
 Common::String Application::getZoneString(Zone zone) const {
@@ -559,6 +602,10 @@ void Application::puzzleAdd(PuzzleId id) {
 	_puzzleList.push_back(new Puzzle(id));
 }
 
+void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, uint32 a5) {
+	error("[Application::puzzleAddBackgroundImage] Not implemented");
+}
+
 void Application::puzzleReset() {
 	SAFE_DELETE(_puzzle);
 	SAFE_DELETE(_field_89);
@@ -597,16 +644,24 @@ void Application::objectRemove(ObjectId id) {
 	_objectList.remove(id);
 }
 
-void Application::objectAddPresentation(ObjectId objectId) {
-	error("[Application::objectAddPresentation] Not implemented");
-}
-
 void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {
 	error("[Application::objectAddPuzzleAccessibility] Not implemented");
 }
 
 void Application::objectSetPuzzleAccessibilityKey(ObjectId id, uint32 accessiblityIndex, uint32 a3) {
 	error("[Application::objectSetPuzzleAccessibilityKey] Not implemented");
+}
+
+void Application::objectSetActiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
+	error("[Application::objectSetActiveDrawCursor] Not implemented");
+}
+
+void Application::objectSetPassiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
+	error("[Application::objectSetPassiveDrawCursor] Not implemented");
+}
+
+void Application::objectAddPresentation(ObjectId objectId) {
+	error("[Application::objectAddPresentation] Not implemented");
 }
 
 void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, uint32 a7, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13) {
@@ -617,47 +672,68 @@ void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 p
 	error("[Application::objectPresentationAddImageToPuzzle] Not implemented");
 }
 
+void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12) {
+	error("[Application::objectPresentationAddAnimationToPuzzle] Not implemented");
+}
+
+void Application::objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, Common::Point point) {
+	error("[Application::objectPresentationSetAnimationCoordinatesOnPuzzle] Not implemented");
+}
+
+void Application::objectPresentationShow(ObjectId objectId, uint32 presentationIndex) {
+	error("[Application::objectPresentationShow] Not implemented");
+}
+
+void Application::objectPresentationShow(ObjectId objectId) {
+	error("[Application::objectPresentationShow] Not implemented");
+}
+
 //////////////////////////////////////////////////////////////////////////
-// Bag
+// Sound
 //////////////////////////////////////////////////////////////////////////
-void Application::bagAdd(ObjectId id) {
-	if (id == kObjectNone)
-		error("[Application::removeFromBag] Invalid ID (%d)", id);
-
-	if (!_bag)
-		error("[Application::removeFromBag] bag is not initialized properly");
-
-	if (!_objectList.has(id))
-		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
-
-	_bag->add(id);
+void Application::soundAddEx(Id soundId, uint32 a2, Common::String filename, uint32 a3, uint32 a4, int soundChunk) {
+	error("[Application::soundAddEx] Not implemented");
 }
 
-void Application::bagRemove(ObjectId id) {
-	if (!_bag)
-		error("[Application::removeFromBag] bag is not initialized properly");
-
-	if (!_objectList.has(id))
-		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
-
-	_bag->remove(id);
+//////////////////////////////////////////////////////////////////////////
+// Var
+//////////////////////////////////////////////////////////////////////////
+void Application::varDefineByte(Id id, byte val) {
+	error("[Application::varDefineByte] Not implemented");
 }
 
-void Application::bagRemoveAll() {
-	if (!_bag)
-		error("[Application::removeAllFromBag] bag is not initialized properly");
-
-	_bag->removeAll();
+void Application::varDefineWord(Id id, int16 val) {
+	error("[Application::varDefineWord] Not implemented");
 }
 
-bool Application::bagIsIn(ObjectId id) {
-	if (!_bag)
-		error("[Application::removeFromBag] bag is not initialized properly");
+void Application::varDefineDword(Id id, int32 val) {
+	error("[Application::varDefineDword] Not implemented");
+}
 
-	if (!_objectList.has(id))
-		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
+void Application::varDefineString(Id id, Common::String val) {
+	error("[Application::varDefineString] Not implemented");
+}
 
-	return _bag->has(id);
+void Application::varDefineFloat(Id id, double val) {
+	error("[Application::varDefineFloat] Not implemented");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Visual
+//////////////////////////////////////////////////////////////////////////
+void Application::visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10) {
+	error("[Application::visualAddShowToPuzzle] Not implemented");
+}
+
+void Application::visualAddListToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3,
+	                                    Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10,
+	                                    Common::String filename11, Common::String filename12, Common::String filename13,
+							            uint32 a16, uint32 a17, uint32 a18, uint32 a19, uint32 a20, uint32 a21, uint32 a22, uint32 a23, uint32 a24, uint32 a25,
+	                                    uint32 a26, uint32 a27, uint32 a28, uint32 a29, uint32 a30, uint32 a31, uint32 a32, uint32 a33, uint32 a34, uint32 a35,
+	                                    uint32 a36, uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, uint32 a42, uint32 a43, uint32 a44, uint32 a45,
+							            uint32 a46, uint32 a47, uint32 a48, uint32 a49, uint32 a50, uint32 a51, int32 a52, int32 a53, int32 a54, int32 a55,
+							            ArchiveType archiveType) {
+	error("[Application::visualAddListToPuzzle] Not implemented");
 }
 
 } // End of namespace Ring

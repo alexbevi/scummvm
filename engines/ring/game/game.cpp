@@ -240,10 +240,14 @@ void Game::setZoneN2(Zone zone, uint32 a2) {
 void Game::initZoneSY() {
 	setZoneAndEnableBag(kZoneSY);
 
+	//////////////////////////////////////////////////////////////////////////
+	// Setup system and dialog boxes
 	_app->puzzleAdd(kPuzzle1);
+
 	_app->objectAdd(kObject1, "", "", 1);
 	_app->objectAddPresentation(kObject1);
 	_app->objectPresentationAddTextToPuzzle(kObject1, 0, kPuzzle1, "", 1, 16, 1, 0, -1, 0, -1, -1, -1);
+
 	_app->objectAdd(kObject6, "", "", 1);
 	_app->objectAddPresentation(kObject6);
 	_app->objectPresentationAddImageToPuzzle(kObject6, 0, kPuzzle1, "FO_WOT1_W_A.tga", 0, 96, 1, 3, 1000);
@@ -299,9 +303,11 @@ void Game::initZoneSY() {
 	_app->objectPresentationAddImageToPuzzle(kObject6, 25, kPuzzle1, "FO_WOT3_B_B.tga", 381, 216, 1, 3, 1000);
 	_app->objectAddPresentation(kObject6);
 	_app->objectPresentationAddImageToPuzzle(kObject6, 26, kPuzzle1, "FO_WOT3_B_D.tga", 408, 246, 1, 3, 1000);
+
 	_app->objectAdd(kObject7, "", "", 1);
 	_app->objectAddPresentation(kObject7);
 	_app->objectPresentationAddImageToPuzzle(kObject7, 0, kPuzzle1, "SY_ISHA.bmp", 0, 16, 1, 1, 1000);
+
 	_app->objectAdd(kObject2, "", "", 1);
 	_app->objectAddPresentation(kObject2);
 	_app->objectPresentationAddImageToPuzzle(kObject2, 0, kPuzzle1, "Exit.bmp", 160, 165, 1, 1, 1000);
@@ -313,6 +319,7 @@ void Game::initZoneSY() {
 	_app->objectPresentationAddImageToPuzzle(kObject2, 1, kPuzzle1, "ex_yes.bmp", 261, 279, 1, 1, 1000);
 	_app->objectAddPresentation(kObject2);
 	_app->objectPresentationAddImageToPuzzle(kObject2, 2, kPuzzle1, "ex_no.bmp", 318, 279, 1, 1, 1000);
+
 	_app->objectAdd(kObject3, "", "", 1);
 	_app->objectAddPresentation(kObject3);
 	_app->objectPresentationAddImageToPuzzle(kObject3, 0, kPuzzle1, "Warning.bmp", 160, 165, 1, 1, 1000);
@@ -322,6 +329,7 @@ void Game::initZoneSY() {
 	_app->objectPresentationAddImageToPuzzle(kObject3, 1, kPuzzle1, "wr_ok.tga", 313, 281, 1, 3, 1000);
 	_app->objectAddPuzzleAccessibility(kObject3, kPuzzle1, Common::Rect(286, 269, 363, 307), 0, 57, 0);
 	_app->objectSetPuzzleAccessibilityKey(kObject3, 0, 13);
+
 	_app->objectAdd(kObject4, "", "", 1);
 	_app->objectAddPresentation(kObject4);
 	_app->objectPresentationAddImageToPuzzle(kObject4, 0, kPuzzle1, "Question.bmp", 160, 165, 1, 1, 1000);
@@ -343,6 +351,217 @@ void Game::initZoneSY() {
 	_app->objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 283, 250, 309), 0, 57, 5);
 	_app->objectSetPuzzleAccessibilityKey(kObject4, 4, 13);
 	_app->objectSetPuzzleAccessibilityKey(kObject4, 5, 27);
+
+	_app->objectAdd(kObject5, "", "", 1);
+	_app->puzzleAdd(kPuzzleInsertCd);
+	_app->puzzleAddBackgroundImage(kPuzzleInsertCd, "insertcd.bmp", 0, 16, 1);
+
+	_app->objectAdd(kObject90912, "", "", 1);
+	_app->objectAddPresentation(kObject90912);
+	_app->objectPresentationAddImageToPuzzle(kObject90912, 0, kPuzzleInsertCd, "g_ok.tga", 306, 274, 1, 3, 1000);
+	_app->objectAddPresentation(kObject90912);
+	_app->objectPresentationAddTextToPuzzle(kObject90912, 1, kPuzzleInsertCd, "", 320, 240, 1, 0xFFu, 95, 0, -1, -1, -1);
+	_app->objectPresentationAddTextToPuzzle(kObject90912, 1, kPuzzleInsertCd, "", 320, 260, 1, 0xFFu, 95, 0, -1, -1, -1);
+	_app->objectPresentationShow(kObject90912, 1);
+	_app->objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 0);
+	_app->objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 1);
+	_app->objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 2);
+	_app->objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 3);
+	_app->objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 4);
+	_app->objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 5);
+	_app->objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 6);
+	_app->objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 7);
+	_app->objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 8);
+	_app->objectSetPuzzleAccessibilityKey(kObject90912, 0, 13);
+	_app->objectSetPuzzleAccessibilityKey(kObject90912, 1, 13);
+	_app->objectSetPuzzleAccessibilityKey(kObject90912, 2, 13);
+	_app->objectSetPuzzleAccessibilityKey(kObject90912, 3, 13);
+	_app->objectSetPuzzleAccessibilityKey(kObject90912, 4, 13);
+	_app->objectSetPuzzleAccessibilityKey(kObject90912, 5, 13);
+	_app->objectSetPuzzleAccessibilityKey(kObject90912, 6, 13);
+	_app->objectSetPuzzleAccessibilityKey(kObject90912, 7, 13);
+	_app->objectSetPuzzleAccessibilityKey(kObject90912, 8, 13);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Menu
+	_app->puzzleAdd(kPuzzleMenu);
+	_app->puzzleAddBackgroundImage(kPuzzleMenu, "GenMen.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzlePreferences);
+	_app->puzzleAddBackgroundImage(kPuzzlePreferences, "Preferences.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzleSave);
+	_app->puzzleAddBackgroundImage(kPuzzleSave, "Save.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzleLoad);
+	_app->puzzleAddBackgroundImage(kPuzzleLoad, "Load.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzleGameStatus);
+	_app->puzzleAddBackgroundImage(kPuzzleGameStatus, "GameStat.bmp", 0, 16, 1);
+
+	// Menu objects
+	_app->objectAdd(kObjectMenuNewGame, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectMenuNewGame, kPuzzleMenu, Common::Rect(148, 69, 500, 99), 1, 57, 0);
+	_app->objectAddPresentation(kObjectMenuNewGame);
+	_app->objectPresentationAddImageToPuzzle(kObjectMenuNewGame, 0, kPuzzleMenu, "gm_new.bmp", 148, 85, 1, 1, 1000);
+	_app->objectAdd(kObjectMenuPreferences, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectMenuPreferences, kPuzzleMenu, Common::Rect(148, 105, 500, 135), 1, 57, 0);
+	_app->objectAddPresentation(kObjectMenuPreferences);
+	_app->objectPresentationAddImageToPuzzle(kObjectMenuPreferences, 0, kPuzzleMenu, "gm_pre.bmp", 148, 121, 1, 1, 1000);
+	_app->objectAdd(kObjectMenuLoad, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectMenuLoad, kPuzzleMenu, Common::Rect(148, 168, 500, 198), 1, 57, 0);
+	_app->objectAddPresentation(kObjectMenuLoad);
+	_app->objectPresentationAddImageToPuzzle(kObjectMenuLoad, 0, kPuzzleMenu, "gm_loa.bmp", 148, 184, 1, 1, 1000);
+	_app->objectAdd(kObjectMenuSave, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectMenuSave, kPuzzleMenu, Common::Rect(148, 236, 500, 266), 1, 57, 0);
+	_app->objectAddPresentation(kObjectMenuSave);
+	_app->objectPresentationAddImageToPuzzle(kObjectMenuSave, 0, kPuzzleMenu, "gm_sav.bmp", 148, 252, 1, 1, 1000);
+	_app->objectAdd(kObjectMenuContinue, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectMenuContinue, kPuzzleMenu, Common::Rect(148, 303, 500, 333), 1, 57, 0);
+	_app->objectAddPresentation(kObjectMenuContinue);
+	_app->objectPresentationAddImageToPuzzle(kObjectMenuContinue, 0, kPuzzleMenu, "gm_con.bmp", 148, 319, 1, 1, 1000);
+	_app->objectAdd(kObjectMenuStatus, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectMenuStatus, kPuzzleMenu, Common::Rect(148, 342, 500, 372), 1, 57, 0);
+	_app->objectAddPresentation(kObjectMenuStatus);
+	_app->objectPresentationAddImageToPuzzle(kObjectMenuStatus, 0, kPuzzleMenu, "gm_sta.bmp", 148, 358, 1, 1, 1000);
+	_app->objectAdd(kObjectMenuExit, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectMenuExit, kPuzzleMenu, Common::Rect(148, 380, 500, 410), 1, 57, 0);
+	_app->objectAddPresentation(kObjectMenuExit);
+	_app->objectPresentationAddImageToPuzzle(kObjectMenuExit, 0, kPuzzleMenu, "gm_exi.bmp", 148, 396, 1, 1, 1000);
+
+	// Preferences objects
+	_app->objectAdd(kObjectPreferencesCancel, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectPreferencesCancel, kPuzzlePreferences, Common::Rect(410, 420, 490, 445), 1, 57, 0);
+	_app->objectAddPresentation(kObjectPreferencesCancel);
+	_app->objectPresentationAddImageToPuzzle(kObjectPreferencesCancel, 0, kPuzzlePreferences, "g_cancel.tga", 407, 421, 1, 3, 1000);
+	_app->objectSetPuzzleAccessibilityKey(kObjectPreferencesCancel, 0, 27);
+	_app->objectAdd(kObjectPreferencesOk, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectPreferencesOk, kPuzzlePreferences, Common::Rect(320, 420, 370, 445), 1, 57, 0);
+	_app->objectAddPresentation(kObjectPreferencesOk);
+	_app->objectPresentationAddImageToPuzzle(kObjectPreferencesOk, 0, kPuzzlePreferences, "g_ok.tga", 328, 421, 1, 3, 1000);
+	_app->objectSetPuzzleAccessibilityKey(kObjectPreferencesOk, 0, 13);
+	_app->objectAdd(kObjectPreferencesSubtitles, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectPreferencesSubtitles, kPuzzlePreferences, Common::Rect(310, 315, 370, 350), 1, 57, 0);
+	_app->objectAddPuzzleAccessibility(kObjectPreferencesSubtitles, kPuzzlePreferences, Common::Rect(400, 315, 460, 350), 1, 57, 1);
+	_app->objectAddPresentation(kObjectPreferencesSubtitles);
+	_app->objectPresentationAddImageToPuzzle(kObjectPreferencesSubtitles, 0, kPuzzlePreferences, "pr_on.bmp", 317, 326, 1, 1, 1000);
+	_app->objectAddPresentation(kObjectPreferencesSubtitles);
+	_app->objectPresentationAddImageToPuzzle(kObjectPreferencesSubtitles, 1, kPuzzlePreferences, "pr_off.bmp", 402, 326, 1, 1, 1000);
+	_app->objectAdd(kObjectPreferences3dSound, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectPreferences3dSound, kPuzzlePreferences, Common::Rect(355, 260, 420, 295), 1, 57, 1);
+	_app->objectAddPresentation(kObjectPreferences3dSound);
+	_app->objectPresentationAddImageToPuzzle(kObjectPreferences3dSound, 0, kPuzzlePreferences, "pr_left.tga", 336, 288, 1, 3, 1000);
+	_app->objectPresentationAddImageToPuzzle(kObjectPreferences3dSound, 0, kPuzzlePreferences, "pr_right.tga", 428, 288, 1, 3, 1000);
+	_app->objectAddPresentation(kObjectPreferences3dSound);
+	_app->objectPresentationAddImageToPuzzle(kObjectPreferences3dSound, 1, kPuzzlePreferences, "pr_right.tga", 336, 288, 1, 3, 1000);
+	_app->objectPresentationAddImageToPuzzle(kObjectPreferences3dSound, 1, kPuzzlePreferences, "pr_left.tga", 428, 288, 1, 3, 1000);
+	_app->objectAddPresentation(kObjectPreferences3dSound);
+	_app->objectPresentationAddImageToPuzzle(kObjectPreferences3dSound, 2, kPuzzlePreferences, "pr_3ds.tga", 356, 281, 1, 3, 1000);
+	_app->objectAdd(kObjectPreferencesSliderVolume, "", "ni_handsel", 4);
+	_app->objectAddPuzzleAccessibility(kObjectPreferencesSliderVolume, kPuzzlePreferences, Common::Rect(300, 140, 600, 180), 1, 57, 1);
+	_app->objectAddPresentation(kObjectPreferencesSliderVolume);
+	_app->objectPresentationAddImageToPuzzle(kObjectPreferencesSliderVolume, 0, kPuzzlePreferences, "pr_slider.tga", 314, 155, 1, 3, 1000);
+	_app->objectPresentationShow(kObjectPreferencesSliderVolume);
+	_app->objectSetActiveDrawCursor(kObjectPreferencesSliderVolume, 15, 15, 0, 3, 0, 0, 3);
+	_app->objectSetPassiveDrawCursor(kObjectPreferencesSliderVolume, 15, 15, 0, 3, 0, 0, 3);
+	_app->objectAdd(kObjectPreferencesSliderDialog, "", "ni_handsel", 4);
+	_app->objectAddPuzzleAccessibility(kObjectPreferencesSliderDialog, kPuzzlePreferences, Common::Rect(300, 197, 600, 237), 1, 57, 1);
+	_app->objectAddPresentation(kObjectPreferencesSliderDialog);
+	_app->objectPresentationAddImageToPuzzle(kObjectPreferencesSliderDialog, 0, kPuzzlePreferences, "pr_slider.tga", 314, 212, 1, 3, 1000);
+	_app->objectPresentationShow(kObjectPreferencesSliderDialog);
+	_app->objectSetActiveDrawCursor(kObjectPreferencesSliderDialog, 15, 15, 0, 3, 0, 0, 3);
+	_app->objectSetPassiveDrawCursor(kObjectPreferencesSliderDialog, 15, 15, 0, 3, 0, 0, 3);
+	_app->objectAdd(kObject90107, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObject90107, kPuzzlePreferences, Common::Rect(0, 448, 20, 640), 1, 57, 1);
+
+	// Loading screen objects
+	_app->objectAdd(kObjectLoadOk, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectLoadOk, kPuzzleLoad, Common::Rect(325, 418, 375, 461), 1, 57, 0);
+	_app->objectAddPresentation(kObjectLoadOk);
+	_app->objectPresentationAddImageToPuzzle(kObjectLoadOk, 0, kPuzzleLoad, "g_ok.tga", 328, 421, 1, 3, 1000);
+	_app->objectSetPuzzleAccessibilityKey(kObjectLoadOk, 0, 13);
+	_app->objectAdd(kObjectLoadCancel, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectLoadCancel, kPuzzleLoad, Common::Rect(416, 418, 498, 461), 1, 57, 0);
+	_app->objectAddPresentation(kObjectLoadCancel);
+	_app->objectPresentationAddImageToPuzzle(kObjectLoadCancel, 0, kPuzzleLoad, "g_cancel.tga", 407, 421, 1, 3, 1000);
+	_app->objectSetPuzzleAccessibilityKey(kObjectLoadCancel, 0, 27);
+
+	// Saving screen objects
+	_app->objectAdd(kObjectSaveOk, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectSaveOk, kPuzzleSave, Common::Rect(325, 418, 375, 461), 1, 57, 0);
+	_app->objectAdd(kObjectSaveCancel, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectSaveCancel, kPuzzleSave, Common::Rect(416, 418, 498, 461), 1, 57, 0);
+	_app->objectSetPuzzleAccessibilityKey(kObjectSaveCancel, 0, 27);
+	_app->objectAddPresentation(kObjectSaveOk);
+	_app->objectPresentationAddImageToPuzzle(kObjectSaveOk, 0, kPuzzleSave, "g_ok.tga", 328, 421, 1, 3, 1000);
+	_app->objectAddPresentation(kObjectSaveCancel);
+	_app->objectPresentationAddImageToPuzzle(kObjectSaveCancel, 0, kPuzzleSave, "g_cancel.tga", 407, 421, 1, 3, 1000);
+	_app->objectSetPuzzleAccessibilityKey(kObjectSaveOk, 0, 13);
+	_app->objectAdd(kObjectSave90313, "", "", 1);
+	_app->objectAddPresentation(kObjectSave90313);
+	_app->objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", 344, 181, 1, 0xFFu, 95, 0, -1, -1, -1);
+	_app->objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", 0, 0, 1, 0xFFu, 95, 0, -1, -1, -1);
+	_app->objectPresentationAddAnimationToPuzzle(kObjectSave90313, 0, kPuzzleSave, "kybcur", 0, 0, 0, 1, 1000, 6, 1095237632, 16);
+	_app->objectPresentationSetAnimationCoordinatesOnPuzzle(kObjectSave90313, 0, Common::Point(346, 181));
+	_app->setArchiveType(kArchiveFile);
+	_app->objectPresentationAddImageToPuzzle(kObjectSave90313, 0, kPuzzleSave, "osc.bmp", 0, 0, 1, 1, 1000);
+	if ( _app->getConfiguration().artSY )
+		_app->setArchiveType(kArchiveArt);
+	_app->objectPresentationShow(kObjectSave90313, 0);
+
+	_app->visualAddListToPuzzle(1, kPuzzleLoad, 65,
+	                            "", "" /* save folder */, "", "up_gun.tga", "up_gur.tga", "", "up_gua.tga", "down_gun.tga", "down_gur.tga", "",
+	                            "down_gua.tga", "load_gun.tga", "load_gua.tga",
+	                            3, 0, 0, 0, 0, 335, 127, 300, 35, 45,
+	                            3, 330, 349, 320, 339, 40, 40, 330, 380, 320,
+	                            370, 40, 40, 0, 0, 0, 1, 311, 137, 4,
+	                            255, 95, 0, 245, 235, 50, -1, -1,-1, 1,
+	                            kArchiveFile);
+
+	// Game status screen
+	_app->objectAdd(kObjectStatusOk, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObjectStatusOk, kPuzzleGameStatus, Common::Rect(28, 79, 107, 109), 1, 57, 0);
+	_app->objectAddPresentation(kObjectStatusOk);
+	_app->objectPresentationAddImageToPuzzle(kObjectStatusOk, 0, kPuzzleGameStatus, "g_ok.tga", 46, 95, 1, 3, 1000);
+	_app->objectSetPuzzleAccessibilityKey(kObjectStatusOk, 0, 13);
+	_app->visualAddShowToPuzzle(2, kPuzzleGameStatus, 1, 4, 295, 343, 28, 4, 300, 38655);
+	_app->objectAdd(kObjectStatusProgress, "", "", 1);
+	_app->objectAddPresentation(kObjectStatusProgress);
+	_app->objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 327, 1, 0xFFu, -106, 0, -1, -1, -1);
+	_app->objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 356, 1, 0xFFu, -106, 0, -1, -1, -1);
+	_app->objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 384, 1, 0xFFu, -106, 0, -1, -1, -1);
+	_app->objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 410, 1, 0xFFu, -106, 0, -1, -1, -1);
+	_app->objectPresentationShow(kObjectStatusProgress);
+
+	// Sounds
+	_app->soundAddEx(90001, 5, "1844.wac", 2, 2, _app->getConfiguration().dialog.soundChunck);
+
+	// Variables
+	_app->varDefineByte(90001, 0);
+	_app->varDefineByte(90002, 0);
+	_app->varDefineByte(90003, 0);
+	_app->varDefineByte(90004, 0);
+	_app->varDefineFloat(90005, 0);
+	_app->varDefineFloat(90006, 0);
+	_app->varDefineFloat(90007, 0);
+	_app->varDefineFloat(90008, 0);
+	_app->varDefineByte(90009, 0);
+	_app->varDefineByte(90010, 0);
+	_app->varDefineByte(90011, 0);
+	_app->varDefineByte(90012, 0);
+	_app->varDefineDword(90013, 0);
+	_app->varDefineDword(90014, 0);
+	_app->varDefineDword(90015, 0);
+	_app->varDefineDword(90016, 0);
+	_app->varDefineByte(90017, 0);
+	_app->varDefineByte(90018, 0);
+	_app->varDefineByte(90019, 0);
+	_app->varDefineByte(90020, 0);
+	_app->varDefineDword(90021, 0);
+	_app->varDefineDword(90022, 0);
+	_app->varDefineDword(90023, 0);
+	_app->varDefineDword(90024, 0);
+	_app->varDefineByte(90025, 0);
+	_app->varDefineByte(90026, 0);
+	_app->varDefineByte(90027, 0);
+	_app->varDefineByte(90028, 0);
+
 
 
 

@@ -93,6 +93,13 @@ public:
 	void subtitleSetBackgroundColor(Color color);
 
 	//////////////////////////////////////////////////////////////////////////
+	// Bag
+	void bagAdd(ObjectId id);
+	void bagRemove(ObjectId id);
+	void bagRemoveAll();
+	bool bagIsIn(ObjectId id);
+
+	//////////////////////////////////////////////////////////////////////////
 	// Zone
 	void setArchiveType(ArchiveType type) { _archiveType = type; }
 	ArchiveType getArchiveType() { return _archiveType; }
@@ -109,6 +116,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Puzzle
 	void puzzleAdd(PuzzleId id);
+	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, uint32 a5);
 	void puzzleReset();
 	bool hasPuzzle() { return _puzzle != NULL; }
 	PuzzleId getPuzzleId();
@@ -116,19 +124,45 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Object
 	void objectAdd(ObjectId objectId, Common::String language, Common::String name, byte a5);
-	void objectAddPresentation(ObjectId objectId);
-	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
-	void objectSetPuzzleAccessibilityKey(ObjectId id, uint32 accessiblityIndex, uint32 a3);
-	void objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, uint32 a7, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13);
-	void objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9);
 	void objectRemove(ObjectId objectId);
 
+	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
+	void objectSetPuzzleAccessibilityKey(ObjectId id, uint32 accessiblityIndex, uint32 a3);
+
+	void objectSetActiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
+	void objectSetPassiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
+
+	void objectAddPresentation(ObjectId objectId);
+	void objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, uint32 a7, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13);
+	void objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9);
+	void objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12);
+	void objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, Common::Point point);
+	void objectPresentationShow(ObjectId objectId, uint32 presentationIndex);
+	void objectPresentationShow(ObjectId objectId);
+
 	//////////////////////////////////////////////////////////////////////////
-	// Bag
-	void bagAdd(ObjectId id);
-	void bagRemove(ObjectId id);
-	void bagRemoveAll();
-	bool bagIsIn(ObjectId id);
+	// Sound
+	void soundAddEx(Id soundId, uint32 a2, Common::String filename, uint32 a3, uint32 a4, int soundChunk);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Var
+	void varDefineByte(Id id, byte val);
+	void varDefineWord(Id id, int16 val);
+	void varDefineDword(Id id, int32 val);
+	void varDefineString(Id id, Common::String val);
+	void varDefineFloat(Id id, double val);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Visual
+	void visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10);
+	void visualAddListToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3,
+	                           Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10,
+	                           Common::String filename11, Common::String filename12, Common::String filename13,
+							   uint32 a16, uint32 a17, uint32 a18, uint32 a19, uint32 a20, uint32 a21, uint32 a22, uint32 a23, uint32 a24, uint32 a25,
+	                           uint32 a26, uint32 a27, uint32 a28, uint32 a29, uint32 a30, uint32 a31, uint32 a32, uint32 a33, uint32 a34, uint32 a35,
+	                           uint32 a36, uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, uint32 a42, uint32 a43, uint32 a44, uint32 a45,
+							   uint32 a46, uint32 a47, uint32 a48, uint32 a49, uint32 a50, uint32 a51, int32 a52, int32 a53, int32 a54, int32 a55,
+							   ArchiveType archiveType);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
