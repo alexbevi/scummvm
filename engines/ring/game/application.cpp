@@ -52,7 +52,7 @@ namespace Ring {
 
 Application::Application(RingEngine *engine) : _vm(engine),
 	_video(NULL),        _artHandler(NULL),       _fontHandler(NULL),   _dialogHandler(NULL), _languageHandler(NULL),
-	_field_54(1),        _archiveType(kArchiveFile), _cursorHandler(NULL), _field_5D(0),         _field_5E(0),
+	_field_54(1),        _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
 	_soundHandler(NULL), _field_66(0),            _field_6A(0),         _zoneName("A0"),      _zone(kZoneInvalid),
 	_field_6F(0),        _field_70(0),            _field_74(0),         _field_75(0),         _field_76(0),
 	_field_77(0),        _field_78(0),            _puzzle(NULL),        _field_89(NULL),      _bag(NULL),
@@ -165,7 +165,7 @@ void Application::init() {
 	_field_76 = 1;
 	_field_77 = 1;
 	_field_78 = 1;
-	_field_5D = 1;
+	_loadFrom = kLoadFromCd;
 	_field_54 = 1;
 	_archiveType = kArchiveFile;
 	_field_6F = 0;
@@ -606,6 +606,22 @@ void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String fil
 	error("[Application::puzzleAddBackgroundImage] Not implemented");
 }
 
+void Application::puzzleAddMovabilityToPuzzle(PuzzleId puzzleId, Id movabilityId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {
+	error("[Application::puzzleAddMovabilityToPuzzle] Not implemented");
+}
+
+void Application::puzzleAddMovabilityToRotation(PuzzleId puzzleId, Id rotationId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {
+	error("[Application::puzzleAddMovabilityToRotation] Not implemented");
+}
+
+void Application::puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5) {
+	error("[Application::puzzleSetMovabilityToRotation] Not implemented");
+}
+
+void Application::puzzleAddAmbientSound(PuzzleId puzzleId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7) {
+	error("[Application::puzzleAddAmbientSound] Not implemented");
+}
+
 void Application::puzzleReset() {
 	SAFE_DELETE(_puzzle);
 	SAFE_DELETE(_field_89);
@@ -644,12 +660,28 @@ void Application::objectRemove(ObjectId id) {
 	_objectList.remove(id);
 }
 
+void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, uint32 a2, uint32 a3) {
+	error("[Application::objectSetAccessibilityOnOrOff] Not implemented");
+}
+
 void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {
 	error("[Application::objectAddPuzzleAccessibility] Not implemented");
 }
 
 void Application::objectSetPuzzleAccessibilityKey(ObjectId id, uint32 accessiblityIndex, uint32 a3) {
 	error("[Application::objectSetPuzzleAccessibilityKey] Not implemented");
+}
+
+void Application::objectAddRotationAccessibility(ObjectId, Id rotationId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {
+	error("[Application::objectAddRotationAccessibility] Not implemented");
+}
+
+void Application::objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
+	error("[Application::objectSetActiveCursor] Not implemented");
+}
+
+void Application::objectSetPassiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
+	error("[Application::objectSetPassiveCursor] Not implemented");
 }
 
 void Application::objectSetActiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
@@ -672,8 +704,24 @@ void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 p
 	error("[Application::objectPresentationAddImageToPuzzle] Not implemented");
 }
 
+void Application::objectPresentationAddImageToRotation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4) {
+	error("[Application::objectPresentationAddImageToRotation] Not implemented");
+}
+
 void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12) {
 	error("[Application::objectPresentationAddAnimationToPuzzle] Not implemented");
+}
+
+void Application::objectPresentationAddAnimationToRotation(ObjectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7) {
+	error("[Application::objectPresentationAddAnimationToRotation] Not implemented");
+}
+
+void Application::objectPresentationSetAnimationOnPuzzle(ObjectId id, uint32 a2, uint32 a3, uint32 a4) {
+	error("[Application::objectPresentationSetAnimationOnPuzzle] Not implemented");
+}
+
+void Application::objectPresentationSetAnimationOnRotation(ObjectId id, uint32 a2, uint32 a3, uint32 a4) {
+	error("[Application::objectPresentationSetAnimationOnRotation] Not implemented");
 }
 
 void Application::objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, Common::Point point) {
@@ -688,11 +736,63 @@ void Application::objectPresentationShow(ObjectId objectId) {
 	error("[Application::objectPresentationShow] Not implemented");
 }
 
+void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6) {
+	error("[Application::objectAddBagAnimation] Not implemented");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Rotation
+//////////////////////////////////////////////////////////////////////////
+void Application::rotationAdd(Id rotationId, Common::String name, uint32 a3, uint32 a4) {
+	error("[Application::rotationAdd] Not implemented");
+}
+
+void Application::rotationSetComBufferLength(Id rotationId, uint32 length) {
+	error("[Application::rotationSetComBufferLength] Not implemented");
+}
+
+void Application::rotationSetMovabilityOnOrOff(Id rotationId, uint32 a2, uint32 a3) {
+	error("[Application::rotationSetMovabilityOnOrOff] Not implemented");
+}
+
+void Application::rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, uint32 a4, int32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10) {
+	error("[Application::rotationAddMovabilityToPuzzle] Not implemented");
+}
+
+void Application::rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7) {
+	error("[Application::rotationSetMovabilityToPuzzle] Not implemented");
+}
+
+void Application::rotationAddMovabilityToRotation(Id rotationId1, Id rotationId2, Common::String name, uint32 a4, int32 a5, uint32 a6, int32 a7, uint32 a8, uint32 a9, uint32 a10) {
+	error("[Application::rotationAddMovabilityToRotation] Not implemented");
+}
+
+void Application::rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5,  uint32 a6, uint32 a7, int32 a8, int32 a9, uint32 a10) {
+	error("[Application::rotationSetMovabilityToRotation] Not implemented");
+}
+
+void Application::rotationAddAmbientSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7) {
+	error("[Application::rotationAddAmbientSound] Not implemented");
+}
+
+void Application::rotationAdd3DSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8) {
+	error("[Application::rotationAdd3DSound] Not implemented");
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 // Sound
 //////////////////////////////////////////////////////////////////////////
-void Application::soundAddEx(Id soundId, uint32 a2, Common::String filename, uint32 a3, uint32 a4, int soundChunk) {
-	error("[Application::soundAddEx] Not implemented");
+void Application::soundAdd(Id soundId, uint32 a2, Common::String filename, LoadFrom loadFrom) {
+	error("[Application::soundAdd] Not implemented");
+}
+
+void Application::soundAdd(Id soundId, uint32 a2, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk) {
+	error("[Application::soundAdd] Not implemented");
+}
+
+void Application::soundSetVolume(Id soundId, uint32 volume) {
+	error("[Application::soundSetVolume] Not implemented");
 }
 
 //////////////////////////////////////////////////////////////////////////

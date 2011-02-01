@@ -116,7 +116,14 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Puzzle
 	void puzzleAdd(PuzzleId id);
+
 	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, uint32 a5);
+	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleId, Id movabilityId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
+	void puzzleAddMovabilityToRotation(PuzzleId puzzleId, Id rotationId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
+	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5);
+
+	void puzzleAddAmbientSound(PuzzleId puzzleId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
+
 	void puzzleReset();
 	bool hasPuzzle() { return _puzzle != NULL; }
 	PuzzleId getPuzzleId();
@@ -126,23 +133,50 @@ public:
 	void objectAdd(ObjectId objectId, Common::String language, Common::String name, byte a5);
 	void objectRemove(ObjectId objectId);
 
+	void objectSetAccessibilityOnOrOff(ObjectId objectId, uint32 a2, uint32 a3);
+
 	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
 	void objectSetPuzzleAccessibilityKey(ObjectId id, uint32 accessiblityIndex, uint32 a3);
 
+	void objectAddRotationAccessibility(ObjectId, Id rotationId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
+
+	void objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
+	void objectSetPassiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
 	void objectSetActiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
 	void objectSetPassiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
 
 	void objectAddPresentation(ObjectId objectId);
 	void objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, uint32 a7, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13);
 	void objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9);
+	void objectPresentationAddImageToRotation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4);
 	void objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12);
+	void objectPresentationAddAnimationToRotation(ObjectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
+	void objectPresentationSetAnimationOnPuzzle(ObjectId id, uint32 a2, uint32 a3, uint32 a4);
+	void objectPresentationSetAnimationOnRotation(ObjectId id, uint32 a2, uint32 a3, uint32 a4);
 	void objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, Common::Point point);
 	void objectPresentationShow(ObjectId objectId, uint32 presentationIndex);
 	void objectPresentationShow(ObjectId objectId);
 
+	void objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Rotation
+	void rotationAdd(Id rotationId, Common::String name, uint32 a3, uint32 a4);
+	void rotationSetComBufferLength(Id rotationId, uint32 length);
+	void rotationSetMovabilityOnOrOff(Id rotationId, uint32 a2, uint32 a3);
+	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, uint32 a4, int32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10);
+	void rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
+	void rotationAddMovabilityToRotation(Id rotationId1, Id rotationId2, Common::String name, uint32 a4, int32 a5, uint32 a6, int32 a7, uint32 a8, uint32 a9, uint32 a10);
+	void rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5,  uint32 a6, uint32 a7, int32 a8, int32 a9, uint32 a10);
+
+	void rotationAddAmbientSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
+	void rotationAdd3DSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8);
+
 	//////////////////////////////////////////////////////////////////////////
 	// Sound
-	void soundAddEx(Id soundId, uint32 a2, Common::String filename, uint32 a3, uint32 a4, int soundChunk);
+	void soundAdd(Id soundId, uint32 a2, Common::String filename, LoadFrom loadFrom);
+	void soundAdd(Id soundId, uint32 a2, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk);
+	void soundSetVolume(Id soundId, uint32 volume);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Var
@@ -167,7 +201,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
 	Configuration getConfiguration() { return _configuration; }
-	void setField5D(uint32 val) { _field_5D = val; }
+	void setLoadFrom(LoadFrom loadFrom) { _loadFrom = loadFrom; }
 	void setField66(uint32 val) { _field_66 = val; }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -194,7 +228,7 @@ private:
 	uint32                      _field_54;
 	ArchiveType                 _archiveType;
 	CursorHandler              *_cursorHandler;
-	char                        _field_5D;
+	LoadFrom                    _loadFrom;
 	uint32                      _field_5E;
 	SoundHandler               *_soundHandler;
 	uint32                      _field_66;
