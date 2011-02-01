@@ -728,6 +728,10 @@ void Application::objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id,
 	error("[Application::objectPresentationSetAnimationCoordinatesOnPuzzle] Not implemented");
 }
 
+void Application::objectPresentationAnimationSetStartFrame(ObjectId objectId, uint32 animationIdex, uint32 startFrame) {
+	error("[Application::objectPresentationAnimationSetStartFrame] Not implemented");
+}
+
 void Application::objectPresentationShow(ObjectId objectId, uint32 presentationIndex) {
 	error("[Application::objectPresentationShow] Not implemented");
 }

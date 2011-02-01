@@ -136,9 +136,9 @@ public:
 	void objectSetAccessibilityOnOrOff(ObjectId objectId, uint32 a2, uint32 a3);
 
 	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
-	void objectSetPuzzleAccessibilityKey(ObjectId id, uint32 accessiblityIndex, uint32 a3);
+	void objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessiblityIndex, uint32 a3);
 
-	void objectAddRotationAccessibility(ObjectId, Id rotationId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
+	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
 
 	void objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
 	void objectSetPassiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
@@ -154,6 +154,7 @@ public:
 	void objectPresentationSetAnimationOnPuzzle(ObjectId id, uint32 a2, uint32 a3, uint32 a4);
 	void objectPresentationSetAnimationOnRotation(ObjectId id, uint32 a2, uint32 a3, uint32 a4);
 	void objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, Common::Point point);
+	void objectPresentationAnimationSetStartFrame(ObjectId objectId, uint32 animationIdex, uint32 startFrame);
 	void objectPresentationShow(ObjectId objectId, uint32 presentationIndex);
 	void objectPresentationShow(ObjectId objectId);
 
