@@ -622,6 +622,14 @@ void Application::puzzleAddAmbientSound(PuzzleId puzzleId, uint32 a2, uint32 a3,
 	error("[Application::puzzleAddAmbientSound] Not implemented");
 }
 
+void Application::puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8) {
+	error("[Application::puzzleAdd3DSound] Not implemented");
+}
+
+void Application::puzzleSet3DSoundOff(PuzzleId id, Id soundId) {
+	error("[Application::puzzleSet3DSoundOff] Not implemented");
+}
+
 void Application::puzzleReset() {
 	SAFE_DELETE(_puzzle);
 	SAFE_DELETE(_field_89);
@@ -783,6 +791,13 @@ void Application::rotationAdd3DSound(Id rotationId, uint32 a2, uint32 a3, uint32
 	error("[Application::rotationAdd3DSound] Not implemented");
 }
 
+void Application::rotationSet3DSoundOff(Id rotationId, Id soundId) {
+	error("[Application::rotationSet3DSoundOff] Not implemented");
+}
+
+void Application::rotationSetJugOn(Id rotationId, float amplitude, float speed) {
+	error("[Application::rotationSetJugOn] Not implemented");
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Sound

@@ -123,6 +123,8 @@ public:
 	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5);
 
 	void puzzleAddAmbientSound(PuzzleId puzzleId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
+	void puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8);
+	void puzzleSet3DSoundOff(PuzzleId id, Id soundId);
 
 	void puzzleReset();
 	bool hasPuzzle() { return _puzzle != NULL; }
@@ -172,6 +174,8 @@ public:
 
 	void rotationAddAmbientSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
 	void rotationAdd3DSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8);
+	void rotationSet3DSoundOff(Id rotationId, Id soundId);
+	void rotationSetJugOn(Id rotationId, float amplitude, float speed);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Sound
