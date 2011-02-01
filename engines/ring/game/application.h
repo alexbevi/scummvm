@@ -100,14 +100,20 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Puzzle
+	void puzzleAdd(PuzzleId id);
 	void resetPuzzle();
 	bool hasPuzzle() { return _puzzle != NULL; }
 	PuzzleId getPuzzleId();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Object
-	void addObject(ObjectId id, Common::String language, Common::String name, byte a5);
-	void removeObject(ObjectId id);
+	void objectAdd(ObjectId objectId, Common::String language, Common::String name, byte a5);
+	void objectAddPresentation(ObjectId objectId);
+	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
+	void objectSetPuzzleAccessibilityKey(ObjectId id, uint32 accessiblityIndex, uint32 a3);
+	void objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, uint32 a7, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13);
+	void objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9);
+	void objectRemove(ObjectId objectId);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Bag
@@ -205,7 +211,7 @@ private:
 	char                        _field_77;
 	char                        _field_78;
 	AssociativeArray<Object*>   _objectList;
-	Common::Array<PuzzleInfo*>  _puzzleList;
+	AssociativeArray<Puzzle*>   _puzzleList;
 	Puzzle                     *_puzzle;
 	Common::Array<Rotation*>    _rotationList;
 	void                       *_field_89;

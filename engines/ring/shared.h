@@ -97,6 +97,7 @@ enum ObjectId {
 	kObject3                     = 3,
 	kObject4                     = 4,
 	kObject6                     = 6,
+	kObject7                     = 7,
 	kObjectBrutality             = 10000,
 	kObjectGlug                  = 10001,
 	kObjectMinerals              = 10002,

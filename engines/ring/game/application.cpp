@@ -71,7 +71,7 @@ Application::~Application() {
 	SAFE_DELETE(_cursorHandler);
 	SAFE_DELETE(_soundHandler);
 	CLEAR_ARRAY(Object, _objectList);
-	CLEAR_ARRAY(PuzzleInfo, _puzzleList);
+	CLEAR_ARRAY(Puzzle, _puzzleList);
 	SAFE_DELETE(_puzzle);
 	CLEAR_ARRAY(Rotation, _rotationList);
 	SAFE_DELETE(_field_89);
@@ -560,6 +560,114 @@ void Application::setZoneN2(Zone zone, uint32 a2) {
 }
 
 void Application::initZoneSY() {
+	setZoneAndEnableBag(kZoneSY);
+
+	puzzleAdd(kPuzzle1);
+	objectAdd(kObject1, "", "", 1);
+	objectAddPresentation(kObject1);
+	objectPresentationAddTextToPuzzle(kObject1, 0, kPuzzle1, "", 1, 16, 1, 0, -1, 0, -1, -1, -1);
+	objectAdd(kObject6, "", "", 1);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 0, kPuzzle1, "FO_WOT1_W_A.tga", 0, 96, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 1, kPuzzle1, "FO_WOT1_W_B.tga", 0, 176, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 2, kPuzzle1, "FO_WOT1_W_C.tga", 0, 126, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 3, kPuzzle1, "FO_WOT1_W_D.tga", 0, 208, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 4, kPuzzle1, "FO_WOT1_W_E.tga", 0, 88, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 5, kPuzzle1, "FO_WOT1_B_A.tga", 415, 281, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 6, kPuzzle1, "FO_WOT1_B_C.tga", 488, 180, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 7, kPuzzle1, "FO_WOT1_B_E.tga", 195, 94, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 8, kPuzzle1, "FO_BRU1_W_A.tga", 0, 45, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 9, kPuzzle1, "FO_BRU1_B_A.tga", 440, 66, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 10, kPuzzle1, "FO_BRU1_B_B.tga", 490, 208, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 11, kPuzzle1, "FO_WOT2_W_A.tga", 0, 28, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 12, kPuzzle1, "FO_WOT2_W_B.tga", 0, 22, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 13, kPuzzle1, "FO_WOT2_W_C.tga", 0, 67, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 14, kPuzzle1, "FO_WOT2_W_D.tga", 0, 194, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 15, kPuzzle1, "FO_WOT2_B_A.tga", 477, 200, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 16, kPuzzle1, "FO_WOT2_B_C.tga", 496, 251, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 17, kPuzzle1, "FO_BRU2_W_A.tga", 0, 186, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 18, kPuzzle1, "FO_BRU2_B_A.tga", 443, 222, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 19, kPuzzle1, "FO_BRU2_B_B.tga", 493, 219, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 20, kPuzzle1, "FO_WOT3_W_A.tga", 0, 16, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 21, kPuzzle1, "FO_WOT3_W_B.tga", 0, 107, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 22, kPuzzle1, "FO_WOT3_W_C.tga", 0, 46, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 23, kPuzzle1, "FO_WOT3_W_D.tga", 0, 26, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 24, kPuzzle1, "FO_WOT3_B_A.tga", 508, 238, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 25, kPuzzle1, "FO_WOT3_B_B.tga", 381, 216, 1, 3, 1000);
+	objectAddPresentation(kObject6);
+	objectPresentationAddImageToPuzzle(kObject6, 26, kPuzzle1, "FO_WOT3_B_D.tga", 408, 246, 1, 3, 1000);
+	objectAdd(kObject7, "", "", 1);
+	objectAddPresentation(kObject7);
+	objectPresentationAddImageToPuzzle(kObject7, 0, kPuzzle1, "SY_ISHA.bmp", 0, 16, 1, 1, 1000);
+	objectAdd(kObject2, "", "", 1);
+	objectAddPresentation(kObject2);
+	objectPresentationAddImageToPuzzle(kObject2, 0, kPuzzle1, "Exit.bmp", 160, 165, 1, 1, 1000);
+	objectAddPuzzleAccessibility(kObject2, kPuzzle1, Common::Rect(262, 270, 321, 306), 0, 57, 1);
+	objectAddPuzzleAccessibility(kObject2, kPuzzle1, Common::Rect(310, 270, 370, 306), 0, 57, 0);
+	objectSetPuzzleAccessibilityKey(kObject2, 0, 13);
+	objectSetPuzzleAccessibilityKey(kObject2, 1, 27);
+	objectAddPresentation(kObject2);
+	objectPresentationAddImageToPuzzle(kObject2, 1, kPuzzle1, "ex_yes.bmp", 261, 279, 1, 1, 1000);
+	objectAddPresentation(kObject2);
+	objectPresentationAddImageToPuzzle(kObject2, 2, kPuzzle1, "ex_no.bmp", 318, 279, 1, 1, 1000);
+	objectAdd(kObject3, "", "", 1);
+	objectAddPresentation(kObject3);
+	objectPresentationAddImageToPuzzle(kObject3, 0, kPuzzle1, "Warning.bmp", 160, 165, 1, 1, 1000);
+	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", 200, 200, 1, 255u, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", 300, 280, 1, 255u, 95, 0, -1, -1, -1);
+	objectAddPresentation(kObject3);
+	objectPresentationAddImageToPuzzle(kObject3, 1, kPuzzle1, "wr_ok.tga", 313, 281, 1, 3, 1000);
+	objectAddPuzzleAccessibility(kObject3, kPuzzle1, Common::Rect(286, 269, 363, 307), 0, 57, 0);
+	objectSetPuzzleAccessibilityKey(kObject3, 0, 13);
+	objectAdd(kObject4, "", "", 1);
+	objectAddPresentation(kObject4);
+	objectPresentationAddImageToPuzzle(kObject4, 0, kPuzzle1, "Question.bmp", 160, 165, 1, 1, 1000);
+	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", 200, 200, 1, 255u, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", 200, 280, 1, 255u, 95, 0, -1, -1, -1);
+	objectAddPresentation(kObject4);
+	objectPresentationAddImageToPuzzle(kObject4, 1, kPuzzle1, "g_ok.tga", 181, 257, 1, 3, 1000);
+	objectAddPresentation(kObject4);
+	objectPresentationAddImageToPuzzle(kObject4, 2, kPuzzle1, "qu_cancel.tga", 181, 282, 1, 3, 1000);
+	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(277, 300, 347, 340), 0, 57, 0);
+	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(350, 300, 380, 340), 0, 57, 1);
+	objectSetPuzzleAccessibilityKey(kObject4, 0, 13);
+	objectSetPuzzleAccessibilityKey(kObject4, 1, 27);
+	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 250, 250, 281), 0, 57, 2);
+	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 283, 250, 309), 0, 57, 3);
+	objectSetPuzzleAccessibilityKey(kObject4, 2, 13);
+	objectSetPuzzleAccessibilityKey(kObject4, 3, 27);
+	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 250, 250, 281), 0, 57, 4);
+	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 283, 250, 309), 0, 57, 5);
+	objectSetPuzzleAccessibilityKey(kObject4, 4, 13);
+	objectSetPuzzleAccessibilityKey(kObject4, 5, 27);
+
+
+
 	error("[Application::initZoneSY] Not implemented");
 }
 
@@ -692,6 +800,13 @@ uint32 Application::getReadFrom(Zone zone) const {
 //////////////////////////////////////////////////////////////////////////
 // Puzzle
 //////////////////////////////////////////////////////////////////////////
+void Application::puzzleAdd(PuzzleId id) {
+	if (_puzzleList.has(id))
+		error("[Application::addPuzzle] ID already exists (%d)", id);
+
+	_puzzleList.push_back(new Puzzle(id));
+}
+
 void Application::resetPuzzle() {
 	SAFE_DELETE(_puzzle);
 	SAFE_DELETE(_field_89);
@@ -710,9 +825,9 @@ PuzzleId Application::getPuzzleId() {
 //////////////////////////////////////////////////////////////////////////
 // Object
 //////////////////////////////////////////////////////////////////////////
-void Application::addObject(ObjectId id, Common::String language, Common::String name, byte a5) {
+void Application::objectAdd(ObjectId id, Common::String language, Common::String name, byte a5) {
 	if (_objectList.has(id))
-		error("[Application::addObject] ID alredy exists (%d)", id);
+		error("[Application::ObjectAdd] ID already exists (%d)", id);
 
 	// Compute language and name
 	Common::String processedLanguage = _objectHandler->getLanguage(id);
@@ -726,7 +841,27 @@ void Application::addObject(ObjectId id, Common::String language, Common::String
 	_objectList.push_back(new Object(id, processedLanguage, processedName, a5));
 }
 
-void Application::removeObject(ObjectId id) {
+void Application::objectAddPresentation(ObjectId objectId) {
+	error("[Application::objectAddPresentation] Not implemented");
+}
+
+void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {
+	error("[Application::objectAddPuzzleAccessibility] Not implemented");
+}
+
+void Application::objectSetPuzzleAccessibilityKey(ObjectId id, uint32 accessiblityIndex, uint32 a3) {
+	error("[Application::objectSetPuzzleAccessibilityKey] Not implemented");
+}
+
+void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, uint32 a7, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13) {
+	error("[Application::objectPresentationAddTextToPuzzle] Not implemented");
+}
+
+void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9) {
+	error("[Application::objectPresentationAddImageToPuzzle] Not implemented");
+}
+
+void Application::objectRemove(ObjectId id) {
 	_objectList.remove(id);
 }
 
