@@ -145,7 +145,7 @@ void ArtHandler::open(Zone zone, LoadFrom loadFrom) {
 	// Compute path
 	// - since we have all the data on disk, the path is the same all the time
 	// - we support multilanguage, so we need to read from the languahe folder
-	Common::String path = Common::String::format("DATA/%s/%s.at2", _application->getLanguageName().c_str(), _application->getZone(zone).c_str());
+	Common::String path = Common::String::format("DATA/%s/%s.at2", _application->languageGetFolder().c_str(), _application->getZoneString(zone).c_str());
 
 	// Create new archive
 	Art *art = new Art();

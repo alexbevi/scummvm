@@ -30,8 +30,6 @@
 
 namespace Ring {
 
-class RingEngine;
-
 class Hotspot {
 public:
 	Hotspot(Common::Rect rect, bool enabled, uint32 a2, uint32 a3, uint32 a4);

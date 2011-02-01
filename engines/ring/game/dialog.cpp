@@ -70,7 +70,7 @@ void DialogHandler::init(uint32 a1, Color subtitlesColor, Color subtitlesBackgro
 
 void DialogHandler::addDialog(Dialog *dialog) {
 	if (!dialog)
-		error("[DialogHandler::addDialog] dialog is NULL");
+		error("[DialogHandler::addDialog] dialog is not initialized properly");
 
 	dialog->setTicks();
 

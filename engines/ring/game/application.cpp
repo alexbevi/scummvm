@@ -35,6 +35,7 @@
 
 #include "ring/game/bag.h"
 #include "ring/game/dialog.h"
+#include "ring/game/game.h"
 #include "ring/game/language.h"
 #include "ring/game/object.h"
 #include "ring/game/puzzle.h"
@@ -57,7 +58,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_field_77(0),        _field_78(0),            _puzzle(NULL),        _field_89(NULL),      _bag(NULL),
 	_timerHandler(NULL), _var(NULL),              _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
 	_controlNotPressed(false) {
-	_saveLoad = new SaveLoad();
+	_game = new Game(this);
 }
 
 Application::~Application() {
@@ -82,7 +83,7 @@ Application::~Application() {
 	SAFE_DELETE(_objectHandler);
 	SAFE_DELETE(_preferenceHandler);
 
-	SAFE_DELETE(_saveLoad);
+	SAFE_DELETE(_game);
 
 	// Zero-out passed pointers
 	_vm = NULL;
@@ -92,19 +93,18 @@ Application::~Application() {
 // Initialization
 //////////////////////////////////////////////////////////////////////////
 void Application::init() {
-
 	// Setup available languages
 	_languageHandler = new LanguageHandler();
-	_languageHandler->add(kLanguageEnglish, "ENG", "ENG", 1);
-	_languageHandler->add(kLanguageFrench,  "FRA", "FRA", 2);
-	_languageHandler->add(kLanguageGerman,  "GER", "GER", 3);
-	_languageHandler->add(kLanguageItalian, "ITA", "ITA", 1);
-	_languageHandler->add(kLanguageSpanish, "SPA", "SPA", 2);
-	_languageHandler->add(kLanguageSwedish, "SWE", "SWE", 1);
-	_languageHandler->add(kLanguageDutch,   "HOL", "HOL", 3);
-	_languageHandler->add(kLanguageHebrew,  "HEB", "HEB", 1);
-	_languageHandler->add(kLanguageGreek,   "GRE", "GRE", 1);
-	_languageHandler->add(kLanguageSlovak,  "SLO", "SLO", 1);
+	languageAdd(kLanguageEnglish, "ENG", "ENG", 1);
+	languageAdd(kLanguageFrench,  "FRA", "FRA", 2);
+	languageAdd(kLanguageGerman,  "GER", "GER", 3);
+	languageAdd(kLanguageItalian, "ITA", "ITA", 1);
+	languageAdd(kLanguageSpanish, "SPA", "SPA", 2);
+	languageAdd(kLanguageSwedish, "SWE", "SWE", 1);
+	languageAdd(kLanguageDutch,   "HOL", "HOL", 3);
+	languageAdd(kLanguageHebrew,  "HEB", "HEB", 1);
+	languageAdd(kLanguageGreek,   "GRE", "GRE", 1);
+	languageAdd(kLanguageSlovak,  "SLO", "SLO", 1);
 
 	_field_5E = 0;
 
@@ -118,7 +118,7 @@ void Application::init() {
 
 	// Setup objects
 	_objectHandler = new ObjectHandler();
-	_objectHandler->addFromFile("aObj.ini", getLanguageName());
+	_objectHandler->addFromFile("aObj.ini", languageGetFolder());
 
 	// Setup art
 	if (_configuration.artBAG || _configuration.artCURSOR || _configuration.artSY)
@@ -133,18 +133,18 @@ void Application::init() {
 
 	// Setup fonts
 	_fontHandler = new FontHandler();
-	switch (getLanguage()) {
+	switch (languageGetCurrent()) {
 	default:
-		_fontHandler->add(kFontDefault, "arxrin.fon", "ARX Pilgrim L", 12, true, false, false, false, getLanguage());
+		fontAdd(kFontDefault, "arxrin.fon", "ARX Pilgrim L", 12, true, false, false, false, languageGetCurrent());
 		break;
 
 	case kLanguageHebrew:
-		_fontHandler->add(kFontDefault, "arxrin.fon", "ArxelHebrew", 12, true, false, false, false, getLanguage());
+		fontAdd(kFontDefault, "arxrin.fon", "ArxelHebrew", 12, true, false, false, false, languageGetCurrent());
 		break;
 
 	case kLanguageGreek:
 		// FIXME replace by proper GUI font
-		_fontHandler->add(kFontDefault, "arxrin.fon", "Arial", 16, true, false, false, false, getLanguage());
+		fontAdd(kFontDefault, "arxrin.fon", "Arial", 16, true, false, false, false, languageGetCurrent());
 		break;
 	}
 
@@ -321,70 +321,11 @@ void Application::loadConfiguration() {
 }
 
 void Application::setup() {
-	// Set system zone
-	setupZone(kZoneSY, 0);
-
-	// Setup cursors
-	ArchiveType archiveType = (_configuration.artCURSOR ? kArchiveArt : kArchiveFile);
-
-	_cursorHandler->add(kCursorDefault,       "",                kCursorTypeNormal,   1, kImageCursor, archiveType);
-	_cursorHandler->add(kCursorBusy,          "cur_busy",        kCursorTypeImage,    1, kImageCursor, archiveType);
-	_cursorHandler->add(kCursorHandSelection, "ni_handsel",      kCursorTypeImage,    1, kImageCursor, archiveType);
-	_cursorHandler->add(kCursorIdle,          "cur_idle",        kCursorTypeAnimated, 1, 15, 1095237632, 4, kImageCursor, archiveType);
-	_cursorHandler->add(kCursorMove,          "cur_muv",         kCursorTypeAnimated, 1, 20, 1095237632, 4, kImageCursor, archiveType);
-	_cursorHandler->add(kCursorHotspot,       "cur_hotspot",     kCursorTypeAnimated, 1, 19, 1095237632, 4, kImageCursor, archiveType);
-	_cursorHandler->add(kCursorBack,          "cur_back",        kCursorTypeImage,    1, kImageCursor, archiveType);
-	_cursorHandler->add(kCursorMenuIdle,      "cur_menuidle",    kCursorTypeNormal,   1, kImageCursor, archiveType);
-	_cursorHandler->add(kCursorMenuActive,    "cur_menuactive",  kCursorTypeImage,    1, kImageCursor, archiveType);
-
-	// Adjust offsets
-	_cursorHandler->setOffset(kCursorHandSelection, Common::Point(15, 15));
-	_cursorHandler->setOffset(kCursorIdle, Common::Point(10, 6));
-	_cursorHandler->setOffset(kCursorMove, Common::Point(10, 6));
-	_cursorHandler->setOffset(kCursorHotspot, Common::Point(10, 6));
-	_cursorHandler->setOffset(kCursorBack, Common::Point(10, 20));
-
-	// Setup subtitles
-	_dialogHandler->setSubtitleColor(Color(255, 255, 255));
-	_dialogHandler->setSubtitleBackgroundColor(Color(50, 50, 50));
+	_game->setup();
 }
 
 void Application::initZones() {
-	_field_5D = 2;
-
-	_archiveType = _configuration.artSY ? kArchiveArt : kArchiveFile;
-	initZoneSY();
-
-	_field_5D = 1;
-
-	_archiveType = _configuration.artAS ? kArchiveArt : kArchiveFile;
-	initZoneAS();
-
-	_archiveType = _configuration.artNI ? kArchiveArt : kArchiveFile;
-	initZoneNI();
-
-	_archiveType = _configuration.artN2 ? kArchiveArt : kArchiveFile;
-	initZoneN2();
-
-	_archiveType = _configuration.artRO ? kArchiveArt : kArchiveFile;
-	initZoneRO();
-
-	_archiveType = _configuration.artRH ? kArchiveArt : kArchiveFile;
-	initZoneRH();
-
-	_archiveType = _configuration.artFO ? kArchiveArt : kArchiveFile;
-	initZoneFO();
-
-	_archiveType = _configuration.artWA ? kArchiveArt : kArchiveFile;
-	initZoneWA();
-
-	if (_configuration.artSY || _configuration.artAS || _configuration.artNI || _configuration.artN2
-	 || _configuration.artRO || _configuration.artRH || _configuration.artFO || _configuration.artWA)
-		_archiveType = kArchiveArt;
-	else
-		_archiveType = kArchiveFile;
-
-	_field_66 = 0;
+	_game->initZones();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -438,268 +379,79 @@ void Application::onZoneTimer(TimerId id) {
 }
 
 //////////////////////////////////////////////////////////////////////////
+// Language, Fonts and Cursors
+void Application::languageAdd(LanguageId id, Common::String name, Common::String folder, uint channel) {
+	if (!_languageHandler)
+		error("[Application::languageAdd] Language handler is not initialized properly");
+
+	_languageHandler->add(id, name, folder, channel);
+}
+
+LanguageId Application::languageGetCurrent() {
+	if (!_languageHandler)
+		error("[Application::getLanguage] Language handler is not initialized properly");
+
+	return _languageHandler->getLanguage();
+}
+
+Common::String Application::languageGetFolder() {
+	LanguageId id = languageGetCurrent();
+
+	return _languageHandler->getFolder(id);
+}
+
+uint32 Application::languageGetChannel() {
+	LanguageId id = languageGetCurrent();
+
+	return _languageHandler->getChannel(id);
+}
+
+void Application::fontAdd(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId) {
+	if (!_fontHandler)
+		error("[Application::fontAdd] Font handler is not initialized properly");
+
+	_fontHandler->add(id, filename, facename, height, smallWeight, underline, italic, strikeout, langId);
+}
+
+void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, ImageType imageType, ArchiveType archiveType) {
+	if (!_cursorHandler)
+		error("[Application::cursorAdd] Cursor handler is not initialized properly");
+
+	_cursorHandler->add(id, name, cursorType, a3, 0, 0, 0, imageType, archiveType);
+}
+
+void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, ImageType imageType, ArchiveType archiveType) {
+	if (!_cursorHandler)
+		error("[Application::cursorAdd] Cursor handler is not initialized properly");
+
+	_cursorHandler->add(id, name, cursorType, a3, a4, a5, a6, imageType, archiveType);
+}
+
+void Application::cursorSetOffset(CursorId id, Common::Point offset) {
+	if (!_cursorHandler)
+		error("[Application::cursorSetOffset] Cursor handler is not initialized properly");
+
+	_cursorHandler->setOffset(id, offset);
+}
+
+void Application::subtitleSetColor(Color color) {
+	if (!_dialogHandler)
+		error("[Application::subtitleSetColor] Dialog handler is not initialized properly");
+
+	_dialogHandler->setSubtitleColor(color);
+}
+
+void Application::subtitleSetBackgroundColor(Color color) {
+	if (!_dialogHandler)
+		error("[Application::subtitleSetBackgroundColor] Dialog handler is not initialized properly");
+
+	_dialogHandler->setSubtitleBackgroundColor(color);
+}
+
+//////////////////////////////////////////////////////////////////////////
 // Zone
 //////////////////////////////////////////////////////////////////////////
-void Application::setupZone(Zone zone, uint32 a2)  {
-	bool load = _saveLoad->isLoaded(a2);
-
-	// Check saved data for zone and/or puzzle id
-	if (!load) {
-		if (zone == kZoneSY) {
-			load = true;
-		} else {
-			error("[Application::setupZone] Zone CD check not implemented");
-		}
-	}
-
-	resetPuzzle();
-	warning("[Application::setupZone] Missing function call");
-
-	_soundHandler->reset();
-
-	if (zone != kZoneSY)
-		_artHandler->remove();
-
-	if (load) {
-		setZoneAndEnableBag(zone);
-		setZone(zone, a2);
-	} else {
-		error("[Application::setupZone] CD check not implemented");
-	}
-}
-
-void Application::setZoneAndEnableBag(Zone zone) {
-	_zoneName = getZone(zone);
-	_zone = zone;
-
-	// Enable or disable bag
-	if (zone == kZoneSY || zone == kZoneAS)
-		_bag->disable();
-	else
-		_bag->enable();
-}
-
-void Application::setZone(Zone zone, uint32 a2) {
-	bool load = _saveLoad->isLoaded(a2);
-
-	if (zone != kZoneSY && !load) {
-		if (getReadFrom(zone) == kArchiveArt) {
-			if (!_artHandler)
-				error("[Application::setZone] Art handler is NULL");
-
-			_artHandler->open(zone, kLoadFromCd);
-		}
-	}
-
-	if (a2 == 1000) {
-		error("[Application::setZone] Not implemented (a2 == 1000)");
-	}
-
-	// Set zone
-	switch (zone) {
-	default:
-	case kZoneSY:
-		break;
-
-	case kZoneNI:
-		setZoneNI(zone, a2);
-		break;
-
-	case kZoneRH:
-		setZoneRH(zone, a2);
-		break;
-
-	case kZoneFO:
-		setZoneFO(zone, a2);
-		break;
-
-	case kZoneRO:
-		setZoneRO(zone, a2);
-		break;
-
-	case kZoneWA:
-		setZoneWA(zone, a2);
-		break;
-
-	case kZoneAS:
-		setZoneAS(zone, a2);
-		break;
-
-	case kZoneN2:
-		setZoneN2(zone, a2);
-		break;
-	}
-}
-
-void Application::setZoneNI(Zone zone, uint32 a2) {
-	error("[Application::setZoneNI] Not implemented");
-}
-
-void Application::setZoneRH(Zone zone, uint32 a2) {
-	error("[Application::setZoneRH] Not implemented");
-}
-
-void Application::setZoneFO(Zone zone, uint32 a2) {
-	error("[Application::setZoneFO] Not implemented");
-}
-
-void Application::setZoneRO(Zone zone, uint32 a2) {
-	error("[Application::setZoneRO] Not implemented");
-}
-
-void Application::setZoneWA(Zone zone, uint32 a2) {
-	error("[Application::setZoneWA] Not implemented");
-}
-
-void Application::setZoneAS(Zone zone, uint32 a2) {
-	error("[Application::setZoneAS] Not implemented");
-}
-
-void Application::setZoneN2(Zone zone, uint32 a2) {
-	error("[Application::setZoneN2] Not implemented");
-}
-
-void Application::initZoneSY() {
-	setZoneAndEnableBag(kZoneSY);
-
-	puzzleAdd(kPuzzle1);
-	objectAdd(kObject1, "", "", 1);
-	objectAddPresentation(kObject1);
-	objectPresentationAddTextToPuzzle(kObject1, 0, kPuzzle1, "", 1, 16, 1, 0, -1, 0, -1, -1, -1);
-	objectAdd(kObject6, "", "", 1);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 0, kPuzzle1, "FO_WOT1_W_A.tga", 0, 96, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 1, kPuzzle1, "FO_WOT1_W_B.tga", 0, 176, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 2, kPuzzle1, "FO_WOT1_W_C.tga", 0, 126, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 3, kPuzzle1, "FO_WOT1_W_D.tga", 0, 208, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 4, kPuzzle1, "FO_WOT1_W_E.tga", 0, 88, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 5, kPuzzle1, "FO_WOT1_B_A.tga", 415, 281, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 6, kPuzzle1, "FO_WOT1_B_C.tga", 488, 180, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 7, kPuzzle1, "FO_WOT1_B_E.tga", 195, 94, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 8, kPuzzle1, "FO_BRU1_W_A.tga", 0, 45, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 9, kPuzzle1, "FO_BRU1_B_A.tga", 440, 66, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 10, kPuzzle1, "FO_BRU1_B_B.tga", 490, 208, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 11, kPuzzle1, "FO_WOT2_W_A.tga", 0, 28, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 12, kPuzzle1, "FO_WOT2_W_B.tga", 0, 22, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 13, kPuzzle1, "FO_WOT2_W_C.tga", 0, 67, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 14, kPuzzle1, "FO_WOT2_W_D.tga", 0, 194, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 15, kPuzzle1, "FO_WOT2_B_A.tga", 477, 200, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 16, kPuzzle1, "FO_WOT2_B_C.tga", 496, 251, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 17, kPuzzle1, "FO_BRU2_W_A.tga", 0, 186, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 18, kPuzzle1, "FO_BRU2_B_A.tga", 443, 222, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 19, kPuzzle1, "FO_BRU2_B_B.tga", 493, 219, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 20, kPuzzle1, "FO_WOT3_W_A.tga", 0, 16, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 21, kPuzzle1, "FO_WOT3_W_B.tga", 0, 107, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 22, kPuzzle1, "FO_WOT3_W_C.tga", 0, 46, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 23, kPuzzle1, "FO_WOT3_W_D.tga", 0, 26, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 24, kPuzzle1, "FO_WOT3_B_A.tga", 508, 238, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 25, kPuzzle1, "FO_WOT3_B_B.tga", 381, 216, 1, 3, 1000);
-	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 26, kPuzzle1, "FO_WOT3_B_D.tga", 408, 246, 1, 3, 1000);
-	objectAdd(kObject7, "", "", 1);
-	objectAddPresentation(kObject7);
-	objectPresentationAddImageToPuzzle(kObject7, 0, kPuzzle1, "SY_ISHA.bmp", 0, 16, 1, 1, 1000);
-	objectAdd(kObject2, "", "", 1);
-	objectAddPresentation(kObject2);
-	objectPresentationAddImageToPuzzle(kObject2, 0, kPuzzle1, "Exit.bmp", 160, 165, 1, 1, 1000);
-	objectAddPuzzleAccessibility(kObject2, kPuzzle1, Common::Rect(262, 270, 321, 306), 0, 57, 1);
-	objectAddPuzzleAccessibility(kObject2, kPuzzle1, Common::Rect(310, 270, 370, 306), 0, 57, 0);
-	objectSetPuzzleAccessibilityKey(kObject2, 0, 13);
-	objectSetPuzzleAccessibilityKey(kObject2, 1, 27);
-	objectAddPresentation(kObject2);
-	objectPresentationAddImageToPuzzle(kObject2, 1, kPuzzle1, "ex_yes.bmp", 261, 279, 1, 1, 1000);
-	objectAddPresentation(kObject2);
-	objectPresentationAddImageToPuzzle(kObject2, 2, kPuzzle1, "ex_no.bmp", 318, 279, 1, 1, 1000);
-	objectAdd(kObject3, "", "", 1);
-	objectAddPresentation(kObject3);
-	objectPresentationAddImageToPuzzle(kObject3, 0, kPuzzle1, "Warning.bmp", 160, 165, 1, 1, 1000);
-	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", 200, 200, 1, 255u, 95, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", 300, 280, 1, 255u, 95, 0, -1, -1, -1);
-	objectAddPresentation(kObject3);
-	objectPresentationAddImageToPuzzle(kObject3, 1, kPuzzle1, "wr_ok.tga", 313, 281, 1, 3, 1000);
-	objectAddPuzzleAccessibility(kObject3, kPuzzle1, Common::Rect(286, 269, 363, 307), 0, 57, 0);
-	objectSetPuzzleAccessibilityKey(kObject3, 0, 13);
-	objectAdd(kObject4, "", "", 1);
-	objectAddPresentation(kObject4);
-	objectPresentationAddImageToPuzzle(kObject4, 0, kPuzzle1, "Question.bmp", 160, 165, 1, 1, 1000);
-	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", 200, 200, 1, 255u, 95, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", 200, 280, 1, 255u, 95, 0, -1, -1, -1);
-	objectAddPresentation(kObject4);
-	objectPresentationAddImageToPuzzle(kObject4, 1, kPuzzle1, "g_ok.tga", 181, 257, 1, 3, 1000);
-	objectAddPresentation(kObject4);
-	objectPresentationAddImageToPuzzle(kObject4, 2, kPuzzle1, "qu_cancel.tga", 181, 282, 1, 3, 1000);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(277, 300, 347, 340), 0, 57, 0);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(350, 300, 380, 340), 0, 57, 1);
-	objectSetPuzzleAccessibilityKey(kObject4, 0, 13);
-	objectSetPuzzleAccessibilityKey(kObject4, 1, 27);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 250, 250, 281), 0, 57, 2);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 283, 250, 309), 0, 57, 3);
-	objectSetPuzzleAccessibilityKey(kObject4, 2, 13);
-	objectSetPuzzleAccessibilityKey(kObject4, 3, 27);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 250, 250, 281), 0, 57, 4);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 283, 250, 309), 0, 57, 5);
-	objectSetPuzzleAccessibilityKey(kObject4, 4, 13);
-	objectSetPuzzleAccessibilityKey(kObject4, 5, 27);
-
-
-
-	error("[Application::initZoneSY] Not implemented");
-}
-
-void Application::initZoneNI() {
-	error("[Application::initZoneNI] Not implemented");
-}
-
-void Application::initZoneRH() {
-	error("[Application::initZoneRH] Not implemented");
-}
-
-void Application::initZoneFO() {
-	error("[Application::initZoneFO] Not implemented");
-}
-
-void Application::initZoneRO() {
-	error("[Application::initZoneRO] Not implemented");
-}
-
-void Application::initZoneWA() {
-	error("[Application::initZoneWA] Not implemented");
-}
-
-void Application::initZoneAS() {
-	error("[Application::initZoneAS] Not implemented");
-}
-
-void Application::initZoneN2() {
-	error("[Application::initZoneN2] Not implemented");
-}
-
-Common::String Application::getZone(Zone zone) const {
+Common::String Application::getZoneString(Zone zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -732,7 +484,7 @@ Common::String Application::getZone(Zone zone) const {
 	error("[Application::getZone] Invalid zone (%d)", zone);
 }
 
-Common::String Application::getZoneName(Zone zone) const {
+Common::String Application::getZoneLongName(Zone zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -807,7 +559,7 @@ void Application::puzzleAdd(PuzzleId id) {
 	_puzzleList.push_back(new Puzzle(id));
 }
 
-void Application::resetPuzzle() {
+void Application::puzzleReset() {
 	SAFE_DELETE(_puzzle);
 	SAFE_DELETE(_field_89);
 
@@ -841,6 +593,10 @@ void Application::objectAdd(ObjectId id, Common::String language, Common::String
 	_objectList.push_back(new Object(id, processedLanguage, processedName, a5));
 }
 
+void Application::objectRemove(ObjectId id) {
+	_objectList.remove(id);
+}
+
 void Application::objectAddPresentation(ObjectId objectId) {
 	error("[Application::objectAddPresentation] Not implemented");
 }
@@ -861,19 +617,15 @@ void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 p
 	error("[Application::objectPresentationAddImageToPuzzle] Not implemented");
 }
 
-void Application::objectRemove(ObjectId id) {
-	_objectList.remove(id);
-}
-
 //////////////////////////////////////////////////////////////////////////
 // Bag
 //////////////////////////////////////////////////////////////////////////
-void Application::addToBag(ObjectId id) {
+void Application::bagAdd(ObjectId id) {
 	if (id == kObjectNone)
 		error("[Application::removeFromBag] Invalid ID (%d)", id);
 
 	if (!_bag)
-		error("[Application::removeFromBag] bag is NULL");
+		error("[Application::removeFromBag] bag is not initialized properly");
 
 	if (!_objectList.has(id))
 		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
@@ -881,9 +633,9 @@ void Application::addToBag(ObjectId id) {
 	_bag->add(id);
 }
 
-void Application::removeFromBag(ObjectId id) {
+void Application::bagRemove(ObjectId id) {
 	if (!_bag)
-		error("[Application::removeFromBag] bag is NULL");
+		error("[Application::removeFromBag] bag is not initialized properly");
 
 	if (!_objectList.has(id))
 		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
@@ -891,44 +643,21 @@ void Application::removeFromBag(ObjectId id) {
 	_bag->remove(id);
 }
 
-void Application::removeAllFromBag() {
+void Application::bagRemoveAll() {
 	if (!_bag)
-		error("[Application::removeAllFromBag] bag is NULL");
+		error("[Application::removeAllFromBag] bag is not initialized properly");
 
 	_bag->removeAll();
 }
 
-bool Application::isInBag(ObjectId id) {
+bool Application::bagIsIn(ObjectId id) {
 	if (!_bag)
-		error("[Application::removeFromBag] bag is NULL");
+		error("[Application::removeFromBag] bag is not initialized properly");
 
 	if (!_objectList.has(id))
 		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
 
 	return _bag->has(id);
 }
-
-//////////////////////////////////////////////////////////////////////////
-// Accessors
-//////////////////////////////////////////////////////////////////////////
-LanguageId Application::getLanguage() {
-	if (!_languageHandler)
-		error("[Application::getLanguage] languageHandler not initialized properly");
-
-	return _languageHandler->getLanguage();
-}
-
-Common::String Application::getLanguageName() {
-	LanguageId id = getLanguage();
-
-	return _languageHandler->getFolder(id);
-}
-
-uint32 Application::getLanguageChannel() {
-	LanguageId id = getLanguage();
-
-	return _languageHandler->getChannel(id);
-}
-
 
 } // End of namespace Ring

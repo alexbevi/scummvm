@@ -236,7 +236,7 @@ enum PuzzleId {
 };
 
 //////////////////////////////////////////////////////////////////////////
-// Types
+// Structures and types
 //////////////////////////////////////////////////////////////////////////
 typedef int32 Id;
 
@@ -258,6 +258,57 @@ struct Color {
 	}
 };
 
+// Configuration data
+struct SoundConfiguration {
+	int soundChunck;
+	LoadFrom loadFrom;
+
+	SoundConfiguration() {
+		soundChunck = 9;
+		loadFrom = kLoadFromCd;
+	}
+};
+
+struct Configuration {
+	bool runningFromDisk;
+	int checkCD;
+	SoundConfiguration backgroundMusic;
+	SoundConfiguration ambientMusic;
+	SoundConfiguration ambientEffect;
+	SoundConfiguration effect;
+	SoundConfiguration dialog;
+	bool artBAG;
+	bool artCURSOR;
+	bool artSY;
+	bool artAS;
+	bool artNI;
+	bool artN2;
+	bool artRO;
+	bool artRH;
+	bool artWA;
+	bool artFO;
+	bool checkLoadSave;
+
+	Configuration() {
+		runningFromDisk = false;
+		checkCD = 0;
+		artBAG = false;
+		artCURSOR = false;
+		artSY = false;
+		artAS = false;
+		artNI = false;
+		artN2 = false;
+		artRO = false;
+		artRH = false;
+		artWA = false;
+		artFO = false;
+		checkLoadSave = false;
+	}
+};
+
+//////////////////////////////////////////////////////////////////////////
+// Classes
+//////////////////////////////////////////////////////////////////////////
 class BaseObject {
 public:
 	BaseObject(Id id) : _id(id) {}

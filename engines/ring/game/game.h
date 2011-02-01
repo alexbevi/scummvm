@@ -23,24 +23,54 @@
  *
  */
 
-#ifndef RING_SAVELOAD_H
-#define RING_SAVELOAD_H
-
-namespace Ring {
+#ifndef RING_GAME_H
+#define RING_GAME_H
 
 #include "ring/shared.h"
 
-class SaveLoad {
-public:
-	SaveLoad();
-	~SaveLoad();
+namespace Ring {
 
-	bool isLoaded(uint32 a1);
+class Application;
+class SaveLoad;
+
+class Game {
+public:
+	Game(Application* application);
+	~Game();
+
+	// Setup
+	void setup();
+
+	// Set
+	void setupZone(Zone zone, uint32 a2);
+	void setZone(Zone zone, uint32 a2);
+	void setZoneAndEnableBag(Zone zone);
+	void setZoneNI(Zone zone, uint32 a2);
+	void setZoneRH(Zone zone, uint32 a2);
+	void setZoneFO(Zone zone, uint32 a2);
+	void setZoneRO(Zone zone, uint32 a2);
+	void setZoneWA(Zone zone, uint32 a2);
+	void setZoneAS(Zone zone, uint32 a2);
+	void setZoneN2(Zone zone, uint32 a2);
+
+	// Initialization
+	void initZones();
+	void initZoneSY();
+	void initZoneNI();
+	void initZoneRH();
+	void initZoneFO();
+	void initZoneRO();
+	void initZoneWA();
+	void initZoneAS();
+	void initZoneN2();
+
 
 private:
+	Application *_app;
+	SaveLoad    *_saveLoad;
 
 };
 
 } // End of namespace Ring
 
-#endif // RING_SAVELOAD_H
+#endif // RING_GAME_H

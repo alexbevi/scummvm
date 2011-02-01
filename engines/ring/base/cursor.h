@@ -116,8 +116,7 @@ class CursorHandler {
 public:
 	CursorHandler();
 	~CursorHandler();
-
-	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, ImageType imageType, ArchiveType archiveType);
+	
 	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, ImageType imageType, ArchiveType archiveType);
 	void removeByType();
 

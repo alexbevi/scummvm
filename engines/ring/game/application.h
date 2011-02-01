@@ -30,6 +30,8 @@
 
 namespace Ring {
 
+struct Configuration;
+
 class ArtHandler;
 class Bag;
 class CursorHandler;
@@ -37,6 +39,7 @@ class DialogHandler;
 class DragControl;
 class LanguageHandler;
 class FontHandler;
+class Game;
 class ObjectHandler;
 class Object;
 class PreferenceHandler;
@@ -44,7 +47,6 @@ class Puzzle;
 class PuzzleInfo;
 class RingEngine;
 class Rotation;
-class SaveLoad;
 class SoundHandler;
 class TimerHandler;
 class Var;
@@ -75,33 +77,39 @@ public:
 	void onTimer(TimerId id);
 
 	//////////////////////////////////////////////////////////////////////////
+	// Language, Font, Cursor and Subtitle
+	void languageAdd(LanguageId id, Common::String name, Common::String folder, uint channel);
+	LanguageId languageGetCurrent();
+	Common::String languageGetFolder();
+	uint32 languageGetChannel();
+
+	void fontAdd(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
+
+	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, ImageType imageType, ArchiveType archiveType);
+	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, ImageType imageType, ArchiveType archiveType);
+	void cursorSetOffset(CursorId id, Common::Point offset);
+
+	void subtitleSetColor(Color color);
+	void subtitleSetBackgroundColor(Color color);
+
+	//////////////////////////////////////////////////////////////////////////
 	// Zone
-	void setupZone(Zone zone, uint32 a2);
-	void setZone(Zone zone, uint32 a2);
-	void setZoneNI(Zone zone, uint32 a2);
-	void setZoneRH(Zone zone, uint32 a2);
-	void setZoneFO(Zone zone, uint32 a2);
-	void setZoneRO(Zone zone, uint32 a2);
-	void setZoneWA(Zone zone, uint32 a2);
-	void setZoneAS(Zone zone, uint32 a2);
-	void setZoneN2(Zone zone, uint32 a2);
-	void initZoneSY();
-	void initZoneNI();
-	void initZoneRH();
-	void initZoneFO();
-	void initZoneRO();
-	void initZoneWA();
-	void initZoneAS();
-	void initZoneN2();
-	void setZoneAndEnableBag(Zone zone);
-	Common::String getZone(Zone zone) const;
-	Common::String getZoneName(Zone zone) const;
+	void setArchiveType(ArchiveType type) { _archiveType = type; }
+	ArchiveType getArchiveType() { return _archiveType; }
+
+	Common::String getZoneString(Zone zone) const;
+	Common::String getZoneLongName(Zone zone) const;
+
+	void setCurrentZone(Zone zone) { _zone = zone; _zoneName = getZoneString(zone); }
+	Zone getCurrentZone() { return _zone; }
+	Common::String getCurrentZoneName() { return _zoneName; }
+
 	uint32 getReadFrom(Zone zone) const;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Puzzle
 	void puzzleAdd(PuzzleId id);
-	void resetPuzzle();
+	void puzzleReset();
 	bool hasPuzzle() { return _puzzle != NULL; }
 	PuzzleId getPuzzleId();
 
@@ -117,72 +125,28 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Bag
-	void addToBag(ObjectId id);
-	void removeFromBag(ObjectId id);
-	void removeAllFromBag();
-	bool isInBag(ObjectId id);
+	void bagAdd(ObjectId id);
+	void bagRemove(ObjectId id);
+	void bagRemoveAll();
+	bool bagIsIn(ObjectId id);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
-	Zone getZone() { return _zone; }
-	Common::String getZoneName() { return _zoneName; }
-	LanguageId getLanguage();
-	Common::String getLanguageName();
+	Configuration getConfiguration() { return _configuration; }
+	void setField5D(uint32 val) { _field_5D = val; }
+	void setField66(uint32 val) { _field_66 = val; }
 
+	//////////////////////////////////////////////////////////////////////////
+	// Handlers and shared data
+	//CursorHandler *getCursorHandler() { return _cursorHandler; }
+	ArtHandler    *getArtHandler()    { return _artHandler; }
+	Bag           *getBag()           { return _bag; }
 	DialogHandler *getDialogHandler() { return _dialogHandler; }
 	FontHandler   *getFontHandler()   { return _fontHandler; }
 	SoundHandler  *getSoundHandler()  { return _soundHandler; }
 
 private:
 	RingEngine *_vm;
-
-	// Configuration data
-	struct SoundConfiguration {
-		int soundChunck;
-		LoadFrom loadFrom;
-
-		SoundConfiguration() {
-			soundChunck = 9;
-			loadFrom = kLoadFromCd;
-		}
-	};
-
-	struct Configuration {
-		bool runningFromDisk;
-		int checkCD;
-		SoundConfiguration backgroundMusic;
-		SoundConfiguration ambientMusic;
-		SoundConfiguration ambientEffect;
-		SoundConfiguration effect;
-		SoundConfiguration dialog;
-		bool artBAG;
-		bool artCURSOR;
-		bool artSY;
-		bool artAS;
-		bool artNI;
-		bool artN2;
-		bool artRO;
-		bool artRH;
-		bool artWA;
-		bool artFO;
-		bool checkLoadSave;
-
-		Configuration() {
-			runningFromDisk = false;
-			checkCD = 0;
-			artBAG = false;
-			artCURSOR = false;
-			artSY = false;
-			artAS = false;
-			artNI = false;
-			artN2 = false;
-			artRO = false;
-			artRH = false;
-			artWA = false;
-			artFO = false;
-			checkLoadSave = false;
-		}
-	};
 
 	// Application objects
 	Video                      *_video;
@@ -223,7 +187,8 @@ private:
 	PreferenceHandler          *_preferenceHandler;
 	bool                        _controlNotPressed;
 
-	SaveLoad                   *_saveLoad;
+	// Game specific
+	Game                       *_game;
 
 	// Configuration
 	void loadConfiguration();
@@ -231,9 +196,6 @@ private:
 	// Event handling
 	void onMouseLeftButtonUp(Common::Event &evt);
 	void onZoneTimer(TimerId id);
-
-	// Accessors
-	uint32 getLanguageChannel();
 };
 
 } // End of namespace Ring

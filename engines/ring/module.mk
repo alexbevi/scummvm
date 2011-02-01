@@ -13,6 +13,7 @@ MODULE_OBJS := \
 	game/application.o \
 	game/bag.o \
 	game/dialog.o \
+	game/game.o \
 	game/language.o \
 	game/object.o \
 	game/puzzle.o \

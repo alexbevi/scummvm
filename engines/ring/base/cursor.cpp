@@ -174,10 +174,6 @@ CursorHandler::~CursorHandler() {
 	CLEAR_ARRAY(CursorBase, _cursors);
 }
 
-void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, ImageType imageType, ArchiveType archiveType) {
-	add(id, name, cursorType, a3, 0, 0, 0, imageType, archiveType);
-}
-
 void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, ImageType imageType, ArchiveType archiveType) {
 	if (_cursors.has(id))
 		error("[CursorHandler::add] ID already exists (%d)", id);
