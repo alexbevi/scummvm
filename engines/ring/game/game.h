@@ -64,7 +64,6 @@ public:
 	void initZoneAS();
 	void initZoneN2();
 
-
 private:
 	Application *_app;
 	SaveLoad    *_saveLoad;

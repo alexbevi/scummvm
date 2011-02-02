@@ -748,6 +748,10 @@ void Application::objectPresentationShow(ObjectId objectId) {
 	error("[Application::objectPresentationShow] Not implemented");
 }
 
+void Application::objectPresentationPauseAnimation(ObjectId objectId, uint32 presentationIndex) {
+	error("[Application::objectPresentationPauseAnimation] Not implemented");
+}
+
 void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6) {
 	error("[Application::objectAddBagAnimation] Not implemented");
 }
@@ -771,7 +775,7 @@ void Application::rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId
 	error("[Application::rotationAddMovabilityToPuzzle] Not implemented");
 }
 
-void Application::rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7) {
+void Application::rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5, uint32 a6, uint32 a7) {
 	error("[Application::rotationSetMovabilityToPuzzle] Not implemented");
 }
 

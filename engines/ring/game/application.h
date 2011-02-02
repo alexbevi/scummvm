@@ -159,6 +159,7 @@ public:
 	void objectPresentationAnimationSetStartFrame(ObjectId objectId, uint32 animationIdex, uint32 startFrame);
 	void objectPresentationShow(ObjectId objectId, uint32 presentationIndex);
 	void objectPresentationShow(ObjectId objectId);
+	void objectPresentationPauseAnimation(ObjectId objectId, uint32 presentationIndex);
 
 	void objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6);
 
@@ -168,7 +169,7 @@ public:
 	void rotationSetComBufferLength(Id rotationId, uint32 length);
 	void rotationSetMovabilityOnOrOff(Id rotationId, uint32 a2, uint32 a3);
 	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, uint32 a4, int32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10);
-	void rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
+	void rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5, uint32 a6, uint32 a7);
 	void rotationAddMovabilityToRotation(Id rotationId1, Id rotationId2, Common::String name, uint32 a4, int32 a5, uint32 a6, int32 a7, uint32 a8, uint32 a9, uint32 a10);
 	void rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5,  uint32 a6, uint32 a7, int32 a8, int32 a9, uint32 a10);
 
