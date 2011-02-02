@@ -2611,7 +2611,434 @@ void Game::initZoneFO() {
 }
 
 void Game::initZoneRO() {
-	error("[Game::initZoneRO] Not implemented");
+	setZoneAndEnableBag(kZoneRO);
+
+	_app->puzzleAdd(kPuzzle40010);
+	_app->puzzleAddBackgroundImage(kPuzzle40010, "ROS00N01P01.0001.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzle40011);
+	_app->puzzleAddBackgroundImage(kPuzzle40011, "ROS00N01P01L02.0001.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzle40013);
+	_app->puzzleAddBackgroundImage(kPuzzle40013, "ROS00N01P01L01.0001.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzle40012);
+	_app->puzzleAddBackgroundImage(kPuzzle40012, "ROS00N01P01L03.0001.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzle40060);
+	_app->puzzleAddBackgroundImage(kPuzzle40060, "ROS00N06P01.0001.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzle40100);
+	_app->puzzleAddBackgroundImage(kPuzzle40100, "ROS00N01A01_A.0001.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzle40101);
+	_app->puzzleAddBackgroundImage(kPuzzle40101, "ROS00N01A01_B.0001.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzle40102);
+	_app->puzzleAddBackgroundImage(kPuzzle40102, "ROS00N01A01_C.0001.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzle40103);
+	_app->puzzleAddBackgroundImage(kPuzzle40103, "ROS00N01A01_D.0001.bmp", 0, 16, 1);
+	_app->puzzleAdd(kPuzzle40104);
+	_app->puzzleAddBackgroundImage(kPuzzle40104, "RO_ERDA.bmp", 0, 16, 1);
+	_app->rotationAdd(40000, "ROS00N01", 0, 1);
+	_app->rotationAdd(40001, "ROS00N02", 0, 1);
+	_app->rotationAdd(40002, "ROS00N03", 0, 1);
+	_app->rotationAdd(40003, "ROS00N04", 0, 1);
+	_app->rotationAdd(40004, "ROS00N05", 0, 1);
+	_app->rotationAdd(40005, "ROS00N06", 0, 0);
+	_app->rotationAddMovabilityToRotation(40000, 40001, "1789", 300, -250, 600, 300, 1, 53, 0);
+	_app->rotationSetMovabilityToRotation(40000, 0, 0, 0, 1118529126, 0, 0, 0, 0, 1118529126);
+	_app->rotationAddMovabilityToPuzzle(40000, kPuzzle40010, "", 3192, -104, 3378, 90, 1, 52, 0);
+	_app->rotationSetMovabilityToPuzzle(40000, 1, 1133576192, 0, 1118437376, 0, 0);
+	_app->rotationAddMovabilityToRotation(40001, 40004, "1790", 300, -250, 600, 300, 1, 53, 0);
+	_app->rotationSetMovabilityToRotation(40001, 0, 0, 0, 1118529126, 0, 0, 0, 0, 1118529126);
+	_app->rotationAddMovabilityToRotation(40001, 40003, "1791", 1200, -250, 1500, 300, 1, 53, 0);
+	_app->rotationSetMovabilityToRotation(40001, 1, 1119092736, 0, 1118529126, 0, 0, 1119092736, 0, 1118529126);
+	_app->rotationAddMovabilityToRotation(40001, 40000, "1792", 2100, -250, 2400, 300, 1, 53, 0);
+	_app->rotationSetMovabilityToRotation(40001, 2, 1127481344, 0, 1118529126, 0, 0, 1127481344, 0, 1118529126);
+	_app->rotationAddMovabilityToRotation(40001, 40002, "1793", 3000, -250, 3300, 300, 1, 53, 0);
+	_app->rotationSetMovabilityToRotation(40001, 3, 1132920832, 0, 1118529126, 0, 0, 1132920832, 0, 1118529126);
+	_app->rotationAddMovabilityToRotation(40002, 40001, "1794", 1200, -250, 1500, 300, 1, 53, 0);
+	_app->rotationSetMovabilityToRotation(40002, 0, 1119092736, 0, 1118529126, 0, 0, 1119092736, 0, 1118529126);
+	_app->rotationAddMovabilityToRotation(40003, 40001, "1795", 3000, -250, 3300, 300, 1, 53, 0);
+	_app->rotationSetMovabilityToRotation(40003, 0, 1132920832, 0, 1118529126, 0, 0, 1132920832, 0, 1118529126);
+	_app->rotationAddMovabilityToRotation(40004, 40005, "1796", 300, -250, 600, 300, 0, 53, 0);
+	_app->rotationSetMovabilityToRotation(40004, 0, 0, 0, 1118529126, 0, 0, 0, 0, 1118529126);
+	_app->rotationAddMovabilityToRotation(40004, 40001, "1797", 2100, -250, 2400, 300, 1, 53, 0);
+	_app->rotationSetMovabilityToRotation(40004, 1, 1127481344, 0, 1118529126, 0, 0, 1127481344, 0, 1118529126);
+	_app->rotationAddMovabilityToRotation(40005, 40004, "1798", 2100, -250, 2400, 300, 1, 53, 0);
+	_app->rotationSetMovabilityToRotation(40005, 0, 1127481344, 0, 1118529126, 0, 0, 1127481344, 0, 1118529126);
+	_app->rotationAddMovabilityToPuzzle(40005, kPuzzle40060, "", 246, -90, 715, 376, 1, 52, 0);
+	_app->rotationSetMovabilityToPuzzle(40005, 1, 0, 1102053376, 1118529126, 0, 0);
+	_app->puzzleAddMovabilityToRotation(kPuzzle40010, 40000, "", Common::Rect(0, 420, 640, 464), 1, 55, 0);
+	_app->puzzleSetMovabilityToRotation(kPuzzle40010, 0, 1133477888, 1092616192, 1118529126);
+	_app->puzzleAddMovabilityToRotation(kPuzzle40011, 40000, "", Common::Rect(0, 420, 640, 464), 1, 55, 0);
+	_app->puzzleSetMovabilityToRotation(kPuzzle40011, 0, 1133477888, 1092616192, 1118529126);
+	_app->puzzleAddMovabilityToRotation(kPuzzle40012, 40000, "", Common::Rect(0, 420, 640, 464), 1, 55, 0);
+	_app->puzzleSetMovabilityToRotation(kPuzzle40012, 0, 1133477888, 1092616192, 1118529126);
+	_app->puzzleAddMovabilityToRotation(kPuzzle40013, 40000, "", Common::Rect(0, 420, 640, 464), 1, 55, 0);
+	_app->puzzleSetMovabilityToRotation(kPuzzle40013, 0, 1133477888, 1092616192, 1118529126);
+	_app->puzzleAddMovabilityToRotation(kPuzzle40060, 40005, "", Common::Rect(0, 420, 640, 464), 1, 55, 0);
+	_app->puzzleSetMovabilityToRotation(kPuzzle40060, 0, 0, 1102053376, 1118529126);
+	_app->objectAdd(kObjectFirePower, "Fire Power", "RO_Fire_", 1);
+	_app->objectAddBagAnimation(kObjectFirePower, 1, 3, 13, 1095237632, 4);
+	_app->objectSetActiveCursor(kObjectFirePower, 22, 22, 13, 4, 1095237632, 4, 4);
+	_app->objectSetPassiveCursor(kObjectFirePower, 22, 22, 1, 4, 1065353216, 4, 4);
+	_app->objectAdd(kObjectRing, "Ring", "RO_Ring", 1);
+	_app->objectAddBagAnimation(kObjectRing, 1, 3, 20, 1095237632, 4);
+	_app->objectSetActiveCursor(kObjectRing, 22, 22, 20, 4, 1095237632, 4, 4);
+	_app->objectSetPassiveCursor(kObjectRing, 22, 22, 1, 4, 1065353216, 4, 4);
+	_app->objectAdd(kObjectCrown, "Crown", "RO_Crown", 1);
+	_app->objectAddBagAnimation(kObjectCrown, 1, 3, 20, 1095237632, 4);
+	_app->objectSetActiveCursor(kObjectCrown, 22, 22, 20, 4, 1095237632, 4, 4);
+	_app->objectSetPassiveCursor(kObjectCrown, 22, 22, 1, 4, 1065353216, 4, 4);
+	_app->objectAdd(kObject40010, "The Egg", "RO_Egg", 1);
+	_app->objectAddPuzzleAccessibility(kObject40010, kPuzzle40010, Common::Rect(200, 80, 440, 350), 1, 52, 0);
+	_app->objectAddPuzzleAccessibility(kObject40010, kPuzzle40011, Common::Rect(200, 80, 440, 350), 0, 52, 1);
+	_app->objectAddPuzzleAccessibility(kObject40010, kPuzzle40012, Common::Rect(219, 189, 430, 352), 1, 52, 2);
+	_app->objectAddPresentation(kObject40010);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40010, 0, kPuzzle40012, "ROS00N01P01s03", 0, 217, 192, 1, 1000, 69, 1103626240, 4);
+	_app->objectAddPresentation(kObject40010);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40010, 1, kPuzzle40012, "ROS00N01P01s04", 0, 211, 180, 1, 1000, 69, 1103626240, 4);
+	_app->objectAdd(kObject40203, "", "", 1);
+	_app->objectAddPresentation(kObject40203);
+	_app->objectPresentationAddImageToRotation(kObject40203, 0, 40000, 0);
+	_app->objectAddPresentation(kObject40203);
+	_app->objectPresentationAddImageToRotation(kObject40203, 1, 40001, 0);
+	_app->objectAddPresentation(kObject40203);
+	_app->objectPresentationAddImageToRotation(kObject40203, 2, 40002, 0);
+	_app->objectAddPresentation(kObject40203);
+	_app->objectPresentationAddImageToRotation(kObject40203, 3, 40003, 0);
+	_app->objectAddPresentation(kObject40203);
+	_app->objectPresentationAddImageToRotation(kObject40203, 4, 40004, 0);
+	_app->objectAdd(kObject40101, "", "NI_HandSel", 4);
+	_app->objectSetActiveDrawCursor(kObject40101, 15, 15, 0, 3, 0, 0, 3);
+	_app->objectSetPassiveDrawCursor(kObject40101, 15, 15, 0, 3, 0, 0, 3);
+
+	for (uint32 i = 0; i < 99; i++) {
+		_app->objectAddPresentation(kObject40101);
+		_app->objectPresentationAddImageToPuzzle(kObject40101, i, kPuzzle40013, Common::String::format("ROS00N01P01S02CF1.%04d.bmp", i + 1), 232, 203, 1, 1, 1000);
+	}
+
+	_app->objectAdd(kObject40102, "", "NI_HandSel", 4);
+	_app->objectSetActiveDrawCursor(kObject40102, 15, 15, 0, 3, 0, 0, 3);
+	_app->objectSetPassiveDrawCursor(kObject40102, 15, 15, 0, 3, 0, 0, 3);
+
+	for (uint32 i = 0; i < 99; i++) {
+		_app->objectAddPresentation(kObject40102);
+		_app->objectPresentationAddImageToPuzzle(kObject40102, i, kPuzzle40013, Common::String::format("ROS00N01P01S02CF2.%04d.bmp", i + 1), 265, 204, 1, 1, 1000);
+	}
+
+	_app->objectAdd(kObject40103, "", "NI_HandSel", 4);
+	_app->objectSetActiveDrawCursor(kObject40103, 15, 15, 0, 3, 0, 0, 3);
+	_app->objectSetPassiveDrawCursor(kObject40103, 15, 15, 0, 3, 0, 0, 3);
+
+	for (uint32 i = 0; i < 99; i++) {
+		_app->objectAddPresentation(kObject40103);
+		_app->objectPresentationAddImageToPuzzle(kObject40103, i, kPuzzle40013, Common::String::format("ROS00N01P01S02CF3.%04d.bmp", i + 1), 295, 203, 1, 1, 1000);
+	}
+
+	_app->objectAdd(kObject40104, "", "NI_HandSel", 4);
+	_app->objectSetActiveDrawCursor(kObject40104, 15, 15, 0, 3, 0, 0, 3);
+	_app->objectSetPassiveDrawCursor(kObject40104, 15, 15, 0, 3, 0, 0, 3);
+
+	for (uint32 i = 0; i < 99; i++) {
+		_app->objectAddPresentation(kObject40104);
+		_app->objectPresentationAddImageToPuzzle(kObject40104, i, kPuzzle40013, Common::String::format("ROS00N01P01S02CF4.%04d.bmp", i + 1), 326, 203, 1, 1, 1000);
+	}
+
+	_app->objectAdd(kObject40105, "", "NI_HandSel", 4);
+	_app->objectSetActiveDrawCursor(kObject40105, 15, 15, 0, 3, 0, 0, 3);
+	_app->objectSetPassiveDrawCursor(kObject40105, 15, 15, 0, 3, 0, 0, 3);
+
+	for (uint32 i = 0; i < 99; i++) {
+		_app->objectAddPresentation(kObject40105);
+		_app->objectPresentationAddImageToPuzzle(kObject40105, i, kPuzzle40013, Common::String::format("ROS00N01P01S02CF5.%04d.bmp", i + 1), 356, 204, 1, 1, 1000);
+	}
+
+	_app->objectAddPuzzleAccessibility(kObject40101, kPuzzle40013, Common::Rect(0, 0, 0, 0), 1, 52, 0);
+	_app->objectAddPuzzleAccessibility(kObject40101, kPuzzle40013, Common::Rect(0, 0, 0, 0), 1, 52, 1);
+	_app->objectAddPuzzleAccessibility(kObject40101, kPuzzle40013, Common::Rect(298, 202, 328, 245), 1, 52, 2);
+	_app->objectAddPuzzleAccessibility(kObject40101, kPuzzle40013, Common::Rect(329, 202, 359, 245), 1, 52, 3);
+	_app->objectAddPuzzleAccessibility(kObject40101, kPuzzle40013, Common::Rect(360, 202, 390, 245), 1, 52, 4);
+	_app->objectAdd(kObject40011, "", "", 1);
+	_app->objectAddPresentation(kObject40011);
+
+	for (uint32 i = 0; i < 7; i++) {
+		for (uint32 j = 0; j < 7; j++) {
+			_app->varDefineByte(40501 + j * 10 + i, 99);
+		}
+	}
+
+	_app->objectAddPuzzleAccessibility(kObject40011, kPuzzle40011, Common::Rect(263, 71, 319, 127), 1, 52, 12);
+	_app->varSetByte(40513, 0);
+
+	for (uint32 i = 0; i < 3; i++) {
+		for (uint32 j = 0; j < 14; j++) {
+			_app->objectPresentationAddImageToPuzzle(kObject40011, i, kPuzzle40011, Common::String::format("L01T%d%d.bmp", i, j), 207 + j * 56, 127 + 56 * i, 1, 1, 1000);
+			_app->objectAddPuzzleAccessibility(kObject40011, kPuzzle40011, Common::Rect(207 + j * 56, 127 + 56 * i, 207 + (j + 1) * 56, 127 + 56 * (i + 1)), 1, 52, (21 + i * 10 + j));
+			_app->varSetByte((21 + i * 10 + j) + 40501, (j + 1) + 10 * i);
+		}
+	}
+
+	_app->objectPresentationShow(kObject40011, 0);
+	_app->objectPresentationShow(kObject40011, 1);
+	_app->objectPresentationShow(kObject40011, 2);
+	_app->objectPresentationShow(kObject40011, 3);
+	_app->objectAdd(kObject40060, "", "NI_HandSel", 4);
+	_app->objectSetActiveDrawCursor(kObject40060, 15, 15, 0, 3, 0, 0, 3);
+	_app->objectSetPassiveDrawCursor(kObject40060, 15, 15, 0, 3, 0, 0, 3);
+
+	for (uint32 i = 0; i < 73; i++) {
+		_app->objectAddPresentation(kObject40060);
+		_app->objectPresentationAddImageToPuzzle(kObject40060, i, kPuzzle40060, Common::String::format("ROS00N06P01S02.%04d.bmp", i + 1), 67, 34, 1, 1, 1000);
+	}
+
+	_app->objectAddPuzzleAccessibility(kObject40060, kPuzzle40060, Common::Rect(531, 112, 576, 135), 1, 52, 0);
+	_app->objectAddPuzzleAccessibility(kObject40060, kPuzzle40060, Common::Rect(466, 110, 511, 135), 0, 52, 1);
+	_app->objectAddPuzzleAccessibility(kObject40060, kPuzzle40060, Common::Rect(404, 110, 449, 135), 0, 52, 2);
+	_app->objectAddPuzzleAccessibility(kObject40060, kPuzzle40060, Common::Rect(343, 110, 387, 135), 0, 52, 3);
+	_app->objectAddPuzzleAccessibility(kObject40060, kPuzzle40060, Common::Rect(282, 110, 325, 135), 0, 52, 4);
+	_app->objectAddPuzzleAccessibility(kObject40060, kPuzzle40060, Common::Rect(218, 110, 263, 135), 0, 52, 5);
+	_app->objectAddPuzzleAccessibility(kObject40060, kPuzzle40060, Common::Rect(157, 110, 201, 135), 0, 52, 6);
+	_app->objectAddPuzzleAccessibility(kObject40060, kPuzzle40060, Common::Rect(93, 110, 140, 135), 0, 52, 7);
+	_app->objectAdd(kObject40201, "", "", 1);
+	_app->objectAddPuzzleAccessibility(kObject40201, kPuzzle40060, Common::Rect(461, 63, 488, 103), 1, 52, 0);
+	_app->objectAddPuzzleAccessibility(kObject40201, kPuzzle40060, Common::Rect(409, 63, 436, 103), 1, 52, 1);
+	_app->objectAddPuzzleAccessibility(kObject40201, kPuzzle40060, Common::Rect(357, 63, 383, 103), 1, 52, 2);
+	_app->objectAddPuzzleAccessibility(kObject40201, kPuzzle40060, Common::Rect(307, 63, 331, 103), 1, 52, 3);
+	_app->objectAddPuzzleAccessibility(kObject40201, kPuzzle40060, Common::Rect(253, 63, 280, 103), 1, 52, 4);
+	_app->objectAddPuzzleAccessibility(kObject40201, kPuzzle40060, Common::Rect(200, 63, 228, 103), 1, 52, 5);
+	_app->objectAddPuzzleAccessibility(kObject40201, kPuzzle40060, Common::Rect(150, 63, 176, 103), 1, 52, 6);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 0, kPuzzle40060, "ROS00N06P01S03", 0, 457, 17, 1, 1000, 70, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 0, 0, 40100);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 1, kPuzzle40060, "ROS00N06P01S04", 0, 412, 19, 1, 1000, 70, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 1, 0, 40101);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 2, kPuzzle40060, "ROS00N06P01S05", 0, 359, 20, 1, 1000, 70, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 2, 0, 40102);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 3, kPuzzle40060, "ROS00N06P01S06", 0, 298, 23, 1, 1000, 70, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 3, 0, 40103);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 4, kPuzzle40060, "ROS00N06P01S07", 0, 239, 20, 1, 1000, 70, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 4, 0, 40104);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 5, kPuzzle40060, "ROS00N06P01S08", 0, 173, 22, 1, 1000, 70, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 5, 0, 40105);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 6, kPuzzle40060, "ROS00N06P01S09", 0, 109, 22, 1, 1000, 70, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 6, 0, 40106);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 7, kPuzzle40060, "ROS00N06P02S01", 0, 454, 61, 1, 1000, 26, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 7, 0, 40201);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 8, kPuzzle40060, "ROS00N06P02S02", 0, 400, 62, 1, 1000, 26, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 8, 0, 40202);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 9, kPuzzle40060, "ROS00N06P02S03", 0, 349, 61, 1, 1000, 26, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 9, 0, 40203);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 10, kPuzzle40060, "ROS00N06P02S04", 0, 297, 63, 1, 1000, 26, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 10, 0, 40204);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 11, kPuzzle40060, "ROS00N06P02S05", 0, 247, 62, 1, 1000, 26, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 11, 0, 40205);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 12, kPuzzle40060, "ROS00N06P02S06", 0, 195, 63, 1, 1000, 26, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 12, 0, 40206);
+	_app->objectAddPresentation(kObject40201);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40201, 13, kPuzzle40060, "ROS00N06P02S07", 0, 142, 62, 1, 1000, 26, 1103626240, 6);
+	_app->objectPresentationSetAnimationOnPuzzle(kObject40201, 13, 0, 40207);
+	_app->objectAdd(kObject40202, "", "", 3);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 0, kPuzzle40060, "ROS00N06P01L01.0001.bmp", 0, 16, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 1, kPuzzle40060, "ROS00N06P01L01.0002.bmp", 57, 360, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 2, kPuzzle40060, "ROS00N06P01L01.0003.bmp", 100, 353, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 3, kPuzzle40060, "ROS00N06P01L01.0004.bmp", 127, 353, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 4, kPuzzle40060, "ROS00N06P01L01.0005.bmp", 165, 355, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 5, kPuzzle40060, "ROS00N06P01L01.0006.bmp", 197, 355, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 6, kPuzzle40060, "ROS00N06P01L01.0007.bmp", 234, 352, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 7, kPuzzle40060, "ROS00N06P01L01.0008.bmp", 260, 342, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 8, kPuzzle40060, "ROS00N06P01L01.0009.bmp", 299, 331, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 9, kPuzzle40060, "ROS00N06P01L01.0010.bmp", 330, 349, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 10, kPuzzle40060, "ROS00N06P01L01.0011.bmp", 364, 335, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 11, kPuzzle40060, "ROS00N06P01L01.0012.bmp", 393, 354, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 12, kPuzzle40060, "ROS00N06P01L01.0013.bmp", 421, 353, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 13, kPuzzle40060, "ROS00N06P01L01.0014.bmp", 454, 358, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 14, kPuzzle40060, "ROS00N06P01L01.0015.bmp", 484, 345, 1, 1, 1000);
+	_app->objectAddPresentation(kObject40202);
+	_app->objectPresentationAddImageToPuzzle(kObject40202, 15, kPuzzle40060, "ROS00N06P01L01.0016.bmp", 516, 349, 1, 1, 1000);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(67, 384, 100, 438), 0, 52, 0);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(101, 384, 133, 438), 0, 52, 1);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(136, 384, 164, 438), 0, 52, 2);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(169, 384, 200, 438), 0, 52, 3);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(203, 384, 234, 438), 0, 52, 4);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(236, 384, 267, 438), 0, 52, 5);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(269, 384, 299, 438), 0, 52, 6);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(303, 384, 335, 438), 0, 52, 7);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(336, 384, 368, 438), 0, 52, 8);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(368, 384, 400, 438), 0, 52, 9);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(402, 384, 436, 438), 0, 52, 10);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(435, 384, 466, 438), 0, 52, 11);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(466, 384, 499, 438), 0, 52, 12);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(503, 384, 534, 438), 0, 52, 13);
+	_app->objectAddPuzzleAccessibility(kObject40202, kPuzzle40060, Common::Rect(535, 384, 571, 438), 0, 52, 14);
+	_app->objectAdd(kObject40300, "", "", 1);
+	_app->objectAddPresentation(kObject40300);
+	_app->objectPresentationAddAnimationToPuzzle(kObject40300, 0, kPuzzle40101, "ROS00N01A01_B", 0, 301, 217, 1, 1000, 19, 1095237632, 4);
+	_app->soundAdd(40001, 2, "1799.was", _app->getConfiguration().ambientMusic.loadFrom, 2, _app->getConfiguration().ambientMusic.soundChunck);
+	_app->soundAdd(40604, 2, "1800.was", _app->getConfiguration().ambientMusic.loadFrom, 2, _app->getConfiguration().ambientMusic.soundChunck);
+	_app->rotationAddAmbientSound(40000, 40001, 100, 0, 1, 1, 10);
+	_app->rotationAddAmbientSound(40001, 40001, 100, 0, 1, 1, 10);
+	_app->rotationAddAmbientSound(40002, 40001, 100, 0, 1, 1, 10);
+	_app->rotationAddAmbientSound(40003, 40001, 100, 0, 1, 1, 10);
+	_app->rotationAddAmbientSound(40004, 40001, 100, 0, 1, 1, 10);
+	_app->rotationAddAmbientSound(40005, 40001, 100, 0, 1, 1, 10);
+	_app->puzzleAddAmbientSound(kPuzzle40010, 40001, 100, 0, 1, 1, 10);
+	_app->puzzleAddAmbientSound(kPuzzle40011, 40001, 100, 0, 1, 1, 10);
+	_app->puzzleAddAmbientSound(kPuzzle40012, 40001, 100, 0, 1, 1, 10);
+	_app->puzzleAddAmbientSound(kPuzzle40013, 40001, 100, 0, 1, 1, 10);
+	_app->puzzleAddAmbientSound(kPuzzle40100, 40001, 100, 0, 1, 1, 10);
+	_app->puzzleAddAmbientSound(kPuzzle40101, 40001, 100, 0, 1, 1, 10);
+	_app->puzzleAddAmbientSound(kPuzzle40102, 40001, 100, 0, 1, 1, 10);
+	_app->puzzleAddAmbientSound(kPuzzle40103, 40001, 100, 0, 1, 1, 10);
+	_app->puzzleAddAmbientSound(kPuzzle40104, 40001, 100, 0, 1, 1, 10);
+	_app->rotationAddAmbientSound(40000, 40604, 100, 0, 1, 1, 10);
+	_app->rotationAddAmbientSound(40001, 40604, 100, 0, 1, 1, 10);
+	_app->rotationAddAmbientSound(40002, 40604, 100, 0, 1, 1, 10);
+	_app->rotationAddAmbientSound(40003, 40604, 100, 0, 1, 1, 10);
+	_app->rotationAddAmbientSound(40004, 40604, 100, 0, 1, 1, 10);
+	_app->rotationAddAmbientSound(40005, 40604, 100, 0, 1, 1, 10);
+	_app->puzzleAddAmbientSound(kPuzzle40060, 40604, 100, 0, 1, 1, 10);
+	_app->rotationSetAmbiantSoundOff(40000, 40604);
+	_app->rotationSetAmbiantSoundOff(40001, 40604);
+	_app->rotationSetAmbiantSoundOff(40002, 40604);
+	_app->rotationSetAmbiantSoundOff(40003, 40604);
+	_app->rotationSetAmbiantSoundOff(40004, 40604);
+	_app->rotationSetAmbiantSoundOff(40005, 40604);
+	_app->puzzleSetAmbientSoundOff(kPuzzle40060, 40604);
+	_app->soundAdd(40002, 3, "1802.wav", _app->getConfiguration().ambientEffect.loadFrom, 2, _app->getConfiguration().ambientEffect.soundChunck);
+	_app->soundAdd(40003, 3, "1803.wav", _app->getConfiguration().ambientEffect.loadFrom, 2, _app->getConfiguration().ambientEffect.soundChunck);
+	_app->soundAdd(40102, 4, "1318.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundSetVolume(40102, 80);
+	_app->soundAdd(40103, 4, "1804.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundSetVolume(40103, 80);
+	_app->soundAdd(40500, 4, "1805.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40501, 4, "1806.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40502, 4, "1807.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40503, 4, "1808.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40504, 4, "1809.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40505, 4, "1810.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40506, 4, "1811.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40507, 4, "1805.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40508, 4, "1806.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40509, 4, "1807.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40510, 4, "1811.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40511, 4, "1812.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40512, 4, "1810.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40513, 4, "1809.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40514, 4, "1808.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40600, 4, "1813.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40601, 4, "1814.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40602, 4, "1815.wav", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40603, 4, "1816.was", _app->getConfiguration().effect.loadFrom, 2, _app->getConfiguration().effect.soundChunck);
+	_app->soundAdd(40400, 5, "1817.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40200, 5, "1818.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40201, 5, "1819.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40202, 5, "1820.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40203, 5, "1821.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40204, 5, "1822.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40205, 5, "1823.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40206, 5, "1824.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40300, 5, "1825.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40301, 5, "1826.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40302, 5, "1827.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40303, 5, "1828.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40304, 5, "1829.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40305, 5, "1830.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40306, 5, "1831.wav", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40700, 5, "1832.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40701, 5, "1833.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40706, 5, "1834.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40707, 5, "1835.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40708, 5, "1836.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40709, 5, "1837.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40710, 5, "1838.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40711, 5, "1839.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40702, 5, "1840.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40703, 5, "1841.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40704, 5, "1842.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->soundAdd(40705, 5, "1843.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
+	_app->rotationAdd3DSound(40000, 40002, 1, 1, 10, 87, 290.0, 10);
+	_app->rotationAdd3DSound(40001, 40002, 1, 1, 10, 85, 194.0, 5);
+	_app->rotationAdd3DSound(40002, 40002, 1, 1, 10, 83, 141.0, 5);
+	_app->rotationAdd3DSound(40003, 40002, 1, 1, 10, 83, 233.0, 5);
+	_app->rotationAdd3DSound(40004, 40002, 1, 1, 10, 80, 189.0, 2);
+	_app->rotationAdd3DSound(40005, 40002, 1, 1, 10, 77, 187.0, 2);
+	_app->puzzleAdd3DSound(kPuzzle40010, 40002, 1, 1, 10, 93, 290.0, 2);
+	_app->puzzleAdd3DSound(kPuzzle40011, 40002, 1, 1, 10, 95, 290.0, 2);
+	_app->puzzleAdd3DSound(kPuzzle40012, 40002, 1, 1, 10, 100, 290.0, 2);
+	_app->puzzleAdd3DSound(kPuzzle40013, 40002, 1, 1, 10, 97, 290.0, 2);
+	_app->puzzleAdd3DSound(kPuzzle40100, 40002, 1, 1, 10, 90, 290.0, 2);
+	_app->puzzleAdd3DSound(kPuzzle40101, 40002, 1, 1, 10, 90, 290.0, 2);
+	_app->puzzleAdd3DSound(kPuzzle40102, 40002, 1, 1, 10, 90, 290.0, 2);
+	_app->puzzleAdd3DSound(kPuzzle40103, 40002, 1, 1, 10, 90, 290.0, 2);
+	_app->puzzleAdd3DSound(kPuzzle40104, 40002, 1, 1, 10, 90, 290.0, 2);
+	_app->rotationAdd3DSound(40000, 40003, 1, 1, 10, 70, 0.0, 2);
+	_app->rotationAdd3DSound(40001, 40003, 1, 1, 10, 75, 0.0, 5);
+	_app->rotationAdd3DSound(40002, 40003, 1, 1, 10, 72, 25.0, 5);
+	_app->rotationAdd3DSound(40003, 40003, 1, 1, 10, 72, 333.0, 5);
+	_app->rotationAdd3DSound(40004, 40003, 1, 1, 10, 76, 0.0, 10);
+	_app->rotationAdd3DSound(40005, 40003, 1, 1, 10, 82, 0.0, 10);
+	_app->varDefineByte(40000, 0);
+	_app->varDefineByte(40601, 0);
+	_app->varDefineByte(40602, 0);
+	_app->varDefineByte(40603, 0);
+	_app->varDefineByte(40604, 0);
+	_app->varDefineByte(40605, 0);
+	_app->varDefineByte(40701, 0);
+	_app->varDefineByte(40702, 0);
+	_app->varDefineByte(40703, 0);
+	_app->varDefineByte(40801, 0);
+	_app->varDefineByte(40200, 1);
+	_app->varDefineByte(40201, 0);
+	_app->varDefineByte(40202, 1);
+	_app->varDefineByte(40203, 0);
+	_app->varDefineByte(40204, 0);
+	_app->varDefineByte(40205, 1);
+	_app->varDefineByte(40206, 0);
+	_app->varDefineByte(40802, 0);
+	_app->varDefineByte(40803, 0);
+	_app->varDefineByte(40804, 0);
+	_app->varDefineByte(40805, 56);
+	_app->varDefineByte(40806, 0);
+	_app->varDefineByte(40807, 0);
+	_app->varDefineByte(40901, 26);
+	_app->varDefineByte(40902, 26);
+	_app->varDefineByte(40903, 26);
+	_app->varDefineByte(40904, 26);
+	_app->varDefineByte(40905, 26);
+	_app->varDefineByte(40906, 26);
+	_app->varDefineByte(40907, 26);
+	_app->varDefineByte(40911, 70);
+	_app->varDefineByte(40912, 70);
+	_app->varDefineByte(40913, 70);
+	_app->varDefineByte(40914, 70);
+	_app->varDefineByte(40915, 70);
+	_app->varDefineByte(40916, 70);
+	_app->varDefineByte(40917, 70);
+	_app->varDefineString(40901, "0000000");
+	_app->varDefineString(40902, "00000000");
 }
 
 void Game::initZoneWA() {

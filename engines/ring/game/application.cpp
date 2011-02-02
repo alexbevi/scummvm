@@ -622,6 +622,10 @@ void Application::puzzleAddAmbientSound(PuzzleId puzzleId, uint32 a2, uint32 a3,
 	error("[Application::puzzleAddAmbientSound] Not implemented");
 }
 
+void Application::puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId) {
+	error("[Application::puzzleSetAmbientSoundOff] Not implemented");
+}
+
 void Application::puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8) {
 	error("[Application::puzzleAdd3DSound] Not implemented");
 }
@@ -791,6 +795,10 @@ void Application::rotationAddAmbientSound(Id rotationId, uint32 a2, uint32 a3, u
 	error("[Application::rotationAddAmbientSound] Not implemented");
 }
 
+void Application::rotationSetAmbiantSoundOff(Id rotationId, Id soundId) {
+	error("[Application::rotationSetAmbiantSoundOff] Not implemented");
+}
+
 void Application::rotationAdd3DSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8) {
 	error("[Application::rotationAdd3DSound] Not implemented");
 }
@@ -823,6 +831,10 @@ void Application::soundSetVolume(Id soundId, uint32 volume) {
 //////////////////////////////////////////////////////////////////////////
 void Application::varDefineByte(Id id, byte val) {
 	error("[Application::varDefineByte] Not implemented");
+}
+
+void Application::varSetByte(Id id, byte val) {
+	error("[Application::varSetByte] Not implemented");
 }
 
 void Application::varDefineWord(Id id, int16 val) {

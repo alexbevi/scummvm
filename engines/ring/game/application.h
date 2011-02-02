@@ -123,8 +123,9 @@ public:
 	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5);
 
 	void puzzleAddAmbientSound(PuzzleId puzzleId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
+	void puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId);
 	void puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8);
-	void puzzleSet3DSoundOff(PuzzleId id, Id soundId);
+	void puzzleSet3DSoundOff(PuzzleId puzzleId, Id soundId);
 
 	void puzzleReset();
 	bool hasPuzzle() { return _puzzle != NULL; }
@@ -174,6 +175,7 @@ public:
 	void rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5,  uint32 a6, uint32 a7, int32 a8, int32 a9, uint32 a10);
 
 	void rotationAddAmbientSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
+	void rotationSetAmbiantSoundOff(Id rotationId, Id soundId);
 	void rotationAdd3DSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8);
 	void rotationSet3DSoundOff(Id rotationId, Id soundId);
 	void rotationSetJugOn(Id rotationId, float amplitude, float speed);
@@ -187,6 +189,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Var
 	void varDefineByte(Id id, byte val);
+	void varSetByte(Id id, byte val);
 	void varDefineWord(Id id, int16 val);
 	void varDefineDword(Id id, int32 val);
 	void varDefineString(Id id, Common::String val);
