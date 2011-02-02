@@ -26,7 +26,15 @@
 #ifndef RING_PRESENTATION_H
 #define RING_PRESENTATION_H
 
+#include "ring/shared.h"
+
 namespace Ring {
+
+class AnimationImage;
+class Object;
+class Puzzle;
+class Rotation;
+class Text;
 
 class PresentationImage {
 public:
@@ -57,10 +65,25 @@ private:
 
 class ObjectPresentation {
 public:
-	ObjectPresentation();
+	ObjectPresentation(Object *object);
 	~ObjectPresentation();
 
 private:
+	Object *_object;
+	byte _field_4;
+	Common::Array<PresentationImage *> _imagePuzzle;
+	Common::Array<Puzzle *> _imagePuzzlePtr;
+	Common::Array<AnimationImage *> _animationPuzzle;
+	Common::Array<Puzzle *> _animationPuzzlePtr;
+	Common::Array<uint32 *> _layImagePtr;
+	Common::Array<Rotation *> _layImageRotationPtr;
+	Common::Array<uint32 *> _layAnimationRotation;
+	Common::Array<Rotation *> _layAnimationRotationPtr;
+	Common::Array<AnimationImage *> _layAnimationRotationAnimation;
+	Common::Array<Text *> _textPuzzle;
+	Common::Array<Puzzle *> _textPuzzlePtr;
+	Common::Array<Text *> _textRotation;
+	Common::Array<Rotation *> _textRotationPtr;
 
 };
 

@@ -595,7 +595,10 @@ void Application::objectSetPassiveDrawCursor(ObjectId objectId, uint32 a2, uint3
 }
 
 void Application::objectAddPresentation(ObjectId objectId) {
-	error("[Application::objectAddPresentation] Not implemented");
+	if (!_objectList.has(objectId))
+		error("[Application::objectAddPresentation] Id doesn't exist (%d)", objectId);
+
+	_objectList.get(objectId)->addPresentation();
 }
 
 void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, uint32 a7, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13) {

@@ -25,6 +25,16 @@
 
 #include "ring/graphics/presentation.h"
 
+#include "ring/base/text.h"
+
+#include "ring/game/puzzle.h"
+
+#include "ring/graphics/animation.h"
+#include "ring/graphics/rotation.h"
+
+
+#include "ring/helpers.h"
+
 namespace Ring {
 
 //////////////////////////////////////////////////////////////////////////
@@ -57,10 +67,24 @@ PresentationImage::~PresentationImage() {
 //////////////////////////////////////////////////////////////////////////
 // Presentation
 //////////////////////////////////////////////////////////////////////////
-ObjectPresentation::ObjectPresentation() {
+ObjectPresentation::ObjectPresentation(Object *object) : _object(object) {
+	_field_4 = 0;
 }
 
 ObjectPresentation::~ObjectPresentation() {
+	CLEAR_ARRAY(PresentationImage, _imagePuzzle);
+	CLEAR_ARRAY(Puzzle, _imagePuzzlePtr);
+	CLEAR_ARRAY(AnimationImage, _animationPuzzle);
+	CLEAR_ARRAY(Puzzle, _animationPuzzlePtr);
+	CLEAR_ARRAY(uint32, _layImagePtr);
+	CLEAR_ARRAY(Rotation, _layImageRotationPtr);
+	CLEAR_ARRAY(uint32, _layAnimationRotation);
+	CLEAR_ARRAY(Rotation, _layAnimationRotationPtr);
+	CLEAR_ARRAY(AnimationImage, _layAnimationRotationAnimation);
+	CLEAR_ARRAY(Text, _textPuzzle);
+	CLEAR_ARRAY(Puzzle, _textPuzzlePtr);
+	CLEAR_ARRAY(Text, _textRotation);
+	CLEAR_ARRAY(Rotation, _textRotationPtr);
 }
 
 } // End of namespace Ring

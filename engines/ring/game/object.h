@@ -39,6 +39,8 @@ public:
 	Object(ObjectId id, Common::String language, Common::String name, byte a5);
 	~Object();
 
+	void addPresentation();
+
 private:
 	Common::String _language;
 	Common::String _name;
