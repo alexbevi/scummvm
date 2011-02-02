@@ -113,7 +113,7 @@ public:
 	void puzzleAdd(PuzzleId id);
 
 	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, bool isActive);
-	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleId, Id movabilityId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
+	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void puzzleAddMovabilityToRotation(PuzzleId puzzleId, Id rotationId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
 	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5);
 

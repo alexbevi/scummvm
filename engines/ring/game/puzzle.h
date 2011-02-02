@@ -50,6 +50,7 @@ public:
 	void addPresentationText(Text *text);
 	void addPresentationImage(ImageHandle *image);
 	void addAccessibility(Accessibility *accessibility);
+	void addMovability(Movability *movability);
 
 private:
 	Application *_application;

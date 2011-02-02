@@ -38,6 +38,9 @@ Accessibility::Accessibility(Object *object) : _object(object), _hotspot(NULL) {
 
 Accessibility::~Accessibility() {
 	SAFE_DELETE(_hotspot);
+
+	// Zero-out passed pointers
+	_object = NULL;
 }
 
 Hotspot *Accessibility::getHotspot() {

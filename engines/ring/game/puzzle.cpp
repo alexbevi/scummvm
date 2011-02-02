@@ -96,6 +96,13 @@ void Puzzle::addAccessibility(Accessibility *accessibility) {
 	_accessibilities.push_back(accessibility);
 }
 
+void Puzzle::addMovability(Movability *movability) {
+	if (!movability)
+		error("[Puzzle::addMovability] Movability is not initialized properly");
+
+	_movabilities.push_back(movability);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Helpers
 //////////////////////////////////////////////////////////////////////////

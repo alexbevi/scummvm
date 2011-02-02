@@ -26,15 +26,39 @@
 #ifndef RING_MOVABILITY_H
 #define RING_MOVABILITY_H
 
+#include "ring/shared.h"
+
 namespace Ring {
+
+class Hotspot;
+class Puzzle;
 
 class Movability {
 public:
-	Movability();
+	Movability(Puzzle *puzzleFrom, Puzzle *puzzleTo, Common::String name, uint32 a5);
 	~Movability();
 
-private:
+	void setHotspot(Common::Rect rect, bool enabled, uint32 a3, uint32 a4);
+	Hotspot *getHotspot();
 
+	Common::String getRideName() { return _name; }
+	void setRideName(Common::String name) { _name = name; }
+
+private:
+	uint32   _field_0;
+	Puzzle  *_puzzleFrom;
+	Hotspot *_hotspot;
+	Puzzle  *_puzzleTo;
+	Common::String _name;
+	uint32   _field_14;
+	uint32   _field_18;
+	uint32   _field_1C;
+	float    _field_20;
+	uint32   _field_24;
+	byte     _field_28;
+	uint32   _field_29;
+	uint32   _field_2D;
+	uint32   _field_31;
 };
 
 } // End of namespace Ring

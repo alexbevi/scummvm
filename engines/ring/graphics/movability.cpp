@@ -25,12 +25,47 @@
 
 #include "ring/graphics/movability.h"
 
+#include "ring/game/puzzle.h"
+
+#include "ring/graphics/hotspot.h"
+
+#include "ring/helpers.h"
+
 namespace Ring {
 
-Movability::Movability() {
+Movability::Movability(Puzzle *puzzleFrom, Puzzle *puzzleTo, Common::String name, uint32 a5) {
+	_field_0 = 0;
+	_puzzleFrom = puzzleFrom;
+	_hotspot = NULL;
+	_puzzleTo = puzzleTo;
+	_field_14 = a5;
+	_field_18 = 0;
+	_field_1C = 0;
+	_field_20 = 85.0;
+	_field_24 = 0;
+	_field_28 = 2;
+	_field_29 = 0;
+	_field_2D = 0;
+	_field_31 = 85.0;
 }
 
 Movability::~Movability() {
+	SAFE_DELETE(_hotspot);
+
+	// Zero-out passed pointers
+	_puzzleFrom = NULL;
+	_puzzleTo = NULL;
+}
+
+Hotspot *Movability::getHotspot() {
+	if (!_hotspot)
+		error("[Movability::getHotspot] Hotspot is not initialized properly");
+
+	return _hotspot;
+}
+
+void Movability::setHotspot(Common::Rect rect, bool enabled, uint32 a3, uint32 a4) {
+	_hotspot = new Hotspot(rect, enabled, 1, a3, a4);
 }
 
 } // End of namespace Ring

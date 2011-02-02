@@ -40,6 +40,7 @@
 #include "ring/game/puzzle.h"
 #include "ring/game/saveload.h"
 
+#include "ring/graphics/movability.h"
 #include "ring/graphics/dragControl.h"
 #include "ring/graphics/rotation.h"
 #include "ring/graphics/video.h"
@@ -494,13 +495,22 @@ void Application::puzzleAdd(PuzzleId id) {
 
 void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, bool isActive) {
 	if (!_puzzleList.has(puzzleId))
-		error("[Application::addPuzzle] ID doesn;t exist (%d)", puzzleId);
+		error("[Application::addPuzzle] ID doesn't exist (%d)", puzzleId);
 
 	_puzzleList.get(puzzleId)->setBackgroundImage(filename, a3, a4, isActive, _loadFrom);
 }
 
-void Application::puzzleAddMovabilityToPuzzle(PuzzleId puzzleId, Id movabilityId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {
-	error("[Application::puzzleAddMovabilityToPuzzle] Not implemented");
+void Application::puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+	if (!_puzzleList.has(puzzleIdFrom))
+		error("[Application::addPuzzle] Wrong FROM puzzle Id (%d)", puzzleIdFrom);
+
+	if (!_puzzleList.has(puzzleIdTo))
+		error("[Application::addPuzzle] Wrong TO puzzle Id (%d)", puzzleIdTo);
+
+	Movability *movability = new Movability(_puzzleList.get(puzzleIdFrom), _puzzleList.get(puzzleIdTo), name, 3);
+	movability->setHotspot(rect, enabled, a9, a10);
+
+	_puzzleList.get(puzzleIdFrom)->addMovability(movability);
 }
 
 void Application::puzzleAddMovabilityToRotation(PuzzleId puzzleId, Id rotationId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {
