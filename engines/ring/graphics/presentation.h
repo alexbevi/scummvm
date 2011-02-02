@@ -30,6 +30,7 @@
 
 namespace Ring {
 
+class Application;
 class AnimationImage;
 class Object;
 class Puzzle;
@@ -65,10 +66,14 @@ private:
 
 class ObjectPresentation {
 public:
-	ObjectPresentation(Object *object);
+	ObjectPresentation(Application *application, Object *object);
 	~ObjectPresentation();
 
+	void addTextToPuzzle(Puzzle *puzzle, Common::String text, int a4, int a5, FontId fontId, byte a7, char a8, byte a9, int a10, int a11, int a12);
+
 private:
+	Application *_application;
+
 	Object *_object;
 	byte _field_4;
 	Common::Array<PresentationImage *> _imagePuzzle;
@@ -84,7 +89,6 @@ private:
 	Common::Array<Puzzle *> _textPuzzlePtr;
 	Common::Array<Text *> _textRotation;
 	Common::Array<Rotation *> _textRotationPtr;
-
 };
 
 } // End of namespace Ring

@@ -555,7 +555,7 @@ void Application::objectAdd(ObjectId id, Common::String language, Common::String
 	if (processedName.empty())
 		processedName = name;
 
-	_objectList.push_back(new Object(id, processedLanguage, processedName, a5));
+	_objectList.push_back(new Object(this, id, processedLanguage, processedName, a5));
 }
 
 void Application::objectRemove(ObjectId id) {
@@ -601,8 +601,14 @@ void Application::objectAddPresentation(ObjectId objectId) {
 	_objectList.get(objectId)->addPresentation();
 }
 
-void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, uint32 a7, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13) {
-	error("[Application::objectPresentationAddTextToPuzzle] Not implemented");
+void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, FontId fontId, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13) {
+	if (!_objectList.has(objectId))
+		error("[Application::objectPresentationAddTextToPuzzle] Object Id doesn't exist (%d)", objectId);
+
+	if (!_puzzleList.has(puzzleId))
+		error("[Application::objectPresentationAddTextToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	_objectList.get(objectId)->addTextToPuzzle(presentationIndex, _puzzleList.get(puzzleId), text, a5, a6, fontId, a8, a9, a10, a11, a12, a13);
 }
 
 void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9) {

@@ -30,18 +30,23 @@
 
 namespace Ring {
 
+class Application;
 class Accessibility;
 class AnimationImage;
 class ObjectPresentation;
+class Puzzle;
 
 class Object : public BaseObject {
 public:
-	Object(ObjectId id, Common::String language, Common::String name, byte a5);
+	Object(Application *application, ObjectId id, Common::String language, Common::String name, byte a5);
 	~Object();
 
 	void addPresentation();
+	void addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, int a5, int a6, FontId fontId, byte a8, char a9, byte a10, int a11, int a12, int a13);
 
 private:
+	Application *_application;
+
 	Common::String _language;
 	Common::String _name;
 	byte    _field_C;

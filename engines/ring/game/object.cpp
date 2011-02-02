@@ -38,7 +38,7 @@ namespace Ring {
 
 //////////////////////////////////////////////////////////////////////////
 // Object
-Object::Object(ObjectId id, Common::String language, Common::String name, byte a5) : BaseObject(id) {
+Object::Object(Application *application, ObjectId id, Common::String language, Common::String name, byte a5) : BaseObject(id), _application(application) {
 	_language = language;
 	_name = name;
 	_field_C  = a5;
@@ -81,10 +81,20 @@ Object::~Object() {
 	CLEAR_ARRAY(Accessibility, _accessibilities);
 	CLEAR_ARRAY(ObjectPresentation, _presentations);
 	SAFE_DELETE(_animationImage);
+
+	// Zero-out passed pointers
+	_application = NULL;
 }
 
 void Object::addPresentation() {
-	_presentations.push_back(new ObjectPresentation(this));
+	_presentations.push_back(new ObjectPresentation(_application, this));
+}
+
+void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, int a5, int a6, FontId fontId, byte a8, char a9, byte a10, int a11, int a12, int a13) {
+	if (presentationIndex >= _presentations.size())
+		error("[Object::addTextToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->addTextToPuzzle(puzzle, text, a5, a6, fontId, a8, a9, a10, a11, a12, a13);
 }
 
 //////////////////////////////////////////////////////////////////////////

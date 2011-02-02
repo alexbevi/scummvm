@@ -67,7 +67,7 @@ PresentationImage::~PresentationImage() {
 //////////////////////////////////////////////////////////////////////////
 // Presentation
 //////////////////////////////////////////////////////////////////////////
-ObjectPresentation::ObjectPresentation(Object *object) : _object(object) {
+ObjectPresentation::ObjectPresentation(Application *application, Object *object) : _application(application), _object(object) {
 	_field_4 = 0;
 }
 
@@ -85,6 +85,19 @@ ObjectPresentation::~ObjectPresentation() {
 	CLEAR_ARRAY(Puzzle, _textPuzzlePtr);
 	CLEAR_ARRAY(Text, _textRotation);
 	CLEAR_ARRAY(Rotation, _textRotationPtr);
+
+	// Zero-out passed pointers
+	_application = NULL;
+}
+
+void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, int a4, int a5, FontId fontId, byte a7, char a8, byte a9, int a10, int a11, int a12) {
+	Text *textObject = new Text(_application);
+	textObject->init(text, a4, a5, fontId, a7, a8, a9, a10, a11, a12);
+	textObject->setPresentation(this);
+
+	_textPuzzle.push_back(textObject);
+
+	puzzle->addPresentationText(textObject);
 }
 
 } // End of namespace Ring

@@ -437,7 +437,7 @@ void ApplicationRing::initZoneSY() {
 
 	objectAdd(kObject1, "", "", 1);
 	objectAddPresentation(kObject1);
-	objectPresentationAddTextToPuzzle(kObject1, 0, kPuzzle1, "", 1, 16, 1, 0, -1, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject1, 0, kPuzzle1, "", 1, 16, kFontDefault, 0, -1, 0, -1, -1, -1);
 
 	objectAdd(kObject6, "", "", 1);
 	objectAddPresentation(kObject6);
@@ -514,8 +514,8 @@ void ApplicationRing::initZoneSY() {
 	objectAdd(kObject3, "", "", 1);
 	objectAddPresentation(kObject3);
 	objectPresentationAddImageToPuzzle(kObject3, 0, kPuzzle1, "Warning.bmp", 160, 165, 1, 1, 1000);
-	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", 200, 200, 1, 255u, 95, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", 300, 280, 1, 255u, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", 200, 200, kFontDefault, 255u, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", 300, 280, kFontDefault, 255u, 95, 0, -1, -1, -1);
 	objectAddPresentation(kObject3);
 	objectPresentationAddImageToPuzzle(kObject3, 1, kPuzzle1, "wr_ok.tga", 313, 281, 1, 3, 1000);
 	objectAddPuzzleAccessibility(kObject3, kPuzzle1, Common::Rect(286, 269, 363, 307), 0, 57, 0);
@@ -524,8 +524,8 @@ void ApplicationRing::initZoneSY() {
 	objectAdd(kObject4, "", "", 1);
 	objectAddPresentation(kObject4);
 	objectPresentationAddImageToPuzzle(kObject4, 0, kPuzzle1, "Question.bmp", 160, 165, 1, 1, 1000);
-	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", 200, 200, 1, 255u, 95, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", 200, 280, 1, 255u, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", 200, 200, kFontDefault, 255u, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", 200, 280, kFontDefault, 255u, 95, 0, -1, -1, -1);
 	objectAddPresentation(kObject4);
 	objectPresentationAddImageToPuzzle(kObject4, 1, kPuzzle1, "g_ok.tga", 181, 257, 1, 3, 1000);
 	objectAddPresentation(kObject4);
@@ -551,8 +551,8 @@ void ApplicationRing::initZoneSY() {
 	objectAddPresentation(kObject90912);
 	objectPresentationAddImageToPuzzle(kObject90912, 0, kPuzzleInsertCd, "g_ok.tga", 306, 274, 1, 3, 1000);
 	objectAddPresentation(kObject90912);
-	objectPresentationAddTextToPuzzle(kObject90912, 1, kPuzzleInsertCd, "", 320, 240, 1, 0xFFu, 95, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObject90912, 1, kPuzzleInsertCd, "", 320, 260, 1, 0xFFu, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject90912, 1, kPuzzleInsertCd, "", 320, 240, kFontDefault, 0xFFu, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject90912, 1, kPuzzleInsertCd, "", 320, 260, kFontDefault, 0xFFu, 95, 0, -1, -1, -1);
 	objectPresentationShow(kObject90912, 1);
 	objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 0);
 	objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 1);
@@ -686,8 +686,8 @@ void ApplicationRing::initZoneSY() {
 	objectSetPuzzleAccessibilityKey(kObjectSaveOk, 0, 13);
 	objectAdd(kObjectSave90313, "", "", 1);
 	objectAddPresentation(kObjectSave90313);
-	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", 344, 181, 1, 0xFFu, 95, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", 0, 0, 1, 0xFFu, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", 344, 181, kFontDefault, 255, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", 0, 0, kFontDefault, 255, 95, 0, -1, -1, -1);
 	objectPresentationAddAnimationToPuzzle(kObjectSave90313, 0, kPuzzleSave, "kybcur", 0, 0, 0, 1, 1000, 6, 1095237632, 16);
 	objectPresentationSetAnimationCoordinatesOnPuzzle(kObjectSave90313, 0, Common::Point(346, 181));
 
@@ -716,10 +716,10 @@ void ApplicationRing::initZoneSY() {
 	visualAddShowToPuzzle(2, kPuzzleGameStatus, 1, 4, 295, 343, 28, 4, 300, 38655);
 	objectAdd(kObjectStatusProgress, "", "", 1);
 	objectAddPresentation(kObjectStatusProgress);
-	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 327, 1, 0xFFu, -106, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 356, 1, 0xFFu, -106, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 384, 1, 0xFFu, -106, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 410, 1, 0xFFu, -106, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 327, kFontDefault, 0xFFu, -106, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 356, kFontDefault, 0xFFu, -106, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 384, kFontDefault, 0xFFu, -106, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", 600, 410, kFontDefault, 0xFFu, -106, 0, -1, -1, -1);
 	objectPresentationShow(kObjectStatusProgress);
 
 	// Sounds

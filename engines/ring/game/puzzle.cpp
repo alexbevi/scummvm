@@ -55,4 +55,11 @@ Puzzle::~Puzzle() {
 	CLEAR_ARRAY(Visual, _visuals);
 }
 
+void Puzzle::addPresentationText(Text *text) {
+	if (!text)
+		error("[Puzzle::addPresentationText] Text is not initialized properly");
+
+	_texts.push_back(text);
+}
+
 } // End of namespace Ring

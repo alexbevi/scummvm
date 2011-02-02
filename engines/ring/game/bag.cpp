@@ -109,6 +109,9 @@ Bag::~Bag() {
 	SAFE_DELETE(_text);
 	SAFE_DELETE(_imageErdaGun);
 	SAFE_DELETE(_imageErdaGur);
+
+	// Zero-out passed pointers
+	_application = NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////

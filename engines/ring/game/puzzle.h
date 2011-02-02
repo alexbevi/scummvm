@@ -43,6 +43,8 @@ public:
 	Puzzle(PuzzleId id);
 	~Puzzle();
 
+	void addPresentationText(Text *text);
+
 private:
 	uint32 _field_4;
 	Common::Array<Movability *>            _movabilities;
