@@ -42,11 +42,11 @@ Text::Text(Application *application) : _application(application) {
 	_height = 0;
 	_field_1C = 0;
 	_field_1D = 0;
-	_presentation = NULL;
+	_objectPresentation = NULL;
 }
 
 Text::~Text() {
-	_presentation = NULL;
+	_objectPresentation = NULL;
 
 	// Zero-out passed pointers
 	_application = NULL;
@@ -63,12 +63,12 @@ void Text::init(Common::String text, uint32 a1, uint32 a2, FontId fontId, byte a
 
 	if (a7 != -1 || a8 != -1 || a9 != -1) {
 		_field_1C = 0;
-		_presentation = NULL;
+		_objectPresentation = NULL;
 		_field_1D = (byte)a7 | ((a8 | a9 << 4) << 8);
 	} else {
 		_field_1C = 1;
 		_field_1D = 0;
-		_presentation = NULL;
+		_objectPresentation = NULL;
 	}
 }
 

@@ -25,8 +25,41 @@
 
 #include "ring/graphics/image.h"
 
+#include "ring/graphics/presentation.h"
+
 namespace Ring {
 
+//////////////////////////////////////////////////////////////////////////
+// ImageHandle
+//////////////////////////////////////////////////////////////////////////
+ImageHandle::ImageHandle(Common::String nameId, uint32 a3, uint32 a4, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType) {
+	_nameId = nameId;
+	_field_55 = a3;
+	_field_59 = a4;
+	_field_5D = a3;
+	_field_61 = a4;
+	_isActive = isActive;
+	_field_66 = a6;
+	_priority = priority;
+	_field_6B = a8;
+	_field_6C = 1;
+	_field_70 = a11;
+	_objectPresentation = NULL;
+	_field_75 = 0;
+	_zone = zone;
+	_loadFrom = loadFrom;
+	_archiveType = archiveType;
+}
+
+ImageHandle::~ImageHandle() {
+	// Zero-out passed pointers
+	_objectPresentation = NULL;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// Image
+//////////////////////////////////////////////////////////////////////////
 Image::Image() {
 	_bpp = 32; // HACK
 }

@@ -27,11 +27,12 @@
 
 #include "ring/base/text.h"
 
+#include "ring/game/application.h"
 #include "ring/game/puzzle.h"
 
 #include "ring/graphics/animation.h"
+#include "ring/graphics/image.h"
 #include "ring/graphics/rotation.h"
-
 
 #include "ring/helpers.h"
 
@@ -72,7 +73,7 @@ ObjectPresentation::ObjectPresentation(Application *application, Object *object)
 }
 
 ObjectPresentation::~ObjectPresentation() {
-	CLEAR_ARRAY(PresentationImage, _imagePuzzle);
+	CLEAR_ARRAY(Image, _imagePuzzle);
 	CLEAR_ARRAY(Puzzle, _imagePuzzlePtr);
 	CLEAR_ARRAY(AnimationImage, _animationPuzzle);
 	CLEAR_ARRAY(Puzzle, _animationPuzzlePtr);
@@ -90,14 +91,25 @@ ObjectPresentation::~ObjectPresentation() {
 	_application = NULL;
 }
 
-void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, int a4, int a5, FontId fontId, byte a7, char a8, byte a9, int a10, int a11, int a12) {
+void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, uint32 a4, uint32 a5, FontId fontId, byte a7, byte a8, byte a9, uint32 a10, uint32 a11, uint32 a12) {
 	Text *textObject = new Text(_application);
 	textObject->init(text, a4, a5, fontId, a7, a8, a9, a10, a11, a12);
-	textObject->setPresentation(this);
+	textObject->setObjectPresentation(this);
 
 	_textPuzzle.push_back(textObject);
+	_textPuzzlePtr.push_back(puzzle);
 
 	puzzle->addPresentationText(textObject);
+}
+
+void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, uint32 a5, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom) {
+	ImageHandle *image = new ImageHandle(filename, a4, a5, isActive, a7, priority, a9, _application->getCurrentZone(), loadFrom, 4, _application->getArchiveType());
+	image->setObjectPresentation(this);
+
+	_imagePuzzle.push_back(image);
+	_imagePuzzlePtr.push_back(puzzle);
+
+	puzzle->addPresentationImage(image);
 }
 
 } // End of namespace Ring

@@ -32,6 +32,7 @@ namespace Ring {
 
 class Application;
 class AnimationImage;
+class Image;
 class Object;
 class Puzzle;
 class Rotation;
@@ -69,14 +70,15 @@ public:
 	ObjectPresentation(Application *application, Object *object);
 	~ObjectPresentation();
 
-	void addTextToPuzzle(Puzzle *puzzle, Common::String text, int a4, int a5, FontId fontId, byte a7, char a8, byte a9, int a10, int a11, int a12);
+	void addTextToPuzzle(Puzzle *puzzle, Common::String text, uint32 a4, uint32 a5, FontId fontId, byte a7, byte a8, byte a9, uint32 a10, uint32 a11, uint32 a12);
+	void addImageToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, uint32 a5, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom);
 
 private:
 	Application *_application;
 
 	Object *_object;
 	byte _field_4;
-	Common::Array<PresentationImage *> _imagePuzzle;
+	Common::Array<Image *> _imagePuzzle;
 	Common::Array<Puzzle *> _imagePuzzlePtr;
 	Common::Array<AnimationImage *> _animationPuzzle;
 	Common::Array<Puzzle *> _animationPuzzlePtr;

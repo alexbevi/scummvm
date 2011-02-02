@@ -42,7 +42,8 @@ public:
 	~Object();
 
 	void addPresentation();
-	void addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, int a5, int a6, FontId fontId, byte a8, char a9, byte a10, int a11, int a12, int a13);
+	void addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, uint32 a5, uint32 a6, FontId fontId, byte a8, byte a9, byte a10, uint32 a11, uint32 a12, uint32 a13);
+	void addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, uint32 a5, uint32 a6, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom);
 
 private:
 	Application *_application;

@@ -29,6 +29,7 @@
 #include "ring/base/sound.h"
 
 #include "ring/graphics/accessibility.h"
+#include "ring/graphics/image.h"
 #include "ring/graphics/movability.h"
 #include "ring/graphics/presentation.h"
 
@@ -48,7 +49,7 @@ Puzzle::Puzzle(PuzzleId id) : BaseObject(id) {
 Puzzle::~Puzzle() {
 	CLEAR_ARRAY(Movability, _movabilities);
 	CLEAR_ARRAY(Accessibility, _accessibilities);
-	CLEAR_ARRAY(PresentationImage, _presentationImages);
+	CLEAR_ARRAY(ImageHandle, _presentationImages);
 	CLEAR_ARRAY(PresentationAnimation, _presentationAnimations);
 	CLEAR_ARRAY(Text, _texts);
 	CLEAR_ARRAY(SoundItem, _soundItems);
@@ -60,6 +61,17 @@ void Puzzle::addPresentationText(Text *text) {
 		error("[Puzzle::addPresentationText] Text is not initialized properly");
 
 	_texts.push_back(text);
+}
+
+void Puzzle::addPresentationImage(ImageHandle *image) {
+	// Insert image into presentations images, and sort by priority
+	_presentationImages.push_back(image);
+
+	Common::sort(_presentationImages.begin(), _presentationImages.end(), &Puzzle::imagePriorityCompare);
+}
+
+bool Puzzle::imagePriorityCompare(ImageHandle *image1, ImageHandle *image2) {
+	return (image1->getPriority() > image2->getPriority());
 }
 
 } // End of namespace Ring

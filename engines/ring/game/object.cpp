@@ -90,11 +90,18 @@ void Object::addPresentation() {
 	_presentations.push_back(new ObjectPresentation(_application, this));
 }
 
-void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, int a5, int a6, FontId fontId, byte a8, char a9, byte a10, int a11, int a12, int a13) {
+void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, uint32 a5, uint32 a6, FontId fontId, byte a8, byte a9, byte a10, uint32 a11, uint32 a12, uint32 a13) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addTextToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
 	_presentations[presentationIndex]->addTextToPuzzle(puzzle, text, a5, a6, fontId, a8, a9, a10, a11, a12, a13);
+}
+
+void Object::addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, uint32 a5, uint32 a6, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom) {
+	if (presentationIndex >= _presentations.size())
+		error("[Object::addTextToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->addImageToPuzzle(puzzle, filename, a5, a6, isActive, a8, priority, a10, loadFrom);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -31,6 +31,7 @@
 namespace Ring {
 
 class Accessibility;
+class ImageHandle;
 class Movability;
 class PresentationAnimation;
 class PresentationImage;
@@ -44,12 +45,13 @@ public:
 	~Puzzle();
 
 	void addPresentationText(Text *text);
+	void addPresentationImage(ImageHandle *image);
 
 private:
 	uint32 _field_4;
 	Common::Array<Movability *>            _movabilities;
 	Common::Array<Accessibility *>         _accessibilities;
-	Common::Array<PresentationImage *>     _presentationImages;
+	Common::Array<ImageHandle *>           _presentationImages;
 	Common::Array<PresentationAnimation *> _presentationAnimations;
 	Common::Array<Text *>                  _texts;
 	Common::Array<SoundItem *>             _soundItems;
@@ -57,6 +59,8 @@ private:
 	uint32 _field_24;
 	byte   _field_28;
 	uint32 _field_29;
+
+	static bool imagePriorityCompare(ImageHandle *image1, ImageHandle *image2);
 };
 
 } // End of namespace Ring

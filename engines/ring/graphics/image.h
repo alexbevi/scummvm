@@ -30,6 +30,8 @@
 
 namespace Ring {
 
+class ObjectPresentation;
+
 class Image {
 public:
 	Image();
@@ -45,6 +47,34 @@ public:
 
 private:
 	uint32 _bpp;
+};
+
+class ImageHandle : public Image {
+public:
+	ImageHandle(Common::String nameId, uint32 a3, uint32 a4, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType);
+	~ImageHandle();
+
+	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
+	uint32 getPriority() { return _priority; }
+
+private:
+	Common::String _directory;
+	Common::String _nameId;
+	uint32 _field_55;
+	uint32 _field_59;
+	uint32 _field_5D;
+	uint32 _field_61;
+	bool _isActive;
+	byte _field_66;
+	uint32 _priority;
+	byte _field_6B;
+	uint32 _field_6C;
+	byte _field_70;
+	ObjectPresentation *_objectPresentation;
+	uint32 _field_75;
+	Zone _zone;
+	LoadFrom _loadFrom;
+	ArchiveType _archiveType;
 };
 
 } // End of namespace Ring

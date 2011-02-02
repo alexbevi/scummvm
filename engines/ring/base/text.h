@@ -41,7 +41,7 @@ public:
 	void init(Common::String text, uint32 a1, uint32 a2, FontId fontId, byte a4, byte a5, byte a6, uint32 a7, uint32 a8, uint32 a9);
 	void set(Common::String text);
 
-	void setPresentation(ObjectPresentation *presentation) { _presentation = presentation; }
+	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
 
 private:
 	Application *_application;
@@ -56,7 +56,7 @@ private:
 	uint32 _height;
 	byte _field_1C;
 	uint32 _field_1D;
-	ObjectPresentation *_presentation;
+	ObjectPresentation *_objectPresentation;
 };
 
 } // End of namespace Ring

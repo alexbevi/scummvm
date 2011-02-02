@@ -611,8 +611,14 @@ void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 pr
 	_objectList.get(objectId)->addTextToPuzzle(presentationIndex, _puzzleList.get(puzzleId), text, a5, a6, fontId, a8, a9, a10, a11, a12, a13);
 }
 
-void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9) {
-	error("[Application::objectPresentationAddImageToPuzzle] Not implemented");
+void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, bool isActive, uint32 a8, uint32 priority) {
+	if (!_objectList.has(objectId))
+		error("[Application::objectPresentationAddTextToPuzzle] Object Id doesn't exist (%d)", objectId);
+
+	if (!_puzzleList.has(puzzleId))
+		error("[Application::objectPresentationAddTextToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	_objectList.get(objectId)->addImageToPuzzle(presentationIndex, _puzzleList.get(puzzleId), filename, a5, a6, isActive, a8, priority, 0, _loadFrom);
 }
 
 void Application::objectPresentationAddImageToRotation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4) {
