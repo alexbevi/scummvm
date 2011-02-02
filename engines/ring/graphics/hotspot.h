@@ -26,7 +26,7 @@
 #ifndef RING_HOTSPOT_H
 #define RING_HOTSPOT_H
 
-#include "common/rect.h"
+#include "common/events.h"
 
 namespace Ring {
 
@@ -40,13 +40,16 @@ public:
 	bool isEnabled() { return _enabled; }
 	bool contains(Common::Point point);
 
+	void setKey(Common::KeyCode key) { _key = key; }
+	Common::KeyCode getKey() { return _key; }
+
 private:
-	Common::Rect _rect;
-	bool         _enabled;
-	uint32       _field_11;
-	uint32       _field_15;
-	uint32       _field_19;
-	int32        _field_1D;
+	Common::Rect    _rect;
+	bool            _enabled;
+	uint32          _field_11;
+	uint32          _field_15;
+	uint32          _field_19;
+	Common::KeyCode _key;
 };
 
 } // End of namespace Ring

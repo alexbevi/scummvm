@@ -566,12 +566,21 @@ void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, uint32 a2, ui
 	error("[Application::objectSetAccessibilityOnOrOff] Not implemented");
 }
 
-void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {
-	error("[Application::objectAddPuzzleAccessibility] Not implemented");
+void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+	if (!_objectList.has(objectId))
+		error("[Application::objectAddPuzzleAccessibility] Object Id doesn't exist (%d)", objectId);
+
+	if (!_puzzleList.has(puzzleId))
+		error("[Application::objectAddPuzzleAccessibility] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	_objectList.get(objectId)->addPuzzleAccessibility(_puzzleList.get(puzzleId), rect, enabled, a9, a10);
 }
 
-void Application::objectSetPuzzleAccessibilityKey(ObjectId id, uint32 accessiblityIndex, uint32 a3) {
-	error("[Application::objectSetPuzzleAccessibilityKey] Not implemented");
+void Application::objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key) {
+	if (!_objectList.has(objectId))
+		error("[Application::objectSetPuzzleAccessibilityKey] Object Id doesn't exist (%d)", objectId);
+
+	_objectList.get(objectId)->setAccessibilityKey(accessibilityIndex, key);
 }
 
 void Application::objectAddRotationAccessibility(ObjectId, Id rotationId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {

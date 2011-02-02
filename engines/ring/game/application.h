@@ -28,6 +28,8 @@
 
 #include "ring/shared.h"
 
+#include "common/events.h"
+
 namespace Ring {
 
 struct Configuration;
@@ -131,8 +133,8 @@ public:
 
 	void objectSetAccessibilityOnOrOff(ObjectId objectId, uint32 a2, uint32 a3);
 
-	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
-	void objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessiblityIndex, uint32 a3);
+	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
+	void objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key);
 
 	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
 

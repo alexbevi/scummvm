@@ -64,12 +64,25 @@ void Puzzle::addPresentationText(Text *text) {
 }
 
 void Puzzle::addPresentationImage(ImageHandle *image) {
+	if (!image)
+		error("[Puzzle::addPresentationImage] Image is not initialized properly");
+
 	// Insert image into presentations images, and sort by priority
 	_presentationImages.push_back(image);
 
 	Common::sort(_presentationImages.begin(), _presentationImages.end(), &Puzzle::imagePriorityCompare);
 }
 
+void Puzzle::addAccessibility(Accessibility *accessibility) {
+	if (!accessibility)
+		error("[Puzzle::addAccessibility] Accessibility is not initialized properly");
+
+	_accessibilities.push_back(accessibility);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Helpers
+//////////////////////////////////////////////////////////////////////////
 bool Puzzle::imagePriorityCompare(ImageHandle *image1, ImageHandle *image2) {
 	return (image1->getPriority() > image2->getPriority());
 }

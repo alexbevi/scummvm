@@ -504,8 +504,8 @@ void ApplicationRing::initZoneSY() {
 	objectPresentationAddImageToPuzzle(kObject2, 0, kPuzzle1, "Exit.bmp", 160, 165, 1, 1, 1000);
 	objectAddPuzzleAccessibility(kObject2, kPuzzle1, Common::Rect(262, 270, 321, 306), 0, 57, 1);
 	objectAddPuzzleAccessibility(kObject2, kPuzzle1, Common::Rect(310, 270, 370, 306), 0, 57, 0);
-	objectSetPuzzleAccessibilityKey(kObject2, 0, 13);
-	objectSetPuzzleAccessibilityKey(kObject2, 1, 27);
+	objectSetPuzzleAccessibilityKey(kObject2, 0, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject2, 1, Common::KEYCODE_ESCAPE);
 	objectAddPresentation(kObject2);
 	objectPresentationAddImageToPuzzle(kObject2, 1, kPuzzle1, "ex_yes.bmp", 261, 279, 1, 1, 1000);
 	objectAddPresentation(kObject2);
@@ -519,7 +519,7 @@ void ApplicationRing::initZoneSY() {
 	objectAddPresentation(kObject3);
 	objectPresentationAddImageToPuzzle(kObject3, 1, kPuzzle1, "wr_ok.tga", 313, 281, 1, 3, 1000);
 	objectAddPuzzleAccessibility(kObject3, kPuzzle1, Common::Rect(286, 269, 363, 307), 0, 57, 0);
-	objectSetPuzzleAccessibilityKey(kObject3, 0, 13);
+	objectSetPuzzleAccessibilityKey(kObject3, 0, Common::KEYCODE_RETURN);
 
 	objectAdd(kObject4, "", "", 1);
 	objectAddPresentation(kObject4);
@@ -532,16 +532,16 @@ void ApplicationRing::initZoneSY() {
 	objectPresentationAddImageToPuzzle(kObject4, 2, kPuzzle1, "qu_cancel.tga", 181, 282, 1, 3, 1000);
 	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(277, 300, 347, 340), 0, 57, 0);
 	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(350, 300, 380, 340), 0, 57, 1);
-	objectSetPuzzleAccessibilityKey(kObject4, 0, 13);
-	objectSetPuzzleAccessibilityKey(kObject4, 1, 27);
+	objectSetPuzzleAccessibilityKey(kObject4, 0, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject4, 1, Common::KEYCODE_ESCAPE);
 	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 250, 250, 281), 0, 57, 2);
 	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 283, 250, 309), 0, 57, 3);
-	objectSetPuzzleAccessibilityKey(kObject4, 2, 13);
-	objectSetPuzzleAccessibilityKey(kObject4, 3, 27);
+	objectSetPuzzleAccessibilityKey(kObject4, 2, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject4, 3, Common::KEYCODE_ESCAPE);
 	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 250, 250, 281), 0, 57, 4);
 	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 283, 250, 309), 0, 57, 5);
-	objectSetPuzzleAccessibilityKey(kObject4, 4, 13);
-	objectSetPuzzleAccessibilityKey(kObject4, 5, 27);
+	objectSetPuzzleAccessibilityKey(kObject4, 4, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject4, 5, Common::KEYCODE_ESCAPE);
 
 	objectAdd(kObject5, "", "", 1);
 	puzzleAdd(kPuzzleInsertCd);
@@ -563,15 +563,15 @@ void ApplicationRing::initZoneSY() {
 	objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 6);
 	objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 7);
 	objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), 1, 57, 8);
-	objectSetPuzzleAccessibilityKey(kObject90912, 0, 13);
-	objectSetPuzzleAccessibilityKey(kObject90912, 1, 13);
-	objectSetPuzzleAccessibilityKey(kObject90912, 2, 13);
-	objectSetPuzzleAccessibilityKey(kObject90912, 3, 13);
-	objectSetPuzzleAccessibilityKey(kObject90912, 4, 13);
-	objectSetPuzzleAccessibilityKey(kObject90912, 5, 13);
-	objectSetPuzzleAccessibilityKey(kObject90912, 6, 13);
-	objectSetPuzzleAccessibilityKey(kObject90912, 7, 13);
-	objectSetPuzzleAccessibilityKey(kObject90912, 8, 13);
+	objectSetPuzzleAccessibilityKey(kObject90912, 0, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject90912, 1, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject90912, 2, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject90912, 3, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject90912, 4, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject90912, 5, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject90912, 6, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject90912, 7, Common::KEYCODE_RETURN);
+	objectSetPuzzleAccessibilityKey(kObject90912, 8, Common::KEYCODE_RETURN);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Menu
@@ -621,12 +621,12 @@ void ApplicationRing::initZoneSY() {
 	objectAddPuzzleAccessibility(kObjectPreferencesCancel, kPuzzlePreferences, Common::Rect(410, 420, 490, 445), 1, 57, 0);
 	objectAddPresentation(kObjectPreferencesCancel);
 	objectPresentationAddImageToPuzzle(kObjectPreferencesCancel, 0, kPuzzlePreferences, "g_cancel.tga", 407, 421, 1, 3, 1000);
-	objectSetPuzzleAccessibilityKey(kObjectPreferencesCancel, 0, 27);
+	objectSetPuzzleAccessibilityKey(kObjectPreferencesCancel, 0, Common::KEYCODE_ESCAPE);
 	objectAdd(kObjectPreferencesOk, "", "", 1);
 	objectAddPuzzleAccessibility(kObjectPreferencesOk, kPuzzlePreferences, Common::Rect(320, 420, 370, 445), 1, 57, 0);
 	objectAddPresentation(kObjectPreferencesOk);
 	objectPresentationAddImageToPuzzle(kObjectPreferencesOk, 0, kPuzzlePreferences, "g_ok.tga", 328, 421, 1, 3, 1000);
-	objectSetPuzzleAccessibilityKey(kObjectPreferencesOk, 0, 13);
+	objectSetPuzzleAccessibilityKey(kObjectPreferencesOk, 0, Common::KEYCODE_RETURN);
 	objectAdd(kObjectPreferencesSubtitles, "", "", 1);
 	objectAddPuzzleAccessibility(kObjectPreferencesSubtitles, kPuzzlePreferences, Common::Rect(310, 315, 370, 350), 1, 57, 0);
 	objectAddPuzzleAccessibility(kObjectPreferencesSubtitles, kPuzzlePreferences, Common::Rect(400, 315, 460, 350), 1, 57, 1);
@@ -666,24 +666,24 @@ void ApplicationRing::initZoneSY() {
 	objectAddPuzzleAccessibility(kObjectLoadOk, kPuzzleLoad, Common::Rect(325, 418, 375, 461), 1, 57, 0);
 	objectAddPresentation(kObjectLoadOk);
 	objectPresentationAddImageToPuzzle(kObjectLoadOk, 0, kPuzzleLoad, "g_ok.tga", 328, 421, 1, 3, 1000);
-	objectSetPuzzleAccessibilityKey(kObjectLoadOk, 0, 13);
+	objectSetPuzzleAccessibilityKey(kObjectLoadOk, 0, Common::KEYCODE_RETURN);
 	objectAdd(kObjectLoadCancel, "", "", 1);
 	objectAddPuzzleAccessibility(kObjectLoadCancel, kPuzzleLoad, Common::Rect(416, 418, 498, 461), 1, 57, 0);
 	objectAddPresentation(kObjectLoadCancel);
 	objectPresentationAddImageToPuzzle(kObjectLoadCancel, 0, kPuzzleLoad, "g_cancel.tga", 407, 421, 1, 3, 1000);
-	objectSetPuzzleAccessibilityKey(kObjectLoadCancel, 0, 27);
+	objectSetPuzzleAccessibilityKey(kObjectLoadCancel, 0, Common::KEYCODE_ESCAPE);
 
 	// Saving screen objects
 	objectAdd(kObjectSaveOk, "", "", 1);
 	objectAddPuzzleAccessibility(kObjectSaveOk, kPuzzleSave, Common::Rect(325, 418, 375, 461), 1, 57, 0);
 	objectAdd(kObjectSaveCancel, "", "", 1);
 	objectAddPuzzleAccessibility(kObjectSaveCancel, kPuzzleSave, Common::Rect(416, 418, 498, 461), 1, 57, 0);
-	objectSetPuzzleAccessibilityKey(kObjectSaveCancel, 0, 27);
+	objectSetPuzzleAccessibilityKey(kObjectSaveCancel, 0, Common::KEYCODE_ESCAPE);
 	objectAddPresentation(kObjectSaveOk);
 	objectPresentationAddImageToPuzzle(kObjectSaveOk, 0, kPuzzleSave, "g_ok.tga", 328, 421, 1, 3, 1000);
 	objectAddPresentation(kObjectSaveCancel);
 	objectPresentationAddImageToPuzzle(kObjectSaveCancel, 0, kPuzzleSave, "g_cancel.tga", 407, 421, 1, 3, 1000);
-	objectSetPuzzleAccessibilityKey(kObjectSaveOk, 0, 13);
+	objectSetPuzzleAccessibilityKey(kObjectSaveOk, 0, Common::KEYCODE_RETURN);
 	objectAdd(kObjectSave90313, "", "", 1);
 	objectAddPresentation(kObjectSave90313);
 	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", 344, 181, kFontDefault, 255, 95, 0, -1, -1, -1);
@@ -712,7 +712,7 @@ void ApplicationRing::initZoneSY() {
 	objectAddPuzzleAccessibility(kObjectStatusOk, kPuzzleGameStatus, Common::Rect(28, 79, 107, 109), 1, 57, 0);
 	objectAddPresentation(kObjectStatusOk);
 	objectPresentationAddImageToPuzzle(kObjectStatusOk, 0, kPuzzleGameStatus, "g_ok.tga", 46, 95, 1, 3, 1000);
-	objectSetPuzzleAccessibilityKey(kObjectStatusOk, 0, 13);
+	objectSetPuzzleAccessibilityKey(kObjectStatusOk, 0, Common::KEYCODE_RETURN);
 	visualAddShowToPuzzle(2, kPuzzleGameStatus, 1, 4, 295, 343, 28, 4, 300, 38655);
 	objectAdd(kObjectStatusProgress, "", "", 1);
 	objectAddPresentation(kObjectStatusProgress);

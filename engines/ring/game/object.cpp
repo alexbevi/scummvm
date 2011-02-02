@@ -25,8 +25,11 @@
 
 #include "ring/game/object.h"
 
+#include "ring/game/puzzle.h"
+
 #include "ring/graphics/accessibility.h"
 #include "ring/graphics/animation.h"
+#include "ring/graphics/hotspot.h"
 #include "ring/graphics/presentation.h"
 
 #include "ring/helpers.h"
@@ -102,6 +105,22 @@ void Object::addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::
 		error("[Object::addTextToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
 	_presentations[presentationIndex]->addImageToPuzzle(puzzle, filename, a5, a6, isActive, a8, priority, a10, loadFrom);
+}
+
+void Object::addPuzzleAccessibility(Puzzle *puzzle, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+	Accessibility *accessibility = new Accessibility(this);
+	accessibility->setHotspot(rect, enabled, a9, a10);
+
+	_accessibilities.push_back(accessibility);
+
+	puzzle->addAccessibility(accessibility);
+}
+
+void Object::setAccessibilityKey(uint32 accessibilityIndex, Common::KeyCode key) {
+	if (accessibilityIndex >= _accessibilities.size())
+		error("[Object::setAccessibilityKey] Invalid accessibility index (was: %d, max: %d)", accessibilityIndex, _accessibilities.size() - 1);
+
+	_accessibilities[accessibilityIndex]->getHotspot()->setKey(key);
 }
 
 //////////////////////////////////////////////////////////////////////////

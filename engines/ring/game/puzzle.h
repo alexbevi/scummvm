@@ -46,6 +46,7 @@ public:
 
 	void addPresentationText(Text *text);
 	void addPresentationImage(ImageHandle *image);
+	void addAccessibility(Accessibility *accessibility);
 
 private:
 	uint32 _field_4;

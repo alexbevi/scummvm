@@ -25,12 +25,40 @@
 
 #include "ring/graphics/accessibility.h"
 
+#include "ring/game/object.h"
+
+#include "ring/graphics/hotspot.h"
+
+#include "ring/helpers.h"
+
 namespace Ring {
 
-Accessibility::Accessibility() {
+Accessibility::Accessibility(Object *object) : _object(object), _hotspot(NULL) {
 }
 
 Accessibility::~Accessibility() {
+	SAFE_DELETE(_hotspot);
+}
+
+Hotspot *Accessibility::getHotspot() {
+	if (!_hotspot)
+		error("[Accessibility::getHotspot] Hotspot is not initialized properly");
+
+	return _hotspot;
+}
+
+void Accessibility::setHotspot(Common::Rect rect, bool enabled, uint32 a3, uint32 a4) {
+	_hotspot = new Hotspot(rect, enabled, 1, a3, a4);
+}
+
+void Accessibility::enableHotspot() {
+	if (_hotspot)
+		_hotspot->enable();
+}
+
+void Accessibility::disableHotspot() {
+	if (_hotspot)
+		_hotspot->disable();
 }
 
 } // End of namespace Ring

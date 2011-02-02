@@ -26,15 +26,29 @@
 #ifndef RING_ACCESSIBILITY_H
 #define RING_ACCESSIBILITY_H
 
+#include "common/rect.h"
+
 namespace Ring {
+
+class Hotspot;
+class Object;
 
 class Accessibility {
 public:
-	Accessibility();
+	Accessibility(Object *object);
 	~Accessibility();
 
-private:
+	void setHotspot(Common::Rect rect, bool enabled, uint32 a3, uint32 a4);
+	Hotspot *getHotspot();
 
+	Object *getObject() { return _object; }
+
+	void enableHotspot();
+	void disableHotspot();
+
+private:
+	Object  *_object;
+	Hotspot *_hotspot;
 };
 
 } // End of namespace Ring
