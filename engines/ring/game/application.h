@@ -181,6 +181,8 @@ public:
 	void soundAdd(Id soundId, uint32 a2, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk);
 	void soundSetVolume(Id soundId, uint32 volume);
 
+	void noiceIdPlay(Id noiceId, bool a2);
+
 	//////////////////////////////////////////////////////////////////////////
 	// Timer
 	void timerStart(TimerId id, uint32 elapseTime);

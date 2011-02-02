@@ -743,6 +743,10 @@ void Application::soundSetVolume(Id soundId, uint32 volume) {
 	error("[Application::soundSetVolume] Not implemented");
 }
 
+void Application::noiceIdPlay(Id noiceId, bool a2) {
+	error("[Application::noiceIdPlay] Not implemented");
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Timer
 //////////////////////////////////////////////////////////////////////////

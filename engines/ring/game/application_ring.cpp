@@ -160,9 +160,9 @@ void ApplicationRing::onZoneTimerAS(TimerId id) {
 }
 
 void ApplicationRing::onZoneTimerN2(TimerId id) {
-	error("[ApplicationRing::onZoneTimerNI] Not implemented");
+	if (id == kTimer0)
+		noiceIdPlay(_vm->getRandom().getRandomNumber(12) + 70004, 1);
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // Zone init and setup
