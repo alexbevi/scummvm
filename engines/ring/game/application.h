@@ -202,16 +202,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
-	void setArchiveType(ArchiveType type) { _archiveType = type; }
-	ArchiveType getArchiveType() { return _archiveType; }
-
-	void setCurrentZone(Zone zone) { _zone = zone; _zoneName = getZoneString(zone); }
 	Zone getCurrentZone() { return _zone; }
-	Common::String getCurrentZoneName() { return _zoneName; }
-
-	void setLoadFrom(LoadFrom loadFrom) { _loadFrom = loadFrom; }
-
-	void setField66(uint32 val) { _field_66 = val; }
 
 	//////////////////////////////////////////////////////////////////////////
 	// Handlers and shared data
@@ -242,7 +233,7 @@ protected:
 	SoundHandler               *_soundHandler;
 	uint32                      _field_66;
 	char                        _field_6A;
-	Common::String              _zoneName;
+	Common::String              _zoneString;
 	Zone                        _zone;          // original uses byte
 	char                        _field_6F;
 	uint32                      _field_70;
@@ -272,7 +263,9 @@ protected:
 
 	// Event handling
 	void onMouseLeftButtonUp(Common::Event &evt);
-	void onZoneTimer(TimerId id);
+
+	// Timer
+	virtual void onZoneTimer(TimerId id) = 0;
 };
 
 } // End of namespace Ring

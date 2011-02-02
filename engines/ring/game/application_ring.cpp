@@ -77,6 +77,67 @@ void ApplicationRing::setup() {
 }
 
 //////////////////////////////////////////////////////////////////////////
+// Timer
+//////////////////////////////////////////////////////////////////////////
+void ApplicationRing::onZoneTimer(TimerId timerId) {
+	switch (getCurrentZone()) {
+	default:
+	case kZoneSY:
+	case kZoneWA:
+		break;
+
+	case kZoneNI:
+		onZoneTimerNI(timerId);
+		break;
+
+	case kZoneRH:
+		onZoneTimerRH(timerId);
+		break;
+
+	case kZoneFO:
+		onZoneTimerFO(timerId);
+		break;
+
+	case kZoneRO:
+		onZoneTimerRO(timerId);
+		break;
+
+	case kZoneAS:
+		onZoneTimerAS(timerId);
+		break;
+
+	case kZoneN2:
+		onZoneTimerN2(timerId);
+		break;
+	}
+}
+
+void ApplicationRing::onZoneTimerNI(TimerId id) {
+	error("[ApplicationRing::onZoneTimerNI] Not implemented");
+}
+
+void ApplicationRing::onZoneTimerRH(TimerId id) {
+	error("[ApplicationRing::onZoneTimerNI] Not implemented");
+}
+
+void ApplicationRing::onZoneTimerFO(TimerId id) {
+	error("[ApplicationRing::onZoneTimerNI] Not implemented");
+}
+
+void ApplicationRing::onZoneTimerRO(TimerId id) {
+	error("[ApplicationRing::onZoneTimerNI] Not implemented");
+}
+
+void ApplicationRing::onZoneTimerAS(TimerId id) {
+	error("[ApplicationRing::onZoneTimerNI] Not implemented");
+}
+
+void ApplicationRing::onZoneTimerN2(TimerId id) {
+	error("[ApplicationRing::onZoneTimerNI] Not implemented");
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 // Zone init and setup
 //////////////////////////////////////////////////////////////////////////
 void ApplicationRing::setupZone(Zone zone, uint32 a2)  {
@@ -108,7 +169,8 @@ void ApplicationRing::setupZone(Zone zone, uint32 a2)  {
 }
 
 void ApplicationRing::setZoneAndEnableBag(Zone zone) {
-	setCurrentZone(zone);
+	_zone = zone;
+	_zoneString = getZoneString(zone);
 
 	// Enable or disable bag
 	if (zone == kZoneSY || zone == kZoneAS)
@@ -302,41 +364,41 @@ uint32 ApplicationRing::getReadFrom(Zone zone) const {
 // Initialization
 //////////////////////////////////////////////////////////////////////////
 void ApplicationRing::initZones() {
-	setLoadFrom(kLoadFromDisk);
+	_loadFrom = kLoadFromDisk;
 
-	setArchiveType(_configuration.artSY ? kArchiveArt : kArchiveFile);
+	_archiveType = _configuration.artSY ? kArchiveArt : kArchiveFile;
 	initZoneSY();
 
-	setLoadFrom(kLoadFromCd);
+	_loadFrom = kLoadFromCd;
 
-	setArchiveType(_configuration.artAS ? kArchiveArt : kArchiveFile);
+	_archiveType = _configuration.artAS ? kArchiveArt : kArchiveFile;
 	initZoneAS();
 
-	setArchiveType(_configuration.artNI ? kArchiveArt : kArchiveFile);
+	_archiveType = _configuration.artNI ? kArchiveArt : kArchiveFile;
 	initZoneNI();
 
-	setArchiveType(_configuration.artN2 ? kArchiveArt : kArchiveFile);
+	_archiveType = _configuration.artN2 ? kArchiveArt : kArchiveFile;
 	initZoneN2();
 
-	setArchiveType(_configuration.artRO ? kArchiveArt : kArchiveFile);
+	_archiveType = _configuration.artRO ? kArchiveArt : kArchiveFile;
 	initZoneRO();
 
-	setArchiveType(_configuration.artRH ? kArchiveArt : kArchiveFile);
+	_archiveType = _configuration.artRH ? kArchiveArt : kArchiveFile;
 	initZoneRH();
 
-	setArchiveType(_configuration.artFO ? kArchiveArt : kArchiveFile);
+	_archiveType = _configuration.artFO ? kArchiveArt : kArchiveFile;
 	initZoneFO();
 
-	setArchiveType(_configuration.artWA ? kArchiveArt : kArchiveFile);
+	_archiveType = _configuration.artWA ? kArchiveArt : kArchiveFile;
 	initZoneWA();
 
 	if (_configuration.artSY || _configuration.artAS || _configuration.artNI || _configuration.artN2
 	 || _configuration.artRO || _configuration.artRH || _configuration.artFO || _configuration.artWA)
-		setArchiveType(kArchiveArt);
+		_archiveType = kArchiveArt;
 	else
-		setArchiveType(kArchiveFile);
+		_archiveType = kArchiveFile;
 
-	setField66(0);
+	_field_66 = 0;
 }
 
 void ApplicationRing::initZoneSY() {
@@ -601,10 +663,12 @@ void ApplicationRing::initZoneSY() {
 	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", 0, 0, 1, 0xFFu, 95, 0, -1, -1, -1);
 	objectPresentationAddAnimationToPuzzle(kObjectSave90313, 0, kPuzzleSave, "kybcur", 0, 0, 0, 1, 1000, 6, 1095237632, 16);
 	objectPresentationSetAnimationCoordinatesOnPuzzle(kObjectSave90313, 0, Common::Point(346, 181));
-	setArchiveType(kArchiveFile);
+
+	_archiveType = kArchiveFile;
 	objectPresentationAddImageToPuzzle(kObjectSave90313, 0, kPuzzleSave, "osc.bmp", 0, 0, 1, 1, 1000);
 	if ( _configuration.artSY )
-		setArchiveType(kArchiveArt);
+		_archiveType = kArchiveArt;
+
 	objectPresentationShow(kObjectSave90313, 0);
 
 	visualAddListToPuzzle(1, kPuzzleLoad, 65,
@@ -3788,8 +3852,8 @@ void ApplicationRing::initZoneWA() {
 void ApplicationRing::initZoneAS() {
 	setZoneAndEnableBag(kZoneAS);
 
-	setLoadFrom(kLoadFromDisk);
-	setArchiveType(kArchiveFile);
+	_loadFrom = kLoadFromDisk;
+	_archiveType = kArchiveFile;
 
 	puzzleAdd(kPuzzle80001);
 	puzzleAddBackgroundImage(kPuzzle80001, "Old_Ish.bma", 0, 16, 1);
@@ -3820,9 +3884,9 @@ void ApplicationRing::initZoneAS() {
 	puzzleAdd(kPuzzle80007);
 	puzzleAddBackgroundImage(kPuzzle80007, "ASP02L01.bma", 0, 16, 1);
 
-	setLoadFrom(kLoadFromCd);
+	_loadFrom = kLoadFromCd;
 	if (_configuration.artAS)
-		setArchiveType(kArchiveArt);
+		_archiveType = kArchiveArt;
 
 	rotationAdd(80001, "ASS00N01", 0, 1);
 	rotationAdd(80002, "ASS00N02", 0, 1);
@@ -3839,9 +3903,9 @@ void ApplicationRing::initZoneAS() {
 	rotationAdd(80014, "ASS00N14", 0, 1);
 	rotationAdd(80015, "ASS00N15", 0, 1);
 
-	setLoadFrom(kLoadFromDisk);
+	_loadFrom = kLoadFromDisk;
 	rotationAdd(80101, "ASS01N01", 0, 6);
-	setLoadFrom(kLoadFromCd);
+	_loadFrom = kLoadFromCd;
 
 	rotationSetComBufferLength(80101, 1800000);
 	rotationAddMovabilityToRotation(80001, 80002, "1001", 757, -71, 928, 85, 1, 53, 0);
@@ -4047,14 +4111,14 @@ void ApplicationRing::initZoneAS() {
 	objectAddRotationAccessibility(kObject80021, 80101, Common::Rect(1444, 183, 1620, 249), 1, 52, 4);
 	objectAddPresentation(kObject80019);
 
-	setLoadFrom(kLoadFromDisk);
-	setArchiveType(kArchiveFile);
+	_loadFrom = kLoadFromDisk;
+	_archiveType = kArchiveFile;
 
 	objectPresentationAddImageToPuzzle(kObject80019, 0, kPuzzle80006, "ASP01L02.bma", 0, 16, 1, 1, 1000);
 
-	setLoadFrom(kLoadFromCd);
+	_loadFrom = kLoadFromCd;
 	if (_configuration.artAS)
-		setArchiveType(kArchiveArt);
+		_archiveType = kArchiveArt;
 
 	objectAdd(kObject80022, "", "", 1);
 	objectAddRotationAccessibility(kObject80022, 80101, Common::Rect(0, -580, 3600, -279), 1, 53, 0);

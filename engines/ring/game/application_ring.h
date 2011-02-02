@@ -54,6 +54,17 @@ public:
 
 private:
 	//////////////////////////////////////////////////////////////////////////
+	// Timer
+	//////////////////////////////////////////////////////////////////////////
+	virtual void onZoneTimer(TimerId id);
+	void onZoneTimerNI(TimerId id);
+	void onZoneTimerRH(TimerId id);
+	void onZoneTimerFO(TimerId id);
+	void onZoneTimerRO(TimerId id);
+	void onZoneTimerAS(TimerId id);
+	void onZoneTimerN2(TimerId id);
+
+	//////////////////////////////////////////////////////////////////////////
 	// Zone
 	//////////////////////////////////////////////////////////////////////////
 	void setZoneNI(Zone zone, uint32 a2);
@@ -72,7 +83,6 @@ private:
 	void initZoneWA();
 	void initZoneAS();
 	void initZoneN2();
-
 };
 
 } // End of namespace Ring
