@@ -27,13 +27,6 @@
 
 namespace Ring {
 
-struct RingGameDescription {
-	ADGameDescription desc;
-
-	int gameType;
-	uint32 features;
-};
-
 static const char *directoryGlobs[] = {
 	"DATA",
 	0
@@ -110,19 +103,10 @@ public:
 };
 
 bool RingMetaEngine::createInstance(OSystem *syst, Engine **engine, const ADGameDescription *desc) const {
-	const Ring::RingGameDescription *gd = (const Ring::RingGameDescription *)desc;
+	if (desc)
+		*engine = new RingEngine(syst, (const RingGameDescription *)desc);
 
-	switch (gd->gameType) {
-	default:
-		error("Ring engine: unknown gameType");
-		break;
-
-	case Ring::GameTypeRing:
-		*engine = new Ring::RingEngine(syst, gd);
-		break;
-	}
-
-	return (gd != 0);
+	return desc != 0;
 }
 
 } // End of namespace Ring

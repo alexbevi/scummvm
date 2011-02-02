@@ -26,6 +26,7 @@
 #include "ring/ring.h"
 
 #include "ring/game/application.h"
+#include "ring/game/application_ring.h"
 
 #include "common/config-manager.h"
 #include "common/debug-channels.h"
@@ -79,7 +80,15 @@ Common::Error RingEngine::run() {
 	_debugger = new Debugger(this);
 
 	// Create application
-	_application = new Application(this);
+	switch (_gameDescription->gameType) {
+	default:
+		error("[RingEngine::run] Unknown game type!");
+		break;
+
+	case Ring::GameTypeRing:
+		_application = new ApplicationRing(this);
+		break;
+	}
 
 	// Init application
 	_application->init();

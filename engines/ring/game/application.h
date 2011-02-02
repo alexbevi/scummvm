@@ -47,6 +47,7 @@ class Puzzle;
 class PuzzleInfo;
 class RingEngine;
 class Rotation;
+class SaveLoad;
 class SoundHandler;
 class TimerHandler;
 class Var;
@@ -60,8 +61,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Initialization
 	void init();
-	void setup();
-	void initZones();
+	virtual void setup() = 0;
+	virtual void initZones() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Startup
@@ -100,18 +101,10 @@ public:
 	bool bagIsIn(ObjectId id);
 
 	//////////////////////////////////////////////////////////////////////////
-	// Zone
-	void setArchiveType(ArchiveType type) { _archiveType = type; }
-	ArchiveType getArchiveType() { return _archiveType; }
-
-	Common::String getZoneString(Zone zone) const;
-	Common::String getZoneLongName(Zone zone) const;
-
-	void setCurrentZone(Zone zone) { _zone = zone; _zoneName = getZoneString(zone); }
-	Zone getCurrentZone() { return _zone; }
-	Common::String getCurrentZoneName() { return _zoneName; }
-
-	uint32 getReadFrom(Zone zone) const;
+	// Zone name, short string and readFrom
+	virtual Common::String getZoneString(Zone zone) const = 0;
+	virtual Common::String getZoneLongName(Zone zone) const = 0;
+	virtual uint32 getReadFrom(Zone zone) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Puzzle
@@ -209,8 +202,15 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
-	Configuration getConfiguration() { return _configuration; }
+	void setArchiveType(ArchiveType type) { _archiveType = type; }
+	ArchiveType getArchiveType() { return _archiveType; }
+
+	void setCurrentZone(Zone zone) { _zone = zone; _zoneName = getZoneString(zone); }
+	Zone getCurrentZone() { return _zone; }
+	Common::String getCurrentZoneName() { return _zoneName; }
+
 	void setLoadFrom(LoadFrom loadFrom) { _loadFrom = loadFrom; }
+
 	void setField66(uint32 val) { _field_66 = val; }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -222,7 +222,7 @@ public:
 	FontHandler   *getFontHandler()   { return _fontHandler; }
 	SoundHandler  *getSoundHandler()  { return _soundHandler; }
 
-private:
+protected:
 	RingEngine *_vm;
 
 	// Application objects
@@ -264,8 +264,8 @@ private:
 	PreferenceHandler          *_preferenceHandler;
 	bool                        _controlNotPressed;
 
-	// Game specific
-	Game                       *_game;
+	// Save / Load games
+	SaveLoad                   *_saveLoad;
 
 	// Configuration
 	void loadConfiguration();

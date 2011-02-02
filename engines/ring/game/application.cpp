@@ -35,7 +35,6 @@
 
 #include "ring/game/bag.h"
 #include "ring/game/dialog.h"
-#include "ring/game/game.h"
 #include "ring/game/language.h"
 #include "ring/game/object.h"
 #include "ring/game/puzzle.h"
@@ -58,7 +57,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_field_77(0),        _field_78(0),            _puzzle(NULL),        _field_89(NULL),      _bag(NULL),
 	_timerHandler(NULL), _var(NULL),              _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
 	_controlNotPressed(false) {
-	_game = new Game(this);
+	_saveLoad = new SaveLoad();
 }
 
 Application::~Application() {
@@ -83,7 +82,7 @@ Application::~Application() {
 	SAFE_DELETE(_objectHandler);
 	SAFE_DELETE(_preferenceHandler);
 
-	SAFE_DELETE(_game);
+	SAFE_DELETE(_saveLoad);
 
 	// Zero-out passed pointers
 	_vm = NULL;
@@ -320,14 +319,6 @@ void Application::loadConfiguration() {
 	}
 }
 
-void Application::setup() {
-	_game->setup();
-}
-
-void Application::initZones() {
-	_game->initZones();
-}
-
 //////////////////////////////////////////////////////////////////////////
 // Startup
 //////////////////////////////////////////////////////////////////////////
@@ -489,107 +480,6 @@ bool Application::bagIsIn(ObjectId id) {
 		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
 
 	return _bag->has(id);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Zone
-//////////////////////////////////////////////////////////////////////////
-Common::String Application::getZoneString(Zone zone) const {
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return "sy";
-
-	case kZoneNI:
-		return "ni";
-
-	case kZoneRH:
-		return "rh";
-
-	case kZoneFO:
-		return "fo";
-
-	case kZoneRO:
-		return "ro";
-
-	case kZoneWA:
-		return "wa";
-
-	case kZoneAS:
-		return "as";
-
-	case kZoneN2:
-		return "n2";
-	}
-
-	error("[Application::getZone] Invalid zone (%d)", zone);
-}
-
-Common::String Application::getZoneLongName(Zone zone) const {
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return "";
-
-	case kZoneNI:
-	case kZoneRH:
-		return "Alberich";
-
-	case kZoneFO:
-		return "Siegmund";
-
-	case kZoneWA:
-		return "Brnnnhilde";
-
-	case kZoneAS:
-		return "Dril";
-
-	case kZoneRO:
-	case kZoneN2:
-		return "Loge";
-	}
-
-	error("[Application::getZoneName] Invalid zone (%d)", zone);
-}
-
-uint32 Application::getReadFrom(Zone zone) const {
-	if (_archiveType == kArchiveFile)
-		return kArchiveFile;
-
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return _configuration.artSY ? kArchiveArt : kArchiveFile;
-
-	case kZoneNI:
-		return _configuration.artNI ? kArchiveArt : kArchiveFile;
-
-	case kZoneRH:
-		return _configuration.artRH ? kArchiveArt : kArchiveFile;
-
-	case kZoneFO:
-		return _configuration.artFO ? kArchiveArt : kArchiveFile;
-
-	case kZoneRO:
-		return _configuration.artRO ? kArchiveArt : kArchiveFile;
-
-	case kZoneWA:
-		return _configuration.artWA ? kArchiveArt : kArchiveFile;
-
-	case kZoneAS:
-		return _configuration.artAS ? kArchiveArt : kArchiveFile;
-
-	case kZoneN2:
-		return _configuration.artN2 ? kArchiveArt : kArchiveFile;
-	}
-
-	error("[Application::getReadFrom] Invalid zone (%d)", zone);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -26,25 +26,36 @@
 #ifndef RING_GAME_H
 #define RING_GAME_H
 
-#include "ring/shared.h"
+#include "ring/game/application.h"
 
 namespace Ring {
 
-class Application;
-class SaveLoad;
-
-class Game {
+class ApplicationRing : public Application {
 public:
-	Game(Application* application);
-	~Game();
+	ApplicationRing(RingEngine *engine);
+	~ApplicationRing();
 
+	//////////////////////////////////////////////////////////////////////////
+	// Initialization
+	virtual void setup();
+	virtual void initZones();
+
+	//////////////////////////////////////////////////////////////////////////
 	// Setup
-	void setup();
-
-	// Set
 	void setupZone(Zone zone, uint32 a2);
 	void setZone(Zone zone, uint32 a2);
 	void setZoneAndEnableBag(Zone zone);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Zone name, short string and readFrom
+	virtual Common::String getZoneString(Zone zone) const;
+	virtual Common::String getZoneLongName(Zone zone) const;
+	virtual uint32 getReadFrom(Zone zone) const;
+
+private:
+	//////////////////////////////////////////////////////////////////////////
+	// Zone
+	//////////////////////////////////////////////////////////////////////////
 	void setZoneNI(Zone zone, uint32 a2);
 	void setZoneRH(Zone zone, uint32 a2);
 	void setZoneFO(Zone zone, uint32 a2);
@@ -53,8 +64,6 @@ public:
 	void setZoneAS(Zone zone, uint32 a2);
 	void setZoneN2(Zone zone, uint32 a2);
 
-	// Initialization
-	void initZones();
 	void initZoneSY();
 	void initZoneNI();
 	void initZoneRH();
@@ -63,10 +72,6 @@ public:
 	void initZoneWA();
 	void initZoneAS();
 	void initZoneN2();
-
-private:
-	Application *_app;
-	SaveLoad    *_saveLoad;
 
 };
 

@@ -48,7 +48,12 @@
  */
 namespace Ring {
 
-struct RingGameDescription;
+struct RingGameDescription {
+	ADGameDescription desc;
+
+	int gameType;
+	uint32 features;
+};
 
 enum RingGameType {
 	GameTypeRing = 1

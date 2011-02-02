@@ -11,9 +11,9 @@ MODULE_OBJS := \
 	base/timer.o \
 	base/var.o \
 	game/application.o \
+	game/application_ring.o \
 	game/bag.o \
 	game/dialog.o \
-	game/game.o \
 	game/language.o \
 	game/object.o \
 	game/puzzle.o \
