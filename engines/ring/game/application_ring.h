@@ -50,7 +50,7 @@ public:
 	// Zone name, short string and readFrom
 	virtual Common::String getZoneString(Zone zone) const;
 	virtual Common::String getZoneLongName(Zone zone) const;
-	virtual uint32 getReadFrom(Zone zone) const;
+	virtual ArchiveType getReadFrom(Zone zone) const;
 
 private:
 	//////////////////////////////////////////////////////////////////////////

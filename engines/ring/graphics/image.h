@@ -51,6 +51,7 @@ private:
 
 class ImageHandle : public Image {
 public:
+	ImageHandle::ImageHandle(Common::String nameId, uint32 a3, uint32 a4, bool isActive, Zone zone, LoadFrom loadFrom, byte a8, ArchiveType archiveType);
 	ImageHandle(Common::String nameId, uint32 a3, uint32 a4, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType);
 	~ImageHandle();
 

@@ -31,6 +31,7 @@
 namespace Ring {
 
 class Accessibility;
+class Application;
 class ImageHandle;
 class Movability;
 class PresentationAnimation;
@@ -41,15 +42,19 @@ class Visual;
 
 class Puzzle : public BaseObject {
 public:
-	Puzzle(PuzzleId id);
+	Puzzle(Application *application, PuzzleId id);
 	~Puzzle();
+
+	void setBackgroundImage(Common::String filename, uint32 a3, uint32 a4, bool isActive, LoadFrom loadFrom);
 
 	void addPresentationText(Text *text);
 	void addPresentationImage(ImageHandle *image);
 	void addAccessibility(Accessibility *accessibility);
 
 private:
-	uint32 _field_4;
+	Application *_application;
+
+	ImageHandle *_background;
 	Common::Array<Movability *>            _movabilities;
 	Common::Array<Accessibility *>         _accessibilities;
 	Common::Array<ImageHandle *>           _presentationImages;

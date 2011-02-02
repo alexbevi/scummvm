@@ -106,13 +106,13 @@ public:
 	// Zone name, short string and readFrom
 	virtual Common::String getZoneString(Zone zone) const = 0;
 	virtual Common::String getZoneLongName(Zone zone) const = 0;
-	virtual uint32 getReadFrom(Zone zone) const = 0;
+	virtual ArchiveType getReadFrom(Zone zone) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Puzzle
 	void puzzleAdd(PuzzleId id);
 
-	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, uint32 a5);
+	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, bool isActive);
 	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleId, Id movabilityId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
 	void puzzleAddMovabilityToRotation(PuzzleId puzzleId, Id rotationId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
 	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5);

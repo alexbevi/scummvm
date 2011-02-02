@@ -28,6 +28,8 @@
 #include "ring/base/text.h"
 #include "ring/base/sound.h"
 
+#include "ring/game/application.h"
+
 #include "ring/graphics/accessibility.h"
 #include "ring/graphics/image.h"
 #include "ring/graphics/movability.h"
@@ -39,14 +41,16 @@ namespace Ring {
 
 //////////////////////////////////////////////////////////////////////////
 // Puzzle
-Puzzle::Puzzle(PuzzleId id) : BaseObject(id) {
-	_field_4 = 0;
+Puzzle::Puzzle(Application *application, PuzzleId id) : BaseObject(id), _application(application) {
+	_background = NULL;
 	_field_24 = 1;
 	_field_28 = 0;
 	_field_29 = 0;
 }
 
 Puzzle::~Puzzle() {
+	SAFE_DELETE(_background);
+
 	CLEAR_ARRAY(Movability, _movabilities);
 	CLEAR_ARRAY(Accessibility, _accessibilities);
 	CLEAR_ARRAY(ImageHandle, _presentationImages);
@@ -54,6 +58,18 @@ Puzzle::~Puzzle() {
 	CLEAR_ARRAY(Text, _texts);
 	CLEAR_ARRAY(SoundItem, _soundItems);
 	CLEAR_ARRAY(Visual, _visuals);
+
+	// Zero-out passed pointers
+	_application = NULL;
+}
+
+void Puzzle::setBackgroundImage(Common::String filename, uint32 a3, uint32 a4, bool isActive, LoadFrom loadFrom) {
+	SAFE_DELETE(_background);
+
+	Zone zone = _application->getCurrentZone();
+	ArchiveType archiveType = _application->getReadFrom(zone);
+
+	_background = new ImageHandle(filename, a3, a4, isActive, zone, loadFrom, 4, archiveType);
 }
 
 void Puzzle::addPresentationText(Text *text) {

@@ -489,11 +489,14 @@ void Application::puzzleAdd(PuzzleId id) {
 	if (_puzzleList.has(id))
 		error("[Application::addPuzzle] ID already exists (%d)", id);
 
-	_puzzleList.push_back(new Puzzle(id));
+	_puzzleList.push_back(new Puzzle(this, id));
 }
 
-void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, uint32 a5) {
-	error("[Application::puzzleAddBackgroundImage] Not implemented");
+void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, bool isActive) {
+	if (!_puzzleList.has(puzzleId))
+		error("[Application::addPuzzle] ID doesn;t exist (%d)", puzzleId);
+
+	_puzzleList.get(puzzleId)->setBackgroundImage(filename, a3, a4, isActive, _loadFrom);
 }
 
 void Application::puzzleAddMovabilityToPuzzle(PuzzleId puzzleId, Id movabilityId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {

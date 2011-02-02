@@ -351,7 +351,7 @@ Common::String ApplicationRing::getZoneLongName(Zone zone) const {
 	error("[Application::getZoneName] Invalid zone (%d)", zone);
 }
 
-uint32 ApplicationRing::getReadFrom(Zone zone) const {
+ArchiveType ApplicationRing::getReadFrom(Zone zone) const {
 	if (_archiveType == kArchiveFile)
 		return kArchiveFile;
 

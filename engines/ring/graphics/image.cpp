@@ -51,6 +51,25 @@ ImageHandle::ImageHandle(Common::String nameId, uint32 a3, uint32 a4, bool isAct
 	_archiveType = archiveType;
 }
 
+ImageHandle::ImageHandle(Common::String nameId, uint32 a3, uint32 a4, bool isActive, Zone zone, LoadFrom loadFrom, byte a8, ArchiveType archiveType) {
+	_nameId = nameId;
+	_field_55 = a3;
+	_field_59 = a4;
+	_field_5D = a3;
+	_field_61 = a4;
+	_isActive = isActive;
+	_field_66 = 1;
+	_priority = 0;
+	_field_6B = 0;
+	_field_6C = 1;
+	_field_70 = a8;
+	_objectPresentation = NULL;
+	_field_75 = 0;
+	_zone = zone;
+	_loadFrom = loadFrom;
+	_archiveType = archiveType;
+}
+
 ImageHandle::~ImageHandle() {
 	// Zero-out passed pointers
 	_objectPresentation = NULL;
