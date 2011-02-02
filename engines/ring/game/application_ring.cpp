@@ -125,6 +125,33 @@ void ApplicationRing::onZoneTimerFO(TimerId id) {
 }
 
 void ApplicationRing::onZoneTimerRO(TimerId id) {
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0:
+		varSetByte(40806, varGetByte(40806) + 1);
+
+		if (varGetByte(40806) == 10) {
+			timerStop(kTimer0);
+			varSetByte(40601, 10);
+		}
+
+		objectPresentationShow(kObject40101, varGetByte(40806));
+		break;
+
+	case kTimer1:
+		varSetByte(40807, varGetByte(40807) + 1);
+
+		if (varGetByte(40807) == 90) {
+			timerStop(kTimer1);
+			varSetByte(40602, 90);
+		}
+
+		objectPresentationShow(kObject40102, varGetByte(40807));
+		break;
+	}
+
 	error("[ApplicationRing::onZoneTimerNI] Not implemented");
 }
 

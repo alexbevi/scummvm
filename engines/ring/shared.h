@@ -77,7 +77,18 @@ enum LanguageId {
 };
 
 enum TimerId {
-	kTimerInvalid = 0
+	kTimer0       = 0,
+	kTimer1       = 1,
+	kTimer2       = 2,
+	kTimer3       = 3,
+	kTimer4       = 4,
+	kTimer5       = 5,
+	kTimer6       = 6,
+	kTimer9       = 9,
+	kTimerInit    = 100,
+	kTimerStartup = 101,
+
+	kTimerInvalid = 99999
 };
 
 enum FontId {

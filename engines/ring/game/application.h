@@ -180,13 +180,28 @@ public:
 	void soundSetVolume(Id soundId, uint32 volume);
 
 	//////////////////////////////////////////////////////////////////////////
+	// Timer
+	void timerStart(TimerId id, uint32 elapseTime);
+	void timerStop(TimerId id);
+	void timerStopAll();
+
+	//////////////////////////////////////////////////////////////////////////
 	// Var
 	void varDefineByte(Id id, byte val);
 	void varSetByte(Id id, byte val);
+	byte varGetByte(Id id);
 	void varDefineWord(Id id, int16 val);
+	void varSetWord(Id id, int16 val);
+	int16 varGetWord(Id id);
 	void varDefineDword(Id id, int32 val);
+	void varSetDword(Id id, uint32 val);
+	uint32 varGetDword(Id id);
 	void varDefineString(Id id, Common::String val);
-	void varDefineFloat(Id id, double val);
+	void varSetString(Id id, Common::String val);
+	Common::String varGetString(Id id);
+	void varDefineFloat(Id id, float val);
+	void varSetFloat(Id id, float val);
+	float varGetFloat(Id id);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Visual

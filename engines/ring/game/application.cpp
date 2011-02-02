@@ -717,6 +717,21 @@ void Application::soundSetVolume(Id soundId, uint32 volume) {
 }
 
 //////////////////////////////////////////////////////////////////////////
+// Timer
+//////////////////////////////////////////////////////////////////////////
+void Application::timerStart(TimerId id, uint32 elapseTime) {
+	error("[Application::timerStart] Not implemented");
+}
+
+void Application::timerStop(TimerId id) {
+	error("[Application::timerStop] Not implemented");
+}
+
+void Application::timerStopAll() {
+	error("[Application::timerStopAll] Not implemented");
+}
+
+//////////////////////////////////////////////////////////////////////////
 // Var
 //////////////////////////////////////////////////////////////////////////
 void Application::varDefineByte(Id id, byte val) {
@@ -727,20 +742,56 @@ void Application::varSetByte(Id id, byte val) {
 	error("[Application::varSetByte] Not implemented");
 }
 
+byte Application::varGetByte(Id id) {
+	error("[Application::varGetByte] Not implemented");
+}
+
 void Application::varDefineWord(Id id, int16 val) {
 	error("[Application::varDefineWord] Not implemented");
+}
+
+void Application::varSetWord(Id id, int16 val) {
+	error("[Application::varSetWord] Not implemented");
+}
+
+int16 Application::varGetWord(Id id) {
+	error("[Application::varGetWord] Not implemented");
 }
 
 void Application::varDefineDword(Id id, int32 val) {
 	error("[Application::varDefineDword] Not implemented");
 }
 
+void Application::varSetDword(Id id, uint32 val) {
+	error("[Application::varSetDword] Not implemented");
+}
+
+uint32 Application::varGetDword(Id id) {
+	error("[Application::varGetDword] Not implemented");
+}
+
 void Application::varDefineString(Id id, Common::String val) {
 	error("[Application::varDefineString] Not implemented");
 }
 
-void Application::varDefineFloat(Id id, double val) {
+void Application::varSetString(Id id, Common::String val) {
+	error("[Application::varSetString] Not implemented");
+}
+
+Common::String Application::varGetString(Id id) {
+	error("[Application::varGetString] Not implemented");
+}
+
+void Application::varDefineFloat(Id id, float val) {
 	error("[Application::varDefineFloat] Not implemented");
+}
+
+void Application::varSetFloat(Id id, float val) {
+	error("[Application::varSetFloat] Not implemented");
+}
+
+float Application::varGetFloat(Id id) {
+	error("[Application::varGetFloat] Not implemented");
 }
 
 //////////////////////////////////////////////////////////////////////////
