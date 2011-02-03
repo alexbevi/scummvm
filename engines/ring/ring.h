@@ -39,12 +39,22 @@
  * This is the namespace of the Ring engine.
  *
  * Status of this engine:
+ *  Work in progress
  *
  * Maintainers:
  *  Littleboy
  *
  * Supported games:
- *  - Ring
+ *  - Ring: The Legend of the Nibelungen
+ *
+ * Games using the engine
+ *  - Pilgrim: Faith as a Weapon (1998) ???
+ *  - Ring: The Legend of the Nibelungen (1998)
+ *  - Faust: Seven Games of the Soul (1999)
+ *  - TimeScape: Journey to Pompeii (2000)
+ *  - Pilgrim 2: The Legend of the Prophet and the Assassin (2000)
+ *  - Pilgrim 3: The Secrets of Alamut (2001) ???
+ *  - Jerusalem: The Three Roads to the Holy Land (2002)
  */
 namespace Ring {
 
