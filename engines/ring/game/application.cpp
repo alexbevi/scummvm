@@ -651,20 +651,32 @@ void Application::objectAddRotationAccessibility(ObjectId, Id rotationId, Common
 	error("[Application::objectAddRotationAccessibility] Not implemented");
 }
 
-void Application::objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
-	error("[Application::objectSetActiveCursor] Not implemented");
+void Application::objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
+	if (!_objects.has(objectId))
+		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setActiveCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetPassiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
-	error("[Application::objectSetPassiveCursor] Not implemented");
+void Application::objectSetPassiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
+	if (!_objects.has(objectId))
+		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setPassiveCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetActiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
-	error("[Application::objectSetActiveDrawCursor] Not implemented");
+void Application::objectSetActiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
+	if (!_objects.has(objectId))
+		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setActiveDrawCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetPassiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
-	error("[Application::objectSetPassiveDrawCursor] Not implemented");
+void Application::objectSetPassiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
+	if (!_objects.has(objectId))
+		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setPassiveDrawCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
 void Application::objectAddPresentation(ObjectId objectId) {

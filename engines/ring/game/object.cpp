@@ -45,38 +45,6 @@ Object::Object(Application *application, ObjectId id, Common::String language, C
 	_language = language;
 	_name = name;
 	_field_C  = a5;
-	_field_15 = 0;;
-	_field_19 = 0;
-	_field_1D = 0;
-	_field_21 = 3;
-	_field_25 = 0;
-	_field_29 = 0;
-	_field_2D = 3;
-	_field_31 = 101;
-	_field_32 = 0;
-	_field_36 = 0;
-	_field_3A = 0;
-	_field_3E = 3;
-	_field_42 = 0;
-	_field_46 = 0;
-	_field_4A = 3;
-	_field_4E = 101;
-	_field_4F = 0;
-	_field_53 = 0;
-	_field_57 = 0;
-	_field_5B = 3;
-	_field_5F = 0;
-	_field_63 = 0;
-	_field_67 = 3;
-	_field_6B = 101;
-	_field_6C = 0;
-	_field_70 = 0;
-	_field_74 = 0;
-	_field_78 = 3;
-	_field_7C = 0;
-	_field_80 = 0;
-	_field_84 = 3;
-	_field_88 = 101;
 	_animationImage = NULL;
 }
 
@@ -88,6 +56,8 @@ Object::~Object() {
 	// Zero-out passed pointers
 	_application = NULL;
 }
+
+#pragma region Presentation
 
 void Object::addPresentation() {
 	_presentations.push_back(new ObjectPresentation(_application, this));
@@ -130,6 +100,10 @@ void Object::hidePresentations() {
 		(*it)->hide();
 }
 
+#pragma endregion
+
+#pragma region Accessibility
+
 void Object::addPuzzleAccessibility(Puzzle *puzzle, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
 	Accessibility *accessibility = new Accessibility(this);
 	accessibility->setHotspot(rect, enabled, a9, a10);
@@ -145,6 +119,39 @@ void Object::setAccessibilityKey(uint32 accessibilityIndex, Common::KeyCode key)
 
 	_accessibilities[accessibilityIndex]->getHotspot()->setKey(key);
 }
+
+#pragma endregion
+
+#pragma region Cursor
+
+void Object::setCursor(ObjectCursor *cursor, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType) {
+	cursor->_field_0     = a2;
+	cursor->_field_4     = a3;
+	cursor->_field_8     = a4;
+	cursor->_field_C     = a5;
+	cursor->_field_10    = a6;
+	cursor->_field_14    = a7;
+	cursor->_field_18    = a8;
+	cursor->_archiveType = archiveType;
+}
+
+void Object::setActiveCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType) {
+	setCursor(&_activeCursor, a2, a3, a4, a5, a6, a7, a8, archiveType);
+}
+
+void Object::setPassiveCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType) {
+	setCursor(&_passiveCursor, a2, a3, a4, a5, a6, a7, a8, archiveType);
+}
+
+void Object::setActiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType) {
+	setCursor(&_activeDrawCursor, a2, a3, a4, a5, a6, a7, a8, archiveType);
+}
+
+void Object::setPassiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType) {
+	setCursor(&_passiveDrawCursor, a2, a3, a4, a5, a6, a7, a8, archiveType);
+}
+
+#pragma endregion
 
 //////////////////////////////////////////////////////////////////////////
 // ObjectInfo

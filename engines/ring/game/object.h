@@ -52,10 +52,39 @@ public:
 	void hidePresentation(uint32 presentationIndex);
 	void hidePresentations();
 
+	// Accessibility
 	void addPuzzleAccessibility(Puzzle *puzzle, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void setAccessibilityKey(uint32 accessibilityIndex, Common::KeyCode key);
 
+	// Cursor
+	void setActiveCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
+	void setPassiveCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
+	void setActiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
+	void setPassiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
+
 private:
+	struct ObjectCursor {
+		uint32      _field_0;
+		uint32      _field_4;
+		uint32      _field_8;
+		uint32      _field_C;
+		float       _field_10;
+		uint32      _field_14;
+		uint32      _field_18;
+		ArchiveType _archiveType;
+
+		ObjectCursor() {
+			_field_0     = 0;
+			_field_4     = 0;
+			_field_8     = 0;
+			_field_C     = 3;
+			_field_10    = 0;
+			_field_14    = 0;
+			_field_18    = 3;
+			_archiveType = kArchiveFile;
+		}
+	};
+
 	Application *_application;
 
 	Common::String _language;
@@ -63,39 +92,13 @@ private:
 	byte    _field_C;
 	Common::Array<Accessibility *> _accessibilities;
 	Common::Array<ObjectPresentation *> _presentations;
-	uint32  _field_15;
-	uint32  _field_19;
-	uint32  _field_1D;
-	uint32  _field_21;
-	uint32  _field_25;
-	uint32  _field_29;
-	uint32  _field_2D;
-	byte    _field_31;
-	uint32  _field_32;
-	uint32  _field_36;
-	uint32  _field_3A;
-	uint32  _field_3E;
-	uint32  _field_42;
-	uint32  _field_46;
-	uint32  _field_4A;
-	byte    _field_4E;
-	uint32  _field_4F;
-	uint32  _field_53;
-	uint32  _field_57;
-	uint32  _field_5B;
-	uint32  _field_5F;
-	uint32  _field_63;
-	uint32  _field_67;
-	byte    _field_6B;
-	uint32  _field_6C;
-	uint32  _field_70;
-	uint32  _field_74;
-	uint32  _field_78;
-	uint32  _field_7C;
-	uint32  _field_80;
-	uint32  _field_84;
-	byte    _field_88;
+	ObjectCursor _passiveCursor;
+	ObjectCursor _activeCursor;
+	ObjectCursor _passiveDrawCursor;
+	ObjectCursor _activeDrawCursor;
 	AnimationImage *_animationImage;
+
+	void setCursor(ObjectCursor *cursor, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
 };
 
 class ObjectInfo : public BaseObject {
