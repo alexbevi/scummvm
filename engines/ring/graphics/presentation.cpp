@@ -47,14 +47,6 @@ Visual::Visual() {
 Visual::~Visual() {
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Presentation
-//////////////////////////////////////////////////////////////////////////
-PresentationAnimation::PresentationAnimation() {
-}
-
-PresentationAnimation::~PresentationAnimation() {
-}
 
 //////////////////////////////////////////////////////////////////////////
 // Presentation
@@ -110,6 +102,26 @@ void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filenam
 	_imagePuzzlePtr.push_back(puzzle);
 
 	puzzle->addPresentationImage(image);
+}
+
+void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, LoadFrom loadFrom) {
+	AnimationImage *animation = new AnimationImage();
+	animation->init(filename, a4, a5, a6, 0, a8, a11, a12, 1, a13, a10, a9, loadFrom, _application->getArchiveType());
+	animation->updatePresentation(this);
+	if (!(a13 & 2)) {
+		animation->setField20(0);
+		animation->setField89();
+	}
+
+	_animationPuzzle.push_back(animation);
+	_animationPuzzlePtr.push_back(puzzle);
+
+	// FIXME: Implement proper animation initialization
+	warning("[ObjectPresentation::addAnimationToPuzzle] Not implemented");
+	//animation->updateCurrentImage();
+
+	//puzzle->addPresentationImage(animation->getCurrentImage());
+	//puzzle->addPresentationAnimation(this);
 }
 
 void ObjectPresentation::show() {

@@ -54,7 +54,7 @@ Puzzle::~Puzzle() {
 	CLEAR_ARRAY(Movability, _movabilities);
 	CLEAR_ARRAY(Accessibility, _accessibilities);
 	CLEAR_ARRAY(ImageHandle, _presentationImages);
-	CLEAR_ARRAY(PresentationAnimation, _presentationAnimations);
+	CLEAR_ARRAY(ObjectPresentation, _presentationAnimations);
 	CLEAR_ARRAY(Text, _texts);
 	CLEAR_ARRAY(SoundItem, _soundItems);
 	CLEAR_ARRAY(Visual, _visuals);
@@ -87,6 +87,13 @@ void Puzzle::addPresentationImage(ImageHandle *image) {
 	_presentationImages.push_back(image);
 
 	Common::sort(_presentationImages.begin(), _presentationImages.end(), &Puzzle::imagePriorityCompare);
+}
+
+void Puzzle::addPresentationAnimation(ObjectPresentation *objectPresentation) {
+	if (!objectPresentation)
+		error("[Puzzle::addPresentationAnimation] Object presentation is not initialized properly");
+
+	_presentationAnimations.push_back(objectPresentation);
 }
 
 void Puzzle::addAccessibility(Accessibility *accessibility) {

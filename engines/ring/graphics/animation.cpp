@@ -25,9 +25,52 @@
 
 #include "ring/graphics/animation.h"
 
+#include "ring/graphics/image.h"
+#include "ring/graphics/presentation.h"
+
 namespace Ring {
 
 AnimationImage::AnimationImage() {
+	_field_0  = 0;
+	_field_8  = 0;
+	_field_C  = 0;
+	_field_10 = 0;
+	_field_14 = 0;
+	_field_18 = 0;
+	_field_1C = 0;
+	_field_20 = 1;
+	_field_21 = 1;
+	_currentIndex = 0;
+	_field_26 = 0;
+	_field_27 = 0;
+	_field_28 = 0;
+	_field_2C = 0;
+	_field_2D = 0;
+	_field_2E = 0;
+	_field_32 = 0;
+	_field_36 = 1;
+	_field_3A = 1;
+	_field_3E = 0;
+	_field_42 = 0;
+	_field_46 = 0;
+	_field_4A = 0;
+	_field_4E = 1;
+	_ticks    = 0;
+	_field_53 = 0;
+	_field_57 = 0;
+	_field_58 = 0;
+	_field_5C = 0;
+	_field_60 = 0;
+	_field_61 = -5;
+	_field_65 = 0;
+	_field_6D = 0;
+	_field_71 = 0;
+	_field_75 = 0;
+	_field_79 = 0;
+	_field_7D = 0;
+	_field_81 = 0;
+	_currentImage = NULL;
+	_field_89;
 }
 
 AnimationImage::~AnimationImage() {
@@ -61,6 +104,16 @@ void AnimationImage::sub_416710() {
 	warning("[AnimationImage::setTicks] Not implemented");
 }
 
+void AnimationImage::updatePresentation(ObjectPresentation *objectPresentation) {
+	for	(Common::Array<ImageHandle *>::iterator it = _imageHandles.begin(); it != _imageHandles.end(); it++)
+		(*it)->setObjectPresentation(objectPresentation);
+}
 
+void AnimationImage::updateCurrentImage() {
+	if (_currentIndex >= _imageHandles.size())
+		error("[AnimationImage::updateCurrentImage] Current index is not valid (%d)", _currentIndex);
+
+	_currentImage = _imageHandles[_currentIndex];
+}
 
 } // End of namespace Ring

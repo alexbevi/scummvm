@@ -30,6 +30,9 @@
 
 namespace Ring {
 
+class ImageHandle;
+class ObjectPresentation;
+
 class AnimationImage {
 public:
 	AnimationImage();
@@ -41,12 +44,60 @@ public:
 	void dealloc();
 
 	void draw();
-
-	void setTicks(uint32 ticks);
 	void sub_416710();
 
-private:
+	void updatePresentation(ObjectPresentation *objectPresentation);
+	void updateCurrentImage();
 
+	// Accessors
+	void setTicks(uint32 ticks);
+	void setField20(byte val) { _field_20 = 0; }
+	void setField89() { _field_89 = 1; }
+	ImageHandle *getCurrentImage() { return _currentImage; }
+
+private:
+	uint32 _field_0;
+	Common::String _name;
+	uint32 _field_8;
+	uint32 _field_C;
+	uint32 _field_10;
+	uint32 _field_14;
+	uint32 _field_18;
+	uint32 _field_1C;
+	byte   _field_20;
+	byte   _field_21;
+	uint32 _currentIndex;
+	byte   _field_26;
+	byte   _field_27;
+	uint32 _field_28;
+	byte   _field_2C;
+	byte   _field_2D;
+	uint32 _field_2E;
+	uint32 _field_32;
+	uint32 _field_36;
+	uint32 _field_3A;
+	uint32 _field_3E;
+	uint32 _field_42;
+	uint32 _field_46;
+	uint32 _field_4A;
+	byte   _field_4E;
+	uint32 _ticks;
+	uint32 _field_53;
+	byte   _field_57;
+	uint32 _field_58;
+	uint32 _field_5C;
+	byte   _field_60;
+	int32  _field_61;
+	uint32 _field_65;
+	Common::Array<ImageHandle *> _imageHandles;
+	uint32 _field_6D;
+	uint32 _field_71;
+	uint32 _field_75;
+	uint32 _field_79;
+	uint32 _field_7D;
+	uint32 _field_81;
+	ImageHandle *_currentImage;
+	byte _field_89;
 };
 
 } // End of namespace Ring

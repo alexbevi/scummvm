@@ -660,21 +660,21 @@ void Application::objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3,
 
 void Application::objectSetPassiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
 	if (!_objects.has(objectId))
-		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectSetPassiveCursor] Object Id doesn't exist (%d)", objectId);
 
 	_objects.get(objectId)->setPassiveCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
 void Application::objectSetActiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
 	if (!_objects.has(objectId))
-		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectSetActiveDrawCursor] Object Id doesn't exist (%d)", objectId);
 
 	_objects.get(objectId)->setActiveDrawCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
 void Application::objectSetPassiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
 	if (!_objects.has(objectId))
-		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectSetPassiveDrawCursor] Object Id doesn't exist (%d)", objectId);
 
 	_objects.get(objectId)->setPassiveDrawCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
@@ -710,8 +710,14 @@ void Application::objectPresentationAddImageToRotation(ObjectId objectId, uint32
 	error("[Application::objectPresentationAddImageToRotation] Not implemented");
 }
 
-void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12) {
-	error("[Application::objectPresentationAddAnimationToPuzzle] Not implemented");
+void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationAddAnimationToPuzzle] Object Id doesn't exist (%d)", objectId);
+
+	if (!_puzzles.has(puzzleId))
+		error("[Application::objectPresentationAddAnimationToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	_objects.get(objectId)->addAnimationToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, a5, a6, a7, 1, a8, a9, 0, a10, a11, a12, _loadFrom);
 }
 
 void Application::objectPresentationAddAnimationToRotation(ObjectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7) {

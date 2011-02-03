@@ -34,6 +34,7 @@ class Accessibility;
 class Application;
 class ImageHandle;
 class Movability;
+class ObjectPresentation;
 class PresentationAnimation;
 class PresentationImage;
 class SoundEntry;
@@ -50,6 +51,7 @@ public:
 
 	void addPresentationText(Text *text);
 	void addPresentationImage(ImageHandle *image);
+	void addPresentationAnimation(ObjectPresentation *objectPresentation);
 	void addAccessibility(Accessibility *accessibility);
 	void addMovability(Movability *movability);
 	void addAmbientSound(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7);
@@ -69,7 +71,7 @@ private:
 	Common::Array<Movability *>            _movabilities;
 	Common::Array<Accessibility *>         _accessibilities;
 	Common::Array<ImageHandle *>           _presentationImages;
-	Common::Array<PresentationAnimation *> _presentationAnimations;
+	Common::Array<ObjectPresentation *>    _presentationAnimations;
 	Common::Array<Text *>                  _texts;
 	Common::Array<SoundItem *>             _soundItems;
 	Common::Array<Visual *>                _visuals;

@@ -56,15 +56,6 @@ private:
 
 };
 
-class PresentationAnimation {
-public:
-	PresentationAnimation();
-	~PresentationAnimation();
-
-private:
-
-};
-
 class ObjectPresentation {
 public:
 	ObjectPresentation(Application *application, Object *object);
@@ -72,7 +63,7 @@ public:
 
 	void addTextToPuzzle(Puzzle *puzzle, Common::String text, uint32 a4, uint32 a5, FontId fontId, byte a7, byte a8, byte a9, uint32 a10, uint32 a11, uint32 a12);
 	void addImageToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, uint32 a5, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom);
-
+	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, LoadFrom loadFrom);
 	void show();
 	void hide();
 
