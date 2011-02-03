@@ -30,9 +30,9 @@
 
 namespace Ring {
 
-class Rotation {
+class Rotation : public BaseObject {
 public:
-	Rotation();
+	Rotation(Id id, Common::String name, uint32 a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6);
 	~Rotation();
 
 	void updateData(uint32 index, uint32 val);

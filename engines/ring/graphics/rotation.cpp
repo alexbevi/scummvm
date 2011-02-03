@@ -27,7 +27,8 @@
 
 namespace Ring {
 
-Rotation::Rotation() {
+Rotation::Rotation(Id id, Common::String name, uint32 a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6) : BaseObject(id) {
+	warning("[Rotation::Rotation] Not implemented!");
 }
 
 Rotation::~Rotation() {

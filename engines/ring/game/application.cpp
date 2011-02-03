@@ -48,6 +48,8 @@
 #include "ring/helpers.h"
 #include "ring/ring.h"
 
+#include "common/file.h"
+
 namespace Ring {
 
 Application::Application(RingEngine *engine) : _vm(engine),
@@ -55,7 +57,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_field_54(1),        _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
 	_soundHandler(NULL), _field_66(0),            _field_6A(0),         _zoneString("A0"),      _zone(kZoneInvalid),
 	_field_6F(0),        _field_70(0),            _field_74(0),         _field_75(0),         _field_76(0),
-	_field_77(0),        _field_78(0),            _puzzle(NULL),        _field_89(NULL),      _bag(NULL),
+	_field_77(0),        _field_78(0),            _puzzle(NULL),        _rotation(NULL),      _bag(NULL),
 	_timerHandler(NULL), _var(NULL),              _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
 	_controlNotPressed(false) {
 
@@ -78,7 +80,7 @@ Application::~Application() {
 	CLEAR_ARRAY(Puzzle, _puzzles);
 	SAFE_DELETE(_puzzle);
 	CLEAR_ARRAY(Rotation, _rotations);
-	SAFE_DELETE(_field_89);
+	SAFE_DELETE(_rotation);
 	SAFE_DELETE(_bag);
 	SAFE_DELETE(_timerHandler);
 	SAFE_DELETE(_var);
@@ -173,7 +175,7 @@ void Application::init() {
 	_archiveType = kArchiveFile;
 	_field_6F = 0;
 
-	_field_89 = NULL;
+	_rotation = NULL;
 
 	// Setup bag
 	if (_configuration.artBAG)
@@ -581,7 +583,7 @@ void Application::puzzleSet3DSoundOff(PuzzleId puzzleId, Id soundId) {
 
 void Application::puzzleReset() {
 	SAFE_DELETE(_puzzle);
-	SAFE_DELETE(_field_89);
+	SAFE_DELETE(_rotation);
 
 	// TODO two calls missing
 	warning("[Application::resetPuzzle] Missing two function calls");
@@ -594,11 +596,11 @@ PuzzleId Application::getCurrentPuzzleId() {
 	return (PuzzleId)_puzzle->getId();
 }
 
-PuzzleId Application::getField89Id() {
-	if (!_field_89)
+Id Application::getCurrentRotationId() {
+	if (!_rotation)
 		return kPuzzleInvalid;
 
-	return (PuzzleId)_field_89->getId();
+	return _rotation->getId();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -759,8 +761,32 @@ void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3,
 //////////////////////////////////////////////////////////////////////////
 // Rotation
 //////////////////////////////////////////////////////////////////////////
-void Application::rotationAdd(Id rotationId, Common::String name, uint32 a3, uint32 a4) {
-	error("[Application::rotationAdd] Not implemented");
+void Application::rotationAdd(Id rotationId, Common::String name, uint32 a3, uint32 nodeCount) {
+	if (_rotations.has(rotationId))
+		error("[Application::rotationAdd] Rotation Id already exists (%d)", rotationId);
+
+	// Compute path
+	//  Note: .aqi files do not seem to exists in the data
+	Common::String path = Common::String::format("DATA/NODE/%s.%s", name.c_str(), _field_54 ? "aqc" : "aqi");
+
+	// Check for single node file
+	if (_field_5E && !Common::File::exists(path))
+		error("[Application::rotationAdd] Node file doesn't exist (%s)", path.c_str());
+
+	// Check for node channel files
+	if (_field_5E && !_field_54 && nodeCount > 0) {
+		for (uint i = 0; i < nodeCount; i++) {
+			Common::String nodePath = Common::String::format("DATA/NODE/%s_%03d.aqc", name.c_str(), i);
+
+			if (!Common::File::exists(nodePath))
+				error("[Application::rotationAdd] Channel node file doesn't exist (%s)", nodePath.c_str());
+		}
+	}
+
+	// Create rotation
+	Rotation *rotation = new Rotation(rotationId, name, a3, _loadFrom, nodeCount, _field_54);
+
+	_rotations.push_back(rotation);
 }
 
 void Application::rotationSetComBufferLength(Id rotationId, uint32 length) {

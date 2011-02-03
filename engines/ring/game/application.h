@@ -128,8 +128,8 @@ public:
 	bool hasCurrentPuzzle() { return _puzzle != NULL; }
 	PuzzleId getCurrentPuzzleId();
 
-	bool hasField89() { return _field_89 != NULL; }
-	PuzzleId getField89Id();
+	bool hasCurrentRotation() { return _rotation != NULL; }
+	Id getCurrentRotationId();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Object
@@ -168,7 +168,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Rotation
-	void rotationAdd(Id rotationId, Common::String name, uint32 a3, uint32 a4);
+	void rotationAdd(Id rotationId, Common::String name, uint32 a3, uint32 nodeCount);
 	void rotationSetComBufferLength(Id rotationId, uint32 length);
 	void rotationSetMovabilityOnOrOff(Id rotationId, uint32 a2, uint32 a3);
 	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, uint32 a4, int32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10);
@@ -273,7 +273,7 @@ protected:
 	AssociativeArray<Puzzle *>    _puzzles;
 	Puzzle                       *_puzzle;
 	AssociativeArray<Rotation *>  _rotations;
-	Puzzle                       *_field_89;
+	Rotation                     *_rotation;
 	Bag                          *_bag;
 	TimerHandler                 *_timerHandler;
 	Var                          *_var;

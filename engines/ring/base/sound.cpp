@@ -198,8 +198,8 @@ bool SoundItem::checkCurrentPuzzle() {
 	if (getApp()->hasCurrentPuzzle())
 		id = getApp()->getCurrentPuzzleId();
 
-	if (getApp()->hasField89())
-		id = getApp()->getField89Id();
+	if (getApp()->hasCurrentRotation())
+		id = getApp()->getCurrentRotationId();
 
 	if (id == 0 || id != _id)
 		return false;
