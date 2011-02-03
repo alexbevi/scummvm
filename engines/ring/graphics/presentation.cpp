@@ -69,7 +69,7 @@ PresentationImage::~PresentationImage() {
 // Presentation
 //////////////////////////////////////////////////////////////////////////
 ObjectPresentation::ObjectPresentation(Application *application, Object *object) : _application(application), _object(object) {
-	_field_4 = 0;
+	_isShown = false;
 }
 
 ObjectPresentation::~ObjectPresentation() {
@@ -110,6 +110,34 @@ void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filenam
 	_imagePuzzlePtr.push_back(puzzle);
 
 	puzzle->addPresentationImage(image);
+}
+
+void ObjectPresentation::show() {
+	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
+		(*it)->setTicks(g_system->getMillis());
+
+	for (Common::Array<AnimationImage *>::iterator it = _layAnimationRotationAnimation.begin(); it != _layAnimationRotationAnimation.end(); it++)
+		(*it)->setTicks(g_system->getMillis());
+
+	for (uint32 i = 0; i < _layImagePtr.size(); i++)
+		_layImageRotationPtr[i]->updateData(*(_layImagePtr[i]), 1);
+
+	for (uint32 i = 0; i < _layAnimationRotation.size(); i++)
+		_layAnimationRotationPtr[i]->updateData(*(_layAnimationRotation[i]), 1);
+}
+
+void ObjectPresentation::hide() {
+	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
+		(*it)->sub_416710();
+
+	for (Common::Array<AnimationImage *>::iterator it = _layAnimationRotationAnimation.begin(); it != _layAnimationRotationAnimation.end(); it++)
+		(*it)->sub_416710();
+
+	for (uint32 i = 0; i < _layImagePtr.size(); i++)
+		_layImageRotationPtr[i]->updateData(*(_layImagePtr[i]), 0);
+
+	for (uint32 i = 0; i < _layAnimationRotation.size(); i++)
+		_layAnimationRotationPtr[i]->updateData(*(_layAnimationRotation[i]), 0);
 }
 
 } // End of namespace Ring

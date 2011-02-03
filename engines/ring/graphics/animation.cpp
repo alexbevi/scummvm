@@ -57,6 +57,9 @@ void AnimationImage::setTicks(uint32 ticks) {
 	warning("[AnimationImage::setTicks] Not implemented");
 }
 
+void AnimationImage::sub_416710() {
+	warning("[AnimationImage::setTicks] Not implemented");
+}
 
 
 

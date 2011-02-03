@@ -26,12 +26,16 @@
 #ifndef RING_ROTATION_H
 #define RING_ROTATION_H
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class Rotation {
 public:
 	Rotation();
 	~Rotation();
+
+	void updateData(uint32 index, uint32 val);
 
 private:
 

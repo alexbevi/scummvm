@@ -721,11 +721,31 @@ void Application::objectPresentationAnimationSetStartFrame(ObjectId objectId, ui
 }
 
 void Application::objectPresentationShow(ObjectId objectId, uint32 presentationIndex) {
-	error("[Application::objectPresentationShow] Not implemented");
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationShow] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->showPresentation(presentationIndex);
 }
 
 void Application::objectPresentationShow(ObjectId objectId) {
-	error("[Application::objectPresentationShow] Not implemented");
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationShow] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->showPresentations();
+}
+
+void Application::objectPresentationHide(ObjectId objectId, uint32 presentationIndex) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->hidePresentation(presentationIndex);
+}
+
+void Application::objectPresentationHide(ObjectId objectId) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->hidePresentations();
 }
 
 void Application::objectPresentationPauseAnimation(ObjectId objectId, uint32 presentationIndex) {

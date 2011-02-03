@@ -33,4 +33,8 @@ Rotation::Rotation() {
 Rotation::~Rotation() {
 }
 
+void Rotation::updateData(uint32 index, uint32 val) {
+	warning("[Rotation::updateData] Not implemented!");
+}
+
 } // End of namespace Ring

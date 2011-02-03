@@ -43,6 +43,7 @@ public:
 	void draw();
 
 	void setTicks(uint32 ticks);
+	void sub_416710();
 
 private:
 

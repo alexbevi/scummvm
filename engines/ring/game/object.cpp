@@ -107,6 +107,29 @@ void Object::addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::
 	_presentations[presentationIndex]->addImageToPuzzle(puzzle, filename, a5, a6, isActive, a8, priority, a10, loadFrom);
 }
 
+void Object::showPresentation(uint32 presentationIndex) {
+	if (presentationIndex >= _presentations.size())
+		error("[Object::showPresentation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->show();
+}
+void Object::showPresentations() {
+	for (Common::Array<ObjectPresentation *>::iterator it = _presentations.begin(); it != _presentations.end(); it++)
+		(*it)->show();
+}
+
+void Object::hidePresentation(uint32 presentationIndex) {
+	if (presentationIndex >= _presentations.size())
+		error("[Object::hidePresentation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->hide();
+}
+
+void Object::hidePresentations() {
+	for (Common::Array<ObjectPresentation *>::iterator it = _presentations.begin(); it != _presentations.end(); it++)
+		(*it)->hide();
+}
+
 void Object::addPuzzleAccessibility(Puzzle *puzzle, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
 	Accessibility *accessibility = new Accessibility(this);
 	accessibility->setHotspot(rect, enabled, a9, a10);

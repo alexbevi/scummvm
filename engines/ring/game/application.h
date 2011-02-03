@@ -160,6 +160,8 @@ public:
 	void objectPresentationAnimationSetStartFrame(ObjectId objectId, uint32 animationIdex, uint32 startFrame);
 	void objectPresentationShow(ObjectId objectId, uint32 presentationIndex);
 	void objectPresentationShow(ObjectId objectId);
+	void objectPresentationHide(ObjectId objectId, uint32 presentationIndex);
+	void objectPresentationHide(ObjectId objectId);
 	void objectPresentationPauseAnimation(ObjectId objectId, uint32 presentationIndex);
 
 	void objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6);

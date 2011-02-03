@@ -43,9 +43,14 @@ public:
 	Object(Application *application, ObjectId id, Common::String language, Common::String name, byte a5);
 	~Object();
 
+	// Presentation
 	void addPresentation();
 	void addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, uint32 a5, uint32 a6, FontId fontId, byte a8, byte a9, byte a10, uint32 a11, uint32 a12, uint32 a13);
 	void addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, uint32 a5, uint32 a6, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom);
+	void showPresentation(uint32 presentationIndex);
+	void showPresentations();
+	void hidePresentation(uint32 presentationIndex);
+	void hidePresentations();
 
 	void addPuzzleAccessibility(Puzzle *puzzle, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void setAccessibilityKey(uint32 accessibilityIndex, Common::KeyCode key);
