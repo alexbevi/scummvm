@@ -52,6 +52,8 @@ public:
 	void addAccessibility(Accessibility *accessibility);
 	void addMovability(Movability *movability);
 
+	Movability *getMovability(uint32 index);
+
 private:
 	Application *_application;
 

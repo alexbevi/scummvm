@@ -378,6 +378,11 @@ enum CursorType {
 	kCursorTypeAnimated = 4
 };
 
+enum MovabilityType {
+	kMovabilityPuzzleRotation = 2,
+	kMovabilityPuzzlePuzzle   = 3
+};
+
 enum ImageType {
 	kImageCursor   = 3,
 	kImageListIcon = 4

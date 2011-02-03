@@ -35,30 +35,40 @@ class Puzzle;
 
 class Movability {
 public:
-	Movability(Puzzle *puzzleFrom, Puzzle *puzzleTo, Common::String name, uint32 a5);
+	Movability(Puzzle *puzzleFrom, Puzzle *puzzleTo, Common::String name, MovabilityType type);
+	Movability(Puzzle *puzzleFrom, Id rotationId, Common::String name, MovabilityType type);
 	~Movability();
+
+	void update(float a1, float a2, float a3, float a4, byte a5, float a6, float a7, float a8);
 
 	void setHotspot(Common::Rect rect, bool enabled, uint32 a3, uint32 a4);
 	Hotspot *getHotspot();
+
+	MovabilityType getType() { return _type; }
 
 	Common::String getRideName() { return _name; }
 	void setRideName(Common::String name) { _name = name; }
 
 private:
-	uint32   _field_0;
-	Puzzle  *_puzzleFrom;
-	Hotspot *_hotspot;
-	Puzzle  *_puzzleTo;
-	Common::String _name;
-	uint32   _field_14;
-	uint32   _field_18;
-	uint32   _field_1C;
-	float    _field_20;
-	uint32   _field_24;
-	byte     _field_28;
-	uint32   _field_29;
-	uint32   _field_2D;
-	uint32   _field_31;
+	union MovabilityToFrom {
+		Puzzle *puzzle;
+		Id rotationId;
+	};
+
+	uint32            _field_0;
+	Puzzle           *_puzzleFrom;
+	Hotspot          *_hotspot;
+	MovabilityToFrom  _to;
+	Common::String    _name;
+	MovabilityType    _type;
+	float             _field_18;
+	float             _field_1C;
+	float             _field_20;
+	float             _field_24;
+	byte              _field_28;
+	float             _field_29;
+	float             _field_2D;
+	float             _field_31;
 };
 
 } // End of namespace Ring

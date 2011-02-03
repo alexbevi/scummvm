@@ -103,6 +103,13 @@ void Puzzle::addMovability(Movability *movability) {
 	_movabilities.push_back(movability);
 }
 
+Movability *Puzzle::getMovability(uint32 index) {
+	if (index >= _movabilities.size())
+		error("[Puzzle::getMovability] Invalid movability index (was: %d, max:%d)", index, _movabilities.size() - 1);
+
+	return _movabilities[index];
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Helpers
 //////////////////////////////////////////////////////////////////////////

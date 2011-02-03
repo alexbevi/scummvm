@@ -33,20 +33,36 @@
 
 namespace Ring {
 
-Movability::Movability(Puzzle *puzzleFrom, Puzzle *puzzleTo, Common::String name, uint32 a5) {
+Movability::Movability(Puzzle *puzzleFrom, Puzzle *puzzleTo, Common::String name, MovabilityType type) {
 	_field_0 = 0;
 	_puzzleFrom = puzzleFrom;
 	_hotspot = NULL;
-	_puzzleTo = puzzleTo;
-	_field_14 = a5;
-	_field_18 = 0;
-	_field_1C = 0;
-	_field_20 = 85.0;
-	_field_24 = 0;
-	_field_28 = 2;
-	_field_29 = 0;
-	_field_2D = 0;
-	_field_31 = 85.0;
+	_to.puzzle = puzzleTo;
+	_type = type;
+	_field_18 = 0.0f;
+	_field_1C = 0.0f;
+	_field_20 = 85.0f;
+	_field_24 = 0.0f;
+	_field_28 = 2.0f;
+	_field_29 = 0.0f;
+	_field_2D = 0.0f;
+	_field_31 = 85.0f;
+}
+
+Movability::Movability(Puzzle *puzzleFrom, Id rotationId, Common::String name, MovabilityType type) {
+	_field_0 = 0;
+	_puzzleFrom = puzzleFrom;
+	_hotspot = NULL;
+	_to.rotationId = rotationId;
+	_type = type;
+	_field_18 = 0.0f;
+	_field_1C = 0.0f;
+	_field_20 = 85.0f;
+	_field_24 = 0.0f;
+	_field_28 = 2.0f;
+	_field_29 = 0.0f;
+	_field_2D = 0.0f;
+	_field_31 = 85.0f;
 }
 
 Movability::~Movability() {
@@ -54,7 +70,18 @@ Movability::~Movability() {
 
 	// Zero-out passed pointers
 	_puzzleFrom = NULL;
-	_puzzleTo = NULL;
+	_to.puzzle = NULL;
+}
+
+void Movability::update(float a1, float a2, float a3, float a4, byte a5, float a6, float a7, float a8) {
+	_field_18 = a1;
+	_field_1C = a2;
+	_field_20 = a3;
+	_field_24 = a4;
+	_field_28 = a5;
+	_field_29 = a6;
+	_field_2D = a7;
+	_field_31 = a8;
 }
 
 Hotspot *Movability::getHotspot() {

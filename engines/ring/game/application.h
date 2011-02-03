@@ -114,8 +114,8 @@ public:
 
 	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, bool isActive);
 	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
-	void puzzleAddMovabilityToRotation(PuzzleId puzzleId, Id rotationId, Common::String name, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
-	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5);
+	void puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
+	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, float a3, float a4, float a5);
 
 	void puzzleAddAmbientSound(PuzzleId puzzleId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
 	void puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId);
@@ -237,46 +237,46 @@ protected:
 	RingEngine *_vm;
 
 	// Application objects
-	Video                      *_video;
-	ArtHandler                 *_artHandler;
-	FontHandler                *_fontHandler;
-	DialogHandler              *_dialogHandler;
-	LanguageHandler            *_languageHandler;
-	//Common::String              _cdPath;
-	//Common::String              _currentDirectory
-	Configuration               _configuration;
-	uint32                      _field_54;
-	ArchiveType                 _archiveType;
-	CursorHandler              *_cursorHandler;
-	LoadFrom                    _loadFrom;
-	uint32                      _field_5E;
-	SoundHandler               *_soundHandler;
-	uint32                      _field_66;
-	char                        _field_6A;
-	Common::String              _zoneString;
-	Zone                        _zone;          // original uses byte
-	char                        _field_6F;
-	uint32                      _field_70;
-	char                        _field_74;
-	char                        _field_75;
-	char                        _field_76;
-	char                        _field_77;
-	char                        _field_78;
-	AssociativeArray<Object*>   _objectList;
-	AssociativeArray<Puzzle*>   _puzzleList;
-	Puzzle                     *_puzzle;
-	Common::Array<Rotation*>    _rotationList;
-	void                       *_field_89;
-	Bag                        *_bag;
-	TimerHandler               *_timerHandler;
-	Var                        *_var;
-	DragControl                *_dragControl;
-	ObjectHandler              *_objectHandler;
-	PreferenceHandler          *_preferenceHandler;
-	bool                        _controlNotPressed;
+	Video                        *_video;
+	ArtHandler                   *_artHandler;
+	FontHandler                  *_fontHandler;
+	DialogHandler                *_dialogHandler;
+	LanguageHandler              *_languageHandler;
+	//Common::String                _cdPath;
+	//Common::String                _currentDirectory
+	Configuration                 _configuration;
+	uint32                        _field_54;
+	ArchiveType                   _archiveType;
+	CursorHandler                *_cursorHandler;
+	LoadFrom                      _loadFrom;
+	uint32                        _field_5E;
+	SoundHandler                 *_soundHandler;
+	uint32                        _field_66;
+	char                          _field_6A;
+	Common::String                _zoneString;
+	Zone                          _zone;          // original uses byte
+	char                          _field_6F;
+	uint32                        _field_70;
+	char                          _field_74;
+	char                          _field_75;
+	char                          _field_76;
+	char                          _field_77;
+	char                          _field_78;
+	AssociativeArray<Object *>    _objectList;
+	AssociativeArray<Puzzle *>    _puzzleList;
+	Puzzle                       *_puzzle;
+	AssociativeArray<Rotation *>  _rotationList;
+	void                         *_field_89;
+	Bag                          *_bag;
+	TimerHandler                 *_timerHandler;
+	Var                          *_var;
+	DragControl                  *_dragControl;
+	ObjectHandler                *_objectHandler;
+	PreferenceHandler            *_preferenceHandler;
+	bool                          _controlNotPressed;
 
 	// Save / Load games
-	SaveLoad                   *_saveLoad;
+	SaveLoad                     *_saveLoad;
 
 	// Configuration
 	void loadConfiguration();
