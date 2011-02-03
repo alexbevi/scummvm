@@ -88,6 +88,8 @@ public:
 	RingEngine(OSystem *syst, const RingGameDescription *gd);
 	~RingEngine();
 
+	Application *getApplication() { return _application; }
+
 	// Misc
 	Common::RandomSource getRandom() const {return _random; }
 
@@ -102,6 +104,7 @@ private:
 	// Game
 	Application *_application;
 	bool _mouseButtonPressed;
+
 };
 
 } // End of namespace Ring

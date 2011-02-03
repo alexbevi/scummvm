@@ -103,6 +103,13 @@ void Puzzle::addMovability(Movability *movability) {
 	_movabilities.push_back(movability);
 }
 
+void Puzzle::addAmbientSound(SoundEntry *entry, uint32 a2, uint32 a3, int32 a4, uint32 fadeFrames, uint32 a6, uint32 a7) {
+	SoundItem *item = new SoundItem(_id);
+	item->init(entry, a2, a3, a4, fadeFrames, a6, a7);
+
+	_soundItems.push_back(item);
+}
+
 Movability *Puzzle::getMovability(uint32 index) {
 	if (index >= _movabilities.size())
 		error("[Puzzle::getMovability] Invalid movability index (was: %d, max:%d)", index, _movabilities.size() - 1);

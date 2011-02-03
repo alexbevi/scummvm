@@ -36,6 +36,7 @@ class ImageHandle;
 class Movability;
 class PresentationAnimation;
 class PresentationImage;
+class SoundEntry;
 class SoundItem;
 class Text;
 class Visual;
@@ -51,6 +52,7 @@ public:
 	void addPresentationImage(ImageHandle *image);
 	void addAccessibility(Accessibility *accessibility);
 	void addMovability(Movability *movability);
+	void addAmbientSound(SoundEntry *entry, uint32 a2, uint32 a3, int32 a4, uint32 fadeFrames, uint32 a6, uint32 a7);
 
 	Movability *getMovability(uint32 index);
 

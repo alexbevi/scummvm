@@ -29,12 +29,14 @@
 
 namespace Ring {
 
-SaveLoad::SaveLoad() {}
+SaveManager::SaveManager(Application *application) : _application(application) {}
 
-SaveLoad::~SaveLoad() {
+SaveManager::~SaveManager() {
+	// Zero-out passed pointers
+	_application = NULL;
 }
 
-bool SaveLoad::isLoaded(uint32 a1) {
+bool SaveManager::isLoaded(uint32 a1) {
 	//warning("[SaveLoad::isUnknown] Not implemented");
 
 	return false;

@@ -49,8 +49,9 @@ class Puzzle;
 class PuzzleInfo;
 class RingEngine;
 class Rotation;
-class SaveLoad;
+class SaveManager;
 class SoundHandler;
+class SoundManager;
 class TimerHandler;
 class Var;
 class Video;
@@ -117,7 +118,7 @@ public:
 	void puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, float a3, float a4, float a5);
 
-	void puzzleAddAmbientSound(PuzzleId puzzleId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
+	void puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
 	void puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId);
 	void puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8);
 	void puzzleSet3DSoundOff(PuzzleId puzzleId, Id soundId);
@@ -177,8 +178,8 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Sound
-	void soundAdd(Id soundId, uint32 a2, Common::String filename, LoadFrom loadFrom);
-	void soundAdd(Id soundId, uint32 a2, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk);
+	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom);
+	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk);
 	void soundSetVolume(Id soundId, uint32 volume);
 
 	void noiceIdPlay(Id noiceId, bool a2);
@@ -276,7 +277,10 @@ protected:
 	bool                          _controlNotPressed;
 
 	// Save / Load games
-	SaveLoad                     *_saveLoad;
+	SaveManager                     *_saveManager;
+
+	// Sound (playing & managing sound data)
+	SoundManager                    *_soundManager;
 
 	// Configuration
 	void loadConfiguration();

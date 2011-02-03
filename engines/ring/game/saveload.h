@@ -26,19 +26,21 @@
 #ifndef RING_SAVELOAD_H
 #define RING_SAVELOAD_H
 
-namespace Ring {
-
 #include "ring/shared.h"
 
-class SaveLoad {
+namespace Ring {
+
+class Application;
+
+class SaveManager {
 public:
-	SaveLoad();
-	~SaveLoad();
+	SaveManager(Application *application);
+	~SaveManager();
 
 	bool isLoaded(uint32 a1);
 
 private:
-
+	Application *_application;
 };
 
 } // End of namespace Ring

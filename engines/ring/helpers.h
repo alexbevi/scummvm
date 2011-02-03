@@ -31,6 +31,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 // Misc
+#define getSoundDirection() (((RingEngine *)g_engine)->getApplication()->getSoundHandler()->getDirection())
 
 // Shared objects
 

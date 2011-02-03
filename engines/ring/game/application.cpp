@@ -58,7 +58,10 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_field_77(0),        _field_78(0),            _puzzle(NULL),        _field_89(NULL),      _bag(NULL),
 	_timerHandler(NULL), _var(NULL),              _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
 	_controlNotPressed(false) {
-	_saveLoad = new SaveLoad();
+
+	// Start managers
+	_saveManager = new SaveManager(this);
+	_soundManager = new SoundManager(this);
 }
 
 Application::~Application() {
@@ -83,7 +86,7 @@ Application::~Application() {
 	SAFE_DELETE(_objectHandler);
 	SAFE_DELETE(_preferenceHandler);
 
-	SAFE_DELETE(_saveLoad);
+	SAFE_DELETE(_saveManager);
 
 	// Zero-out passed pointers
 	_vm = NULL;
@@ -537,8 +540,18 @@ void Application::puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabi
 	movability->update(0.0, 0.0, 85.0, 0.0, 2, a3, a4, a5);
 }
 
-void Application::puzzleAddAmbientSound(PuzzleId puzzleId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7) {
-	error("[Application::puzzleAddAmbientSound] Not implemented");
+void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7) {
+	if (!_puzzleList.has(puzzleId))
+		error("[Application::puzzleAddAmbientSound] Wrong puzzle Id (%d)", puzzleId);
+
+	SoundEntry *entry = _soundManager->getSoundEntry(soundId);
+	if (!entry)
+		error("[Application::puzzleAddAmbientSound] Wrong sound Id (%d)", soundId);
+
+	if (entry->getType() != kSoundTypeAmbientMusic)
+		error("[Application::puzzleAddAmbientSound] Wrong sound type, only kSoundTypeAmbientMusic(2) is allowed (%d)", entry->getType());
+
+	_puzzleList.get(puzzleId)->addAmbientSound(entry, a3, a4, 1, fadeFrames, a6, a7);
 }
 
 void Application::puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId) {
@@ -757,11 +770,11 @@ void Application::rotationSetJugOn(Id rotationId, float amplitude, float speed) 
 //////////////////////////////////////////////////////////////////////////
 // Sound
 //////////////////////////////////////////////////////////////////////////
-void Application::soundAdd(Id soundId, uint32 a2, Common::String filename, LoadFrom loadFrom) {
+void Application::soundAdd(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom) {
 	error("[Application::soundAdd] Not implemented");
 }
 
-void Application::soundAdd(Id soundId, uint32 a2, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk) {
+void Application::soundAdd(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk) {
 	error("[Application::soundAdd] Not implemented");
 }
 
