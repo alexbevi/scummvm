@@ -103,13 +103,49 @@ void Puzzle::addMovability(Movability *movability) {
 	_movabilities.push_back(movability);
 }
 
-void Puzzle::addAmbientSound(SoundEntry *entry, uint32 a2, uint32 a3, int32 a4, uint32 fadeFrames, uint32 a6, uint32 a7) {
+void Puzzle::addAmbientSound(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	SoundItem *item = new SoundItem(_id);
-	item->init(entry, a2, a3, a4, fadeFrames, a6, a7);
+	item->init(entry, volume, a3, isOn, fadeFrames, a6, a7);
 
 	_soundItems.push_back(item);
 }
 
+void Puzzle::add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4, uint32 a5, uint32 fadeFrames, float a7, uint32 a8) {
+	SoundItem *item = new SoundItem(_id);
+	item->setField1D(a8);
+	item->setAngle(a7);
+	item->init(entry, volume, item->computeFieldC(0.0), isOn, a4, a5, fadeFrames, a7, a8);
+
+	_soundItems.push_back(item);
+}
+
+void Puzzle::setAmbientSoundOn(Id soundId) {
+	SoundItem *item = getSoundItem(soundId);
+	if (!item)
+		error("[Puzzle::setAmbientSoundOff] Wrong sound Id (%d)", soundId);
+
+	item->on();
+}
+
+void Puzzle::setAmbientSoundOff(Id soundId) {
+	SoundItem *item = getSoundItem(soundId);
+	if (!item)
+		error("[Puzzle::setAmbientSoundOff] Wrong sound Id (%d)", soundId);
+
+	item->off();
+}
+
+void Puzzle::setAmbientSoundVolume(Id soundId, uint32 volume) {
+	SoundItem *item = getSoundItem(soundId);
+	if (!item)
+		error("[Puzzle::setAmbientSoundOff] Wrong sound Id (%d)", soundId);
+
+	item->setVolume(volume);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Accessors
+//////////////////////////////////////////////////////////////////////////
 Movability *Puzzle::getMovability(uint32 index) {
 	if (index >= _movabilities.size())
 		error("[Puzzle::getMovability] Invalid movability index (was: %d, max:%d)", index, _movabilities.size() - 1);
@@ -120,6 +156,15 @@ Movability *Puzzle::getMovability(uint32 index) {
 //////////////////////////////////////////////////////////////////////////
 // Helpers
 //////////////////////////////////////////////////////////////////////////
+SoundItem *Puzzle::getSoundItem(Id soundId) {
+	for (Common::Array<SoundItem *>::iterator i = _soundItems.begin(); i != _soundItems.end(); i++) {
+		if ((*i)->getSoundEntry()->getId() == soundId)
+			return *i;
+	}
+
+	return NULL;
+}
+
 bool Puzzle::imagePriorityCompare(ImageHandle *image1, ImageHandle *image2) {
 	return (image1->getPriority() > image2->getPriority());
 }

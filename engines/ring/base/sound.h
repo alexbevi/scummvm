@@ -41,8 +41,11 @@ public:
 	SoundEntry(Id soundId, SoundType type, Common::String name, byte a5);
 	~SoundEntry();
 
-	SoundType getType() { return _type; }
+    void setVolume(uint32 volume);
+	void updateVolume();
 
+	// Accessors
+	SoundType getType() { return _type; }
 	void setField125(uint32 val) { _field_125 = val; }
 
 private:
@@ -50,7 +53,7 @@ private:
 	Common::String _name;
 	uint32         _field_10C;
 	byte           _field_110;
-	uint32         _field_111;
+	uint32         _volume;
 	uint32         _field_115;
 	uint32         _field_119;
 	uint32         _field_11D;
@@ -80,29 +83,44 @@ public:
 	SoundItem(Id id);
 	~SoundItem();
 
-	void init(SoundEntry *entry, uint32 a2, uint32 a3, byte a4, uint32 fadeFrames, uint32 a6, uint32 a7);
-    void init(SoundEntry *entry, uint32 a2, uint32 a3, byte a4, uint32 a5, uint32 a6, uint32 fadeFrames, float a8, int a9);
+	// Initialization
+	void init(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7);
+    void init(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 a5, uint32 a6, uint32 fadeFrames, float a8, int a9);
 
+	// Sound on/off & volume
+	void on();
+	void off();
+	void turnOn();
+	void turnOff();
+	void setVolume(uint32 volume);
+
+	// Accessors
+	SoundEntry *getSoundEntry() { return _entry; }
 	void setField1D(int32 val);
 	void setAngle(float angle);
 
+	// Helpers
+	float computeFieldC(float angle);
+
 private:
 	SoundEntry *_entry;
-	uint32      _field_8;
+	uint32      _volume;
 	uint32      _field_C;
 	uint32      _field_10;
 	uint32      _field_14;
-	byte        _field_18;
+	bool        _isOn;
 	uint32      _field_19;
 	uint32      _field_1D;
 	float       _angle;
-	uint32      _field_25;
-	uint32      _field_29;
-	uint32      _field_2D;
-	uint32      _field_31;
+	float       _field_25;
+	float       _field_29;
+	float       _field_2D;
+	float       _field_31;
 	uint32      _field_35;
 	uint32      _field_39;
 	uint32      _field_3D;
+
+	bool checkCurrentPuzzle();
 };
 
 class SoundHandler {

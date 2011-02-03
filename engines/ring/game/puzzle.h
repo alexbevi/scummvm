@@ -52,8 +52,14 @@ public:
 	void addPresentationImage(ImageHandle *image);
 	void addAccessibility(Accessibility *accessibility);
 	void addMovability(Movability *movability);
-	void addAmbientSound(SoundEntry *entry, uint32 a2, uint32 a3, int32 a4, uint32 fadeFrames, uint32 a6, uint32 a7);
+	void addAmbientSound(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7);
+	void add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4, uint32 a5, uint32 fadeFrames, float a7, uint32 a9);
 
+	void setAmbientSoundOn(Id soundId);
+	void setAmbientSoundOff(Id soundId);
+	void setAmbientSoundVolume(Id soundId, uint32 volume);
+
+	// Accessors
 	Movability *getMovability(uint32 index);
 
 private:
@@ -70,6 +76,8 @@ private:
 	uint32 _field_24;
 	byte   _field_28;
 	uint32 _field_29;
+
+	SoundItem *getSoundItem(Id soundId);
 
 	static bool imagePriorityCompare(ImageHandle *image1, ImageHandle *image2);
 };

@@ -540,7 +540,7 @@ void Application::puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabi
 	movability->update(0.0, 0.0, 85.0, 0.0, 2, a3, a4, a5);
 }
 
-void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7) {
+void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	if (!_puzzles.has(puzzleId))
 		error("[Application::puzzleAddAmbientSound] Wrong puzzle Id (%d)", puzzleId);
 
@@ -551,19 +551,32 @@ void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 a3
 	if (entry->getType() != kSoundTypeAmbientMusic)
 		error("[Application::puzzleAddAmbientSound] Wrong sound type, only kSoundTypeAmbientMusic(2) is allowed (%d)", entry->getType());
 
-	_puzzles.get(puzzleId)->addAmbientSound(entry, a3, a4, 1, fadeFrames, a6, a7);
+	_puzzles.get(puzzleId)->addAmbientSound(entry, volume, a4, true, fadeFrames, a6, a7);
 }
 
 void Application::puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId) {
-	error("[Application::puzzleSetAmbientSoundOff] Not implemented");
+	if (!_puzzles.has(puzzleId))
+		error("[Application::puzzleSetAmbientSoundOff] Wrong puzzle Id (%d)", puzzleId);
+
+	_puzzle->setAmbientSoundOff(soundId);
 }
 
-void Application::puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8) {
-	error("[Application::puzzleAdd3DSound] Not implemented");
+void Application::puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 volume, float a7, uint32 a8) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::puzzleAdd3DSound] Wrong puzzle Id (%d)", puzzleId);
+
+	SoundEntry *entry = _soundManager->getSoundEntry(soundId);
+	if (!entry)
+		error("[Application::puzzleAdd3DSound] Wrong sound Id (%d)", soundId);
+
+	if (entry->getType() != kSoundTypeAmbientEffect)
+		error("[Application::puzzleAdd3DSound] Wrong sound type, only kSoundTypeAmbientEffect(3) is allowed (%d)", entry->getType());
+
+	_puzzles.get(puzzleId)->add3DSound(entry, volume, true, a3, a4, fadeFrames, a7, a8);
 }
 
-void Application::puzzleSet3DSoundOff(PuzzleId id, Id soundId) {
-	error("[Application::puzzleSet3DSoundOff] Not implemented");
+void Application::puzzleSet3DSoundOff(PuzzleId puzzleId, Id soundId) {
+	puzzleSetAmbientSoundOff(puzzleId, soundId);
 }
 
 void Application::puzzleReset() {
@@ -574,11 +587,18 @@ void Application::puzzleReset() {
 	warning("[Application::resetPuzzle] Missing two function calls");
 }
 
-PuzzleId Application::getPuzzleId() {
+PuzzleId Application::getCurrentPuzzleId() {
 	if (!_puzzle)
 		return kPuzzleInvalid;
 
 	return (PuzzleId)_puzzle->getId();
+}
+
+PuzzleId Application::getField89Id() {
+	if (!_field_89)
+		return kPuzzleInvalid;
+
+	return (PuzzleId)_field_89->getId();
 }
 
 //////////////////////////////////////////////////////////////////////////

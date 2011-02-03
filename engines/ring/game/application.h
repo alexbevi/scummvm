@@ -118,14 +118,18 @@ public:
 	void puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, float a3, float a4, float a5);
 
-	void puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
+	void puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7);
 	void puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId);
-	void puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8);
+	void puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 volume, float a7, uint32 a8);
 	void puzzleSet3DSoundOff(PuzzleId puzzleId, Id soundId);
 
 	void puzzleReset();
-	bool hasPuzzle() { return _puzzle != NULL; }
-	PuzzleId getPuzzleId();
+
+	bool hasCurrentPuzzle() { return _puzzle != NULL; }
+	PuzzleId getCurrentPuzzleId();
+
+	bool hasField89() { return _field_89 != NULL; }
+	PuzzleId getField89Id();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Object
@@ -267,7 +271,7 @@ protected:
 	AssociativeArray<Puzzle *>    _puzzles;
 	Puzzle                       *_puzzle;
 	AssociativeArray<Rotation *>  _rotations;
-	void                         *_field_89;
+	Puzzle                       *_field_89;
 	Bag                          *_bag;
 	TimerHandler                 *_timerHandler;
 	Var                          *_var;
