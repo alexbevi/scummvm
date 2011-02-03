@@ -263,10 +263,10 @@ protected:
 	char                          _field_76;
 	char                          _field_77;
 	char                          _field_78;
-	AssociativeArray<Object *>    _objectList;
-	AssociativeArray<Puzzle *>    _puzzleList;
+	AssociativeArray<Object *>    _objects;
+	AssociativeArray<Puzzle *>    _puzzles;
 	Puzzle                       *_puzzle;
-	AssociativeArray<Rotation *>  _rotationList;
+	AssociativeArray<Rotation *>  _rotations;
 	void                         *_field_89;
 	Bag                          *_bag;
 	TimerHandler                 *_timerHandler;
