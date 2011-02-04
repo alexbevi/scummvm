@@ -102,12 +102,45 @@ void Puzzle::addAccessibility(Accessibility *accessibility) {
 	_accessibilities.push_back(accessibility);
 }
 
+#pragma region Movability
+
 void Puzzle::addMovability(Movability *movability) {
 	if (!movability)
 		error("[Puzzle::addMovability] Movability is not initialized properly");
 
 	_movabilities.push_back(movability);
 }
+
+void Puzzle::setMovabilityOnOrOff(bool enableHotspot) {
+	for (Common::Array<Movability *>::iterator it = _movabilities.begin(); it != _movabilities.end(); it++) {
+		if (enableHotspot)
+			(*it)->enableHotspot();
+		else
+			(*it)->disableHotspot();
+	}
+}
+
+void Puzzle::setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability) {
+	// Check from/to movability
+	if (toMovability < fromMovability)
+		error("[Object::setMovabilityOnOrOff] From movability (%d) is greater than To movability (%d)", fromMovability, toMovability);
+
+	if (fromMovability < 0 || fromMovability >= _movabilities.size())
+		error("[Object::setMovabilityOnOrOff] From acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
+
+	if (toMovability < 0 || toMovability >= _movabilities.size())
+		error("[Object::setMovabilityOnOrOff] To acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
+
+
+	for (uint32 i = fromMovability; i <= toMovability; i++) {
+		if (enableHotspot)
+			_movabilities[i]->enableHotspot();
+		else
+			_movabilities[i]->disableHotspot();
+	}
+}
+
+#pragma endregion
 
 void Puzzle::addAmbientSound(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	SoundItem *item = new SoundItem(_id);

@@ -118,6 +118,13 @@ public:
 	void puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, float a3, float a4, float a5);
 
+	void puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotspot);
+	void puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotspot, uint32 fromMovability, uint32 toMovability);
+	void puzzleSetMovabilityOnOrOffEnableHotspot(PuzzleId puzzleId);
+	void puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId);
+	void puzzleSetMovabilityOnOrOffEnableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
+	void puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
+
 	void puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7);
 	void puzzleSetAmbientSoundOn(PuzzleId puzzleId, Id soundId);
 	void puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId);
@@ -139,15 +146,15 @@ public:
 	void objectAdd(ObjectId objectId, Common::String language, Common::String name, byte a5);
 	void objectRemove(ObjectId objectId);
 
+	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
+	void objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key);
+
 	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot);
 	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration);
 	void objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId);
 	void objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId);
 	void objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration);
 	void objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration);
-
-	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
-	void objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key);
 
 	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 

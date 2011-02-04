@@ -511,6 +511,8 @@ void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String fil
 	_puzzles.get(puzzleId)->setBackgroundImage(filename, a3, a4, isActive, _loadFrom);
 }
 
+#pragma region Puzzle Movability
+
 void Application::puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
 	if (!_puzzles.has(puzzleIdFrom))
 		error("[Application::puzzleAddMovabilityToPuzzle] Wrong FROM puzzle Id (%d)", puzzleIdFrom);
@@ -547,6 +549,38 @@ void Application::puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabi
 
 	movability->update(0.0, 0.0, 85.0, 0.0, 2, a3, a4, a5);
 }
+
+void Application::puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotspot, uint32 fromMovability, uint32 toMovability) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::puzzleSetMovabilityOnOrOff] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	_puzzles.get(puzzleId)->setMovabilityOnOrOff(enableHotspot, fromMovability, toMovability);
+}
+
+void Application::puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotspot) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::puzzleSetMovabilityOnOrOff] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	_puzzles.get(puzzleId)->setMovabilityOnOrOff(enableHotspot);
+}
+
+void Application::puzzleSetMovabilityOnOrOffEnableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability) {
+	puzzleSetMovabilityOnOrOff(puzzleId, true, fromMovability, toMovability);
+}
+
+void Application::puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability) {
+	puzzleSetMovabilityOnOrOff(puzzleId, false, fromMovability, toMovability);
+}
+
+void Application::puzzleSetMovabilityOnOrOffEnableHotspot(PuzzleId puzzleId) {
+	puzzleSetMovabilityOnOrOff(puzzleId, true);
+}
+
+void Application::puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId) {
+	puzzleSetMovabilityOnOrOff(puzzleId, false);
+}
+
+#pragma endregion
 
 void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	if (!_puzzles.has(puzzleId))
@@ -663,16 +697,36 @@ void Application::objectRemove(ObjectId id) {
 	_objects.remove(id);
 }
 
-void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration) {
+#pragma region Object Accessibility
+
+void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
 	if (!_objects.has(objectId))
 		error("[Application::objectAddPuzzleAccessibility] Object Id doesn't exist (%d)", objectId);
+
+	if (!_puzzles.has(puzzleId))
+		error("[Application::objectAddPuzzleAccessibility] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	_objects.get(objectId)->addPuzzleAccessibility(_puzzles.get(puzzleId), rect, enabled, a9, a10);
+}
+
+void Application::objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key) {
+	if (!_objects.has(objectId))
+		error("[Application::objectSetPuzzleAccessibilityKey] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setAccessibilityKey(accessibilityIndex, key);
+}
+
+
+void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration) {
+	if (!_objects.has(objectId))
+		error("[Application::objectSetAccessibilityOnOrOff] Object Id doesn't exist (%d)", objectId);
 
 	_objects.get(objectId)->setAccessibilityOnOrOff(enableHotspot, fromAcceleration, toAcceleration);
 }
 
 void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot) {
 	if (!_objects.has(objectId))
-		error("[Application::objectAddPuzzleAccessibility] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectSetAccessibilityOnOrOff] Object Id doesn't exist (%d)", objectId);
 
 	_objects.get(objectId)->setAccessibilityOnOrOff(enableHotspot);
 }
@@ -693,22 +747,9 @@ void Application::objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId)
 	objectSetAccessibilityOnOrOff(objectId, false);
 }
 
-void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
-	if (!_objects.has(objectId))
-		error("[Application::objectAddPuzzleAccessibility] Object Id doesn't exist (%d)", objectId);
+#pragma endregion
 
-	if (!_puzzles.has(puzzleId))
-		error("[Application::objectAddPuzzleAccessibility] Puzzle Id doesn't exist (%d)", puzzleId);
-
-	_objects.get(objectId)->addPuzzleAccessibility(_puzzles.get(puzzleId), rect, enabled, a9, a10);
-}
-
-void Application::objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key) {
-	if (!_objects.has(objectId))
-		error("[Application::objectSetPuzzleAccessibilityKey] Object Id doesn't exist (%d)", objectId);
-
-	_objects.get(objectId)->setAccessibilityKey(accessibilityIndex, key);
-}
+#pragma region Object Rotation
 
 void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
 	if (!_objects.has(objectId))
@@ -719,6 +760,8 @@ void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationI
 
 	_objects[objectId]->addRotationAccessibility(_rotations.get(rotationId), rect, enabled, a9, a10);
 }
+
+#pragma endregion
 
 void Application::objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
 	if (!_objects.has(objectId))

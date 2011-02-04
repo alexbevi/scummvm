@@ -40,11 +40,10 @@ public:
 
 	void setHotspot(Common::Rect rect, bool enabled, uint32 a3, uint32 a4);
 	Hotspot *getHotspot();
-
-	Object *getObject() { return _object; }
-
 	void enableHotspot();
 	void disableHotspot();
+
+	Object *getObject() { return _object; }
 
 private:
 	Object  *_object;

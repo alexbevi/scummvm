@@ -53,10 +53,15 @@ public:
 	void addPresentationImage(ImageHandle *image);
 	void addPresentationAnimation(ObjectPresentation *objectPresentation);
 	void addAccessibility(Accessibility *accessibility);
+
+	// Movability
 	void addMovability(Movability *movability);
+	void setMovabilityOnOrOff(bool enableHotspot);
+	void setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability);
+
+	// Sound
 	void addAmbientSound(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7);
 	void add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4, uint32 a5, uint32 fadeFrames, float a7, uint32 a9);
-
 	void setAmbientSoundOn(Id soundId);
 	void setAmbientSoundOff(Id soundId);
 	void setAmbientSoundVolume(Id soundId, uint32 volume);

@@ -95,4 +95,14 @@ void Movability::setHotspot(Common::Rect rect, bool enabled, uint32 a3, uint32 a
 	_hotspot = new Hotspot(rect, enabled, 1, a3, a4);
 }
 
+void Movability::enableHotspot() {
+	if (_hotspot)
+		_hotspot->enable();
+}
+
+void Movability::disableHotspot() {
+	if (_hotspot)
+		_hotspot->disable();
+}
+
 } // End of namespace Ring
