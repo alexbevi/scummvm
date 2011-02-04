@@ -170,6 +170,35 @@ void Object::setAccessibilityKey(uint32 accessibilityIndex, Common::KeyCode key)
 	_accessibilities[accessibilityIndex]->getHotspot()->setKey(key);
 }
 
+void Object::setAccessibilityOnOrOff(bool enableHotspot) {
+	for (Common::Array<Accessibility *>::iterator it = _accessibilities.begin(); it != _accessibilities.end(); it++) {
+		if (enableHotspot)
+			(*it)->enableHotspot();
+		else
+			(*it)->disableHotspot();
+	}
+}
+
+void Object::setAccessibilityOnOrOff(bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration) {
+	// Check from/to accelerations
+	if (toAcceleration < fromAcceleration)
+		error("[Object::setAccessibilityOnOrOff] From acceleration (%d) is greater than To acceleration (%d)", fromAcceleration, toAcceleration);
+
+	if (fromAcceleration < 0 || fromAcceleration >= _accessibilities.size())
+		error("[Object::setAccessibilityOnOrOff] From acceleration is not in range (was:%d, max:%d)", fromAcceleration, _accessibilities.size() - 1);
+
+	if (toAcceleration < 0 || toAcceleration >= _accessibilities.size())
+		error("[Object::setAccessibilityOnOrOff] To acceleration is not in range (was:%d, max:%d)", fromAcceleration, _accessibilities.size() - 1);
+
+
+	for (uint32 i = fromAcceleration; i <= toAcceleration; i++) {
+		if (enableHotspot)
+			_accessibilities[i]->enableHotspot();
+		else
+			_accessibilities[i]->disableHotspot();
+	}
+}
+
 #pragma endregion
 
 #pragma region Animation

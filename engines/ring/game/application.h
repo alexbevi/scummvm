@@ -140,11 +140,11 @@ public:
 	void objectRemove(ObjectId objectId);
 
 	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot);
-	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 a3, uint32 a4);
+	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration);
 	void objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId);
 	void objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId);
-	void objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId, uint32 a2, uint32 a3);
-	void objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId, uint32 a2, uint32 a3);
+	void objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration);
+	void objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration);
 
 	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key);

@@ -663,20 +663,26 @@ void Application::objectRemove(ObjectId id) {
 	_objects.remove(id);
 }
 
-void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 a3, uint32 a4) {
-	error("[Application::objectSetAccessibilityOnOrOff] Not implemented");
+void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration) {
+	if (!_objects.has(objectId))
+		error("[Application::objectAddPuzzleAccessibility] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setAccessibilityOnOrOff(enableHotspot, fromAcceleration, toAcceleration);
 }
 
 void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot) {
-	error("[Application::objectSetAccessibilityOnOrOff] Not implemented");
+	if (!_objects.has(objectId))
+		error("[Application::objectAddPuzzleAccessibility] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setAccessibilityOnOrOff(enableHotspot);
 }
 
-void Application::objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId, uint32 a2, uint32 a3) {
-	objectSetAccessibilityOnOrOff(objectId, true, a2, a3);
+void Application::objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration) {
+	objectSetAccessibilityOnOrOff(objectId, true, fromAcceleration, toAcceleration);
 }
 
-void Application::objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId, uint32 a2, uint32 a3) {
-	objectSetAccessibilityOnOrOff(objectId, false, a2, a3);
+void Application::objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration) {
+	objectSetAccessibilityOnOrOff(objectId, false, fromAcceleration, toAcceleration);
 }
 
 void Application::objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId) {
