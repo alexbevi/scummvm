@@ -51,20 +51,21 @@ private:
 
 class ImageHandle : public Image {
 public:
-	ImageHandle(Common::String nameId, uint32 a3, uint32 a4, bool isActive, Zone zone, LoadFrom loadFrom, byte a8, ArchiveType archiveType);
-	ImageHandle(Common::String nameId, uint32 a3, uint32 a4, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType);
+	ImageHandle(Common::String nameId, Common::Point point, bool isActive, Zone zone, LoadFrom loadFrom, byte a8, ArchiveType archiveType);
+	ImageHandle(Common::String nameId, Common::Point point, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType);
 	~ImageHandle();
 
+	void setCoordinates(Common::Point point) { _coordinates = point; }
+
+	// Accessors
 	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
 	uint32 getPriority() { return _priority; }
 
 private:
 	Common::String _directory;
 	Common::String _nameId;
-	uint32 _field_55;
-	uint32 _field_59;
-	uint32 _field_5D;
-	uint32 _field_61;
+	Common::Point _coordinates;
+	Common::Point _coordinates2;
 	bool _isActive;
 	byte _field_66;
 	uint32 _priority;
@@ -77,7 +78,7 @@ private:
 	LoadFrom _loadFrom;
 	ArchiveType _archiveType;
 
-	void init(Common::String nameId, uint32 a3, uint32 a4, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType);
+	void init(Common::String nameId, Common::Point point, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType);
 };
 
 } // End of namespace Ring

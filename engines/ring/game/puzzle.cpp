@@ -62,13 +62,13 @@ Puzzle::~Puzzle() {
 }
 
 
-void Puzzle::setBackgroundImage(Common::String filename, uint32 a3, uint32 a4, bool isActive, LoadFrom loadFrom) {
+void Puzzle::setBackgroundImage(Common::String filename, Common::Point point, bool isActive, LoadFrom loadFrom) {
 	SAFE_DELETE(_background);
 
 	Zone zone = _application->getCurrentZone();
 	ArchiveType archiveType = _application->getReadFrom(zone);
 
-	_background = new ImageHandle(filename, a3, a4, isActive, zone, loadFrom, 4, archiveType);
+	_background = new ImageHandle(filename, point, isActive, zone, loadFrom, 4, archiveType);
 }
 
 void Puzzle::addPresentationText(Text *text) {

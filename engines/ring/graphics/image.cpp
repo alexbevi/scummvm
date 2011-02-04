@@ -31,12 +31,12 @@ namespace Ring {
 
 #pragma region ImageHandle
 
-ImageHandle::ImageHandle(Common::String nameId, uint32 a3, uint32 a4, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType) {
-	init(nameId, a3, a4, isActive, a6, priority, a8, zone, loadFrom, a11, archiveType);
+ImageHandle::ImageHandle(Common::String nameId, Common::Point point, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType) {
+	init(nameId, point, isActive, a6, priority, a8, zone, loadFrom, a11, archiveType);
 }
 
-ImageHandle::ImageHandle(Common::String nameId, uint32 a3, uint32 a4, bool isActive, Zone zone, LoadFrom loadFrom, byte a8, ArchiveType archiveType) {
-	init(nameId, a3, a4, isActive, 1, 0, 0, zone, loadFrom, a8, archiveType);
+ImageHandle::ImageHandle(Common::String nameId, Common::Point point, bool isActive, Zone zone, LoadFrom loadFrom, byte a8, ArchiveType archiveType) {
+	init(nameId, point, isActive, 1, 0, 0, zone, loadFrom, a8, archiveType);
 }
 
 ImageHandle::~ImageHandle() {
@@ -44,12 +44,10 @@ ImageHandle::~ImageHandle() {
 	_objectPresentation = NULL;
 }
 
-void ImageHandle::init(Common::String nameId, uint32 a3, uint32 a4, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType) {
+void ImageHandle::init(Common::String nameId, Common::Point point, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType) {
 	_nameId = nameId;
-	_field_55 = a3;
-	_field_59 = a4;
-	_field_5D = a3;
-	_field_61 = a4;
+	_coordinates = point;
+	_coordinates2 = point;
 	_isActive = isActive;
 	_field_66 = a6;
 	_priority = priority;

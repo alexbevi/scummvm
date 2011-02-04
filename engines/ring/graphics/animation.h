@@ -49,6 +49,8 @@ public:
 	void updatePresentation(ObjectPresentation *objectPresentation);
 	void updateCurrentImage();
 
+	void setCoordinates(Common::Point point);
+
 	// Accessors
 	void setTicks(uint32 ticks);
 	void setField20(byte val) { _field_20 = 0; }
@@ -91,8 +93,7 @@ private:
 	uint32 _field_65;
 	Common::Array<ImageHandle *> _imageHandles;
 	uint32 _field_6D;
-	uint32 _field_71;
-	uint32 _field_75;
+	Common::Point _coordinates;
 	uint32 _field_79;
 	uint32 _field_7D;
 	uint32 _field_81;

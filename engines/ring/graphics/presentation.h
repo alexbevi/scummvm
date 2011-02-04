@@ -61,9 +61,17 @@ public:
 	ObjectPresentation(Application *application, Object *object);
 	~ObjectPresentation();
 
+	// Text
 	void addTextToPuzzle(Puzzle *puzzle, Common::String text, uint32 a4, uint32 a5, FontId fontId, byte a7, byte a8, byte a9, int32 a10, int32 a11, int32 a12);
-	void addImageToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, uint32 a5, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom);
+
+	// Image
+	void addImageToPuzzle(Puzzle *puzzle, Common::String filename, Common::Point point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom);
+
+	// Animation
 	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, LoadFrom loadFrom);
+	void setAnimationCoordinatesOnPuzzle(Common::Point point);
+
+	// Show/Hide
 	void show();
 	void hide();
 	void hideAndRemove();

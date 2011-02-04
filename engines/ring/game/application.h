@@ -113,7 +113,7 @@ public:
 	// Puzzle
 	void puzzleAdd(PuzzleId id);
 
-	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, bool isActive);
+	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, Common::Point point, bool isActive);
 	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, float a3, float a4, float a5);
@@ -171,7 +171,7 @@ public:
 	void objectPresentationSetTextCoordinatesToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, Common::Point point);
 	uint32 objectPresentationGetTextWidth(ObjectId objectId, uint32 presentationIndex, uint32 textIndex);
 
-	void objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, bool isActive, uint32 a8, uint32 priority);
+	void objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, Common::Point point, bool isActive, uint32 a8, uint32 priority);
 	void objectPresentationAddImageToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer);
 	void objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, Common::Point point);
 	void objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 imageIndex, Common::Point point);

@@ -94,8 +94,8 @@ void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, ui
 	puzzle->addPresentationText(textObject);
 }
 
-void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, uint32 a5, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom) {
-	ImageHandle *image = new ImageHandle(filename, a4, a5, isActive, a7, priority, a9, _application->getCurrentZone(), loadFrom, 4, _application->getArchiveType());
+void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filename, Common::Point point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom) {
+	ImageHandle *image = new ImageHandle(filename, point, isActive, a7, priority, a9, _application->getCurrentZone(), loadFrom, 4, _application->getArchiveType());
 	image->setObjectPresentation(this);
 
 	_imagePuzzle.push_back(image);
@@ -122,6 +122,11 @@ void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String fil
 
 	//puzzle->addPresentationImage(animation->getCurrentImage());
 	//puzzle->addPresentationAnimation(this);
+}
+
+void ObjectPresentation::setAnimationCoordinatesOnPuzzle(Common::Point point) {
+	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
+		(*it)->setCoordinates(point);
 }
 
 void ObjectPresentation::show() {

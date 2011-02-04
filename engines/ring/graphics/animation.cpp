@@ -64,8 +64,6 @@ AnimationImage::AnimationImage() {
 	_field_61 = -5;
 	_field_65 = 0;
 	_field_6D = 0;
-	_field_71 = 0;
-	_field_75 = 0;
 	_field_79 = 0;
 	_field_7D = 0;
 	_field_81 = 0;
@@ -114,6 +112,13 @@ void AnimationImage::updateCurrentImage() {
 		error("[AnimationImage::updateCurrentImage] Current index is not valid (%d)", _currentIndex);
 
 	_currentImage = _imageHandles[_currentIndex];
+}
+
+void AnimationImage::setCoordinates(Common::Point point) {
+	_coordinates =  point;
+
+	for	(Common::Array<ImageHandle *>::iterator it = _imageHandles.begin(); it != _imageHandles.end(); it++)
+		(*it)->setCoordinates(point);
 }
 
 } // End of namespace Ring

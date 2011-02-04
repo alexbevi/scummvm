@@ -504,11 +504,11 @@ void Application::puzzleAdd(PuzzleId id) {
 	_puzzles.push_back(new Puzzle(this, id));
 }
 
-void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, uint32 a3, uint32 a4, bool isActive) {
+void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, Common::Point point, bool isActive) {
 	if (!_puzzles.has(puzzleId))
 		error("[Application::puzzleAddBackgroundImage] ID doesn't exist (%d)", puzzleId);
 
-	_puzzles.get(puzzleId)->setBackgroundImage(filename, a3, a4, isActive, _loadFrom);
+	_puzzles.get(puzzleId)->setBackgroundImage(filename, point, isActive, _loadFrom);
 }
 
 #pragma region Puzzle Movability
@@ -829,14 +829,14 @@ uint32 Application::objectPresentationGetTextWidth(ObjectId objectId, uint32 pre
 	return _objects.get(objectId)->getTextWidth(presentationIndex, textIndex);
 }
 
-void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, bool isActive, uint32 a8, uint32 priority) {
+void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, Common::Point point, bool isActive, uint32 a8, uint32 priority) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationAddImageToPuzzle] Object Id doesn't exist (%d)", objectId);
 
 	if (!_puzzles.has(puzzleId))
 		error("[Application::objectPresentationAddImageToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
 
-	_objects.get(objectId)->addImageToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, a5, a6, isActive, a8, priority, 0, _loadFrom);
+	_objects.get(objectId)->addImageToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, point, isActive, a8, priority, 0, _loadFrom);
 }
 
 void Application::objectPresentationAddImageToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer) {

@@ -47,7 +47,7 @@ public:
 	Puzzle(Application *application, PuzzleId id);
 	~Puzzle();
 
-	void setBackgroundImage(Common::String filename, uint32 a3, uint32 a4, bool isActive, LoadFrom loadFrom);
+	void setBackgroundImage(Common::String filename, Common::Point point, bool isActive, LoadFrom loadFrom);
 
 	void addPresentationText(Text *text);
 	void addPresentationImage(ImageHandle *image);

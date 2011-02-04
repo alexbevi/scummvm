@@ -51,7 +51,7 @@ public:
 	void setTextCoordinatesToPuzzle(uint32 presentationIndex, uint32 textIndex, Common::Point point);
 	uint32 getTextWidth(uint32 presentationIndex, uint32 textIndex);
 
-	void addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, uint32 a5, uint32 a6, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom);
+	void addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, Common::Point point, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom);
 	void addImageToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer);
 	void setImageCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point);
 	void setImageCoordinatesOnPuzzle(uint32 presentationIndex, uint32 imageIndex, Common::Point point);
