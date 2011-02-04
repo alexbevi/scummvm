@@ -119,9 +119,12 @@ public:
 	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, float a3, float a4, float a5);
 
 	void puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7);
+	void puzzleSetAmbientSoundOn(PuzzleId puzzleId, Id soundId);
 	void puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId);
 	void puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 volume, float a7, uint32 a8);
+	void puzzleSet3DSoundOn(PuzzleId puzzleId, Id soundId);
 	void puzzleSet3DSoundOff(PuzzleId puzzleId, Id soundId);
+	void puzzleSet3DSoundVolume(PuzzleId puzzleId, Id soundId, int32 volume);
 
 	void puzzleReset();
 

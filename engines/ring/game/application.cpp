@@ -562,6 +562,13 @@ void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 vo
 	_puzzles.get(puzzleId)->addAmbientSound(entry, volume, a4, true, fadeFrames, a6, a7);
 }
 
+void Application::puzzleSetAmbientSoundOn(PuzzleId puzzleId, Id soundId) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::puzzleSetAmbientSoundOn] Wrong puzzle Id (%d)", puzzleId);
+
+	_puzzle->setAmbientSoundOn(soundId);
+}
+
 void Application::puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId) {
 	if (!_puzzles.has(puzzleId))
 		error("[Application::puzzleSetAmbientSoundOff] Wrong puzzle Id (%d)", puzzleId);
@@ -583,8 +590,19 @@ void Application::puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uin
 	_puzzles.get(puzzleId)->add3DSound(entry, volume, true, a3, a4, fadeFrames, a7, a8);
 }
 
+void Application::puzzleSet3DSoundOn(PuzzleId puzzleId, Id soundId) {
+	puzzleSetAmbientSoundOn(puzzleId, soundId);
+}
+
 void Application::puzzleSet3DSoundOff(PuzzleId puzzleId, Id soundId) {
 	puzzleSetAmbientSoundOff(puzzleId, soundId);
+}
+
+void Application::puzzleSet3DSoundVolume(PuzzleId puzzleId, Id soundId, int32 volume) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::puzzleSet3DSoundVolume] Wrong puzzle Id (%d)", puzzleId);
+
+	_puzzle->setAmbientSoundVolume(soundId, volume);
 }
 
 void Application::puzzleReset() {
