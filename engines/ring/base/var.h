@@ -46,11 +46,6 @@ private:
 	T _value;
 };
 
-#define DEFINE_FUNCTIONS(name, type, storage) \
-	void define##name(Id id, type value) { define(&storage, id, value); } \
-	type get##name(Id id) { return get(&storage, id); } \
-	void set##name(Id id, type value) { set(&storage, id, value); }
-
 class Var : Common::Serializable {
 public:
 	Var();
@@ -59,11 +54,18 @@ public:
 	void removeAll();
 
 	// Accessors
+#define DEFINE_FUNCTIONS(name, type, storage) \
+	void define##name(Id id, type value) { define(&storage, id, value); } \
+	type get##name(Id id) { return get(&storage, id); } \
+	void set##name(Id id, type value) { set(&storage, id, value); }
+
 	DEFINE_FUNCTIONS(Byte,   byte,           _bytes);
 	DEFINE_FUNCTIONS(Word,   int16,          _words);
 	DEFINE_FUNCTIONS(Dword,  int32,          _dwords);
 	DEFINE_FUNCTIONS(String, Common::String, _strings);
 	DEFINE_FUNCTIONS(Float,  double,         _floats);
+
+#undef DEFINE_FUNCTIONS
 
 	// Serializable
 	void saveLoadWithSerializer(Common::Serializer &s);
@@ -75,15 +77,39 @@ private:
 	AssociativeArray<VarEntry<Common::String> *> _strings;
 	AssociativeArray<VarEntry<double> *>         _floats;
 
-	template<typename T>
+	template<class T>
 	void define(AssociativeArray<VarEntry<T> *> *array, Id id, T value);
 
-	template<typename T>
+	template<class T>
 	T get(AssociativeArray<VarEntry<T> *> *array, Id id);
 
-	template<typename T>
+	template<class T>
 	void set(AssociativeArray<VarEntry<T> *> *array, Id id, T value);
 };
+
+template<typename T>
+inline void Var::define(AssociativeArray<VarEntry<T> *> *array, Id id, T value) {
+	if (array->has(id))
+		error("[Var::define] ID already exists (%d)", id);
+
+	array->push_back(new VarEntry<T>(id, value));
+}
+
+template<typename T>
+inline T Var::get(AssociativeArray<VarEntry<T> *> *array, Id id) {
+	if (!array->has(id))
+		error("[Var::get] ID doesn't exists (%d)", id);
+
+	return array->get(id)->get();
+}
+
+template<typename T>
+inline void Var::set(AssociativeArray<VarEntry<T> *> *array, Id id, T value) {
+	if (!array->has(id))
+		error("[Var::set] ID doesn't exists (%d)", id);
+
+	array->get(id)->set(value);
+}
 
 } // End of namespace Ring
 

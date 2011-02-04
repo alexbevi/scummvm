@@ -1070,65 +1070,30 @@ void Application::timerStopAll() {
 
 #pragma region Var
 
-void Application::varDefineByte(Id id, byte val) {
-	error("[Application::varDefineByte] Not implemented");
-}
+#define IMPLEMENT_VAR_FUNCTIONS(name, type) \
+	void Application::varDefine##name(Id id, type val) { \
+		if (!_var) \
+			error("[Application::varDefine##name] Var not initialized properly"); \
+		_var->define##name(id, val); \
+	} \
+	type Application::varGet##name(Id id) { \
+		if (!_var) \
+			error("[Application::varGet##name] Var not initialized properly"); \
+		return _var->get##name(id); \
+	} \
+	void Application::varSet##name(Id id, type val) { \
+		if (!_var) \
+			error("[Application::varSet##name] Var not initialized properly"); \
+		_var->set##name(id, val); \
+	}
 
-void Application::varSetByte(Id id, byte val) {
-	error("[Application::varSetByte] Not implemented");
-}
+IMPLEMENT_VAR_FUNCTIONS(Byte,   byte);
+IMPLEMENT_VAR_FUNCTIONS(Word,   int16);
+IMPLEMENT_VAR_FUNCTIONS(Dword,  int32);
+IMPLEMENT_VAR_FUNCTIONS(String, Common::String);
+IMPLEMENT_VAR_FUNCTIONS(Float,  float);
 
-byte Application::varGetByte(Id id) {
-	error("[Application::varGetByte] Not implemented");
-}
-
-void Application::varDefineWord(Id id, int16 val) {
-	error("[Application::varDefineWord] Not implemented");
-}
-
-void Application::varSetWord(Id id, int16 val) {
-	error("[Application::varSetWord] Not implemented");
-}
-
-int16 Application::varGetWord(Id id) {
-	error("[Application::varGetWord] Not implemented");
-}
-
-void Application::varDefineDword(Id id, int32 val) {
-	error("[Application::varDefineDword] Not implemented");
-}
-
-void Application::varSetDword(Id id, uint32 val) {
-	error("[Application::varSetDword] Not implemented");
-}
-
-uint32 Application::varGetDword(Id id) {
-	error("[Application::varGetDword] Not implemented");
-}
-
-void Application::varDefineString(Id id, Common::String val) {
-	error("[Application::varDefineString] Not implemented");
-}
-
-void Application::varSetString(Id id, Common::String val) {
-	error("[Application::varSetString] Not implemented");
-}
-
-Common::String Application::varGetString(Id id) {
-	error("[Application::varGetString] Not implemented");
-}
-
-void Application::varDefineFloat(Id id, float val) {
-	error("[Application::varDefineFloat] Not implemented");
-}
-
-void Application::varSetFloat(Id id, float val) {
-	error("[Application::varSetFloat] Not implemented");
-}
-
-float Application::varGetFloat(Id id) {
-	error("[Application::varGetFloat] Not implemented");
-}
+#undef IMPLEMENT_VAR_FUNCTIONS
 
 #pragma endregion
 

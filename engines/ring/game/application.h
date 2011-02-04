@@ -221,21 +221,18 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Var
-	void varDefineByte(Id id, byte val);
-	void varSetByte(Id id, byte val);
-	byte varGetByte(Id id);
-	void varDefineWord(Id id, int16 val);
-	void varSetWord(Id id, int16 val);
-	int16 varGetWord(Id id);
-	void varDefineDword(Id id, int32 val);
-	void varSetDword(Id id, uint32 val);
-	uint32 varGetDword(Id id);
-	void varDefineString(Id id, Common::String val);
-	void varSetString(Id id, Common::String val);
-	Common::String varGetString(Id id);
-	void varDefineFloat(Id id, float val);
-	void varSetFloat(Id id, float val);
-	float varGetFloat(Id id);
+#define DEFINE_VAR_FUNCTIONS(name, type) \
+	void varDefine##name(Id id, type value); \
+	type varGet##name(Id id); \
+	void varSet##name(Id id, type value);
+
+	DEFINE_VAR_FUNCTIONS(Byte,   byte);
+	DEFINE_VAR_FUNCTIONS(Word,   int16);
+	DEFINE_VAR_FUNCTIONS(Dword,  int32);
+	DEFINE_VAR_FUNCTIONS(String, Common::String);
+	DEFINE_VAR_FUNCTIONS(Float,  float);
+
+#undef DEFINE_VAR_FUNCTIONS
 
 	//////////////////////////////////////////////////////////////////////////
 	// Visual

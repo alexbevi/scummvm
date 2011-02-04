@@ -95,30 +95,6 @@ void Var::saveLoadWithSerializer(Common::Serializer &s) {
 	_floats.saveLoadWithSerializer(s);
 }
 
-template<typename T>
-void Var::define(AssociativeArray<VarEntry<T> *> *array, Id id, T value) {
-	if (array->has(id))
-		error("[Var::define] ID already exists (%d)", id);
-
-	array->push_back(new VarEntry<T>(id, value));
-}
-
-template<typename T>
-T Var::get(AssociativeArray<VarEntry<T> *> *array, Id id) {
-	if (!array->has(id))
-		error("[Var::get] ID doesn't exists (%d)", id);
-
-	return array->get(id)->get();
-}
-
-template<typename T>
-void Var::set(AssociativeArray<VarEntry<T> *> *array, Id id, T value) {
-	if (!array->has(id))
-		error("[Var::set] ID doesn't exists (%d)", id);
-
-	array->get(id)->set(value);
-}
-
 #pragma endregion
 
 } // End of namespace Ring
