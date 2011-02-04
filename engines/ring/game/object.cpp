@@ -145,6 +145,38 @@ void Object::addAnimationToRotation(uint32 presentationIndex, Rotation *rotation
 	error("[Object::addAnimationToRotation] Not implemented");
 }
 
+void Object::setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, uint32 a3) {
+	error("[Object::setAnimationOnPuzzle] Not implemented");
+}
+
+void Object::setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, uint32 a3) {
+	error("[Object::setAnimationOnRotation] Not implemented");
+}
+
+void Object::setAnimationStartFrame(uint32 presentationIndex, uint32 startFrame) {
+	error("[Object::setAnimationStartFrame] Not implemented");
+}
+
+void Object::setAnimationActiveFrame(uint32 presentationIndex, uint32 activeFrame) {
+	error("[Object::setAnimationActiveFrame] Not implemented");
+}
+
+void Object::setAnimationCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point) {
+	error("[Object::setAnimationCoordinatesOnPuzzle] Not implemented");
+}
+
+void Object::pauseAnimation(uint32 presentationIndex) {
+	error("[Object::pauseAnimation] Not implemented");
+}
+
+void Object::unpauseAnimation(uint32 presentationIndex) {
+	error("[Object::unpauseAnimation] Not implemented");
+}
+
+void Object::pauseFrameAnimation(uint32 presentationIndex, uint32 frame, uint32 a3, uint32 a4) {
+	error("[Object::pauseFrameAnimation] Not implemented");
+}
+
 #pragma endregion
 
 #pragma region Cursor

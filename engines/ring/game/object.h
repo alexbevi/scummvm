@@ -62,12 +62,24 @@ public:
 	// Animation
 	void addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, uint32 a14, LoadFrom loadFrom);
 	void addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7);
+	void setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, uint32 a3);
+	void setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, uint32 a3);
+	void setAnimationStartFrame(uint32 presentationIndex, uint32 startFrame);
+	void setAnimationActiveFrame(uint32 presentationIndex, uint32 active);
+	void setAnimationCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point);
+	void pauseAnimation(uint32 presentationIndex);
+	void unpauseAnimation(uint32 presentationIndex);
+	void pauseFrameAnimation(uint32 presentationIndex, uint32 frame, uint32 a3, uint32 a4);
 
 	// Cursor
 	void setActiveCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
 	void setPassiveCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
 	void setActiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
 	void setPassiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
+
+	// Accessors
+	Common::String getName() { return _name; }
+	void setAnimationImage(AnimationImage *image) { _animationImage = image; }
 
 private:
 	struct ObjectCursor {

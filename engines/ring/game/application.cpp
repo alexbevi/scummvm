@@ -40,6 +40,7 @@
 #include "ring/game/puzzle.h"
 #include "ring/game/saveload.h"
 
+#include "ring/graphics/animation.h"
 #include "ring/graphics/movability.h"
 #include "ring/graphics/dragControl.h"
 #include "ring/graphics/rotation.h"
@@ -776,20 +777,39 @@ void Application::objectPresentationAddAnimationToRotation(ObjectId objectId, ui
 	_objects.get(objectId)->addAnimationToRotation(presentationIndex, rotation, layer, a5, a6, a7);
 }
 
-void Application::objectPresentationSetAnimationOnPuzzle(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4) {
-	error("[Application::objectPresentationSetAnimationOnPuzzle] Not implemented");
+void Application::objectPresentationSetAnimationOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, uint32 a4) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationSetAnimationOnPuzzle] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setAnimationOnPuzzle(presentationIndex, animationIndex, a4);
 }
 
-void Application::objectPresentationSetAnimationOnRotation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4) {
-	error("[Application::objectPresentationSetAnimationOnRotation] Not implemented");
+void Application::objectPresentationSetAnimationOnRotation(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, uint32 a4) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationSetAnimationOnRotation] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setAnimationOnRotation(presentationIndex, animationIndex, a4);
+}
+
+void Application::objectPresentationAnimationSetStartFrame(ObjectId objectId, uint32 presentationIndex, uint32 startFrame) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationAnimationSetStartFrame] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setAnimationStartFrame(presentationIndex, startFrame);
+}
+
+void Application::objectPresentationAnimationSetActiveFrame(ObjectId objectId, uint32 presentationIndex, uint32 activeFrame) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationAnimationSetActiveFrame] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setAnimationActiveFrame(presentationIndex, activeFrame);
 }
 
 void Application::objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, Common::Point point) {
-	error("[Application::objectPresentationSetAnimationCoordinatesOnPuzzle] Not implemented");
-}
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationSetAnimationCoordinatesOnPuzzle] Object Id doesn't exist (%d)", objectId);
 
-void Application::objectPresentationAnimationSetStartFrame(ObjectId objectId, uint32 animationIdex, uint32 startFrame) {
-	error("[Application::objectPresentationAnimationSetStartFrame] Not implemented");
+	_objects.get(objectId)->setAnimationCoordinatesOnPuzzle(presentationIndex, point);
 }
 
 void Application::objectPresentationShow(ObjectId objectId, uint32 presentationIndex) {
@@ -821,11 +841,36 @@ void Application::objectPresentationHide(ObjectId objectId) {
 }
 
 void Application::objectPresentationPauseAnimation(ObjectId objectId, uint32 presentationIndex) {
-	error("[Application::objectPresentationPauseAnimation] Not implemented");
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationPauseAnimation] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->pauseAnimation(presentationIndex);
 }
 
-void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6) {
-	error("[Application::objectAddBagAnimation] Not implemented");
+void Application::objectPresentationUnpauseAnimation(ObjectId objectId, uint32 presentationIndex) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationPauseAnimation] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->unpauseAnimation(presentationIndex);
+}
+
+void Application::objectPresentationPauseFrameAnimation(ObjectId objectId, uint32 presentationIndex, uint32 frame, uint32 a4, uint32 a5) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationPauseAnimation] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->pauseFrameAnimation(presentationIndex, frame, a4, a5);
+}
+
+void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, float a5, uint32 a6) {
+	if (!_objects.has(objectId))
+		error("[Application::objectAddBagAnimation] Object Id doesn't exist (%d)", objectId);
+
+	Object *object = _objects.get(objectId);
+	AnimationImage *image = new AnimationImage();
+	image->init(object->getName(), a2, 0, 0, 0, a3, a4, a5, 1, a6, 0, 1000, 4, (_configuration.artBAG ? kArchiveArt : kArchiveFile));
+	image->setField89();
+
+	object->setAnimationImage(image);
 }
 
 #pragma endregion
