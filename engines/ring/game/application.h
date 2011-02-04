@@ -59,7 +59,7 @@ class Video;
 class Application {
 public:
 	Application(RingEngine *engine);
-	~Application();
+	virtual ~Application();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Initialization

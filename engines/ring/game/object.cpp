@@ -198,7 +198,7 @@ void ObjectHandler::addFromFile(Common::String filename, Common::String language
 			break;
 
 		// Check object id
-		if (sscanf(line.c_str(), "%d", &id) == 1)
+		if (sscanf(line.c_str(), "%d", (int *)&id) == 1)
 			continue;
 
 		// Check language

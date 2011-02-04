@@ -37,7 +37,7 @@ class Image;
 class CursorBase : public BaseObject {
 public:
 	CursorBase();
-	~CursorBase();
+	virtual ~CursorBase();
 
 	virtual void init(CursorId id, Common::String name, CursorType cursorType, byte a4);
 	virtual void deinit() = 0;

@@ -83,7 +83,7 @@ ObjectPresentation::~ObjectPresentation() {
 	_application = NULL;
 }
 
-void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, uint32 a4, uint32 a5, FontId fontId, byte a7, byte a8, byte a9, uint32 a10, uint32 a11, uint32 a12) {
+void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, uint32 a4, uint32 a5, FontId fontId, byte a7, byte a8, byte a9, int32 a10, int32 a11, int32 a12) {
 	Text *textObject = new Text(_application);
 	textObject->init(text, a4, a5, fontId, a7, a8, a9, a10, a11, a12);
 	textObject->setObjectPresentation(this);

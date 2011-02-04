@@ -70,7 +70,7 @@ AnimationImage::AnimationImage() {
 	_field_7D = 0;
 	_field_81 = 0;
 	_currentImage = NULL;
-	_field_89;
+	_field_89 = 0;
 }
 
 AnimationImage::~AnimationImage() {

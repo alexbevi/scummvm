@@ -119,9 +119,9 @@ private:
 	uint32      _field_AD;
 	uint32      _field_B1;
 	uint32      _field_B5;
-	uint32      _field_B9;
-	uint32      _field_BD;
-	uint32      _field_C1;
+	int32       _field_B9;
+	int32       _field_BD;
+	int32       _field_C1;
 	uint32      _field_C5;
 	ArchiveType _archiveType;
 	Image      *_imageErdaGun;

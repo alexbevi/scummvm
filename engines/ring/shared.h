@@ -660,17 +660,17 @@ template<class T>
 class AssociativeArray : public Common::Array<T>, public Common::Serializable {
 public:
 	void saveLoadWithSerializer(Common::Serializer &s) {
-		uint32 size = this->size();
-		s.syncAsUint32LE(size);
+		uint32 count = this->size();
+		s.syncAsUint32LE(count);
 
-		for (uint32 i = 0; i < size; i++)
+		for (uint32 i = 0; i < count; i++)
 			this[i].saveLoadWithSerializer(s);
 	}
 
 	T get(Id id) {
-		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++) {
-			if (((BaseObject*) *i)->getId() == id)
-				return *i;
+		for (typename Common::Array<T>::iterator it = this->begin(); it != this->end(); it++) {
+			if (((BaseObject*) *it)->getId() == id)
+				return *it;
 		}
 
 		error("[AssociativeArray::get] No object has this ID (%d)", id);
@@ -686,8 +686,8 @@ public:
 	}
 
 	bool has(Id id) {
-		for (Common::Array<T>::iterator i = this->begin(); i != this->end(); i++) {
-			if (((BaseObject*) *i)->getId() == id)
+		for (typename Common::Array<T>::iterator it = this->begin(); it != this->end(); it++) {
+			if (((BaseObject*) *it)->getId() == id)
 				return true;
 		}
 

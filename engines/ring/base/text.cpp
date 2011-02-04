@@ -52,7 +52,7 @@ Text::~Text() {
 	_application = NULL;
 }
 
-void Text::init(Common::String text, uint32 a1, uint32 a2, FontId fontId, byte a4, byte a5, byte a6, uint32 a7, uint32 a8, uint32 a9) {
+void Text::init(Common::String text, uint32 a1, uint32 a2, FontId fontId, byte a4, byte a5, byte a6, int32 a7, int32 a8, int32 a9) {
 	_text = text;
 	_fontId = fontId;
 	_field_8 = a1;
