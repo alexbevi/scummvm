@@ -152,6 +152,10 @@ void ObjectPresentation::hide() {
 		_layerAnimationRotationPtr[i]->updateData(*(_layerAnimationRotation[i]), 0);
 }
 
+void ObjectPresentation::hideAndRemove() {
+	error("[ObjectPresentation::hide] Not implemented");
+}
+
 #pragma endregion
 
 } // End of namespace Ring

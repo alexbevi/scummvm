@@ -66,6 +66,7 @@ public:
 	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, LoadFrom loadFrom);
 	void show();
 	void hide();
+	void hideAndRemove();
 
 private:
 	Application *_application;

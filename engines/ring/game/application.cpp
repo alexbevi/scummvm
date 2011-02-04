@@ -629,6 +629,18 @@ void Application::objectAdd(ObjectId id, Common::String language, Common::String
 	_objects.push_back(new Object(this, id, processedLanguage, processedName, a5));
 }
 
+void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, float a5, uint32 a6) {
+	if (!_objects.has(objectId))
+		error("[Application::objectAddBagAnimation] Object Id doesn't exist (%d)", objectId);
+
+	Object *object = _objects.get(objectId);
+	AnimationImage *image = new AnimationImage();
+	image->init(object->getName(), a2, 0, 0, 0, a3, a4, a5, 1, a6, 0, 1000, 4, (_configuration.artBAG ? kArchiveArt : kArchiveFile));
+	image->setField89();
+
+	object->setAnimationImage(image);
+}
+
 void Application::objectRemove(ObjectId id) {
 	_objects.remove(id);
 }
@@ -727,6 +739,27 @@ void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 pr
 		error("[Application::objectPresentationAddTextToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
 
 	_objects.get(objectId)->addTextToPuzzle(presentationIndex, _puzzles.get(puzzleId), text, a5, a6, fontId, a8, a9, a10, a11, a12, a13);
+}
+
+void Application::objectPresentationSetTextToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, Common::String text) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationSetTextToPuzzle] Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setTextToPuzzle(presentationIndex, textIndex, text);
+}
+
+void Application::objectPresentationSetTextCoordinatesToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, Common::Point point) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationSetTextCoordinatesToPuzzle] Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->setTextCoordinatesToPuzzle(presentationIndex, textIndex, point);
+}
+
+uint32 Application::objectPresentationGetTextWidth(ObjectId objectId, uint32 presentationIndex, uint32 textIndex) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationGetTextWidth] Id doesn't exist (%d)", objectId);
+
+	return _objects.get(objectId)->getTextWidth(presentationIndex, textIndex);
 }
 
 void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, bool isActive, uint32 a8, uint32 priority) {
@@ -840,34 +873,6 @@ void Application::objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId obj
 	_objects.get(objectId)->setAnimationCoordinatesOnPuzzle(presentationIndex, point);
 }
 
-void Application::objectPresentationShow(ObjectId objectId, uint32 presentationIndex) {
-	if (!_objects.has(objectId))
-		error("[Application::objectPresentationShow] Object Id doesn't exist (%d)", objectId);
-
-	_objects.get(objectId)->showPresentation(presentationIndex);
-}
-
-void Application::objectPresentationShow(ObjectId objectId) {
-	if (!_objects.has(objectId))
-		error("[Application::objectPresentationShow] Object Id doesn't exist (%d)", objectId);
-
-	_objects.get(objectId)->showPresentations();
-}
-
-void Application::objectPresentationHide(ObjectId objectId, uint32 presentationIndex) {
-	if (!_objects.has(objectId))
-		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
-
-	_objects.get(objectId)->hidePresentation(presentationIndex);
-}
-
-void Application::objectPresentationHide(ObjectId objectId) {
-	if (!_objects.has(objectId))
-		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
-
-	_objects.get(objectId)->hidePresentations();
-}
-
 void Application::objectPresentationPauseAnimation(ObjectId objectId, uint32 presentationIndex) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationPauseAnimation] Object Id doesn't exist (%d)", objectId);
@@ -889,16 +894,46 @@ void Application::objectPresentationPauseAnimationFrame(ObjectId objectId, uint3
 	_objects.get(objectId)->pauseFrameAnimation(presentationIndex, frame, a4, a5);
 }
 
-void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, float a5, uint32 a6) {
+void Application::objectPresentationShow(ObjectId objectId, uint32 presentationIndex) {
 	if (!_objects.has(objectId))
-		error("[Application::objectAddBagAnimation] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationShow] Object Id doesn't exist (%d)", objectId);
 
-	Object *object = _objects.get(objectId);
-	AnimationImage *image = new AnimationImage();
-	image->init(object->getName(), a2, 0, 0, 0, a3, a4, a5, 1, a6, 0, 1000, 4, (_configuration.artBAG ? kArchiveArt : kArchiveFile));
-	image->setField89();
+	_objects.get(objectId)->show(presentationIndex);
+}
 
-	object->setAnimationImage(image);
+void Application::objectPresentationShow(ObjectId objectId) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationShow] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->show();
+}
+
+void Application::objectPresentationHide(ObjectId objectId, uint32 presentationIndex) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->hide(presentationIndex);
+}
+
+void Application::objectPresentationHide(ObjectId objectId) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->hide();
+}
+
+void Application::objectPresentationHideAndRemove(ObjectId objectId, uint32 presentationIndex) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->hideAndRemove(presentationIndex);
+}
+
+void Application::objectPresentationHideAndRemove(ObjectId objectId) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
+
+	_objects.get(objectId)->hideAndRemove();
 }
 
 #pragma endregion

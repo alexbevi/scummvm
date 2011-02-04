@@ -72,6 +72,18 @@ void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::S
 	_presentations[presentationIndex]->addTextToPuzzle(puzzle, text, a5, a6, fontId, a8, a9, a10, a11, a12, a13);
 }
 
+void Object::setTextToPuzzle(uint32 presentationIndex, uint32 textIndex, Common::String text) {
+	error("[Object::setTextToPuzzle] Not implemented");
+}
+
+void Object::setTextCoordinatesToPuzzle(uint32 presentationIndex, uint32 textIndex, Common::Point point) {
+	error("[Object::setTextCoordinatesToPuzzle] Not implemented");
+}
+
+uint32 Object::getTextWidth(uint32 presentationIndex, uint32 textIndex) {
+	error("[Object::getTextWidth] Not implemented");
+}
+
 void Object::addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, uint32 a5, uint32 a6, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addTextToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
@@ -99,27 +111,39 @@ Common::Point Object::getImageCoordinatesOnPuzzle(uint32 presentationIndex, uint
 	error("[Object::getImageCoordinatesOnPuzzle] Not implemented");
 }
 
-void Object::showPresentation(uint32 presentationIndex) {
+void Object::show(uint32 presentationIndex) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::showPresentation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
 	_presentations[presentationIndex]->show();
 }
-void Object::showPresentations() {
+void Object::show() {
 	for (Common::Array<ObjectPresentation *>::iterator it = _presentations.begin(); it != _presentations.end(); it++)
 		(*it)->show();
 }
 
-void Object::hidePresentation(uint32 presentationIndex) {
+void Object::hide(uint32 presentationIndex) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::hidePresentation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
 	_presentations[presentationIndex]->hide();
 }
 
-void Object::hidePresentations() {
+void Object::hide() {
 	for (Common::Array<ObjectPresentation *>::iterator it = _presentations.begin(); it != _presentations.end(); it++)
 		(*it)->hide();
+}
+
+void Object::hideAndRemove(uint32 presentationIndex) {
+	if (presentationIndex >= _presentations.size())
+		error("[Object::hidePresentation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->hideAndRemove();
+}
+
+void Object::hideAndRemove() {
+	for (Common::Array<ObjectPresentation *>::iterator it = _presentations.begin(); it != _presentations.end(); it++)
+		(*it)->hideAndRemove();
 }
 
 #pragma endregion
