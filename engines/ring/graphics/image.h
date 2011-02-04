@@ -76,6 +76,8 @@ private:
 	Zone _zone;
 	LoadFrom _loadFrom;
 	ArchiveType _archiveType;
+
+	void init(Common::String nameId, uint32 a3, uint32 a4, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType);
 };
 
 } // End of namespace Ring

@@ -29,9 +29,8 @@
 
 namespace Ring {
 
-//////////////////////////////////////////////////////////////////////////
-// VarEntry
-//////////////////////////////////////////////////////////////////////////
+#pragma region VarEntry
+
 template<class T>
 void VarEntry<T>::saveLoadWithSerializer(Common::Serializer &s) {
 	// We need to provide a specific specialization for each type
@@ -69,9 +68,10 @@ void VarEntry<Common::String>::saveLoadWithSerializer(Common::Serializer &s) {
 	s.syncString(_value);
 }
 
-//////////////////////////////////////////////////////////////////////////
-/// Var
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Var
+
 Var::Var() {
 }
 
@@ -106,7 +106,7 @@ void Var::define(AssociativeArray<VarEntry<T> *> *array, Id id, T value) {
 template<typename T>
 T Var::get(AssociativeArray<VarEntry<T> *> *array, Id id) {
 	if (!array->has(id))
-		error("[Var::define] ID doesn't exists (%d)", id);
+		error("[Var::get] ID doesn't exists (%d)", id);
 
 	return array->get(id)->get();
 }
@@ -114,9 +114,11 @@ T Var::get(AssociativeArray<VarEntry<T> *> *array, Id id) {
 template<typename T>
 void Var::set(AssociativeArray<VarEntry<T> *> *array, Id id, T value) {
 	if (!array->has(id))
-		error("[Var::define] ID doesn't exists (%d)", id);
+		error("[Var::set] ID doesn't exists (%d)", id);
 
 	array->get(id)->set(value);
 }
+
+#pragma endregion
 
 } // End of namespace Ring

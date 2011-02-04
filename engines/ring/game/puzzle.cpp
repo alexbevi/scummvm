@@ -39,8 +39,6 @@
 
 namespace Ring {
 
-//////////////////////////////////////////////////////////////////////////
-// Puzzle
 Puzzle::Puzzle(Application *application, PuzzleId id) : BaseObject(id), _application(application) {
 	_background = NULL;
 	_field_24 = 1;
@@ -62,6 +60,7 @@ Puzzle::~Puzzle() {
 	// Zero-out passed pointers
 	_application = NULL;
 }
+
 
 void Puzzle::setBackgroundImage(Common::String filename, uint32 a3, uint32 a4, bool isActive, LoadFrom loadFrom) {
 	SAFE_DELETE(_background);
@@ -150,9 +149,9 @@ void Puzzle::setAmbientSoundVolume(Id soundId, uint32 volume) {
 	item->setVolume(volume);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Accessors
-//////////////////////////////////////////////////////////////////////////
+
+#pragma region Accessors
+
 Movability *Puzzle::getMovability(uint32 index) {
 	if (index >= _movabilities.size())
 		error("[Puzzle::getMovability] Invalid movability index (was: %d, max:%d)", index, _movabilities.size() - 1);
@@ -160,9 +159,10 @@ Movability *Puzzle::getMovability(uint32 index) {
 	return _movabilities[index];
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Helpers
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Helpers
+
 SoundItem *Puzzle::getSoundItem(Id soundId) {
 	for (Common::Array<SoundItem *>::iterator i = _soundItems.begin(); i != _soundItems.end(); i++) {
 		if ((*i)->getSoundEntry()->getId() == soundId)
@@ -175,5 +175,7 @@ SoundItem *Puzzle::getSoundItem(Id soundId) {
 bool Puzzle::imagePriorityCompare(ImageHandle *image1, ImageHandle *image2) {
 	return (image1->getPriority() > image2->getPriority());
 }
+
+#pragma endregion
 
 } // End of namespace Ring

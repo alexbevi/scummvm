@@ -114,9 +114,8 @@ Bag::~Bag() {
 	_application = NULL;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Initialization
-//////////////////////////////////////////////////////////////////////////
+#pragma region Initialization
+
 void Bag::initHotspots() {
 	_hotspots.push_back(new Hotspot(Common::Rect(_field_48 + _field_1C,
 	                                             _field_4C + _field_20,
@@ -246,9 +245,10 @@ void Bag::loadImage(Common::String filename, Image *image, ArchiveType archiveTy
 		error("[Bag::LoadImage] Cannot load image: %s", path.c_str());
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Enable/Disable
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Enable/Disable
+
 void Bag::enable() {
 	if (_hotspots.empty() || _hotspots.size() <= 3)
 		return;
@@ -265,9 +265,10 @@ void Bag::disable() {
 	_enabled = false;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Management
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Management
+
 void Bag::add(ObjectId id) {
 	error("[Bag::add] Not implemented");
 }
@@ -284,5 +285,6 @@ bool Bag::has(ObjectId id) {
 	error("[Bag::has] Not implemented");
 }
 
+#pragma endregion
 
 } // End of namespace Ring

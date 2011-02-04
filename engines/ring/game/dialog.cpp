@@ -29,9 +29,8 @@
 
 namespace Ring {
 
-//////////////////////////////////////////////////////////////////////////
-// Dialog
-//////////////////////////////////////////////////////////////////////////
+#pragma region Dialog
+
 Dialog::Dialog() : BaseObject(kDialogInvalid) {
 }
 
@@ -46,9 +45,10 @@ void Dialog::hide() {
 	error("[Dialog::hide] No implemented");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// DialogHandler
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region DialogHandler
+
 DialogHandler::DialogHandler() {
 	_field_0 = 0;
 	_field_1C = 0;
@@ -96,5 +96,7 @@ bool DialogHandler::isPlaying(DialogId id) {
 bool DialogHandler::isPlaying() {
 	return !_dialogs.empty();
 }
+
+#pragma endregion
 
 } // End of namespace Ring

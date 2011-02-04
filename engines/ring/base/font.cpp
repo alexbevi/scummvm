@@ -31,9 +31,8 @@
 
 namespace Ring {
 
-//////////////////////////////////////////////////////////////////////////
-// Font
-//////////////////////////////////////////////////////////////////////////
+#pragma region Font
+
 Font::Font(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId) : BaseObject(id) {
 
 	// Setup font description
@@ -67,9 +66,10 @@ Font::~Font() {
 	delete _font;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// FontHandler
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region FontHandler
+
 FontHandler::FontHandler() {
 }
 
@@ -90,5 +90,7 @@ Graphics::WinFont *FontHandler::getFont(FontId id) {
 
 	return _fonts.get(id)->getFont();
 }
+
+#pragma endregion
 
 } // End of namespace Ring

@@ -42,12 +42,10 @@ ApplicationRing::ApplicationRing(RingEngine *engine) : Application(engine) {
 }
 
 ApplicationRing::~ApplicationRing() {
-
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Game setup
-//////////////////////////////////////////////////////////////////////////
+#pragma region Game setup
+
 void ApplicationRing::setup() {
 	setupZone(kZoneSY, 0);
 
@@ -76,9 +74,10 @@ void ApplicationRing::setup() {
 	subtitleSetBackgroundColor(Color(50, 50, 50));
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Timer
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Timer
+
 void ApplicationRing::onZoneTimer(TimerId timerId) {
 	switch (getCurrentZone()) {
 	default:
@@ -164,9 +163,10 @@ void ApplicationRing::onZoneTimerN2(TimerId id) {
 		noiceIdPlay(_vm->getRandom().getRandomNumber(12) + 70004, 1);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Zone init and setup
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Zone setup
+
 void ApplicationRing::setupZone(Zone zone, uint32 a2)  {
 	bool load = _saveManager->isLoaded(a2);
 
@@ -286,9 +286,10 @@ void ApplicationRing::setZoneN2(Zone zone, uint32 a2) {
 	error("[ApplicationRing::setZoneN2] Not implemented");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Zone full names, short string and ReadFrom
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Zone full names, short string and ReadFrom
+
 Common::String ApplicationRing::getZoneString(Zone zone) const {
 	switch (zone) {
 	default:
@@ -387,9 +388,10 @@ ArchiveType ApplicationRing::getReadFrom(Zone zone) const {
 	error("[ApplicationRing::getReadFrom] Invalid zone (%d)", zone);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Initialization
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Zone initialization
+
 void ApplicationRing::initZones() {
 	_loadFrom = kLoadFromDisk;
 
@@ -4766,5 +4768,7 @@ void ApplicationRing::initZoneN2() {
 	varDefineWord(70016, 0);
 	varDefineString(70099, "3231323131 76766     34        020212121212        776000    ");
 }
+
+#pragma endregion
 
 } // End of namespace Ring

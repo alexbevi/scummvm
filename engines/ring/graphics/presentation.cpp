@@ -38,28 +38,28 @@
 
 namespace Ring {
 
-//////////////////////////////////////////////////////////////////////////
-// Visual
-//////////////////////////////////////////////////////////////////////////
+#pragma region Visual
+
 Visual::Visual() {
 }
 
 Visual::~Visual() {
 }
 
+#pragma endregion
 
-//////////////////////////////////////////////////////////////////////////
-// Presentation
-//////////////////////////////////////////////////////////////////////////
+#pragma region Presentation
+
 PresentationImage::PresentationImage() {
 }
 
 PresentationImage::~PresentationImage() {
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Presentation
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Presentation
+
 ObjectPresentation::ObjectPresentation(Application *application, Object *object) : _application(application), _object(object) {
 	_isShown = false;
 }
@@ -151,5 +151,7 @@ void ObjectPresentation::hide() {
 	for (uint32 i = 0; i < _layAnimationRotation.size(); i++)
 		_layAnimationRotationPtr[i]->updateData(*(_layAnimationRotation[i]), 0);
 }
+
+#pragma endregion
 
 } // End of namespace Ring

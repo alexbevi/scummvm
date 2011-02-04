@@ -35,9 +35,8 @@
 
 namespace Ring {
 
-//////////////////////////////////////////////////////////////////////////
-// Art
-//////////////////////////////////////////////////////////////////////////
+#pragma region Art
+
 Art::Art() : _zone(kZoneInvalid), _loadFrom(kLoadFromInvalid) {
 }
 
@@ -119,10 +118,10 @@ Common::SeekableReadStream *Art::createReadStreamForMember(const Common::String 
 	return new Common::SeekableSubReadStream(archive, fDesc->_value.offset, fDesc->_value.offset + fDesc->_value.size, DisposeAfterUse::YES);
 }
 
+#pragma endregion
 
-//////////////////////////////////////////////////////////////////////////
-// ArtHandler
-//////////////////////////////////////////////////////////////////////////
+#pragma region ArtHandler
+
 ArtHandler::ArtHandler(Application *application) : _application(application) {
 }
 
@@ -197,5 +196,7 @@ int32 ArtHandler::getIndex(Zone zone, LoadFrom loadFrom) {
 
 	return -1;
 }
+
+#pragma endregion
 
 } // End of namespace Ring

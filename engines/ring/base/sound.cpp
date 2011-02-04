@@ -35,10 +35,8 @@ namespace Ring {
 
 #define SOUND_FRAC_VALUE .01745328888888889f
 
+#pragma region SoundEntry
 
-//////////////////////////////////////////////////////////////////////////
-// SoundEntry
-//////////////////////////////////////////////////////////////////////////
 SoundEntry::SoundEntry(Id soundId, SoundType type, Common::String name, byte a5) : BaseObject(soundId) {
 	_type      = type;
 	_name      = name;
@@ -68,9 +66,10 @@ void SoundEntry::updateVolume() {
 	error( "[SoundEntry::updateVolume] Not implemented");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// SoundManager
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region SoundManager
+
 SoundManager::SoundManager(Application *application) : _application(application) {
 }
 
@@ -88,9 +87,10 @@ SoundEntry *SoundManager::getSoundEntry(Id soundId) {
 	return _entries.get(soundId);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// SoundItem
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region SoundItem
+
 SoundItem::SoundItem(Id id) : BaseObject(id) {
 	_entry    = NULL;
 	_volume  = 0;
@@ -207,9 +207,10 @@ bool SoundItem::checkCurrentPuzzle() {
 	return true;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// SoundHandler
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region SoundHandler
+
 SoundHandler::SoundHandler() {
 	_field_0 = 0;
 	_field_1 = 0;
@@ -245,5 +246,7 @@ void SoundHandler::setReverseStereo(int32 reverseStereo) {
 		break;
 	}
 }
+
+#pragma endregion
 
 } // End of namespace Ring

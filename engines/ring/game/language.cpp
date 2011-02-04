@@ -29,9 +29,8 @@
 
 namespace Ring {
 
-//////////////////////////////////////////////////////////////////////////
-// Language
-//////////////////////////////////////////////////////////////////////////
+#pragma region Language
+
 Language::Language() : BaseObject(kLanguageInvalid), _channel(0) {
 }
 
@@ -39,9 +38,10 @@ Language::Language(LanguageId id, Common::String name, Common::String folder, ui
 	BaseObject(id), _name(name), _folder(folder), _channel(channel) {
 }
 
-//////////////////////////////////////////////////////////////////////////
-// LanguageHandler
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region LanguageHandler
+
 LanguageHandler::LanguageHandler() : _language(kLanguageInvalid) {
 }
 
@@ -83,5 +83,7 @@ uint32 LanguageHandler::getChannel(LanguageId id) {
 
 	return _languages.get(id)->getChannel();
 }
+
+#pragma endregion
 
 } // End of namespace Ring

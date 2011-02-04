@@ -27,20 +27,24 @@
 
 namespace Ring {
 
-//////////////////////////////////////////////////////////////////////////
-// Timer
+#pragma region Timer
+
 Timer::Timer() {
 }
 
 Timer::~Timer() {
 }
 
-//////////////////////////////////////////////////////////////////////////
-// TimerHandler
+#pragma endregion
+
+#pragma region TimerHandler
+
 TimerHandler::TimerHandler() : _fired(0) {
 }
 
 TimerHandler::~TimerHandler() {
 }
+
+#pragma endregion
 
 } // End of namespace Ring

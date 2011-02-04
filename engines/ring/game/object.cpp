@@ -39,8 +39,8 @@
 
 namespace Ring {
 
-//////////////////////////////////////////////////////////////////////////
-// Object
+#pragma region Object
+
 Object::Object(Application *application, ObjectId id, Common::String language, Common::String name, byte a5) : BaseObject(id), _application(application) {
 	_language = language;
 	_name = name;
@@ -56,6 +56,8 @@ Object::~Object() {
 	// Zero-out passed pointers
 	_application = NULL;
 }
+
+#pragma endregion
 
 #pragma region Presentation
 
@@ -164,16 +166,16 @@ void Object::setPassiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, fl
 
 #pragma endregion
 
-//////////////////////////////////////////////////////////////////////////
-// ObjectInfo
-//////////////////////////////////////////////////////////////////////////
+#pragma region ObjectInfo
+
 ObjectInfo::ObjectInfo(ObjectId id, Common::String language, Common::String name) :
 	BaseObject(id), _language(language), _name(name) {
 }
 
-//////////////////////////////////////////////////////////////////////////
-// ObjectHandler
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region ObjectHandler
+
 ObjectHandler::ObjectHandler() {
 }
 
@@ -229,5 +231,7 @@ Common::String ObjectHandler::getName(ObjectId id) {
 
 	return _objects.get(id)->getName();
 }
+
+#pragma endregion
 
 } // End of namespace Ring

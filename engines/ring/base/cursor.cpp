@@ -32,9 +32,8 @@
 
 namespace Ring {
 
-//////////////////////////////////////////////////////////////////////////
-// CursorBase
-//////////////////////////////////////////////////////////////////////////
+#pragma region CursorBase
+
 CursorBase::CursorBase() : BaseObject(kCursorInvalid) {
 	_type = kCursorTypeInvalid;
 	_field_18 = 0;
@@ -50,9 +49,10 @@ void CursorBase::init(CursorId id, Common::String name, CursorType cursorType, b
 	_field_18 = a4;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Cursor
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Cursor
+
 Cursor::Cursor() {
 	_field_19 = 0;
 	_isDefaultCursor = false;
@@ -82,9 +82,10 @@ void Cursor::dealloc() {
 	error("[Cursor::dealloc] Not implemented");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// CursorImage
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region CursorImage
+
 CursorImage::CursorImage() {
 	_image = NULL;
 }
@@ -128,9 +129,10 @@ void CursorImage::dealloc() {
 		_image->destroy();
 }
 
-//////////////////////////////////////////////////////////////////////////
-// CursorAnimation
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region CursorAnimation
+
 CursorAnimation::CursorAnimation() {
 	_image = new AnimationImage();
 }
@@ -163,9 +165,10 @@ void CursorAnimation::draw() {
 	_image->draw();
 }
 
-//////////////////////////////////////////////////////////////////////////
-// CursorHandler
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region CursorHandler
+
 CursorHandler::CursorHandler() {
 	_index = 0;
 }
@@ -253,5 +256,7 @@ CursorType CursorHandler::getType() {
 
 	return _cursors[_index]->getType();
 }
+
+#pragma endregion
 
 } // End of namespace Ring

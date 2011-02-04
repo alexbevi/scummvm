@@ -94,9 +94,8 @@ Application::~Application() {
 	_vm = NULL;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Initialization
-//////////////////////////////////////////////////////////////////////////
+#pragma region Initialization
+
 void Application::init() {
 	// Setup available languages
 	_languageHandler = new LanguageHandler();
@@ -325,9 +324,10 @@ void Application::loadConfiguration() {
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Startup
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Startup
+
 void Application::showStartupScreen() {
 	error("[Application::showStartupScreen] Not implemented");
 }
@@ -336,9 +336,10 @@ void Application::startMenu() {
 	error("[Application::startMenu] Not implemented");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Event handling
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Event handling
+
 void Application::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
 	_controlNotPressed = !isControlPressed;
 
@@ -375,8 +376,10 @@ void Application::onZoneTimer(TimerId id) {
 	error("[Application::onZoneTimer] Not implemented");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Language, Fonts and Cursors
+#pragma endregion
+
+#pragma region Language, Fonts and Cursors
+
 void Application::languageAdd(LanguageId id, Common::String name, Common::String folder, uint channel) {
 	if (!_languageHandler)
 		error("[Application::languageAdd] Language handler is not initialized properly");
@@ -445,9 +448,10 @@ void Application::subtitleSetBackgroundColor(Color color) {
 	_dialogHandler->setSubtitleBackgroundColor(color);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Bag
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Bag
+
 void Application::bagAdd(ObjectId id) {
 	if (id == kObjectNone)
 		error("[Application::removeFromBag] Invalid ID (%d)", id);
@@ -488,9 +492,10 @@ bool Application::bagIsIn(ObjectId id) {
 	return _bag->has(id);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Puzzle
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Puzzle
+
 void Application::puzzleAdd(PuzzleId id) {
 	if (_puzzles.has(id))
 		error("[Application::addPuzzle] ID already exists (%d)", id);
@@ -603,9 +608,10 @@ Id Application::getCurrentRotationId() {
 	return _rotation->getId();
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Object
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Object
+
 void Application::objectAdd(ObjectId id, Common::String language, Common::String name, byte a5) {
 	if (_objects.has(id))
 		error("[Application::ObjectAdd] ID already exists (%d)", id);
@@ -776,9 +782,10 @@ void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3,
 	error("[Application::objectAddBagAnimation] Not implemented");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Rotation
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Rotation
+
 void Application::rotationAdd(Id rotationId, Common::String name, uint32 a3, uint32 nodeCount) {
 	if (_rotations.has(rotationId))
 		error("[Application::rotationAdd] Rotation Id already exists (%d)", rotationId);
@@ -851,9 +858,10 @@ void Application::rotationSetJugOn(Id rotationId, float amplitude, float speed) 
 	error("[Application::rotationSetJugOn] Not implemented");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Sound
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Sound
+
 void Application::soundAdd(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom) {
 	error("[Application::soundAdd] Not implemented");
 }
@@ -870,9 +878,10 @@ void Application::noiceIdPlay(Id noiceId, bool a2) {
 	error("[Application::noiceIdPlay] Not implemented");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Timer
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Timer
+
 void Application::timerStart(TimerId id, uint32 elapseTime) {
 	error("[Application::timerStart] Not implemented");
 }
@@ -885,9 +894,10 @@ void Application::timerStopAll() {
 	error("[Application::timerStopAll] Not implemented");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Var
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Var
+
 void Application::varDefineByte(Id id, byte val) {
 	error("[Application::varDefineByte] Not implemented");
 }
@@ -948,9 +958,10 @@ float Application::varGetFloat(Id id) {
 	error("[Application::varGetFloat] Not implemented");
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Visual
-//////////////////////////////////////////////////////////////////////////
+#pragma endregion
+
+#pragma region Visual
+
 void Application::visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10) {
 	error("[Application::visualAddShowToPuzzle] Not implemented");
 }
@@ -965,5 +976,7 @@ void Application::visualAddListToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 							            ArchiveType archiveType) {
 	error("[Application::visualAddListToPuzzle] Not implemented");
 }
+
+#pragma endregion
 
 } // End of namespace Ring
