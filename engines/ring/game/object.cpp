@@ -83,6 +83,22 @@ void Object::addImageToRotation(uint32 presentationIndex, Rotation *rotation, ui
 	error("[Object::addImageToRotation] Not implemented");
 }
 
+void Object::setImageCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point) {
+	error("[Object::setImageCoordinatesOnPuzzle] Not implemented");
+}
+
+void Object::setImageCoordinatesOnPuzzle(uint32 presentationIndex, uint32 imageIndex, Common::Point point) {
+	error("[Object::setImageCoordinatesOnPuzzle] Not implemented");
+}
+
+void Object::setImageOriginalCoordinatesOnPuzzle(uint32 presentationIndex) {
+	error("[Object::setImageOriginalCoordinatesOnPuzzle] Not implemented");
+}
+
+Common::Point Object::getImageCoordinatesOnPuzzle(uint32 presentationIndex, uint32 imageIndex) {
+	error("[Object::getImageCoordinatesOnPuzzle] Not implemented");
+}
+
 void Object::showPresentation(uint32 presentationIndex) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::showPresentation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);

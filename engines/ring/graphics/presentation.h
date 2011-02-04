@@ -32,7 +32,7 @@ namespace Ring {
 
 class Application;
 class AnimationImage;
-class Image;
+class ImageHandle;
 class Object;
 class Puzzle;
 class Rotation;
@@ -72,19 +72,19 @@ private:
 
 	Object *_object;
 	bool _isShown;
-	Common::Array<Image *> _imagePuzzle;
-	Common::Array<Puzzle *> _imagePuzzlePtr;
+	Common::Array<ImageHandle *>    _imagePuzzle;
+	Common::Array<Puzzle *>         _imagePuzzlePtr;
 	Common::Array<AnimationImage *> _animationPuzzle;
-	Common::Array<Puzzle *> _animationPuzzlePtr;
-	Common::Array<uint32 *> _layerImagePtr;
-	Common::Array<Rotation *> _layImageRotationPtr;
-	Common::Array<uint32 *> _layerAnimationRotation;
-	Common::Array<Rotation *> _layerAnimationRotationPtr;
+	Common::Array<Puzzle *>         _animationPuzzlePtr;
+	Common::Array<uint32 *>         _layerImagePtr;
+	Common::Array<Rotation *>       _layImageRotationPtr;
+	Common::Array<uint32 *>         _layerAnimationRotation;
+	Common::Array<Rotation *>       _layerAnimationRotationPtr;
 	Common::Array<AnimationImage *> _layerAnimationRotationAnimation;
-	Common::Array<Text *> _textPuzzle;
-	Common::Array<Puzzle *> _textPuzzlePtr;
-	Common::Array<Text *> _textRotation;
-	Common::Array<Rotation *> _textRotationPtr;
+	Common::Array<Text *>           _textPuzzle;
+	Common::Array<Puzzle *>         _textPuzzlePtr;
+	Common::Array<Text *>           _textRotation;
+	Common::Array<Rotation *>       _textRotationPtr;
 };
 
 } // End of namespace Ring

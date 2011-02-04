@@ -157,20 +157,24 @@ public:
 	void objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, FontId fontId, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13);
 	void objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, bool isActive, uint32 a8, uint32 priority);
 	void objectPresentationAddImageToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer);
+	void objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, Common::Point point);
+	void objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 imageIndex, Common::Point point);
+	void objectPresentationSetImageOriginalCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex);
+	Common::Point objectPresentationGetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 imageIndex);
 	void objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12);
 	void objectPresentationAddAnimationToRotation(ObjectId, uint32 presentationIndex, Id rotationId, uint32 a4, uint32 a5, float a6, uint32 a7);
 	void objectPresentationSetAnimationOnPuzzle(ObjectId id, uint32 presentationIndex, uint32 animationIndex, uint32 a4);
 	void objectPresentationSetAnimationOnRotation(ObjectId id, uint32 presentationIndex, uint32 animationIndex, uint32 a4);
 	void objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, Common::Point point);
-	void objectPresentationAnimationSetStartFrame(ObjectId objectId, uint32 presentationIndex, uint32 startFrame);
-	void objectPresentationAnimationSetActiveFrame(ObjectId objectId, uint32 presentationIndex, uint32 activeFrame);
+	void objectPresentationSetAnimationStartFrame(ObjectId objectId, uint32 presentationIndex, uint32 startFrame);
+	void objectPresentationSetAnimationActiveFrame(ObjectId objectId, uint32 presentationIndex, uint32 activeFrame);
+	void objectPresentationPauseAnimation(ObjectId objectId, uint32 presentationIndex);
+	void objectPresentationPauseAnimationFrame(ObjectId objectId, uint32 presentationIndex, uint32 frame, uint32 a4, uint32 a5);
+	void objectPresentationUnpauseAnimation(ObjectId objectId, uint32 presentationIndex);
 	void objectPresentationShow(ObjectId objectId, uint32 presentationIndex);
 	void objectPresentationShow(ObjectId objectId);
 	void objectPresentationHide(ObjectId objectId, uint32 presentationIndex);
 	void objectPresentationHide(ObjectId objectId);
-	void objectPresentationPauseAnimation(ObjectId objectId, uint32 presentationIndex);
-	void objectPresentationUnpauseAnimation(ObjectId objectId, uint32 presentationIndex);
-	void objectPresentationPauseFrameAnimation(ObjectId objectId, uint32 presentationIndex, uint32 frame, uint32 a4, uint32 a5);
 
 	void objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, float a5, uint32 a6);
 

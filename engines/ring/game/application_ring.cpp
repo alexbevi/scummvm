@@ -3523,7 +3523,7 @@ void ApplicationRing::initZoneWA() {
 	objectPresentationAddImageToPuzzle(kObject50100, 6, kPuzzle50100, "WAS01N08P01L04.bmp", 325, 400, 1, 1, 1000);
 	objectAddPresentation(kObject50100);
 	objectPresentationAddAnimationToPuzzle(kObject50100, 7, kPuzzle50100, "WAS01N08P01S01", 0, 270, 101, 1, 1000, 50, 12.5f, 6);
-	objectPresentationAnimationSetStartFrame(kObject50100, 7, 1);
+	objectPresentationSetAnimationStartFrame(kObject50100, 7, 1);
 	objectPresentationSetAnimationOnPuzzle(kObject50100, 7, 0, 50003);
 	objectAddPresentation(kObject50100);
 	objectPresentationAddAnimationToPuzzle(kObject50100, 8, kPuzzle50100, "WAS01N08P01S02", 0, 316, 30, 1, 1000, 50, 12.5f, 6);

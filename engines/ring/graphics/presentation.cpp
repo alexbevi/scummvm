@@ -65,7 +65,7 @@ ObjectPresentation::ObjectPresentation(Application *application, Object *object)
 }
 
 ObjectPresentation::~ObjectPresentation() {
-	CLEAR_ARRAY(Image, _imagePuzzle);
+	CLEAR_ARRAY(ImageHandle, _imagePuzzle);
 	CLEAR_ARRAY(Puzzle, _imagePuzzlePtr);
 	CLEAR_ARRAY(AnimationImage, _animationPuzzle);
 	CLEAR_ARRAY(Puzzle, _animationPuzzlePtr);
