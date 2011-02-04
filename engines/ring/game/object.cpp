@@ -79,6 +79,10 @@ void Object::addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::
 	_presentations[presentationIndex]->addImageToPuzzle(puzzle, filename, a5, a6, isActive, a8, priority, a10, loadFrom);
 }
 
+void Object::addImageToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer) {
+	error("[Object::addImageToRotation] Not implemented");
+}
+
 void Object::showPresentation(uint32 presentationIndex) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::showPresentation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
@@ -115,6 +119,10 @@ void Object::addPuzzleAccessibility(Puzzle *puzzle, Common::Rect rect, bool enab
 	puzzle->addAccessibility(accessibility);
 }
 
+void Object::addRotationAccessibility(Rotation *rotation, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+	error("[Object::addRotationAccessibility] Not implemented");
+}
+
 void Object::setAccessibilityKey(uint32 accessibilityIndex, Common::KeyCode key) {
 	if (accessibilityIndex >= _accessibilities.size())
 		error("[Object::setAccessibilityKey] Invalid accessibility index (was: %d, max: %d)", accessibilityIndex, _accessibilities.size() - 1);
@@ -131,6 +139,10 @@ void Object::addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Comm
 		error("[Object::addAnimationToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
 	_presentations[presentationIndex]->addAnimationToPuzzle(puzzle, name, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, loadFrom);
+}
+
+void Object::addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7) {
+	error("[Object::addAnimationToRotation] Not implemented");
 }
 
 #pragma endregion

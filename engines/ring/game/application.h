@@ -136,12 +136,17 @@ public:
 	void objectAdd(ObjectId objectId, Common::String language, Common::String name, byte a5);
 	void objectRemove(ObjectId objectId);
 
-	void objectSetAccessibilityOnOrOff(ObjectId objectId, uint32 a2, uint32 a3);
+	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot);
+	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 a3, uint32 a4);
+	void objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId);
+	void objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId);
+	void objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId, uint32 a2, uint32 a3);
+	void objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId, uint32 a2, uint32 a3);
 
 	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key);
 
-	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10);
+	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 
 	void objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8);
 	void objectSetPassiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8);
@@ -151,9 +156,9 @@ public:
 	void objectAddPresentation(ObjectId objectId);
 	void objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, FontId fontId, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13);
 	void objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, bool isActive, uint32 a8, uint32 priority);
-	void objectPresentationAddImageToRotation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4);
+	void objectPresentationAddImageToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer);
 	void objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12);
-	void objectPresentationAddAnimationToRotation(ObjectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
+	void objectPresentationAddAnimationToRotation(ObjectId, uint32 presentationIndex, Id rotationId, uint32 a4, uint32 a5, float a6, uint32 a7);
 	void objectPresentationSetAnimationOnPuzzle(ObjectId id, uint32 a2, uint32 a3, uint32 a4);
 	void objectPresentationSetAnimationOnRotation(ObjectId id, uint32 a2, uint32 a3, uint32 a4);
 	void objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, Common::Point point);

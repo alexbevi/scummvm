@@ -632,8 +632,28 @@ void Application::objectRemove(ObjectId id) {
 	_objects.remove(id);
 }
 
-void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, uint32 a2, uint32 a3) {
+void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 a3, uint32 a4) {
 	error("[Application::objectSetAccessibilityOnOrOff] Not implemented");
+}
+
+void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot) {
+	error("[Application::objectSetAccessibilityOnOrOff] Not implemented");
+}
+
+void Application::objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId, uint32 a2, uint32 a3) {
+	objectSetAccessibilityOnOrOff(objectId, true, a2, a3);
+}
+
+void Application::objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId, uint32 a2, uint32 a3) {
+	objectSetAccessibilityOnOrOff(objectId, false, a2, a3);
+}
+
+void Application::objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId) {
+	objectSetAccessibilityOnOrOff(objectId, true);
+}
+
+void Application::objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId) {
+	objectSetAccessibilityOnOrOff(objectId, false);
 }
 
 void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
@@ -653,8 +673,14 @@ void Application::objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 acce
 	_objects.get(objectId)->setAccessibilityKey(accessibilityIndex, key);
 }
 
-void Application::objectAddRotationAccessibility(ObjectId, Id rotationId, Common::Rect rect, uint32 a8, uint32 a9, uint32 a10) {
-	error("[Application::objectAddRotationAccessibility] Not implemented");
+void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+	if (!_objects.has(objectId))
+		error("[Application::objectAddRotationAccessibility] Object Id doesn't exist (%d)", objectId);
+
+	if (!_rotations.has(rotationId))
+		error("[Application::objectAddRotationAccessibility] Rotation Id doesn't exist (%d)", rotationId);
+
+	_objects[objectId]->addRotationAccessibility(_rotations.get(rotationId), rect, enabled, a9, a10);
 }
 
 void Application::objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
@@ -704,16 +730,26 @@ void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 pr
 
 void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, bool isActive, uint32 a8, uint32 priority) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationAddTextToPuzzle] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationAddImageToPuzzle] Object Id doesn't exist (%d)", objectId);
 
 	if (!_puzzles.has(puzzleId))
-		error("[Application::objectPresentationAddTextToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::objectPresentationAddImageToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
 
 	_objects.get(objectId)->addImageToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, a5, a6, isActive, a8, priority, 0, _loadFrom);
 }
 
-void Application::objectPresentationAddImageToRotation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4) {
-	error("[Application::objectPresentationAddImageToRotation] Not implemented");
+void Application::objectPresentationAddImageToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationAddImageToRotation] Object Id doesn't exist (%d)", objectId);
+
+	if (!_rotations.has(rotationId))
+		error("[Application::objectPresentationAddImageToRotation] Rotation Id doesn't exist (%d)", rotationId);
+
+	Rotation *rotation = _rotations.get(rotationId);
+	if (layer >= rotation->getLayerCount())
+		error("[Application::objectPresentationAddImageToRotation] Rotation layer to big (was:%d, max: %d)", layer, rotation->getLayerCount() - 1);
+
+	_objects.get(objectId)->addImageToRotation(presentationIndex, rotation, layer);
 }
 
 void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12) {
@@ -726,19 +762,29 @@ void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint
 	_objects.get(objectId)->addAnimationToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, a5, a6, a7, 1, a8, a9, 0, a10, a11, a12, _loadFrom);
 }
 
-void Application::objectPresentationAddAnimationToRotation(ObjectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7) {
-	error("[Application::objectPresentationAddAnimationToRotation] Not implemented");
+void Application::objectPresentationAddAnimationToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer, uint32 a5, float a6, uint32 a7) {
+	if (!_objects.has(objectId))
+		error("[Application::objectPresentationAddImageToRotation] Object Id doesn't exist (%d)", objectId);
+
+	if (!_rotations.has(rotationId))
+		error("[Application::objectPresentationAddImageToRotation] Rotation Id doesn't exist (%d)", rotationId);
+
+	Rotation *rotation = _rotations.get(rotationId);
+	if (layer >= rotation->getLayerCount())
+		error("[Application::objectPresentationAddImageToRotation] Rotation layer to big (was:%d, max: %d)", layer, rotation->getLayerCount() - 1);
+
+	_objects.get(objectId)->addAnimationToRotation(presentationIndex, rotation, layer, a5, a6, a7);
 }
 
-void Application::objectPresentationSetAnimationOnPuzzle(ObjectId id, uint32 a2, uint32 a3, uint32 a4) {
+void Application::objectPresentationSetAnimationOnPuzzle(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4) {
 	error("[Application::objectPresentationSetAnimationOnPuzzle] Not implemented");
 }
 
-void Application::objectPresentationSetAnimationOnRotation(ObjectId id, uint32 a2, uint32 a3, uint32 a4) {
+void Application::objectPresentationSetAnimationOnRotation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4) {
 	error("[Application::objectPresentationSetAnimationOnRotation] Not implemented");
 }
 
-void Application::objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, Common::Point point) {
+void Application::objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, Common::Point point) {
 	error("[Application::objectPresentationSetAnimationCoordinatesOnPuzzle] Not implemented");
 }
 

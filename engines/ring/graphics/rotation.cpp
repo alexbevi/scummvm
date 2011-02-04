@@ -38,4 +38,8 @@ void Rotation::updateData(uint32 index, uint32 val) {
 	warning("[Rotation::updateData] Not implemented!");
 }
 
+uint32 Rotation::getLayerCount() {
+	error("[Rotation::getLayerCount] Not implemented!");
+}
+
 } // End of namespace Ring

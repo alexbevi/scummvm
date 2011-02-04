@@ -37,6 +37,8 @@ public:
 
 	void updateData(uint32 index, uint32 val);
 
+	uint32 getLayerCount();
+
 private:
 
 };

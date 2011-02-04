@@ -69,11 +69,11 @@ ObjectPresentation::~ObjectPresentation() {
 	CLEAR_ARRAY(Puzzle, _imagePuzzlePtr);
 	CLEAR_ARRAY(AnimationImage, _animationPuzzle);
 	CLEAR_ARRAY(Puzzle, _animationPuzzlePtr);
-	CLEAR_ARRAY(uint32, _layImagePtr);
+	CLEAR_ARRAY(uint32, _layerImagePtr);
 	CLEAR_ARRAY(Rotation, _layImageRotationPtr);
-	CLEAR_ARRAY(uint32, _layAnimationRotation);
-	CLEAR_ARRAY(Rotation, _layAnimationRotationPtr);
-	CLEAR_ARRAY(AnimationImage, _layAnimationRotationAnimation);
+	CLEAR_ARRAY(uint32, _layerAnimationRotation);
+	CLEAR_ARRAY(Rotation, _layerAnimationRotationPtr);
+	CLEAR_ARRAY(AnimationImage, _layerAnimationRotationAnimation);
 	CLEAR_ARRAY(Text, _textPuzzle);
 	CLEAR_ARRAY(Puzzle, _textPuzzlePtr);
 	CLEAR_ARRAY(Text, _textRotation);
@@ -128,28 +128,28 @@ void ObjectPresentation::show() {
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
 		(*it)->setTicks(g_system->getMillis());
 
-	for (Common::Array<AnimationImage *>::iterator it = _layAnimationRotationAnimation.begin(); it != _layAnimationRotationAnimation.end(); it++)
+	for (Common::Array<AnimationImage *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
 		(*it)->setTicks(g_system->getMillis());
 
-	for (uint32 i = 0; i < _layImagePtr.size(); i++)
-		_layImageRotationPtr[i]->updateData(*(_layImagePtr[i]), 1);
+	for (uint32 i = 0; i < _layerImagePtr.size(); i++)
+		_layImageRotationPtr[i]->updateData(*(_layerImagePtr[i]), 1);
 
-	for (uint32 i = 0; i < _layAnimationRotation.size(); i++)
-		_layAnimationRotationPtr[i]->updateData(*(_layAnimationRotation[i]), 1);
+	for (uint32 i = 0; i < _layerAnimationRotation.size(); i++)
+		_layerAnimationRotationPtr[i]->updateData(*(_layerAnimationRotation[i]), 1);
 }
 
 void ObjectPresentation::hide() {
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
 		(*it)->sub_416710();
 
-	for (Common::Array<AnimationImage *>::iterator it = _layAnimationRotationAnimation.begin(); it != _layAnimationRotationAnimation.end(); it++)
+	for (Common::Array<AnimationImage *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
 		(*it)->sub_416710();
 
-	for (uint32 i = 0; i < _layImagePtr.size(); i++)
-		_layImageRotationPtr[i]->updateData(*(_layImagePtr[i]), 0);
+	for (uint32 i = 0; i < _layerImagePtr.size(); i++)
+		_layImageRotationPtr[i]->updateData(*(_layerImagePtr[i]), 0);
 
-	for (uint32 i = 0; i < _layAnimationRotation.size(); i++)
-		_layAnimationRotationPtr[i]->updateData(*(_layAnimationRotation[i]), 0);
+	for (uint32 i = 0; i < _layerAnimationRotation.size(); i++)
+		_layerAnimationRotationPtr[i]->updateData(*(_layerAnimationRotation[i]), 0);
 }
 
 #pragma endregion

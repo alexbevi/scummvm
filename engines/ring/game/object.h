@@ -37,6 +37,7 @@ class Accessibility;
 class AnimationImage;
 class ObjectPresentation;
 class Puzzle;
+class Rotation;
 
 class Object : public BaseObject {
 public:
@@ -47,6 +48,7 @@ public:
 	void addPresentation();
 	void addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, uint32 a5, uint32 a6, FontId fontId, byte a8, byte a9, byte a10, uint32 a11, uint32 a12, uint32 a13);
 	void addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, uint32 a5, uint32 a6, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom);
+	void addImageToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer);
 	void showPresentation(uint32 presentationIndex);
 	void showPresentations();
 	void hidePresentation(uint32 presentationIndex);
@@ -54,10 +56,12 @@ public:
 
 	// Accessibility
 	void addPuzzleAccessibility(Puzzle *puzzle, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
+	void addRotationAccessibility(Rotation *rotation, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void setAccessibilityKey(uint32 accessibilityIndex, Common::KeyCode key);
 
 	// Animation
 	void addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, uint32 a14, LoadFrom loadFrom);
+	void addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7);
 
 	// Cursor
 	void setActiveCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);

@@ -76,11 +76,11 @@ private:
 	Common::Array<Puzzle *> _imagePuzzlePtr;
 	Common::Array<AnimationImage *> _animationPuzzle;
 	Common::Array<Puzzle *> _animationPuzzlePtr;
-	Common::Array<uint32 *> _layImagePtr;
+	Common::Array<uint32 *> _layerImagePtr;
 	Common::Array<Rotation *> _layImageRotationPtr;
-	Common::Array<uint32 *> _layAnimationRotation;
-	Common::Array<Rotation *> _layAnimationRotationPtr;
-	Common::Array<AnimationImage *> _layAnimationRotationAnimation;
+	Common::Array<uint32 *> _layerAnimationRotation;
+	Common::Array<Rotation *> _layerAnimationRotationPtr;
+	Common::Array<AnimationImage *> _layerAnimationRotationAnimation;
 	Common::Array<Text *> _textPuzzle;
 	Common::Array<Puzzle *> _textPuzzlePtr;
 	Common::Array<Text *> _textRotation;
