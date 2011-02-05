@@ -65,27 +65,32 @@ bool VideoPlayer::playVideo(char *filename) {
 	_skipVideo = false;
 	byte backupPalette[256 * 4];
 
-	// Figure out which player to use, based on extension
-	_player = &_smk;
-
 	// Backup the palette
 	_vm->_system->grabPalette(backupPalette, 0, 256);
 
-	if (!_player->loadFile(filename)) {
-		ColorSet *cs;
-		int length = strlen(filename);
-		filename[length - 5] = '0';
-		filename[length - 3] = 'f';
-		filename[length - 2] = 'l';
-		filename[length - 1] = 'c';
-		_player = &_flic;
+	// Figure out which player to use, based on extension
+	int length = strlen(filename);
+
+	if (filename[length - 3] == 's' &&
+		filename[length - 2] == 'm' &&
+		filename[length - 1] == 'k') {
+
+		_player = &_smk;
+
 		if (!_player->loadFile(filename))
-			error("Could not load flic file: %s\n", filename);
+			error("Could not load video file: %s\n", filename);
+
+	// Flic files have associated color set and audio files
+	} else {
+		_player = &_flic;
+
+		if (!_player->loadFile(filename))
+			error("Could not load video file: %s\n", filename);
 
 		filename[length - 3] = 'c';
 		filename[length - 2] = 'l';
 		filename[length - 1] = '\0';
-		cs = new ColorSet(filename);
+		ColorSet *cs = new ColorSet(filename);
 		_vm->screen()->useColorSet(cs, 0);
 		delete cs;
 

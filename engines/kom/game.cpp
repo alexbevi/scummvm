@@ -1703,15 +1703,24 @@ void Game::doActionPlayVideo(const char *name) {
 		sprintf(filename, "kom/%s/%s%s%s.smk",
 			dir, prefix, prefix[0] ? "/" : "", videoName.c_str());
 	else {
-		sprintf(filename, "kom/%s/%s%s%s%d.smk",
+		int len = sprintf(filename, "kom/%s/%s%s%s%d.smk",
 			dir, prefix, prefix[0] ? "/" : "", videoName.c_str(),
 			_vm->game()->player()->isNight);
 
-		// If the file doesn't exist, try the other day mode
-		if (!Common::File::exists(filename))
-			sprintf(filename, "kom/%s/%s%s%s%d.smk",
-				dir, prefix, prefix[0] ? "/" : "", videoName.c_str(),
-				1 - _vm->game()->player()->isNight);
+		// If the file isn't found, try the other day mode
+		if (!Common::File::exists(filename)) {
+
+			filename[len-5] = '0' + '1' - filename[len-5];
+
+			if (!Common::File::exists(filename)) {
+
+				// Still not found. Try flc extension
+				filename[len-5] = '0';
+				filename[len-3] = 'f';
+				filename[len-2] = 'l';
+				filename[len-1] = 'c';
+			}
+		}
 	}
 
 	// Fail silently when a video isn't found.
