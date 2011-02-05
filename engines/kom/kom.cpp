@@ -147,10 +147,6 @@ Common::Error KomEngine::run() {
 	return Common::kNoError;
 }
 
-void KomEngine::errorString(const char *buf1, char *buf2) {
-	strcpy(buf2, buf1);
-}
-
 void KomEngine::gameLoop() {
 	// TODO:
 	// setFrameRate(24)

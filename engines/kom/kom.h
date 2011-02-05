@@ -72,7 +72,6 @@ public:
 	Common::Error run();
 
 	::GUI::Debugger *getDebugger() { return _debugger; }
-	void errorString(const char *buf1, char *buf2);
 
 	Input *input() const { return _input; }
 	ActorManager *actorMan() const { return _actorMan; }
