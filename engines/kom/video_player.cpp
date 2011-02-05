@@ -135,7 +135,7 @@ void VideoPlayer::processFrame() {
 
 	Graphics::Surface *screen = _vm->_system->lockScreen();
 
-	if (_player->hasDirtyPalette()) {
+	if (_player->hasDirtyPalette() && _player == &_smk) {
 		_player->setSystemPalette();
 	}
 
