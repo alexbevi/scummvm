@@ -197,7 +197,7 @@ bool Conv::doTalk(int16 convNum, int32 optNum) {
 void Conv::doResponse(int responseNum) {
 	int count;
 	int num = -1;
-	int charId, offset;
+	int charId = 0, offset = 0;
 
 	initText(READ_LE_UINT32(_convEntry + 12));
 

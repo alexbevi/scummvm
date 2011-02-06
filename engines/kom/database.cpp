@@ -810,6 +810,7 @@ void Database::initScopes() {
 	char keyword[30];
 	uint8 actorIndex = 0;
 	uint8 scopeIndex = 0;
+	Character *charScope = NULL;
 
 	// Temporary variables to bypass scanf's %hhu - not supported by ISO C++
 	uint16 tmp1, tmp2, tmp3;
@@ -820,8 +821,6 @@ void Database::initScopes() {
 	} while (line.empty());
 
 	while (!f.eos()) {
-		Character *charScope;
-
 		sscanf(line.c_str(), "%s", keyword);
 
 		if (strcmp(keyword, "ACTOR") == 0) {

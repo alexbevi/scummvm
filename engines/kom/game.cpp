@@ -1109,7 +1109,7 @@ void Game::loopCollide() {
 
 	// Animate doors
 	for (uint i = 0; i < _roomDoors.size(); i++) {
-		int newState;
+		int newState = 0;
 		Actor *act = _vm->actorMan()->get(_roomDoors[i].actorId);
 
 		switch (_roomDoors[i].boxHit) {
@@ -1313,7 +1313,7 @@ void Game::loopInterfaceCollide() {
 
 		Object *obj = _vm->database()->getObj((*roomObjects)[i].objectId);
 		int32 z = 0;
-		int16 x, y;
+		int16 x = 0, y = 0;
 
 		if (!obj->isVisible)
 			continue;
@@ -1886,7 +1886,7 @@ int8 Game::doDonut(int type, Inventory *inv) {
 	Actor *donut = _vm->actorMan()->getDonut();
 	int8 donutLoopState = 1;
 	bool overVerb = false;
-	CommandType overCommand;
+	CommandType overCommand = CMD_WALK;
 
 	enum {
 		PICKUP = 0,
@@ -2182,7 +2182,7 @@ int Game::getDonutSegment(int xPos, int yPos) {
 	  segment = 5;
 	else if (0x40 <= tangent && tangent < 0x80)
 	  segment = 6;
-	else if (tangent < 0x40)
+	else // tangent < 0x40
 	  segment = 7;
 
 
@@ -2348,7 +2348,6 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 
 				if (inv.isSelected && inv.offset_3E == 0) {
 					CommandType cmdBackup;
-					bool foo;
 					int8 donutState;
 
 					_vm->sound()->playSampleSFX(_vm->_clickSample, false);
@@ -2359,7 +2358,7 @@ void Game::doInventory(int16 *objectNum, int16 *objectType, bool shop, uint8 mod
 						_vm->input()->setMousePos(_vm->input()->getMouseX(), 83);
 					} else {
 						_player.command = CMD_USE;
-						foo = false;
+						donutState = false;
 					}
 
 					if (donutState != 0) {
@@ -2610,7 +2609,7 @@ void Game::doLookAt(int charId, int pauseTimer, bool showBackground) {
 	char spellPoints[16];
 	char gold[16];
 	int displayedObject = -1;
-	int objRatio;
+	int objRatio = 0;
 	int16 hash[6];
 
 	// Generate codename hash
