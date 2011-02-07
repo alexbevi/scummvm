@@ -255,6 +255,7 @@ public:
 	void visualListAdd(Id visualId, PuzzleId puzzleId, ObjectId objectId);
 	void visualListRemove(Id visualId, PuzzleId puzzleId, ObjectId objectId, bool removeObject);
 	void visualListRemove(Id visualId, PuzzleId puzzleId, bool removeObject);
+	uint32 visualListGetItemCount(Id visualId, PuzzleId puzzleId);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors

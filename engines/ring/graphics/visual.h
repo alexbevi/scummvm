@@ -46,7 +46,28 @@ public:
 	VisualElement(Id id);
 	~VisualElement();
 
+	void init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
+
+	// Accessors
+	void setField8(uint32 val) { _field_8 = val; }
+	void setFieldC(uint32 val) { _field_C = val; }
+
 private:
+	uint32 _field_8;
+	byte _field_C;
+	uint32 _field_D;
+	uint32 _field_11;
+	uint32 _field_15;
+	uint32 _field_19;
+	uint32 _field_1D;
+	uint32 _field_21;
+	uint32 _field_25;
+	uint32 _field_29;
+	byte _field_2D;
+	uint32 _field_2E;
+	uint32 _field_32;
+	uint32 _field_36;
+	uint32 _field_3A;
 };
 
 class VisualObjectList : public Visual {
@@ -54,6 +75,7 @@ public:
 	VisualObjectList(Id id);
 	~VisualObjectList();
 
+	// Init
 	void init(uint32 a1, Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10, Common::String filename11, Common::String filename12, Common::String filename13, uint32 a15, ArchiveType archiveType);
 	void sub_46DCF0(uint32 a1, uint32 a2);
 	void sub_46DD11(uint32 a1, uint32 a2);
@@ -70,9 +92,15 @@ public:
 	void sub_46E3F0(int32 a1, int32 a2, int32 a3);
 	void setFontId(FontId fontId);
 
+	// Management
+	void add(ObjectId objectId);
+	void remove(ObjectId objectId, bool removeObject);
+	void removeAll(bool removeObject);
+
 	// Accessors
 	void setField8(uint32 val) { _field_8 = val; }
 	void setFieldC(uint32 val) { _field_C = val; }
+	uint32 getItemCount() { return _itemCount; }
 
 private:
 	uint32 _field_8;
@@ -123,7 +151,7 @@ private:
 	uint32 _field_B9;
 	uint32 _field_BD;
 	uint32 _field_C1;
-	uint32 _field_C5;
+	uint32 _itemCount;
 	uint32 _field_C9;
 	int32 _field_CD;
 	int32 _field_D1;

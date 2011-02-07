@@ -41,9 +41,35 @@ namespace Ring {
 #pragma region VisualElement
 
 VisualElement::VisualElement(Id id) : Visual(id) {
+	_field_8  = 0;
+	_field_C  = 0;
+	_field_D  = 0;
+	_field_11 = 0;
+	_field_15 = 0;
+	_field_19 = 0;
+	_field_1D = 0;
+	_field_21 = 0;
+	_field_25 = 0;
+	_field_29 = 0;
+	_field_2D = 0;
+	_field_2E = 0;
+	_field_32 = 0;
+	_field_36 = 0;
+	_field_3A = 0;
 }
 
 VisualElement::~VisualElement() {
+}
+
+void VisualElement::init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
+	_field_D  = a1;
+	_field_11 = a2;
+	_field_15 = a3;
+	_field_19 = a4;
+	_field_1D = a5;
+	_field_21 = a6;
+	_field_25 = a7;
+	_field_29 = a8;
 }
 
 #pragma endregion
@@ -100,7 +126,7 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_field_BD = 0;
 	_field_C9 = 0;
 	_field_C1 = 0;
-	_field_C5 = 0;
+	_itemCount = 0;
 	_text1 = NULL;
 	_text2 = NULL;
 	_fontId = kFontDefault;
@@ -343,5 +369,21 @@ void VisualObjectList::setFontId(FontId fontId) {
 
 #pragma endregion
 
+#pragma region Management
+
+void VisualObjectList::add(ObjectId objectId) {
+	error("[Application::add] Not implemented");
+}
+
+void VisualObjectList::remove(ObjectId objectId, bool removeObject) {
+	error("[Application::remove] Not implemented");
+}
+
+void VisualObjectList::removeAll(bool removeObject) {
+	error("[Application::removeAll] Not implemented");
+}
+
+
+#pragma endregion
 
 } // End of namespace Ring

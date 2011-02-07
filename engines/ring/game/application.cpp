@@ -1150,7 +1150,19 @@ IMPLEMENT_VAR_FUNCTIONS(Float,  float);
 #pragma region Visual
 
 void Application::visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10) {
-	error("[Application::visualAddShowToPuzzle] Not implemented");
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualAddListToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (puzzle->hasVisual(visualId))
+		error("[Application::visualAddListToPuzzle] Visual already exists on puzzle (%d)", visualId);
+
+	VisualElement *visual = new VisualElement(visualId);
+	visual->init(a3, a4, a5, a6, a7, a8, a9, a10);
+	visual->setField8(2);
+	visual->setFieldC(1);
+
+	puzzle->addVisual(visual);
 }
 
 void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3,
@@ -1168,7 +1180,7 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (puzzle->hasVisual(visualId))
-		error("[Application::visualAddListToPuzzle] Visual Id already exists (%d)", visualId);
+		error("[Application::visualAddListToPuzzle] Visual already exists on puzzle (%d)", visualId);
 
 	VisualObjectList *list = new VisualObjectList(visualId);
 	list->init(a3, imagePath, iconPath, filename3, filename4, filename5, filename6, filename7, filename8, filename9, filename10, filename11, filename12, filename13, a17, archiveType);
@@ -1193,15 +1205,47 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 }
 
 void Application::visualListAdd(Id visualId, PuzzleId puzzleId, ObjectId objectId) {
-	error("[Application::visualListAdd] Not implemented");
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId);
+
+	((VisualObjectList *)puzzle->getVisual(visualId))->add(objectId);
 }
 
 void Application::visualListRemove(Id visualId, PuzzleId puzzleId, ObjectId objectId, bool removeObject) {
-	error("[Application::visualListRemove] Not implemented");
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId);
+
+	((VisualObjectList *)puzzle->getVisual(visualId))->remove(objectId, removeObject);
 }
 
 void Application::visualListRemove(Id visualId, PuzzleId puzzleId, bool removeObject) {
-	error("[Application::visualListRemove] Not implemented");
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId);
+
+	((VisualObjectList *)puzzle->getVisual(visualId))->removeAll(removeObject);
+}
+
+uint32 Application::visualListGetItemCount(Id visualId, PuzzleId puzzleId) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId);
+
+	return ((VisualObjectList *)puzzle->getVisual(visualId))->getItemCount();
 }
 
 #pragma endregion
