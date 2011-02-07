@@ -26,11 +26,12 @@
 #ifndef RING_CURSOR_H
 #define RING_CURSOR_H
 
+#include "ring/graphics/animation.h"
+
 #include "ring/shared.h"
 
 namespace Ring {
 
-class AnimationImage;
 class Image;
 
 //////////////////////////////////////////////////////////////////////////
@@ -39,8 +40,7 @@ public:
 	CursorBase();
 	virtual ~CursorBase();
 
-	virtual void init(CursorId id, Common::String name, CursorType cursorType, byte a4);
-	virtual void deinit() = 0;
+	virtual void init(CursorId id, Common::String name, CursorType cursorType, byte frameCount);
 	virtual void alloc() = 0;
 	virtual void dealloc() = 0;
 	virtual void draw() {}
@@ -58,7 +58,7 @@ private:
 	Common::String _name;
 	CursorType _type;
 	Common::Point _offset;
-	byte _field_18;
+	byte _frameCount;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,6 @@ public:
 	~Cursor();
 
 	virtual void init(CursorId id, Common::String name, CursorType cursorType, byte a4);
-	virtual void deinit();
 	virtual void alloc();
 	virtual void dealloc();
 
@@ -86,7 +85,6 @@ public:
 	~CursorImage();
 
 	void init(CursorId id, Common::String name, CursorType cursorType, byte a4, ArchiveType archiveType);
-	virtual void deinit();
 	virtual void alloc();
 	virtual void dealloc();
 
@@ -96,19 +94,18 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-class CursorAnimation : public CursorBase {
+class CursorAnimation : public CursorBase, public AnimationImage {
 public:
 	CursorAnimation();
 	~CursorAnimation();
 
-	void init(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, ArchiveType archiveType);
-	virtual void deinit();
+	void init(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, LoadFrom loadFrom, ArchiveType archiveType);
 	virtual void alloc();
 	virtual void dealloc();
 	virtual void draw();
 
 private:
-	AnimationImage *_image;
+
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -117,7 +114,7 @@ public:
 	CursorHandler();
 	~CursorHandler();
 
-	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, ImageType imageType, ArchiveType archiveType);
+	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, LoadFrom loadFrom, ArchiveType archiveType);
 	void removeByType();
 
 	void draw();

@@ -182,7 +182,7 @@ int32 ArtHandler::getIndex(Zone zone, LoadFrom loadFrom) {
 	LoadFrom l = loadFrom;
 
 	// Compute zone & loadFrom
-	if (loadFrom == kLoadFromDisk || loadFrom == kLoadFrom3 || loadFrom == kLoadFrom4 || loadFrom == kLoadFrom5) {
+	if (loadFrom == kLoadFromDisk || loadFrom == kLoadFromCursor || loadFrom == kLoadFromListIcon || loadFrom == kLoadFrom5) {
 		z = kZoneSY;
 		l = kLoadFromDisk;
 	}

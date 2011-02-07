@@ -68,7 +68,7 @@ public:
 	void addImageToPuzzle(Puzzle *puzzle, Common::String filename, Common::Point point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom);
 
 	// Animation
-	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, LoadFrom loadFrom);
+	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, Common::Point point, uint32 a7, uint32 a8, uint32 priority, uint32 a10, uint32 a11, uint32 a12, uint32 a13, LoadFrom loadFrom);
 	void setAnimationCoordinatesOnPuzzle(Common::Point point);
 
 	// Show/Hide

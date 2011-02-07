@@ -37,7 +37,7 @@ SaveManager::~SaveManager() {
 }
 
 bool SaveManager::isLoaded(uint32 a1) {
-	//warning("[SaveLoad::isUnknown] Not implemented");
+	warning("[SaveLoad::isUnknown] Not implemented");
 
 	return false;
 }

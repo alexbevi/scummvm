@@ -42,6 +42,7 @@ ImageHandle::ImageHandle(Common::String nameId, Common::Point point, bool isActi
 ImageHandle::~ImageHandle() {
 	// Zero-out passed pointers
 	_objectPresentation = NULL;
+	_animation = NULL;
 }
 
 void ImageHandle::init(Common::String nameId, Common::Point point, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType) {
@@ -55,7 +56,7 @@ void ImageHandle::init(Common::String nameId, Common::Point point, bool isActive
 	_field_6C = 1;
 	_field_70 = a11;
 	_objectPresentation = NULL;
-	_field_75 = 0;
+	_animation = NULL;
 	_zone = zone;
 	_loadFrom = loadFrom;
 	_archiveType = archiveType;

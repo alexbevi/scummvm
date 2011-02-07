@@ -203,11 +203,11 @@ void Object::setAccessibilityOnOrOff(bool enableHotspot, uint32 fromAcceleration
 
 #pragma region Animation
 
-void Object::addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, uint32 a14, LoadFrom loadFrom) {
+void Object::addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, uint32 a5, Common::Point point, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, uint32 a14, LoadFrom loadFrom) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addAnimationToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
-	_presentations[presentationIndex]->addAnimationToPuzzle(puzzle, name, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, loadFrom);
+	_presentations[presentationIndex]->addAnimationToPuzzle(puzzle, name, a5, point, a8, a9, a10, a11, a12, a13, a14, loadFrom);
 }
 
 void Object::addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7) {

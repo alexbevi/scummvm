@@ -528,11 +528,6 @@ enum MovabilityType {
 	kMovabilityPuzzlePuzzle   = 3
 };
 
-enum ImageType {
-	kImageCursor   = 3,
-	kImageListIcon = 4
-};
-
 enum ArchiveType {
 	kArchiveInvalid = 0,
 	kArchiveFile    = 101,
@@ -540,12 +535,12 @@ enum ArchiveType {
 };
 
 enum LoadFrom {
-	kLoadFromInvalid = 0,
-	kLoadFromCd      = 1,
-	kLoadFromDisk    = 2,
-	kLoadFrom3       = 3,
-	kLoadFrom4       = 4,
-	kLoadFrom5       = 5
+	kLoadFromInvalid  = 0,
+	kLoadFromCd       = 1,
+	kLoadFromDisk     = 2,
+	kLoadFromCursor   = 3,
+	kLoadFromListIcon = 4,
+	kLoadFrom5        = 5
 };
 
 enum Zone {

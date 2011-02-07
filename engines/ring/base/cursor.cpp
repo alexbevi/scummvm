@@ -36,17 +36,17 @@ namespace Ring {
 
 CursorBase::CursorBase() : BaseObject(kCursorInvalid) {
 	_type = kCursorTypeInvalid;
-	_field_18 = 0;
+	_frameCount = 0;
 }
 
 CursorBase::~CursorBase() {
 }
 
-void CursorBase::init(CursorId id, Common::String name, CursorType cursorType, byte a4) {
+void CursorBase::init(CursorId id, Common::String name, CursorType cursorType, byte frameCount) {
 	_id	 = id;
 	_name = name;
 	_type  = cursorType;
-	_field_18 = a4;
+	_frameCount = frameCount;
 }
 
 #pragma endregion
@@ -59,19 +59,13 @@ Cursor::Cursor() {
 }
 
 Cursor::~Cursor() {
-	deinit();
 }
 
-void Cursor::init(CursorId id, Common::String name, CursorType cursorType, byte a4) {
-	CursorBase::init(id, name, cursorType, a4);
+void Cursor::init(CursorId id, Common::String name, CursorType cursorType, byte frameCount) {
+	CursorBase::init(id, name, cursorType, frameCount);
 
-	if (a4 == 1)
+	if (frameCount == 1)
 		alloc();
-}
-
-void Cursor::deinit() {
-	// TODO release cursor resources
-	error("[Cursor::deinit] Not implemented");
 }
 
 void Cursor::alloc() {
@@ -91,21 +85,17 @@ CursorImage::CursorImage() {
 }
 
 CursorImage::~CursorImage() {
-	deinit();
+	SAFE_DELETE(_image);
 }
 
-void CursorImage::init(CursorId id, Common::String name, CursorType cursorType, byte a4, ArchiveType archiveType) {
-	CursorBase::init(id, name, cursorType, a4);
+void CursorImage::init(CursorId id, Common::String name, CursorType cursorType, byte frameCount, ArchiveType archiveType) {
+	CursorBase::init(id, name, cursorType, frameCount);
 
 	_archiveType = archiveType;
 	_image = new Image();
 
-	if (a4 == 1)
+	if (frameCount == 1)
 		alloc();
-}
-
-void CursorImage::deinit() {
-	SAFE_DELETE(_image);
 }
 
 void CursorImage::alloc() {
@@ -134,35 +124,27 @@ void CursorImage::dealloc() {
 #pragma region CursorAnimation
 
 CursorAnimation::CursorAnimation() {
-	_image = new AnimationImage();
 }
 
 CursorAnimation::~CursorAnimation() {
-	deinit();
-	SAFE_DELETE(_image);
 }
 
-void CursorAnimation::init(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, ArchiveType archiveType) {
-	CursorBase::init(id, name, cursorType, a4);
-
-	_image->init(name, 1, 0, 0, 0, 3, a4, a5, 1, a6, a3, 0, a7, archiveType);
-	_image->setTicks(g_system->getMillis());
-}
-
-void CursorAnimation::deinit() {
-	_image->deinit();
+void CursorAnimation::init(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 frameCount, uint32 a5, uint32 a6, LoadFrom loadFrom, ArchiveType archiveType) {
+	CursorBase::init(id, name, cursorType, frameCount);
+	AnimationImage::init(name, 1, Common::Point(0, 0), 0, 3, frameCount, a5, 1, a6, a3, 0, loadFrom, archiveType);
+	setTicks(g_system->getMillis());
 }
 
 void CursorAnimation::alloc() {
-	_image->alloc();
+	AnimationImage::alloc();
 }
 
 void CursorAnimation::dealloc() {
-	_image->dealloc();
+	AnimationImage::dealloc();
 }
 
 void CursorAnimation::draw() {
-	_image->draw();
+	AnimationImage::draw();
 }
 
 #pragma endregion
@@ -177,7 +159,7 @@ CursorHandler::~CursorHandler() {
 	CLEAR_ARRAY(CursorBase, _cursors);
 }
 
-void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, ImageType imageType, ArchiveType archiveType) {
+void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (_cursors.has(id))
 		error("[CursorHandler::add] ID already exists (%d)", id);
 
@@ -201,16 +183,16 @@ void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType,
 			error("[CursorHandler::add] Invalid archive type (archiveType: %d)", archiveType);
 
 		Common::String path;
-		switch (imageType) {
+		switch (loadFrom) {
 		default:
-			error("[CursorHandler::add] Cannot load image cursor (imageType: %d)", imageType);
+			error("[CursorHandler::add] Cannot load image cursor (loadFrom: %d)", loadFrom);
 			break;
 
-		case kImageCursor:
+		case kLoadFromCursor:
 			path = Common::String::format("%sCURSOR/%s.tga", archiveType == kArchiveFile ? "" : "/", name.c_str());
 			break;
 
-		case kImageListIcon:
+		case kLoadFromListIcon:
 			path = Common::String::format("%sLSTICON/%s.tga", archiveType == kArchiveFile ? "" : "/", name.c_str());
 			break;
 		}
@@ -222,7 +204,7 @@ void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType,
 
 	case kCursorTypeAnimated:
 		cursor = new CursorAnimation();
-		((CursorAnimation *)cursor)->init(id, name, cursorType, a3, a4, a5, a6, imageType, archiveType);
+		((CursorAnimation *)cursor)->init(id, name, cursorType, a3, a4, a5, a6, loadFrom, archiveType);
 		break;
 	}
 

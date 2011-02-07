@@ -28,14 +28,14 @@
 namespace Ring {
 
 Rotation::Rotation(Id id, Common::String name, uint32 a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6) : BaseObject(id) {
-	warning("[Rotation::Rotation] Not implemented!");
+	error("[Rotation::Rotation] Not implemented!");
 }
 
 Rotation::~Rotation() {
 }
 
 void Rotation::updateData(uint32 index, uint32 val) {
-	warning("[Rotation::updateData] Not implemented!");
+	error("[Rotation::updateData] Not implemented!");
 }
 
 uint32 Rotation::getLayerCount() {

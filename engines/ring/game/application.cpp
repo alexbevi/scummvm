@@ -414,18 +414,18 @@ void Application::fontAdd(FontId id, Common::String filename, Common::String fac
 	_fontHandler->add(id, filename, facename, height, smallWeight, underline, italic, strikeout, langId);
 }
 
-void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, ImageType imageType, ArchiveType archiveType) {
+void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (!_cursorHandler)
 		error("[Application::cursorAdd] Cursor handler is not initialized properly");
 
-	_cursorHandler->add(id, name, cursorType, a3, 0, 0, 0, imageType, archiveType);
+	_cursorHandler->add(id, name, cursorType, a3, 0, 0, 0, loadFrom, archiveType);
 }
 
-void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, ImageType imageType, ArchiveType archiveType) {
+void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (!_cursorHandler)
 		error("[Application::cursorAdd] Cursor handler is not initialized properly");
 
-	_cursorHandler->add(id, name, cursorType, a3, a4, a5, a6, imageType, archiveType);
+	_cursorHandler->add(id, name, cursorType, a3, a4, a5, a6, loadFrom, archiveType);
 }
 
 void Application::cursorSetOffset(CursorId id, Common::Point offset) {
@@ -681,13 +681,13 @@ void Application::objectAdd(ObjectId id, Common::String language, Common::String
 	_objects.push_back(new Object(this, id, processedLanguage, processedName, a5));
 }
 
-void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, float a5, uint32 a6) {
+void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 frameCount, float a5, uint32 a6) {
 	if (!_objects.has(objectId))
 		error("[Application::objectAddBagAnimation] Object Id doesn't exist (%d)", objectId);
 
 	Object *object = _objects.get(objectId);
 	AnimationImage *image = new AnimationImage();
-	image->init(object->getName(), a2, 0, 0, 0, a3, a4, a5, 1, a6, 0, 1000, 4, (_configuration.artBAG ? kArchiveArt : kArchiveFile));
+	image->init(object->getName(), a2, Common::Point(0, 0), 0, a3, frameCount, a5, 1, a6, 0, 1000, kLoadFromListIcon, (_configuration.artBAG ? kArchiveArt : kArchiveFile));
 	image->setField89();
 
 	object->setAnimationImage(image);
@@ -881,14 +881,14 @@ Common::Point Application::objectPresentationGetImageCoordinatesOnPuzzle(ObjectI
 	return _objects.get(objectId)->getImageCoordinatesOnPuzzle(presentationIndex, imageIndex);
 }
 
-void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12) {
+void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, Common::Point point, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationAddAnimationToPuzzle] Object Id doesn't exist (%d)", objectId);
 
 	if (!_puzzles.has(puzzleId))
 		error("[Application::objectPresentationAddAnimationToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
 
-	_objects.get(objectId)->addAnimationToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, a5, a6, a7, 1, a8, a9, 0, a10, a11, a12, _loadFrom);
+	_objects.get(objectId)->addAnimationToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, a5, point, 1, a8, a9, 0, a10, a11, a12, _loadFrom);
 }
 
 void Application::objectPresentationAddAnimationToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer, uint32 a5, float a6, uint32 a7) {

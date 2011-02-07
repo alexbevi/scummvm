@@ -33,42 +33,32 @@ namespace Ring {
 class ImageHandle;
 class ObjectPresentation;
 
-class AnimationImage {
+class Animation {
 public:
-	AnimationImage();
-	~AnimationImage();
+	Animation();
+	~Animation();
 
-	void init(Common::String name, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, ArchiveType archiveType);
-	void deinit();
-	void alloc();
-	void dealloc();
+	void init(uint32 frameCount, float a2, uint32 startFrame, byte a4, uint32 priority);
 
-	void draw();
 	void sub_416710();
 
-	void updatePresentation(ObjectPresentation *objectPresentation);
-	void updateCurrentImage();
-
-	void setCoordinates(Common::Point point);
-
-	// Accessors
 	void setTicks(uint32 ticks);
+	void setStartFrame(uint32 frame);
+	void setActiveFrame(uint32 frame);
 	void setField20(byte val) { _field_20 = 0; }
-	void setField89() { _field_89 = 1; }
-	ImageHandle *getCurrentImage() { return _currentImage; }
 
-private:
+protected:
 	uint32 _field_0;
 	Common::String _name;
-	uint32 _field_8;
-	uint32 _field_C;
-	uint32 _field_10;
+	uint32 _frameCount;
+	float _field_C;
+	uint32 _startFrame;
 	uint32 _field_14;
 	uint32 _field_18;
-	uint32 _field_1C;
+	uint32 _priority;
 	byte   _field_20;
 	byte   _field_21;
-	uint32 _currentIndex;
+	uint32 _activeFrame;
 	byte   _field_26;
 	byte   _field_27;
 	uint32 _field_28;
@@ -84,13 +74,38 @@ private:
 	uint32 _field_4A;
 	byte   _field_4E;
 	uint32 _ticks;
-	uint32 _field_53;
+	float  _field_53;
 	byte   _field_57;
 	uint32 _field_58;
 	uint32 _field_5C;
 	byte   _field_60;
 	int32  _field_61;
 	uint32 _field_65;
+};
+
+class AnimationImage : public Animation {
+public:
+	AnimationImage();
+	virtual ~AnimationImage();
+
+	void init(Common::String name, uint32 a2, Common::Point point, uint32 a5, uint32 a6, uint32 frameCount, float a8, uint32 startFrame, char a10, uint32 a11, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType);
+	void alloc();
+	void dealloc();
+
+	void drawActiveFrame();
+	void drawActiveFrame(Common::Point point);
+	void draw();
+
+	// Accessors
+	void setField89() { _field_89 = 1; }
+	void setCoordinates(Common::Point point);
+	ImageHandle *getCurrentImage() { return _currentImage; }
+
+	// Helpers
+	void updatePresentation(ObjectPresentation *objectPresentation);
+	void updateCurrentImage();
+
+private:
 	Common::Array<ImageHandle *> _imageHandles;
 	uint32 _field_6D;
 	Common::Point _coordinates;

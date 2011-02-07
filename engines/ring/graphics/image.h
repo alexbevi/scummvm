@@ -30,6 +30,7 @@
 
 namespace Ring {
 
+class Animation;
 class ObjectPresentation;
 
 class Image {
@@ -60,6 +61,8 @@ public:
 	// Accessors
 	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
 	uint32 getPriority() { return _priority; }
+	void setField6C(uint32 val) { _field_6C = val; }
+	void setAnimation(Animation *animation) { _animation = animation; }
 
 private:
 	Common::String _directory;
@@ -73,7 +76,7 @@ private:
 	uint32 _field_6C;
 	byte _field_70;
 	ObjectPresentation *_objectPresentation;
-	uint32 _field_75;
+	Animation *_animation;
 	Zone _zone;
 	LoadFrom _loadFrom;
 	ArchiveType _archiveType;

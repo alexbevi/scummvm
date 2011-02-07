@@ -104,9 +104,9 @@ void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filenam
 	puzzle->addPresentationImage(image);
 }
 
-void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, LoadFrom loadFrom) {
+void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, Common::Point point, uint32 a7, uint32 a8, uint32 priority, uint32 a10, uint32 frameCount, uint32 a12, uint32 a13, LoadFrom loadFrom) {
 	AnimationImage *animation = new AnimationImage();
-	animation->init(filename, a4, a5, a6, 0, a8, a11, a12, 1, a13, a10, a9, loadFrom, _application->getArchiveType());
+	animation->init(filename, a4, point, 0, a8, frameCount, a12, 1, a13, a10, priority, loadFrom, _application->getArchiveType());
 	animation->updatePresentation(this);
 	if (!(a13 & 2)) {
 		animation->setField20(0);
@@ -116,12 +116,10 @@ void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String fil
 	_animationPuzzle.push_back(animation);
 	_animationPuzzlePtr.push_back(puzzle);
 
-	// FIXME: Implement proper animation initialization
-	warning("[ObjectPresentation::addAnimationToPuzzle] Not implemented");
-	//animation->updateCurrentImage();
+	animation->updateCurrentImage();
 
-	//puzzle->addPresentationImage(animation->getCurrentImage());
-	//puzzle->addPresentationAnimation(this);
+	puzzle->addPresentationImage(animation->getCurrentImage());
+	puzzle->addPresentationAnimation(this);
 }
 
 void ObjectPresentation::setAnimationCoordinatesOnPuzzle(Common::Point point) {
