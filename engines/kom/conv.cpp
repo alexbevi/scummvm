@@ -46,7 +46,7 @@ Conv::Conv(KomEngine *vm, uint16 charId)
 	_convEntry = _vm->database()->getConvIndex(_codename);
 
 	// Backup the palette
-	_vm->_system->grabPalette(_backupPalette, 0, 256);
+	_vm->_system->getPaletteManager()->grabPalette(_backupPalette, 0, 256);
 
 	_vm->screen()->showMouseCursor(false);
 }
@@ -56,7 +56,7 @@ Conv::~Conv() {
 	delete[] _text;
 
 	// Restore the palette
-	_vm->_system->setPalette(_backupPalette, 0, 256);
+	_vm->_system->getPaletteManager()->setPalette(_backupPalette, 0, 256);
 
 	_vm->screen()->showMouseCursor(true);
 }

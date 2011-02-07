@@ -66,7 +66,7 @@ bool VideoPlayer::playVideo(char *filename) {
 	byte backupPalette[256 * 4];
 
 	// Backup the palette
-	_vm->_system->grabPalette(backupPalette, 0, 256);
+	_vm->_system->getPaletteManager()->grabPalette(backupPalette, 0, 256);
 
 	// Figure out which player to use, based on extension
 	int length = strlen(filename);
@@ -125,7 +125,7 @@ bool VideoPlayer::playVideo(char *filename) {
 	_vm->_system->updateScreen();
 
 	// Restore the palette
-	_vm->_system->setPalette(backupPalette, 0, 256);
+	_vm->_system->getPaletteManager()->setPalette(backupPalette, 0, 256);
 
 	return true;
 }

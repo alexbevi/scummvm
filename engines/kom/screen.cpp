@@ -569,16 +569,16 @@ void Screen::drawActorFrameLine(byte *outBuffer, const int8 *rowData, uint16 len
 void Screen::useColorSet(ColorSet *cs, uint start) {
 	static const byte black[4] = { 0, 0, 0, 0 };
 
-	_system->setPalette(cs->data, start, cs->size);
+	_system->getPaletteManager()->setPalette(cs->data, start, cs->size);
 
 	// Index 0 is always black
-	_system->setPalette(black, 0, 1);
+	_system->getPaletteManager()->setPalette(black, 0, 1);
 
 	_paletteChanged = true;
 }
 
 void Screen::setPaletteColor(int index, const byte color[4]) {
-	_system->setPalette(color, index, index + 1);
+	_system->getPaletteManager()->setPalette(color, index, index + 1);
 
 	_paletteChanged = true;
 }
@@ -586,7 +586,7 @@ void Screen::setPaletteColor(int index, const byte color[4]) {
 void Screen::setPaletteBrightness() {
 	byte newPalette[256 * 4];
 
-	_system->grabPalette(newPalette, 0, 256);
+	_system->getPaletteManager()->grabPalette(newPalette, 0, 256);
 
 	if (_currBrightness < 256) {
 
@@ -594,7 +594,7 @@ void Screen::setPaletteBrightness() {
 			newPalette[i] = newPalette[i] * _currBrightness / 256;
 		}
 
-		_system->setPalette(newPalette, 0, 256);
+		_system->getPaletteManager()->setPalette(newPalette, 0, 256);
 		_paletteChanged = true;
 		_newBrightness = 9999;
 	} else {
@@ -612,7 +612,7 @@ void Screen::createSepia(bool shop) {
 	Graphics::Surface *screen = _system->lockScreen();
 	assert(screen);
 
-	_system->grabPalette(_backupPalette, 0, 256);
+	_system->getPaletteManager()->grabPalette(_backupPalette, 0, 256);
 
 	for (uint y = 0; y < SCREEN_H - PANEL_H; ++y) {
 		for (uint x = 0; x < SCREEN_W; ++x) {
@@ -635,7 +635,7 @@ void Screen::freeSepia() {
 
 	delete[] _sepiaScreen;
 	_sepiaScreen = 0;
-	_system->setPalette(_backupPalette, 0, 256);
+	_system->getPaletteManager()->setPalette(_backupPalette, 0, 256);
 
 	_backgroundRedraw = true;
 }
@@ -894,7 +894,7 @@ void Screen::updateBackground() {
 					rgbaPalette[i * 4 + 3] = 0;
 				}
 
-				_system->setPalette(rgbaPalette, 128, 128);
+				_system->getPaletteManager()->setPalette(rgbaPalette, 128, 128);
 				_paletteChanged = true;
 			}
 		}
