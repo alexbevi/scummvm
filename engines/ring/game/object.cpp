@@ -62,7 +62,7 @@ Object::~Object() {
 #pragma region Presentation
 
 void Object::addPresentation() {
-	_presentations.push_back(new ObjectPresentation(_application, this));
+	_presentations.push_back(new ObjectPresentation(this));
 }
 
 void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, uint32 a5, uint32 a6, FontId fontId, byte a8, byte a9, byte a10, uint32 a11, uint32 a12, uint32 a13) {

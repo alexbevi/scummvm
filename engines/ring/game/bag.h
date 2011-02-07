@@ -38,7 +38,7 @@ class Text;
 
 class Bag {
 public:
-	Bag(Application *application);
+	Bag();
 	~Bag();
 
 	// Initialization
@@ -69,8 +69,6 @@ public:
 	bool has(ObjectId id);
 
 private:
-	Application *_application;
-
 	// Bag data
 	Common::Array<Object *> _objects;
 	Common::Array<uint32*> _field_4;

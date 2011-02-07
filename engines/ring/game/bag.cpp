@@ -38,7 +38,7 @@
 
 namespace Ring {
 
-Bag::Bag(Application *application) : _application(application) {
+Bag::Bag() {
 	_field_C = 0;
 	_field_10 = 0;
 	_field_14 = 0;
@@ -109,9 +109,6 @@ Bag::~Bag() {
 	SAFE_DELETE(_text);
 	SAFE_DELETE(_imageErdaGun);
 	SAFE_DELETE(_imageErdaGur);
-
-	// Zero-out passed pointers
-	_application = NULL;
 }
 
 #pragma region Initialization
@@ -226,7 +223,7 @@ void Bag::loadBackground(Common::String filename1, Common::String, Common::Strin
 
 	// Setup text
 	SAFE_DELETE(_text);
-	_text = new Text(_application);
+	_text = new Text();
 	_text->init("", 0, 0, _fontId, _field_AD, _field_B1, _field_B5, _field_B9, _field_BD, _field_C1);
 }
 

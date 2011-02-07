@@ -29,11 +29,14 @@
 
 #include "ring/game/application.h"
 
+#include "ring/ring.h"
+#include "ring/helpers.h"
+
 #include "graphics/fonts/winfont.h"
 
 namespace Ring {
 
-Text::Text(Application *application) : _application(application) {
+Text::Text() {
 	_fontId  = kFontInvalid;
 	_field_8  = 0;
 	_field_C  = 0;
@@ -47,9 +50,6 @@ Text::Text(Application *application) : _application(application) {
 
 Text::~Text() {
 	_objectPresentation = NULL;
-
-	// Zero-out passed pointers
-	_application = NULL;
 }
 
 void Text::init(Common::String text, uint32 a1, uint32 a2, FontId fontId, byte a4, byte a5, byte a6, int32 a7, int32 a8, int32 a9) {
@@ -76,13 +76,27 @@ void Text::set(Common::String text) {
 	_text = text;
 
 	// Get the text font and calculate text dimensions
-	Graphics::WinFont *font = _application->getFontHandler()->getFont(_fontId);
+	Graphics::WinFont *font = getApp()->getFontHandler()->getFont(_fontId);
 	if (font) {
 		_width = font->getStringWidth(text);
 		_height = font->getFontHeight();
 	} else {
 		_width = 0;
 		_height = 0;
+	}
+}
+
+void Text::setField10(uint32 a1, uint32 a2, uint32 a3) {
+	_field_10 = (byte)a1 | ((a2 | a3 << 4) << 8);
+}
+
+void Text::setFields1C1D(uint32 a1, uint32 a2, uint32 a3) {
+	if (a1 != -1 || a2 != -1 || a3 != -1) {
+		_field_1C = 0;
+		_field_1D = (byte)a1 | ((a2 | a3 << 4) << 8);
+	} else {
+		_field_1C = 1;
+		_field_1D = 0;
 	}
 }
 

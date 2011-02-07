@@ -45,6 +45,7 @@
 #include "ring/graphics/dragControl.h"
 #include "ring/graphics/rotation.h"
 #include "ring/graphics/video.h"
+#include "ring/graphics/visual.h"
 
 #include "ring/helpers.h"
 #include "ring/ring.h"
@@ -181,7 +182,7 @@ void Application::init() {
 	if (_configuration.artBAG)
 		_archiveType = kArchiveArt;
 
-	_bag= new Bag(this);
+	_bag= new Bag();
 	_bag->sub_417D20(0, 0);
 	_bag->sub_417D40(18, 42, 44, 100);
 	_bag->sub_417D60(0, 0);
@@ -1152,15 +1153,55 @@ void Application::visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 	error("[Application::visualAddShowToPuzzle] Not implemented");
 }
 
-void Application::visualAddListToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3,
-	                                    Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10,
+void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3,
+	                                    Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10,
 	                                    Common::String filename11, Common::String filename12, Common::String filename13,
-							            uint32 a16, uint32 a17, uint32 a18, uint32 a19, uint32 a20, uint32 a21, uint32 a22, uint32 a23, uint32 a24, uint32 a25,
-	                                    uint32 a26, uint32 a27, uint32 a28, uint32 a29, uint32 a30, uint32 a31, uint32 a32, uint32 a33, uint32 a34, uint32 a35,
-	                                    uint32 a36, uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, uint32 a42, uint32 a43, uint32 a44, uint32 a45,
-							            uint32 a46, uint32 a47, uint32 a48, uint32 a49, uint32 a50, uint32 a51, int32 a52, int32 a53, int32 a54, int32 a55,
+							            uint32 a17, uint32 a18, uint32 a19, uint32 a20, uint32 a21, uint32 a22, uint32 a23, uint32 a24, uint32 a25, uint32 a26,
+	                                    uint32 a27, uint32 a28, uint32 a29, uint32 a30, uint32 a31, uint32 a32, uint32 a33, uint32 a34, uint32 a35, uint32 a36,
+	                                    uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, uint32 a42, uint32 a43, uint32 a44, uint32 a45, uint32 a46,
+							            uint32 a47, uint32 a48, uint32 a49, uint32 a50, uint32 a51, uint32 a52, int32  a53,  int32 a54, int32  a55, FontId fontId,
 							            ArchiveType archiveType) {
-	error("[Application::visualAddListToPuzzle] Not implemented");
+
+
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualAddListToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (puzzle->hasVisual(visualId))
+		error("[Application::visualAddListToPuzzle] Visual Id already exists (%d)", visualId);
+
+	VisualObjectList *list = new VisualObjectList(visualId);
+	list->init(a3, imagePath, iconPath, filename3, filename4, filename5, filename6, filename7, filename8, filename9, filename10, filename11, filename12, filename13, a17, archiveType);
+	list->setField8(1);
+	list->setFieldC(1);
+	list->sub_46DCF0(a18, a19);
+	list->sub_46DD11(a20, a21);
+	list->sub_46DD30(a22, a23, a24, a25, a26, a27);
+	list->sub_46DD60(a28, a29);
+	list->sub_46DDA0(a30, a31, a32, a33);
+	list->sub_46DD80(a34, a35);
+	list->sub_46DDD0(a36, a37, a38, a39);
+	list->sub_46DE00(a40, a41, a42, a43);
+	list->sub_46DE30(a44, a45);
+	list->sub_46E330(a46);
+	list->initHotspots();
+	list->sub_46E340(a47, a48, a49, a50, a51, a52);
+	list->sub_46E3F0(a53, a54, a55);
+	list->setFontId(fontId);
+
+	puzzle->addVisual(list);
+}
+
+void Application::visualListAdd(Id visualId, PuzzleId puzzleId, ObjectId objectId) {
+	error("[Application::visualListAdd] Not implemented");
+}
+
+void Application::visualListRemove(Id visualId, PuzzleId puzzleId, ObjectId objectId, bool removeObject) {
+	error("[Application::visualListRemove] Not implemented");
+}
+
+void Application::visualListRemove(Id visualId, PuzzleId puzzleId, bool removeObject) {
+	error("[Application::visualListRemove] Not implemented");
 }
 
 #pragma endregion

@@ -34,19 +34,10 @@
 #include "ring/graphics/image.h"
 #include "ring/graphics/rotation.h"
 
+#include "ring/ring.h"
 #include "ring/helpers.h"
 
 namespace Ring {
-
-#pragma region Visual
-
-Visual::Visual() {
-}
-
-Visual::~Visual() {
-}
-
-#pragma endregion
 
 #pragma region Presentation
 
@@ -60,7 +51,7 @@ PresentationImage::~PresentationImage() {
 
 #pragma region Presentation
 
-ObjectPresentation::ObjectPresentation(Application *application, Object *object) : _application(application), _object(object) {
+ObjectPresentation::ObjectPresentation(Object *object) : _object(object) {
 	_isShown = false;
 }
 
@@ -78,13 +69,10 @@ ObjectPresentation::~ObjectPresentation() {
 	CLEAR_ARRAY(Puzzle, _textPuzzlePtr);
 	CLEAR_ARRAY(Text, _textRotation);
 	CLEAR_ARRAY(Rotation, _textRotationPtr);
-
-	// Zero-out passed pointers
-	_application = NULL;
 }
 
 void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, uint32 a4, uint32 a5, FontId fontId, byte a7, byte a8, byte a9, int32 a10, int32 a11, int32 a12) {
-	Text *textObject = new Text(_application);
+	Text *textObject = new Text();
 	textObject->init(text, a4, a5, fontId, a7, a8, a9, a10, a11, a12);
 	textObject->setObjectPresentation(this);
 
@@ -95,7 +83,7 @@ void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, ui
 }
 
 void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filename, Common::Point point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom) {
-	ImageHandle *image = new ImageHandle(filename, point, isActive, a7, priority, a9, _application->getCurrentZone(), loadFrom, 4, _application->getArchiveType());
+	ImageHandle *image = new ImageHandle(filename, point, isActive, a7, priority, a9, getApp()->getCurrentZone(), loadFrom, 4, getApp()->getArchiveType());
 	image->setObjectPresentation(this);
 
 	_imagePuzzle.push_back(image);
@@ -106,7 +94,7 @@ void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filenam
 
 void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, Common::Point point, uint32 a7, uint32 a8, uint32 priority, uint32 a10, uint32 frameCount, uint32 a12, uint32 a13, LoadFrom loadFrom) {
 	AnimationImage *animation = new AnimationImage();
-	animation->init(filename, a4, point, 0, a8, frameCount, a12, 1, a13, a10, priority, loadFrom, _application->getArchiveType());
+	animation->init(filename, a4, point, 0, a8, frameCount, a12, 1, a13, a10, priority, loadFrom, getApp()->getArchiveType());
 	animation->updatePresentation(this);
 	if (!(a13 & 2)) {
 		animation->setField20(0);

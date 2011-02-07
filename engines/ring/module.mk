@@ -27,6 +27,7 @@ MODULE_OBJS := \
 	graphics/presentation.o \
 	graphics/rotation.o \
 	graphics/video.o \
+	graphics/visual.o \
 	debug.o \
 	detection.o \
 	ring.o

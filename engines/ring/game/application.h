@@ -244,14 +244,17 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Visual
 	void visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10);
-	void visualAddListToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3,
-	                           Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10,
+	void visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3,
+	                           Common::String imageDir, Common::String iconDir, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10,
 	                           Common::String filename11, Common::String filename12, Common::String filename13,
-							   uint32 a16, uint32 a17, uint32 a18, uint32 a19, uint32 a20, uint32 a21, uint32 a22, uint32 a23, uint32 a24, uint32 a25,
-	                           uint32 a26, uint32 a27, uint32 a28, uint32 a29, uint32 a30, uint32 a31, uint32 a32, uint32 a33, uint32 a34, uint32 a35,
-	                           uint32 a36, uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, uint32 a42, uint32 a43, uint32 a44, uint32 a45,
-							   uint32 a46, uint32 a47, uint32 a48, uint32 a49, uint32 a50, uint32 a51, int32 a52, int32 a53, int32 a54, int32 a55,
+							   uint32 a17, uint32 a18, uint32 a19, uint32 a20, uint32 a21, uint32 a22, uint32 a23, uint32 a24, uint32 a25, uint32 a26,
+							   uint32 a27, uint32 a28, uint32 a29, uint32 a30, uint32 a31, uint32 a32, uint32 a33, uint32 a34, uint32 a35, uint32 a36,
+							   uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, uint32 a42, uint32 a43, uint32 a44, uint32 a45, uint32 a46,
+							   uint32 a47, uint32 a48, uint32 a49, uint32 a50, uint32 a51, uint32 a52, int32  a53,  int32 a54, int32  a55, FontId fontId,
 							   ArchiveType archiveType);
+	void visualListAdd(Id visualId, PuzzleId puzzleId, ObjectId objectId);
+	void visualListRemove(Id visualId, PuzzleId puzzleId, ObjectId objectId, bool removeObject);
+	void visualListRemove(Id visualId, PuzzleId puzzleId, bool removeObject);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors

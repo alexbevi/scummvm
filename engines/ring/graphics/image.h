@@ -59,13 +59,14 @@ public:
 	void setCoordinates(Common::Point point) { _coordinates = point; }
 
 	// Accessors
+	void setPath(Common::String path) { _path = path; }
 	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
 	uint32 getPriority() { return _priority; }
 	void setField6C(uint32 val) { _field_6C = val; }
 	void setAnimation(Animation *animation) { _animation = animation; }
 
 private:
-	Common::String _directory;
+	Common::String _path;
 	Common::String _nameId;
 	Common::Point _coordinates;
 	Common::Point _coordinates2;

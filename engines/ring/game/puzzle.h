@@ -59,6 +59,9 @@ public:
 	void setMovabilityOnOrOff(bool enableHotspot);
 	void setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability);
 
+	// Visual
+	void addVisual(Visual *visual);
+
 	// Sound
 	void addAmbientSound(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7);
 	void add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4, uint32 a5, uint32 fadeFrames, float a7, uint32 a9);
@@ -68,6 +71,9 @@ public:
 
 	// Accessors
 	Movability *getMovability(uint32 index);
+
+	bool hasVisual(Id visualId) { return _visuals.has(visualId); }
+	Visual *getVisual(Id visualId) { return _visuals.get(visualId); }
 
 private:
 	Application *_application;
@@ -79,7 +85,7 @@ private:
 	Common::Array<ObjectPresentation *>    _presentationAnimations;
 	Common::Array<Text *>                  _texts;
 	Common::Array<SoundItem *>             _soundItems;
-	Common::Array<Visual *>                _visuals;
+	AssociativeArray<Visual *>             _visuals;
 	uint32 _field_24;
 	byte   _field_28;
 	uint32 _field_29;

@@ -34,6 +34,7 @@
 #include "ring/graphics/image.h"
 #include "ring/graphics/movability.h"
 #include "ring/graphics/presentation.h"
+#include "ring/graphics/visual.h"
 
 #include "ring/helpers.h"
 
@@ -142,6 +143,22 @@ void Puzzle::setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uin
 
 #pragma endregion
 
+#pragma region Visual
+
+void Puzzle::addVisual(Visual *visual) {
+	if (!visual)
+		error("[Puzzle::addVisual] Visual is not initialized properly");
+
+	if (hasVisual(visual->getId()))
+		error("[Puzzle::addVisual] Visual Id already exists (%d)", visual->getId());
+
+	_visuals.push_back(visual);
+}
+
+#pragma endregion
+
+#pragma region Sound
+
 void Puzzle::addAmbientSound(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	SoundItem *item = new SoundItem(_id);
 	item->init(entry, volume, a3, isOn, fadeFrames, a6, a7);
@@ -182,6 +199,7 @@ void Puzzle::setAmbientSoundVolume(Id soundId, uint32 volume) {
 	item->setVolume(volume);
 }
 
+#pragma endregion
 
 #pragma region Accessors
 

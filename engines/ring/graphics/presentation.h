@@ -47,18 +47,9 @@ private:
 
 };
 
-class Visual {
-public:
-	Visual();
-	~Visual();
-
-private:
-
-};
-
 class ObjectPresentation {
 public:
-	ObjectPresentation(Application *application, Object *object);
+	ObjectPresentation(Object *object);
 	~ObjectPresentation();
 
 	// Text
@@ -77,8 +68,6 @@ public:
 	void hideAndRemove();
 
 private:
-	Application *_application;
-
 	Object *_object;
 	bool _isShown;
 	Common::Array<ImageHandle *>    _imagePuzzle;
