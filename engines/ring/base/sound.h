@@ -38,7 +38,7 @@ class Application;
 //////////////////////////////////////////////////////////////////////////
 class SoundEntry : public BaseObject {
 public:
-	SoundEntry(Id soundId, SoundType type, Common::String name, byte a5);
+	SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format);
 	~SoundEntry();
 
     void setVolume(uint32 volume);
@@ -54,15 +54,55 @@ private:
 	SoundType      _type;
 	Common::String _name;
 	uint32         _field_10C;
-	byte           _field_110;
+	LoadFrom       _loadFrom;
 	uint32         _volume;
 	uint32         _field_115;
 	uint32         _field_119;
 	uint32         _field_11D;
-	LoadFrom       _loadFrom;
+	SoundFormat    _format;
 	uint32         _field_125;
 };
 
+class SoundEntryS : public SoundEntry {
+public:
+	SoundEntryS(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, uint32 soundChunk);
+	~SoundEntryS();
+
+private:
+	uint32         _field_126;
+	uint32         _field_12A;
+	uint32         _field_12E;
+	uint32         _field_132;
+	uint32         _field_136;
+	uint32         _field_13A;
+	uint32         _field_13E;
+	uint32         _field_142;
+	uint32         _field_146;
+	uint32         _field_14A;
+	uint32         _field_14E;
+	uint32         _field_152;
+	uint32         _field_156;
+	uint32         _field_15A;
+	uint32         _field_15E;
+	uint32         _field_162;
+	//uint32         _event;
+	uint32         _soundChunk;
+};
+
+class SoundEntryD : public SoundEntry {
+public:
+	SoundEntryD(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format);
+	~SoundEntryD();
+
+private:
+	uint32         _field_126;
+	uint32         _field_12A;
+	uint32         _field_12E;
+	uint32         _field_132;
+	uint32         _field_136;
+	uint32         _field_13A;
+	uint32         _field_13E;
+};
 
 class SoundManager {
 public:

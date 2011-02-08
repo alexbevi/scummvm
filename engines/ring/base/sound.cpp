@@ -37,16 +37,16 @@ namespace Ring {
 
 #pragma region SoundEntry
 
-SoundEntry::SoundEntry(Id soundId, SoundType type, Common::String name, byte a5) : BaseObject(soundId) {
+SoundEntry::SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format) : BaseObject(soundId) {
 	_type      = type;
 	_name      = name;
 	_field_10C = 0;
-	_field_110 = a5;
-	_volume    = 0;
-	_field_115 = 0;
+	_loadFrom  = loadFrom;
+	_volume    = 100;
+	_field_115 = 100;
 	_field_119 = 0;
 	_field_11D = 0;
-	_loadFrom  = kLoadFromInvalid;
+	_format    = format;
 	_field_125 = 1;
 }
 
@@ -81,6 +81,52 @@ SoundFormat SoundEntry::getFormat(Common::String filename) {
 
 #pragma endregion
 
+#pragma region SoundEntryS
+
+SoundEntryS::SoundEntryS(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, uint32 soundChunk) : SoundEntry(soundId, type, name, loadFrom, format) {
+	_field_126 = 0;
+	_field_12A = 0;
+	_field_12E = 0;
+	_field_132 = 0;
+	_field_136 = 0;
+	_field_13A = 0;
+	_field_13E = 0;
+	_field_142 = 0;
+	_field_146 = 0;
+	_field_14A = 0;
+	_field_14E = 0;
+	_field_152 = 0;
+	_field_156 = 0;
+	_field_15A = 0;
+	_field_15E = 0;
+	_field_162 = 0;
+	//_event = NULL;
+	_soundChunk = soundChunk;
+}
+
+SoundEntryS::~SoundEntryS() {
+}
+
+#pragma endregion
+
+#pragma region SoundEntryD
+
+SoundEntryD::SoundEntryD(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format) : SoundEntry(soundId, type, name, loadFrom, format) {
+	_field_126 = 0;
+	_field_12A = 0;
+	_field_12E = 0;
+	_field_132 = 0;
+	_field_136 = 0;
+	_field_13A = 0;
+	_field_13E = 0;
+}
+
+SoundEntryD::~SoundEntryD() {
+}
+
+#pragma endregion
+
+
 #pragma region SoundManager
 
 SoundManager::SoundManager(Application *application) : _application(application) {
@@ -94,7 +140,18 @@ SoundManager::~SoundManager() {
 }
 
 void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk) {
-	warning("[SoundManager::addEntry] Not implemented!");
+	// Check if we already have a sound entry for this id
+	if (getSoundEntry(soundId))
+		return;
+
+	SoundEntry *entry = NULL;
+	if (a4) {
+		entry = new SoundEntryS(soundId, type, filename, loadFrom, format, soundChunk);
+	} else {
+		entry = new SoundEntryD(soundId, type, filename, loadFrom, format);
+	}
+
+	_entries.push_back(entry);
 }
 
 SoundEntry *SoundManager::getSoundEntry(Id soundId) {
