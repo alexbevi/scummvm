@@ -414,6 +414,7 @@ void ConditionBlock::readFrom(Common::SeekableReadStream *objstream) {
 
 	how_close_dist = objstream->readUint16LE();
 
+	// TODO: zero skill check becomes -1 at load
 	skill_check = objstream->readUint16LE();
 
 	counter_value = objstream->readUint16LE();
@@ -445,7 +446,7 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 
 	x_pos = objstream->readUint16LE();
 	y_pos = objstream->readUint16LE();
-
+	// z_pos?
 	unknown8 = objstream->readUint16LE();
 
 	// these are always 0xffff inside objects..
@@ -472,9 +473,10 @@ void AlterBlock::readFrom(Common::SeekableReadStream *objstream) {
 	// .. neither is the voice_id
 	assert(voice_group != 0xffffffff || voice_id == 0xffffffff);
 
+	// talk begin/end stuff??
 	unknown11 = objstream->readByte();
 	unknown12 = objstream->readByte();
-	// checks
+	// random checks
 	assert(unknown11 == 0xff || unknown11 == 0 || unknown11 == 1 || unknown11 == 2 || unknown11 == 3);
 	assert(unknown12 == 0xff || unknown12 == 0 || unknown12 == 1);
 
@@ -1300,7 +1302,7 @@ ResultType AlterBlock::execute(UnityEngine *_vm, Action *context) {
 		}
 
 		if (alter_flags & 0x1) {
-			// TODO: talk?
+			// TODO: talk? - run immediately (action 5), who is worldobj+16(??)
 			warning("unimplemented: AlterBlock::execute (%s): alter_flag 1", obj->identify().c_str());
 		}
 		if (alter_flags & 0x02) {
@@ -1357,6 +1359,7 @@ ResultType AlterBlock::execute(UnityEngine *_vm, Action *context) {
 
 		obj->x = x_pos;
 		obj->y = y_pos;
+		// TODO: z_pos too?
 	}
 
 	if (alter_name.size()) {
@@ -1376,7 +1379,7 @@ ResultType AlterBlock::execute(UnityEngine *_vm, Action *context) {
 		did_something = true;
 		warning("unimplemented: AlterBlock::execute (%s): voice %x/%x/%x", obj->identify().c_str(), voice_group, voice_subgroup, voice_id);
 
-		// TODO: alter voice for the description?
+		// TODO: alter voice for the description? set all, if voice_id is not 0xffffffff
 	}
 
 	if (alter_state != 0xff) {
@@ -1410,6 +1413,7 @@ ResultType AlterBlock::execute(UnityEngine *_vm, Action *context) {
 				anim_id = 30000 - alter_anim;
 				// TODO: some other magic?
 				// (try going into the third area of Allanor: 020412 tries this on the drone)
+				// TODO: this probably just force-stops the animation
 				warning("weird animation id %04x (%d)", alter_anim, anim_id);
 			} else {
 				// TODO: ?!?
@@ -1440,6 +1444,7 @@ ResultType AlterBlock::execute(UnityEngine *_vm, Action *context) {
 
 	if (unknown8 != 0xffff) {
 		did_something = true;
+		// TODO: set y_adjust
 		warning("unimplemented: AlterBlock::execute (%s): unknown8 %x", obj->identify().c_str(), unknown8);
 	}
 
@@ -1457,11 +1462,13 @@ ResultType AlterBlock::execute(UnityEngine *_vm, Action *context) {
 	}
 
 	if (unknown11 != 0xff) {
+		// TODO: cursor id
 		did_something = true;
 		warning("unimplemented: AlterBlock::execute (%s): unknown11 %x", obj->identify().c_str(), unknown11);
 	}
 
 	if (unknown12 != 0xff) {
+		// TODO: cursor flag
 		did_something = true;
 		warning("unimplemented: AlterBlock::execute (%s): unknown12 %x", obj->identify().c_str(), unknown12);
 	}
@@ -1701,7 +1708,7 @@ ResultType CommunicateBlock::execute(UnityEngine *_vm, Action *context) {
 				error("'%s' is not a valid hail string (during Communicate)",
 					targ->talk_string.c_str());
 
-			// TODO: use hail_type
+			// TODO: use hail_type!!
 			targ->runHail(targ->talk_string);
 			return 0;
 		}
