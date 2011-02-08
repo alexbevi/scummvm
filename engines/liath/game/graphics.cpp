@@ -222,7 +222,7 @@ void GraphicsManager::setPalette(Common::String paletteName) {
 
 	// Set the screen palette
 	byte *palette = toSystemPalette(_palette);
-	g_system->setPalette(palette, 0, 3);
+	g_system->getPaletteManager()->setPalette(palette, 0, 3);
 	free(palette);
 }
 
