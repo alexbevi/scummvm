@@ -259,7 +259,8 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
-	Zone getCurrentZone() { return _zone; }	
+	Zone getCurrentZone() { return _zone; }
+	Common::String getCurrentZoneString() { return getZoneString(_zone); }
 	ArchiveType getArchiveType() { return _archiveType; }
 
 	//////////////////////////////////////////////////////////////////////////

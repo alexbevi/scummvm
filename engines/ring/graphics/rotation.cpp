@@ -25,13 +25,106 @@
 
 #include "ring/graphics/rotation.h"
 
+#include "ring/base/sound.h"
+#include "ring/base/text.h"
+
+#include "ring/game/application.h"
+
+#include "ring/graphics/accessibility.h"
+#include "ring/graphics/animation.h"
+#include "ring/graphics/image.h"
+#include "ring/graphics/movability.h"
+#include "ring/graphics/presentation.h"
+
+#include "ring/ring.h"
+
 namespace Ring {
 
+#pragma region Node
+
+Node::Node() {
+	_field_0 = 0;
+	_field_4 = 0;
+	_field_8 = 0;
+	_field_5C = 0;
+}
+
+Node::~Node() {
+}
+
+#pragma endregion
+
+#pragma region RotationData
+
+RotationData::RotationData(uint32 count, Common::String path) {
+	_path = path;
+
+	for (uint32 i = 0; i < count; i++)
+		_nodes.push_back(new Node());
+
+	_count = count;
+}
+
+RotationData::~RotationData() {
+	CLEAR_ARRAY(Node, _nodes);
+}
+
+#pragma endregion
+
+#pragma region Rotation
+
 Rotation::Rotation(Id id, Common::String name, uint32 a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6) : BaseObject(id) {
-	error("[Rotation::Rotation] Not implemented!");
+	_field_8 = a6;
+	_comBufferLength = 0;
+
+	// Compute path
+	_path = Common::String::format("DATA/%s/NODE/%s", getApp()->getCurrentZoneString().c_str(), name.c_str());
+
+	_field_28 = a3;
+	_field_65 = 0;
+	_field_66 = 0;
+
+	initNodes(nodeCount);
 }
 
 Rotation::~Rotation() {
+	CLEAR_ARRAY(Movability,         _movabilities);
+	CLEAR_ARRAY(Accessibility,      _accessibilities);
+	CLEAR_ARRAY(ObjectPresentation, _presentations);
+	CLEAR_ARRAY(AnimationImage,     _animationImages);
+	CLEAR_ARRAY(Text,               _texts);
+	CLEAR_ARRAY(SoundItem,          _soundItems);
+	CLEAR_ARRAY(ImageHandle,        _imageHandles);
+
+	SAFE_DELETE(_data);
+}
+
+void Rotation::initNodes(uint32 count) {
+	_data = new RotationData(count, _path);
+
+	_field_31  = 1.0f;
+	_field_35  = 0.3f;
+	_amplitude = 30.0f;
+	_field_3D  = 1.0f;
+	_speed     = 1.0f;
+	_field_67  = 0;
+	_field_68  = 225.0f;
+	_field_6C  = 0;
+	_field_70  = 85.0f;
+}
+
+void Rotation::addAccessibility(Accessibility *accessibility) {
+	if (accessibility == NULL)
+		error("[Rotation::addAccessibility] Accessibility is NULL!");
+
+	_accessibilities.push_back(accessibility);
+}
+
+void Rotation::addMovability(Movability *movability) {
+	if (movability == NULL)
+		error("[Rotation::addMovability] Movability is NULL!");
+
+	_movabilities.push_back(movability);
 }
 
 void Rotation::updateData(uint32 index, uint32 val) {
@@ -41,5 +134,7 @@ void Rotation::updateData(uint32 index, uint32 val) {
 uint32 Rotation::getLayerCount() {
 	error("[Rotation::getLayerCount] Not implemented!");
 }
+
+#pragma endregion
 
 } // End of namespace Ring
