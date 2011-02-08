@@ -1914,7 +1914,8 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	uint16 unknown1 = stream->readUint16LE();
 	uint16 unknown2 = stream->readUint16LE();
 	//printf("(%04x, %04x), ", unknown1, unknown2);
-	assert(unknown2 == 0 || (unknown2 >= 6 && unknown2 <= 15) || unknown2 == 0xffff);
+	// the 0xfffb is somewhere after a USE on 070504, see 7/4
+	assert(unknown2 == 0 || (unknown2 >= 6 && unknown2 <= 15) || unknown2 == 0xffff || unknown2 == 0xfffb);
 
 	unknown1 = stream->readUint16LE();
 	//printf("(%04x), ", unknown1);
@@ -2096,10 +2097,10 @@ void Response::execute(UnityEngine *_vm, Object *speaker, Conversation *src) {
 
 	Object *targetobj = speaker;
 	if (target.id != 0xff) {
-		if (target.world == 0 && target.screen == 0 && (target.id == 0x20 || target.id == 0x23)) {
+		if (target.world == 0 && target.screen == 0 && (target.id >= 0x20 && target.id <= 0x28)) {
 			// TODO: super hack
-			warning("weird target: this is meant to be the Enterprise?");
-			target.id = 0;
+			warning("weird target: this is meant to be actors on the Enterprise?");
+			target.id -= 0x20;
 		}
 		targetobj = _vm->data.getObject(target);
 	}
