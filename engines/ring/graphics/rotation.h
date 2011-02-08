@@ -92,6 +92,8 @@ public:
 	Node();
 	~Node();
 
+	void update(uint32 val);
+
 private:
 	uint32 _field_0;
 	uint32 _field_4;
@@ -105,6 +107,7 @@ public:
 	RotationData(uint32 count, Common::String path);
 	~RotationData();
 
+	void update(uint32 index, uint32 val);
 	uint32 getCount() { return _count; }
 
 private:
@@ -124,7 +127,7 @@ public:
 
 	Animation *addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, uint32 a5);
 
-	void updateData(uint32 index, uint32 val);
+	void updateNode(uint32 index, uint32 val);
 
 	// Accessors
 	uint32 getLayerCount();

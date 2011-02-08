@@ -66,7 +66,9 @@ public:
 	void setAnimationOnPuzzle(uint32 animationIndex, ObjectId objectId);
 	void setAnimationOnRotation(uint32 animationIndex, ObjectId objectId);
 	void setAnimationCoordinatesOnPuzzle(Common::Point point);
-
+	void pauseAnimation();
+	void unpauseAnimation();
+	void pauseFrameAnimation(uint32 frame, uint32 a3, uint32 a4);
 
 	// Show/Hide
 	void show();

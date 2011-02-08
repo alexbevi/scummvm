@@ -256,15 +256,24 @@ void Object::setAnimationCoordinatesOnPuzzle(uint32 presentationIndex, Common::P
 }
 
 void Object::pauseAnimation(uint32 presentationIndex) {
-	error("[Object::pauseAnimation] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::pauseAnimation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->pauseAnimation();
 }
 
 void Object::unpauseAnimation(uint32 presentationIndex) {
-	error("[Object::unpauseAnimation] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::unpauseAnimation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->unpauseAnimation();
 }
 
 void Object::pauseFrameAnimation(uint32 presentationIndex, uint32 frame, uint32 a3, uint32 a4) {
-	error("[Object::pauseFrameAnimation] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::pauseAnimation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->pauseFrameAnimation(frame, a3, a4);
 }
 
 #pragma endregion

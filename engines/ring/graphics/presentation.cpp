@@ -145,6 +145,30 @@ void ObjectPresentation::setAnimationCoordinatesOnPuzzle(Common::Point point) {
 		(*it)->setCoordinates(point);
 }
 
+void ObjectPresentation::pauseAnimation() {
+	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
+		(*it)->pause();
+
+	for (Common::Array<Animation *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
+		(*it)->pause();
+}
+
+void ObjectPresentation::unpauseAnimation() {
+	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
+		(*it)->unpause();
+
+	for (Common::Array<Animation *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
+		(*it)->unpause();
+}
+
+void ObjectPresentation::pauseFrameAnimation(uint32 frame, uint32 a3, uint32 a4) {
+	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
+		(*it)->pauseOnFrame(frame, a3, a4);
+
+	for (Common::Array<Animation *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
+		(*it)->pauseOnFrame(frame, a3, a4);
+}
+
 void ObjectPresentation::show() {
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
 		(*it)->setTicks(g_system->getMillis());
@@ -153,10 +177,10 @@ void ObjectPresentation::show() {
 		(*it)->setTicks(g_system->getMillis());
 
 	for (uint32 i = 0; i < _layerImagePtr.size(); i++)
-		_layImageRotationPtr[i]->updateData(*(_layerImagePtr[i]), 1);
+		_layImageRotationPtr[i]->updateNode(*(_layerImagePtr[i]), 1);
 
 	for (uint32 i = 0; i < _layerAnimationRotation.size(); i++)
-		_layerAnimationRotationPtr[i]->updateData(*(_layerAnimationRotation[i]), 1);
+		_layerAnimationRotationPtr[i]->updateNode(*(_layerAnimationRotation[i]), 1);
 }
 
 void ObjectPresentation::hide() {
@@ -167,10 +191,10 @@ void ObjectPresentation::hide() {
 		(*it)->sub_416710();
 
 	for (uint32 i = 0; i < _layerImagePtr.size(); i++)
-		_layImageRotationPtr[i]->updateData(*(_layerImagePtr[i]), 0);
+		_layImageRotationPtr[i]->updateNode(*(_layerImagePtr[i]), 0);
 
 	for (uint32 i = 0; i < _layerAnimationRotation.size(); i++)
-		_layerAnimationRotationPtr[i]->updateData(*(_layerAnimationRotation[i]), 0);
+		_layerAnimationRotationPtr[i]->updateNode(*(_layerAnimationRotation[i]), 0);
 }
 
 void ObjectPresentation::hideAndRemove() {

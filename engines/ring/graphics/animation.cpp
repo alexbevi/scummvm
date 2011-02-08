@@ -95,7 +95,7 @@ void Animation::initAnimation(uint32 frameCount, float a2, uint32 startFrame, by
 	}
 
 	_field_26 = 0;
-	_field_27 = 0;
+	_paused = false;
 	_field_28 = 0;
 	_field_2C = 1;
 	_field_2D = 0;
@@ -177,6 +177,35 @@ void Animation::setActiveFrame(uint32 frame) {
 
 	_startFrame = frame;
 	_activeFrame = frame;
+}
+
+void Animation::pauseOnFrame(uint32 frame, uint32 a2, uint32 a3) {
+	if (frame >= _frameCount + 1 || frame < 1)
+		error("[Animation::pauseOnFrame] Invalid pause frame number (was: %d, valid: [1-%d])", frame, _frameCount);
+
+	_field_46 = a2;
+	_field_42 = frame - 1;
+	_field_4A = 1;
+
+	if (a3 != 2) {
+		uint32 f1 = _activeFrame - frame + 1;
+		uint32 f2 = 0;
+
+		if (f1 <= 0) {
+			f1 = _activeFrame - _startFrame - frame + _frameCount;
+			f2 = frame + 1 - _activeFrame;
+		} else {
+			f2 = _startFrame - _activeFrame - frame + _frameCount;
+		}
+
+		if (_field_14 == 4 || (_field_14 == 16 || _field_14 == 32) && _field_57 == 1) {
+			if (f1 < f2)
+				_field_14 = 8;
+		} else {
+			if (f2 < f1)
+				_field_14 = 4;
+		}
+	}
 }
 
 #pragma endregion

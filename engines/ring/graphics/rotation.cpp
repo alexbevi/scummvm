@@ -52,6 +52,13 @@ Node::Node() {
 Node::~Node() {
 }
 
+void Node::update(uint32 val) {
+	if (_field_5C != val) {
+		_field_5C = val;
+		_field_4 = 1;
+	}
+}
+
 #pragma endregion
 
 #pragma region RotationData
@@ -67,6 +74,10 @@ RotationData::RotationData(uint32 count, Common::String path) {
 
 RotationData::~RotationData() {
 	CLEAR_ARRAY(Node, _nodes);
+}
+
+void RotationData::update(uint32 index, uint32 val) {
+	_nodes[index]->update(val);
 }
 
 #pragma endregion
@@ -146,8 +157,8 @@ Animation *Rotation::addPresentationAnimation(ObjectPresentation *presentation, 
 	return animation;
 }
 
-void Rotation::updateData(uint32 index, uint32 val) {
-	error("[Rotation::updateData] Not implemented!");
+void Rotation::updateNode(uint32 index, uint32 val) {
+	_data->update(index, val);
 }
 
 uint32 Rotation::getLayerCount() {

@@ -40,11 +40,16 @@ public:
 
 	void initAnimation(uint32 frameCount, float a2, uint32 startFrame, byte a4, uint32 priority);
 
+	void pause() { _paused = true; }
+	void unpause() { _paused = false; }
+
 	void sub_416710();
 
-	void setTicks(uint32 ticks);
 	void setStartFrame(uint32 frame);
 	void setActiveFrame(uint32 frame);
+	void pauseOnFrame(uint32 frame, uint32 a2, uint32 a3);
+
+	void setTicks(uint32 ticks);
 	void setField20(byte val) { _field_20 = 0; }
 
 protected:
@@ -59,7 +64,7 @@ protected:
 	byte   _field_21;
 	uint32 _activeFrame;
 	byte   _field_26;
-	byte   _field_27;
+	byte   _paused;
 	uint32 _field_28;
 	byte   _field_2C;
 	byte   _field_2D;
