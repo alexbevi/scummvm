@@ -63,7 +63,7 @@ void SoundEntry::setVolume(uint32 volume) {
 }
 
 void SoundEntry::updateVolume() {
-	error( "[SoundEntry::updateVolume] Not implemented");
+	error("[SoundEntry::updateVolume] Not implemented");
 }
 
 SoundFormat SoundEntry::getFormat(Common::String filename) {
@@ -200,7 +200,7 @@ void SoundItem::init(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uin
 }
 
 void SoundItem::init(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 a5, uint32 a6, uint32 fadeFrames, float angle, int a9) {
-	if (fadeFrames <= 1)
+	if (fadeFrames < 1) // FIXME??? (was <= 1)
 		error( "[SoundItem::init] Fade number of frames needs to be greater then 1 (was: %d)", fadeFrames);
 
 	_entry    = entry;

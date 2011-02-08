@@ -206,9 +206,11 @@ public:
 	void rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5,  uint32 a6, uint32 a7, int32 a8, int32 a9, uint32 a10);
 
-	void rotationAddAmbientSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);
-	void rotationSetAmbiantSoundOff(Id rotationId, Id soundId);
-	void rotationAdd3DSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8);
+	void rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volume, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7);
+	void rotationSetAmbientSoundOn(Id rotationId, Id soundId);
+	void rotationSetAmbientSoundOff(Id rotationId, Id soundId);
+	void rotationAdd3DSound(Id rotationId, uint32 soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 volume, float a7, uint32 a8);
+	void rotationSet3DSoundOn(Id rotationId, Id soundId);
 	void rotationSet3DSoundOff(Id rotationId, Id soundId);
 	void rotationSetJugOn(Id rotationId, float amplitude, float speed);
 

@@ -601,14 +601,14 @@ void Application::puzzleSetAmbientSoundOn(PuzzleId puzzleId, Id soundId) {
 	if (!_puzzles.has(puzzleId))
 		error("[Application::puzzleSetAmbientSoundOn] Wrong puzzle Id (%d)", puzzleId);
 
-	_puzzle->setAmbientSoundOn(soundId);
+	_puzzles.get(puzzleId)->setAmbientSoundOn(soundId);
 }
 
 void Application::puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId) {
 	if (!_puzzles.has(puzzleId))
 		error("[Application::puzzleSetAmbientSoundOff] Wrong puzzle Id (%d)", puzzleId);
 
-	_puzzle->setAmbientSoundOff(soundId);
+	_puzzles.get(puzzleId)->setAmbientSoundOff(soundId);
 }
 
 void Application::puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 volume, float a7, uint32 a8) {
@@ -1103,20 +1103,54 @@ void Application::rotationSetMovabilityToRotation(Id rotationId, uint32 movabili
 	movability->update(a3, a4, a5, a6, a7, a8, a9, a10);
 }
 
-void Application::rotationAddAmbientSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7) {
-	error("[Application::rotationAddAmbientSound] Not implemented");
+void Application::rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volume, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7) {
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationAddAmbientSound] Wrong rotation Id (%d)", rotationId);
+
+	SoundEntry *entry = _soundManager->getSoundEntry(soundId);
+	if (!entry)
+		error("[Application::rotationAddAmbientSound] Wrong sound Id (%d)", soundId);
+
+	if (entry->getType() != kSoundTypeAmbientMusic)
+		error("[Application::rotationAddAmbientSound] Wrong sound type, only kSoundTypeAmbientMusic(2) is allowed (%d)", entry->getType());
+
+	_rotations.get(rotationId)->addAmbientSound(entry, volume, a4, true, fadeFrames, a6, a7);
 }
 
-void Application::rotationSetAmbiantSoundOff(Id rotationId, Id soundId) {
-	error("[Application::rotationSetAmbiantSoundOff] Not implemented");
+void Application::rotationSetAmbientSoundOn(Id rotationId, Id soundId) {
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetAmbientSoundOn] Wrong rotation Id (%d)", rotationId);
+
+	_rotations.get(rotationId)->setAmbientSoundOn(soundId);
 }
 
-void Application::rotationAdd3DSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, float a7, uint32 a8) {
-	error("[Application::rotationAdd3DSound] Not implemented");
+void Application::rotationSetAmbientSoundOff(Id rotationId, Id soundId) {
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetAmbientSoundOff] Wrong rotation Id (%d)", rotationId);
+
+	_rotations.get(rotationId)->setAmbientSoundOff(soundId);
+}
+
+void Application::rotationAdd3DSound(Id rotationId, uint32 soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 volume, float a7, uint32 a8) {
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationAdd3DSound] Wrong rotation Id (%d)", rotationId);
+
+	SoundEntry *entry = _soundManager->getSoundEntry(soundId);
+	if (!entry)
+		error("[Application::rotationAdd3DSound] Wrong sound Id (%d)", soundId);
+
+	if (entry->getType() != kSoundTypeAmbientEffect)
+		error("[Application::rotationAdd3DSound] Wrong sound type, only kSoundTypeAmbientEffect(3) is allowed (%d)", entry->getType());
+
+	_rotations.get(rotationId)->add3DSound(entry, volume, true, a3, a4, fadeFrames, a7, a8);
+}
+
+void Application::rotationSet3DSoundOn(Id rotationId, Id soundId) {
+	rotationSetAmbientSoundOn(rotationId, soundId);
 }
 
 void Application::rotationSet3DSoundOff(Id rotationId, Id soundId) {
-	error("[Application::rotationSet3DSoundOff] Not implemented");
+	rotationSetAmbientSoundOff(rotationId, soundId);
 }
 
 void Application::rotationSetJugOn(Id rotationId, float amplitude, float speed) {

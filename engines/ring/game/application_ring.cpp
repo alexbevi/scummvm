@@ -3121,12 +3121,12 @@ void ApplicationRing::initZoneRO() {
 	rotationAddAmbientSound(40004, 40604, 100, 0, 1, 1, 10);
 	rotationAddAmbientSound(40005, 40604, 100, 0, 1, 1, 10);
 	puzzleAddAmbientSound(kPuzzle40060, 40604, 100, 0, 1, 1, 10);
-	rotationSetAmbiantSoundOff(40000, 40604);
-	rotationSetAmbiantSoundOff(40001, 40604);
-	rotationSetAmbiantSoundOff(40002, 40604);
-	rotationSetAmbiantSoundOff(40003, 40604);
-	rotationSetAmbiantSoundOff(40004, 40604);
-	rotationSetAmbiantSoundOff(40005, 40604);
+	rotationSetAmbientSoundOff(40000, 40604);
+	rotationSetAmbientSoundOff(40001, 40604);
+	rotationSetAmbientSoundOff(40002, 40604);
+	rotationSetAmbientSoundOff(40003, 40604);
+	rotationSetAmbientSoundOff(40004, 40604);
+	rotationSetAmbientSoundOff(40005, 40604);
 	puzzleSetAmbientSoundOff(kPuzzle40060, 40604);
 	soundAdd(40002, kSoundTypeAmbientEffect, "1802.wav", _configuration.ambientEffect.loadFrom, 2, _configuration.ambientEffect.soundChunck);
 	soundAdd(40003, kSoundTypeAmbientEffect, "1803.wav", _configuration.ambientEffect.loadFrom, 2, _configuration.ambientEffect.soundChunck);

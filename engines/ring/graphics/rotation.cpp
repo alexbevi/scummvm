@@ -161,6 +161,43 @@ void Rotation::updateNode(uint32 index, uint32 val) {
 	_data->update(index, val);
 }
 
+void Rotation::addAmbientSound(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
+	SoundItem *item = new SoundItem(_id);
+	item->init(entry, volume, a3, isOn, fadeFrames, a6, a7);
+
+	_soundItems.push_back(item);
+}
+
+void Rotation::add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4, uint32 a5, uint32 fadeFrames, float angle, uint32 a8) {
+	SoundItem *item = new SoundItem(_id);
+
+	float val = _field_68 + 135.0f;
+	if (val < 360.0)
+		val -= 360.0;
+
+	item->setField1D(a8);
+	item->setAngle(angle);
+	item->init(entry, volume, item->computeFieldC(val), isOn, a4, a5, fadeFrames, angle, a8);
+
+	_soundItems.push_back(item);
+}
+
+void Rotation::setAmbientSoundOn(Id soundId) {
+	SoundItem *item = getSoundItem(soundId);
+	if (!item)
+		error("[Rotation::setAmbientSoundOff] Wrong sound Id (%d)", soundId);
+
+	item->on();
+}
+
+void Rotation::setAmbientSoundOff(Id soundId) {
+	SoundItem *item = getSoundItem(soundId);
+	if (!item)
+		error("[Rotation::setAmbientSoundOff] Wrong sound Id (%d)", soundId);
+
+	item->off();
+}
+
 uint32 Rotation::getLayerCount() {
 	if (!_data)
 		error("[Rotation::getLayerCount] Data not initialized!");
@@ -173,6 +210,19 @@ Movability *Rotation::getMovability(uint32 index) {
 		error("[Rotation::getMovability] Invalid movability index (was: %d, max:%d)", index, _movabilities.size() - 1);
 
 	return _movabilities[index];
+}
+
+#pragma endregion
+
+#pragma region Helpers
+
+SoundItem *Rotation::getSoundItem(Id soundId) {
+	for (Common::Array<SoundItem *>::iterator i = _soundItems.begin(); i != _soundItems.end(); i++) {
+		if ((*i)->getSoundEntry()->getId() == soundId)
+			return *i;
+	}
+
+	return NULL;
 }
 
 #pragma endregion
