@@ -104,6 +104,13 @@ SoundEntry *SoundManager::getSoundEntry(Id soundId) {
 	return _entries.get(soundId);
 }
 
+void SoundManager::setVolume(Id soundId, uint32 volume) {
+	if (!_entries.has(soundId))
+		return;
+
+	_entries.get(soundId)->setVolume(volume);
+}
+
 #pragma endregion
 
 #pragma region SoundItem

@@ -1112,7 +1112,7 @@ void Application::soundAdd(Id soundId, SoundType type, Common::String filename, 
 }
 
 void Application::soundSetVolume(Id soundId, uint32 volume) {
-	error("[Application::soundSetVolume] Not implemented");
+	_soundManager->setVolume(soundId, volume);
 }
 
 void Application::noiceIdPlay(Id noiceId, bool a2) {

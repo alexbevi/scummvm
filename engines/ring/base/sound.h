@@ -72,6 +72,8 @@ public:
 	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk);
 	SoundEntry *getSoundEntry(Id soundId);
 
+	void setVolume(Id soundId, uint32 volume);
+
 private:
 	Application *_application;
 
