@@ -378,7 +378,7 @@ void Graphics::setBackgroundImage(Common::String filename) {
 		}
 	}
 
-	_vm->_system->setPalette(palette, 0, 256);
+	_vm->_system->getPaletteManager()->setPalette(palette, 0, 256);
 
 	// some of the files seem to be 480 high, but just padded with black
 	background.width = 640;
@@ -457,7 +457,7 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 			palette[i * 4 + 3] = 0;
 		}
 
-		_vm->_system->setPalette(palette, 0, 256);
+		_vm->_system->getPaletteManager()->setPalette(palette, 0, 256);
 	}
 
 	if (scale < 256) {
@@ -570,7 +570,7 @@ void Graphics::playMovie(Common::String filename) {
 	Common::SeekableReadStream *intro_movie = _vm->data.openFile(filename);
 
 	::Video::VideoDecoder *videoDecoder = new FVFDecoder(g_system->getMixer());
-	if (!videoDecoder->load(intro_movie)) error("failed to load movie %s", filename.c_str());
+	if (!videoDecoder->loadStream(intro_movie)) error("failed to load movie %s", filename.c_str());
 
 	bool skipVideo = false;
 
@@ -635,7 +635,7 @@ void Graphics::playMovie(Common::String filename) {
 	g_system->endGFXTransaction();
 	g_system->showMouse(true);
 	if (palette) {
-		_vm->_system->setPalette(palette, 0, 256);
+		_vm->_system->getPaletteManager()->setPalette(palette, 0, 256);
 	}
 
 	delete videoDecoder;

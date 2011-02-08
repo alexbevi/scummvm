@@ -35,7 +35,7 @@ public:
 
 	uint32 getFrameCount() const { return _frameCount; }
 
-	bool load(Common::SeekableReadStream *stream);
+	bool loadStream(Common::SeekableReadStream *stream);
 	void close();
 
 	bool isVideoLoaded() const { return _fileStream != 0; }

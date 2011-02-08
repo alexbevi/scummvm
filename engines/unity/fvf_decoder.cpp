@@ -34,7 +34,7 @@ FVFDecoder::~FVFDecoder() {
 	delete _audioHandle;
 }
 
-bool FVFDecoder::load(Common::SeekableReadStream *stream) {
+bool FVFDecoder::loadStream(Common::SeekableReadStream *stream) {
 	close();
 
 	_fileStream = stream;
