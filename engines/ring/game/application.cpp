@@ -521,7 +521,7 @@ void Application::puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId pu
 	if (!_puzzles.has(puzzleIdTo))
 		error("[Application::puzzleAddMovabilityToPuzzle] Wrong TO puzzle Id (%d)", puzzleIdTo);
 
-	Movability *movability = new Movability(_puzzles.get(puzzleIdFrom), _puzzles.get(puzzleIdTo), name, kMovabilityPuzzlePuzzle);
+	Movability *movability = new Movability(_puzzles.get(puzzleIdFrom), _puzzles.get(puzzleIdTo), name, kMovabilityPuzzleToPuzzle);
 	movability->setHotspot(rect, enabled, a9, a10);
 
 	_puzzles.get(puzzleIdFrom)->addMovability(movability);
@@ -534,7 +534,7 @@ void Application::puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotati
 	if (!_puzzles.has(puzzleIdFrom))
 		error("[Application::puzzleAddMovabilityToRotation] Wrong FROM puzzle Id (%d)", puzzleIdFrom);
 
-	Movability *movability = new Movability(_puzzles.get(puzzleIdFrom), rotationIdTo, name, kMovabilityPuzzleRotation);
+	Movability *movability = new Movability(_puzzles.get(puzzleIdFrom), _rotations.get(rotationIdTo), name, kMovabilityPuzzleToRotation);
 	movability->setHotspot(rect, enabled, a9, a10);
 
 	_puzzles.get(puzzleIdFrom)->addMovability(movability);
@@ -545,7 +545,7 @@ void Application::puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabi
 		error("[Application::puzzleSetMovabilityToRotation] Wrong puzzle Id (%d)", puzzleId);
 
 	Movability *movability = _puzzles.get(puzzleId)->getMovability(movabilityIndex);
-	if (movability->getType() != kMovabilityPuzzlePuzzle)
+	if (movability->getType() != kMovabilityPuzzleToRotation)
 		error("[Application::puzzleSetMovabilityToRotation] Invalid type of movability (%d)", movability->getType());
 
 	movability->update(0.0, 0.0, 85.0, 0.0, 2, a3, a4, a5);
@@ -759,7 +759,7 @@ void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationI
 	if (!_rotations.has(rotationId))
 		error("[Application::objectAddRotationAccessibility] Rotation Id doesn't exist (%d)", rotationId);
 
-	_objects[objectId]->addRotationAccessibility(_rotations.get(rotationId), rect, enabled, a9, a10);
+	_objects.get(objectId)->addRotationAccessibility(_rotations.get(rotationId), rect, enabled, a9, a10);
 }
 
 #pragma endregion
@@ -1037,27 +1037,70 @@ void Application::rotationAdd(Id rotationId, Common::String name, uint32 a3, uin
 }
 
 void Application::rotationSetComBufferLength(Id rotationId, uint32 length) {
-	error("[Application::rotationSetComBufferLength] Not implemented");
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationAdd] Rotation Id doesn't exist (%d)", rotationId);
+
+	_rotations.get(rotationId)->setComBufferLength(length);
 }
 
 void Application::rotationSetMovabilityOnOrOff(Id rotationId, uint32 a2, uint32 a3) {
 	error("[Application::rotationSetMovabilityOnOrOff] Not implemented");
 }
 
-void Application::rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, uint32 a4, int32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10) {
-	error("[Application::rotationAddMovabilityToPuzzle] Not implemented");
+void Application::rotationAddMovabilityToPuzzle(Id fromRotationId, PuzzleId toPuzzleId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+	// Check ids
+	if (!_rotations.has(fromRotationId))
+		error("[Application::rotationAddMovabilityToRotation] Wrong From rotation Id (%d)", fromRotationId);
+
+	if (!_puzzles.has(toPuzzleId))
+		error("[Application::rotationAddMovabilityToRotation] Wrong To puzzle Id (%d)", toPuzzleId);
+
+	Rotation *rotation = _rotations.get(fromRotationId);
+
+	// Create movability
+	Movability *movability = new Movability(rotation, _puzzles.get(toPuzzleId), name, kMovabilityRotationToPuzzle);
+	movability->setHotspot(rect, enabled, a9, a10);
+
+	rotation->addMovability(movability);
 }
 
 void Application::rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5, uint32 a6, uint32 a7) {
-	error("[Application::rotationSetMovabilityToPuzzle] Not implemented");
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetMovabilityToPuzzle] Wrong rotation Id (%d)", rotationId);
+
+	Movability *movability = _rotations.get(rotationId)->getMovability(movabilityIndex);
+	if (movability->getType() != kMovabilityRotationToPuzzle)
+		error("[Application::rotationSetMovabilityToPuzzle] Invalid type of movability (%d)", movability->getType());
+
+	movability->update(a3, a4, a5, a6, a7, 0.0, 0.0, 85.0);
 }
 
-void Application::rotationAddMovabilityToRotation(Id rotationId1, Id rotationId2, Common::String name, uint32 a4, int32 a5, uint32 a6, int32 a7, uint32 a8, uint32 a9, uint32 a10) {
-	error("[Application::rotationAddMovabilityToRotation] Not implemented");
+void Application::rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+	// Check ids
+	if (!_rotations.has(fromRotationId))
+		error("[Application::rotationAddMovabilityToRotation] Wrong From rotation Id (%d)", fromRotationId);
+
+	if (!_rotations.has(toRotationId))
+		error("[Application::rotationAddMovabilityToRotation] Wrong To rotation Id (%d)", toRotationId);
+
+	Rotation *rotation = _rotations.get(fromRotationId);
+
+	// Create movability
+	Movability *movability = new Movability(rotation, _rotations.get(toRotationId), name, kMovabilityRotationToRotation);
+	movability->setHotspot(rect, enabled, a9, a10);
+
+	rotation->addMovability(movability);
 }
 
 void Application::rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5,  uint32 a6, uint32 a7, int32 a8, int32 a9, uint32 a10) {
-	error("[Application::rotationSetMovabilityToRotation] Not implemented");
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetMovabilityToRotation] Wrong rotation Id (%d)", rotationId);
+
+	Movability *movability = _rotations.get(rotationId)->getMovability(movabilityIndex);
+	if (movability->getType() != kMovabilityRotationToRotation)
+		error("[Application::rotationSetMovabilityToRotation] Invalid type of movability (%d)", movability->getType());
+
+	movability->update(a3, a4, a5, a6, a7, a8, a9, a10);
 }
 
 void Application::rotationAddAmbientSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7) {

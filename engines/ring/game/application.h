@@ -201,9 +201,9 @@ public:
 	void rotationAdd(Id rotationId, Common::String name, uint32 a3, uint32 nodeCount);
 	void rotationSetComBufferLength(Id rotationId, uint32 length);
 	void rotationSetMovabilityOnOrOff(Id rotationId, uint32 a2, uint32 a3);
-	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, uint32 a4, int32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10);
+	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5, uint32 a6, uint32 a7);
-	void rotationAddMovabilityToRotation(Id rotationId1, Id rotationId2, Common::String name, uint32 a4, int32 a5, uint32 a6, int32 a7, uint32 a8, uint32 a9, uint32 a10);
+	void rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5,  uint32 a6, uint32 a7, int32 a8, int32 a9, uint32 a10);
 
 	void rotationAddAmbientSound(Id rotationId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7);

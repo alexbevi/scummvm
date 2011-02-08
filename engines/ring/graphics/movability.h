@@ -32,11 +32,14 @@ namespace Ring {
 
 class Hotspot;
 class Puzzle;
+class Rotation;
 
 class Movability {
 public:
 	Movability(Puzzle *puzzleFrom, Puzzle *puzzleTo, Common::String name, MovabilityType type);
-	Movability(Puzzle *puzzleFrom, Id rotationId, Common::String name, MovabilityType type);
+	Movability(Puzzle *puzzleFrom, Rotation *rotationTo, Common::String name, MovabilityType type);
+	Movability(Rotation *rotationFrom, Rotation *rotationTo, Common::String name, MovabilityType type);
+	Movability(Rotation *rotationFrom, Puzzle *puzzleTo, Common::String name, MovabilityType type);
 	~Movability();
 
 	void update(float a1, float a2, float a3, float a4, byte a5, float a6, float a7, float a8);
@@ -54,11 +57,11 @@ public:
 private:
 	union MovabilityToFrom {
 		Puzzle *puzzle;
-		Id rotationId;
+		Rotation *rotation;
 	};
 
 	uint32            _field_0;
-	Puzzle           *_puzzleFrom;
+	MovabilityToFrom  _from;
 	Hotspot          *_hotspot;
 	MovabilityToFrom  _to;
 	Common::String    _name;
@@ -71,6 +74,8 @@ private:
 	float             _field_29;
 	float             _field_2D;
 	float             _field_31;
+
+	void init();
 };
 
 } // End of namespace Ring

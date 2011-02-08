@@ -135,6 +135,13 @@ uint32 Rotation::getLayerCount() {
 	error("[Rotation::getLayerCount] Not implemented!");
 }
 
+Movability *Rotation::getMovability(uint32 index) {
+	if (index >= _movabilities.size())
+		error("[Rotation::getMovability] Invalid movability index (was: %d, max:%d)", index, _movabilities.size() - 1);
+
+	return _movabilities[index];
+}
+
 #pragma endregion
 
 } // End of namespace Ring

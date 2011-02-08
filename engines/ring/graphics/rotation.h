@@ -121,7 +121,11 @@ public:
 	void addMovability(Movability *movability);
 
 	void updateData(uint32 index, uint32 val);
+
+	// Accessors
 	uint32 getLayerCount();
+	void setComBufferLength(uint32 length) { _comBufferLength = length; }
+	Movability *getMovability(uint32 index);
 
 private:
 	Common::String                      _path;

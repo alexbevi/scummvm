@@ -524,8 +524,10 @@ enum CursorType {
 };
 
 enum MovabilityType {
-	kMovabilityPuzzleRotation = 2,
-	kMovabilityPuzzlePuzzle   = 3
+	kMovabilityRotationToRotation = 0,
+	kMovabilityRotationToPuzzle   = 1,
+	kMovabilityPuzzleToRotation   = 2,
+	kMovabilityPuzzleToPuzzle     = 3
 };
 
 enum ArchiveType {
