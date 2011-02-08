@@ -48,6 +48,8 @@ public:
 	SoundType getType() { return _type; }
 	void setField125(uint32 val) { _field_125 = val; }
 
+	static SoundFormat getFormat(Common::String filename);
+
 private:
 	SoundType      _type;
 	Common::String _name;
@@ -67,6 +69,7 @@ public:
 	SoundManager(Application *application);
 	~SoundManager();
 
+	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk);
 	SoundEntry *getSoundEntry(Id soundId);
 
 private:

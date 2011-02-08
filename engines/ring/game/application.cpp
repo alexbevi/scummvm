@@ -1085,11 +1085,30 @@ void Application::rotationSetJugOn(Id rotationId, float amplitude, float speed) 
 #pragma region Sound
 
 void Application::soundAdd(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom) {
-	error("[Application::soundAdd] Not implemented");
+	soundAdd(soundId, type, filename, loadFrom, 2, 3);
 }
 
 void Application::soundAdd(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk) {
-	error("[Application::soundAdd] Not implemented");
+	// Check filename
+	if (filename.size() <= 4)
+		error("[Application::soundAdd] Wrong filename (%s)", filename.c_str());
+
+	// Check format
+	SoundFormat format = SoundEntry::getFormat(filename);
+	if (format == kSoundFormatInvalid)
+		error("[Application::soundAdd] Wrong file format (%s)", filename.c_str());
+
+	// Compute path
+	Common::String path;
+	if (type == kSoundTypeDialog)
+		path = Common::String::format("DATA/%s/SOUND/%s/%s", _zoneString.c_str(), languageGetFolder().c_str(), filename.c_str());
+	else
+		path = Common::String::format("DATA/%s/SOUND/%s", _zoneString.c_str(), filename.c_str());
+
+	if (!Common::File::exists(path))
+		error("[Application::soundAdd] File doesn't exist (%s)", path.c_str());
+
+	_soundManager->addEntry(soundId, type, filename, loadFrom, format, a4 != 1, soundChunk);
 }
 
 void Application::soundSetVolume(Id soundId, uint32 volume) {

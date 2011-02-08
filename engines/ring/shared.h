@@ -564,6 +564,14 @@ enum SoundType {
 
 };
 
+enum SoundFormat {
+	kSoundFormatWAV = 0,
+	kSoundFormatWAC = 1,
+	kSoundFormatWAS = 2,
+
+	kSoundFormatInvalid = 999
+};
+
 #pragma endregion
 
 //////////////////////////////////////////////////////////////////////////

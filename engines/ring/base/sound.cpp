@@ -66,6 +66,19 @@ void SoundEntry::updateVolume() {
 	error( "[SoundEntry::updateVolume] Not implemented");
 }
 
+SoundFormat SoundEntry::getFormat(Common::String filename) {
+	if (filename.hasSuffix("wav"))
+		return kSoundFormatWAV;
+
+	if (filename.hasSuffix("wac"))
+		return kSoundFormatWAC;
+
+	if (filename.hasSuffix("was"))
+		return kSoundFormatWAS;
+
+	return kSoundFormatInvalid;
+}
+
 #pragma endregion
 
 #pragma region SoundManager
@@ -78,6 +91,10 @@ SoundManager::~SoundManager() {
 
 	// Zero-out passed pointers
 	_application = NULL;
+}
+
+void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk) {
+	warning("[SoundManager::addEntry] Not implemented!");
 }
 
 SoundEntry *SoundManager::getSoundEntry(Id soundId) {

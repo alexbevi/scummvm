@@ -431,6 +431,8 @@ void ApplicationRing::initZones() {
 }
 
 void ApplicationRing::initZoneSY() {
+	debugC(1, kRingDebugLogic, "Initializing System zone (SY)...");
+
 	setZoneAndEnableBag(kZoneSY);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -759,6 +761,8 @@ void ApplicationRing::initZoneSY() {
 }
 
 void ApplicationRing::initZoneNI() {
+	debugC(1, kRingDebugLogic, "Initializing Alberich zone (NI)...");
+
 	setZoneAndEnableBag(kZoneNI);
 
 	rotationAdd(10000, "NIS00N01", 0, 2);
@@ -1452,6 +1456,8 @@ void ApplicationRing::initZoneNI() {
 }
 
 void ApplicationRing::initZoneRH() {
+	debugC(1, kRingDebugLogic, "Initializing Alberich zone (RH)...");
+
 	setZoneAndEnableBag(kZoneRH);
 
 	puzzleAdd(kPuzzle22001);
@@ -1871,6 +1877,8 @@ void ApplicationRing::initZoneRH() {
 }
 
 void ApplicationRing::initZoneFO() {
+	debugC(1, kRingDebugLogic, "Initializing Siegmund zone (FO)...");
+
 	setZoneAndEnableBag(kZoneFO);
 
 	puzzleAdd(kPuzzle35001);
@@ -2802,6 +2810,8 @@ void ApplicationRing::initZoneFO() {
 }
 
 void ApplicationRing::initZoneRO() {
+	debugC(1, kRingDebugLogic, "Initializing Loge zone (RO)...");
+
 	setZoneAndEnableBag(kZoneRO);
 
 	puzzleAdd(kPuzzle40010);
@@ -3233,6 +3243,8 @@ void ApplicationRing::initZoneRO() {
 }
 
 void ApplicationRing::initZoneWA() {
+	debugC(1, kRingDebugLogic, "Initializing Brnnnhilde zone (WA)...");
+
 	setZoneAndEnableBag(kZoneWA);
 
 	puzzleAdd(kPuzzle51001);
@@ -3879,6 +3891,8 @@ void ApplicationRing::initZoneWA() {
 }
 
 void ApplicationRing::initZoneAS() {
+	debugC(1, kRingDebugLogic, "Initializing Dril zone (AS)...");
+
 	setZoneAndEnableBag(kZoneAS);
 
 	_loadFrom = kLoadFromDisk;
@@ -4277,6 +4291,8 @@ void ApplicationRing::initZoneAS() {
 }
 
 void ApplicationRing::initZoneN2() {
+	debugC(1, kRingDebugLogic, "Initializing Loge zone (N2)...");
+
 	setZoneAndEnableBag(kZoneN2);
 
 	rotationAdd(70000, "N2S00N01", 0, 1);
