@@ -637,8 +637,7 @@ void UnityEngine::checkEvents() {
 	while (_eventMan->pollEvent(event)) {
 		switch (event.type) {
 			case Common::EVENT_QUIT:
-				_system->quit();
-				break;
+				return;
 
 			case Common::EVENT_KEYUP:
 				switch (event.kbd.keycode) {
