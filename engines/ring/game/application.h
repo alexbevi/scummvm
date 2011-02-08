@@ -180,8 +180,8 @@ public:
 
 	void objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, Common::Point point, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12);
 	void objectPresentationAddAnimationToRotation(ObjectId, uint32 presentationIndex, Id rotationId, uint32 a4, uint32 a5, float a6, uint32 a7);
-	void objectPresentationSetAnimationOnPuzzle(ObjectId id, uint32 presentationIndex, uint32 animationIndex, uint32 a4);
-	void objectPresentationSetAnimationOnRotation(ObjectId id, uint32 presentationIndex, uint32 animationIndex, uint32 a4);
+	void objectPresentationSetAnimationOnPuzzle(ObjectId id, uint32 presentationIndex, uint32 animationIndex, ObjectId targetId);
+	void objectPresentationSetAnimationOnRotation(ObjectId id, uint32 presentationIndex, uint32 animationIndex, ObjectId targetId);
 	void objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, Common::Point point);
 	void objectPresentationSetAnimationStartFrame(ObjectId objectId, uint32 presentationIndex, uint32 startFrame);
 	void objectPresentationSetAnimationActiveFrame(ObjectId objectId, uint32 presentationIndex, uint32 activeFrame);

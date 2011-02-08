@@ -906,18 +906,18 @@ void Application::objectPresentationAddAnimationToRotation(ObjectId objectId, ui
 	_objects.get(objectId)->addAnimationToRotation(presentationIndex, rotation, layer, a5, a6, a7);
 }
 
-void Application::objectPresentationSetAnimationOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, uint32 a4) {
+void Application::objectPresentationSetAnimationOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, ObjectId targetId) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationSetAnimationOnPuzzle] Object Id doesn't exist (%d)", objectId);
 
-	_objects.get(objectId)->setAnimationOnPuzzle(presentationIndex, animationIndex, a4);
+	_objects.get(objectId)->setAnimationOnPuzzle(presentationIndex, animationIndex, targetId);
 }
 
-void Application::objectPresentationSetAnimationOnRotation(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, uint32 a4) {
+void Application::objectPresentationSetAnimationOnRotation(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, ObjectId targetId) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationSetAnimationOnRotation] Object Id doesn't exist (%d)", objectId);
 
-	_objects.get(objectId)->setAnimationOnRotation(presentationIndex, animationIndex, a4);
+	_objects.get(objectId)->setAnimationOnRotation(presentationIndex, animationIndex, targetId);
 }
 
 void Application::objectPresentationSetAnimationStartFrame(ObjectId objectId, uint32 presentationIndex, uint32 startFrame) {

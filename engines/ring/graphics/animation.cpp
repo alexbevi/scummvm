@@ -38,8 +38,7 @@ namespace Ring {
 
 #pragma region Animation
 
-Animation::Animation() {
-	_field_0  = 0;
+Animation::Animation() : BaseObject(0) {
 	_frameCount  = 0;
 	_field_C  = 0;
 	_startFrame = 0;
@@ -54,8 +53,8 @@ Animation::Animation() {
 Animation::~Animation() {
 }
 
-void Animation::init(uint32 frameCount, float a2, uint32 startFrame, byte a4, uint32 priority) {
-	_field_0 = 0;
+void Animation::initAnimation(uint32 frameCount, float a2, uint32 startFrame, byte a4, uint32 priority) {
+	_id = 0;
 	_field_C = a2;
 	_frameCount = frameCount;
 
@@ -200,7 +199,7 @@ AnimationImage::~AnimationImage() {
 }
 
 void AnimationImage::init(Common::String name, uint32 a2, Common::Point point, uint32 a5, uint32 a6, uint32 frameCount, float a8, uint32 startFrame, char a10, uint32 a11, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType) {
-	Animation::init(frameCount, a8, startFrame, a10, priority);
+	Animation::initAnimation(frameCount, a8, startFrame, a10, priority);
 
 	_name = name;
 	_field_6D = a2;

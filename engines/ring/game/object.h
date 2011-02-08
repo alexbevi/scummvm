@@ -75,8 +75,8 @@ public:
 	// Animation
 	void addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, uint32 a5, Common::Point point, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, uint32 a14, LoadFrom loadFrom);
 	void addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7);
-	void setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, uint32 a3);
-	void setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, uint32 a3);
+	void setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, ObjectId objectId);
+	void setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, ObjectId objectId);
 	void setAnimationStartFrame(uint32 presentationIndex, uint32 startFrame);
 	void setAnimationActiveFrame(uint32 presentationIndex, uint32 active);
 	void setAnimationCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point);

@@ -32,7 +32,7 @@
 namespace Ring {
 
 class Accessibility;
-class AnimationImage;
+class Animation;
 class ImageHandle;
 class Movability;
 class ObjectPresentation;
@@ -105,6 +105,8 @@ public:
 	RotationData(uint32 count, Common::String path);
 	~RotationData();
 
+	uint32 getCount() { return _count; }
+
 private:
 	Common::Array<Node *> _nodes;
 	Common::String _path;
@@ -120,6 +122,8 @@ public:
 	void addAccessibility(Accessibility *accessibility);
 	void addMovability(Movability *movability);
 
+	Animation *addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, uint32 a5);
+
 	void updateData(uint32 index, uint32 val);
 
 	// Accessors
@@ -134,7 +138,7 @@ private:
 	Common::Array<Movability *>         _movabilities;
 	Common::Array<Accessibility *>      _accessibilities;
 	Common::Array<ObjectPresentation *> _presentations;
-	Common::Array<AnimationImage *>     _animationImages;
+	Common::Array<Animation *>          _animations;
 	Common::Array<Text *>               _texts;
 	Common::Array<SoundItem *>          _soundItems;
 	byte                                _field_28;

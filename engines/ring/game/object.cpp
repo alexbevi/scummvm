@@ -31,6 +31,7 @@
 #include "ring/graphics/animation.h"
 #include "ring/graphics/hotspot.h"
 #include "ring/graphics/presentation.h"
+#include "ring/graphics/rotation.h"
 
 #include "ring/helpers.h"
 
@@ -92,7 +93,10 @@ void Object::addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::
 }
 
 void Object::addImageToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer) {
-	error("[Object::addImageToRotation] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::addImageToRotation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->addImageToRotation(rotation, layer);
 }
 
 void Object::setImageCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point) {
@@ -160,7 +164,12 @@ void Object::addPuzzleAccessibility(Puzzle *puzzle, Common::Rect rect, bool enab
 }
 
 void Object::addRotationAccessibility(Rotation *rotation, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
-	error("[Object::addRotationAccessibility] Not implemented");
+	Accessibility *accessibility = new Accessibility(this);
+	accessibility->setHotspot(rect, enabled, a9, a10);
+
+	_accessibilities.push_back(accessibility);
+
+	rotation->addAccessibility(accessibility);
 }
 
 void Object::setAccessibilityKey(uint32 accessibilityIndex, Common::KeyCode key) {
@@ -211,15 +220,24 @@ void Object::addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Comm
 }
 
 void Object::addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7) {
-	error("[Object::addAnimationToRotation] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::addAnimationToRotation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->addAnimationToRotation(rotation, layer, a5, a6, a7);
 }
 
-void Object::setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, uint32 a3) {
-	error("[Object::setAnimationOnPuzzle] Not implemented");
+void Object::setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, ObjectId objectId) {
+	if (presentationIndex >= _presentations.size())
+		error("[Object::setAnimationOnPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->setAnimationOnPuzzle(animationIndex, objectId);
 }
 
-void Object::setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, uint32 a3) {
-	error("[Object::setAnimationOnRotation] Not implemented");
+void Object::setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, ObjectId objectId) {
+	if (presentationIndex >= _presentations.size())
+		error("[Object::setAnimationOnPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->setAnimationOnRotation(animationIndex, objectId);
 }
 
 void Object::setAnimationStartFrame(uint32 presentationIndex, uint32 startFrame) {

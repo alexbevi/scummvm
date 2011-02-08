@@ -64,7 +64,7 @@ ObjectPresentation::~ObjectPresentation() {
 	CLEAR_ARRAY(Rotation, _layImageRotationPtr);
 	CLEAR_ARRAY(uint32, _layerAnimationRotation);
 	CLEAR_ARRAY(Rotation, _layerAnimationRotationPtr);
-	CLEAR_ARRAY(AnimationImage, _layerAnimationRotationAnimation);
+	CLEAR_ARRAY(Animation, _layerAnimationRotationAnimation);
 	CLEAR_ARRAY(Text, _textPuzzle);
 	CLEAR_ARRAY(Puzzle, _textPuzzlePtr);
 	CLEAR_ARRAY(Text, _textRotation);
@@ -92,6 +92,11 @@ void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filenam
 	puzzle->addPresentationImage(image);
 }
 
+void ObjectPresentation::addImageToRotation(Rotation *rotation, uint32 layer) {
+	_layerImagePtr.push_back(new uint32(layer));
+	_layImageRotationPtr.push_back(rotation);
+}
+
 void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, Common::Point point, uint32 a7, uint32 a8, uint32 priority, uint32 a10, uint32 frameCount, uint32 a12, uint32 a13, LoadFrom loadFrom) {
 	AnimationImage *animation = new AnimationImage();
 	animation->init(filename, a4, point, 0, a8, frameCount, a12, 1, a13, a10, priority, loadFrom, getApp()->getArchiveType());
@@ -110,6 +115,31 @@ void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String fil
 	puzzle->addPresentationAnimation(this);
 }
 
+void ObjectPresentation::addAnimationToRotation(Rotation *rotation, uint32 layer, uint32 a3, float a4, uint32 a5) {
+	Animation *animation = rotation->addPresentationAnimation(this, layer, a3, a4, a5);
+
+	if (!(a5 & 2))
+		animation->setField20(0);
+
+	_layerAnimationRotation.push_back(new uint32(layer));
+	_layerAnimationRotationPtr.push_back(rotation);
+	_layerAnimationRotationAnimation.push_back(animation);
+}
+
+void ObjectPresentation::setAnimationOnPuzzle(uint32 animationIndex, ObjectId objectId) {
+	if (animationIndex >= _animationPuzzle.size())
+		error("[ObjectPresentation::setAnimationOnPuzzle] Invalid animation index (was: %d, max: %d)", animationIndex, _animationPuzzle.size() - 1);
+
+	_animationPuzzle[animationIndex]->setId(objectId);
+}
+
+void ObjectPresentation::setAnimationOnRotation(uint32 animationIndex, ObjectId objectId) {
+	if (animationIndex >= _layerAnimationRotationAnimation.size())
+		error("[ObjectPresentation::setAnimationOnPuzzle] Invalid animation index (was: %d, max: %d)", animationIndex, _layerAnimationRotationAnimation.size() - 1);
+
+	_layerAnimationRotationAnimation[animationIndex]->setId(objectId);
+}
+
 void ObjectPresentation::setAnimationCoordinatesOnPuzzle(Common::Point point) {
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
 		(*it)->setCoordinates(point);
@@ -119,7 +149,7 @@ void ObjectPresentation::show() {
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
 		(*it)->setTicks(g_system->getMillis());
 
-	for (Common::Array<AnimationImage *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
+	for (Common::Array<Animation *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
 		(*it)->setTicks(g_system->getMillis());
 
 	for (uint32 i = 0; i < _layerImagePtr.size(); i++)
@@ -133,7 +163,7 @@ void ObjectPresentation::hide() {
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
 		(*it)->sub_416710();
 
-	for (Common::Array<AnimationImage *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
+	for (Common::Array<Animation *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
 		(*it)->sub_416710();
 
 	for (uint32 i = 0; i < _layerImagePtr.size(); i++)

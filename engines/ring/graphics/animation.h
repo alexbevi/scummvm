@@ -33,12 +33,12 @@ namespace Ring {
 class ImageHandle;
 class ObjectPresentation;
 
-class Animation {
+class Animation : public BaseObject {
 public:
 	Animation();
 	~Animation();
 
-	void init(uint32 frameCount, float a2, uint32 startFrame, byte a4, uint32 priority);
+	void initAnimation(uint32 frameCount, float a2, uint32 startFrame, byte a4, uint32 priority);
 
 	void sub_416710();
 
@@ -48,7 +48,6 @@ public:
 	void setField20(byte val) { _field_20 = 0; }
 
 protected:
-	uint32 _field_0;
 	Common::String _name;
 	uint32 _frameCount;
 	float _field_C;

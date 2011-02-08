@@ -80,6 +80,10 @@ Rotation::Rotation(Id id, Common::String name, uint32 a3, LoadFrom loadFrom, uin
 	// Compute path
 	_path = Common::String::format("DATA/%s/NODE/%s", getApp()->getCurrentZoneString().c_str(), name.c_str());
 
+	// Create animation for each node
+	for (uint32 i = 0; i < nodeCount; i++)
+		_animations.push_back(new Animation());
+
 	_field_28 = a3;
 	_field_65 = 0;
 	_field_66 = 0;
@@ -91,7 +95,7 @@ Rotation::~Rotation() {
 	CLEAR_ARRAY(Movability,         _movabilities);
 	CLEAR_ARRAY(Accessibility,      _accessibilities);
 	CLEAR_ARRAY(ObjectPresentation, _presentations);
-	CLEAR_ARRAY(AnimationImage,     _animationImages);
+	CLEAR_ARRAY(Animation,          _animations);
 	CLEAR_ARRAY(Text,               _texts);
 	CLEAR_ARRAY(SoundItem,          _soundItems);
 	CLEAR_ARRAY(ImageHandle,        _imageHandles);
@@ -127,12 +131,30 @@ void Rotation::addMovability(Movability *movability) {
 	_movabilities.push_back(movability);
 }
 
+Animation *Rotation::addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, uint32 a5) {
+	if (!presentation)
+		error("[Rotation::addPresentationAnimation] Presentation is NULL!");
+
+	if (layer >= _animations.size())
+		error("[Rotation::addPresentationAnimation] Invalid layer index (was: %d, max:%d)", layer, _animations.size() - 1);
+
+	Animation *animation = _animations[layer];
+	animation->initAnimation(a3, a4, 1, a5, 0);
+
+	_presentations.push_back(presentation);
+
+	return animation;
+}
+
 void Rotation::updateData(uint32 index, uint32 val) {
 	error("[Rotation::updateData] Not implemented!");
 }
 
 uint32 Rotation::getLayerCount() {
-	error("[Rotation::getLayerCount] Not implemented!");
+	if (!_data)
+		error("[Rotation::getLayerCount] Data not initialized!");
+
+	return _data->getCount();
 }
 
 Movability *Rotation::getMovability(uint32 index) {
