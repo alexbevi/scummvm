@@ -328,18 +328,6 @@ void Application::loadConfiguration() {
 
 #pragma endregion
 
-#pragma region Startup
-
-void Application::showStartupScreen() {
-	error("[Application::showStartupScreen] Not implemented");
-}
-
-void Application::startMenu() {
-	error("[Application::startMenu] Not implemented");
-}
-
-#pragma endregion
-
 #pragma region Event handling
 
 void Application::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
@@ -376,6 +364,18 @@ void Application::onTimer(TimerId id) {
 
 void Application::onZoneTimer(TimerId id) {
 	error("[Application::onZoneTimer] Not implemented");
+}
+
+#pragma endregion
+
+#pragma region Display and Movies
+
+void Application::displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 a3, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
+	warning("[Application::displayFade] Not implemented");
+}
+
+void Application::playMovie(Common::String filename, float a2) {
+	warning("[Application::playMovie] Not implemented (%s)", filename.c_str());
 }
 
 #pragma endregion

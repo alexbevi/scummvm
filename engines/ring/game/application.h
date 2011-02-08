@@ -69,8 +69,8 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Startup
-	void showStartupScreen();
-	void startMenu();
+	virtual void showStartupScreen() = 0;
+	virtual void startMenu() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Event handling
@@ -336,6 +336,11 @@ protected:
 
 	// Timer
 	virtual void onZoneTimer(TimerId id) = 0;
+
+	// Display and movies
+	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 a3, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
+	void playMovie(Common::String filename, float a2);
+
 };
 
 } // End of namespace Ring

@@ -38,6 +38,28 @@
 
 namespace Ring {
 
+// List of animations
+static const struct {
+	Common::String filenameFrom;
+	Common::String filenameTo;
+	uint32 a3;
+	uint32 ticksWait;
+	LoadFrom loadFrom;
+	ArchiveType archiveType;
+} introScreens[11] = {
+	{"beg0.bmp", "beg1.bmp", 20, 3000, kLoadFromDisk, kArchiveFile},
+	{"beg1.bmp", "beg0.bmp", 20,    0, kLoadFromDisk, kArchiveFile},
+	{"beg0.bmp", "beg2.bmp", 20, 3000, kLoadFromDisk, kArchiveFile},
+	{"beg2.bmp", "beg0.bmp", 20,    0, kLoadFromDisk, kArchiveFile},
+	{"beg0.bmp", "beg3.bmp", 20, 3000, kLoadFromDisk, kArchiveFile},
+	{"beg3.bmp", "beg0.bmp", 20,    0, kLoadFromDisk, kArchiveFile},
+	{"beg0.bmp", "beg4.bmp", 20, 3000, kLoadFromDisk, kArchiveFile},
+	{"beg4.bmp", "beg0.bmp", 20,    0, kLoadFromDisk, kArchiveFile},
+	{"beg0.bmp", "beg5.bmp", 20, 3000, kLoadFromDisk, kArchiveFile},
+	{"beg5.bmp", "beg0.bmp", 20,    0, kLoadFromDisk, kArchiveFile},
+	{"beg0.bmp", "beg6.bmp", 20, 6000, kLoadFromDisk, kArchiveFile}
+};
+
 ApplicationRing::ApplicationRing(RingEngine *engine) : Application(engine) {
 }
 
@@ -75,6 +97,39 @@ void ApplicationRing::setup() {
 }
 
 #pragma endregion
+
+#pragma region Startup
+
+void ApplicationRing::showStartupScreen() {
+	setZoneAndEnableBag(kZoneSY);
+	playMovie("logo", 0.0);
+
+	for (uint i = 0; i < ARRAYSIZE(introScreens); i++) {
+
+		displayFade(introScreens[i].filenameFrom, introScreens[i].filenameTo, introScreens[i].a3, introScreens[i].ticksWait, introScreens[i].loadFrom, introScreens[i].archiveType);
+
+		// Skip intro screens if ESCAPE is pressed
+		Common::Event ev;
+		g_engine->getEventManager()->pollEvent(ev);
+		switch (ev.type) {
+		default:
+			break;
+
+		case Common::EVENT_KEYDOWN:
+			if (ev.kbd.keycode == Common::KEYCODE_ESCAPE)
+				return;
+
+			break;
+		}
+	}
+}
+
+void ApplicationRing::startMenu() {
+	error("[ApplicationRing::startMenu] Not implemented");
+}
+
+#pragma endregion
+
 
 #pragma region Timer
 
