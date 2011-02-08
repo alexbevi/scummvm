@@ -42,7 +42,11 @@ RingEngine::RingEngine(OSystem *syst, const RingGameDescription *gd) :
 
 	// Adding the default directories
 	const Common::FSNode gameDataDir(ConfMan.get("path"));
-	SearchMan.addSubDirectoryMatching(gameDataDir, "DATA");
+
+	// Add the game path to the directory search list.
+	// ScummVM defaults to 4, we needs 5
+	SearchMan.remove(gameDataDir.getPath());
+	SearchMan.addDirectory(gameDataDir.getPath(), gameDataDir, 0, 5);
 
 	// Initialize the custom debug levels
 	DebugMan.addDebugChannel(kRingDebugAll, "All", "Debug everything");
