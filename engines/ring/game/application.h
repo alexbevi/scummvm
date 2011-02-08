@@ -125,7 +125,7 @@ public:
 	void puzzleSetMovabilityOnOrOffEnableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
 	void puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
 
-	void puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7);
+	void puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7);
 	void puzzleSetAmbientSoundOn(PuzzleId puzzleId, Id soundId);
 	void puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId);
 	void puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 volume, float a7, uint32 a8);
@@ -206,7 +206,7 @@ public:
 	void rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5,  uint32 a6, uint32 a7, int32 a8, int32 a9, uint32 a10);
 
-	void rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volume, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7);
+	void rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7);
 	void rotationSetAmbientSoundOn(Id rotationId, Id soundId);
 	void rotationSetAmbientSoundOff(Id rotationId, Id soundId);
 	void rotationAdd3DSound(Id rotationId, uint32 soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 volume, float a7, uint32 a8);
@@ -273,6 +273,7 @@ public:
 	DialogHandler *getDialogHandler() { return _dialogHandler; }
 	FontHandler   *getFontHandler()   { return _fontHandler; }
 	SoundHandler  *getSoundHandler()  { return _soundHandler; }
+	SoundManager  *getSoundManager()  { return _soundManager; }
 
 protected:
 	RingEngine *_vm;

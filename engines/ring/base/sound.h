@@ -28,10 +28,11 @@
 
 #include "ring/shared.h"
 
+#include "sound/mixer.h"
+
 namespace Ring {
 
 class Application;
-
 
 //////////////////////////////////////////////////////////////////////////
 // Engine sound
@@ -42,7 +43,8 @@ public:
 	~SoundEntry();
 
     void setVolume(uint32 volume);
-	void updateVolume();
+	void setMultiplier(uint32 multiplier);
+	void setPan(int32 pan);
 
 	// Accessors
 	SoundType getType() { return _type; }
@@ -50,17 +52,47 @@ public:
 
 	static SoundFormat getFormat(Common::String filename);
 
+protected:
+	void setVolumeAndPan();
+
 private:
 	SoundType      _type;
 	Common::String _name;
 	uint32         _field_10C;
 	LoadFrom       _loadFrom;
 	uint32         _volume;
-	uint32         _field_115;
-	uint32         _field_119;
+	uint32         _multiplier;
+	int32          _pan;
 	uint32         _field_11D;
 	SoundFormat    _format;
 	uint32         _field_125;
+
+	Audio::SoundHandle _handle;
+
+	//////////////////////////////////////////////////////////////////////////
+	// Conversion functions
+	//////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * Convert volume to a ScummVM mixer value
+	 *
+	 * @param [in,out] vol The volume.
+	 */
+	static void convertVolumeFrom(float &vol);
+
+	/**
+	 * Convert ScummVM mixer value to a volume
+	 *
+	 * @param [in,out] vol The volume.
+	 */
+	static void convertVolumeTo(float &vol);
+
+	/**
+	 * Convert pan.
+	 *
+	 * @param [in,out] pan The pan.
+	 */
+	static void convertPan(float &pan);
 };
 
 class SoundEntryS : public SoundEntry {
@@ -106,7 +138,7 @@ private:
 
 class SoundManager {
 public:
-	SoundManager(Application *application);
+	SoundManager(Application *application, Audio::Mixer *mixer);
 	~SoundManager();
 
 	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk);
@@ -114,10 +146,18 @@ public:
 
 	void setVolume(Id soundId, uint32 volume);
 
+	float getGlobalVolume() { return _globalVolume; }
+
+	void updateVolumeAndPan(Audio::SoundHandle handle, int32 volume, int32 pan);
+
 private:
 	Application *_application;
 
 	AssociativeArray<SoundEntry *> _entries;
+
+	float _globalVolume;
+
+	Audio::Mixer       *_mixer;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -129,8 +169,8 @@ public:
 	~SoundItem();
 
 	// Initialization
-	void init(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7);
-    void init(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 a5, uint32 a6, uint32 fadeFrames, float a8, int a9);
+	void init(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7);
+    void init(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 a5, uint32 a6, uint32 fadeFrames, float a8, int a9);
 
 	// Sound on/off & volume
 	void on();
@@ -138,6 +178,7 @@ public:
 	void turnOn();
 	void turnOff();
 	void setVolume(uint32 volume);
+	void setPan(int32 pan);
 
 	// Accessors
 	SoundEntry *getSoundEntry() { return _entry; }
@@ -145,12 +186,12 @@ public:
 	void setAngle(float angle);
 
 	// Helpers
-	float computeFieldC(float angle);
+	float computePan(float angle);
 
 private:
 	SoundEntry *_entry;
 	uint32      _volume;
-	uint32      _field_C;
+	int32      _pan;
 	uint32      _field_10;
 	uint32      _field_14;
 	bool        _isOn;

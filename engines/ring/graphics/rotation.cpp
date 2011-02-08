@@ -161,9 +161,9 @@ void Rotation::updateNode(uint32 index, uint32 val) {
 	_data->update(index, val);
 }
 
-void Rotation::addAmbientSound(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
+void Rotation::addAmbientSound(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	SoundItem *item = new SoundItem(_id);
-	item->init(entry, volume, a3, isOn, fadeFrames, a6, a7);
+	item->init(entry, volume, pan, isOn, fadeFrames, a6, a7);
 
 	_soundItems.push_back(item);
 }
@@ -177,7 +177,7 @@ void Rotation::add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4
 
 	item->setField1D(a8);
 	item->setAngle(angle);
-	item->init(entry, volume, item->computeFieldC(val), isOn, a4, a5, fadeFrames, angle, a8);
+	item->init(entry, volume, item->computePan(val), isOn, a4, a5, fadeFrames, angle, a8);
 
 	_soundItems.push_back(item);
 }

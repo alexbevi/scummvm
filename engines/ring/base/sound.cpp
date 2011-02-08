@@ -27,9 +27,8 @@
 
 #include "ring/game/application.h"
 
-#include "ring/ring.h"
-
 #include "ring/helpers.h"
+#include "ring/ring.h"
 
 namespace Ring {
 
@@ -38,16 +37,16 @@ namespace Ring {
 #pragma region SoundEntry
 
 SoundEntry::SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format) : BaseObject(soundId) {
-	_type      = type;
-	_name      = name;
-	_field_10C = 0;
-	_loadFrom  = loadFrom;
-	_volume    = 100;
-	_field_115 = 100;
-	_field_119 = 0;
-	_field_11D = 0;
-	_format    = format;
-	_field_125 = 1;
+	_type       = type;
+	_name       = name;
+	_field_10C  = 0;
+	_loadFrom   = loadFrom;
+	_volume     = 100;
+	_multiplier = 100;
+	_pan        = 0;
+	_field_11D  = 0;
+	_format     = format;
+	_field_125  = 1;
 }
 
 SoundEntry::~SoundEntry() {
@@ -59,11 +58,38 @@ void SoundEntry::setVolume(uint32 volume) {
 	else
 		_volume = 0;
 
-	updateVolume();
+	setVolumeAndPan();
 }
 
-void SoundEntry::updateVolume() {
-	error("[SoundEntry::updateVolume] Not implemented");
+void SoundEntry::setMultiplier(uint32 multiplier) {
+	if (multiplier >= 0)
+		_multiplier = (multiplier > 100) ? 100 : multiplier;
+	else
+		_multiplier = 0;
+
+	setVolumeAndPan();
+}
+
+void SoundEntry::setPan(int32 pan) {
+	if (pan >= -100)
+		_pan = (pan > 100) ? 100 : pan;
+	else
+		_pan = -100;
+
+	setVolumeAndPan();
+}
+
+void SoundEntry::setVolumeAndPan() {
+	// Compute volume and pan
+
+	float volume = -10000.0f - _multiplier * 0.01f * _volume * 0.01f * getSound()->getGlobalVolume() * -10000.0f;
+	float pan = -10000.0f - (_pan + 100.0f) * -100.0f;
+
+	// Convert volume and panning
+	convertVolumeFrom(volume);
+	convertPan(pan);
+
+	getSound()->updateVolumeAndPan(_handle, volume, pan);
 }
 
 SoundFormat SoundEntry::getFormat(Common::String filename) {
@@ -77,6 +103,60 @@ SoundFormat SoundEntry::getFormat(Common::String filename) {
 		return kSoundFormatWAS;
 
 	return kSoundFormatInvalid;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Conversion functions
+//
+// Those are from engines/agos/sound.cpp (FIXME: Move to common code?)
+//////////////////////////////////////////////////////////////////////////
+
+void SoundEntry::convertVolumeFrom(float &vol) {
+	// DirectSound was originally used, which specifies volume
+	// and panning differently than ScummVM does, using a logarithmic scale
+	// rather than a linear one.
+	//
+	// Volume is a value between -10,000 and 0.
+	//
+	// In both cases, the -10,000 represents -100 dB. When panning, only
+	// one speaker's volume is affected - just like in ScummVM - with
+	// negative values affecting the left speaker, and positive values
+	// affecting the right speaker. Thus -10,000 means the left speaker is
+	// silent.
+
+	int32 v = CLIP(vol, -10000.0f, 0.0f);
+	if (v) {
+		vol = (int)((double)Audio::Mixer::kMaxChannelVolume * pow(10.0, (double)v / 2000.0) + 0.5);
+	} else {
+		vol = Audio::Mixer::kMaxChannelVolume;
+	}
+}
+
+void SoundEntry::convertVolumeTo(float &vol) {
+	vol = (log10(vol / (double)Audio::Mixer::kMaxChannelVolume) - 0.5) * 2000;
+}
+
+void SoundEntry::convertPan(float &pan) {
+	// DirectSound was originally used, which specifies volume
+	// and panning differently than ScummVM does, using a logarithmic scale
+	// rather than a linear one.
+	//
+	// Panning is a value between -10,000 and 10,000.
+	//
+	// In both cases, the -10,000 represents -100 dB. When panning, only
+	// one speaker's volume is affected - just like in ScummVM - with
+	// negative values affecting the left speaker, and positive values
+	// affecting the right speaker. Thus -10,000 means the left speaker is
+	// silent.
+
+	int32 p = CLIP(pan, -10000.0f, 10000.0f);
+	if (p < 0) {
+		pan = (int)(255.0 * pow(10.0, (double)p / 2000.0) + 127.5);
+	} else if (p > 0) {
+		pan = (int)(255.0 * pow(10.0, (double)p / -2000.0) - 127.5);
+	} else {
+		pan = 0;
+	}
 }
 
 #pragma endregion
@@ -129,7 +209,8 @@ SoundEntryD::~SoundEntryD() {
 
 #pragma region SoundManager
 
-SoundManager::SoundManager(Application *application) : _application(application) {
+SoundManager::SoundManager(Application *application, Audio::Mixer *mixer) : _application(application), _mixer(mixer) {
+	_globalVolume = 1.0f;
 }
 
 SoundManager::~SoundManager() {
@@ -137,6 +218,7 @@ SoundManager::~SoundManager() {
 
 	// Zero-out passed pointers
 	_application = NULL;
+	_mixer = NULL;
 }
 
 void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk) {
@@ -168,6 +250,11 @@ void SoundManager::setVolume(Id soundId, uint32 volume) {
 	_entries.get(soundId)->setVolume(volume);
 }
 
+void SoundManager::updateVolumeAndPan(Audio::SoundHandle handle, int32 volume, int32 pan) {
+	_mixer->setChannelVolume(handle, (byte)volume);
+	_mixer->setChannelBalance(handle, (byte)pan);
+}
+
 #pragma endregion
 
 #pragma region SoundItem
@@ -175,7 +262,7 @@ void SoundManager::setVolume(Id soundId, uint32 volume) {
 SoundItem::SoundItem(Id id) : BaseObject(id) {
 	_entry    = NULL;
 	_volume  = 0;
-	_field_C  = 0;
+	_pan  = 0;
 	_field_10 = 0;
 	_field_14 = 0;
 	_isOn = false;
@@ -195,11 +282,11 @@ SoundItem::~SoundItem() {
 	_entry = NULL;
 }
 
-void SoundItem::init(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
-	init(entry, volume, a3, isOn, a6, a7, fadeFrames, 0.0, 20);
+void SoundItem::init(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
+	init(entry, volume, pan, isOn, a6, a7, fadeFrames, 0.0, 20);
 }
 
-void SoundItem::init(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 a5, uint32 a6, uint32 fadeFrames, float angle, int a9) {
+void SoundItem::init(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 a5, uint32 a6, uint32 fadeFrames, float angle, int a9) {
 	if (fadeFrames < 1) // FIXME??? (was <= 1)
 		error( "[SoundItem::init] Fade number of frames needs to be greater then 1 (was: %d)", fadeFrames);
 
@@ -207,7 +294,7 @@ void SoundItem::init(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uin
 	entry->setField125(0);
 
 	_volume  = volume;
-	_field_C  = a3;
+	_pan  = pan;
 	_field_10 = a5;
 	_field_14 = a6;
 	_isOn = isOn;
@@ -223,7 +310,7 @@ void SoundItem::init(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uin
 	_field_3D = 0;
 
 	setVolume(volume);
-	warning( "[SoundItem::init] Implementation incomplete");
+	setPan(pan);
 }
 
 void SoundItem::on() {
@@ -255,6 +342,13 @@ void SoundItem::setVolume(uint32 volume) {
 	_volume = volume;
 }
 
+void SoundItem::setPan(int32 pan) {
+	if (_entry)
+		_entry->setPan(pan);
+
+	_pan = pan;
+}
+
 void SoundItem::setField1D(int32 val) {
 	if (val > 100 || val < 0)
 		return;
@@ -269,7 +363,7 @@ void SoundItem::setAngle(float angle) {
 	_angle = getSoundDirection() * angle * SOUND_FRAC_VALUE;
 }
 
-float SoundItem::computeFieldC(float angle) {
+float SoundItem::computePan(float angle) {
 	return getSoundDirection() * (sin(angle * SOUND_FRAC_VALUE + _angle) * _field_1D);
 }
 

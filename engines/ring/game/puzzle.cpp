@@ -159,9 +159,9 @@ void Puzzle::addVisual(Visual *visual) {
 
 #pragma region Sound
 
-void Puzzle::addAmbientSound(SoundEntry *entry, uint32 volume, uint32 a3, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
+void Puzzle::addAmbientSound(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	SoundItem *item = new SoundItem(_id);
-	item->init(entry, volume, a3, isOn, fadeFrames, a6, a7);
+	item->init(entry, volume, pan, isOn, fadeFrames, a6, a7);
 
 	_soundItems.push_back(item);
 }
@@ -170,7 +170,7 @@ void Puzzle::add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4, 
 	SoundItem *item = new SoundItem(_id);
 	item->setField1D(a8);
 	item->setAngle(a7);
-	item->init(entry, volume, item->computeFieldC(0.0), isOn, a4, a5, fadeFrames, a7, a8);
+	item->init(entry, volume, item->computePan(0.0), isOn, a4, a5, fadeFrames, a7, a8);
 
 	_soundItems.push_back(item);
 }

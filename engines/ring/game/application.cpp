@@ -65,7 +65,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 
 	// Start managers
 	_saveManager = new SaveManager(this);
-	_soundManager = new SoundManager(this);
+	_soundManager = new SoundManager(this, _vm->_mixer);
 }
 
 Application::~Application() {
@@ -583,7 +583,7 @@ void Application::puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId) {
 
 #pragma endregion
 
-void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7) {
+void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	if (!_puzzles.has(puzzleId))
 		error("[Application::puzzleAddAmbientSound] Wrong puzzle Id (%d)", puzzleId);
 
@@ -594,7 +594,7 @@ void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 vo
 	if (entry->getType() != kSoundTypeAmbientMusic)
 		error("[Application::puzzleAddAmbientSound] Wrong sound type, only kSoundTypeAmbientMusic(2) is allowed (%d)", entry->getType());
 
-	_puzzles.get(puzzleId)->addAmbientSound(entry, volume, a4, true, fadeFrames, a6, a7);
+	_puzzles.get(puzzleId)->addAmbientSound(entry, volume, pan, true, fadeFrames, a6, a7);
 }
 
 void Application::puzzleSetAmbientSoundOn(PuzzleId puzzleId, Id soundId) {
@@ -1103,7 +1103,7 @@ void Application::rotationSetMovabilityToRotation(Id rotationId, uint32 movabili
 	movability->update(a3, a4, a5, a6, a7, a8, a9, a10);
 }
 
-void Application::rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volume, uint32 a4, uint32 fadeFrames, uint32 a6, uint32 a7) {
+void Application::rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	if (!_rotations.has(rotationId))
 		error("[Application::rotationAddAmbientSound] Wrong rotation Id (%d)", rotationId);
 
@@ -1114,7 +1114,7 @@ void Application::rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volu
 	if (entry->getType() != kSoundTypeAmbientMusic)
 		error("[Application::rotationAddAmbientSound] Wrong sound type, only kSoundTypeAmbientMusic(2) is allowed (%d)", entry->getType());
 
-	_rotations.get(rotationId)->addAmbientSound(entry, volume, a4, true, fadeFrames, a6, a7);
+	_rotations.get(rotationId)->addAmbientSound(entry, volume, pan, true, fadeFrames, a6, a7);
 }
 
 void Application::rotationSetAmbientSoundOn(Id rotationId, Id soundId) {
