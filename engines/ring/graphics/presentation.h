@@ -65,6 +65,8 @@ public:
 	void addAnimationToRotation(Rotation *rotation, uint32 layer, uint32 a3, float a4, uint32 a5);
 	void setAnimationOnPuzzle(uint32 animationIndex, ObjectId objectId);
 	void setAnimationOnRotation(uint32 animationIndex, ObjectId objectId);
+	void setAnimationStartFrame(uint32 startFrame);
+	void setAnimationActiveFrame(uint32 activeFrame);
 	void setAnimationCoordinatesOnPuzzle(Common::Point point);
 	void pauseAnimation();
 	void unpauseAnimation();

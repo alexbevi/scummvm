@@ -241,11 +241,17 @@ void Object::setAnimationOnRotation(uint32 presentationIndex, uint32 animationIn
 }
 
 void Object::setAnimationStartFrame(uint32 presentationIndex, uint32 startFrame) {
-	error("[Object::setAnimationStartFrame] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::setAnimationStartFrame] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->setAnimationStartFrame(startFrame);
 }
 
 void Object::setAnimationActiveFrame(uint32 presentationIndex, uint32 activeFrame) {
-	error("[Object::setAnimationActiveFrame] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::setAnimationActiveFrame] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->setAnimationActiveFrame(activeFrame);
 }
 
 void Object::setAnimationCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point) {

@@ -78,7 +78,7 @@ public:
 	void setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, ObjectId objectId);
 	void setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, ObjectId objectId);
 	void setAnimationStartFrame(uint32 presentationIndex, uint32 startFrame);
-	void setAnimationActiveFrame(uint32 presentationIndex, uint32 active);
+	void setAnimationActiveFrame(uint32 presentationIndex, uint32 activeFrame);
 	void setAnimationCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point);
 	void pauseAnimation(uint32 presentationIndex);
 	void unpauseAnimation(uint32 presentationIndex);

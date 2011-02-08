@@ -140,6 +140,22 @@ void ObjectPresentation::setAnimationOnRotation(uint32 animationIndex, ObjectId 
 	_layerAnimationRotationAnimation[animationIndex]->setId(objectId);
 }
 
+void ObjectPresentation::setAnimationStartFrame(uint32 startFrame) {
+	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
+		(*it)->setStartFrame(startFrame);
+
+	for (Common::Array<Animation *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
+		(*it)->setStartFrame(startFrame);
+}
+
+void ObjectPresentation::setAnimationActiveFrame(uint32 activeFrame) {
+	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
+		(*it)->setActiveFrame(activeFrame);
+
+	for (Common::Array<Animation *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
+		(*it)->setActiveFrame(activeFrame);
+}
+
 void ObjectPresentation::setAnimationCoordinatesOnPuzzle(Common::Point point) {
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
 		(*it)->setCoordinates(point);
