@@ -1043,10 +1043,6 @@ void Application::rotationSetComBufferLength(Id rotationId, uint32 length) {
 	_rotations.get(rotationId)->setComBufferLength(length);
 }
 
-void Application::rotationSetMovabilityOnOrOff(Id rotationId, uint32 a2, uint32 a3) {
-	error("[Application::rotationSetMovabilityOnOrOff] Not implemented");
-}
-
 void Application::rotationAddMovabilityToPuzzle(Id fromRotationId, PuzzleId toPuzzleId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
 	// Check ids
 	if (!_rotations.has(fromRotationId))
@@ -1101,6 +1097,32 @@ void Application::rotationSetMovabilityToRotation(Id rotationId, uint32 movabili
 		error("[Application::rotationSetMovabilityToRotation] Invalid type of movability (%d)", movability->getType());
 
 	movability->update(a3, a4, a5, a6, a7, a8, a9, a10);
+}
+
+void Application::rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot) {
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetMovabilityOnOrOff] Rotation Id doesn't exist (%d)", rotationId);
+
+	_rotations.get(rotationId)->setMovabilityOnOrOff(enableHotspot);
+}
+
+void Application::rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot, uint32 fromMovability, uint32 toMovability) {
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetMovabilityOnOrOff] Rotation Id doesn't exist (%d)", rotationId);
+
+	_rotations.get(rotationId)->setMovabilityOnOrOff(enableHotspot, fromMovability, toMovability);
+}
+
+void Application::rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId) {
+	rotationSetMovabilityOnOrOff(rotationId, false);
+}
+
+void Application::rotationSetMovabilityOnOrOffEnableHotspot(Id rotationId, uint32 fromMovability, uint32 toMovability) {
+	rotationSetMovabilityOnOrOff(rotationId, true, fromMovability, toMovability);
+}
+
+void Application::rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId, uint32 fromMovability, uint32 toMovability) {
+	rotationSetMovabilityOnOrOff(rotationId, false, fromMovability, toMovability);
 }
 
 void Application::rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7) {

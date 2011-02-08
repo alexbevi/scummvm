@@ -123,9 +123,18 @@ public:
 	Rotation(Id id, Common::String name, uint32 a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6);
 	~Rotation();
 
+	// Accessibility
 	void addAccessibility(Accessibility *accessibility);
+
+	// Movability
 	void addMovability(Movability *movability);
+	void setMovabilityOnOrOff(bool enableHotspot);
+	void setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability);
+
+	// Presentation
 	Animation *addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, uint32 a5);
+
+	// Nodes
 	void updateNode(uint32 index, uint32 val);
 
 	// Sound

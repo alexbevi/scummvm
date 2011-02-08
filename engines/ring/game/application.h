@@ -200,11 +200,16 @@ public:
 	// Rotation
 	void rotationAdd(Id rotationId, Common::String name, uint32 a3, uint32 nodeCount);
 	void rotationSetComBufferLength(Id rotationId, uint32 length);
-	void rotationSetMovabilityOnOrOff(Id rotationId, uint32 a2, uint32 a3);
 	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5, uint32 a6, uint32 a7);
 	void rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 	void rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5,  uint32 a6, uint32 a7, int32 a8, int32 a9, uint32 a10);
+
+	void rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot);
+	void rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot, uint32 fromMovability, uint32 toMovability);
+	void rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId);
+	void rotationSetMovabilityOnOrOffEnableHotspot(Id rotationId, uint32 fromMovability, uint32 toMovability);
+	void rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId, uint32 fromMovability, uint32 toMovability);
 
 	void rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7);
 	void rotationSetAmbientSoundOn(Id rotationId, Id soundId);

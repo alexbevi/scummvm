@@ -1555,7 +1555,7 @@ void ApplicationRing::initZoneRH() {
 	rotationSetMovabilityToRotation(20203, 1, 90.0f, 0.3f, 85.7f, 0, 2, 180.0f, 0.3f, 85.7f);
 	rotationAddMovabilityToRotation(20203, 20301, "1707", Common::Rect(3300, -560, 3600, 600), false, 53, 0);
 	rotationSetMovabilityToRotation(20203, 2, 270.0f, 0.3f, 85.7f, 0, 2, 42.0f, 23.0f, 85.7f);
-	rotationAddMovabilityToRotation(20203, 20301, "1707", Common::Rect(0, 560, 50, -600), false, 53, 0);
+	rotationAddMovabilityToRotation(20203, 20301, "1707", Common::Rect(0, -600, 50, 560), false, 53, 0); // Updated to valid rect
 	rotationSetMovabilityToRotation(20203, 3, 270.0f, 0.3f, 85.7f, 0, 2, 42.0f, 23.0f, 85.7f);
 	rotationAddMovabilityToRotation(20304, 20305, "1729", Common::Rect(346, -88, 569, 191), true, 53, 0);
 	rotationSetMovabilityToRotation(20304, 0, 0, 0.3f, 85.7f, 0, 2, 90.0f, 0.3f, 85.7f);
@@ -2042,7 +2042,7 @@ void ApplicationRing::initZoneFO() {
 	rotationSetMovabilityToRotation(30402, 1, 92.0f, 0, 85.3f, 0, 2, 80.0f, 0, 85.3f);
 	rotationAddMovabilityToRotation(30402, 30501, "1249", Common::Rect(2967, -102, 3237, 190), true, 53, 0);
 	rotationSetMovabilityToRotation(30402, 2, 261.0f, 0, 85.3f, 0, 2, 30.0f, 15.0f, 85.3f);
-	rotationSetMovabilityOnOrOff(30402, 2, 2);
+	rotationSetMovabilityOnOrOffDisableHotspot(30402, 2, 2);
 	rotationAddMovabilityToRotation(30501, 30012, "1250", Common::Rect(1981, -64, 2218, 324), true, 53, 0);
 	rotationSetMovabilityToRotation(30501, 0, 165.0f, 8.0f, 85.3f, 0, 2, 207.0f, 0, 85.3f);
 	rotationAddMovabilityToRotation(30501, 30601, "1251", Common::Rect(390, -247, 766, 179), true, 53, 0);
@@ -2960,19 +2960,21 @@ void ApplicationRing::initZoneRO() {
 
 	for (uint32 i = 0; i < 7; i++) {
 		for (uint32 j = 0; j < 7; j++) {
-			varDefineByte(40501 + j * 10 + i, 99);
+			varDefineByte(40501 + (j + 1) * 10 + i, 99);
 		}
 	}
 
 	objectAddPuzzleAccessibility(kObject40011, kPuzzle40011, Common::Rect(263, 71, 319, 127), true, 52, 12);
 	varSetByte(40513, 0);
 
-	for (uint32 i = 0; i < 3; i++) {
-		for (uint32 j = 0; j < 14; j++) {
+	for (uint32 i = 0; i < 5; i++) {
+		for (uint32 j = 0; j < 5; j++) {
 			objectPresentationAddImageToPuzzle(kObject40011, i, kPuzzle40011, Common::String::format("L01T%d%d.bmp", i, j), Common::Point(207 + j * 56, 127 + 56 * i), true, 1, 1000);
 			objectAddPuzzleAccessibility(kObject40011, kPuzzle40011, Common::Rect(207 + j * 56, 127 + 56 * i, 207 + (j + 1) * 56, 127 + 56 * (i + 1)), true, 52, (21 + i * 10 + j));
-			varSetByte((21 + i * 10 + j) + 40501, (j + 1) + 10 * i);
+			varSetByte(40501 + (21 + i * 10 + j), 10 * (i + 2) + j + 1);
 		}
+
+		objectAddPresentation(kObject40011);
 	}
 
 	objectPresentationShow(kObject40011, 0);

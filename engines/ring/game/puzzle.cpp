@@ -124,13 +124,13 @@ void Puzzle::setMovabilityOnOrOff(bool enableHotspot) {
 void Puzzle::setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability) {
 	// Check from/to movability
 	if (toMovability < fromMovability)
-		error("[Object::setMovabilityOnOrOff] From movability (%d) is greater than To movability (%d)", fromMovability, toMovability);
+		error("[Puzzle::setMovabilityOnOrOff] From movability (%d) is greater than To movability (%d)", fromMovability, toMovability);
 
 	if (fromMovability < 0 || fromMovability >= _movabilities.size())
-		error("[Object::setMovabilityOnOrOff] From acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
+		error("[Puzzle::setMovabilityOnOrOff] From acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
 
 	if (toMovability < 0 || toMovability >= _movabilities.size())
-		error("[Object::setMovabilityOnOrOff] To acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
+		error("[Puzzle::setMovabilityOnOrOff] To acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
 
 
 	for (uint32 i = fromMovability; i <= toMovability; i++) {

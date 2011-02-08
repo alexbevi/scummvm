@@ -142,6 +142,35 @@ void Rotation::addMovability(Movability *movability) {
 	_movabilities.push_back(movability);
 }
 
+void Rotation::setMovabilityOnOrOff(bool enableHotspot) {
+	for (Common::Array<Movability *>::iterator it = _movabilities.begin(); it != _movabilities.end(); it++) {
+		if (enableHotspot)
+			(*it)->enableHotspot();
+		else
+			(*it)->disableHotspot();
+	}
+}
+
+void Rotation::setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability) {
+	// Check from/to movability
+	if (toMovability < fromMovability)
+		error("[Rotation::setMovabilityOnOrOff] From movability (%d) is greater than To movability (%d)", fromMovability, toMovability);
+
+	if (fromMovability < 0 || fromMovability >= _movabilities.size())
+		error("[Rotation::setMovabilityOnOrOff] From acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
+
+	if (toMovability < 0 || toMovability >= _movabilities.size())
+		error("[Rotation::setMovabilityOnOrOff] To acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
+
+
+	for (uint32 i = fromMovability; i <= toMovability; i++) {
+		if (enableHotspot)
+			_movabilities[i]->enableHotspot();
+		else
+			_movabilities[i]->disableHotspot();
+	}
+}
+
 Animation *Rotation::addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, uint32 a5) {
 	if (!presentation)
 		error("[Rotation::addPresentationAnimation] Presentation is NULL!");
