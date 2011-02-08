@@ -198,6 +198,12 @@ void Rotation::setAmbientSoundOff(Id soundId) {
 	item->off();
 }
 
+void Rotation::setAmplitudeAndSpeed(float amplitude, float speed) {
+	_field_66 = 1;
+	_amplitude = amplitude;
+	_speed = speed;
+}
+
 uint32 Rotation::getLayerCount() {
 	if (!_data)
 		error("[Rotation::getLayerCount] Data not initialized!");

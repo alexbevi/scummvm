@@ -125,9 +125,7 @@ public:
 
 	void addAccessibility(Accessibility *accessibility);
 	void addMovability(Movability *movability);
-
 	Animation *addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, uint32 a5);
-
 	void updateNode(uint32 index, uint32 val);
 
 	// Sound
@@ -137,6 +135,7 @@ public:
 	void setAmbientSoundOff(Id soundId);
 
 	// Accessors
+	void setAmplitudeAndSpeed(float amplitude, float speed);
 	uint32 getLayerCount();
 	void setComBufferLength(uint32 length) { _comBufferLength = length; }
 	Movability *getMovability(uint32 index);

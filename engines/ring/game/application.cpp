@@ -1154,7 +1154,16 @@ void Application::rotationSet3DSoundOff(Id rotationId, Id soundId) {
 }
 
 void Application::rotationSetJugOn(Id rotationId, float amplitude, float speed) {
-	error("[Application::rotationSetJugOn] Not implemented");
+	if (amplitude < 10.0f || amplitude > 50.0f)
+		error("[Application::rotationSetJugOn] Wrong amplitude for rotation (was: %f, valid: [10.0, 50.0])", amplitude);
+
+	if (speed < 0.1f || speed > 10.0f)
+		error("[Application::rotationSetJugOn] Wrong speed for rotation (was: %f, valid: [10.0, 50.0])", speed);
+
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetJugOn] Wrong rotation Id (%d)", rotationId);
+
+	_rotations.get(rotationId)->setAmplitudeAndSpeed(amplitude, speed);
 }
 
 #pragma endregion
