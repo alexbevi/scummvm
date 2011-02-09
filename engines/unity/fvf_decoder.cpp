@@ -17,7 +17,7 @@
 #include "fvf_decoder.h"
 #include "common/stream.h"
 
-#include "sound/decoders/raw.h"
+#include "audio/decoders/raw.h"
 
 namespace Unity {
 

@@ -17,8 +17,8 @@
 #include "sound.h"
 #include "common/system.h"
 #include "common/memstream.h"
-#include "sound/audiostream.h"
-#include "sound/decoders/adpcm.h"
+#include "audio/audiostream.h"
+#include "audio/decoders/adpcm.h"
 
 namespace Unity {
 

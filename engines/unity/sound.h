@@ -15,7 +15,7 @@
  */
 
 #include "unity.h"
-#include "sound/mixer.h"
+#include "audio/mixer.h"
 
 namespace Unity {
 
