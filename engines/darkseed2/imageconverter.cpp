@@ -186,7 +186,7 @@ inline uint32 ImageConverter::getColor(uint8 c, const Palette &palette) const {
 inline uint32 ImageConverter::getColorSystem(uint8 c) const {
 	byte pal[4];
 
-	g_system->grabPalette(pal, c, 1);
+	g_system->getPaletteManager()->grabPalette(pal, c, 1);
 
 	const uint8 r = pal[0];
 	const uint8 g = pal[1];

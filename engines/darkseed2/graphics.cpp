@@ -240,7 +240,7 @@ void Graphics::leaveMovieMode() {
 void Graphics::assertPalette0() {
 	byte index0[4];
 
-	g_system->grabPalette(index0, 0, 1);
+	g_system->getPaletteManager()->grabPalette(index0, 0, 1);
 
 	if ((index0[0] == 0) && (index0[1] == 0) && (index0[2] == 0))
 		return;
@@ -249,7 +249,7 @@ void Graphics::assertPalette0() {
 	index0[1] = 0;
 	index0[2] = 0;
 
-	g_system->setPalette(index0, 0, 1);
+	g_system->getPaletteManager()->setPalette(index0, 0, 1);
 	g_system->updateScreen();
 }
 

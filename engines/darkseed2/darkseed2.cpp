@@ -341,7 +341,7 @@ bool DarkSeed2Engine::doLoadDialog() {
 	GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser("Load game:", "Load");
 
 	dialog->setSaveMode(false);
-	int slot = dialog->runModal(plugin, ConfMan.getActiveDomainName());
+	int slot = dialog->runModalWithPluginAndTarget(plugin, ConfMan.getActiveDomainName());
 
 	bool result = false;
 	if (slot >= 0)

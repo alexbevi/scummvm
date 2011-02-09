@@ -89,7 +89,7 @@ SegaFILMDecoder::~SegaFILMDecoder() {
 	close();
 }
 
-bool SegaFILMDecoder::load(Common::SeekableReadStream *stream) {
+bool SegaFILMDecoder::loadStream(Common::SeekableReadStream *stream) {
 	close();
 
 	_stream = stream;

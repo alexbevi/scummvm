@@ -56,7 +56,7 @@ public:
 			Audio::Mixer::SoundType soundType = Audio::Mixer::kPlainSoundType);
 	~SegaFILMDecoder();
 
-	bool load(Common::SeekableReadStream *stream);
+	bool loadStream(Common::SeekableReadStream *stream);
 	void close();
 
 	uint16 getWidth() const { return _width; }
