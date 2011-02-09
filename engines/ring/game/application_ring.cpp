@@ -42,7 +42,7 @@
 
 namespace Ring {
 
-// List of animations
+// List of intro screens
 static const struct {
 	Common::String filenameFrom;
 	Common::String filenameTo;
@@ -62,6 +62,26 @@ static const struct {
 	{"beg0.bmp", "beg5.bmp", 20, 3000, kLoadFromDisk, kArchiveFile},
 	{"beg5.bmp", "beg0.bmp", 20,    0, kLoadFromDisk, kArchiveFile},
 	{"beg0.bmp", "beg6.bmp", 20, 6000, kLoadFromDisk, kArchiveFile}
+};
+
+// List of credits screens
+static const struct {
+	Common::String filename;
+	uint32 ticksWait;
+	LoadFrom loadFrom;
+	ArchiveType archiveType;
+} creditsScreens[11] = {
+	{"cre_01.bmp",    0, kLoadFromDisk, kArchiveFile},
+	{"cre_02.bmp",    0, kLoadFromDisk, kArchiveFile},
+	{"cre_03.bmp",    0, kLoadFromDisk, kArchiveFile},
+	{"cre_04.bmp",    0, kLoadFromDisk, kArchiveFile},
+	{"cre_05.bmp",    0, kLoadFromDisk, kArchiveFile},
+	{"cre_06.bmp",    0, kLoadFromDisk, kArchiveFile},
+	{"cre_07.bmp",    0, kLoadFromDisk, kArchiveFile},
+	{"cre_08.bmp",    0, kLoadFromDisk, kArchiveFile},
+	{"cre_09.bmp",    0, kLoadFromDisk, kArchiveFile},
+	{"cre_10.bmp",    0, kLoadFromDisk, kArchiveFile},
+	{"cre_11.bmp", 5000, kLoadFromDisk, kArchiveFile}
 };
 
 ApplicationRing::ApplicationRing(RingEngine *engine) : Application(engine) {
@@ -207,6 +227,22 @@ void ApplicationRing::initMenu(PuzzleId id, bool a2, bool a3) {
 
 	_soundHandler->reset();
 	_soundHandler->setCount1(_puzzle->getSoundItemsCount());
+}
+
+void ApplicationRing::showCredits() {
+	sound_sub_406EA0(1024);
+	setZoneAndEnableBag(kZoneWA);
+	noiceIdPlay(51002, true);
+
+	setZoneAndEnableBag(kZoneSY);
+
+	// Scroll credits
+	for (uint i = 0; i < ARRAYSIZE(creditsScreens); i++) {
+		if (scrollImage(creditsScreens[i].filename, creditsScreens[i].ticksWait, creditsScreens[i].loadFrom, creditsScreens[i].archiveType) == 2)
+			break;
+	}
+
+	sound_sub_406E00(51002, 1024);
 }
 
 #pragma endregion

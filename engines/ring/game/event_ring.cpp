@@ -270,7 +270,11 @@ void EventHandlerRing::onSound(Id id, SoundType type, uint32 a3) {
 }
 
 void EventHandlerRing::onSoundZoneSY(Id id, SoundType type, uint32 a3, uint32 a4) {
-	error("[EventHandlerRing::onSoundZoneSY] Not implemented");
+	if (a4 && id == 90001) {
+		_app->objectPresentationHideAndRemove(kObject7, 0);
+		_app->showCredits();
+		_app->startMenu(false);
+	}
 }
 
 void EventHandlerRing::onSoundZoneNI(Id id, SoundType type, uint32 a3, uint32 a4) {

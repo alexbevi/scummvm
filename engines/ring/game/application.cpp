@@ -371,6 +371,10 @@ void Application::onSound(Id id, SoundType type, uint32 a3) {
 
 #pragma region Display and Movies
 
+int Application::scrollImage(Common::String filename,  uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
+	error("[Application::scrollImage] Not implemented");
+}
+
 void Application::displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 a3, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
 	warning("[Application::displayFade] Not implemented");
 }
@@ -1348,6 +1352,10 @@ void Application::soundSetVolume(Id soundId, uint32 volume) {
 
 bool Application::soundIsPlaying(Id soundId) {
 	return _soundManager->isPlaying(soundId);
+}
+
+void Application::sound_sub_406E00(Id soundId, uint32 a2) {
+	error("[Application::sound_sub_406E00] Not implemented");
 }
 
 void Application::sound_sub_406EA0(uint32 a1) {

@@ -73,6 +73,7 @@ public:
 	virtual void showStartupScreen() = 0;
 	virtual void startMenu(bool savegame) = 0;
 	virtual void initMenu(PuzzleId id, bool a2, bool a3) = 0;
+	virtual void showCredits() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Event handling
@@ -255,7 +256,9 @@ public:
 	void soundSetVolume(Id soundId, uint32 volume);
 	bool soundIsPlaying(Id soundId);
 
+	void sound_sub_406E00(Id soundId, uint32 a2);
 	void sound_sub_406EA0(uint32 a1);
+
 
 	void noiceIdPlay(Id noiceId, bool a2);
 
@@ -367,6 +370,7 @@ protected:
 	void loadConfiguration();
 
 	// Display and movies
+	int scrollImage(Common::String filename,  uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 a3, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	void playMovie(Common::String filename, float a2);
 
