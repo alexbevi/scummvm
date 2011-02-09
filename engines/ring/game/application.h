@@ -151,9 +151,6 @@ public:
 	bool hasCurrentPuzzle() { return _puzzle != NULL; }
 	PuzzleId getCurrentPuzzleId();
 
-	bool hasCurrentRotation() { return _rotation != NULL; }
-	Id getCurrentRotationId();
-
 	//////////////////////////////////////////////////////////////////////////
 	// Object
 	void objectAdd(ObjectId objectId, Common::String language, Common::String name, byte a5);
@@ -243,6 +240,13 @@ public:
 
 	void rotationSetFreOn(Id rotationId);
 	void rotationSetFreOff(Id rotationId);
+
+	// Current rotation
+	bool hasCurrentRotation() { return _rotation != NULL; }
+	Id getCurrentRotationId();
+	Rotation *getCurrentRotation() { return _rotation; }
+	void setupCurrentRotation();
+	void setFreOffCurrentRotation();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Sound
@@ -365,6 +369,9 @@ protected:
 	// Display and movies
 	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 a3, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	void playMovie(Common::String filename, float a2);
+
+	// Current rotation
+	Rotation *_currentRotation;
 
 };
 

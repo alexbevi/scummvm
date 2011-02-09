@@ -29,6 +29,7 @@
 #include "ring/base/sound.h"
 
 #include "ring/game/application.h"
+#include "ring/game/bag.h"
 
 #include "ring/graphics/accessibility.h"
 #include "ring/graphics/image.h"
@@ -37,6 +38,7 @@
 #include "ring/graphics/video.h"
 #include "ring/graphics/visual.h"
 
+#include "ring/ring.h"
 #include "ring/helpers.h"
 
 namespace Ring {
@@ -152,7 +154,26 @@ void Puzzle::setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uin
 #pragma endregion
 
 void Puzzle::setMod(uint32 a2, uint32 a3) {
-	error("[Puzzle::setMod] Not implemented");
+	_field_24 = a2;
+	_field_29 = a3;
+
+	switch (a2){
+	default:
+		break;
+
+	case 1:
+		getApp()->setFreOffCurrentRotation();
+		break;
+
+	case 2:
+		getApp()->setupCurrentRotation();
+
+		if (getApp()->getBag() && getApp()->getBag()->getField94())
+			getApp()->getBag()->sub_419350();
+
+		getApp()->cursorDelete();
+		break;
+	}
 }
 
 #pragma region Visual

@@ -67,6 +67,8 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	// Start managers
 	_saveManager = new SaveManager(this);
 	_soundManager = new SoundManager(this, _vm->_mixer);
+
+	_currentRotation = NULL;
 }
 
 Application::~Application() {
@@ -94,6 +96,8 @@ Application::~Application() {
 	SAFE_DELETE(_saveManager);
 	SAFE_DELETE(_soundManager);
 	SAFE_DELETE(_eventHandler);
+
+	_currentRotation = NULL;
 
 	// Zero-out passed pointers
 	_vm = NULL;
@@ -681,9 +685,26 @@ PuzzleId Application::getCurrentPuzzleId() {
 
 Id Application::getCurrentRotationId() {
 	if (!_rotation)
-		return kPuzzleInvalid;
+		return 0;
 
 	return _rotation->getId();
+}
+
+void Application::setupCurrentRotation() {
+	if (!hasCurrentRotation()) {
+		_currentRotation = NULL;
+		return;
+	}
+
+	Rotation *rotation = getCurrentRotation();
+	rotation->setFreOnOff(true);
+
+	_currentRotation = rotation;
+}
+
+void Application::setFreOffCurrentRotation() {
+	if (_currentRotation)
+		_currentRotation->setFreOnOff(false);
 }
 
 #pragma endregion
