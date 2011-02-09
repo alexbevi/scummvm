@@ -29,6 +29,7 @@
 #include "ring/base/sound.h"
 
 #include "ring/game/bag.h"
+#include "ring/game/event_ring.h"
 #include "ring/game/saveload.h"
 
 #include "ring/helpers.h"
@@ -61,6 +62,7 @@ static const struct {
 };
 
 ApplicationRing::ApplicationRing(RingEngine *engine) : Application(engine) {
+	_eventHandler = new EventHandlerRing(this);
 }
 
 ApplicationRing::~ApplicationRing() {
@@ -161,96 +163,6 @@ void ApplicationRing::startMenu(bool load) {
 
 void ApplicationRing::initMenu(PuzzleId id, bool a2, bool a3) {
 	error("[ApplicationRing::initMenu] Not implemented");
-}
-
-#pragma endregion
-
-
-#pragma region Timer
-
-void ApplicationRing::onZoneTimer(TimerId timerId) {
-	switch (getCurrentZone()) {
-	default:
-	case kZoneSY:
-	case kZoneWA:
-		break;
-
-	case kZoneNI:
-		onZoneTimerNI(timerId);
-		break;
-
-	case kZoneRH:
-		onZoneTimerRH(timerId);
-		break;
-
-	case kZoneFO:
-		onZoneTimerFO(timerId);
-		break;
-
-	case kZoneRO:
-		onZoneTimerRO(timerId);
-		break;
-
-	case kZoneAS:
-		onZoneTimerAS(timerId);
-		break;
-
-	case kZoneN2:
-		onZoneTimerN2(timerId);
-		break;
-	}
-}
-
-void ApplicationRing::onZoneTimerNI(TimerId id) {
-	error("[ApplicationRing::onZoneTimerNI] Not implemented");
-}
-
-void ApplicationRing::onZoneTimerRH(TimerId id) {
-	error("[ApplicationRing::onZoneTimerNI] Not implemented");
-}
-
-void ApplicationRing::onZoneTimerFO(TimerId id) {
-	error("[ApplicationRing::onZoneTimerNI] Not implemented");
-}
-
-void ApplicationRing::onZoneTimerRO(TimerId id) {
-	switch (id) {
-	default:
-		break;
-
-	case kTimer0:
-		varSetByte(40806, varGetByte(40806) + 1);
-
-		if (varGetByte(40806) == 10) {
-			timerStop(kTimer0);
-			varSetByte(40601, 10);
-		}
-
-		objectPresentationShow(kObject40101, varGetByte(40806));
-		break;
-
-	case kTimer1:
-		varSetByte(40807, varGetByte(40807) + 1);
-
-		if (varGetByte(40807) == 90) {
-			timerStop(kTimer1);
-			varSetByte(40602, 90);
-		}
-
-		objectPresentationShow(kObject40102, varGetByte(40807));
-		break;
-	}
-
-	error("[ApplicationRing::onZoneTimerNI] Not implemented");
-}
-
-void ApplicationRing::onZoneTimerAS(TimerId id) {
-	error("[ApplicationRing::onZoneTimerNI] Not implemented");
-}
-
-void ApplicationRing::onZoneTimerN2(TimerId id) {
-	if (id == kTimer0)
-		noiceIdPlay(_vm->getRandom().getRandomNumber(12) + 70004, 1);
 }
 
 #pragma endregion

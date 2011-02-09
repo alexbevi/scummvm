@@ -14,6 +14,7 @@ MODULE_OBJS := \
 	game/application_ring.o \
 	game/bag.o \
 	game/dialog.o \
+	game/event_ring.o \
 	game/language.o \
 	game/object.o \
 	game/puzzle.o \

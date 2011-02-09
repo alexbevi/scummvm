@@ -39,6 +39,7 @@ class Bag;
 class CursorHandler;
 class DialogHandler;
 class DragControl;
+class EventHandler;
 class LanguageHandler;
 class FontHandler;
 class Game;
@@ -333,7 +334,7 @@ protected:
 	DragControl                  *_dragControl;
 	ObjectHandler                *_objectHandler;
 	PreferenceHandler            *_preferenceHandler;
-	bool                          _controlNotPressed;
+	//bool                          _controlNotPressed; // Moved to EventHandler
 
 	// Save / Load games
 	SaveManager                     *_saveManager;
@@ -341,14 +342,11 @@ protected:
 	// Sound (playing & managing sound data)
 	SoundManager                    *_soundManager;
 
+	// Event Handling
+	EventHandler                    *_eventHandler;
+
 	// Configuration
 	void loadConfiguration();
-
-	// Event handling
-	void onMouseLeftButtonUp(Common::Event &evt);
-
-	// Timer
-	virtual void onZoneTimer(TimerId id) = 0;
 
 	// Display and movies
 	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 a3, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);

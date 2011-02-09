@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef RING_GAME_H
-#define RING_GAME_H
+#ifndef RING_APPLICATION_RING_H
+#define RING_APPLICATION_RING_H
 
 #include "ring/game/application.h"
 
@@ -60,17 +60,6 @@ public:
 
 private:
 	//////////////////////////////////////////////////////////////////////////
-	// Timer
-	//////////////////////////////////////////////////////////////////////////
-	virtual void onZoneTimer(TimerId id);
-	void onZoneTimerNI(TimerId id);
-	void onZoneTimerRH(TimerId id);
-	void onZoneTimerFO(TimerId id);
-	void onZoneTimerRO(TimerId id);
-	void onZoneTimerAS(TimerId id);
-	void onZoneTimerN2(TimerId id);
-
-	//////////////////////////////////////////////////////////////////////////
 	// Zone
 	//////////////////////////////////////////////////////////////////////////
 	void setZoneNI(Zone zone, uint32 a2);
@@ -93,4 +82,4 @@ private:
 
 } // End of namespace Ring
 
-#endif // RING_GAME_H
+#endif // RING_APPLICATION_RING_H

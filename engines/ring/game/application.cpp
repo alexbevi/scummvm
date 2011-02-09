@@ -35,6 +35,7 @@
 
 #include "ring/game/bag.h"
 #include "ring/game/dialog.h"
+#include "ring/game/event.h"
 #include "ring/game/language.h"
 #include "ring/game/object.h"
 #include "ring/game/puzzle.h"
@@ -61,7 +62,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_field_6F(0),        _field_70(0),            _field_74(0),         _field_75(0),         _field_76(0),
 	_field_77(0),        _field_78(0),            _puzzle(NULL),        _rotation(NULL),      _bag(NULL),
 	_timerHandler(NULL), _var(NULL),              _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
-	_controlNotPressed(false) {
+	_eventHandler(NULL) {
 
 	// Start managers
 	_saveManager = new SaveManager(this);
@@ -91,6 +92,8 @@ Application::~Application() {
 	SAFE_DELETE(_preferenceHandler);
 
 	SAFE_DELETE(_saveManager);
+	SAFE_DELETE(_soundManager);
+	SAFE_DELETE(_eventHandler);
 
 	// Zero-out passed pointers
 	_vm = NULL;
@@ -331,39 +334,29 @@ void Application::loadConfiguration() {
 #pragma region Event handling
 
 void Application::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
-	_controlNotPressed = !isControlPressed;
-
-	onMouseLeftButtonUp(evt);
-}
-
-void Application::onMouseLeftButtonUp(Common::Event &evt) {
-	error("[Application::onMouseLeftButtonUp] Not implemented");
+	_eventHandler->onMouseLeftButtonUp(evt, isControlPressed);
 }
 
 void Application::onMouseLeftButtonDown(Common::Event &evt) {
-	error("[Application::onMouseLeftButtonDown] Not implemented");
+	_eventHandler->onMouseLeftButtonDown(evt);
 }
 
 void Application::onMouseRightButtonUp(Common::Event &evt) {
-	error("[Application::onMouseRightButtonUp] Not implemented");
+	_eventHandler->onMouseRightButtonUp(evt);
 }
 
 void Application::onKeyDown(Common::Event &evt) {
-	error("[Application::onKeyDown] Not implemented");
+	_eventHandler->onKeyDown(evt);
 }
 
 void Application::onTimer(TimerId id) {
 	if (_field_6A)
 		return;
 
-	onZoneTimer(id);
+	_eventHandler->onTimer(id);
 
 	if (_timerHandler)
 		_timerHandler->incrementFiredCount(id);
-}
-
-void Application::onZoneTimer(TimerId id) {
-	error("[Application::onZoneTimer] Not implemented");
 }
 
 #pragma endregion
