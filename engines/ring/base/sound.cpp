@@ -430,6 +430,10 @@ float SoundItem::computePan(float angle) {
 	return getSoundDirection() * (sin(angle * SOUND_FRAC_VALUE + _angle) * _field_1D);
 }
 
+void SoundItem::computeAndSetPan(float alp) {
+	_pan = computePan(alp);
+}
+
 bool SoundItem::checkCurrentPuzzle() {
 	Id id = 0;
 
@@ -468,6 +472,40 @@ void SoundHandler::reset() {
 	_field_0 = false;
 	_count1 = 0;
 	_count2 = 0;
+}
+
+void SoundHandler::turnOffItems2(bool a1) {
+	if (!a1 || !_count1)
+		return;
+
+	for (Common::Array<SoundItem *>::iterator it = _soundItems2.begin(); it != _soundItems2.end(); it++)
+		(*it)->turnOff();
+}
+
+bool SoundHandler::sub_41AA00() {
+	error("[SoundHandler::sub_41AA00] Not implemented");
+}
+
+bool SoundHandler::sub_41AEE0(uint32 a1) {
+	error("[SoundHandler::sub_41AEE0] Not implemented");
+}
+
+
+void SoundHandler::turnOffItems1() {
+	for (Common::Array<SoundItem *>::iterator it = _soundItems1.begin(); it != _soundItems1.end(); it++)
+		(*it)->turnOff();
+}
+
+void SoundHandler::sub_41B180(uint32 a1) {
+	error("[SoundHandler::sub_41B180] Not implemented");
+}
+
+void SoundHandler::sub_41B350(uint32 a1) {
+	error("[SoundHandler::sub_41B350] Not implemented");
+}
+
+void SoundHandler::sub_41B520() {
+	error("[SoundHandler::sub_41AA00] Not implemented");
 }
 
 void SoundHandler::setReverseStereo(int32 reverseStereo) {

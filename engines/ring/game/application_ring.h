@@ -44,7 +44,6 @@ public:
 	// Startup
 	virtual void showStartupScreen();
 	virtual void startMenu(bool savegame);
-	virtual void initMenu(PuzzleId id, bool a2, bool a3);
 	virtual void showCredits();
 
 	//////////////////////////////////////////////////////////////////////////

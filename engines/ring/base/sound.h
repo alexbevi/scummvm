@@ -201,6 +201,7 @@ public:
 
 	// Helpers
 	float computePan(float angle);
+	void computeAndSetPan(float alp);
 
 private:
 	SoundEntry *_entry;
@@ -228,11 +229,19 @@ public:
 	SoundHandler();
 	~SoundHandler();
 
-	void setReverseStereo(int32 reverseStereo);
+	void turnOffItems2(bool a1);
+	bool sub_41AA00();
+	bool sub_41AEE0(uint32 a1);
+	void turnOffItems1();
+	void sub_41B180(uint32 a1);
+	void sub_41B350(uint32 a1);
+	void sub_41B520();
+
 	void reset();
 
+	// Accessors
+	void setReverseStereo(int32 reverseStereo);
 	float getDirection() { return _direction; }
-
 	bool getField0() { return _field_0; }
 	void setCount1(uint32 count) { _count1 = count; }
 	void setCount2(uint32 count) { _count2 = count; }

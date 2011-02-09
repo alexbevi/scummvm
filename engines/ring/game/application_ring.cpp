@@ -192,43 +192,6 @@ void ApplicationRing::startMenu(bool savegame) {
 	}
 }
 
-void ApplicationRing::initMenu(PuzzleId id, bool a2, bool a3) {
-	bool updateSoundItems = false;
-
-	// Setup puzzle
-	if (!_puzzles.has(id))
-		return;
-
-	puzzleReset();
-	_puzzle = _puzzles.get(id);
-	_puzzle->alloc();
-	_puzzle->update(_video);
-
-	_field_66 = 2;
-
-	if (_soundHandler) {
-		if (_soundHandler->getField0()) {
-
-			_soundHandler->reset();
-			_soundHandler->setCount1(_puzzle->getSoundItemsCount());
-
-			return;
-		}
-
-		_soundHandler->setCount2(_puzzle->getSoundItemsCount());
-
-		warning("[ApplicationRing::initMenu] Not implemented!");
-
-		updateSoundItems = true;
-	}
-
-	if (updateSoundItems)
-		_puzzle->updateSoundItems();
-
-	_soundHandler->reset();
-	_soundHandler->setCount1(_puzzle->getSoundItemsCount());
-}
-
 void ApplicationRing::showCredits() {
 	sound_sub_406EA0(1024);
 	setZoneAndEnableBag(kZoneWA);

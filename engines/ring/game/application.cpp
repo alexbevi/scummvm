@@ -672,6 +672,58 @@ void Application::puzzleSet3DSoundVolume(PuzzleId puzzleId, Id soundId, int32 vo
 	_puzzle->setAmbientSoundVolume(soundId, volume);
 }
 
+void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
+	bool update = false;
+
+	// Setup puzzle
+	if (!_puzzles.has(id))
+		return;
+
+	puzzleReset();
+	_puzzle = _puzzles.get(id);
+	_puzzle->alloc();
+	_puzzle->update(_video);
+
+	_field_66 = 2;
+
+	if (_soundHandler) {
+		if (_soundHandler->getField0()) {
+			_soundHandler->sub_41B520();
+
+			_soundHandler->reset();
+			_soundHandler->setCount1(_puzzle->getSoundItemsCount());
+			return;
+		}
+
+		_soundHandler->setCount2(_puzzle->getSoundItemsCount());
+
+		if (_soundHandler->sub_41AA00()) {
+
+			_soundHandler->turnOffItems1();
+
+			if (_soundHandler->sub_41AEE0(2)) {
+
+				_soundHandler->sub_41B180(3);
+				_soundHandler->sub_41B350(3);
+				_soundHandler->sub_41B520();
+
+				_soundHandler->reset();
+				_soundHandler->setCount1(_puzzle->getSoundItemsCount());
+				return;
+			}
+		}
+
+		_soundHandler->turnOffItems2(a3);
+		update = updateSoundItems;
+	}
+
+	if (update)
+		_puzzle->updateSoundItems();
+
+	_soundHandler->reset();
+	_soundHandler->setCount1(_puzzle->getSoundItemsCount());
+}
+
 void Application::puzzleReset() {
 	SAFE_DELETE(_puzzle);
 	SAFE_DELETE(_rotation);
@@ -1313,6 +1365,59 @@ void Application::rotationSetFreOff(Id rotationId) {
 		error("[Application::rotationSetFreOff] Rotation Id doesn't exist (%d)", rotationId);
 
 	_rotations.get(rotationId)->setFreOnOff(false);
+}
+
+void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
+	bool update = false;
+
+	// Setup puzzle
+	if (!_rotations.has(id))
+		return;
+
+	puzzleReset();
+	_rotation = _rotations.get(id);
+	_rotation->load();
+
+	g_system->warpMouse(320, 240);
+
+	_field_66 = 1;
+
+	if (_soundHandler) {
+		if (_soundHandler->getField0()) {
+			_soundHandler->sub_41B520();
+
+			_soundHandler->reset();
+			_soundHandler->setCount1(_rotation->getSoundItemsCount());
+			return;
+		}
+
+		_soundHandler->setCount2(_rotation->getSoundItemsCount());
+
+		if (_soundHandler->sub_41AA00()) {
+
+			_soundHandler->turnOffItems1();
+
+			if (_soundHandler->sub_41AEE0(2)) {
+
+				_soundHandler->sub_41B180(3);
+				_soundHandler->sub_41B350(3);
+				_soundHandler->sub_41B520();
+
+				_soundHandler->reset();
+				_soundHandler->setCount1(_rotation->getSoundItemsCount());
+				return;
+			}
+		}
+
+		_soundHandler->turnOffItems2(a3);
+		update = updateSoundItems;
+	}
+
+	if (update)
+		_rotation->updateSoundItems();
+
+	_soundHandler->reset();
+	_soundHandler->setCount1(_rotation->getSoundItemsCount());
 }
 
 #pragma endregion

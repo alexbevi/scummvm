@@ -147,6 +147,8 @@ public:
 	void puzzleSet3DSoundOff(PuzzleId puzzleId, Id soundId);
 	void puzzleSet3DSoundVolume(PuzzleId puzzleId, Id soundId, int32 volume);
 
+	void puzzleSetActive(PuzzleId id, bool a2, bool a3);
+
 	void puzzleReset();
 
 	bool hasCurrentPuzzle() { return _puzzle != NULL; }
@@ -241,6 +243,8 @@ public:
 
 	void rotationSetFreOn(Id rotationId);
 	void rotationSetFreOff(Id rotationId);
+
+	void rotationSetActive(Id rotationId, bool a2, bool a3);
 
 	// Current rotation
 	bool hasCurrentRotation() { return _rotation != NULL; }

@@ -123,6 +123,8 @@ public:
 	Rotation(Id id, Common::String name, uint32 a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6);
 	~Rotation();
 
+	void load();
+
 	// Accessibility
 	void addAccessibility(Accessibility *accessibility);
 
@@ -151,10 +153,12 @@ public:
 	void add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4, uint32 a5, uint32 fadeFrames, float angle, uint32 a9);
 	void setAmbientSoundOn(Id soundId);
 	void setAmbientSoundOff(Id soundId);
-
-	void setFreOnOff(bool state);
+	void updateAmbientSoundPan();
+	void updateSoundItems();
+	uint32 getSoundItemsCount() { return _soundItems.size(); }
 
 	// Accessors
+	void setFreOnOff(bool state);
 	void setAmplitudeAndSpeed(float amplitude, float speed);
 	uint32 getLayerCount();
 	void setComBufferLength(uint32 length) { _comBufferLength = length; }

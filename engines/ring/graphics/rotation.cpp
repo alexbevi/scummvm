@@ -128,6 +128,10 @@ void Rotation::initNodes(uint32 count) {
 	_ran       = 85.0f;
 }
 
+void Rotation::load() {
+	error("[Rotation::load] Not implemented");
+}
+
 void Rotation::addAccessibility(Accessibility *accessibility) {
 	if (accessibility == NULL)
 		error("[Rotation::addAccessibility] Accessibility is NULL!");
@@ -236,6 +240,37 @@ void Rotation::setAmbientSoundOff(Id soundId) {
 		error("[Rotation::setAmbientSoundOff] Wrong sound Id (%d)", soundId);
 
 	item->off();
+}
+
+void Rotation::updateAmbientSoundPan() {
+	for (Common::Array<SoundItem *>::iterator it = _soundItems.begin(); it != _soundItems.end(); it++) {
+		SoundItem *item = (*it);
+
+		if (!item->getSoundEntry() || item->getSoundEntry()->getType() != kSoundTypeAmbientEffect)
+			continue;
+
+		float alp = _alp + 135.0f;
+		if (alp > 360.0f)
+			alp -= 360.0f;
+
+		item->computeAndSetPan(alp);
+	}
+}
+
+void Rotation::updateSoundItems() {
+	updateAmbientSoundPan();
+
+	for (Common::Array<SoundItem *>::iterator it = _soundItems.begin(); it != _soundItems.end(); it++) {
+		SoundItem *item = (*it);
+
+		if (!item->isOn()) {
+			item->turnOff();
+			continue;
+		}
+
+		if (!item->getSoundEntry() || !item->getSoundEntry()->isPlaying())
+			item->turnOn();
+	}
 }
 
 void Rotation::setFreOnOff(bool state) {
