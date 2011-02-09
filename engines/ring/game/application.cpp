@@ -1125,32 +1125,68 @@ void Application::rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId, uint
 	rotationSetMovabilityOnOrOff(rotationId, false, fromMovability, toMovability);
 }
 
+void Application::rotationSetMovabilityRideName(Id rotationId, uint32 movabilityIndex, Common::String name) {
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetAlp] Rotation Id doesn't exist (%d)", rotationId);
+
+	_rotations.get(rotationId)->setMovabilityRideName(movabilityIndex, name);
+}
+
 void Application::rotationSetAlp(Id rotationId, float alp) {
-	error("[Application::rotationSetAlp] Not implemented");
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetAlp] Rotation Id doesn't exist (%d)", rotationId);
+
+	alp -= 135.0f;
+	if (alp < 0.0f)
+		alp += 360.0f;
+
+	_rotations.get(rotationId)->setAlp(alp);
 }
 
 void Application::rotationSetBet(Id rotationId, float bet) {
-	error("[Application::rotationSetBet] Not implemented");
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetBet] Rotation Id doesn't exist (%d)", rotationId);
+
+	_rotations.get(rotationId)->setBet(bet);
 }
 
 void Application::rotationSetRan(Id rotationId, float ran) {
-	error("[Application::rotationSetRan] Not implemented");
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetRan] Rotation Id doesn't exist (%d)", rotationId);
+
+	_rotations.get(rotationId)->setRan(ran);
 }
 
 float Application::rotationGetAlp(Id rotationId) {
-	error("[Application::rotationGetAlp] Not implemented");
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationGetAlp] Rotation Id doesn't exist (%d)", rotationId);
+
+	float alp = _rotations.get(rotationId)->getAlp() + 135.0f;
+	if (alp > 360.0f)
+		alp -= 360.0f;
+
+	return alp;
 }
 
 float Application::rotationGetBet(Id rotationId) {
-	error("[Application::rotationGetBet] Not implemented");
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationGetBet] Rotation Id doesn't exist (%d)", rotationId);
+
+	return _rotations.get(rotationId)->getBet();
 }
 
 float Application::rotationGetRan(Id rotationId) {
-	error("[Application::rotationGetRan] Not implemented");
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationGetRan] Rotation Id doesn't exist (%d)", rotationId);
+
+	return _rotations.get(rotationId)->getRan();
 }
 
 void Application::rotationSetRolTo(Id rotationId, float a2, float a3, float a4) {
-	error("[Application::rotationSetAlp] Not implemented");
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetRolTo] Rotation Id doesn't exist (%d)", rotationId);
+
+	_rotations.get(rotationId)->setRolTo(a2, a3, a4);
 }
 
 void Application::rotationSetJugOn(Id rotationId, float amplitude, float speed) {
@@ -1214,6 +1250,20 @@ void Application::rotationSet3DSoundOn(Id rotationId, Id soundId) {
 
 void Application::rotationSet3DSoundOff(Id rotationId, Id soundId) {
 	rotationSetAmbientSoundOff(rotationId, soundId);
+}
+
+void Application::rotationSetFreOn(Id rotationId) {
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetFreOn] Rotation Id doesn't exist (%d)", rotationId);
+
+	_rotations.get(rotationId)->setFreOnOff(true);
+}
+
+void Application::rotationSetFreOff(Id rotationId) {
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetFreOff] Rotation Id doesn't exist (%d)", rotationId);
+
+	_rotations.get(rotationId)->setFreOnOff(false);
 }
 
 #pragma endregion

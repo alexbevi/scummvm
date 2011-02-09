@@ -130,6 +130,15 @@ public:
 	void addMovability(Movability *movability);
 	void setMovabilityOnOrOff(bool enableHotspot);
 	void setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability);
+	void setMovabilityRideName(uint32 movabilityIndex, Common::String name);
+
+	void setAlp(float alp) { _alp = alp; }
+	void setBet(float bet) { _bet = bet; }
+	void setRan(float ran) { _ran = ran; }
+	float getAlp() { return _alp; };
+	float getBet() { return _bet; }
+	float getRan() { return _ran; }
+	void setRolTo(float a2, float a3, float a4);
 
 	// Presentation
 	Animation *addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, uint32 a5);
@@ -142,6 +151,8 @@ public:
 	void add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4, uint32 a5, uint32 fadeFrames, float angle, uint32 a9);
 	void setAmbientSoundOn(Id soundId);
 	void setAmbientSoundOff(Id soundId);
+
+	void setFreOnOff(bool state);
 
 	// Accessors
 	void setAmplitudeAndSpeed(float amplitude, float speed);
@@ -177,10 +188,10 @@ private:
 	uint32                              _field_61;
 	byte                                _field_65;
 	byte                                _field_66;
-	byte                                _field_67;
-	float                               _field_68;
-	uint32                              _field_6C;
-	float                               _field_70;
+	bool                                _fre;
+	float                               _alp;
+	float                               _bet;
+	float                               _ran;
 
 	void initNodes(uint32 count);
 

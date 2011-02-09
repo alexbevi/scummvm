@@ -229,6 +229,9 @@ public:
 	void rotationSet3DSoundOn(Id rotationId, Id soundId);
 	void rotationSet3DSoundOff(Id rotationId, Id soundId);
 
+	void rotationSetFreOn(Id rotationId);
+	void rotationSetFreOff(Id rotationId);
+
 	//////////////////////////////////////////////////////////////////////////
 	// Sound
 	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom);

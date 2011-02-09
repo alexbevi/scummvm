@@ -122,10 +122,10 @@ void Rotation::initNodes(uint32 count) {
 	_amplitude = 30.0f;
 	_field_3D  = 1.0f;
 	_speed     = 1.0f;
-	_field_67  = 0;
-	_field_68  = 225.0f;
-	_field_6C  = 0;
-	_field_70  = 85.0f;
+	_fre       = false;
+	_alp       = 225.0f;
+	_bet       = 0;
+	_ran       = 85.0f;
 }
 
 void Rotation::addAccessibility(Accessibility *accessibility) {
@@ -171,6 +171,17 @@ void Rotation::setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, u
 	}
 }
 
+void Rotation::setMovabilityRideName(uint32 movabilityIndex, Common::String name) {
+	if (movabilityIndex >= _movabilities.size())
+		error("[Rotation::setMovabilityRideName] Invalid movability index (was:%d, max:%d)", movabilityIndex, _movabilities.size() - 1);
+
+	_movabilities[movabilityIndex]->setRideName(name);
+}
+
+void Rotation::setRolTo(float a2, float a3, float a4) {
+	error("[Rotation::SetRolTo] Not implemented");
+}
+
 Animation *Rotation::addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, uint32 a5) {
 	if (!presentation)
 		error("[Rotation::addPresentationAnimation] Presentation is NULL!");
@@ -200,7 +211,7 @@ void Rotation::addAmbientSound(SoundEntry *entry, uint32 volume, int32 pan, bool
 void Rotation::add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4, uint32 a5, uint32 fadeFrames, float angle, uint32 a8) {
 	SoundItem *item = new SoundItem(_id);
 
-	float val = _field_68 + 135.0f;
+	float val = _alp + 135.0f;
 	if (val < 360.0)
 		val -= 360.0;
 
@@ -225,6 +236,10 @@ void Rotation::setAmbientSoundOff(Id soundId) {
 		error("[Rotation::setAmbientSoundOff] Wrong sound Id (%d)", soundId);
 
 	item->off();
+}
+
+void Rotation::setFreOnOff(bool state) {
+	_fre = state;
 }
 
 void Rotation::setAmplitudeAndSpeed(float amplitude, float speed) {
