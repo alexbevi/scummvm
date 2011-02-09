@@ -28,7 +28,7 @@
 
 #include "common/rect.h"
 
-#include "sound/mixer.h"
+#include "audio/mixer.h"
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/sprite.h"

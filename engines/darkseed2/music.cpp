@@ -29,7 +29,7 @@
 
 #include "common/serializer.h"
 
-#include "sound/midiparser.h"
+#include "audio/midiparser.h"
 
 #include "engines/darkseed2/music.h"
 #include "engines/darkseed2/options.h"

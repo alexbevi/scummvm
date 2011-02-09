@@ -28,8 +28,8 @@
 
 #include "common/mutex.h"
 
-#include "sound/mixer.h"
-#include "sound/mididrv.h"
+#include "audio/mixer.h"
+#include "audio/mididrv.h"
 
 #include "engines/darkseed2/darkseed2.h"
 #include "engines/darkseed2/saveable.h"

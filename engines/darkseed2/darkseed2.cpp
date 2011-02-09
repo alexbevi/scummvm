@@ -35,9 +35,9 @@
 
 #include "engines/util.h"
 
-// Sound
-#include "sound/mixer.h"
-#include "sound/mididrv.h"
+// Audio
+#include "audio/mixer.h"
+#include "audio/mididrv.h"
 
 // Save/Load
 #include "gui/saveload.h"

@@ -27,7 +27,7 @@
 #include "common/endian.h"
 #include "common/system.h"
 
-#include "sound/decoders/raw.h"
+#include "audio/decoders/raw.h"
 
 #include "engines/darkseed2/cpk_decoder.h"
 

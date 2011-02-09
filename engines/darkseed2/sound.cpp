@@ -25,10 +25,10 @@
 
 #include "common/types.h"
 
-#include "sound/audiostream.h"
-#include "sound/decoders/wave.h"
-#include "sound/decoders/aiff.h"
-#include "sound/decoders/mac_snd.h"
+#include "audio/audiostream.h"
+#include "audio/decoders/wave.h"
+#include "audio/decoders/aiff.h"
+#include "audio/decoders/mac_snd.h"
 
 #include "engines/darkseed2/sound.h"
 #include "engines/darkseed2/options.h"
