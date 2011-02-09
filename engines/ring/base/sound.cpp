@@ -272,6 +272,10 @@ bool SoundManager::isPlaying(Id soundId) {
 		return entry->isPlaying();
 }
 
+void SoundManager::sub_4696F0() {
+	error("[SoundManager::sub_4696F0] Not implemented");
+}
+
 void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk) {
 	// Check if we already have a sound entry for this id
 	if (getSoundEntry(soundId))

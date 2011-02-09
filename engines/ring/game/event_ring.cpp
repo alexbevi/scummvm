@@ -25,7 +25,10 @@
 
 #include "ring/game/event_ring.h"
 
+#include "ring/base/sound.h"
+
 #include "ring/game/application.h"
+#include "ring/game/saveload.h"
 
 #include "ring/helpers.h"
 #include "ring/ring.h"
@@ -107,7 +110,68 @@ void EventHandlerRing::onSetup(Zone zone, uint32 a2) {
 }
 
 void EventHandlerRing::onSetupZoneNI(uint32 a1) {
-	error("[EventHandlerRing::onSetupZoneNI] Not implemented");
+	switch (a1) {
+	default:
+		break;
+
+	case 0:
+		_app->playMovie("1540", 0.0f);
+		_app->soundPlay(14001, true);
+		_app->playMovie("1541", 0.0f);
+		_app->bagRemoveAll();
+		_app->bagAdd(kObjectBrutality);
+		_app->puzzleSetActive(kPuzzle10390, true, true);
+		_app->soundPlay(10001, 1);
+		break;
+
+	case 3:
+		_app->timerStopAll();
+		_app->puzzleSetMovabilityOnOrOffEnableHotspot(kPuzzle10410, 0, 0);
+		_app->playMovie("1550", 0.0f);
+		_app->rotationSetAlp(10301, 160.0f);
+		_app->rotationSetRan(10301, 85.7f);
+		_app->rotationSetActive(10301, true, true);
+		_app->soundPlay(14001, true);
+		_app->soundPlay(10021, 1);
+		_app->varSetByte(10303, 1);
+		break;
+
+	case 10:
+		if (!_app->getSaveManager()->has("alb.ars"))
+			error("[EventHandlerRing::onSetupZoneNI] Cannot find savegame alb.ars!");
+
+		_app->bagRemoveAll();
+
+		if (_app->varGetByte(90017)) {
+			_app->puzzleSetActive((PuzzleId)_app->varGetDword(90021), true, true);
+		} else {
+			_app->rotationSetActive(_app->varGetDword(90021), true, true);
+
+			if (_app->varGetByte(90025))
+				_app->rotationSetFreOn(_app->varGetDword(90021));
+			else
+				_app->rotationSetFreOff(_app->varGetDword(90021));
+		}
+
+		if (!_app->getSaveManager()->loadSaveTimer("alb", kLoadSaveRead))
+			error("[EventHandlerRing::onSetupZoneNI] Cannot load timers (alb)!");
+
+		_app->getSoundManager()->sub_4696F0();
+		break;
+
+	case 999:
+		_app->bagRemoveAll();
+		_app->bagAdd(kObjectBrutality);
+		_app->bagAdd(kObjectGlug);
+		_app->bagAdd(kObjectMinerals);
+		_app->bagAdd(kObjectLogeTear);
+		_app->bagAdd(kObjectDivingHelmet2);
+		_app->varSetByte(10106, 1);
+		_app->objectPresentationShow(kObject1);
+		_app->soundPlay(10409, true);
+		_app->rotationSetActive(10415, 1, 1);
+		break;
+	}
 }
 
 void EventHandlerRing::onSetupZoneRH(uint32 a1) {
@@ -220,7 +284,7 @@ void EventHandlerRing::onTimerZoneAS(TimerId id) {
 
 void EventHandlerRing::onTimerZoneN2(TimerId id) {
 	if (id == kTimer0)
-		_app->noiceIdPlay(rnd(12) + 70004, 1);
+		_app->soundPlay(rnd(12) + 70004, 1);
 }
 
 #pragma endregion

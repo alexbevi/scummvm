@@ -159,7 +159,7 @@ void ApplicationRing::startMenu(bool savegame) {
 		_vm->update();
 		getBag()->sub_419350();
 
-		if (!_saveManager->saveLoad("SaveGame", kSaveLoadWrite))
+		if (!_saveManager->loadSave("SaveGame", kLoadSaveWrite))
 			error("[ApplicationRing::startMenu] Cannot save game in SaveGame.ars");
 
 		// TODO: Original saves a copy of the screen surface
@@ -169,7 +169,7 @@ void ApplicationRing::startMenu(bool savegame) {
 
 	sound_sub_406EA0(4);
 	setZoneAndEnableBag(kZoneSY);
-	initMenu(kPuzzleMenu, true, true);
+	puzzleSetActive(kPuzzleMenu, true, true);
 	puzzleSetMod(kPuzzle1, 1, 0);
 
 	for (uint32 i = 0; i < 7; i++) {
@@ -195,7 +195,7 @@ void ApplicationRing::startMenu(bool savegame) {
 void ApplicationRing::showCredits() {
 	sound_sub_406EA0(1024);
 	setZoneAndEnableBag(kZoneWA);
-	noiceIdPlay(51002, true);
+	soundPlay(51002, true);
 
 	setZoneAndEnableBag(kZoneSY);
 

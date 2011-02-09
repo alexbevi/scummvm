@@ -72,7 +72,6 @@ public:
 	// Startup
 	virtual void showStartupScreen() = 0;
 	virtual void startMenu(bool savegame) = 0;
-	virtual void initMenu(PuzzleId id, bool a2, bool a3) = 0;
 	virtual void showCredits() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -84,8 +83,11 @@ public:
 	void onTimer(TimerId id);
 	void onSound(Id id, SoundType type, uint32 a3);
 
+	//////////////////////////////////////////////////////////////////////////
 	// Drawing
 	virtual void draw() = 0;
+
+	void playMovie(Common::String filename, float a2);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Language, Font, Cursor and Subtitle
@@ -264,13 +266,13 @@ public:
 	void sound_sub_406EA0(uint32 a1);
 
 
-	void noiceIdPlay(Id noiceId, bool a2);
+	void soundPlay(Id noiceId, bool a2);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Timer
 	void timerStart(TimerId id, uint32 elapseTime);
 	void timerStop(TimerId id);
-	void timerStopAll();
+	void timerStopAll();	
 
 	//////////////////////////////////////////////////////////////////////////
 	// Var
@@ -316,6 +318,7 @@ public:
 	Bag           *getBag()           { return _bag; }
 	DialogHandler *getDialogHandler() { return _dialogHandler; }
 	FontHandler   *getFontHandler()   { return _fontHandler; }
+	SaveManager   *getSaveManager()   { return _saveManager; }
 	SoundHandler  *getSoundHandler()  { return _soundHandler; }
 	SoundManager  *getSoundManager()  { return _soundManager; }
 
@@ -376,7 +379,6 @@ protected:
 	// Display and movies
 	int scrollImage(Common::String filename,  uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 a3, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
-	void playMovie(Common::String filename, float a2);
 
 	// Current rotation
 	Rotation *_currentRotation;

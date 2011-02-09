@@ -152,6 +152,8 @@ public:
 	void updateQueue();
 	bool isPlaying(Id soundId);
 
+	void sub_4696F0();
+
 	// Sound entries
 	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk);
 	SoundEntry *getSoundEntry(Id soundId);

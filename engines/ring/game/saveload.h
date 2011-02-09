@@ -37,8 +37,12 @@ public:
 	SaveManager(Application *application);
 	~SaveManager();
 
-	bool saveLoad(Common::String filename, SaveLoadType type);
+	bool loadSave(Common::String filename, LoadSaveType type);
+	bool loadSaveTimer(Common::String filename, LoadSaveType type);
+
 	bool isLoaded(uint32 a1);
+
+	bool has(Common::String filename);
 
 private:
 	Application *_application;

@@ -1467,7 +1467,7 @@ void Application::sound_sub_406EA0(uint32 a1) {
 	warning("[Application::sound_sub_406EA0] Not implemented");
 }
 
-void Application::noiceIdPlay(Id noiceId, bool a2) {
+void Application::soundPlay(Id soundId, bool a2) {
 	error("[Application::noiceIdPlay] Not implemented");
 }
 
