@@ -73,7 +73,7 @@ Bag::Bag() {
 	_field_88 = 0;
 	_field_8C = 0;
 	_field_90 = 6;
-	_field_94 = 0;
+	_field_94 = false;
 	_field_95 = 0;
 	_field_99 = 0;
 	_field_9D = 0;
@@ -208,6 +208,10 @@ void Bag::sub_4192A0(uint32 a1, uint32 a2) {
 void Bag::sub_4192C0(uint32 a1, uint32 a2) {
 	_field_60 = a1;
 	_field_64 = a2;
+}
+
+void Bag::sub_419350() {
+	error("[Bag::sub_419350] Not implemented");
 }
 
 void Bag::loadBackground(Common::String filename1, Common::String, Common::String filename3, Common::String, Common::String, Common::String filename6, Common::String, Common::String filename8, ArchiveType archiveType) {

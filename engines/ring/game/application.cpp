@@ -732,19 +732,19 @@ void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHo
 	_objects.get(objectId)->setAccessibilityOnOrOff(enableHotspot);
 }
 
-void Application::objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration) {
+void Application::objectSetAccessibilityOn(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration) {
 	objectSetAccessibilityOnOrOff(objectId, true, fromAcceleration, toAcceleration);
 }
 
-void Application::objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration) {
+void Application::objectSetAccessibilityOff(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration) {
 	objectSetAccessibilityOnOrOff(objectId, false, fromAcceleration, toAcceleration);
 }
 
-void Application::objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId) {
+void Application::objectSetAccessibilityOn(ObjectId objectId) {
 	objectSetAccessibilityOnOrOff(objectId, true);
 }
 
-void Application::objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId) {
+void Application::objectSetAccessibilityOff(ObjectId objectId) {
 	objectSetAccessibilityOnOrOff(objectId, false);
 }
 
@@ -1125,6 +1125,47 @@ void Application::rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId, uint
 	rotationSetMovabilityOnOrOff(rotationId, false, fromMovability, toMovability);
 }
 
+void Application::rotationSetAlp(Id rotationId, float alp) {
+	error("[Application::rotationSetAlp] Not implemented");
+}
+
+void Application::rotationSetBet(Id rotationId, float bet) {
+	error("[Application::rotationSetBet] Not implemented");
+}
+
+void Application::rotationSetRan(Id rotationId, float ran) {
+	error("[Application::rotationSetRan] Not implemented");
+}
+
+float Application::rotationGetAlp(Id rotationId) {
+	error("[Application::rotationGetAlp] Not implemented");
+}
+
+float Application::rotationGetBet(Id rotationId) {
+	error("[Application::rotationGetBet] Not implemented");
+}
+
+float Application::rotationGetRan(Id rotationId) {
+	error("[Application::rotationGetRan] Not implemented");
+}
+
+void Application::rotationSetRolTo(Id rotationId, float a2, float a3, float a4) {
+	error("[Application::rotationSetAlp] Not implemented");
+}
+
+void Application::rotationSetJugOn(Id rotationId, float amplitude, float speed) {
+	if (amplitude < 10.0f || amplitude > 50.0f)
+		error("[Application::rotationSetJugOn] Wrong amplitude for rotation (was: %f, valid: [10.0, 50.0])", amplitude);
+
+	if (speed < 0.1f || speed > 10.0f)
+		error("[Application::rotationSetJugOn] Wrong speed for rotation (was: %f, valid: [10.0, 50.0])", speed);
+
+	if (!_rotations.has(rotationId))
+		error("[Application::rotationSetJugOn] Wrong rotation Id (%d)", rotationId);
+
+	_rotations.get(rotationId)->setAmplitudeAndSpeed(amplitude, speed);
+}
+
 void Application::rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	if (!_rotations.has(rotationId))
 		error("[Application::rotationAddAmbientSound] Wrong rotation Id (%d)", rotationId);
@@ -1173,19 +1214,6 @@ void Application::rotationSet3DSoundOn(Id rotationId, Id soundId) {
 
 void Application::rotationSet3DSoundOff(Id rotationId, Id soundId) {
 	rotationSetAmbientSoundOff(rotationId, soundId);
-}
-
-void Application::rotationSetJugOn(Id rotationId, float amplitude, float speed) {
-	if (amplitude < 10.0f || amplitude > 50.0f)
-		error("[Application::rotationSetJugOn] Wrong amplitude for rotation (was: %f, valid: [10.0, 50.0])", amplitude);
-
-	if (speed < 0.1f || speed > 10.0f)
-		error("[Application::rotationSetJugOn] Wrong speed for rotation (was: %f, valid: [10.0, 50.0])", speed);
-
-	if (!_rotations.has(rotationId))
-		error("[Application::rotationSetJugOn] Wrong rotation Id (%d)", rotationId);
-
-	_rotations.get(rotationId)->setAmplitudeAndSpeed(amplitude, speed);
 }
 
 #pragma endregion

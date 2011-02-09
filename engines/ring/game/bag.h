@@ -55,6 +55,7 @@ public:
 	void sub_419280(uint32 a1);
 	void sub_4192A0(uint32 a1, uint32 a2);
 	void sub_4192C0(uint32 a1, uint32 a2);
+	void sub_419350();
 
 	void loadBackground(Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, ArchiveType filetype);
 
@@ -67,6 +68,9 @@ public:
 	void remove(ObjectId id);
 	void removeAll();
 	bool has(ObjectId id);
+
+	// Accessors
+	bool getField94() { return _field_94; }
 
 private:
 	// Bag data
@@ -107,7 +111,7 @@ private:
 	uint32      _field_88;
 	uint32      _field_8C;
 	uint32      _field_90;
-	byte        _field_94;
+	bool        _field_94;
 	uint32      _field_95;
 	uint32      _field_99;
 	uint32      _field_9D;

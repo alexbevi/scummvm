@@ -70,7 +70,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Startup
 	virtual void showStartupScreen() = 0;
-	virtual void startMenu() = 0;
+	virtual void startMenu(bool load) = 0;
+	virtual void initMenu(PuzzleId id, bool a2, bool a3) = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Event handling
@@ -151,10 +152,10 @@ public:
 
 	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot);
 	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration);
-	void objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId);
-	void objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId);
-	void objectSetAccessibilityOnOrOffEnableHotspot(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration);
-	void objectSetAccessibilityOnOrOffDisableHotspot(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration);
+	void objectSetAccessibilityOn(ObjectId objectId);
+	void objectSetAccessibilityOff(ObjectId objectId);
+	void objectSetAccessibilityOn(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration);
+	void objectSetAccessibilityOff(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration);
 
 	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
 
@@ -210,6 +211,16 @@ public:
 	void rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId);
 	void rotationSetMovabilityOnOrOffEnableHotspot(Id rotationId, uint32 fromMovability, uint32 toMovability);
 	void rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId, uint32 fromMovability, uint32 toMovability);
+	void rotationSetMovabilityRideName(Id rotationId, uint32 movabilityIndex, Common::String name);
+
+	void rotationSetAlp(Id rotationId, float alp);
+	void rotationSetBet(Id rotationId, float bet);
+	void rotationSetRan(Id rotationId, float ran);
+	float rotationGetAlp(Id rotationId);
+	float rotationGetBet(Id rotationId);
+	float rotationGetRan(Id rotationId);
+	void rotationSetRolTo(Id rotationId, float a2, float a3, float a4);
+	void rotationSetJugOn(Id rotationId, float amplitude, float speed);
 
 	void rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7);
 	void rotationSetAmbientSoundOn(Id rotationId, Id soundId);
@@ -217,7 +228,6 @@ public:
 	void rotationAdd3DSound(Id rotationId, uint32 soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 volume, float a7, uint32 a8);
 	void rotationSet3DSoundOn(Id rotationId, Id soundId);
 	void rotationSet3DSoundOff(Id rotationId, Id soundId);
-	void rotationSetJugOn(Id rotationId, float amplitude, float speed);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Sound

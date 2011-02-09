@@ -124,8 +124,43 @@ void ApplicationRing::showStartupScreen() {
 	}
 }
 
-void ApplicationRing::startMenu() {
-	error("[ApplicationRing::startMenu] Not implemented");
+void ApplicationRing::startMenu(bool load) {
+	if (_field_6F)
+		return;
+
+	if (load) {
+		warning("[ApplicationRing::startMenu] Loading not implemented");
+	}
+
+	_field_6F = _zone;
+
+	//sub_406EA0(4);
+	setZoneAndEnableBag(kZoneSY);
+	initMenu(kPuzzleMenu, true, true);
+	//puzzleSetMod(1, 1, 0);
+
+	for (uint32 i = 0; i < 7; i++) {
+		objectSetAccessibilityOff((ObjectId)i);
+		objectPresentationHideAndRemove((ObjectId)i);
+	}
+
+	Bag *bag = getBag();
+	if (bag && bag->getField94())
+		bag->sub_419350();
+
+	//cursorDeleteType();
+
+	if (load) {
+		objectSetAccessibilityOn(kObjectMenuContinue);
+		objectSetAccessibilityOn(kObjectMenuSave);
+	} else {
+		objectSetAccessibilityOff(kObjectMenuContinue);
+		objectSetAccessibilityOff(kObjectMenuSave);
+	}
+}
+
+void ApplicationRing::initMenu(PuzzleId id, bool a2, bool a3) {
+	error("[ApplicationRing::initMenu] Not implemented");
 }
 
 #pragma endregion
@@ -2218,7 +2253,7 @@ void ApplicationRing::initZoneFO() {
 	objectAddPuzzleAccessibility(kObject30001, kPuzzle35011, Common::Rect(276, 218, 359, 238), true, 52, 2);
 	objectAddPuzzleAccessibility(kObject30001, kPuzzle35011, Common::Rect(275, 257, 361, 312), true, 52, 3);
 	objectAddPuzzleAccessibility(kObject30001, kPuzzle35011, Common::Rect(292, 333, 345, 388), true, 52, 4);
-	objectSetAccessibilityOnOrOffDisableHotspot(kObject30001, 1, 4);
+	objectSetAccessibilityOff(kObject30001, 1, 4);
 	objectAdd(kObjectPatience, "Saturn", "FO_Scroll01_", 1);
 	objectAddBagAnimation(kObjectPatience, 1, 3, 20, 12.5f, 4);
 	objectSetActiveCursor(kObjectPatience, 22, 22, 20, 4, 12.5f, 4, 4);
@@ -2398,10 +2433,10 @@ void ApplicationRing::initZoneFO() {
 	objectAddPuzzleAccessibility(kObject30040, kPuzzle35006, Common::Rect(201, 289, 284, 329), true, 52, 3);
 	objectAddPuzzleAccessibility(kObject30040, kPuzzle35006, Common::Rect(214, 135, 364, 189), true, 52, 4);
 	objectAddPuzzleAccessibility(kObject30040, kPuzzle35006, Common::Rect(222, 210, 353, 277), true, 52, 5);
-	objectSetAccessibilityOnOrOffDisableHotspot(kObject30040, 2, 2);
-	objectSetAccessibilityOnOrOffDisableHotspot(kObject30040, 3, 3);
-	objectSetAccessibilityOnOrOffDisableHotspot(kObject30040, 4, 4);
-	objectSetAccessibilityOnOrOffDisableHotspot(kObject30040, 5, 5);
+	objectSetAccessibilityOff(kObject30040, 2, 2);
+	objectSetAccessibilityOff(kObject30040, 3, 3);
+	objectSetAccessibilityOff(kObject30040, 4, 4);
+	objectSetAccessibilityOff(kObject30040, 5, 5);
 	objectAddPresentation(kObject30040);
 	objectPresentationAddImageToPuzzle(kObject30040, 0, kPuzzle35006, "FOS06N01P02L02.bmp", Common::Point(1, 44), true, 1, 1000);
 	objectAddPresentation(kObject30040);
@@ -2422,7 +2457,7 @@ void ApplicationRing::initZoneFO() {
 	objectAddPuzzleAccessibility(kObject30042, kPuzzle35007, Common::Rect(285,  46, 330,  73), true, 52, 5);
 	objectAddPuzzleAccessibility(kObject30042, kPuzzle35007, Common::Rect(419, 120, 457, 151), true, 52, 6);
 	objectAddPuzzleAccessibility(kObject30042, kPuzzle35007, Common::Rect(441, 266, 476, 294), true, 52, 7);
-	objectSetAccessibilityOnOrOffDisableHotspot(kObject30042, 1, 7);
+	objectSetAccessibilityOff(kObject30042, 1, 7);
 	objectAddPresentation(kObject30042);
 	objectPresentationAddImageToPuzzle(kObject30042, 0, kPuzzle35007, "FOS06N01P03L02.bmp", Common::Point(0, 16), true, 1, 1000);
 	objectAddPresentation(kObject30042);
@@ -2448,7 +2483,7 @@ void ApplicationRing::initZoneFO() {
 	objectAdd(kObject30044, "", "", 1);
 	objectAddPuzzleAccessibility(kObject30044, kPuzzle35008, Common::Rect(253, 206, 333, 300), true, 52, 0);
 	objectAddPuzzleAccessibility(kObject30044, kPuzzle35008, Common::Rect(203, 262, 300, 379), true, 52, 1);
-	objectSetAccessibilityOnOrOffDisableHotspot(kObject30044, 1, 1);
+	objectSetAccessibilityOff(kObject30044, 1, 1);
 	objectAddPresentation(kObject30044);
 	objectPresentationAddImageToPuzzle(kObject30044, 0, kPuzzle35008, "FOS06N01P04L01.bmp", Common::Point(189, 229), true, 1, 1000);
 	objectAdd(kObject30045, "", "", 1);
@@ -2497,7 +2532,7 @@ void ApplicationRing::initZoneFO() {
 	objectAddPuzzleAccessibility(kObjectFishingRod, kPuzzle35010, Common::Rect(0, 208, 639, 384), true, 52, 0);
 	objectAddPuzzleAccessibility(kObjectFishingRod, kPuzzle35010, Common::Rect(0, 208, 639, 384), true, 52, 1);
 	objectAddPuzzleAccessibility(kObjectFishingRod, kPuzzle35010, Common::Rect(0,  63, 639, 197), true, 52, 2);
-	objectSetAccessibilityOnOrOffDisableHotspot(kObjectFishingRod, 1, 2);
+	objectSetAccessibilityOff(kObjectFishingRod, 1, 2);
 	objectAddRotationAccessibility(kObjectFishingRod, 30703, Common::Rect(1126, 141, 3373, 523), true, 52, 3);
 	objectAddPresentation(kObjectFishingRod);
 	objectPresentationAddImageToPuzzle(kObjectFishingRod, 0, kPuzzle35010, "FOS07N03P01L01.bmp", Common::Point(0, 16), true, 1, 1000);
@@ -4202,7 +4237,7 @@ void ApplicationRing::initZoneAS() {
 	objectAddPuzzleAccessibility(kObject80019, kPuzzle80008, Common::Rect(159, 161, 477, 393), true,  52, 3);
 	objectAddPuzzleAccessibility(kObject80019, kPuzzle80009, Common::Rect(159, 161, 477, 393), true,  52, 4);
 	objectAddPuzzleAccessibility(kObject80019, kPuzzle80010, Common::Rect(159, 161, 477, 393), true,  52, 5);
-	objectSetAccessibilityOnOrOffDisableHotspot(kObject80019, 1, 1);
+	objectSetAccessibilityOff(kObject80019, 1, 1);
 	objectAdd(kObject80021, "", "", 1);
 	objectAddRotationAccessibility(kObject80021, 80101, Common::Rect(1248, 235, 1466, 348), true, 52, 0);
 	objectAddRotationAccessibility(kObject80021, 80101, Common::Rect(1089, 170, 1232, 268), true, 52, 1);
