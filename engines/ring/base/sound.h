@@ -149,6 +149,7 @@ public:
 
 	// Playing
 	void updateQueue();
+	bool isPlaying(Id soundId);
 
 	// Sound entries
 	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk);

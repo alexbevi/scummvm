@@ -1325,8 +1325,12 @@ void Application::soundSetVolume(Id soundId, uint32 volume) {
 	_soundManager->setVolume(soundId, volume);
 }
 
+bool Application::soundIsPlaying(Id soundId) {
+	return _soundManager->isPlaying(soundId);
+}
+
 void Application::sound_sub_406EA0(uint32 a1) {
-	error("[Application::sound_sub_406EA0] Not implemented");
+	warning("[Application::sound_sub_406EA0] Not implemented");
 }
 
 void Application::noiceIdPlay(Id noiceId, bool a2) {

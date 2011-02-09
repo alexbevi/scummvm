@@ -31,7 +31,7 @@ namespace Ring {
 
 #pragma region Dialog
 
-Dialog::Dialog() : BaseObject(kDialogInvalid) {
+Dialog::Dialog() : BaseObject(0) {
 }
 
 Dialog::~Dialog() {
@@ -77,7 +77,7 @@ void DialogHandler::addDialog(Dialog *dialog) {
 	_dialogs.push_back(dialog);
 }
 
-void DialogHandler::removeDialog(DialogId id) {
+void DialogHandler::removeDialog(Id id) {
 	for (uint32 i = 0; i < _dialogs.size();) {
 		if (_dialogs[i]->getId() == id) {
 			_dialogs[i]->hide();
@@ -89,7 +89,7 @@ void DialogHandler::removeDialog(DialogId id) {
 	}
 }
 
-bool DialogHandler::isPlaying(DialogId id) {
+bool DialogHandler::isPlaying(Id id) {
 	return _dialogs.has(id);
 }
 

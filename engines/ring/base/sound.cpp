@@ -26,6 +26,7 @@
 #include "ring/base/sound.h"
 
 #include "ring/game/application.h"
+#include "ring/game/dialog.h"
 
 #include "ring/helpers.h"
 #include "ring/ring.h"
@@ -258,6 +259,17 @@ void SoundManager::updateQueue() {
 
 		_application->onSound((*it)->getId(), (*it)->getType(), 4097);
 	}
+}
+
+bool SoundManager::isPlaying(Id soundId) {
+	SoundEntry *entry = getSoundEntry(soundId);
+	if (!entry)
+		return false;
+
+	if (entry->getType() == kSoundTypeDialog)
+		return _application->getDialogHandler()->isPlaying(soundId);
+	else
+		return entry->isPlaying();
 }
 
 void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk) {

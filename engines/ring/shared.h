@@ -513,10 +513,6 @@ enum FontId {
 	kFontDefault = 1
 };
 
-enum DialogId {
-	kDialogInvalid = 0
-};
-
 enum CursorId {
 	kCursorInvalid    = 0,
 	kCursorIdle       = 50,

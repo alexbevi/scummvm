@@ -249,6 +249,7 @@ public:
 	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom);
 	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk);
 	void soundSetVolume(Id soundId, uint32 volume);
+	bool soundIsPlaying(Id soundId);
 
 	void sound_sub_406EA0(uint32 a1);
 
