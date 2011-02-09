@@ -33,9 +33,8 @@
 
 #include "common/stream.h"
 
-#include "sound/audiostream.h"
-#include "sound/mixer.h"
-
+#include "audio/audiostream.h"
+#include "audio/mixer.h"
 
 namespace Liath {
 

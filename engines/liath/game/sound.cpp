@@ -32,7 +32,7 @@
 #include "liath/helpers.h"
 #include "liath/liath.h"
 
-#include "sound/decoders/wave.h"
+#include "audio/decoders/wave.h"
 
 namespace Liath {
 
