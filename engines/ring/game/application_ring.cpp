@@ -30,6 +30,7 @@
 
 #include "ring/game/bag.h"
 #include "ring/game/event_ring.h"
+#include "ring/game/puzzle.h"
 #include "ring/game/saveload.h"
 
 #include "ring/graphics/video.h"
@@ -172,7 +173,40 @@ void ApplicationRing::startMenu(bool savegame) {
 }
 
 void ApplicationRing::initMenu(PuzzleId id, bool a2, bool a3) {
-	error("[ApplicationRing::initMenu] Not implemented");
+	bool updateSoundItems = false;
+
+	// Setup puzzle
+	if (!_puzzles.has(id))
+		return;
+
+	puzzleReset();
+	_puzzle = _puzzles.get(id);
+	_puzzle->alloc();
+	_puzzle->update(_video);
+
+	_field_66 = 2;
+
+	if (_soundHandler) {
+		if (_soundHandler->getField0()) {
+
+			_soundHandler->reset();
+			_soundHandler->setCount1(_puzzle->getSoundItemsCount());
+
+			return;
+		}
+
+		_soundHandler->setCount2(_puzzle->getSoundItemsCount());
+
+		warning("[ApplicationRing::initMenu] Not implemented!");
+
+		updateSoundItems = true;
+	}
+
+	if (updateSoundItems)
+		_puzzle->updateSoundItems();
+
+	_soundHandler->reset();
+	_soundHandler->setCount1(_puzzle->getSoundItemsCount());
 }
 
 #pragma endregion

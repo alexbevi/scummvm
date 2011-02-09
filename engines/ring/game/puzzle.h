@@ -40,12 +40,16 @@ class PresentationImage;
 class SoundEntry;
 class SoundItem;
 class Text;
+class Video;
 class Visual;
 
 class Puzzle : public BaseObject {
 public:
 	Puzzle(Application *application, PuzzleId id);
 	~Puzzle();
+
+	void alloc();
+	void update(Video *video);
 
 	void setBackgroundImage(Common::String filename, Common::Point point, bool isActive, LoadFrom loadFrom);
 
@@ -60,7 +64,7 @@ public:
 	void setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability);
 
 	void setMod(uint32 a2, uint32 a3);
-		
+
 	// Visual
 	void addVisual(Visual *visual);
 
@@ -70,6 +74,9 @@ public:
 	void setAmbientSoundOn(Id soundId);
 	void setAmbientSoundOff(Id soundId);
 	void setAmbientSoundVolume(Id soundId, uint32 volume);
+
+	void updateSoundItems();
+	uint32 getSoundItemsCount() { return _soundItems.size(); }
 
 	// Accessors
 	Movability *getMovability(uint32 index);

@@ -379,11 +379,23 @@ void SoundItem::off() {
 }
 
 void SoundItem::turnOn() {
-	error( "[SoundItem::turnOn] Not implemented");
+	if (!_entry)
+		return;
+
+	if (_entry->isPlaying())
+		_entry->stop();
+
+	setVolume(_volume);
+	setPan(_pan);
+
+	_entry->play(true);
+
+	_entry->setPlaying(true);
 }
 
 void SoundItem::turnOff() {
-	error( "[SoundItem::turnOff] Not implemented");
+	if (_entry && _entry->isPlaying())
+		_entry->stop();
 }
 
 void SoundItem::setVolume(uint32 volume) {
@@ -438,9 +450,9 @@ bool SoundItem::checkCurrentPuzzle() {
 #pragma region SoundHandler
 
 SoundHandler::SoundHandler() {
-	_field_0 = 0;
-	_field_1 = 0;
-	_field_5 = 0;
+	_field_0 = false;
+	_count1 = 0;
+	_count2 = 0;
 
 	_direction = -1.0;
 }
@@ -453,9 +465,9 @@ SoundHandler::~SoundHandler() {
 }
 
 void SoundHandler::reset() {
-	_field_0 = 0;
-	_field_1 = 0;
-	_field_5 = 0;
+	_field_0 = false;
+	_count1 = 0;
+	_count2 = 0;
 }
 
 void SoundHandler::setReverseStereo(int32 reverseStereo) {

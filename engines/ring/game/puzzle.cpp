@@ -34,6 +34,7 @@
 #include "ring/graphics/image.h"
 #include "ring/graphics/movability.h"
 #include "ring/graphics/presentation.h"
+#include "ring/graphics/video.h"
 #include "ring/graphics/visual.h"
 
 #include "ring/helpers.h"
@@ -62,6 +63,13 @@ Puzzle::~Puzzle() {
 	_application = NULL;
 }
 
+void Puzzle::alloc() {
+	warning("[Puzzle::alloc] Not implemented");
+}
+
+void Puzzle::update(Video *video) {
+	warning("[Puzzle::update] Not implemented");
+}
 
 void Puzzle::setBackgroundImage(Common::String filename, Common::Point point, bool isActive, LoadFrom loadFrom) {
 	SAFE_DELETE(_background);
@@ -201,6 +209,20 @@ void Puzzle::setAmbientSoundVolume(Id soundId, uint32 volume) {
 		error("[Puzzle::setAmbientSoundOff] Wrong sound Id (%d)", soundId);
 
 	item->setVolume(volume);
+}
+
+void Puzzle::updateSoundItems() {
+	for (Common::Array<SoundItem *>::iterator it = _soundItems.begin(); it != _soundItems.end(); it++) {
+		SoundItem *item = (*it);
+
+		if (!item->isOn()) {
+			item->turnOff();
+			continue;
+		}
+
+		if (!item->getSoundEntry() || !item->getSoundEntry()->isPlaying())
+			item->turnOn();
+	}
 }
 
 #pragma endregion

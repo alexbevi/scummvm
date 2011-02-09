@@ -55,6 +55,7 @@ public:
 	// Accessors
 	SoundType getType() { return _type; }
 	void setField125(uint32 val) { _field_125 = val; }
+	void setPlaying(bool state) { _isPlaying = state; }
 
 	static SoundFormat getFormat(Common::String filename);
 
@@ -196,6 +197,7 @@ public:
 	SoundEntry *getSoundEntry() { return _entry; }
 	void setField1D(int32 val);
 	void setAngle(float angle);
+	bool isOn() { return _isOn; }
 
 	// Helpers
 	float computePan(float angle);
@@ -203,7 +205,7 @@ public:
 private:
 	SoundEntry *_entry;
 	uint32      _volume;
-	int32      _pan;
+	int32       _pan;
 	uint32      _field_10;
 	uint32      _field_14;
 	bool        _isOn;
@@ -231,11 +233,15 @@ public:
 
 	float getDirection() { return _direction; }
 
+	bool getField0() { return _field_0; }
+	void setCount1(uint32 count) { _count1 = count; }
+	void setCount2(uint32 count) { _count2 = count; }
+
 private:
 	// Data
-	byte _field_0;
-	uint32 _field_1;
-	uint32 _field_5;
+	bool _field_0;
+	uint32 _count1;
+	uint32 _count2;
 	Common::Array<SoundItem *> _soundItems1;
 	Common::Array<SoundItem *> _soundItems2;
 	Common::Array<SoundItem *> _soundItems3;
