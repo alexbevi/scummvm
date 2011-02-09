@@ -71,6 +71,7 @@ public:
 
 	// Accessors
 	bool getField94() { return _field_94; }
+	void setField95(uint32 val) { _field_95 = val; }
 
 private:
 	// Bag data

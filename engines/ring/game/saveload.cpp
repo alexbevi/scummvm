@@ -36,8 +36,14 @@ SaveManager::~SaveManager() {
 	_application = NULL;
 }
 
+bool SaveManager::saveLoad(Common::String filename, SaveLoadType type) {
+	warning("[SaveManager::saveLoad] Not implemented");
+
+	return true;
+}
+
 bool SaveManager::isLoaded(uint32 a1) {
-	warning("[SaveLoad::isUnknown] Not implemented");
+	warning("[SaveManager::isLoaded] Not implemented");
 
 	return false;
 }

@@ -211,6 +211,19 @@ void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType,
 	_cursors.push_back(cursor);
 }
 
+void CursorHandler::removeByType(CursorType cursorType) {
+	for (uint i = 0; i < _cursors.size();) {
+		if (_cursors[i]->getType() == cursorType) {
+			SAFE_DELETE(_cursors[i]);
+			_cursors.remove_at(i);
+		} else {
+			++i;
+		}
+	}
+
+	select(kCursorIdle);
+}
+
 void CursorHandler::draw() {
 	if (_cursors.empty())
 		error("[CursorHandler::draw] No cursor present");

@@ -493,6 +493,23 @@ bool Application::bagIsIn(ObjectId id) {
 
 #pragma endregion
 
+#pragma region Cursor
+
+void Application::cursorSelect(CursorId id) {
+	if (_cursorHandler)
+		_cursorHandler->select(id);
+}
+
+void Application::cursorDelete() {
+	if (_bag)
+		_bag->setField95(0);
+
+	if (_cursorHandler)
+		_cursorHandler->removeByType(kCursorType2);
+}
+
+#pragma endregion
+
 #pragma region Puzzle
 
 void Application::puzzleAdd(PuzzleId id) {
@@ -579,6 +596,16 @@ void Application::puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId) {
 }
 
 #pragma endregion
+
+void Application::puzzleSetMod(PuzzleId puzzleId, uint32 a2, uint32 a3) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::puzzleAddAmbientSound] Wrong puzzle Id (%d)", puzzleId);
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (puzzle->getField24() != 2 || a2 != 2)
+		puzzle->setMod(a2, a3);
+
+}
 
 void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	if (!_puzzles.has(puzzleId))
@@ -1296,6 +1323,10 @@ void Application::soundAdd(Id soundId, SoundType type, Common::String filename, 
 
 void Application::soundSetVolume(Id soundId, uint32 volume) {
 	_soundManager->setVolume(soundId, volume);
+}
+
+void Application::sound_sub_406EA0(uint32 a1) {
+	error("[Application::sound_sub_406EA0] Not implemented");
 }
 
 void Application::noiceIdPlay(Id noiceId, bool a2) {

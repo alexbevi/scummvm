@@ -594,6 +594,11 @@ enum SoundFormat {
 	kSoundFormatInvalid = 999
 };
 
+enum SaveLoadType {
+	kSaveLoadRead  = 1,
+	kSaveLoadWrite = 2
+};
+
 #pragma endregion
 
 //////////////////////////////////////////////////////////////////////////

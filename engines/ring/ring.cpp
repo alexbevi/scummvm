@@ -38,7 +38,7 @@ namespace Ring {
 
 RingEngine::RingEngine(OSystem *syst, const RingGameDescription *gd) :
 	Engine(syst), _gameDescription(gd), _debugger(NULL),
-	_application(NULL), _mouseButtonPressed(false) {
+	_application(NULL), _mouseButtonPressed(false) , _flag(true) {
 
 	// Adding the default directories
 	const Common::FSNode gameDataDir(ConfMan.get("path"));
@@ -167,6 +167,10 @@ Common::Error RingEngine::run() {
 	}
 
 	return Common::kNoError;
+}
+
+void RingEngine::handleEvents() {
+	warning("[RingEngine::handleEvents] Not implemented!");
 }
 
 bool RingEngine::hasFeature(EngineFeature f) const {

@@ -98,10 +98,12 @@ public:
 	RingEngine(OSystem *syst, const RingGameDescription *gd);
 	~RingEngine();
 
-	Application *getApplication() { return _application; }
+	void handleEvents();
 
-	// Misc
+	// Accessors and helpers
+	Application *getApplication() { return _application; }
 	Common::RandomSource getRandom() const {return _random; }
+	void unsetFlag() { _flag = false; }
 
 private:
 	const RingGameDescription *_gameDescription;
@@ -113,8 +115,10 @@ private:
 
 	// Game
 	Application *_application;
-	bool _mouseButtonPressed;
 
+	// Flags
+	bool _mouseButtonPressed;
+	bool _flag;
 };
 
 } // End of namespace Ring

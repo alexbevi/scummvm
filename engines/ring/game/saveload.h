@@ -37,6 +37,7 @@ public:
 	SaveManager(Application *application);
 	~SaveManager();
 
+	bool saveLoad(Common::String filename, SaveLoadType type);
 	bool isLoaded(uint32 a1);
 
 private:

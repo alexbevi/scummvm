@@ -71,7 +71,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Startup
 	virtual void showStartupScreen() = 0;
-	virtual void startMenu(bool load) = 0;
+	virtual void startMenu(bool savegame) = 0;
 	virtual void initMenu(PuzzleId id, bool a2, bool a3) = 0;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -107,6 +107,11 @@ public:
 	bool bagIsIn(ObjectId id);
 
 	//////////////////////////////////////////////////////////////////////////
+	// Cursor
+	void cursorSelect(CursorId id);
+	void cursorDelete();
+
+	//////////////////////////////////////////////////////////////////////////
 	// Zone name, short string and readFrom
 	virtual Common::String getZoneString(Zone zone) const = 0;
 	virtual Common::String getZoneLongName(Zone zone) const = 0;
@@ -127,6 +132,8 @@ public:
 	void puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId);
 	void puzzleSetMovabilityOnOrOffEnableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
 	void puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
+
+	void puzzleSetMod(PuzzleId puzzleId, uint32 a2, uint32 a3);
 
 	void puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7);
 	void puzzleSetAmbientSoundOn(PuzzleId puzzleId, Id soundId);
@@ -239,6 +246,8 @@ public:
 	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom);
 	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk);
 	void soundSetVolume(Id soundId, uint32 volume);
+
+	void sound_sub_406EA0(uint32 a1);
 
 	void noiceIdPlay(Id noiceId, bool a2);
 

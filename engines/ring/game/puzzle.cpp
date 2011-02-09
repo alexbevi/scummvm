@@ -143,6 +143,10 @@ void Puzzle::setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uin
 
 #pragma endregion
 
+void Puzzle::setMod(uint32 a2, uint32 a3) {
+	error("[Puzzle::setMod] Not implemented");
+}
+
 #pragma region Visual
 
 void Puzzle::addVisual(Visual *visual) {

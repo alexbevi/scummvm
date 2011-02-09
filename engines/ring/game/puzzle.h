@@ -59,6 +59,8 @@ public:
 	void setMovabilityOnOrOff(bool enableHotspot);
 	void setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability);
 
+	void setMod(uint32 a2, uint32 a3);
+		
 	// Visual
 	void addVisual(Visual *visual);
 
@@ -71,6 +73,7 @@ public:
 
 	// Accessors
 	Movability *getMovability(uint32 index);
+	uint32 getField24() { return _field_24; }
 
 	bool hasVisual(Id visualId) { return _visuals.has(visualId); }
 	Visual *getVisual(Id visualId) { return _visuals.get(visualId); }

@@ -126,20 +126,28 @@ void ApplicationRing::showStartupScreen() {
 	}
 }
 
-void ApplicationRing::startMenu(bool load) {
+void ApplicationRing::startMenu(bool savegame) {
 	if (_field_6F)
 		return;
 
-	if (load) {
-		warning("[ApplicationRing::startMenu] Loading not implemented");
+	if (savegame) {
+		cursorSelect(kCursorBusy);
+		_vm->unsetFlag();
+		_vm->handleEvents();
+		getBag()->sub_419350();
+
+		if (!_saveManager->saveLoad("SaveGame", kSaveLoadWrite))
+			error("[ApplicationRing::startMenu] Cannot save game in SaveGame.ars");
+
+		// Original creates base surface and copies the screen buffer to it
 	}
 
 	_field_6F = _zone;
 
-	//sub_406EA0(4);
+	sound_sub_406EA0(4);
 	setZoneAndEnableBag(kZoneSY);
 	initMenu(kPuzzleMenu, true, true);
-	//puzzleSetMod(1, 1, 0);
+	puzzleSetMod(kPuzzle1, 1, 0);
 
 	for (uint32 i = 0; i < 7; i++) {
 		objectSetAccessibilityOff((ObjectId)i);
@@ -150,9 +158,9 @@ void ApplicationRing::startMenu(bool load) {
 	if (bag && bag->getField94())
 		bag->sub_419350();
 
-	//cursorDeleteType();
+	cursorDelete();
 
-	if (load) {
+	if (savegame) {
 		objectSetAccessibilityOn(kObjectMenuContinue);
 		objectSetAccessibilityOn(kObjectMenuSave);
 	} else {
