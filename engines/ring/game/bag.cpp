@@ -29,6 +29,7 @@
 
 #include "ring/game/object.h"
 
+#include "ring/graphics/animation.h"
 #include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
 
@@ -95,7 +96,7 @@ Bag::Bag() {
 
 Bag::~Bag() {
 	CLEAR_ARRAY(Object, _objects);
-	CLEAR_ARRAY(uint32, _field_4);
+	CLEAR_ARRAY(ImageHandle, _images);
 	CLEAR_ARRAY(Hotspot, _hotspots);
 
 	SAFE_DELETE(_background);
@@ -210,8 +211,37 @@ void Bag::sub_4192C0(uint32 a1, uint32 a2) {
 	_field_64 = a2;
 }
 
+void Bag::sub_4192E0() {
+	_field_94 = 1;
+
+	for (Common::Array<ImageHandle *>::iterator it = _images.begin(); it != _images.end(); it++) {
+		if ((*it)->getField6C() != 2)
+			continue;
+
+		Animation *animation = (*it)->getAnimation();
+		if (animation)
+			animation->setTicks(g_system->getMillis());
+	}
+}
+
 void Bag::sub_419350() {
-	error("[Bag::sub_419350] Not implemented");
+	_field_94 = 0;
+
+	for (uint i = 0; i < _images.size();) {
+		if (_images[i]->getField6C() == 2) {
+
+			AnimationImage *animation = _images[i]->getAnimation();
+			if (animation) {
+				animation->sub_416710();
+				animation->dealloc();
+			}
+
+			++i;
+		} else {
+			SAFE_DELETE(_images[i]);
+			_images.remove_at(i);
+		}
+	}
 }
 
 void Bag::loadBackground(Common::String filename1, Common::String, Common::String filename3, Common::String, Common::String, Common::String filename6, Common::String, Common::String filename8, ArchiveType archiveType) {

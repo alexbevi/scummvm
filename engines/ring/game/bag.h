@@ -33,6 +33,7 @@ namespace Ring {
 class Application;
 class Hotspot;
 class Image;
+class ImageHandle;
 class Object;
 class Text;
 
@@ -51,10 +52,12 @@ public:
 	void sub_417DA0(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
 	void sub_417DD0(uint32 a1);
 	void sub_417DE0(uint32 a1, uint32 a2);
+	void sub_417E00();
 
 	void sub_419280(uint32 a1);
 	void sub_4192A0(uint32 a1, uint32 a2);
 	void sub_4192C0(uint32 a1, uint32 a2);
+	void sub_4192E0();
 	void sub_419350();
 
 	void loadBackground(Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, ArchiveType filetype);
@@ -75,9 +78,9 @@ public:
 
 private:
 	// Bag data
-	Common::Array<Object *> _objects;
-	Common::Array<uint32*> _field_4;
-	Common::Array<Hotspot*> _hotspots;
+	Common::Array<Object *>      _objects;
+	Common::Array<ImageHandle *> _images;
+	Common::Array<Hotspot*>      _hotspots;
 	uint32      _field_C;
 	uint32      _field_10;
 	uint32      _field_14;
