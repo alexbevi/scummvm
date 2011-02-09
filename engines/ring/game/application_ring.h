@@ -60,16 +60,8 @@ public:
 
 private:
 	//////////////////////////////////////////////////////////////////////////
-	// Zone
+	// Zone initialization
 	//////////////////////////////////////////////////////////////////////////
-	void setZoneNI(Zone zone, uint32 a2);
-	void setZoneRH(Zone zone, uint32 a2);
-	void setZoneFO(Zone zone, uint32 a2);
-	void setZoneRO(Zone zone, uint32 a2);
-	void setZoneWA(Zone zone, uint32 a2);
-	void setZoneAS(Zone zone, uint32 a2);
-	void setZoneN2(Zone zone, uint32 a2);
-
 	void initZoneSY();
 	void initZoneNI();
 	void initZoneRH();

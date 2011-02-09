@@ -224,68 +224,8 @@ void ApplicationRing::setZone(Zone zone, uint32 a2) {
 		error("[ApplicationRing::setZone] Not implemented (a2 == 1000)");
 	}
 
-	// Set zone
-	switch (zone) {
-	default:
-	case kZoneSY:
-		break;
-
-	case kZoneNI:
-		setZoneNI(zone, a2);
-		break;
-
-	case kZoneRH:
-		setZoneRH(zone, a2);
-		break;
-
-	case kZoneFO:
-		setZoneFO(zone, a2);
-		break;
-
-	case kZoneRO:
-		setZoneRO(zone, a2);
-		break;
-
-	case kZoneWA:
-		setZoneWA(zone, a2);
-		break;
-
-	case kZoneAS:
-		setZoneAS(zone, a2);
-		break;
-
-	case kZoneN2:
-		setZoneN2(zone, a2);
-		break;
-	}
-}
-
-void ApplicationRing::setZoneNI(Zone zone, uint32 a2) {
-	error("[ApplicationRing::setZoneNI] Not implemented");
-}
-
-void ApplicationRing::setZoneRH(Zone zone, uint32 a2) {
-	error("[ApplicationRing::setZoneRH] Not implemented");
-}
-
-void ApplicationRing::setZoneFO(Zone zone, uint32 a2) {
-	error("[ApplicationRing::setZoneFO] Not implemented");
-}
-
-void ApplicationRing::setZoneRO(Zone zone, uint32 a2) {
-	error("[ApplicationRing::setZoneRO] Not implemented");
-}
-
-void ApplicationRing::setZoneWA(Zone zone, uint32 a2) {
-	error("[ApplicationRing::setZoneWA] Not implemented");
-}
-
-void ApplicationRing::setZoneAS(Zone zone, uint32 a2) {
-	error("[ApplicationRing::setZoneAS] Not implemented");
-}
-
-void ApplicationRing::setZoneN2(Zone zone, uint32 a2) {
-	error("[ApplicationRing::setZoneN2] Not implemented");
+	// Setup zone
+	_eventHandler->onSetup(zone, a2);
 }
 
 #pragma endregion

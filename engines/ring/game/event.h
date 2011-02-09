@@ -41,6 +41,8 @@ public:
 	virtual void onMouseRightButtonUp(Common::Event &evt) = 0;
 	virtual void onKeyDown(Common::Event &evt) = 0;
 	virtual void onTimer(TimerId id) = 0;
+	virtual void onSound(Id id, SoundType type, uint32 a3) = 0;
+	virtual void onSetup(Zone zone, uint32 a2) = 0;
 };
 
 } // End of namespace LastExpress

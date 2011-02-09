@@ -81,6 +81,7 @@ public:
 	void onMouseRightButtonUp(Common::Event &evt);
 	void onKeyDown(Common::Event &evt);
 	void onTimer(TimerId id);
+	void onSound(Id id, SoundType type, uint32 a3);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Language, Font, Cursor and Subtitle

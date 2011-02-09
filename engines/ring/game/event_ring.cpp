@@ -68,6 +68,74 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 
 #pragma endregion
 
+#pragma region Zone Setup
+
+void EventHandlerRing::onSetup(Zone zone, uint32 a2) {
+	switch (zone) {
+	default:
+	case kZoneSY:
+		break;
+
+	case kZoneNI:
+		onSetupZoneNI(a2);
+		break;
+
+	case kZoneRH:
+		onSetupZoneRH(a2);
+		break;
+
+	case kZoneFO:
+		onSetupZoneFO(a2);
+		break;
+
+	case kZoneRO:
+		onSetupZoneRO(a2);
+		break;
+
+	case kZoneWA:
+		onSetupZoneWA(a2);
+		break;
+
+	case kZoneAS:
+		onSetupZoneAS(a2);
+		break;
+
+	case kZoneN2:
+		onSetupZoneN2(a2);
+		break;
+	}
+}
+
+void EventHandlerRing::onSetupZoneNI(uint32 a1) {
+	error("[EventHandlerRing::onSetupZoneNI] Not implemented");
+}
+
+void EventHandlerRing::onSetupZoneRH(uint32 a1) {
+	error("[EventHandlerRing::onSetupZoneRH] Not implemented");
+}
+
+void EventHandlerRing::onSetupZoneFO(uint32 a1) {
+	error("[EventHandlerRing::onSetupZoneFO] Not implemented");
+}
+
+void EventHandlerRing::onSetupZoneRO(uint32 a1) {
+	error("[EventHandlerRing::onSetupZoneRO] Not implemented");
+}
+
+void EventHandlerRing::onSetupZoneWA(uint32 a1) {
+	error("[EventHandlerRing::onSetupZoneWA] Not implemented");
+}
+
+void EventHandlerRing::onSetupZoneAS(uint32 a1) {
+	error("[EventHandlerRing::onSetupZoneAS] Not implemented");
+}
+
+void EventHandlerRing::onSetupZoneN2(uint32 a1) {
+	error("[EventHandlerRing::onSetupZoneN2] Not implemented");
+}
+
+#pragma endregion
+
 #pragma region Timer
 
 void EventHandlerRing::onTimer(TimerId timerId) {
@@ -78,44 +146,44 @@ void EventHandlerRing::onTimer(TimerId timerId) {
 		break;
 
 	case kZoneNI:
-		onZoneTimerNI(timerId);
+		onTimerZoneNI(timerId);
 		break;
 
 	case kZoneRH:
-		onZoneTimerRH(timerId);
+		onTimerZoneRH(timerId);
 		break;
 
 	case kZoneFO:
-		onZoneTimerFO(timerId);
+		onTimerZoneFO(timerId);
 		break;
 
 	case kZoneRO:
-		onZoneTimerRO(timerId);
+		onTimerZoneRO(timerId);
 		break;
 
 	case kZoneAS:
-		onZoneTimerAS(timerId);
+		onTimerZoneAS(timerId);
 		break;
 
 	case kZoneN2:
-		onZoneTimerN2(timerId);
+		onTimerZoneN2(timerId);
 		break;
 	}
 }
 
-void EventHandlerRing::onZoneTimerNI(TimerId id) {
+void EventHandlerRing::onTimerZoneNI(TimerId id) {
 	error("[EventHandlerRing::onZoneTimerNI] Not implemented");
 }
 
-void EventHandlerRing::onZoneTimerRH(TimerId id) {
+void EventHandlerRing::onTimerZoneRH(TimerId id) {
 	error("[EventHandlerRing::onZoneTimerNI] Not implemented");
 }
 
-void EventHandlerRing::onZoneTimerFO(TimerId id) {
+void EventHandlerRing::onTimerZoneFO(TimerId id) {
 	error("[EventHandlerRing::onZoneTimerNI] Not implemented");
 }
 
-void EventHandlerRing::onZoneTimerRO(TimerId id) {
+void EventHandlerRing::onTimerZoneRO(TimerId id) {
 	switch (id) {
 	default:
 		break;
@@ -146,16 +214,93 @@ void EventHandlerRing::onZoneTimerRO(TimerId id) {
 	error("[EventHandlerRing::onZoneTimerNI] Not implemented");
 }
 
-void EventHandlerRing::onZoneTimerAS(TimerId id) {
+void EventHandlerRing::onTimerZoneAS(TimerId id) {
 	error("[EventHandlerRing::onZoneTimerNI] Not implemented");
 }
 
-void EventHandlerRing::onZoneTimerN2(TimerId id) {
+void EventHandlerRing::onTimerZoneN2(TimerId id) {
 	if (id == kTimer0)
 		_app->noiceIdPlay(rnd(12) + 70004, 1);
 }
 
 #pragma endregion
 
+#pragma region Sound
+
+void EventHandlerRing::onSound(Id id, SoundType type, uint32 a3) {
+	int a4 = a3 & 0x1000;
+	a3 &= 239;
+
+	switch (_app->getCurrentZone()) {
+	default:
+		break;
+
+	case kZoneSY:
+		onSoundZoneSY(id, type, a3, a4);
+		break;
+
+	case kZoneNI:
+		onSoundZoneNI(id, type, a3, a4);
+		break;
+
+	case kZoneRH:
+		onSoundZoneRH(id, type, a3, a4);
+		break;
+
+	case kZoneFO:
+		onSoundZoneFO(id, type, a3, a4);
+		break;
+
+	case kZoneRO:
+		onSoundZoneRO(id, type, a3, a4);
+		break;
+
+	case kZoneAS:
+		onSoundZoneAS(id, type, a3, a4);
+		break;
+
+	case kZoneWA:
+		onSoundZoneWA(id, type, a3, a4);
+		break;
+
+	case kZoneN2:
+		onSoundZoneN2(id, type, a3, a4);
+		break;
+	}
+}
+
+void EventHandlerRing::onSoundZoneSY(Id id, SoundType type, uint32 a3, uint32 a4) {
+	error("[EventHandlerRing::onSoundZoneSY] Not implemented");
+}
+
+void EventHandlerRing::onSoundZoneNI(Id id, SoundType type, uint32 a3, uint32 a4) {
+	error("[EventHandlerRing::onSoundZoneNI] Not implemented");
+}
+
+void EventHandlerRing::onSoundZoneRH(Id id, SoundType type, uint32 a3, uint32 a4) {
+	error("[EventHandlerRing::onSoundZoneRH] Not implemented");
+}
+
+void EventHandlerRing::onSoundZoneFO(Id id, SoundType type, uint32 a3, uint32 a4) {
+	error("[EventHandlerRing::onSoundZoneFO] Not implemented");
+}
+
+void EventHandlerRing::onSoundZoneRO(Id id, SoundType type, uint32 a3, uint32 a4) {
+	error("[EventHandlerRing::onSoundZoneRO] Not implemented");
+}
+
+void EventHandlerRing::onSoundZoneWA(Id id, SoundType type, uint32 a3, uint32 a4) {
+	error("[EventHandlerRing::onSoundZoneWA] Not implemented");
+}
+
+void EventHandlerRing::onSoundZoneAS(Id id, SoundType type, uint32 a3, uint32 a4) {
+	error("[EventHandlerRing::onSoundZoneAS] Not implemented");
+}
+
+void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, uint32 a4) {
+	error("[EventHandlerRing::onSoundZoneN2] Not implemented");
+}
+
+#pragma endregion
 
 } // End of namespace Ring

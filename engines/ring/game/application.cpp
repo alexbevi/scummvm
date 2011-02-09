@@ -359,6 +359,10 @@ void Application::onTimer(TimerId id) {
 		_timerHandler->incrementFiredCount(id);
 }
 
+void Application::onSound(Id id, SoundType type, uint32 a3) {
+	_eventHandler->onSound(id, type, a3);
+}
+
 #pragma endregion
 
 #pragma region Display and Movies

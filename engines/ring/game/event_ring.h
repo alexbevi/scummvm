@@ -42,6 +42,8 @@ public:
 	virtual void onMouseRightButtonUp(Common::Event &evt);
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
+	virtual void onSound(Id id, SoundType type, uint32 a3);
+	virtual void onSetup(Zone zone, uint32 a2);
 
 private:
 	Application *_app;
@@ -54,14 +56,37 @@ private:
 	void onMouseLeftButtonUp(Common::Event &evt);
 
 	//////////////////////////////////////////////////////////////////////////
+	// Setup
+	//////////////////////////////////////////////////////////////////////////
+	void onSetupZoneNI(uint32 a1);
+	void onSetupZoneRH(uint32 a1);
+	void onSetupZoneFO(uint32 a1);
+	void onSetupZoneRO(uint32 a1);
+	void onSetupZoneWA(uint32 a1);
+	void onSetupZoneAS(uint32 a1);
+	void onSetupZoneN2(uint32 a1);
+
+	//////////////////////////////////////////////////////////////////////////
 	// Timer
 	//////////////////////////////////////////////////////////////////////////
-	void onZoneTimerNI(TimerId id);
-	void onZoneTimerRH(TimerId id);
-	void onZoneTimerFO(TimerId id);
-	void onZoneTimerRO(TimerId id);
-	void onZoneTimerAS(TimerId id);
-	void onZoneTimerN2(TimerId id);
+	void onTimerZoneNI(TimerId id);
+	void onTimerZoneRH(TimerId id);
+	void onTimerZoneFO(TimerId id);
+	void onTimerZoneRO(TimerId id);
+	void onTimerZoneAS(TimerId id);
+	void onTimerZoneN2(TimerId id);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Sound
+	//////////////////////////////////////////////////////////////////////////
+	void onSoundZoneSY(Id id, SoundType type, uint32 a3, uint32 a4);
+	void onSoundZoneNI(Id id, SoundType type, uint32 a3, uint32 a4);
+	void onSoundZoneRH(Id id, SoundType type, uint32 a3, uint32 a4);
+	void onSoundZoneFO(Id id, SoundType type, uint32 a3, uint32 a4);
+	void onSoundZoneRO(Id id, SoundType type, uint32 a3, uint32 a4);
+	void onSoundZoneWA(Id id, SoundType type, uint32 a3, uint32 a4);
+	void onSoundZoneAS(Id id, SoundType type, uint32 a3, uint32 a4);
+	void onSoundZoneN2(Id id, SoundType type, uint32 a3, uint32 a4);
 };
 
 } // End of namespace Ring
