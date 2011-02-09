@@ -33,14 +33,20 @@ Video::Video() {
 }
 
 Video::~Video() {
+	_screen.free();
 }
 
 void Video::init() {
-	warning("[Video::init] Not implemented");
+	_screen.create(640, 480, 2);
 }
 
 void Video::sub_4028D0(int a1, int a2) {
 	warning("[Video::sub_4028D0] Not implemented");
+}
+
+void Video::updateScreen() {
+	g_system->fillScreen(0);
+	g_system->copyRectToScreen((byte *)_screen.getBasePtr(0, 0), 640 * 2, 0, 0, 640, 480);
 }
 
 } // End of namespace Ring

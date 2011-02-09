@@ -32,6 +32,8 @@
 #include "ring/game/event_ring.h"
 #include "ring/game/saveload.h"
 
+#include "ring/graphics/video.h"
+
 #include "ring/helpers.h"
 #include "ring/ring.h"
 
@@ -133,13 +135,13 @@ void ApplicationRing::startMenu(bool savegame) {
 	if (savegame) {
 		cursorSelect(kCursorBusy);
 		_vm->unsetFlag();
-		_vm->handleEvents();
+		_vm->update();
 		getBag()->sub_419350();
 
 		if (!_saveManager->saveLoad("SaveGame", kSaveLoadWrite))
 			error("[ApplicationRing::startMenu] Cannot save game in SaveGame.ars");
 
-		// Original creates base surface and copies the screen buffer to it
+		// TODO: Original saves a copy of the screen surface
 	}
 
 	_field_6F = _zone;
@@ -171,6 +173,18 @@ void ApplicationRing::startMenu(bool savegame) {
 
 void ApplicationRing::initMenu(PuzzleId id, bool a2, bool a3) {
 	error("[ApplicationRing::initMenu] Not implemented");
+}
+
+#pragma endregion
+
+#pragma region Drawing
+
+void ApplicationRing::draw() {
+	// Update our screen
+	_video->updateScreen();
+
+	// Update engine state
+	warning("[ApplicationRing::draw] Engine state update not implemented!");
 }
 
 #pragma endregion

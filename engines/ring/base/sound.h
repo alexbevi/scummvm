@@ -42,9 +42,15 @@ public:
 	SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format);
 	~SoundEntry();
 
+	void play(bool loop);
+	void stop();
+	bool isPlaying();
+
     void setVolume(uint32 volume);
 	void setMultiplier(uint32 multiplier);
 	void setPan(int32 pan);
+
+	bool checkPlaying();
 
 	// Accessors
 	SoundType getType() { return _type; }
@@ -58,7 +64,7 @@ protected:
 private:
 	SoundType      _type;
 	Common::String _name;
-	uint32         _field_10C;
+	bool           _isPlaying;
 	LoadFrom       _loadFrom;
 	uint32         _volume;
 	uint32         _multiplier;
@@ -141,14 +147,19 @@ public:
 	SoundManager(Application *application, Audio::Mixer *mixer);
 	~SoundManager();
 
+	// Playing
+	void updateQueue();
+
+	// Sound entries
 	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk);
 	SoundEntry *getSoundEntry(Id soundId);
 
 	void setVolume(Id soundId, uint32 volume);
-
-	float getGlobalVolume() { return _globalVolume; }
-
 	void updateVolumeAndPan(Audio::SoundHandle handle, int32 volume, int32 pan);
+
+	// Accessors
+	float getGlobalVolume() { return _globalVolume; }
+	Audio::Mixer *getMixer() { return _mixer; }
 
 private:
 	Application *_application;

@@ -25,6 +25,8 @@
 
 #include "ring/ring.h"
 
+#include "ring/base/sound.h"
+
 #include "ring/game/application.h"
 #include "ring/game/application_ring.h"
 
@@ -156,6 +158,9 @@ Common::Error RingEngine::run() {
 			}
 		}
 
+		// Draw screen, update state and play sounds
+		update();
+
 		// Update the screen
 		_system->updateScreen();
 		_system->delayMillis(10);
@@ -169,8 +174,9 @@ Common::Error RingEngine::run() {
 	return Common::kNoError;
 }
 
-void RingEngine::handleEvents() {
-	warning("[RingEngine::handleEvents] Not implemented!");
+void RingEngine::update() {
+	_application->draw();
+	_application->getSoundManager()->updateQueue();
 }
 
 bool RingEngine::hasFeature(EngineFeature f) const {

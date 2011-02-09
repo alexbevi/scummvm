@@ -83,6 +83,9 @@ public:
 	void onTimer(TimerId id);
 	void onSound(Id id, SoundType type, uint32 a3);
 
+	// Drawing
+	virtual void draw() = 0;
+
 	//////////////////////////////////////////////////////////////////////////
 	// Language, Font, Cursor and Subtitle
 	void languageAdd(LanguageId id, Common::String name, Common::String folder, uint channel);

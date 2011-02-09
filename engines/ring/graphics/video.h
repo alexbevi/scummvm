@@ -26,6 +26,8 @@
 #ifndef RING_VIDEO_H
 #define RING_VIDEO_H
 
+#include "graphics/surface.h"
+
 namespace Ring {
 
 class Video {
@@ -36,8 +38,10 @@ public:
 	void init();
 	void sub_4028D0(int a1, int a2);
 
-private:
+	void updateScreen();
 
+private:
+	Graphics::Surface _screen;
 };
 
 } // End of namespace Ring

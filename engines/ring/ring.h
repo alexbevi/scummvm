@@ -98,7 +98,7 @@ public:
 	RingEngine(OSystem *syst, const RingGameDescription *gd);
 	~RingEngine();
 
-	void handleEvents();
+	void update();
 
 	// Accessors and helpers
 	Application *getApplication() { return _application; }

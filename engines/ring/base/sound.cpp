@@ -39,7 +39,7 @@ namespace Ring {
 SoundEntry::SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format) : BaseObject(soundId) {
 	_type       = type;
 	_name       = name;
-	_field_10C  = 0;
+	_isPlaying  = false;
 	_loadFrom   = loadFrom;
 	_volume     = 100;
 	_multiplier = 100;
@@ -50,6 +50,20 @@ SoundEntry::SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom
 }
 
 SoundEntry::~SoundEntry() {
+}
+
+void SoundEntry::play(bool loop) {
+	error("[SoundEntry::play] Not implemented");
+}
+
+void SoundEntry::stop() {
+	getSound()->getMixer()->stopHandle(_handle);
+
+	_isPlaying = false;
+}
+
+bool SoundEntry::isPlaying() {
+	return getSound()->getMixer()->isSoundHandleActive(_handle);
 }
 
 void SoundEntry::setVolume(uint32 volume) {
@@ -77,6 +91,19 @@ void SoundEntry::setPan(int32 pan) {
 		_pan = -100;
 
 	setVolumeAndPan();
+}
+
+bool SoundEntry::checkPlaying() {
+	if (!_isPlaying)
+		return false;
+
+	bool playing = isPlaying();
+	if (!playing) {
+		_isPlaying = false;
+		stop();
+	}
+
+	return (playing == false);
 }
 
 void SoundEntry::setVolumeAndPan() {
@@ -219,6 +246,18 @@ SoundManager::~SoundManager() {
 	// Zero-out passed pointers
 	_application = NULL;
 	_mixer = NULL;
+}
+
+void SoundManager::updateQueue() {
+	for (Common::Array<SoundEntry *>::iterator it = _entries.begin(); it != _entries.end(); it++) {
+		if (!(*it)->checkPlaying())
+			continue;
+
+		if ((*it)->getType() == kSoundTypeDialog)
+			continue;
+
+		_application->onSound((*it)->getId(), (*it)->getType(), 4097);
+	}
 }
 
 void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk) {

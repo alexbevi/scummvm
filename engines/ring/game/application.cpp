@@ -122,7 +122,7 @@ void Application::init() {
 
 	// Setup video
 	_video = new Video();
-	_video->init(); // TODO probably not needed as we initialize graphics at engine start
+	_video->init();
 	_video->sub_4028D0(0, 0);
 
 	// Setup objects
