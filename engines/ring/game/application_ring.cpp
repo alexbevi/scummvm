@@ -2042,7 +2042,7 @@ void ApplicationRing::initZoneFO() {
 	rotationSetMovabilityToRotation(30402, 1, 92.0f, 0, 85.3f, 0, 2, 80.0f, 0, 85.3f);
 	rotationAddMovabilityToRotation(30402, 30501, "1249", Common::Rect(2967, -102, 3237, 190), true, 53, 0);
 	rotationSetMovabilityToRotation(30402, 2, 261.0f, 0, 85.3f, 0, 2, 30.0f, 15.0f, 85.3f);
-	rotationSetMovabilityOnOrOffDisableHotspot(30402, 2, 2);
+	rotationSetMovabilityOff(30402, 2, 2);
 	rotationAddMovabilityToRotation(30501, 30012, "1250", Common::Rect(1981, -64, 2218, 324), true, 53, 0);
 	rotationSetMovabilityToRotation(30501, 0, 165.0f, 8.0f, 85.3f, 0, 2, 207.0f, 0, 85.3f);
 	rotationAddMovabilityToRotation(30501, 30601, "1251", Common::Rect(390, -247, 766, 179), true, 53, 0);

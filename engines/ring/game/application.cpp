@@ -591,19 +591,19 @@ void Application::puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotsp
 	_puzzles.get(puzzleId)->setMovabilityOnOrOff(enableHotspot);
 }
 
-void Application::puzzleSetMovabilityOnOrOffEnableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability) {
+void Application::puzzleSetMovabilityOn(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability) {
 	puzzleSetMovabilityOnOrOff(puzzleId, true, fromMovability, toMovability);
 }
 
-void Application::puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability) {
+void Application::puzzleSetMovabilityOff(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability) {
 	puzzleSetMovabilityOnOrOff(puzzleId, false, fromMovability, toMovability);
 }
 
-void Application::puzzleSetMovabilityOnOrOffEnableHotspot(PuzzleId puzzleId) {
+void Application::puzzleSetMovabilityOn(PuzzleId puzzleId) {
 	puzzleSetMovabilityOnOrOff(puzzleId, true);
 }
 
-void Application::puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId) {
+void Application::puzzleSetMovabilityOff(PuzzleId puzzleId) {
 	puzzleSetMovabilityOnOrOff(puzzleId, false);
 }
 
@@ -1218,15 +1218,15 @@ void Application::rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot
 	_rotations.get(rotationId)->setMovabilityOnOrOff(enableHotspot, fromMovability, toMovability);
 }
 
-void Application::rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId) {
+void Application::rotationSetMovabilityOff(Id rotationId) {
 	rotationSetMovabilityOnOrOff(rotationId, false);
 }
 
-void Application::rotationSetMovabilityOnOrOffEnableHotspot(Id rotationId, uint32 fromMovability, uint32 toMovability) {
+void Application::rotationSetMovabilityOn(Id rotationId, uint32 fromMovability, uint32 toMovability) {
 	rotationSetMovabilityOnOrOff(rotationId, true, fromMovability, toMovability);
 }
 
-void Application::rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId, uint32 fromMovability, uint32 toMovability) {
+void Application::rotationSetMovabilityOff(Id rotationId, uint32 fromMovability, uint32 toMovability) {
 	rotationSetMovabilityOnOrOff(rotationId, false, fromMovability, toMovability);
 }
 

@@ -119,10 +119,7 @@ Common::Error RingEngine::run() {
 				if ((ev.kbd.flags & Common::KBD_CTRL) && ev.kbd.keycode == Common::KEYCODE_d)
 					_debugger->attach();
 
-				// DEBUG: Quit game on escape
-				if (ev.kbd.keycode == Common::KEYCODE_ESCAPE)
-					quitGame();
-
+				_application->onKeyDown(ev);
 				break;
 
 			case Common::EVENT_MAINMENU:
@@ -172,6 +169,23 @@ Common::Error RingEngine::run() {
 	}
 
 	return Common::kNoError;
+}
+
+bool RingEngine::pollEvents() {
+	Common::Event ev;
+	_eventMan->pollEvent(ev);
+
+	switch (ev.type) {
+	default:
+		break;
+
+	case Common::EVENT_KEYDOWN:
+		if (ev.kbd.keycode == Common::KEYCODE_ESCAPE)
+			return true;
+		break;
+	}
+
+	return false;
 }
 
 void RingEngine::update() {

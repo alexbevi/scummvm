@@ -135,10 +135,10 @@ public:
 
 	void puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotspot);
 	void puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotspot, uint32 fromMovability, uint32 toMovability);
-	void puzzleSetMovabilityOnOrOffEnableHotspot(PuzzleId puzzleId);
-	void puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId);
-	void puzzleSetMovabilityOnOrOffEnableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
-	void puzzleSetMovabilityOnOrOffDisableHotspot(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
+	void puzzleSetMovabilityOn(PuzzleId puzzleId);
+	void puzzleSetMovabilityOff(PuzzleId puzzleId);
+	void puzzleSetMovabilityOn(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
+	void puzzleSetMovabilityOff(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
 
 	void puzzleSetMod(PuzzleId puzzleId, uint32 a2, uint32 a3);
 
@@ -223,9 +223,9 @@ public:
 
 	void rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot);
 	void rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot, uint32 fromMovability, uint32 toMovability);
-	void rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId);
-	void rotationSetMovabilityOnOrOffEnableHotspot(Id rotationId, uint32 fromMovability, uint32 toMovability);
-	void rotationSetMovabilityOnOrOffDisableHotspot(Id rotationId, uint32 fromMovability, uint32 toMovability);
+	void rotationSetMovabilityOff(Id rotationId);
+	void rotationSetMovabilityOn(Id rotationId, uint32 fromMovability, uint32 toMovability);
+	void rotationSetMovabilityOff(Id rotationId, uint32 fromMovability, uint32 toMovability);
 	void rotationSetMovabilityRideName(Id rotationId, uint32 movabilityIndex, Common::String name);
 
 	void rotationSetAlp(Id rotationId, float alp);

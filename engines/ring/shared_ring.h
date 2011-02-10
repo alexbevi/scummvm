@@ -26,8 +26,6 @@
 #ifndef RING_SHARED_RING_H
 #define RING_SHARED_RING_H
 
-#include "ring/shared.h"
-
 namespace RingGame {
 
 //////////////////////////////////////////////////////////////////////////

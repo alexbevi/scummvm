@@ -38,8 +38,9 @@ using namespace RingGame;
 
 namespace Ring {
 
-EventHandlerRing::EventHandlerRing(Application *application) : _app(application),
-	_controlNotPressed(false) {
+EventHandlerRing::EventHandlerRing(Application *application) : _app(application), _controlNotPressed(false) {
+	// Data
+	_dword_4A1C00 = 0;
 }
 
 
@@ -129,7 +130,7 @@ void EventHandlerRing::onSetupZoneNI(uint32 a1) {
 
 	case 3:
 		_app->timerStopAll();
-		_app->puzzleSetMovabilityOnOrOffEnableHotspot(kPuzzle10410, 0, 0);
+		_app->puzzleSetMovabilityOn(kPuzzle10410, 0, 0);
 		_app->playMovie("1550");
 		_app->rotationSetAlp(10301, 160.0f);
 		_app->rotationSetRan(10301, 85.7f);
@@ -533,31 +534,363 @@ void EventHandlerRing::onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 m
 }
 
 void EventHandlerRing::onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
-	error("[EventHandlerRing::onBeforeRideZoneNI] Not implemented");
+	switch (movabilityType) {
+	default:
+		break;
+
+	case kMovabilityRotationToRotation:
+		if (movabilityFrom == 10005)
+			if (movabilityTo == 10101) {
+				_app->sound_sub_406E00(10901, 1024);
+				_app->soundPlay(rnd(8) + 13001, 1);
+			}
+		break;
+
+	case kMovabilityRotationToPuzzle:
+		switch (movabilityIndex) {
+		default:
+			break;
+
+		case 41:
+			if (_app->varGetByte(10420))
+				_app->playMovie("1529");
+			else
+				_app->playMovie("1528");
+			break;
+
+		case 42:
+			if (_app->varGetByte(10421))
+				_app->playMovie("1531");
+			else
+				_app->playMovie("1530");
+			break;
+
+		case 61:
+			_app->varSetWord(10600, 12);
+			_app->varSetWord(10601, 0);
+			_app->varSetWord(10602, 24);
+
+			_app->objectPresentationHideAndRemove(kObject10601);
+			_app->objectPresentationShow(kObject10601, 12);
+			_app->objectPresentationHideAndRemove(kObject10602);
+			_app->objectPresentationShow(kObject10602, 0);
+			_app->objectPresentationHideAndRemove(kObject10603);
+			_app->objectPresentationShow(kObject10603, 24);
+			break;
+		}
+		break;
+
+	case kMovabilityPuzzleToRotation:
+		switch (movabilityIndex) {
+		default:
+			break;
+
+		case 41:
+			if (_app->varGetByte(10420))
+				_app->playMovie("1534");
+			else
+				_app->playMovie("1533");
+			break;
+
+		case 42:
+			if (_app->varGetByte(10421))
+				_app->playMovie("1536");
+			else
+				_app->playMovie("1535");
+			break;
+		}
+		break;
+
+	case kMovabilityPuzzleToPuzzle:
+		if (movabilityTo == 10501 || movabilityTo == 10511 || movabilityTo == 10521)
+			if (!movabilityIndex)
+				_app->soundPlay(10501, 1);
+
+		if (movabilityFrom == 10501 || movabilityFrom == 10511 || movabilityFrom == 10521)
+			if (!movabilityIndex)
+				_app->soundPlay(10502, 1);
+
+		if (movabilityFrom == 10001) {
+			_app->soundPlay(10804, 1);
+		} else if (movabilityFrom == 10002) {
+			_app->soundPlay(10804, 1);
+			_app->sound_sub_406E00(10800, 1024);
+		}
+		break;
+	}
 }
 
 void EventHandlerRing::onBeforeRideZoneRH(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
-	error("[EventHandlerRing::onBeforeRideZoneRH] Not implemented");
+	if (movabilityFrom == 20401)
+		_app->timerStop(kTimer0);
 }
 
 void EventHandlerRing::onBeforeRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
-	error("[EventHandlerRing::onBeforeRideZoneFO] Not implemented");
+	switch (movabilityType) {
+	default:
+		break;
+
+	case kMovabilityRotationToRotation:
+		if (movabilityFrom == 30402 && movabilityTo == 30501) {
+			_app->varSetByte(30037, 1);
+			_app->objectPresentationShow(kObject30051, 0);
+			_app->objectPresentationHide(kObject30050);
+			_app->objectPresentationShow(kObject30050, 3);
+			_app->rotationSetMovabilityOff(30011, 1, 2);
+			_app->objectSetAccessibilityOn(kObject30051, 0, 0);
+			_app->objectSetAccessibilityOn(kObject30051, 3, 3);
+		}
+		break;
+
+	case kMovabilityRotationToPuzzle:
+		if (movabilityFrom == 30601 && movabilityTo == 35003)
+			_app->objectSetAccessibilityOn(kObjectBow, 0, 0);
+		break;
+
+	case kMovabilityPuzzleToRotation:
+		switch (movabilityFrom) {
+		default:
+			break;
+
+		case 35002:
+			if (movabilityTo == 30801) {
+				if (!_app->varGetByte(30076)) {
+					_app->objectPresentationHide(kObjectBerries);
+					_app->varSetByte(30017, 0);
+				}
+			}
+			break;
+
+		case 35003:
+			if (movabilityTo == 30601)
+				_app->objectPresentationHide(kObjectBow);
+			break;
+
+		case 35004:
+			if (movabilityTo == 30601) {
+				if (_app->varGetByte(30091) == 1 && _app->varGetByte(30021) == 1) {
+					_app->playMovie("1184");
+					_app->bagAdd(kObjectLogeTear2);
+
+					if (_app->varGetByte(30020) == 1) {
+						_app->bagAdd(kObjectMould);
+						_app->varSetByte(30020, 0);
+					}
+
+					_app->objectPresentationHide(kObject30028);
+					_app->objectPresentationShow(kObject30028, 0);
+					_app->objectPresentationShow(kObject30028, 3);
+
+					_app->varSetByte(30021, 0);
+				}
+			}
+			break;
+
+		case 35006:
+			if (movabilityTo == 30601) {
+				_app->objectPresentationHide(kObject30040);
+				_app->varSetByte(30022, 0);
+				_app->varSetByte(30023, 0);
+				_app->objectSetAccessibilityOn(kObject30040, 0, 1);
+				_app->objectSetAccessibilityOff(kObject30040, 2, 5);
+			}
+			break;
+
+		case 35007:
+			if (movabilityTo == 30601) {
+				_app->objectPresentationHide(kObject30042);
+				_app->objectSetAccessibilityOff(kObject30042, 1, 7);
+				_app->objectSetAccessibilityOn(kObject30042, 0, 0);
+				_app->varSetByte(30025, 0);
+				_app->varSetByte(30026, 0);
+				_app->varSetByte(30027, 0);
+				_app->varSetByte(30028, 0);
+				_app->varSetByte(30029, 0);
+				_app->varSetByte(30030, 0);
+				_app->varSetByte(30031, 0);
+			}
+			break;
+
+		case 35008:
+			if (movabilityTo == 30601) {
+				if (_app->varGetByte(30032) == 1) {
+					_app->bagAdd(kObjectGolem);
+					_app->objectPresentationHide(30044, 0);
+				}
+			}
+			break;
+
+		case 35009:
+			if (movabilityTo == 30601) {
+				_app->objectPresentationHide(kObject30045);
+			} else if (movabilityTo == 30602) {
+				_app->playMovie("1205");
+				_app->objectPresentationShow(kObject30045, 7);
+			}
+			break;
+
+		case 30701:
+		case 30702:
+		case 30703:
+		case 30704:
+			if (_app->varGetByte(30033)) {
+				_app->objectPresentationHide(kObjectFishingRod);
+				_app->objectSetAccessibilityOn(kObjectFishingRod, 1, 1);
+			} else {
+				_app->objectPresentationHide(kObjectFishingRod);
+				_app->objectSetAccessibilityOn(kObjectFishingRod, 0, 0);
+				_app->objectSetAccessibilityOff(kObjectFishingRod, 1, 1);
+			}
+			break;
+
+		case 35111:
+			if (movabilityTo == 30101) {
+				_app->playMovie("1206");
+				_app->timerStop(kTimer5);
+			}
+			break;
+		}
+
+		_app->objectSetAccessibilityOff(kObjectNotung, 0, 0);
+		_app->objectPresentationHide(kObjectNotung);
+		_app->objectPresentationHide(kObjectWorms, 0);
+		_app->objectPresentationHide(kObjectWorms, 1);
+		_app->objectPresentationHide(kObjectBerries, 3);
+		_app->objectPresentationHide(kObjectBerries, 1);
+		_app->varSetByte(30017, 0);
+		_app->objectSetAccessibilityOff(kObjectWorms, 0, 0);
+		break;
+	}
 }
 
 void EventHandlerRing::onBeforeRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
-	error("[EventHandlerRing::onBeforeRideZoneRO] Not implemented");
+	if (movabilityType != kMovabilityPuzzleToRotation)
+		return;
+
+	if (movabilityFrom == 40060 || movabilityFrom == 40005) {
+		_app->soundSetVolume(40102, 100);
+		_app->soundPlay(40102, 2);
+
+		if (_app->varGetByte(40804) > 4) {
+			do {
+				_app->objectPresentationHide(kObject40060);
+				_app->objectPresentationShow(kObject40060, _app->varGetByte(40804));
+
+				handleEvents();
+
+				_app->varSetByte(40804, _app->varGetByte(40804) + 1);
+			} while (!checkEvents() && _app->varGetByte(40804) > 0);
+		}
+
+		_app->varSetByte(40804, 0);
+		_app->sound_sub_406E00(40102, 1024);
+		if (_app->varGetByte(40802) == 1)
+			_app->playMovie("1785");
+
+		_app->objectSetAccessibilityOff(kObject40060);
+		_app->objectSetAccessibilityOn(kObject40060, 0, 0);
+		_app->objectSetAccessibilityOn(kObject40201);
+		_app->objectSetAccessibilityOff(kObject40202);
+
+		_app->objectPresentationHide(kObject40060);
+		_app->objectPresentationHide(kObject40201);
+		_app->objectPresentationHide(kObject40202);
+
+		_app->varSetByte(40802, 0);
+		_app->varSetString(40902, "00000000");
+
+		_dword_4A1C00 = 0;
+	}
 }
 
 void EventHandlerRing::onBeforeRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
-	error("[EventHandlerRing::onBeforeRideZoneWA] Not implemented");
+	if (movabilityType != kMovabilityRotationToRotation)
+		return;
+
+	switch (movabilityFrom){
+	default:
+		break;
+
+	case 50001:
+		if (movabilityTo == 50101)
+			if (!_app->soundIsPlaying(51006))
+				_app->soundPlay(51006, 2);
+		break;
+
+	case 50103:
+		if (movabilityTo == 50701) {
+			_app->sound_sub_406E00(51006, 1024);
+			_app->soundPlay(51007, 2);
+		}
+		break;
+
+	case 50304:
+		if (movabilityTo == 50302) {
+			if (_app->varGetByte(50003)) {
+				if (_app->varGetByte(50005) >= 2)
+					_app->playMovie("1871");
+				else
+					_app->playMovie("1870");
+			} else if (_app->varGetByte(50005)) {
+				_app->playMovie("1869");
+			} else {
+				_app->playMovie("1868");
+			}
+		}
+		break;
+	}
 }
 
 void EventHandlerRing::onBeforeRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
-	error("[EventHandlerRing::onBeforeRideZoneAS] Not implemented");
+	if (movabilityType != kMovabilityPuzzleToRotation)
+		return;
+
+	switch (movabilityFrom){
+	default:
+		break;
+
+	case 80006:
+		if (movabilityTo == 80101) {
+			if (_app->varGetByte(90001))
+				_app->playMovie("1152");
+			else
+				_app->playMovie("1151");
+		}
+		break;
+
+	case 80007:
+		if (movabilityTo == 80101)
+			_app->playMovie("1153");
+		break;
+
+	case 80008:
+		if (movabilityTo == 80101)
+			_app->playMovie("1155");
+		break;
+
+	case 80009:
+		if (movabilityTo == 80101)
+			_app->playMovie("1154");
+		break;
+
+	case 80010:
+		if (movabilityTo == 80101)
+			_app->playMovie("1156");
+		break;
+	}
 }
 
 void EventHandlerRing::onBeforeRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
-	error("[EventHandlerRing::onBeforeRideZoneN2] Not implemented");
+	if (movabilityFrom == 70000 || movabilityFrom == 70001)
+		_app->timerStop(kTimer0);
+
+	if (movabilityType == kMovabilityPuzzleToPuzzle) {
+		if (movabilityTo == 70501 || movabilityTo == 70511 || movabilityTo == 70521)
+			_app->soundPlay(70501, 1);
+
+		if (movabilityFrom == 70501 || movabilityFrom == 70511 || movabilityFrom == 70521)
+			_app->soundPlay(70502, 1);
+	}
 }
 
 void EventHandlerRing::onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {

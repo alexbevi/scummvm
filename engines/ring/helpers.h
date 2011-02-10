@@ -38,6 +38,9 @@
 #define getSound() ((RingEngine *)g_engine)->getApplication()->getSoundManager()
 #define getSoundDirection() (((RingEngine *)g_engine)->getApplication()->getSoundHandler()->getDirection())
 
+// Events
+#define handleEvents() ((RingEngine *)g_engine)->update()
+#define checkEvents() ((RingEngine *)g_engine)->pollEvents()
 
 //////////////////////////////////////////////////////////////////////////
 // Sub-integer partial access macros

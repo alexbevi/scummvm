@@ -98,6 +98,7 @@ public:
 	RingEngine(OSystem *syst, const RingGameDescription *gd);
 	~RingEngine();
 
+	bool pollEvents();
 	void update();
 
 	// Accessors and helpers
