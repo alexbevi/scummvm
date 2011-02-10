@@ -127,7 +127,7 @@ void ApplicationRing::setup() {
 
 void ApplicationRing::showStartupScreen() {
 	setZoneAndEnableBag(kZoneSY);
-	playMovie("logo", 0.0);
+	playMovie("logo");
 
 	for (uint i = 0; i < ARRAYSIZE(introScreens); i++) {
 
@@ -195,7 +195,7 @@ void ApplicationRing::startMenu(bool savegame) {
 void ApplicationRing::showCredits() {
 	sound_sub_406EA0(1024);
 	setZoneAndEnableBag(kZoneWA);
-	soundPlay(51002, true);
+	soundPlay(51002, 2);
 
 	setZoneAndEnableBag(kZoneSY);
 

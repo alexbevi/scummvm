@@ -44,6 +44,8 @@ public:
 	virtual void onTimer(TimerId id);
 	virtual void onSound(Id id, SoundType type, uint32 a3);
 	virtual void onSetup(Zone zone, uint32 a2);
+	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
 
 private:
 	Application *_app;
@@ -54,6 +56,9 @@ private:
 	// Event Handling
 	//////////////////////////////////////////////////////////////////////////
 	void onMouseLeftButtonUp(Common::Event &evt);
+
+
+	void onKeyDownZoneSY(Common::KeyCode keycode);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Setup
@@ -66,6 +71,8 @@ private:
 	void onSetupZoneAS(uint32 a1);
 	void onSetupZoneN2(uint32 a1);
 
+	void onSetupLoadTimers(Common::String zoneName, Id testId1, Id puzzleRotationId, Id testId2);
+
 	//////////////////////////////////////////////////////////////////////////
 	// Timer
 	//////////////////////////////////////////////////////////////////////////
@@ -75,6 +82,25 @@ private:
 	void onTimerZoneRO(TimerId id);
 	void onTimerZoneAS(TimerId id);
 	void onTimerZoneN2(TimerId id);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Rides
+	//////////////////////////////////////////////////////////////////////////
+	void onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onBeforeRideZoneRH(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onBeforeRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onBeforeRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onBeforeRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onBeforeRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onBeforeRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+
+	void onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onAfterRideZoneRH(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onAfterRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onAfterRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onAfterRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onAfterRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onAfterRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Sound

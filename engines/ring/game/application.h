@@ -87,7 +87,8 @@ public:
 	// Drawing
 	virtual void draw() = 0;
 
-	void playMovie(Common::String filename, float a2);
+	void playMovie(Common::String filename, float a2 = 0.0f);
+	void playMovieChannel(Common::String filename, uint32 channel);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Language, Font, Cursor and Subtitle
@@ -149,7 +150,7 @@ public:
 	void puzzleSet3DSoundOff(PuzzleId puzzleId, Id soundId);
 	void puzzleSet3DSoundVolume(PuzzleId puzzleId, Id soundId, int32 volume);
 
-	void puzzleSetActive(PuzzleId id, bool a2, bool a3);
+	void puzzleSetActive(PuzzleId id, bool a2 = true, bool a3 = true);
 
 	void puzzleReset();
 
@@ -246,7 +247,7 @@ public:
 	void rotationSetFreOn(Id rotationId);
 	void rotationSetFreOff(Id rotationId);
 
-	void rotationSetActive(Id rotationId, bool a2, bool a3);
+	void rotationSetActive(Id rotationId, bool a2 = true, bool a3 = true);
 
 	// Current rotation
 	bool hasCurrentRotation() { return _rotation != NULL; }
@@ -266,13 +267,13 @@ public:
 	void sound_sub_406EA0(uint32 a1);
 
 
-	void soundPlay(Id noiceId, bool a2);
+	void soundPlay(Id noiceId, int a2);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Timer
 	void timerStart(TimerId id, uint32 elapseTime);
 	void timerStop(TimerId id);
-	void timerStopAll();	
+	void timerStopAll();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Var

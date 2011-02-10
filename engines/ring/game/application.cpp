@@ -383,6 +383,10 @@ void Application::playMovie(Common::String filename, float a2) {
 	warning("[Application::playMovie] Not implemented (%s)", filename.c_str());
 }
 
+void Application::playMovieChannel(Common::String filename, uint32 channel) {
+	warning("[Application::playplayMovieChannelMovie] Not implemented (%s)", filename.c_str());
+}
+
 #pragma endregion
 
 #pragma region Language, Fonts and Cursors
@@ -1467,7 +1471,7 @@ void Application::sound_sub_406EA0(uint32 a1) {
 	warning("[Application::sound_sub_406EA0] Not implemented");
 }
 
-void Application::soundPlay(Id soundId, bool a2) {
+void Application::soundPlay(Id soundId, int a2) {
 	error("[Application::noiceIdPlay] Not implemented");
 }
 

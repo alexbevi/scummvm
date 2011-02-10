@@ -43,6 +43,8 @@ public:
 	virtual void onTimer(TimerId id) = 0;
 	virtual void onSound(Id id, SoundType type, uint32 a3) = 0;
 	virtual void onSetup(Zone zone, uint32 a2) = 0;
+	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) = 0;
+	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) = 0;
 };
 
 } // End of namespace LastExpress
