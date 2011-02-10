@@ -464,7 +464,7 @@ void Application::subtitleSetBackgroundColor(Color color) {
 #pragma region Bag
 
 void Application::bagAdd(ObjectId id) {
-	if (id == kObjectNone)
+	if (id == ObjectId::kObjectNone)
 		error("[Application::removeFromBag] Invalid ID (%d)", id);
 
 	if (!_bag)
@@ -738,7 +738,7 @@ void Application::puzzleReset() {
 
 PuzzleId Application::getCurrentPuzzleId() {
 	if (!_puzzle)
-		return kPuzzleInvalid;
+		return PuzzleId::kPuzzleInvalid;
 
 	return (PuzzleId)_puzzle->getId();
 }

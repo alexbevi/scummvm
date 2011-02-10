@@ -32,6 +32,9 @@
 
 #include "ring/helpers.h"
 #include "ring/ring.h"
+#include "ring/shared_ring.h"
+
+using namespace RingGame;
 
 namespace Ring {
 

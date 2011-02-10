@@ -40,31 +40,31 @@ void VarEntry<T>::saveLoadWithSerializer(Common::Serializer &s) {
 
 template<>
 void VarEntry<byte>::saveLoadWithSerializer(Common::Serializer &s) {
-	s.syncAsUint32LE(_id);
+	s.syncAsSint32LE(_id);
 	s.syncAsByte(_value);
 }
 
 template<>
 void VarEntry<int16>::saveLoadWithSerializer(Common::Serializer &s) {
-	s.syncAsUint32LE(_id);
+	s.syncAsSint32LE(_id);
 	s.syncAsSint16LE(_value);
 }
 
 template<>
 void VarEntry<int32>::saveLoadWithSerializer(Common::Serializer &s) {
-	s.syncAsUint32LE(_id);
+	s.syncAsSint32LE(_id);
 	s.syncAsSint32LE(_value);
 }
 
 template<>
 void VarEntry<double>::saveLoadWithSerializer(Common::Serializer &s) {
-	s.syncAsUint32LE(_id);
+	s.syncAsSint32LE(_id);
 	s.syncAsSint32LE(_value);
 }
 
 template<>
 void VarEntry<Common::String>::saveLoadWithSerializer(Common::Serializer &s) {
-	s.syncAsUint32LE(_id);
+	s.syncAsSint32LE(_id);
 	s.syncString(_value);
 }
 

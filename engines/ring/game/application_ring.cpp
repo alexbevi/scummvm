@@ -37,8 +37,11 @@
 
 #include "ring/helpers.h"
 #include "ring/ring.h"
+#include "ring/shared_ring.h"
 
 #include "common/archive.h"
+
+using namespace RingGame;
 
 namespace Ring {
 

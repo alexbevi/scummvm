@@ -339,7 +339,7 @@ void ObjectHandler::addFromFile(Common::String filename, Common::String language
 		error("[ObjectHandler::addFromFile] Error opening objects file (%s)", filename.c_str());
 
 	// Read each object info
-	ObjectId id = kObjectInvalid;
+	ObjectId id = ObjectId::kObjectInvalid;
 	while (!archive->eos() && !archive->err()) {
 
 		Common::String line = archive->readLine();
