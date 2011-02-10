@@ -81,6 +81,7 @@ void Cursor::dealloc() {
 #pragma region CursorImage
 
 CursorImage::CursorImage() {
+	_archiveType = kArchiveInvalid;
 	_image = NULL;
 }
 
@@ -129,9 +130,9 @@ CursorAnimation::CursorAnimation() {
 CursorAnimation::~CursorAnimation() {
 }
 
-void CursorAnimation::init(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 frameCount, uint32 a5, uint32 a6, LoadFrom loadFrom, ArchiveType archiveType) {
+void CursorAnimation::init(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a5, float a6, byte a7, LoadFrom loadFrom, ArchiveType archiveType) {
 	CursorBase::init(id, name, cursorType, frameCount);
-	AnimationImage::init(name, 1, Common::Point(0, 0), 0, 3, frameCount, a5, 1, a6, a3, 0, loadFrom, archiveType);
+	AnimationImage::init(name, 1, Common::Point(0, 0), 0, 3, a5, a6, 1, a7, frameCount, 0, loadFrom, archiveType);
 	setTicks(g_system->getMillis());
 }
 
@@ -159,7 +160,7 @@ CursorHandler::~CursorHandler() {
 	CLEAR_ARRAY(CursorBase, _cursors);
 }
 
-void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, LoadFrom loadFrom, ArchiveType archiveType) {
+void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a4, float a5, byte a6, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (_cursors.has(id))
 		error("[CursorHandler::add] ID already exists (%d)", id);
 
@@ -172,7 +173,7 @@ void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType,
 	case kCursorTypeNormal:
 	case kCursorType2:
 		cursor = new Cursor();
-		cursor->init(id, name, cursorType, a3);
+		cursor->init(id, name, cursorType, frameCount);
 		break;
 
 	case kCursorTypeImage: {
@@ -198,13 +199,13 @@ void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType,
 		}
 
 
-		((CursorImage *)cursor)->init(id, path, cursorType, a3, archiveType);
+		((CursorImage *)cursor)->init(id, path, cursorType, frameCount, archiveType);
 		}
 		break;
 
 	case kCursorTypeAnimated:
 		cursor = new CursorAnimation();
-		((CursorAnimation *)cursor)->init(id, name, cursorType, a3, a4, a5, a6, loadFrom, archiveType);
+		((CursorAnimation *)cursor)->init(id, name, cursorType, frameCount, a4, a5, a6, loadFrom, archiveType);
 		break;
 	}
 
@@ -238,7 +239,7 @@ void CursorHandler::select(CursorId id) {
 	_index = _cursors.getIndex(id);
 }
 
-void CursorHandler::setOffset(CursorId id, Common::Point offset) {
+void CursorHandler::setOffset(CursorId id, const Common::Point &offset) {
 	if (!_cursors.has(id))
 		error("[CursorHandler::setOffset] ID doesn't exist (%d)", id);
 

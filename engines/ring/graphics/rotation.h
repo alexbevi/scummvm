@@ -120,7 +120,7 @@ private:
 
 class Rotation : public BaseObject {
 public:
-	Rotation(Id id, Common::String name, uint32 a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6);
+	Rotation(Id id, Common::String name, byte a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6);
 	~Rotation();
 
 	void load();
@@ -143,7 +143,7 @@ public:
 	void setRolTo(float a2, float a3, float a4);
 
 	// Presentation
-	Animation *addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, uint32 a5);
+	Animation *addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, byte a5);
 
 	// Nodes
 	void updateNode(uint32 index, uint32 val);
@@ -196,8 +196,6 @@ private:
 	float                               _alp;
 	float                               _bet;
 	float                               _ran;
-
-	void initNodes(uint32 count);
 
 	SoundItem *getSoundItem(Id soundId);
 };

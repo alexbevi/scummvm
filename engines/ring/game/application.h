@@ -99,12 +99,12 @@ public:
 
 	void fontAdd(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
 
-	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, LoadFrom loadFrom, ArchiveType archiveType);
-	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, LoadFrom loadFrom, ArchiveType archiveType);
-	void cursorSetOffset(CursorId id, Common::Point offset);
+	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte frameCount, LoadFrom loadFrom, ArchiveType archiveType);
+	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a4, float a5, byte a6, LoadFrom loadFrom, ArchiveType archiveType);
+	void cursorSetOffset(CursorId id, const Common::Point &offset);
 
-	void subtitleSetColor(Color color);
-	void subtitleSetBackgroundColor(Color color);
+	void subtitleSetColor(const Color &color);
+	void subtitleSetBackgroundColor(const Color &color);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Bag
@@ -128,17 +128,17 @@ public:
 	// Puzzle
 	void puzzleAdd(PuzzleId id);
 
-	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, Common::Point point, bool isActive);
-	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
-	void puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
+	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, const Common::Point &point, bool isActive);
+	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
+	void puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
 	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, float a3, float a4, float a5);
 
 	void puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotspot);
 	void puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotspot, uint32 fromMovability, uint32 toMovability);
-	void puzzleSetMovabilityOn(PuzzleId puzzleId);
-	void puzzleSetMovabilityOff(PuzzleId puzzleId);
-	void puzzleSetMovabilityOn(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
-	void puzzleSetMovabilityOff(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability);
+	void puzzleSetMovabilityOn(const PuzzleId &puzzleId);
+	void puzzleSetMovabilityOff(const PuzzleId & puzzleId);
+	void puzzleSetMovabilityOn(const PuzzleId &puzzleId, uint32 fromMovability, uint32 toMovability);
+	void puzzleSetMovabilityOff(const PuzzleId &puzzleId, uint32 fromMovability, uint32 toMovability);
 
 	void puzzleSetMod(PuzzleId puzzleId, uint32 a2, uint32 a3);
 
@@ -146,8 +146,8 @@ public:
 	void puzzleSetAmbientSoundOn(PuzzleId puzzleId, Id soundId);
 	void puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId);
 	void puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 volume, float a7, uint32 a8);
-	void puzzleSet3DSoundOn(PuzzleId puzzleId, Id soundId);
-	void puzzleSet3DSoundOff(PuzzleId puzzleId, Id soundId);
+	void puzzleSet3DSoundOn(const PuzzleId &puzzleId, Id soundId);
+	void puzzleSet3DSoundOff(const PuzzleId &puzzleId, Id soundId);
 	void puzzleSet3DSoundVolume(PuzzleId puzzleId, Id soundId, int32 volume);
 
 	void puzzleSetActive(PuzzleId id, bool a2 = true, bool a3 = true);
@@ -162,17 +162,17 @@ public:
 	void objectAdd(ObjectId objectId, Common::String language, Common::String name, byte a5);
 	void objectRemove(ObjectId objectId);
 
-	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
+	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
 	void objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key);
 
 	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot);
 	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration);
-	void objectSetAccessibilityOn(ObjectId objectId);
-	void objectSetAccessibilityOff(ObjectId objectId);
-	void objectSetAccessibilityOn(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration);
-	void objectSetAccessibilityOff(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration);
+	void objectSetAccessibilityOn(const ObjectId &objectId);
+	void objectSetAccessibilityOff(const ObjectId &objectId);
+	void objectSetAccessibilityOn(const ObjectId &objectId, uint32 fromAcceleration, uint32 toAcceleration);
+	void objectSetAccessibilityOff(const ObjectId &objectId, uint32 fromAcceleration, uint32 toAcceleration);
 
-	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
+	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
 
 	void objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8);
 	void objectSetPassiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8);
@@ -182,23 +182,23 @@ public:
 	void objectAddPresentation(ObjectId objectId);
 	void objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, float a5, uint32 a6);
 
-	void objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, FontId fontId, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13);
+	void objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, const Common::Point &point, FontId fontId, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13);
 	void objectPresentationSetTextToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, Common::String text);
-	void objectPresentationSetTextCoordinatesToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, Common::Point point);
+	void objectPresentationSetTextCoordinatesToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, const Common::Point &point);
 	uint32 objectPresentationGetTextWidth(ObjectId objectId, uint32 presentationIndex, uint32 textIndex);
 
-	void objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, Common::Point point, bool isActive, uint32 a8, uint32 priority);
+	void objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, const Common::Point &point, bool isActive, uint32 a8, uint32 priority);
 	void objectPresentationAddImageToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer);
-	void objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, Common::Point point);
-	void objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 imageIndex, Common::Point point);
+	void objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, const Common::Point &point);
+	void objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 imageIndex, const Common::Point &point);
 	void objectPresentationSetImageOriginalCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex);
 	Common::Point objectPresentationGetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 imageIndex);
 
-	void objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, Common::Point point, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12);
+	void objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, const Common::Point &point, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12);
 	void objectPresentationAddAnimationToRotation(ObjectId, uint32 presentationIndex, Id rotationId, uint32 a4, uint32 a5, float a6, uint32 a7);
-	void objectPresentationSetAnimationOnPuzzle(ObjectId id, uint32 presentationIndex, uint32 animationIndex, ObjectId targetId);
-	void objectPresentationSetAnimationOnRotation(ObjectId id, uint32 presentationIndex, uint32 animationIndex, ObjectId targetId);
-	void objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, Common::Point point);
+	void objectPresentationSetAnimationOnPuzzle(ObjectId id, uint32 presentationIndex, uint32 animationIndex, const ObjectId &targetId);
+	void objectPresentationSetAnimationOnRotation(ObjectId id, uint32 presentationIndex, uint32 animationIndex, const ObjectId &targetId);
+	void objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, const Common::Point &point);
 	void objectPresentationSetAnimationStartFrame(ObjectId objectId, uint32 presentationIndex, uint32 startFrame);
 	void objectPresentationSetAnimationActiveFrame(ObjectId objectId, uint32 presentationIndex, uint32 activeFrame);
 	void objectPresentationPauseAnimation(ObjectId objectId, uint32 presentationIndex);
@@ -214,12 +214,12 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Rotation
-	void rotationAdd(Id rotationId, Common::String name, uint32 a3, uint32 nodeCount);
+	void rotationAdd(Id rotationId, Common::String name, byte a3, uint32 nodeCount);
 	void rotationSetComBufferLength(Id rotationId, uint32 length);
-	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
-	void rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5, uint32 a6, uint32 a7);
-	void rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
-	void rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5,  uint32 a6, uint32 a7, int32 a8, int32 a9, uint32 a10);
+	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
+	void rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, float a3, float a4, float a5, float a6, byte a7);
+	void rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
+	void rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, float a3, float a4, float a5, float a6, byte a7, float a8, float a9, float a10);
 
 	void rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot);
 	void rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot, uint32 fromMovability, uint32 toMovability);
@@ -303,8 +303,8 @@ public:
 							   uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, uint32 a42, uint32 a43, uint32 a44, uint32 a45, uint32 a46,
 							   uint32 a47, uint32 a48, uint32 a49, uint32 a50, uint32 a51, uint32 a52, int32  a53,  int32 a54, int32  a55, FontId fontId,
 							   ArchiveType archiveType);
-	void visualListAdd(Id visualId, PuzzleId puzzleId, ObjectId objectId);
-	void visualListRemove(Id visualId, PuzzleId puzzleId, ObjectId objectId, bool removeObject);
+	void visualListAdd(Id visualId, PuzzleId puzzleId, const ObjectId &objectId);
+	void visualListRemove(Id visualId, PuzzleId puzzleId, const ObjectId &objectId, bool removeObject);
 	void visualListRemove(Id visualId, PuzzleId puzzleId, bool removeObject);
 	uint32 visualListGetItemCount(Id visualId, PuzzleId puzzleId);
 

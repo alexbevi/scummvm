@@ -34,63 +34,24 @@
 
 namespace Ring {
 
-Movability::Movability(Puzzle *puzzleFrom, Puzzle *puzzleTo, Common::String name, MovabilityType type) {
+Movability::Movability(BaseId from, BaseId to, Common::String name, MovabilityType type) {
 	_field_0 = 0;
-	_from.puzzle = puzzleFrom;
+	_from = from;
 	_hotspot = NULL;
-	_to.puzzle = puzzleTo;
+	_to = to;
 	_type = type;
-
-	init();
-}
-
-Movability::Movability(Puzzle *puzzleFrom, Rotation *rotationTo, Common::String name, MovabilityType type) {
-	_field_0 = 0;
-	_from.puzzle = puzzleFrom;
-	_hotspot = NULL;
-	_to.rotation = rotationTo;
-	_type = type;
-
-	init();
-}
-
-Movability::Movability(Rotation *rotationFrom, Rotation *rotationTo, Common::String name, MovabilityType type) {
-	_field_0 = 0;
-	_from.rotation = rotationFrom;
-	_hotspot = NULL;
-	_to.rotation = rotationTo;
-	_type = type;
-
-	init();
-}
-
-Movability::Movability(Rotation *rotationFrom, Puzzle *puzzleTo, Common::String name, MovabilityType type) {
-	_field_0 = 0;
-	_from.rotation = rotationFrom;
-	_hotspot = NULL;
-	_to.puzzle = puzzleTo;
-	_type = type;
-
-	init();
-}
-
-Movability::~Movability() {
-	SAFE_DELETE(_hotspot);
-
-	// Zero-out passed pointers
-	_from.puzzle = NULL;
-	_to.puzzle = NULL;
-}
-
-void Movability::init() {
 	_field_18 = 0.0f;
 	_field_1C = 0.0f;
 	_field_20 = 85.0f;
 	_field_24 = 0.0f;
-	_field_28 = 2.0f;
+	_field_28 = 2;
 	_field_29 = 0.0f;
 	_field_2D = 0.0f;
 	_field_31 = 85.0f;
+}
+
+Movability::~Movability() {
+	SAFE_DELETE(_hotspot);
 }
 
 void Movability::update(float a1, float a2, float a3, float a4, byte a5, float a6, float a7, float a8) {
@@ -111,7 +72,7 @@ Hotspot *Movability::getHotspot() {
 	return _hotspot;
 }
 
-void Movability::setHotspot(Common::Rect rect, bool enabled, uint32 a3, uint32 a4) {
+void Movability::setHotspot(const Common::Rect &rect, bool enabled, uint32 a3, uint32 a4) {
 	_hotspot = new Hotspot(rect, enabled, 1, a3, a4);
 }
 

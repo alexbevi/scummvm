@@ -36,15 +36,12 @@ class Rotation;
 
 class Movability {
 public:
-	Movability(Puzzle *puzzleFrom, Puzzle *puzzleTo, Common::String name, MovabilityType type);
-	Movability(Puzzle *puzzleFrom, Rotation *rotationTo, Common::String name, MovabilityType type);
-	Movability(Rotation *rotationFrom, Rotation *rotationTo, Common::String name, MovabilityType type);
-	Movability(Rotation *rotationFrom, Puzzle *puzzleTo, Common::String name, MovabilityType type);
+	Movability(BaseId from, BaseId to, Common::String name, MovabilityType type);
 	~Movability();
 
 	void update(float a1, float a2, float a3, float a4, byte a5, float a6, float a7, float a8);
 
-	void setHotspot(Common::Rect rect, bool enabled, uint32 a3, uint32 a4);
+	void setHotspot(const Common::Rect &rect, bool enabled, uint32 a3, uint32 a4);
 	Hotspot *getHotspot();
 	void enableHotspot();
 	void disableHotspot();
@@ -55,15 +52,10 @@ public:
 	void setRideName(Common::String name) { _name = name; }
 
 private:
-	union MovabilityToFrom {
-		Puzzle *puzzle;
-		Rotation *rotation;
-	};
-
 	uint32            _field_0;
-	MovabilityToFrom  _from;
+	BaseId            _from;
 	Hotspot          *_hotspot;
-	MovabilityToFrom  _to;
+	BaseId            _to;
 	Common::String    _name;
 	MovabilityType    _type;
 	float             _field_18;
@@ -74,8 +66,6 @@ private:
 	float             _field_29;
 	float             _field_2D;
 	float             _field_31;
-
-	void init();
 };
 
 } // End of namespace Ring

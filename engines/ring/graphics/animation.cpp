@@ -39,7 +39,7 @@ namespace Ring {
 #pragma region Animation
 
 Animation::Animation() : BaseObject(0) {
-	_frameCount  = 0;
+	_field_8  = 0;
 	_field_C  = 0;
 	_startFrame = 0;
 	_field_14 = 0;
@@ -48,15 +48,37 @@ Animation::Animation() : BaseObject(0) {
 	_field_20 = 1;
 	_field_21 = 1;
 	_activeFrame = 0;
+	_field_26 = 0;
+	_paused   = false;
+	_field_28 = 0;
+	_field_2C = 0;
+	_field_2D = 0;
+	_field_2E = 0;
+	_field_32 = 0;
+	_field_36 = 0;
+	_field_3A = 0;
+	_field_3E = 0;
+	_field_42 = 0;
+	_field_46 = 0;
+	_field_4A = 0;
+	_field_4E = 0;
+	_ticks    = 0;
+	_field_53 = 0;
+	_field_57 = 0;
+	_field_58 = 0;
+	_field_5C = 0;
+	_field_60 = 0;
+	_field_61 = 0;
+	_field_65 = 0;
 }
 
 Animation::~Animation() {
 }
 
-void Animation::initAnimation(uint32 frameCount, float a2, uint32 startFrame, byte a4, uint32 priority) {
+void Animation::initAnimation(uint32 a1, float a2, uint32 startFrame, byte a4, uint32 priority) {
 	_id = 0;
 	_field_C = a2;
-	_frameCount = frameCount;
+	_field_8 = a1;
 
 	setStartFrame(startFrame);
 
@@ -76,7 +98,7 @@ void Animation::initAnimation(uint32 frameCount, float a2, uint32 startFrame, by
 	_field_20 = 1;
 	_field_21 = 1;
 
-	if (!_frameCount)
+	if (!_field_8)
 		error("[Animation::init] Number of frames cannot be 0!");
 
 	switch (_field_14) {
@@ -90,7 +112,7 @@ void Animation::initAnimation(uint32 frameCount, float a2, uint32 startFrame, by
 
 	case 8:
 	case 32:
-		_activeFrame = _frameCount - 1;
+		_activeFrame = _field_8 - 1;
 		break;
 	}
 
@@ -142,7 +164,7 @@ void Animation::setTicks(uint32 ticks) {
 
 		case 8:
 		case 32:
-			_activeFrame = _frameCount - 1;
+			_activeFrame = _field_8 - 1;
 			break;
 		}
 
@@ -159,20 +181,20 @@ void Animation::setTicks(uint32 ticks) {
 }
 
 void Animation::setStartFrame(uint32 frame) {
-	if (frame - 1 >= _frameCount)
-		error("[Animation::setActiveFrame] Frame number is too big (was: %d, max: %d)", frame, _frameCount - 2);
+	if (frame > _field_8)
+		error("[Animation::setActiveFrame] Frame number is too big (was: %d, max: %d)", frame, _field_8);
 
-	if (frame - 1 < 0)
+	if (frame == 0)
 		error("[Animation::setActiveFrame] Frame number is too small (was: %d, min: 1)", frame);
 
 	_activeFrame = frame;
 }
 
 void Animation::setActiveFrame(uint32 frame) {
-	if (frame - 1 >= _frameCount)
-		error("[Animation::setActiveFrame] Frame number is too big (was: %d, max: %d)", frame, _frameCount - 2);
+	if (frame > _field_8)
+		error("[Animation::setActiveFrame] Frame number is too big (was: %d, max: %d)", frame, _field_8);
 
-	if (frame - 1 < 0)
+	if (frame == 0)
 		error("[Animation::setActiveFrame] Frame number is too small (was: %d, min: 1)", frame);
 
 	_startFrame = frame;
@@ -180,25 +202,28 @@ void Animation::setActiveFrame(uint32 frame) {
 }
 
 void Animation::pauseOnFrame(uint32 frame, uint32 a2, uint32 a3) {
-	if (frame >= _frameCount + 1 || frame < 1)
-		error("[Animation::pauseOnFrame] Invalid pause frame number (was: %d, valid: [1-%d])", frame, _frameCount);
+	if (frame > _field_8)
+		error("[Animation::setActiveFrame] Frame number is too big (was: %d, max: %d)", frame, _field_8);
+
+	if (frame == 0)
+		error("[Animation::setActiveFrame] Frame number is too small (was: %d, min: 1)", frame);
 
 	_field_46 = a2;
 	_field_42 = frame - 1;
 	_field_4A = 1;
 
 	if (a3 != 2) {
-		uint32 f1 = _activeFrame - frame + 1;
-		uint32 f2 = 0;
+		int32 f1 = _activeFrame - (frame - 1);
+		int32 f2 = 0;
 
 		if (f1 <= 0) {
-			f1 = _activeFrame - _startFrame - frame + _frameCount;
-			f2 = frame + 1 - _activeFrame;
+			f1 = _activeFrame - (_startFrame + frame - _field_8);
+			f2 = frame - (_activeFrame - 1);
 		} else {
-			f2 = _startFrame - _activeFrame - frame + _frameCount;
+			f2 = _startFrame - (_activeFrame + frame - _field_8);
 		}
 
-		if (_field_14 == 4 || (_field_14 == 16 || _field_14 == 32) && _field_57 == 1) {
+		if (_field_14 == 4 || ((_field_14 == 16 || _field_14 == 32) && _field_57 == 1)) {
 			if (f1 < f2)
 				_field_14 = 8;
 		} else {
@@ -216,7 +241,7 @@ AnimationImage::AnimationImage() : Animation() {
 	_field_6D = 0;
 	_field_79 = 0;
 	_field_7D = 0;
-	_field_81 = 0;
+	_frameCount = 0;
 	_currentImage = NULL;
 	_field_89 = 0;
 }
@@ -227,8 +252,8 @@ AnimationImage::~AnimationImage() {
 	_currentImage = NULL;
 }
 
-void AnimationImage::init(Common::String name, uint32 a2, Common::Point point, uint32 a5, uint32 a6, uint32 frameCount, float a8, uint32 startFrame, char a10, uint32 a11, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType) {
-	Animation::initAnimation(frameCount, a8, startFrame, a10, priority);
+void AnimationImage::init(Common::String name, byte a2, const Common::Point &point, uint32 a5, uint32 a6, uint32 a7, float a8, uint32 startFrame, byte a10, byte frameCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType) {
+	Animation::initAnimation(a7, a8, startFrame, a10, priority);
 
 	_name = name;
 	_field_6D = a2;
@@ -236,11 +261,10 @@ void AnimationImage::init(Common::String name, uint32 a2, Common::Point point, u
 
 	_coordinates = point;
 	_field_7D = a6;
-	_field_81 = a11;
+	_frameCount = frameCount;
 
-	// FIXME: This should never happen, as the parent checks for framecount != 0
-	if (_frameCount == 0) {
-		if (_field_81 == 1)
+	if (_field_8 == 0) {
+		if (_frameCount == 1)
 			alloc();
 
 		_currentImage = _imageHandles[_startFrame];
@@ -249,8 +273,8 @@ void AnimationImage::init(Common::String name, uint32 a2, Common::Point point, u
 	}
 
 	// Create image storage for each frame
-	for (uint32 i = 0; i < _frameCount; i++) {
-		ImageHandle *image = new ImageHandle(name, point, true, LOBYTE(_field_7D), priority, a11, getApp()->getCurrentZone(), loadFrom, a2, archiveType);
+	for (uint32 i = 0; i < _field_8; i++) {
+		ImageHandle *image = new ImageHandle(name, point, true, LOBYTE(_field_7D), priority, frameCount, getApp()->getCurrentZone(), loadFrom, a2, archiveType);
 
 		image->setField6C(2);
 		image->setAnimation(this);
@@ -271,7 +295,7 @@ void AnimationImage::drawActiveFrame() {
 	drawActiveFrame(_coordinates);
 }
 
-void AnimationImage::drawActiveFrame(Common::Point point) {
+void AnimationImage::drawActiveFrame(const Common::Point &point) {
 	error("[AnimationImage::drawActiveFrame] Not implemented");
 }
 
@@ -279,7 +303,7 @@ void AnimationImage::draw() {
 	error("[AnimationImage::draw] Not implemented");
 }
 
-void AnimationImage::setCoordinates(Common::Point point) {
+void AnimationImage::setCoordinates(const Common::Point &point) {
 	_coordinates =  point;
 
 	for	(Common::Array<ImageHandle *>::iterator it = _imageHandles.begin(); it != _imageHandles.end(); it++)

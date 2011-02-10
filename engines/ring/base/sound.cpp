@@ -67,7 +67,7 @@ bool SoundEntry::isPlaying() {
 	return getSound()->getMixer()->isSoundHandleActive(_handle);
 }
 
-void SoundEntry::setVolume(uint32 volume) {
+void SoundEntry::setVolume(int32 volume) {
 	if (volume >= 0)
 		_volume = (volume > 100) ? 100 : volume;
 	else
@@ -76,7 +76,7 @@ void SoundEntry::setVolume(uint32 volume) {
 	setVolumeAndPan();
 }
 
-void SoundEntry::setMultiplier(uint32 multiplier) {
+void SoundEntry::setMultiplier(int32 multiplier) {
 	if (multiplier >= 0)
 		_multiplier = (multiplier > 100) ? 100 : multiplier;
 	else
@@ -110,8 +110,8 @@ bool SoundEntry::checkPlaying() {
 void SoundEntry::setVolumeAndPan() {
 	// Compute volume and pan
 
-	float volume = -10000.0f - _multiplier * 0.01f * _volume * 0.01f * getSound()->getGlobalVolume() * -10000.0f;
-	float pan = -10000.0f - (_pan + 100.0f) * -100.0f;
+	int32 volume = (int32)(-10000.0f - _multiplier * 0.01f * _volume * 0.01f * getSound()->getGlobalVolume() * -10000.0f);
+	int32 pan = (int32)(-10000.0f - (_pan + 100.0f) * -100.0f);
 
 	// Convert volume and panning
 	convertVolumeFrom(volume);
@@ -140,7 +140,7 @@ SoundFormat SoundEntry::getFormat(Common::String filename) {
 // Those are from engines/agos/sound.cpp (FIXME: Move to common code?)
 //////////////////////////////////////////////////////////////////////////
 
-void SoundEntry::convertVolumeFrom(float &vol) {
+void SoundEntry::convertVolumeFrom(int32 &vol) {
 	// DirectSound was originally used, which specifies volume
 	// and panning differently than ScummVM does, using a logarithmic scale
 	// rather than a linear one.
@@ -153,7 +153,7 @@ void SoundEntry::convertVolumeFrom(float &vol) {
 	// affecting the right speaker. Thus -10,000 means the left speaker is
 	// silent.
 
-	int32 v = CLIP(vol, -10000.0f, 0.0f);
+	int32 v = CLIP(vol, -10000, 0);
 	if (v) {
 		vol = (int)((double)Audio::Mixer::kMaxChannelVolume * pow(10.0, (double)v / 2000.0) + 0.5);
 	} else {
@@ -161,11 +161,11 @@ void SoundEntry::convertVolumeFrom(float &vol) {
 	}
 }
 
-void SoundEntry::convertVolumeTo(float &vol) {
-	vol = (log10(vol / (double)Audio::Mixer::kMaxChannelVolume) - 0.5) * 2000;
+void SoundEntry::convertVolumeTo(int32 &vol) {
+	vol = (int32)(log10(vol / (double)Audio::Mixer::kMaxChannelVolume) - 0.5) * 2000;
 }
 
-void SoundEntry::convertPan(float &pan) {
+void SoundEntry::convertPan(int32 &pan) {
 	// DirectSound was originally used, which specifies volume
 	// and panning differently than ScummVM does, using a logarithmic scale
 	// rather than a linear one.
@@ -178,7 +178,7 @@ void SoundEntry::convertPan(float &pan) {
 	// affecting the right speaker. Thus -10,000 means the left speaker is
 	// silent.
 
-	int32 p = CLIP(pan, -10000.0f, 10000.0f);
+	int32 p = CLIP(pan, -10000, 10000);
 	if (p < 0) {
 		pan = (int)(255.0 * pow(10.0, (double)p / 2000.0) + 127.5);
 	} else if (p > 0) {
@@ -406,11 +406,11 @@ SoundItem::~SoundItem() {
 	_entry = NULL;
 }
 
-void SoundItem::init(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
-	init(entry, volume, pan, isOn, a6, a7, fadeFrames, 0.0, 20);
+void SoundItem::init(SoundEntry *entry, uint32 volume, int32 pan, bool isTurnedOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
+	init(entry, volume, pan, isTurnedOn, a6, a7, fadeFrames, 0.0, 20);
 }
 
-void SoundItem::init(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 a5, uint32 a6, uint32 fadeFrames, float angle, int a9) {
+void SoundItem::init(SoundEntry *entry, uint32 volume, int32 pan, bool isTurnedOn, uint32 a5, uint32 a6, uint32 fadeFrames, float angle, int a9) {
 	if (fadeFrames < 1) // FIXME??? (was <= 1)
 		error( "[SoundItem::init] Fade number of frames needs to be greater then 1 (was: %d)", fadeFrames);
 
@@ -421,7 +421,7 @@ void SoundItem::init(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uin
 	_pan  = pan;
 	_field_10 = a5;
 	_field_14 = a6;
-	_isOn = isOn;
+	_isOn = isTurnedOn;
 	_field_19 = fadeFrames - 1;
 	setField1D(a9);
 	setAngle(angle);
@@ -471,7 +471,7 @@ void SoundItem::turnOff() {
 		_entry->stop();
 }
 
-void SoundItem::setVolume(uint32 volume) {
+void SoundItem::setVolume(int32 volume) {
 	if (_entry)
 		_entry->setVolume(volume);
 
@@ -499,8 +499,8 @@ void SoundItem::setAngle(float angle) {
 	_angle = getSoundDirection() * angle * SOUND_FRAC_VALUE;
 }
 
-float SoundItem::computePan(float angle) {
-	return getSoundDirection() * (sin(angle * SOUND_FRAC_VALUE + _angle) * _field_1D);
+int32 SoundItem::computePan(float angle) {
+	return (int32)(getSoundDirection() * (sin(angle * SOUND_FRAC_VALUE + _angle) * _field_1D));
 }
 
 void SoundItem::computeAndSetPan(float alp) {
@@ -556,11 +556,15 @@ void SoundHandler::turnOffItems2(bool a1) {
 }
 
 bool SoundHandler::sub_41AA00() {
-	error("[SoundHandler::sub_41AA00] Not implemented");
+	warning("[SoundHandler::sub_41AA00] Not implemented");
+
+	return false;
 }
 
 bool SoundHandler::sub_41AEE0(uint32 a1) {
-	error("[SoundHandler::sub_41AEE0] Not implemented");
+	warning("[SoundHandler::sub_41AEE0] Not implemented");
+
+	return false;
 }
 
 
@@ -570,15 +574,15 @@ void SoundHandler::turnOffItems1() {
 }
 
 void SoundHandler::sub_41B180(uint32 a1) {
-	error("[SoundHandler::sub_41B180] Not implemented");
+	warning("[SoundHandler::sub_41B180] Not implemented");
 }
 
 void SoundHandler::sub_41B350(uint32 a1) {
-	error("[SoundHandler::sub_41B350] Not implemented");
+	warning("[SoundHandler::sub_41B350] Not implemented");
 }
 
 void SoundHandler::sub_41B520() {
-	error("[SoundHandler::sub_41AA00] Not implemented");
+	warning("[SoundHandler::sub_41AA00] Not implemented");
 }
 
 void SoundHandler::setReverseStereo(int32 reverseStereo) {

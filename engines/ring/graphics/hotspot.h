@@ -32,13 +32,13 @@ namespace Ring {
 
 class Hotspot {
 public:
-	Hotspot(Common::Rect rect, bool enabled, uint32 a2, uint32 a3, uint32 a4);
+	Hotspot(const Common::Rect &rect, bool enabled, uint32 a2, uint32 a3, uint32 a4);
 	~Hotspot();
 
 	void enable() { _enabled = true; }
 	void disable() { _enabled = false; }
 	bool isEnabled() { return _enabled; }
-	bool contains(Common::Point point);
+	bool contains(const Common::Point &point) const;
 
 	void setKey(Common::KeyCode key) { _key = key; }
 	Common::KeyCode getKey() { return _key; }

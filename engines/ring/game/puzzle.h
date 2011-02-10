@@ -51,7 +51,7 @@ public:
 	void alloc();
 	void update(Video *video);
 
-	void setBackgroundImage(Common::String filename, Common::Point point, bool isActive, LoadFrom loadFrom);
+	void setBackgroundImage(Common::String filename, const Common::Point &point, bool isActive, LoadFrom loadFrom);
 
 	void addPresentationText(Text *text);
 	void addPresentationImage(ImageHandle *image);
@@ -73,7 +73,7 @@ public:
 	void add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4, uint32 a5, uint32 fadeFrames, float a7, uint32 a9);
 	void setAmbientSoundOn(Id soundId);
 	void setAmbientSoundOff(Id soundId);
-	void setAmbientSoundVolume(Id soundId, uint32 volume);
+	void setAmbientSoundVolume(Id soundId, int32 volume);
 
 	void updateSoundItems();
 	uint32 getSoundItemsCount() { return _soundItems.size(); }

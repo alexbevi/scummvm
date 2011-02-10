@@ -46,8 +46,8 @@ public:
 	void stop();
 	bool isPlaying();
 
-    void setVolume(uint32 volume);
-	void setMultiplier(uint32 multiplier);
+    void setVolume(int32 volume);
+	void setMultiplier(int32 multiplier);
 	void setPan(int32 pan);
 
 	bool checkPlaying();
@@ -67,8 +67,8 @@ private:
 	Common::String _name;
 	bool           _isPlaying;
 	LoadFrom       _loadFrom;
-	uint32         _volume;
-	uint32         _multiplier;
+	int32          _volume;
+	int32          _multiplier;
 	int32          _pan;
 	uint32         _field_11D;
 	SoundFormat    _format;
@@ -85,21 +85,21 @@ private:
 	 *
 	 * @param [in,out] vol The volume.
 	 */
-	static void convertVolumeFrom(float &vol);
+	static void convertVolumeFrom(int32 &vol);
 
 	/**
 	 * Convert ScummVM mixer value to a volume
 	 *
 	 * @param [in,out] vol The volume.
 	 */
-	static void convertVolumeTo(float &vol);
+	static void convertVolumeTo(int32 &vol);
 
 	/**
 	 * Convert pan.
 	 *
 	 * @param [in,out] pan The pan.
 	 */
-	static void convertPan(float &pan);
+	static void convertPan(int32 &pan);
 };
 
 class SoundEntryS : public SoundEntry {
@@ -187,15 +187,15 @@ public:
 	~SoundItem();
 
 	// Initialization
-	void init(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7);
-    void init(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 a5, uint32 a6, uint32 fadeFrames, float a8, int a9);
+	void init(SoundEntry *entry, uint32 volume, int32 pan, bool isTurnedOn, uint32 fadeFrames, uint32 a6, uint32 a7);
+    void init(SoundEntry *entry, uint32 volume, int32 pan, bool isTurnedOn, uint32 a5, uint32 a6, uint32 fadeFrames, float a8, int a9);
 
 	// Sound on/off & volume
 	void on();
 	void off();
 	void turnOn();
 	void turnOff();
-	void setVolume(uint32 volume);
+	void setVolume(int32 volume);
 	void setPan(int32 pan);
 
 	// Accessors
@@ -205,12 +205,12 @@ public:
 	bool isOn() { return _isOn; }
 
 	// Helpers
-	float computePan(float angle);
+	int32 computePan(float angle);
 	void computeAndSetPan(float alp);
 
 private:
 	SoundEntry *_entry;
-	uint32      _volume;
+	int32      _volume;
 	int32       _pan;
 	uint32      _field_10;
 	uint32      _field_14;

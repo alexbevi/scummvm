@@ -41,7 +41,7 @@ public:
 	void save();
 
 private:
-	Application *_application;
+	Application *_app;
 
 	int32 _pref1;
 	int32 _pref2;

@@ -115,19 +115,19 @@ Bag::~Bag() {
 #pragma region Initialization
 
 void Bag::initHotspots() {
-	_hotspots.push_back(new Hotspot(Common::Rect(_field_48 + _field_1C,
-	                                             _field_4C + _field_20,
-	                                             _field_48 + _field_1C + _field_50,
-	                                             _field_4C + _field_20 + _field_54),
+	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_48 + _field_1C),
+	                                             (int16)(_field_4C + _field_20),
+	                                             (int16)(_field_48 + _field_1C + _field_50),
+	                                             (int16)(_field_4C + _field_20 + _field_54)),
 	                                false,
 	                                1000,
 	                                1001,
 	                                1001));
 
-	_hotspots.push_back(new Hotspot(Common::Rect(_field_1C + _field_74,
-	                                             _field_20 + _field_78,
-	                                             _field_1C + _field_74 + _field_7C,
-	                                             _field_20 + _field_78 + _field_80),
+	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_1C + _field_74),
+	                                             (int16)(_field_20 + _field_78),
+	                                             (int16)(_field_1C + _field_74 + _field_7C),
+	                                             (int16)(_field_20 + _field_78 + _field_80)),
 	                                false,
 	                                1000,
 	                                1002,
@@ -146,10 +146,10 @@ void Bag::initHotspots() {
 	                                1005));
 
 	for (uint32 i = 0; i < _field_24; ++i)
-		_hotspots.push_back(new Hotspot(Common::Rect(_field_C + i * _field_18 + _field_1C + 1,
-													 _field_20 + _field_10,
-													 _field_18 * (i + 1) - 1 + _field_C + _field_1C,
-													 _field_10 + _field_14 + 1 + _field_20),
+		_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_C + i * _field_18 + _field_1C + 1),
+													 (int16)(_field_20 + _field_10),
+													 (int16)(_field_18 * (i + 1) + _field_C + _field_1C - 1),
+													 (int16)(_field_10 + _field_14 + 1 + _field_20)),
 										false,
 										1000,
 										i,
@@ -212,7 +212,7 @@ void Bag::sub_4192C0(uint32 a1, uint32 a2) {
 }
 
 void Bag::sub_4192E0() {
-	_field_94 = 1;
+	_field_94 = true;
 
 	for (Common::Array<ImageHandle *>::iterator it = _images.begin(); it != _images.end(); it++) {
 		if ((*it)->getField6C() != 2)
@@ -225,7 +225,7 @@ void Bag::sub_4192E0() {
 }
 
 void Bag::sub_419350() {
-	_field_94 = 0;
+	_field_94 = false;
 
 	for (uint i = 0; i < _images.size();) {
 		if (_images[i]->getField6C() == 2) {
@@ -248,20 +248,20 @@ void Bag::loadBackground(Common::String filename1, Common::String, Common::Strin
 	_archiveType = archiveType;
 
 	// Load images
-	loadImage(filename1, _background, archiveType);
-	loadImage(filename3, _image3, archiveType);
-	loadImage(filename6, _image6, archiveType);
-	loadImage(filename8, _image8, archiveType);
-	loadImage("erda_gun.tga", _imageErdaGun, archiveType);
-	loadImage("erda_gur.tga", _imageErdaGur, archiveType);
+	loadImage(filename1, &_background, archiveType);
+	loadImage(filename3, &_image3, archiveType);
+	loadImage(filename6, &_image6, archiveType);
+	loadImage(filename8, &_image8, archiveType);
+	loadImage("erda_gun.tga", &_imageErdaGun, archiveType);
+	loadImage("erda_gur.tga", &_imageErdaGur, archiveType);
 
 	// Setup text
 	SAFE_DELETE(_text);
 	_text = new Text();
-	_text->init("", 0, 0, _fontId, _field_AD, _field_B1, _field_B5, _field_B9, _field_BD, _field_C1);
+	_text->init("", Common::Point(0, 0), _fontId, _field_AD, _field_B1, _field_B5, _field_B9, _field_BD, _field_C1);
 }
 
-void Bag::loadImage(Common::String filename, Image *image, ArchiveType archiveType) {
+void Bag::loadImage(Common::String filename, Image **image, ArchiveType archiveType) const {
 	Common::String path;
 
 	if (archiveType == kArchiveFile)
@@ -269,10 +269,10 @@ void Bag::loadImage(Common::String filename, Image *image, ArchiveType archiveTy
 	else
 		path = Common::String::format("/LIST/%s", filename.c_str());
 
-	SAFE_DELETE(image);
-	image = new Image();
+	SAFE_DELETE(*image);
+	*image = new Image();
 
-	if (!image->load(path, archiveType, 1, 2))
+	if (!(*image)->load(path, archiveType, 1, 2))
 		error("[Bag::LoadImage] Cannot load image: %s", path.c_str());
 }
 
@@ -300,11 +300,11 @@ void Bag::disable() {
 
 #pragma region Management
 
-void Bag::add(ObjectId id) {
+void Bag::add(ObjectId objectId) {
 	error("[Bag::add] Not implemented");
 }
 
-void Bag::remove(ObjectId id) {
+void Bag::remove(ObjectId objectId) {
 	error("[Bag::remove] Not implemented");
 }
 
@@ -312,7 +312,7 @@ void Bag::removeAll() {
 	error("[Bag::removeAll] Not implemented");
 }
 
-bool Bag::has(ObjectId id) {
+bool Bag::has(ObjectId objectId) {
 	error("[Bag::has] Not implemented");
 }
 

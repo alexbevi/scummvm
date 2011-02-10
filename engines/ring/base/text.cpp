@@ -38,8 +38,6 @@ namespace Ring {
 
 Text::Text() {
 	_fontId  = kFontInvalid;
-	_field_8  = 0;
-	_field_C  = 0;
 	_field_10 = 0;
 	_width = 0;
 	_height = 0;
@@ -52,11 +50,10 @@ Text::~Text() {
 	_objectPresentation = NULL;
 }
 
-void Text::init(Common::String text, uint32 a1, uint32 a2, FontId fontId, byte a4, byte a5, byte a6, int32 a7, int32 a8, int32 a9) {
+void Text::init(Common::String text, const Common::Point &point, FontId fontId, byte a4, byte a5, byte a6, int32 a7, int32 a8, int32 a9) {
 	_text = text;
 	_fontId = fontId;
-	_field_8 = a1;
-	_field_C = a2;
+	_point = point;
 	_field_10 = a4 | ((a5 | a6 << 4) << 8);
 
 	set(text);
@@ -78,8 +75,8 @@ void Text::set(Common::String text) {
 	// Get the text font and calculate text dimensions
 	Graphics::WinFont *font = getApp()->getFontHandler()->getFont(_fontId);
 	if (font) {
-		_width = font->getStringWidth(text);
-		_height = font->getFontHeight();
+		_width = (uint32)font->getStringWidth(text);
+		_height = (uint32)font->getFontHeight();
 	} else {
 		_width = 0;
 		_height = 0;
@@ -90,7 +87,7 @@ void Text::setField10(uint32 a1, uint32 a2, uint32 a3) {
 	_field_10 = (byte)a1 | ((a2 | a3 << 4) << 8);
 }
 
-void Text::setFields1C1D(uint32 a1, uint32 a2, uint32 a3) {
+void Text::setFields1C1D(int32 a1, int32 a2, int32 a3) {
 	if (a1 != -1 || a2 != -1 || a3 != -1) {
 		_field_1C = 0;
 		_field_1D = (byte)a1 | ((a2 | a3 << 4) << 8);

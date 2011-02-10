@@ -29,16 +29,52 @@
 
 namespace Ring {
 
+#pragma region DialogLine
+
+DialogLine::DialogLine() {
+}
+
+DialogLine::~DialogLine() {
+}
+
+#pragma endregion
+
+#pragma region DialogLevel
+
+DialogLevel::DialogLevel() {
+}
+
+DialogLevel::~DialogLevel() {
+}
+
+#pragma endregion
+
+#pragma region DialogAnimation
+
+DialogAnimation::DialogAnimation() {
+}
+
+DialogAnimation::~DialogAnimation() {
+}
+
+#pragma endregion
+
 #pragma region Dialog
 
 Dialog::Dialog() : BaseObject(0) {
+	_startTicks = 0;
+	_field_C = 0;
+	_field_D = 0;
 }
 
 Dialog::~Dialog() {
+	CLEAR_ARRAY(DialogLine, _lines);
+	CLEAR_ARRAY(DialogLevel, _levels);
+	CLEAR_ARRAY(DialogAnimation, _animations);
 }
 
 void Dialog::setTicks() {
-	_ticks = g_system->getMillis();
+	_startTicks = g_system->getMillis();
 }
 
 void Dialog::hide() {
@@ -60,7 +96,7 @@ DialogHandler::~DialogHandler() {
 	CLEAR_ARRAY(Dialog, _dialogs);
 }
 
-void DialogHandler::init(uint32 a1, Color subtitlesColor, Color subtitlesBackgroundColor, uint32 a8, uint32 a9) {
+void DialogHandler::init(uint32 a1, const Color &subtitlesColor, const Color &subtitlesBackgroundColor, uint32 a8, uint32 a9) {
 	_field_0 = a1;
 	_subtitleColor = subtitlesColor;
 	_subtitlesBackgroundColor = subtitlesBackgroundColor;
@@ -90,7 +126,7 @@ bool DialogHandler::isPlaying(Id id) {
 	return _dialogs.has(id);
 }
 
-bool DialogHandler::isPlaying() {
+bool DialogHandler::isPlaying() const {
 	return !_dialogs.empty();
 }
 

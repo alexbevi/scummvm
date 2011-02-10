@@ -161,41 +161,46 @@ enum LoadSaveType {
 // Structures and types
 //////////////////////////////////////////////////////////////////////////
 
-typedef int32 Id;
-
-class PuzzleId {
-public:
-	enum PuzzleIdEnum {
-		kPuzzleInvalid = 0,
-	};
-
-	PuzzleId(PuzzleIdEnum id) : _id(id) {}
-	PuzzleId(uint32 id) : _id((PuzzleIdEnum)id) {}
-
-	operator Id() {
-		return _id;
-	}
-
-protected:
-	PuzzleIdEnum _id;
+enum PuzzleIdEnum {
+	kPuzzleInvalid = 0
 };
 
-class ObjectId {
+enum ObjectIdEnum {
+	kObjectInvalid = 0
+};
+
+typedef uint32 Id;
+
+class BaseId {
 public:
-	enum ObjectIdEnum {
-		kObjectInvalid = -1,
-		kObjectNone    = 0
-	};
+	BaseId() : _id(0) {}
+	BaseId(uint32 i) : _id(i) {}
 
-	ObjectId(ObjectIdEnum id) : _id(id) {}
-	ObjectId(uint32 id) : _id((ObjectIdEnum)id) {}
+	operator uint32() { return _id;	}
+	uint32 id()       { return _id; }
 
-	operator Id() {
-		return _id;
+	bool operator==(const uint32 &i) {
+		return _id == i;
 	}
 
 protected:
-	ObjectIdEnum _id;
+	uint32 _id;
+};
+
+class PuzzleId : public BaseId {
+public:
+	PuzzleId(PuzzleIdEnum i) : BaseId(i) {}
+	PuzzleId(uint32 i) : BaseId(i) {}
+};
+
+class ObjectId : public BaseId {
+public:
+	ObjectId(ObjectIdEnum i) : BaseId(i) {}
+	ObjectId(uint32 i) : BaseId(i) {}
+
+	bool operator==(const ObjectIdEnum &i) {
+		return _id == (uint32)i;
+	}
 };
 
 struct Color {

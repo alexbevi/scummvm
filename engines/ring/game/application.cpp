@@ -338,22 +338,37 @@ void Application::loadConfiguration() {
 #pragma region Event handling
 
 void Application::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
+	if (!_eventHandler)
+		error("[Application::onMouseLeftButtonUp] Event handler not initialized properly!");
+
 	_eventHandler->onMouseLeftButtonUp(evt, isControlPressed);
 }
 
 void Application::onMouseLeftButtonDown(Common::Event &evt) {
+	if (!_eventHandler)
+		error("[Application::onMouseLeftButtonDown] Event handler not initialized properly!");
+
 	_eventHandler->onMouseLeftButtonDown(evt);
 }
 
 void Application::onMouseRightButtonUp(Common::Event &evt) {
+	if (!_eventHandler)
+		error("[Application::onMouseRightButtonUp] Event handler not initialized properly!");
+
 	_eventHandler->onMouseRightButtonUp(evt);
 }
 
 void Application::onKeyDown(Common::Event &evt) {
+	if (!_eventHandler)
+		error("[Application::onKeyDown] Event handler not initialized properly!");
+
 	_eventHandler->onKeyDown(evt);
 }
 
 void Application::onTimer(TimerId id) {
+	if (!_eventHandler)
+		error("[Application::onTimer] Event handler not initialized properly!");
+
 	if (_field_6A)
 		return;
 
@@ -364,6 +379,9 @@ void Application::onTimer(TimerId id) {
 }
 
 void Application::onSound(Id id, SoundType type, uint32 a3) {
+	if (!_eventHandler)
+		error("[Application::onSound] Event handler not initialized properly!");
+
 	_eventHandler->onSound(id, type, a3);
 }
 
@@ -424,35 +442,35 @@ void Application::fontAdd(FontId id, Common::String filename, Common::String fac
 	_fontHandler->add(id, filename, facename, height, smallWeight, underline, italic, strikeout, langId);
 }
 
-void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, LoadFrom loadFrom, ArchiveType archiveType) {
+void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte frameCount, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (!_cursorHandler)
 		error("[Application::cursorAdd] Cursor handler is not initialized properly");
 
-	_cursorHandler->add(id, name, cursorType, a3, 0, 0, 0, loadFrom, archiveType);
+	_cursorHandler->add(id, name, cursorType, frameCount, 0, 0, 0, loadFrom, archiveType);
 }
 
-void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, LoadFrom loadFrom, ArchiveType archiveType) {
+void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a4, float a5, byte a6, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (!_cursorHandler)
 		error("[Application::cursorAdd] Cursor handler is not initialized properly");
 
-	_cursorHandler->add(id, name, cursorType, a3, a4, a5, a6, loadFrom, archiveType);
+	_cursorHandler->add(id, name, cursorType, frameCount, a4, a5, a6, loadFrom, archiveType);
 }
 
-void Application::cursorSetOffset(CursorId id, Common::Point offset) {
+void Application::cursorSetOffset(CursorId id, const Common::Point &offset) {
 	if (!_cursorHandler)
 		error("[Application::cursorSetOffset] Cursor handler is not initialized properly");
 
 	_cursorHandler->setOffset(id, offset);
 }
 
-void Application::subtitleSetColor(Color color) {
+void Application::subtitleSetColor(const Color &color) {
 	if (!_dialogHandler)
 		error("[Application::subtitleSetColor] Dialog handler is not initialized properly");
 
 	_dialogHandler->setSubtitleColor(color);
 }
 
-void Application::subtitleSetBackgroundColor(Color color) {
+void Application::subtitleSetBackgroundColor(const Color &color) {
 	if (!_dialogHandler)
 		error("[Application::subtitleSetBackgroundColor] Dialog handler is not initialized properly");
 
@@ -463,27 +481,27 @@ void Application::subtitleSetBackgroundColor(Color color) {
 
 #pragma region Bag
 
-void Application::bagAdd(ObjectId id) {
-	if (id == ObjectId::kObjectNone)
-		error("[Application::removeFromBag] Invalid ID (%d)", id);
+void Application::bagAdd(ObjectId objectId) {
+	if (objectId == kObjectInvalid)
+		error("[Application::removeFromBag] Invalid ID (%d)", objectId.id());
 
 	if (!_bag)
 		error("[Application::removeFromBag] bag is not initialized properly");
 
-	if (!_objects.has(id))
-		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
+	if (!_objects.has(objectId))
+		error("[Application::removeFromBag] ID doesn't exist (%d)", objectId.id());
 
-	_bag->add(id);
+	_bag->add(objectId);
 }
 
-void Application::bagRemove(ObjectId id) {
+void Application::bagRemove(ObjectId objectId) {
 	if (!_bag)
 		error("[Application::removeFromBag] bag is not initialized properly");
 
-	if (!_objects.has(id))
-		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
+	if (!_objects.has(objectId))
+		error("[Application::removeFromBag] ID doesn't exist (%d)", objectId.id());
 
-	_bag->remove(id);
+	_bag->remove(objectId);
 }
 
 void Application::bagRemoveAll() {
@@ -493,14 +511,14 @@ void Application::bagRemoveAll() {
 	_bag->removeAll();
 }
 
-bool Application::bagIsIn(ObjectId id) {
+bool Application::bagIsIn(ObjectId objectId) {
 	if (!_bag)
 		error("[Application::removeFromBag] bag is not initialized properly");
 
-	if (!_objects.has(id))
-		error("[Application::removeFromBag] ID doesn't exist (%d)", id);
+	if (!_objects.has(objectId))
+		error("[Application::removeFromBag] ID doesn't exist (%d)", objectId.id());
 
-	return _bag->has(id);
+	return _bag->has(objectId);
 }
 
 #pragma endregion
@@ -524,43 +542,43 @@ void Application::cursorDelete() {
 
 #pragma region Puzzle
 
-void Application::puzzleAdd(PuzzleId id) {
-	if (_puzzles.has(id))
-		error("[Application::addPuzzle] ID already exists (%d)", id);
+void Application::puzzleAdd(PuzzleId puzzleId) {
+	if (_puzzles.has(puzzleId))
+		error("[Application::addPuzzle] ID already exists (%d)", puzzleId.id());
 
-	_puzzles.push_back(new Puzzle(this, id));
+	_puzzles.push_back(new Puzzle(this, puzzleId));
 }
 
-void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, Common::Point point, bool isActive) {
+void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, const Common::Point &point, bool isActive) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::puzzleAddBackgroundImage] ID doesn't exist (%d)", puzzleId);
+		error("[Application::puzzleAddBackgroundImage] ID doesn't exist (%d)", puzzleId.id());
 
 	_puzzles.get(puzzleId)->setBackgroundImage(filename, point, isActive, _loadFrom);
 }
 
 #pragma region Puzzle Movability
 
-void Application::puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
 	if (!_puzzles.has(puzzleIdFrom))
-		error("[Application::puzzleAddMovabilityToPuzzle] Wrong FROM puzzle Id (%d)", puzzleIdFrom);
+		error("[Application::puzzleAddMovabilityToPuzzle] Wrong FROM puzzle Id (%d)", puzzleIdFrom.id());
 
 	if (!_puzzles.has(puzzleIdTo))
-		error("[Application::puzzleAddMovabilityToPuzzle] Wrong TO puzzle Id (%d)", puzzleIdTo);
+		error("[Application::puzzleAddMovabilityToPuzzle] Wrong TO puzzle Id (%d)", puzzleIdTo.id());
 
-	Movability *movability = new Movability(_puzzles.get(puzzleIdFrom), _puzzles.get(puzzleIdTo), name, kMovabilityPuzzleToPuzzle);
+	Movability *movability = new Movability(puzzleIdFrom, puzzleIdTo, name, kMovabilityPuzzleToPuzzle);
 	movability->setHotspot(rect, enabled, a9, a10);
 
 	_puzzles.get(puzzleIdFrom)->addMovability(movability);
 }
 
-void Application::puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
 	if (!_rotations.has(rotationIdTo))
 		error("[Application::puzzleAddMovabilityToRotation] Wrong TO rotation Id (%d)", rotationIdTo);
 
 	if (!_puzzles.has(puzzleIdFrom))
-		error("[Application::puzzleAddMovabilityToRotation] Wrong FROM puzzle Id (%d)", puzzleIdFrom);
+		error("[Application::puzzleAddMovabilityToRotation] Wrong FROM puzzle Id (%d)", puzzleIdFrom.id());
 
-	Movability *movability = new Movability(_puzzles.get(puzzleIdFrom), _rotations.get(rotationIdTo), name, kMovabilityPuzzleToRotation);
+	Movability *movability = new Movability(puzzleIdFrom, rotationIdTo, name, kMovabilityPuzzleToRotation);
 	movability->setHotspot(rect, enabled, a9, a10);
 
 	_puzzles.get(puzzleIdFrom)->addMovability(movability);
@@ -568,7 +586,7 @@ void Application::puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotati
 
 void Application::puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, float a3, float a4, float a5) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::puzzleSetMovabilityToRotation] Wrong puzzle Id (%d)", puzzleId);
+		error("[Application::puzzleSetMovabilityToRotation] Wrong puzzle Id (%d)", puzzleId.id());
 
 	Movability *movability = _puzzles.get(puzzleId)->getMovability(movabilityIndex);
 	if (movability->getType() != kMovabilityPuzzleToRotation)
@@ -579,31 +597,31 @@ void Application::puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabi
 
 void Application::puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotspot, uint32 fromMovability, uint32 toMovability) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::puzzleSetMovabilityOnOrOff] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::puzzleSetMovabilityOnOrOff] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	_puzzles.get(puzzleId)->setMovabilityOnOrOff(enableHotspot, fromMovability, toMovability);
 }
 
 void Application::puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotspot) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::puzzleSetMovabilityOnOrOff] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::puzzleSetMovabilityOnOrOff] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	_puzzles.get(puzzleId)->setMovabilityOnOrOff(enableHotspot);
 }
 
-void Application::puzzleSetMovabilityOn(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability) {
+void Application::puzzleSetMovabilityOn(const PuzzleId &puzzleId, uint32 fromMovability, uint32 toMovability) {
 	puzzleSetMovabilityOnOrOff(puzzleId, true, fromMovability, toMovability);
 }
 
-void Application::puzzleSetMovabilityOff(PuzzleId puzzleId, uint32 fromMovability, uint32 toMovability) {
+void Application::puzzleSetMovabilityOff(const PuzzleId &puzzleId, uint32 fromMovability, uint32 toMovability) {
 	puzzleSetMovabilityOnOrOff(puzzleId, false, fromMovability, toMovability);
 }
 
-void Application::puzzleSetMovabilityOn(PuzzleId puzzleId) {
+void Application::puzzleSetMovabilityOn(const PuzzleId &puzzleId) {
 	puzzleSetMovabilityOnOrOff(puzzleId, true);
 }
 
-void Application::puzzleSetMovabilityOff(PuzzleId puzzleId) {
+void Application::puzzleSetMovabilityOff(const PuzzleId &puzzleId) {
 	puzzleSetMovabilityOnOrOff(puzzleId, false);
 }
 
@@ -611,7 +629,7 @@ void Application::puzzleSetMovabilityOff(PuzzleId puzzleId) {
 
 void Application::puzzleSetMod(PuzzleId puzzleId, uint32 a2, uint32 a3) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::puzzleAddAmbientSound] Wrong puzzle Id (%d)", puzzleId);
+		error("[Application::puzzleAddAmbientSound] Wrong puzzle Id (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (puzzle->getField24() != 2 || a2 != 2)
@@ -621,7 +639,7 @@ void Application::puzzleSetMod(PuzzleId puzzleId, uint32 a2, uint32 a3) {
 
 void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::puzzleAddAmbientSound] Wrong puzzle Id (%d)", puzzleId);
+		error("[Application::puzzleAddAmbientSound] Wrong puzzle Id (%d)", puzzleId.id());
 
 	SoundEntry *entry = _soundManager->getEntry(soundId);
 	if (!entry)
@@ -635,21 +653,21 @@ void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 vo
 
 void Application::puzzleSetAmbientSoundOn(PuzzleId puzzleId, Id soundId) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::puzzleSetAmbientSoundOn] Wrong puzzle Id (%d)", puzzleId);
+		error("[Application::puzzleSetAmbientSoundOn] Wrong puzzle Id (%d)", puzzleId.id());
 
 	_puzzles.get(puzzleId)->setAmbientSoundOn(soundId);
 }
 
 void Application::puzzleSetAmbientSoundOff(PuzzleId puzzleId, Id soundId) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::puzzleSetAmbientSoundOff] Wrong puzzle Id (%d)", puzzleId);
+		error("[Application::puzzleSetAmbientSoundOff] Wrong puzzle Id (%d)", puzzleId.id());
 
 	_puzzles.get(puzzleId)->setAmbientSoundOff(soundId);
 }
 
 void Application::puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uint32 a4, uint32 fadeFrames, uint32 volume, float a7, uint32 a8) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::puzzleAdd3DSound] Wrong puzzle Id (%d)", puzzleId);
+		error("[Application::puzzleAdd3DSound] Wrong puzzle Id (%d)", puzzleId.id());
 
 	SoundEntry *entry = _soundManager->getEntry(soundId);
 	if (!entry)
@@ -661,24 +679,22 @@ void Application::puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uin
 	_puzzles.get(puzzleId)->add3DSound(entry, volume, true, a3, a4, fadeFrames, a7, a8);
 }
 
-void Application::puzzleSet3DSoundOn(PuzzleId puzzleId, Id soundId) {
+void Application::puzzleSet3DSoundOn(const PuzzleId &puzzleId, Id soundId) {
 	puzzleSetAmbientSoundOn(puzzleId, soundId);
 }
 
-void Application::puzzleSet3DSoundOff(PuzzleId puzzleId, Id soundId) {
+void Application::puzzleSet3DSoundOff(const PuzzleId &puzzleId, Id soundId) {
 	puzzleSetAmbientSoundOff(puzzleId, soundId);
 }
 
 void Application::puzzleSet3DSoundVolume(PuzzleId puzzleId, Id soundId, int32 volume) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::puzzleSet3DSoundVolume] Wrong puzzle Id (%d)", puzzleId);
+		error("[Application::puzzleSet3DSoundVolume] Wrong puzzle Id (%d)", puzzleId.id());
 
-	_puzzle->setAmbientSoundVolume(soundId, volume);
+	_puzzles.get(puzzleId)->setAmbientSoundVolume(soundId, volume);
 }
 
 void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
-	bool update = false;
-
 	// Setup puzzle
 	if (!_puzzles.has(id))
 		return;
@@ -690,38 +706,34 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 
 	_field_66 = 2;
 
-	if (_soundHandler) {
-		if (_soundHandler->getField0()) {
+	if (_soundHandler->getField0()) {
+		_soundHandler->sub_41B520();
+
+		_soundHandler->reset();
+		_soundHandler->setCount1(_puzzle->getSoundItemsCount());
+		return;
+	}
+
+	_soundHandler->setCount2(_puzzle->getSoundItemsCount());
+	if (_soundHandler->sub_41AA00()) {
+
+		_soundHandler->turnOffItems1();
+
+		if (_soundHandler->sub_41AEE0(2)) {
+
+			_soundHandler->sub_41B180(3);
+			_soundHandler->sub_41B350(3);
 			_soundHandler->sub_41B520();
 
 			_soundHandler->reset();
 			_soundHandler->setCount1(_puzzle->getSoundItemsCount());
 			return;
 		}
-
-		_soundHandler->setCount2(_puzzle->getSoundItemsCount());
-
-		if (_soundHandler->sub_41AA00()) {
-
-			_soundHandler->turnOffItems1();
-
-			if (_soundHandler->sub_41AEE0(2)) {
-
-				_soundHandler->sub_41B180(3);
-				_soundHandler->sub_41B350(3);
-				_soundHandler->sub_41B520();
-
-				_soundHandler->reset();
-				_soundHandler->setCount1(_puzzle->getSoundItemsCount());
-				return;
-			}
-		}
-
-		_soundHandler->turnOffItems2(a3);
-		update = updateSoundItems;
 	}
 
-	if (update)
+	_soundHandler->turnOffItems2(a3);
+
+	if (updateSoundItems)
 		_puzzle->updateSoundItems();
 
 	_soundHandler->reset();
@@ -738,7 +750,7 @@ void Application::puzzleReset() {
 
 PuzzleId Application::getCurrentPuzzleId() {
 	if (!_puzzle)
-		return PuzzleId::kPuzzleInvalid;
+		return kPuzzleInvalid;
 
 	return (PuzzleId)_puzzle->getId();
 }
@@ -771,25 +783,28 @@ void Application::setFreOffCurrentRotation() {
 
 #pragma region Object
 
-void Application::objectAdd(ObjectId id, Common::String language, Common::String name, byte a5) {
-	if (_objects.has(id))
-		error("[Application::ObjectAdd] ID already exists (%d)", id);
+void Application::objectAdd(ObjectId objectId, Common::String language, Common::String name, byte a5) {
+	if (!_objectHandler)
+		error("[Application::objectAdd] Object handler not initialized properly");
+
+	if (_objects.has(objectId))
+		error("[Application::ObjectAdd] ID already exists (%d)", objectId.id());
 
 	// Compute language and name
-	Common::String processedLanguage = _objectHandler->getLanguage(id);
+	Common::String processedLanguage = _objectHandler->getLanguage(objectId);
 	if (processedLanguage.empty())
 		processedLanguage = language;
 
-	Common::String processedName = _objectHandler->getName(id);
+	Common::String processedName = _objectHandler->getName(objectId);
 	if (processedName.empty())
 		processedName = name;
 
-	_objects.push_back(new Object(this, id, processedLanguage, processedName, a5));
+	_objects.push_back(new Object(this, objectId, processedLanguage, processedName, a5));
 }
 
 void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 frameCount, float a5, uint32 a6) {
 	if (!_objects.has(objectId))
-		error("[Application::objectAddBagAnimation] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectAddBagAnimation] Object Id doesn't exist (%d)", objectId.id());
 
 	Object *object = _objects.get(objectId);
 	AnimationImage *image = new AnimationImage();
@@ -805,19 +820,19 @@ void Application::objectRemove(ObjectId id) {
 
 #pragma region Object Accessibility
 
-void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
 	if (!_objects.has(objectId))
-		error("[Application::objectAddPuzzleAccessibility] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectAddPuzzleAccessibility] Object Id doesn't exist (%d)", objectId.id());
 
 	if (!_puzzles.has(puzzleId))
-		error("[Application::objectAddPuzzleAccessibility] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::objectAddPuzzleAccessibility] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	_objects.get(objectId)->addPuzzleAccessibility(_puzzles.get(puzzleId), rect, enabled, a9, a10);
 }
 
 void Application::objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key) {
 	if (!_objects.has(objectId))
-		error("[Application::objectSetPuzzleAccessibilityKey] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectSetPuzzleAccessibilityKey] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setAccessibilityKey(accessibilityIndex, key);
 }
@@ -825,31 +840,31 @@ void Application::objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 acce
 
 void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration) {
 	if (!_objects.has(objectId))
-		error("[Application::objectSetAccessibilityOnOrOff] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectSetAccessibilityOnOrOff] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setAccessibilityOnOrOff(enableHotspot, fromAcceleration, toAcceleration);
 }
 
 void Application::objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot) {
 	if (!_objects.has(objectId))
-		error("[Application::objectSetAccessibilityOnOrOff] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectSetAccessibilityOnOrOff] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setAccessibilityOnOrOff(enableHotspot);
 }
 
-void Application::objectSetAccessibilityOn(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration) {
+void Application::objectSetAccessibilityOn(const ObjectId &objectId, uint32 fromAcceleration, uint32 toAcceleration) {
 	objectSetAccessibilityOnOrOff(objectId, true, fromAcceleration, toAcceleration);
 }
 
-void Application::objectSetAccessibilityOff(ObjectId objectId, uint32 fromAcceleration, uint32 toAcceleration) {
+void Application::objectSetAccessibilityOff(const ObjectId &objectId, uint32 fromAcceleration, uint32 toAcceleration) {
 	objectSetAccessibilityOnOrOff(objectId, false, fromAcceleration, toAcceleration);
 }
 
-void Application::objectSetAccessibilityOn(ObjectId objectId) {
+void Application::objectSetAccessibilityOn(const ObjectId &objectId) {
 	objectSetAccessibilityOnOrOff(objectId, true);
 }
 
-void Application::objectSetAccessibilityOff(ObjectId objectId) {
+void Application::objectSetAccessibilityOff(const ObjectId &objectId) {
 	objectSetAccessibilityOnOrOff(objectId, false);
 }
 
@@ -857,9 +872,9 @@ void Application::objectSetAccessibilityOff(ObjectId objectId) {
 
 #pragma region Object Rotation
 
-void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationId, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
 	if (!_objects.has(objectId))
-		error("[Application::objectAddRotationAccessibility] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectAddRotationAccessibility] Object Id doesn't exist (%d)", objectId.id());
 
 	if (!_rotations.has(rotationId))
 		error("[Application::objectAddRotationAccessibility] Rotation Id doesn't exist (%d)", rotationId);
@@ -871,83 +886,83 @@ void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationI
 
 void Application::objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
 	if (!_objects.has(objectId))
-		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setActiveCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
 void Application::objectSetPassiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
 	if (!_objects.has(objectId))
-		error("[Application::objectSetPassiveCursor] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectSetPassiveCursor] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setPassiveCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
 void Application::objectSetActiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
 	if (!_objects.has(objectId))
-		error("[Application::objectSetActiveDrawCursor] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectSetActiveDrawCursor] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setActiveDrawCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
 void Application::objectSetPassiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
 	if (!_objects.has(objectId))
-		error("[Application::objectSetPassiveDrawCursor] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectSetPassiveDrawCursor] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setPassiveDrawCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
 void Application::objectAddPresentation(ObjectId objectId) {
 	if (!_objects.has(objectId))
-		error("[Application::objectAddPresentation] Id doesn't exist (%d)", objectId);
+		error("[Application::objectAddPresentation] Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->addPresentation();
 }
 
-void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, uint32 a5, uint32 a6, FontId fontId, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13) {
+void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, const Common::Point &point, FontId fontId, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationAddTextToPuzzle] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationAddTextToPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	if (!_puzzles.has(puzzleId))
-		error("[Application::objectPresentationAddTextToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::objectPresentationAddTextToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
-	_objects.get(objectId)->addTextToPuzzle(presentationIndex, _puzzles.get(puzzleId), text, a5, a6, fontId, a8, a9, a10, a11, a12, a13);
+	_objects.get(objectId)->addTextToPuzzle(presentationIndex, _puzzles.get(puzzleId), text, point, fontId, a8, a9, a10, a11, a12, a13);
 }
 
 void Application::objectPresentationSetTextToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, Common::String text) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationSetTextToPuzzle] Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationSetTextToPuzzle] Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setTextToPuzzle(presentationIndex, textIndex, text);
 }
 
-void Application::objectPresentationSetTextCoordinatesToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, Common::Point point) {
+void Application::objectPresentationSetTextCoordinatesToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, const Common::Point &point) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationSetTextCoordinatesToPuzzle] Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationSetTextCoordinatesToPuzzle] Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setTextCoordinatesToPuzzle(presentationIndex, textIndex, point);
 }
 
 uint32 Application::objectPresentationGetTextWidth(ObjectId objectId, uint32 presentationIndex, uint32 textIndex) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationGetTextWidth] Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationGetTextWidth] Id doesn't exist (%d)", objectId.id());
 
 	return _objects.get(objectId)->getTextWidth(presentationIndex, textIndex);
 }
 
-void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, Common::Point point, bool isActive, uint32 a8, uint32 priority) {
+void Application::objectPresentationAddImageToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, const Common::Point &point, bool isActive, uint32 a8, uint32 priority) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationAddImageToPuzzle] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationAddImageToPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	if (!_puzzles.has(puzzleId))
-		error("[Application::objectPresentationAddImageToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::objectPresentationAddImageToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	_objects.get(objectId)->addImageToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, point, isActive, a8, priority, 0, _loadFrom);
 }
 
 void Application::objectPresentationAddImageToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationAddImageToRotation] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationAddImageToRotation] Object Id doesn't exist (%d)", objectId.id());
 
 	if (!_rotations.has(rotationId))
 		error("[Application::objectPresentationAddImageToRotation] Rotation Id doesn't exist (%d)", rotationId);
@@ -959,47 +974,47 @@ void Application::objectPresentationAddImageToRotation(ObjectId objectId, uint32
 	_objects.get(objectId)->addImageToRotation(presentationIndex, rotation, layer);
 }
 
-void Application::objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, Common::Point point) {
+void Application::objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, const Common::Point &point) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationSetImageCoordinatesOnPuzzle] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationSetImageCoordinatesOnPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setImageCoordinatesOnPuzzle(presentationIndex, point);
 }
 
-void Application::objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 imageIndex, Common::Point point) {
+void Application::objectPresentationSetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 imageIndex, const Common::Point &point) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationSetImageCoordinatesOnPuzzle] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationSetImageCoordinatesOnPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setImageCoordinatesOnPuzzle(presentationIndex, imageIndex, point);
 }
 
 void Application::objectPresentationSetImageOriginalCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationSetImageOriginalCoordinatesOnPuzzle] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationSetImageOriginalCoordinatesOnPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setImageOriginalCoordinatesOnPuzzle(presentationIndex);
 }
 
 Common::Point Application::objectPresentationGetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 imageIndex) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationGetImageCoordinatesOnPuzzle] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationGetImageCoordinatesOnPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	return _objects.get(objectId)->getImageCoordinatesOnPuzzle(presentationIndex, imageIndex);
 }
 
-void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, Common::Point point, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12) {
+void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, const Common::Point &point, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationAddAnimationToPuzzle] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationAddAnimationToPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	if (!_puzzles.has(puzzleId))
-		error("[Application::objectPresentationAddAnimationToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::objectPresentationAddAnimationToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	_objects.get(objectId)->addAnimationToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, a5, point, 1, a8, a9, 0, a10, a11, a12, _loadFrom);
 }
 
 void Application::objectPresentationAddAnimationToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer, uint32 a5, float a6, uint32 a7) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationAddImageToRotation] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationAddImageToRotation] Object Id doesn't exist (%d)", objectId.id());
 
 	if (!_rotations.has(rotationId))
 		error("[Application::objectPresentationAddImageToRotation] Rotation Id doesn't exist (%d)", rotationId);
@@ -1011,100 +1026,100 @@ void Application::objectPresentationAddAnimationToRotation(ObjectId objectId, ui
 	_objects.get(objectId)->addAnimationToRotation(presentationIndex, rotation, layer, a5, a6, a7);
 }
 
-void Application::objectPresentationSetAnimationOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, ObjectId targetId) {
+void Application::objectPresentationSetAnimationOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, const ObjectId &targetId) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationSetAnimationOnPuzzle] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationSetAnimationOnPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setAnimationOnPuzzle(presentationIndex, animationIndex, targetId);
 }
 
-void Application::objectPresentationSetAnimationOnRotation(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, ObjectId targetId) {
+void Application::objectPresentationSetAnimationOnRotation(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, const ObjectId &targetId) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationSetAnimationOnRotation] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationSetAnimationOnRotation] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setAnimationOnRotation(presentationIndex, animationIndex, targetId);
 }
 
 void Application::objectPresentationSetAnimationStartFrame(ObjectId objectId, uint32 presentationIndex, uint32 startFrame) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationAnimationSetStartFrame] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationAnimationSetStartFrame] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setAnimationStartFrame(presentationIndex, startFrame);
 }
 
 void Application::objectPresentationSetAnimationActiveFrame(ObjectId objectId, uint32 presentationIndex, uint32 activeFrame) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationAnimationSetActiveFrame] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationAnimationSetActiveFrame] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setAnimationActiveFrame(presentationIndex, activeFrame);
 }
 
-void Application::objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, Common::Point point) {
+void Application::objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, const Common::Point &point) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationSetAnimationCoordinatesOnPuzzle] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationSetAnimationCoordinatesOnPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setAnimationCoordinatesOnPuzzle(presentationIndex, point);
 }
 
 void Application::objectPresentationPauseAnimation(ObjectId objectId, uint32 presentationIndex) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationPauseAnimation] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationPauseAnimation] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->pauseAnimation(presentationIndex);
 }
 
 void Application::objectPresentationUnpauseAnimation(ObjectId objectId, uint32 presentationIndex) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationPauseAnimation] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationPauseAnimation] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->unpauseAnimation(presentationIndex);
 }
 
 void Application::objectPresentationPauseAnimationFrame(ObjectId objectId, uint32 presentationIndex, uint32 frame, uint32 a4, uint32 a5) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationPauseAnimation] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationPauseAnimation] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->pauseFrameAnimation(presentationIndex, frame, a4, a5);
 }
 
 void Application::objectPresentationShow(ObjectId objectId, uint32 presentationIndex) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationShow] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationShow] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->show(presentationIndex);
 }
 
 void Application::objectPresentationShow(ObjectId objectId) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationShow] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationShow] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->show();
 }
 
 void Application::objectPresentationHide(ObjectId objectId, uint32 presentationIndex) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->hide(presentationIndex);
 }
 
 void Application::objectPresentationHide(ObjectId objectId) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->hide();
 }
 
 void Application::objectPresentationHideAndRemove(ObjectId objectId, uint32 presentationIndex) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->hideAndRemove(presentationIndex);
 }
 
 void Application::objectPresentationHideAndRemove(ObjectId objectId) {
 	if (!_objects.has(objectId))
-		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId);
+		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->hideAndRemove();
 }
@@ -1113,7 +1128,7 @@ void Application::objectPresentationHideAndRemove(ObjectId objectId) {
 
 #pragma region Rotation
 
-void Application::rotationAdd(Id rotationId, Common::String name, uint32 a3, uint32 nodeCount) {
+void Application::rotationAdd(Id rotationId, Common::String name, byte a3, uint32 nodeCount) {
 	if (_rotations.has(rotationId))
 		error("[Application::rotationAdd] Rotation Id already exists (%d)", rotationId);
 
@@ -1148,24 +1163,22 @@ void Application::rotationSetComBufferLength(Id rotationId, uint32 length) {
 	_rotations.get(rotationId)->setComBufferLength(length);
 }
 
-void Application::rotationAddMovabilityToPuzzle(Id fromRotationId, PuzzleId toPuzzleId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::rotationAddMovabilityToPuzzle(Id fromRotationId, PuzzleId toPuzzleId, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
 	// Check ids
 	if (!_rotations.has(fromRotationId))
 		error("[Application::rotationAddMovabilityToRotation] Wrong From rotation Id (%d)", fromRotationId);
 
 	if (!_puzzles.has(toPuzzleId))
-		error("[Application::rotationAddMovabilityToRotation] Wrong To puzzle Id (%d)", toPuzzleId);
-
-	Rotation *rotation = _rotations.get(fromRotationId);
+		error("[Application::rotationAddMovabilityToRotation] Wrong To puzzle Id (%d)", toPuzzleId.id());
 
 	// Create movability
-	Movability *movability = new Movability(rotation, _puzzles.get(toPuzzleId), name, kMovabilityRotationToPuzzle);
+	Movability *movability = new Movability(fromRotationId, toPuzzleId, name, kMovabilityRotationToPuzzle);
 	movability->setHotspot(rect, enabled, a9, a10);
 
-	rotation->addMovability(movability);
+	_rotations.get(fromRotationId)->addMovability(movability);
 }
 
-void Application::rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5, uint32 a6, uint32 a7) {
+void Application::rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, float a3, float a4, float a5, float a6, byte a7) {
 	if (!_rotations.has(rotationId))
 		error("[Application::rotationSetMovabilityToPuzzle] Wrong rotation Id (%d)", rotationId);
 
@@ -1176,7 +1189,7 @@ void Application::rotationSetMovabilityToPuzzle(Id rotationId, uint32 movability
 	movability->update(a3, a4, a5, a6, a7, 0.0, 0.0, 85.0);
 }
 
-void Application::rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
 	// Check ids
 	if (!_rotations.has(fromRotationId))
 		error("[Application::rotationAddMovabilityToRotation] Wrong From rotation Id (%d)", fromRotationId);
@@ -1184,16 +1197,14 @@ void Application::rotationAddMovabilityToRotation(Id fromRotationId, Id toRotati
 	if (!_rotations.has(toRotationId))
 		error("[Application::rotationAddMovabilityToRotation] Wrong To rotation Id (%d)", toRotationId);
 
-	Rotation *rotation = _rotations.get(fromRotationId);
-
 	// Create movability
-	Movability *movability = new Movability(rotation, _rotations.get(toRotationId), name, kMovabilityRotationToRotation);
+	Movability *movability = new Movability(fromRotationId, toRotationId, name, kMovabilityRotationToRotation);
 	movability->setHotspot(rect, enabled, a9, a10);
 
-	rotation->addMovability(movability);
+	_rotations.get(fromRotationId)->addMovability(movability);
 }
 
-void Application::rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, uint32 a3, int32 a4, uint32 a5,  uint32 a6, uint32 a7, int32 a8, int32 a9, uint32 a10) {
+void Application::rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, float a3, float a4, float a5, float a6, byte a7, float a8, float a9, float a10) {
 	if (!_rotations.has(rotationId))
 		error("[Application::rotationSetMovabilityToRotation] Wrong rotation Id (%d)", rotationId);
 
@@ -1372,8 +1383,6 @@ void Application::rotationSetFreOff(Id rotationId) {
 }
 
 void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
-	bool update = false;
-
 	// Setup puzzle
 	if (!_rotations.has(id))
 		return;
@@ -1386,39 +1395,35 @@ void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
 
 	_field_66 = 1;
 
-	if (_soundHandler) {
-		if (_soundHandler->getField0()) {
+	if (_soundHandler->getField0()) {
+		_soundHandler->sub_41B520();
+
+		_soundHandler->reset();
+		_soundHandler->setCount1(_rotation->getSoundItemsCount());
+		return;
+	}
+
+	_soundHandler->setCount2(_rotation->getSoundItemsCount());
+
+	if (_soundHandler->sub_41AA00()) {
+
+		_soundHandler->turnOffItems1();
+
+		if (_soundHandler->sub_41AEE0(2)) {
+
+			_soundHandler->sub_41B180(3);
+			_soundHandler->sub_41B350(3);
 			_soundHandler->sub_41B520();
 
 			_soundHandler->reset();
 			_soundHandler->setCount1(_rotation->getSoundItemsCount());
 			return;
 		}
-
-		_soundHandler->setCount2(_rotation->getSoundItemsCount());
-
-		if (_soundHandler->sub_41AA00()) {
-
-			_soundHandler->turnOffItems1();
-
-			if (_soundHandler->sub_41AEE0(2)) {
-
-				_soundHandler->sub_41B180(3);
-				_soundHandler->sub_41B350(3);
-				_soundHandler->sub_41B520();
-
-				_soundHandler->reset();
-				_soundHandler->setCount1(_rotation->getSoundItemsCount());
-				return;
-			}
-		}
-
-		_soundHandler->turnOffItems2(a3);
-		update = updateSoundItems;
 	}
 
-	if (update)
-		_rotation->updateSoundItems();
+	_soundHandler->turnOffItems2(a3);
+
+	_rotation->updateSoundItems();
 
 	_soundHandler->reset();
 	_soundHandler->setCount1(_rotation->getSoundItemsCount());
@@ -1546,7 +1551,7 @@ IMPLEMENT_VAR_FUNCTIONS(Float,  float);
 
 void Application::visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::visualAddListToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::visualAddListToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (puzzle->hasVisual(visualId))
@@ -1571,7 +1576,7 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 
 
 	if (!_puzzles.has(puzzleId))
-		error("[Application::visualAddListToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::visualAddListToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (puzzle->hasVisual(visualId))
@@ -1599,46 +1604,46 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 	puzzle->addVisual(list);
 }
 
-void Application::visualListAdd(Id visualId, PuzzleId puzzleId, ObjectId objectId) {
+void Application::visualListAdd(Id visualId, PuzzleId puzzleId, const ObjectId &objectId) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (!puzzle->hasVisual(visualId))
-		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId);
+		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
 
 	((VisualObjectList *)puzzle->getVisual(visualId))->add(objectId);
 }
 
-void Application::visualListRemove(Id visualId, PuzzleId puzzleId, ObjectId objectId, bool removeObject) {
+void Application::visualListRemove(Id visualId, PuzzleId puzzleId, const ObjectId &objectId, bool removeObject) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (!puzzle->hasVisual(visualId))
-		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId);
+		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
 
 	((VisualObjectList *)puzzle->getVisual(visualId))->remove(objectId, removeObject);
 }
 
 void Application::visualListRemove(Id visualId, PuzzleId puzzleId, bool removeObject) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (!puzzle->hasVisual(visualId))
-		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId);
+		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
 
 	((VisualObjectList *)puzzle->getVisual(visualId))->removeAll(removeObject);
 }
 
 uint32 Application::visualListGetItemCount(Id visualId, PuzzleId puzzleId) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId);
+		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (!puzzle->hasVisual(visualId))
-		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId);
+		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
 
 	return ((VisualObjectList *)puzzle->getVisual(visualId))->getItemCount();
 }

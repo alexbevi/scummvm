@@ -84,11 +84,11 @@ void RotationData::update(uint32 index, uint32 val) {
 
 #pragma region Rotation
 
-Rotation::Rotation(Id id, Common::String name, uint32 a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6) : BaseObject(id) {
+Rotation::Rotation(Id id, Common::String name, byte a3, LoadFrom, uint32 nodeCount, uint32 a6) : BaseObject(id) {
 	_field_8 = a6;
 	_comBufferLength = 0;
 
-	// Compute path
+	// Compute path (Original checks loadFrom) 
 	_path = Common::String::format("DATA/%s/NODE/%s", getApp()->getCurrentZoneString().c_str(), name.c_str());
 
 	// Create animation for each node
@@ -96,10 +96,29 @@ Rotation::Rotation(Id id, Common::String name, uint32 a3, LoadFrom loadFrom, uin
 		_animations.push_back(new Animation());
 
 	_field_28 = a3;
-	_field_65 = 0;
-	_field_66 = 0;
 
-	initNodes(nodeCount);
+	// Init nodes
+	_data = new RotationData(nodeCount, _path);
+
+	_field_31  = 1.0f;
+	_field_35  = 0.3f;
+	_amplitude = 30.0f;
+	_field_3D  = 1.0f;
+	_speed     = 1.0f;
+	_field_45  = 0;
+	_field_49  = 0;
+	_field_4D  = 0;
+	_field_51  = 0;
+	_field_55  = 0;
+	_field_59  = 0;
+	_field_5D  = 0;
+	_field_61  = 0;
+	_field_65  = 0;
+	_field_66  = 0;
+	_fre       = false;
+	_alp       = 225.0f;
+	_bet       = 0;
+	_ran       = 85.0f;
 }
 
 Rotation::~Rotation() {
@@ -112,20 +131,6 @@ Rotation::~Rotation() {
 	CLEAR_ARRAY(ImageHandle,        _imageHandles);
 
 	SAFE_DELETE(_data);
-}
-
-void Rotation::initNodes(uint32 count) {
-	_data = new RotationData(count, _path);
-
-	_field_31  = 1.0f;
-	_field_35  = 0.3f;
-	_amplitude = 30.0f;
-	_field_3D  = 1.0f;
-	_speed     = 1.0f;
-	_fre       = false;
-	_alp       = 225.0f;
-	_bet       = 0;
-	_ran       = 85.0f;
 }
 
 void Rotation::load() {
@@ -160,10 +165,10 @@ void Rotation::setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, u
 	if (toMovability < fromMovability)
 		error("[Rotation::setMovabilityOnOrOff] From movability (%d) is greater than To movability (%d)", fromMovability, toMovability);
 
-	if (fromMovability < 0 || fromMovability >= _movabilities.size())
+	if (fromMovability >= _movabilities.size())
 		error("[Rotation::setMovabilityOnOrOff] From acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
 
-	if (toMovability < 0 || toMovability >= _movabilities.size())
+	if (toMovability >= _movabilities.size())
 		error("[Rotation::setMovabilityOnOrOff] To acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
 
 
@@ -186,7 +191,7 @@ void Rotation::setRolTo(float a2, float a3, float a4) {
 	error("[Rotation::SetRolTo] Not implemented");
 }
 
-Animation *Rotation::addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, uint32 a5) {
+Animation *Rotation::addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, byte a5) {
 	if (!presentation)
 		error("[Rotation::addPresentationAnimation] Presentation is NULL!");
 

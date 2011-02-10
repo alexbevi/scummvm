@@ -38,7 +38,7 @@ public:
 	Accessibility(Object *object);
 	~Accessibility();
 
-	void setHotspot(Common::Rect rect, bool enabled, uint32 a3, uint32 a4);
+	void setHotspot(const Common::Rect &rect, bool enabled, uint32 a3, uint32 a4);
 	Hotspot *getHotspot();
 	void enableHotspot();
 	void disableHotspot();

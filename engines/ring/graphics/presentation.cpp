@@ -60,20 +60,23 @@ ObjectPresentation::~ObjectPresentation() {
 	CLEAR_ARRAY(Puzzle, _imagePuzzlePtr);
 	CLEAR_ARRAY(AnimationImage, _animationPuzzle);
 	CLEAR_ARRAY(Puzzle, _animationPuzzlePtr);
-	CLEAR_ARRAY(uint32, _layerImagePtr);
+	CLEAR_ARRAY(BaseId, _layerImagePtr);
 	CLEAR_ARRAY(Rotation, _layImageRotationPtr);
-	CLEAR_ARRAY(uint32, _layerAnimationRotation);
+	CLEAR_ARRAY(BaseId, _layerAnimationRotation);
 	CLEAR_ARRAY(Rotation, _layerAnimationRotationPtr);
 	CLEAR_ARRAY(Animation, _layerAnimationRotationAnimation);
 	CLEAR_ARRAY(Text, _textPuzzle);
 	CLEAR_ARRAY(Puzzle, _textPuzzlePtr);
 	CLEAR_ARRAY(Text, _textRotation);
 	CLEAR_ARRAY(Rotation, _textRotationPtr);
+
+	// Zero-out passed pointers
+	_object = NULL;
 }
 
-void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, uint32 a4, uint32 a5, FontId fontId, byte a7, byte a8, byte a9, int32 a10, int32 a11, int32 a12) {
+void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, byte a7, byte a8, byte a9, int32 a10, int32 a11, int32 a12) {
 	Text *textObject = new Text();
-	textObject->init(text, a4, a5, fontId, a7, a8, a9, a10, a11, a12);
+	textObject->init(text, point, fontId, a7, a8, a9, a10, a11, a12);
 	textObject->setObjectPresentation(this);
 
 	_textPuzzle.push_back(textObject);
@@ -82,7 +85,7 @@ void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, ui
 	puzzle->addPresentationText(textObject);
 }
 
-void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filename, Common::Point point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom) {
+void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom) {
 	ImageHandle *image = new ImageHandle(filename, point, isActive, a7, priority, a9, getApp()->getCurrentZone(), loadFrom, 4, getApp()->getArchiveType());
 	image->setObjectPresentation(this);
 
@@ -93,13 +96,13 @@ void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filenam
 }
 
 void ObjectPresentation::addImageToRotation(Rotation *rotation, uint32 layer) {
-	_layerImagePtr.push_back(new uint32(layer));
+	_layerImagePtr.push_back(new BaseId(layer));
 	_layImageRotationPtr.push_back(rotation);
 }
 
-void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, Common::Point point, uint32 a7, uint32 a8, uint32 priority, uint32 a10, uint32 frameCount, uint32 a12, uint32 a13, LoadFrom loadFrom) {
+void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, const Common::Point &point, uint32, uint32 a8, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom) {
 	AnimationImage *animation = new AnimationImage();
-	animation->init(filename, a4, point, 0, a8, frameCount, a12, 1, a13, a10, priority, loadFrom, getApp()->getArchiveType());
+	animation->init(filename, a4, point, 0, a8, a11, a12, 1, a13, frameCount, priority, loadFrom, getApp()->getArchiveType());
 	animation->updatePresentation(this);
 	if (!(a13 & 2)) {
 		animation->setField20(0);
@@ -121,7 +124,7 @@ void ObjectPresentation::addAnimationToRotation(Rotation *rotation, uint32 layer
 	if (!(a5 & 2))
 		animation->setField20(0);
 
-	_layerAnimationRotation.push_back(new uint32(layer));
+	_layerAnimationRotation.push_back(new BaseId(layer));
 	_layerAnimationRotationPtr.push_back(rotation);
 	_layerAnimationRotationAnimation.push_back(animation);
 }
@@ -156,7 +159,7 @@ void ObjectPresentation::setAnimationActiveFrame(uint32 activeFrame) {
 		(*it)->setActiveFrame(activeFrame);
 }
 
-void ObjectPresentation::setAnimationCoordinatesOnPuzzle(Common::Point point) {
+void ObjectPresentation::setAnimationCoordinatesOnPuzzle(const Common::Point &point) {
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
 		(*it)->setCoordinates(point);
 }
@@ -196,7 +199,7 @@ void ObjectPresentation::show() {
 		_layImageRotationPtr[i]->updateNode(*(_layerImagePtr[i]), 1);
 
 	for (uint32 i = 0; i < _layerAnimationRotation.size(); i++)
-		_layerAnimationRotationPtr[i]->updateNode(*(_layerAnimationRotation[i]), 1);
+		_layerAnimationRotationPtr[i]->updateNode(_layerAnimationRotation[i]->id(), 1);
 }
 
 void ObjectPresentation::hide() {
@@ -210,7 +213,7 @@ void ObjectPresentation::hide() {
 		_layImageRotationPtr[i]->updateNode(*(_layerImagePtr[i]), 0);
 
 	for (uint32 i = 0; i < _layerAnimationRotation.size(); i++)
-		_layerAnimationRotationPtr[i]->updateNode(*(_layerAnimationRotation[i]), 0);
+		_layerAnimationRotationPtr[i]->updateNode(_layerAnimationRotation[i]->id(), 0);
 }
 
 void ObjectPresentation::hideAndRemove() {

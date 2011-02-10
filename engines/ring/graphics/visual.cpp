@@ -77,6 +77,8 @@ void VisualElement::init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, 
 #pragma region VisualObjectList
 
 VisualObjectList::VisualObjectList(Id id) : Visual(id) {
+	_field_8 = 0;
+	_field_C = 0;
 	_backgroundImage = NULL;
 	_upGun = NULL;
 	_upGur = NULL;
@@ -95,6 +97,7 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_field_59 = 0;
 	_field_5D = 0;
 	_field_61 = 0;
+	_field_65 = 0;
 	_field_69 = 0;
 	_field_6D = 0;
 	_field_CD = -1;
@@ -154,9 +157,11 @@ VisualObjectList::~VisualObjectList() {
 	SAFE_DELETE(_downGua);
 	SAFE_DELETE(_cliImageP);
 	SAFE_DELETE(_cliImageA);
+	SAFE_DELETE(_text1);
+	SAFE_DELETE(_text2);
 }
 
-void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10, Common::String filename11, Common::String filename12, Common::String filename13, uint32 a15, ArchiveType archiveType) {
+void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10, Common::String filename11, Common::String filename12, Common::String filename13, byte a15, ArchiveType archiveType) {
 	_archiveType = archiveType;
 
 	if (iconPath != "")
@@ -210,10 +215,10 @@ void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String 
 	_cliImageA->setPath(path);
 
 	_text1 = new Text();
-	_text1->init("", 0, 0, _fontId, _field_E2, _field_E6, _field_EA, _field_FA, _field_FE, _field_102);
+	_text1->init("", Common::Point(0, 0), _fontId, _field_E2, _field_E6, _field_EA, _field_FA, _field_FE, _field_102);
 
 	_text2 = new Text();
-	_text2->init("", 0, 0, _fontId, _field_E2, _field_E6, _field_EA, _field_FA, _field_FE, _field_102);
+	_text2->init("", Common::Point(0, 0), _fontId, _field_E2, _field_E6, _field_EA, _field_FA, _field_FE, _field_102);
 }
 
 void VisualObjectList::sub_46DCF0(uint32 a1, uint32 a2) {
@@ -274,19 +279,19 @@ void VisualObjectList::sub_46DE30(uint32 a1, uint32 a2) {
 }
 
 void VisualObjectList::initHotspots() {
-	_hotspots.push_back(new Hotspot(Common::Rect(_field_81 + _field_49,
-	                                             _field_85 + _field_4D,
-	                                             _field_81 + _field_49 + _field_89,
-	                                             _field_85 + _field_4D + _field_8D),
+	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_81 + _field_49),
+	                                             (int16)(_field_85 + _field_4D),
+	                                             (int16)(_field_81 + _field_49 + _field_89),
+	                                             (int16)(_field_85 + _field_4D + _field_8D)),
 	                                false,
 	                                0,
 	                                1,
 	                                0));
 
-	_hotspots.push_back(new Hotspot(Common::Rect(_field_49 + _field_91,
-	                                             _field_4D + _field_95,
-	                                             _field_49 + _field_91 + _field_99,
-	                                             _field_4D + _field_95 + _field_9D),
+	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_49 + _field_91),
+	                                             (int16)(_field_4D + _field_95),
+	                                             (int16)(_field_49 + _field_91 + _field_99),
+	                                             (int16)(_field_4D + _field_95 + _field_9D)),
 	                                false,
 	                                0,
 	                                2,
@@ -295,10 +300,10 @@ void VisualObjectList::initHotspots() {
 	if (_field_B9 & 1) {
 		for (uint32 i = 0; i < _field_BD; i++) {
 			uint32 y = i * _field_69 + _field_69 / 2;
-			_hotspots.push_back(new Hotspot(Common::Rect(_field_49 + _field_59,
-			                                             _field_4D + _field_5D - _field_65 / 2 + y,
-			                                             _field_49 + _field_59 + _field_61,
-			                                             _field_4D + _field_5D + _field_65 / 2 + y),
+			_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_49 + _field_59),
+			                                             (int16)(_field_4D + _field_5D + y - _field_65 / 2),
+			                                             (int16)(_field_49 + _field_59 + _field_61),
+			                                             (int16)(_field_4D + _field_5D + _field_65 / 2 + y)),
 			                                false,
 			                                0,
 			                                3,
@@ -309,10 +314,10 @@ void VisualObjectList::initHotspots() {
 	if (_field_B9 & 2) {
 		for (uint32 i = 0; i < _field_BD; i++) {
 			uint32 y = i * _field_69 + _field_69 / 2;
-			_hotspots.push_back(new Hotspot(Common::Rect(_field_49 + _field_59 + _field_61 / 2 + y,
-			                                             _field_4D + _field_5D,
-			                                             _field_49 + _field_59 + _field_61 / 2 + y,
-			                                             _field_4D + _field_5D + _field_65),
+			_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_49 + _field_59 + _field_61 / 2 + y),
+			                                             (int16)(_field_4D + _field_5D),
+			                                             (int16)(_field_49 + _field_59 + _field_61 / 2 + y),
+			                                             (int16)(_field_4D + _field_5D + _field_65)),
 			                                false,
 			                                0,
 			                                3,

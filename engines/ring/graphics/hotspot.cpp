@@ -27,7 +27,7 @@
 
 namespace Ring {
 
-Hotspot::Hotspot(Common::Rect rect, bool enabled, uint32 a2, uint32 a3, uint32 a4) {
+Hotspot::Hotspot(const Common::Rect &rect, bool enabled, uint32 a2, uint32 a3, uint32 a4) {
 	_rect = rect;
 	_enabled = enabled;
 	_field_11 = a2;
@@ -39,7 +39,7 @@ Hotspot::Hotspot(Common::Rect rect, bool enabled, uint32 a2, uint32 a3, uint32 a
 Hotspot::~Hotspot() {
 }
 
-bool Hotspot::contains(Common::Point point) {
+bool Hotspot::contains(const Common::Point &point) const {
 	return _enabled && _rect.contains(point);
 }
 

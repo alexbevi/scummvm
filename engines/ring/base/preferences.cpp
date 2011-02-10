@@ -34,7 +34,7 @@
 
 namespace Ring {
 
-PreferenceHandler::PreferenceHandler(Application *application) : _application(application) {
+PreferenceHandler::PreferenceHandler(Application *application) : _app(application) {
 	_pref1 = 0;
 	_pref2 = 0;
 	_reverseStereo = 0;
@@ -42,6 +42,8 @@ PreferenceHandler::PreferenceHandler(Application *application) : _application(ap
 }
 
 PreferenceHandler::~PreferenceHandler() {
+	// Zero-out passed pointers
+	_app = NULL;
 }
 
 void PreferenceHandler::load() {
@@ -90,11 +92,11 @@ void PreferenceHandler::set(int32 pref1, int32 pref2, int32 reverseStereo, int32
 void PreferenceHandler::setup() {
 	warning("[PreferenceHandler::setup] Sound volume setup not implemented");
 
-	if (_application->getSoundHandler())
-		_application->getSoundHandler()->setReverseStereo(_reverseStereo);
+	if (_app->getSoundHandler())
+		_app->getSoundHandler()->setReverseStereo(_reverseStereo);
 
-	if (_application->getDialogHandler())
-		_application->getDialogHandler()->setField28(_pref4 ? 1 : 0);
+	if (_app->getDialogHandler())
+		_app->getDialogHandler()->setField28(_pref4 ? 1 : 0);
 }
 
 } // End of namespace Ring

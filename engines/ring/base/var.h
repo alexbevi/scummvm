@@ -63,7 +63,7 @@ public:
 	DEFINE_FUNCTIONS(Word,   int16,          _words);
 	DEFINE_FUNCTIONS(Dword,  int32,          _dwords);
 	DEFINE_FUNCTIONS(String, Common::String, _strings);
-	DEFINE_FUNCTIONS(Float,  double,         _floats);
+	DEFINE_FUNCTIONS(Float,  float,         _floats);
 
 #undef DEFINE_FUNCTIONS
 
@@ -75,7 +75,7 @@ private:
 	AssociativeArray<VarEntry<int16> *>          _words;
 	AssociativeArray<VarEntry<int32> *>          _dwords;
 	AssociativeArray<VarEntry<Common::String> *> _strings;
-	AssociativeArray<VarEntry<double> *>         _floats;
+	AssociativeArray<VarEntry<float> *>          _floats;
 
 	template<class T>
 	void define(AssociativeArray<VarEntry<T> *> *array, Id id, T value);

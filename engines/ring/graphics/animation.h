@@ -38,7 +38,7 @@ public:
 	Animation();
 	~Animation();
 
-	void initAnimation(uint32 frameCount, float a2, uint32 startFrame, byte a4, uint32 priority);
+	void initAnimation(uint32 a1, float a2, uint32 startFrame, byte a4, uint32 priority);
 
 	void pause() { _paused = true; }
 	void unpause() { _paused = false; }
@@ -54,8 +54,8 @@ public:
 
 protected:
 	Common::String _name;
-	uint32 _frameCount;
-	float _field_C;
+	uint32 _field_8;
+	float  _field_C;
 	uint32 _startFrame;
 	uint32 _field_14;
 	uint32 _field_18;
@@ -64,7 +64,7 @@ protected:
 	byte   _field_21;
 	uint32 _activeFrame;
 	byte   _field_26;
-	byte   _paused;
+	bool   _paused;
 	uint32 _field_28;
 	byte   _field_2C;
 	byte   _field_2D;
@@ -92,17 +92,17 @@ public:
 	AnimationImage();
 	virtual ~AnimationImage();
 
-	void init(Common::String name, uint32 a2, Common::Point point, uint32 a5, uint32 a6, uint32 frameCount, float a8, uint32 startFrame, char a10, uint32 a11, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType);
+	void init(Common::String name, byte a2, const Common::Point &point, uint32 a5, uint32 a6, uint32 a7, float a8, uint32 startFrame, byte a10, byte frameCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType);
 	void alloc();
 	void dealloc();
 
 	void drawActiveFrame();
-	void drawActiveFrame(Common::Point point);
+	void drawActiveFrame(const Common::Point &point);
 	void draw();
 
 	// Accessors
 	void setField89() { _field_89 = 1; }
-	void setCoordinates(Common::Point point);
+	void setCoordinates(const Common::Point &point);
 	ImageHandle *getCurrentImage() { return _currentImage; }
 
 	// Helpers
@@ -115,7 +115,7 @@ private:
 	Common::Point _coordinates;
 	uint32 _field_79;
 	uint32 _field_7D;
-	uint32 _field_81;
+	uint32 _frameCount;
 	ImageHandle *_currentImage;
 	byte _field_89;
 };

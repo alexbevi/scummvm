@@ -962,7 +962,7 @@ void EventHandlerRing::onAfterRideZoneN2(Id movabilityFrom, Id movabilityTo, uin
 #pragma region Sound
 
 void EventHandlerRing::onSound(Id id, SoundType type, uint32 a3) {
-	int a4 = a3 & 0x1000;
+	uint32 a4 = a3 & 0x1000;
 	a3 &= 239;
 
 	switch (_app->getCurrentZone()) {

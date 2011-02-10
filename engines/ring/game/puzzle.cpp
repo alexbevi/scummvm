@@ -73,7 +73,7 @@ void Puzzle::update(Video *video) {
 	warning("[Puzzle::update] Not implemented");
 }
 
-void Puzzle::setBackgroundImage(Common::String filename, Common::Point point, bool isActive, LoadFrom loadFrom) {
+void Puzzle::setBackgroundImage(Common::String filename, const Common::Point &point, bool isActive, LoadFrom loadFrom) {
 	SAFE_DELETE(_background);
 
 	Zone zone = _application->getCurrentZone();
@@ -136,10 +136,10 @@ void Puzzle::setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uin
 	if (toMovability < fromMovability)
 		error("[Puzzle::setMovabilityOnOrOff] From movability (%d) is greater than To movability (%d)", fromMovability, toMovability);
 
-	if (fromMovability < 0 || fromMovability >= _movabilities.size())
+	if (fromMovability >= _movabilities.size())
 		error("[Puzzle::setMovabilityOnOrOff] From acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
 
-	if (toMovability < 0 || toMovability >= _movabilities.size())
+	if (toMovability >= _movabilities.size())
 		error("[Puzzle::setMovabilityOnOrOff] To acceleration is not in range (was:%d, max:%d)", fromMovability, _movabilities.size() - 1);
 
 
@@ -224,7 +224,7 @@ void Puzzle::setAmbientSoundOff(Id soundId) {
 	item->off();
 }
 
-void Puzzle::setAmbientSoundVolume(Id soundId, uint32 volume) {
+void Puzzle::setAmbientSoundVolume(Id soundId, int32 volume) {
 	SoundItem *item = getSoundItem(soundId);
 	if (!item)
 		error("[Puzzle::setAmbientSoundOff] Wrong sound Id (%d)", soundId);

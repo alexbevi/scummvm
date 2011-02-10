@@ -30,6 +30,33 @@
 
 namespace Ring {
 
+class DialogLine {
+public:
+	DialogLine();
+	~DialogLine();
+
+private:
+
+};
+
+class DialogLevel {
+public:
+	DialogLevel();
+	~DialogLevel();
+
+private:
+
+};
+
+class DialogAnimation {
+public:
+	DialogAnimation();
+	~DialogAnimation();
+
+private:
+
+};
+
 class Dialog : public BaseObject {
 public:
 	Dialog();
@@ -39,12 +66,12 @@ public:
 	void hide();
 
 private:
-	uint32 _field_4;
-	uint32 _ticks;
-	uint32 _field_C;
-	uint32 _field_10;
-	uint32 _field_14;
-	byte _field_18;
+	Common::Array<DialogLine *> _lines;
+	uint32 _startTicks;
+	byte _field_C;
+	uint32 _field_D;
+	Common::Array<DialogLevel *> _levels;
+	Common::Array<DialogAnimation *> _animations;
 };
 
 class DialogHandler {
@@ -52,13 +79,13 @@ public:
 	DialogHandler();
 	~DialogHandler();
 
-	void init(uint32 a1, Color subtitlesColor, Color subtitlesBackgroundColor, uint32 a8, uint32 a9);
+	void init(uint32 a1, const Color &subtitlesColor, const Color &subtitlesBackgroundColor, uint32 a8, uint32 a9);
 
 	void addDialog(Dialog *dialog);
 	bool removeDialog(Id id);
 
 	bool isPlaying(Id id);
-	bool isPlaying();
+	bool isPlaying() const;
 
 	// Accessors
 	void setSubtitleColor(Color color) { _subtitleColor = color; }

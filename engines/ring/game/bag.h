@@ -67,10 +67,10 @@ public:
 	void disable();
 
 	// Management
-	void add(ObjectId id);
-	void remove(ObjectId id);
+	void add(ObjectId objectId);
+	void remove(ObjectId objectId);
 	void removeAll();
-	bool has(ObjectId id);
+	bool has(ObjectId objectId);
 
 	// Accessors
 	bool getField94() { return _field_94; }
@@ -134,7 +134,7 @@ private:
 	Image      *_imageErdaGur;
 	bool        _enabled;
 
-	void loadImage(Common::String filename, Image *image, ArchiveType archiveType);
+	void loadImage(Common::String filename, Image **image, ArchiveType archiveType) const;
 };
 
 } // End of namespace Ring

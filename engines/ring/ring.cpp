@@ -189,6 +189,9 @@ bool RingEngine::pollEvents() {
 }
 
 void RingEngine::update() {
+	if (!_application)
+		error("[RingEngine::update] Application not initialized properly");
+
 	_application->draw();
 	_application->getSoundManager()->updateQueue();
 }

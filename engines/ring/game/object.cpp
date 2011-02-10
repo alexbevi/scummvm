@@ -66,18 +66,18 @@ void Object::addPresentation() {
 	_presentations.push_back(new ObjectPresentation(this));
 }
 
-void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, uint32 a5, uint32 a6, FontId fontId, byte a8, byte a9, byte a10, uint32 a11, uint32 a12, uint32 a13) {
+void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, byte a8, byte a9, byte a10, uint32 a11, uint32 a12, uint32 a13) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addTextToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
-	_presentations[presentationIndex]->addTextToPuzzle(puzzle, text, a5, a6, fontId, a8, a9, a10, a11, a12, a13);
+	_presentations[presentationIndex]->addTextToPuzzle(puzzle, text, point, fontId, a8, a9, a10, a11, a12, a13);
 }
 
 void Object::setTextToPuzzle(uint32 presentationIndex, uint32 textIndex, Common::String text) {
 	error("[Object::setTextToPuzzle] Not implemented");
 }
 
-void Object::setTextCoordinatesToPuzzle(uint32 presentationIndex, uint32 textIndex, Common::Point point) {
+void Object::setTextCoordinatesToPuzzle(uint32 presentationIndex, uint32 textIndex, const Common::Point &point) {
 	error("[Object::setTextCoordinatesToPuzzle] Not implemented");
 }
 
@@ -85,7 +85,7 @@ uint32 Object::getTextWidth(uint32 presentationIndex, uint32 textIndex) {
 	error("[Object::getTextWidth] Not implemented");
 }
 
-void Object::addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, Common::Point point, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom) {
+void Object::addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addTextToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
@@ -99,11 +99,11 @@ void Object::addImageToRotation(uint32 presentationIndex, Rotation *rotation, ui
 	_presentations[presentationIndex]->addImageToRotation(rotation, layer);
 }
 
-void Object::setImageCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point) {
+void Object::setImageCoordinatesOnPuzzle(uint32 presentationIndex, const Common::Point &point) {
 	error("[Object::setImageCoordinatesOnPuzzle] Not implemented");
 }
 
-void Object::setImageCoordinatesOnPuzzle(uint32 presentationIndex, uint32 imageIndex, Common::Point point) {
+void Object::setImageCoordinatesOnPuzzle(uint32 presentationIndex, uint32 imageIndex, const Common::Point &point) {
 	error("[Object::setImageCoordinatesOnPuzzle] Not implemented");
 }
 
@@ -154,7 +154,7 @@ void Object::hideAndRemove() {
 
 #pragma region Accessibility
 
-void Object::addPuzzleAccessibility(Puzzle *puzzle, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+void Object::addPuzzleAccessibility(Puzzle *puzzle, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
 	Accessibility *accessibility = new Accessibility(this);
 	accessibility->setHotspot(rect, enabled, a9, a10);
 
@@ -163,7 +163,7 @@ void Object::addPuzzleAccessibility(Puzzle *puzzle, Common::Rect rect, bool enab
 	puzzle->addAccessibility(accessibility);
 }
 
-void Object::addRotationAccessibility(Rotation *rotation, Common::Rect rect, bool enabled, uint32 a9, uint32 a10) {
+void Object::addRotationAccessibility(Rotation *rotation, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
 	Accessibility *accessibility = new Accessibility(this);
 	accessibility->setHotspot(rect, enabled, a9, a10);
 
@@ -193,10 +193,10 @@ void Object::setAccessibilityOnOrOff(bool enableHotspot, uint32 fromAcceleration
 	if (toAcceleration < fromAcceleration)
 		error("[Object::setAccessibilityOnOrOff] From acceleration (%d) is greater than To acceleration (%d)", fromAcceleration, toAcceleration);
 
-	if (fromAcceleration < 0 || fromAcceleration >= _accessibilities.size())
+	if (fromAcceleration >= _accessibilities.size())
 		error("[Object::setAccessibilityOnOrOff] From acceleration is not in range (was:%d, max:%d)", fromAcceleration, _accessibilities.size() - 1);
 
-	if (toAcceleration < 0 || toAcceleration >= _accessibilities.size())
+	if (toAcceleration >= _accessibilities.size())
 		error("[Object::setAccessibilityOnOrOff] To acceleration is not in range (was:%d, max:%d)", fromAcceleration, _accessibilities.size() - 1);
 
 
@@ -212,11 +212,11 @@ void Object::setAccessibilityOnOrOff(bool enableHotspot, uint32 fromAcceleration
 
 #pragma region Animation
 
-void Object::addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, uint32 a5, Common::Point point, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, uint32 a14, LoadFrom loadFrom) {
+void Object::addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, uint32 a5, const Common::Point &point, uint32 a8, uint32 a9, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addAnimationToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
-	_presentations[presentationIndex]->addAnimationToPuzzle(puzzle, name, a5, point, a8, a9, a10, a11, a12, a13, a14, loadFrom);
+	_presentations[presentationIndex]->addAnimationToPuzzle(puzzle, name, a5, point, a8, a9, priority, frameCount, a12, a13, a14, loadFrom);
 }
 
 void Object::addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7) {
@@ -226,14 +226,14 @@ void Object::addAnimationToRotation(uint32 presentationIndex, Rotation *rotation
 	_presentations[presentationIndex]->addAnimationToRotation(rotation, layer, a5, a6, a7);
 }
 
-void Object::setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, ObjectId objectId) {
+void Object::setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::setAnimationOnPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
 	_presentations[presentationIndex]->setAnimationOnPuzzle(animationIndex, objectId);
 }
 
-void Object::setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, ObjectId objectId) {
+void Object::setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::setAnimationOnPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
@@ -254,7 +254,7 @@ void Object::setAnimationActiveFrame(uint32 presentationIndex, uint32 activeFram
 	_presentations[presentationIndex]->setAnimationActiveFrame(activeFrame);
 }
 
-void Object::setAnimationCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point) {
+void Object::setAnimationCoordinatesOnPuzzle(uint32 presentationIndex, const Common::Point &point) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::setAnimationCoordinatesOnPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
@@ -339,7 +339,7 @@ void ObjectHandler::addFromFile(Common::String filename, Common::String language
 		error("[ObjectHandler::addFromFile] Error opening objects file (%s)", filename.c_str());
 
 	// Read each object info
-	ObjectId id = ObjectId::kObjectInvalid;
+	ObjectId id = kObjectInvalid;
 	while (!archive->eos() && !archive->err()) {
 
 		Common::String line = archive->readLine();

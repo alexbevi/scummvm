@@ -76,7 +76,7 @@ public:
 	~VisualObjectList();
 
 	// Init
-	void init(uint32 a1, Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10, Common::String filename11, Common::String filename12, Common::String filename13, uint32 a15, ArchiveType archiveType);
+	void init(uint32 a1, Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10, Common::String filename11, Common::String filename12, Common::String filename13, byte a15, ArchiveType archiveType);
 	void sub_46DCF0(uint32 a1, uint32 a2);
 	void sub_46DD11(uint32 a1, uint32 a2);
 	void sub_46DD30(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6);
@@ -165,9 +165,9 @@ private:
 	uint32 _field_EE;
 	uint32 _field_F2;
 	uint32 _field_F6;
-	uint32 _field_FA;
-	uint32 _field_FE;
-	uint32 _field_102;
+	int32 _field_FA;
+	int32 _field_FE;
+	int32 _field_102;
 	uint32 _field_106;
 };
 

@@ -54,20 +54,20 @@ public:
 	~ObjectPresentation();
 
 	// Text
-	void addTextToPuzzle(Puzzle *puzzle, Common::String text, uint32 a4, uint32 a5, FontId fontId, byte a7, byte a8, byte a9, int32 a10, int32 a11, int32 a12);
+	void addTextToPuzzle(Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, byte a7, byte a8, byte a9, int32 a10, int32 a11, int32 a12);
 
 	// Image
-	void addImageToPuzzle(Puzzle *puzzle, Common::String filename, Common::Point point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom);
+	void addImageToPuzzle(Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom);
 	void addImageToRotation(Rotation *rotation, uint32 layer);
 
 	// Animation
-	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, Common::Point point, uint32 a7, uint32 a8, uint32 priority, uint32 a10, uint32 a11, uint32 a12, uint32 a13, LoadFrom loadFrom);
+	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, const Common::Point &point, uint32 a7, uint32 a8, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom);
 	void addAnimationToRotation(Rotation *rotation, uint32 layer, uint32 a3, float a4, uint32 a5);
 	void setAnimationOnPuzzle(uint32 animationIndex, ObjectId objectId);
 	void setAnimationOnRotation(uint32 animationIndex, ObjectId objectId);
 	void setAnimationStartFrame(uint32 startFrame);
 	void setAnimationActiveFrame(uint32 activeFrame);
-	void setAnimationCoordinatesOnPuzzle(Common::Point point);
+	void setAnimationCoordinatesOnPuzzle(const Common::Point &point);
 	void pauseAnimation();
 	void unpauseAnimation();
 	void pauseFrameAnimation(uint32 frame, uint32 a3, uint32 a4);
@@ -84,9 +84,9 @@ private:
 	Common::Array<Puzzle *>         _imagePuzzlePtr;
 	Common::Array<AnimationImage *> _animationPuzzle;
 	Common::Array<Puzzle *>         _animationPuzzlePtr;
-	Common::Array<uint32 *>         _layerImagePtr;
+	Common::Array<BaseId *>         _layerImagePtr;
 	Common::Array<Rotation *>       _layImageRotationPtr;
-	Common::Array<uint32 *>         _layerAnimationRotation;
+	Common::Array<BaseId *>         _layerAnimationRotation;
 	Common::Array<Rotation *>       _layerAnimationRotationPtr;
 	Common::Array<Animation *>      _layerAnimationRotationAnimation;
 	Common::Array<Text *>           _textPuzzle;

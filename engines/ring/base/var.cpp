@@ -57,7 +57,7 @@ void VarEntry<int32>::saveLoadWithSerializer(Common::Serializer &s) {
 }
 
 template<>
-void VarEntry<double>::saveLoadWithSerializer(Common::Serializer &s) {
+void VarEntry<float>::saveLoadWithSerializer(Common::Serializer &s) {
 	s.syncAsSint32LE(_id);
 	s.syncAsSint32LE(_value);
 }
@@ -84,7 +84,7 @@ void Var::removeAll() {
 	CLEAR_ARRAY(VarEntry<int16>, _words);
 	CLEAR_ARRAY(VarEntry<int32>, _dwords);
 	CLEAR_ARRAY(VarEntry<Common::String>, _strings);
-	CLEAR_ARRAY(VarEntry<double>, _floats);
+	CLEAR_ARRAY(VarEntry<float>, _floats);
 }
 
 void Var::saveLoadWithSerializer(Common::Serializer &s) {

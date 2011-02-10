@@ -84,7 +84,7 @@ public:
 	CursorImage();
 	~CursorImage();
 
-	void init(CursorId id, Common::String name, CursorType cursorType, byte a4, ArchiveType archiveType);
+	void init(CursorId id, Common::String name, CursorType cursorType, byte frameCount, ArchiveType archiveType);
 	virtual void alloc();
 	virtual void dealloc();
 
@@ -99,7 +99,7 @@ public:
 	CursorAnimation();
 	~CursorAnimation();
 
-	void init(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, LoadFrom loadFrom, ArchiveType archiveType);
+	void init(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a5, float a6, byte a7, LoadFrom loadFrom, ArchiveType archiveType);
 	virtual void alloc();
 	virtual void dealloc();
 	virtual void draw();
@@ -114,12 +114,12 @@ public:
 	CursorHandler();
 	~CursorHandler();
 
-	void add(CursorId id, Common::String name, CursorType cursorType, uint32 a3, uint32 a4, uint32 a5, uint32 a6, LoadFrom loadFrom, ArchiveType archiveType);
+	void add(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a4, float a5, byte a6, LoadFrom loadFrom, ArchiveType archiveType);
 	void removeByType(CursorType cursorType);
 
 	void draw();
 	void select(CursorId id);
-	void setOffset(CursorId id, Common::Point offset);
+	void setOffset(CursorId id, const Common::Point &offset);
 	CursorType getType();
 
 private:

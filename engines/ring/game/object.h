@@ -46,15 +46,15 @@ public:
 
 	// Presentation
 	void addPresentation();
-	void addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, uint32 a5, uint32 a6, FontId fontId, byte a8, byte a9, byte a10, uint32 a11, uint32 a12, uint32 a13);
+	void addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, byte a8, byte a9, byte a10, uint32 a11, uint32 a12, uint32 a13);
 	void setTextToPuzzle(uint32 presentationIndex, uint32 textIndex, Common::String text);
-	void setTextCoordinatesToPuzzle(uint32 presentationIndex, uint32 textIndex, Common::Point point);
+	void setTextCoordinatesToPuzzle(uint32 presentationIndex, uint32 textIndex, const Common::Point &point);
 	uint32 getTextWidth(uint32 presentationIndex, uint32 textIndex);
 
-	void addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, Common::Point point, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom);
+	void addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom);
 	void addImageToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer);
-	void setImageCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point);
-	void setImageCoordinatesOnPuzzle(uint32 presentationIndex, uint32 imageIndex, Common::Point point);
+	void setImageCoordinatesOnPuzzle(uint32 presentationIndex, const Common::Point &point);
+	void setImageCoordinatesOnPuzzle(uint32 presentationIndex, uint32 imageIndex, const Common::Point &point);
 	void setImageOriginalCoordinatesOnPuzzle(uint32 presentationIndex);
 	Common::Point getImageCoordinatesOnPuzzle(uint32 presentationIndex, uint32 imageIndex);
 
@@ -66,20 +66,20 @@ public:
 	void hideAndRemove();
 
 	// Accessibility
-	void addPuzzleAccessibility(Puzzle *puzzle, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
-	void addRotationAccessibility(Rotation *rotation, Common::Rect rect, bool enabled, uint32 a9, uint32 a10);
+	void addPuzzleAccessibility(Puzzle *puzzle, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
+	void addRotationAccessibility(Rotation *rotation, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
 	void setAccessibilityKey(uint32 accessibilityIndex, Common::KeyCode key);
 	void setAccessibilityOnOrOff(bool enableHotspot);
 	void setAccessibilityOnOrOff(bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration);
 
 	// Animation
-	void addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, uint32 a5, Common::Point point, uint32 a8, uint32 a9, uint32 a10, uint32 a11, uint32 a12, uint32 a13, uint32 a14, LoadFrom loadFrom);
+	void addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, uint32 a5, const Common::Point &point, uint32 a8, uint32 a9, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom);
 	void addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7);
-	void setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, ObjectId objectId);
-	void setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, ObjectId objectId);
+	void setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId);
+	void setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId);
 	void setAnimationStartFrame(uint32 presentationIndex, uint32 startFrame);
 	void setAnimationActiveFrame(uint32 presentationIndex, uint32 activeFrame);
-	void setAnimationCoordinatesOnPuzzle(uint32 presentationIndex, Common::Point point);
+	void setAnimationCoordinatesOnPuzzle(uint32 presentationIndex, const Common::Point &point);
 	void pauseAnimation(uint32 presentationIndex);
 	void unpauseAnimation(uint32 presentationIndex);
 	void pauseFrameAnimation(uint32 presentationIndex, uint32 frame, uint32 a3, uint32 a4);
