@@ -55,7 +55,7 @@ public:
 	void init(uint32 a1, Color subtitlesColor, Color subtitlesBackgroundColor, uint32 a8, uint32 a9);
 
 	void addDialog(Dialog *dialog);
-	void removeDialog(Id id);
+	bool removeDialog(Id id);
 
 	bool isPlaying(Id id);
 	bool isPlaying();

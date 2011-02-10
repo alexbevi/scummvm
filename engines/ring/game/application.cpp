@@ -623,7 +623,7 @@ void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 vo
 	if (!_puzzles.has(puzzleId))
 		error("[Application::puzzleAddAmbientSound] Wrong puzzle Id (%d)", puzzleId);
 
-	SoundEntry *entry = _soundManager->getSoundEntry(soundId);
+	SoundEntry *entry = _soundManager->getEntry(soundId);
 	if (!entry)
 		error("[Application::puzzleAddAmbientSound] Wrong sound Id (%d)", soundId);
 
@@ -651,7 +651,7 @@ void Application::puzzleAdd3DSound(PuzzleId puzzleId, Id soundId, uint32 a3, uin
 	if (!_puzzles.has(puzzleId))
 		error("[Application::puzzleAdd3DSound] Wrong puzzle Id (%d)", puzzleId);
 
-	SoundEntry *entry = _soundManager->getSoundEntry(soundId);
+	SoundEntry *entry = _soundManager->getEntry(soundId);
 	if (!entry)
 		error("[Application::puzzleAdd3DSound] Wrong sound Id (%d)", soundId);
 
@@ -1311,7 +1311,7 @@ void Application::rotationAddAmbientSound(Id rotationId, Id soundId, uint32 volu
 	if (!_rotations.has(rotationId))
 		error("[Application::rotationAddAmbientSound] Wrong rotation Id (%d)", rotationId);
 
-	SoundEntry *entry = _soundManager->getSoundEntry(soundId);
+	SoundEntry *entry = _soundManager->getEntry(soundId);
 	if (!entry)
 		error("[Application::rotationAddAmbientSound] Wrong sound Id (%d)", soundId);
 
@@ -1339,7 +1339,7 @@ void Application::rotationAdd3DSound(Id rotationId, uint32 soundId, uint32 a3, u
 	if (!_rotations.has(rotationId))
 		error("[Application::rotationAdd3DSound] Wrong rotation Id (%d)", rotationId);
 
-	SoundEntry *entry = _soundManager->getSoundEntry(soundId);
+	SoundEntry *entry = _soundManager->getEntry(soundId);
 	if (!entry)
 		error("[Application::rotationAdd3DSound] Wrong sound Id (%d)", soundId);
 

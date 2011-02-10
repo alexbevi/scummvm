@@ -165,14 +165,14 @@ public:
 
 	// Sound entries
 	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk);
-	SoundEntry *getSoundEntry(Id soundId);
+	SoundEntry *getEntry(Id soundId);
 
 	// Accessors
 	float getGlobalVolume() { return _globalVolume; }
 	Audio::Mixer *getMixer() { return _mixer; }
 
 private:
-	Application                    *_application;
+	Application                    *_app;
 	Audio::Mixer                   *_mixer;
 	AssociativeArray<SoundEntry *>  _entries;
 	float                           _globalVolume;

@@ -238,7 +238,7 @@ SoundEntryD::~SoundEntryD() {
 
 #pragma region SoundManager
 
-SoundManager::SoundManager(Application *application, Audio::Mixer *mixer) : _application(application), _mixer(mixer) {
+SoundManager::SoundManager(Application *application, Audio::Mixer *mixer) : _app(application), _mixer(mixer) {
 	_globalVolume = 1.0f;
 }
 
@@ -246,7 +246,7 @@ SoundManager::~SoundManager() {
 	CLEAR_ARRAY(SoundEntry, _entries);
 
 	// Zero-out passed pointers
-	_application = NULL;
+	_app = NULL;
 	_mixer = NULL;
 }
 
@@ -260,16 +260,31 @@ void SoundManager::updateQueue() {
 		if ((*it)->getType() == kSoundTypeDialog)
 			continue;
 
-		_application->onSound((*it)->getId(), (*it)->getType(), 4097);
+		_app->onSound((*it)->getId(), (*it)->getType(), 4097);
 	}
 }
 
 void SoundManager::play(Id soundId, int a2) {
-	error("[SoundManager::stop] Not implemented");
+	error("[SoundManager::play] Not implemented");
 }
 
 void SoundManager::stop(Id soundId, uint32 a2) {
-	error("[SoundManager::stop] Not implemented");
+	SoundEntry *entry = getEntry(soundId);
+	if (!entry)
+		return;
+
+	if (entry->getType() == kSoundTypeDialog) {
+		if (entry->isPlaying())
+			entry->stop();
+
+		if (_app->getDialogHandler()->removeDialog(soundId))
+			_app->onSound(soundId, entry->getType(), a2);
+	} else {
+		if (entry->isPlaying())
+			entry->stop();
+
+		_app->onSound(soundId, entry->getType(), a2);
+	}
 }
 
 void SoundManager::setVolume(Id soundId, uint32 volume) {
@@ -292,7 +307,26 @@ void SoundManager::setMultiplierIfNotType(SoundType soundType, int32 multiplier)
 }
 
 void SoundManager::stopAll(uint32 a1) {
-	error("[SoundManager::stopAll] Not implemented");
+	bool stopDialog = true;
+
+	for (Common::Array<SoundEntry *>::iterator it = _entries.begin(); it != _entries.end(); it++) {
+		SoundEntry *entry = (*it);
+
+		if (entry->getType() == kSoundTypeDialog && stopDialog) {
+			if (entry->isPlaying())
+				entry->stop();
+
+			if (_app->getDialogHandler()->removeDialog(entry->getId()))
+				_app->onSound(entry->getId(), entry->getType(), a1);
+
+			stopDialog = false;
+		} else {
+			if (entry->isPlaying())
+				entry->stop();
+
+			_app->onSound(entry->getId(), entry->getType(), a1);
+		}
+	}
 }
 
 void SoundManager::setPan(Id soundId, int32 pan) {
@@ -303,12 +337,12 @@ void SoundManager::setPan(Id soundId, int32 pan) {
 }
 
 bool SoundManager::isPlaying(Id soundId) {
-	SoundEntry *entry = getSoundEntry(soundId);
+	SoundEntry *entry = getEntry(soundId);
 	if (!entry)
 		return false;
 
 	if (entry->getType() == kSoundTypeDialog)
-		return _application->getDialogHandler()->isPlaying(soundId);
+		return _app->getDialogHandler()->isPlaying(soundId);
 	else
 		return entry->isPlaying();
 }
@@ -325,7 +359,7 @@ void SoundManager::sub_4696F0() {
 // Sound Entries
 void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk) {
 	// Check if we already have a sound entry for this id
-	if (getSoundEntry(soundId))
+	if (getEntry(soundId))
 		return;
 
 	SoundEntry *entry = NULL;
@@ -338,7 +372,7 @@ void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename,
 	_entries.push_back(entry);
 }
 
-SoundEntry *SoundManager::getSoundEntry(Id soundId) {
+SoundEntry *SoundManager::getEntry(Id soundId) {
 	if (!_entries.has(soundId))
 		return NULL;
 

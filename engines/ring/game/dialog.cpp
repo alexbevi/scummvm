@@ -77,16 +77,13 @@ void DialogHandler::addDialog(Dialog *dialog) {
 	_dialogs.push_back(dialog);
 }
 
-void DialogHandler::removeDialog(Id id) {
-	for (uint32 i = 0; i < _dialogs.size();) {
-		if (_dialogs[i]->getId() == id) {
-			_dialogs[i]->hide();
-			SAFE_DELETE(_dialogs[i]);
-			_dialogs.remove_at(i);
-		} else {
-			++i;
-		}
-	}
+bool DialogHandler::removeDialog(Id id) {
+	if (!_dialogs.has(id))
+		return false;
+
+	_dialogs.remove_at(_dialogs.getIndex(id));
+
+	return true;
 }
 
 bool DialogHandler::isPlaying(Id id) {
