@@ -732,8 +732,8 @@ void Application::puzzleReset() {
 	SAFE_DELETE(_puzzle);
 	SAFE_DELETE(_rotation);
 
-	// TODO two calls missing
-	warning("[Application::resetPuzzle] Missing two function calls");
+	soundStop(kSoundTypeEffect, 16);
+	soundStop(kSoundTypeDialog, 16);
 }
 
 PuzzleId Application::getCurrentPuzzleId() {
@@ -1455,24 +1455,44 @@ void Application::soundAdd(Id soundId, SoundType type, Common::String filename, 
 	_soundManager->addEntry(soundId, type, filename, loadFrom, format, a4 != 1, soundChunk);
 }
 
+void Application::soundPlay(Id soundId, int a2) {
+	_soundManager->play(soundId, a2 != 1);
+}
+
+void Application::soundStop(Id soundId, uint32 a2) {
+	_soundManager->stop(soundId, a2);
+}
+
 void Application::soundSetVolume(Id soundId, uint32 volume) {
 	_soundManager->setVolume(soundId, volume);
+}
+
+void Application::soundStopType(SoundType soundType, uint32 a2) {
+	_soundManager->stopType(soundType, a2);
+}
+
+void Application::soundSetMultiplier(SoundType soundType, uint32 multiplier) {
+	_soundManager->setMultiplier(soundType, multiplier);
+}
+
+void Application::soundSetMultiplierIfNotType(SoundType soundType, int32 multiplier) {
+	_soundManager->setMultiplierIfNotType(soundType, multiplier);
+}
+
+void Application::soundStopAll(uint32 a1) {
+	_soundManager->stopAll(a1);
+}
+
+void Application::soundSetPan(Id soundId, int32 pan) {
+	_soundManager->setPan(soundId, pan);
 }
 
 bool Application::soundIsPlaying(Id soundId) {
 	return _soundManager->isPlaying(soundId);
 }
 
-void Application::sound_sub_406E00(Id soundId, uint32 a2) {
-	error("[Application::sound_sub_406E00] Not implemented");
-}
-
-void Application::sound_sub_406EA0(uint32 a1) {
-	warning("[Application::sound_sub_406EA0] Not implemented");
-}
-
-void Application::soundPlay(Id soundId, int a2) {
-	error("[Application::noiceIdPlay] Not implemented");
+bool Application::soundIsPlayingType(SoundType soundType) {
+	return _soundManager->isPlayingType(soundType);
 }
 
 #pragma endregion

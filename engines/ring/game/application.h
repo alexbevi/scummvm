@@ -260,14 +260,16 @@ public:
 	// Sound
 	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom);
 	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk);
+	void soundPlay(Id soundId, int a2);
+	void soundStop(Id soundId, uint32 a2);
 	void soundSetVolume(Id soundId, uint32 volume);
+	void soundStopType(SoundType soundType, uint32 a2);
+	void soundSetMultiplier(SoundType soundType, uint32 a2);
+	void soundSetMultiplierIfNotType(SoundType soundType, int32 multiplier);
+	void soundStopAll(uint32 a1);
+	void soundSetPan(Id soundId, int32 pan);
 	bool soundIsPlaying(Id soundId);
-
-	void sound_sub_406E00(Id soundId, uint32 a2);
-	void sound_sub_406EA0(uint32 a1);
-
-
-	void soundPlay(Id noiceId, int a2);
+	bool soundIsPlayingType(SoundType soundType);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Timer

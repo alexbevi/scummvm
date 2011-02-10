@@ -150,7 +150,16 @@ public:
 
 	// Playing
 	void updateQueue();
+	void play(Id soundId, int a2);
+	void stop(Id soundId, uint32 a2);
+	void setVolume(Id soundId, uint32 volume);
+	void stopType(SoundType soundType, uint32 a2);
+	void setMultiplier(SoundType soundType, uint32 a2);
+	void setMultiplierIfNotType(SoundType soundType, int32 multiplier);
+	void stopAll(uint32 a1);
+	void setPan(Id soundId, int32 pan);
 	bool isPlaying(Id soundId);
+	bool isPlayingType(SoundType soundType);
 
 	void sub_4696F0();
 
@@ -158,21 +167,15 @@ public:
 	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk);
 	SoundEntry *getSoundEntry(Id soundId);
 
-	void setVolume(Id soundId, uint32 volume);
-	void updateVolumeAndPan(Audio::SoundHandle handle, int32 volume, int32 pan);
-
 	// Accessors
 	float getGlobalVolume() { return _globalVolume; }
 	Audio::Mixer *getMixer() { return _mixer; }
 
 private:
-	Application *_application;
-
-	AssociativeArray<SoundEntry *> _entries;
-
-	float _globalVolume;
-
-	Audio::Mixer       *_mixer;
+	Application                    *_application;
+	Audio::Mixer                   *_mixer;
+	AssociativeArray<SoundEntry *>  _entries;
+	float                           _globalVolume;
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -117,7 +117,8 @@ void SoundEntry::setVolumeAndPan() {
 	convertVolumeFrom(volume);
 	convertPan(pan);
 
-	getSound()->updateVolumeAndPan(_handle, volume, pan);
+	getSound()->getMixer()->setChannelVolume(_handle, (byte)volume);
+	getSound()->getMixer()->setChannelBalance(_handle, (byte)pan);
 }
 
 SoundFormat SoundEntry::getFormat(Common::String filename) {
@@ -249,6 +250,8 @@ SoundManager::~SoundManager() {
 	_mixer = NULL;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Playing
 void SoundManager::updateQueue() {
 	for (Common::Array<SoundEntry *>::iterator it = _entries.begin(); it != _entries.end(); it++) {
 		if (!(*it)->checkPlaying())
@@ -259,6 +262,44 @@ void SoundManager::updateQueue() {
 
 		_application->onSound((*it)->getId(), (*it)->getType(), 4097);
 	}
+}
+
+void SoundManager::play(Id soundId, int a2) {
+	error("[SoundManager::stop] Not implemented");
+}
+
+void SoundManager::stop(Id soundId, uint32 a2) {
+	error("[SoundManager::stop] Not implemented");
+}
+
+void SoundManager::setVolume(Id soundId, uint32 volume) {
+	if (!_entries.has(soundId))
+		return;
+
+	_entries.get(soundId)->setVolume(volume);
+}
+
+void SoundManager::stopType(SoundType soundType, uint32 a2) {
+	error("[SoundManager::stopType] Not implemented");
+}
+
+void SoundManager::setMultiplier(SoundType soundType, uint32 a2) {
+	error("[SoundManager::setMultiplier] Not implemented");
+}
+
+void SoundManager::setMultiplierIfNotType(SoundType soundType, int32 multiplier) {
+	error("[SoundManager::setMultiplierIfNotType] Not implemented");
+}
+
+void SoundManager::stopAll(uint32 a1) {
+	error("[SoundManager::stopAll] Not implemented");
+}
+
+void SoundManager::setPan(Id soundId, int32 pan) {
+	if (!_entries.has(soundId))
+		return;
+
+	_entries.get(soundId)->setPan(pan);
 }
 
 bool SoundManager::isPlaying(Id soundId) {
@@ -272,10 +313,16 @@ bool SoundManager::isPlaying(Id soundId) {
 		return entry->isPlaying();
 }
 
+bool SoundManager::isPlayingType(SoundType soundType) {
+	error("[SoundManager::isPlayingType] Not implemented");
+}
+
 void SoundManager::sub_4696F0() {
 	error("[SoundManager::sub_4696F0] Not implemented");
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Sound Entries
 void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk) {
 	// Check if we already have a sound entry for this id
 	if (getSoundEntry(soundId))
@@ -296,18 +343,6 @@ SoundEntry *SoundManager::getSoundEntry(Id soundId) {
 		return NULL;
 
 	return _entries.get(soundId);
-}
-
-void SoundManager::setVolume(Id soundId, uint32 volume) {
-	if (!_entries.has(soundId))
-		return;
-
-	_entries.get(soundId)->setVolume(volume);
-}
-
-void SoundManager::updateVolumeAndPan(Audio::SoundHandle handle, int32 volume, int32 pan) {
-	_mixer->setChannelVolume(handle, (byte)volume);
-	_mixer->setChannelBalance(handle, (byte)pan);
 }
 
 #pragma endregion

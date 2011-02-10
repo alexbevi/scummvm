@@ -541,7 +541,7 @@ void EventHandlerRing::onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, ui
 	case kMovabilityRotationToRotation:
 		if (movabilityFrom == 10005)
 			if (movabilityTo == 10101) {
-				_app->sound_sub_406E00(10901, 1024);
+				_app->soundStop(10901, 1024);
 				_app->soundPlay(rnd(8) + 13001, 1);
 			}
 		break;
@@ -614,7 +614,7 @@ void EventHandlerRing::onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, ui
 			_app->soundPlay(10804, 1);
 		} else if (movabilityFrom == 10002) {
 			_app->soundPlay(10804, 1);
-			_app->sound_sub_406E00(10800, 1024);
+			_app->soundStop(10800, 1024);
 		}
 		break;
 	}
@@ -783,7 +783,7 @@ void EventHandlerRing::onBeforeRideZoneRO(Id movabilityFrom, Id movabilityTo, ui
 		}
 
 		_app->varSetByte(40804, 0);
-		_app->sound_sub_406E00(40102, 1024);
+		_app->soundStop(40102, 1024);
 		if (_app->varGetByte(40802) == 1)
 			_app->playMovie("1785");
 
@@ -819,7 +819,7 @@ void EventHandlerRing::onBeforeRideZoneWA(Id movabilityFrom, Id movabilityTo, ui
 
 	case 50103:
 		if (movabilityTo == 50701) {
-			_app->sound_sub_406E00(51006, 1024);
+			_app->soundStop(51006, 1024);
 			_app->soundPlay(51007, 2);
 		}
 		break;

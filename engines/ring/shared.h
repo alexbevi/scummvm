@@ -140,7 +140,6 @@ enum SoundType {
 	kSoundTypeAmbientEffect   = 3,
 	kSoundTypeEffect          = 4,
 	kSoundTypeDialog          = 5
-
 };
 
 enum SoundFormat {

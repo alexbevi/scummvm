@@ -170,7 +170,7 @@ void ApplicationRing::startMenu(bool savegame) {
 
 	_field_6F = _zone;
 
-	sound_sub_406EA0(4);
+	soundStopAll(4);
 	setZoneAndEnableBag(kZoneSY);
 	puzzleSetActive(kPuzzleMenu, true, true);
 	puzzleSetMod(kPuzzle1, 1, 0);
@@ -196,7 +196,7 @@ void ApplicationRing::startMenu(bool savegame) {
 }
 
 void ApplicationRing::showCredits() {
-	sound_sub_406EA0(1024);
+	soundStopAll(1024);
 	setZoneAndEnableBag(kZoneWA);
 	soundPlay(51002, 2);
 
@@ -208,7 +208,7 @@ void ApplicationRing::showCredits() {
 			break;
 	}
 
-	sound_sub_406E00(51002, 1024);
+	soundStop(51002, 1024);
 }
 
 #pragma endregion
