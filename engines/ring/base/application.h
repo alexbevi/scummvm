@@ -68,6 +68,9 @@ public:
 	virtual void setup() = 0;
 	virtual void initZones() = 0;
 
+	void exitZone();
+	void exitToMenu(uint32 a1);
+
 	//////////////////////////////////////////////////////////////////////////
 	// Startup & Menu
 	virtual void showStartupScreen() = 0;
@@ -85,7 +88,6 @@ public:
 	void onSound(Id id, SoundType type, uint32 a3);
 
 	void update(const Common::Point &point);
-	void exitZone();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Drawing
@@ -115,7 +117,7 @@ public:
 	void bagAdd(ObjectId id);
 	void bagRemove(ObjectId id);
 	void bagRemoveAll();
-	bool bagIsIn(ObjectId id);
+	bool bagHas(ObjectId id);
 
 	void bagOpen(const Common::Point &point);
 

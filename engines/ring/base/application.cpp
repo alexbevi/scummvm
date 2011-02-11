@@ -332,6 +332,16 @@ void Application::loadConfiguration() {
 	}
 }
 
+void Application::exitZone() {
+	error("[Application::exitZone] Not implemented");
+}
+
+void Application::exitToMenu(uint32 a1) {
+	_state = kStateShowMenu;
+	_field_70 = a1;
+	soundStopAll(64);
+}
+
 #pragma endregion
 
 #pragma region Event handling
@@ -386,10 +396,6 @@ void Application::onSound(Id id, SoundType type, uint32 a3) {
 
 void Application::update(const Common::Point &point) {
 	error("[Application::update] Not implemented");
-}
-
-void Application::exitZone() {
-	error("[Application::exitZone] Not implemented");
 }
 
 #pragma endregion
@@ -518,7 +524,7 @@ void Application::bagRemoveAll() {
 	_bag->removeAll();
 }
 
-bool Application::bagIsIn(ObjectId objectId) {
+bool Application::bagHas(ObjectId objectId) {
 	if (!_bag)
 		error("[Application::removeFromBag] bag is not initialized properly");
 
