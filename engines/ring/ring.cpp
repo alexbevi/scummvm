@@ -28,6 +28,10 @@
 #include "ring/base/application.h"
 #include "ring/base/sound.h"
 
+#include "ring/game/application_faust.h"
+#include "ring/game/application_jerusalem.h"
+#include "ring/game/application_pilgrim2.h"
+#include "ring/game/application_pompeii.h"
 #include "ring/game/application_ring.h"
 
 #include "common/config-manager.h"
@@ -91,8 +95,30 @@ Common::Error RingEngine::run() {
 		error("[RingEngine::run] Unknown game type!");
 		break;
 
+	case Ring::GameTypePilgrim:
+		error("[RingEngine::run] Pilgrim support not implemented yet!");
+
 	case Ring::GameTypeRing:
 		_application = new ApplicationRing(this);
+		break;
+
+	case Ring::GameTypeFaust:
+		_application = new ApplicationFaust(this);
+		break;
+
+	case Ring::GameTypePompeii:
+		_application = new ApplicationPompeii(this);
+		break;
+
+	case Ring::GameTypePilgrim2:
+		_application = new ApplicationPilgrim2(this);
+		break;
+
+	case Ring::GameTypePilgrim3:
+		error("[RingEngine::run] Pilgrim 3 support not implemented yet!");
+
+	case Ring::GameTypeJerusalem:
+		_application = new ApplicationJerusalem(this);
 		break;
 	}
 

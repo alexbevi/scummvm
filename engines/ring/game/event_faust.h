@@ -23,30 +23,32 @@
  *
  */
 
-#ifndef RING_EVENTHANDLER_H
-#define RING_EVENTHANDLER_H
+#ifndef RING_EVENTHANDLER_FAUST_H
+#define RING_EVENTHANDLER_FAUST_H
 
-#include "ring/shared.h"
-
-#include "common/events.h"
+#include "ring/base/event.h"
 
 namespace Ring {
 
-class EventHandler {
-public:
-	virtual ~EventHandler() {}
+class Application;
 
-	virtual void onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) = 0;
-	virtual void onMouseLeftButtonDown(Common::Event &evt) = 0;
-	virtual void onMouseRightButtonUp(Common::Event &evt) = 0;
-	virtual void onKeyDown(Common::Event &evt) = 0;
-	virtual void onTimer(TimerId id) = 0;
-	virtual void onSound(Id id, SoundType type, uint32 a3) = 0;
-	virtual void onSetup(Zone zone, uint32 a2) = 0;
-	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {};
-	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {};
+class EventHandlerFaust : public EventHandler {
+public:
+	EventHandlerFaust(Application *application);
+	virtual ~EventHandlerFaust();
+
+	virtual void onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed);
+	virtual void onMouseLeftButtonDown(Common::Event &evt);
+	virtual void onMouseRightButtonUp(Common::Event &evt);
+	virtual void onKeyDown(Common::Event &evt);
+	virtual void onTimer(TimerId id);
+	virtual void onSound(Id id, SoundType type, uint32 a3);
+	virtual void onSetup(Zone zone, uint32 a2);
+
+private:
+	Application *_app;
 };
 
-} // End of namespace LastExpress
+} // End of namespace Ring
 
-#endif // LASTEXPRESS_EVENTHANDLER_H
+#endif // RING_EVENTHANDLER_FAUST_H

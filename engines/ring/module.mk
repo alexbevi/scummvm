@@ -20,7 +20,15 @@ MODULE_OBJS := \
 	base/text.o \
 	base/timer.o \
 	base/var.o \
+	game/application_faust.o \
+	game/application_jerusalem.o \
+	game/application_pilgrim2.o \
+	game/application_pompeii.o \
 	game/application_ring.o \
+	game/event_faust.o \
+	game/event_jerusalem.o \
+	game/event_pilgrim2.o \
+	game/event_pompeii.o \
 	game/event_ring.o \
 	graphics/animation.o \
 	graphics/aquator.o \
