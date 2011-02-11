@@ -384,6 +384,14 @@ void Application::onSound(Id id, SoundType type, uint32 a3) {
 	_eventHandler->onSound(id, type, a3);
 }
 
+void Application::update(const Common::Point &point) {
+	error("[Application::update] Not implemented");
+}
+
+void Application::exitZone() {
+	error("[Application::exitZone] Not implemented");
+}
+
 #pragma endregion
 
 #pragma region Display and Movies
@@ -518,6 +526,10 @@ bool Application::bagIsIn(ObjectId objectId) {
 		error("[Application::removeFromBag] ID doesn't exist (%d)", objectId.id());
 
 	return _bag->has(objectId);
+}
+
+void Application::bagOpen(const Common::Point &point) {
+	error("[Application::bagUpdate] Not implemented!");
 }
 
 #pragma endregion

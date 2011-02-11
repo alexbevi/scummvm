@@ -41,9 +41,10 @@ public:
 	virtual void initZones();
 
 	//////////////////////////////////////////////////////////////////////////
-	// Startup
+	// Startup & Menu
 	virtual void showStartupScreen();
 	virtual void startMenu(bool savegame);
+	virtual void showMenu(Zone zone, uint32 a2);
 	virtual void showCredits();
 
 	//////////////////////////////////////////////////////////////////////////

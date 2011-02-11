@@ -299,7 +299,7 @@ void AnimationImage::drawActiveFrame(const Common::Point &point) {
 }
 
 void AnimationImage::draw() {
-	error("[AnimationImage::draw] Not implemented");
+	warning("[AnimationImage::draw] Not implemented");
 }
 
 void AnimationImage::setCoordinates(const Common::Point &point) {

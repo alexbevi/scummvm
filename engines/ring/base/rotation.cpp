@@ -128,14 +128,43 @@ Rotation::~Rotation() {
 	CLEAR_ARRAY(Animation,          _animations);
 	CLEAR_ARRAY(Text,               _texts);
 	CLEAR_ARRAY(SoundItem,          _soundItems);
-	CLEAR_ARRAY(ImageHandle,        _imageHandles);
 
+	SAFE_DELETE(_imageHandle);
 	SAFE_DELETE(_data);
 }
 
 void Rotation::load() {
 	error("[Rotation::load] Not implemented");
 }
+
+void Rotation::update() {
+	error("[Rotation::update] Not implemented");
+}
+
+void Rotation::setCoordinates(const Common::Point &point){
+	error("[Rotation::setCoordinates] Not implemented");
+}
+
+void Rotation::loadImage() {
+	error("[Rotation::loadImage] Not implemented");
+}
+
+void Rotation::destroyImage() {
+	error("[Rotation::destroyImage] Not implemented");
+}
+
+void Rotation::drawImage(ScreenManager *screen) {
+	error("[Rotation::drawImage] Not implemented");
+}
+
+void Rotation::draw(ScreenManager *screen) {
+	error("[Rotation::draw] Not implemented");
+}
+
+void Rotation::drawText() {
+	error("[Rotation::drawText] Not implemented");
+}
+
 
 void Rotation::addAccessibility(Accessibility *accessibility) {
 	if (accessibility == NULL)

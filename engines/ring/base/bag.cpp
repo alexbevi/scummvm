@@ -195,6 +195,14 @@ void Bag::sub_417DE0(uint32 a1, uint32 a2) {
 	_field_8C = a2;
 }
 
+void Bag::sub_417E00() {
+	error("[Bag::sub_417E00] Not implemented!");
+}
+
+void Bag::draw(){
+	error("[Bag::draw] Not implemented!");
+}
+
 void Bag::sub_419280(uint32 a1) {
 	_field_9D = a1;
 	_ticks = g_system->getMillis();

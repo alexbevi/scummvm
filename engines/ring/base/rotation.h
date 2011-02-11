@@ -36,6 +36,7 @@ class Animation;
 class ImageHandle;
 class Movability;
 class ObjectPresentation;
+class ScreenManager;
 class SoundEntry;
 class SoundItem;
 class Text;
@@ -124,6 +125,13 @@ public:
 	~Rotation();
 
 	void load();
+	void update();
+	void setCoordinates(const Common::Point &point);
+	void loadImage();
+	void destroyImage();
+	void drawImage(ScreenManager *screen);
+	void draw(ScreenManager *screen);
+	void drawText();
 
 	// Accessibility
 	void addAccessibility(Accessibility *accessibility);
@@ -163,6 +171,9 @@ public:
 	uint32 getLayerCount();
 	void setComBufferLength(uint32 length) { _comBufferLength = length; }
 	Movability *getMovability(uint32 index);
+	void setField28(byte val) { _field_28 = val; }
+	byte getField28() { return _field_28; }
+	bool hasImage() { return _imageHandle != NULL; }
 
 private:
 	Common::String                      _path;
@@ -175,7 +186,7 @@ private:
 	Common::Array<Text *>               _texts;
 	Common::Array<SoundItem *>          _soundItems;
 	byte                                _field_28;
-	Common::Array<ImageHandle *>        _imageHandles;
+	ImageHandle                        *_imageHandle;
 	RotationData                       *_data;
 	float                               _field_31;
 	float                               _field_35;

@@ -106,7 +106,7 @@ void DialogHandler::init(uint32 a1, const Color &subtitlesColor, const Color &su
 
 void DialogHandler::addDialog(Dialog *dialog) {
 	if (!dialog)
-		error("[DialogHandler::addDialog] dialog is not initialized properly");
+		error("[DialogHandler::addDialog] Dialog is not initialized properly");
 
 	dialog->setTicks();
 
@@ -120,6 +120,13 @@ bool DialogHandler::removeDialog(Id id) {
 	_dialogs.remove_at(_dialogs.getIndex(id));
 
 	return true;
+}
+
+void DialogHandler::play() {
+	if (_dialogs.empty())
+		return;
+
+	error("[DialogHandler::play] Not implemented");
 }
 
 bool DialogHandler::isPlaying(Id id) {

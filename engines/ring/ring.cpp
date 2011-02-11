@@ -152,6 +152,7 @@ Common::Error RingEngine::run() {
 				// Closing the GMM
 
 			case Common::EVENT_MOUSEMOVE:
+				_coordinates = ev.mouse;
 				break;
 
 			case Common::EVENT_LBUTTONUP:
@@ -203,6 +204,10 @@ bool RingEngine::pollEvents() {
 
 	switch (ev.type) {
 	default:
+		break;
+
+	case Common::EVENT_MOUSEMOVE:
+		_coordinates = ev.mouse;
 		break;
 
 	case Common::EVENT_KEYDOWN:

@@ -69,9 +69,10 @@ public:
 	virtual void initZones() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
-	// Startup
+	// Startup & Menu
 	virtual void showStartupScreen() = 0;
 	virtual void startMenu(bool savegame) = 0;
+	virtual void showMenu(Zone zone, uint32 a2) = 0;
 	virtual void showCredits() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -82,6 +83,9 @@ public:
 	void onKeyDown(Common::Event &evt);
 	void onTimer(TimerId id);
 	void onSound(Id id, SoundType type, uint32 a3);
+
+	void update(const Common::Point &point);
+	void exitZone();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Drawing
@@ -112,6 +116,8 @@ public:
 	void bagRemove(ObjectId id);
 	void bagRemoveAll();
 	bool bagIsIn(ObjectId id);
+
+	void bagOpen(const Common::Point &point);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Cursor

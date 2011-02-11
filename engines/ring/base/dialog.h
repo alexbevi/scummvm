@@ -84,6 +84,7 @@ public:
 	void addDialog(Dialog *dialog);
 	bool removeDialog(Id id);
 
+	void play();
 	bool isPlaying(Id id);
 	bool isPlaying() const;
 

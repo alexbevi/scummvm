@@ -28,6 +28,7 @@
 
 #include "ring/debug.h"
 
+#include "common/rect.h"
 #include "common/random.h"
 
 #include "engines/advancedDetector.h"
@@ -110,7 +111,10 @@ public:
 	// Accessors and helpers
 	Application *getApplication() { return _application; }
 	Common::RandomSource getRandom() const {return _random; }
-	void unsetFlag() { _flag = false; }
+	bool getFlag() { return _flag; }
+	void setFlag(bool state) { _flag = state; }
+	bool isMouseButtonPressed() { return _mouseButtonPressed; }
+	Common::Point getCoordinates() { return _coordinates; }
 
 private:
 	const RingGameDescription *_gameDescription;
@@ -125,6 +129,7 @@ private:
 
 	// Flags
 	bool _mouseButtonPressed;
+	Common::Point _coordinates;
 	bool _flag;
 };
 

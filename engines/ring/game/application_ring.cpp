@@ -27,7 +27,10 @@
 
 #include "ring/base/art.h"
 #include "ring/base/bag.h"
+#include "ring/base/cursor.h"
+#include "ring/base/dialog.h"
 #include "ring/base/puzzle.h"
+#include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 #include "ring/base/sound.h"
 
@@ -157,7 +160,7 @@ void ApplicationRing::startMenu(bool savegame) {
 
 	if (savegame) {
 		cursorSelect(kCursorBusy);
-		_vm->unsetFlag();
+		_vm->setFlag(false);
 		_vm->update();
 		getBag()->sub_419350();
 
@@ -194,6 +197,10 @@ void ApplicationRing::startMenu(bool savegame) {
 	}
 }
 
+void ApplicationRing::showMenu(Zone zone, uint32 a2) {
+	error("[ApplicationPompeii::showMenu] Not implemented");
+}
+
 void ApplicationRing::showCredits() {
 	soundStopAll(1024);
 	setZoneAndEnableBag(kZoneWA);
@@ -219,7 +226,95 @@ void ApplicationRing::draw() {
 	_screenManager->updateScreen();
 
 	// Update engine state
-	warning("[ApplicationRing::draw] Engine state update not implemented!");
+	switch (_field_66){
+	default:
+		break;
+
+	case 0:
+		return;
+
+	case 1:
+		if (!_rotation)
+			error("[ApplicationRing::draw] No active rotation!");
+
+		// TODO: check for pressed key SPACE and skip drawing image
+
+		if (_rotation->getField28() != 0) {
+			if (_rotation->getField28() != 3) {
+				_rotation->destroyImage();
+				_rotation->setField28(0);
+			}
+		} else {
+			if (_rotation->hasImage())
+				_rotation->setField28(3);
+		}
+
+		// TODO: loop and check for pressed key SPACE
+
+		if (_rotation->getField28() != 0) {
+			if (_rotation->getField28() != 3) {
+				_rotation->loadImage();
+				_rotation->drawImage(_screenManager);
+				_rotation->drawText();
+			}
+		} else {
+			_rotation->load();
+			_rotation->update();
+			_rotation->setCoordinates(_vm->getCoordinates());
+			_rotation->draw(_screenManager);
+			_rotation->drawText();
+		}
+
+		break;
+
+	case 2:
+		_puzzle->alloc();
+		_puzzle->update(_screenManager);
+		break;
+
+	case 3:
+		getBag()->draw();
+		break;
+
+	case 4:
+		exitZone();
+		initZones();
+		showMenu(_zone, _field_70);
+		return;
+	}
+
+	// Update puzzle 1
+	if (_puzzles.has(kPuzzle1)) {
+		Puzzle *puzzle = _puzzles.get(kPuzzle1);
+
+		puzzle->alloc();
+		puzzle->update(_screenManager);
+	}
+
+	// Draw bag
+	Bag *bag = getBag();
+	if (bag && bag->getField94())
+		bag->draw();
+
+	// Open bag
+	if (_vm->isMouseButtonPressed())
+		bagOpen(_vm->getCoordinates());
+
+	// Update bag, puzzle & rotation
+	if (_vm->getFlag()) {
+		update(_vm->getCoordinates());
+	} else {
+		_vm->setFlag(true);
+	}
+
+	// Play dialogs
+	if (_dialogHandler) {
+		_dialogHandler->play();
+	}
+
+	// Update animated cursors
+	if (_cursorHandler->getType() == kCursorTypeImage || _cursorHandler->getType() == kCursorTypeAnimated)
+		_cursorHandler->draw();
 }
 
 #pragma endregion

@@ -58,6 +58,10 @@ void ApplicationJerusalem::startMenu(bool savegame) {
 	error("[ApplicationJerusalem::startMenu] Not implemented");
 }
 
+void ApplicationJerusalem::showMenu(Zone zone, uint32 a2) {
+	error("[ApplicationJerusalem::showMenu] Not implemented");
+}
+
 void ApplicationJerusalem::showCredits() {
 	error("[ApplicationJerusalem::showCredits] Not implemented");
 }
