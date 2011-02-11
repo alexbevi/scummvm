@@ -23,7 +23,7 @@
  *
  */
 
-#include "ring/game/language.h"
+#include "ring/base/language.h"
 
 #include "ring/helpers.h"
 

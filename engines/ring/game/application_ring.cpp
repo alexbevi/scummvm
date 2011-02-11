@@ -26,14 +26,14 @@
 #include "ring/game/application_ring.h"
 
 #include "ring/base/art.h"
+#include "ring/base/bag.h"
+#include "ring/base/puzzle.h"
+#include "ring/base/saveload.h"
 #include "ring/base/sound.h"
 
-#include "ring/game/bag.h"
 #include "ring/game/event_ring.h"
-#include "ring/game/puzzle.h"
-#include "ring/game/saveload.h"
 
-#include "ring/graphics/video.h"
+#include "ring/graphics/screen.h"
 
 #include "ring/ring.h"
 #include "ring/shared_ring.h"
@@ -216,7 +216,7 @@ void ApplicationRing::showCredits() {
 
 void ApplicationRing::draw() {
 	// Update our screen
-	_video->updateScreen();
+	_screenManager->updateScreen();
 
 	// Update engine state
 	warning("[ApplicationRing::draw] Engine state update not implemented!");

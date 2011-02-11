@@ -25,9 +25,9 @@
 
 #include "ring/ring.h"
 
+#include "ring/base/application.h"
 #include "ring/base/sound.h"
 
-#include "ring/game/application.h"
 #include "ring/game/application_ring.h"
 
 #include "common/config-manager.h"

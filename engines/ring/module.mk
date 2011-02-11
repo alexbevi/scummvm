@@ -1,33 +1,34 @@
 MODULE := engines/ring
 
 MODULE_OBJS := \
+	base/accessibility.o \
+	base/application.o \
 	base/art.o \
+	base/bag.o \
 	base/cursor.o \
-	base/file.o \
+	base/dialog.o \
 	base/font.o \
+	base/language.o \
+	base/object.o \
+	base/movability.o \
 	base/preferences.o \
+	base/presentation.o \
+	base/puzzle.o \
+	base/rotation.o \
+	base/saveload.o \
 	base/sound.o \
 	base/text.o \
 	base/timer.o \
 	base/var.o \
-	game/application.o \
 	game/application_ring.o \
-	game/bag.o \
-	game/dialog.o \
 	game/event_ring.o \
-	game/language.o \
-	game/object.o \
-	game/puzzle.o \
-	game/saveload.o \
-	graphics/accessibility.o \
 	graphics/animation.o \
+	graphics/aquator.o \
 	graphics/dragControl.o \
 	graphics/hotspot.o \
 	graphics/image.o \
-	graphics/movability.o \
-	graphics/presentation.o \
-	graphics/rotation.o \
-	graphics/video.o \
+	graphics/movie.o \
+	graphics/screen.o \
 	graphics/visual.o \
 	debug.o \
 	detection.o \

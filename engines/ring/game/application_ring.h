@@ -26,7 +26,7 @@
 #ifndef RING_APPLICATION_RING_H
 #define RING_APPLICATION_RING_H
 
-#include "ring/game/application.h"
+#include "ring/base/application.h"
 
 namespace Ring {
 

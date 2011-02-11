@@ -23,12 +23,12 @@
  *
  */
 
-#include "ring/graphics/movability.h"
+#include "ring/base/movability.h"
 
-#include "ring/game/puzzle.h"
+#include "ring/base/puzzle.h"
+#include "ring/base/rotation.h"
 
 #include "ring/graphics/hotspot.h"
-#include "ring/graphics/rotation.h"
 
 #include "ring/helpers.h"
 

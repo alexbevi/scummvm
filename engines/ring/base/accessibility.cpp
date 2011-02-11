@@ -23,9 +23,9 @@
  *
  */
 
-#include "ring/graphics/accessibility.h"
+#include "ring/base/accessibility.h"
 
-#include "ring/game/object.h"
+#include "ring/base/object.h"
 
 #include "ring/graphics/hotspot.h"
 

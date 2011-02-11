@@ -23,31 +23,20 @@
  *
  */
 
-#ifndef RING_SAVELOAD_H
-#define RING_SAVELOAD_H
-
-#include "ring/shared.h"
+#ifndef RING_AQUATOR_H
+#define RING_AQUATOR_H
 
 namespace Ring {
 
-class Application;
-
-class SaveManager {
+class Aquator {
 public:
-	SaveManager(Application *application);
-	~SaveManager();
-
-	bool loadSave(Common::String filename, LoadSaveType type);
-	bool loadSaveTimer(Common::String filename, LoadSaveType type);
-
-	bool isLoaded(uint32 a1);
-
-	bool has(Common::String filename);
+	Aquator();
+	~Aquator();
 
 private:
-	Application *_application;
+
 };
 
 } // End of namespace Ring
 
-#endif // RING_SAVELOAD_H
+#endif // RING_AQUATOR_H

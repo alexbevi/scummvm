@@ -26,7 +26,7 @@
 #ifndef RING_EVENTHANDLER_RING_H
 #define RING_EVENTHANDLER_RING_H
 
-#include "ring/game/event.h"
+#include "ring/base/event.h"
 
 namespace Ring {
 

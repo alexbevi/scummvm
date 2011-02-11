@@ -25,9 +25,8 @@
 
 #include "ring/base/text.h"
 
+#include "ring/base/application.h"
 #include "ring/base/font.h"
-
-#include "ring/game/application.h"
 
 #include "ring/ring.h"
 #include "ring/helpers.h"

@@ -23,19 +23,17 @@
  *
  */
 
-#include "ring/game/puzzle.h"
+#include "ring/base/puzzle.h"
 
-#include "ring/base/text.h"
+#include "ring/base/accessibility.h"
+#include "ring/base/application.h"
+#include "ring/base/bag.h"
+#include "ring/base/movability.h"
+#include "ring/base/object.h"
 #include "ring/base/sound.h"
+#include "ring/base/text.h"
 
-#include "ring/game/application.h"
-#include "ring/game/bag.h"
-
-#include "ring/graphics/accessibility.h"
 #include "ring/graphics/image.h"
-#include "ring/graphics/movability.h"
-#include "ring/graphics/presentation.h"
-#include "ring/graphics/video.h"
 #include "ring/graphics/visual.h"
 
 #include "ring/ring.h"
@@ -69,7 +67,7 @@ void Puzzle::alloc() {
 	warning("[Puzzle::alloc] Not implemented");
 }
 
-void Puzzle::update(Video *video) {
+void Puzzle::update(ScreenManager *screen) {
 	warning("[Puzzle::update] Not implemented");
 }
 

@@ -23,7 +23,7 @@
  *
  */
 
-#include "ring/game/dialog.h"
+#include "ring/base/dialog.h"
 
 #include "ring/helpers.h"
 

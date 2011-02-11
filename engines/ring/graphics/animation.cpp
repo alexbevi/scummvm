@@ -25,10 +25,9 @@
 
 #include "ring/graphics/animation.h"
 
-#include "ring/game/application.h"
+#include "ring/base/application.h"
 
 #include "ring/graphics/image.h"
-#include "ring/graphics/presentation.h"
 
 #include "ring/ring.h"
 

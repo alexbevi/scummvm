@@ -23,14 +23,14 @@
  *
  */
 
-#include "ring/base/file.h"
+#include "ring/graphics/aquator.h"
 
 namespace Ring {
 
-File::File() {
+Aquator::Aquator() {
 }
 
-File::~File() {
+Aquator::~Aquator() {
 }
 
 } // End of namespace Ring

@@ -23,17 +23,19 @@
  *
  */
 
-#include "ring/game/saveload.h"
+#include "ring/base/saveload.h"
+
+#include "ring/base/application.h"
 
 #include "common/system.h"
 
 namespace Ring {
 
-SaveManager::SaveManager(Application *application) : _application(application) {}
+SaveManager::SaveManager(Application *application) : _app(application) {}
 
 SaveManager::~SaveManager() {
 	// Zero-out passed pointers
-	_application = NULL;
+	_app = NULL;
 }
 
 bool SaveManager::loadSave(Common::String filename, LoadSaveType type) {

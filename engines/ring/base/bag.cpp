@@ -23,11 +23,10 @@
  *
  */
 
-#include "ring/game/bag.h"
+#include "ring/base/bag.h"
 
+#include "ring/base/object.h"
 #include "ring/base/text.h"
-
-#include "ring/game/object.h"
 
 #include "ring/graphics/animation.h"
 #include "ring/graphics/hotspot.h"

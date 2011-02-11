@@ -23,20 +23,13 @@
  *
  */
 
-#ifndef RING_FILE_H
-#define RING_FILE_H
+#include "ring/graphics/movie.h"
 
 namespace Ring {
 
-class File {
-public:
-	File();
-	~File();
+Movie::Movie() {}
 
-private:
-
-};
+Movie::~Movie() {
+}
 
 } // End of namespace Ring
-
-#endif // RING_FILE_H

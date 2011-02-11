@@ -25,7 +25,7 @@
 
 #include "ring/base/art.h"
 
-#include "ring/game/application.h"
+#include "ring/base/application.h"
 
 #include "ring/debug.h"
 #include "ring/helpers.h"
@@ -122,14 +122,14 @@ Common::SeekableReadStream *Art::createReadStreamForMember(const Common::String 
 
 #pragma region ArtHandler
 
-ArtHandler::ArtHandler(Application *application) : _application(application) {
+ArtHandler::ArtHandler(Application *application) : _app(application) {
 }
 
 ArtHandler::~ArtHandler() {
 	CLEAR_ARRAY(Art, _arts);
 
 	// Zero-out passed pointers
-	_application = NULL;
+	_app = NULL;
 }
 
 void ArtHandler::open(Zone zone, LoadFrom loadFrom) {
@@ -144,7 +144,7 @@ void ArtHandler::open(Zone zone, LoadFrom loadFrom) {
 	// Compute path
 	// - since we have all the data on disk, the path is the same all the time
 	// - we support multilanguage, so we need to read from the languahe folder
-	Common::String path = Common::String::format("DATA/%s/%s.at2", _application->languageGetFolder().c_str(), _application->getZoneString(zone).c_str());
+	Common::String path = Common::String::format("DATA/%s/%s.at2", _app->languageGetFolder().c_str(), _app->getZoneString(zone).c_str());
 
 	// Create new archive
 	Art *art = new Art();

@@ -23,27 +23,30 @@
  *
  */
 
-#ifndef RING_VIDEO_H
-#define RING_VIDEO_H
+#include "ring/graphics/screen.h"
 
-#include "graphics/surface.h"
+#include "common/system.h"
 
 namespace Ring {
 
-class Video {
-public:
-	Video();
-	~Video();
+ScreenManager::ScreenManager() {
+}
 
-	void init();
-	void sub_4028D0(int a1, int a2);
+ScreenManager::~ScreenManager() {
+	_screen.free();
+}
 
-	void updateScreen();
+void ScreenManager::init() {
+	_screen.create(640, 480, 2);
+}
 
-private:
-	Graphics::Surface _screen;
-};
+void ScreenManager::sub_4028D0(int a1, int a2) {
+	warning("[Video::sub_4028D0] Not implemented");
+}
+
+void ScreenManager::updateScreen() {
+	g_system->fillScreen(0);
+	g_system->copyRectToScreen((byte *)_screen.getBasePtr(0, 0), 640 * 2, 0, 0, 640, 480);
+}
 
 } // End of namespace Ring
-
-#endif // RING_VIDEO_H

@@ -37,10 +37,10 @@ class Movability;
 class ObjectPresentation;
 class PresentationAnimation;
 class PresentationImage;
+class ScreenManager;
 class SoundEntry;
 class SoundItem;
 class Text;
-class Video;
 class Visual;
 
 class Puzzle : public BaseObject {
@@ -49,7 +49,7 @@ public:
 	~Puzzle();
 
 	void alloc();
-	void update(Video *video);
+	void update(ScreenManager *screen);
 
 	void setBackgroundImage(Common::String filename, const Common::Point &point, bool isActive, LoadFrom loadFrom);
 

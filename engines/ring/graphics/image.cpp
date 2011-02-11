@@ -25,7 +25,7 @@
 
 #include "ring/graphics/image.h"
 
-#include "ring/graphics/presentation.h"
+#include "ring/base/object.h"
 
 namespace Ring {
 

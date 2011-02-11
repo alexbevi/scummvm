@@ -51,11 +51,11 @@ class PuzzleInfo;
 class RingEngine;
 class Rotation;
 class SaveManager;
+class ScreenManager;
 class SoundHandler;
 class SoundManager;
 class TimerHandler;
 class Var;
-class Video;
 
 class Application {
 public:
@@ -329,7 +329,7 @@ protected:
 	RingEngine *_vm;
 
 	// Application objects
-	Video                        *_video;
+	ScreenManager                *_screenManager;
 	ArtHandler                   *_artHandler;
 	FontHandler                  *_fontHandler;
 	DialogHandler                *_dialogHandler;

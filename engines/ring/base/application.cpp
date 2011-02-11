@@ -23,29 +23,28 @@
  *
  */
 
-#include "ring/game/application.h"
+#include "ring/base/application.h"
 
 #include "ring/base/art.h"
+#include "ring/base/bag.h"
 #include "ring/base/cursor.h"
+#include "ring/base/dialog.h"
+#include "ring/base/event.h"
 #include "ring/base/font.h"
+#include "ring/base/language.h"
+#include "ring/base/movability.h"
+#include "ring/base/object.h"
 #include "ring/base/preferences.h"
+#include "ring/base/puzzle.h"
+#include "ring/base/rotation.h"
+#include "ring/base/saveload.h"
 #include "ring/base/sound.h"
 #include "ring/base/timer.h"
 #include "ring/base/var.h"
 
-#include "ring/game/bag.h"
-#include "ring/game/dialog.h"
-#include "ring/game/event.h"
-#include "ring/game/language.h"
-#include "ring/game/object.h"
-#include "ring/game/puzzle.h"
-#include "ring/game/saveload.h"
-
 #include "ring/graphics/animation.h"
-#include "ring/graphics/movability.h"
 #include "ring/graphics/dragControl.h"
-#include "ring/graphics/rotation.h"
-#include "ring/graphics/video.h"
+#include "ring/graphics/screen.h"
 #include "ring/graphics/visual.h"
 
 #include "ring/helpers.h"
@@ -56,7 +55,7 @@
 namespace Ring {
 
 Application::Application(RingEngine *engine) : _vm(engine),
-	_video(NULL),        _artHandler(NULL),       _fontHandler(NULL),   _dialogHandler(NULL), _languageHandler(NULL),
+	_screenManager(NULL),        _artHandler(NULL),       _fontHandler(NULL),   _dialogHandler(NULL), _languageHandler(NULL),
 	_field_54(1),        _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
 	_soundHandler(NULL), _field_66(0),            _field_6A(0),         _zoneString("A0"),      _zone(kZoneInvalid),
 	_field_6F(0),        _field_70(0),            _field_74(0),         _field_75(0),         _field_76(0),
@@ -74,7 +73,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 Application::~Application() {
 	// TODO delete global image buffer
 
-	SAFE_DELETE(_video);
+	SAFE_DELETE(_screenManager);
 	SAFE_DELETE(_artHandler);
 	SAFE_DELETE(_fontHandler);
 	SAFE_DELETE(_dialogHandler);
@@ -125,9 +124,9 @@ void Application::init() {
 	loadConfiguration();
 
 	// Setup video
-	_video = new Video();
-	_video->init();
-	_video->sub_4028D0(0, 0);
+	_screenManager = new ScreenManager();
+	_screenManager->init();
+	_screenManager->sub_4028D0(0, 0);
 
 	// Setup objects
 	_objectHandler = new ObjectHandler();
@@ -702,7 +701,7 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 	puzzleReset();
 	_puzzle = _puzzles.get(id);
 	_puzzle->alloc();
-	_puzzle->update(_video);
+	_puzzle->update(_screenManager);
 
 	_field_66 = 2;
 

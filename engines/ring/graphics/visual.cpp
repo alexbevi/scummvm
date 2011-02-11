@@ -25,12 +25,11 @@
 
 #include "ring/graphics/visual.h"
 
+#include "ring/base/application.h"
+#include "ring/base/object.h"
 #include "ring/base/text.h"
 
-#include "ring/game/application.h"
-#include "ring/game/object.h"
-
-#include "ring/graphics/hotspot.h"
+#include "ring/graphics//hotspot.h"
 #include "ring/graphics/image.h"
 
 #include "ring/ring.h"

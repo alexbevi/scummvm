@@ -23,18 +23,18 @@
  *
  */
 
-#include "ring/graphics/rotation.h"
+#include "ring/base/rotation.h"
 
+#include "ring/base/accessibility.h"
+#include "ring/base/application.h"
+#include "ring/base/movability.h"
+#include "ring/base/object.h"
 #include "ring/base/sound.h"
 #include "ring/base/text.h"
 
-#include "ring/game/application.h"
-
-#include "ring/graphics/accessibility.h"
 #include "ring/graphics/animation.h"
 #include "ring/graphics/image.h"
-#include "ring/graphics/movability.h"
-#include "ring/graphics/presentation.h"
+
 
 #include "ring/ring.h"
 

@@ -26,7 +26,7 @@
 #ifndef RING_ART_H
 #define RING_ART_H
 
-#include "ring/game/object.h"
+#include "ring/base/object.h"
 
 #include "ring/shared.h"
 
@@ -91,7 +91,7 @@ private:
 	LoadFrom _loadFrom;
 };
 
-class ArtHandler : ObjectHandler {
+class ArtHandler : public ObjectHandler {
 public:
 	ArtHandler(Application *application);
 	~ArtHandler();
@@ -106,7 +106,7 @@ public:
 	Common::SeekableReadStream *get(Common::String filename, Zone zone, LoadFrom loadFrom);
 
 private:
-	Application *_application;
+	Application *_app;
 
 	Common::Array<Art *> _arts;
 
