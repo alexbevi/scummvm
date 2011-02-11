@@ -206,7 +206,7 @@ public:
 
 	// Helpers
 	int32 computePan(float angle);
-	void computeAndSetPan(float alp);
+	void computeAndSetPan(float alp, bool apply);
 
 private:
 	SoundEntry *_entry;

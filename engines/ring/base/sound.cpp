@@ -503,8 +503,11 @@ int32 SoundItem::computePan(float angle) {
 	return (int32)(getSoundDirection() * (sin(angle * SOUND_FRAC_VALUE + _angle) * _field_1D));
 }
 
-void SoundItem::computeAndSetPan(float alp) {
+void SoundItem::computeAndSetPan(float alp, bool apply) {
 	_pan = computePan(alp);
+
+	if (apply)
+		setPan(_pan);
 }
 
 bool SoundItem::checkCurrentPuzzle() {

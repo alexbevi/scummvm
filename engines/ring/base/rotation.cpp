@@ -88,7 +88,7 @@ Rotation::Rotation(Id id, Common::String name, byte a3, LoadFrom, uint32 nodeCou
 	_field_8 = a6;
 	_comBufferLength = 0;
 
-	// Compute path (Original checks loadFrom) 
+	// Compute path (Original checks loadFrom)
 	_path = Common::String::format("DATA/%s/NODE/%s", getApp()->getCurrentZoneString().c_str(), name.c_str());
 
 	// Create animation for each node
@@ -247,7 +247,7 @@ void Rotation::setAmbientSoundOff(Id soundId) {
 	item->off();
 }
 
-void Rotation::updateAmbientSoundPan() {
+void Rotation::updateAmbientSoundPan(bool apply) {
 	for (Common::Array<SoundItem *>::iterator it = _soundItems.begin(); it != _soundItems.end(); it++) {
 		SoundItem *item = (*it);
 
@@ -258,12 +258,12 @@ void Rotation::updateAmbientSoundPan() {
 		if (alp > 360.0f)
 			alp -= 360.0f;
 
-		item->computeAndSetPan(alp);
+		item->computeAndSetPan(alp, apply);
 	}
 }
 
 void Rotation::updateSoundItems() {
-	updateAmbientSoundPan();
+	updateAmbientSoundPan(false);
 
 	for (Common::Array<SoundItem *>::iterator it = _soundItems.begin(); it != _soundItems.end(); it++) {
 		SoundItem *item = (*it);

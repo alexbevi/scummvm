@@ -153,7 +153,7 @@ public:
 	void add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4, uint32 a5, uint32 fadeFrames, float angle, uint32 a9);
 	void setAmbientSoundOn(Id soundId);
 	void setAmbientSoundOff(Id soundId);
-	void updateAmbientSoundPan();
+	void updateAmbientSoundPan(bool apply);
 	void updateSoundItems();
 	uint32 getSoundItemsCount() { return _soundItems.size(); }
 
