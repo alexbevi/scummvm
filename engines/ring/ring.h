@@ -66,7 +66,13 @@ struct RingGameDescription {
 };
 
 enum RingGameType {
-	GameTypeRing = 1
+	GameTypePilgrim,
+	GameTypeRing,
+	GameTypeFaust,
+	GameTypePompeii,
+	GameTypePilgrim2,
+	GameTypePilgrim3,
+	GameTypeJerusalem
 };
 
 // Available languages
