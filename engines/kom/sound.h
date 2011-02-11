@@ -32,8 +32,8 @@
 #include "common/ptr.h"
 #include "common/str.h"
 
-#include "sound/mixer.h"
-#include "sound/audiostream.h"
+#include "audio/mixer.h"
+#include "audio/audiostream.h"
 
 namespace Kom {
 

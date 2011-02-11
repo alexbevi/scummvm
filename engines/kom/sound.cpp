@@ -33,9 +33,9 @@
 #include "kom/kom.h"
 #include "kom/sound.h"
 
-#include "sound/mixer.h"
-#include "sound/audiostream.h"
-#include "sound/decoders/raw.h"
+#include "audio/mixer.h"
+#include "audio/audiostream.h"
+#include "audio/decoders/raw.h"
 
 using Common::File;
 
