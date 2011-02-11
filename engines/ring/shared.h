@@ -90,6 +90,14 @@ enum CursorId {
 
 #pragma region Others
 
+enum State {
+	kStateNone           = 0,
+	kStateUpdateRotation = 1,
+	kStateUpdatePuzzle   = 2,
+	kStateDrawBag        = 3,
+	kStateShowMenu       = 4
+};
+
 enum CursorType {
 	kCursorTypeInvalid  = 0,
 	kCursorTypeNormal   = 1,

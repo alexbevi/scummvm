@@ -349,7 +349,7 @@ protected:
 	LoadFrom                      _loadFrom;
 	uint32                        _field_5E;
 	SoundHandler                 *_soundHandler;
-	uint32                        _field_66;
+	State                         _state;
 	char                          _field_6A;
 	Common::String                _zoneString;
 	Zone                          _zone;          // original uses byte

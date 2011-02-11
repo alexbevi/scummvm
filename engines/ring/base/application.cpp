@@ -55,12 +55,12 @@
 namespace Ring {
 
 Application::Application(RingEngine *engine) : _vm(engine),
-	_screenManager(NULL),        _artHandler(NULL),       _fontHandler(NULL),   _dialogHandler(NULL), _languageHandler(NULL),
-	_field_54(1),        _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
-	_soundHandler(NULL), _field_66(0),            _field_6A(0),         _zoneString("A0"),      _zone(kZoneInvalid),
-	_field_6F(0),        _field_70(0),            _field_74(0),         _field_75(0),         _field_76(0),
-	_field_77(0),        _field_78(0),            _puzzle(NULL),        _rotation(NULL),      _bag(NULL),
-	_timerHandler(NULL), _var(NULL),              _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
+	_screenManager(NULL),  _artHandler(NULL),          _fontHandler(NULL),   _dialogHandler(NULL), _languageHandler(NULL),
+	_field_54(1),          _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
+	_soundHandler(NULL),   _state(kStateNone),         _field_6A(0),         _zoneString("A0"),      _zone(kZoneInvalid),
+	_field_6F(0),          _field_70(0),               _field_74(0),         _field_75(0),         _field_76(0),
+	_field_77(0),          _field_78(0),               _puzzle(NULL),        _rotation(NULL),      _bag(NULL),
+	_timerHandler(NULL),   _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
 	_eventHandler(NULL) {
 
 	// Start managers
@@ -715,7 +715,7 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 	_puzzle->alloc();
 	_puzzle->update(_screenManager);
 
-	_field_66 = 2;
+	_state = kStateUpdatePuzzle;
 
 	if (_soundHandler->getField0()) {
 		_soundHandler->sub_41B520();
@@ -1404,7 +1404,7 @@ void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
 
 	g_system->warpMouse(320, 240);
 
-	_field_66 = 1;
+	_state = kStateUpdateRotation;
 
 	if (_soundHandler->getField0()) {
 		_soundHandler->sub_41B520();

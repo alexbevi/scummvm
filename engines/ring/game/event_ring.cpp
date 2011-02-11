@@ -29,6 +29,8 @@
 #include "ring/base/saveload.h"
 #include "ring/base/sound.h"
 
+#include "ring/graphics/dragControl.h"
+
 #include "ring/helpers.h"
 #include "ring/ring.h"
 #include "ring/shared_ring.h"
@@ -70,6 +72,19 @@ void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
 
 void EventHandlerRing::onKeyDown(Common::Event &evt) {
 	error("[EventHandlerRing::onKeyDown] Not implemented");
+}
+
+#pragma endregion
+
+#pragma region Zone Setup
+
+void EventHandlerRing::onKeyDownZone(Common::KeyCode keycode) {
+	if (_app->getCurrentZone() == kZoneSY)
+		onKeyDownZoneSY(keycode);
+}
+
+void EventHandlerRing::onKeyDownZoneSY(Common::KeyCode keycode) {
+	error("[EventHandlerRing::onKeyDownZoneSY] Not implemented");
 }
 
 #pragma endregion
@@ -490,6 +505,60 @@ void EventHandlerRing::onTimerZoneAS(TimerId id) {
 void EventHandlerRing::onTimerZoneN2(TimerId id) {
 	if (id == kTimer0)
 		_app->soundPlay(rnd(12) + 70004, 1);
+}
+
+#pragma endregion
+
+#pragma region Bag
+
+void EventHandlerRing::onBag(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+	switch (_app->getCurrentZone()) {
+	default:
+	case kZoneRH:
+	case kZoneWA:
+	case kZoneAS:
+		break;
+
+	case kZoneSY:
+		onBagZoneSY(id, a2, puzzleRotationId, a4, dragControl, a6);
+		break;
+
+	case kZoneNI:
+		onBagZoneNI(id, a2, puzzleRotationId, a4, dragControl, a6);
+		break;
+
+	case kZoneFO:
+		onBagZoneFO(id, a2, puzzleRotationId, a4, dragControl, a6);
+		break;
+
+	case kZoneRO:
+		onBagZoneRO(id, a2, puzzleRotationId, a4, dragControl, a6);
+		break;
+
+	case kZoneN2:
+		onBagZoneN2(id, a2, puzzleRotationId, a4, dragControl, a6);
+		break;
+	}
+}
+
+void EventHandlerRing::onBagZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+	error("[EventHandlerRing::onBagZoneSY] Not implemented");
+}
+
+void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+	error("[EventHandlerRing::onBagZoneNI] Not implemented");
+}
+
+void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+	error("[EventHandlerRing::onBagZoneFO] Not implemented");
+}
+
+void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+	error("[EventHandlerRing::onBagZoneRO] Not implemented");
+}
+
+void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+	error("[EventHandlerRing::onBagZoneN2] Not implemented");
 }
 
 #pragma endregion

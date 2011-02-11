@@ -44,16 +44,16 @@ public:
 	virtual void onTimer(TimerId id);
 	virtual void onSound(Id id, SoundType type, uint32 a3);
 	virtual void onSetup(Zone zone, uint32 a2);
+	virtual void onBag(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6);
 	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
 	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
 
 private:
 	Application *_app;
 
+	// Data & State
 	bool         _controlNotPressed;
-
-	// Data
-	uint32 _dword_4A1C00;
+	uint32       _dword_4A1C00;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Event Handling
@@ -61,6 +61,10 @@ private:
 	void onMouseLeftButtonUp(Common::Event &evt);
 
 
+	//////////////////////////////////////////////////////////////////////////
+	// Keydown
+	//////////////////////////////////////////////////////////////////////////
+	void onKeyDownZone(Common::KeyCode keycode);
 	void onKeyDownZoneSY(Common::KeyCode keycode);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -85,6 +89,15 @@ private:
 	void onTimerZoneRO(TimerId id);
 	void onTimerZoneAS(TimerId id);
 	void onTimerZoneN2(TimerId id);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Bag
+	//////////////////////////////////////////////////////////////////////////
+	void onBagZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6);
+	void onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6);
+	void onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6);
+	void onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6);
+	void onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Rides

@@ -32,6 +32,8 @@
 
 namespace Ring {
 
+class DragControl;
+
 class EventHandler {
 public:
 	virtual ~EventHandler() {}
@@ -43,6 +45,7 @@ public:
 	virtual void onTimer(TimerId id) = 0;
 	virtual void onSound(Id id, SoundType type, uint32 a3) = 0;
 	virtual void onSetup(Zone zone, uint32 a2) = 0;
+	virtual void onBag(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {};
 	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {};
 	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {};
 };

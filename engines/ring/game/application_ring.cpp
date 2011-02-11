@@ -226,14 +226,14 @@ void ApplicationRing::draw() {
 	_screenManager->updateScreen();
 
 	// Update engine state
-	switch (_field_66){
+	switch (_state){
 	default:
 		break;
 
-	case 0:
+	case kStateNone:
 		return;
 
-	case 1:
+	case kStateUpdateRotation:
 		if (!_rotation)
 			error("[ApplicationRing::draw] No active rotation!");
 
@@ -267,16 +267,16 @@ void ApplicationRing::draw() {
 
 		break;
 
-	case 2:
+	case kStateUpdatePuzzle:
 		_puzzle->alloc();
 		_puzzle->update(_screenManager);
 		break;
 
-	case 3:
+	case kStateDrawBag:
 		getBag()->draw();
 		break;
 
-	case 4:
+	case kStateShowMenu:
 		exitZone();
 		initZones();
 		showMenu(_zone, _field_70);
@@ -521,7 +521,7 @@ void ApplicationRing::initZones() {
 	else
 		_archiveType = kArchiveFile;
 
-	_field_66 = 0;
+	_state = kStateNone;
 }
 
 void ApplicationRing::initZoneSY() {
