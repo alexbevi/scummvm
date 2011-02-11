@@ -78,7 +78,7 @@ Image::~Image() {
 }
 
 void Image::destroy() {
-	error("[Image::isInitialized] Not implemented");
+	error("[Image::destroy] Not implemented");
 }
 
 bool Image::load(Common::String path, ArchiveType type, uint32 a3, uint32 a4) {
@@ -90,7 +90,7 @@ bool Image::load(Common::String path, ArchiveType type, uint32 a3, uint32 a4) {
 bool Image::isInitialized() {
 	warning("[Image::isInitialized] Not implemented");
 
-	return true;
+	return false;
 }
 
 #pragma endregion

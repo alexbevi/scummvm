@@ -211,7 +211,25 @@ void ObjectPresentation::hide() {
 }
 
 void ObjectPresentation::hideAndRemove() {
-	error("[ObjectPresentation::hide] Not implemented");
+	hide();
+
+	for (Common::Array<ImageHandle *>::iterator it = _imagePuzzle.begin(); it != _imagePuzzle.end(); it++) {
+		ImageHandle *image = (*it);
+
+		if (!image->isInitialized())
+			continue;
+
+		if (image->getField6C() == 1) {
+			image->destroy();
+		} else if (image->getAnimation()) {
+			image->getAnimation()->dealloc();
+		} else {
+			error("[ObjectPresentation::hideAndRemove] Invalid animation in ImageHandle!");
+		}
+	}
+
+	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
+		(*it)->dealloc();
 }
 
 #pragma region Object
