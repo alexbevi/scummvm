@@ -25,24 +25,61 @@
 
 #include "ring/base/timer.h"
 
+#include "ring/helpers.h"
+
 namespace Ring {
 
 #pragma region Timer
 
-Timer::Timer() {
+Timer::Timer(TimerId id, uint32 elapseTime): BaseId(id), _elapseTime(elapseTime) {
+	_fired = 0;
+	_tickStart = g_system->getMillis();
+
+	// TODO Start timer
 }
 
 Timer::~Timer() {
+	// TODO Stop timer
 }
 
 #pragma endregion
 
 #pragma region TimerHandler
 
-TimerHandler::TimerHandler() : _fired(0) {
+TimerHandler::TimerHandler() {
 }
 
 TimerHandler::~TimerHandler() {
+	CLEAR_ARRAY(Timer, _timers);
+}
+
+void TimerHandler::start(TimerId id, uint32 elapseTime) {
+	if (_timers.has(id))
+		error("[TimerHandler::start] Timer with that id already exists (%d)", id);
+
+	_timers.push_back(new Timer(id, elapseTime));
+}
+
+void TimerHandler::stop(TimerId id) {
+	if (!_timers.has(id))
+		error("[TimerHandler::stop] Timer with that id doesn't exist (%d)", id);
+
+	_timers.remove_at(_timers.getIndex(id));
+}
+
+void TimerHandler::stopAll() {
+	CLEAR_ARRAY(Timer, _timers);
+}
+
+bool TimerHandler::has(TimerId id) {
+	return _timers.has(id);
+}
+
+void TimerHandler::incrementFiredCount(TimerId id) {
+	if (!_timers.has(id))
+		return;
+
+	_timers.get(id)->incrementFiredCount();
 }
 
 #pragma endregion

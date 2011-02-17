@@ -30,13 +30,19 @@
 
 namespace Ring {
 
-class Timer {
+class Timer : public BaseId {
 public:
-	Timer();
+	Timer(TimerId id, uint32 elapseTime);
 	~Timer();
 
-private:
+	void incrementFiredCount() { ++_fired; }
+	void setFiredCount(uint32 count) { _fired = count; }
+	uint32 getFiredCount() { return _fired; }
 
+private:
+	uint32 _tickStart;
+	uint32 _fired;
+	uint32 _elapseTime;
 };
 
 class TimerHandler {
@@ -44,10 +50,14 @@ public:
 	TimerHandler();
 	~TimerHandler();
 
-	void incrementFiredCount(TimerId id) { ++_fired; }
+	void start(TimerId id, uint32 elapseTime);
+	void stop(TimerId id);
+	void stopAll();
+	bool has(TimerId id);
+	void incrementFiredCount(TimerId id);
 
 private:
-	uint32 _fired;
+	AssociativeArray<Timer *> _timers;
 };
 
 } // End of namespace Ring

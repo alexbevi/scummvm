@@ -1522,15 +1522,19 @@ bool Application::soundIsPlayingType(SoundType soundType) {
 #pragma region Timer
 
 void Application::timerStart(TimerId id, uint32 elapseTime) {
-	error("[Application::timerStart] Not implemented");
+	_timerHandler->start(id, elapseTime);
 }
 
 void Application::timerStop(TimerId id) {
-	error("[Application::timerStop] Not implemented");
+	_timerHandler->stop(id);
 }
 
 void Application::timerStopAll() {
-	error("[Application::timerStopAll] Not implemented");
+	_timerHandler->stopAll();
+}
+
+bool Application::timerHas(TimerId id) {
+	return _timerHandler->has(id);
 }
 
 #pragma endregion
