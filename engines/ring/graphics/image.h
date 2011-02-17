@@ -56,9 +56,10 @@ public:
 	ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType);
 	~ImageHandle();
 
-	void setCoordinates(const Common::Point &point) { _coordinates = point; }
-
 	// Accessors
+	void setCoordinates(const Common::Point &point) { _coordinates = point; }
+	Common::Point getCoordinates() { return _coordinates; }
+	Common::Point getOriginalCoordinates() { return _originalCoordinates; }
 	void setPath(Common::String path) { _path = path; }
 	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
 	uint32 getPriority() { return _priority; }
@@ -71,7 +72,7 @@ private:
 	Common::String _path;
 	Common::String _nameId;
 	Common::Point _coordinates;
-	Common::Point _coordinates2;
+	Common::Point _originalCoordinates;
 	bool _isActive;
 	byte _field_66;
 	uint32 _priority;

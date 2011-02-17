@@ -49,10 +49,17 @@ public:
 
 	// Text
 	void addTextToPuzzle(Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background);
+	void setTextToPuzzle(uint32 textIndex, Common::String text);
+	void setTextCoordinatesToPuzzle(uint32 textIndex, const Common::Point &point);
+	uint32 getTextWidth(uint32 textIndex);
 
 	// Image
 	void addImageToPuzzle(Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom);
 	void addImageToRotation(Rotation *rotation, uint32 layer);
+	void setImageCoordinatesOnPuzzle(const Common::Point &point);
+	void setImageCoordinatesOnPuzzle(uint32 imageIndex, const Common::Point &point);
+	void setImageOriginalCoordinatesOnPuzzle();
+	Common::Point getImageCoordinatesOnPuzzle(uint32 imageIndex);
 
 	// Animation
 	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, const Common::Point &point, uint32 a7, uint32 a8, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom);

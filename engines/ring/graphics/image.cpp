@@ -49,7 +49,7 @@ void ImageHandle::init(Common::String nameId, const Common::Point &point, bool i
 	_path = "";
 	_nameId = nameId;
 	_coordinates = point;
-	_coordinates2 = point;
+	_originalCoordinates = point;
 	_isActive = isActive;
 	_field_66 = a6;
 	_priority = priority;

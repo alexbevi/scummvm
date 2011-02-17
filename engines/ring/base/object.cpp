@@ -79,6 +79,27 @@ void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, co
 	puzzle->addPresentationText(textObject);
 }
 
+void ObjectPresentation::setTextToPuzzle(uint32 textIndex, Common::String text) {
+	if (textIndex >= _textPuzzle.size())
+		error("[ObjectPresentation::setTextToPuzzle] Invalid text index (was:%d, max:%d)", textIndex, _textPuzzle.size() - 1);
+
+	_textPuzzle[textIndex]->set(text);
+}
+
+void ObjectPresentation::setTextCoordinatesToPuzzle(uint32 textIndex, const Common::Point &point) {
+	if (textIndex >= _textPuzzle.size())
+		error("[ObjectPresentation::setTextCoordinatesToPuzzle] Invalid text index (was:%d, max:%d)", textIndex, _textPuzzle.size() - 1);
+
+	_textPuzzle[textIndex]->setCoordinates(point);
+}
+
+uint32 ObjectPresentation::getTextWidth(uint32 textIndex) {
+	if (textIndex >= _textPuzzle.size())
+		error("[ObjectPresentation::getTextWidth] Invalid text index (was:%d, max:%d)", textIndex, _textPuzzle.size() - 1);
+
+	return _textPuzzle[textIndex]->getWidth();
+}
+
 void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom) {
 	ImageHandle *image = new ImageHandle(filename, point, isActive, a7, priority, a9, getApp()->getCurrentZone(), loadFrom, 4, getApp()->getArchiveType());
 	image->setObjectPresentation(this);
@@ -92,6 +113,30 @@ void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filenam
 void ObjectPresentation::addImageToRotation(Rotation *rotation, uint32 layer) {
 	_layerImagePtr.push_back(new BaseId(layer));
 	_layImageRotationPtr.push_back(rotation);
+}
+
+void ObjectPresentation::setImageCoordinatesOnPuzzle(const Common::Point &point) {
+	for (Common::Array<ImageHandle *>::iterator it = _imagePuzzle.begin(); it != _imagePuzzle.end(); it++)
+		(*it)->setCoordinates(point);
+}
+
+void ObjectPresentation::setImageCoordinatesOnPuzzle(uint32 imageIndex, const Common::Point &point) {
+	if (imageIndex >= _imagePuzzle.size())
+		error("[ObjectPresentation::setImageCoordinatesOnPuzzle] Invalid image index (was:%d, max:%d)", imageIndex, _imagePuzzle.size() - 1);
+
+	_imagePuzzle[imageIndex]->setCoordinates(point);
+}
+
+void ObjectPresentation::setImageOriginalCoordinatesOnPuzzle() {
+	for (Common::Array<ImageHandle *>::iterator it = _imagePuzzle.begin(); it != _imagePuzzle.end(); it++)
+		(*it)->setCoordinates((*it)->getOriginalCoordinates());
+}
+
+Common::Point ObjectPresentation::getImageCoordinatesOnPuzzle(uint32 imageIndex) {
+	if (imageIndex >= _imagePuzzle.size())
+		error("[ObjectPresentation::getImageCoordinatesOnPuzzle] Invalid image index (was:%d, max:%d)", imageIndex, _imagePuzzle.size() - 1);
+
+	return _imagePuzzle[imageIndex]->getCoordinates();
 }
 
 void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, const Common::Point &point, uint32, uint32 a8, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom) {
@@ -266,15 +311,24 @@ void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::S
 }
 
 void Object::setTextToPuzzle(uint32 presentationIndex, uint32 textIndex, Common::String text) {
-	error("[Object::setTextToPuzzle] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::setTextToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->setTextToPuzzle(textIndex, text);
 }
 
 void Object::setTextCoordinatesToPuzzle(uint32 presentationIndex, uint32 textIndex, const Common::Point &point) {
-	error("[Object::setTextCoordinatesToPuzzle] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::setTextCoordinatesToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->setTextCoordinatesToPuzzle(textIndex, point);
 }
 
 uint32 Object::getTextWidth(uint32 presentationIndex, uint32 textIndex) {
-	error("[Object::getTextWidth] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::getTextWidth] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	return _presentations[presentationIndex]->getTextWidth(textIndex);
 }
 
 void Object::addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom) {
@@ -292,19 +346,31 @@ void Object::addImageToRotation(uint32 presentationIndex, Rotation *rotation, ui
 }
 
 void Object::setImageCoordinatesOnPuzzle(uint32 presentationIndex, const Common::Point &point) {
-	error("[Object::setImageCoordinatesOnPuzzle] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::setImageCoordinatesOnPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->setImageCoordinatesOnPuzzle(point);
 }
 
 void Object::setImageCoordinatesOnPuzzle(uint32 presentationIndex, uint32 imageIndex, const Common::Point &point) {
-	error("[Object::setImageCoordinatesOnPuzzle] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::setImageCoordinatesOnPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->setImageCoordinatesOnPuzzle(imageIndex, point);
 }
 
 void Object::setImageOriginalCoordinatesOnPuzzle(uint32 presentationIndex) {
-	error("[Object::setImageOriginalCoordinatesOnPuzzle] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::setImageOriginalCoordinatesOnPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	_presentations[presentationIndex]->setImageOriginalCoordinatesOnPuzzle();
 }
 
 Common::Point Object::getImageCoordinatesOnPuzzle(uint32 presentationIndex, uint32 imageIndex) {
-	error("[Object::getImageCoordinatesOnPuzzle] Not implemented");
+	if (presentationIndex >= _presentations.size())
+		error("[Object::getImageCoordinatesOnPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
+
+	return _presentations[presentationIndex]->getImageCoordinatesOnPuzzle(imageIndex);
 }
 
 void Object::show(uint32 presentationIndex) {
