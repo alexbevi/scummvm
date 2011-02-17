@@ -139,12 +139,12 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_fontId = kFontDefault;
 	_backgroundColor = Color(0, 0, 0);
 	_archiveType = kArchiveFile;
-	_field_106 = 0;
+	_allocated = false;
 }
 
 VisualObjectList::~VisualObjectList() {
 	CLEAR_ARRAY(Object, _objects);
-	CLEAR_ARRAY(uint32, _field_15);
+	CLEAR_ARRAY(ImageHandle, _images);
 	CLEAR_ARRAY(Hotspot, _hotspots);
 
 	SAFE_DELETE(_backgroundImage);
@@ -163,11 +163,72 @@ VisualObjectList::~VisualObjectList() {
 }
 
 void VisualObjectList::alloc() {
-	error("[VisualObjectList::alloc] Not implemented!");
+	if (_allocated)
+		return;
+
+	loadImage(_backgroundImage);
+	loadImage(_upGun);
+	loadImage(_upGur);
+	loadImage(_upGus);
+	loadImage(_upGua);
+	loadImage(_downGun);
+	loadImage(_downGur);
+	loadImage(_downGus);
+	loadImage(_downGua);
+	loadImage(_cliImageP);
+	loadImage(_cliImageA);
+
+	_allocated = true;
+}
+
+void VisualObjectList::loadImage(ImageHandle *image) {
+	if (image->getNameId().empty())
+		return;
+
+	// Compute file path
+	Common::String filename = Common::String::format("%s%s", image->getPath().c_str(), image->getNameId().c_str());
+
+	image->load(filename, image->getArchiveType(), image->getZone(), image->getLoadFrom());
 }
 
 void VisualObjectList::dealloc() {
-	error("[VisualObjectList::dealloc] Not implemented!");
+	_allocated = false;
+
+	if (_backgroundImage)
+		_backgroundImage->destroy();
+
+	if (_upGun)
+		_upGun->destroy();
+
+	if (_upGur)
+		_upGur->destroy();
+
+	if (_upGus)
+		_upGus->destroy();
+
+	if (_upGua)
+		_upGua->destroy();
+
+	if (_downGun)
+		_downGun->destroy();
+
+	if (_downGur)
+		_downGur->destroy();
+
+	if (_downGus)
+		_downGus->destroy();
+
+	if (_downGua)
+		_downGua->destroy();
+
+	if (_cliImageP)
+		_cliImageP->destroy();
+
+	if (_cliImageA)
+		_cliImageA->destroy();
+
+	for (Common::Array<ImageHandle *>::iterator it = _images.begin(); it != _images.end(); it++)
+		(*it)->destroy();
 }
 
 void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10, Common::String filename11, Common::String filename12, Common::String filename13, byte a15, ArchiveType archiveType) {

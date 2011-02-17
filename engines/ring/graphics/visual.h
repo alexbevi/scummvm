@@ -116,7 +116,7 @@ private:
 	uint32 _field_C;
 	Common::String _iconPath;
 	AssociativeArray<Object *> _objects;
-	Common::Array<uint32 *> _field_15;
+	Common::Array<ImageHandle *> _images;
 	Common::Array<Hotspot *> _hotspots;
 	ImageHandle *_backgroundImage;
 	ImageHandle *_upGun;
@@ -171,7 +171,9 @@ private:
 	Color  _foregroundColor1;
 	Color  _foregroundColor2;
 	Color  _backgroundColor;
-	byte   _field_106;
+	bool   _allocated;
+
+	void loadImage(ImageHandle *image);
 };
 
 } // End of namespace Ring

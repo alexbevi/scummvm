@@ -103,7 +103,7 @@ void CursorImage::alloc() {
 	if (!_image)
 		return;
 
-	if (!_image->load(getName(), _archiveType, 1, 2))
+	if (!_image->load(getName(), _archiveType, kZoneSY, kLoadFromDisk))
 		error("[CursorImage::alloc] Cannot load image (%s)", getName().c_str());
 
 	if (_image->getBPP() != 32) {

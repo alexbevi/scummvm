@@ -278,7 +278,7 @@ void Bag::loadImage(Common::String filename, Image **image, ArchiveType archiveT
 	SAFE_DELETE(*image);
 	*image = new Image();
 
-	if (!(*image)->load(path, archiveType, 1, 2))
+	if (!(*image)->load(path, archiveType, kZoneSY, kLoadFromDisk))
 		error("[Bag::LoadImage] Cannot load image: %s", path.c_str());
 }
 

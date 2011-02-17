@@ -81,7 +81,7 @@ void Image::destroy() {
 	error("[Image::destroy] Not implemented");
 }
 
-bool Image::load(Common::String path, ArchiveType type, uint32 a3, uint32 a4) {
+bool Image::load(Common::String path, ArchiveType type, Zone zone, LoadFrom loadFrom) {
 	warning("[Image::load] Not implemented (%s)", path.c_str());
 
 	return true;

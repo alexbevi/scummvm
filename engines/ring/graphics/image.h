@@ -38,7 +38,7 @@ public:
 	Image();
 	~Image();
 
-	bool load(Common::String path, ArchiveType type, uint32 a3, uint32 a4);
+	bool load(Common::String path, ArchiveType type, Zone zone, LoadFrom loadFrom);
 
 	void destroy();
 
@@ -57,6 +57,7 @@ public:
 	~ImageHandle();
 
 	// Accessors
+	Common::String getPath() { return _path; }
 	void setPath(Common::String path) { _path = path; }
 	Common::String getNameId() { return _nameId; }
 	void setCoordinates(const Common::Point &point) { _coordinates = point; }
@@ -68,6 +69,9 @@ public:
 	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
 	void setAnimation(AnimationImage *animation) { _animation = animation; }
 	AnimationImage *getAnimation() { return _animation; }
+	Zone getZone() { return _zone; }
+	LoadFrom getLoadFrom() { return _loadFrom; }
+	ArchiveType getArchiveType() { return _archiveType; }
 
 private:
 	Common::String _path;
