@@ -51,6 +51,7 @@
 #include "ring/ring.h"
 
 #include "common/file.h"
+#include "common/tokenizer.h"
 
 namespace Ring {
 
@@ -330,6 +331,8 @@ void Application::loadConfiguration() {
 				_configuration.checkLoadSave = (bool)atoi((char *)&val);
 		}
 	}
+
+	delete archive;
 }
 
 void Application::exitZone() {
@@ -560,7 +563,55 @@ void Application::cursorDelete() {
 #pragma region Message
 
 bool Application::messageGet(Common::String messageId) {
-	error("[Application::messageGet] Not implemented");
+	// Open a stream to the message file
+	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember("ames.ini");
+	if (!archive)
+		error("[Application::messageGet] Error opening objects file (ames.ini)");
+
+	Common::String language = languageGetFolder();
+
+	char id[255];
+	while (!archive->eos() && !archive->err()) {
+
+		Common::String line = archive->readLine();
+		if (archive->eos() || archive->err())
+			break;
+
+		// Parse line for message id
+		if (sscanf(line.c_str(), "%s\n", (char *)&id) != 1)
+			error("[Application::messageGet] Error parsing message line!");
+
+		// Check message id
+		if (messageId != Common::String(id))
+			continue;
+
+		// Check language
+		if (!line.matchString(language + "*", true))
+			continue;
+
+		// Get message type
+		Common::StringTokenizer tokenizer(line, "#");
+		if (tokenizer.empty())
+			error("[Application::messageGet] Invalid line format (missing # separators)");
+
+		tokenizer.nextToken();
+		if (tokenizer.empty())
+			error("[Application::messageGet] Invalid line format (missing message type)");
+
+		_messageType = tokenizer.nextToken();
+		if (tokenizer.empty())
+			error("[Application::messageGet] Invalid line format (missing message)");
+
+		_message = tokenizer.nextToken();
+
+		delete archive;
+
+		return true;
+	}
+
+	delete archive;
+
+	return false;
 }
 
 void Application::messageFormat(Common::String messageId, Common::String argument) {
