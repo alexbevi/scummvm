@@ -33,6 +33,7 @@
 #include "ring/base/sound.h"
 #include "ring/base/text.h"
 
+#include "ring/graphics/animation.h"
 #include "ring/graphics/image.h"
 #include "ring/graphics/visual.h"
 
@@ -65,6 +66,31 @@ Puzzle::~Puzzle() {
 
 void Puzzle::alloc() {
 	warning("[Puzzle::alloc] Not implemented");
+}
+
+void Puzzle::dealloc() {
+	if (_background) {
+		if (_background->isInitialized())
+			_background->destroy();
+	}
+
+	for (Common::Array<ImageHandle *>::iterator it = _presentationImages.begin(); it != _presentationImages.end(); it++) {
+		ImageHandle *image = (*it);
+
+		if (!image->isInitialized())
+			continue;
+
+		if (image->getField6C()) {
+			image->destroy();
+		} else if (image->getAnimation()) {
+			image->getAnimation()->dealloc();
+		} else {
+			error("[Puzzle::dealloc] Invalid animation in ImageHandle (%s)", image->getNameId().c_str());
+		}
+	}
+
+	for (Common::Array<Visual *>::iterator it = _visuals.begin(); it != _visuals.end(); it++)
+		(*it)->dealloc();
 }
 
 void Puzzle::update(ScreenManager *screen) {

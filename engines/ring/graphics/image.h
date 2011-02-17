@@ -57,14 +57,15 @@ public:
 	~ImageHandle();
 
 	// Accessors
+	void setPath(Common::String path) { _path = path; }
+	Common::String getNameId() { return _nameId; }
 	void setCoordinates(const Common::Point &point) { _coordinates = point; }
 	Common::Point getCoordinates() { return _coordinates; }
 	Common::Point getOriginalCoordinates() { return _originalCoordinates; }
-	void setPath(Common::String path) { _path = path; }
-	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
 	uint32 getPriority() { return _priority; }
 	void setField6C(uint32 val) { _field_6C = val; }
 	uint32 getField6C() { return _field_6C; }
+	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
 	void setAnimation(AnimationImage *animation) { _animation = animation; }
 	AnimationImage *getAnimation() { return _animation; }
 

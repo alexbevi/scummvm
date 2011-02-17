@@ -49,6 +49,7 @@ public:
 	~Puzzle();
 
 	void alloc();
+	void dealloc();
 	void update(ScreenManager *screen);
 
 	void setBackgroundImage(Common::String filename, const Common::Point &point, bool isActive, LoadFrom loadFrom);

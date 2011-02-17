@@ -38,13 +38,19 @@ class Text;
 class Visual : public BaseObject {
 public:
 	Visual(Id id) : BaseObject(id) {}
-	~Visual() {}
+	~Visual() {};
+
+	virtual void alloc() = 0;
+	virtual void dealloc() = 0;
 };
 
 class VisualElement : public Visual {
 public:
 	VisualElement(Id id);
 	~VisualElement();
+
+	virtual void alloc();
+	virtual void dealloc();
 
 	void init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
 
@@ -74,6 +80,9 @@ class VisualObjectList : public Visual {
 public:
 	VisualObjectList(Id id);
 	~VisualObjectList();
+
+	virtual void alloc();
+	virtual void dealloc();
 
 	// Init
 	void init(uint32 a1, Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10, Common::String filename11, Common::String filename12, Common::String filename13, byte a15, ArchiveType archiveType);

@@ -29,7 +29,7 @@
 #include "ring/base/object.h"
 #include "ring/base/text.h"
 
-#include "ring/graphics//hotspot.h"
+#include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
 
 #include "ring/ring.h"
@@ -58,6 +58,14 @@ VisualElement::VisualElement(Id id) : Visual(id) {
 }
 
 VisualElement::~VisualElement() {
+}
+
+void VisualElement::alloc() {
+	error("[VisualElement::alloc] Not implemented!");
+}
+
+void VisualElement::dealloc() {
+	_field_2D = 1;
 }
 
 void VisualElement::init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
@@ -152,6 +160,14 @@ VisualObjectList::~VisualObjectList() {
 	SAFE_DELETE(_cliImageA);
 	SAFE_DELETE(_text1);
 	SAFE_DELETE(_text2);
+}
+
+void VisualObjectList::alloc() {
+	error("[VisualObjectList::alloc] Not implemented!");
+}
+
+void VisualObjectList::dealloc() {
+	error("[VisualObjectList::dealloc] Not implemented!");
 }
 
 void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10, Common::String filename11, Common::String filename12, Common::String filename13, byte a15, ArchiveType archiveType) {
