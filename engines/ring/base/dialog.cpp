@@ -51,7 +51,7 @@ Dialog::Dialog(ObjectId id, Common::String name) : BaseObject(id) {
 
 Dialog::~Dialog() {
 	CLEAR_ARRAY(DialogLine, _lines);
-	CLEAR_ARRAY(DialogAnimation, _levels);
+	CLEAR_ARRAY(DialogObject, _objects);
 	CLEAR_ARRAY(DialogAnimation, _animations);
 }
 
@@ -63,12 +63,51 @@ void Dialog::hide() {
 	if (!_visible)
 		return;
 
-	for (Common::Array<DialogAnimation *>::iterator it = _levels.begin(); it != _levels.end(); it++)
+	for (Common::Array<DialogObject *>::iterator it = _objects.begin(); it != _objects.end(); it++)
 		getApp()->objectPresentationHide((*it)->objectId, (*it)->presentationIndex);
 }
 
 void Dialog::show() {
-	error("[Dialog::show] No implemented");
+	// Tick offset
+	uint32 ticks = g_system->getMillis() - _startTicks;
+
+	// Check animation to show
+	int32 index = -1;
+	for (uint32 i = 0; i < _animations.size(); i++) {
+		if (ticks >= _animations[i]->tickStart && ticks <= _animations[i]->tickEnd) {
+			index = i;
+			break;
+		}
+	}
+
+	uint32 val = (index != -1) ? _animations[index]->field_8 : 0;
+	if (val = _field_D)
+		return;
+
+	// Hide all objects
+	for (Common::Array<DialogObject *>::iterator it = _objects.begin(); it != _objects.end(); it++)
+		getApp()->objectPresentationHide((*it)->objectId, (*it)->presentationIndex);
+
+	if (val) {
+		// Get the object to show
+		int32 objectIndex = -1;
+		for (uint32 i = 0; i < _objects.size(); i++) {
+			if (_objects[i]->field_8 == val) {
+				objectIndex = i;
+				break;
+			}
+		}
+
+		// Not found
+		if (objectIndex == -1) {
+			_field_D = val;
+			return;
+		}
+
+		getApp()->objectPresentationShow(_objects[objectIndex]->objectId, _objects[objectIndex]->presentationIndex);
+	}
+
+	_field_D = val;
 }
 
 int32 Dialog::getLineIndex() {

@@ -41,11 +41,23 @@ struct DialogLine {
 };
 
 struct DialogAnimation {
+	uint32 tickStart;
+	uint32 tickEnd;
+	uint32 field_8;
+
+	DialogAnimation(uint32 start, uint32 end, uint32 a3) {
+		tickStart = start;
+		tickEnd = end;
+		field_8 = a3;
+	}
+};
+
+struct DialogObject {
 	ObjectId objectId;
 	uint32 presentationIndex;
 	uint32 field_8;
 
-	DialogAnimation(ObjectId id, uint32 index, uint32 a3) {
+	DialogObject(ObjectId id, uint32 index, uint32 a3) {
 		objectId = id;
 		presentationIndex = index;
 		field_8 = a3;
@@ -72,7 +84,7 @@ private:
 	uint32 _startTicks;
 	bool _visible;
 	uint32 _field_D;
-	Common::Array<DialogAnimation *> _levels;
+	Common::Array<DialogObject *> _objects;
 	Common::Array<DialogAnimation *> _animations;
 
 	void readLyrics(Common::String filename);
