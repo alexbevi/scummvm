@@ -25,6 +25,7 @@
 
 #include "ring/base/bag.h"
 
+#include "ring/base/application.h"
 #include "ring/base/object.h"
 #include "ring/base/text.h"
 
@@ -35,6 +36,8 @@
 #include "ring/ring.h"
 
 #include "ring/helpers.h"
+
+#include "common/file.h"
 
 namespace Ring {
 
@@ -47,7 +50,7 @@ Bag::Bag() {
 	_field_20 = 0;
 	_field_24 = 0;
 	_field_28 = 0;
-	_field_2C = 0;
+	_objectCount = 0;
 	_field_30 = 0;
 	_field_34 = 0;
 	_background = NULL;
@@ -304,19 +307,83 @@ void Bag::disable() {
 #pragma region Management
 
 void Bag::add(ObjectId objectId) {
-	error("[Bag::add] Not implemented");
+	if (_objects.has(objectId))
+		return;
+
+	Object *object = getApp()->objectGet(objectId);
+	_objects.push_back(object);
+
+	// Setup animation image
+	ImageHandle *imageHandle = NULL;
+	AnimationImage *animationImage = object->getAnimationImage();
+	if (animationImage) {
+		animationImage->updateCurrentImage();
+		imageHandle = animationImage->getCurrentImage();
+	} else {
+		Common::String filename;
+		if (_archiveType == kArchiveFile) {
+			filename = Common::String::format("LSTICON/%s.tga", object->getName().c_str());
+
+			if (!Common::File::exists(filename)) {
+				if (object->getName().empty()) {
+					filename = "dummy.tga";
+				} else {
+					filename = Common::String::format("%s.tga", object->getName().c_str());
+				}
+			}
+		} else {
+			filename = Common::String::format("/LSTICON/%s.tga", object->getName().c_str());
+		}
+
+		imageHandle = new ImageHandle(filename, Common::Point(0, 0), true, kZoneSY, kLoadFromDisk, 1, _archiveType);
+	}
+
+	if (!imageHandle)
+		error("[Bag::add] Invalid image handle!");
+
+	_images.push_back(imageHandle);
+
+	_objectCount = _objects.size();
+	if (_objectCount > _field_24)
+		_field_28 = 0;
 }
 
 void Bag::remove(ObjectId objectId) {
-	error("[Bag::remove] Not implemented");
+	if (!_objects.has(objectId))
+		return;
+
+	uint32 index = _objects.getIndex(objectId);
+
+	if (_images[index]->getField6C() == 1) {
+		// Stores references to existing objects, so we should not delete them
+		_objects.remove_at(index);
+
+		SAFE_DELETE(_images[index]);
+		_images.remove_at(index);
+	} else {
+		AnimationImage *image = _objects[index]->getAnimationImage();
+		if (image)
+			image->dealloc();
+
+		// Stores references to existing objects, so we should not delete them!
+		_objects.remove_at(index);
+
+		// Stores a reference to the object current image, so we should not delete it!
+		_images.remove_at(index);
+	}
+
+	_objectCount = _objects.size();
+	if (_objectCount <= _field_24)
+		_field_28 = 0;
 }
 
 void Bag::removeAll() {
-	error("[Bag::removeAll] Not implemented");
+	for (uint32 i = 0; i < _objects.size(); i++)
+		remove(_objects[i]->getId());
 }
 
 bool Bag::has(ObjectId objectId) {
-	error("[Bag::has] Not implemented");
+	return _objects.has(objectId);
 }
 
 #pragma endregion

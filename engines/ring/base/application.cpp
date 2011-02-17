@@ -927,6 +927,13 @@ void Application::objectRemove(ObjectId id) {
 	_objects.remove(id);
 }
 
+Object *Application::objectGet(ObjectId objectId) {
+	if (!_objects.has(objectId))
+		error("[Application::objectGet] Object Id doesn't exist (%d)", objectId.id());
+
+	return _objects.get(objectId);
+}
+
 #pragma region Object Accessibility
 
 void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {

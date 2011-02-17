@@ -182,6 +182,7 @@ public:
 	// Object
 	void objectAdd(ObjectId objectId, Common::String language, Common::String name, byte a5);
 	void objectRemove(ObjectId objectId);
+	Object *objectGet(ObjectId objectId);
 
 	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
 	void objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key);

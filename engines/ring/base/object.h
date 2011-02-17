@@ -150,6 +150,7 @@ public:
 	// Accessors
 	Common::String getName() { return _name; }
 	void setAnimationImage(AnimationImage *image) { _animationImage = image; }
+	AnimationImage *getAnimationImage() { return _animationImage; }
 
 private:
 	struct ObjectCursor {

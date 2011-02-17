@@ -79,7 +79,7 @@ public:
 
 private:
 	// Bag data
-	Common::Array<Object *>      _objects;
+	AssociativeArray<Object *>   _objects;
 	Common::Array<ImageHandle *> _images;
 	Common::Array<Hotspot*>      _hotspots;
 	uint32      _field_C;
@@ -90,7 +90,7 @@ private:
 	uint32      _field_20;
 	uint32      _field_24;
 	uint32      _field_28;
-	uint32      _field_2C;
+	uint32      _objectCount;
 	uint32      _field_30;
 	uint32      _field_34;
 	Image      *_background;
