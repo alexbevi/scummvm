@@ -623,6 +623,8 @@ void ObjectHandler::addFromFile(Common::String filename, Common::String language
 
 		_objects.push_back(new ObjectInfo(id, language, tokenizer.nextToken()));
 	}
+
+	delete archive;
 }
 
 Common::String ObjectHandler::getLanguage(ObjectId id) {
