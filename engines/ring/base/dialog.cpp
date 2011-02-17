@@ -194,7 +194,7 @@ bool DialogHandler::removeDialog(Id id) {
 	// Hide dialog
 	_dialogs.get(id)->hide();
 
-	_dialogs.remove_at(_dialogs.getIndex(id));
+	_dialogs.remove(id);
 
 	return true;
 }

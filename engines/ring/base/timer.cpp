@@ -64,7 +64,7 @@ void TimerHandler::stop(TimerId id) {
 	if (!_timers.has(id))
 		error("[TimerHandler::stop] Timer with that id doesn't exist (%d)", id);
 
-	_timers.remove_at(_timers.getIndex(id));
+	_timers.remove(id);
 }
 
 void TimerHandler::stopAll() {
