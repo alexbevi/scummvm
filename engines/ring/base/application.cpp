@@ -499,42 +499,52 @@ void Application::subtitleSetBackgroundColor(const Color &color) {
 
 void Application::bagAdd(ObjectId objectId) {
 	if (objectId == kObjectInvalid)
-		error("[Application::removeFromBag] Invalid ID (%d)", objectId.id());
+		error("[Application::bagAdd] Invalid ID (%d)", objectId.id());
 
 	if (!_bag)
-		error("[Application::removeFromBag] bag is not initialized properly");
+		error("[Application::bagAdd] bag is not initialized properly");
 
 	if (!_objects.has(objectId))
-		error("[Application::removeFromBag] ID doesn't exist (%d)", objectId.id());
+		error("[Application::bagAdd] ID doesn't exist (%d)", objectId.id());
 
 	_bag->add(objectId);
 }
 
 void Application::bagRemove(ObjectId objectId) {
 	if (!_bag)
-		error("[Application::removeFromBag] bag is not initialized properly");
+		error("[Application::bagRemove] bag is not initialized properly");
 
 	if (!_objects.has(objectId))
-		error("[Application::removeFromBag] ID doesn't exist (%d)", objectId.id());
+		error("[Application::bagRemove] ID doesn't exist (%d)", objectId.id());
 
 	_bag->remove(objectId);
 }
 
 void Application::bagRemoveAll() {
 	if (!_bag)
-		error("[Application::removeAllFromBag] bag is not initialized properly");
+		error("[Application::bagRemoveAll] bag is not initialized properly");
 
 	_bag->removeAll();
 }
 
 bool Application::bagHas(ObjectId objectId) {
 	if (!_bag)
-		error("[Application::removeFromBag] bag is not initialized properly");
+		error("[Application::bagHas] bag is not initialized properly");
 
 	if (!_objects.has(objectId))
-		error("[Application::removeFromBag] ID doesn't exist (%d)", objectId.id());
+		error("[Application::bagHas] ID doesn't exist (%d)", objectId.id());
 
 	return _bag->has(objectId);
+}
+
+void Application::bagSetClickedObject(ObjectId objectId) {
+	if (!_bag)
+		error("[Application::bagSetClickedObject] bag is not initialized properly");
+
+	if (!_objects.has(objectId))
+		error("[Application::bagSetClickedObject] ID doesn't exist (%d)", objectId.id());
+
+	_bag->setClickedObject(objectId);
 }
 
 bool Application::bagHasClickedObject() {
@@ -546,7 +556,7 @@ bool Application::bagHasClickedObject() {
 
 ObjectId Application::bagGetClickedObject() {
 	if (!_bag)
-		error("[Application::bagHasClickedObject] bag is not initialized properly");
+		error("[Application::bagGetClickedObject] bag is not initialized properly");
 
 	return _bag->getClickedObject();
 }
