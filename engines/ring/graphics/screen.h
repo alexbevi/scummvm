@@ -30,13 +30,30 @@
 
 namespace Ring {
 
+class Image;
+
 class ScreenManager {
 public:
 	ScreenManager();
 	~ScreenManager();
 
-	void init();
 	void sub_4028D0(int a1, int a2);
+
+	void init();
+	//
+	void clear();
+	//
+	//
+	//
+	//
+	//
+	void update(Image *image, Common::Point point, byte a3);
+	//
+	//void readPalette();
+	//
+	//
+	//
+	//
 
 	void updateScreen();
 

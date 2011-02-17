@@ -25,6 +25,7 @@
 
 #include "ring/base/rotation.h"
 
+#include "ring/base/application.h"
 #include "ring/base/accessibility.h"
 #include "ring/base/application.h"
 #include "ring/base/movability.h"
@@ -34,7 +35,7 @@
 
 #include "ring/graphics/animation.h"
 #include "ring/graphics/image.h"
-
+#include "ring/graphics/screen.h"
 
 #include "ring/ring.h"
 
@@ -146,15 +147,39 @@ void Rotation::setCoordinates(const Common::Point &point){
 }
 
 void Rotation::loadImage() {
-	error("[Rotation::loadImage] Not implemented");
+	if (!_imageHandle || _imageHandle->isInitialized())
+		return;
+
+	if (!_imageHandle->isActive())
+		return;
+
+	// Compute filename
+	Common::String filename;
+	switch (_imageHandle->getArchiveType()) {
+	default:
+		error("[Rotation::drawImage] Invalid archive type (%d)", _imageHandle->getArchiveType());
+
+	case kArchiveFile:
+		// Original checks if we are loading from cd or from disk
+		filename = Common::String::format("DATA/%s/IMAGE/%s", getApp()->getZoneString(_imageHandle->getZone()).c_str(), _imageHandle->getNameId().c_str());
+		break;
+
+	case kArchiveArt:
+		filename = Common::String::format("/DATA/%s", _imageHandle->getNameId().c_str());
+		break;
+	}
+
+	_imageHandle->load(filename, _imageHandle->getArchiveType(), _imageHandle->getZone(), _imageHandle->getLoadFrom());
 }
 
 void Rotation::destroyImage() {
-	error("[Rotation::destroyImage] Not implemented");
+	if (_imageHandle && _imageHandle->isInitialized())
+		_imageHandle->destroy();
 }
 
 void Rotation::drawImage(ScreenManager *screen) {
-	error("[Rotation::drawImage] Not implemented");
+	if (_imageHandle)
+		screen->update(_imageHandle, _imageHandle->getCoordinates(), 1);
 }
 
 void Rotation::draw(ScreenManager *screen) {

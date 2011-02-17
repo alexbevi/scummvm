@@ -40,8 +40,12 @@ void ScreenManager::init() {
 	_screen.create(640, 480, 2);
 }
 
+void ScreenManager::update(Image *image, Common::Point point, byte a3) {
+	warning("[ScreenManager::update] Not implemented");
+}
+
 void ScreenManager::sub_4028D0(int a1, int a2) {
-	warning("[Video::sub_4028D0] Not implemented");
+	warning("[ScreenManager::sub_4028D0] Not implemented");
 }
 
 void ScreenManager::updateScreen() {

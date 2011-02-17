@@ -63,6 +63,7 @@ public:
 	void setCoordinates(const Common::Point &point) { _coordinates = point; }
 	Common::Point getCoordinates() { return _coordinates; }
 	Common::Point getOriginalCoordinates() { return _originalCoordinates; }
+	bool isActive() { return _isActive; }
 	uint32 getPriority() { return _priority; }
 	void setField6C(uint32 val) { _field_6C = val; }
 	uint32 getField6C() { return _field_6C; }
