@@ -118,7 +118,8 @@ public:
 	void bagRemove(ObjectId id);
 	void bagRemoveAll();
 	bool bagHas(ObjectId id);
-
+	bool bagHasClickedObject();
+	ObjectId bagGetClickedObject();
 	void bagOpen(const Common::Point &point);
 
 	//////////////////////////////////////////////////////////////////////////

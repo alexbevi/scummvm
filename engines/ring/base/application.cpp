@@ -537,8 +537,22 @@ bool Application::bagHas(ObjectId objectId) {
 	return _bag->has(objectId);
 }
 
+bool Application::bagHasClickedObject() {
+	if (!_bag)
+		error("[Application::bagHasClickedObject] bag is not initialized properly");
+
+	return _bag->getClickedObject() != kObjectInvalid;
+}
+
+ObjectId Application::bagGetClickedObject() {
+	if (!_bag)
+		error("[Application::bagHasClickedObject] bag is not initialized properly");
+
+	return _bag->getClickedObject();
+}
+
 void Application::bagOpen(const Common::Point &point) {
-	error("[Application::bagUpdate] Not implemented!");
+	error("[Application::bagOpen] Not implemented!");
 }
 
 #pragma endregion
@@ -552,7 +566,7 @@ void Application::cursorSelect(CursorId id) {
 
 void Application::cursorDelete() {
 	if (_bag)
-		_bag->setField95(0);
+		_bag->setClickedObject(kObjectInvalid);
 
 	if (_cursorHandler)
 		_cursorHandler->removeByType(kCursorType2);

@@ -74,7 +74,8 @@ public:
 
 	// Accessors
 	bool getField94() { return _field_94; }
-	void setField95(uint32 val) { _field_95 = val; }
+	void setClickedObject(ObjectId object) { _clickedObject = object; }
+	ObjectId getClickedObject() { return _clickedObject; }
 
 private:
 	// Bag data
@@ -116,7 +117,7 @@ private:
 	uint32      _field_8C;
 	uint32      _field_90;
 	bool        _field_94;
-	uint32      _field_95;
+	ObjectId    _clickedObject;
 	uint32      _field_99;
 	uint32      _field_9D;
 	uint32      _ticks;

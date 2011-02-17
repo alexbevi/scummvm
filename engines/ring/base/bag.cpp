@@ -74,7 +74,7 @@ Bag::Bag() {
 	_field_8C = 0;
 	_field_90 = 6;
 	_field_94 = false;
-	_field_95 = 0;
+	_clickedObject = kObjectInvalid;
 	_field_99 = 0;
 	_field_9D = 0;
 	_ticks = 0;
