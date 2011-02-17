@@ -88,8 +88,8 @@ public:
 	void sub_46DE30(uint32 a1, uint32 a2);
 	void initHotspots();
 	void sub_46E330(uint32 a1);
-	void sub_46E340(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6);
-	void sub_46E3F0(int32 a1, int32 a2, int32 a3);
+	void setTextForegroundColor(Color foreground, Color foreground2);
+	void setTextBackgroundColor(Color background);
 	void setFontId(FontId fontId);
 
 	// Management
@@ -156,19 +156,13 @@ private:
 	int32 _field_CD;
 	int32 _field_D1;
 	ArchiveType _archiveType;
-	Text *_text1;
-	Text *_text2;
+	Text  *_text1;
+	Text  *_text2;
 	FontId _fontId;
-	uint32 _field_E2;
-	uint32 _field_E6;
-	uint32 _field_EA;
-	uint32 _field_EE;
-	uint32 _field_F2;
-	uint32 _field_F6;
-	int32 _field_FA;
-	int32 _field_FE;
-	int32 _field_102;
-	uint32 _field_106;
+	Color  _foregroundColor1;
+	Color  _foregroundColor2;
+	Color  _backgroundColor;
+	byte   _field_106;
 };
 
 } // End of namespace Ring

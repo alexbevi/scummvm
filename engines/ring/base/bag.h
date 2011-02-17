@@ -122,12 +122,8 @@ private:
 	uint32      _ticks;
 	Text       *_text;
 	FontId      _fontId;
-	uint32      _field_AD;
-	uint32      _field_B1;
-	uint32      _field_B5;
-	int32       _field_B9;
-	int32       _field_BD;
-	int32       _field_C1;
+	Color       _foregroundColor;
+	Color       _backgroundColor;
 	uint32      _field_C5;
 	ArchiveType _archiveType;
 	Image      *_imageErdaGun;

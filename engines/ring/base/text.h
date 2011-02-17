@@ -38,25 +38,29 @@ public:
 	Text();
 	~Text();
 
-	void init(Common::String text, const Common::Point &point, FontId fontId, byte a4, byte a5, byte a6, int32 a7, int32 a8, int32 a9);
+	void init(Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background);
 	void set(Common::String text);
+	void draw();
 
 	// Accessors
 	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
 	void setFontId(FontId fontId) { _fontId = fontId; }
-	void setField10(uint32 a1, uint32 a2, uint32 a3);
-	void setFields1C1D(int32 a1, int32 a2, int32 a3);
+	void setForegroundColor(Color foreground);
+	void setBackgroundColor(Color background);
+	void setCoordinates(Common::Point point) { _point = point; }
+	uint32 getWidth() { return _width; }
+	uint32 getHeight() { return _height; }
 
 private:
 	// Data
 	Common::String _text;
 	FontId _fontId;
 	Common::Point _point;
-	uint32 _field_10;
+	uint32 _foregroundColor;
 	uint32 _width;
 	uint32 _height;
-	byte _field_1C;
-	uint32 _field_1D;
+	byte _transparentBackground;
+	uint32 _backgroundColor;
 	ObjectPresentation *_objectPresentation;
 };
 

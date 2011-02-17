@@ -212,9 +212,9 @@ public:
 };
 
 struct Color {
-	uint32 red;
-	uint32 green;
-	uint32 blue;
+	int32 red;
+	int32 green;
+	int32 blue;
 
 	Color() {
 		red = 0;
@@ -222,10 +222,18 @@ struct Color {
 		blue = 0;
 	}
 
-	Color(uint32 r, uint g, uint32 b) {
+	Color(int32 r, int g, int32 b) {
 		red = r;
 		green = g;
 		blue = b;
+	}
+
+	bool isTransparent() {
+		return (red == -1 && green == -1 && blue == -1);
+	}
+
+	uint32 getColor() {
+		return g_system->getScreenFormat().RGBToColor(red, green, blue);
 	}
 };
 

@@ -104,14 +104,11 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_field_71 = 0;
 	_field_75 = 0;
 	_field_79 = 0;
-	_field_E2 = 200;
-	_field_E6 = 200;
+	_foregroundColor1 = Color(200, 200, 30);
 	_field_7D = 0;
 	_field_81 = 0;
 	_field_85 = 0;
-	_field_EE = 255;
-	_field_F2 = 255;
-	_field_F6 = 255;
+	_foregroundColor2 = Color(255, 255, 255);
 	_field_89 = 0;
 	_field_8D = 0;
 	_field_91 = 0;
@@ -132,10 +129,7 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_text1 = NULL;
 	_text2 = NULL;
 	_fontId = kFontDefault;
-	_field_EA = 30;
-	_field_FA = 0;
-	_field_FE = 0;
-	_field_102 = 0;
+	_backgroundColor = Color(0, 0, 0);
 	_archiveType = kArchiveFile;
 	_field_106 = 0;
 }
@@ -214,10 +208,10 @@ void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String 
 	_cliImageA->setPath(path);
 
 	_text1 = new Text();
-	_text1->init("", Common::Point(0, 0), _fontId, _field_E2, _field_E6, _field_EA, _field_FA, _field_FE, _field_102);
+	_text1->init("", Common::Point(0, 0), _fontId, _foregroundColor1, _backgroundColor);
 
 	_text2 = new Text();
-	_text2->init("", Common::Point(0, 0), _fontId, _field_E2, _field_E6, _field_EA, _field_FA, _field_FE, _field_102);
+	_text2->init("", Common::Point(0, 0), _fontId, _foregroundColor2, _backgroundColor);
 }
 
 void VisualObjectList::sub_46DCF0(uint32 a1, uint32 a2) {
@@ -329,34 +323,28 @@ void VisualObjectList::sub_46E330(uint32 a1) {
 	_field_BD = a1;
 }
 
-void VisualObjectList::sub_46E340(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6) {
+void VisualObjectList::setTextForegroundColor(Color foreground1, Color foreground2) {
 	if (_text1)
-		_text1->setField10(a1, a2, a3);
+		_text1->setForegroundColor(foreground1);
 
 	if (_text2)
-		_text2->setField10(a1, a2, a3);
+		_text2->setForegroundColor(foreground2);
 
 	if (_text1 || _text2) {
-		_field_E2 = a1;
-		_field_E6 = a2;
-		_field_EA = a3;
-		_field_EE = a4;
-		_field_F2 = a5;
-		_field_F6 = a6;
+		_foregroundColor1 = foreground1;
+		_foregroundColor2 = foreground2;
 	}
 }
 
-void VisualObjectList::sub_46E3F0(int32 a1, int32 a2, int32 a3) {
+void VisualObjectList::setTextBackgroundColor(Color background) {
 	if (_text1)
-		_text1->setFields1C1D(a1, a2, a3);
+		_text1->setBackgroundColor(background);
 
 	if (_text2)
-		_text2->setFields1C1D(a1, a2, a3);
+		_text2->setBackgroundColor(background);
 
 	if (_text1 || _text2) {
-		_field_FA = a1;
-		_field_FE = a2;
-		_field_102 = a3;
+		_backgroundColor = background;
 	}
 }
 

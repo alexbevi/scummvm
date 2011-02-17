@@ -65,10 +65,17 @@ public:
 	void setTicks();
 	void hide();
 
+	void sub_427A10();
+
+	int32 getLineIndex();
+	Common::String getLine1(int32 index);
+	Common::String getLine2(int32 index);
+	bool getFieldC() { return _field_C; }
+
 private:
 	Common::Array<DialogLine *> _lines;
 	uint32 _startTicks;
-	byte _field_C;
+	bool _field_C;
 	uint32 _field_D;
 	Common::Array<DialogLevel *> _levels;
 	Common::Array<DialogAnimation *> _animations;
@@ -79,7 +86,7 @@ public:
 	DialogHandler();
 	~DialogHandler();
 
-	void init(uint32 a1, const Color &subtitlesColor, const Color &subtitlesBackgroundColor, uint32 a8, uint32 a9);
+	void init(FontId fontId, const Color &subtitlesColor, const Color &subtitlesBackgroundColor, uint32 a8, uint32 a9);
 
 	void addDialog(Dialog *dialog);
 	bool removeDialog(Id id);
@@ -95,9 +102,9 @@ public:
 	void setField28(uint32 val) { _field_28 = val; }
 
 private:
-	uint32 _field_0;
-	Color _subtitleColor;
-	Color _subtitlesBackgroundColor;
+	FontId _fontId;
+	Color  _subtitleColor;
+	Color  _subtitlesBackgroundColor;
 	uint32 _field_1C;
 	uint32 _field_20;
 	AssociativeArray<Dialog *> _dialogs;

@@ -162,7 +162,7 @@ void Application::init() {
 
 	// Setup dialogs
 	_dialogHandler = new DialogHandler();
-	_dialogHandler->init(1, Color(200, 200, 30), Color(0, 0, 0), 461, 3);
+	_dialogHandler->init(kFontDefault, Color(200, 200, 30), Color(0, 0, 0), 461, 3);
 
 	// Setup cursors
 	_cursorHandler = new CursorHandler();
@@ -936,14 +936,14 @@ void Application::objectAddPresentation(ObjectId objectId) {
 	_objects.get(objectId)->addPresentation();
 }
 
-void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, const Common::Point &point, FontId fontId, uint32 a8, int32 a9, int32 a10, int32 a11, int32 a12, int32 a13) {
+void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationAddTextToPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	if (!_puzzles.has(puzzleId))
 		error("[Application::objectPresentationAddTextToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
-	_objects.get(objectId)->addTextToPuzzle(presentationIndex, _puzzles.get(puzzleId), text, point, fontId, a8, a9, a10, a11, a12, a13);
+	_objects.get(objectId)->addTextToPuzzle(presentationIndex, _puzzles.get(puzzleId), text, point, fontId, foreground, background);
 }
 
 void Application::objectPresentationSetTextToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, Common::String text) {
@@ -1588,7 +1588,7 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 							            uint32 a17, uint32 a18, uint32 a19, uint32 a20, uint32 a21, uint32 a22, uint32 a23, uint32 a24, uint32 a25, uint32 a26,
 	                                    uint32 a27, uint32 a28, uint32 a29, uint32 a30, uint32 a31, uint32 a32, uint32 a33, uint32 a34, uint32 a35, uint32 a36,
 	                                    uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, uint32 a42, uint32 a43, uint32 a44, uint32 a45, uint32 a46,
-							            uint32 a47, uint32 a48, uint32 a49, uint32 a50, uint32 a51, uint32 a52, int32  a53,  int32 a54, int32  a55, FontId fontId,
+							           Color foreground1, Color foreground2, Color background, FontId fontId,
 							            ArchiveType archiveType) {
 
 
@@ -1614,8 +1614,8 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 	list->sub_46DE30(a44, a45);
 	list->sub_46E330(a46);
 	list->initHotspots();
-	list->sub_46E340(a47, a48, a49, a50, a51, a52);
-	list->sub_46E3F0(a53, a54, a55);
+	list->setTextForegroundColor(foreground1, foreground2);
+	list->setTextBackgroundColor(background);
 	list->setFontId(fontId);
 
 	puzzle->addVisual(list);

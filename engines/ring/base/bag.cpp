@@ -80,12 +80,8 @@ Bag::Bag() {
 	_ticks = 0;
 	_text = NULL;
 	_fontId = kFontDefault;
-	_field_AD = 245;
-	_field_B1 = 235;
-	_field_B5 = 50;
-	_field_B9 = 0;
-	_field_BD = 0;
-	_field_C1 = 0;
+	_foregroundColor = Color(245, 235, 50);
+	_backgroundColor = Color(0, 0, 0);
 	_field_C5 = 90;
 	_archiveType = kArchiveInvalid;
 	_imageErdaGun = NULL;
@@ -265,7 +261,7 @@ void Bag::loadBackground(Common::String filename1, Common::String, Common::Strin
 	// Setup text
 	SAFE_DELETE(_text);
 	_text = new Text();
-	_text->init("", Common::Point(0, 0), _fontId, _field_AD, _field_B1, _field_B5, _field_B9, _field_BD, _field_C1);
+	_text->init("", Common::Point(0, 0), _fontId, _foregroundColor, _backgroundColor);
 }
 
 void Bag::loadImage(Common::String filename, Image **image, ArchiveType archiveType) const {

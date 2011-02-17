@@ -535,7 +535,7 @@ void ApplicationRing::initZoneSY() {
 
 	objectAdd(kObject1, "", "", 1);
 	objectAddPresentation(kObject1);
-	objectPresentationAddTextToPuzzle(kObject1, 0, kPuzzle1, "", Common::Point(1, 16), kFontDefault, 0, -1, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject1, 0, kPuzzle1, "", Common::Point(1, 16), kFontDefault, Color(0, -1, 0), Color(-1, -1, -1));
 
 	objectAdd(kObject6, "", "", 1);
 	objectAddPresentation(kObject6);
@@ -612,8 +612,8 @@ void ApplicationRing::initZoneSY() {
 	objectAdd(kObject3, "", "", 1);
 	objectAddPresentation(kObject3);
 	objectPresentationAddImageToPuzzle(kObject3, 0, kPuzzle1, "Warning.bmp", Common::Point(160, 165), true, 1, 1000);
-	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", Common::Point(200, 200), kFontDefault, 255u, 95, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", Common::Point(300, 280), kFontDefault, 255u, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", Common::Point(200, 200), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", Common::Point(300, 280), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
 	objectAddPresentation(kObject3);
 	objectPresentationAddImageToPuzzle(kObject3, 1, kPuzzle1, "wr_ok.tga", Common::Point(313, 281), true, 3, 1000);
 	objectAddPuzzleAccessibility(kObject3, kPuzzle1, Common::Rect(286, 269, 363, 307), false, 57, 0);
@@ -622,8 +622,8 @@ void ApplicationRing::initZoneSY() {
 	objectAdd(kObject4, "", "", 1);
 	objectAddPresentation(kObject4);
 	objectPresentationAddImageToPuzzle(kObject4, 0, kPuzzle1, "Question.bmp", Common::Point(160, 165), true, 1, 1000);
-	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", Common::Point(200, 200), kFontDefault, 255u, 95, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", Common::Point(200, 280), kFontDefault, 255u, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", Common::Point(200, 200), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", Common::Point(200, 280), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
 	objectAddPresentation(kObject4);
 	objectPresentationAddImageToPuzzle(kObject4, 1, kPuzzle1, "g_ok.tga", Common::Point(181, 257), true, 3, 1000);
 	objectAddPresentation(kObject4);
@@ -649,8 +649,8 @@ void ApplicationRing::initZoneSY() {
 	objectAddPresentation(kObject90912);
 	objectPresentationAddImageToPuzzle(kObject90912, 0, kPuzzleInsertCd, "g_ok.tga", Common::Point(306, 274), true, 3, 1000);
 	objectAddPresentation(kObject90912);
-	objectPresentationAddTextToPuzzle(kObject90912, 1, kPuzzleInsertCd, "", Common::Point(320, 240), kFontDefault, 255, 95, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObject90912, 1, kPuzzleInsertCd, "", Common::Point(320, 260), kFontDefault, 255, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObject90912, 1, kPuzzleInsertCd, "", Common::Point(320, 240), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObject90912, 1, kPuzzleInsertCd, "", Common::Point(320, 260), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
 	objectPresentationShow(kObject90912, 1);
 	objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), true, 57, 0);
 	objectAddPuzzleAccessibility(kObject90912, kPuzzleInsertCd, Common::Rect(266, 268, 388, 311), true, 57, 1);
@@ -784,8 +784,8 @@ void ApplicationRing::initZoneSY() {
 	objectSetPuzzleAccessibilityKey(kObjectSaveOk, 0, Common::KEYCODE_RETURN);
 	objectAdd(kObjectSave90313, "", "", 1);
 	objectAddPresentation(kObjectSave90313);
-	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", Common::Point(344, 181), kFontDefault, 255, 95, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", Common::Point(0, 0), kFontDefault, 255, 95, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", Common::Point(344, 181), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", Common::Point(0, 0),     kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
 	objectPresentationAddAnimationToPuzzle(kObjectSave90313, 0, kPuzzleSave, "kybcur", 0, Common::Point(0, 0), 1, 1000, 6, 12.5f, 16);
 	objectPresentationSetAnimationCoordinatesOnPuzzle(kObjectSave90313, 0, Common::Point(346, 181));
 
@@ -802,7 +802,7 @@ void ApplicationRing::initZoneSY() {
 	                      3, 0, 0, 0, 0, 335, 127, 300, 35, 45,
 	                      3, 330, 349, 320, 339, 40, 40, 330, 380, 320,
 	                      370, 40, 40, 0, 0, 0, 1, 311, 137, 4,
-	                      255, 95, 0, 245, 235, 50, -1, -1,-1, kFontDefault,
+	                      Color(255, 95, 0), Color(245, 235, 50), Color(-1, -1, -1), kFontDefault,
 	                      kArchiveFile);
 
 	// Game status screen
@@ -814,10 +814,10 @@ void ApplicationRing::initZoneSY() {
 	visualAddShowToPuzzle(2, kPuzzleGameStatus, 1, 4, 295, 343, 28, 4, 300, 38655);
 	objectAdd(kObjectStatusProgress, "", "", 1);
 	objectAddPresentation(kObjectStatusProgress);
-	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", Common::Point(600, 327), kFontDefault, 255, -106, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", Common::Point(600, 356), kFontDefault, 255, -106, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", Common::Point(600, 384), kFontDefault, 255, -106, 0, -1, -1, -1);
-	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", Common::Point(600, 410), kFontDefault, 255, -106, 0, -1, -1, -1);
+	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", Common::Point(600, 327), kFontDefault, Color(255, -106, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", Common::Point(600, 356), kFontDefault, Color(255, -106, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", Common::Point(600, 384), kFontDefault, Color(255, -106, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObjectStatusProgress, 0, kPuzzleGameStatus, "", Common::Point(600, 410), kFontDefault, Color(255, -106, 0), Color(-1, -1, -1));
 	objectPresentationShow(kObjectStatusProgress);
 
 	// Sounds

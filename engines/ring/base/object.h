@@ -48,7 +48,7 @@ public:
 	~ObjectPresentation();
 
 	// Text
-	void addTextToPuzzle(Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, byte a7, byte a8, byte a9, int32 a10, int32 a11, int32 a12);
+	void addTextToPuzzle(Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background);
 
 	// Image
 	void addImageToPuzzle(Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom);
@@ -96,7 +96,7 @@ public:
 
 	// Presentation
 	void addPresentation();
-	void addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, byte a8, byte a9, byte a10, uint32 a11, uint32 a12, uint32 a13);
+	void addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background);
 	void setTextToPuzzle(uint32 presentationIndex, uint32 textIndex, Common::String text);
 	void setTextCoordinatesToPuzzle(uint32 presentationIndex, uint32 textIndex, const Common::Point &point);
 	uint32 getTextWidth(uint32 presentationIndex, uint32 textIndex);

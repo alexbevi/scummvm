@@ -37,11 +37,11 @@ namespace Ring {
 
 Text::Text() {
 	_fontId  = kFontInvalid;
-	_field_10 = 0;
+	_foregroundColor = 0;
 	_width = 0;
 	_height = 0;
-	_field_1C = 0;
-	_field_1D = 0;
+	_transparentBackground = false;
+	_backgroundColor = 0;
 	_objectPresentation = NULL;
 }
 
@@ -49,21 +49,21 @@ Text::~Text() {
 	_objectPresentation = NULL;
 }
 
-void Text::init(Common::String text, const Common::Point &point, FontId fontId, byte a4, byte a5, byte a6, int32 a7, int32 a8, int32 a9) {
+void Text::init(Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background) {
 	_text = text;
 	_fontId = fontId;
 	_point = point;
-	_field_10 = a4 | ((a5 | a6 << 4) << 8);
+	_foregroundColor = foreground.getColor();
 
 	set(text);
 
-	if (a7 != -1 || a8 != -1 || a9 != -1) {
-		_field_1C = 0;
+	if (!background.isTransparent()) {
+		_transparentBackground = false;
 		_objectPresentation = NULL;
-		_field_1D = (byte)a7 | ((a8 | a9 << 4) << 8);
+		_backgroundColor = background.getColor();
 	} else {
-		_field_1C = 1;
-		_field_1D = 0;
+		_transparentBackground = true;
+		_backgroundColor = 0;
 		_objectPresentation = NULL;
 	}
 }
@@ -82,17 +82,21 @@ void Text::set(Common::String text) {
 	}
 }
 
-void Text::setField10(uint32 a1, uint32 a2, uint32 a3) {
-	_field_10 = (byte)a1 | ((a2 | a3 << 4) << 8);
+void Text::draw() {
+	error("[Text::draw] Not implemented");
 }
 
-void Text::setFields1C1D(int32 a1, int32 a2, int32 a3) {
-	if (a1 != -1 || a2 != -1 || a3 != -1) {
-		_field_1C = 0;
-		_field_1D = (byte)a1 | ((a2 | a3 << 4) << 8);
+void Text::setForegroundColor(Color foreground) {
+	_foregroundColor = foreground.getColor();
+}
+
+void Text::setBackgroundColor(Color background) {
+	if (!background.isTransparent()) {
+		_transparentBackground = false;
+		_backgroundColor = background.getColor();
 	} else {
-		_field_1C = 1;
-		_field_1D = 0;
+		_transparentBackground = true;
+		_backgroundColor = 0;
 	}
 }
 

@@ -68,9 +68,9 @@ ObjectPresentation::~ObjectPresentation() {
 	_object = NULL;
 }
 
-void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, byte a7, byte a8, byte a9, int32 a10, int32 a11, int32 a12) {
+void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background) {
 	Text *textObject = new Text();
-	textObject->init(text, point, fontId, a7, a8, a9, a10, a11, a12);
+	textObject->init(text, point, fontId, foreground, background);
 	textObject->setObjectPresentation(this);
 
 	_textPuzzle.push_back(textObject);
@@ -258,11 +258,11 @@ void Object::addPresentation() {
 	_presentations.push_back(new ObjectPresentation(this));
 }
 
-void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, byte a8, byte a9, byte a10, uint32 a11, uint32 a12, uint32 a13) {
+void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addTextToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
-	_presentations[presentationIndex]->addTextToPuzzle(puzzle, text, point, fontId, a8, a9, a10, a11, a12, a13);
+	_presentations[presentationIndex]->addTextToPuzzle(puzzle, text, point, fontId, foreground, background);
 }
 
 void Object::setTextToPuzzle(uint32 presentationIndex, uint32 textIndex, Common::String text) {

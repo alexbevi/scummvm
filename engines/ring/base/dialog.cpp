@@ -25,6 +25,10 @@
 
 #include "ring/base/dialog.h"
 
+#include "ring/base/application.h"
+#include "ring/base/text.h"
+
+#include "ring/ring.h"
 #include "ring/helpers.h"
 
 namespace Ring {
@@ -63,7 +67,7 @@ DialogAnimation::~DialogAnimation() {
 
 Dialog::Dialog() : BaseObject(0) {
 	_startTicks = 0;
-	_field_C = 0;
+	_field_C = false;
 	_field_D = 0;
 }
 
@@ -81,12 +85,28 @@ void Dialog::hide() {
 	error("[Dialog::hide] No implemented");
 }
 
+void Dialog::sub_427A10() {
+	error("[Dialog::sub_427A10] No implemented");
+}
+
+int32 Dialog::getLineIndex() {
+	error("[Dialog::getLineIndex] No implemented");
+}
+
+Common::String Dialog::getLine1(int32 index) {
+	error("[Dialog::getLine1] No implemented");
+}
+
+Common::String Dialog::getLine2(int32 index) {
+	error("[Dialog::getLine2] No implemented");
+}
+
 #pragma endregion
 
 #pragma region DialogHandler
 
 DialogHandler::DialogHandler() {
-	_field_0 = 0;
+	_fontId = kFontInvalid;
 	_field_1C = 0;
 	_field_20 = 0;
 	_field_28 = 1;
@@ -96,8 +116,8 @@ DialogHandler::~DialogHandler() {
 	CLEAR_ARRAY(Dialog, _dialogs);
 }
 
-void DialogHandler::init(uint32 a1, const Color &subtitlesColor, const Color &subtitlesBackgroundColor, uint32 a8, uint32 a9) {
-	_field_0 = a1;
+void DialogHandler::init(FontId fontId, const Color &subtitlesColor, const Color &subtitlesBackgroundColor, uint32 a8, uint32 a9) {
+	_fontId = fontId;
 	_subtitleColor = subtitlesColor;
 	_subtitlesBackgroundColor = subtitlesBackgroundColor;
 	_field_1C = a8;
@@ -117,6 +137,9 @@ bool DialogHandler::removeDialog(Id id) {
 	if (!_dialogs.has(id))
 		return false;
 
+	// Hide dialog
+	_dialogs.get(id)->hide();
+
 	_dialogs.remove_at(_dialogs.getIndex(id));
 
 	return true;
@@ -126,7 +149,55 @@ void DialogHandler::play() {
 	if (_dialogs.empty())
 		return;
 
-	error("[DialogHandler::play] Not implemented");
+	// Play first dialog
+	Dialog *dialog = _dialogs[0];
+
+	int32 index = dialog->getLineIndex();
+	if (index != -1) {
+		Text *line1 = NULL;
+		Text *line2 = NULL;
+
+		// Create text from dialog lines
+		if (!dialog->getLine1(index).empty()) {
+			line1 = new Text();
+			line1->init(dialog->getLine1(index), Common::Point(0, 0), _fontId, _subtitleColor, _subtitlesBackgroundColor);
+		}
+
+		if (!dialog->getLine2(index).empty()) {
+			line2 = new Text();
+			line2->init(dialog->getLine2(index), Common::Point(0, 0), _fontId, _subtitleColor, _subtitlesBackgroundColor);
+		}
+
+		// Set text coordinates
+		if (line1) {
+			if (line2) {
+				line1->setCoordinates(Common::Point(320 - line1->getWidth() / 2, _field_1C - line1->getHeight() - _field_20 - line2->getHeight()));
+				line2->setCoordinates(Common::Point(320 - line2->getWidth() / 2, _field_1C - line2->getHeight()));
+			} else {
+				line1->setCoordinates(Common::Point(320 - line1->getWidth() / 2, _field_1C - line1->getHeight()));
+			}
+		}
+
+		if (_field_28) {
+			if (line1)
+				line1->draw();
+
+			if (line2)
+				line2->draw();
+		}
+
+		SAFE_DELETE(line1);
+		SAFE_DELETE(line2);
+
+		if (dialog->getFieldC())
+			dialog->sub_427A10();
+
+		error("[DialogHandler::play] Not implemented");
+	}
+
+	Id dialogId = dialog->getId();
+	removeDialog(dialogId);
+	getApp()->onSound(dialogId, kSoundTypeDialog, 4097);
 }
 
 bool DialogHandler::isPlaying(Id id) {
