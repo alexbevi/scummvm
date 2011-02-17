@@ -30,55 +30,54 @@
 
 namespace Ring {
 
-class DialogLine {
-public:
-	DialogLine();
-	~DialogLine();
+struct DialogLine {
+	uint32 ticks;
+	Common::String line1;
+	Common::String line2;
 
-private:
-
+	DialogLine() {
+		ticks = 0;
+	}
 };
 
-class DialogLevel {
-public:
-	DialogLevel();
-	~DialogLevel();
+struct DialogAnimation {
+	ObjectId objectId;
+	uint32 presentationIndex;
+	uint32 field_8;
 
-private:
-
-};
-
-class DialogAnimation {
-public:
-	DialogAnimation();
-	~DialogAnimation();
-
-private:
-
+	DialogAnimation(ObjectId id, uint32 index, uint32 a3) {
+		objectId = id;
+		presentationIndex = index;
+		field_8 = a3;
+	}
 };
 
 class Dialog : public BaseObject {
 public:
-	Dialog();
+	Dialog(ObjectId id, Common::String name);
 	~Dialog();
 
-	void setTicks();
+	void show();
 	void hide();
 
-	void sub_427A10();
+	void setTicks();
 
 	int32 getLineIndex();
-	Common::String getLine1(int32 index);
-	Common::String getLine2(int32 index);
-	bool getFieldC() { return _field_C; }
+	Common::String getLine1(uint32 index);
+	Common::String getLine2(uint32 index);
+	bool isVisible() { return _visible; }
 
 private:
 	Common::Array<DialogLine *> _lines;
 	uint32 _startTicks;
-	bool _field_C;
+	bool _visible;
 	uint32 _field_D;
-	Common::Array<DialogLevel *> _levels;
+	Common::Array<DialogAnimation *> _levels;
 	Common::Array<DialogAnimation *> _animations;
+
+	void readLyrics(Common::String filename);
+	void parseLyrics(Common::String line);
+	bool readAnimation(Common::String filename);
 };
 
 class DialogHandler {

@@ -33,47 +33,25 @@
 
 namespace Ring {
 
-#pragma region DialogLine
-
-DialogLine::DialogLine() {
-}
-
-DialogLine::~DialogLine() {
-}
-
-#pragma endregion
-
-#pragma region DialogLevel
-
-DialogLevel::DialogLevel() {
-}
-
-DialogLevel::~DialogLevel() {
-}
-
-#pragma endregion
-
-#pragma region DialogAnimation
-
-DialogAnimation::DialogAnimation() {
-}
-
-DialogAnimation::~DialogAnimation() {
-}
-
-#pragma endregion
-
 #pragma region Dialog
 
-Dialog::Dialog() : BaseObject(0) {
+Dialog::Dialog(ObjectId id, Common::String name) : BaseObject(id) {
 	_startTicks = 0;
-	_field_C = false;
 	_field_D = 0;
+
+	if (name.size() < 4)
+		error("[Dialog::Dialog] Invalid dialog name (length should be >= 4)");
+
+	// Read lyrics
+	readLyrics(Common::String::format("DATA/%s/DIA/%s/%sdia", getApp()->getCurrentZoneString().c_str(), getApp()->languageGetFolder().c_str(), name.c_str()));
+
+	// Read animations
+	_visible = readAnimation(Common::String::format("DATA/%s/DIA/%s/%sdan", getApp()->getCurrentZoneString().c_str(), getApp()->languageGetFolder().c_str(), name.c_str()));
 }
 
 Dialog::~Dialog() {
 	CLEAR_ARRAY(DialogLine, _lines);
-	CLEAR_ARRAY(DialogLevel, _levels);
+	CLEAR_ARRAY(DialogAnimation, _levels);
 	CLEAR_ARRAY(DialogAnimation, _animations);
 }
 
@@ -82,23 +60,60 @@ void Dialog::setTicks() {
 }
 
 void Dialog::hide() {
-	error("[Dialog::hide] No implemented");
+	if (!_visible)
+		return;
+
+	for (Common::Array<DialogAnimation *>::iterator it = _levels.begin(); it != _levels.end(); it++)
+		getApp()->objectPresentationHide((*it)->objectId, (*it)->presentationIndex);
 }
 
-void Dialog::sub_427A10() {
-	error("[Dialog::sub_427A10] No implemented");
+void Dialog::show() {
+	error("[Dialog::show] No implemented");
 }
 
 int32 Dialog::getLineIndex() {
-	error("[Dialog::getLineIndex] No implemented");
+	if (_lines.empty())
+		return -1;
+
+	if (_lines.size() == 1)
+		return 0;
+
+	// Tick offset
+	uint32 ticks = g_system->getMillis() - _startTicks;
+
+	// Get the proper line
+	for (uint32 i = 0; i < _lines.size() - 1; i++) {
+		if (ticks >= _lines[i]->ticks && ticks <= _lines[i + 1]->ticks)
+			return i;
+	}
+
+	return -1;
 }
 
-Common::String Dialog::getLine1(int32 index) {
-	error("[Dialog::getLine1] No implemented");
+Common::String Dialog::getLine1(uint32 index) {
+	if (index >= _lines.size())
+		error("[Dialog::getLine1] Invalid index (was:%d, max:%d)", index, _lines.size() - 1);
+
+	return _lines[index]->line1;
 }
 
-Common::String Dialog::getLine2(int32 index) {
-	error("[Dialog::getLine2] No implemented");
+Common::String Dialog::getLine2(uint32 index) {
+	if (index >= _lines.size())
+		error("[Dialog::getLine2] Invalid index (was:%d, max:%d)", index, _lines.size() - 1);
+
+	return _lines[index]->line2;
+}
+
+void Dialog::readLyrics(Common::String filename) {
+	error("[Dialog::readLyrics] No implemented");
+}
+
+void Dialog::parseLyrics(Common::String line) {
+	error("[Dialog::parseLyrics] No implemented");
+}
+
+bool Dialog::readAnimation(Common::String filename) {
+	error("[Dialog::readDialogAnimation] No implemented");
 }
 
 #pragma endregion
@@ -189,8 +204,8 @@ void DialogHandler::play() {
 		SAFE_DELETE(line1);
 		SAFE_DELETE(line2);
 
-		if (dialog->getFieldC())
-			dialog->sub_427A10();
+		if (dialog->isVisible())
+			dialog->show();
 
 		error("[DialogHandler::play] Not implemented");
 	}

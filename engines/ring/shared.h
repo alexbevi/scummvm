@@ -203,6 +203,7 @@ public:
 
 class ObjectId : public BaseId {
 public:
+	ObjectId() : BaseId(0) {}
 	ObjectId(ObjectIdEnum i) : BaseId(i) {}
 	ObjectId(uint32 i) : BaseId(i) {}
 
