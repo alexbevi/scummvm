@@ -557,6 +557,19 @@ void Application::cursorDelete() {
 
 #pragma endregion
 
+#pragma region Message
+
+bool Application::messageGet(Common::String messageId) {
+	error("[Application::messageGet] Not implemented");
+}
+
+void Application::messageFormat(Common::String messageId, Common::String argument) {
+	if (messageGet(messageId))
+		_message = Common::String::format(_message.c_str(), argument.c_str());
+}
+
+#pragma endregion
+
 #pragma region Puzzle
 
 void Application::puzzleAdd(PuzzleId puzzleId) {
@@ -644,14 +657,18 @@ void Application::puzzleSetMovabilityOff(const PuzzleId &puzzleId) {
 
 #pragma endregion
 
-void Application::puzzleSetMod(PuzzleId puzzleId, uint32 a2, uint32 a3) {
+bool Application::puzzleSetMod(PuzzleId puzzleId, uint32 a2, uint32 a3) {
 	if (!_puzzles.has(puzzleId))
 		error("[Application::puzzleAddAmbientSound] Wrong puzzle Id (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
-	if (puzzle->getField24() != 2 || a2 != 2)
+	if (puzzle->getField24() != 2 || a2 != 2) {
 		puzzle->setMod(a2, a3);
 
+		return true;
+	}
+
+	return false;
 }
 
 void Application::puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7) {

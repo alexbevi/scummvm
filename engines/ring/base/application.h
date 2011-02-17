@@ -127,6 +127,17 @@ public:
 	void cursorDelete();
 
 	//////////////////////////////////////////////////////////////////////////
+	// Message
+	virtual void messageInsertCd(Zone zone) {}
+	virtual void messageShowWarning(uint32 accelerationIndex) {}
+	virtual void messageHideWarning(uint32 accelerationIndex) {}
+	virtual void messageShowQuestion(uint32 accelerationIndex) {}
+	virtual void messageHideQuestion(uint32 accelerationIndex) {}
+
+	bool messageGet(Common::String messageId);
+	void messageFormat(Common::String messageId, Common::String argument);
+
+	//////////////////////////////////////////////////////////////////////////
 	// Zone name, short string and readFrom
 	virtual Common::String getZoneString(Zone zone) const = 0;
 	virtual Common::String getZoneLongName(Zone zone) const = 0;
@@ -148,7 +159,7 @@ public:
 	void puzzleSetMovabilityOn(const PuzzleId &puzzleId, uint32 fromMovability, uint32 toMovability);
 	void puzzleSetMovabilityOff(const PuzzleId &puzzleId, uint32 fromMovability, uint32 toMovability);
 
-	void puzzleSetMod(PuzzleId puzzleId, uint32 a2, uint32 a3);
+	bool puzzleSetMod(PuzzleId puzzleId, uint32 a2, uint32 a3);
 
 	void puzzleAddAmbientSound(PuzzleId puzzleId, Id soundId, uint32 volume, int32 pan, uint32 fadeFrames, uint32 a6, uint32 a7);
 	void puzzleSetAmbientSoundOn(PuzzleId puzzleId, Id soundId);
@@ -395,6 +406,9 @@ protected:
 	// Current rotation
 	Rotation *_currentRotation;
 
+	// Current message
+	Common::String _messageType;
+	Common::String _message;
 };
 
 } // End of namespace Ring

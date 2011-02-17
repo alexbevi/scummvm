@@ -319,6 +319,58 @@ void ApplicationRing::draw() {
 
 #pragma endregion
 
+#pragma region Message
+
+void ApplicationRing::messageInsertCd(Zone zone) {
+	setZoneAndEnableBag(kZoneSY);
+	objectPresentationSetTextToPuzzle(kObject90912, 1, 0, _messageType);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject90912, 1, 0, Common::Point(225, 193));
+	objectPresentationSetTextToPuzzle(kObject90912, 1, 1, _message);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject90912, 1, 1, Common::Point(225, 213));
+	objectPresentationShow(kObject90912, 0);
+	objectSetAccessibilityOff(kObject90912);
+	objectSetAccessibilityOn(kObject90912, zone, zone);
+	puzzleSetActive(kPuzzleInsertCd, 1, 1);
+}
+
+void ApplicationRing::messageShowWarning(uint32 accelerationIndex) {
+	if (!puzzleSetMod(kPuzzle1, 2, 3))
+		return;
+
+	objectPresentationSetTextToPuzzle(kObject3, 0, 0, _messageType);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject3, 0, 0, Common::Point(225, 193));
+	objectPresentationSetTextToPuzzle(kObject3, 0, 1, _message);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject3, 0, 1, Common::Point(225, 213));
+	objectPresentationShow(kObject3, 0);
+	objectSetAccessibilityOn(kObject3, accelerationIndex, accelerationIndex);
+}
+
+void ApplicationRing::messageHideWarning(uint32 accelerationIndex) {
+	objectPresentationHideAndRemove(kObject3);
+	objectSetAccessibilityOff(kObject3, accelerationIndex, accelerationIndex);
+	puzzleSetMod(kPuzzle1, 1, 0);
+}
+
+void ApplicationRing::messageShowQuestion(uint32 accelerationIndex) {
+	if (!puzzleSetMod(kPuzzle1, 2, 4))
+		return;
+
+	objectPresentationSetTextToPuzzle(kObject4, 0, 0, _messageType);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject4, 0, 0, Common::Point(225, 193));
+	objectPresentationSetTextToPuzzle(kObject4, 0, 1, _message);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject4, 0, 1, Common::Point(225, 213));
+	objectPresentationShow(kObject4, 0);
+	objectSetAccessibilityOn(kObject4, accelerationIndex, accelerationIndex + 1);
+}
+
+void ApplicationRing::messageHideQuestion(uint32 accelerationIndex) {
+	objectPresentationHideAndRemove(kObject4);
+	objectSetAccessibilityOff(kObject4, accelerationIndex, accelerationIndex + 1);
+	puzzleSetMod(kPuzzle1, 1, 0);
+}
+
+#pragma endregion
+
 #pragma region Zone setup
 
 void ApplicationRing::setupZone(Zone zone, uint32 a2)  {

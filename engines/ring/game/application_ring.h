@@ -52,6 +52,14 @@ public:
 	virtual void draw();
 
 	//////////////////////////////////////////////////////////////////////////
+	// Messages
+	virtual void messageInsertCd(Zone zone);
+	virtual void messageShowWarning(uint32 accelerationIndex);
+	virtual void messageHideWarning(uint32 accelerationIndex);
+	virtual void messageShowQuestion(uint32 accelerationIndex);
+	virtual void messageHideQuestion(uint32 accelerationIndex);
+
+	//////////////////////////////////////////////////////////////////////////
 	// Setup
 	void setupZone(Zone zone, uint32 a2);
 	void setZone(Zone zone, uint32 a2);
