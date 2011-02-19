@@ -237,7 +237,7 @@ void Animation::pauseOnFrame(uint32 frame, uint32 a2, uint32 a3) {
 #pragma region AnimationImage
 
 AnimationImage::AnimationImage() : Animation() {
-	_field_6D = 0;
+	_imageType = kImageTypeBMP;
 	_field_79 = 0;
 	_field_7D = 0;
 	_frameCount = 0;
@@ -251,11 +251,11 @@ AnimationImage::~AnimationImage() {
 	_currentImage = NULL;
 }
 
-void AnimationImage::init(Common::String name, byte a2, const Common::Point &point, uint32 a5, uint32 a6, uint32 a7, float a8, uint32 startFrame, byte a10, byte frameCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType) {
+void AnimationImage::init(Common::String name, ImageType imageType, const Common::Point &point, uint32 a5, uint32 a6, uint32 a7, float a8, uint32 startFrame, byte a10, byte frameCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType) {
 	Animation::initAnimation(a7, a8, startFrame, a10, priority);
 
 	_name = name;
-	_field_6D = a2;
+	_imageType = imageType;
 	_field_79 = a5;
 
 	_coordinates = point;
@@ -273,7 +273,7 @@ void AnimationImage::init(Common::String name, byte a2, const Common::Point &poi
 
 	// Create image storage for each frame
 	for (uint32 i = 0; i < _field_8; i++) {
-		ImageHandle *image = new ImageHandle(name, point, true, LOBYTE(_field_7D), priority, frameCount, getApp()->getCurrentZone(), loadFrom, a2, archiveType);
+		ImageHandle *image = new ImageHandle(name, point, true, LOBYTE(_field_7D), priority, frameCount, getApp()->getCurrentZone(), loadFrom, imageType, archiveType);
 
 		image->setField6C(2);
 		image->setAnimation(this);

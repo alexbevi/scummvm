@@ -129,7 +129,7 @@ enum LoadFrom {
 };
 
 enum Zone {
-	kZoneInvalid = 0,
+	kZoneNone = 0,
 	kZoneSY      = 1,
 
 	// Game-specific zones
@@ -172,6 +172,16 @@ enum SetupType {
 	kSetupType998  = 998,
 	kSetupType999  = 999,
 	kSetupType1000 = 1000
+};
+
+enum ImageType {
+	kImageTypeBMP = 0,
+	kImageTypeTGA = 1,
+	kImageTypeCIN = 2,
+	kImageTypeCNM = 3,
+	kImageTypeBackground = 4,
+	kImageTypeBMA = 5,
+	kImageTypeTGC = 6
 };
 
 #pragma endregion

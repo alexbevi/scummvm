@@ -29,11 +29,14 @@
 #include "ring/base/object.h"
 #include "ring/base/text.h"
 
+#include "ring/graphics/animation.h"
 #include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
 
 #include "ring/ring.h"
 #include "ring/helpers.h"
+
+#include "common/file.h"
 
 namespace Ring {
 
@@ -125,7 +128,7 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_field_9D = 0;
 	_field_A1 = 0;
 	_field_A5 = 0;
-	_field_A9 = 0;
+	_imageType = kImageTypeBMP;
 	_field_AD = 0;
 	_field_B1 = 0;
 	_field_B5 = 0;
@@ -251,37 +254,37 @@ void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String 
 	}
 
 	// Create images
-	_backgroundImage = new ImageHandle(filename3, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, 4, _archiveType);
+	_backgroundImage = new ImageHandle(filename3, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_backgroundImage->setPath(path);
 
-	_upGun = new ImageHandle(filename4, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, 4, _archiveType);
+	_upGun = new ImageHandle(filename4, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_upGun->setPath(path);
 
-	_upGur = new ImageHandle(filename5, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, 4, _archiveType);
+	_upGur = new ImageHandle(filename5, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_upGur->setPath(path);
 
-	_upGus = new ImageHandle(filename6, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, 4, _archiveType);
+	_upGus = new ImageHandle(filename6, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_upGus->setPath(path);
 
-	_upGua = new ImageHandle(filename7, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, 4, _archiveType);
+	_upGua = new ImageHandle(filename7, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_upGua->setPath(path);
 
-	_downGun = new ImageHandle(filename8, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, 4, _archiveType);
+	_downGun = new ImageHandle(filename8, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_downGun->setPath(path);
 
-	_downGur = new ImageHandle(filename9, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, 4, _archiveType);
+	_downGur = new ImageHandle(filename9, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_downGur->setPath(path);
 
-	_downGus = new ImageHandle(filename10, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, 4, _archiveType);
+	_downGus = new ImageHandle(filename10, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_downGus->setPath(path);
 
-	_downGua = new ImageHandle(filename11, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, 4, _archiveType);
+	_downGua = new ImageHandle(filename11, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_downGua->setPath(path);
 
-	_cliImageP = new ImageHandle(filename12, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, 4, _archiveType);
+	_cliImageP = new ImageHandle(filename12, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_cliImageP->setPath(path);
 
-	_cliImageA = new ImageHandle(filename13, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, 4, _archiveType);
+	_cliImageA = new ImageHandle(filename13, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_cliImageA->setPath(path);
 
 	_text1 = new Text();
@@ -336,10 +339,10 @@ void VisualObjectList::sub_46DDD0(uint32 a1, uint32 a2, uint32 a3, uint32 a4) {
 	_field_9D = a4;
 }
 
-void VisualObjectList::sub_46DE00(uint32 a1, uint32 a2, uint32 a3, uint32 a4) {
+void VisualObjectList::sub_46DE00(uint32 a1, uint32 a2, ImageType imageType, uint32 a4) {
 	_field_A1 = a1;
 	_field_A5 = a2;
-	_field_A9 = a3;
+	_imageType = imageType;
 	_field_AD = a4;
 }
 
@@ -441,15 +444,82 @@ void VisualObjectList::setFontId(FontId fontId) {
 #pragma region Management
 
 void VisualObjectList::add(ObjectId objectId) {
-	error("[Application::add] Not implemented");
+	if (_objects.has(objectId)) {
+		_field_C9 = 0;
+		_field_CD = -1;
+		_field_D1 = -1;
+
+		return;
+	}
+
+	Object *object = getApp()->objectGet(objectId);
+	ImageHandle *image = NULL;
+
+	if (object->getAnimationImage()) {
+		object->getAnimationImage()->updateCurrentImage();
+		image = object->getAnimationImage()->getCurrentImage();
+	} else {
+		// Compute path
+		Common::String path = Common::String::format("%s%s.%s", _iconPath.c_str(), object->getName().c_str(), Application::getFileExtension(_imageType).c_str());
+		if (!Common::File::exists(path))
+			path = "dummyLS.bmp";
+
+		image = new ImageHandle(path, Common::Point(0, 0), true, kZoneNone, kLoadFromDisk, _imageType, kArchiveFile);
+	}
+
+	if (!image)
+		error("[VisualObjectList::add] Could not get an image for this object");
+
+	_objects.push_back(object);
+	_images.push_back(image);
+
+	_itemCount = _objects.size();
+	if (_itemCount > _field_BD)
+		_field_C1 = 0;
+	_field_C9 = 0;
+	_field_CD = -1;
+	_field_D1 = -1;
 }
 
 void VisualObjectList::remove(ObjectId objectId, bool removeObject) {
-	error("[Application::remove] Not implemented");
+	if (!_objects.has(objectId))
+		return;
+
+	if (removeObject)
+		getApp()->objectRemove(objectId);
+
+	// Remove object image
+	uint32 index = _objects.getIndex(objectId);
+
+	_images.remove_at(index);
+	_objects.remove_at(index);
+
+	_itemCount = _objects.size();
+	if (_itemCount <= _field_BD)
+		_field_C1 = 0;
+	_field_C9 = 0;
+	_field_CD = -1;
+	_field_D1 = -1;
 }
 
 void VisualObjectList::removeAll(bool removeObject) {
-	error("[Application::removeAll] Not implemented");
+	// Remove all objects if asked
+	if (removeObject) {
+		for (Common::Array<Object *>::iterator it = _objects.begin(); it != _objects.end(); it++)
+			getApp()->objectRemove((*it)->getId());
+	}
+
+	// Clear the list of objects
+	_objects.clear();
+
+	// Remove all images
+	CLEAR_ARRAY(ImageHandle, _images);
+
+	_field_C1 = 0;
+	_itemCount = _objects.size();
+	_field_C9 = 0;
+	_field_CD = -1;
+	_field_D1 = -1;
 }
 
 

@@ -101,7 +101,7 @@ uint32 ObjectPresentation::getTextWidth(uint32 textIndex) {
 }
 
 void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom) {
-	ImageHandle *image = new ImageHandle(filename, point, isActive, a7, priority, a9, getApp()->getCurrentZone(), loadFrom, 4, getApp()->getArchiveType());
+	ImageHandle *image = new ImageHandle(filename, point, isActive, a7, priority, a9, getApp()->getCurrentZone(), loadFrom, kImageTypeBackground, getApp()->getArchiveType());
 	image->setObjectPresentation(this);
 
 	_imagePuzzle.push_back(image);
@@ -139,9 +139,9 @@ Common::Point ObjectPresentation::getImageCoordinatesOnPuzzle(uint32 imageIndex)
 	return _imagePuzzle[imageIndex]->getCoordinates();
 }
 
-void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, const Common::Point &point, uint32, uint32 a8, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom) {
+void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32, uint32 a8, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom) {
 	AnimationImage *animation = new AnimationImage();
-	animation->init(filename, a4, point, 0, a8, a11, a12, 1, a13, frameCount, priority, loadFrom, getApp()->getArchiveType());
+	animation->init(filename, imageType, point, 0, a8, a11, a12, 1, a13, frameCount, priority, loadFrom, getApp()->getArchiveType());
 	animation->updatePresentation(this);
 	if (!(a13 & 2)) {
 		animation->setField20(0);
@@ -279,8 +279,8 @@ void ObjectPresentation::hideAndRemove() {
 
 #pragma region Object
 
-Object::Object(Application *application, ObjectId id, Common::String language, Common::String name, byte a5) : BaseObject(id), _application(application) {
-	_language = language;
+Object::Object(Application *application, ObjectId id, Common::String description, Common::String name, byte a5) : BaseObject(id), _application(application) {
+	_description = description;
 	_name = name;
 	_field_C  = a5;
 	_animationImage = NULL;
@@ -470,11 +470,11 @@ void Object::setAccessibilityOnOrOff(bool enableHotspot, uint32 fromAcceleration
 
 #pragma region Animation
 
-void Object::addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, uint32 a5, const Common::Point &point, uint32 a8, uint32 a9, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom) {
+void Object::addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, ImageType imageType, const Common::Point &point, uint32 a8, uint32 a9, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addAnimationToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
-	_presentations[presentationIndex]->addAnimationToPuzzle(puzzle, name, a5, point, a8, a9, priority, frameCount, a12, a13, a14, loadFrom);
+	_presentations[presentationIndex]->addAnimationToPuzzle(puzzle, name, imageType, point, a8, a9, priority, frameCount, a12, a13, a14, loadFrom);
 }
 
 void Object::addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7) {
@@ -575,8 +575,8 @@ void Object::setPassiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, fl
 
 #pragma region ObjectInfo
 
-ObjectInfo::ObjectInfo(ObjectId id, Common::String language, Common::String name) :
-	BaseObject(id), _language(language), _name(name) {
+ObjectInfo::ObjectInfo(ObjectId id, Common::String description, Common::String name) :
+	BaseObject(id), _description(description), _name(name) {
 }
 
 #pragma endregion
@@ -621,17 +621,17 @@ void ObjectHandler::addFromFile(Common::String filename, Common::String language
 		if (tokenizer.empty())
 			error("[ObjectHandler::addFromFile] Invalid line format (missing object name)");
 
-		_objects.push_back(new ObjectInfo(id, language, tokenizer.nextToken()));
+		_objects.push_back(new ObjectInfo(id, tokenizer.nextToken(), tokenizer.nextToken()));
 	}
 
 	delete archive;
 }
 
-Common::String ObjectHandler::getLanguage(ObjectId id) {
+Common::String ObjectHandler::getDescription(ObjectId id) {
 	if (!_objects.has(id))
 		return "";
 
-	return _objects.get(id)->getLanguage();
+	return _objects.get(id)->getDescription();
 }
 
 Common::String ObjectHandler::getName(ObjectId id) {

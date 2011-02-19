@@ -37,7 +37,7 @@ namespace Ring {
 
 #pragma region Art
 
-Art::Art() : _zone(kZoneInvalid), _loadFrom(kLoadFromInvalid) {
+Art::Art() : _zone(kZoneNone), _loadFrom(kLoadFromInvalid) {
 }
 
 Art::~Art() {

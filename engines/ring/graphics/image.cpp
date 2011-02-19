@@ -31,12 +31,12 @@ namespace Ring {
 
 #pragma region ImageHandle
 
-ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType) {
-	init(nameId, point, isActive, a6, priority, frameCount, zone, loadFrom, a11, archiveType);
+ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
+	init(nameId, point, isActive, a6, priority, frameCount, zone, loadFrom, imageType, archiveType);
 }
 
-ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, Zone zone, LoadFrom loadFrom, byte a8, ArchiveType archiveType) {
-	init(nameId, point, isActive, 1, 0, 0, zone, loadFrom, a8, archiveType);
+ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
+	init(nameId, point, isActive, 1, 0, 0, zone, loadFrom, imageType, archiveType);
 }
 
 ImageHandle::~ImageHandle() {
@@ -45,7 +45,7 @@ ImageHandle::~ImageHandle() {
 	_animation = NULL;
 }
 
-void ImageHandle::init(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType) {
+void ImageHandle::init(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
 	_path = "";
 	_nameId = nameId;
 	_coordinates = point;
@@ -55,7 +55,7 @@ void ImageHandle::init(Common::String nameId, const Common::Point &point, bool i
 	_priority = priority;
 	_frameCount = frameCount;
 	_field_6C = 1;
-	_field_70 = a11;
+	_imageType = imageType;
 	_objectPresentation = NULL;
 	_animation = NULL;
 	_zone = zone;

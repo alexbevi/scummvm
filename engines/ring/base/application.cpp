@@ -59,7 +59,7 @@ namespace Ring {
 Application::Application(RingEngine *engine) : _vm(engine),
 	_screenManager(NULL),  _artHandler(NULL),          _fontHandler(NULL),   _dialogHandler(NULL), _languageHandler(NULL),
 	_field_54(1),          _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
-	_soundHandler(NULL),   _state(kStateNone),         _field_6A(0),         _zoneString("A0"),      _zone(kZoneInvalid),
+	_soundHandler(NULL),   _state(kStateNone),         _field_6A(0),         _zoneString("A0"),      _zone(kZoneNone),
 	_field_6F(0),          _field_70(0),               _field_74(0),         _field_75(0),         _field_76(0),
 	_field_77(0),          _field_78(false),           _puzzle(NULL),        _rotation(NULL),      _bag(NULL),
 	_timerHandler(NULL),   _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
@@ -456,6 +456,18 @@ void Application::playMovieChannel(Common::String filename, uint32 channel) {
 	movie->play(0, 16);
 
 	delete movie;
+}
+
+Common::String Application::getFileExtension(ImageType imageType) {
+	switch (imageType) {
+	default:            return "";
+	case kImageTypeBMP: return "bmp";
+	case kImageTypeTGA: return "tga";
+	case kImageTypeCIN: return "cin";
+	case kImageTypeCNM: return "cnm";
+	case kImageTypeBMA: return "bma";
+	case kImageTypeTGC: return "tgc";
+	}
 }
 
 #pragma endregion
@@ -929,7 +941,7 @@ void Application::setFreOffCurrentRotation() {
 
 #pragma region Object
 
-void Application::objectAdd(ObjectId objectId, Common::String language, Common::String name, byte a5) {
+void Application::objectAdd(ObjectId objectId, Common::String description, Common::String name, byte a5) {
 	if (!_objectHandler)
 		error("[Application::objectAdd] Object handler not initialized properly");
 
@@ -937,24 +949,24 @@ void Application::objectAdd(ObjectId objectId, Common::String language, Common::
 		error("[Application::ObjectAdd] ID already exists (%d)", objectId.id());
 
 	// Compute language and name
-	Common::String processedLanguage = _objectHandler->getLanguage(objectId);
-	if (processedLanguage.empty())
-		processedLanguage = language;
+	Common::String processedDescription = _objectHandler->getDescription(objectId);
+	if (processedDescription.empty())
+		processedDescription = description;
 
 	Common::String processedName = _objectHandler->getName(objectId);
 	if (processedName.empty())
 		processedName = name;
 
-	_objects.push_back(new Object(this, objectId, processedLanguage, processedName, a5));
+	_objects.push_back(new Object(this, objectId, processedDescription, processedName, a5));
 }
 
-void Application::objectAddBagAnimation(ObjectId objectId, uint32 a2, uint32 a3, uint32 frameCount, float a5, uint32 a6) {
+void Application::objectAddBagAnimation(ObjectId objectId, ImageType imageType, uint32 a3, uint32 frameCount, float a5, uint32 a6) {
 	if (!_objects.has(objectId))
 		error("[Application::objectAddBagAnimation] Object Id doesn't exist (%d)", objectId.id());
 
 	Object *object = _objects.get(objectId);
 	AnimationImage *image = new AnimationImage();
-	image->init(object->getName(), a2, Common::Point(0, 0), 0, a3, frameCount, a5, 1, a6, 0, 1000, kLoadFromListIcon, (_configuration.artBAG ? kArchiveArt : kArchiveFile));
+	image->init(object->getName(), imageType, Common::Point(0, 0), 0, a3, frameCount, a5, 1, a6, 0, 1000, kLoadFromListIcon, (_configuration.artBAG ? kArchiveArt : kArchiveFile));
 	image->setField89();
 
 	object->setAnimationImage(image);
@@ -1155,14 +1167,14 @@ Common::Point Application::objectPresentationGetImageCoordinatesOnPuzzle(ObjectI
 	return _objects.get(objectId)->getImageCoordinatesOnPuzzle(presentationIndex, imageIndex);
 }
 
-void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, uint32 a5, const Common::Point &point, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12) {
+void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, ImageType imageType, const Common::Point &point, uint32 a8, uint32 a9, uint32 a10, float a11, uint32 a12) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationAddAnimationToPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	if (!_puzzles.has(puzzleId))
 		error("[Application::objectPresentationAddAnimationToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
-	_objects.get(objectId)->addAnimationToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, a5, point, 1, a8, a9, 0, a10, a11, a12, _loadFrom);
+	_objects.get(objectId)->addAnimationToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, imageType, point, 1, a8, a9, 0, a10, a11, a12, _loadFrom);
 }
 
 void Application::objectPresentationAddAnimationToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer, uint32 a5, float a6, uint32 a7) {
@@ -1727,7 +1739,7 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 	                                    Common::String filename11, Common::String filename12, Common::String filename13,
 							            uint32 a17, uint32 a18, uint32 a19, uint32 a20, uint32 a21, uint32 a22, uint32 a23, uint32 a24, uint32 a25, uint32 a26,
 	                                    uint32 a27, uint32 a28, uint32 a29, uint32 a30, uint32 a31, uint32 a32, uint32 a33, uint32 a34, uint32 a35, uint32 a36,
-	                                    uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, uint32 a42, uint32 a43, uint32 a44, uint32 a45, uint32 a46,
+	                                    uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, ImageType imageType, uint32 a43, uint32 a44, uint32 a45, uint32 a46,
 							           Color foreground1, Color foreground2, Color background, FontId fontId,
 							            ArchiveType archiveType) {
 
@@ -1750,7 +1762,7 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 	list->sub_46DDA0(a30, a31, a32, a33);
 	list->sub_46DD80(a34, a35);
 	list->sub_46DDD0(a36, a37, a38, a39);
-	list->sub_46DE00(a40, a41, a42, a43);
+	list->sub_46DE00(a40, a41, imageType, a43);
 	list->sub_46DE30(a44, a45);
 	list->sub_46E330(a46);
 	list->initHotspots();

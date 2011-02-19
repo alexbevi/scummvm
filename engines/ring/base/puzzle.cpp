@@ -103,7 +103,7 @@ void Puzzle::setBackgroundImage(Common::String filename, const Common::Point &po
 	Zone zone = _application->getCurrentZone();
 	ArchiveType archiveType = _application->getReadFrom(zone);
 
-	_background = new ImageHandle(filename, point, isActive, zone, loadFrom, 4, archiveType);
+	_background = new ImageHandle(filename, point, isActive, zone, loadFrom, kImageTypeBackground, archiveType);
 }
 
 void Puzzle::addPresentationText(Text *text) {

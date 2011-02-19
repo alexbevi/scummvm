@@ -52,8 +52,8 @@ protected:
 
 class ImageHandle : public Image {
 public:
-	ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, Zone zone, LoadFrom loadFrom, byte a8, ArchiveType archiveType);
-	ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType);
+	ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
+	ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 	~ImageHandle();
 
 	// Accessors
@@ -84,14 +84,14 @@ private:
 	uint32 _priority;
 	byte _frameCount;
 	uint32 _field_6C;
-	byte _field_70;
+	ImageType _imageType;
 	ObjectPresentation *_objectPresentation;
 	AnimationImage *_animation;
 	Zone _zone;
 	LoadFrom _loadFrom;
 	ArchiveType _archiveType;
 
-	void init(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, byte a11, ArchiveType archiveType);
+	void init(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 };
 
 } // End of namespace Ring

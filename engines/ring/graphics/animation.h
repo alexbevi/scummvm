@@ -92,7 +92,7 @@ public:
 	AnimationImage();
 	virtual ~AnimationImage();
 
-	void init(Common::String name, byte a2, const Common::Point &point, uint32 a5, uint32 a6, uint32 a7, float a8, uint32 startFrame, byte a10, byte frameCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType);
+	void init(Common::String name, ImageType imageType, const Common::Point &point, uint32 a5, uint32 a6, uint32 a7, float a8, uint32 startFrame, byte a10, byte frameCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType);
 	void alloc();
 	void dealloc();
 
@@ -111,7 +111,7 @@ public:
 
 private:
 	Common::Array<ImageHandle *> _imageHandles;
-	uint32 _field_6D;
+	ImageType _imageType;
 	Common::Point _coordinates;
 	uint32 _field_79;
 	uint32 _field_7D;

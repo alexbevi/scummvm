@@ -93,7 +93,7 @@ public:
 	void sub_46DD80(uint32 a1, uint32 a2);
 	void sub_46DDA0(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
 	void sub_46DDD0(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
-	void sub_46DE00(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
+	void sub_46DE00(uint32 a1, uint32 a2, ImageType imageType, uint32 a4);
 	void sub_46DE30(uint32 a1, uint32 a2);
 	void initHotspots();
 	void sub_46E330(uint32 a1);
@@ -153,7 +153,7 @@ private:
 	uint32 _field_9D;
 	uint32 _field_A1;
 	uint32 _field_A5;
-	uint32 _field_A9;
+	ImageType _imageType;
 	uint32 _field_AD;
 	uint32 _field_B1;
 	uint32 _field_B5;
@@ -174,6 +174,7 @@ private:
 	bool   _allocated;
 
 	void loadImage(ImageHandle *image);
+
 };
 
 } // End of namespace Ring

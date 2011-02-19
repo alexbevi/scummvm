@@ -188,7 +188,7 @@ void Debugger::dumpFile(Common::String filename) {
 
 	// Load MUL archive
 	Art *archive = new Art();
-	archive->init(filename, kZoneInvalid, kLoadFromInvalid);
+	archive->init(filename, kZoneNone, kLoadFromInvalid);
 	Common::ArchiveMemberList list;
 	int count = archive->listMembers(list);
 

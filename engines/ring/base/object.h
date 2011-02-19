@@ -62,7 +62,7 @@ public:
 	Common::Point getImageCoordinatesOnPuzzle(uint32 imageIndex);
 
 	// Animation
-	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, uint32 a4, const Common::Point &point, uint32 a7, uint32 a8, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom);
+	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32 a7, uint32 a8, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom);
 	void addAnimationToRotation(Rotation *rotation, uint32 layer, uint32 a3, float a4, uint32 a5);
 	void setAnimationOnPuzzle(uint32 animationIndex, ObjectId objectId);
 	void setAnimationOnRotation(uint32 animationIndex, ObjectId objectId);
@@ -98,7 +98,7 @@ private:
 
 class Object : public BaseObject {
 public:
-	Object(Application *application, ObjectId id, Common::String language, Common::String name, byte a5);
+	Object(Application *application, ObjectId id, Common::String description, Common::String name, byte a5);
 	~Object();
 
 	// Presentation
@@ -130,7 +130,7 @@ public:
 	void setAccessibilityOnOrOff(bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration);
 
 	// Animation
-	void addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, uint32 a5, const Common::Point &point, uint32 a8, uint32 a9, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom);
+	void addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, ImageType imageType, const Common::Point &point, uint32 a8, uint32 a9, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom);
 	void addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7);
 	void setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId);
 	void setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId);
@@ -177,7 +177,7 @@ private:
 
 	Application *_application;
 
-	Common::String _language;
+	Common::String _description;
 	Common::String _name;
 	byte    _field_C;
 	Common::Array<Accessibility *> _accessibilities;
@@ -193,15 +193,15 @@ private:
 
 class ObjectInfo : public BaseObject {
 public:
-	ObjectInfo(ObjectId id, Common::String language, Common::String name);
+	ObjectInfo(ObjectId id, Common::String description, Common::String name);
 	~ObjectInfo() {}
 
 	// Accessors
-	Common::String getLanguage() { return _language; }
+	Common::String getDescription() { return _description; }
 	Common::String getName() { return _name; }
 
 private:
-	Common::String _language;
+	Common::String _description;
 	Common::String _name;
 };
 
@@ -210,10 +210,10 @@ public:
 	ObjectHandler();
 	~ObjectHandler();
 
-	void addFromFile(Common::String filename, Common::String language);
+	void addFromFile(Common::String filename, Common::String description);
 
 	// Accessors
-	Common::String getLanguage(ObjectId id);
+	Common::String getDescription(ObjectId id);
 	Common::String getName(ObjectId id);
 
 private:

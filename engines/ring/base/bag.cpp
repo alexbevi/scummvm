@@ -335,7 +335,7 @@ void Bag::add(ObjectId objectId) {
 			filename = Common::String::format("/LSTICON/%s.tga", object->getName().c_str());
 		}
 
-		imageHandle = new ImageHandle(filename, Common::Point(0, 0), true, kZoneSY, kLoadFromDisk, 1, _archiveType);
+		imageHandle = new ImageHandle(filename, Common::Point(0, 0), true, kZoneSY, kLoadFromDisk, kImageTypeTGA, _archiveType);
 	}
 
 	if (!imageHandle)

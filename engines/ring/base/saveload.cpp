@@ -30,7 +30,7 @@
 namespace Ring {
 
 SaveManager::SaveManager(Application *application) : _app(application) {
-	_zone = kZoneInvalid;
+	_zone = kZoneNone;
 	_hasRotation = false;
 	_rotationId = 0;
 	_puzzleId = kPuzzleInvalid;
