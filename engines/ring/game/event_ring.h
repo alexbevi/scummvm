@@ -45,6 +45,7 @@ public:
 	virtual void onSound(Id id, SoundType type, uint32 a3);
 	virtual void onSetup(Zone zone, SetupType type);
 	virtual void onBag(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6);
+	virtual void onBagClickedObject(ObjectId id);
 	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
 	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
 
@@ -100,6 +101,8 @@ private:
 	void onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6);
 	void onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6);
 	void onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6);
+
+	void onBagClickedObjectZoneFO(ObjectId id);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Rides

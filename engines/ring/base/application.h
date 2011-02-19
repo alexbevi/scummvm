@@ -336,6 +336,7 @@ public:
 	Zone getCurrentZone() { return _zone; }
 	Common::String getCurrentZoneString() { return getZoneString(_zone); }
 	ArchiveType getArchiveType() { return _archiveType; }
+	void setField78(bool state) { _field_78 = state; }
 
 	//////////////////////////////////////////////////////////////////////////
 	// Handlers and shared data
@@ -376,7 +377,7 @@ protected:
 	char                          _field_75;
 	char                          _field_76;
 	char                          _field_77;
-	char                          _field_78;
+	bool                          _field_78;
 	AssociativeArray<Object *>    _objects;
 	AssociativeArray<Puzzle *>    _puzzles;
 	Puzzle                       *_puzzle;

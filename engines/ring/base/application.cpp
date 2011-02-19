@@ -61,7 +61,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_field_54(1),          _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
 	_soundHandler(NULL),   _state(kStateNone),         _field_6A(0),         _zoneString("A0"),      _zone(kZoneInvalid),
 	_field_6F(0),          _field_70(0),               _field_74(0),         _field_75(0),         _field_76(0),
-	_field_77(0),          _field_78(0),               _puzzle(NULL),        _rotation(NULL),      _bag(NULL),
+	_field_77(0),          _field_78(false),           _puzzle(NULL),        _rotation(NULL),      _bag(NULL),
 	_timerHandler(NULL),   _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
 	_eventHandler(NULL) {
 
@@ -178,7 +178,7 @@ void Application::init() {
 	_field_75 = 1;
 	_field_76 = 1;
 	_field_77 = 1;
-	_field_78 = 1;
+	_field_78 = true;
 	_loadFrom = kLoadFromCd;
 	_field_54 = 1;
 	_archiveType = kArchiveFile;

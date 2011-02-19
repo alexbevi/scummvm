@@ -566,6 +566,100 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 	error("[EventHandlerRing::onBagZoneN2] Not implemented");
 }
 
+void EventHandlerRing::onBagClickedObject(ObjectId id) {
+	switch (_app->getCurrentZone()) {
+	default:
+		break;
+
+	case kZoneFO:
+		onBagClickedObjectZoneFO(id);
+		break;
+	}
+}
+
+void EventHandlerRing::onBagClickedObjectZoneFO(ObjectId objectId) {
+	if (objectId != kObjectWolfInstinct)
+		return;
+
+	Id id = objectId;
+	if (_app->hasCurrentRotation())
+		id = _app->getCurrentRotationId();
+
+	if (_app->hasCurrentPuzzle())
+		id = _app->getCurrentPuzzleId();
+
+	// Rotation
+	if (id == 30302 || id == 30303) {
+		if (_app->varGetByte(30017) == 1) {
+			_app->rotationSetAlp(30302, _app->rotationGetAlp(30303));
+			_app->rotationSetBet(30302, _app->rotationGetBet(30303));
+			_app->rotationSetRan(30302, _app->rotationGetRan(30303));
+			_app->rotationSetActive(30302);
+
+			_app->varSetByte(30017, 0);
+		} else {
+			_app->rotationSetAlp(30303, _app->rotationGetAlp(30302));
+			_app->rotationSetBet(30303, _app->rotationGetBet(30302));
+			_app->rotationSetRan(30303, _app->rotationGetRan(30302));
+			_app->rotationSetActive(30303);
+
+			_app->varSetByte(30017, 1);
+		}
+	} else if (id == kPuzzle35020) { //  Puzzle 35020
+		if (_app->varGetByte(30017) == 1) {
+			_app->varSetByte(30017, 0);
+			_app->objectPresentationHide(kObjectWorms, 0);
+			_app->objectPresentationHide(kObjectWorms, 1);
+			_app->objectSetAccessibilityOff(kObjectWorms, 0, 0);
+		} else {
+			_app->varSetByte(30017, 1);
+			_app->objectPresentationShow(kObjectWorms, 0);
+			_app->objectPresentationShow(kObjectWorms, 1);
+			_app->objectSetAccessibilityOn(kObjectWorms, 0, 0);
+		}
+	} else if (id == kPuzzle35019) { //  Puzzle 35019
+		if (_app->varGetByte(30017) == 1) {
+			_app->varSetByte(30017, 0);
+			_app->objectPresentationHide(kObjectNotung);
+			_app->objectSetAccessibilityOff(kObjectNotung, 0, 0);
+		}
+
+		_app->varSetByte(30017, 1);
+		_app->objectSetAccessibilityOn(kObjectNotung, 0, 0);
+
+		if (_app->varGetByte(30066) != 1 && _app->varGetByte(30067) != 1 ) {
+			_app->objectPresentationShow(kObjectNotung, 0);
+		} else {
+			_app->objectPresentationShow(kObjectNotung, 0);
+			_app->objectPresentationShow(kObjectNotung, 2);
+		}
+	} else if (id == kPuzzle35002) { //  Puzzle 35002
+		if (_app->varGetByte(30017)) {
+			_app->objectPresentationHide(kObjectBerries, 1);
+			_app->objectPresentationHide(kObjectBerries, 2);
+			_app->objectPresentationHide(kObjectBerries, 3);
+			_app->varSetByte(30017, 0);
+		} else {
+			_app->varSetByte(30017, 1);
+			_app->objectPresentationShow(kObjectBerries, 1);
+
+			if (_app->varGetByte(30075) == 1)
+				_app->objectPresentationHide(kObjectBerries, 3);
+			else
+				_app->objectPresentationShow(kObjectBerries, 3);
+
+			if (_app->varGetByte(30076) == 1)
+				_app->objectPresentationHide(kObjectBerries, 2);
+			else
+				_app->objectPresentationShow(kObjectBerries, 2);
+		}
+	} else {
+		return;
+	}
+
+	_app->setField78(false);
+}
+
 #pragma endregion
 
 #pragma region Rides
