@@ -61,8 +61,8 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Setup
-	void setupZone(Zone zone, uint32 a2);
-	void setZone(Zone zone, uint32 a2);
+	void setupZone(Zone zone, SetupType type);
+	void setZone(Zone zone, SetupType type);
 	void setZoneAndEnableBag(Zone zone);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -83,6 +83,9 @@ private:
 	void initZoneWA();
 	void initZoneAS();
 	void initZoneN2();
+
+	uint32 getCdForZone(Zone zone);
+	bool isLoaded(SetupType type);
 };
 
 } // End of namespace Ring

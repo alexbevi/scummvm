@@ -61,7 +61,7 @@ void EventHandlerPompeii::onKeyDown(Common::Event &evt) {
 
 #pragma region Zone Setup
 
-void EventHandlerPompeii::onSetup(Zone zone, uint32 a2) {
+void EventHandlerPompeii::onSetup(Zone zone, SetupType type) {
 	error("[EventHandlerPompeii::onSetup] Not implemented");
 }
 

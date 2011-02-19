@@ -40,12 +40,25 @@ public:
 	bool loadSave(Common::String filename, LoadSaveType type);
 	bool loadSaveTimer(Common::String filename, LoadSaveType type);
 
-	bool isLoaded(uint32 a1);
-
 	bool has(Common::String filename);
+
+	// Accessors
+	Zone getZone() const { return _zone; }
+	bool hasRotation() const { return _hasRotation; }
+	Id getRotationId() const { return _rotationId; }
+	PuzzleId getPuzzleId() const { return _puzzleId; }
+	SetupType getSetupType() const { return _setupType; }
+
+	void setSetupType(SetupType type) { _setupType = type; }
 
 private:
 	Application *_app;
+
+	Zone _zone;
+	bool _hasRotation;
+	Id _rotationId;
+	PuzzleId _puzzleId;
+	SetupType _setupType;
 };
 
 } // End of namespace Ring

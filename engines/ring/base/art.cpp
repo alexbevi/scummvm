@@ -153,7 +153,7 @@ void ArtHandler::open(Zone zone, LoadFrom loadFrom) {
 	_arts.push_back(art);
 }
 
-void ArtHandler::remove() {
+void ArtHandler::reset() {
 	for (uint i = 0; i < _arts.size();) {
 		if (_arts[i]->getLoadFrom() == kLoadFromCd) {
 			SAFE_DELETE(_arts[i]);

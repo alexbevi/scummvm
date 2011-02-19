@@ -27,11 +27,16 @@
 
 #include "ring/base/application.h"
 
-#include "common/system.h"
-
 namespace Ring {
 
-SaveManager::SaveManager(Application *application) : _app(application) {}
+SaveManager::SaveManager(Application *application) : _app(application) {
+	_zone = kZoneInvalid;
+	_hasRotation = false;
+	_rotationId = 0;
+	_puzzleId = kPuzzleInvalid;
+	_setupType = kSetupTypeNone;
+}
+
 
 SaveManager::~SaveManager() {
 	// Zero-out passed pointers
@@ -48,12 +53,6 @@ bool SaveManager::loadSaveTimer(Common::String filename, LoadSaveType type) {
 	warning("[SaveManager::saveLoad] Not implemented");
 
 	return true;
-}
-
-bool SaveManager::isLoaded(uint32 a1) {
-	warning("[SaveManager::isLoaded] Not implemented");
-
-	return false;
 }
 
 bool SaveManager::has(Common::String filename) {

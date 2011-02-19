@@ -43,7 +43,7 @@ public:
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
 	virtual void onSound(Id id, SoundType type, uint32 a3);
-	virtual void onSetup(Zone zone, uint32 a2);
+	virtual void onSetup(Zone zone, SetupType type);
 
 private:
 	Application *_app;

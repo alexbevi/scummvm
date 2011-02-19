@@ -61,7 +61,7 @@ void EventHandlerJerusalem::onKeyDown(Common::Event &evt) {
 
 #pragma region Zone Setup
 
-void EventHandlerJerusalem::onSetup(Zone zone, uint32 a2) {
+void EventHandlerJerusalem::onSetup(Zone zone, SetupType type) {
 	error("[EventHandlerJerusalem::onSetup] Not implemented");
 }
 

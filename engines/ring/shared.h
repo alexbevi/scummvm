@@ -163,6 +163,17 @@ enum LoadSaveType {
 	kLoadSaveWrite = 2
 };
 
+enum SetupType {
+	kSetupTypeNone = 0,
+	kSetupType3    = 3,
+	kSetupType5    = 5,
+	kSetupType6    = 6,
+	kSetupType10   = 10,
+	kSetupType998  = 998,
+	kSetupType999  = 999,
+	kSetupType1000 = 1000
+};
+
 #pragma endregion
 
 //////////////////////////////////////////////////////////////////////////
@@ -197,6 +208,7 @@ protected:
 
 class PuzzleId : public BaseId {
 public:
+	PuzzleId() : BaseId(0) {}
 	PuzzleId(PuzzleIdEnum i) : BaseId(i) {}
 	PuzzleId(uint32 i) : BaseId(i) {}
 };
@@ -209,6 +221,10 @@ public:
 
 	bool operator==(const ObjectIdEnum &i) {
 		return _id == (uint32)i;
+	}
+
+	bool operator==(const uint32 &i) {
+		return _id == i;
 	}
 };
 

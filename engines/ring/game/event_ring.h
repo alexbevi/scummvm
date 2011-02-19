@@ -43,7 +43,7 @@ public:
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
 	virtual void onSound(Id id, SoundType type, uint32 a3);
-	virtual void onSetup(Zone zone, uint32 a2);
+	virtual void onSetup(Zone zone, SetupType type);
 	virtual void onBag(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6);
 	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
 	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
@@ -72,13 +72,13 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	// Setup
 	//////////////////////////////////////////////////////////////////////////
-	void onSetupZoneNI(uint32 a1);
-	void onSetupZoneRH(uint32 a1);
-	void onSetupZoneFO(uint32 a1);
-	void onSetupZoneRO(uint32 a1);
-	void onSetupZoneWA(uint32 a1);
-	void onSetupZoneAS(uint32 a1);
-	void onSetupZoneN2(uint32 a1);
+	void onSetupZoneNI(SetupType type);
+	void onSetupZoneRH(SetupType type);
+	void onSetupZoneFO(SetupType type);
+	void onSetupZoneRO(SetupType type);
+	void onSetupZoneWA(SetupType type);
+	void onSetupZoneAS(SetupType type);
+	void onSetupZoneN2(SetupType type);
 
 	void onSetupLoadTimers(Common::String zoneName, Id testId1, Id puzzleRotationId, Id testId2);
 

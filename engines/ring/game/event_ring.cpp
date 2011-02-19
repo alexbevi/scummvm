@@ -91,48 +91,48 @@ void EventHandlerRing::onKeyDownZoneSY(Common::KeyCode keycode) {
 
 #pragma region Zone Setup
 
-void EventHandlerRing::onSetup(Zone zone, uint32 a2) {
+void EventHandlerRing::onSetup(Zone zone, SetupType type) {
 	switch (zone) {
 	default:
 	case kZoneSY:
 		break;
 
 	case kZoneNI:
-		onSetupZoneNI(a2);
+		onSetupZoneNI(type);
 		break;
 
 	case kZoneRH:
-		onSetupZoneRH(a2);
+		onSetupZoneRH(type);
 		break;
 
 	case kZoneFO:
-		onSetupZoneFO(a2);
+		onSetupZoneFO(type);
 		break;
 
 	case kZoneRO:
-		onSetupZoneRO(a2);
+		onSetupZoneRO(type);
 		break;
 
 	case kZoneWA:
-		onSetupZoneWA(a2);
+		onSetupZoneWA(type);
 		break;
 
 	case kZoneAS:
-		onSetupZoneAS(a2);
+		onSetupZoneAS(type);
 		break;
 
 	case kZoneN2:
-		onSetupZoneN2(a2);
+		onSetupZoneN2(type);
 		break;
 	}
 }
 
-void EventHandlerRing::onSetupZoneNI(uint32 a1) {
-	switch (a1) {
+void EventHandlerRing::onSetupZoneNI(SetupType type) {
+	switch (type) {
 	default:
 		break;
 
-	case 0:
+	case kSetupTypeNone:
 		_app->playMovie("1540");
 		_app->soundPlay(14001, 2);
 		_app->playMovie("1541");
@@ -142,7 +142,7 @@ void EventHandlerRing::onSetupZoneNI(uint32 a1) {
 		_app->soundPlay(10001, 1);
 		break;
 
-	case 3:
+	case kSetupType3:
 		_app->timerStopAll();
 		_app->puzzleSetMovabilityOn(kPuzzle10410, 0, 0);
 		_app->playMovie("1550");
@@ -154,11 +154,11 @@ void EventHandlerRing::onSetupZoneNI(uint32 a1) {
 		_app->varSetByte(10303, 1);
 		break;
 
-	case 10:
+	case kSetupType10:
 		onSetupLoadTimers("alb", 90017, 90021, 90025);
 		break;
 
-	case 999:
+	case kSetupType999:
 		_app->bagRemoveAll();
 		_app->bagAdd(kObjectBrutality);
 		_app->bagAdd(kObjectGlug);
@@ -173,12 +173,12 @@ void EventHandlerRing::onSetupZoneNI(uint32 a1) {
 	}
 }
 
-void EventHandlerRing::onSetupZoneRH(uint32 a1) {
-	switch (a1) {
+void EventHandlerRing::onSetupZoneRH(SetupType type) {
+	switch (type) {
 	default:
 		break;
 
-	case 0:
+	case kSetupTypeNone:
 		_app->bagRemove(kObjectAntiGCells);
 		_app->soundPlay(23005, 2);
 		_app->playMovie("1706");
@@ -186,11 +186,11 @@ void EventHandlerRing::onSetupZoneRH(uint32 a1) {
 		_app->soundPlay(22001, 1);
 		break;
 
-	case 10:
+	case kSetupType10:
 		onSetupLoadTimers("alb", 90017, 90021, 90025);
 		break;
 
-	case 999:
+	case kSetupType999:
 		_app->bagRemoveAll();
 		_app->bagAdd(kObjectBrutality);
 		_app->bagAdd(kObjectDivingHelmet2);
@@ -204,12 +204,12 @@ void EventHandlerRing::onSetupZoneRH(uint32 a1) {
 	}
 }
 
-void EventHandlerRing::onSetupZoneFO(uint32 a1) {
-	switch (a1) {
+void EventHandlerRing::onSetupZoneFO(SetupType type) {
+	switch (type) {
 	default:
 		break;
 
-	case 0:
+	case kSetupTypeNone:
 		_app->bagRemoveAll();
 		_app->bagAdd(kObjectLogeTear2);
 		_app->timerStart(kTimer1, 3000);
@@ -224,11 +224,11 @@ void EventHandlerRing::onSetupZoneFO(uint32 a1) {
 		_app->rotationSetActive(30003);
 		break;
 
-	case 10:
+	case kSetupType10:
 		onSetupLoadTimers("sie", 90019, 90023, 90027);
 		break;
 
-	case 999:
+	case kSetupType999:
 		_app->bagAdd(kObjectWolfInstinct);
 		_app->bagAdd(kObjectKey);
 		_app->bagAdd(kObjectIngot);
@@ -239,16 +239,16 @@ void EventHandlerRing::onSetupZoneFO(uint32 a1) {
 	}
 }
 
-void EventHandlerRing::onSetupZoneRO(uint32 a1) {
-	switch (a1) {
+void EventHandlerRing::onSetupZoneRO(SetupType type) {
+	switch (type) {
 	default:
 		break;
 
-	case 10:
+	case kSetupType10:
 		onSetupLoadTimers("log", 90018, 90022, 90026);
 		break;
 
-	case 999:
+	case kSetupType999:
 		_app->rotationSetAlp(40000, 0.0f);
 		_app->rotationSetRan(40000, 85.3f);
 		_app->rotationSetActive(40000);
@@ -263,12 +263,12 @@ void EventHandlerRing::onSetupZoneRO(uint32 a1) {
 	}
 }
 
-void EventHandlerRing::onSetupZoneWA(uint32 a1) {
-	switch (a1) {
+void EventHandlerRing::onSetupZoneWA(SetupType type) {
+	switch (type) {
 	default:
 		break;
 
-	case 0:
+	case kSetupTypeNone:
 		_app->bagRemoveAll();
 		_app->bagAdd(kObjectMagicLance);
 		_app->bagAdd(kObjectGolem1);
@@ -280,11 +280,11 @@ void EventHandlerRing::onSetupZoneWA(uint32 a1) {
 		_app->soundIsPlaying(50001);
 		break;
 
-	case 10:
+	case kSetupType10:
 		onSetupLoadTimers("bru", 90020, 90024, 90028);
 		break;
 
-	case 999:
+	case kSetupType999:
 		_app->bagAdd(kObjectMagicLance);
 		_app->bagAdd(kObjectThread);
 		_app->bagAdd(kObjectGolem1);
@@ -301,12 +301,12 @@ void EventHandlerRing::onSetupZoneWA(uint32 a1) {
 	}
 }
 
-void EventHandlerRing::onSetupZoneAS(uint32 a1) {
-	switch (a1) {
+void EventHandlerRing::onSetupZoneAS(SetupType type) {
+	switch (type) {
 	default:
 		break;
 
-	case 5:
+	case kSetupType5:
 		_app->playMovie("1047");
 		_app->rotationSetAlp(80003, 270.0f);
 		_app->rotationSetBet(80003, 0.0f);
@@ -314,7 +314,7 @@ void EventHandlerRing::onSetupZoneAS(uint32 a1) {
 		_app->rotationSetActive(80003);
 		break;
 
-	case 6:
+	case kSetupType6:
 		switch (_app->languageGetCurrent()) {
 		default:
 			_app->playMovieChannel("1162", _app->languageGetChannel());
@@ -335,7 +335,7 @@ void EventHandlerRing::onSetupZoneAS(uint32 a1) {
 		_app->soundPlay(80107, 1);
 		break;
 
-	case 998:
+	case kSetupType998:
 		switch (_app->languageGetCurrent()) {
 		default:
 			_app->playMovieChannel("1164", _app->languageGetChannel());
@@ -353,7 +353,7 @@ void EventHandlerRing::onSetupZoneAS(uint32 a1) {
 		_app->soundPlay(80100, 1);
 		break;
 
-	case 999:
+	case kSetupType999:
 		_app->rotationSetAlp(80001, 90.0f);
 		_app->rotationSetRan(80001, 85.3f);
 		_app->rotationSetActive(80001);
@@ -364,12 +364,12 @@ void EventHandlerRing::onSetupZoneAS(uint32 a1) {
 	}
 }
 
-void EventHandlerRing::onSetupZoneN2(uint32 a1) {
-	switch (a1) {
+void EventHandlerRing::onSetupZoneN2(SetupType type) {
+	switch (type) {
 	default:
 		break;
 
-	case 0:
+	case kSetupTypeNone:
 		_app->bagRemoveAll();
 		_app->timerStopAll();
 		_app->bagAdd(kObjectFire);
@@ -381,11 +381,11 @@ void EventHandlerRing::onSetupZoneN2(uint32 a1) {
 		_app->soundPlay(72001, 1);
 		break;
 
-	case 10:
+	case kSetupType10:
 		onSetupLoadTimers("log", 90018, 90022, 90026);
 		break;
 
-	case 999:
+	case kSetupType999:
 		_app->bagRemoveAll();
 		_app->timerStopAll();
 		_app->bagAdd(kObjectFire);

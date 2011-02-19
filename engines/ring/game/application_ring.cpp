@@ -99,7 +99,7 @@ ApplicationRing::~ApplicationRing() {
 #pragma region Game setup
 
 void ApplicationRing::setup() {
-	setupZone(kZoneSY, 0);
+	setupZone(kZoneSY, kSetupTypeNone);
 
 	// Setup cursors
 	ArchiveType archiveType = (_configuration.artCURSOR ? kArchiveArt : kArchiveFile);
@@ -373,32 +373,98 @@ void ApplicationRing::messageHideQuestion(uint32 accelerationIndex) {
 
 #pragma region Zone setup
 
-void ApplicationRing::setupZone(Zone zone, uint32 a2)  {
-	bool load = _saveManager->isLoaded(a2);
+void ApplicationRing::setupZone(Zone zone, SetupType type) {
+	bool load = isLoaded(type);
 
 	// Check saved data for zone and/or puzzle id
 	if (!load) {
 		if (zone == kZoneSY) {
 			load = true;
 		} else {
-			error("[ApplicationRing::setupZone] Zone CD check not implemented");
+			// The original checks for the correct CD,
+			// we should instead check that the zone folder
+			// has been copied properly
+			warning("[ApplicationRing::setupZone] Zone CD check not implemented");
 		}
 	}
 
 	puzzleReset();
-	warning("[ApplicationRing::setupZone] Missing function call");
+	soundStopAll(8);
 
-	getSoundHandler()->reset();
+	if (getSoundHandler())
+		getSoundHandler()->reset();
 
 	if (zone != kZoneSY)
-		getArtHandler()->remove();
+		getArtHandler()->reset();
 
 	if (load) {
 		setZoneAndEnableBag(zone);
-		setZone(zone, a2);
+		setZone(zone, type);
 	} else {
-		error("[ApplicationRing::setupZone] CD check not implemented");
+		_saveManager->setSetupType(type);
+		messageFormat("InsertCD", Common::String::format("%d", getCdForZone(_zone)));
+		messageInsertCd(zone);
 	}
+}
+
+bool ApplicationRing::isLoaded(SetupType type) {
+	if (type != kSetupType1000 || _zone != kZoneAS)
+		return false;
+
+	if (_saveManager->hasRotation()) {
+		if (_saveManager->getRotationId() == 80101)
+			return true;
+		else
+			return false;
+	}
+
+	PuzzleId id = _saveManager->getPuzzleId();
+	if (id == (Id)kPuzzle80002
+	 || id == (Id)kPuzzle80003
+	 || id == (Id)kPuzzle80004
+	 || id == (Id)kPuzzle80005
+	 || id == (Id)kPuzzle80006
+	 || id == (Id)kPuzzle80007
+	 || id == (Id)kPuzzle80008
+	 || id == (Id)kPuzzle80009
+	 || id == (Id)kPuzzle80010)
+		return true;
+
+	return false;
+}
+
+uint32 ApplicationRing::getCdForZone(Zone zone) {
+	if (!_configuration.checkCD)
+		return 1;
+
+	switch (zone) {
+	default:
+		break;
+
+	case kZoneSY:
+		return 0;
+
+	case kZoneAS:
+		return 1;
+
+	case kZoneNI:
+		return 2;
+
+	case kZoneRH:
+		return 3;
+
+	case kZoneFO:
+		return 5;
+
+	case kZoneRO:
+	case kZoneN2:
+		return 4;
+
+	case kZoneWA:
+		return 6;
+	}
+
+	error("[ApplicationRing::getCdForZone] Invalid zone (%d)", zone);
 }
 
 void ApplicationRing::setZoneAndEnableBag(Zone zone) {
@@ -412,8 +478,8 @@ void ApplicationRing::setZoneAndEnableBag(Zone zone) {
 		getBag()->enable();
 }
 
-void ApplicationRing::setZone(Zone zone, uint32 a2) {
-	bool load = _saveManager->isLoaded(a2);
+void ApplicationRing::setZone(Zone zone, SetupType type) {
+	bool load = isLoaded(type);
 
 	if (zone != kZoneSY && !load) {
 		if (getReadFrom(zone) == kArchiveArt) {
@@ -424,12 +490,12 @@ void ApplicationRing::setZone(Zone zone, uint32 a2) {
 		}
 	}
 
-	if (a2 == 1000) {
+	if (type == 1000) {
 		error("[ApplicationRing::setZone] Not implemented (a2 == 1000)");
 	}
 
 	// Setup zone
-	_eventHandler->onSetup(zone, a2);
+	_eventHandler->onSetup(zone, type);
 }
 
 #pragma endregion

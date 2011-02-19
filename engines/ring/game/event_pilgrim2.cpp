@@ -61,7 +61,7 @@ void EventHandlerPilgrim2::onKeyDown(Common::Event &evt) {
 
 #pragma region Zone Setup
 
-void EventHandlerPilgrim2::onSetup(Zone zone, uint32 a2) {
+void EventHandlerPilgrim2::onSetup(Zone zone, SetupType type) {
 	error("[EventHandlerPilgrim2::onSetup] Not implemented");
 }
 

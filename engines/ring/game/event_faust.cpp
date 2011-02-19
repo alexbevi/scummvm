@@ -61,7 +61,7 @@ void EventHandlerFaust::onKeyDown(Common::Event &evt) {
 
 #pragma region Zone Setup
 
-void EventHandlerFaust::onSetup(Zone zone, uint32 a2) {
+void EventHandlerFaust::onSetup(Zone zone, SetupType type) {
 	error("[EventHandlerFaust::onSetup] Not implemented");
 }
 

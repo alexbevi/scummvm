@@ -101,7 +101,7 @@ public:
 	/**
 	 * Removes all art entries that are not loaded from disk (ie. were on the CD in the original)
 	 */
-	void remove();
+	void reset();
 
 	Common::SeekableReadStream *get(Common::String filename, Zone zone, LoadFrom loadFrom);
 
