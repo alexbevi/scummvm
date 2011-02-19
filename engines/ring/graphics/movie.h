@@ -26,15 +26,29 @@
 #ifndef RING_MOVIE_H
 #define RING_MOVIE_H
 
+#include "ring/shared.h"
+
 namespace Ring {
+
+class ScreenManager;
 
 class Movie {
 public:
-	Movie();
+	Movie(ScreenManager *screen);
 	~Movie();
 
-private:
+	void init(Common::String path, Common::String filename, uint32 a3, uint32 a4);
+	void play(uint32 a1, uint32 a2);
 
+	void setFramerate(float rate) { _framerate = rate; }
+
+private:
+	ScreenManager *_screen;
+
+
+	float  _framerate;
+	bool   _removeDialog;
+	uint32 _channel;
 };
 
 } // End of namespace Ring

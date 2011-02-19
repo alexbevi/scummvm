@@ -44,6 +44,7 @@
 
 #include "ring/graphics/animation.h"
 #include "ring/graphics/dragControl.h"
+#include "ring/graphics/movie.h"
 #include "ring/graphics/screen.h"
 #include "ring/graphics/visual.h"
 
@@ -413,12 +414,48 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 	warning("[Application::displayFade] Not implemented");
 }
 
-void Application::playMovie(Common::String filename, float a2) {
-	warning("[Application::playMovie] Not implemented (%s)", filename.c_str());
+void Application::playMovie(Common::String filename, float frameDivider) {
+	soundStopType(kSoundTypeEffect, 256);
+	soundStopType(kSoundTypeDialog, 256);
+	cursorSelect(kCursorDefault);
+
+	// Compute full path
+	if (!filename.hasSuffix(".cnm"))
+		filename += ".cnm";
+
+	Common::String path = Common::String::format("DATA/%s/PLA/", getCurrentZoneString().c_str());
+
+	Movie *movie = new Movie(_screenManager);
+	movie->init(path, filename, 1, 0);
+
+	if (frameDivider != 0.0f)
+		movie->setFramerate(1000.0f / frameDivider);
+
+	movie->play(0, 16);
+
+	delete movie;
 }
 
 void Application::playMovieChannel(Common::String filename, uint32 channel) {
-	warning("[Application::playplayMovieChannelMovie] Not implemented (%s)", filename.c_str());
+	if (channel < 1 || channel > 3)
+		error("[Application::playMovieChannel] Invalid channel for movie %s (was:%d, valid=[1-3]", filename.c_str(), channel);
+
+	soundStopType(kSoundTypeEffect, 256);
+	soundStopType(kSoundTypeDialog, 256);
+	cursorSelect(kCursorDefault);
+
+	// Compute full path
+	if (!filename.hasSuffix(".cnm"))
+		filename += ".cnm";
+
+	Common::String path = Common::String::format("DATA/%s/PLA/", getCurrentZoneString().c_str());
+
+	Movie *movie = new Movie(_screenManager);
+	movie->init(path, filename, 1, channel);
+
+	movie->play(0, 16);
+
+	delete movie;
 }
 
 #pragma endregion

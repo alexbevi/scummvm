@@ -93,7 +93,7 @@ public:
 	// Drawing
 	virtual void draw() = 0;
 
-	void playMovie(Common::String filename, float a2 = 0.0f);
+	void playMovie(Common::String filename, float frameDivider = 0.0f);
 	void playMovieChannel(Common::String filename, uint32 channel);
 
 	//////////////////////////////////////////////////////////////////////////

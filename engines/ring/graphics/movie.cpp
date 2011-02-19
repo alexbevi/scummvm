@@ -25,11 +25,23 @@
 
 #include "ring/graphics/movie.h"
 
+#include "ring/graphics/screen.h"
+
 namespace Ring {
 
-Movie::Movie() {}
+Movie::Movie(ScreenManager *screen) : _screen(screen) {}
 
 Movie::~Movie() {
+	// Zero-out passed pointers
+	_screen = NULL;
+}
+
+void Movie::init(Common::String path, Common::String filename, uint32 a3, uint32 a4) {
+	error("[Movie::init] Not implemented");
+}
+
+void Movie::play(uint32 a1, uint32 a2) {
+	error("[Movie::play] Not implemented");
 }
 
 } // End of namespace Ring
