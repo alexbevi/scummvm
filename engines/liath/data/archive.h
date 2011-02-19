@@ -30,6 +30,9 @@
 
 namespace Liath {
 
+/**
+ * 	Multi archives (.mul files)
+ */
 class MultiArchive : public Common::Archive {
 public:
 	MultiArchive(const Common::String &path);
