@@ -295,7 +295,31 @@ void SoundManager::setVolume(Id soundId, uint32 volume) {
 }
 
 void SoundManager::stopType(SoundType soundType, uint32 a2) {
-	error("[SoundManager::stopType] Not implemented");
+	bool stopDialog = true;
+
+	for (Common::Array<SoundEntry *>::iterator it = _entries.begin(); it != _entries.end(); it++) {
+		SoundEntry *entry = (*it);
+
+		if (entry->getType() != soundType)
+			continue;
+
+		if (entry->getType() == kSoundTypeDialog && stopDialog) {
+			if (entry->isPlaying())
+				entry->stop();
+
+			if (_app->getDialogHandler()->removeDialog(entry->getId())) {
+				_app->onSound(entry->getId(), entry->getType(), a2);
+
+				stopDialog = false;
+			}
+		} else {
+			if (entry->isPlaying()) {
+				entry->stop();
+
+				_app->onSound(entry->getId(), entry->getType(), a2);
+			}
+		}
+	}
 }
 
 void SoundManager::setMultiplier(SoundType soundType, uint32 a2) {
@@ -316,15 +340,17 @@ void SoundManager::stopAll(uint32 a1) {
 			if (entry->isPlaying())
 				entry->stop();
 
-			if (_app->getDialogHandler()->removeDialog(entry->getId()))
+			if (_app->getDialogHandler()->removeDialog(entry->getId())) {
 				_app->onSound(entry->getId(), entry->getType(), a1);
 
-			stopDialog = false;
+				stopDialog = false;
+			}
 		} else {
-			if (entry->isPlaying())
+			if (entry->isPlaying()) {
 				entry->stop();
 
-			_app->onSound(entry->getId(), entry->getType(), a1);
+				_app->onSound(entry->getId(), entry->getType(), a1);
+			}
 		}
 	}
 }
