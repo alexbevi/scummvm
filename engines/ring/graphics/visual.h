@@ -52,7 +52,8 @@ public:
 	virtual void alloc();
 	virtual void dealloc();
 
-	void init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8);
+	void init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 progressMultiplier, uint32 progressColor);
+	void draw();
 
 	// Accessors
 	void setField8(uint32 val) { _field_8 = val; }
@@ -67,13 +68,15 @@ private:
 	uint32 _field_19;
 	uint32 _field_1D;
 	uint32 _field_21;
-	uint32 _field_25;
-	uint32 _field_29;
-	byte _field_2D;
-	uint32 _field_2E;
-	uint32 _field_32;
-	uint32 _field_36;
-	uint32 _field_3A;
+	uint32 _progressMultiplier;
+	uint32 _progressColor;  ///< The progress color in RGB form (0x00bbggrr)
+	bool   _initialized;
+	float  _progress1;
+	float  _progress2;
+	float  _progress3;
+	float  _progress4;
+
+	void setupProgress(Id progressId, uint32 textIndex, float *progress);
 };
 
 class VisualObjectList : public Visual {

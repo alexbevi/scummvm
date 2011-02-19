@@ -51,35 +51,62 @@ VisualElement::VisualElement(Id id) : Visual(id) {
 	_field_19 = 0;
 	_field_1D = 0;
 	_field_21 = 0;
-	_field_25 = 0;
-	_field_29 = 0;
-	_field_2D = 0;
-	_field_2E = 0;
-	_field_32 = 0;
-	_field_36 = 0;
-	_field_3A = 0;
+	_progressMultiplier = 0;
+	_progressColor = 0;
+	_initialized = false;
+	_progress1 = 0.0f;
+	_progress2 = 0.0f;
+	_progress3 = 0.0f;
+	_progress4 = 0.0f;
 }
 
 VisualElement::~VisualElement() {
 }
 
+// FIXME This should be moved to application_ring or abstracted
+#include "ring/shared_ring.h"
 void VisualElement::alloc() {
-	error("[VisualElement::alloc] Not implemented!");
+	if (_initialized)
+		return;
+
+	setupProgress(90005, 0, &_progress1);
+	setupProgress(90006, 1, &_progress2);
+	setupProgress(90007, 2, &_progress3);
+	setupProgress(90008, 3, &_progress4);
+
+	_initialized = true;
+}
+
+void VisualElement::setupProgress(Id progressId, uint32 textIndex, float *width) {
+	float progress = getApp()->varGetFloat(progressId);
+	if (progress > 100.0f)
+		progress = 100.0f;
+
+	if (progress < 0.0f)
+		progress = 0.0f;
+
+	getApp()->objectPresentationSetTextToPuzzle(RingGame::kObjectStatusProgress, 0, textIndex, Common::String::format("%3.1f", progress));
+
+	*width = ceil(_progressMultiplier * progress * 0.01);
 }
 
 void VisualElement::dealloc() {
-	_field_2D = 1;
+	_initialized = true;
 }
 
-void VisualElement::init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8) {
+void VisualElement::init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 progressMultiplier, uint32 progressColor) {
 	_field_D  = a1;
 	_field_11 = a2;
 	_field_15 = a3;
 	_field_19 = a4;
 	_field_1D = a5;
 	_field_21 = a6;
-	_field_25 = a7;
-	_field_29 = a8;
+	_progressMultiplier = progressMultiplier;
+	_progressColor = progressColor;
+}
+
+void VisualElement::draw() {
+	error("[VisualElement::draw] Not implemented!");
 }
 
 #pragma endregion

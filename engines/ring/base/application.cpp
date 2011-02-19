@@ -1718,7 +1718,7 @@ IMPLEMENT_VAR_FUNCTIONS(Float,  float);
 
 #pragma region Visual
 
-void Application::visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 a9, uint32 a10) {
+void Application::visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 progressMultiplier, uint32 progressColor) {
 	if (!_puzzles.has(puzzleId))
 		error("[Application::visualAddListToPuzzle] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
@@ -1727,7 +1727,7 @@ void Application::visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 		error("[Application::visualAddListToPuzzle] Visual already exists on puzzle (%d)", visualId);
 
 	VisualElement *visual = new VisualElement(visualId);
-	visual->init(a3, a4, a5, a6, a7, a8, a9, a10);
+	visual->init(a3, a4, a5, a6, a7, a8, progressMultiplier, progressColor);
 	visual->setField8(2);
 	visual->setFieldC(1);
 
