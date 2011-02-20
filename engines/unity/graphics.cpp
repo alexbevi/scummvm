@@ -71,13 +71,12 @@ void Graphics::init() {
 
 void Graphics::loadPalette() {
 	// read the standard palette entries
-	basePalette = new byte[128 * 4];
+	basePalette = new byte[128 * 3];
 	Common::SeekableReadStream *palStream = _vm->data.openFile("STANDARD.PAL");
 	for (uint16 i = 0; i < 128; i++) {
-		basePalette[i * 4] = palStream->readByte();
-		basePalette[i * 4 + 1] = palStream->readByte();
-		basePalette[i * 4 + 2] = palStream->readByte();
-		basePalette[i * 4 + 3] = 0;
+		basePalette[i * 3] = palStream->readByte();
+		basePalette[i * 3 + 1] = palStream->readByte();
+		basePalette[i * 3 + 2] = palStream->readByte();
 	}
 	delete palStream;
 }
@@ -361,20 +360,19 @@ void Graphics::drawMRG(MRGFile *mrg, unsigned int entry, unsigned int x, unsigne
 
 void Graphics::setBackgroundImage(Common::String filename) {
 	delete[] palette;
-	palette = new byte[256 * 4];
+	palette = new byte[256 * 3];
 
 	Common::SeekableReadStream *scrStream = _vm->data.openFile(filename);
 	for (uint16 i = 0; i < 128; i++) {
-		palette[i * 4] = scrStream->readByte();
-		palette[i * 4 + 1] = scrStream->readByte();
-		palette[i * 4 + 2] = scrStream->readByte();
-		palette[i * 4 + 3] = 0;
+		palette[i * 3] = scrStream->readByte();
+		palette[i * 3 + 1] = scrStream->readByte();
+		palette[i * 3 + 2] = scrStream->readByte();
 	}
-	memcpy(palette + 128*4, basePalette, 128*4);
+	memcpy(palette + 128*3, basePalette, 128*3);
 
 	for (uint16 i = 0; i < 256; i++) {
 		for (byte j = 0; j < 3; j++) {
-			palette[i * 4 + j] = palette[i * 4 + j] << 2;
+			palette[i * 3 + j] = palette[i * 3 + j] << 2;
 		}
 	}
 
@@ -448,13 +446,12 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 		printf("new sprite-embedded palette\n");
 
 		delete[] palette;
-		palette = new byte[256 * 4];
+		palette = new byte[256 * 3];
 
 		for (uint16 i = 0; i < 256; i++) {
-			palette[i * 4] = *(newpal++) * 4;
-			palette[i * 4 + 1] = *(newpal++) * 4;
-			palette[i * 4 + 2] = *(newpal++) * 4;
-			palette[i * 4 + 3] = 0;
+			palette[i * 3] = *(newpal++) * 3;
+			palette[i * 3 + 1] = *(newpal++) * 3;
+			palette[i * 3 + 2] = *(newpal++) * 3;
 		}
 
 		_vm->_system->getPaletteManager()->setPalette(palette, 0, 256);
