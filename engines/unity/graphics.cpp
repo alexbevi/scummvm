@@ -449,9 +449,9 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 		palette = new byte[256 * 3];
 
 		for (uint16 i = 0; i < 256; i++) {
-			palette[i * 3] = *(newpal++) * 3;
-			palette[i * 3 + 1] = *(newpal++) * 3;
-			palette[i * 3 + 2] = *(newpal++) * 3;
+			palette[i * 3] = *(newpal++) * 4;
+			palette[i * 3 + 1] = *(newpal++) * 4;
+			palette[i * 3 + 2] = *(newpal++) * 4;
 		}
 
 		_vm->_system->getPaletteManager()->setPalette(palette, 0, 256);
