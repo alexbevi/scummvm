@@ -63,7 +63,7 @@ void VideoPlayer::processEvents() {
 
 bool VideoPlayer::playVideo(char *filename) {
 	_skipVideo = false;
-	byte backupPalette[256 * 4];
+	byte backupPalette[256 * 3];
 
 	// Backup the palette
 	_vm->_system->getPaletteManager()->grabPalette(backupPalette, 0, 256);

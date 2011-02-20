@@ -87,8 +87,7 @@ private:
 	byte *_convEntry;
 	Common::File *_convData;
 
-
-	byte _backupPalette[256 * 4];
+	byte _backupPalette[256 * 3];
 
 	byte *_convs;
 	char *_text;

@@ -55,15 +55,8 @@ ColorSet::ColorSet(const char *filename) {
 		return;
 
 	size = f.size() / 3;
-
-	data = new byte[size * 4];
-
-	for (uint i = 0; i < size; ++i) {
-		data[4 * i + 0] = f.readByte();
-		data[4 * i + 1] = f.readByte();
-		data[4 * i + 2] = f.readByte();
-		data[4 * i + 3] = 0;
-	}
+	data = new byte[size * 3];
+	f.read(data, size * 3);
 
 	f.close();
 }
@@ -567,7 +560,7 @@ void Screen::drawActorFrameLine(byte *outBuffer, const int8 *rowData, uint16 len
 }
 
 void Screen::useColorSet(ColorSet *cs, uint start) {
-	static const byte black[4] = { 0, 0, 0, 0 };
+	static const byte black[] = { 0, 0, 0 };
 
 	_system->getPaletteManager()->setPalette(cs->data, start, cs->size);
 
@@ -577,20 +570,20 @@ void Screen::useColorSet(ColorSet *cs, uint start) {
 	_paletteChanged = true;
 }
 
-void Screen::setPaletteColor(int index, const byte color[4]) {
+void Screen::setPaletteColor(int index, const byte color[]) {
 	_system->getPaletteManager()->setPalette(color, index, index + 1);
 
 	_paletteChanged = true;
 }
 
 void Screen::setPaletteBrightness() {
-	byte newPalette[256 * 4];
+	byte newPalette[256 * 3];
 
 	_system->getPaletteManager()->grabPalette(newPalette, 0, 256);
 
 	if (_currBrightness < 256) {
 
-		for (uint i = 0; i < 256 * 4; (i%4==2)?i+=2:i++) {
+		for (uint i = 0; i < 256 * 3; i++) {
 			newPalette[i] = newPalette[i] * _currBrightness / 256;
 		}
 
@@ -616,7 +609,7 @@ void Screen::createSepia(bool shop) {
 
 	for (uint y = 0; y < SCREEN_H - PANEL_H; ++y) {
 		for (uint x = 0; x < SCREEN_W; ++x) {
-			byte *color = &_backupPalette[((uint8*)screen->pixels)[y * SCREEN_W + x] * 4];
+			byte *color = &_backupPalette[((uint8*)screen->pixels)[y * SCREEN_W + x] * 3];
 
 			// FIXME: this does not produce the same shade as the original
 			_sepiaScreen[y * SCREEN_W + x] = ((color[0] + color[1] + color[2]) / 3 * 23 + 255 / 2) / 255 + 232;
@@ -885,16 +878,8 @@ void Screen::updateBackground() {
 			_roomBackground = _roomBackgroundFlic.decodeNextFrame();
 
 			if (_roomBackgroundFlic.hasDirtyPalette()) {
-				byte rgbaPalette[4 * 128];
-				const byte *rgbPalette = _roomBackgroundFlic.getPalette();
-				for (int i = 0; i < 128; i++) {
-					rgbaPalette[i * 4 + 0] = rgbPalette[(i + 128) * 3 + 0];
-					rgbaPalette[i * 4 + 1] = rgbPalette[(i + 128) * 3 + 1];
-					rgbaPalette[i * 4 + 2] = rgbPalette[(i + 128) * 3 + 2];
-					rgbaPalette[i * 4 + 3] = 0;
-				}
-
-				_system->getPaletteManager()->setPalette(rgbaPalette, 128, 128);
+				const byte *flicPalette = _roomBackgroundFlic.getPalette();
+				_system->getPaletteManager()->setPalette(flicPalette + 128 * 3, 128, 128);
 				_paletteChanged = true;
 			}
 		}

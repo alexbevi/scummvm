@@ -265,8 +265,8 @@ bool Conv::doOptions(Conversation *conv, int32 optNum) {
 }
 
 int Conv::showOptions() {
-	static const byte active[4] = {255, 255, 255, 0};
-	static const byte inactive[4] = {162, 130, 130, 0};
+	static const byte active[] = {255, 255, 255};
+	static const byte inactive[] = {162, 130, 130};
 
 	int validOptions = 0;
 

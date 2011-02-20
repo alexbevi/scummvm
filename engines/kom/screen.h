@@ -93,7 +93,7 @@ public:
 	void drawInventory(Inventory *inv);
 
 	void useColorSet(ColorSet *cs, uint start);
-	void setPaletteColor(int index, const byte color[4]);
+	void setPaletteColor(int index, const byte color[]);
 	void createSepia(bool shop);
 	void freeSepia();
 	void copySepia();
