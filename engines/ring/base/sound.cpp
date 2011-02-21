@@ -322,12 +322,22 @@ void SoundManager::stopType(SoundType soundType, uint32 a2) {
 	}
 }
 
-void SoundManager::setMultiplier(SoundType soundType, uint32 a2) {
-	error("[SoundManager::setMultiplier] Not implemented");
+void SoundManager::setMultiplier(SoundType soundType, uint32 multiplier) {
+	for (Common::Array<SoundEntry *>::iterator it = _entries.begin(); it != _entries.end(); it++) {
+		SoundEntry *entry = (*it);
+
+		if (entry->getType() == soundType)
+			entry->setMultiplier(multiplier);
+	}
 }
 
 void SoundManager::setMultiplierIfNotType(SoundType soundType, int32 multiplier) {
-	error("[SoundManager::setMultiplierIfNotType] Not implemented");
+	for (Common::Array<SoundEntry *>::iterator it = _entries.begin(); it != _entries.end(); it++) {
+		SoundEntry *entry = (*it);
+
+		if (entry->getType() != soundType)
+			entry->setMultiplier(multiplier);
+	}
 }
 
 void SoundManager::stopAll(uint32 a1) {

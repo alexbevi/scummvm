@@ -154,7 +154,7 @@ public:
 	void stop(Id soundId, uint32 a2);
 	void setVolume(Id soundId, uint32 volume);
 	void stopType(SoundType soundType, uint32 a2);
-	void setMultiplier(SoundType soundType, uint32 a2);
+	void setMultiplier(SoundType soundType, uint32 multiplier);
 	void setMultiplierIfNotType(SoundType soundType, int32 multiplier);
 	void stopAll(uint32 a1);
 	void setPan(Id soundId, int32 pan);
