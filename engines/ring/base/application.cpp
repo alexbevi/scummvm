@@ -407,6 +407,29 @@ void Application::update(const Common::Point &point) {
 
 #pragma region Display and Movies
 
+void Application::showImage(Common::String filename, Common::Point point, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
+	if (archiveType == kArchiveInvalid)
+		archiveType = getReadFrom(getCurrentZone());
+
+	Common::String path;
+	if (archiveType == kArchiveFile)
+		path = Common::String::format("/DATA/%s/IMAGE/%s", getCurrentZoneString().c_str(), filename.c_str());
+	else
+		path = Common::String::format("/IMAGE/%s", filename.c_str());
+
+	Image *image = new Image();
+	if (!image->load(path, archiveType, getCurrentZone(), loadFrom)) {
+		delete image;
+		return;
+	}
+
+	_screenManager->drawImage(image,  point.x, point.y, image->getWidth(), image->getHeight(), 0, 0);
+
+	waitForEscape(ticksWait);
+
+	delete image;
+}
+
 bool Application::scrollImage(Common::String filename, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (archiveType == kArchiveInvalid)
 		archiveType = getReadFrom(getCurrentZone());
@@ -420,6 +443,8 @@ bool Application::scrollImage(Common::String filename, uint32 ticksWait, LoadFro
 	Image *image = new Image();
 	if (!image->load(path, archiveType, getCurrentZone(), loadFrom)) {
 		warning("[Application::scrollImage] Cannot load image (%s)", path.c_str());
+
+		delete image;
 		return false;
 	}
 
@@ -438,15 +463,21 @@ bool Application::scrollImage(Common::String filename, uint32 ticksWait, LoadFro
 	}
 
 	if (offset == image->getWidth() - 448)
-		for (uint32 i = 0; i < ticksWait; i++)
-			if (checkEscape())
-				break;
+		waitForEscape(ticksWait);
+
+	delete image;
 
 	return skipped;
 }
 
 void Application::displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
 	warning("[Application::displayFade] Not implemented");
+}
+
+void Application::waitForEscape(uint32 ticksWait) {
+	for (uint32 i = 0; i < ticksWait; i++)
+		if (checkEscape())
+			break;
 }
 
 void Application::playMovie(Common::String filename, float frameDivider) {

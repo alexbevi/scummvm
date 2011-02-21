@@ -406,8 +406,10 @@ protected:
 	void loadConfiguration();
 
 	// Display and movies
+	void showImage(Common::String filename, Common::Point point, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	bool scrollImage(Common::String filename, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
+	void waitForEscape(uint32 ticksWait);
 
 	// Current rotation
 	Rotation *_currentRotation;
