@@ -47,7 +47,9 @@ public:
 	//
 	//
 	//
-	void update(Image *image, Common::Point point, byte a3);
+	void update(Image *image, Common::Point point, byte type);
+	void updateBackground(Image *image, byte type);
+	void drawImage(Image *image, int32 xDest, int32 yDest, int srcWidth, int srcHeight, int xSrc, int offset);
 	//
 	//void readPalette();
 	//

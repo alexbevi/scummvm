@@ -44,6 +44,12 @@ void ScreenManager::update(Image *image, Common::Point point, byte a3) {
 	warning("[ScreenManager::update] Not implemented");
 }
 
+void ScreenManager::drawImage(Image *image, int32 xDest, int32 yDest, int srcWidth, int srcHeight, int xSrc, int offset) {
+	warning("[ScreenManager::drawImage] Not implemented");
+
+	//updateScreen();
+}
+
 void ScreenManager::sub_4028D0(int a1, int a2) {
 	warning("[ScreenManager::sub_4028D0] Not implemented");
 }

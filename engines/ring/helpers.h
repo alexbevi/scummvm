@@ -41,6 +41,7 @@
 // Events
 #define handleEvents() ((RingEngine *)g_engine)->update()
 #define checkEvents() ((RingEngine *)g_engine)->pollEvents()
+#define checkEscape() ((RingEngine *)g_engine)->pollEvents(false)
 
 //////////////////////////////////////////////////////////////////////////
 // Sub-integer partial access macros

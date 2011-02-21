@@ -45,8 +45,12 @@ public:
 	bool isInitialized();
 
 	uint32 getBPP() { return _bpp; }
+	uint32 getWidth() { return _width; }
+	uint32 getHeight() { return _height; }
 
 protected:
+	uint32 _width;
+	uint32 _height;
 	uint32 _bpp;
 };
 

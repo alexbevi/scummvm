@@ -406,8 +406,8 @@ protected:
 	void loadConfiguration();
 
 	// Display and movies
-	int scrollImage(Common::String filename,  uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
-	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 a3, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
+	bool scrollImage(Common::String filename, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
+	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 
 	// Current rotation
 	Rotation *_currentRotation;

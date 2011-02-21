@@ -105,7 +105,7 @@ public:
 	RingEngine(OSystem *syst, const RingGameDescription *gd);
 	~RingEngine();
 
-	bool pollEvents();
+	bool pollEvents(bool updateCoords = true);
 	void update();
 
 	// Accessors and helpers

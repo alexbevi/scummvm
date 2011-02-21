@@ -71,6 +71,8 @@ void ImageHandle::init(Common::String nameId, const Common::Point &point, bool i
 #pragma region Image
 
 Image::Image() {
+	_width = 0;
+	_height = 0;
 	_bpp = 32; // HACK
 }
 

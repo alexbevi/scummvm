@@ -44,6 +44,7 @@
 
 #include "ring/graphics/animation.h"
 #include "ring/graphics/dragControl.h"
+#include "ring/graphics/image.h"
 #include "ring/graphics/movie.h"
 #include "ring/graphics/screen.h"
 #include "ring/graphics/visual.h"
@@ -406,11 +407,45 @@ void Application::update(const Common::Point &point) {
 
 #pragma region Display and Movies
 
-int Application::scrollImage(Common::String filename,  uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
-	error("[Application::scrollImage] Not implemented");
+bool Application::scrollImage(Common::String filename, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
+	if (archiveType == kArchiveInvalid)
+		archiveType = getReadFrom(getCurrentZone());
+
+	Common::String path;
+	if (archiveType == kArchiveFile)
+		path = Common::String::format("/DATA/%s/IMAGE/%s", getCurrentZoneString().c_str(), filename.c_str());
+	else
+		path = Common::String::format("/IMAGE/%s", filename.c_str());
+
+	Image *image = new Image();
+	if (!image->load(path, archiveType, getCurrentZone(), loadFrom)) {
+		warning("[Application::scrollImage] Cannot load image (%s)", path.c_str());
+		return false;
+	}
+
+	// Scroll image
+	bool skipped = false;
+	uint32 offset = 0;
+	if (image->getWidth() > 448) {
+
+		while (offset < image->getWidth() - 448 && !skipped) {
+			_screenManager->drawImage(image, 0, 16, 640, 464, 0, offset);
+
+			// Skip if ESCAPE is pressed
+			if (checkEscape())
+				skipped = true;
+		}
+	}
+
+	if (offset == image->getWidth() - 448)
+		for (uint32 i = 0; i < ticksWait; i++)
+			if (checkEscape())
+				break;
+
+	return skipped;
 }
 
-void Application::displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 a3, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
+void Application::displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
 	warning("[Application::displayFade] Not implemented");
 }
 

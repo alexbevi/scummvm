@@ -139,18 +139,8 @@ void ApplicationRing::showStartupScreen() {
 		displayFade(introScreens[i].filenameFrom, introScreens[i].filenameTo, introScreens[i].a3, introScreens[i].ticksWait, introScreens[i].loadFrom, introScreens[i].archiveType);
 
 		// Skip intro screens if ESCAPE is pressed
-		Common::Event ev;
-		g_engine->getEventManager()->pollEvent(ev);
-		switch (ev.type) {
-		default:
-			break;
-
-		case Common::EVENT_KEYDOWN:
-			if (ev.kbd.keycode == Common::KEYCODE_ESCAPE)
-				return;
-
-			break;
-		}
+		if (checkEscape())
+			return;
 	}
 }
 
@@ -210,7 +200,7 @@ void ApplicationRing::showCredits() {
 
 	// Scroll credits
 	for (uint i = 0; i < ARRAYSIZE(creditsScreens); i++) {
-		if (scrollImage(creditsScreens[i].filename, creditsScreens[i].ticksWait, creditsScreens[i].loadFrom, creditsScreens[i].archiveType) == 2)
+		if (scrollImage(creditsScreens[i].filename, creditsScreens[i].ticksWait, creditsScreens[i].loadFrom, creditsScreens[i].archiveType))
 			break;
 	}
 

@@ -198,7 +198,7 @@ Common::Error RingEngine::run() {
 	return Common::kNoError;
 }
 
-bool RingEngine::pollEvents() {
+bool RingEngine::pollEvents(bool updateCoords) {
 	Common::Event ev;
 	_eventMan->pollEvent(ev);
 
@@ -207,7 +207,8 @@ bool RingEngine::pollEvents() {
 		break;
 
 	case Common::EVENT_MOUSEMOVE:
-		_coordinates = ev.mouse;
+		if (updateCoords)
+			_coordinates = ev.mouse;
 		break;
 
 	case Common::EVENT_KEYDOWN:
