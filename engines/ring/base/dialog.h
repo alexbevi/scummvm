@@ -66,7 +66,7 @@ struct DialogObject {
 
 class Dialog : public BaseObject {
 public:
-	Dialog(ObjectId id, Common::String name);
+	Dialog(Id id, Common::String name);
 	~Dialog();
 
 	void show();

@@ -31,11 +31,14 @@
 #include "ring/ring.h"
 #include "ring/helpers.h"
 
+#include "common/file.h"
+#include "common/tokenizer.h"
+
 namespace Ring {
 
 #pragma region Dialog
 
-Dialog::Dialog(ObjectId id, Common::String name) : BaseObject(id) {
+Dialog::Dialog(Id id, Common::String name) : BaseObject(id) {
 	_startTicks = 0;
 	_field_D = 0;
 
@@ -43,10 +46,10 @@ Dialog::Dialog(ObjectId id, Common::String name) : BaseObject(id) {
 		error("[Dialog::Dialog] Invalid dialog name (length should be >= 4)");
 
 	// Read lyrics
-	readLyrics(Common::String::format("DATA/%s/DIA/%s/%sdia", getApp()->getCurrentZoneString().c_str(), getApp()->languageGetFolder().c_str(), name.c_str()));
+	readLyrics(Common::String::format("DATA/%s/DIA/%s/%s.dia", getApp()->getCurrentZoneString().c_str(), getApp()->languageGetFolder().c_str(), name.c_str()));
 
 	// Read animations
-	_visible = readAnimation(Common::String::format("DATA/%s/DIA/%s/%sdan", getApp()->getCurrentZoneString().c_str(), getApp()->languageGetFolder().c_str(), name.c_str()));
+	_visible = readAnimation(Common::String::format("DATA/%s/DIA/%s/%s.dan", getApp()->getCurrentZoneString().c_str(), getApp()->languageGetFolder().c_str(), name.c_str()));
 }
 
 Dialog::~Dialog() {
@@ -144,15 +147,131 @@ Common::String Dialog::getLine2(uint32 index) {
 }
 
 void Dialog::readLyrics(Common::String filename) {
-	error("[Dialog::readLyrics] No implemented");
+	// Open a stream to the dialog file
+	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember(filename);
+	if (!archive)
+		error("[Dialog::readLyrics] Error opening dialog file (%s)", filename.c_str());
+
+	while (!archive->eos() && !archive->err()) {
+		Common::String line = archive->readLine();
+		if (archive->eos() || archive->err())
+			break;
+
+		parseLyrics(line);
+	}
+
+	delete archive;
 }
 
 void Dialog::parseLyrics(Common::String line) {
-	error("[Dialog::parseLyrics] No implemented");
+	// Trim whitespace
+	line.trim();
+
+	// Parse line
+	//  - ticks
+	//  - message (line1#line2)
+	Common::StringTokenizer tokenizer(line, " ");
+
+	Common::String ticks = tokenizer.nextToken();
+	if (tokenizer.empty())
+		error("[Dialog::parseLyrics] Invalid line format (%s)", line.c_str());
+
+	// First, try parsing ticks
+	uint32 tick = 0;
+	if (!ticks.contains(",")) {
+		// Normal tick value
+		if (sscanf(ticks.c_str(), "%d", (int *)&tick) == 0)
+			error("[Dialog::parseLyrics] Cannot parse tick value (%s) for line %s", ticks.c_str(), line.c_str());
+	} else {
+		// Normal tick value, followed by a tick interval (separated by ',')
+		int minutes = 0;
+		int seconds = 0;
+		int centiseconds = 0;
+		if (sscanf(ticks.c_str(), "%d,%d:%d.%d", (int *)&tick, &minutes, &seconds, &centiseconds) == 0)
+			error("[Dialog::parseLyrics] Cannot parse tick value (%s) for line %s", ticks.c_str(), line.c_str());
+
+		// The values other than the ticks are ignored in the original (Ring)
+	}
+
+	// Parse dialog lines
+	Common::String dialogs = line.begin() + ticks.size() + 1;
+	dialogs.trim();
+
+	Common::StringTokenizer lines(dialogs, "#");
+	if (lines.empty())
+		error("[Dialog::parseLyrics] Invalid dialog line format (%s)", dialogs.c_str());
+
+	// Store line
+	DialogLine *dialogLine = new DialogLine();
+	dialogLine->ticks = tick;
+	dialogLine->line1 = lines.nextToken();
+	dialogLine->line2 = lines.nextToken();
+
+	// Special case for Greek language (ascii code 160: Greek lower case iota with dialytika in codepage 869)
+	for (Common::String::iterator c = dialogLine->line1.begin(); c != dialogLine->line1.end(); ++c)
+		if (*c == 'á')
+			*c = ' ';
+
+	for (Common::String::iterator c = dialogLine->line2.begin(); c != dialogLine->line2.end(); ++c)
+		if (*c == 'á')
+			*c = ' ';
 }
 
 bool Dialog::readAnimation(Common::String filename) {
-	error("[Dialog::readDialogAnimation] No implemented");
+	if (!Common::File::exists(filename))
+		return false;
+
+	// Open a stream to the dialog file
+	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember(filename);
+	if (!archive)
+		error("[Dialog::readAnimation] Error opening dialog animation file (%s)", filename.c_str());
+
+	// Parse object levels
+	Common::String levelLine = archive->readLine();
+	if (archive->eos() || archive->err())
+		error("[Dialog::readAnimation] Error reading object levels (EOS in %s)", filename.c_str());
+
+	int levels = 0;
+	if (sscanf(levelLine.c_str(), "%d", (int *)&levels) == 0)
+		error("[Dialog::readAnimation] Error reading object levels (Wrong format in %s)", filename.c_str());
+
+	// Read objects
+	if (levels > 0) {
+		for (int i = 0; i < levels; i++) {
+			Common::String line = archive->readLine();
+			if (archive->eos() || archive->err())
+				error("[Dialog::readAnimation] Error reading object animations (EOS in %s)", filename.c_str());
+
+			// Parse object line
+			uint32 objectId = 0;
+			uint32 presentationIndex = 0;
+			uint32 a3 = 0;
+			if (sscanf(line.c_str(), "%d %d %d", (int *)&objectId, (int *)&presentationIndex, (int *)&a3) != 3)
+				error("[Dialog::readAnimation] Error reading object levels (Wrong format in %s)", filename.c_str());
+
+			_objects.push_back(new DialogObject(objectId, presentationIndex, a3));
+		}
+	}
+
+	// Read animations
+	while (!archive->eos() && !archive->err()) {
+		Common::String line = archive->readLine();
+		if (archive->eos() || archive->err())
+			break;
+
+		// Parse animation line
+		uint32 start = 0;
+		uint32 end = 0;
+		uint32 a3 = 0;
+		if (sscanf(line.c_str(), "%d %d %d", (int *)&start, (int *)&end, (int *)&a3) != 3)
+			break;
+
+		_animations.push_back(new DialogAnimation(start, end, a3));
+	}
+
+	delete archive;
+
+	return true;
 }
 
 #pragma endregion
