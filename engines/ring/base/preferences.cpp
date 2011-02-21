@@ -34,8 +34,8 @@
 namespace Ring {
 
 PreferenceHandler::PreferenceHandler(Application *application) : _app(application) {
-	_pref1 = 0;
-	_pref2 = 0;
+	_volume = 0;
+	_volumeDialog = 0;
 	_reverseStereo = 0;
 	_pref4 = 0;
 }
@@ -66,14 +66,14 @@ void PreferenceHandler::loadDefaults() {
 	delete archive;
 
 	// Read preferences
-	int32 pref1;
-	int32 pref2;
+	int32 volume;
+	int32 volumeDialog;
 	int32 reverseStereo;
 	int32 pref4;
-	if (sscanf(line.c_str(), "%d %d %d %d", &pref1, &pref2, &reverseStereo, &pref4) != 4)
+	if (sscanf(line.c_str(), "%d %d %d %d", &volume, &volumeDialog, &reverseStereo, &pref4) != 4)
 		error("[PreferenceHandler::load] Invalid configuration format");
 
-	set(pref1, pref2, reverseStereo, pref4);
+	set(volume, volumeDialog, reverseStereo, pref4);
 	setup();
 }
 
@@ -81,15 +81,16 @@ void PreferenceHandler::save() {
 	error("[PreferenceHandler::save] No implemented");
 }
 
-void PreferenceHandler::set(int32 pref1, int32 pref2, int32 reverseStereo, int32 pref4) {
-	_pref1 = pref1;
-	_pref2 = pref2;
+void PreferenceHandler::set(int32 volume, int32 volumeDialog, int32 reverseStereo, int32 pref4) {
+	_volume = volume;
+	_volumeDialog = volumeDialog;
 	_reverseStereo = reverseStereo;
 	_pref4 = pref4;
 }
 
 void PreferenceHandler::setup() {
-	warning("[PreferenceHandler::setup] Sound volume setup not implemented");
+	_app->soundSetMultiplierIfNotType(kSoundTypeDialog, _volume);
+	_app->soundSetMultiplier(kSoundTypeDialog, _volumeDialog);
 
 	if (_app->getSoundHandler())
 		_app->getSoundHandler()->setReverseStereo(_reverseStereo);

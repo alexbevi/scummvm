@@ -43,13 +43,13 @@ public:
 private:
 	Application *_app;
 
-	int32 _pref1;
-	int32 _pref2;
+	int32 _volume;
+	int32 _volumeDialog;
 	int32 _reverseStereo;
 	int32 _pref4;
 
 	void loadDefaults();
-	void set(int32 pref1, int32 pref2, int32 reverseStereo, int32 pref4);
+	void set(int32 volume, int32 volumeDialog, int32 reverseStereo, int32 pref4);
 	void setup();
 };
 
