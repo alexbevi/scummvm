@@ -28,6 +28,8 @@
 
 #include "ring/shared.h"
 
+#include "graphics/surface.h"
+
 namespace Ring {
 
 class AnimationImage;
@@ -38,20 +40,33 @@ public:
 	Image();
 	~Image();
 
-	bool load(Common::String path, ArchiveType type, Zone zone, LoadFrom loadFrom);
-
+	void create(uint32 depth, uint32 direction, uint32 width, uint32 height);
 	void destroy();
 
-	bool isInitialized();
+	bool load(Common::String filename, ArchiveType type, Zone zone, LoadFrom loadFrom);
+	Image *zoom(uint32 xZoom, uint32 yZoom);
 
-	uint32 getBPP() { return _bpp; }
-	uint32 getWidth() { return _width; }
-	uint32 getHeight() { return _height; }
+	// Drawing
+	void draw(Graphics::Surface *surface, Common::Point dest);
+	void draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset);
+
+	// Accessors
+	uint32 getBPP()    { return _surface ? _surface->bytesPerPixel : 0; }
+	uint32 getWidth()  { return _surface ? _surface->w : 0; }
+	uint32 getHeight() { return _surface ? _surface->h : 0; }
+
+	Common::String getName() { return _filename; }
+	void setName(Common::String name) { _filename = name; }
+
+	bool isInitialized() { return _surface != NULL; }
 
 protected:
-	uint32 _width;
-	uint32 _height;
-	uint32 _bpp;
+	//bool _loaded;
+	Common::String _filename;
+	Graphics::Surface *_surface;
+	//uint32 _direction;
+	//uint32 _offset;
+	//Common::Rect _rect;
 };
 
 class ImageHandle : public Image {
@@ -61,9 +76,9 @@ public:
 	~ImageHandle();
 
 	// Accessors
-	Common::String getPath() { return _path; }
-	void setPath(Common::String path) { _path = path; }
 	Common::String getNameId() { return _nameId; }
+	Common::String getDirectory() { return _directory; }
+	void setDirectory(Common::String directory) { _directory = directory; }
 	void setCoordinates(const Common::Point &point) { _coordinates = point; }
 	Common::Point getCoordinates() { return _coordinates; }
 	Common::Point getOriginalCoordinates() { return _originalCoordinates; }
@@ -79,8 +94,8 @@ public:
 	ArchiveType getArchiveType() { return _archiveType; }
 
 private:
-	Common::String _path;
 	Common::String _nameId;
+	Common::String _directory;
 	Common::Point _coordinates;
 	Common::Point _originalCoordinates;
 	bool _isActive;

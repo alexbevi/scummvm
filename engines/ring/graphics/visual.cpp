@@ -216,7 +216,7 @@ void VisualObjectList::loadImage(ImageHandle *image) {
 		return;
 
 	// Compute file path
-	Common::String filename = Common::String::format("%s%s", image->getPath().c_str(), image->getNameId().c_str());
+	Common::String filename = Common::String::format("%s%s", image->getDirectory().c_str(), image->getNameId().c_str());
 
 	image->load(filename, image->getArchiveType(), image->getZone(), image->getLoadFrom());
 }
@@ -282,37 +282,37 @@ void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String 
 
 	// Create images
 	_backgroundImage = new ImageHandle(filename3, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
-	_backgroundImage->setPath(path);
+	_backgroundImage->setDirectory(path);
 
 	_upGun = new ImageHandle(filename4, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
-	_upGun->setPath(path);
+	_upGun->setDirectory(path);
 
 	_upGur = new ImageHandle(filename5, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
-	_upGur->setPath(path);
+	_upGur->setDirectory(path);
 
 	_upGus = new ImageHandle(filename6, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
-	_upGus->setPath(path);
+	_upGus->setDirectory(path);
 
 	_upGua = new ImageHandle(filename7, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
-	_upGua->setPath(path);
+	_upGua->setDirectory(path);
 
 	_downGun = new ImageHandle(filename8, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
-	_downGun->setPath(path);
+	_downGun->setDirectory(path);
 
 	_downGur = new ImageHandle(filename9, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
-	_downGur->setPath(path);
+	_downGur->setDirectory(path);
 
 	_downGus = new ImageHandle(filename10, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
-	_downGus->setPath(path);
+	_downGus->setDirectory(path);
 
 	_downGua = new ImageHandle(filename11, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
-	_downGua->setPath(path);
+	_downGua->setDirectory(path);
 
 	_cliImageP = new ImageHandle(filename12, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
-	_cliImageP->setPath(path);
+	_cliImageP->setDirectory(path);
 
 	_cliImageA = new ImageHandle(filename13, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
-	_cliImageA->setPath(path);
+	_cliImageA->setDirectory(path);
 
 	_text1 = new Text();
 	_text1->init("", Common::Point(0, 0), _fontId, _foregroundColor1, _backgroundColor);

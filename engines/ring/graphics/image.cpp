@@ -27,6 +27,10 @@
 
 #include "ring/base/object.h"
 
+#include "ring/graphics/imageLoader.h"
+
+#include "ring/helpers.h"
+
 namespace Ring {
 
 #pragma region ImageHandle
@@ -46,7 +50,6 @@ ImageHandle::~ImageHandle() {
 }
 
 void ImageHandle::init(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
-	_path = "";
 	_nameId = nameId;
 	_coordinates = point;
 	_originalCoordinates = point;
@@ -61,9 +64,6 @@ void ImageHandle::init(Common::String nameId, const Common::Point &point, bool i
 	_zone = zone;
 	_loadFrom = loadFrom;
 	_archiveType = archiveType;
-
-	// Image
-	_bpp = 0;
 }
 
 #pragma endregion
@@ -71,26 +71,68 @@ void ImageHandle::init(Common::String nameId, const Common::Point &point, bool i
 #pragma region Image
 
 Image::Image() {
-	_width = 0;
-	_height = 0;
-	_bpp = 32; // HACK
+	_surface = NULL;
 }
 
 Image::~Image() {
+	destroy();
+}
+
+void Image::create(uint32 depth, uint32 direction, uint32 width, uint32 height) {
+	if (_surface)
+		_surface->free();
+
+	_surface = new Graphics::Surface();
+	_surface->create(width, height, depth);
 }
 
 void Image::destroy() {
-	error("[Image::destroy] Not implemented");
+	if (_surface)
+		_surface->free();
+
+	_surface = NULL;
 }
 
-bool Image::load(Common::String path, ArchiveType type, Zone zone, LoadFrom loadFrom) {
-	warning("[Image::load] Not implemented (%s)", path.c_str());
+bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+	_filename = filename;
 
-	return true;
-}
+	ImageLoader *loader = NULL;
 
-bool Image::isInitialized() {
-	warning("[Image::isInitialized] Not implemented");
+	// Special case for files with no extension
+	if (filename.size() < 4) {
+		if (type == kArchiveFile)
+			loader = new ImageLoaderBMP();
+		else
+			loader = new ImageLoaderBMA();
+	} else if (filename.hasSuffix(".bmp")) {
+		loader = new ImageLoaderBMP();
+	} else if (filename.hasSuffix(".cnm")) {
+		if (type == kArchiveArt)
+			error("[Image::load] Archive files do not contains cinematic files (%s)", filename.c_str());
+
+		loader = new ImageLoaderCNM();
+	} else if (filename.hasSuffix(".tga")) {
+		loader = new ImageLoaderTGA();
+	} else if (filename.hasSuffix(".bma")) {
+		loader = new ImageLoaderBMA();
+	} else if (filename.hasSuffix(".tgc")) {
+		loader = new ImageLoaderTGC();
+	} else {
+		// Defaults to BMP or BMA
+		if (type == kArchiveFile)
+			loader = new ImageLoaderBMP();
+		else
+			loader = new ImageLoaderBMA();
+	}
+
+	if (!loader)
+		error("[Image::load] Cannot find an image loader for file %s", filename.c_str());
+
+	if (loader->load(this, type, zone, loadFrom)) {
+		delete loader;
+
+		return true;
+	}
 
 	return false;
 }

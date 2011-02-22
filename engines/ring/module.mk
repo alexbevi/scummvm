@@ -35,6 +35,7 @@ MODULE_OBJS := \
 	graphics/dragControl.o \
 	graphics/hotspot.o \
 	graphics/image.o \
+	graphics/imageLoader.o \
 	graphics/movie.o \
 	graphics/screen.o \
 	graphics/visual.o \
