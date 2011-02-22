@@ -55,9 +55,28 @@ public:
 //////////////////////////////////////////////////////////////////////////
 class ImageLoaderBMA : public ImageLoader {
 public:
-	virtual ~ImageLoaderBMA() {};
+	virtual ~ImageLoaderBMA();
 
 	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
+
+private:
+	struct Header {
+		uint16 field_0;
+		uint16 field_2;
+		uint32 width;
+		uint32 height;
+		uint32 field_C;
+		uint16 field_10;
+	};
+
+	Header _header;
+
+	CompressedStream *_stream;
+
+	bool init(ArchiveType type, Zone zone, LoadFrom loadFrom);
+	void deinit();
+	bool readHeader();
+	bool readImage(Image *image);
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -55,10 +55,89 @@ bool ImageLoaderBMP::load(Image *image, ArchiveType type, Zone zone, LoadFrom lo
 
 #pragma region BMA
 
+ImageLoaderBMA::~ImageLoaderBMA() {
+	deinit();
+}
+
 bool ImageLoaderBMA::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
-	warning("[ImageLoaderBMA::load] Not implemented (%s)!", image->getName().c_str());
+	if (!image)
+		error("[ImageLoaderBMA::load] Invalid image pointer!");
+
+	_stream = NULL;
+	_filename = image->getName();
+
+	if (!init(type, zone, loadFrom)){
+		warning("[ImageLoaderBMA::load] Error opening image file (%s)", _filename.c_str());
+		goto cleanup;
+	}
+
+	// Read header
+	if (!readHeader()) {
+		warning("[ImageLoaderBMA::load] Error reading header (%s)", image->getName().c_str());
+		goto cleanup;
+	}
+
+	// Read image data
+	if (!readImage(image)) {
+		warning("[ImageLoaderBMA::load] Error reading header (%s)", image->getName().c_str());
+		goto cleanup;
+	}
+
+	deinit();
 
 	return true;
+
+cleanup:
+	deinit();
+	return false;
+}
+
+bool ImageLoaderBMA::init(ArchiveType type, Zone zone, LoadFrom loadFrom) {
+	_stream = new CompressedStream();
+
+	// Initialize stream
+	switch (type) {
+	default:
+		warning("[ImageLoaderBMA::init] Invalid archive type (%d)!", type);
+		break;
+
+	case kArchiveFile:
+		return _stream->init(_filename, 1, 0);
+
+	case kArchiveArt:
+		return _stream->initArt(_filename, zone, loadFrom);
+	}
+
+	return false;
+}
+
+void ImageLoaderBMA::deinit() {
+	SAFE_DELETE(_stream);
+}
+
+bool ImageLoaderBMA::readHeader() {
+	Common::SeekableReadStream *data = _stream->getCompressedStream();
+	if (!data) {
+		warning("[ImageLoaderBMA::readHeader] Cannot get compressed stream (%s)", _filename.c_str());
+		return false;
+	}
+
+	// Skip signature
+	data->skip(4);
+
+	_header.field_0 = data->readUint16LE();
+	_header.field_2 = data->readUint16LE();
+	_header.width = data->readUint32LE();
+	_header.height = data->readUint32LE();
+	_header.field_C = data->readUint32LE();
+	_header.field_10 = data->readUint16LE();
+
+	return true;
+}
+
+bool ImageLoaderBMA::readImage(Image *image) {
+	// TODO implement decompression
+	return false;
 }
 
 #pragma endregion
@@ -112,15 +191,22 @@ bool ImageLoaderTGC::init(ArchiveType type, Zone zone, LoadFrom loadFrom) {
 		return false;
 
 	case kArchiveFile:
-		return _stream->init(_filename, 1, 0);
+		if (!_stream->init(_filename, 1, 0))
+			return false;
 		break;
 
 	case kArchiveArt:
-		return _stream->initArt(_filename, zone, loadFrom);
+		if (!_stream->initArt(_filename, zone, loadFrom))
+			return false;
+		break;
 	}
 
-	// Decompress data
-	// TODO!
+	// TGC are compressed as chunks of up to 64kb
+	Common::SeekableReadStream *stream = _stream->getCompressedStream();
+	uint32 chunks = stream->readUint32LE();
+	uint32 size = stream->readUint32LE();
+
+	_stream->decompressChuncks(chunks, size);
 
 	return true;
 }
@@ -172,7 +258,7 @@ bool ImageLoaderTGA::readHeader(Common::SeekableReadStream *stream) {
 		return false;
 	}
 
-	memset(&_header, 0, sizeof(_header));
+memset(&_header, 0, sizeof(_header));
 
 	_header.identsize       = stream->readByte();
 	_header.colourmaptype   = stream->readByte();

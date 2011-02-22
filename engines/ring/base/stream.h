@@ -64,7 +64,7 @@ private:
 
 	uint32 _field_8;
 	uint32 _field_C;
-	byte   _field_10[512];
+	byte   _decBuffer[512];
 	byte   _type;
 	uint32 _field_211;
 
