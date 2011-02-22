@@ -74,8 +74,16 @@ void Art::init(const Common::String &path, Zone zone, LoadFrom loadFrom) {
 		record.size = archive->readUint32LE();
 		record.field_FB = archive->readUint32LE();
 
+		// Replace path separators & convert to lowercase
+		Common::String filename = name;
+		for (Common::String::iterator c = filename.begin(); c != filename.end(); ++c)
+			if (*c == '\\')
+				*c = '/';
+
+		filename.toLowercase();
+
 		// Add to file map
-		_records[Common::String(name)] = record;
+		_records[filename] = record;
 	}
 
 	// Close stream
@@ -105,7 +113,11 @@ Common::ArchiveMemberPtr Art::getMember(const Common::String &name) {
 }
 
 Common::SeekableReadStream *Art::createReadStreamForMember(const Common::String &name) const {
-	RecordMap::const_iterator fDesc = _records.find(name);
+	// Convert to lowercase for match
+	Common::String filename(name);
+	filename.toLowercase();
+
+	RecordMap::const_iterator fDesc = _records.find(filename);
 	if (fDesc == _records.end())
 		return NULL;
 
@@ -167,8 +179,10 @@ void ArtHandler::reset() {
 Common::SeekableReadStream *ArtHandler::get(Common::String filename, Zone zone, LoadFrom loadFrom) {
 	int32 index = getIndex(zone, loadFrom);
 
-	if (index == -1)
-		error("[ArtHandler::get] File for Zone %d and LoadFrom %d not opened!", zone, loadFrom);
+	if (index == -1) {
+		warning("[ArtHandler::get] File for Zone %d and LoadFrom %d not opened!", zone, loadFrom);
+		return NULL;
+	}
 
 	return _arts[index]->createReadStreamForMember(filename);
 }
