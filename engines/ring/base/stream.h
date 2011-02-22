@@ -45,6 +45,7 @@ public:
 
 	// Decompression functions
 	void decompressChuncks(uint32 chuncks, uint32 size);
+	void decompressIndexed(uint32 blockSize, uint32 seqSize, uint32 seqDataSize, uint32 coreSize, uint32 coreDataSize, uint32 size, uint32 indexEnd, uint32 field_C, uint16 field_10);
 
 	// ReadStream
 	virtual bool eos() const;

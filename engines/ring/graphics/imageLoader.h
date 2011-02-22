@@ -61,15 +61,18 @@ public:
 
 private:
 	struct Header {
-		uint16 field_0;
-		uint16 field_2;
-		uint32 width;
-		uint32 height;
+		uint16 coreWidth;
+		uint16 coreHeight;
+		uint32 seqWidth;
+		uint32 seqHeight;
 		uint32 field_C;
 		uint16 field_10;
 	};
 
 	Header _header;
+	uint32 _coreSize;
+	uint32 _seqSize;
+	uint32 _blockSize;
 
 	CompressedStream *_stream;
 

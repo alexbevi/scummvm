@@ -131,6 +131,55 @@ void CompressedStream::decompressChuncks(uint32 chuncks, uint32 size) {
 	_memoryStream = new Common::MemoryReadStream(_buffer, size, DisposeAfterUse::YES);
 }
 
+void CompressedStream::decompressIndexed(uint32 blockSize, uint32 seqSize, uint32 seqDataSize, uint32 coreSize, uint32 coreDataSize, uint32 size, uint32 indexEnd, uint32 field_C, uint16 field_10) {
+	Common::SeekableReadStream *stream = getCompressedStream();
+	if (!stream)
+		error("[CompressedStream::decompressIndexed] Invalid stream!");
+
+	// Initialize buffer
+	if (_buffer)
+		free(_buffer);
+
+	_buffer = (byte *)malloc(size + 1024);
+	memset(_buffer, 0, size + 1024);
+	uint16 *pBuffer = (uint16 *)_buffer;
+
+	// Decompress seq
+	byte *seqBuffer = (byte *)malloc(seqDataSize + 1024);
+	memset(seqBuffer, 0, seqSize + 1024);
+
+	uint32 decompressSize = decompress(stream, blockSize, 6, 608, 8 * seqSize + 608, seqBuffer);
+	if (decompressSize > seqDataSize + 64)
+		warning("[CompressedStream::decompressIndexed] Error during SEQ decompression (buffer overrun)!");
+
+	// Decompress core
+	byte *coreBuffer = (byte *)malloc(coreDataSize + 1024);
+	memset(coreBuffer, 0, coreDataSize + 1024);
+
+	uint32 start = 8 * seqSize + 640;
+	decompressSize = decompress(stream, 16, 6, start, start + 8 * coreSize, coreBuffer);
+	if (decompressSize > coreDataSize + 64)
+		warning("[CompressedStream::decompressIndexed] Error during COR decompression (buffer overrun)!");
+
+	// Store data into buffer
+	for (uint32 i = 0; i < seqDataSize; i += 2) {
+		uint32 index = seqBuffer[i];
+
+		pBuffer[i/2] = coreBuffer[index * 6];
+		pBuffer[i/2 + 1] = coreBuffer[index * 6 + 2];
+		pBuffer[i/2 + 2] = coreBuffer[index * 6 + 4];
+
+		pBuffer += 6;
+	}
+
+	*(uint32 *)pBuffer[indexEnd] = field_C;
+	*(uint16 *)pBuffer[indexEnd + 2] = field_10;
+
+	// Cleanup buffers
+	free(seqBuffer);
+	free(coreBuffer);
+}
+
 uint32 CompressedStream::decompress(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte* buffer) {
 	// Reset decompression buffer
 	memset(&_decBuffer, 0, sizeof(_decBuffer));

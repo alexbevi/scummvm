@@ -122,21 +122,42 @@ bool ImageLoaderBMA::readHeader() {
 		return false;
 	}
 
-	// Skip signature
-	data->skip(4);
+	// Read Seq size
+	_seqSize = data->readUint32LE();
 
-	_header.field_0 = data->readUint16LE();
-	_header.field_2 = data->readUint16LE();
-	_header.width = data->readUint32LE();
-	_header.height = data->readUint32LE();
+	// Read header
+	_header.coreWidth = data->readUint16LE();
+	_header.coreHeight = data->readUint16LE();
+	_header.seqWidth = data->readUint32LE();
+	_header.seqHeight = data->readUint32LE();
 	_header.field_C = data->readUint32LE();
 	_header.field_10 = data->readUint16LE();
+
+	// Read core size
+	data->seek(_seqSize + 76);
+	_coreSize = data->readUint32LE();
+
+	// Compute block size
+	_blockSize = 0;
+	uint32 val = _header.coreWidth;
+	if (val) {
+		do {
+			val >>= 1;
+			++_blockSize;
+		} while (val);
+	}
 
 	return true;
 }
 
 bool ImageLoaderBMA::readImage(Image *image) {
-	// TODO implement decompression
+	_stream->decompressIndexed(_blockSize,
+	                           _seqSize,  2 * _header.seqWidth * (_header.seqHeight / _header.coreHeight),
+	                           _coreSize, 2 * _header.coreWidth * _header.coreHeight,
+	                           _header.seqWidth * _header.seqHeight * 16,
+							   2 * _header.seqWidth * _header.seqHeight - 6,
+							   _header.field_C, _header.field_10);
+
 	return false;
 }
 
