@@ -129,7 +129,7 @@ void Application::init() {
 	// Setup video
 	_screenManager = new ScreenManager();
 	_screenManager->init();
-	_screenManager->sub_4028D0(0, 0);
+	_screenManager->setOffset(Common::Point(0, 0));
 
 	// Setup objects
 	_objectHandler = new ObjectHandler();
@@ -423,7 +423,7 @@ void Application::showImage(Common::String filename, Common::Point point, uint32
 		return;
 	}
 
-	_screenManager->drawImage(image,  point.x, point.y, image->getWidth(), image->getHeight(), 0, 0);
+	_screenManager->drawImage(image,  point, image->getWidth(), image->getHeight(), 0, 0);
 
 	waitForEscape(ticksWait);
 
@@ -454,7 +454,7 @@ bool Application::scrollImage(Common::String filename, uint32 ticksWait, LoadFro
 	if (image->getWidth() > 448) {
 
 		while (offset < image->getWidth() - 448 && !skipped) {
-			_screenManager->drawImage(image, 0, 16, 640, 464, 0, offset);
+			_screenManager->drawImage(image, Common::Point(0, 16), 640, 464, 0, offset);
 
 			// Skip if ESCAPE is pressed
 			if (checkEscape())

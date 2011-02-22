@@ -37,6 +37,7 @@ struct Configuration;
 class ArtHandler;
 class Bag;
 class CursorHandler;
+class Debugger;
 class DialogHandler;
 class DragControl;
 class EventHandler;
@@ -417,6 +418,8 @@ protected:
 	// Current message
 	Common::String _messageType;
 	Common::String _message;
+
+	friend Debugger;
 };
 
 } // End of namespace Ring

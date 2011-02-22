@@ -25,7 +25,11 @@
 
 #include "ring/debug.h"
 
+#include "ring/base/application.h"
 #include "ring/base/art.h"
+
+#include "ring/graphics/image.h"
+#include "ring/graphics/screen.h"
 
 #include "ring/ring.h"
 
@@ -94,6 +98,10 @@ Debugger::Debugger(RingEngine *engine) : _engine(engine) {
 	// Data
 	DCmd_Register("ls",        WRAP_METHOD(Debugger, cmdListFiles));
 	DCmd_Register("dump",      WRAP_METHOD(Debugger, cmdDumpArchive));
+
+	// Graphics
+	DCmd_Register("clear",     WRAP_METHOD(Debugger, cmdClear));
+	DCmd_Register("show",      WRAP_METHOD(Debugger, cmdShow));
 }
 
 Debugger::~Debugger() {
@@ -120,6 +128,7 @@ bool Debugger::cmdHelp(int, const char **) {
 	DebugPrintf(" dump - dump the files from an archive\n");
 	DebugPrintf("\n");
 	DebugPrintf(" clear - clear the screen\n");
+	DebugPrintf(" show  - show an image\n");
 	DebugPrintf("\n");
 	return true;
 }
@@ -285,10 +294,47 @@ void Debugger::dumpFile(Common::String filename) {
 
 bool Debugger::cmdClear(int argc, const char **) {
 	if (argc == 1) {
-		/*askForRedraw();
-		redrawScreen();*/
+		_engine->getApplication()->_screenManager->clear();
 	} else {
 		DebugPrintf("Syntax: clear - clear the screen\n");
+	}
+
+	return true;
+}
+
+bool Debugger::cmdShow(int argc, const char ** argv) {
+	if (argc == 2) {
+		Common::String filename(const_cast<char *>(argv[1]));
+
+		Image *image = new Image();
+		if (!image->load(filename, kArchiveFile, kZoneNone, kLoadFromDisk)) {
+			DebugPrintf("Cannot load image: %s", filename.c_str());
+			return true;
+		}
+
+		_engine->getApplication()->_screenManager->drawImage(image, Common::Point(0, 0), image->getWidth(), image->getHeight(), 0, 0);
+
+		// Refresh screen
+		_engine->getApplication()->_screenManager->updateScreen();
+		g_system->updateScreen();
+
+	} else if (argc == 3) {
+		Common::String filename(const_cast<char *>(argv[1]));
+
+		Image *image = new Image();
+		if (!image->load(filename, kArchiveArt, (Zone)getNumber(argv[2]), kLoadFromDisk)) {
+			DebugPrintf("Cannot load image: %s", filename.c_str());
+			return true;
+		}
+
+		_engine->getApplication()->_screenManager->drawImage(image, Common::Point(0, 0), image->getWidth(), image->getHeight(), 0, 0);
+
+		// Refresh screen
+		_engine->getApplication()->_screenManager->updateScreen();
+		g_system->updateScreen();
+
+	} else {
+		DebugPrintf("Syntax: show <filename> (<zone>)- Show an image\n");
 	}
 
 	return true;

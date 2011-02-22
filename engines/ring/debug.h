@@ -48,9 +48,6 @@ public:
 	Debugger(RingEngine *engine);
 	~Debugger();
 
-	bool hasCommand() const;
-	void callCommand();
-
 private:
 	RingEngine *_engine;
 
@@ -60,6 +57,7 @@ private:
 	bool cmdDumpArchive(int argc, const char **argv);
 
 	bool cmdClear(int argc, const char **argv);
+	bool cmdShow(int argc, const char **argv);
 
 	void dumpFile(Common::String filename);
 

@@ -25,6 +25,8 @@
 
 #include "ring/graphics/screen.h"
 
+#include "ring/graphics/image.h"
+
 #include "common/system.h"
 
 namespace Ring {
@@ -40,18 +42,34 @@ void ScreenManager::init() {
 	_screen.create(640, 480, 2);
 }
 
-void ScreenManager::update(Image *image, Common::Point point, byte a3) {
+void ScreenManager::clear() {
+	g_system->fillScreen(0);
+}
+
+void ScreenManager::drawAndUpdate(Image *image) {
+	drawAndUpdate(image, Common::Point(0, 0));
+}
+
+void ScreenManager::drawAndUpdate(Image *image, Common::Point point) {
+	draw(image, point, 1);
+	updateScreen();
+}
+
+void ScreenManager::draw(Image *image, byte type) {
+	draw(image, Common::Point(0, 0), type);
+}
+
+void ScreenManager::draw(Image *image, Common::Point point, byte type) {
 	warning("[ScreenManager::update] Not implemented");
+
+	// HACK (direct surface copy, ignore drawing type)
+	image->draw(&_screen, point, image->getWidth(), image->getHeight(), 0, 0);
 }
 
-void ScreenManager::drawImage(Image *image, int32 xDest, int32 yDest, int srcWidth, int srcHeight, int xSrc, int offset) {
-	warning("[ScreenManager::drawImage] Not implemented");
+void ScreenManager::drawImage(Image *image, Common::Point dest, int srcWidth, int srcHeight, int srcX, int offset) {
+	image->draw(&_screen, dest, srcWidth, srcHeight, srcX, offset);
 
-	//updateScreen();
-}
-
-void ScreenManager::sub_4028D0(int a1, int a2) {
-	warning("[ScreenManager::sub_4028D0] Not implemented");
+	updateScreen();
 }
 
 void ScreenManager::updateScreen() {

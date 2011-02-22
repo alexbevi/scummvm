@@ -37,19 +37,14 @@ public:
 	ScreenManager();
 	~ScreenManager();
 
-	void sub_4028D0(int a1, int a2);
-
 	void init();
-	//
+	//void createFont()
 	void clear();
-	//
-	//
-	//
-	//
-	//
-	void update(Image *image, Common::Point point, byte type);
-	void updateBackground(Image *image, byte type);
-	void drawImage(Image *image, int32 xDest, int32 yDest, int srcWidth, int srcHeight, int xSrc, int offset);
+	void drawAndUpdate(Image *image);
+	void drawAndUpdate(Image *image, Common::Point point);
+	void draw(Image *image, Common::Point point, byte type);
+	void draw(Image *image, byte type);
+	void drawImage(Image *image, Common::Point dest, int srcWidth, int srcHeight, int srcX, int offset);
 	//
 	//void readPalette();
 	//
@@ -59,8 +54,12 @@ public:
 
 	void updateScreen();
 
+	void setOffset(Common::Point offset) { _offset = offset; }
+
 private:
 	Graphics::Surface _screen;
+
+	Common::Point _offset;
 };
 
 } // End of namespace Ring
