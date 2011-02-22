@@ -20,6 +20,7 @@
 #include "graphics/surface.h"
 #include "graphics/cursorman.h"
 #include "fvf_decoder.h"
+#include "video/qt_decoder.h"
 
 namespace Unity {
 
@@ -564,9 +565,23 @@ void Graphics::fillRect(byte colour, unsigned int x1, unsigned int y1, unsigned 
 }
 
 void Graphics::playMovie(Common::String filename) {
-	Common::SeekableReadStream *intro_movie = _vm->data.openFile(filename);
+	Common::SeekableReadStream *intro_movie;
+	::Video::VideoDecoder *videoDecoder;
+	if (SearchMan.hasFile(filename)) {
+		intro_movie = _vm->data.openFile(filename);
+		videoDecoder = new FVFDecoder(g_system->getMixer());
+	} else {
+		assert(filename.size() > 3);
+		filename = Common::String(filename.c_str(), filename.size() - 3) + "mov";
+		intro_movie = _vm->data.openFile(filename);
+		videoDecoder = new ::Video::QuickTimeDecoder();
+		// try and grab a 16bpp mode before the cinepak codec decides that it should produce 8bpp
+		::Graphics::PixelFormat hackFormat = ::Graphics::PixelFormat(2, 5, 5, 5, 0, 10, 5, 0, 0);
+		g_system->beginGFXTransaction();
+		g_system->initSize(640, 400, &hackFormat);
+		g_system->endGFXTransaction();
+	}
 
-	::Video::VideoDecoder *videoDecoder = new FVFDecoder(g_system->getMixer());
 	if (!videoDecoder->loadStream(intro_movie)) error("failed to load movie %s", filename.c_str());
 
 	bool skipVideo = false;
@@ -579,6 +594,8 @@ void Graphics::playMovie(Common::String filename) {
 	g_system->beginGFXTransaction();
 	g_system->initSize(vidwidth*2, vidheight*2, &format);
 	g_system->endGFXTransaction();
+
+	assert(format.bytesPerPixel != 1);
 
 	byte *vidpixels = (byte *)alloca(vidwidth*2 * vidheight*2 * vidbpp);
 
