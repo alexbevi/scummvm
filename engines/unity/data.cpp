@@ -21,6 +21,8 @@
 #include "common/memstream.h"
 #include "common/substream.h"
 #include "common/macresman.h"
+#include "common/fs.h"
+#include "common/config-manager.h"
 #include "trigger.h"
 
 namespace Unity {
@@ -186,8 +188,17 @@ Trigger *UnityData::getTrigger(uint32 id) {
 
 Common::SeekableReadStream *UnityData::openFile(Common::String filename) {
 	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(filename);
-	if (!stream) error("couldn't open '%s'", filename.c_str());
-	return stream;
+	if (stream)
+		return stream;
+
+	Common::MacResManager macres;
+	if (macres.open(filename)) {
+		stream = macres.getDataFork();
+		if (stream)
+			return stream->readStream(stream->size());
+	}
+
+	error("couldn't open '%s'", filename.c_str());
 }
 
 void UnityData::loadSpriteFilenames() {
@@ -552,7 +563,7 @@ void UnityData::loadExecutableData() {
 		Common::SeekableReadStream *ovl_stream = openFile("sttng.ovl");
 		base_stream = new Common::SeekableSubReadStream(ovl_stream, DATA_SEGMENT_OFFSET_DOS, ovl_stream->size(), DisposeAfterUse::YES);
 	} else {
-		if (!macres.open("\"A Final Unity\""))
+		if (!macres.open("Star Trek TNG/\"A Final Unity\""))
 			error("couldn't find sttng.ovl (DOS) or \"A Final Unity\" (Mac)");
 		isMac = true;
 		// we use the powerpc data segment, in the data fork

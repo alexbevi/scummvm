@@ -79,11 +79,15 @@ Common::Error UnityEngine::init() {
 	}*/
 	SearchMan.add("sttngzip", data.data);
 
+	// DOS version only
 	data.instdata = Common::makeZipArchive("STTNGINS.ZIP");
-	if (!data.instdata) {
-		error("couldn't open data file");
+	if (data.instdata) {
+		SearchMan.add("sttnginszip", data.instdata);
 	}
-	SearchMan.add("sttnginszip", data.instdata);
+
+	// Mac version only
+	const Common::FSNode gameDataDir(ConfMan.get("path"));
+	SearchMan.addDirectory(".movies", gameDataDir.getPath() + "/.movies");
 
 	return Common::kNoError;
 }
