@@ -90,7 +90,7 @@ void Image::destroy() {
 	if (_surface)
 		_surface->free();
 
-	_surface = NULL;
+	SAFE_DELETE(_surface);
 }
 
 bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom loadFrom) {
@@ -112,7 +112,11 @@ bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom 
 
 		loader = new ImageLoaderCNM();
 	} else if (filename.hasSuffix(".tga")) {
-		loader = new ImageLoaderTGA();
+		// TGA images in art files are always compressed
+		if (type == kArchiveFile)
+			loader = new ImageLoaderTGA();
+		else
+			loader = new ImageLoaderTGC();
 	} else if (filename.hasSuffix(".bma")) {
 		loader = new ImageLoaderBMA();
 	} else if (filename.hasSuffix(".tgc")) {

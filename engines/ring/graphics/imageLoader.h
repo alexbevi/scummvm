@@ -65,6 +65,38 @@ public:
 	virtual ~ImageLoaderTGA() {};
 
 	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
+
+private:
+	enum ImageType {
+		kImageTypeNone,
+		kImageTypeIndexed,
+		kImageTypeRGB,
+		kImageTypeGrey,
+		kImageTypeRLE
+	};
+
+	struct Header {
+		byte   identsize;          ///< size of ID field that follows 18 byte header (0 usually)
+		byte   colourmaptype;      ///< type of colour map 0=none, 1=has palette
+		byte   imagetype;          ///< type of image 0=none,1=indexed,2=rgb,3=grey,+8=rle packed
+
+		uint16 colourmapstart;     ///< first color map entry in palette
+		uint16 colourmaplength;    ///< number of colors in palette
+		byte   colourmapbits;      ///< number of bits per palette entry 15,16,24,32
+
+		uint16 xstart;             ///< image x origin
+		uint16 ystart;             ///< image y origin
+		uint16 width;              ///< image width in pixels
+		uint16 height;             ///< image height in pixels
+		byte   bits;               ///< image bits per pixel 8,16,24,32
+		byte   descriptor;         ///< image descriptor bits (vh flip bits)
+	};
+
+	Common::String _filename;
+	Header _header;
+
+	bool readHeader(Common::SeekableReadStream *stream);
+	bool readImage(Common::SeekableReadStream *stream, Image *image);
 };
 
 class ImageLoaderCNM : public ImageLoader {
