@@ -72,6 +72,10 @@ void ScreenManager::drawImage(Image *image, Common::Point dest, int srcWidth, in
 	updateScreen();
 }
 
+void ScreenManager::drawRectangle(Common::Rect rect, uint32 color) {
+	_screen.frameRect(rect, color);
+}
+
 void ScreenManager::updateScreen() {
 	g_system->fillScreen(0);
 	g_system->copyRectToScreen((byte *)_screen.getBasePtr(0, 0), 640 * 2, 0, 0, 640, 480);

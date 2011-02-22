@@ -349,6 +349,7 @@ public:
 	DialogHandler *getDialogHandler() { return _dialogHandler; }
 	FontHandler   *getFontHandler()   { return _fontHandler; }
 	SaveManager   *getSaveManager()   { return _saveManager; }
+	ScreenManager *getScreenManager() { return _screenManager; }
 	SoundHandler  *getSoundHandler()  { return _soundHandler; }
 	SoundManager  *getSoundManager()  { return _soundManager; }
 

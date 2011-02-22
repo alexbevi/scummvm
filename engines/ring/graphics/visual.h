@@ -52,7 +52,7 @@ public:
 	virtual void alloc();
 	virtual void dealloc();
 
-	void init(uint32 a1, uint32 a2, uint32 left, uint32 top, uint32 offsetY, uint32 width, uint32 progressMultiplier, uint32 progressColor);
+	void init(uint32 a1, uint32 a2, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 	void draw();
 
 	// Accessors
@@ -67,7 +67,7 @@ private:
 	uint32 _left;
 	uint32 _top;
 	uint32 _offsetY;
-	uint32 _width;
+	uint32 _height;
 	uint32 _progressMultiplier;
 	uint32 _progressColor;  ///< The progress color in RGB form (0x00bbggrr)
 	bool   _initialized;

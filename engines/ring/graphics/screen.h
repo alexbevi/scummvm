@@ -45,6 +45,7 @@ public:
 	void draw(Image *image, Common::Point point, byte type);
 	void draw(Image *image, byte type);
 	void drawImage(Image *image, Common::Point dest, int srcWidth, int srcHeight, int srcX, int offset);
+	void drawRectangle(Common::Rect rect, uint32 color);
 	//
 	//void readPalette();
 	//

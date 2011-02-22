@@ -32,6 +32,7 @@
 #include "ring/graphics/animation.h"
 #include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
+#include "ring/graphics/screen.h"
 
 #include "ring/ring.h"
 #include "ring/helpers.h"
@@ -50,7 +51,7 @@ VisualElement::VisualElement(Id id) : Visual(id) {
 	_left = 0;
 	_top = 0;
 	_offsetY = 0;
-	_width = 0;
+	_height = 0;
 	_progressMultiplier = 0;
 	_progressColor = 0;
 	_initialized = false;
@@ -94,19 +95,25 @@ void VisualElement::dealloc() {
 	_initialized = true;
 }
 
-void VisualElement::init(uint32 a1, uint32 a2, uint32 left, uint32 top, uint32 offsetY, uint32 width, uint32 progressMultiplier, uint32 progressColor) {
+void VisualElement::init(uint32 a1, uint32 a2, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor) {
 	_field_D  = a1;
 	_field_11 = a2;
 	_left = left;
 	_top = top;
 	_offsetY = offsetY;
-	_width = width;
+	_height = height;
 	_progressMultiplier = progressMultiplier;
 	_progressColor = progressColor;
 }
 
 void VisualElement::draw() {
-	error("[VisualElement::draw] Not implemented!");
+	if (!_field_C)
+		return;
+
+	getApp()->getScreenManager()->drawRectangle(Common::Rect(_left, _top,                    _left + _progress1, _top + _height),                    _progressColor);
+	getApp()->getScreenManager()->drawRectangle(Common::Rect(_left, _top + _offsetY + 1,     _left + _progress2, _top + _offsetY + _height + 1),     _progressColor);
+	getApp()->getScreenManager()->drawRectangle(Common::Rect(_left, _top + 2 * _offsetY + 1, _left + _progress3, _top + 2 * _offsetY + _height + 1), _progressColor);
+	getApp()->getScreenManager()->drawRectangle(Common::Rect(_left, _top + 3 * _offsetY - 1, _left + _progress4, _top + 3 * _offsetY + _height - 1), _progressColor);
 }
 
 #pragma endregion
