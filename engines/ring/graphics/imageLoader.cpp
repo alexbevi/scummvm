@@ -25,7 +25,11 @@
 
 #include "ring/graphics/imageLoader.h"
 
+#include "ring/base/stream.h"
+
 #include "ring/graphics/image.h"
+
+#include "ring/helpers.h"
 
 #include "common/archive.h"
 
@@ -61,9 +65,56 @@ bool ImageLoaderBMA::load(Image *image, ArchiveType type, Zone zone, LoadFrom lo
 
 #pragma region TGC
 
-bool ImageLoaderTGC::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
-	warning("[ImageLoaderTGC::load] Not implemented (%s)!", image->getName().c_str());
+ImageLoaderTGC::~ImageLoaderTGC() {
+	deinit();
+}
 
+bool ImageLoaderTGC::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+	if (!image)
+		error("[ImageLoaderTGC::load] Invalid image pointer!");
+
+	_stream = NULL;
+	_filename = image->getName();
+
+	if (!init(type, zone, loadFrom)){
+		warning("[ImageLoaderTGC::load] Error opening image file (%s)", _filename.c_str());
+		goto cleanup;
+	}
+
+	// Read header
+	if (!readHeader()) {
+		warning("[ImageLoaderTGC::load] Error reading header (%s)", image->getName().c_str());
+		goto cleanup;
+	}
+
+	// Read image data
+	if (!readImage(image)) {
+		warning("[ImageLoaderTGC::load] Error reading header (%s)", image->getName().c_str());
+		goto cleanup;
+	}
+
+	deinit();
+
+	return true;
+
+cleanup:
+	deinit();
+	return false;
+}
+
+bool ImageLoaderTGC::init(ArchiveType type, Zone zone, LoadFrom loadFrom) {
+	return true;
+}
+
+void ImageLoaderTGC::deinit() {
+	SAFE_DELETE(_stream);
+}
+
+bool ImageLoaderTGC::readHeader() {
+	return ImageLoaderTGA::readHeader(_stream);
+}
+
+bool ImageLoaderTGC::readImage(Image *image) {
 	return true;
 }
 
@@ -72,6 +123,8 @@ bool ImageLoaderTGC::load(Image *image, ArchiveType type, Zone zone, LoadFrom lo
 #pragma region TGA
 
 bool ImageLoaderTGA::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+	if (!image)
+		error("[ImageLoaderTGA::load] Invalid image pointer!");
 
 	_filename = image->getName();
 
@@ -103,6 +156,11 @@ cleanup:
 }
 
 bool ImageLoaderTGA::readHeader(Common::SeekableReadStream *stream) {
+	if (!stream) {
+		warning("[ImageLoaderTGA::readHeader] Invalid stream (%s)", _filename.c_str());
+		return false;
+	}
+
 	memset(&_header, 0, sizeof(_header));
 
 	_header.identsize       = stream->readByte();

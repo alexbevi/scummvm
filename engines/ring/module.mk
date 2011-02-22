@@ -17,6 +17,7 @@ MODULE_OBJS := \
 	base/rotation.o \
 	base/saveload.o \
 	base/sound.o \
+	base/stream.o \
 	base/text.o \
 	base/timer.o \
 	base/var.o \

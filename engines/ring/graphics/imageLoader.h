@@ -30,15 +30,21 @@
 
 namespace Ring {
 
+class CompressedStream;
 class Image;
 
+//////////////////////////////////////////////////////////////////////////
 class ImageLoader {
 public:
 	virtual ~ImageLoader() {};
 
 	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) = 0;
+
+protected:
+	Common::String _filename;
 };
 
+//////////////////////////////////////////////////////////////////////////
 class ImageLoaderBMP : public ImageLoader {
 public:
 	virtual ~ImageLoaderBMP() {};
@@ -46,6 +52,7 @@ public:
 	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
 };
 
+//////////////////////////////////////////////////////////////////////////
 class ImageLoaderBMA : public ImageLoader {
 public:
 	virtual ~ImageLoaderBMA() {};
@@ -53,20 +60,14 @@ public:
 	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
 };
 
-class ImageLoaderTGC : public ImageLoader {
-public:
-	virtual ~ImageLoaderTGC() {};
-
-	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
-};
-
+//////////////////////////////////////////////////////////////////////////
 class ImageLoaderTGA : public ImageLoader {
 public:
 	virtual ~ImageLoaderTGA() {};
 
 	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
 
-private:
+protected:
 	enum ImageType {
 		kImageTypeNone,
 		kImageTypeIndexed,
@@ -92,13 +93,29 @@ private:
 		byte   descriptor;         ///< image descriptor bits (vh flip bits)
 	};
 
-	Common::String _filename;
 	Header _header;
 
 	bool readHeader(Common::SeekableReadStream *stream);
 	bool readImage(Common::SeekableReadStream *stream, Image *image);
 };
 
+//////////////////////////////////////////////////////////////////////////
+class ImageLoaderTGC : public ImageLoaderTGA {
+public:
+	virtual ~ImageLoaderTGC();
+
+	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
+
+private:
+	CompressedStream *_stream;
+
+	bool init(ArchiveType type, Zone zone, LoadFrom loadFrom);
+	void deinit();
+	bool readHeader();
+	bool readImage(Image *image);
+};
+
+//////////////////////////////////////////////////////////////////////////
 class ImageLoaderCNM : public ImageLoader {
 public:
 	virtual ~ImageLoaderCNM() {};
