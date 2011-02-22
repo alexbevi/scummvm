@@ -134,8 +134,31 @@ bool Debugger::cmdListFiles(int argc, const char **argv) {
 		DebugPrintf("Number of matches: %d\n", count);
 		for (Common::ArchiveMemberList::iterator it = list.begin(); it != list.end(); ++it)
 			DebugPrintf(" %s\n", (*it)->getName().c_str());
+	} else if (argc == 3) {
+		Common::String filter(const_cast<char *>(argv[1]));
+		Common::String filename(const_cast<char *>(argv[2]));
+
+		filename.toLowercase();
+		if (!filename.contains(".at2"))
+			filename += ".at2";
+
+		if (!SearchMan.hasFile(filename)) {
+			DebugPrintf("Cannot find file: %s\n", filename.c_str());
+			return true;
+		}
+
+		// Load MUL archive
+		Art *archive = new Art();
+		archive->init(filename, kZoneNone, kLoadFromInvalid);
+
+		Common::ArchiveMemberList list;
+		int count = archive->listMatchingMembers(list, filter);
+
+		DebugPrintf("Number of matches: %d\n", count);
+		for (Common::ArchiveMemberList::iterator it = list.begin(); it != list.end(); ++it)
+			DebugPrintf(" %s\n", (*it)->getName().c_str());
 	} else {
-		DebugPrintf("Syntax: ls <filter> (use * for all) (<archive>) \n");
+		DebugPrintf("Syntax: ls <filter> (<archive>) (use * for all) \n");
 	}
 
 	return true;
