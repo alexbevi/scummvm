@@ -213,21 +213,16 @@ void Debugger::dumpFile(Common::String filename) {
 		Common::String name = (*it)->getName();
 		Common::SeekableReadStream *stream = archive->createReadStreamForMember(name);
 
-		uint32 offset = 22;
-		stream->seek(offset);
-
-		uint32 size = (uint32)stream->size() - offset;
-
-		byte *data = (byte *)calloc(size, 1);
+		byte *data = (byte *)calloc(stream->size(), 1);
 		if (!data) {
-			DebugPrintf("Cannot allocated data for file %s (size: %d)", name.c_str(), size);
+			DebugPrintf("Cannot allocated data for file %s (size: %d)", name.c_str(), stream->size());
 			delete archive;
 			delete stream;
 			return;
 		}
 
-		memset(data, 0, size);
-		stream->read(data, size);
+		memset(data, 0, stream->size());
+		stream->read(data, stream->size());
 
 		Common::String outPath = dumpPath;
 		Common::String outFilename = name;
