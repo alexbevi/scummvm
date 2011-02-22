@@ -35,12 +35,12 @@ namespace Ring {
 
 #pragma region ImageHandle
 
-ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
-	init(nameId, point, isActive, a6, priority, frameCount, zone, loadFrom, imageType, archiveType);
+ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
+	init(nameId, point, active, a6, priority, frameCount, zone, loadFrom, imageType, archiveType);
 }
 
-ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
-	init(nameId, point, isActive, 1, 0, 0, zone, loadFrom, imageType, archiveType);
+ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
+	init(nameId, point, active, 1, 0, 0, zone, loadFrom, imageType, archiveType);
 }
 
 ImageHandle::~ImageHandle() {
@@ -49,11 +49,11 @@ ImageHandle::~ImageHandle() {
 	_animation = NULL;
 }
 
-void ImageHandle::init(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
+void ImageHandle::init(Common::String nameId, const Common::Point &point, bool active, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
 	_nameId = nameId;
 	_coordinates = point;
 	_originalCoordinates = point;
-	_isActive = isActive;
+	_isActive = active;
 	_field_66 = a6;
 	_priority = priority;
 	_frameCount = frameCount;
@@ -105,7 +105,11 @@ bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom 
 		else
 			loader = new ImageLoaderBMA();
 	} else if (filename.hasSuffix(".bmp")) {
-		loader = new ImageLoaderBMP();
+		// BMP images in art files are always compressed
+		if (type == kArchiveFile)
+			loader = new ImageLoaderBMP();
+		else
+			loader = new ImageLoaderBMA();
 	} else if (filename.hasSuffix(".cnm")) {
 		if (type == kArchiveArt)
 			error("[Image::load] Archive files do not contains cinematic files (%s)", filename.c_str());

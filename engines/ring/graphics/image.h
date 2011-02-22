@@ -73,27 +73,29 @@ protected:
 
 class ImageHandle : public Image {
 public:
-	ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
-	ImageHandle(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
+	ImageHandle(Common::String nameId, const Common::Point &point, bool active, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
+	ImageHandle(Common::String nameId, const Common::Point &point, bool active, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 	~ImageHandle();
 
 	// Accessors
 	Common::String getNameId() { return _nameId; }
 	Common::String getDirectory() { return _directory; }
-	void setDirectory(Common::String directory) { _directory = directory; }
-	void setCoordinates(const Common::Point &point) { _coordinates = point; }
 	Common::Point getCoordinates() { return _coordinates; }
 	Common::Point getOriginalCoordinates() { return _originalCoordinates; }
 	bool isActive() { return _isActive; }
 	uint32 getPriority() { return _priority; }
-	void setField6C(uint32 val) { _field_6C = val; }
 	uint32 getField6C() { return _field_6C; }
-	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
-	void setAnimation(AnimationImage *animation) { _animation = animation; }
+	ObjectPresentation *getObjectPresentation() { return _objectPresentation; }
 	AnimationImage *getAnimation() { return _animation; }
 	Zone getZone() { return _zone; }
 	LoadFrom getLoadFrom() { return _loadFrom; }
 	ArchiveType getArchiveType() { return _archiveType; }
+
+	void setDirectory(Common::String directory) { _directory = directory; }
+	void setCoordinates(const Common::Point &point) { _coordinates = point; }
+	void setField6C(uint32 val) { _field_6C = val; }
+	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
+	void setAnimation(AnimationImage *animation) { _animation = animation; }
 
 private:
 	Common::String _nameId;

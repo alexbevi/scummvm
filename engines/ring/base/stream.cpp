@@ -125,7 +125,7 @@ void CompressedStream::decompressChuncks(uint32 chuncks, uint32 size) {
 	}
 
 	// Check decompressed size
-	if (decompSize > size + 64)
+	if (decompSize > (size + 64))
 		warning("[CompressedStream::decompressChuncks] Error during decompression (buffer overrun)!");
 
 	_memoryStream = new Common::MemoryReadStream(_buffer, size, DisposeAfterUse::YES);
@@ -142,14 +142,14 @@ void CompressedStream::decompressIndexed(uint32 blockSize, uint32 seqSize, uint3
 
 	_buffer = (byte *)malloc(size + 1024);
 	memset(_buffer, 0, size + 1024);
-	uint16 *pBuffer = (uint16 *)_buffer;
+	byte *pBuffer = _buffer;
 
 	// Decompress seq
 	byte *seqBuffer = (byte *)malloc(seqDataSize + 1024);
-	memset(seqBuffer, 0, seqSize + 1024);
+	memset(seqBuffer, 0, seqDataSize + 1024);
 
 	uint32 decompressSize = decompress(stream, blockSize, 6, 608, 8 * seqSize + 608, seqBuffer);
-	if (decompressSize > seqDataSize + 64)
+	if (decompressSize > (seqDataSize + 64))
 		warning("[CompressedStream::decompressIndexed] Error during SEQ decompression (buffer overrun)!");
 
 	// Decompress core
@@ -158,22 +158,24 @@ void CompressedStream::decompressIndexed(uint32 blockSize, uint32 seqSize, uint3
 
 	uint32 start = 8 * seqSize + 640;
 	decompressSize = decompress(stream, 16, 6, start, start + 8 * coreSize, coreBuffer);
-	if (decompressSize > coreDataSize + 64)
+	if (decompressSize > (coreDataSize + 64))
 		warning("[CompressedStream::decompressIndexed] Error during COR decompression (buffer overrun)!");
 
 	// Store data into buffer
+	byte *pSeqBuffer = seqBuffer;
 	for (uint32 i = 0; i < seqDataSize; i += 2) {
-		uint32 index = seqBuffer[i];
+		uint16 index = READ_UINT16(pSeqBuffer);
+		pSeqBuffer += 2;
 
-		pBuffer[i/2] = coreBuffer[index * 6];
-		pBuffer[i/2 + 1] = coreBuffer[index * 6 + 2];
-		pBuffer[i/2 + 2] = coreBuffer[index * 6 + 4];
+		WRITE_UINT16(pBuffer,     READ_UINT16(coreBuffer + index * 6));
+		WRITE_UINT16(pBuffer + 2, READ_UINT16(coreBuffer + index * 6 + 2));
+		WRITE_UINT16(pBuffer + 4, READ_UINT16(coreBuffer + index * 6 + 4));
 
 		pBuffer += 6;
 	}
 
-	*(uint32 *)pBuffer[indexEnd] = field_C;
-	*(uint16 *)pBuffer[indexEnd + 2] = field_10;
+	WRITE_UINT32(_buffer + indexEnd, field_C);
+	WRITE_UINT16(_buffer + indexEnd + 2, field_10);
 
 	// Cleanup buffers
 	free(seqBuffer);

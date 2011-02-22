@@ -65,7 +65,78 @@ Puzzle::~Puzzle() {
 }
 
 void Puzzle::alloc() {
-	warning("[Puzzle::alloc] Not implemented");
+	if (_background && !_background->isInitialized()) {
+		Common::String path;
+		switch (_background->getArchiveType()) {
+		default:
+			error("[Puzzle::alloc] Invalid archive type!");
+			break;
+
+		case kArchiveFile:
+			if (_background->getLoadFrom() == kLoadFromCd || _background->getLoadFrom() == kLoadFromDisk)
+				path = Common::String::format("DATA/%s/IMAGE/%s", getApp()->getZoneString(_background->getZone()).c_str(), _background->getNameId().c_str());
+			else if (_background->getLoadFrom() == kLoadFrom5)
+				path = Common::String::format("%s%s", _background->getDirectory().c_str(), _background->getNameId().c_str());
+			else
+				error("[Puzzle::alloc] Invalid load From!");
+			break;
+
+		case kArchiveArt:
+			if (_background->getLoadFrom() == kLoadFromCd || _background->getLoadFrom() == kLoadFromDisk)
+				path = Common::String::format("/IMAGE/%s", _background->getNameId().c_str());
+			else if (_background->getLoadFrom() == kLoadFrom5)
+				path = Common::String::format("%s%s", _background->getDirectory().c_str(), _background->getNameId().c_str());
+			else
+				error("[Puzzle::alloc] Invalid load From!");
+			break;
+		}
+
+		if (!_background->load(path, _background->getArchiveType(), _background->getZone(), _background->getLoadFrom()))
+			error("[Puzzle::alloc] Cannot load background image (%s)!", path.c_str());
+	}
+
+	for (Common::Array<ImageHandle *>::iterator it = _presentationImages.begin(); it != _presentationImages.end(); it++) {
+		ImageHandle *image = (*it);
+
+		if (!image->getObjectPresentation()
+		 || !image->getObjectPresentation()->isShown()
+		 || image->isInitialized()
+		 || !image->isActive()
+		 || image->getField6C() != 1)
+			continue;
+
+		Common::String path;
+		switch (image->getArchiveType()) {
+		default:
+			error("[Puzzle::alloc] Invalid archive type!");
+			break;
+
+		case kArchiveFile:
+			if (image->getLoadFrom() == kLoadFromCd || image->getLoadFrom() == kLoadFromDisk)
+				path = Common::String::format("DATA/%s/IMAGE/%s", getApp()->getZoneString(image->getZone()).c_str(), image->getNameId().c_str());
+			else if (image->getLoadFrom() == kLoadFrom5)
+				path = Common::String::format("%s%s", image->getDirectory().c_str(), image->getNameId().c_str());
+			else
+				error("[Puzzle::alloc] Invalid load From!");
+			break;
+
+		case kArchiveArt:
+			if (image->getLoadFrom() == kLoadFromCd || image->getLoadFrom() == kLoadFromDisk)
+				path = Common::String::format("/IMAGE/%s", image->getNameId().c_str());
+			else if (image->getLoadFrom() == kLoadFrom5)
+				path = Common::String::format("%s%s", image->getDirectory().c_str(), image->getNameId().c_str());
+			else
+				error("[Puzzle::alloc] Invalid load From!");
+			break;
+		}
+
+		if (!image->load(path, image->getArchiveType(), image->getZone(), image->getLoadFrom()))
+			error("[Puzzle::alloc] Cannot load image (%s)!", path.c_str());
+
+	}
+
+	for (Common::Array<Visual *>::iterator it = _visuals.begin(); it != _visuals.end(); it++)
+		(*it)->alloc();
 }
 
 void Puzzle::dealloc() {

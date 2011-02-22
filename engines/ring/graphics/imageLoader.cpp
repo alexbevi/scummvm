@@ -170,7 +170,7 @@ bool ImageLoaderBMA::readImage(Image *image) {
 							   2 * _header.seqWidth * _header.seqHeight - 6,
 							   _header.field_C, _header.field_10);
 
-	return false;
+	return true;
 }
 
 #pragma endregion

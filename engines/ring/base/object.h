@@ -78,6 +78,9 @@ public:
 	void hide();
 	void hideAndRemove();
 
+	// Accessors
+	bool isShown() { return _isShown; }
+
 private:
 	Object *_object;
 	bool _isShown;
