@@ -132,13 +132,23 @@ bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom 
 	if (!loader)
 		error("[Image::load] Cannot find an image loader for file %s", filename.c_str());
 
-	if (loader->load(this, type, zone, loadFrom)) {
+	if (!loader->load(this, type, zone, loadFrom)) {
 		delete loader;
 
-		return true;
+		return false;
 	}
 
-	return false;
+	delete loader;
+
+	return true;
+}
+
+void Image::draw(Graphics::Surface *surface, Common::Point dest) {
+	error("[Image::draw] Not implemented!");
+}
+
+void Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset) {
+	_surface->copyFrom(*surface);
 }
 
 void Image::setSurface(Graphics::Surface *surface) {
