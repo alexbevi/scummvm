@@ -38,8 +38,13 @@ public:
 	CompressedStream();
 	~CompressedStream();
 
-	bool init(Common::String filename, uint32 a2, uint32 a3);
+	bool init(Common::String filename, uint32 type, uint32 size);
 	bool initArt(Common::String filename, Zone zone, LoadFrom loadFrom);
+
+	Common::SeekableReadStream *getCompressedStream();
+
+	// Decompression functions
+	void decompressChuncks(uint32 chuncks, uint32 size);
 
 	// ReadStream
 	virtual bool eos() const;
@@ -55,7 +60,16 @@ private:
 	Common::SeekableReadStream *_artStream;     ///< The art stream
 	Common::MemoryReadStream   *_memoryStream;  ///< Memory data buffer stream
 
-	void *_buffer;  ///< The buffer to hold decompressed data
+	byte *_buffer;  ///< The buffer to hold decompressed data
+
+	uint32 _field_8;
+	uint32 _field_C;
+	byte   _field_10[512];
+	byte   _type;
+	uint32 _field_211;
+
+	void initDecompression();
+	uint32 decompress(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte *buffer);
 };
 
 } // End of namespace Ring

@@ -25,28 +25,118 @@
 
 #include "ring/base/stream.h"
 
+#include "ring/base/application.h"
+#include "ring/base/art.h"
+
 #include "ring/helpers.h"
+#include "ring/ring.h"
+
+#include "common/archive.h"
 
 namespace Ring {
 
-CompressedStream::CompressedStream() : _fileStream(NULL), _artStream(NULL), _memoryStream(NULL), _buffer(NULL) {}
+CompressedStream::CompressedStream() : _fileStream(NULL), _artStream(NULL), _memoryStream(NULL), _buffer(NULL) {
+	_field_8 = 0;
+	_field_C = 0;
+	memset(&_field_10, 0, sizeof(_field_10));
+	_type = 1;
+	_field_211 = 0;
+}
 
 CompressedStream::~CompressedStream() {
 	SAFE_DELETE(_fileStream);
 	SAFE_DELETE(_artStream);
 	SAFE_DELETE(_memoryStream);
-	SAFE_DELETE(_buffer);
+	// Buffer is disposed as part of _memoryStream
 }
 
-bool CompressedStream::init(Common::String filename, uint32 a2, uint32 a3) {
-	return false;
+bool CompressedStream::init(Common::String filename, uint32 type, uint32 size) {
+	_fileStream = SearchMan.createReadStreamForMember(filename);
+	if (!_fileStream) {
+		warning("[CompressedStream::init] Error opening file (%s)", filename.c_str());
+		return false;
+	}
+
+	initDecompression();
+
+	return true;
 }
 
 bool CompressedStream::initArt(Common::String filename, Zone zone, LoadFrom loadFrom) {
-	return false;
+	_artStream = getApp()->getArtHandler()->get(filename, zone, loadFrom);
+	if (!_artStream) {
+		warning("[CompressedStream::initArt] Error opening file (%s)", filename.c_str());
+		return false;
+	}
+
+	initDecompression();
+
+	return true;
 }
 
-// ReadStream
+#pragma region Decompression
+
+Common::SeekableReadStream *CompressedStream::getCompressedStream() {
+	if (_fileStream)
+		return _fileStream;
+
+	if (_artStream)
+		return _artStream;
+
+	return NULL;
+}
+
+void CompressedStream::initDecompression() {
+	_field_8 = 0;
+	_field_C = 0;
+	memset(&_field_10, 0, sizeof(_field_10));
+	_field_211 = 0;
+}
+
+
+void CompressedStream::decompressChuncks(uint32 chuncks, uint32 size) {
+	Common::SeekableReadStream *stream = getCompressedStream();
+	if (!stream)
+		error("[CompressedStream::decompressChuncks] Invalid stream!");
+
+	// Rewind stream to data start
+	stream->seek(8, SEEK_SET);
+
+	// Initialize buffer
+	if (_buffer)
+		free(_buffer);
+
+	_buffer = (byte *)malloc(size);
+	memset(_buffer, 0, size);
+	byte *pBuffer = _buffer;
+
+	uint32 decompSize = 0;
+	for (uint32 i = 0; i < chuncks; i++) {
+		uint32 chunkSize = stream->readUint32LE();
+		uint32 chunkDataSize = stream->readUint32LE();
+
+		decompSize += decompress(stream, 16, 6, 8 * stream->pos(), 8 * (stream->pos() + chunkSize), pBuffer);
+
+		pBuffer += chunkDataSize;
+	}
+
+	// Check decompressed size
+	if (decompSize > size)
+		warning("[CompressedStream::decompressChuncks] Error during decompression (buffer overrun)!");
+
+	_memoryStream = new Common::MemoryReadStream(_buffer, size, DisposeAfterUse::YES);
+}
+
+uint32 CompressedStream::decompress(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte* buffer) {
+	warning("[CompressedStream::decompress] Not implemented!");
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region ReadStream
+
 bool CompressedStream::eos() const {
 	if (!_memoryStream)
 		error("[CompressedStream::eos] Not initialized properly!");
@@ -61,7 +151,10 @@ uint32 CompressedStream::read(void *dataPtr, uint32 dataSize) {
 	return _memoryStream->read(dataPtr, dataSize);
 }
 
-// SeekableReadStream
+#pragma endregion
+
+#pragma region SeekableReadStream
+
 int32 CompressedStream::pos() const {
 	if (!_memoryStream)
 		error("[CompressedStream::pos] Not initialized properly!");
@@ -82,5 +175,7 @@ bool CompressedStream::seek(int32 offset, int whence) {
 
 	return _memoryStream->seek(offset, whence);
 }
+
+#pragma endregion
 
 } // End of namespace Ring
