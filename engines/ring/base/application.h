@@ -320,7 +320,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Visual
-	void visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 a7, uint32 a8, uint32 progressMultiplier, uint32 progressColor);
+	void visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 width, uint32 progressMultiplier, uint32 progressColor);
 	void visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3,
 	                           Common::String imageDir, Common::String iconDir, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10,
 	                           Common::String filename11, Common::String filename12, Common::String filename13,

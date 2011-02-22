@@ -47,10 +47,10 @@ VisualElement::VisualElement(Id id) : Visual(id) {
 	_field_C  = 0;
 	_field_D  = 0;
 	_field_11 = 0;
-	_field_15 = 0;
-	_field_19 = 0;
-	_field_1D = 0;
-	_field_21 = 0;
+	_left = 0;
+	_top = 0;
+	_offsetY = 0;
+	_width = 0;
 	_progressMultiplier = 0;
 	_progressColor = 0;
 	_initialized = false;
@@ -94,13 +94,13 @@ void VisualElement::dealloc() {
 	_initialized = true;
 }
 
-void VisualElement::init(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6, uint32 progressMultiplier, uint32 progressColor) {
+void VisualElement::init(uint32 a1, uint32 a2, uint32 left, uint32 top, uint32 offsetY, uint32 width, uint32 progressMultiplier, uint32 progressColor) {
 	_field_D  = a1;
 	_field_11 = a2;
-	_field_15 = a3;
-	_field_19 = a4;
-	_field_1D = a5;
-	_field_21 = a6;
+	_left = left;
+	_top = top;
+	_offsetY = offsetY;
+	_width = width;
 	_progressMultiplier = progressMultiplier;
 	_progressColor = progressColor;
 }
