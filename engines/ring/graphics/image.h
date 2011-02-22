@@ -58,6 +58,8 @@ public:
 	Common::String getName() { return _filename; }
 	void setName(Common::String name) { _filename = name; }
 
+	void setSurface(Graphics::Surface *surface);
+
 	bool isInitialized() { return _surface != NULL; }
 
 protected:

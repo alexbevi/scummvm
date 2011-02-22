@@ -137,6 +137,12 @@ bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom 
 	return false;
 }
 
+void Image::setSurface(Graphics::Surface *surface) {
+	destroy();
+
+	_surface = surface;
+}
+
 #pragma endregion
 
 } // End of namespace Ring

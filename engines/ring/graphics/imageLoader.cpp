@@ -27,10 +27,18 @@
 
 #include "ring/graphics/image.h"
 
+#include "graphics/imagedec.h"
+#include "graphics/surface.h"
+
 namespace Ring {
 
 bool ImageLoaderBMP::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
-	warning("[ImageLoaderBMP::load] Not implemented (%s)!", image->getName().c_str());
+	// Get image surface
+	Graphics::Surface *surface = Graphics::ImageDecoder::loadFile(image->getName(), g_system->getScreenFormat());
+	if (!surface)
+		return false;
+
+	image->setSurface(surface);
 
 	return true;
 }
