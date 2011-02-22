@@ -82,13 +82,13 @@ bool ImageLoaderTGC::load(Image *image, ArchiveType type, Zone zone, LoadFrom lo
 	}
 
 	// Read header
-	if (!readHeader()) {
+	if (!readHeader(_stream)) {
 		warning("[ImageLoaderTGC::load] Error reading header (%s)", image->getName().c_str());
 		goto cleanup;
 	}
 
 	// Read image data
-	if (!readImage(image)) {
+	if (!readImage(_stream, image)) {
 		warning("[ImageLoaderTGC::load] Error reading header (%s)", image->getName().c_str());
 		goto cleanup;
 	}
@@ -103,19 +103,30 @@ cleanup:
 }
 
 bool ImageLoaderTGC::init(ArchiveType type, Zone zone, LoadFrom loadFrom) {
+	_stream = new CompressedStream();
+
+	// Initialize stream
+	switch (type) {
+	default:
+		warning("[ImageLoaderTGC::init] Invalid archive type (%d)!", type);
+		return false;
+
+	case kArchiveFile:
+		return _stream->init(_filename, 1, 0);
+		break;
+
+	case kArchiveArt:
+		return _stream->initArt(_filename, zone, loadFrom);
+	}
+
+	// Decompress data
+	// TODO!
+
 	return true;
 }
 
 void ImageLoaderTGC::deinit() {
 	SAFE_DELETE(_stream);
-}
-
-bool ImageLoaderTGC::readHeader() {
-	return ImageLoaderTGA::readHeader(_stream);
-}
-
-bool ImageLoaderTGC::readImage(Image *image) {
-	return true;
 }
 
 #pragma endregion

@@ -111,8 +111,6 @@ private:
 
 	bool init(ArchiveType type, Zone zone, LoadFrom loadFrom);
 	void deinit();
-	bool readHeader();
-	bool readImage(Image *image);
 };
 
 //////////////////////////////////////////////////////////////////////////

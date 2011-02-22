@@ -26,6 +26,9 @@
 #ifndef RING_STREAM_H
 #define RING_STREAM_H
 
+#include "ring/shared.h"
+
+#include "common/memstream.h"
 #include "common/stream.h"
 
 namespace Ring {
@@ -35,8 +38,24 @@ public:
 	CompressedStream();
 	~CompressedStream();
 
-private:
+	bool init(Common::String filename, uint32 a2, uint32 a3);
+	bool initArt(Common::String filename, Zone zone, LoadFrom loadFrom);
 
+	// ReadStream
+	virtual bool eos() const;
+	virtual uint32 read(void *dataPtr, uint32 dataSize);
+
+	// SeekableReadStream
+	virtual int32 pos() const;
+	virtual int32 size() const;
+	virtual bool seek(int32 offset, int whence = SEEK_SET);
+
+private:
+	Common::SeekableReadStream *_fileStream;    ///< The file stream
+	Common::SeekableReadStream *_artStream;     ///< The art stream
+	Common::MemoryReadStream   *_memoryStream;  ///< Memory data buffer stream
+
+	void *_buffer;  ///< The buffer to hold decompressed data
 };
 
 } // End of namespace Ring
