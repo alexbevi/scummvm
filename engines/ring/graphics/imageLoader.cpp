@@ -41,12 +41,24 @@ namespace Ring {
 #pragma region BMP
 
 bool ImageLoaderBMP::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
-	// Get image surface
-	Graphics::Surface *surface = Graphics::ImageDecoder::loadFile(image->getName(), g_system->getScreenFormat());
-	if (!surface)
+	// Get image stream
+	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(image->getName());
+	if (!stream) {
+		warning("[ImageLoaderBMP::load] Cannot load image (%s)", image->getName().c_str());
 		return false;
+	}
+
+	// Get image surface
+	Graphics::Surface *surface = Graphics::ImageDecoder::loadFile(*stream, g_system->getScreenFormat());
+	if (!surface) {
+		warning("[ImageLoaderBMP::load] Cannot decode image (%s)", image->getName().c_str());
+		delete stream;
+		return false;
+	}
 
 	image->setSurface(surface);
+
+	delete stream;
 
 	return true;
 }
