@@ -160,6 +160,7 @@ public:
 	void setPan(Id soundId, int32 pan);
 	bool isPlaying(Id soundId);
 	bool isPlayingType(SoundType soundType);
+	void clear();
 
 	void sub_4696F0();
 

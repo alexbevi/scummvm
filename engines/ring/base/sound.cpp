@@ -384,7 +384,22 @@ bool SoundManager::isPlaying(Id soundId) {
 }
 
 bool SoundManager::isPlayingType(SoundType soundType) {
-	error("[SoundManager::isPlayingType] Not implemented");
+	for (Common::Array<SoundEntry *>::iterator it = _entries.begin(); it != _entries.end(); it++) {
+		SoundEntry *entry = (*it);
+
+		if (entry->getType() == soundType) {
+			if (entry->getType() == kSoundTypeDialog)
+				return _app->getDialogHandler()->isPlaying(entry->getId());
+			else
+				return entry->isPlaying();
+		}
+	}
+
+	return false;
+}
+
+void SoundManager::clear() {
+	CLEAR_ARRAY(SoundEntry, _entries);
 }
 
 void SoundManager::sub_4696F0() {
