@@ -471,7 +471,60 @@ bool Application::scrollImage(Common::String filename, uint32 ticksWait, LoadFro
 }
 
 void Application::displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
+	Image *imageFrom = NULL;
+	Image *imageTo = NULL;
+
+	if (archiveType == kArchiveInvalid)
+		archiveType = getReadFrom(getCurrentZone());
+
+	// Compute paths
+	Common::String pathFrom;
+	Common::String pathTo;
+	if (archiveType == kArchiveFile) {
+		pathFrom = Common::String::format("DATA/%s/IMAGE/%s", getCurrentZoneString().c_str(), filenameFrom.c_str());
+		pathTo   = Common::String::format("DATA/%s/IMAGE/%s", getCurrentZoneString().c_str(), filenameTo.c_str());
+	} else {
+		pathFrom = Common::String::format("/IMAGE/%s", filenameFrom.c_str());
+		pathTo   = Common::String::format("/IMAGE/%s", filenameTo.c_str());
+	}
+
+	// Load images
+	imageFrom = new Image();
+	if (!imageFrom->load(pathFrom, archiveType, getCurrentZone(), loadFrom)) {
+		warning("[Application::displayFade] Cannot load imageFrom (%s)", pathFrom.c_str());
+		goto cleanup;
+	}
+
+	imageTo = new Image();
+	if (!imageTo->load(pathTo, archiveType, getCurrentZone(), loadFrom)) {
+		warning("[Application::displayFade] Cannot load imageTo (%s)", pathTo.c_str());
+		goto cleanup;
+	}
+
+	// Check dimensions
+	if (imageFrom->getHeight() != imageTo->getHeight()) {
+		warning("[Application::displayFade] Heights are different (from: %d, to: %d)", imageFrom->getHeight(), imageTo->getHeight());
+		goto cleanup;
+	}
+
+	if (imageFrom->getWidth() != imageTo->getWidth()) {
+		warning("[Application::displayFade] Widths are different (from: %d, to: %d)", imageFrom->getWidth(), imageTo->getWidth());
+		goto cleanup;
+	}
+
+	// Check bpp
+	if (imageFrom->getBPP() != 24 || imageTo->getBPP() != 24) {
+		warning("[Application::displayFade] Depths are not 24bpp (from: %d, to: %d)", imageFrom->getBPP(), imageTo->getBPP());
+		goto cleanup;
+	}
+
 	warning("[Application::displayFade] Not implemented");
+
+	waitForEscape(ticksWait);
+
+cleanup:
+	SAFE_DELETE(imageFrom);
+	SAFE_DELETE(imageTo);
 }
 
 void Application::waitForEscape(uint32 ticksWait) {
