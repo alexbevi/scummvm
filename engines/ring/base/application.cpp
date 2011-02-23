@@ -1067,10 +1067,12 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 
 void Application::puzzleReset() {
 	// Those are reference to existing objects in the _puzzles and _rotations arrays
-	_puzzle->dealloc();
+	if (_puzzle)
+		_puzzle->dealloc();
 	_puzzle = NULL;
 
-	_rotation->dealloc();
+	if (_rotation)
+		_rotation->dealloc();
 	_rotation = NULL;
 
 	soundStop(kSoundTypeEffect, 16);
