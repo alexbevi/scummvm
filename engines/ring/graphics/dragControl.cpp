@@ -32,32 +32,40 @@
 namespace Ring {
 
 DragControl::DragControl() {
-	_field_0  = 0;
-	_field_4  = 0;
-	_field_8  = 0;
-	_field_C  = 0;
-	_field_10 = 0;
-	_field_14 = 0;
-	_field_18 = 0;
-	_field_1C = 0;
 	_field_20 = 0;
-	_field_21 = 0;
+	_objectId = kObjectInvalid;
 	_field_25 = 0;
-	_field_29 = 0;
-	_field_2D = 0;
+	_object = NULL;
+	_field_2D = NULL;
 	_field_31 = 0;
-	_field_35 = 0;
+	_puzzleRotationId = 0;
 	_field_39 = 0;
-	_field_3D = 0;
+	_ticks = 0;
 	_field_41 = 0;
 	_field_45 = 1;
 	_hotspot = new Hotspot(Common::Rect(0, 16, 640, 461), true, 0, 0, 0);
 }
 
 DragControl::~DragControl() {
-	warning("[DragControl::~DragControl] Not implemented");
+	reset();
 
 	SAFE_DELETE(_hotspot);
+}
+
+void DragControl::init() {
+	error("[DragControl::init] Not implemented!");
+}
+
+void DragControl::reset() {
+	error("[DragControl::reset] Not implemented!");
+}
+
+void DragControl::updateCoordinates(const Common::Point &point) {
+	error("[DragControl::updateCoordinates] Not implemented!");
+}
+
+void DragControl::setPreferences(int32 volume, int32 volumeDialog, int32 reverseStereo, int32 pref4) {
+	error("[DragControl::setPreferences] Not implemented!");
 }
 
 } // End of namespace Ring

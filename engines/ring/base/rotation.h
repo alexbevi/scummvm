@@ -124,6 +124,8 @@ public:
 	Rotation(Id id, Common::String name, byte a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6);
 	~Rotation();
 
+	void dealloc();
+
 	void load();
 	void update();
 	void setCoordinates(const Common::Point &point);

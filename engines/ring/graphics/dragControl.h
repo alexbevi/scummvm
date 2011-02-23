@@ -30,6 +30,7 @@
 
 namespace Ring {
 
+class Object;
 class Hotspot;
 
 class DragControl {
@@ -37,27 +38,31 @@ public:
 	DragControl();
 	~DragControl();
 
+	void init();
+	void reset();
+
+	void updateCoordinates(const Common::Point &point);
+	void setPreferences(int32 volume, int32 volumeDialog, int32 reverseStereo, int32 pref4);
+
+	Hotspot *getHotspot() { return _hotspot; }
+
 private:
-	uint32 _field_0;
-	uint32 _field_4;
-	uint32 _field_8;
-	uint32 _field_C;
-	uint32 _field_10;
-	uint32 _field_14;
-	uint32 _field_18;
-	uint32 _field_1C;
-	byte _field_20;
-	uint32 _field_21;
-	uint32 _field_25;
-	uint32 _field_29;
-	uint32 _field_2D;
-	uint32 _field_31;
-	uint32 _field_35;
-	uint32 _field_39;
-	uint32 _field_3D;
-	uint32 _field_41;
-	uint32 _field_45;
-	Hotspot *_hotspot;
+	Common::Point _coords0;
+	Common::Point _coords1;
+	Common::Point _oldCoords;
+	Common::Point _currentCoords;
+	byte          _field_20;
+	ObjectId      _objectId;
+	uint32        _field_25;
+	Object       *_object;
+	Hotspot      *_field_2D;
+	uint32        _field_31;
+	Id            _puzzleRotationId;
+	uint32        _field_39;
+	uint32        _ticks;
+	uint32        _field_41;
+	uint32        _field_45;
+	Hotspot      *_hotspot;
 };
 
 } // End of namespace Ring

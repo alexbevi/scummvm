@@ -134,6 +134,10 @@ Rotation::~Rotation() {
 	SAFE_DELETE(_data);
 }
 
+void Rotation::dealloc() {
+	error("[Rotation::dealloc] Not implemented");
+}
+
 void Rotation::load() {
 	error("[Rotation::load] Not implemented");
 }
