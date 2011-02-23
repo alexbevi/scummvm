@@ -89,6 +89,7 @@ public:
 	void onSound(Id id, SoundType type, uint32 a3);
 
 	void update(const Common::Point &point);
+	void updateBag(const Common::Point &point);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Drawing
@@ -124,7 +125,6 @@ public:
 	void bagSetClickedObject(ObjectId objectId);
 	bool bagHasClickedObject();
 	ObjectId bagGetClickedObject();
-	void bagOpen(const Common::Point &point);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Cursor
@@ -381,7 +381,7 @@ protected:
 	uint32                        _field_70;
 	char                          _field_74;
 	char                          _field_75;
-	char                          _field_76;
+	bool                          _field_76;
 	char                          _field_77;
 	bool                          _field_78;
 	AssociativeArray<Object *>    _objects;

@@ -44,6 +44,14 @@ public:
 	void updateCoordinates(const Common::Point &point);
 	void setPreferences(int32 volume, int32 volumeDialog, int32 reverseStereo, int32 pref4);
 
+	// Accessors
+	bool getField20() { return _field_20; }
+	ObjectId getObjectId() { return _objectId; }
+	Hotspot *getHotspot2() { return _hotspot2; }
+	uint32 getField31() { return _field_31; }
+	uint32 getPuzzleRotationId() { return _puzzleRotationId; }
+	uint32 getField39() { return _field_39; }
+	uint32 getField45() { return _field_45; }
 	Hotspot *getHotspot() { return _hotspot; }
 
 private:
@@ -51,11 +59,11 @@ private:
 	Common::Point _coords1;
 	Common::Point _oldCoords;
 	Common::Point _currentCoords;
-	byte          _field_20;
+	bool          _field_20;
 	ObjectId      _objectId;
 	uint32        _field_25;
 	Object       *_object;
-	Hotspot      *_field_2D;
+	Hotspot      *_hotspot2;
 	uint32        _field_31;
 	Id            _puzzleRotationId;
 	uint32        _field_39;

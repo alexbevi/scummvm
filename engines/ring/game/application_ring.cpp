@@ -288,19 +288,17 @@ void ApplicationRing::draw() {
 
 	// Open bag
 	if (_vm->isMouseButtonPressed())
-		bagOpen(_vm->getCoordinates());
+		updateBag(_vm->getCoordinates());
 
 	// Update bag, puzzle & rotation
-	if (_vm->getFlag()) {
+	if (_vm->getFlag())
 		update(_vm->getCoordinates());
-	} else {
+	else
 		_vm->setFlag(true);
-	}
 
 	// Play dialogs
-	if (_dialogHandler) {
+	if (_dialogHandler)
 		_dialogHandler->play();
-	}
 
 	// Update animated cursors
 	if (_cursorHandler->getType() == kCursorTypeImage || _cursorHandler->getType() == kCursorTypeAnimated)

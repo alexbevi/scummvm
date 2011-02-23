@@ -45,6 +45,7 @@
 #include "ring/graphics/animation.h"
 #include "ring/graphics/dragControl.h"
 #include "ring/graphics/image.h"
+#include "ring/graphics/hotspot.h"
 #include "ring/graphics/movie.h"
 #include "ring/graphics/screen.h"
 #include "ring/graphics/visual.h"
@@ -61,7 +62,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_screenManager(NULL),  _artHandler(NULL),          _fontHandler(NULL),   _dialogHandler(NULL), _languageHandler(NULL),
 	_field_54(1),          _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
 	_soundHandler(NULL),   _state(kStateNone),         _field_6A(0),         _zoneString("A0"),      _zone(kZoneNone),
-	_field_6F(0),          _field_70(0),               _field_74(0),         _field_75(0),         _field_76(0),
+	_field_6F(0),          _field_70(0),               _field_74(0),         _field_75(0),         _field_76(false),
 	_field_77(0),          _field_78(false),           _puzzle(NULL),        _rotation(NULL),      _bag(NULL),
 	_timerHandler(NULL),   _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
 	_eventHandler(NULL) {
@@ -177,7 +178,7 @@ void Application::init() {
 	_field_70 = 0;
 	_field_74 = 1;
 	_field_75 = 1;
-	_field_76 = 1;
+	_field_76 = true;
 	_field_77 = 1;
 	_field_78 = true;
 	_loadFrom = kLoadFromCd;
@@ -343,7 +344,7 @@ void Application::exitZone() {
 
 	_field_74 = 1;
 	_field_75 = 1;
-	_field_76 = 1;
+	_field_76 = true;
 	_field_77 = 1;
 	_field_78 = 1;
 
@@ -428,6 +429,30 @@ void Application::onSound(Id id, SoundType type, uint32 a3) {
 
 void Application::update(const Common::Point &point) {
 	error("[Application::update] Not implemented");
+}
+
+void Application::updateBag(const Common::Point &point) {
+	if (_bag->getField94() || !_dragControl->getField20())
+		return;
+
+	Hotspot *hotspot = NULL;
+
+	if (_dragControl->getField45() == 2)
+		hotspot = _dragControl->getHotspot();
+	else
+		hotspot = _dragControl->getHotspot2();
+
+	if (hotspot && hotspot->contains(point)) {
+		_dragControl->updateCoordinates(point);
+		_eventHandler->onBag(_dragControl->getObjectId(), _dragControl->getField31(), _dragControl->getPuzzleRotationId(), _dragControl->getField39(), _dragControl, 3);
+
+		if (_state != kStateShowMenu) {
+			if (!_field_76)
+				_dragControl->reset();
+
+			_field_76 = true;
+		}
+	}
 }
 
 #pragma endregion
@@ -754,10 +779,6 @@ ObjectId Application::bagGetClickedObject() {
 		error("[Application::bagGetClickedObject] bag is not initialized properly");
 
 	return _bag->getClickedObject();
-}
-
-void Application::bagOpen(const Common::Point &point) {
-	error("[Application::bagOpen] Not implemented!");
 }
 
 #pragma endregion

@@ -32,11 +32,11 @@
 namespace Ring {
 
 DragControl::DragControl() {
-	_field_20 = 0;
+	_field_20 = false;
 	_objectId = kObjectInvalid;
 	_field_25 = 0;
 	_object = NULL;
-	_field_2D = NULL;
+	_hotspot2 = NULL;
 	_field_31 = 0;
 	_puzzleRotationId = 0;
 	_field_39 = 0;
