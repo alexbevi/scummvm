@@ -51,7 +51,7 @@ public:
 	void draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset);
 
 	// Accessors
-	uint32 getBPP()    { return _surface ? _surface->bytesPerPixel : 0; }
+	uint32 getBPP()    { return _surface ? _surface->bytesPerPixel * 8: 0; }
 	uint32 getWidth()  { return _surface ? _surface->w : 0; }
 	uint32 getHeight() { return _surface ? _surface->h : 0; }
 

@@ -336,7 +336,7 @@ bool ImageLoaderTGA::readImage(Common::SeekableReadStream *stream, Image *image)
 		error("[ImageLoaderTGA::readImage] Unsupported image type (%s)!", _filename.c_str());
 
 	Graphics::Surface *surface = new Graphics::Surface();
-	surface->create(_header.width, _header.height, _header.bits);
+	surface->create(_header.width, _header.height, _header.bits / 8);
 
 	uint32 size = _header.width * _header.height;
 
