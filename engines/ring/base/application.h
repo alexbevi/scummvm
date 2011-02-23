@@ -318,6 +318,8 @@ public:
 
 #undef DEFINE_VAR_FUNCTIONS
 
+	void varRemoveAll();
+
 	//////////////////////////////////////////////////////////////////////////
 	// Visual
 	void visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 width, uint32 progressMultiplier, uint32 progressColor);

@@ -338,7 +338,34 @@ void Application::loadConfiguration() {
 }
 
 void Application::exitZone() {
-	error("[Application::exitZone] Not implemented");
+	soundStopAll(128);
+	_soundManager->clear();
+
+	_field_74 = 1;
+	_field_75 = 1;
+	_field_76 = 1;
+	_field_77 = 1;
+	_field_78 = 1;
+
+	timerStopAll();
+	varRemoveAll();
+	cursorDelete();
+	bagRemoveAll();
+	puzzleReset();
+
+	CLEAR_ARRAY(Puzzle,   _puzzles);
+	CLEAR_ARRAY(Rotation, _rotations);
+	CLEAR_ARRAY(Object,   _objects);
+
+	if (_dragControl)
+		_dragControl->reset();
+
+	if (_soundHandler)
+		_soundHandler->reset();
+
+	_field_6F = 0;
+
+	// Original destroys the savegame current image
 }
 
 void Application::exitToMenu(uint32 a1) {
@@ -1018,8 +1045,12 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 }
 
 void Application::puzzleReset() {
-	SAFE_DELETE(_puzzle);
-	SAFE_DELETE(_rotation);
+	// Those are reference to existing objects in the _puzzles and _rotations arrays
+	_puzzle->dealloc();
+	_puzzle = NULL;
+
+	_rotation->dealloc();
+	_rotation = NULL;
 
 	soundStop(kSoundTypeEffect, 16);
 	soundStop(kSoundTypeDialog, 16);
@@ -1832,6 +1863,13 @@ IMPLEMENT_VAR_FUNCTIONS(String, Common::String);
 IMPLEMENT_VAR_FUNCTIONS(Float,  float);
 
 #undef IMPLEMENT_VAR_FUNCTIONS
+
+void Application::varRemoveAll() {
+	if (!_var)
+		error("[Application::varRemoveAll] Var not initialized properly");
+
+	_var->removeAll();
+}
 
 #pragma endregion
 
