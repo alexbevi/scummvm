@@ -42,7 +42,7 @@ class Puzzle;
 class Rotation;
 class Text;
 
-class ObjectPresentation {
+class ObjectPresentation : public Common::Serializable {
 public:
 	ObjectPresentation(Object *object);
 	~ObjectPresentation();
@@ -78,6 +78,9 @@ public:
 	void hide();
 	void hideAndRemove();
 
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
+
 	// Accessors
 	bool isShown() { return _isShown; }
 
@@ -99,7 +102,7 @@ private:
 	Common::Array<Rotation *>       _textRotationPtr;
 };
 
-class Object : public BaseObject {
+class Object : public BaseObject, public Common::Serializable {
 public:
 	Object(Application *application, ObjectId id, Common::String description, Common::String name, byte a5);
 	~Object();
@@ -154,6 +157,9 @@ public:
 	Common::String getName() { return _name; }
 	void setAnimationImage(AnimationImage *image) { _animationImage = image; }
 	AnimationImage *getAnimationImage() { return _animationImage; }
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
 	struct ObjectCursor {

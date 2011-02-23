@@ -27,10 +27,11 @@
 #define RING_HOTSPOT_H
 
 #include "common/events.h"
+#include "common/serializer.h"
 
 namespace Ring {
 
-class Hotspot {
+class Hotspot : public Common::Serializable {
 public:
 	Hotspot(const Common::Rect &rect, bool enabled, uint32 a2, uint32 a3, uint32 a4);
 	~Hotspot();
@@ -40,6 +41,10 @@ public:
 	bool isEnabled() { return _enabled; }
 	bool contains(const Common::Point &point) const;
 
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
+
+	// Accessors
 	void setKey(Common::KeyCode key) { _key = key; }
 	Common::KeyCode getKey() { return _key; }
 

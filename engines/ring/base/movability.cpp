@@ -86,4 +86,12 @@ void Movability::disableHotspot() {
 		_hotspot->disable();
 }
 
+#pragma region Serializable
+
+void Movability::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[Movability::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
+
 } // End of namespace Ring

@@ -27,13 +27,14 @@
 #define RING_ACCESSIBILITY_H
 
 #include "common/rect.h"
+#include "common/serializer.h"
 
 namespace Ring {
 
 class Hotspot;
 class Object;
 
-class Accessibility {
+class Accessibility : public Common::Serializable {
 public:
 	Accessibility(Object *object);
 	~Accessibility();
@@ -42,6 +43,9 @@ public:
 	Hotspot *getHotspot();
 	void enableHotspot();
 	void disableHotspot();
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 	Object *getObject() { return _object; }
 

@@ -232,6 +232,14 @@ void Animation::pauseOnFrame(uint32 frame, uint32 a2, uint32 a3) {
 	}
 }
 
+#pragma region Serializable
+
+void Animation::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[Animation::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
+
 #pragma endregion
 
 #pragma region AnimationImage
@@ -320,6 +328,14 @@ void AnimationImage::updateCurrentImage() {
 
 	_currentImage = _imageHandles[_activeFrame];
 }
+
+#pragma region Serializable
+
+void AnimationImage::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[AnimationImage::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
 
 #pragma endregion
 

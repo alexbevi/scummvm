@@ -34,7 +34,7 @@ class Hotspot;
 class Puzzle;
 class Rotation;
 
-class Movability {
+class Movability : public Common::Serializable {
 public:
 	Movability(BaseId from, BaseId to, Common::String name, MovabilityType type);
 	~Movability();
@@ -50,6 +50,9 @@ public:
 
 	Common::String getRideName() { return _name; }
 	void setRideName(Common::String name) { _name = name; }
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
 	uint32            _field_0;

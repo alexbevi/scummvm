@@ -43,4 +43,12 @@ bool Hotspot::contains(const Common::Point &point) const {
 	return _enabled && _rect.contains(point);
 }
 
+#pragma region Serializable
+
+void Hotspot::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[Hotspot::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
+
 } // End of namespace Ring

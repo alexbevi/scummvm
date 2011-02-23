@@ -277,6 +277,16 @@ void ObjectPresentation::hideAndRemove() {
 		(*it)->dealloc();
 }
 
+#pragma region Serializable
+
+void ObjectPresentation::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[ObjectPresentation::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
+
+#pragma endregion
+
 #pragma region Object
 
 Object::Object(Application *application, ObjectId id, Common::String description, Common::String name, byte a5) : BaseObject(id), _application(application) {
@@ -294,8 +304,6 @@ Object::~Object() {
 	// Zero-out passed pointers
 	_application = NULL;
 }
-
-#pragma endregion
 
 #pragma region Presentation
 
@@ -570,6 +578,16 @@ void Object::setActiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, flo
 void Object::setPassiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType) {
 	setCursor(&_passiveDrawCursor, a2, a3, a4, a5, a6, a7, a8, archiveType);
 }
+
+#pragma endregion
+
+#pragma region Serializable
+
+void Object::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[Object::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
 
 #pragma endregion
 

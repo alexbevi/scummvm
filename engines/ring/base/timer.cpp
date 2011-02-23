@@ -82,6 +82,14 @@ void TimerHandler::incrementFiredCount(TimerId id) {
 	_timers.get(id)->incrementFiredCount();
 }
 
+#pragma region Serializable
+
+void TimerHandler::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[TimerHandler::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
+
 #pragma endregion
 
 } // End of namespace Ring

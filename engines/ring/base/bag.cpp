@@ -388,4 +388,12 @@ bool Bag::has(ObjectId objectId) {
 
 #pragma endregion
 
+#pragma region Serializable
+
+void Bag::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[Bag::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
+
 } // End of namespace Ring

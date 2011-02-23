@@ -43,7 +43,7 @@ class SoundItem;
 class Text;
 class Visual;
 
-class Puzzle : public BaseObject {
+class Puzzle : public BaseObject, public Common::Serializable {
 public:
 	Puzzle(Application *application, PuzzleId id);
 	~Puzzle();
@@ -85,6 +85,9 @@ public:
 
 	bool hasVisual(Id visualId) { return _visuals.has(visualId); }
 	Visual *getVisual(Id visualId) { return _visuals.get(visualId); }
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
 	Application *_application;

@@ -64,4 +64,12 @@ void Accessibility::disableHotspot() {
 		_hotspot->disable();
 }
 
+#pragma region Serializable
+
+void Accessibility::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[Accessibility::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
+
 } // End of namespace Ring

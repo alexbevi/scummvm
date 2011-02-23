@@ -37,7 +37,7 @@ class ImageHandle;
 class Object;
 class Text;
 
-class Bag {
+class Bag : public Common::Serializable {
 public:
 	Bag();
 	~Bag();
@@ -71,6 +71,9 @@ public:
 	void remove(ObjectId objectId);
 	void removeAll();
 	bool has(ObjectId objectId);
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 	// Accessors
 	bool getField94() { return _field_94; }

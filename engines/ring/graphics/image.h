@@ -71,11 +71,14 @@ protected:
 	//Common::Rect _rect;
 };
 
-class ImageHandle : public Image {
+class ImageHandle : public Image, public Common::Serializable {
 public:
 	ImageHandle(Common::String nameId, const Common::Point &point, bool active, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 	ImageHandle(Common::String nameId, const Common::Point &point, bool active, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 	~ImageHandle();
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 	// Accessors
 	Common::String getNameId() { return _nameId; }

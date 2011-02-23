@@ -33,7 +33,7 @@ namespace Ring {
 class Application;
 class ObjectPresentation;
 
-class Text {
+class Text : public Common::Serializable {
 public:
 	Text();
 	~Text();
@@ -50,6 +50,9 @@ public:
 	void setCoordinates(Common::Point point) { _point = point; }
 	uint32 getWidth() { return _width; }
 	uint32 getHeight() { return _height; }
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
 	// Data

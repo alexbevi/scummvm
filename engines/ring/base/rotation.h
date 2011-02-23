@@ -119,7 +119,7 @@ private:
 	uint32 _count;
 };
 
-class Rotation : public BaseObject {
+class Rotation : public BaseObject, public Common::Serializable {
 public:
 	Rotation(Id id, Common::String name, byte a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6);
 	~Rotation();
@@ -166,6 +166,9 @@ public:
 	void updateAmbientSoundPan(bool apply);
 	void updateSoundItems();
 	uint32 getSoundItemsCount() { return _soundItems.size(); }
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 	// Accessors
 	void setFreOnOff(bool state);

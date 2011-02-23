@@ -375,4 +375,12 @@ SoundItem *Rotation::getSoundItem(Id soundId) {
 
 #pragma endregion
 
+#pragma region Serializable
+
+void Rotation::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[Rotation::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
+
 } // End of namespace Ring

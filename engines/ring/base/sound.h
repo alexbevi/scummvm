@@ -182,7 +182,7 @@ private:
 //////////////////////////////////////////////////////////////////////////
 // Game classes
 //////////////////////////////////////////////////////////////////////////
-class SoundItem : public BaseObject {
+class SoundItem : public BaseObject, public Common::Serializable {
 public:
 	SoundItem(Id id);
 	~SoundItem();
@@ -198,6 +198,9 @@ public:
 	void turnOff();
 	void setVolume(int32 volume);
 	void setPan(int32 pan);
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 	// Accessors
 	SoundEntry *getSoundEntry() { return _entry; }

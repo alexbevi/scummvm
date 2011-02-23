@@ -371,4 +371,12 @@ bool Puzzle::imagePriorityCompare(ImageHandle *image1, ImageHandle *image2) {
 
 #pragma endregion
 
+#pragma region Serializable
+
+void Puzzle::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[Puzzle::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
+
 } // End of namespace Ring

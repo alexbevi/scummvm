@@ -66,6 +66,14 @@ void ImageHandle::init(Common::String nameId, const Common::Point &point, bool a
 	_archiveType = archiveType;
 }
 
+#pragma region Serializable
+
+void ImageHandle::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[ImageHandle::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
+
 #pragma endregion
 
 #pragma region Image

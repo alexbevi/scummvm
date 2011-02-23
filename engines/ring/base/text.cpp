@@ -100,4 +100,12 @@ void Text::setBackgroundColor(Color background) {
 	}
 }
 
+#pragma region Serializable
+
+void Text::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[Text::saveLoadWithSerializer] Not implemented!");
+}
+
+#pragma endregion
+
 } // End of namespace Ring

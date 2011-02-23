@@ -45,7 +45,7 @@ private:
 	uint32 _elapseTime;
 };
 
-class TimerHandler {
+class TimerHandler : public Common::Serializable {
 public:
 	TimerHandler();
 	~TimerHandler();
@@ -55,6 +55,9 @@ public:
 	void stopAll();
 	bool has(TimerId id);
 	void incrementFiredCount(TimerId id);
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
 	AssociativeArray<Timer *> _timers;

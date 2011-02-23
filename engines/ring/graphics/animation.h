@@ -33,7 +33,7 @@ namespace Ring {
 class ImageHandle;
 class ObjectPresentation;
 
-class Animation : public BaseObject {
+class Animation : public BaseObject, public Common::Serializable {
 public:
 	Animation();
 	~Animation();
@@ -48,8 +48,12 @@ public:
 	void setStartFrame(uint32 frame);
 	void setActiveFrame(uint32 frame);
 	void pauseOnFrame(uint32 frame, uint32 a2, uint32 a3);
-
 	void setTicks(uint32 ticks);
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
+
+	// Accessors
 	void setField20(byte val) { _field_20 = 0; }
 
 protected:
@@ -108,6 +112,9 @@ public:
 	// Helpers
 	void updatePresentation(ObjectPresentation *objectPresentation);
 	void updateCurrentImage();
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
 	Common::Array<ImageHandle *> _imageHandles;
