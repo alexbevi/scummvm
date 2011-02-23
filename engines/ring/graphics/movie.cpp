@@ -29,11 +29,14 @@
 
 #include "ring/helpers.h"
 
+#include "common/archive.h"
+
 namespace Ring {
 
 #pragma region MovieData
 
-MovieData::MovieData() {
+Cinematic::Cinematic() {
+	_stream = NULL;
 	// buffer = NULL;
 	// buffer2 = NULL;
 	_field_8 = 0;
@@ -63,13 +66,69 @@ MovieData::MovieData() {
 	_channel = 0;
 }
 
-MovieData::~MovieData() {
+Cinematic::~Cinematic() {
 	deinit();
 }
 
-void MovieData::deinit() {
-	warning("[MovieData::deinit] Not implemented!");
+bool Cinematic::init(Common::String filename) {
+	_stream = SearchMan.createReadStreamForMember(filename);
+	if (!_stream) {
+		warning("[Cinematic::init] Error opening file (%s)", filename.c_str());
+		return false;
+	}
+
+	error("[Cinematic::init] Not implemented!");
+
+	return true;
 }
+
+void Cinematic::deinit() {
+	SAFE_DELETE(_stream);
+	//warning("[Cinematic::deinit] Not implemented!");
+}
+
+#pragma region ReadStream
+
+bool Cinematic::eos() const {
+	if (!_stream)
+		error("[Cinematic::eos] Not initialized properly!");
+
+	return _stream->eos();
+}
+
+uint32 Cinematic::read(void *dataPtr, uint32 dataSize) {
+	if (!_stream)
+		error("[Cinematic::read] Not initialized properly!");
+
+	return _stream->read(dataPtr, dataSize);
+}
+
+#pragma endregion
+
+#pragma region SeekableReadStream
+
+int32 Cinematic::pos() const {
+	if (!_stream)
+		error("[Cinematic::pos] Not initialized properly!");
+
+	return _stream->pos();
+}
+
+int32 Cinematic::size() const {
+	if (!_stream)
+		error("[Cinematic::size] Not initialized properly!");
+
+	return _stream->size();
+}
+
+bool Cinematic::seek(int32 offset, int whence) {
+	if (!_stream)
+		error("[Cinematic::seek] Not initialized properly!");
+
+	return _stream->seek(offset, whence);
+}
+
+#pragma endregion
 
 #pragma endregion
 
@@ -79,7 +138,7 @@ Movie::Movie(ScreenManager *screen) : _screen(screen) {
 	_imageCIN = NULL;
 	// bufferGlobal = NULL;
 
-	_data = new MovieData();
+	_data = new Cinematic();
 }
 
 Movie::~Movie() {

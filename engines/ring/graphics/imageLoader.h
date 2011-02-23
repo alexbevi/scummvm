@@ -30,6 +30,7 @@
 
 namespace Ring {
 
+class Cinematic;
 class CompressedStream;
 class Image;
 
@@ -136,11 +137,32 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-class ImageLoaderCNM : public ImageLoader {
+#define CINEMATIC_FORMAT 83
+
+class ImageLoaderCIN : public ImageLoader {
 public:
-	virtual ~ImageLoaderCNM() {};
+	virtual ~ImageLoaderCIN();
 
 	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
+
+private:
+	struct Header {
+		// More fields
+		uint32 width;
+		uint32 height;
+		// More fields
+	};
+
+	Cinematic *_cinematic;
+	Header _header;
+	//uint32 _field_1084;
+	//uint32 _field_1088;
+
+	bool init();
+	void deinit();
+
+	bool readHeader();
+	bool readImage(Image *image);
 };
 
 } // End of namespace Ring

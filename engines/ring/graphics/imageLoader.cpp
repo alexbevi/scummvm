@@ -28,6 +28,7 @@
 #include "ring/base/stream.h"
 
 #include "ring/graphics/image.h"
+#include "ring/graphics/movie.h"
 
 #include "ring/helpers.h"
 
@@ -41,6 +42,9 @@ namespace Ring {
 #pragma region BMP
 
 bool ImageLoaderBMP::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+	if (!image)
+		error("[ImageLoaderBMP::load] Invalid image pointer!");
+
 	// Get image stream
 	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(image->getName());
 	if (!stream) {
@@ -85,13 +89,13 @@ bool ImageLoaderBMA::load(Image *image, ArchiveType type, Zone zone, LoadFrom lo
 
 	// Read header
 	if (!readHeader()) {
-		warning("[ImageLoaderBMA::load] Error reading header (%s)", image->getName().c_str());
+		warning("[ImageLoaderBMA::load] Error reading header (%s)", _filename.c_str());
 		goto cleanup;
 	}
 
 	// Read image data
 	if (!readImage(image)) {
-		warning("[ImageLoaderBMA::load] Error reading header (%s)", image->getName().c_str());
+		warning("[ImageLoaderBMA::load] Error reading image (%s)", _filename.c_str());
 		goto cleanup;
 	}
 
@@ -195,13 +199,13 @@ bool ImageLoaderTGC::load(Image *image, ArchiveType type, Zone zone, LoadFrom lo
 
 	// Read header
 	if (!readHeader(_stream)) {
-		warning("[ImageLoaderTGC::load] Error reading header (%s)", image->getName().c_str());
+		warning("[ImageLoaderTGC::load] Error reading header (%s)", _filename.c_str());
 		goto cleanup;
 	}
 
 	// Read image data
 	if (!readImage(_stream, image)) {
-		warning("[ImageLoaderTGC::load] Error reading header (%s)", image->getName().c_str());
+		warning("[ImageLoaderTGC::load] Error reading image (%s)", _filename.c_str());
 		goto cleanup;
 	}
 
@@ -267,13 +271,13 @@ bool ImageLoaderTGA::load(Image *image, ArchiveType type, Zone zone, LoadFrom lo
 
 	// Read header
 	if (!readHeader(stream)) {
-		warning("[ImageLoaderTGA::load] Error reading header (%s)", image->getName().c_str());
+		warning("[ImageLoaderTGA::load] Error reading header (%s)", _filename.c_str());
 		goto cleanup;
 	}
 
 	// Read image data
 	if (!readImage(stream, image)) {
-		warning("[ImageLoaderTGA::load] Error reading header (%s)", image->getName().c_str());
+		warning("[ImageLoaderTGA::load] Error reading image (%s)", _filename.c_str());
 		goto cleanup;
 	}
 
@@ -361,10 +365,82 @@ bool ImageLoaderTGA::readImage(Common::SeekableReadStream *stream, Image *image)
 
 #pragma region CNM
 
-bool ImageLoaderCNM::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
-	warning("[ImageLoaderCNM::load] Not implemented (%s)!", image->getName().c_str());
+ImageLoaderCIN::~ImageLoaderCIN() {
+	deinit();
+}
+
+bool ImageLoaderCIN::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+	if (!image)
+		error("[ImageLoaderCNM::load] Invalid image pointer (%s)!");
+
+	byte format = 0;
+	_filename = image->getName();
+
+	if (!init()){
+		warning("[ImageLoaderCIN::load] Error initializing image reader (%s)", _filename.c_str());
+		goto cleanup;
+	}
+
+	// Check cinematic format
+	format = _cinematic->readByte();
+	if (_cinematic->eos() || _cinematic->err() || format != CINEMATIC_FORMAT) {
+		warning("[ImageLoaderCIN::load] Wrong cinematic format for %s (was: %d, valid: %d)", _filename.c_str(), format, CINEMATIC_FORMAT);
+		goto cleanup;
+	}
+
+	// Read image data
+	if (!readImage(image)) {
+		warning("[ImageLoaderCIN::load] Error reading image (%s)", _filename.c_str());
+		goto cleanup;
+	}
+
+	deinit();
 
 	return true;
+
+cleanup:
+	deinit();
+	return false;
+}
+
+bool ImageLoaderCIN::init() {
+	_cinematic = new Cinematic();
+
+	if (!_cinematic->init(_filename)) {
+		warning("[ImageLoaderCIN::init] Error initializing cinematic (%s)", _filename.c_str());
+		return false;
+	}
+
+	if (!readHeader()) {
+		warning("[ImageLoaderCIN::init] Error reading header (%s)", _filename.c_str());
+		return false;
+	}
+
+	return true;
+}
+
+void ImageLoaderCIN::deinit() {
+	SAFE_DELETE(_cinematic);
+}
+
+bool ImageLoaderCIN::readHeader() {
+	memset(&_header, 0, sizeof(_header));
+
+	// Read header (size: 0x40)
+	// TODO read missing fields properly
+	_cinematic->skip(5 * 4 + 2 + 1);
+	_header.width  = _cinematic->readUint32LE();
+	_header.height = _cinematic->readUint32LE();
+	_cinematic->skip(1 +  8 * 4);
+
+	return true;
+}
+
+bool ImageLoaderCIN::readImage(Image *image) {
+	if (!image || !image->isInitialized())
+		error("[ImageLoaderCNM::readImage] Invalid image pointer or image not initialized (%s)!");
+
+	return false;
 }
 
 #pragma endregion

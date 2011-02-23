@@ -28,19 +28,32 @@
 
 #include "ring/shared.h"
 
+#include "common/stream.h"
+
 namespace Ring {
 
 class Movie;
 class ScreenManager;
 
-class MovieData {
+class Cinematic : public Common::SeekableReadStream  {
 public:
-	MovieData();
-	~MovieData();
+	Cinematic();
+	~Cinematic();
 
+	bool init(Common::String name);
 	void deinit();
 
+	// ReadStream
+	virtual bool eos() const;
+	virtual uint32 read(void *dataPtr, uint32 dataSize);
+
+	// SeekableReadStream
+	virtual int32 pos() const;
+	virtual int32 size() const;
+	virtual bool seek(int32 offset, int whence = SEEK_SET);
+
 private:
+	Common::SeekableReadStream *_stream;    ///< The movie file stream
 	// buffer
 	// buffer 2
 	byte   _field_8;
@@ -91,7 +104,7 @@ private:
 	// global buffer
 
 	// Data
-	MovieData *_data;
+	Cinematic *_data;
 };
 
 } // End of namespace Ring

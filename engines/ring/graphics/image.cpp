@@ -114,7 +114,7 @@ bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom 
 		if (type == kArchiveArt)
 			error("[Image::load] Archive files do not contains cinematic files (%s)", filename.c_str());
 
-		loader = new ImageLoaderCNM();
+		loader = new ImageLoaderCIN();
 	} else if (filename.hasSuffix(".tga")) {
 		// TGA images in art files are always compressed
 		if (type == kArchiveFile)
