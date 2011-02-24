@@ -184,7 +184,7 @@ void ApplicationRing::startMenu(bool savegame) {
 
 	soundStopAll(4);
 	setZoneAndEnableBag(kZoneSY);
-	puzzleSetActive(kPuzzleMenu, true, true);
+	puzzleSetActive(kPuzzleGeneralMenu, true, true);
 	puzzleSetMod(kPuzzleMenu, 1, 0);
 
 	for (uint32 i = 1; i < 8; i++) {
