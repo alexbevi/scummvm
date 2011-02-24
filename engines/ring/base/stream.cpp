@@ -180,6 +180,9 @@ void CompressedStream::decompressIndexed(uint32 blockSize, uint32 seqSize, uint3
 	// Cleanup buffers
 	free(seqBuffer);
 	free(coreBuffer);
+
+	// Create decompressed stream
+	_memoryStream = new Common::MemoryReadStream(_buffer, size, DisposeAfterUse::YES);
 }
 
 uint32 CompressedStream::decompress(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte* buffer) {

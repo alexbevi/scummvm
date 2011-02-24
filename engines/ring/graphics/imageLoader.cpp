@@ -174,6 +174,16 @@ bool ImageLoaderBMA::readImage(Image *image) {
 							   2 * _header.seqWidth * _header.seqHeight - 6,
 							   _header.field_C, _header.field_10);
 
+	// Create surface to hold the data
+	Graphics::Surface *surface = new Graphics::Surface();
+	surface->create(_header.seqWidth, _header.seqHeight, 2); // FIXME: Always 16bpp BMPs?
+
+	// Read from compressed stream
+	_stream->read(surface->pixels, _header.seqWidth * _header.seqHeight * 2);
+
+
+	image->setSurface(surface);
+
 	return true;
 }
 

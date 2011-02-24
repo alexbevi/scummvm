@@ -117,7 +117,7 @@ void ScreenManager::draw(Image *image, Common::Point point, DrawType type) {
 }
 
 void ScreenManager::drawImage(Image *image, Common::Point dest, int srcWidth, int srcHeight, int srcX, int offset) {
-
+	image->draw(&_screen, dest, srcWidth, srcHeight, srcX, offset);
 
 	updateScreen();
 }
