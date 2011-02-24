@@ -31,6 +31,7 @@
 #include "ring/game/application_faust.h"
 #include "ring/game/application_jerusalem.h"
 #include "ring/game/application_pilgrim2.h"
+#include "ring/game/application_pilgrim3.h"
 #include "ring/game/application_pompeii.h"
 #include "ring/game/application_ring.h"
 
@@ -115,7 +116,7 @@ Common::Error RingEngine::run() {
 		break;
 
 	case Ring::GameTypePilgrim3:
-		error("[RingEngine::run] Pilgrim 3 support not implemented yet!");
+		_application = new ApplicationPilgrim3(this);
 
 	case Ring::GameTypeJerusalem:
 		_application = new ApplicationJerusalem(this);

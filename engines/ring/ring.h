@@ -54,7 +54,7 @@
  *  - Faust: Seven Games of the Soul (1999)
  *  - TimeScape: Journey to Pompeii (2000)
  *  - Pilgrim 2: The Legend of the Prophet and the Assassin (2000)
- *  - Pilgrim 3: The Secrets of Alamut (2001) ???
+ *  - Pilgrim 3: The Secrets of Alamut (2001)
  *  - Jerusalem: The Three Roads to the Holy Land (2002)
  */
 namespace Ring {

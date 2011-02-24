@@ -24,11 +24,13 @@ MODULE_OBJS := \
 	game/application_faust.o \
 	game/application_jerusalem.o \
 	game/application_pilgrim2.o \
+	game/application_pilgrim3.o \
 	game/application_pompeii.o \
 	game/application_ring.o \
 	game/event_faust.o \
 	game/event_jerusalem.o \
 	game/event_pilgrim2.o \
+	game/event_pilgrim3.o \
 	game/event_pompeii.o \
 	game/event_ring.o \
 	graphics/animation.o \

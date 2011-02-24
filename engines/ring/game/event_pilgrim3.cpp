@@ -1,0 +1,86 @@
+/* ScummVM - Graphic Adventure Engine
+ *
+ * ScummVM is the legal property of its developers, whose names
+ * are too numerous to list here. Please refer to the COPYRIGHT
+ * file distributed with this source distribution.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * $URL$
+ * $Id$
+ *
+ */
+
+#include "ring/game/event_pilgrim3.h"
+
+#include "ring/base/application.h"
+
+//using namespace Pilgrim3Game;
+
+namespace Ring {
+
+EventHandlerPilgrim3::EventHandlerPilgrim3(Application *application) : _app(application) {
+}
+
+EventHandlerPilgrim3::~EventHandlerPilgrim3() {
+	// Zero-out passed pointers
+	_app = NULL;
+}
+
+#pragma region Event handling
+
+void EventHandlerPilgrim3::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
+	error("[EventHandlerPilgrim3::onMouseLeftButtonUp] Not implemented");
+}
+
+void EventHandlerPilgrim3::onMouseLeftButtonDown(Common::Event &evt) {
+	error("[EventHandlerPilgrim3::onMouseLeftButtonDown] Not implemented");
+}
+
+void EventHandlerPilgrim3::onMouseRightButtonUp(Common::Event &evt) {
+	error("[EventHandlerPilgrim3::onMouseRightButtonUp] Not implemented");
+}
+
+void EventHandlerPilgrim3::onKeyDown(Common::Event &evt) {
+	error("[EventHandlerPilgrim3::onKeyDown] Not implemented");
+}
+
+#pragma endregion
+
+#pragma region Zone Setup
+
+void EventHandlerPilgrim3::onSetup(Zone zone, SetupType type) {
+	error("[EventHandlerPilgrim3::onSetup] Not implemented");
+}
+
+#pragma endregion
+
+#pragma region Timer
+
+void EventHandlerPilgrim3::onTimer(TimerId timerId) {
+	error("[EventHandlerPilgrim3::onTimer] Not implemented");
+}
+
+#pragma endregion
+
+#pragma region Sound
+
+void EventHandlerPilgrim3::onSound(Id id, SoundType type, uint32 a3) {
+	error("[EventHandlerPilgrim3::onSound] Not implemented");
+}
+
+#pragma endregion
+
+} // End of namespace Ring
