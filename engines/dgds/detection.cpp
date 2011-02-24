@@ -44,9 +44,6 @@ namespace Dgds {
 
 /**
  * Detection entries for Dynamix games
- *
- * When adding a new entry, use Game.getVersion() for the
- * version information.
  */
 static const ADGameDescription DgdsGameDescriptions[] = {
 	// Heart of China - Spanish PC
@@ -136,8 +133,13 @@ class DgdsMetaEngine : public AdvancedMetaEngine {
 public:
 	DgdsMetaEngine() : AdvancedMetaEngine(detectionParams) {}
 
-	virtual const char *getName() const { return "Dynamix Game Development System"; }
-	virtual const char *getOriginalCopyright() const { return "Dynamix Game Development System (c) Dynamix"; }
+	virtual const char *getName() const {
+		return "Dynamix Game Development System";
+	}
+
+	virtual const char *getOriginalCopyright() const {
+		return "Dynamix Game Development System (c) Dynamix";
+	}
 
 	virtual bool hasFeature(MetaEngineFeature f) const;
 	virtual bool createInstance(OSystem *syst, Engine **engine, const ADGameDescription *desc) const;
