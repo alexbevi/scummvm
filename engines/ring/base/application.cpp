@@ -149,20 +149,7 @@ void Application::init() {
 
 	// Setup fonts
 	_fontHandler = new FontHandler();
-	switch (languageGetCurrent()) {
-	default:
-		fontAdd(kFontDefault, "arxrin.fon", "ARX Pilgrim L", 12, true, false, false, false, languageGetCurrent());
-		break;
-
-	case kLanguageHebrew:
-		fontAdd(kFontDefault, "arxrin.fon", "ArxelHebrew", 12, true, false, false, false, languageGetCurrent());
-		break;
-
-	case kLanguageGreek:
-		// FIXME replace by proper GUI font
-		fontAdd(kFontDefault, "arxrin.fon", "Arial", 16, true, false, false, false, languageGetCurrent());
-		break;
-	}
+	initFont();
 
 	// Setup dialogs
 	_dialogHandler = new DialogHandler();

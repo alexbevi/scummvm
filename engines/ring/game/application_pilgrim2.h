@@ -37,6 +37,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Initialization
+	virtual void initFont();
 	virtual void setup();
 	virtual void initZones();
 

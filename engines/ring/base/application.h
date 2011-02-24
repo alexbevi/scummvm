@@ -66,6 +66,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Initialization
 	void init();
+	virtual void initFont() = 0;
 	virtual void setup() = 0;
 	virtual void initZones() = 0;
 

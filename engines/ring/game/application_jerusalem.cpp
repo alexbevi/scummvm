@@ -42,6 +42,10 @@ ApplicationJerusalem::~ApplicationJerusalem() {
 
 #pragma region Game setup
 
+void ApplicationJerusalem::initFont() {
+	error("[ApplicationJerusalem::initFont] Not implemented");
+}
+
 void ApplicationJerusalem::setup() {
 	error("[ApplicationJerusalem::setup] Not implemented");
 }

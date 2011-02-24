@@ -42,6 +42,10 @@ ApplicationPompeii::~ApplicationPompeii() {
 
 #pragma region Game setup
 
+void ApplicationPompeii::initFont() {
+	error("[ApplicationPompeii::initFont] Not implemented");
+}
+
 void ApplicationPompeii::setup() {
 	error("[ApplicationPompeii::setup] Not implemented");
 }

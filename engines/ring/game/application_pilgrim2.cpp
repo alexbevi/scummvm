@@ -42,6 +42,10 @@ ApplicationPilgrim2::~ApplicationPilgrim2() {
 
 #pragma region Game setup
 
+void ApplicationPilgrim2::initFont() {
+	error("[ApplicationPilgrim2::initFont] Not implemented");
+}
+
 void ApplicationPilgrim2::setup() {
 	error("[ApplicationPilgrim2::setup] Not implemented");
 }

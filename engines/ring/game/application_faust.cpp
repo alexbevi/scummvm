@@ -42,6 +42,10 @@ ApplicationFaust::~ApplicationFaust() {
 
 #pragma region Game setup
 
+void ApplicationFaust::initFont() {
+	error("[ApplicationFaust::initFont] Not implemented");
+}
+
 void ApplicationFaust::setup() {
 	error("[ApplicationFaust::setup] Not implemented");
 }
