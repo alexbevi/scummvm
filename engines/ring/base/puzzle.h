@@ -107,6 +107,8 @@ private:
 	SoundItem *getSoundItem(Id soundId);
 
 	static bool imagePriorityCompare(ImageHandle *image1, ImageHandle *image2);
+
+	void initializeImage(ImageHandle *image);
 };
 
 } // End of namespace Ring

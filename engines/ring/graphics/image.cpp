@@ -54,7 +54,7 @@ void ImageHandle::init(Common::String nameId, const Common::Point &point, bool a
 	_coordinates = point;
 	_originalCoordinates = point;
 	_isActive = active;
-	_field_66 = a6;
+	_drawingType = a6;
 	_priority = priority;
 	_frameCount = frameCount;
 	_field_6C = 1;

@@ -42,6 +42,8 @@ public:
 
 	virtual void alloc() = 0;
 	virtual void dealloc() = 0;
+
+	virtual void draw() = 0;
 };
 
 class VisualElement : public Visual {
@@ -53,7 +55,7 @@ public:
 	virtual void dealloc();
 
 	void init(uint32 a1, uint32 a2, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
-	void draw();
+	virtual void draw();
 
 	// Accessors
 	void setField8(uint32 val) { _field_8 = val; }
@@ -103,6 +105,8 @@ public:
 	void setTextForegroundColor(Color foreground, Color foreground2);
 	void setTextBackgroundColor(Color background);
 	void setFontId(FontId fontId);
+
+	void draw();
 
 	// Management
 	void add(ObjectId objectId);

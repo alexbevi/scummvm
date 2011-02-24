@@ -73,6 +73,9 @@ public:
 	void unpauseAnimation();
 	void pauseFrameAnimation(uint32 frame, uint32 a3, uint32 a4);
 
+	void playPuzzleAnimations(uint32 ticks);
+	void playRotationAnimations(uint32 ticks);
+
 	// Show/Hide
 	void show();
 	void hide();

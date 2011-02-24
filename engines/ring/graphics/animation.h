@@ -44,6 +44,7 @@ public:
 	void unpause() { _paused = false; }
 
 	void sub_416710();
+	void sub_416870(uint32 ticks);
 
 	void setStartFrame(uint32 frame);
 	void setActiveFrame(uint32 frame);
@@ -54,6 +55,9 @@ public:
 	void saveLoadWithSerializer(Common::Serializer &s);
 
 	// Accessors
+	byte getField26() { return _field_26; }
+	byte getField2D() { return _field_2D; }
+
 	void setField20(byte val) { _field_20 = 0; }
 
 protected:

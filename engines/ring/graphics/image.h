@@ -86,6 +86,7 @@ public:
 	Common::Point getCoordinates() { return _coordinates; }
 	Common::Point getOriginalCoordinates() { return _originalCoordinates; }
 	bool isActive() { return _isActive; }
+	byte getDrawingType() { return _drawingType; }
 	uint32 getPriority() { return _priority; }
 	uint32 getField6C() { return _field_6C; }
 	ObjectPresentation *getObjectPresentation() { return _objectPresentation; }
@@ -106,7 +107,7 @@ private:
 	Common::Point _coordinates;
 	Common::Point _originalCoordinates;
 	bool _isActive;
-	byte _field_66;
+	byte _drawingType;
 	uint32 _priority;
 	byte _frameCount;
 	uint32 _field_6C;

@@ -145,7 +145,11 @@ void Animation::initAnimation(uint32 a1, float a2, uint32 startFrame, byte a4, u
 }
 
 void Animation::sub_416710() {
-	error("[AnimationImage::setTicks] Not implemented");
+	error("[AnimationImage::sub_416710] Not implemented");
+}
+
+void Animation::sub_416870(uint32 ticks) {
+	error("[AnimationImage::sub_416870] Not implemented");
 }
 
 void Animation::setTicks(uint32 ticks) {

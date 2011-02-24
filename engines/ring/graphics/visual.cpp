@@ -473,6 +473,10 @@ void VisualObjectList::setFontId(FontId fontId) {
 		_fontId = fontId;
 }
 
+void VisualObjectList::draw() {
+	error("[VisualObjectList::draw] Not implemented!");
+}
+
 #pragma endregion
 
 #pragma region Management

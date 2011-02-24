@@ -227,6 +227,16 @@ void ObjectPresentation::pauseFrameAnimation(uint32 frame, uint32 a3, uint32 a4)
 		(*it)->pauseOnFrame(frame, a3, a4);
 }
 
+void ObjectPresentation::playPuzzleAnimations(uint32 ticks) {
+	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
+		(*it)->sub_416870(ticks);
+}
+
+void ObjectPresentation::playRotationAnimations(uint32 ticks) {
+	for (Common::Array<Animation *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
+		(*it)->sub_416870(ticks);
+}
+
 void ObjectPresentation::show() {
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
 		(*it)->setTicks(g_system->getMillis());
