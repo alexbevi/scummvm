@@ -145,14 +145,13 @@ static const RingGameDescription gameDescriptions[] = {
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Pilgrim 3: The Secrets of Alamut (Windows CD - 2 disks)
-#if 0
 	{
 		{
 			"pilgrim3",
 			"",
 			{
-				{"", 0, "", 0},
-				{"", 0, "", 0},
+				{"Legend.exe", 0, "985e2a88576fbe008b0aedc8373766fd", 856064},
+				{"sy.at3", 0, "b7084371c0adb1a84e708843130514d8", 10381851},
 			},
 			Common::EN_ANY,
 			Common::kPlatformWindows,
@@ -162,7 +161,6 @@ static const RingGameDescription gameDescriptions[] = {
 		GameTypePilgrim3,
 		LANG_ENG,
 	},
-#endif
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Jerusalem: The Three Roads to the Holy Land (Windows CD - 2 disks)
