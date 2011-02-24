@@ -2008,4 +2008,43 @@ uint32 Application::visualListGetItemCount(Id visualId, PuzzleId puzzleId) {
 
 #pragma endregion
 
+#pragma region DragControl
+
+void Application::dragControlSetField45(uint32 a1) {
+	if (!_dragControl)
+		error("[Application::dragControlSetField45] DragControl not initialized properly!");
+
+	_dragControl->setField45(a1);
+}
+
+void Application::dragControlSetHotspot(const Common::Rect &rect) {
+	if (!_dragControl)
+		error("[Application::dragControlSetHotspot] DragControl not initialized properly!");
+
+	_dragControl->setHotspot(rect);
+}
+
+uint32 Application::dragControlGetOffsetX() {
+	if (!_dragControl)
+		error("[Application::dragControlGetOffsetX] DragControl not initialized properly!");
+
+	return _dragControl->getOffsetX();
+}
+
+uint32 Application::dragControlGetOffsetY() {
+	if (!_dragControl)
+		error("[Application::dragControlGetOffsetY] DragControl not initialized properly!");
+
+	return _dragControl->getOffsetY();
+}
+
+uint32 Application::dragControlGetDistance() {
+	if (!_dragControl)
+		error("[Application::dragControlGetDistance] DragControl not initialized properly!");
+
+	return _dragControl->getDistance();
+}
+
+#pragma endregion
+
 } // End of namespace Ring

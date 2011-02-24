@@ -340,6 +340,15 @@ public:
 	uint32 visualListGetItemCount(Id visualId, PuzzleId puzzleId);
 
 	//////////////////////////////////////////////////////////////////////////
+	// DragControl
+	void dragControlSetField45(uint32 a1);
+	void dragControlSetHotspot(const Common::Rect &rect);
+
+	uint32 dragControlGetOffsetX();
+	uint32 dragControlGetOffsetY();
+	uint32 dragControlGetDistance();
+
+	//////////////////////////////////////////////////////////////////////////
 	// Accessors
 	Zone getCurrentZone() { return _zone; }
 	Common::String getCurrentZoneString() { return getZoneString(_zone); }

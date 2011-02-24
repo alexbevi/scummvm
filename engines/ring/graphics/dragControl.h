@@ -58,6 +58,8 @@ public:
 	uint32 getField45() { return _field_45; }
 	Hotspot *getHotspot() { return _hotspot; }
 
+	void setField45(uint32 val) { _field_45 = val; }
+
 private:
 	Common::Point _coords0;
 	Common::Point _coords1;
