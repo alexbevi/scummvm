@@ -100,6 +100,10 @@ void Text::setBackgroundColor(Color background) {
 	}
 }
 
+Common::Rect Text::getBoundingBox() {
+	return Common::Rect(_point.x, _point.y, _point.x + _width, _point.y + _height);
+}
+
 #pragma region Serializable
 
 void Text::saveLoadWithSerializer(Common::Serializer &s) {

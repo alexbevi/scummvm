@@ -28,9 +28,12 @@
 
 #include "graphics/surface.h"
 
+#include "ring/shared.h"
+
 namespace Ring {
 
 class Image;
+class Text;
 
 class ScreenManager {
 public:
@@ -49,9 +52,8 @@ public:
 	//
 	//void readPalette();
 	//
-	//
-	//
-	//
+	void drawText(Common::String text, Common::Point coords, Color color);
+	void drawText(Text *text);
 
 	void updateScreen();
 

@@ -41,6 +41,7 @@ public:
 	void init(Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background);
 	void set(Common::String text);
 	void draw();
+	Common::Rect getBoundingBox();
 
 	// Accessors
 	void setObjectPresentation(ObjectPresentation *objectPresentation) { _objectPresentation = objectPresentation; }
@@ -48,8 +49,16 @@ public:
 	void setForegroundColor(Color foreground);
 	void setBackgroundColor(Color background);
 	void setCoordinates(Common::Point point) { _point = point; }
+
+	Common::String getString() { return _text; }
+	Common::Point getCoordinates() { return _point; }
+	FontId getFontId() { return _fontId; }
+	uint32 getForegroundColor() { return _foregroundColor; }
 	uint32 getWidth() { return _width; }
 	uint32 getHeight() { return _height; }
+	bool hasTransparentBackground() { return _transparentBackground; }
+	uint32 getBackgroundColor() { return _backgroundColor; }
+	ObjectPresentation *getPresentation() { return _objectPresentation; }
 
 	// Serializable
 	void saveLoadWithSerializer(Common::Serializer &s);
@@ -62,7 +71,7 @@ private:
 	uint32 _foregroundColor;
 	uint32 _width;
 	uint32 _height;
-	byte _transparentBackground;
+	bool _transparentBackground;
 	uint32 _backgroundColor;
 	ObjectPresentation *_objectPresentation;
 };

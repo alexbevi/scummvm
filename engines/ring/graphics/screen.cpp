@@ -25,9 +25,19 @@
 
 #include "ring/graphics/screen.h"
 
+#include "ring/base/application.h"
+#include "ring/base/font.h"
+#include "ring/base/object.h"
+#include "ring/base/text.h"
+
 #include "ring/graphics/image.h"
 
+#include "ring/helpers.h"
+#include "ring/ring.h"
+
 #include "common/system.h"
+
+#include "graphics/fonts/winfont.h"
 
 namespace Ring {
 
@@ -39,10 +49,11 @@ ScreenManager::~ScreenManager() {
 }
 
 void ScreenManager::init() {
-	_screen.create(640, 480, 2);
+	_screen.create(640, 480, g_system->getScreenFormat().bytesPerPixel);
 }
 
 void ScreenManager::clear() {
+	_screen.fillRect(Common::Rect(0, 0, 640, 480), 0);
 	g_system->fillScreen(0);
 }
 
@@ -74,6 +85,39 @@ void ScreenManager::drawImage(Image *image, Common::Point dest, int srcWidth, in
 
 void ScreenManager::drawRectangle(Common::Rect rect, uint32 color) {
 	_screen.frameRect(rect, color);
+}
+
+void ScreenManager::drawText(Common::String text, Common::Point coords, Color color) {
+	Graphics::WinFont *font = getApp()->getFontHandler()->getFont(kFontDefault);
+	if (!font)
+		error("[ScreenManager::drawText] Cannot get the font to draw text (id: %d)", kFontDefault);
+
+	// Draw text
+	uint32 width = font->getStringWidth(text);
+	font->drawString(&_screen, text, coords.x, coords.y, width, color.getColor());
+}
+
+void ScreenManager::drawText(Text *text) {
+	if (!text)
+		return;
+
+	// Check text presentation
+	if (text->getPresentation() && !text->getPresentation()->isShown())
+		return;
+
+	// Draw background if needed
+	if (!text->hasTransparentBackground())
+		_screen.fillRect(text->getBoundingBox(), text->getBackgroundColor());
+
+	Graphics::WinFont *font = getApp()->getFontHandler()->getFont(kFontDefault);
+	if (text->getFontId())
+		font = getApp()->getFontHandler()->getFont(text->getFontId());
+
+	if (!font)
+		error("[ScreenManager::drawText] Cannot get the font to draw text (id: %d)", text->getFontId() ? text->getFontId() : kFontDefault);
+
+	// Draw text
+	font->drawString(&_screen, text->getString(), text->getCoordinates().x, text->getCoordinates().y, text->getWidth(), text->getForegroundColor());
 }
 
 void ScreenManager::updateScreen() {
