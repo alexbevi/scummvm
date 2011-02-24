@@ -53,18 +53,21 @@ public:
 	void update(ScreenManager *screen);
 
 	void setBackgroundImage(Common::String filename, const Common::Point &point, bool isActive, LoadFrom loadFrom);
+	void setMod(uint32 a2, uint32 a3);
 
 	void addPresentationText(Text *text);
 	void addPresentationImage(ImageHandle *image);
 	void addPresentationAnimation(ObjectPresentation *objectPresentation);
+
+	// Accessibility
 	void addAccessibility(Accessibility *accessibility);
+	Accessibility *getAccessibility(const Common::Point &point);
 
 	// Movability
 	void addMovability(Movability *movability);
 	void setMovabilityOnOrOff(bool enableHotspot);
 	void setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability);
-
-	void setMod(uint32 a2, uint32 a3);
+	Movability *getMovability(const Common::Point &point);
 
 	// Visual
 	void addVisual(Visual *visual);

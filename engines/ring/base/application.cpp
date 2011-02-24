@@ -442,9 +442,40 @@ void Application::update(const Common::Point &point) {
 
 	// Menu
 	if (puzzleGet(kPuzzleMenu)) {
-		error("[Application::update] Menu puzzle update not implemented");
+		Puzzle *menu = puzzleGet(kPuzzleMenu);
 
-		return;
+		// FIXME always return 0 in Ring (calls a method of Visual that always return 0)
+		/*if (menu->checkVisuals0(point))
+			return;*/
+
+		// Check accessibilities
+		Accessibility *accessibility = menu->getAccessibility(point);
+		if (accessibility) {
+
+			if (menu->getField24() == 2) {
+				error("[Application::update] Menu puzzle update not implemented");
+
+
+			} else {
+				error("[Application::update] Menu puzzle update not implemented");
+
+				return;
+			}
+		}
+
+		// Check movabilities
+		if (menu->getField24() == 1) {
+			Movability *movability = menu->getMovability(point);
+			if (!movability)
+				return;
+
+			error("[Application::update] Menu puzzle update not implemented");
+		} else if (menu->getField24() == 2) {
+			error("[Application::update] Menu puzzle update not implemented");
+
+
+			return;
+		}
 	}
 
 	// Current rotation

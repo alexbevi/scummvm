@@ -34,6 +34,7 @@
 #include "ring/base/text.h"
 
 #include "ring/graphics/animation.h"
+#include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
 #include "ring/graphics/screen.h"
 #include "ring/graphics/visual.h"
@@ -243,12 +244,28 @@ void Puzzle::addPresentationAnimation(ObjectPresentation *objectPresentation) {
 	_presentationAnimations.push_back(objectPresentation);
 }
 
+#pragma region Accessibility
+
 void Puzzle::addAccessibility(Accessibility *accessibility) {
 	if (!accessibility)
 		error("[Puzzle::addAccessibility] Accessibility is not initialized properly");
 
 	_accessibilities.push_back(accessibility);
 }
+
+Accessibility *Puzzle::getAccessibility(const Common::Point &point) {
+	for (Common::Array<Accessibility *>::iterator it = _accessibilities.begin(); it != _accessibilities.end(); it++) {
+		if (!(*it)->getHotspot()->isEnabled())
+			continue;
+
+		if ((*it)->getHotspot()->contains(point))
+			return (*it);
+	}
+
+	return NULL;
+}
+
+#pragma endregion
 
 #pragma region Movability
 
@@ -286,6 +303,18 @@ void Puzzle::setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uin
 		else
 			_movabilities[i]->disableHotspot();
 	}
+}
+
+Movability *Puzzle::getMovability(const Common::Point &point) {
+	for (Common::Array<Movability *>::iterator it = _movabilities.begin(); it != _movabilities.end(); it++) {
+		if (!(*it)->getHotspot()->isEnabled())
+			continue;
+
+		if ((*it)->getHotspot()->contains(point))
+			return (*it);
+	}
+
+	return NULL;
 }
 
 #pragma endregion
