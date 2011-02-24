@@ -185,7 +185,7 @@ void Rotation::destroyImage() {
 
 void Rotation::drawImage(ScreenManager *screen) {
 	if (_imageHandle)
-		screen->draw(_imageHandle, _imageHandle->getCoordinates(), 1);
+		screen->draw(_imageHandle, _imageHandle->getCoordinates(), kDrawType1);
 }
 
 void Rotation::draw(ScreenManager *screen) {

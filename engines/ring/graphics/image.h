@@ -74,7 +74,7 @@ protected:
 class ImageHandle : public Image, public Common::Serializable {
 public:
 	ImageHandle(Common::String nameId, const Common::Point &point, bool active, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
-	ImageHandle(Common::String nameId, const Common::Point &point, bool active, byte a6, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
+	ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 	~ImageHandle();
 
 	// Serializable
@@ -86,7 +86,7 @@ public:
 	Common::Point getCoordinates() { return _coordinates; }
 	Common::Point getOriginalCoordinates() { return _originalCoordinates; }
 	bool isActive() { return _isActive; }
-	byte getDrawingType() { return _drawingType; }
+	DrawType getDrawType() { return _drawType; }
 	uint32 getPriority() { return _priority; }
 	uint32 getField6C() { return _field_6C; }
 	ObjectPresentation *getObjectPresentation() { return _objectPresentation; }
@@ -107,7 +107,7 @@ private:
 	Common::Point _coordinates;
 	Common::Point _originalCoordinates;
 	bool _isActive;
-	byte _drawingType;
+	DrawType _drawType;
 	uint32 _priority;
 	byte _frameCount;
 	uint32 _field_6C;
@@ -118,7 +118,7 @@ private:
 	LoadFrom _loadFrom;
 	ArchiveType _archiveType;
 
-	void init(Common::String nameId, const Common::Point &point, bool isActive, byte a6, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
+	void init(Common::String nameId, const Common::Point &point, bool isActive, DrawType drawType, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 };
 
 } // End of namespace Ring

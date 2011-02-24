@@ -187,6 +187,13 @@ enum ImageType {
 	kImageTypeTGC = 6
 };
 
+enum DrawType {
+	kDrawTypeInvalid    = 0,
+	kDrawType1          = 1,
+	kDrawType2          = 2,
+	kDrawType3          = 3
+};
+
 #pragma endregion
 
 //////////////////////////////////////////////////////////////////////////

@@ -62,15 +62,15 @@ void ScreenManager::drawAndUpdate(Image *image) {
 }
 
 void ScreenManager::drawAndUpdate(Image *image, Common::Point point) {
-	draw(image, point, 1);
+	draw(image, point, kDrawType1);
 	updateScreen();
 }
 
-void ScreenManager::draw(Image *image, byte type) {
+void ScreenManager::draw(Image *image, DrawType type) {
 	draw(image, Common::Point(0, 0), type);
 }
 
-void ScreenManager::draw(Image *image, Common::Point point, byte type) {
+void ScreenManager::draw(Image *image, Common::Point point, DrawType type) {
 	warning("[ScreenManager::update] Not implemented");
 
 	// HACK (direct surface copy, ignore drawing type)

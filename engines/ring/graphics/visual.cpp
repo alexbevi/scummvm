@@ -268,7 +268,7 @@ void VisualObjectList::dealloc() {
 		(*it)->destroy();
 }
 
-void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10, Common::String filename11, Common::String filename12, Common::String filename13, byte a15, ArchiveType archiveType) {
+void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10, Common::String filename11, Common::String filename12, Common::String filename13, DrawType drawType, ArchiveType archiveType) {
 	_archiveType = archiveType;
 
 	if (iconPath != "")
@@ -288,37 +288,37 @@ void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String 
 	}
 
 	// Create images
-	_backgroundImage = new ImageHandle(filename3, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
+	_backgroundImage = new ImageHandle(filename3, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_backgroundImage->setDirectory(path);
 
-	_upGun = new ImageHandle(filename4, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
+	_upGun = new ImageHandle(filename4, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_upGun->setDirectory(path);
 
-	_upGur = new ImageHandle(filename5, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
+	_upGur = new ImageHandle(filename5, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_upGur->setDirectory(path);
 
-	_upGus = new ImageHandle(filename6, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
+	_upGus = new ImageHandle(filename6, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_upGus->setDirectory(path);
 
-	_upGua = new ImageHandle(filename7, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
+	_upGua = new ImageHandle(filename7, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_upGua->setDirectory(path);
 
-	_downGun = new ImageHandle(filename8, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
+	_downGun = new ImageHandle(filename8, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_downGun->setDirectory(path);
 
-	_downGur = new ImageHandle(filename9, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
+	_downGur = new ImageHandle(filename9, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_downGur->setDirectory(path);
 
-	_downGus = new ImageHandle(filename10, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
+	_downGus = new ImageHandle(filename10, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_downGus->setDirectory(path);
 
-	_downGua = new ImageHandle(filename11, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
+	_downGua = new ImageHandle(filename11, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_downGua->setDirectory(path);
 
-	_cliImageP = new ImageHandle(filename12, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
+	_cliImageP = new ImageHandle(filename12, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_cliImageP->setDirectory(path);
 
-	_cliImageA = new ImageHandle(filename13, Common::Point(0, 0), true, a15, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
+	_cliImageA = new ImageHandle(filename13, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
 	_cliImageA->setDirectory(path);
 
 	_text1 = new Text();

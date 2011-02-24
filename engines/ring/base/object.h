@@ -54,7 +54,7 @@ public:
 	uint32 getTextWidth(uint32 textIndex);
 
 	// Image
-	void addImageToPuzzle(Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom);
+	void addImageToPuzzle(Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, DrawType drawType, uint32 priority, byte a9, LoadFrom loadFrom);
 	void addImageToRotation(Rotation *rotation, uint32 layer);
 	void setImageCoordinatesOnPuzzle(const Common::Point &point);
 	void setImageCoordinatesOnPuzzle(uint32 imageIndex, const Common::Point &point);
@@ -62,7 +62,7 @@ public:
 	Common::Point getImageCoordinatesOnPuzzle(uint32 imageIndex);
 
 	// Animation
-	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32 a7, uint32 a8, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom);
+	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32 a7, DrawType drawType, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom);
 	void addAnimationToRotation(Rotation *rotation, uint32 layer, uint32 a3, float a4, uint32 a5);
 	void setAnimationOnPuzzle(uint32 animationIndex, ObjectId objectId);
 	void setAnimationOnRotation(uint32 animationIndex, ObjectId objectId);
@@ -117,7 +117,7 @@ public:
 	void setTextCoordinatesToPuzzle(uint32 presentationIndex, uint32 textIndex, const Common::Point &point);
 	uint32 getTextWidth(uint32 presentationIndex, uint32 textIndex);
 
-	void addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom);
+	void addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, DrawType drawType, uint32 priority, byte a10, LoadFrom loadFrom);
 	void addImageToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer);
 	void setImageCoordinatesOnPuzzle(uint32 presentationIndex, const Common::Point &point);
 	void setImageCoordinatesOnPuzzle(uint32 presentationIndex, uint32 imageIndex, const Common::Point &point);
@@ -139,7 +139,7 @@ public:
 	void setAccessibilityOnOrOff(bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration);
 
 	// Animation
-	void addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, ImageType imageType, const Common::Point &point, uint32 a8, uint32 a9, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom);
+	void addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, ImageType imageType, const Common::Point &point, uint32 a8, DrawType drawType, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom);
 	void addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7);
 	void setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId);
 	void setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId);

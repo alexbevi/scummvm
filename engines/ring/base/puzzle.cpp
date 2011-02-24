@@ -149,7 +149,7 @@ void Puzzle::update(ScreenManager *screen) {
 		if (!_background->isInitialized())
 			initializeImage(_background);
 
-		_application->getScreenManager()->draw(_background, _background->getCoordinates(), 1);
+		_application->getScreenManager()->draw(_background, _background->getCoordinates(), kDrawType1);
 	}
 
 	// Handle animations
@@ -199,7 +199,7 @@ void Puzzle::update(ScreenManager *screen) {
 		if (!image->isInitialized())
 			initializeImage(image);
 
-		_application->getScreenManager()->draw(image, image->getCoordinates(), image->getDrawingType());
+		_application->getScreenManager()->draw(image, image->getCoordinates(), image->getDrawType());
 	}
 
 	// Draw texts

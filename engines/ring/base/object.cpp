@@ -100,8 +100,8 @@ uint32 ObjectPresentation::getTextWidth(uint32 textIndex) {
 	return _textPuzzle[textIndex]->getWidth();
 }
 
-void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a7, uint32 priority, byte a9, LoadFrom loadFrom) {
-	ImageHandle *image = new ImageHandle(filename, point, isActive, a7, priority, a9, getApp()->getCurrentZone(), loadFrom, kImageTypeBackground, getApp()->getArchiveType());
+void ObjectPresentation::addImageToPuzzle(Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, DrawType drawType, uint32 priority, byte a9, LoadFrom loadFrom) {
+	ImageHandle *image = new ImageHandle(filename, point, isActive, drawType, priority, a9, getApp()->getCurrentZone(), loadFrom, kImageTypeBackground, getApp()->getArchiveType());
 	image->setObjectPresentation(this);
 
 	_imagePuzzle.push_back(image);
@@ -139,9 +139,9 @@ Common::Point ObjectPresentation::getImageCoordinatesOnPuzzle(uint32 imageIndex)
 	return _imagePuzzle[imageIndex]->getCoordinates();
 }
 
-void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32, uint32 a8, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom) {
+void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32, DrawType drawType, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom) {
 	AnimationImage *animation = new AnimationImage();
-	animation->init(filename, imageType, point, 0, a8, a11, a12, 1, a13, frameCount, priority, loadFrom, getApp()->getArchiveType());
+	animation->init(filename, imageType, point, 0, drawType, a11, a12, 1, a13, frameCount, priority, loadFrom, getApp()->getArchiveType());
 	animation->updatePresentation(this);
 	if (!(a13 & 2)) {
 		animation->setField20(0);
@@ -349,11 +349,11 @@ uint32 Object::getTextWidth(uint32 presentationIndex, uint32 textIndex) {
 	return _presentations[presentationIndex]->getTextWidth(textIndex);
 }
 
-void Object::addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, byte a8, uint32 priority, byte a10, LoadFrom loadFrom) {
+void Object::addImageToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String filename, const Common::Point &point, bool isActive, DrawType drawType, uint32 priority, byte a10, LoadFrom loadFrom) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addTextToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
-	_presentations[presentationIndex]->addImageToPuzzle(puzzle, filename, point, isActive, a8, priority, a10, loadFrom);
+	_presentations[presentationIndex]->addImageToPuzzle(puzzle, filename, point, isActive, drawType, priority, a10, loadFrom);
 }
 
 void Object::addImageToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer) {
@@ -488,11 +488,11 @@ void Object::setAccessibilityOnOrOff(bool enableHotspot, uint32 fromAcceleration
 
 #pragma region Animation
 
-void Object::addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, ImageType imageType, const Common::Point &point, uint32 a8, uint32 a9, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom) {
+void Object::addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, ImageType imageType, const Common::Point &point, uint32 a8, DrawType drawType, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addAnimationToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
-	_presentations[presentationIndex]->addAnimationToPuzzle(puzzle, name, imageType, point, a8, a9, priority, frameCount, a12, a13, a14, loadFrom);
+	_presentations[presentationIndex]->addAnimationToPuzzle(puzzle, name, imageType, point, a8, drawType, priority, frameCount, a12, a13, a14, loadFrom);
 }
 
 void Object::addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7) {

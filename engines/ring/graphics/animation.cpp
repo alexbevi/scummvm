@@ -251,7 +251,7 @@ void Animation::saveLoadWithSerializer(Common::Serializer &s) {
 AnimationImage::AnimationImage() : Animation() {
 	_imageType = kImageTypeBMP;
 	_field_79 = 0;
-	_field_7D = 0;
+	_drawType = kDrawTypeInvalid;
 	_frameCount = 0;
 	_currentImage = NULL;
 	_field_89 = 0;
@@ -263,7 +263,7 @@ AnimationImage::~AnimationImage() {
 	_currentImage = NULL;
 }
 
-void AnimationImage::init(Common::String name, ImageType imageType, const Common::Point &point, uint32 a5, uint32 a6, uint32 a7, float a8, uint32 startFrame, byte a10, byte frameCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType) {
+void AnimationImage::init(Common::String name, ImageType imageType, const Common::Point &point, uint32 a5, DrawType drawType, uint32 a7, float a8, uint32 startFrame, byte a10, byte frameCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType) {
 	Animation::initAnimation(a7, a8, startFrame, a10, priority);
 
 	_name = name;
@@ -271,7 +271,7 @@ void AnimationImage::init(Common::String name, ImageType imageType, const Common
 	_field_79 = a5;
 
 	_coordinates = point;
-	_field_7D = a6;
+	_drawType = drawType;
 	_frameCount = frameCount;
 
 	if (_field_8 == 0) {
@@ -285,7 +285,7 @@ void AnimationImage::init(Common::String name, ImageType imageType, const Common
 
 	// Create image storage for each frame
 	for (uint32 i = 0; i < _field_8; i++) {
-		ImageHandle *image = new ImageHandle(name, point, true, LOBYTE(_field_7D), priority, frameCount, getApp()->getCurrentZone(), loadFrom, imageType, archiveType);
+		ImageHandle *image = new ImageHandle(name, point, true, _drawType, priority, frameCount, getApp()->getCurrentZone(), loadFrom, imageType, archiveType);
 
 		image->setField6C(2);
 		image->setAnimation(this);
