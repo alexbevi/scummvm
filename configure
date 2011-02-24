@@ -87,6 +87,7 @@ add_engine cge "CGE" yes
 add_engine cine "Cinematique evo 1" yes
 add_engine composer "Magic Composer" no
 add_engine cruise "Cinematique evo 2" yes
+add_engine dgds "Dynamix Game Development System" yes
 add_engine draci "Dragon History" yes
 add_engine drascula "Drascula: The Vampire Strikes Back" yes
 add_engine dreamweb "Dreamweb" no

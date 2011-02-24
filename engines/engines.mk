@@ -46,6 +46,11 @@ DEFINES += -DENABLE_CRUISE=$(ENABLE_CRUISE)
 MODULES += engines/cruise
 endif
 
+ifdef ENABLE_DGDS
+DEFINES += -DENABLE_DGDS=$(ENABLE_DGDS)
+MODULES += engines/dgds
+endif
+
 ifdef ENABLE_DRACI
 DEFINES += -DENABLE_DRACI=$(ENABLE_DRACI)
 MODULES += engines/draci
