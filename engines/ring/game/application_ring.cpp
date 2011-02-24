@@ -615,29 +615,37 @@ ArchiveType ApplicationRing::getReadFrom(Zone zone) const {
 void ApplicationRing::initZones() {
 	_loadFrom = kLoadFromDisk;
 
+	drawZoneName(kZoneSY);
 	_archiveType = _configuration.artSY ? kArchiveArt : kArchiveFile;
 	initZoneSY();
 
 	_loadFrom = kLoadFromCd;
 
+	drawZoneName(kZoneAS);
 	_archiveType = _configuration.artAS ? kArchiveArt : kArchiveFile;
 	initZoneAS();
 
+	drawZoneName(kZoneNI);
 	_archiveType = _configuration.artNI ? kArchiveArt : kArchiveFile;
 	initZoneNI();
 
+	drawZoneName(kZoneN2);
 	_archiveType = _configuration.artN2 ? kArchiveArt : kArchiveFile;
 	initZoneN2();
 
+	drawZoneName(kZoneRO);
 	_archiveType = _configuration.artRO ? kArchiveArt : kArchiveFile;
 	initZoneRO();
 
+	drawZoneName(kZoneRH);
 	_archiveType = _configuration.artRH ? kArchiveArt : kArchiveFile;
 	initZoneRH();
 
+	drawZoneName(kZoneFO);
 	_archiveType = _configuration.artFO ? kArchiveArt : kArchiveFile;
 	initZoneFO();
 
+	drawZoneName(kZoneWA);
 	_archiveType = _configuration.artWA ? kArchiveArt : kArchiveFile;
 	initZoneWA();
 
@@ -648,6 +656,10 @@ void ApplicationRing::initZones() {
 		_archiveType = kArchiveFile;
 
 	_state = kStateNone;
+
+	// Clear screen
+	_screenManager->clear();
+	g_system->updateScreen();
 }
 
 void ApplicationRing::initZoneSY() {

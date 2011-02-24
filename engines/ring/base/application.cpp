@@ -450,6 +450,21 @@ void Application::updateBag(const Common::Point &point) {
 
 #pragma region Display and Movies
 
+void Application::drawZoneName(Zone zone) {
+	// Draw the loading zone on screen
+	_screenManager->clear();
+
+	Common::String zoneName = (zone == kZoneSY) ? "System" : getZoneLongName(zone);
+    Common::String message = Common::String::format("Loading zone %s...", zoneName.c_str());
+	_screenManager->drawText(message, Common::Point(10, 435), Color(246, 234, 219));
+
+	_screenManager->updateScreen();
+	g_system->updateScreen();
+
+	// Poll events to prevent unresponsive application
+	_vm->pollEvents();
+}
+
 void Application::showImage(Common::String filename, Common::Point point, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (archiveType == kArchiveInvalid)
 		archiveType = getReadFrom(getCurrentZone());

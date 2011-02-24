@@ -80,7 +80,7 @@ RingEngine::~RingEngine() {
 
 Common::Error RingEngine::run() {
 	// Initialize the graphics
-	const Graphics::PixelFormat dataPixelFormat(3, 5, 5, 5, 0, 10, 5, 0, 0);
+	const Graphics::PixelFormat dataPixelFormat(2, 5, 5, 5, 0, 10, 5, 0, 0);
 	initGraphics(640, 480, true, &dataPixelFormat);
 
 	// We do not support color conversion

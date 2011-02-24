@@ -97,6 +97,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Drawing
 	virtual void draw() = 0;
+	void drawZoneName(Zone zone);
 
 	void playMovie(Common::String filename, float frameDivider = 0.0f);
 	void playMovieChannel(Common::String filename, uint32 channel);
