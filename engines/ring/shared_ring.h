@@ -32,7 +32,6 @@ namespace RingGame {
 // Ring Enumerations
 //////////////////////////////////////////////////////////////////////////
 enum PuzzleId {
-	kPuzzle1           = 1,
 	kPuzzle10000       = 10000,
 	kPuzzle10001       = 10001,
 	kPuzzle10002       = 10002,
@@ -187,7 +186,7 @@ enum PuzzleId {
 	kPuzzle80012       = 80012,
 	kPuzzle80013       = 80013,
 	kPuzzle80014       = 80014,
-	kPuzzleMenu        = 90000,
+	kPuzzleGeneralMenu = 90000,
 	kPuzzlePreferences = 90001,
 	kPuzzleLoad        = 90002,
 	kPuzzleSave        = 90003,

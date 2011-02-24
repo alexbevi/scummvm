@@ -419,7 +419,57 @@ void Application::onSound(Id id, SoundType type, uint32 a3) {
 }
 
 void Application::update(const Common::Point &point) {
-	error("[Application::update] Not implemented");
+	// Handle bag
+	if (_bag->getField94()) {
+		if (_bag->sub_418A70(point)) {
+			_eventHandler->onBagUnknown(point);
+
+			return;
+		}
+
+		goto label_end;
+	}
+
+	// Handle drag control
+	if (_dragControl->getField20() && _dragControl->getField45() == 2) {
+		if (_dragControl->getHotspot() && _dragControl->getHotspot()->contains(point))
+			cursorSelect(kCursor4);
+		else
+			cursorSelect(kCursor3);
+
+		return;
+	}
+
+	// Menu
+	if (puzzleGet(kPuzzleMenu)) {
+		error("[Application::update] Menu puzzle update not implemented");
+
+		return;
+	}
+
+	// Current rotation
+	if (_rotation && !_rotation->getField28()) {
+		error("[Application::update] Current rotation update not implemented");
+
+		return;
+	}
+
+	// Current puzzle
+	if (_puzzle) {
+		error("[Application::update] Current puzzle update not implemented");
+
+		return;
+	}
+
+label_end:
+	if (_dragControl->getField20())
+		cursorSelect(kCursor3);
+	else if (bagHasClickedObject())
+		cursorSelect(kCursor1);
+	else
+		cursorSelect(kCursorIdle);
+
+	_eventHandler->onBagUnknown(point);
 }
 
 void Application::updateBag(const Common::Point &point) {

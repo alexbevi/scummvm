@@ -74,6 +74,9 @@ enum FontId {
 
 enum CursorId {
 	kCursorInvalid    = 0,
+	kCursor1          = 1,
+	kCursor3          = 3,
+	kCursor4          = 4,
 	kCursorIdle       = 50,
 	kCursorBusy       = 51,
 	kCursorHotspot    = 52,
@@ -191,7 +194,8 @@ enum ImageType {
 //////////////////////////////////////////////////////////////////////////
 
 enum PuzzleIdEnum {
-	kPuzzleInvalid = 0
+	kPuzzleInvalid = 0,
+	kPuzzleMenu    = 1
 };
 
 enum ObjectIdEnum {

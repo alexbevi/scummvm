@@ -200,6 +200,10 @@ void Bag::sub_417E00() {
 	error("[Bag::sub_417E00] Not implemented!");
 }
 
+bool Bag::sub_418A70(const Common::Point &point) {
+	error("[Bag::sub_418A70] Not implemented!");
+}
+
 void Bag::draw(){
 	error("[Bag::draw] Not implemented!");
 }

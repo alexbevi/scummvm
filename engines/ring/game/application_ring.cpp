@@ -185,7 +185,7 @@ void ApplicationRing::startMenu(bool savegame) {
 	soundStopAll(4);
 	setZoneAndEnableBag(kZoneSY);
 	puzzleSetActive(kPuzzleMenu, true, true);
-	puzzleSetMod(kPuzzle1, 1, 0);
+	puzzleSetMod(kPuzzleMenu, 1, 0);
 
 	for (uint32 i = 1; i < 8; i++) {
 		objectSetAccessibilityOff((ObjectId)i);
@@ -293,12 +293,12 @@ void ApplicationRing::draw() {
 		return;
 	}
 
-	// Update puzzle 1
-	if (_puzzles.has(kPuzzle1)) {
-		Puzzle *puzzle = _puzzles.get(kPuzzle1);
+	// Update menu puzzle
+	if (_puzzles.has(kPuzzleMenu)) {
+		Puzzle *puzzleMenu = _puzzles.get(kPuzzleMenu);
 
-		puzzle->alloc();
-		puzzle->update(_screenManager);
+		puzzleMenu->alloc();
+		puzzleMenu->update(_screenManager);
 	}
 
 	// Draw bag
@@ -342,7 +342,7 @@ void ApplicationRing::messageInsertCd(Zone zone) {
 }
 
 void ApplicationRing::messageShowWarning(uint32 accelerationIndex) {
-	if (!puzzleSetMod(kPuzzle1, 2, 3))
+	if (!puzzleSetMod(kPuzzleMenu, 2, 3))
 		return;
 
 	objectPresentationSetTextToPuzzle(kObject3, 0, 0, _messageType);
@@ -356,11 +356,11 @@ void ApplicationRing::messageShowWarning(uint32 accelerationIndex) {
 void ApplicationRing::messageHideWarning(uint32 accelerationIndex) {
 	objectPresentationHideAndRemove(kObject3);
 	objectSetAccessibilityOff(kObject3, accelerationIndex, accelerationIndex);
-	puzzleSetMod(kPuzzle1, 1, 0);
+	puzzleSetMod(kPuzzleMenu, 1, 0);
 }
 
 void ApplicationRing::messageShowQuestion(uint32 accelerationIndex) {
-	if (!puzzleSetMod(kPuzzle1, 2, 4))
+	if (!puzzleSetMod(kPuzzleMenu, 2, 4))
 		return;
 
 	objectPresentationSetTextToPuzzle(kObject4, 0, 0, _messageType);
@@ -374,7 +374,7 @@ void ApplicationRing::messageShowQuestion(uint32 accelerationIndex) {
 void ApplicationRing::messageHideQuestion(uint32 accelerationIndex) {
 	objectPresentationHideAndRemove(kObject4);
 	objectSetAccessibilityOff(kObject4, accelerationIndex, accelerationIndex + 1);
-	puzzleSetMod(kPuzzle1, 1, 0);
+	puzzleSetMod(kPuzzleMenu, 1, 0);
 }
 
 #pragma endregion
@@ -669,113 +669,113 @@ void ApplicationRing::initZoneSY() {
 
 	//////////////////////////////////////////////////////////////////////////
 	// Setup system and dialog boxes
-	puzzleAdd(kPuzzle1);
+	puzzleAdd(kPuzzleMenu);
 
 	objectAdd(kObject1, "", "", 1);
 	objectAddPresentation(kObject1);
-	objectPresentationAddTextToPuzzle(kObject1, 0, kPuzzle1, "", Common::Point(1, 16), kFontDefault, Color(0, -1, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObject1, 0, kPuzzleMenu, "", Common::Point(1, 16), kFontDefault, Color(0, -1, 0), Color(-1, -1, -1));
 
 	objectAdd(kObject6, "", "", 1);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 0, kPuzzle1, "FO_WOT1_W_A.tga", Common::Point(0, 96), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 0, kPuzzleMenu, "FO_WOT1_W_A.tga", Common::Point(0, 96), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 1, kPuzzle1, "FO_WOT1_W_B.tga", Common::Point(0, 176), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 1, kPuzzleMenu, "FO_WOT1_W_B.tga", Common::Point(0, 176), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 2, kPuzzle1, "FO_WOT1_W_C.tga", Common::Point(0, 126), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 2, kPuzzleMenu, "FO_WOT1_W_C.tga", Common::Point(0, 126), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 3, kPuzzle1, "FO_WOT1_W_D.tga", Common::Point(0, 208), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 3, kPuzzleMenu, "FO_WOT1_W_D.tga", Common::Point(0, 208), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 4, kPuzzle1, "FO_WOT1_W_E.tga", Common::Point(0, 88), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 4, kPuzzleMenu, "FO_WOT1_W_E.tga", Common::Point(0, 88), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 5, kPuzzle1, "FO_WOT1_B_A.tga", Common::Point(415, 281), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 5, kPuzzleMenu, "FO_WOT1_B_A.tga", Common::Point(415, 281), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 6, kPuzzle1, "FO_WOT1_B_C.tga", Common::Point(488, 180), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 6, kPuzzleMenu, "FO_WOT1_B_C.tga", Common::Point(488, 180), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 7, kPuzzle1, "FO_WOT1_B_E.tga", Common::Point(195, 94), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 7, kPuzzleMenu, "FO_WOT1_B_E.tga", Common::Point(195, 94), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 8, kPuzzle1, "FO_BRU1_W_A.tga", Common::Point(0, 45), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 8, kPuzzleMenu, "FO_BRU1_W_A.tga", Common::Point(0, 45), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 9, kPuzzle1, "FO_BRU1_B_A.tga", Common::Point(440, 66), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 9, kPuzzleMenu, "FO_BRU1_B_A.tga", Common::Point(440, 66), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 10, kPuzzle1, "FO_BRU1_B_B.tga", Common::Point(490, 208), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 10, kPuzzleMenu, "FO_BRU1_B_B.tga", Common::Point(490, 208), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 11, kPuzzle1, "FO_WOT2_W_A.tga", Common::Point(0, 28), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 11, kPuzzleMenu, "FO_WOT2_W_A.tga", Common::Point(0, 28), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 12, kPuzzle1, "FO_WOT2_W_B.tga", Common::Point(0, 22), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 12, kPuzzleMenu, "FO_WOT2_W_B.tga", Common::Point(0, 22), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 13, kPuzzle1, "FO_WOT2_W_C.tga", Common::Point(0, 67), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 13, kPuzzleMenu, "FO_WOT2_W_C.tga", Common::Point(0, 67), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 14, kPuzzle1, "FO_WOT2_W_D.tga", Common::Point(0, 194), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 14, kPuzzleMenu, "FO_WOT2_W_D.tga", Common::Point(0, 194), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 15, kPuzzle1, "FO_WOT2_B_A.tga", Common::Point(477, 200), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 15, kPuzzleMenu, "FO_WOT2_B_A.tga", Common::Point(477, 200), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 16, kPuzzle1, "FO_WOT2_B_C.tga", Common::Point(496, 251), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 16, kPuzzleMenu, "FO_WOT2_B_C.tga", Common::Point(496, 251), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 17, kPuzzle1, "FO_BRU2_W_A.tga", Common::Point(0, 186), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 17, kPuzzleMenu, "FO_BRU2_W_A.tga", Common::Point(0, 186), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 18, kPuzzle1, "FO_BRU2_B_A.tga", Common::Point(443, 222), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 18, kPuzzleMenu, "FO_BRU2_B_A.tga", Common::Point(443, 222), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 19, kPuzzle1, "FO_BRU2_B_B.tga", Common::Point(493, 219), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 19, kPuzzleMenu, "FO_BRU2_B_B.tga", Common::Point(493, 219), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 20, kPuzzle1, "FO_WOT3_W_A.tga", Common::Point(0, 16), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 20, kPuzzleMenu, "FO_WOT3_W_A.tga", Common::Point(0, 16), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 21, kPuzzle1, "FO_WOT3_W_B.tga", Common::Point(0, 107), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 21, kPuzzleMenu, "FO_WOT3_W_B.tga", Common::Point(0, 107), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 22, kPuzzle1, "FO_WOT3_W_C.tga", Common::Point(0, 46), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 22, kPuzzleMenu, "FO_WOT3_W_C.tga", Common::Point(0, 46), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 23, kPuzzle1, "FO_WOT3_W_D.tga", Common::Point(0, 26), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 23, kPuzzleMenu, "FO_WOT3_W_D.tga", Common::Point(0, 26), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 24, kPuzzle1, "FO_WOT3_B_A.tga", Common::Point(508, 238), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 24, kPuzzleMenu, "FO_WOT3_B_A.tga", Common::Point(508, 238), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 25, kPuzzle1, "FO_WOT3_B_B.tga", Common::Point(381, 216), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 25, kPuzzleMenu, "FO_WOT3_B_B.tga", Common::Point(381, 216), true, 3, 1000);
 	objectAddPresentation(kObject6);
-	objectPresentationAddImageToPuzzle(kObject6, 26, kPuzzle1, "FO_WOT3_B_D.tga", Common::Point(408, 246), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject6, 26, kPuzzleMenu, "FO_WOT3_B_D.tga", Common::Point(408, 246), true, 3, 1000);
 
 	objectAdd(kObject7, "", "", 1);
 	objectAddPresentation(kObject7);
-	objectPresentationAddImageToPuzzle(kObject7, 0, kPuzzle1, "SY_ISHA.bmp", Common::Point(0, 16), true, 1, 1000);
+	objectPresentationAddImageToPuzzle(kObject7, 0, kPuzzleMenu, "SY_ISHA.bmp", Common::Point(0, 16), true, 1, 1000);
 
 	objectAdd(kObject2, "", "", 1);
 	objectAddPresentation(kObject2);
-	objectPresentationAddImageToPuzzle(kObject2, 0, kPuzzle1, "Exit.bmp", Common::Point(160, 165), true, 1, 1000);
-	objectAddPuzzleAccessibility(kObject2, kPuzzle1, Common::Rect(262, 270, 321, 306), false, 57, 1);
-	objectAddPuzzleAccessibility(kObject2, kPuzzle1, Common::Rect(310, 270, 370, 306), false, 57, 0);
+	objectPresentationAddImageToPuzzle(kObject2, 0, kPuzzleMenu, "Exit.bmp", Common::Point(160, 165), true, 1, 1000);
+	objectAddPuzzleAccessibility(kObject2, kPuzzleMenu, Common::Rect(262, 270, 321, 306), false, 57, 1);
+	objectAddPuzzleAccessibility(kObject2, kPuzzleMenu, Common::Rect(310, 270, 370, 306), false, 57, 0);
 	objectSetPuzzleAccessibilityKey(kObject2, 0, Common::KEYCODE_RETURN);
 	objectSetPuzzleAccessibilityKey(kObject2, 1, Common::KEYCODE_ESCAPE);
 	objectAddPresentation(kObject2);
-	objectPresentationAddImageToPuzzle(kObject2, 1, kPuzzle1, "ex_yes.bmp", Common::Point(261, 279), true, 1, 1000);
+	objectPresentationAddImageToPuzzle(kObject2, 1, kPuzzleMenu, "ex_yes.bmp", Common::Point(261, 279), true, 1, 1000);
 	objectAddPresentation(kObject2);
-	objectPresentationAddImageToPuzzle(kObject2, 2, kPuzzle1, "ex_no.bmp", Common::Point(318, 279), true, 1, 1000);
+	objectPresentationAddImageToPuzzle(kObject2, 2, kPuzzleMenu, "ex_no.bmp", Common::Point(318, 279), true, 1, 1000);
 
 	objectAdd(kObject3, "", "", 1);
 	objectAddPresentation(kObject3);
-	objectPresentationAddImageToPuzzle(kObject3, 0, kPuzzle1, "Warning.bmp", Common::Point(160, 165), true, 1, 1000);
-	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", Common::Point(200, 200), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
-	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzle1, "", Common::Point(300, 280), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddImageToPuzzle(kObject3, 0, kPuzzleMenu, "Warning.bmp", Common::Point(160, 165), true, 1, 1000);
+	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzleMenu, "", Common::Point(200, 200), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObject3, 0, kPuzzleMenu, "", Common::Point(300, 280), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
 	objectAddPresentation(kObject3);
-	objectPresentationAddImageToPuzzle(kObject3, 1, kPuzzle1, "wr_ok.tga", Common::Point(313, 281), true, 3, 1000);
-	objectAddPuzzleAccessibility(kObject3, kPuzzle1, Common::Rect(286, 269, 363, 307), false, 57, 0);
+	objectPresentationAddImageToPuzzle(kObject3, 1, kPuzzleMenu, "wr_ok.tga", Common::Point(313, 281), true, 3, 1000);
+	objectAddPuzzleAccessibility(kObject3, kPuzzleMenu, Common::Rect(286, 269, 363, 307), false, 57, 0);
 	objectSetPuzzleAccessibilityKey(kObject3, 0, Common::KEYCODE_RETURN);
 
 	objectAdd(kObject4, "", "", 1);
 	objectAddPresentation(kObject4);
-	objectPresentationAddImageToPuzzle(kObject4, 0, kPuzzle1, "Question.bmp", Common::Point(160, 165), true, 1, 1000);
-	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", Common::Point(200, 200), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
-	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzle1, "", Common::Point(200, 280), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddImageToPuzzle(kObject4, 0, kPuzzleMenu, "Question.bmp", Common::Point(160, 165), true, 1, 1000);
+	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzleMenu, "", Common::Point(200, 200), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObject4, 0, kPuzzleMenu, "", Common::Point(200, 280), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
 	objectAddPresentation(kObject4);
-	objectPresentationAddImageToPuzzle(kObject4, 1, kPuzzle1, "g_ok.tga", Common::Point(181, 257), true, 3, 1000);
+	objectPresentationAddImageToPuzzle(kObject4, 1, kPuzzleMenu, "g_ok.tga", Common::Point(181, 257), true, 3, 1000);
 	objectAddPresentation(kObject4);
-	objectPresentationAddImageToPuzzle(kObject4, 2, kPuzzle1, "qu_cancel.tga", Common::Point(181, 282), true, 3, 1000);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(277, 300, 347, 340), false, 57, 0);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(350, 300, 380, 340), false, 57, 1);
+	objectPresentationAddImageToPuzzle(kObject4, 2, kPuzzleMenu, "qu_cancel.tga", Common::Point(181, 282), true, 3, 1000);
+	objectAddPuzzleAccessibility(kObject4, kPuzzleMenu, Common::Rect(277, 300, 347, 340), false, 57, 0);
+	objectAddPuzzleAccessibility(kObject4, kPuzzleMenu, Common::Rect(350, 300, 380, 340), false, 57, 1);
 	objectSetPuzzleAccessibilityKey(kObject4, 0, Common::KEYCODE_RETURN);
 	objectSetPuzzleAccessibilityKey(kObject4, 1, Common::KEYCODE_ESCAPE);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 250, 250, 281), false, 57, 2);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 283, 250, 309), false, 57, 3);
+	objectAddPuzzleAccessibility(kObject4, kPuzzleMenu, Common::Rect(180, 250, 250, 281), false, 57, 2);
+	objectAddPuzzleAccessibility(kObject4, kPuzzleMenu, Common::Rect(180, 283, 250, 309), false, 57, 3);
 	objectSetPuzzleAccessibilityKey(kObject4, 2, Common::KEYCODE_RETURN);
 	objectSetPuzzleAccessibilityKey(kObject4, 3, Common::KEYCODE_ESCAPE);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 250, 250, 281), false, 57, 4);
-	objectAddPuzzleAccessibility(kObject4, kPuzzle1, Common::Rect(180, 283, 250, 309), false, 57, 5);
+	objectAddPuzzleAccessibility(kObject4, kPuzzleMenu, Common::Rect(180, 250, 250, 281), false, 57, 4);
+	objectAddPuzzleAccessibility(kObject4, kPuzzleMenu, Common::Rect(180, 283, 250, 309), false, 57, 5);
 	objectSetPuzzleAccessibilityKey(kObject4, 4, Common::KEYCODE_RETURN);
 	objectSetPuzzleAccessibilityKey(kObject4, 5, Common::KEYCODE_ESCAPE);
 
@@ -810,9 +810,9 @@ void ApplicationRing::initZoneSY() {
 	objectSetPuzzleAccessibilityKey(kObject90912, 8, Common::KEYCODE_RETURN);
 
 	//////////////////////////////////////////////////////////////////////////
-	// Menu
-	puzzleAdd(kPuzzleMenu);
-	puzzleAddBackgroundImage(kPuzzleMenu, "GenMen.bmp", Common::Point(0, 16), true);
+	// General Menu
+	puzzleAdd(kPuzzleGeneralMenu);
+	puzzleAddBackgroundImage(kPuzzleGeneralMenu, "GenMen.bmp", Common::Point(0, 16), true);
 	puzzleAdd(kPuzzlePreferences);
 	puzzleAddBackgroundImage(kPuzzlePreferences, "Preferences.bmp", Common::Point(0, 16), true);
 	puzzleAdd(kPuzzleSave);
@@ -822,35 +822,35 @@ void ApplicationRing::initZoneSY() {
 	puzzleAdd(kPuzzleGameStatus);
 	puzzleAddBackgroundImage(kPuzzleGameStatus, "GameStat.bmp", Common::Point(0, 16), true);
 
-	// Menu objects
+	// General Menu objects
 	objectAdd(kObjectMenuNewGame, "", "", 1);
-	objectAddPuzzleAccessibility(kObjectMenuNewGame, kPuzzleMenu, Common::Rect(148, 69, 500, 99), true, 57, 0);
+	objectAddPuzzleAccessibility(kObjectMenuNewGame, kPuzzleGeneralMenu, Common::Rect(148, 69, 500, 99), true, 57, 0);
 	objectAddPresentation(kObjectMenuNewGame);
-	objectPresentationAddImageToPuzzle(kObjectMenuNewGame, 0, kPuzzleMenu, "gm_new.bmp", Common::Point(148, 85), true, 1, 1000);
+	objectPresentationAddImageToPuzzle(kObjectMenuNewGame, 0, kPuzzleGeneralMenu, "gm_new.bmp", Common::Point(148, 85), true, 1, 1000);
 	objectAdd(kObjectMenuPreferences, "", "", 1);
-	objectAddPuzzleAccessibility(kObjectMenuPreferences, kPuzzleMenu, Common::Rect(148, 105, 500, 135), true, 57, 0);
+	objectAddPuzzleAccessibility(kObjectMenuPreferences, kPuzzleGeneralMenu, Common::Rect(148, 105, 500, 135), true, 57, 0);
 	objectAddPresentation(kObjectMenuPreferences);
-	objectPresentationAddImageToPuzzle(kObjectMenuPreferences, 0, kPuzzleMenu, "gm_pre.bmp", Common::Point(148, 121), true, 1, 1000);
+	objectPresentationAddImageToPuzzle(kObjectMenuPreferences, 0, kPuzzleGeneralMenu, "gm_pre.bmp", Common::Point(148, 121), true, 1, 1000);
 	objectAdd(kObjectMenuLoad, "", "", 1);
-	objectAddPuzzleAccessibility(kObjectMenuLoad, kPuzzleMenu, Common::Rect(148, 168, 500, 198), true, 57, 0);
+	objectAddPuzzleAccessibility(kObjectMenuLoad, kPuzzleGeneralMenu, Common::Rect(148, 168, 500, 198), true, 57, 0);
 	objectAddPresentation(kObjectMenuLoad);
-	objectPresentationAddImageToPuzzle(kObjectMenuLoad, 0, kPuzzleMenu, "gm_loa.bmp", Common::Point(148, 184), true, 1, 1000);
+	objectPresentationAddImageToPuzzle(kObjectMenuLoad, 0, kPuzzleGeneralMenu, "gm_loa.bmp", Common::Point(148, 184), true, 1, 1000);
 	objectAdd(kObjectMenuSave, "", "", 1);
-	objectAddPuzzleAccessibility(kObjectMenuSave, kPuzzleMenu, Common::Rect(148, 236, 500, 266), true, 57, 0);
+	objectAddPuzzleAccessibility(kObjectMenuSave, kPuzzleGeneralMenu, Common::Rect(148, 236, 500, 266), true, 57, 0);
 	objectAddPresentation(kObjectMenuSave);
-	objectPresentationAddImageToPuzzle(kObjectMenuSave, 0, kPuzzleMenu, "gm_sav.bmp", Common::Point(148, 252), true, 1, 1000);
+	objectPresentationAddImageToPuzzle(kObjectMenuSave, 0, kPuzzleGeneralMenu, "gm_sav.bmp", Common::Point(148, 252), true, 1, 1000);
 	objectAdd(kObjectMenuContinue, "", "", 1);
-	objectAddPuzzleAccessibility(kObjectMenuContinue, kPuzzleMenu, Common::Rect(148, 303, 500, 333), true, 57, 0);
+	objectAddPuzzleAccessibility(kObjectMenuContinue, kPuzzleGeneralMenu, Common::Rect(148, 303, 500, 333), true, 57, 0);
 	objectAddPresentation(kObjectMenuContinue);
-	objectPresentationAddImageToPuzzle(kObjectMenuContinue, 0, kPuzzleMenu, "gm_con.bmp", Common::Point(148, 319), true, 1, 1000);
+	objectPresentationAddImageToPuzzle(kObjectMenuContinue, 0, kPuzzleGeneralMenu, "gm_con.bmp", Common::Point(148, 319), true, 1, 1000);
 	objectAdd(kObjectMenuStatus, "", "", 1);
-	objectAddPuzzleAccessibility(kObjectMenuStatus, kPuzzleMenu, Common::Rect(148, 342, 500, 372), true, 57, 0);
+	objectAddPuzzleAccessibility(kObjectMenuStatus, kPuzzleGeneralMenu, Common::Rect(148, 342, 500, 372), true, 57, 0);
 	objectAddPresentation(kObjectMenuStatus);
-	objectPresentationAddImageToPuzzle(kObjectMenuStatus, 0, kPuzzleMenu, "gm_sta.bmp", Common::Point(148, 358), true, 1, 1000);
+	objectPresentationAddImageToPuzzle(kObjectMenuStatus, 0, kPuzzleGeneralMenu, "gm_sta.bmp", Common::Point(148, 358), true, 1, 1000);
 	objectAdd(kObjectMenuExit, "", "", 1);
-	objectAddPuzzleAccessibility(kObjectMenuExit, kPuzzleMenu, Common::Rect(148, 380, 500, 410), true, 57, 0);
+	objectAddPuzzleAccessibility(kObjectMenuExit, kPuzzleGeneralMenu, Common::Rect(148, 380, 500, 410), true, 57, 0);
 	objectAddPresentation(kObjectMenuExit);
-	objectPresentationAddImageToPuzzle(kObjectMenuExit, 0, kPuzzleMenu, "gm_exi.bmp", Common::Point(148, 396), true, 1, 1000);
+	objectPresentationAddImageToPuzzle(kObjectMenuExit, 0, kPuzzleGeneralMenu, "gm_exi.bmp", Common::Point(148, 396), true, 1, 1000);
 
 	// Preferences objects
 	objectAdd(kObjectPreferencesCancel, "", "", 1);

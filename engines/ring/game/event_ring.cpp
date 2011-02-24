@@ -73,8 +73,8 @@ void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
 	if (getApp()->getDragControl()->getField20() || getApp()->getField6F())
 		return;
 
-	Puzzle *puzzle = getApp()->puzzleGet(kPuzzle1);
-	if (puzzle && puzzle->getField24() == 2)
+	Puzzle *puzzleMenu = getApp()->puzzleGet(kPuzzleMenu);
+	if (puzzleMenu && puzzleMenu->getField24() == 2)
 		return;
 
 	Bag *bag = getApp()->getBag();
