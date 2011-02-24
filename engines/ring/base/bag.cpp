@@ -90,6 +90,8 @@ Bag::Bag() {
 	_imageErdaGun = NULL;
 	_imageErdaGur = NULL;
 	_enabled = false;
+
+	_fre = false;
 }
 
 Bag::~Bag() {

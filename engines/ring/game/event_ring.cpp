@@ -26,6 +26,9 @@
 #include "ring/game/event_ring.h"
 
 #include "ring/base/application.h"
+#include "ring/base/bag.h"
+#include "ring/base/puzzle.h"
+#include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 #include "ring/base/sound.h"
 
@@ -67,7 +70,26 @@ void EventHandlerRing::onMouseLeftButtonDown(Common::Event &evt) {
 }
 
 void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
-	error("[EventHandlerRing::onMouseRightButtonUp] Not implemented");
+	if (getApp()->getDragControl()->getField20() || getApp()->getField6F())
+		return;
+
+	Puzzle *puzzle = getApp()->puzzleGet(kPuzzle1);
+	if (puzzle && puzzle->getField24() == 2)
+		return;
+
+	Bag *bag = getApp()->getBag();
+	if (bag->getField94()) {
+		bag->sub_419350();
+	} else {
+		getApp()->cursorDelete();
+		bag->sub_4192E0();
+
+		if (getApp()->getCurrentRotation())
+			bag->setCurrentRotationFre(getApp()->getCurrentRotation()->getFre());
+
+		getApp()->setupCurrentRotation();
+	}
+
 }
 
 void EventHandlerRing::onKeyDown(Common::Event &evt) {

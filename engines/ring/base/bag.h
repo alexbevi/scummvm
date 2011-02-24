@@ -80,6 +80,8 @@ public:
 	void setClickedObject(ObjectId object) { _clickedObject = object; }
 	ObjectId getClickedObject() { return _clickedObject; }
 
+	void setCurrentRotationFre(bool fre) { _fre = fre; }
+
 private:
 	// Bag data
 	AssociativeArray<Object *>   _objects;
@@ -133,6 +135,9 @@ private:
 	Image      *_imageErdaGun;
 	Image      *_imageErdaGur;
 	bool        _enabled;
+
+	// Current rotation fre
+	bool _fre;
 
 	void loadImage(Common::String filename, Image **image, ArchiveType archiveType) const;
 };

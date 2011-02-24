@@ -147,10 +147,12 @@ public:
 	void setAlp(float alp) { _alp = alp; }
 	void setBet(float bet) { _bet = bet; }
 	void setRan(float ran) { _ran = ran; }
+	void setRolTo(float a2, float a3, float a4);
+
 	float getAlp() { return _alp; };
 	float getBet() { return _bet; }
 	float getRan() { return _ran; }
-	void setRolTo(float a2, float a3, float a4);
+	bool  getFre() { return _fre; }
 
 	// Presentation
 	Animation *addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, byte a5);

@@ -153,7 +153,8 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Puzzle
-	void puzzleAdd(PuzzleId id);
+	void puzzleAdd(PuzzleId puzzleId);
+	Puzzle *puzzleGet(PuzzleId puzzleId);
 
 	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, const Common::Point &point, bool isActive);
 	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
@@ -353,7 +354,10 @@ public:
 	Zone getCurrentZone() { return _zone; }
 	Common::String getCurrentZoneString() { return getZoneString(_zone); }
 	ArchiveType getArchiveType() { return _archiveType; }
+	char getField6F() { return _field_6F; }
+
 	void setField78(bool state) { _field_78 = state; }
+
 
 	//////////////////////////////////////////////////////////////////////////
 	// Handlers and shared data
@@ -361,6 +365,7 @@ public:
 	ArtHandler    *getArtHandler()    { return _artHandler; }
 	Bag           *getBag()           { return _bag; }
 	DialogHandler *getDialogHandler() { return _dialogHandler; }
+	DragControl   *getDragControl()   { return _dragControl; }
 	FontHandler   *getFontHandler()   { return _fontHandler; }
 	SaveManager   *getSaveManager()   { return _saveManager; }
 	ScreenManager *getScreenManager() { return _screenManager; }

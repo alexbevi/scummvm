@@ -879,6 +879,13 @@ void Application::puzzleAdd(PuzzleId puzzleId) {
 	_puzzles.push_back(new Puzzle(this, puzzleId));
 }
 
+Puzzle *Application::puzzleGet(PuzzleId puzzleId) {
+	if (!_puzzles.has(puzzleId))
+		return NULL;
+
+	return _puzzles.get(puzzleId);
+}
+
 void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, const Common::Point &point, bool isActive) {
 	if (!_puzzles.has(puzzleId))
 		error("[Application::puzzleAddBackgroundImage] ID doesn't exist (%d)", puzzleId.id());
