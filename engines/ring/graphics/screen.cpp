@@ -71,14 +71,53 @@ void ScreenManager::draw(Image *image, DrawType type) {
 }
 
 void ScreenManager::draw(Image *image, Common::Point point, DrawType type) {
-	warning("[ScreenManager::update] Not implemented");
+	if (!image)
+		error("[ScreenManager::draw] Invalid image pointer!");
 
-	// HACK (direct surface copy, ignore drawing type)
-	//image->draw(&_screen, point, image->getWidth(), image->getHeight(), 0, 0);
+	// Check the screen surface bit depth (we only handle 16bpp)
+	if (_screen.bytesPerPixel != 2)
+		error("[ScreenManager::draw] Engine only handles 16bpp surfaces (was: %d)!", _screen.bytesPerPixel * 8);
+
+	// Check the image bit depth
+	switch (image->getBPP()) {
+	default:
+		error("[ScreenManager::draw] Invalid image bpp (%d)!", image->getBPP());
+
+	case 8:
+	case 16:
+		image->draw(&_screen, point + _offset);
+		break;
+
+	case 24:
+	case 32: {
+		// Adjust coordinates
+		Common::Point coords = point;
+
+		// TODO intersect image rectangle with screen and get update drawing rect
+
+		switch (type) {
+		default:
+			error("[ScreenManager::draw] Invalid draw type (%d)!", type);
+
+		case 1:
+			image->draw(&_screen, coords + _offset);
+			break;
+
+		case 2:
+			warning("[ScreenManager::draw] Not implemented type 2");
+			break;
+
+		case 3:
+			warning("[ScreenManager::draw] Not implemented type 2");
+			break;
+		}
+		}
+		break;
+	}
 }
 
 void ScreenManager::drawImage(Image *image, Common::Point dest, int srcWidth, int srcHeight, int srcX, int offset) {
-	image->draw(&_screen, dest, srcWidth, srcHeight, srcX, offset);
+
 
 	updateScreen();
 }
