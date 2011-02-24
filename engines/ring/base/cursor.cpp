@@ -145,7 +145,8 @@ void CursorAnimation::dealloc() {
 }
 
 void CursorAnimation::draw() {
-	AnimationImage::draw();
+	// FIXME: Update cursor through cursor manager
+	//AnimationImage::draw();
 }
 
 #pragma endregion

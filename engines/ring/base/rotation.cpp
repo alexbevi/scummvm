@@ -120,13 +120,15 @@ Rotation::Rotation(Id id, Common::String name, byte a3, LoadFrom, uint32 nodeCou
 	_alp       = 225.0f;
 	_bet       = 0;
 	_ran       = 85.0f;
+
+	_imageHandle = NULL;
 }
 
 Rotation::~Rotation() {
 	CLEAR_ARRAY(Movability,         _movabilities);
-	CLEAR_ARRAY(Accessibility,      _accessibilities);
-	CLEAR_ARRAY(ObjectPresentation, _presentations);
-	CLEAR_ARRAY(Animation,          _animations);
+	// Accessibilities are stored in the parent Object
+	// Presentations are stored in the parent Object
+	// Animations are stored in the parent Object
 	CLEAR_ARRAY(Text,               _texts);
 	CLEAR_ARRAY(SoundItem,          _soundItems);
 

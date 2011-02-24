@@ -51,18 +51,18 @@ ObjectPresentation::ObjectPresentation(Object *object) : _object(object) {
 
 ObjectPresentation::~ObjectPresentation() {
 	CLEAR_ARRAY(ImageHandle, _imagePuzzle);
-	CLEAR_ARRAY(Puzzle, _imagePuzzlePtr);
+	// _imagePuzzlePtr are pointers to existing objects
 	CLEAR_ARRAY(AnimationImage, _animationPuzzle);
-	CLEAR_ARRAY(Puzzle, _animationPuzzlePtr);
+	// _animationPuzzlePtr are pointers to existing objects
 	CLEAR_ARRAY(BaseId, _layerImagePtr);
-	CLEAR_ARRAY(Rotation, _layImageRotationPtr);
+	// _layImageRotationPtr are pointers to existing objects
 	CLEAR_ARRAY(BaseId, _layerAnimationRotation);
-	CLEAR_ARRAY(Rotation, _layerAnimationRotationPtr);
+	// _layerAnimationRotationPtr are pointers to existing objects
 	CLEAR_ARRAY(Animation, _layerAnimationRotationAnimation);
 	CLEAR_ARRAY(Text, _textPuzzle);
-	CLEAR_ARRAY(Puzzle, _textPuzzlePtr);
+	// _textPuzzlePtr are pointers to existing objects
 	CLEAR_ARRAY(Text, _textRotation);
-	CLEAR_ARRAY(Rotation, _textRotationPtr);
+	// _textRotationPtr are pointers to existing objects
 
 	// Zero-out passed pointers
 	_object = NULL;

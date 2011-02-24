@@ -86,9 +86,7 @@ Application::~Application() {
 	SAFE_DELETE(_soundHandler);
 	CLEAR_ARRAY(Object, _objects);
 	CLEAR_ARRAY(Puzzle, _puzzles);
-	SAFE_DELETE(_puzzle);
 	CLEAR_ARRAY(Rotation, _rotations);
-	SAFE_DELETE(_rotation);
 	SAFE_DELETE(_bag);
 	SAFE_DELETE(_timerHandler);
 	SAFE_DELETE(_var);
@@ -100,6 +98,8 @@ Application::~Application() {
 	SAFE_DELETE(_soundManager);
 	SAFE_DELETE(_eventHandler);
 
+	_puzzle = NULL;
+	_rotation = NULL;
 	_currentRotation = NULL;
 
 	// Zero-out passed pointers

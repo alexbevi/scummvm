@@ -55,10 +55,10 @@ Puzzle::~Puzzle() {
 	SAFE_DELETE(_background);
 
 	CLEAR_ARRAY(Movability, _movabilities);
-	CLEAR_ARRAY(Accessibility, _accessibilities);
-	CLEAR_ARRAY(ImageHandle, _presentationImages);
-	CLEAR_ARRAY(ObjectPresentation, _presentationAnimations);
-	CLEAR_ARRAY(Text, _texts);
+	// Accessibilities are stored in the parent Object
+	// Presentation images are stored in parent Object (or in Animation)
+	// Presentation animations are stored in parent object
+	// Texts are stored in parent Object
 	CLEAR_ARRAY(SoundItem, _soundItems);
 	CLEAR_ARRAY(Visual, _visuals);
 
