@@ -36,6 +36,7 @@ public:
 	Hotspot(const Common::Rect &rect, bool enabled, uint32 a2, uint32 a3, uint32 a4);
 	~Hotspot();
 
+	void update(const Common::Rect &rect) { _rect = rect;}
 	void enable() { _enabled = true; }
 	void disable() { _enabled = false; }
 	bool isEnabled() { return _enabled; }

@@ -69,6 +69,8 @@ public:
 	virtual void setup() = 0;
 	virtual void initZones() = 0;
 
+	void initObjectCursors(ObjectId objectId);
+
 	void exitZone();
 	void exitToMenu(uint32 a1);
 
@@ -130,6 +132,7 @@ public:
 	// Cursor
 	void cursorSelect(CursorId id);
 	void cursorDelete();
+	void cursorRemoveByType(CursorType type);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Message

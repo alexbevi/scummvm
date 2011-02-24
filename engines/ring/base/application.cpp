@@ -338,6 +338,10 @@ void Application::loadConfiguration() {
 	delete archive;
 }
 
+void Application::initObjectCursors(ObjectId objectId) {
+	error("[Application::initObjectCursors] Not implemented!");
+}
+
 void Application::exitZone() {
 	soundStopAll(128);
 	_soundManager->clear();
@@ -796,6 +800,11 @@ void Application::cursorDelete() {
 
 	if (_cursorHandler)
 		_cursorHandler->removeByType(kCursorType2);
+}
+
+void Application::cursorRemoveByType(CursorType type) {
+	if (_cursorHandler)
+		_cursorHandler->removeByType(type);
 }
 
 #pragma endregion

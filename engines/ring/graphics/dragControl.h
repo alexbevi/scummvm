@@ -38,11 +38,15 @@ public:
 	DragControl();
 	~DragControl();
 
-	void init();
+	void init(Common::Point coords, ObjectId objectId, uint32 a3, Hotspot *hostpot, uint32 a5, Id puzzleRotationId, uint32 a7);
 	void reset();
 
 	void updateCoordinates(const Common::Point &point);
-	void setPreferences(int32 volume, int32 volumeDialog, int32 reverseStereo, int32 pref4);
+	void setHotspot(const Common::Rect &rect);
+
+	uint32 getOffsetX();
+	uint32 getOffsetY();
+	uint32 getDistance();
 
 	// Accessors
 	bool getField20() { return _field_20; }

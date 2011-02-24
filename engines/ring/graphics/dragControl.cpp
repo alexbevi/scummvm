@@ -25,9 +25,12 @@
 
 #include "ring/graphics/dragControl.h"
 
+#include "ring/base/application.h"
+
 #include "ring/graphics/hotspot.h"
 
 #include "ring/helpers.h"
+#include "ring/ring.h"
 
 namespace Ring {
 
@@ -52,20 +55,64 @@ DragControl::~DragControl() {
 	SAFE_DELETE(_hotspot);
 }
 
-void DragControl::init() {
-	error("[DragControl::init] Not implemented!");
+void DragControl::init(Common::Point coords, ObjectId objectId, uint32 a3, Hotspot *hostpot, uint32 a5, Id puzzleRotationId, uint32 a7) {
+	_coords0 = _coords1 = _oldCoords = _currentCoords = coords;
+	_field_20 = 1;
+	_objectId = objectId;
+	_field_25 = a3;
+	_object = getApp()->objectGet(objectId);
+	_hotspot2 = hostpot;
+	_field_31 = a5;
+	_puzzleRotationId = puzzleRotationId;
+	_field_39 = a7;
+	_ticks = g_system->getMillis();
+	_field_41 = 0;
+	_field_45 = 1;
+
+	getApp()->initObjectCursors(objectId);
 }
 
 void DragControl::reset() {
-	error("[DragControl::reset] Not implemented!");
+	_coords0 = _coords1 = _oldCoords = _currentCoords = Common::Point(0, 0);
+	_field_20 = 0;
+	_objectId = kObjectInvalid;
+	_field_25 = 0;
+	_object = NULL;
+	_hotspot2 = NULL;
+	_field_31 = 0;
+	_puzzleRotationId = 0;
+	_field_39 = 0;
+	_ticks = 0;
+	_field_41 = 0;
+	_field_45 = 1;
+
+	setHotspot(Common::Rect(0, 16, 640, 464));
+
+	getApp()->cursorRemoveByType(kCursorTypeImage);
 }
 
 void DragControl::updateCoordinates(const Common::Point &point) {
-	error("[DragControl::updateCoordinates] Not implemented!");
+	_oldCoords = _currentCoords;
+	_currentCoords = point;
+
+	++_field_41;
 }
 
-void DragControl::setPreferences(int32 volume, int32 volumeDialog, int32 reverseStereo, int32 pref4) {
-	error("[DragControl::setPreferences] Not implemented!");
+uint32 DragControl::getOffsetX() {
+	return abs(_currentCoords.x - _oldCoords.x);
+}
+
+uint32 DragControl::getOffsetY() {
+	return abs(_currentCoords.y - _oldCoords.y);
+}
+
+uint32 DragControl::getDistance() {
+	return sqrt(pow((double)getOffsetX(), 2) + pow((double)getOffsetY(), 2));
+}
+
+void DragControl::setHotspot(const Common::Rect &rect) {
+	if (_hotspot)
+		_hotspot->update(rect);
 }
 
 } // End of namespace Ring
