@@ -18,8 +18,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL: https://scummvm-dgds.googlecode.com/svn/trunk/dgds.h $
- * $Id: dgds.h 27 2010-03-31 10:03:41Z alexbevi $
+ * $URL$
+ * $Id$
  *
  */
 

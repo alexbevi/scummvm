@@ -18,8 +18,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL: https://scummvm-dgds.googlecode.com/svn/trunk/detection.cpp $
- * $Id: detection.cpp 12 2010-01-23 12:01:58Z alexbevi $
+ * $URL$
+ * $Id$
  *
  */
 
