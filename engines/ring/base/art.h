@@ -112,6 +112,8 @@ private:
 
 	bool isPresent(Zone zone, LoadFrom loadFrom);
 	int32 getIndex(Zone zone, LoadFrom loadFrom);
+
+	Common::String getArtFolder(Zone zone);
 };
 
 } // End of namespace Ring

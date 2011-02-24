@@ -229,6 +229,28 @@ void RingEngine::update() {
 	_application->getSoundManager()->updateQueue();
 }
 
+bool RingEngine::isMultiLanguage() {
+	// Check if the game supports multiple languages
+	switch (_gameDescription->features) {
+	default:
+		return true;
+
+	case LANG_ENG:
+	case LANG_FRA:
+	case LANG_GER:
+	case LANG_GRE:
+	case LANG_HEB:
+	case LANG_HOL:
+	case LANG_ITA:
+	case LANG_SLO:
+	case LANG_SPA:
+	case LANG_SWE:
+		return false;
+	}
+
+	return false;
+}
+
 bool RingEngine::hasFeature(EngineFeature f) const {
 	return (f == kSupportsRTL);
 }

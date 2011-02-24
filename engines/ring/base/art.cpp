@@ -29,6 +29,7 @@
 
 #include "ring/debug.h"
 #include "ring/helpers.h"
+#include "ring/ring.h"
 
 #include "common/file.h"
 #include "common/substream.h"
@@ -154,9 +155,31 @@ void ArtHandler::open(Zone zone, LoadFrom loadFrom) {
 		error("[ArtHandler::open] Load From not supported (%d)", loadFrom);
 
 	// Compute path
-	// - since we have all the data on disk, the path is the same all the time
-	// - we support multilanguage, so we need to read from the languahe folder
-	Common::String path = Common::String::format("DATA/%s/%s.at2", _app->languageGetFolder().c_str(), _app->getZoneString(zone).c_str());
+	// - All data should be on disk, so we ignore the loadFrom value
+	// - We support multi-language, so for the system zone, we need to read from the language folder
+	// - We have different versions of the archive format (art, at2, at3)
+	Common::String path;
+	switch (((RingEngine *)g_engine)->getGameType()) {
+	default:
+		error("[ArtHandler::open] Unsupported game type (%d)", ((RingEngine *)g_engine)->getGameType());
+
+	case GameTypePilgrim:
+		path = Common::String::format("%s/%s.art", getArtFolder(zone).c_str(), _app->getZoneString(zone).c_str());
+		break;
+
+	case GameTypeRing:
+		path = Common::String::format("%s/%s.at2", getArtFolder(zone).c_str(), _app->getZoneString(zone).c_str());
+		break;
+
+	case GameTypeFaust:
+	case GameTypePompeii:
+	case GameTypePilgrim2:
+	case GameTypePilgrim3:
+	case GameTypeJerusalem:
+		path = Common::String::format("%s/%s.at3", getArtFolder(zone).c_str(), _app->getZoneString(zone).c_str());
+		break;
+	}
+
 
 	// Create new archive
 	Art *art = new Art();
@@ -209,6 +232,19 @@ int32 ArtHandler::getIndex(Zone zone, LoadFrom loadFrom) {
 			return i;
 
 	return -1;
+}
+
+Common::String ArtHandler::getArtFolder(Zone zone) {
+	// For zones other than system, just read from the data folder
+	if (zone != kZoneSY)
+		return "DATA";
+
+	// If the game handles multiple languages, we need to read from the language subfolder
+	if (((RingEngine *)g_engine)->isMultiLanguage())
+		return "DATA/" + _app->languageGetFolder();
+
+	// Otherwise, the system archive file is in the data folder with all the others
+	return "DATA";
 }
 
 #pragma endregion

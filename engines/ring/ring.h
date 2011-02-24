@@ -108,6 +108,10 @@ public:
 	bool pollEvents(bool updateCoords = true);
 	void update();
 
+	// Game type
+	RingGameType getGameType() { return (RingGameType)_gameDescription->gameType; }
+	bool isMultiLanguage();
+
 	// Accessors and helpers
 	Application *getApplication() { return _application; }
 	Common::RandomSource getRandom() const {return _random; }
