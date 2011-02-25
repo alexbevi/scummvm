@@ -37,8 +37,8 @@ class Text;
 
 class Visual : public BaseObject {
 public:
-	Visual(Id id) : BaseObject(id) {}
-	~Visual() {};
+	Visual(Id id);
+	virtual ~Visual();
 
 	virtual void alloc() = 0;
 	virtual void dealloc() = 0;
@@ -49,7 +49,7 @@ public:
 class VisualElement : public Visual {
 public:
 	VisualElement(Id id);
-	~VisualElement();
+	virtual ~VisualElement();
 
 	virtual void alloc();
 	virtual void dealloc();

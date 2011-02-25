@@ -50,7 +50,7 @@ CompressedStream::~CompressedStream() {
 	// Buffer is disposed as part of _memoryStream
 }
 
-bool CompressedStream::init(Common::String filename, uint32 type, uint32 size) {
+bool CompressedStream::init(Common::String filename, uint32 type, uint32) {
 	_fileStream = SearchMan.createReadStreamForMember(filename);
 	if (!_fileStream) {
 		warning("[CompressedStream::init] Error opening file (%s)", filename.c_str());
@@ -94,7 +94,7 @@ void CompressedStream::initDecompression() {
 }
 
 
-void CompressedStream::decompressChuncks(uint32 chuncks, uint32 size) {
+void CompressedStream::decompressChuncks(uint32 chuncks, uint32 bufferSize) {
 	Common::SeekableReadStream *stream = getCompressedStream();
 	if (!stream)
 		error("[CompressedStream::decompressChuncks] Invalid stream!");
@@ -106,8 +106,8 @@ void CompressedStream::decompressChuncks(uint32 chuncks, uint32 size) {
 	if (_buffer)
 		free(_buffer);
 
-	_buffer = (byte *)malloc(size + 1024);
-	memset(_buffer, 0, size + 1024);
+	_buffer = (byte *)malloc(bufferSize + 1024);
+	memset(_buffer, 0, bufferSize + 1024);
 	byte *pBuffer = _buffer;
 
 	uint32 streamPosition = 8;
@@ -125,13 +125,13 @@ void CompressedStream::decompressChuncks(uint32 chuncks, uint32 size) {
 	}
 
 	// Check decompressed size
-	if (decompSize > (size + 64))
+	if (decompSize > (bufferSize + 64))
 		warning("[CompressedStream::decompressChuncks] Error during decompression (buffer overrun)!");
 
-	_memoryStream = new Common::MemoryReadStream(_buffer, size, DisposeAfterUse::YES);
+	_memoryStream = new Common::MemoryReadStream(_buffer, bufferSize, DisposeAfterUse::YES);
 }
 
-void CompressedStream::decompressIndexed(uint32 blockSize, uint32 seqSize, uint32 seqDataSize, uint32 coreSize, uint32 coreDataSize, uint32 size, uint32 indexEnd, uint32 field_C, uint16 field_10) {
+void CompressedStream::decompressIndexed(uint32 blockSize, uint32 seqSize, uint32 seqDataSize, uint32 coreSize, uint32 coreDataSize, uint32 bufferSize, uint32 indexEnd, uint32 field_C, uint16 field_10) {
 	Common::SeekableReadStream *stream = getCompressedStream();
 	if (!stream)
 		error("[CompressedStream::decompressIndexed] Invalid stream!");
@@ -140,8 +140,8 @@ void CompressedStream::decompressIndexed(uint32 blockSize, uint32 seqSize, uint3
 	if (_buffer)
 		free(_buffer);
 
-	_buffer = (byte *)malloc(size + 1024);
-	memset(_buffer, 0, size + 1024);
+	_buffer = (byte *)malloc(bufferSize + 1024);
+	memset(_buffer, 0, bufferSize + 1024);
 	byte *pBuffer = _buffer;
 
 	// Decompress seq
@@ -182,7 +182,7 @@ void CompressedStream::decompressIndexed(uint32 blockSize, uint32 seqSize, uint3
 	free(coreBuffer);
 
 	// Create decompressed stream
-	_memoryStream = new Common::MemoryReadStream(_buffer, size, DisposeAfterUse::YES);
+	_memoryStream = new Common::MemoryReadStream(_buffer, bufferSize, DisposeAfterUse::YES);
 }
 
 uint32 CompressedStream::decompress(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte* buffer) {
@@ -201,14 +201,14 @@ uint32 CompressedStream::decompress(Common::SeekableReadStream *stream, uint32 a
 		stream->seek(start >> 3, SEEK_SET);
 
 		uint32 var = stream->readUint32BE();
-		uint32 pos = 31 - (start & 7);
+		uint32 position = 31 - (start & 7);
 
 		// Check bit of var at pos
-		if (CHECK_BIT(var, pos)) {
+		if (CHECK_BIT(var, position)) {
 			// Check previous bit
-			pos -= 1;
+			position -= 1;
 
-			if (CHECK_BIT(var, pos)) {
+			if (CHECK_BIT(var, position)) {
 				start += 2;
 
 				*(uint16 *)buffer = *(uint16 *)(buffer - 2);
@@ -229,7 +229,7 @@ uint32 CompressedStream::decompress(Common::SeekableReadStream *stream, uint32 a
 					}
 				}
 			} else {
-				uint32 decoded = (var << (32 - pos)) >> (32 - a3);
+				uint32 decoded = (var << (32 - position)) >> (32 - a3);
 
 				*(uint16 *)buffer = *(uint16 *)&_decBuffer[8 * decoded];
 				buffer += 2;
@@ -254,7 +254,7 @@ uint32 CompressedStream::decompress(Common::SeekableReadStream *stream, uint32 a
 			}
 
 		} else {
-			uint32 decoded = (uint32)(var << (32 - pos)) >> (32 - a2);
+			uint32 decoded = (uint32)(var << (32 - position)) >> (32 - a2);
 
 			*(uint16 *)buffer = decoded;
 			buffer += 2;

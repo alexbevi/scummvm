@@ -41,6 +41,14 @@
 
 namespace Ring {
 
+#pragma region Visual
+
+Visual::Visual(Id id) : BaseObject(id) {}
+
+Visual::~Visual() {}
+
+#pragma endregion
+
 #pragma region VisualElement
 
 VisualElement::VisualElement(Id id) : Visual(id) {

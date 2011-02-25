@@ -29,6 +29,7 @@
 
 #include "ring/graphics/imageLoader.h"
 
+#include "ring/debug.h"
 #include "ring/helpers.h"
 
 namespace Ring {
@@ -102,6 +103,7 @@ void Image::destroy() {
 }
 
 bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+	debugC(kRingDebugGraphics, "Loading image: %s", filename.c_str());
 	_filename = filename;
 
 	ImageLoader *loader = NULL;

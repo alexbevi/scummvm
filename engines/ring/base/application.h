@@ -441,7 +441,7 @@ protected:
 	Common::String _messageType;
 	Common::String _message;
 
-	friend Debugger;
+	friend class Debugger;
 };
 
 } // End of namespace Ring

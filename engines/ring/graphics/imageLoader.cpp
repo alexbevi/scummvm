@@ -381,7 +381,7 @@ ImageLoaderCIN::~ImageLoaderCIN() {
 
 bool ImageLoaderCIN::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
 	if (!image)
-		error("[ImageLoaderCNM::load] Invalid image pointer (%s)!");
+		error("[ImageLoaderCNM::load] Invalid image pointer!");
 
 	byte format = 0;
 	_filename = image->getName();
@@ -448,7 +448,7 @@ bool ImageLoaderCIN::readHeader() {
 
 bool ImageLoaderCIN::readImage(Image *image) {
 	if (!image || !image->isInitialized())
-		error("[ImageLoaderCNM::readImage] Invalid image pointer or image not initialized (%s)!");
+		error("[ImageLoaderCNM::readImage] Invalid image pointer or image not initialized!");
 
 	return false;
 }

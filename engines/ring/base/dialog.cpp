@@ -84,7 +84,7 @@ void Dialog::show() {
 	}
 
 	uint32 val = (index != -1) ? _animations[index]->field_8 : 0;
-	if (val = _field_D)
+	if (val == _field_D)
 		return;
 
 	// Hide all objects

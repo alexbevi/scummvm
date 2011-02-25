@@ -82,7 +82,7 @@ private:
 	bool   _removeDialog;
 	uint32 _channel;
 
-	friend Movie;
+	friend class Movie;
 };
 
 class Movie {

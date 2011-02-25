@@ -31,7 +31,7 @@ namespace Ring {
 
 #pragma region Timer
 
-Timer::Timer(TimerId id, uint32 elapseTime): BaseId(id), _elapseTime(elapseTime) {
+Timer::Timer(TimerId timerId, uint32 elapseTime): BaseId(timerId), _elapseTime(elapseTime) {
 	_fired = 0;
 	_tickStart = g_system->getMillis();
 

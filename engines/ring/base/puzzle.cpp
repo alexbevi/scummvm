@@ -91,7 +91,7 @@ void Puzzle::initializeImage(ImageHandle *image) {
 	Common::String path;
 	switch (image->getArchiveType()) {
 	default:
-		error("[Puzzle::alloc] Invalid archive type!");
+		error("[Puzzle::initializeImage] Invalid archive type!");
 		break;
 
 	case kArchiveFile:
@@ -100,7 +100,7 @@ void Puzzle::initializeImage(ImageHandle *image) {
 		else if (image->getLoadFrom() == kLoadFrom5)
 			path = Common::String::format("%s%s", image->getDirectory().c_str(), image->getNameId().c_str());
 		else
-			error("[Puzzle::alloc] Invalid load From!");
+			error("[Puzzle::initializeImage] Invalid load From!");
 		break;
 
 	case kArchiveArt:
@@ -109,12 +109,12 @@ void Puzzle::initializeImage(ImageHandle *image) {
 		else if (image->getLoadFrom() == kLoadFrom5)
 			path = Common::String::format("%s%s", image->getDirectory().c_str(), image->getNameId().c_str());
 		else
-			error("[Puzzle::alloc] Invalid load From!");
+			error("[Puzzle::initializeImage] Invalid load From!");
 		break;
 	}
 
 	if (!image->load(path, image->getArchiveType(), image->getZone(), image->getLoadFrom()))
-		error("[Puzzle::alloc] Cannot load image (%s)!", path.c_str());
+		error("[Puzzle::initializeImage] Cannot load image (%s)!", path.c_str());
 }
 
 void Puzzle::dealloc() {
