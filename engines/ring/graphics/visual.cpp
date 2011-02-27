@@ -408,6 +408,14 @@ void VisualObjectList::draw() {
 	error("[VisualObjectList::draw] Not implemented!");
 }
 
+bool VisualObjectList::function3(const Common::Point &point) {
+	error("[VisualObjectList::function3] Not implemented!");
+}
+
+bool VisualObjectList::function4(const Common::Point &point) {
+	error("[VisualObjectList::function4] Not implemented!");
+}
+
 #pragma endregion
 
 #pragma region Management

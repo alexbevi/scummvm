@@ -354,6 +354,42 @@ void Puzzle::addVisual(Visual *visual) {
 	_visuals.push_back(visual);
 }
 
+bool Puzzle::checkVisual3(const Common::Point &point) {
+	for (Common::Array<Visual *>::iterator it = _visuals.begin(); it != _visuals.end(); it++) {
+		if ((*it)->function3(point))
+			return true;
+	}
+
+	return false;
+}
+
+bool Puzzle::checkVisual4(const Common::Point &point) {
+	for (Common::Array<Visual *>::iterator it = _visuals.begin(); it != _visuals.end(); it++) {
+		if ((*it)->function4(point))
+			return true;
+	}
+
+	return false;
+}
+
+bool Puzzle::checkVisual5(const Common::Point &point) {
+	for (Common::Array<Visual *>::iterator it = _visuals.begin(); it != _visuals.end(); it++) {
+		if ((*it)->function5(point))
+			return true;
+	}
+
+	return false;
+}
+
+bool Puzzle::checkVisual6(Common::KeyCode key) {
+	for (Common::Array<Visual *>::iterator it = _visuals.begin(); it != _visuals.end(); it++) {
+		if ((*it)->function6(key))
+			return true;
+	}
+
+	return false;
+}
+
 #pragma endregion
 
 #pragma region Sound

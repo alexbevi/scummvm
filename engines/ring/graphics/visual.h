@@ -28,6 +28,9 @@
 
 #include "ring/shared.h"
 
+#include "common/keyboard.h"
+#include "common/serializer.h"
+
 namespace Ring {
 
 class Hotspot;
@@ -35,15 +38,21 @@ class ImageHandle;
 class Object;
 class Text;
 
-class Visual : public BaseObject {
+class Visual : public BaseObject, public Common::Serializable {
 public:
 	Visual(Id id);
 	virtual ~Visual();
 
+	virtual void draw() = 0;
+	virtual bool function3(const Common::Point &point) = 0;
+	virtual bool function4(const Common::Point &point) = 0;
+	virtual bool function5(Common::Point point) { return false; }
+	virtual bool function6(Common::KeyCode key) { return false; }
 	virtual void alloc() = 0;
 	virtual void dealloc() = 0;
 
-	virtual void draw() = 0;
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s) {}
 };
 
 class VisualObjectList : public Visual {
@@ -51,6 +60,9 @@ public:
 	VisualObjectList(Id id);
 	~VisualObjectList();
 
+	virtual void draw();
+	virtual bool function3(const Common::Point &point);
+	virtual bool function4(const Common::Point &point);
 	virtual void alloc();
 	virtual void dealloc();
 
@@ -74,8 +86,6 @@ public:
 	void setTextForegroundColor(Color foreground, Color foreground2);
 	void setTextBackgroundColor(Color background);
 	void setFontId(FontId fontId);
-
-	void draw();
 
 	// Management
 	void add(ObjectId objectId);

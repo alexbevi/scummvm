@@ -38,6 +38,9 @@ public:
 	virtual void alloc();
 	virtual void dealloc();
 
+	virtual bool function3(const Common::Point &point) { return false; }
+	virtual bool function4(const Common::Point &point) { return false; }
+
 	void init(uint32 a1, uint32 a2, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 	virtual void draw();
 

@@ -28,6 +28,8 @@
 
 #include "ring/shared.h"
 
+#include "common/keyboard.h"
+
 namespace Ring {
 
 class Accessibility;
@@ -71,6 +73,10 @@ public:
 
 	// Visual
 	void addVisual(Visual *visual);
+	bool checkVisual3(const Common::Point &point);
+	bool checkVisual4(const Common::Point &point);
+	bool checkVisual5(const Common::Point &point);
+	bool checkVisual6(Common::KeyCode key);
 
 	// Sound
 	void addAmbientSound(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7);
