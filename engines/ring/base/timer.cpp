@@ -34,12 +34,10 @@ namespace Ring {
 Timer::Timer(TimerId timerId, uint32 elapseTime): BaseId(timerId), _elapseTime(elapseTime) {
 	_fired = 0;
 	_tickStart = g_system->getMillis();
-
-	// TODO Start timer
 }
 
 Timer::~Timer() {
-	// TODO Stop timer
+	// FIXME g_system->getTimerManager()->stopEventTimer(_id);
 }
 
 #pragma endregion
@@ -58,6 +56,9 @@ void TimerHandler::start(TimerId id, uint32 elapseTime) {
 		error("[TimerHandler::start] Timer with that id already exists (%d)", id);
 
 	_timers.push_back(new Timer(id, elapseTime));
+
+	// Start timer
+	// FIXME g_system->getTimerManager()->startEventTimer(id, elapseTime);
 }
 
 void TimerHandler::stop(TimerId id) {
