@@ -2005,11 +2005,7 @@ void Application::visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 	if (puzzle->hasVisual(visualId))
 		error("[Application::visualAddListToPuzzle] Visual already exists on puzzle (%d)", visualId);
 
-	VisualElement *visual = new VisualElement(visualId);
-	visual->init(a3, a4, left, top, offsetY, height, progressMultiplier, progressColor);
-	visual->setField8(2);
-	visual->setFieldC(1);
-
+	Visual *visual = createVisual(visualId, a3, a4, left, top, offsetY, height, progressMultiplier, progressColor);
 	puzzle->addVisual(visual);
 }
 

@@ -35,6 +35,7 @@
 #include "ring/base/sound.h"
 
 #include "ring/game/event_ring.h"
+#include "ring/game/visual_ring.h"
 
 #include "ring/graphics/screen.h"
 
@@ -46,6 +47,8 @@
 using namespace RingGame;
 
 namespace Ring {
+
+#pragma region Screen lists
 
 // List of intro screens
 static const struct {
@@ -88,6 +91,8 @@ static const struct {
 	{"cre_10.bmp",    0, kLoadFromDisk, kArchiveFile},
 	{"cre_11.bmp", 5000, kLoadFromDisk, kArchiveFile}
 };
+
+#pragma endregion
 
 ApplicationRing::ApplicationRing(RingEngine *engine) : Application(engine) {
 	_eventHandler = new EventHandlerRing(this);
@@ -507,6 +512,18 @@ void ApplicationRing::setZone(Zone zone, SetupType type) {
 }
 
 #pragma endregion
+
+#pragma region Visual
+
+Visual *ApplicationRing::createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor) {
+	VisualElementRing *visual = new VisualElementRing(visualId);
+
+	visual->init(a3, a4, left, top, offsetY, height, progressMultiplier, progressColor);
+	visual->setField8(2);
+	visual->setFieldC(1);
+
+	return visual;
+}
 
 #pragma region Zone full names, short string and ReadFrom
 

@@ -84,6 +84,14 @@ void ApplicationPilgrim2::draw() {
 
 #pragma endregion
 
+#pragma region Visual
+
+Visual *ApplicationPilgrim2::createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor) {
+	error("[ApplicationPilgrim2::createVisual] Engine state update not implemented!");
+}
+
+#pragma endregion
+
 #pragma region Zone full names, short string and ReadFrom
 
 Common::String ApplicationPilgrim2::getZoneString(Zone zone) const {

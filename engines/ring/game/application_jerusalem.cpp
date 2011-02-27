@@ -84,6 +84,14 @@ void ApplicationJerusalem::draw() {
 
 #pragma endregion
 
+#pragma region Visual
+
+Visual *ApplicationJerusalem::createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor) {
+	error("[ApplicationJerusalem::createVisual] Engine state update not implemented!");
+}
+
+#pragma endregion
+
 #pragma region Zone full names, short string and ReadFrom
 
 Common::String ApplicationJerusalem::getZoneString(Zone zone) const {
