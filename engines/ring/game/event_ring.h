@@ -65,7 +65,7 @@ private:
 	void onMouseLeftButtonUp(Common::Event &evt);
 
 	//////////////////////////////////////////////////////////////////////////
-	// Keydown
+	// Key down
 	//////////////////////////////////////////////////////////////////////////
 	void onKeyDownZone(Common::KeyState keyState);
 	void onKeyDownZoneSY(Common::KeyState keyState);
@@ -92,6 +92,9 @@ private:
 	void onTimerZoneRO(TimerId id);
 	void onTimerZoneAS(TimerId id);
 	void onTimerZoneN2(TimerId id);
+
+	bool _disableTimerRH;
+	uint32 _frameNumberTimerRH;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Bag

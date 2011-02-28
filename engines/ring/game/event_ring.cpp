@@ -45,6 +45,10 @@ namespace Ring {
 EventHandlerRing::EventHandlerRing(Application *application) : _app(application), _controlNotPressed(false) {
 	// Data
 	_dword_4A1C00 = 0;
+
+	// Timer data
+	_disableTimerRH = false;
+	_frameNumberTimerRH = 0;
 }
 
 
@@ -536,7 +540,26 @@ void EventHandlerRing::onTimerZoneNI(TimerId id) {
 }
 
 void EventHandlerRing::onTimerZoneRH(TimerId id) {
-	error("[EventHandlerRing::onZoneTimerNI] Not implemented");
+	if (id != kTimer0)
+		return;
+
+	// FIXME: Since we are called synchronously, is this needed? If so, replace by mutex?
+	if (_disableTimerRH)
+		return;
+
+	_disableTimerRH = true;
+
+	float alp = _app->rotationGetAlp(20401) - 35.0;
+	if (alp > 0.0f && alp < 146.0f) {
+		uint32 frame = (int)(alp * 0.2631578947368421f);
+
+		if (frame >= 1 && frame <= 28 && _frameNumberTimerRH != frame) {
+			_app->objectPresentationSetAnimationActiveFrame(20401, 0, frame);
+			_frameNumberTimerRH = frame;
+		}
+	}
+
+	_disableTimerRH = false;
 }
 
 void EventHandlerRing::onTimerZoneFO(TimerId id) {
@@ -570,12 +593,87 @@ void EventHandlerRing::onTimerZoneRO(TimerId id) {
 		_app->objectPresentationShow(kObject40102, _app->varGetByte(40807));
 		break;
 	}
-
-	error("[EventHandlerRing::onZoneTimerNI] Not implemented");
 }
 
 void EventHandlerRing::onTimerZoneAS(TimerId id) {
-	error("[EventHandlerRing::onZoneTimerNI] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer2:
+		_app->soundPlay(80018, 1);
+
+		if (!_app->hasTimer(kTimer5))
+			_app->timerStart(kTimer5, 20);
+
+		if (!_app->hasTimer(kTimer6))
+			_app->timerStart(kTimer6, 10);
+
+		if (!_app->soundIsPlaying(kSoundTypeDialog))
+			_app->soundPlay(rnd(12) + 80004, 1);
+		break;
+
+	case kTimer3:
+		_app->soundPlay(80019, 1);
+
+		if (!_app->hasTimer(kTimer5))
+			_app->timerStart(kTimer5, 30);
+
+		if (!_app->hasTimer(kTimer6))
+			_app->timerStart(kTimer6, 10);
+
+		if (!_app->soundIsPlaying(kSoundTypeDialog))
+			_app->soundPlay(rnd(12) + 80004, 1);
+		break;
+
+	case kTimer4:
+		_app->soundPlay(80020, 1);
+
+		if (!_app->hasTimer(kTimer5))
+			_app->timerStart(kTimer5, 10);
+
+		if (!_app->hasTimer(kTimer6))
+			_app->timerStart(kTimer6, 10);
+
+		if (!_app->soundIsPlaying(kSoundTypeDialog))
+			_app->soundPlay(rnd(12) + 80004, 1);
+		break;
+
+	case kTimer5:
+		_app->varSetByte(80001, _app->varGetByte(80001) + 1);
+
+		_app->getCurrentRotation()->setBet(_app->getCurrentRotation()->getBet() + _app->varGetFloat(80001) * _app->varGetFloat(80002));
+		_app->getCurrentRotation()->setAlp(_app->getCurrentRotation()->getAlp() + _app->varGetFloat(80001) * _app->varGetFloat(80002) * 0.5f);
+
+		// Update values
+		_app->varSetFloat(80001, _app->varGetFloat(80001) * -1.0f);
+		_app->varSetFloat(80002, _app->varGetFloat(80002) * 5.0f / 6.0f);
+
+		if (_app->varGetByte(80001) > 50) {
+			_app->varSetByte(80001, 0);
+			_app->varSetFloat(80002, 2.0f);
+
+			_app->timerStop(kTimer5);
+			_app->timerStop(kTimer6);
+
+			_app->objectPresentationHide(kObject80016);
+		}
+		break;
+
+	case kTimer6: {
+		int32 val = rnd(10) & 0x80000001;
+
+		bool show = (val == 0);
+		if (val < 0)
+			show = (((val - 1) | -2) == -1);
+
+		if (show)
+			_app->objectPresentationShow(kObject80016);
+		else
+			_app->objectPresentationHide(kObject80016);
+		}
+		break;
+	}
 }
 
 void EventHandlerRing::onTimerZoneN2(TimerId id) {
@@ -790,7 +888,7 @@ void EventHandlerRing::onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, ui
 		if (movabilityFrom == 10005)
 			if (movabilityTo == 10101) {
 				_app->soundStop(10901, 1024);
-				_app->soundPlay(rnd(8) + 13001, 1);
+				_app->soundPlay(rnd(9) + 13001, 1);
 			}
 		break;
 

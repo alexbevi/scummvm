@@ -31,7 +31,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 // Misc
-#define rnd(value) ((RingEngine *)g_engine)->getRandom().getRandomNumber(value)
+#define rnd(value) ((RingEngine *)g_engine)->getRandom().getRandomNumber(value - 1)
 
 // Shared objects
 #define getApp() ((RingEngine *)g_engine)->getApplication()

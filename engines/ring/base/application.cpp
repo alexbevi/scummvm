@@ -1953,7 +1953,7 @@ void Application::timerStopAll() {
 	_timerHandler->stopAll();
 }
 
-bool Application::timerHas(TimerId id) {
+bool Application::hasTimer(TimerId id) {
 	return _timerHandler->has(id);
 }
 

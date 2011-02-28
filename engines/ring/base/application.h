@@ -308,7 +308,7 @@ public:
 	void timerStart(TimerId id, uint32 elapseTime);
 	void timerStop(TimerId id);
 	void timerStopAll();
-	bool timerHas(TimerId id);
+	bool hasTimer(TimerId id);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Var
