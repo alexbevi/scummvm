@@ -44,13 +44,7 @@ public:
 	void init(uint32 a1, uint32 a2, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 	virtual void draw();
 
-	// Accessors
-	void setField8(uint32 val) { _field_8 = val; }
-	void setFieldC(uint32 val) { _field_C = val; }
-
 private:
-	uint32 _field_8;
-	byte   _field_C;
 	uint32 _field_D;
 	uint32 _field_11;
 	uint32 _left;

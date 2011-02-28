@@ -53,6 +53,14 @@ public:
 
 	// Serializable
 	void saveLoadWithSerializer(Common::Serializer &s) {}
+
+	// Accessors
+	void setField8(uint32 val) { _field_8 = val; }
+	void setVisible(uint32 val) { _visible = val; }
+
+protected:
+	uint32 _field_8;
+	uint32 _visible;
 };
 
 class VisualObjectList : public Visual {
@@ -93,13 +101,9 @@ public:
 	void removeAll(bool removeObject);
 
 	// Accessors
-	void setField8(uint32 val) { _field_8 = val; }
-	void setFieldC(uint32 val) { _field_C = val; }
 	uint32 getItemCount() { return _itemCount; }
 
 private:
-	uint32 _field_8;
-	uint32 _field_C;
 	Common::String _iconPath;
 	AssociativeArray<Object *> _objects;
 	Common::Array<ImageHandle *> _images;

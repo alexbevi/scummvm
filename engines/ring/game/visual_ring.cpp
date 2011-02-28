@@ -40,8 +40,6 @@ namespace Ring {
 #pragma region VisualElement
 
 VisualElementRing::VisualElementRing(Id id) : Visual(id) {
-	_field_8  = 0;
-	_field_C  = 0;
 	_field_D  = 0;
 	_field_11 = 0;
 	_left = 0;
@@ -101,7 +99,7 @@ void VisualElementRing::init(uint32 a1, uint32 a2, uint32 left, uint32 top, uint
 }
 
 void VisualElementRing::draw() {
-	if (!_field_C)
+	if (!_visible)
 		return;
 
 	getApp()->getScreenManager()->drawRectangle(Common::Rect(_left, _top,                    _left + _progress1, _top + _height),                    _progressColor);

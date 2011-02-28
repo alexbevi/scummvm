@@ -2028,7 +2028,7 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 	VisualObjectList *list = new VisualObjectList(visualId);
 	list->init(a3, imagePath, iconPath, filename3, filename4, filename5, filename6, filename7, filename8, filename9, filename10, filename11, filename12, filename13, drawType, archiveType);
 	list->setField8(1);
-	list->setFieldC(1);
+	list->setVisible(1);
 	list->sub_46DCF0(a18, a19);
 	list->sub_46DD11(a20, a21);
 	list->sub_46DD30(a22, a23, a24, a25, a26, a27);

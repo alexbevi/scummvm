@@ -522,7 +522,7 @@ Visual *ApplicationRing::createVisual(Id visualId, uint32 a3, uint32 a4, uint32 
 
 	visual->init(a3, a4, left, top, offsetY, height, progressMultiplier, progressColor);
 	visual->setField8(2);
-	visual->setFieldC(1);
+	visual->setVisible(true);
 
 	return visual;
 }

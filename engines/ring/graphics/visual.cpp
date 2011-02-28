@@ -43,7 +43,10 @@ namespace Ring {
 
 #pragma region Visual
 
-Visual::Visual(Id id) : BaseObject(id) {}
+Visual::Visual(Id id) : BaseObject(id) {
+	_field_8 = 0;
+	_visible = false;
+}
 
 Visual::~Visual() {}
 
@@ -52,8 +55,6 @@ Visual::~Visual() {}
 #pragma region VisualObjectList
 
 VisualObjectList::VisualObjectList(Id id) : Visual(id) {
-	_field_8 = 0;
-	_field_C = 0;
 	_backgroundImage = NULL;
 	_upGun = NULL;
 	_upGur = NULL;
