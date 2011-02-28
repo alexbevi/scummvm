@@ -56,9 +56,6 @@ private:
 	bool         _controlNotPressed;
 	uint32       _dword_4A1C00;
 
-	// Helper functions
-	void sub_433EE0();
-
 	//////////////////////////////////////////////////////////////////////////
 	// Event Handling
 	//////////////////////////////////////////////////////////////////////////
@@ -137,6 +134,12 @@ private:
 	void onSoundZoneWA(Id id, SoundType type, uint32 a3, uint32 a4);
 	void onSoundZoneAS(Id id, SoundType type, uint32 a3, uint32 a4);
 	void onSoundZoneN2(Id id, SoundType type, uint32 a3, uint32 a4);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Zone and helper functions
+	//////////////////////////////////////////////////////////////////////////
+	void sub_433EE0();
+	void onSwitchZoneAS(uint32 type);
 };
 
 } // End of namespace Ring

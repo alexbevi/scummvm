@@ -536,7 +536,55 @@ void EventHandlerRing::onTimer(TimerId timerId) {
 }
 
 void EventHandlerRing::onTimerZoneNI(TimerId id) {
-	error("[EventHandlerRing::onZoneTimerNI] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0: {
+		_app->varSetByte(10432, _app->varGetByte(10432) + 1);
+		if (_app->varGetByte(10432) > 10 && _app->varGetByte(10432) < 70) {
+			_app->objectPresentationHide(kObject10431);
+			_app->objectPresentationShow(kObject10431, (_app->varGetByte(10432) - 10) / 5);
+		} else if (_app->varGetByte(10432) == 100) {
+			_app->objectPresentationShow(kObject10431, 12);
+		}
+
+		uint32 mod = (120 - _app->varGetByte(10432)) / 10;
+		if (mod < 5)
+			mod = 5;
+
+		if (!(_app->varGetByte(10432) % mod)) {
+			_app->soundPlay(10415, 1);
+			_app->objectPresentationShow(kObject10432, rnd(2) + 1);
+		}
+
+		uint32 volume = _app->varGetByte(10432) / 5 + 80;
+		if (volume > 100)
+			volume = 100;
+
+		_app->soundSetVolume(10412, volume);
+
+		if (_app->varGetByte(10412) > 120) {
+			_app->timerStop(kTimer0);
+			_app->soundStopType(kSoundTypeAmbientEffect, 1024);
+			_app->soundStopType(kSoundTypeBackgroundMusic, 1024);
+			_app->playMovie("1538");
+			_app->exitToMenu(4);
+		}
+		}
+		break;
+
+	case kTimer1:
+		_app->varSetByte(10432, _app->varGetByte(10432) + 1);
+		if (_app->varGetByte(10432) > 10 && _app->varGetByte(10303) == 1) {
+			_app->timerStopAll();
+			_app->soundStopAll(1024);
+			_app->varSetFloat(90005, 100.0f);
+			_app->playMovie("1539");
+			onSwitchZoneAS(1);
+		}
+		break;
+	}
 }
 
 void EventHandlerRing::onTimerZoneRH(TimerId id) {
@@ -563,7 +611,88 @@ void EventHandlerRing::onTimerZoneRH(TimerId id) {
 }
 
 void EventHandlerRing::onTimerZoneFO(TimerId id) {
-	error("[EventHandlerRing::onZoneTimerNI] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0:
+		switch (_app->varGetByte(30073)) {
+		default:
+			break;
+
+		case 0:
+			_app->objectPresentationShow(kObject30061);
+			_app->varSetByte(30073, 1);
+			_app->timerStop(kTimer0);
+			_app->timerStart(kTimer0, 100);
+			break;
+
+		case 1:
+			_app->objectPresentationHide(kObject30061);
+			_app->varSetByte(30073, 2);
+			_app->timerStop(kTimer0);
+			_app->timerStart(kTimer0, 10);
+			break;
+
+		case 2:
+			_app->objectPresentationShow(kObject30061);
+			_app->varSetByte(30073, 3);
+			_app->timerStop(kTimer0);
+			_app->timerStart(kTimer0, 100);
+			break;
+
+		case 3:
+			_app->objectPresentationHide(kObject30061);
+			_app->varSetByte(30073, 0);
+			_app->timerStop(kTimer0);
+			_app->timerStart(kTimer0, 1000 * (rnd(10) + 15));
+			break;
+		}
+		break;
+
+	case kTimer1: {
+		Id soundId = rnd(15) + 30301;
+		_app->soundSetPan(soundId, 10 - rnd(20));
+		_app->soundPlay(soundId, 1);
+
+		_app->timerStop(kTimer1);
+		_app->timerStart(kTimer1, 500 * (rnd(10) + 10));
+		}
+		break;
+
+	case kTimer2:
+		_app->objectPresentationUnpauseAnimation(kObjectSleepingPotion, 0);
+		_app->timerStop(kTimer2);
+		break;
+
+	case kTimer3: {
+		Id soundId = rnd(3) + 30316;
+		_app->soundSetPan(soundId, 95);
+		_app->soundPlay(soundId, 1);
+
+		_app->timerStop(kTimer3);
+		_app->timerStart(kTimer3, 500 * (rnd(10) + 30));
+		}
+		break;
+
+	case kTimer4: {
+		Id soundId = rnd(9) + 30319;
+		_app->soundSetPan(soundId, 5 - rnd(10));
+		_app->soundPlay(soundId, 1);
+
+		_app->timerStop(kTimer4);
+		_app->timerStart(kTimer4, 4000 * (rnd(10) + 5));
+		}
+		break;
+
+	case kTimer5:
+		_app->objectPresentationUnpauseAnimation(kObject30110, 1);
+		_app->objectPresentationUnpauseAnimation(kObject30109, 0);
+		_app->objectSetAccessibilityOff(kObject30109, 0, 0);
+		_app->timerStop(kTimer5);
+		_app->timerStart(kTimer5, 2000 * rnd(10) + 15000);
+		break;
+	}
 }
 
 void EventHandlerRing::onTimerZoneRO(TimerId id) {
@@ -1769,7 +1898,7 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, uint32 a4
 
 #pragma endregion
 
-#pragma region Helper functions
+#pragma region Zone and helper functions
 
 void EventHandlerRing::sub_433EE0() {
 	if (_app->varGetByte(70012) == 1
@@ -1782,6 +1911,10 @@ void EventHandlerRing::sub_433EE0() {
 		_app->puzzleSetActive(kPuzzle70305, 1, 1);
 		_app->soundPlay(70017, 1);
 	}
+}
+
+void EventHandlerRing::onSwitchZoneAS(uint32 type) {
+	error("[EventHandlerRing::onSwitchZoneAS] Not implemented!");
 }
 
 #pragma endregion
