@@ -140,7 +140,11 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	void sub_433EE0();
 
+	void onSwitchZoneNI(uint32 type);
+	void onSwitchZoneRH(uint32 type);
+	void onSwitchZoneFO(uint32 type);
 	void onSwitchZoneRO(uint32 type);
+	void onSwitchZoneWA(uint32 type);
 	void onSwitchZoneAS(uint32 type);
 	void onSwitchZoneN2(uint32 type);
 };

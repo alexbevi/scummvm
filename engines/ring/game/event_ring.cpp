@@ -2157,13 +2157,160 @@ void EventHandlerRing::sub_433EE0() {
 	}
 }
 
+void EventHandlerRing::onSwitchZoneNI(uint32 type) {
+	switch (type) {
+	default:
+		break;
+
+	case 0:
+		if (_app->varGetByte(90009))
+			_app->setupZone((Zone)_app->varGetDword(90013), kSetupType10);
+		else
+			_app->setupZone(kZoneNI, kSetupTypeNone);
+		break;
+
+	case 3:
+		_app->setupZone(kZoneNI, kSetupType3);
+		break;
+
+	case 9:
+		_app->timerStart(kTimer9, 1000);
+		break;
+	}
+}
+
+void EventHandlerRing::onSwitchZoneRH(uint32 type) {
+	if (type == 0)
+		_app->setupZone(kZoneRH, kSetupTypeNone);
+}
+
+void EventHandlerRing::onSwitchZoneFO(uint32 type) {
+	if (type == 0) {
+		if (_app->varGetByte(90011))
+			_app->setupZone((Zone)_app->varGetDword(90015), kSetupType10);
+		else
+			_app->setupZone(kZoneRO, kSetupTypeNone);
+	}
+}
+
 void EventHandlerRing::onSwitchZoneRO(uint32 type) {
 	if (type == 0)
 		_app->setupZone(kZoneRO, kSetupTypeNone);
 }
 
 void EventHandlerRing::onSwitchZoneAS(uint32 type) {
-	error("[EventHandlerRing::onSwitchZoneAS] Not implemented!");
+	switch (type) {
+	default:
+		break;
+
+	case 1:
+		_app->setZoneAndEnableBag(kZoneAS);
+		_app->objectSetAccessibilityOn(kObject80018, 0, 0);
+		_app->varSetByte(90001, 1);
+		_app->bagRemoveAll();
+
+		if (_app->varGetByte(90001) == 1
+		 && _app->varGetByte(90002) == 1
+		 && _app->varGetByte(90003) == 1
+		 && _app->varGetByte(90004) == 1)
+			_app->bagAdd(kObjectDeath);
+
+		_app->objectPresentationShow(kObject80018, 2);
+		_app->rotationSetAlp(80101, 90.0f);
+		_app->rotationSetRan(80101, 85.3f);
+		_app->rotationSetActive(80101);
+		_app->soundPlay(80040, 1);
+		_app->objectSetAccessibilityOff(kObject80019, 0, 0);
+		_app->objectSetAccessibilityOn(kObject80019, 1, 1);
+		break;
+
+	case 2:
+		_app->setZoneAndEnableBag(kZoneAS);
+		_app->objectSetAccessibilityOn(kObject80018, 1, 1);
+		_app->varSetByte(90002, 1);
+		_app->bagRemoveAll();
+
+		if (_app->varGetByte(90001) == 1
+		 && _app->varGetByte(90002) == 1
+		 && _app->varGetByte(90003) == 1
+		 && _app->varGetByte(90004) == 1)
+			_app->bagAdd(kObjectDeath);
+
+		_app->objectPresentationShow(kObject80018, 3);
+		_app->rotationSetAlp(80101, 90.0f);
+		_app->rotationSetRan(80101, 85.3f);
+		_app->rotationSetActive(80101);
+		_app->soundPlay(80049, 1);
+		break;
+
+	case 3:
+		_app->setZoneAndEnableBag(kZoneAS);
+		_app->soundSetMultiplier(kSoundTypeAmbientMusic, 100);
+		_app->objectSetAccessibilityOn(kObject80018, 2, 2);
+		_app->varSetByte(90003, 1);
+		_app->bagRemoveAll();
+
+		if (_app->varGetByte(90001) == 1
+		 && _app->varGetByte(90002) == 1
+		 && _app->varGetByte(90003) == 1
+		 && _app->varGetByte(90004) == 1)
+			_app->bagAdd(kObjectDeath);
+
+
+		_app->objectPresentationShow(kObject80018, 4);
+		_app->rotationSetAlp(80101, 90.0f);
+		_app->rotationSetRan(80101, 85.3f);
+		_app->rotationSetActive(80101);
+		_app->soundPlay(80058, 1);
+		break;
+
+	case 4:
+		_app->setZoneAndEnableBag(kZoneAS);
+		_app->objectSetAccessibilityOn(kObject80018, 3, 3);
+		_app->varSetByte(90004, 1);
+		_app->bagRemoveAll();
+
+		if (_app->varGetByte(90001) == 1
+		 && _app->varGetByte(90002) == 1
+		 && _app->varGetByte(90003) == 1
+		 && _app->varGetByte(90004) == 1)
+			_app->bagAdd(kObjectDeath);
+
+		_app->objectPresentationShow(kObject80018, 5);
+		_app->rotationSetAlp(80101, 90.0f);
+		_app->rotationSetRan(80101, 85.3f);
+		_app->rotationSetActive(80101);
+		_app->soundPlay(80068, 1);
+		break;
+
+	case 5:
+		_app->setupZone(kZoneAS, kSetupType5);
+		break;
+	case 13:
+		_app->bagRemoveAll();
+		_app->timerStopAll();
+		_app->soundStopAll(1024);
+		_app->setZoneAndEnableBag(kZoneAS);
+		_app->rotationSetAlp(80101, 90.0f);
+		_app->rotationSetRan(80101, 85.3f);
+		_app->rotationSetActive(80101);
+
+		_app->getBag()->sub_419350();
+
+		_app->timerStart(kTimer2, 100000);
+		_app->timerStart(kTimer3, 220000);
+		_app->timerStart(kTimer4, 150000);
+		break;
+	}
+}
+
+void EventHandlerRing::onSwitchZoneWA(uint32 type) {
+	if (type == 0) {
+		if (_app->varGetByte(90012))
+			_app->setupZone((Zone)_app->varGetDword(90016), kSetupType10);
+		else
+			_app->setupZone(kZoneWA, kSetupTypeNone);
+	}
 }
 
 void EventHandlerRing::onSwitchZoneN2(uint32 type) {
