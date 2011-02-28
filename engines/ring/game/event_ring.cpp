@@ -50,6 +50,9 @@ EventHandlerRing::EventHandlerRing(ApplicationRing *application) : _app(applicat
 	// Timer data
 	_disableTimerRH = false;
 	_frameNumberTimerRH = 0;
+
+	// Sound and bag
+	_presentationIndexRO = 0;
 }
 
 
@@ -2229,14 +2232,349 @@ void EventHandlerRing::onSoundZoneFO(Id id, SoundType type, uint32 a3, bool proc
 	if (!process)
 		return;
 
-	error("[EventHandlerRing::onSoundZoneFO] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case 30100:
+		_app->soundPlay(30101, kSoundOnce);
+		break;
+
+	case 30101:
+		_app->playMovie("1179", 0.0);
+		_app->rotationSetActive(30101);
+		_app->rotationSetAlp(30101, 130.0);
+		_app->rotationSetBet(30101, 20.0);
+
+		if (!_app->varGetByte(30074))
+			_app->varSetFloat(90007, _app->varGetFloat(90007) + 2.2f);
+
+		_app->varSetByte(30074, 1);
+		break;
+
+	case 30102:
+		_app->puzzleSetActive(kPuzzle35103);
+		_app->soundPlay(30103, kSoundOnce);
+		break;
+
+	case 30103:
+		_app->puzzleSetActive(kPuzzle35104);
+		_app->soundPlay(30104, kSoundOnce);
+		break;
+
+	case 30104:
+		_app->playMovie("1208");
+		_app->puzzleSetActive(kPuzzle35105);
+		_app->soundPlay(30106, kSoundOnce);
+		break;
+
+	case 30106:
+		_app->playMovie("1209");
+		_app->puzzleSetActive(kPuzzle35110);
+		_app->soundPlay(30107, kSoundOnce);
+		break;
+
+	case 30107:
+		_app->playMovie("1210");
+		_app->puzzleSetActive(kPuzzle35106);
+		_app->soundPlay(30108, kSoundOnce);
+		break;
+
+	case 30108:
+		_app->playMovie("1211");
+		_app->puzzleSetActive(kPuzzle35107);
+		_app->soundPlay(30161, kSoundOnce);
+		break;
+
+	case 30109:
+		_app->playMovie("1213");
+		_app->puzzleSetActive(kPuzzle35111);
+		_app->objectPresentationShow(kObject30109, 0);
+		break;
+
+	case 30118:
+		_app->rotationSetActive(30101);
+		_app->rotationSetAlp(30101, 130.0);
+		_app->rotationSetBet(30101, 20.0);
+		_app->varSetByte(30078, 1);
+		break;
+
+	case 30105:
+		_app->playMovie("1214");
+		_app->bagAdd(kObjectWolfBrooch);
+		_app->varSetFloat(90007, _app->varGetFloat(90007) + 3.3f);
+		_app->objectPresentationShow(kObject30110, 3);
+		_app->objectSetAccessibilityOff(kObject30102, 1, 1);
+		_app->rotationSetActive(30101);
+		_app->rotationSetAlp(30101, 130.0);
+		_app->rotationSetBet(30101, 20.0);
+		break;
+
+	case 30120:
+		_app->objectPresentationHideAndRemove(kObject6, 0);
+		_app->rotationSetActive(30002);
+		_app->soundPlay(30121, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 1);
+		break;
+
+	case 30121:
+		_app->objectPresentationHideAndRemove(kObject6, 1);
+		_app->objectPresentationHideAndRemove(kObject6, 5);
+		_app->rotationSetActive(30003);
+		_app->soundPlay(30122, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 2);
+		_app->objectPresentationShow(kObject6, 6);
+		break;
+
+	case 30122:
+		_app->objectPresentationHideAndRemove(kObject6, 2);
+		_app->rotationSetActive(30004);
+		_app->soundPlay(30123, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 3);
+		break;
+
+	case 30123:
+		_app->objectPresentationHideAndRemove(kObject6, 3);
+		_app->objectPresentationHideAndRemove(kObject6, 6);
+		_app->rotationSetActive(30005);
+		_app->soundPlay(30124, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 4);
+		_app->objectPresentationShow(kObject6, 7);
+		break;
+
+	case 30124:
+		_app->objectPresentationHideAndRemove(kObject6, 4);
+		_app->objectPresentationHideAndRemove(kObject6, 7);
+		_app->rotationSetActive(30006);
+		_app->soundPlay(30125, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 8);
+		_app->objectPresentationShow(kObject6, 9);
+		break;
+
+	case 30125:
+		_app->objectPresentationHideAndRemove(kObject6, 9);
+		_app->rotationSetActive(30008);
+		_app->soundPlay(30126, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 10);
+		break;
+
+	case 30126:
+		_app->objectPresentationHideAndRemove(kObject6, 8);
+		_app->objectPresentationHideAndRemove(kObject6, 10);
+		_app->rotationSetActive(30009);
+		_app->soundPlay(30127, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 11);
+		_app->objectPresentationShow(kObject6, 15);
+		break;
+
+	case 30127:
+		_app->objectPresentationHideAndRemove(kObject6, 11);
+		_app->rotationSetActive(30010);
+		_app->soundPlay(30128, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 12);
+		break;
+
+	case 30128:
+		_app->objectPresentationHideAndRemove(kObject6, 12);
+		_app->objectPresentationHideAndRemove(kObject6, 15);
+		_app->rotationSetActive(30011);
+		_app->soundPlay(30129, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 13);
+		_app->objectPresentationShow(kObject6, 16);
+		break;
+
+	case 30129:
+		_app->objectPresentationHideAndRemove(kObject6, 13);
+		_app->rotationSetActive(30012);
+		_app->soundPlay(30130, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 14);
+		break;
+
+	case 30130:
+		_app->objectPresentationHideAndRemove(kObject6, 14);
+		_app->objectPresentationHideAndRemove(kObject6, 16);
+		_app->rotationSetActive(30701);
+		_app->soundPlay(30131, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 17);
+		_app->objectPresentationShow(kObject6, 18);
+		break;
+
+	case 30131:
+		_app->objectPresentationHideAndRemove(kObject6, 18);
+		_app->rotationSetActive(30702);
+		_app->soundPlay(30132, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 19);
+		break;
+
+	case 30132:
+		_app->objectPresentationHideAndRemove(kObject6, 17);
+		_app->objectPresentationHideAndRemove(kObject6, 19);
+		_app->rotationSetActive(30703);
+		_app->soundPlay(30133, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 20);
+		_app->objectPresentationShow(kObject6, 24);
+		break;
+
+	case 30133:
+		_app->objectPresentationHideAndRemove(kObject6, 20);
+		_app->objectPresentationHideAndRemove(kObject6, 24);
+		_app->rotationSetActive(30704);
+		_app->soundPlay(30134, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 21);
+		_app->objectPresentationShow(kObject6, 25);
+		break;
+
+	case 30134:
+		_app->objectPresentationHideAndRemove(kObject6, 21);
+		_app->rotationSetActive(30401);
+		_app->soundPlay(30135, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 22);
+		break;
+
+	case 30135:
+		_app->objectPresentationHideAndRemove(kObject6, 22);
+		_app->objectPresentationHideAndRemove(kObject6, 25);
+		_app->rotationSetActive(30402);
+		_app->soundPlay(30136, kSoundOnce);
+		_app->objectPresentationShow(kObject6, 23);
+		_app->objectPresentationShow(kObject6, 26);
+		break;
+
+	case 30136:
+		_app->objectPresentationHideAndRemove(kObject6, 23);
+		_app->objectPresentationHideAndRemove(kObject6, 26);
+		_app->bagRemoveAll();
+		_app->timerStopAll();
+		_app->soundStopAll(1024);
+		_app->playMovie("1215", 0.0);
+		onSwitchZoneAS(3);
+		break;
+
+	case 30161:
+		_app->playMovie("1212", 0.0);
+		_app->puzzleSetActive(kPuzzle35108);
+		_app->soundPlay(30109, kSoundOnce);
+		break;
+
+	case 30506:
+		if (_app->varGetByte(30043) == 1 && _app->bagHas(kObjectSleepingPotion2)) {
+			_app->playMovie("1216");
+			_app->objectPresentationShow(kObject30100, 0);
+			_app->objectSetAccessibilityOff(kObject30100, 0, 0);
+			_app->objectSetAccessibilityOn(kObject30100, 1, 1);
+		} else {
+			_app->objectSetAccessibilityOn(kObject30100, 0, 0);
+			_app->puzzleSetMovabilityOn(kPuzzle35100, 0, 0);
+		}
+		break;
+	}
 }
 
 void EventHandlerRing::onSoundZoneRO(Id id, SoundType type, uint32 a3, bool process) {
 	if (!process)
 		return;
 
-	error("[EventHandlerRing::onSoundZoneRO] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case 40400:
+		_app->playMovie("1787");
+		_app->objectPresentationShow(kObject40202, 0);
+		_app->objectSetAccessibilityOn(kObject40202);
+		break;
+
+	case 40603:
+		_app->soundStop(40003, 1024);
+		_app->timerStopAll();
+		_app->playMovie("1786");
+		onSwitchZoneAS(2);
+		break;
+
+	case 40700:
+		_app->puzzleSetActive(kPuzzle40101);
+		_app->soundPlay(40701, kSoundOnce);
+		break;
+
+	case 40701:
+		_app->rotationSetActive(40000);
+		break;
+
+	case 40702:
+		_app->puzzleSetActive(kPuzzle40102);
+		_app->soundPlay(40703, kSoundOnce);
+		break;
+
+	case 40703:
+		_app->puzzleSetActive(kPuzzle40103);
+		_app->soundPlay(40704, kSoundOnce);
+		break;
+
+	case 40704:
+		_app->soundStopAll(1024);
+		_app->playMovie("1788");
+		_presentationIndexRO = 0;
+		_app->rotationSet3DSoundOff(40000, 40002);
+		_app->rotationSet3DSoundOff(40001, 40002);
+		_app->rotationSet3DSoundOff(40002, 40002);
+		_app->rotationSet3DSoundOff(40003, 40002);
+		_app->rotationSet3DSoundOff(40004, 40002);
+		_app->rotationSetAmbientSoundOff(40000, 40001);
+		_app->rotationSetAmbientSoundOff(40001, 40001);
+		_app->rotationSetAmbientSoundOff(40002, 40001);
+		_app->rotationSetAmbientSoundOff(40003, 40001);
+		_app->rotationSetAmbientSoundOff(40004, 40001);
+		_app->rotationSetAmbientSoundOff(40005, 40001);
+		_app->rotationSetAmbientSoundOn(40000, 40604);
+		_app->rotationSetAmbientSoundOn(40001, 40604);
+		_app->rotationSetAmbientSoundOn(40002, 40604);
+		_app->rotationSetAmbientSoundOn(40003, 40604);
+		_app->rotationSetAmbientSoundOn(40004, 40604);
+		_app->rotationSetAmbientSoundOn(40005, 40604);
+		_app->puzzleSetAmbientSoundOn(kPuzzle40060, 40604);
+		_app->objectPresentationShow(kObject40203);
+		_app->rotationSetMovabilityOff(40000, 1, 1);
+		_app->rotationSetMovabilityOn(40004, 0, 0);
+		_app->rotationSetActive(40000);
+		_app->rotationSetMovabilityRideName(40000, 0, "ro0102");
+		_app->rotationSetMovabilityRideName(40001, 2, "ro0201");
+		_app->rotationSetMovabilityRideName(40001, 3, "ro0203");
+		_app->rotationSetMovabilityRideName(40002, 0, "ro0302");
+		_app->rotationSetMovabilityRideName(40003, 0, "ro0402");
+		_app->rotationSetMovabilityRideName(40004, 0, "1796");
+		_app->rotationSetMovabilityRideName(40004, 1, "ro0502");
+		break;
+
+	case 40706:
+		_app->puzzleSetActive(kPuzzle40102);
+		_app->soundPlay(40707, kSoundOnce);
+		break;
+
+	case 40707:
+		_app->puzzleSetActive(kPuzzle40101);
+		_app->soundPlay(40708, kSoundOnce);
+		break;
+
+	case 40708:
+		_app->puzzleSetActive(kPuzzle40104);
+		_app->soundPlay(40709, kSoundOnce);
+		break;
+
+	case 40709:
+		_app->puzzleSetActive(kPuzzle40102);
+		_app->soundPlay(40710, kSoundOnce);
+		break;
+
+	case 40710:
+		_app->puzzleSetActive(kPuzzle40101);
+		_app->soundPlay(40711, kSoundOnce);
+		break;
+
+	case 40711:
+		_app->puzzleSetActive(kPuzzle40103);
+		_app->soundPlay(40702, kSoundOnce);
+		break;
+	}
 }
 
 void EventHandlerRing::onSoundZoneWA(Id id, SoundType type, uint32 a3, bool process) {

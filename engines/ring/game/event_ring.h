@@ -55,6 +55,9 @@ private:
 	// Data & State
 	bool         _controlNotPressed;
 	uint32       _dword_4A1C00;
+	uint32       _presentationIndexRO;
+	bool         _disableTimerRH;
+	uint32       _frameNumberTimerRH;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Event Handling
@@ -89,9 +92,6 @@ private:
 	void onTimerZoneRO(TimerId id);
 	void onTimerZoneAS(TimerId id);
 	void onTimerZoneN2(TimerId id);
-
-	bool _disableTimerRH;
-	uint32 _frameNumberTimerRH;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Bag
