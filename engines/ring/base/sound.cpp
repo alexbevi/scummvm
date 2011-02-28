@@ -693,8 +693,21 @@ void SoundHandler::sub_41B350(uint32 a1) {
 	warning("[SoundHandler::sub_41B350] Not implemented");
 }
 
-void SoundHandler::sub_41B520() {
-	warning("[SoundHandler::sub_41AA00] Not implemented");
+void SoundHandler::turnOnItems4() {
+	for (Common::Array<SoundItem *>::iterator it = _soundItems4.begin(); it != _soundItems4.end(); it++) {
+		SoundItem *item = (*it);
+
+		if (!item->isOn())
+			continue;
+
+		if (!item->getSoundEntry()) {
+			item->turnOn();
+			continue;
+		}
+
+		if (!item->getSoundEntry()->isPlaying())
+			item->turnOn();
+	}
 }
 
 void SoundHandler::setReverseStereo(int32 reverseStereo) {

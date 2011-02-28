@@ -254,7 +254,7 @@ public:
 	void turnOffItems1();
 	void sub_41B180(uint32 a1);
 	void sub_41B350(uint32 a1);
-	void sub_41B520();
+	void turnOnItems4();
 
 	void reset();
 

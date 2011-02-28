@@ -1130,7 +1130,7 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 	_state = kStateUpdatePuzzle;
 
 	if (_soundHandler->getField0()) {
-		_soundHandler->sub_41B520();
+		_soundHandler->turnOnItems4();
 
 		_soundHandler->reset();
 		_soundHandler->setCount1(_puzzle->getSoundItemsCount());
@@ -1146,7 +1146,7 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 
 			_soundHandler->sub_41B180(3);
 			_soundHandler->sub_41B350(3);
-			_soundHandler->sub_41B520();
+			_soundHandler->turnOnItems4();
 
 			_soundHandler->reset();
 			_soundHandler->setCount1(_puzzle->getSoundItemsCount());
@@ -1832,7 +1832,7 @@ void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
 	_state = kStateUpdateRotation;
 
 	if (_soundHandler->getField0()) {
-		_soundHandler->sub_41B520();
+		_soundHandler->turnOnItems4();
 
 		_soundHandler->reset();
 		_soundHandler->setCount1(_rotation->getSoundItemsCount());
@@ -1849,7 +1849,7 @@ void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
 
 			_soundHandler->sub_41B180(3);
 			_soundHandler->sub_41B350(3);
-			_soundHandler->sub_41B520();
+			_soundHandler->turnOnItems4();
 
 			_soundHandler->reset();
 			_soundHandler->setCount1(_rotation->getSoundItemsCount());
