@@ -106,15 +106,57 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 
 #pragma endregion
 
-#pragma region Zone Setup
+#pragma region Keydown
 
-void EventHandlerRing::onKeyDownZone(Common::KeyCode keycode) {
+void EventHandlerRing::onKeyDownZone(Common::KeyState keyState) {
 	if (_app->getCurrentZone() == kZoneSY)
-		onKeyDownZoneSY(keycode);
+		onKeyDownZoneSY(keyState);
 }
 
-void EventHandlerRing::onKeyDownZoneSY(Common::KeyCode keycode) {
-	error("[EventHandlerRing::onKeyDownZoneSY] Not implemented");
+void EventHandlerRing::onKeyDownZoneSY(Common::KeyState keyState) {
+	if (!_app->hasCurrentPuzzle())
+		return;
+
+	PuzzleId puzzleId = _app->getCurrentPuzzleId();
+	switch (puzzleId) {
+	default:
+		error("[EventHandlerRing::onKeyDownZoneSY] Invalid puzzle Id (%d)", puzzleId.id());
+
+	case kPuzzleLoad:
+		if (keyState.keycode == Common::KEYCODE_DELETE) {
+			_app->messageGet("DoYouWantToDeleteSavedGame");
+			_app->messageShowQuestion(4);
+		}
+		break;
+
+	case kPuzzleSave:
+		switch (keyState.keycode) {
+		default:
+			if (_app->objectPresentationGetTextWidth(kObjectSaveName, 0, 0) >= 280)
+				return;
+
+			*_app->getSaveManager()->getName() += (char)keyState.ascii;
+			break;
+
+		case Common::KEYCODE_ESCAPE:
+			_app->getSaveManager()->getName()->clear();
+			break;
+
+		case Common::KEYCODE_BACKSPACE:
+			if (_app->getSaveManager()->getName()->size() != 1)
+				_app->getSaveManager()->getName()->deleteLastChar();
+			break;
+
+		case Common::KEYCODE_RETURN:
+			// Do nothing
+			return;
+		}
+
+		_app->objectPresentationSetTextToPuzzle(kObjectSaveName, 0, 0, *_app->getSaveManager()->getName());
+		_app->objectPresentationSetTextCoordinatesToPuzzle(kObjectSaveName, 0, 0, Common::Point(344, 181));
+		_app->objectPresentationSetAnimationCoordinatesOnPuzzle(kObjectSaveName, 0, Common::Point(346 + _app->objectPresentationGetTextWidth(kObjectSaveName, 0, 0), 181));
+		break;
+	}
 }
 
 #pragma endregion

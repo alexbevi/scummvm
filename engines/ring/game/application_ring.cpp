@@ -943,19 +943,19 @@ void ApplicationRing::initZoneSY() {
 	objectAddPresentation(kObjectSaveCancel);
 	objectPresentationAddImageToPuzzle(kObjectSaveCancel, 0, kPuzzleSave, "g_cancel.tga", Common::Point(407, 421), true, kDrawType3, 1000);
 	objectSetPuzzleAccessibilityKey(kObjectSaveOk, 0, Common::KEYCODE_RETURN);
-	objectAdd(kObjectSave90313, "", "", 1);
-	objectAddPresentation(kObjectSave90313);
-	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", Common::Point(344, 181), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
-	objectPresentationAddTextToPuzzle(kObjectSave90313, 0, kPuzzleSave, "", Common::Point(0, 0),     kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
-	objectPresentationAddAnimationToPuzzle(kObjectSave90313, 0, kPuzzleSave, "kybcur", kImageTypeBMP, Common::Point(0, 0), kDrawType1, 1000, 6, 12.5f, 16);
-	objectPresentationSetAnimationCoordinatesOnPuzzle(kObjectSave90313, 0, Common::Point(346, 181));
+	objectAdd(kObjectSaveName, "", "", 1);
+	objectAddPresentation(kObjectSaveName);
+	objectPresentationAddTextToPuzzle(kObjectSaveName, 0, kPuzzleSave, "", Common::Point(344, 181), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObjectSaveName, 0, kPuzzleSave, "", Common::Point(0, 0),     kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddAnimationToPuzzle(kObjectSaveName, 0, kPuzzleSave, "kybcur", kImageTypeBMP, Common::Point(0, 0), kDrawType1, 1000, 6, 12.5f, 16);
+	objectPresentationSetAnimationCoordinatesOnPuzzle(kObjectSaveName, 0, Common::Point(346, 181));
 
 	_archiveType = kArchiveFile;
-	objectPresentationAddImageToPuzzle(kObjectSave90313, 0, kPuzzleSave, "osc.bmp", Common::Point(0, 0), true, kDrawType1, 1000);
+	objectPresentationAddImageToPuzzle(kObjectSaveName, 0, kPuzzleSave, "osc.bmp", Common::Point(0, 0), true, kDrawType1, 1000);
 	if ( _configuration.artSY )
 		_archiveType = kArchiveArt;
 
-	objectPresentationShow(kObjectSave90313, 0);
+	objectPresentationShow(kObjectSaveName, 0);
 
 	visualListAddToPuzzle(1, kPuzzleLoad, 65,
 	                      "", "" /* save folder */, "", "up_gun.tga", "up_gur.tga", "", "up_gua.tga", "down_gun.tga", "down_gur.tga", "",

@@ -232,6 +232,10 @@ public:
 	PuzzleId() : BaseId(0) {}
 	PuzzleId(PuzzleIdEnum i) : BaseId(i) {}
 	PuzzleId(uint32 i) : BaseId(i) {}
+
+	bool operator==(const PuzzleIdEnum &i) {
+		return _id == (uint32)i;
+	}
 };
 
 class ObjectId : public BaseId {

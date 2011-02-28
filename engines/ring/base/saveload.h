@@ -48,12 +48,14 @@ public:
 	Id getRotationId() const { return _rotationId; }
 	PuzzleId getPuzzleId() const { return _puzzleId; }
 	SetupType getSetupType() const { return _setupType; }
+	Common::String *getName() { return &_savename; }
 
 	void setSetupType(SetupType type) { _setupType = type; }
 
 private:
 	Application *_app;
 
+	Common::String _savename;
 	Zone _zone;
 	bool _hasRotation;
 	Id _rotationId;

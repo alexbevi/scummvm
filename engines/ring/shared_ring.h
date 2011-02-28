@@ -461,7 +461,7 @@ enum ObjectId {
 	kObjectLoadOk                   = 90208,
 	kObjectSaveOk                   = 90309,
 	kObjectSaveCancel               = 90310,
-	kObjectSave90313                = 90313,
+	kObjectSaveName                 = 90313,
 	kObjectStatusOk                 = 90401,
 	kObjectStatusProgress           = 90402,
 	kObject90912                    = 90912,
