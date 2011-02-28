@@ -141,7 +141,30 @@ void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
 void EventHandlerRing::onKeyDown(Common::Event &evt) {
 	debugC(kRingDebugLogic, "onKeyDown");
 
-	error("[EventHandlerRing::onKeyDown] Not implemented");
+	// Stop dialogs if needed
+	if (evt.kbd.keycode == Common::KEYCODE_ESCAPE)
+		_app->soundStopType(kSoundTypeDialog, 4098);
+
+	// Handle menu
+	Puzzle *puzzleMenu = getApp()->getPuzzle(kPuzzleMenu);
+	if (puzzleMenu) {
+		error("[EventHandlerRing::onKeyDown] Not implemented");
+	}
+
+	// Handle events on zone
+	onKeyDownZone(evt.kbd);
+
+	// Handle current puzzle
+	Puzzle *currentPuzzle = _app->getCurrentPuzzle();
+	if (currentPuzzle) {
+		error("[EventHandlerRing::onKeyDown] current puzzle not implemented");
+	}
+
+	// Handle current rotation
+	Rotation *currentRotation = _app->getCurrentRotation();
+	if (currentRotation) {
+		error("[EventHandlerRing::onKeyDown] current rotation not implemented");
+	}
 }
 
 #pragma endregion
