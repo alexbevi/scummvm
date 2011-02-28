@@ -1873,18 +1873,369 @@ void EventHandlerRing::onSoundZoneSY(Id id, SoundType type, uint32 a3, bool proc
 }
 
 void EventHandlerRing::onSoundZoneNI(Id id, SoundType type, uint32 a3, bool process) {
-	error("[EventHandlerRing::onSoundZoneNI] Not implemented");
+	if (!process)
+		return;
+
+	switch (id) {
+	default:
+		break;
+
+	case 10001:
+		_app->objectPresentationShow(kObject10300, 2);
+		_app->puzzleSetActive(kPuzzle10391);
+		_app->soundPlay(10002, kSoundOnce);
+		return;
+
+	case 10002:
+		_app->bagAdd(kObjectGlug);
+		_app->bagAdd(kObjectMinerals);
+		_app->playMovie("1543");
+		_app->puzzleSetActive(kPuzzle10392);
+		_app->soundPlay(10003, kSoundOnce);
+		return;
+
+	case 10003:
+		_app->puzzleSetActive(kPuzzle10391);
+		_app->soundPlay(10004, kSoundOnce);
+		return;
+
+	case 10004:
+		_app->rotationSetAlp(10301, 160.0f);
+		_app->rotationSetRan(10301, 85.7f);
+		_app->rotationSetActive(10301);
+		break;
+
+	case 10005:
+		_app->puzzleSetActive(kPuzzle10390);
+		_app->soundPlay(10006, kSoundOnce);
+		return;
+
+	case 10006:
+		_app->puzzleSetActive(kPuzzle10392);
+		_app->soundPlay(10007, kSoundOnce);
+		return;
+
+	case 10007:
+		_app->puzzleSetActive(kPuzzle10390);
+		_app->soundPlay(10008, kSoundOnce);
+		return;
+
+	case 10008:
+		_app->puzzleSetActive(kPuzzle10392);
+		_app->soundPlay(10009, kSoundOnce);
+		return;
+
+	case 10009:
+		_app->playMovie("1544");
+		_app->bagAdd(kObjectLogeTear);
+		_app->varSetFloat(90005, _app->varGetFloat(90005) + 5.0f);
+		_app->objectPresentationHide(kObjectLogeTear);
+		_app->objectPresentationShow(kObjectLogeTear, 0);
+		_app->objectSetAccessibilityOff(10305);
+		_app->rotationSetActive(10301);
+		break;
+
+	case 10010:
+		_app->puzzleSetActive(kPuzzle10391);
+		_app->soundPlay(10011, kSoundOnce);
+		return;
+
+	case 10011:
+		_app->playMovie("1545");
+		_app->bagAdd(kObjectMagicFrog);
+		_app->varSetFloat(90005, _app->varGetFloat(90005) + 2.0f);
+		_app->objectSetAccessibilityOff(kObjectMagicFrog);
+		_app->varSetByte(10300, 1);
+
+		if (_app->bagHas(kObjectDivingHelmet)) {
+			_app->bagRemove(kObjectMagicFrog);
+			_app->bagRemove(kObjectDivingHelmet);
+			_app->bagAdd(kObjectDivingHelmet2);
+			_app->playMovie("1522");
+		}
+
+		_app->rotationSetActive(10301);
+		break;
+
+	case 10012:
+		_app->playMovie("1546");
+		_app->varSetByte(10301, 1);
+		_app->puzzleSetActive(kPuzzle10391);
+		_app->soundPlay(10013, kSoundOnce);
+		return;
+
+	case 10014:
+		_app->playMovie("1547");
+		_app->bagAdd(kObjectTile);
+		_app->varSetFloat(90005, _app->varGetFloat(90005) + 5.0f);
+		_app->objectPresentationShow(kObjectTile, 0);
+		_app->objectSetAccessibilityOff(10303);
+		_app->rotationSetActive(10301);
+		break;
+
+	case 10013:
+	case 10018:
+	case 10019:
+	case 10020:
+	case 10021:
+		_app->rotationSetActive(10301);
+		break;
+
+	case 10015:
+	case 10016:
+	case 10017:
+		_app->puzzleSetActive(kPuzzle10392);
+		_app->soundPlay(rnd(3) + 10018, kSoundOnce);
+		break;
+
+	case 10022:
+		_app->puzzleSetActive(kPuzzle10202);
+		_app->soundPlay(10023, kSoundOnce);
+		break;
+
+	case 10023:
+		_app->puzzleSetActive(kPuzzle10200);
+		_app->soundPlay(10024, kSoundOnce);
+		break;
+
+	case 10024:
+		_app->puzzleSetActive(kPuzzle10202);
+		_app->soundPlay(10025, kSoundOnce);
+		break;
+
+	case 10025:
+		_app->puzzleSetActive(kPuzzle10200);
+		_app->soundPlay(10026, kSoundOnce);
+		break;
+
+	case 10026:
+		_app->objectSetAccessibilityOn(kObject10201, 0, 0);
+		break;
+
+	case 10027:
+		_app->puzzleSetActive(kPuzzle10205);
+		_app->soundPlay(10028, kSoundOnce);
+		break;
+
+	case 10028:
+		_app->puzzleSetActive(kPuzzle10203);
+		_app->soundPlay(10029, kSoundOnce);
+		break;
+
+	case 10029:
+		_app->puzzleSetActive(kPuzzle10204);
+		_app->soundPlay(10030, kSoundOnce);
+		break;
+
+	case 10030:
+		_app->puzzleSetActive(kPuzzle10203);
+		_app->soundPlay(10031, kSoundOnce);
+		break;
+
+	case 10031:
+		_app->puzzleSetActive(kPuzzle10204);
+		_app->soundPlay(10032, kSoundOnce);
+		break;
+
+	case 10032:
+		_app->playMovie("1548");
+		_app->playMovie("1549");
+		_app->objectSetAccessibilityOn(kObject10200);
+		_app->rotationSetActive(10201);
+		_app->rotationSetMovabilityOff(10201, 0, 0);
+		break;
+
+	case 12001:
+		_app->puzzleSetActive(kPuzzle12003);
+		_app->soundPlay(12003, kSoundOnce);
+		break;
+
+	case 12002:
+		_app->playMovie("1542");
+		_app->puzzleSetActive(kPuzzle10521);
+		break;
+
+	case 12003:
+		_app->puzzleSetActive(kPuzzle12002);
+		_app->soundPlay(12002, kSoundOnce);
+		break;
+	}
 }
 
 void EventHandlerRing::onSoundZoneRH(Id id, SoundType type, uint32 a3, bool process) {
-	error("[EventHandlerRing::onSoundZoneRH] Not implemented");
+	if (!process)
+		return;
+
+	switch (id) {
+	default:
+		break;
+
+	case 20011:
+	case 20012:
+	case 20013:
+		_app->objectPresentationHide((ObjectId)(_app->varGetByte(21001) + 20001), 2);
+		_app->objectPresentationHide((ObjectId)(_app->varGetByte(21001) + 20001), 4);
+		_app->objectPresentationSetAnimationOnPuzzle((ObjectId)(_app->varGetByte(21001) + 20001), 2, 0, 20002);
+		_app->objectPresentationShow((ObjectId)(_app->varGetByte(21001) + 20001), 3);
+		_app->objectSetAccessibilityOn((ObjectId)(_app->varGetByte(21001) + 20001), 0, 1);
+		break;
+
+	case 20021:
+	case 20022:
+	case 20023:
+		_app->playMovie(Common::String::format("rh_%d", _app->varGetByte(21001) + 1));
+		_app->playMovie("1696");
+		_app->objectPresentationHide((ObjectId)(_app->varGetByte(21001) + 20001));
+		_app->rotationSetMovabilityOff(10 * (_app->varGetByte(21001) + 2001), 0, 0);
+		_app->rotationSetMovabilityOn(10 * (_app->varGetByte(21001) + 2001), 1, 1);
+		_app->rotationSetActive(10 * (_app->varGetByte(21001) + 2001));
+		break;
+
+	case 20031:
+	case 20032:
+	case 20033:
+		_app->playMovie(Common::String::format("rh_%d_l0", _app->varGetByte(21001) + 1));
+		_app->objectSetAccessibilityOff((ObjectId)(_app->varGetByte(21001) + 20001));
+		_app->objectSetAccessibilityOn((ObjectId)(_app->varGetByte(21001) + 20004));
+		_app->objectPresentationShow((ObjectId)(_app->varGetByte(21001) + 20004), 0);
+		_app->objectPresentationHide((ObjectId)(_app->varGetByte(21001) + 20001));
+		_app->puzzleSetActive((PuzzleId)(10 * _app->varGetByte(21001) + 20011));
+		break;
+
+	case 20201:
+		_app->playMovie("1698");
+		_app->bagAdd(kObjectMedallion);
+		_app->soundPlay(23009, kSoundOnce);
+		_app->objectSetAccessibilityOff(kObjectDolphin);
+		_app->rotationSetActive(20201);
+		_app->rotationSetMovabilityOn(20201, 0, 0);
+		break;
+
+	case 20202:
+		_app->playMovie("1699");
+		_app->objectPresentationShow(kObject21003, 0);
+		_app->objectPresentationShow(kObject20204, 0);
+		_app->rotationSetMovabilityOff(20202, 2, 2);
+		_app->rotationSetMovabilityOff(20202, 0, 0);
+		_app->rotationSetMovabilityOff(20203, 0, 0);
+		_app->rotationSetMovabilityOn(20202, 1, 1);
+		_app->rotationSetMovabilityOn(20203, 1, 3);
+		_app->rotationSetActive(20202);
+		break;
+
+	case 20301:
+		_app->objectPresentationHide(kObject20301, 1);
+		break;
+
+	case 20302:
+		_app->objectPresentationHide(kObject20302, 1);
+		_app->bagAdd(kObjectMedallion);
+		_app->playMovie("1700");
+		_app->rotationSetBet(20302, 0.3f);
+		_app->rotationSetActive(20302);
+		break;
+
+	case 20303:
+		_app->soundStop(23010, 1024);
+		_app->playMovie("1687");
+		_app->soundPlay(23009, kSoundOnce);
+		_app->rotationSetAlp(20303, 325.0);
+		_app->rotationSetBet(20303, 0.3f);
+		_app->rotationSetActive(20303);
+		break;
+
+	case 20304:
+		_app->playMovie("1701");
+		_app->objectPresentationShow(kObject20304, 0);
+		_app->objectPresentationShow(kObject21003, 1);
+		_app->rotationSetMovabilityOff(20304, 2, 2);
+		_app->rotationSetMovabilityOff(20304, 0, 0);
+		_app->rotationSetMovabilityOff(20305, 0, 0);
+		_app->rotationSetMovabilityOn(20304, 1, 1);
+		_app->rotationSetMovabilityOn(20305, 1, 2);
+		_app->rotationSetActive(20304);
+		break;
+
+	case 20401:
+		_app->playMovie("1674");
+		_app->bagAdd(kObjectAntiGCells2);
+		_app->soundPlay(23009, kSoundOnce);
+		_app->objectPresentationHide(kObject20402);
+		_app->playMovie("1702");
+		_app->rotationSetAlp(20402, 0.0);
+		_app->rotationSetActive(20402);
+		break;
+
+	case 20402:
+		_app->playMovie("1703");
+		_app->objectPresentationShow(kObject20404, 0);
+		_app->objectPresentationShow(kObject21003, 2);
+		_app->rotationSetMovabilityOff(20402, 0, 0);
+		_app->rotationSetMovabilityOff(20403, 0, 0);
+		_app->rotationSetMovabilityOn(20402, 1, 1);
+		_app->rotationSetMovabilityOn(20403, 1, 2);
+		_app->rotationSetActive(20402);
+		break;
+
+	case 20504:
+		_app->playMovie("1705");
+		_app->objectPresentationShow(kObject20502, 0);
+		_app->rotationSetMovabilityOff(20503, 0, 0);
+		_app->rotationSetMovabilityOff(20504, 0, 0);
+		_app->rotationSetMovabilityOn(20504, 1, 2);
+		_app->rotationSetActive(20503);
+		break;
+
+	case 20501:
+		_app->puzzleSetActive(kPuzzle20502);
+		_app->soundPlay(20502, kSoundOnce);
+		break;
+
+	case 20502:
+		_app->objectPresentationHide(kObject20501, 2);
+		_app->objectSetAccessibilityOn(kObject20501, 3, 4);
+		break;
+
+	case 20503:
+		_app->objectPresentationHide(kObject20501, 3);
+		_app->playMovie("1704");
+		_app->rotationSetAlp(20501, 0.0);
+		_app->rotationSetActive(20501);
+		break;
+
+	case 22001:
+		_app->puzzleSetActive(kPuzzle22003);
+		_app->soundPlay(22003, kSoundOnce);
+		break;
+
+	case 22002:
+		_app->playMovie("1697");
+		_app->bagAdd(kObjectBrutality);
+		_app->bagAdd(kObjectDivingHelmet2);
+		_app->rotationSetAlp(20010, 1.5);
+		_app->rotationSetBet(20010, -4.3f);
+		_app->rotationSetRan(20010, 79.3f);
+		_app->rotationSetActive(20010);
+		break;
+
+	case 22003:
+		_app->puzzleSetActive(kPuzzle22002);
+		_app->soundPlay(22002, kSoundOnce);
+		break;
+	}
 }
 
 void EventHandlerRing::onSoundZoneFO(Id id, SoundType type, uint32 a3, bool process) {
+	if (!process)
+		return;
+
 	error("[EventHandlerRing::onSoundZoneFO] Not implemented");
 }
 
 void EventHandlerRing::onSoundZoneRO(Id id, SoundType type, uint32 a3, bool process) {
+	if (!process)
+		return;
+
 	error("[EventHandlerRing::onSoundZoneRO] Not implemented");
 }
 
