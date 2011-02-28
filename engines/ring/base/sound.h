@@ -42,8 +42,9 @@ public:
 	SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format);
 	~SoundEntry();
 
-	void play(bool loop);
-	void stop();
+	virtual void play(bool loop) = 0;
+	virtual void preload() = 0;
+	virtual void stop() = 0;
 	bool isPlaying();
 
     void setVolume(int32 volume);
@@ -60,9 +61,6 @@ public:
 	static SoundFormat getFormat(Common::String filename);
 
 protected:
-	void setVolumeAndPan();
-
-private:
 	SoundType      _type;
 	Common::String _name;
 	bool           _isPlaying;
@@ -75,6 +73,8 @@ private:
 	uint32         _field_125;
 
 	Audio::SoundHandle _handle;
+
+	void setVolumeAndPan();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Conversion functions
@@ -107,6 +107,10 @@ public:
 	SoundEntryS(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, uint32 soundChunk);
 	~SoundEntryS();
 
+	virtual void play(bool loop);
+	virtual void preload();
+	virtual void stop();
+
 private:
 	uint32         _field_126;
 	uint32         _field_12A;
@@ -133,6 +137,10 @@ public:
 	SoundEntryD(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format);
 	~SoundEntryD();
 
+	virtual void play(bool loop);
+	virtual void preload();
+	virtual void stop();
+
 private:
 	uint32         _field_126;
 	uint32         _field_12A;
@@ -152,6 +160,7 @@ public:
 	void updateQueue();
 	void play(Id soundId, int a2);
 	void stop(Id soundId, uint32 a2);
+	void preload(Id soundId);
 	void setVolume(Id soundId, uint32 volume);
 	void stopType(SoundType soundType, uint32 a2);
 	void setMultiplier(SoundType soundType, uint32 multiplier);

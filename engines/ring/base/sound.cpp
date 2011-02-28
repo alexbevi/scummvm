@@ -53,16 +53,6 @@ SoundEntry::SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom
 SoundEntry::~SoundEntry() {
 }
 
-void SoundEntry::play(bool loop) {
-	error("[SoundEntry::play] Not implemented");
-}
-
-void SoundEntry::stop() {
-	getSound()->getMixer()->stopHandle(_handle);
-
-	_isPlaying = false;
-}
-
 bool SoundEntry::isPlaying() {
 	return getSound()->getMixer()->isSoundHandleActive(_handle);
 }
@@ -216,6 +206,21 @@ SoundEntryS::SoundEntryS(Id soundId, SoundType type, Common::String name, LoadFr
 SoundEntryS::~SoundEntryS() {
 }
 
+void SoundEntryS::play(bool loop) {
+	error("[SoundEntryS::play] Not implemented");
+}
+
+void SoundEntryS::preload() {
+	error("[SoundEntryS::preload] Not implemented");
+}
+
+void SoundEntryS::stop() {
+	getSound()->getMixer()->stopHandle(_handle);
+
+	_isPlaying = false;
+}
+
+
 #pragma endregion
 
 #pragma region SoundEntryD
@@ -232,6 +237,21 @@ SoundEntryD::SoundEntryD(Id soundId, SoundType type, Common::String name, LoadFr
 
 SoundEntryD::~SoundEntryD() {
 }
+
+void SoundEntryD::play(bool loop) {
+	error("[SoundEntryD::play] Not implemented");
+}
+
+void SoundEntryD::preload() {
+	error("[SoundEntryD::preload] Not implemented");
+}
+
+void SoundEntryD::stop() {
+	getSound()->getMixer()->stopHandle(_handle);
+
+	_isPlaying = false;
+}
+
 
 #pragma endregion
 
@@ -285,6 +305,12 @@ void SoundManager::stop(Id soundId, uint32 a2) {
 
 		_app->onSound(soundId, entry->getType(), a2);
 	}
+}
+
+void SoundManager::preload(Id soundId) {
+	SoundEntry *entry = getEntry(soundId);
+	if (entry)
+		entry->preload();
 }
 
 void SoundManager::setVolume(Id soundId, uint32 volume) {
