@@ -241,7 +241,7 @@ Common::String ArtHandler::getArtFolder(Zone zone) {
 
 	// If the game handles multiple languages, we need to read from the language subfolder
 	if (((RingEngine *)g_engine)->isMultiLanguage())
-		return "DATA/" + _app->languageGetFolder();
+		return "DATA/" + _app->getLanguageFolder();
 
 	// Otherwise, the system archive file is in the data folder with all the others
 	return "DATA";

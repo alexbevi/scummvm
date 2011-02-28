@@ -134,7 +134,7 @@ void Application::init() {
 
 	// Setup objects
 	_objectHandler = new ObjectHandler();
-	_objectHandler->addFromFile("aObj.ini", languageGetFolder());
+	_objectHandler->addFromFile("aObj.ini", getLanguageFolder());
 
 	// Setup art
 	if (_configuration.artBAG || _configuration.artCURSOR || _configuration.artSY)
@@ -739,21 +739,21 @@ void Application::languageAdd(LanguageId id, Common::String name, Common::String
 	_languageHandler->add(id, name, folder, channel);
 }
 
-LanguageId Application::languageGetCurrent() {
+LanguageId Application::getCurrentLanguage() {
 	if (!_languageHandler)
 		error("[Application::getLanguage] Language handler is not initialized properly");
 
 	return _languageHandler->getLanguage();
 }
 
-Common::String Application::languageGetFolder() {
-	LanguageId id = languageGetCurrent();
+Common::String Application::getLanguageFolder() {
+	LanguageId id = getCurrentLanguage();
 
 	return _languageHandler->getFolder(id);
 }
 
-uint32 Application::languageGetChannel() {
-	LanguageId id = languageGetCurrent();
+uint32 Application::getLanguageChannel() {
+	LanguageId id = getCurrentLanguage();
 
 	return _languageHandler->getChannel(id);
 }
@@ -900,7 +900,7 @@ bool Application::messageGet(Common::String messageId) {
 	if (!archive)
 		error("[Application::messageGet] Error opening objects file (ames.ini)");
 
-	Common::String language = languageGetFolder();
+	Common::String language = getLanguageFolder();
 
 	char id[255];
 	while (!archive->eos() && !archive->err()) {
@@ -1887,7 +1887,7 @@ void Application::soundAdd(Id soundId, SoundType type, Common::String filename, 
 	// Compute path
 	Common::String path;
 	if (type == kSoundTypeDialog)
-		path = Common::String::format("DATA/%s/SOUND/%s/%s", _zoneString.c_str(), languageGetFolder().c_str(), filename.c_str());
+		path = Common::String::format("DATA/%s/SOUND/%s/%s", _zoneString.c_str(), getLanguageFolder().c_str(), filename.c_str());
 	else
 		path = Common::String::format("DATA/%s/SOUND/%s", _zoneString.c_str(), filename.c_str());
 

@@ -104,21 +104,21 @@ ApplicationRing::~ApplicationRing() {
 #pragma region Game setup
 
 void ApplicationRing::initFont() {
-	switch (languageGetCurrent()) {
+	switch (getCurrentLanguage()) {
 	default:
-		fontAdd(kFontDefault, "arxrin.fon", "ARX Pilgrim L", 12, true, false, false, false, languageGetCurrent());
+		fontAdd(kFontDefault, "arxrin.fon", "ARX Pilgrim L", 12, true, false, false, false, getCurrentLanguage());
 		break;
 
 	case kLanguageSlovak:
-		fontAdd(kFontDefault, "arxrin.slo", "ARX Pilgrim L", 12, true, false, false, false, languageGetCurrent());
+		fontAdd(kFontDefault, "arxrin.slo", "ARX Pilgrim L", 12, true, false, false, false, getCurrentLanguage());
 		break;
 
 	case kLanguageHebrew:
-		fontAdd(kFontDefault, "arxrin.heb", "ArxelHebrew", 12, true, false, false, false, languageGetCurrent());
+		fontAdd(kFontDefault, "arxrin.heb", "ArxelHebrew", 12, true, false, false, false, getCurrentLanguage());
 		break;
 
 	case kLanguageGreek:
-		fontAdd(kFontDefault, "arxrin.gre", "Arial", 16, true, false, false, false, languageGetCurrent());
+		fontAdd(kFontDefault, "arxrin.gre", "Arial", 16, true, false, false, false, getCurrentLanguage());
 		break;
 	}
 }

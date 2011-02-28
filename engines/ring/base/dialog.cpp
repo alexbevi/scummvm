@@ -46,10 +46,10 @@ Dialog::Dialog(Id id, Common::String name) : BaseObject(id) {
 		error("[Dialog::Dialog] Invalid dialog name (length should be >= 4)");
 
 	// Read lyrics
-	readLyrics(Common::String::format("DATA/%s/DIA/%s/%s.dia", getApp()->getCurrentZoneString().c_str(), getApp()->languageGetFolder().c_str(), name.c_str()));
+	readLyrics(Common::String::format("DATA/%s/DIA/%s/%s.dia", getApp()->getCurrentZoneString().c_str(), getApp()->getLanguageFolder().c_str(), name.c_str()));
 
 	// Read animations
-	_visible = readAnimation(Common::String::format("DATA/%s/DIA/%s/%s.dan", getApp()->getCurrentZoneString().c_str(), getApp()->languageGetFolder().c_str(), name.c_str()));
+	_visible = readAnimation(Common::String::format("DATA/%s/DIA/%s/%s.dan", getApp()->getCurrentZoneString().c_str(), getApp()->getLanguageFolder().c_str(), name.c_str()));
 }
 
 Dialog::~Dialog() {

@@ -108,9 +108,9 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Language, Font, Cursor and Subtitle
 	void languageAdd(LanguageId id, Common::String name, Common::String folder, uint channel);
-	LanguageId languageGetCurrent();
-	Common::String languageGetFolder();
-	uint32 languageGetChannel();
+	LanguageId getCurrentLanguage();
+	Common::String getLanguageFolder();
+	uint32 getLanguageChannel();
 
 	void fontAdd(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
 

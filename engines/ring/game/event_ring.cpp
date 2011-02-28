@@ -394,19 +394,19 @@ void EventHandlerRing::onSetupZoneAS(SetupType type) {
 		break;
 
 	case kSetupType6:
-		switch (_app->languageGetCurrent()) {
+		switch (_app->getCurrentLanguage()) {
 		default:
-			_app->playMovieChannel("1162", _app->languageGetChannel());
+			_app->playMovieChannel("1162", _app->getLanguageChannel());
 			break;
 
 		case kLanguageSwedish:
-			_app->playMovieChannel("1161", _app->languageGetChannel());
+			_app->playMovieChannel("1161", _app->getLanguageChannel());
 			break;
 
 		case kLanguageItalian:
 		case kLanguageSpanish:
 		case kLanguageDutch:
-			_app->playMovieChannel("1160", _app->languageGetChannel());
+			_app->playMovieChannel("1160", _app->getLanguageChannel());
 			break;
 		}
 
@@ -415,15 +415,15 @@ void EventHandlerRing::onSetupZoneAS(SetupType type) {
 		break;
 
 	case kSetupType998:
-		switch (_app->languageGetCurrent()) {
+		switch (_app->getCurrentLanguage()) {
 		default:
-			_app->playMovieChannel("1164", _app->languageGetChannel());
+			_app->playMovieChannel("1164", _app->getLanguageChannel());
 			break;
 
 		case kLanguageItalian:
 		case kLanguageSpanish:
 		case kLanguageDutch:
-			_app->playMovieChannel("1163", _app->languageGetChannel());
+			_app->playMovieChannel("1163", _app->getLanguageChannel());
 			break;
 		}
 
@@ -1889,11 +1889,279 @@ void EventHandlerRing::onSoundZoneRO(Id id, SoundType type, uint32 a3, bool proc
 }
 
 void EventHandlerRing::onSoundZoneWA(Id id, SoundType type, uint32 a3, bool process) {
-	error("[EventHandlerRing::onSoundZoneWA] Not implemented");
+	if (!process)
+		return;
+
+	switch (id) {
+	default:
+		break;
+
+	case 50021:
+		switch (_app->getCurrentLanguage()) {
+		default:
+			_app->playMovieChannel("1875", _app->getLanguageChannel());
+			break;
+
+		case kLanguageItalian:
+		case kLanguageSpanish:
+		case kLanguageDutch:
+			_app->playMovieChannel("1873", _app->getLanguageChannel());
+			break;
+
+		case kLanguageSwedish:
+			_app->playMovieChannel("1874", _app->getLanguageChannel());
+			break;
+		}
+
+		_app->puzzleSetActive(kPuzzle51002);
+		_app->soundPlay(50022, 1);
+		break;
+
+	case 50022:
+		switch (_app->getCurrentLanguage()) {
+		default:
+			_app->playMovieChannel("1878", _app->getLanguageChannel());
+			break;
+
+		case kLanguageItalian:
+		case kLanguageSpanish:
+		case kLanguageDutch:
+			_app->playMovieChannel("1876", _app->getLanguageChannel());
+			break;
+
+		case kLanguageSwedish:
+			_app->playMovieChannel("1877", _app->getLanguageChannel());
+			break;
+		}
+
+		_app->puzzleSetActive(kPuzzle51003);
+		_app->soundPlay(51008, 2);
+		_app->soundPlay(50026, 1);
+		break;
+
+	case 50026:
+		_app->puzzleSetActive(kPuzzle51004);
+		_app->soundPlay(50027, 1);
+		break;
+
+	case 50027:
+		_app->puzzleSetActive(kPuzzle51005);
+		_app->soundPlay(50028, 1);
+		break;
+
+	case 50028:
+		_app->puzzleSetActive(kPuzzle51006);
+		_app->soundPlay(50029, 1);
+		break;
+
+	case 50029:
+		_app->puzzleSetActive(kPuzzle51007);
+		_app->soundPlay(50030, 1);
+		break;
+
+	case 50030:
+		_app->puzzleSetActive(kPuzzle51008);
+		_app->soundPlay(50031, 1);
+		break;
+
+	case 50031:
+		_app->puzzleSetActive(kPuzzle51009);
+		_app->soundPlay(50032, 1);
+		break;
+
+	case 50032:
+		_app->puzzleSetActive(kPuzzle51010);
+		_app->soundPlay(50033, 1);
+		break;
+
+	case 50033:
+		_app->puzzleSetActive(kPuzzle51011);
+		_app->soundPlay(50034, 1);
+		break;
+
+	case 50034:
+		_app->puzzleSetActive(kPuzzle51012);
+		_app->soundPlay(50035, 1);
+		break;
+
+	case 50035:
+		_app->puzzleSetActive(kPuzzle51013);
+		_app->soundPlay(50036, 1);
+		break;
+
+	case 50036:
+		_app->playMovie("1879");
+		_app->timerStopAll();
+		_app->soundStopAll(1024);
+		onSwitchZoneAS(4);
+		break;
+
+	case 50001:
+		_app->puzzleSetActive(kPuzzle50001);
+		_app->soundPlay(50002, 1);
+
+		break;
+	case 50002:
+		_app->rotationSetActive(50001);
+		_app->soundPlay(50003, 1);
+		break;
+
+	case 50003:
+		_app->soundPlay(51006, 2);
+		break;
+
+	case 50009:
+		_app->puzzleSetActive(kPuzzle50703);
+		_app->soundPlay(50010, 1);
+		break;
+
+	case 50010:
+		_app->puzzleSetActive(kPuzzle50702);
+		_app->soundPlay(50011, 1);
+		break;
+
+	case 50011:
+		_app->puzzleSetActive(kPuzzle50703);
+		_app->soundPlay(50012, 1);
+		break;
+
+	case 50012:
+		_app->puzzleSetActive(kPuzzle50701);
+		_app->soundPlay(50013, 1);
+		break;
+
+	case 50013:
+		_app->puzzleSetActive(kPuzzle50703);
+		_app->soundPlay(50014, 1);
+		break;
+
+	case 50014:
+		_app->puzzleSetActive(kPuzzle50702);
+		_app->soundPlay(50015, 1);
+		break;
+
+	case 50015:
+		_app->puzzleSetActive(kPuzzle50703);
+		_app->soundPlay(50016, 1);
+		break;
+
+	case 50016:
+		_app->objectSetAccessibilityOff(kObject50700);
+		_app->rotationSetActive(50701);
+		break;
+	}
 }
 
 void EventHandlerRing::onSoundZoneAS(Id id, SoundType type, uint32 a3, bool process) {
-	error("[EventHandlerRing::onSoundZoneAS] Not implemented");
+	if (!process)
+		return;
+
+	switch (id) {
+	default:
+		break;
+
+	case 80100:
+		_app->puzzleSetActive(kPuzzle80012);
+		_app->soundPlay(80101, 1);
+		break;
+
+	case 80101:
+		_app->puzzleSetActive(kPuzzle80011);
+		_app->soundPlay(80102, 1);
+		break;
+
+	case 80102:
+		_app->puzzleSetActive(kPuzzle80012);
+		_app->soundPlay(80103, 1);
+		break;
+
+	case 80103:
+		_app->playMovie("1157");
+		_app->puzzleSetActive(kPuzzle80013);
+		_app->soundPlay(80104, 1);
+		break;
+
+	case 80104:
+	case 80040:
+	case 80041:
+	case 80042:
+	case 80043:
+	case 80044:
+	case 80045:
+	case 80046:
+	case 80047:
+	case 80049:
+	case 80050:
+	case 80051:
+	case 80052:
+	case 80053:
+	case 80054:
+	case 80055:
+	case 80056:
+	case 80058:
+	case 80059:
+	case 80060:
+	case 80061:
+	case 80062:
+	case 80063:
+	case 80064:
+	case 80065:
+	case 80066:
+	case 80068:
+	case 80069:
+	case 80070:
+	case 80071:
+	case 80072:
+	case 80073:
+	case 80074:
+	case 80075:
+	case 80076:
+	case 80077:
+	case 80078:
+	case 80079:
+		_app->soundPlay(id + 1, 1);
+		break;
+
+	case 80105:
+		_app->playMovie("1158");
+		_app->puzzleSetActive(kPuzzle80014);
+		_app->soundPlay(80106, 1);
+		break;
+
+	case 80106:
+		_app->timerStart(kTimer2, 100000);
+		_app->timerStart(kTimer3, 220000);
+		_app->timerStart(kTimer4, 150000);
+		_app->rotationSetAlp(80001, 270.0f);
+		_app->rotationSetBet(80001, -26.0f);
+		_app->rotationSetRan(80001, 85.3f);
+		_app->rotationSetActive(80001);
+		break;
+
+	case 80048:
+		_app->soundSetVolume(80201, 100);
+		_app->varSetByte(80002, 2);
+		break;
+
+	case 80057:
+		_app->soundSetVolume(80203, 100);
+		_app->varSetByte(80002, 3);
+		break;
+
+	case 80067:
+		_app->soundSetVolume(80204, 100);
+		_app->varSetByte(80002, 4);
+		break;
+
+	case 80080:
+		_app->soundSetVolume(80205, 100);
+		_app->varSetByte(80002, 5);
+		break;
+	case 80107:
+		_app->playMovie("1159");
+		_app->showMenu(kZoneAS, 0);
+		break;
+	}
 }
 
 void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool process) {
