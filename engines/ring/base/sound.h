@@ -55,6 +55,7 @@ public:
 
 	// Accessors
 	SoundType getType() { return _type; }
+	Common::String getName() { return _name; }
 	void setField125(uint32 val) { _field_125 = val; }
 	void setPlaying(bool state) { _isPlaying = state; }
 

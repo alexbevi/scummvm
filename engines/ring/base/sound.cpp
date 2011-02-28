@@ -285,8 +285,31 @@ void SoundManager::updateQueue() {
 }
 
 void SoundManager::play(Id soundId, bool loop) {
+	SoundEntry *entry = getEntry(soundId);
+	if (!entry)
+		return;
 
-	error("[SoundManager::play] Not implemented");
+	// Stop sound type
+	if (entry->getType() == kSoundTypeDialog) {
+		stopType(kSoundTypeDialog, 32);
+	} else if (entry->isPlaying()) {
+		entry->stop();
+
+		_app->onSound(soundId, entry->getType(), 32);
+	}
+
+	// Setup and play entry
+	Dialog *dialog = NULL;
+	if (entry->getType() == kSoundTypeDialog) {
+		dialog = new Dialog(soundId, entry->getName());
+		_app->getDialogHandler()->addDialog(dialog);
+	}
+
+	entry->play(loop);
+	entry->setPlaying(true);
+
+	if (entry->getType() == kSoundTypeDialog && dialog != NULL)
+		dialog->setTicks();
 }
 
 void SoundManager::stop(Id soundId, uint32 a2) {
