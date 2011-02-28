@@ -387,12 +387,13 @@ void ApplicationRing::messageHideQuestion(uint32 accelerationIndex) {
 #pragma region Zone setup
 
 void ApplicationRing::setupZone(Zone zone, SetupType type) {
-	bool load = isLoaded(type);
+	debugC(kRingDebugLogic, "Setting up zone %s", getZoneString(zone).c_str());
 
 	// Check saved data for zone and/or puzzle id
-	if (!load) {
+	bool hasData = isDataPresent(type);
+	if (!hasData) {
 		if (zone == kZoneSY) {
-			load = true;
+			hasData = true;
 		} else {
 			// The original checks for the correct CD,
 			// we should instead check that the zone folder
@@ -410,7 +411,7 @@ void ApplicationRing::setupZone(Zone zone, SetupType type) {
 	if (zone != kZoneSY)
 		getArtHandler()->reset();
 
-	if (load) {
+	if (hasData) {
 		setZoneAndEnableBag(zone);
 		setZone(zone, type);
 	} else {
@@ -420,7 +421,7 @@ void ApplicationRing::setupZone(Zone zone, SetupType type) {
 	}
 }
 
-bool ApplicationRing::isLoaded(SetupType type) {
+bool ApplicationRing::isDataPresent(SetupType type) {
 	if (type != kSetupType1000 || _zone != kZoneAS)
 		return false;
 
@@ -492,9 +493,10 @@ void ApplicationRing::setZoneAndEnableBag(Zone zone) {
 }
 
 void ApplicationRing::setZone(Zone zone, SetupType type) {
-	bool load = isLoaded(type);
+	debugC(kRingDebugLogic, "Setting zone %s", getZoneString(zone).c_str());
 
-	if (zone != kZoneSY && !load) {
+	bool hasData = isDataPresent(type);
+	if (zone != kZoneSY && !hasData) {
 		if (getReadFrom(zone) == kArchiveArt) {
 			if (!getArtHandler())
 				error("[ApplicationRing::setZone] Art handler is not initialized properly");
@@ -504,7 +506,7 @@ void ApplicationRing::setZone(Zone zone, SetupType type) {
 	}
 
 	if (type == 1000) {
-		error("[ApplicationRing::setZone] Not implemented (a2 == 1000)");
+		error("[ApplicationRing::setZone] Not implemented (type == 1000)");
 	}
 
 	// Setup zone
@@ -524,6 +526,8 @@ Visual *ApplicationRing::createVisual(Id visualId, uint32 a3, uint32 a4, uint32 
 
 	return visual;
 }
+
+#pragma endregion
 
 #pragma region Zone full names, short string and ReadFrom
 
@@ -630,6 +634,8 @@ ArchiveType ApplicationRing::getReadFrom(Zone zone) const {
 #pragma region Zone initialization
 
 void ApplicationRing::initZones() {
+	debugC(kRingDebugLogic, "Init zone data");
+
 	_loadFrom = kLoadFromDisk;
 
 	drawZoneName(kZoneSY);

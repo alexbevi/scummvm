@@ -62,14 +62,20 @@ void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt, bool isControlPre
 }
 
 void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt) {
+	debugC(kRingDebugLogic, "onMouseLeftButtonUp");
+
 	error("[EventHandlerRing::onMouseLeftButtonUp] Not implemented");
 }
 
 void EventHandlerRing::onMouseLeftButtonDown(Common::Event &evt) {
+	debugC(kRingDebugLogic, "onMouseLeftButtonDown");
+
 	error("[EventHandlerRing::onMouseLeftButtonDown] Not implemented");
 }
 
 void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
+	debugC(kRingDebugLogic, "onMouseRightButtonUp");
+
 	if (getApp()->getDragControl()->getField20() || getApp()->getField6F())
 		return;
 
@@ -93,6 +99,8 @@ void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
 }
 
 void EventHandlerRing::onKeyDown(Common::Event &evt) {
+	debugC(kRingDebugLogic, "onKeyDown");
+
 	error("[EventHandlerRing::onKeyDown] Not implemented");
 }
 
@@ -114,6 +122,8 @@ void EventHandlerRing::onKeyDownZoneSY(Common::KeyCode keycode) {
 #pragma region Zone Setup
 
 void EventHandlerRing::onSetup(Zone zone, SetupType type) {
+	debugC(kRingDebugLogic, "onSetup (zone: %s, type: %d)", _app->getZoneString(zone).c_str(), type);
+
 	switch (zone) {
 	default:
 	case kZoneSY:
@@ -445,6 +455,8 @@ void EventHandlerRing::onSetupLoadTimers(Common::String zoneName, Id testId1, Id
 #pragma region Timer
 
 void EventHandlerRing::onTimer(TimerId timerId) {
+	debugC(kRingDebugLogic, "onTimer (id: %d)", timerId);
+
 	switch (_app->getCurrentZone()) {
 	default:
 	case kZoneSY:
@@ -534,6 +546,8 @@ void EventHandlerRing::onTimerZoneN2(TimerId id) {
 #pragma region Bag
 
 void EventHandlerRing::onBag(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+	debugC(kRingDebugLogic, "onBag (object: %d)", id.id());
+
 	if (puzzleRotationId == 1 && a4 == 1) {
 		onBagZoneSY(id, a2, 1, 1, dragControl, a6);
 		return;
@@ -1534,6 +1548,8 @@ void EventHandlerRing::onAfterRideZoneN2(Id movabilityFrom, Id movabilityTo, uin
 #pragma region Sound
 
 void EventHandlerRing::onSound(Id id, SoundType type, uint32 a3) {
+	debugC(kRingDebugLogic, "onSound (id: %d, type: %d)", id, type);
+
 	uint32 a4 = a3 & 0x1000;
 	a3 &= 239;
 

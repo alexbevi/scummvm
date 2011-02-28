@@ -90,7 +90,7 @@ private:
 	void initZoneN2();
 
 	uint32 getCdForZone(Zone zone);
-	bool isLoaded(SetupType type);
+	bool isDataPresent(SetupType type);
 };
 
 } // End of namespace Ring
