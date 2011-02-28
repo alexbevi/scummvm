@@ -386,7 +386,7 @@ bool ImageLoaderCIN::load(Image *image, ArchiveType type, Zone zone, LoadFrom lo
 	byte format = 0;
 	_filename = image->getName();
 
-	if (!init()){
+	if (!init(_filename)){
 		warning("[ImageLoaderCIN::load] Error initializing image reader (%s)", _filename.c_str());
 		goto cleanup;
 	}
@@ -413,10 +413,10 @@ cleanup:
 	return false;
 }
 
-bool ImageLoaderCIN::init() {
+bool ImageLoaderCIN::init(Common::String filename) {
 	_cinematic = new Cinematic();
 
-	if (!_cinematic->init(_filename)) {
+	if (!_cinematic->init(filename)) {
 		warning("[ImageLoaderCIN::init] Error initializing cinematic (%s)", _filename.c_str());
 		return false;
 	}

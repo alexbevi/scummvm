@@ -684,12 +684,12 @@ void Application::playMovie(Common::String filename, float frameDivider) {
 	Common::String path = Common::String::format("DATA/%s/PLA/", getCurrentZoneString().c_str());
 
 	Movie *movie = new Movie(_screenManager);
-	movie->init(path, filename, 1, 0);
+	if (movie->init(path, filename, 1, 0)) {
+		if (frameDivider != 0.0f)
+			movie->setFramerate(1000.0f / frameDivider);
 
-	if (frameDivider != 0.0f)
-		movie->setFramerate(1000.0f / frameDivider);
-
-	movie->play(0, 16);
+		movie->play(0, 16);
+	}
 
 	delete movie;
 }
@@ -709,9 +709,8 @@ void Application::playMovieChannel(Common::String filename, uint32 channel) {
 	Common::String path = Common::String::format("DATA/%s/PLA/", getCurrentZoneString().c_str());
 
 	Movie *movie = new Movie(_screenManager);
-	movie->init(path, filename, 1, channel);
-
-	movie->play(0, 16);
+	if (movie->init(path, filename, 1, channel))
+		movie->play(0, 16);
 
 	delete movie;
 }

@@ -29,9 +29,11 @@
 #include "ring/shared.h"
 
 #include "common/stream.h"
+#include "common/substream.h"
 
 namespace Ring {
 
+class ImageLoaderCIN;
 class Movie;
 class ScreenManager;
 
@@ -43,6 +45,8 @@ public:
 	bool init(Common::String name);
 	void deinit();
 
+	void setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset);
+
 	// ReadStream
 	virtual bool eos() const;
 	virtual uint32 read(void *dataPtr, uint32 dataSize);
@@ -51,6 +55,15 @@ public:
 	virtual int32 pos() const;
 	virtual int32 size() const;
 	virtual bool seek(int32 offset, int whence = SEEK_SET);
+
+	// Accessors
+	void setChannel(uint32 channel) { _channel = channel; }
+	void setSoundInitialized(bool state) { _isSoundInitialized = state; }
+	void setField53(bool state) { _field_53 = state; }
+	void setRemoveDialog(bool state) { _removeDialog = state; }
+	void setFramerate(uint32 framerate) { _framerate = framerate; }
+
+	bool isSoundInitialized() { return _isSoundInitialized; }
 
 private:
 	Common::SeekableReadStream *_stream;    ///< The movie file stream
@@ -76,13 +89,11 @@ private:
 	uint32 _field_46;
 	uint32 _field_4A;
 	float  _field_4E;
-	bool   _isSoundInitialized;
+	bool   _isSoundInitialized; // FIXME remove (our sound mixer is always initialized)
 	bool   _field_53;
 	float  _framerate;
 	bool   _removeDialog;
 	uint32 _channel;
-
-	friend class Movie;
 };
 
 class Movie {
@@ -90,21 +101,20 @@ public:
 	Movie(ScreenManager *screen);
 	~Movie();
 
-	void init(Common::String path, Common::String filename, uint32 a3, uint32 a4);
+	bool init(Common::String path, Common::String filename, uint32 a3, uint32 channel);
 	void deinit();
 
 	void play(uint32 a1, uint32 a2);
 
-	void setFramerate(float rate) { _data->_framerate = rate; }
+	void setFramerate(float rate) { _cinematic->setFramerate(rate); }
 
 private:
-	ScreenManager *_screen;
+	ScreenManager  *_screen;
+	ImageLoaderCIN *_imageCIN;
+	Cinematic      *_cinematic;
 
-	uint32 *_imageCIN; // ImageCIN
-	// global buffer
-
-	// Data
-	Cinematic *_data;
+	bool readSound();
+	bool skipSound();
 };
 
 } // End of namespace Ring

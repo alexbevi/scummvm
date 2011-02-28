@@ -25,11 +25,18 @@
 
 #include "ring/graphics/movie.h"
 
+#include "ring/base/application.h"
+#include "ring/base/dialog.h"
+
+#include "ring/graphics/image.h"
+#include "ring/graphics/imageLoader.h"
 #include "ring/graphics/screen.h"
 
+#include "ring/ring.h"
 #include "ring/helpers.h"
 
 #include "common/archive.h"
+#include "common/file.h"
 
 namespace Ring {
 
@@ -87,6 +94,10 @@ void Cinematic::deinit() {
 	//warning("[Cinematic::deinit] Not implemented!");
 }
 
+void Cinematic::setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset) {
+	error("[Cinematic::setSoundBuffer] Not implemented!");
+}
+
 #pragma region ReadStream
 
 bool Cinematic::eos() const {
@@ -138,31 +149,128 @@ Movie::Movie(ScreenManager *screen) : _screen(screen) {
 	_imageCIN = NULL;
 	// bufferGlobal = NULL;
 
-	_data = new Cinematic();
+	_cinematic = new Cinematic();
 }
 
 Movie::~Movie() {
 	deinit();
 
-	SAFE_DELETE(_data);
+	SAFE_DELETE(_cinematic);
 
 	// Zero-out passed pointers
 	_screen = NULL;
 }
 
-void Movie::init(Common::String path, Common::String filename, uint32 a3, uint32 a4) {
-	warning("[Movie::init] Not implemented");
+bool Movie::init(Common::String path, Common::String filename, uint32 a3, uint32 channel) {
+	// Compute and check path
+	Common::String filePath = path + '/' + filename;
+	if (!Common::File::exists(filePath))
+		return false;
+
+	// Initialize movie stream
+	_imageCIN = new ImageLoaderCIN();
+	if (!_imageCIN->init(filePath))
+		error("[Movie::init] Cannot read cinematic frame size");
+
+	// Set channel and state
+	_cinematic->setChannel(channel);
+	_cinematic->setSoundInitialized(true);
+
+	// TODO Setup sound
+	warning("[Movie::init] sound setup not implemented");
+
+	// TODO Setup framerate
+	warning("[Movie::init] framerate setup not implemented");
+
+	// TODO Setup sound handler
+	warning("[Movie::init] sound handler setup not implemented");
+
+	// Init dialog
+	Common::String dialogPath = Common::String::format("DATA/%s/DIA/%s/%s", getApp()->getCurrentZoneString().c_str(), getApp()->getLanguageFolder().c_str(), filename.c_str());
+	if (!Common::File::exists(dialogPath)) {
+		_cinematic->setRemoveDialog(false);
+		return true;
+	}
+
+	getApp()->getDialogHandler()->addDialog(new Dialog(500001, filename));
+	_cinematic->setRemoveDialog(true);
+
+	return false;
 }
 
 void Movie::deinit() {
 	SAFE_DELETE(_imageCIN);
 
-	_data->_isSoundInitialized = true;
-	_data->_field_53 = true;
+	_cinematic->setSoundInitialized(true);
+	_cinematic->setField53(true);
 }
 
 void Movie::play(uint32 a1, uint32 a2) {
 	warning("[Movie::play] Not implemented");
+}
+
+bool Movie::readSound() {
+	if (!_cinematic)
+		error("[Movie::readSound] Cinematic not initialized properly");
+
+	// Read sound data offset
+	uint32 offset = _cinematic->readUint32LE();
+	if (_cinematic->err() || _cinematic->eos()) {
+		warning("[Movie::readSound] Error reading from file");
+		deinit();
+		return false;
+	}
+
+	// Check if there is any sound data
+	if (!offset)
+		return true;
+
+	if (offset > 10000000) {
+		warning("[Movie::readSound] Invalid sound offset (was:%d, max:10000000)", offset);
+		return false;
+	}
+
+	// Check remaining file size
+	if ((_cinematic->pos() + offset) >= (uint32)_cinematic->size()) {
+		warning("[Movie::readSound] Invalid sound offset (would read after end of file)", offset);
+		deinit();
+		return false;
+	}
+
+	// Create a substream and initialize cinematic sound buffer
+	if (!_cinematic->isSoundInitialized())
+		return true;
+
+	_cinematic->setSoundBuffer(new Common::SeekableSubReadStream(_cinematic, _cinematic->pos(), _cinematic->pos() + offset), offset);
+
+	return true;
+}
+
+bool Movie::skipSound() {
+	if (!_cinematic)
+		error("[Movie::skipSound] Cinematic not initialized properly");
+
+	// Read sound data offset
+	uint32 offset = _cinematic->readUint32LE();
+	if (_cinematic->err() || _cinematic->eos()) {
+		warning("[Movie::skipSound] Error reading from file");
+		deinit();
+		return false;
+	}
+
+	// Check if there is any sound data
+	if (!offset)
+		return true;
+
+	// Skip sound data
+	_cinematic->seek(offset, SEEK_CUR);
+	if (_cinematic->err() || _cinematic->eos()) {
+		warning("[Movie::skipSound] Error reading from file");
+		deinit();
+		return false;
+	}
+
+	return true;
 }
 
 #pragma endregion

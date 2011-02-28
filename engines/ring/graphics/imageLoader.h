@@ -145,6 +145,8 @@ public:
 
 	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
 
+	bool init(Common::String filename);
+
 private:
 	struct Header {
 		// More fields
@@ -158,7 +160,6 @@ private:
 	//uint32 _field_1084;
 	//uint32 _field_1088;
 
-	bool init();
 	void deinit();
 
 	bool readHeader();
