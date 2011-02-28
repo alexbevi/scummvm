@@ -158,7 +158,7 @@ public:
 
 	// Playing
 	void updateQueue();
-	void play(Id soundId, int a2);
+	void play(Id soundId, bool loop);
 	void stop(Id soundId, uint32 a2);
 	void preload(Id soundId);
 	void setVolume(Id soundId, uint32 volume);

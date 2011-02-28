@@ -213,12 +213,12 @@ void EventHandlerRing::onSetupZoneNI(SetupType type) {
 
 	case kSetupTypeNone:
 		_app->playMovie("1540");
-		_app->soundPlay(14001, 2);
+		_app->soundPlay(14001, kSoundLoop);
 		_app->playMovie("1541");
 		_app->bagRemoveAll();
 		_app->bagAdd(kObjectBrutality);
 		_app->puzzleSetActive(kPuzzle10390);
-		_app->soundPlay(10001, 1);
+		_app->soundPlay(10001, kSoundOnce);
 		break;
 
 	case kSetupType3:
@@ -228,8 +228,8 @@ void EventHandlerRing::onSetupZoneNI(SetupType type) {
 		_app->rotationSetAlp(10301, 160.0f);
 		_app->rotationSetRan(10301, 85.7f);
 		_app->rotationSetActive(10301);
-		_app->soundPlay(14001, 2);
-		_app->soundPlay(10021, 1);
+		_app->soundPlay(14001, kSoundLoop);
+		_app->soundPlay(10021, kSoundOnce);
 		_app->varSetByte(10303, 1);
 		break;
 
@@ -246,7 +246,7 @@ void EventHandlerRing::onSetupZoneNI(SetupType type) {
 		_app->bagAdd(kObjectDivingHelmet2);
 		_app->varSetByte(10106, 1);
 		_app->objectPresentationShow(kObject1);
-		_app->soundPlay(10409, 2);
+		_app->soundPlay(10409, kSoundLoop);
 		_app->rotationSetActive(10415);
 		break;
 	}
@@ -259,10 +259,10 @@ void EventHandlerRing::onSetupZoneRH(SetupType type) {
 
 	case kSetupTypeNone:
 		_app->bagRemove(kObjectAntiGCells);
-		_app->soundPlay(23005, 2);
+		_app->soundPlay(23005, kSoundLoop);
 		_app->playMovie("1706");
 		_app->puzzleSetActive(kPuzzle22001);
-		_app->soundPlay(22001, 1);
+		_app->soundPlay(22001, kSoundOnce);
 		break;
 
 	case kSetupType10:
@@ -337,7 +337,7 @@ void EventHandlerRing::onSetupZoneRO(SetupType type) {
 		_app->bagAdd(kObjectRing);
 		_app->bagAdd(kObjectCrown);
 		_app->puzzleSetActive(kPuzzle40100);
-		_app->soundPlay(40700, 1);
+		_app->soundPlay(40700, kSoundOnce);
 		break;
 	}
 }
@@ -411,7 +411,7 @@ void EventHandlerRing::onSetupZoneAS(SetupType type) {
 		}
 
 		_app->puzzleSetActive(kPuzzle80001);
-		_app->soundPlay(80107, 1);
+		_app->soundPlay(80107, kSoundOnce);
 		break;
 
 	case kSetupType998:
@@ -429,7 +429,7 @@ void EventHandlerRing::onSetupZoneAS(SetupType type) {
 
 		_app->playMovie("1666");
 		_app->puzzleSetActive(kPuzzle80011);
-		_app->soundPlay(80100, 1);
+		_app->soundPlay(80100, kSoundOnce);
 		break;
 
 	case kSetupType999:
@@ -457,7 +457,7 @@ void EventHandlerRing::onSetupZoneN2(SetupType type) {
 		_app->puzzleSetActive(kPuzzle72001);
 		_app->objectPresentationHide(kObject72000);
 		_app->cursorSelect(kCursorDefault);
-		_app->soundPlay(72001, 1);
+		_app->soundPlay(72001, kSoundOnce);
 		break;
 
 	case kSetupType10:
@@ -468,7 +468,7 @@ void EventHandlerRing::onSetupZoneN2(SetupType type) {
 		_app->bagRemoveAll();
 		_app->timerStopAll();
 		_app->bagAdd(kObjectFire);
-		_app->soundPlay(70000, 2);
+		_app->soundPlay(70000, kSoundLoop);
 		_app->rotationSetActive(70400);
 		break;
 	}
@@ -555,7 +555,7 @@ void EventHandlerRing::onTimerZoneNI(TimerId id) {
 			mod = 5;
 
 		if (!(_app->varGetByte(10432) % mod)) {
-			_app->soundPlay(10415, 1);
+			_app->soundPlay(10415, kSoundOnce);
 			_app->objectPresentationShow(kObject10432, rnd(2) + 1);
 		}
 
@@ -654,7 +654,7 @@ void EventHandlerRing::onTimerZoneFO(TimerId id) {
 	case kTimer1: {
 		Id soundId = rnd(15) + 30301;
 		_app->soundSetPan(soundId, 10 - rnd(20));
-		_app->soundPlay(soundId, 1);
+		_app->soundPlay(soundId, kSoundOnce);
 
 		_app->timerStop(kTimer1);
 		_app->timerStart(kTimer1, 500 * (rnd(10) + 10));
@@ -669,7 +669,7 @@ void EventHandlerRing::onTimerZoneFO(TimerId id) {
 	case kTimer3: {
 		Id soundId = rnd(3) + 30316;
 		_app->soundSetPan(soundId, 95);
-		_app->soundPlay(soundId, 1);
+		_app->soundPlay(soundId, kSoundOnce);
 
 		_app->timerStop(kTimer3);
 		_app->timerStart(kTimer3, 500 * (rnd(10) + 30));
@@ -679,7 +679,7 @@ void EventHandlerRing::onTimerZoneFO(TimerId id) {
 	case kTimer4: {
 		Id soundId = rnd(9) + 30319;
 		_app->soundSetPan(soundId, 5 - rnd(10));
-		_app->soundPlay(soundId, 1);
+		_app->soundPlay(soundId, kSoundOnce);
 
 		_app->timerStop(kTimer4);
 		_app->timerStart(kTimer4, 4000 * (rnd(10) + 5));
@@ -731,7 +731,7 @@ void EventHandlerRing::onTimerZoneAS(TimerId id) {
 		break;
 
 	case kTimer2:
-		_app->soundPlay(80018, 1);
+		_app->soundPlay(80018, kSoundOnce);
 
 		if (!_app->hasTimer(kTimer5))
 			_app->timerStart(kTimer5, 20);
@@ -740,11 +740,11 @@ void EventHandlerRing::onTimerZoneAS(TimerId id) {
 			_app->timerStart(kTimer6, 10);
 
 		if (!_app->soundIsPlaying(kSoundTypeDialog))
-			_app->soundPlay(rnd(12) + 80004, 1);
+			_app->soundPlay(rnd(12) + 80004, kSoundOnce);
 		break;
 
 	case kTimer3:
-		_app->soundPlay(80019, 1);
+		_app->soundPlay(80019, kSoundOnce);
 
 		if (!_app->hasTimer(kTimer5))
 			_app->timerStart(kTimer5, 30);
@@ -753,11 +753,11 @@ void EventHandlerRing::onTimerZoneAS(TimerId id) {
 			_app->timerStart(kTimer6, 10);
 
 		if (!_app->soundIsPlaying(kSoundTypeDialog))
-			_app->soundPlay(rnd(12) + 80004, 1);
+			_app->soundPlay(rnd(12) + 80004, kSoundOnce);
 		break;
 
 	case kTimer4:
-		_app->soundPlay(80020, 1);
+		_app->soundPlay(80020, kSoundOnce);
 
 		if (!_app->hasTimer(kTimer5))
 			_app->timerStart(kTimer5, 10);
@@ -766,7 +766,7 @@ void EventHandlerRing::onTimerZoneAS(TimerId id) {
 			_app->timerStart(kTimer6, 10);
 
 		if (!_app->soundIsPlaying(kSoundTypeDialog))
-			_app->soundPlay(rnd(12) + 80004, 1);
+			_app->soundPlay(rnd(12) + 80004, kSoundOnce);
 		break;
 
 	case kTimer5:
@@ -808,7 +808,7 @@ void EventHandlerRing::onTimerZoneAS(TimerId id) {
 
 void EventHandlerRing::onTimerZoneN2(TimerId id) {
 	if (id == kTimer0)
-		_app->soundPlay(rnd(12) + 70004, 1);
+		_app->soundPlay(rnd(12) + 70004, kSoundOnce);
 }
 
 #pragma endregion
@@ -1018,7 +1018,7 @@ void EventHandlerRing::onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, ui
 		if (movabilityFrom == 10005)
 			if (movabilityTo == 10101) {
 				_app->soundStop(10901, 1024);
-				_app->soundPlay(rnd(9) + 13001, 1);
+				_app->soundPlay(rnd(9) + 13001, kSoundOnce);
 			}
 		break;
 
@@ -1080,16 +1080,16 @@ void EventHandlerRing::onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, ui
 	case kMovabilityPuzzleToPuzzle:
 		if (movabilityTo == 10501 || movabilityTo == 10511 || movabilityTo == 10521)
 			if (!movabilityIndex)
-				_app->soundPlay(10501, 1);
+				_app->soundPlay(10501, kSoundOnce);
 
 		if (movabilityFrom == 10501 || movabilityFrom == 10511 || movabilityFrom == 10521)
 			if (!movabilityIndex)
-				_app->soundPlay(10502, 1);
+				_app->soundPlay(10502, kSoundOnce);
 
 		if (movabilityFrom == 10001) {
-			_app->soundPlay(10804, 1);
+			_app->soundPlay(10804, kSoundOnce);
 		} else if (movabilityFrom == 10002) {
-			_app->soundPlay(10804, 1);
+			_app->soundPlay(10804, kSoundOnce);
 			_app->soundStop(10800, 1024);
 		}
 		break;
@@ -1245,7 +1245,7 @@ void EventHandlerRing::onBeforeRideZoneRO(Id movabilityFrom, Id movabilityTo, ui
 
 	if (movabilityFrom == 40060 || movabilityFrom == 40005) {
 		_app->soundSetVolume(40102, 100);
-		_app->soundPlay(40102, 2);
+		_app->soundPlay(40102, kSoundLoop);
 
 		if (_app->varGetByte(40804) > 4) {
 			do {
@@ -1290,13 +1290,13 @@ void EventHandlerRing::onBeforeRideZoneWA(Id movabilityFrom, Id movabilityTo, ui
 	case 50001:
 		if (movabilityTo == 50101)
 			if (!_app->soundIsPlaying(51006))
-				_app->soundPlay(51006, 2);
+				_app->soundPlay(51006, kSoundLoop);
 		break;
 
 	case 50103:
 		if (movabilityTo == 50701) {
 			_app->soundStop(51006, 1024);
-			_app->soundPlay(51007, 2);
+			_app->soundPlay(51007, kSoundLoop);
 		}
 		break;
 
@@ -1362,10 +1362,10 @@ void EventHandlerRing::onBeforeRideZoneN2(Id movabilityFrom, Id movabilityTo, ui
 
 	if (movabilityType == kMovabilityPuzzleToPuzzle) {
 		if (movabilityTo == 70501 || movabilityTo == 70511 || movabilityTo == 70521)
-			_app->soundPlay(70501, 1);
+			_app->soundPlay(70501, kSoundOnce);
 
 		if (movabilityFrom == 70501 || movabilityFrom == 70511 || movabilityFrom == 70521)
-			_app->soundPlay(70502, 1);
+			_app->soundPlay(70502, kSoundOnce);
 	}
 }
 
@@ -1416,12 +1416,12 @@ void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uin
 			_app->soundStop(10800, 1024);
 
 		if (_app->soundIsPlaying(10901))
-			_app->soundPlay(10902, 1);
+			_app->soundPlay(10902, kSoundOnce);
 
 		_app->soundStop(10901, 1024);
 
 		if (movabilityFrom == 10301) {
-			_app->soundPlay(10300, 2);
+			_app->soundPlay(10300, kSoundLoop);
 			_app->varSetByte(10301, 0);
 		}
 	}
@@ -1435,7 +1435,7 @@ void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uin
 			if (!_app->soundIsPlaying(14002)) {
 				_app->soundStop(14001, 1024);
 				_app->soundStop(14003, 1024);
-				_app->soundPlay(14002, 2);
+				_app->soundPlay(14002, kSoundLoop);
 			}
 		}
 
@@ -1443,7 +1443,7 @@ void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uin
 			if (!_app->soundIsPlaying(14003)) {
 				_app->soundStop(14002, 1024);
 				_app->soundStop(14001, 1024);
-				_app->soundPlay(14003, 2);
+				_app->soundPlay(14003, kSoundLoop);
 			}
 		}
 
@@ -1451,7 +1451,7 @@ void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uin
 			if(!_app->soundIsPlaying(14001)) {
 				_app->soundStop(14002, 1024);
 				_app->soundStop(14003, 1024);
-				_app->soundPlay(14001, 2);
+				_app->soundPlay(14001, kSoundLoop);
 			}
 		}
 
@@ -1532,8 +1532,8 @@ void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uin
 
 		if (movabilityFrom == 10406) {
 			if (!_app->soundIsPlaying(10410)) {
-				_app->soundPlay(10410, 2);
-				_app->soundPlay(10411, 2);
+				_app->soundPlay(10410, kSoundLoop);
+				_app->soundPlay(10411, kSoundLoop);
 			}
 		}
 		break;
@@ -1542,7 +1542,7 @@ void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uin
 		if (a4 == 55) {
 			_app->playMovie("1537", 0.0);
 			_app->puzzleSetActive(kPuzzle12001, 1, 1);
-			_app->soundPlay(12001, 1);
+			_app->soundPlay(12001, kSoundOnce);
 		}
 		break;
 	}
@@ -1658,7 +1658,7 @@ void EventHandlerRing::onAfterRideZoneFO(Id movabilityFrom, Id movabilityTo, uin
 				_app->timerStop(kTimer3);
 
 				if (!_app->varGetByte(30071)) {
-					_app->soundPlay(30117, 1);
+					_app->soundPlay(30117, kSoundOnce);
 					_app->varSetByte(30071, 1);
 				}
 			}
@@ -1691,7 +1691,7 @@ void EventHandlerRing::onAfterRideZoneRO(Id movabilityFrom, Id movabilityTo, uin
 			_app->varSetByte(40804, 0);
 
 		if (movabilityTo == 40005 || movabilityFrom == 40060) {
-			_app->soundPlay(40003, 2);
+			_app->soundPlay(40003, kSoundLoop);
 			_app->soundSetVolume(40003, 88);
 		}
 		break;
@@ -1714,8 +1714,8 @@ void EventHandlerRing::onAfterRideZoneWA(Id movabilityFrom, Id movabilityTo, uin
 	case 50201:
 		if (movabilityTo == 50102) {
 			_app->soundStop(51006, 1024);
-			_app->soundPlay(51002, 2);
-			_app->soundPlay(51012, 2);
+			_app->soundPlay(51002, kSoundLoop);
+			_app->soundPlay(51012, kSoundLoop);
 		}
 
 		if (_app->varGetByte(50001) == 2) {
@@ -1749,17 +1749,17 @@ void EventHandlerRing::onAfterRideZoneWA(Id movabilityFrom, Id movabilityTo, uin
 		if (movabilityTo == 50201) {
 			_app->soundStop(51002, 1024);
 			_app->soundStop(51012, 1024);
-			_app->soundPlay(51006, 2);
+			_app->soundPlay(51006, kSoundLoop);
 		}
 		break;
 
 	case 50301:
 		if (movabilityTo == 50104) {
 			_app->soundStop(51006, 1024);
-			_app->soundPlay(51004, 2);
+			_app->soundPlay(51004, kSoundLoop);
 
 			if (_app->varGetByte(50003) > 0)
-				_app->soundPlay(51013, 2);
+				_app->soundPlay(51013, kSoundLoop);
 		}
 		break;
 
@@ -1767,7 +1767,7 @@ void EventHandlerRing::onAfterRideZoneWA(Id movabilityFrom, Id movabilityTo, uin
 		if (movabilityTo == 50301) {
 			_app->soundStop(51004, 1024);
 			_app->soundStop(51013, 1024);
-			_app->soundPlay(51006, 2);
+			_app->soundPlay(51006, kSoundLoop);
 		}
 		break;
 
@@ -1775,20 +1775,20 @@ void EventHandlerRing::onAfterRideZoneWA(Id movabilityFrom, Id movabilityTo, uin
 		if (movabilityTo == 50501) {
 			_app->soundStop(51001, 1024);
 			_app->soundStop(51011, 1024);
-			_app->soundPlay(51006, 2);
+			_app->soundPlay(51006, kSoundLoop);
 		}
 		break;
 
 	case 50103:
 		if (movabilityTo == 50701) {
 			_app->soundStop(51007, 1024);
-			_app->soundPlay(51006, 2);
+			_app->soundPlay(51006, kSoundLoop);
 		}
 		break;
 
 	case 50108:
 		if (movabilityTo == 50601)
-			_app->soundPlay(51006, 2);
+			_app->soundPlay(51006, kSoundLoop);
 		break;
 	}
 }
@@ -1914,7 +1914,7 @@ void EventHandlerRing::onSoundZoneWA(Id id, SoundType type, uint32 a3, bool proc
 		}
 
 		_app->puzzleSetActive(kPuzzle51002);
-		_app->soundPlay(50022, 1);
+		_app->soundPlay(50022, kSoundOnce);
 		break;
 
 	case 50022:
@@ -1935,58 +1935,58 @@ void EventHandlerRing::onSoundZoneWA(Id id, SoundType type, uint32 a3, bool proc
 		}
 
 		_app->puzzleSetActive(kPuzzle51003);
-		_app->soundPlay(51008, 2);
-		_app->soundPlay(50026, 1);
+		_app->soundPlay(51008, kSoundLoop);
+		_app->soundPlay(50026, kSoundOnce);
 		break;
 
 	case 50026:
 		_app->puzzleSetActive(kPuzzle51004);
-		_app->soundPlay(50027, 1);
+		_app->soundPlay(50027, kSoundOnce);
 		break;
 
 	case 50027:
 		_app->puzzleSetActive(kPuzzle51005);
-		_app->soundPlay(50028, 1);
+		_app->soundPlay(50028, kSoundOnce);
 		break;
 
 	case 50028:
 		_app->puzzleSetActive(kPuzzle51006);
-		_app->soundPlay(50029, 1);
+		_app->soundPlay(50029, kSoundOnce);
 		break;
 
 	case 50029:
 		_app->puzzleSetActive(kPuzzle51007);
-		_app->soundPlay(50030, 1);
+		_app->soundPlay(50030, kSoundOnce);
 		break;
 
 	case 50030:
 		_app->puzzleSetActive(kPuzzle51008);
-		_app->soundPlay(50031, 1);
+		_app->soundPlay(50031, kSoundOnce);
 		break;
 
 	case 50031:
 		_app->puzzleSetActive(kPuzzle51009);
-		_app->soundPlay(50032, 1);
+		_app->soundPlay(50032, kSoundOnce);
 		break;
 
 	case 50032:
 		_app->puzzleSetActive(kPuzzle51010);
-		_app->soundPlay(50033, 1);
+		_app->soundPlay(50033, kSoundOnce);
 		break;
 
 	case 50033:
 		_app->puzzleSetActive(kPuzzle51011);
-		_app->soundPlay(50034, 1);
+		_app->soundPlay(50034, kSoundOnce);
 		break;
 
 	case 50034:
 		_app->puzzleSetActive(kPuzzle51012);
-		_app->soundPlay(50035, 1);
+		_app->soundPlay(50035, kSoundOnce);
 		break;
 
 	case 50035:
 		_app->puzzleSetActive(kPuzzle51013);
-		_app->soundPlay(50036, 1);
+		_app->soundPlay(50036, kSoundOnce);
 		break;
 
 	case 50036:
@@ -1998,51 +1998,51 @@ void EventHandlerRing::onSoundZoneWA(Id id, SoundType type, uint32 a3, bool proc
 
 	case 50001:
 		_app->puzzleSetActive(kPuzzle50001);
-		_app->soundPlay(50002, 1);
+		_app->soundPlay(50002, kSoundOnce);
 
 		break;
 	case 50002:
 		_app->rotationSetActive(50001);
-		_app->soundPlay(50003, 1);
+		_app->soundPlay(50003, kSoundOnce);
 		break;
 
 	case 50003:
-		_app->soundPlay(51006, 2);
+		_app->soundPlay(51006, kSoundLoop);
 		break;
 
 	case 50009:
 		_app->puzzleSetActive(kPuzzle50703);
-		_app->soundPlay(50010, 1);
+		_app->soundPlay(50010, kSoundOnce);
 		break;
 
 	case 50010:
 		_app->puzzleSetActive(kPuzzle50702);
-		_app->soundPlay(50011, 1);
+		_app->soundPlay(50011, kSoundOnce);
 		break;
 
 	case 50011:
 		_app->puzzleSetActive(kPuzzle50703);
-		_app->soundPlay(50012, 1);
+		_app->soundPlay(50012, kSoundOnce);
 		break;
 
 	case 50012:
 		_app->puzzleSetActive(kPuzzle50701);
-		_app->soundPlay(50013, 1);
+		_app->soundPlay(50013, kSoundOnce);
 		break;
 
 	case 50013:
 		_app->puzzleSetActive(kPuzzle50703);
-		_app->soundPlay(50014, 1);
+		_app->soundPlay(50014, kSoundOnce);
 		break;
 
 	case 50014:
 		_app->puzzleSetActive(kPuzzle50702);
-		_app->soundPlay(50015, 1);
+		_app->soundPlay(50015, kSoundOnce);
 		break;
 
 	case 50015:
 		_app->puzzleSetActive(kPuzzle50703);
-		_app->soundPlay(50016, 1);
+		_app->soundPlay(50016, kSoundOnce);
 		break;
 
 	case 50016:
@@ -2062,23 +2062,23 @@ void EventHandlerRing::onSoundZoneAS(Id id, SoundType type, uint32 a3, bool proc
 
 	case 80100:
 		_app->puzzleSetActive(kPuzzle80012);
-		_app->soundPlay(80101, 1);
+		_app->soundPlay(80101, kSoundOnce);
 		break;
 
 	case 80101:
 		_app->puzzleSetActive(kPuzzle80011);
-		_app->soundPlay(80102, 1);
+		_app->soundPlay(80102, kSoundOnce);
 		break;
 
 	case 80102:
 		_app->puzzleSetActive(kPuzzle80012);
-		_app->soundPlay(80103, 1);
+		_app->soundPlay(80103, kSoundOnce);
 		break;
 
 	case 80103:
 		_app->playMovie("1157");
 		_app->puzzleSetActive(kPuzzle80013);
-		_app->soundPlay(80104, 1);
+		_app->soundPlay(80104, kSoundOnce);
 		break;
 
 	case 80104:
@@ -2119,13 +2119,13 @@ void EventHandlerRing::onSoundZoneAS(Id id, SoundType type, uint32 a3, bool proc
 	case 80077:
 	case 80078:
 	case 80079:
-		_app->soundPlay(id + 1, 1);
+		_app->soundPlay(id + 1, kSoundOnce);
 		break;
 
 	case 80105:
 		_app->playMovie("1158");
 		_app->puzzleSetActive(kPuzzle80014);
-		_app->soundPlay(80106, 1);
+		_app->soundPlay(80106, kSoundOnce);
 		break;
 
 	case 80106:
@@ -2174,12 +2174,12 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 
 	case 70001:
 		_app->puzzleSetActive(kPuzzle70306);
-		_app->soundPlay(70002, 1);
+		_app->soundPlay(70002, kSoundOnce);
 		break;
 
 	case 70002:
 		_app->puzzleSetActive(kPuzzle70303);
-		_app->soundPlay(70003, 1);
+		_app->soundPlay(70003, kSoundOnce);
 		break;
 
 	case 70003:
@@ -2199,58 +2199,58 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 
 	case 72001:
 		_app->puzzleSetActive(kPuzzle72002);
-		_app->soundPlay(72002, 1);
+		_app->soundPlay(72002, kSoundOnce);
 		break;
 
 	case 72002:
 		_app->playMovie("1499");
 		_app->puzzleSetActive(kPuzzle72003);
-		_app->soundPlay(72003, 1);
+		_app->soundPlay(72003, kSoundOnce);
 		break;
 
 	case 72003:
 		_app->puzzleSetActive(kPuzzle72004);
-		_app->soundPlay(72004, 1);
+		_app->soundPlay(72004, kSoundOnce);
 		break;
 
 	case 72004:
 		_app->puzzleSetActive(kPuzzle72005);
-		_app->soundPlay(72005, 1);
+		_app->soundPlay(72005, kSoundOnce);
 		break;
 
 	case 72005:
 		_app->playMovie("1500");
 		_app->puzzleSetActive(kPuzzle72006);
-		_app->soundPlay(72006, 1);
+		_app->soundPlay(72006, kSoundOnce);
 		break;
 
 	case 72006:
 		_app->puzzleSetActive(kPuzzle72007);
-		_app->soundPlay(72007, 1);
+		_app->soundPlay(72007, kSoundOnce);
 		break;
 
 	case 72007:
 		_app->puzzleSetActive(kPuzzle72008);
-		_app->soundPlay(72008, 1);
+		_app->soundPlay(72008, kSoundOnce);
 		break;
 
 	case 72008:
 		_app->puzzleSetActive(kPuzzle72009);
-		_app->soundPlay(72009, 1);
+		_app->soundPlay(72009, kSoundOnce);
 		break;
 
 	case 72009:
 		_app->playMovie("1501");
 		_app->puzzleSetActive(kPuzzle72010);
-		_app->soundPlay(72010, 1);
+		_app->soundPlay(72010, kSoundOnce);
 		break;
 
 	case 72010:
 		_app->playMovie("1502");
-		_app->soundPlay(70000, 2);
+		_app->soundPlay(70000, kSoundLoop);
 		_app->varSetByte(70013, 0);
 		_app->puzzleSetActive(kPuzzle70301);
-		_app->soundPlay(70056, 1);
+		_app->soundPlay(70056, kSoundOnce);
 		break;
 
 	case 70043:
@@ -2270,7 +2270,7 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 		if ( str > '0' )
 			_app->puzzleSetActive((PuzzleId)(str + 70551));
 
-		_app->soundPlay(id + 1, 1);
+		_app->soundPlay(id + 1, kSoundOnce);
 
 		_app->varSetByte(70013, index + 1);
 		}
@@ -2304,7 +2304,7 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 		char str = _app->varGetString(70099)[index];
 		_app->puzzleSetActive((PuzzleId)(str + 70251));
 
-		_app->soundPlay(id + 1, 1);
+		_app->soundPlay(id + 1, kSoundOnce);
 
 		_app->varSetByte(70013, index + 1);
 		}
@@ -2321,12 +2321,12 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 		_app->playMovie("1503");
 		_app->puzzleSetActive(kPuzzle70303);
 		_app->varSetByte(70013, 51);
-		_app->soundPlay(70024, 1);
+		_app->soundPlay(70024, kSoundOnce);
 		break;
 
 	case 70101:
 		_app->puzzleSetActive(kPuzzle70305);
-		_app->soundPlay(70023, 1);
+		_app->soundPlay(70023, kSoundOnce);
 		break;
 
 	case 70023:
@@ -2336,7 +2336,7 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 
 	case 70027:
 		_app->puzzleSetActive(kPuzzle70000);
-		_app->soundPlay(71001, 1);
+		_app->soundPlay(71001, kSoundOnce);
 		break;
 
 	case 71001:
@@ -2350,7 +2350,7 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 	case 71012:
 		_app->objectPresentationHide(kObject70001);
 		_app->playMovie(Common::String::format("N2_%d%c", _app->varGetByte(70014), _app->varGetByte(70015) + 67));
-		_app->soundPlay(_app->varGetByte(70015) + 10 * (_app->varGetByte(70014) + 7109), 1);
+		_app->soundPlay(_app->varGetByte(70015) + 10 * (_app->varGetByte(70014) + 7109), kSoundOnce);
 		break;
 
 	case 71100:
@@ -2390,14 +2390,14 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 			}
 
 			_app->puzzleSetActive(kPuzzle70303);
-			_app->soundPlay(70001, 1);
+			_app->soundPlay(70001, kSoundOnce);
 		} else {
 			if (_app->varGetByte(70014) == 2 && !_app->varGetByte(70015)) {
 				_app->exitToMenu(2);
 				break;
 			}
 
-			_app->soundPlay(_app->varGetByte(70014) + 71001, 1);
+			_app->soundPlay(_app->varGetByte(70014) + 71001, kSoundOnce);
 			_app->varSetByte(70014, _app->varGetByte(70014) + 1);
 
 			_app->objectSetAccessibilityOn(kObjectCentaur);
@@ -2421,7 +2421,7 @@ void EventHandlerRing::sub_433EE0() {
 	 && _app->bagHas(kObjectPhoenix1)) {
 		_app->varSetByte(70013, 11);
 		_app->puzzleSetActive(kPuzzle70305, 1, 1);
-		_app->soundPlay(70017, 1);
+		_app->soundPlay(70017, kSoundOnce);
 	}
 }
 
@@ -2487,7 +2487,7 @@ void EventHandlerRing::onSwitchZoneAS(uint32 type) {
 		_app->rotationSetAlp(80101, 90.0f);
 		_app->rotationSetRan(80101, 85.3f);
 		_app->rotationSetActive(80101);
-		_app->soundPlay(80040, 1);
+		_app->soundPlay(80040, kSoundOnce);
 		_app->objectSetAccessibilityOff(kObject80019, 0, 0);
 		_app->objectSetAccessibilityOn(kObject80019, 1, 1);
 		break;
@@ -2508,7 +2508,7 @@ void EventHandlerRing::onSwitchZoneAS(uint32 type) {
 		_app->rotationSetAlp(80101, 90.0f);
 		_app->rotationSetRan(80101, 85.3f);
 		_app->rotationSetActive(80101);
-		_app->soundPlay(80049, 1);
+		_app->soundPlay(80049, kSoundOnce);
 		break;
 
 	case 3:
@@ -2529,7 +2529,7 @@ void EventHandlerRing::onSwitchZoneAS(uint32 type) {
 		_app->rotationSetAlp(80101, 90.0f);
 		_app->rotationSetRan(80101, 85.3f);
 		_app->rotationSetActive(80101);
-		_app->soundPlay(80058, 1);
+		_app->soundPlay(80058, kSoundOnce);
 		break;
 
 	case 4:
@@ -2548,7 +2548,7 @@ void EventHandlerRing::onSwitchZoneAS(uint32 type) {
 		_app->rotationSetAlp(80101, 90.0f);
 		_app->rotationSetRan(80101, 85.3f);
 		_app->rotationSetActive(80101);
-		_app->soundPlay(80068, 1);
+		_app->soundPlay(80068, kSoundOnce);
 		break;
 
 	case 5:

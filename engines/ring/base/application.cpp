@@ -1897,8 +1897,8 @@ void Application::soundAdd(Id soundId, SoundType type, Common::String filename, 
 	_soundManager->addEntry(soundId, type, filename, loadFrom, format, a4 != 1, soundChunk);
 }
 
-void Application::soundPlay(Id soundId, int a2) {
-	_soundManager->play(soundId, a2 != 1);
+void Application::soundPlay(Id soundId, SoundLoopType loop) {
+	_soundManager->play(soundId, loop != kSoundOnce);
 }
 
 void Application::soundStop(Id soundId, uint32 a2) {

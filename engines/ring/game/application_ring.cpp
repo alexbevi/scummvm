@@ -219,7 +219,7 @@ void ApplicationRing::showMenu(Zone zone, uint32 a2) {
 void ApplicationRing::showCredits() {
 	soundStopAll(1024);
 	setZoneAndEnableBag(kZoneWA);
-	soundPlay(51002, 2);
+	soundPlay(51002, kSoundLoop);
 
 	setZoneAndEnableBag(kZoneSY);
 

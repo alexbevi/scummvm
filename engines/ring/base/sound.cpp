@@ -284,7 +284,8 @@ void SoundManager::updateQueue() {
 	}
 }
 
-void SoundManager::play(Id soundId, int a2) {
+void SoundManager::play(Id soundId, bool loop) {
+
 	error("[SoundManager::play] Not implemented");
 }
 

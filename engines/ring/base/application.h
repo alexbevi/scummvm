@@ -292,7 +292,7 @@ public:
 	// Sound
 	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom);
 	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk);
-	void soundPlay(Id soundId, int a2);
+	void soundPlay(Id soundId, SoundLoopType loop);
 	void soundStop(Id soundId, uint32 a2);
 	void soundSetVolume(Id soundId, uint32 volume);
 	void soundStopType(SoundType soundType, uint32 a2);

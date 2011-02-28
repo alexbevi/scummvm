@@ -194,6 +194,11 @@ enum DrawType {
 	kDrawType3          = 3
 };
 
+enum SoundLoopType {
+	kSoundOnce = 1,
+	kSoundLoop = 2
+};
+
 #pragma endregion
 
 //////////////////////////////////////////////////////////////////////////
