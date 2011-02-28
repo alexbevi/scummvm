@@ -25,12 +25,13 @@
 
 #include "ring/game/event_ring.h"
 
-#include "ring/base/application.h"
 #include "ring/base/bag.h"
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 #include "ring/base/sound.h"
+
+#include "ring/game/application_ring.h"
 
 #include "ring/graphics/dragControl.h"
 
@@ -42,7 +43,7 @@ using namespace RingGame;
 
 namespace Ring {
 
-EventHandlerRing::EventHandlerRing(Application *application) : _app(application), _controlNotPressed(false) {
+EventHandlerRing::EventHandlerRing(ApplicationRing *application) : _app(application), _controlNotPressed(false) {
 	// Data
 	_dword_4A1C00 = 0;
 
@@ -1819,7 +1820,7 @@ void EventHandlerRing::onAfterRideZoneN2(Id movabilityFrom, Id movabilityTo, uin
 void EventHandlerRing::onSound(Id id, SoundType type, uint32 a3) {
 	debugC(kRingDebugLogic, "onSound (id: %d, type: %d)", id, type);
 
-	uint32 a4 = a3 & 0x1000;
+	bool process = (a3 & 0x1000) != 0;
 	a3 &= 239;
 
 	switch (_app->getCurrentZone()) {
@@ -1827,73 +1828,316 @@ void EventHandlerRing::onSound(Id id, SoundType type, uint32 a3) {
 		break;
 
 	case kZoneSY:
-		onSoundZoneSY(id, type, a3, a4);
+		onSoundZoneSY(id, type, a3, process);
 		break;
 
 	case kZoneNI:
-		onSoundZoneNI(id, type, a3, a4);
+		onSoundZoneNI(id, type, a3, process);
 		break;
 
 	case kZoneRH:
-		onSoundZoneRH(id, type, a3, a4);
+		onSoundZoneRH(id, type, a3, process);
 		break;
 
 	case kZoneFO:
-		onSoundZoneFO(id, type, a3, a4);
+		onSoundZoneFO(id, type, a3, process);
 		break;
 
 	case kZoneRO:
-		onSoundZoneRO(id, type, a3, a4);
+		onSoundZoneRO(id, type, a3, process);
 		break;
 
 	case kZoneAS:
-		onSoundZoneAS(id, type, a3, a4);
+		onSoundZoneAS(id, type, a3, process);
 		break;
 
 	case kZoneWA:
-		onSoundZoneWA(id, type, a3, a4);
+		onSoundZoneWA(id, type, a3, process);
 		break;
 
 	case kZoneN2:
-		onSoundZoneN2(id, type, a3, a4);
+		onSoundZoneN2(id, type, a3, process);
 		break;
 	}
 }
 
-void EventHandlerRing::onSoundZoneSY(Id id, SoundType type, uint32 a3, uint32 a4) {
-	if (a4 && id == 90001) {
+void EventHandlerRing::onSoundZoneSY(Id id, SoundType type, uint32 a3, bool process) {
+	if (!process)
+		return;
+
+	if (id == 90001) {
 		_app->objectPresentationHideAndRemove(kObject7, 0);
 		_app->showCredits();
 		_app->startMenu(false);
 	}
 }
 
-void EventHandlerRing::onSoundZoneNI(Id id, SoundType type, uint32 a3, uint32 a4) {
+void EventHandlerRing::onSoundZoneNI(Id id, SoundType type, uint32 a3, bool process) {
 	error("[EventHandlerRing::onSoundZoneNI] Not implemented");
 }
 
-void EventHandlerRing::onSoundZoneRH(Id id, SoundType type, uint32 a3, uint32 a4) {
+void EventHandlerRing::onSoundZoneRH(Id id, SoundType type, uint32 a3, bool process) {
 	error("[EventHandlerRing::onSoundZoneRH] Not implemented");
 }
 
-void EventHandlerRing::onSoundZoneFO(Id id, SoundType type, uint32 a3, uint32 a4) {
+void EventHandlerRing::onSoundZoneFO(Id id, SoundType type, uint32 a3, bool process) {
 	error("[EventHandlerRing::onSoundZoneFO] Not implemented");
 }
 
-void EventHandlerRing::onSoundZoneRO(Id id, SoundType type, uint32 a3, uint32 a4) {
+void EventHandlerRing::onSoundZoneRO(Id id, SoundType type, uint32 a3, bool process) {
 	error("[EventHandlerRing::onSoundZoneRO] Not implemented");
 }
 
-void EventHandlerRing::onSoundZoneWA(Id id, SoundType type, uint32 a3, uint32 a4) {
+void EventHandlerRing::onSoundZoneWA(Id id, SoundType type, uint32 a3, bool process) {
 	error("[EventHandlerRing::onSoundZoneWA] Not implemented");
 }
 
-void EventHandlerRing::onSoundZoneAS(Id id, SoundType type, uint32 a3, uint32 a4) {
+void EventHandlerRing::onSoundZoneAS(Id id, SoundType type, uint32 a3, bool process) {
 	error("[EventHandlerRing::onSoundZoneAS] Not implemented");
 }
 
-void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, uint32 a4) {
-	error("[EventHandlerRing::onSoundZoneN2] Not implemented");
+void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool process) {
+	if (!process)
+		return;
+
+	switch (id){
+	default:
+		break;
+
+	case 70001:
+		_app->puzzleSetActive(kPuzzle70306);
+		_app->soundPlay(70002, 1);
+		break;
+
+	case 70002:
+		_app->puzzleSetActive(kPuzzle70303);
+		_app->soundPlay(70003, 1);
+		break;
+
+	case 70003:
+		_app->playMovie("1504");
+		_app->playMovie("1505");
+		_app->timerStopAll();
+		_app->soundStopAll(1024);
+		_app->varSetFloat(90006, 50.0);
+		onSwitchZoneRO(0);
+		break;
+
+	case 71002:
+	case 71003:
+		_app->playMovie(Common::String::format("N2_%dA", _app->varGetByte(70014)));
+		_app->objectPresentationShow(kObject70001, _app->varGetByte(70014) - 1);
+		break;
+
+	case 72001:
+		_app->puzzleSetActive(kPuzzle72002);
+		_app->soundPlay(72002, 1);
+		break;
+
+	case 72002:
+		_app->playMovie("1499");
+		_app->puzzleSetActive(kPuzzle72003);
+		_app->soundPlay(72003, 1);
+		break;
+
+	case 72003:
+		_app->puzzleSetActive(kPuzzle72004);
+		_app->soundPlay(72004, 1);
+		break;
+
+	case 72004:
+		_app->puzzleSetActive(kPuzzle72005);
+		_app->soundPlay(72005, 1);
+		break;
+
+	case 72005:
+		_app->playMovie("1500");
+		_app->puzzleSetActive(kPuzzle72006);
+		_app->soundPlay(72006, 1);
+		break;
+
+	case 72006:
+		_app->puzzleSetActive(kPuzzle72007);
+		_app->soundPlay(72007, 1);
+		break;
+
+	case 72007:
+		_app->puzzleSetActive(kPuzzle72008);
+		_app->soundPlay(72008, 1);
+		break;
+
+	case 72008:
+		_app->puzzleSetActive(kPuzzle72009);
+		_app->soundPlay(72009, 1);
+		break;
+
+	case 72009:
+		_app->playMovie("1501");
+		_app->puzzleSetActive(kPuzzle72010);
+		_app->soundPlay(72010, 1);
+		break;
+
+	case 72010:
+		_app->playMovie("1502");
+		_app->soundPlay(70000, 2);
+		_app->varSetByte(70013, 0);
+		_app->puzzleSetActive(kPuzzle70301);
+		_app->soundPlay(70056, 1);
+		break;
+
+	case 70043:
+	case 70044:
+	case 70045:
+	case 70046:
+	case 70047:
+	case 70048:
+	case 70049:
+	case 70050:
+	case 70051:
+	case 70052:
+	case 70053:
+	case 70054: {
+		byte index = _app->varGetByte(70013);
+		char str = _app->varGetString(70099)[index];
+		if ( str > '0' )
+			_app->puzzleSetActive((PuzzleId)(str + 70551));
+
+		_app->soundPlay(id + 1, 1);
+
+		_app->varSetByte(70013, index + 1);
+		}
+		break;
+
+	case 70055:
+		_app->objectSetAccessibilityOff(kObject70700, 0, 0);
+		_app->objectSetAccessibilityOn(kObject70700, 1, 1);
+		_app->rotationSetActive(70200);
+		break;
+
+	case 70017:
+	case 70018:
+	case 70019:
+	case 70020:
+	case 70021:
+	case 70024:
+	case 70025:
+	case 70026:
+	case 70056:
+	case 70057:
+	case 70058:
+	case 70059:
+	case 70060:
+	case 70061:
+	case 70062:
+	case 70063:
+	case 70064:
+	case 70065: {
+		byte index = _app->varGetByte(70013);
+		char str = _app->varGetString(70099)[index];
+		_app->puzzleSetActive((PuzzleId)(str + 70251));
+
+		_app->soundPlay(id + 1, 1);
+
+		_app->varSetByte(70013, index + 1);
+		}
+		break;
+
+	case 70066:
+		_app->rotationSetAlp(70300, 160.0f);
+		_app->rotationSetActive(70300);
+		break;
+
+	case 70022:
+		sub_433EE0();
+		_app->rotationSetActive(70001);
+		_app->playMovie("1503");
+		_app->puzzleSetActive(kPuzzle70303);
+		_app->varSetByte(70013, 51);
+		_app->soundPlay(70024, 1);
+		break;
+
+	case 70101:
+		_app->puzzleSetActive(kPuzzle70305);
+		_app->soundPlay(70023, 1);
+		break;
+
+	case 70023:
+		_app->objectSetAccessibilityOff(kObject70108);
+		_app->puzzleSetActive(kPuzzle70102);
+		break;
+
+	case 70027:
+		_app->puzzleSetActive(kPuzzle70000);
+		_app->soundPlay(71001, 1);
+		break;
+
+	case 71001:
+		_app->playMovie(Common::String::format("N2_%dA", _app->varGetByte(70014)));
+		_app->objectSetAccessibilityOn(kObjectCentaur, 1, 1);
+		_app->objectPresentationShow(kObject70001, _app->varGetByte(70014) - 1);
+		break;
+
+	case 71010:
+	case 71011:
+	case 71012:
+		_app->objectPresentationHide(kObject70001);
+		_app->playMovie(Common::String::format("N2_%d%c", _app->varGetByte(70014), _app->varGetByte(70015) + 67));
+		_app->soundPlay(_app->varGetByte(70015) + 10 * (_app->varGetByte(70014) + 7109), 1);
+		break;
+
+	case 71100:
+	case 71101:
+	case 71102:
+	case 71103:
+	case 71104:
+	case 71105:
+	case 71106:
+	case 71107:
+	case 71108:
+	case 71109:
+	case 71110:
+	case 71111:
+	case 71112:
+	case 71113:
+	case 71114:
+	case 71115:
+	case 71116:
+	case 71117:
+	case 71118:
+	case 71119:
+	case 71120:
+	case 71121:
+	case 71122:
+	case 71123:
+	case 71124:
+	case 71125:
+	case 71126:
+	case 71127:
+	case 71128:
+	case 71129:
+		if (_app->varGetByte(70014) >= 3) {
+			if (_app->varGetByte(70015) != 2) {
+				_app->exitToMenu(2);
+				break;
+			}
+
+			_app->puzzleSetActive(kPuzzle70303);
+			_app->soundPlay(70001, 1);
+		} else {
+			if (_app->varGetByte(70014) == 2 && !_app->varGetByte(70015)) {
+				_app->exitToMenu(2);
+				break;
+			}
+
+			_app->soundPlay(_app->varGetByte(70014) + 71001, 1);
+			_app->varSetByte(70014, _app->varGetByte(70014) + 1);
+
+			_app->objectSetAccessibilityOn(kObjectCentaur);
+			_app->objectSetAccessibilityOn(kObjectDragon);
+			_app->objectSetAccessibilityOn(kObjectPhoenix1);
+		}
+		break;
+	}
 }
 
 #pragma endregion
@@ -1913,8 +2157,22 @@ void EventHandlerRing::sub_433EE0() {
 	}
 }
 
+void EventHandlerRing::onSwitchZoneRO(uint32 type) {
+	if (type == 0)
+		_app->setupZone(kZoneRO, kSetupTypeNone);
+}
+
 void EventHandlerRing::onSwitchZoneAS(uint32 type) {
 	error("[EventHandlerRing::onSwitchZoneAS] Not implemented!");
+}
+
+void EventHandlerRing::onSwitchZoneN2(uint32 type) {
+	if (type == 0) {
+		if (_app->varGetByte(90010))
+			_app->setupZone((Zone)_app->varGetDword(90014), kSetupType10);
+		else
+			_app->setupZone(kZoneN2, kSetupTypeNone);
+	}
 }
 
 #pragma endregion

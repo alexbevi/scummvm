@@ -30,11 +30,11 @@
 
 namespace Ring {
 
-class Application;
+class ApplicationRing;
 
 class EventHandlerRing : public EventHandler {
 public:
-	EventHandlerRing(Application *application);
+	EventHandlerRing(ApplicationRing *application);
 	virtual ~EventHandlerRing();
 
 	virtual void onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed);
@@ -50,7 +50,7 @@ public:
 	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
 
 private:
-	Application *_app;
+	ApplicationRing *_app;
 
 	// Data & State
 	bool         _controlNotPressed;
@@ -126,20 +126,23 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	// Sound
 	//////////////////////////////////////////////////////////////////////////
-	void onSoundZoneSY(Id id, SoundType type, uint32 a3, uint32 a4);
-	void onSoundZoneNI(Id id, SoundType type, uint32 a3, uint32 a4);
-	void onSoundZoneRH(Id id, SoundType type, uint32 a3, uint32 a4);
-	void onSoundZoneFO(Id id, SoundType type, uint32 a3, uint32 a4);
-	void onSoundZoneRO(Id id, SoundType type, uint32 a3, uint32 a4);
-	void onSoundZoneWA(Id id, SoundType type, uint32 a3, uint32 a4);
-	void onSoundZoneAS(Id id, SoundType type, uint32 a3, uint32 a4);
-	void onSoundZoneN2(Id id, SoundType type, uint32 a3, uint32 a4);
+	void onSoundZoneSY(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneNI(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneRH(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneFO(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneRO(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneWA(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneAS(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneN2(Id id, SoundType type, uint32 a3, bool process);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Zone and helper functions
 	//////////////////////////////////////////////////////////////////////////
 	void sub_433EE0();
+
+	void onSwitchZoneRO(uint32 type);
 	void onSwitchZoneAS(uint32 type);
+	void onSwitchZoneN2(uint32 type);
 };
 
 } // End of namespace Ring
