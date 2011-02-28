@@ -130,9 +130,9 @@ CursorAnimation::CursorAnimation() {
 CursorAnimation::~CursorAnimation() {
 }
 
-void CursorAnimation::init(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a5, float a6, byte a7, LoadFrom loadFrom, ArchiveType archiveType) {
-	CursorBase::init(id, name, cursorType, frameCount);
-	AnimationImage::init(name, kImageTypeTGA, Common::Point(0, 0), 0, kDrawType3, a5, a6, 1, a7, frameCount, 0, loadFrom, archiveType);
+void CursorAnimation::init(CursorId id, Common::String name, CursorType cursorType, byte imageCount, uint32 frameCount, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType) {
+	CursorBase::init(id, name, cursorType, imageCount);
+	AnimationImage::init(name, kImageTypeTGA, Common::Point(0, 0), 0, kDrawType3, frameCount, frameRate, 1, a7, imageCount, 0, loadFrom, archiveType);
 	setTicks(g_system->getMillis());
 }
 

@@ -36,8 +36,8 @@ namespace Ring {
 
 #pragma region ImageHandle
 
-ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
-	init(nameId, point, active, drawType, priority, frameCount, zone, loadFrom, imageType, archiveType);
+ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
+	init(nameId, point, active, drawType, priority, imageCount, zone, loadFrom, imageType, archiveType);
 }
 
 ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
@@ -50,14 +50,14 @@ ImageHandle::~ImageHandle() {
 	_animation = NULL;
 }
 
-void ImageHandle::init(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
+void ImageHandle::init(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
 	_nameId = nameId;
 	_coordinates = point;
 	_originalCoordinates = point;
 	_isActive = active;
 	_drawType = drawType;
 	_priority = priority;
-	_frameCount = frameCount;
+	_imageCount = imageCount;
 	_field_6C = 1;
 	_imageType = imageType;
 	_objectPresentation = NULL;
@@ -164,7 +164,17 @@ void Image::draw(Graphics::Surface *surface, Common::Point dest) {
 	Common::Rect rect(dest.x, dest.y, _surface->w, _surface->h);
 	rect.clip(640, 480);
 
-	surface->fillRect(rect, Color(255, 0, 0).getColor());
+	//surface->fillRect(rect, Color(255, 0, 0).getColor());
+
+	byte *origin = (byte*)_surface->pixels;
+	byte *destination = (byte *)surface->pixels;
+	uint32 height = _surface->h;
+
+	while (height--) {
+		memcpy(origin + dest.y * surface->pitch + dest.x, origin, _surface->w);
+		destination += surface->w;
+		origin += _surface->w;
+	}
 }
 
 void Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset) {
@@ -172,6 +182,7 @@ void Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth
 
 	Common::Rect rect(dest.x, dest.y, srcWidth, srcHeight);
 	rect.clip(640, 480);
+
 
 	surface->fillRect(rect, Color(245, 125, 0).getColor());
 }

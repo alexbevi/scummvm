@@ -139,9 +139,9 @@ Common::Point ObjectPresentation::getImageCoordinatesOnPuzzle(uint32 imageIndex)
 	return _imagePuzzle[imageIndex]->getCoordinates();
 }
 
-void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32, DrawType drawType, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom) {
+void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32, DrawType drawType, uint32 priority, byte imageCount, uint32 frameCount, float frameRate, byte a13, LoadFrom loadFrom) {
 	AnimationImage *animation = new AnimationImage();
-	animation->init(filename, imageType, point, 0, drawType, a11, a12, 1, a13, frameCount, priority, loadFrom, getApp()->getArchiveType());
+	animation->init(filename, imageType, point, 0, drawType, frameCount, frameRate, 1, a13, imageCount, priority, loadFrom, getApp()->getArchiveType());
 	animation->updatePresentation(this);
 	if (!(a13 & 2)) {
 		animation->setField20(0);
@@ -229,12 +229,12 @@ void ObjectPresentation::pauseFrameAnimation(uint32 frame, uint32 a3, uint32 a4)
 
 void ObjectPresentation::playPuzzleAnimations(uint32 ticks) {
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
-		(*it)->sub_416870(ticks);
+		(*it)->computeCurrentFrame(ticks);
 }
 
 void ObjectPresentation::playRotationAnimations(uint32 ticks) {
 	for (Common::Array<Animation *>::iterator it = _layerAnimationRotationAnimation.begin(); it != _layerAnimationRotationAnimation.end(); it++)
-		(*it)->sub_416870(ticks);
+		(*it)->computeCurrentFrame(ticks);
 }
 
 void ObjectPresentation::show() {

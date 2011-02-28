@@ -91,6 +91,7 @@ public:
 	void onKeyDown(Common::Event &evt);
 	void onTimer(TimerId id);
 	void onSound(Id id, SoundType type, uint32 a3);
+	void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
 
 	void update(const Common::Point &point);
 	void updateBag(const Common::Point &point);
@@ -213,7 +214,7 @@ public:
 	void objectSetPassiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8);
 
 	void objectAddPresentation(ObjectId objectId);
-	void objectAddBagAnimation(ObjectId objectId, ImageType imageType, DrawType drawType, uint32 a4, float a5, uint32 a6);
+	void objectAddBagAnimation(ObjectId objectId, ImageType imageType, DrawType drawType, uint32 frameCount, float framerate, uint32 a6);
 
 	void objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background);
 	void objectPresentationSetTextToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, Common::String text);

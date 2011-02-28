@@ -155,7 +155,7 @@ public:
 	bool  getFre() { return _fre; }
 
 	// Presentation
-	Animation *addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, byte a5);
+	Animation *addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 frameCount, float frameRate, byte a5);
 
 	// Nodes
 	void updateNode(uint32 index, uint32 val);

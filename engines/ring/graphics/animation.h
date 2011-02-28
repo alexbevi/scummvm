@@ -38,13 +38,15 @@ public:
 	Animation();
 	~Animation();
 
-	void initAnimation(uint32 a1, float a2, uint32 startFrame, byte a4, uint32 priority);
+	void init(uint32 frameCount, float frameRate, uint32 startFrame, byte a4, uint32 priority);
 
 	void pause() { _paused = true; }
 	void unpause() { _paused = false; }
 
 	void sub_416710();
-	void sub_416870(uint32 ticks);
+	void sub_416720();
+	uint32 getCurrentFrame();
+	uint32 computeCurrentFrame(uint32 ticks);
 
 	void setStartFrame(uint32 frame);
 	void setActiveFrame(uint32 frame);
@@ -57,13 +59,15 @@ public:
 	// Accessors
 	byte getField26() { return _field_26; }
 	byte getField2D() { return _field_2D; }
+	uint32 getActiveFrame() { return _activeFrame; }
 
-	void setField20(byte val) { _field_20 = 0; }
+	void setField20(byte val) { _field_20 = val; }
+	void setField21(byte val) { _field_21 = val; }
 
 protected:
 	Common::String _name;
-	uint32 _field_8;
-	float  _field_C;
+	uint32 _frameCount;
+	float  _framerate;
 	uint32 _startFrame;
 	uint32 _field_14;
 	uint32 _field_18;
@@ -100,7 +104,7 @@ public:
 	AnimationImage();
 	virtual ~AnimationImage();
 
-	void init(Common::String name, ImageType imageType, const Common::Point &point, uint32 a5, DrawType drawType, uint32 a7, float a8, uint32 startFrame, byte a10, byte frameCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType);
+	void init(Common::String name, ImageType imageType, const Common::Point &point, uint32 a5, DrawType drawType, uint32 frameCount, float framerate, uint32 startFrame, byte a10, byte imageCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType);
 	void alloc();
 	void dealloc();
 
@@ -126,7 +130,7 @@ private:
 	Common::Point _coordinates;
 	uint32 _field_79;
 	DrawType _drawType;
-	uint32 _frameCount;
+	uint32 _imageCount;
 	ImageHandle *_currentImage;
 	byte _field_89;
 };

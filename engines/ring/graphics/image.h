@@ -59,6 +59,7 @@ public:
 	void setName(Common::String name) { _filename = name; }
 
 	void setSurface(Graphics::Surface *surface);
+	Graphics::Surface *getSurface() { return _surface; }
 
 	bool isInitialized() { return _surface != NULL; }
 
@@ -74,7 +75,7 @@ protected:
 class ImageHandle : public Image, public Common::Serializable {
 public:
 	ImageHandle(Common::String nameId, const Common::Point &point, bool active, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
-	ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte frameCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
+	ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 	~ImageHandle();
 
 	// Serializable
@@ -109,7 +110,7 @@ private:
 	bool _isActive;
 	DrawType _drawType;
 	uint32 _priority;
-	byte _frameCount;
+	byte _imageCount;
 	uint32 _field_6C;
 	ImageType _imageType;
 	ObjectPresentation *_objectPresentation;
@@ -118,7 +119,7 @@ private:
 	LoadFrom _loadFrom;
 	ArchiveType _archiveType;
 
-	void init(Common::String nameId, const Common::Point &point, bool isActive, DrawType drawType, uint32 priority, byte a8, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
+	void init(Common::String nameId, const Common::Point &point, bool isActive, DrawType drawType, uint32 priority, byte imageCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 };
 
 } // End of namespace Ring

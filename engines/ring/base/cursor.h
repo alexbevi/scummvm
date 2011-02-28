@@ -99,7 +99,7 @@ public:
 	CursorAnimation();
 	~CursorAnimation();
 
-	void init(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a5, float a6, byte a7, LoadFrom loadFrom, ArchiveType archiveType);
+	void init(CursorId id, Common::String name, CursorType cursorType, byte imageCount, uint32 frameCount, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType);
 	virtual void alloc();
 	virtual void dealloc();
 	virtual void draw();

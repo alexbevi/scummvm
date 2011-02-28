@@ -251,7 +251,7 @@ void Rotation::setRolTo(float a2, float a3, float a4) {
 	error("[Rotation::SetRolTo] Not implemented");
 }
 
-Animation *Rotation::addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 a3, float a4, byte a5) {
+Animation *Rotation::addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 frameCount, float frameRate, byte a5) {
 	if (!presentation)
 		error("[Rotation::addPresentationAnimation] Presentation is NULL!");
 
@@ -259,7 +259,7 @@ Animation *Rotation::addPresentationAnimation(ObjectPresentation *presentation, 
 		error("[Rotation::addPresentationAnimation] Invalid layer index (was: %d, max:%d)", layer, _animations.size() - 1);
 
 	Animation *animation = _animations[layer];
-	animation->initAnimation(a3, a4, 1, a5, 0);
+	animation->init(frameCount, frameRate, 1, a5, 0);
 
 	_presentations.push_back(presentation);
 

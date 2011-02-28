@@ -38,8 +38,8 @@ namespace Ring {
 #pragma region Animation
 
 Animation::Animation() : BaseObject(0) {
-	_field_8  = 0;
-	_field_C  = 0;
+	_frameCount  = 0;
+	_framerate  = 0;
 	_startFrame = 0;
 	_field_14 = 0;
 	_field_18 = 0;
@@ -74,10 +74,10 @@ Animation::Animation() : BaseObject(0) {
 Animation::~Animation() {
 }
 
-void Animation::initAnimation(uint32 a1, float a2, uint32 startFrame, byte a4, uint32 priority) {
+void Animation::init(uint32 frameCount, float framerate, uint32 startFrame, byte a4, uint32 priority) {
 	_id = 0;
-	_field_C = a2;
-	_field_8 = a1;
+	_framerate = framerate;
+	_frameCount = frameCount;
 
 	setStartFrame(startFrame);
 
@@ -97,7 +97,7 @@ void Animation::initAnimation(uint32 a1, float a2, uint32 startFrame, byte a4, u
 	_field_20 = 1;
 	_field_21 = 1;
 
-	if (!_field_8)
+	if (!_frameCount)
 		error("[Animation::init] Number of frames cannot be 0!");
 
 	switch (_field_14) {
@@ -111,7 +111,7 @@ void Animation::initAnimation(uint32 a1, float a2, uint32 startFrame, byte a4, u
 
 	case 8:
 	case 32:
-		_activeFrame = _field_8 - 1;
+		_activeFrame = _frameCount - 1;
 		break;
 	}
 
@@ -130,7 +130,7 @@ void Animation::initAnimation(uint32 a1, float a2, uint32 startFrame, byte a4, u
 	_field_4A = 0;
 	_field_4E = 1;
 	_ticks    = 0;
-	_field_53 = 1000.0 / _field_C;
+	_field_53 = 1000.0 / _framerate;
 
 	if (_field_14 == 16)
 		_field_57 = 1;
@@ -148,8 +148,33 @@ void Animation::sub_416710() {
 	error("[AnimationImage::sub_416710] Not implemented");
 }
 
-void Animation::sub_416870(uint32 ticks) {
-	error("[AnimationImage::sub_416870] Not implemented");
+void Animation::sub_416720() {
+	error("[AnimationImage::sub_416710] Not implemented");
+}
+
+uint32 Animation::getCurrentFrame() {
+	return computeCurrentFrame(g_system->getMillis());
+}
+
+uint32 Animation::computeCurrentFrame(uint32 ticks) {
+	if (!_field_26)
+		return _activeFrame + 1;
+
+	if (!_field_4E) {
+		error("[AnimationImage::sub_416870] Not implemented");
+	}
+
+	_field_4E = 0;
+
+	// Notify event handler
+	if (_field_61 != (int32)(_activeFrame + 1)) {
+		if (!_name.empty())
+			getApp()->onAnimationNextFrame(_id, _name, _activeFrame + 1, _frameCount);
+	}
+
+	_field_61 = _activeFrame + 1;
+
+	return _field_61;
 }
 
 void Animation::setTicks(uint32 ticks) {
@@ -167,7 +192,7 @@ void Animation::setTicks(uint32 ticks) {
 
 		case 8:
 		case 32:
-			_activeFrame = _field_8 - 1;
+			_activeFrame = _frameCount - 1;
 			break;
 		}
 
@@ -184,8 +209,8 @@ void Animation::setTicks(uint32 ticks) {
 }
 
 void Animation::setStartFrame(uint32 frame) {
-	if (frame > _field_8)
-		error("[Animation::setActiveFrame] Frame number is too big (was: %d, max: %d)", frame, _field_8);
+	if (frame > _frameCount)
+		error("[Animation::setActiveFrame] Frame number is too big (was: %d, max: %d)", frame, _frameCount);
 
 	if (frame == 0)
 		error("[Animation::setActiveFrame] Frame number is too small (was: %d, min: 1)", frame);
@@ -194,8 +219,8 @@ void Animation::setStartFrame(uint32 frame) {
 }
 
 void Animation::setActiveFrame(uint32 frame) {
-	if (frame > _field_8)
-		error("[Animation::setActiveFrame] Frame number is too big (was: %d, max: %d)", frame, _field_8);
+	if (frame > _frameCount)
+		error("[Animation::setActiveFrame] Frame number is too big (was: %d, max: %d)", frame, _frameCount);
 
 	if (frame == 0)
 		error("[Animation::setActiveFrame] Frame number is too small (was: %d, min: 1)", frame);
@@ -205,8 +230,8 @@ void Animation::setActiveFrame(uint32 frame) {
 }
 
 void Animation::pauseOnFrame(uint32 frame, uint32 a2, uint32 a3) {
-	if (frame > _field_8)
-		error("[Animation::setActiveFrame] Frame number is too big (was: %d, max: %d)", frame, _field_8);
+	if (frame > _frameCount)
+		error("[Animation::setActiveFrame] Frame number is too big (was: %d, max: %d)", frame, _frameCount);
 
 	if (frame == 0)
 		error("[Animation::setActiveFrame] Frame number is too small (was: %d, min: 1)", frame);
@@ -220,10 +245,10 @@ void Animation::pauseOnFrame(uint32 frame, uint32 a2, uint32 a3) {
 		int32 f2 = 0;
 
 		if (f1 <= 0) {
-			f1 = _activeFrame - (_startFrame + frame - _field_8);
+			f1 = _activeFrame - (_startFrame + frame - _frameCount);
 			f2 = frame - (_activeFrame - 1);
 		} else {
-			f2 = _startFrame - (_activeFrame + frame - _field_8);
+			f2 = _startFrame - (_activeFrame + frame - _frameCount);
 		}
 
 		if (_field_14 == 4 || ((_field_14 == 16 || _field_14 == 32) && _field_57 == 1)) {
@@ -263,8 +288,8 @@ AnimationImage::~AnimationImage() {
 	_currentImage = NULL;
 }
 
-void AnimationImage::init(Common::String name, ImageType imageType, const Common::Point &point, uint32 a5, DrawType drawType, uint32 a7, float a8, uint32 startFrame, byte a10, byte frameCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType) {
-	Animation::initAnimation(a7, a8, startFrame, a10, priority);
+void AnimationImage::init(Common::String name, ImageType imageType, const Common::Point &point, uint32 a5, DrawType drawType, uint32 frameCount, float framerate, uint32 startFrame, byte a10, byte imageCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType) {
+	Animation::init(frameCount, framerate, startFrame, a10, priority);
 
 	_name = name;
 	_imageType = imageType;
@@ -272,25 +297,23 @@ void AnimationImage::init(Common::String name, ImageType imageType, const Common
 
 	_coordinates = point;
 	_drawType = drawType;
-	_frameCount = frameCount;
+	_imageCount = imageCount;
 
-	if (_field_8 == 0) {
-		if (_frameCount == 1)
+	if (_frameCount != 0) {
+		// Create image storage for each frame
+		for (uint32 i = 0; i < _frameCount; i++) {
+			ImageHandle *image = new ImageHandle(name, point, true, _drawType, priority, imageCount, getApp()->getCurrentZone(), loadFrom, imageType, archiveType);
+
+			image->setField6C(2);
+			image->setAnimation(this);
+
+			_imageHandles.push_back(image);
+		}
+
+		if (_imageCount == 1)
 			alloc();
 
 		_currentImage = _imageHandles[_startFrame];
-
-		return;
-	}
-
-	// Create image storage for each frame
-	for (uint32 i = 0; i < _field_8; i++) {
-		ImageHandle *image = new ImageHandle(name, point, true, _drawType, priority, frameCount, getApp()->getCurrentZone(), loadFrom, imageType, archiveType);
-
-		image->setField6C(2);
-		image->setAnimation(this);
-
-		_imageHandles.push_back(image);
 	}
 }
 

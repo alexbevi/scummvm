@@ -62,7 +62,7 @@ public:
 	Common::Point getImageCoordinatesOnPuzzle(uint32 imageIndex);
 
 	// Animation
-	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32 a7, DrawType drawType, uint32 priority, byte frameCount, uint32 a11, float a12, byte a13, LoadFrom loadFrom);
+	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32 a7, DrawType drawType, uint32 priority, byte imageCount, uint32 frameCount, float frameRate, byte a13, LoadFrom loadFrom);
 	void addAnimationToRotation(Rotation *rotation, uint32 layer, uint32 a3, float a4, uint32 a5);
 	void setAnimationOnPuzzle(uint32 animationIndex, ObjectId objectId);
 	void setAnimationOnRotation(uint32 animationIndex, ObjectId objectId);

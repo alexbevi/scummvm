@@ -56,6 +56,8 @@
 #include "common/file.h"
 #include "common/tokenizer.h"
 
+#include "graphics/surface.h"
+
 namespace Ring {
 
 Application::Application(RingEngine *engine) : _vm(engine),
@@ -418,6 +420,13 @@ void Application::onSound(Id id, SoundType type, uint32 a3) {
 	_eventHandler->onSound(id, type, a3);
 }
 
+void Application::onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	if (!_eventHandler)
+		error("[Application::onAnimationNextFrame] Event handler not initialized properly!");
+
+	_eventHandler->onAnimationNextFrame(animationId, name, frame, frameCount);
+}
+
 void Application::update(const Common::Point &point) {
 	// Handle bag
 	if (_bag->getField94()) {
@@ -612,6 +621,11 @@ bool Application::scrollImage(Common::String filename, uint32 ticksWait, LoadFro
 void Application::displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
 	Image *imageFrom = NULL;
 	Image *imageTo = NULL;
+	Graphics::Surface surface;
+	Animation *animation = NULL;
+	uint16 *diff = NULL;
+	uint16 *srcFrom = NULL;
+	uint16 *srcTo = NULL;
 
 	if (archiveType == kArchiveInvalid)
 		archiveType = getReadFrom(getCurrentZone());
@@ -657,7 +671,52 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 		goto cleanup;
 	}
 
-	warning("[Application::displayFade] Not implemented");
+	// Create new surface to hold the difference frame
+	surface.create(imageFrom->getWidth(), imageFrom->getHeight(), 3);
+
+	// Put difference frame data into surface
+	diff    = (uint16 *)surface.pixels;
+	srcFrom = (uint16 *)imageFrom->getSurface()->pixels;
+	srcTo   = (uint16 *)imageTo->getSurface()->pixels;
+	for (uint32 i = 0; i < (uint32)(surface.w * surface.h * 3); i++)
+		diff[i] = (srcFrom[i] - srcTo[i]) / frameCount;
+
+	// Create animation
+	animation = new Animation();
+	animation->init(frameCount, 25.0f, 1, 4, 0);
+	animation->setField21(2);
+	animation->setTicks(g_system->getMillis());
+
+	if (frameCount >= 1) {
+
+		uint32 currentFrame = 1;
+		while (!checkEscape()) {
+			// Update imageFrom buffer
+			for (uint32 i = 0; i < (uint32)(surface.w * surface.h * 3); i++)
+				srcFrom[i] -= diff[i];
+
+			// Draw updated frame
+			_screenManager->drawAndUpdate(imageFrom, Common::Point(0, 16));
+
+			// Progress to next frame
+			while (animation->getCurrentFrame() == currentFrame);
+
+			uint32 nextFrame = animation->getActiveFrame() + 1;
+			if (nextFrame < currentFrame)
+				break;
+
+			currentFrame = nextFrame;
+
+			if (nextFrame > frameCount)
+				break;
+		}
+	}
+
+	// Draw target image
+	_screenManager->drawAndUpdate(imageTo, Common::Point(0, 16));
+
+	// Cleanup
+	surface.free();
 
 	waitForEscape(ticksWait);
 
@@ -1231,13 +1290,13 @@ void Application::objectAdd(ObjectId objectId, Common::String description, Commo
 	_objects.push_back(new Object(this, objectId, processedDescription, processedName, a5));
 }
 
-void Application::objectAddBagAnimation(ObjectId objectId, ImageType imageType, DrawType drawType, uint32 frameCount, float a5, uint32 a6) {
+void Application::objectAddBagAnimation(ObjectId objectId, ImageType imageType, DrawType drawType, uint32 frameCount, float framerate, uint32 a6) {
 	if (!_objects.has(objectId))
 		error("[Application::objectAddBagAnimation] Object Id doesn't exist (%d)", objectId.id());
 
 	Object *object = _objects.get(objectId);
 	AnimationImage *image = new AnimationImage();
-	image->init(object->getName(), imageType, Common::Point(0, 0), 0, drawType, frameCount, a5, 1, a6, 0, 1000, kLoadFromListIcon, (_configuration.artBAG ? kArchiveArt : kArchiveFile));
+	image->init(object->getName(), imageType, Common::Point(0, 0), 0, drawType, frameCount, framerate, 1, a6, 0, 1000, kLoadFromListIcon, (_configuration.artBAG ? kArchiveArt : kArchiveFile));
 	image->setField89();
 
 	object->setAnimationImage(image);
