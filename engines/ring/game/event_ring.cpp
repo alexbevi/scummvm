@@ -78,7 +78,39 @@ void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt) {
 void EventHandlerRing::onMouseLeftButtonDown(Common::Event &evt) {
 	debugC(kRingDebugLogic, "onMouseLeftButtonDown");
 
-	error("[EventHandlerRing::onMouseLeftButtonDown] Not implemented");
+	if (_app->getBag()->getField94())
+		return;
+
+	// Handle menu
+	Puzzle *puzzleMenu = _app->getPuzzle(kPuzzleMenu);
+	if (puzzleMenu) {
+
+		if (puzzleMenu->checkVisual5(evt.mouse)) {
+			_app->update(evt.mouse);
+			return;
+		}
+
+		Accessibility *accessibility = puzzleMenu->getAccessibility(evt.mouse);
+		if (accessibility) {
+			error("[EventHandlerRing::onMouseLeftButtonDown] menu puzzle accessibility not implemented");
+
+		}
+
+		if (puzzleMenu->getField24() == 2)
+			return;
+	}
+
+	// Handle current puzzle
+	Puzzle *currentPuzzle = _app->getCurrentPuzzle();
+	if (currentPuzzle) {
+		error("[EventHandlerRing::onMouseLeftButtonDown] current puzzle not implemented");
+	}
+
+	// Handle current rotation
+	Rotation *currentRotation = _app->getCurrentRotation();
+	if (currentRotation) {
+		error("[EventHandlerRing::onMouseLeftButtonDown] current rotation not implemented");
+	}
 }
 
 void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
@@ -87,7 +119,7 @@ void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
 	if (getApp()->getDragControl()->getField20() || getApp()->getField6F())
 		return;
 
-	Puzzle *puzzleMenu = getApp()->puzzleGet(kPuzzleMenu);
+	Puzzle *puzzleMenu = getApp()->getPuzzle(kPuzzleMenu);
 	if (puzzleMenu && puzzleMenu->getField24() == 2)
 		return;
 

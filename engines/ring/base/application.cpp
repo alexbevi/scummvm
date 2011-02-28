@@ -441,8 +441,8 @@ void Application::update(const Common::Point &point) {
 	}
 
 	// Menu
-	if (puzzleGet(kPuzzleMenu)) {
-		Puzzle *menu = puzzleGet(kPuzzleMenu);
+	if (getPuzzle(kPuzzleMenu)) {
+		Puzzle *menu = getPuzzle(kPuzzleMenu);
 
 		// FIXME always return 0 in Ring (calls a method of Visual that always return 0)
 		/*if (menu->checkVisuals0(point))
@@ -961,7 +961,7 @@ void Application::puzzleAdd(PuzzleId puzzleId) {
 	_puzzles.push_back(new Puzzle(this, puzzleId));
 }
 
-Puzzle *Application::puzzleGet(PuzzleId puzzleId) {
+Puzzle *Application::getPuzzle(PuzzleId puzzleId) {
 	if (!_puzzles.has(puzzleId))
 		return NULL;
 

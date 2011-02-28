@@ -157,7 +157,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Puzzle
 	void puzzleAdd(PuzzleId puzzleId);
-	Puzzle *puzzleGet(PuzzleId puzzleId);
+	Puzzle *getPuzzle(PuzzleId puzzleId);
 
 	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, const Common::Point &point, bool isActive);
 	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
@@ -186,6 +186,7 @@ public:
 	void puzzleReset();
 
 	bool hasCurrentPuzzle() { return _puzzle != NULL; }
+	Puzzle *getCurrentPuzzle() { return _puzzle; }
 	PuzzleId getCurrentPuzzleId();
 
 	//////////////////////////////////////////////////////////////////////////
