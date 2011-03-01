@@ -48,6 +48,7 @@ public:
 	virtual void onBagClickedObject(ObjectId id);
 	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
 	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	virtual void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
 
 private:
 	ApplicationRing *_app;
@@ -134,6 +135,17 @@ private:
 	void onSoundZoneWA(Id id, SoundType type, uint32 a3, bool process);
 	void onSoundZoneAS(Id id, SoundType type, uint32 a3, bool process);
 	void onSoundZoneN2(Id id, SoundType type, uint32 a3, bool process);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Animation
+	//////////////////////////////////////////////////////////////////////////
+	void onAnimationNextFrameZoneNI(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+	void onAnimationNextFrameZoneRH(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+	void onAnimationNextFrameZoneFO(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+	void onAnimationNextFrameZoneRO(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+	void onAnimationNextFrameZoneWA(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+	void onAnimationNextFrameZoneAS(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+	void onAnimationNextFrameZoneN2(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Zone and helper functions

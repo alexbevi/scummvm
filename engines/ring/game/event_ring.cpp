@@ -3154,6 +3154,99 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 
 #pragma endregion
 
+#pragma region Animation
+
+void EventHandlerRing::onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	switch (_app->getCurrentZone()) {
+	default:
+	case kZoneSY:
+		break;
+
+	case kZoneNI:
+		onAnimationNextFrameZoneNI(animationId, name, frame, frameCount);
+		break;
+
+	case kZoneRH:
+		onAnimationNextFrameZoneRH(animationId, name, frame, frameCount);
+		break;
+
+	case kZoneFO:
+		onAnimationNextFrameZoneFO(animationId, name, frame, frameCount);
+		break;
+
+	case kZoneRO:
+		onAnimationNextFrameZoneRO(animationId, name, frame, frameCount);
+		break;
+
+	case kZoneAS:
+		onAnimationNextFrameZoneAS(animationId, name, frame, frameCount);
+		break;
+
+	case kZoneWA:
+		onAnimationNextFrameZoneWA(animationId, name, frame, frameCount);
+		break;
+
+	case kZoneN2:
+		onAnimationNextFrameZoneN2(animationId, name, frame, frameCount);
+		break;
+	}
+}
+
+void EventHandlerRing::onAnimationNextFrameZoneNI(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	error("[EventHandlerRing::onAnimationNextFrameZoneNI] Not implemented");
+}
+
+void EventHandlerRing::onAnimationNextFrameZoneRH(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	switch (animationId){
+	default:
+		break;
+
+	case 20001:
+		if (frame == 5) {
+			_app->objectPresentationHide((ObjectId)(_app->varGetByte(21001) + 20001), 2);
+			_app->objectPresentationShow((ObjectId)(_app->varGetByte(21001) + 20001), 4);
+			_app->soundPlay(_app->varGetByte(21001) + 20011, kSoundOnce);
+		}
+		break;
+
+	case 20003:
+		if (frame == 2)
+			_app->soundPlay(23014, kSoundOnce);
+		break;
+	}
+}
+
+void EventHandlerRing::onAnimationNextFrameZoneFO(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	error("[EventHandlerRing::onAnimationNextFrameZoneFO] Not implemented");
+}
+
+void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	error("[EventHandlerRing::onAnimationNextFrameZoneRO] Not implemented");
+}
+
+void EventHandlerRing::onAnimationNextFrameZoneWA(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	error("[EventHandlerRing::onAnimationNextFrameZoneNI] Not implemented");
+}
+
+void EventHandlerRing::onAnimationNextFrameZoneAS(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	if (animationId == 80001) {
+		if (frame == _app->varGetByte(80004)) {
+			_app->objectPresentationPauseAnimation(kObject80018, 1);
+			_app->objectSetAccessibilityOn(kObject80021, 0, 4);
+			_app->soundStop(80210, 1024);
+			_app->soundPlay(80209, kSoundOnce);
+		}
+
+		_app->varSetByte(80005, frame);
+	}
+}
+
+void EventHandlerRing::onAnimationNextFrameZoneN2(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	error("[EventHandlerRing::onAnimationNextFrameZoneN2] Not implemented");
+}
+
+#pragma endregion
+
 #pragma region Zone and helper functions
 
 void EventHandlerRing::sub_433EE0() {
