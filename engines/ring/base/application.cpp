@@ -1192,12 +1192,12 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 		_soundHandler->turnOnItems4();
 
 		_soundHandler->reset();
-		_soundHandler->setCount1(_puzzle->getSoundItemsCount());
+		_soundHandler->setSounds1(_puzzle->getSoundItems());
 		return;
 	}
 
-	_soundHandler->setCount2(_puzzle->getSoundItemsCount());
-	if (_soundHandler->sub_41AA00()) {
+	_soundHandler->setSounds2(_puzzle->getSoundItems());
+	if (_soundHandler->processSounds()) {
 
 		_soundHandler->turnOffItems1();
 
@@ -1208,18 +1208,18 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 			_soundHandler->turnOnItems4();
 
 			_soundHandler->reset();
-			_soundHandler->setCount1(_puzzle->getSoundItemsCount());
+			_soundHandler->setSounds1(_puzzle->getSoundItems());
 			return;
 		}
 	}
 
-	_soundHandler->turnOffItems2(a3);
+	_soundHandler->turnOffSounds1(a3);
 
 	if (updateSoundItems)
 		_puzzle->updateSoundItems();
 
 	_soundHandler->reset();
-	_soundHandler->setCount1(_puzzle->getSoundItemsCount());
+	_soundHandler->setSounds1(_puzzle->getSoundItems());
 }
 
 void Application::puzzleReset() {
@@ -1894,13 +1894,13 @@ void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
 		_soundHandler->turnOnItems4();
 
 		_soundHandler->reset();
-		_soundHandler->setCount1(_rotation->getSoundItemsCount());
+		_soundHandler->setSounds1(_rotation->getSoundItems());
 		return;
 	}
 
-	_soundHandler->setCount2(_rotation->getSoundItemsCount());
+	_soundHandler->setSounds2(_rotation->getSoundItems());
 
-	if (_soundHandler->sub_41AA00()) {
+	if (_soundHandler->processSounds()) {
 
 		_soundHandler->turnOffItems1();
 
@@ -1911,17 +1911,17 @@ void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
 			_soundHandler->turnOnItems4();
 
 			_soundHandler->reset();
-			_soundHandler->setCount1(_rotation->getSoundItemsCount());
+			_soundHandler->setSounds1(_rotation->getSoundItems());
 			return;
 		}
 	}
 
-	_soundHandler->turnOffItems2(a3);
+	_soundHandler->turnOffSounds1(a3);
 
 	_rotation->updateSoundItems();
 
 	_soundHandler->reset();
-	_soundHandler->setCount1(_rotation->getSoundItemsCount());
+	_soundHandler->setSounds1(_rotation->getSoundItems());
 }
 
 #pragma endregion

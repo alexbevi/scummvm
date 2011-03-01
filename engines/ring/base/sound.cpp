@@ -494,13 +494,13 @@ SoundItem::SoundItem(Id id) : BaseObject(id) {
 	_field_19 = 0;
 	_field_1D = 20;
 	_angle    = 0.0f;
-	_field_25 = 0;
-	_field_29 = 0;
-	_field_2D = 0;
-	_field_31 = 0;
+	_volume1 = 0;
+	_pan1 = 0;
+	_volume2 = 0;
+	_pan2 = 0;
 	_field_35 = 0;
 	_field_39 = 0;
-	_field_3D = 0;
+	_field_3D = 0.0f;
 }
 
 SoundItem::~SoundItem() {
@@ -526,13 +526,13 @@ void SoundItem::init(SoundEntry *entry, uint32 volume, int32 pan, bool isTurnedO
 	_field_19 = fadeFrames - 1;
 	setField1D(a9);
 	setAngle(angle);
-	_field_25 = 0;
-	_field_29 = 0;
-	_field_2D = 0;
-	_field_31 = 0;
+	_volume1 = 0;
+	_pan1 = 0;
+	_volume2 = 0;
+	_pan2 = 0;
 	_field_35 = 0;
 	_field_39 = 0;
-	_field_3D = 0;
+	_field_3D = 0.0f;
 
 	setVolume(volume);
 	setPan(pan);
@@ -600,6 +600,16 @@ void SoundItem::setAngle(float angle) {
 	_angle = getSoundDirection() * angle * SOUND_FRAC_VALUE;
 }
 
+void SoundItem::setVolumes(float volume1, float volume2) {
+	_volume1 = volume1;
+	_volume2 = volume2;
+}
+
+void SoundItem::setPans(float pan1, float pan2) {
+	_pan1 = pan1;
+	_pan2 = pan2;
+}
+
 int32 SoundItem::computePan(float angle) {
 	return (int32)(getSoundDirection() * (sin(angle * SOUND_FRAC_VALUE + _angle) * _field_1D));
 }
@@ -640,8 +650,8 @@ void SoundItem::saveLoadWithSerializer(Common::Serializer &s) {
 
 SoundHandler::SoundHandler() {
 	_field_0 = false;
-	_count1 = 0;
-	_count2 = 0;
+	_sounds1 = NULL;
+	_sounds2 = NULL;
 
 	_direction = -1.0;
 }
@@ -655,22 +665,110 @@ SoundHandler::~SoundHandler() {
 
 void SoundHandler::reset() {
 	_field_0 = false;
-	_count1 = 0;
-	_count2 = 0;
+	_sounds1 = NULL;
+	_sounds2 = NULL;
 }
 
-void SoundHandler::turnOffItems2(bool a1) {
-	if (!a1 || !_count1)
+void SoundHandler::turnOffSounds1(bool process) {
+	if (!process || !_sounds1)
 		return;
 
-	for (Common::Array<SoundItem *>::iterator it = _soundItems2.begin(); it != _soundItems2.end(); it++)
+	for (Common::Array<SoundItem *>::iterator it = _sounds1->begin(); it != _sounds1->end(); it++)
 		(*it)->turnOff();
 }
 
-bool SoundHandler::sub_41AA00() {
-	warning("[SoundHandler::sub_41AA00] Not implemented");
+bool SoundHandler::processSounds() {
+	if (!_sounds1 || !_sounds2)
+		return false;
 
-	return false;
+	// Examine sounds 1
+	for (Common::Array<SoundItem *>::iterator it = _sounds1->begin(); it != _sounds1->end(); it++) {
+		byte foundType = 0;
+		SoundItem *item (*it);
+		SoundItem* item2 = NULL;
+
+		if (_sounds2->has(item->getId())) {
+			foundType = 1;
+
+			item2 = _sounds2->get(item->getId());
+			if (!item2->isOn()) {
+				if (item->isOn())
+					foundType = 0;
+				else
+					foundType = 2;
+			}
+		}
+
+		switch (foundType){
+		default:
+			break;
+
+		case 0:
+			switch (item->getField14()) {
+			default:
+				break;
+
+			case 1:
+				item->setVolumes(item->getVolume(), 40.0f);
+				item->setPans(item->getPan(), item->getPan());
+				_soundItems2.push_back(item);
+				break;
+
+			case 2:
+				_soundItems1.push_back(item);
+				break;
+			}
+			break;
+
+		case 1:
+			switch (item->getField10()) {
+			default:
+				break;
+
+			case 1:
+				item->setVolumes(item->getVolume(), item2->getVolume());
+				item->setPans(item->getPan(), item2->getPan());
+				_soundItems3.push_back(item);
+				break;
+
+			case 2:
+				item->setVolumes(item->getVolume(), item->getVolume());
+				item->setPans(item->getPan(), item->getPan());
+				_soundItems2.push_back(item);
+				_soundItems4.push_back(item2);
+				break;
+
+			case 3:
+				_soundItems1.push_back(item);
+				_soundItems4.push_back(item2);
+				break;
+			}
+			break;
+
+		case 2:
+			// Do nothing
+			break;
+		}
+	}
+
+	// Examine sounds 2
+	for (Common::Array<SoundItem *>::iterator it = _sounds1->begin(); it != _sounds1->end(); it++) {
+		SoundItem *item (*it);
+
+		if (!_sounds1->has(item->getId())) {
+			_soundItems4.push_back(item);
+			continue;
+		}
+
+		// Check found item
+		SoundItem *item1 = _sounds1->get(item->getId());
+		if (item1->isOn() || !item->isOn())
+			continue;
+
+		_soundItems4.push_back(item);
+	}
+
+	return true;
 }
 
 bool SoundHandler::sub_41AEE0(uint32 a1) {
@@ -685,11 +783,11 @@ void SoundHandler::turnOffItems1() {
 		(*it)->turnOff();
 }
 
-void SoundHandler::sub_41B180(uint32 a1) {
+void SoundHandler::sub_41B180(float a1) {
 	warning("[SoundHandler::sub_41B180] Not implemented");
 }
 
-void SoundHandler::sub_41B350(uint32 a1) {
+void SoundHandler::sub_41B350(float a1) {
 	warning("[SoundHandler::sub_41B350] Not implemented");
 }
 

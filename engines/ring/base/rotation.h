@@ -167,7 +167,7 @@ public:
 	void setAmbientSoundOff(Id soundId);
 	void updateAmbientSoundPan(bool apply);
 	void updateSoundItems();
-	uint32 getSoundItemsCount() { return _soundItems.size(); }
+	AssociativeArray<SoundItem *> *getSoundItems() { return &_soundItems; }
 
 	// Serializable
 	void saveLoadWithSerializer(Common::Serializer &s);
@@ -191,7 +191,7 @@ private:
 	Common::Array<ObjectPresentation *> _presentations;
 	Common::Array<Animation *>          _animations;
 	Common::Array<Text *>               _texts;
-	Common::Array<SoundItem *>          _soundItems;
+	AssociativeArray<SoundItem *>       _soundItems;
 	byte                                _field_28;
 	ImageHandle                        *_imageHandle;
 	RotationData                       *_data;

@@ -216,6 +216,13 @@ public:
 	SoundEntry *getSoundEntry() { return _entry; }
 	void setField1D(int32 val);
 	void setAngle(float angle);
+	void setVolumes(float volume1, float volume2);
+	void setPans(float pan1, float pan2);
+
+	float getVolume() { return _volume; }
+	float getPan() { return _pan; }
+	uint32 getField10() { return _field_10; }
+	uint32 getField14() { return _field_14; }
 	bool isOn() { return _isOn; }
 
 	// Helpers
@@ -224,7 +231,7 @@ public:
 
 private:
 	SoundEntry *_entry;
-	int32      _volume;
+	int32       _volume;
 	int32       _pan;
 	uint32      _field_10;
 	uint32      _field_14;
@@ -232,13 +239,13 @@ private:
 	uint32      _field_19;
 	uint32      _field_1D;
 	float       _angle;
-	float       _field_25;
-	float       _field_29;
-	float       _field_2D;
-	float       _field_31;
+	float       _volume1;
+	float       _pan1;
+	float       _volume2;
+	float       _pan2;
 	uint32      _field_35;
 	uint32      _field_39;
-	uint32      _field_3D;
+	float       _field_3D;
 
 	bool checkCurrentPuzzle();
 };
@@ -248,12 +255,12 @@ public:
 	SoundHandler();
 	~SoundHandler();
 
-	void turnOffItems2(bool a1);
-	bool sub_41AA00();
+	void turnOffSounds1(bool process);
+	bool processSounds();
 	bool sub_41AEE0(uint32 a1);
 	void turnOffItems1();
-	void sub_41B180(uint32 a1);
-	void sub_41B350(uint32 a1);
+	void sub_41B180(float a1);
+	void sub_41B350(float a1);
 	void turnOnItems4();
 
 	void reset();
@@ -262,18 +269,18 @@ public:
 	void setReverseStereo(int32 reverseStereo);
 	float getDirection() { return _direction; }
 	bool getField0() { return _field_0; }
-	void setCount1(uint32 count) { _count1 = count; }
-	void setCount2(uint32 count) { _count2 = count; }
+	void setSounds1(AssociativeArray<SoundItem *>* sounds) { _sounds1 = sounds; }
+	void setSounds2(AssociativeArray<SoundItem *>* sounds) { _sounds2 = sounds; }
 
 private:
 	// Data
 	bool _field_0;
-	uint32 _count1;
-	uint32 _count2;
-	Common::Array<SoundItem *> _soundItems1;
-	Common::Array<SoundItem *> _soundItems2;
-	Common::Array<SoundItem *> _soundItems3;
-	Common::Array<SoundItem *> _soundItems4;
+	AssociativeArray<SoundItem *>* _sounds1;
+	AssociativeArray<SoundItem *>* _sounds2;
+	Common::Array<SoundItem *>  _soundItems1;
+	Common::Array<SoundItem *>  _soundItems2;
+	Common::Array<SoundItem *>  _soundItems3;
+	Common::Array<SoundItem *>  _soundItems4;
 
 	// Sound direction? (-1.0 or 1.0)
 	float _direction;

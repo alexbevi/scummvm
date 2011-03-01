@@ -86,7 +86,7 @@ public:
 	void setAmbientSoundVolume(Id soundId, int32 volume);
 
 	void updateSoundItems();
-	uint32 getSoundItemsCount() { return _soundItems.size(); }
+	AssociativeArray<SoundItem *> *getSoundItems() { return &_soundItems; }
 
 	// Accessors
 	Movability *getMovability(uint32 index);
@@ -107,7 +107,7 @@ private:
 	Common::Array<ImageHandle *>           _presentationImages;
 	Common::Array<ObjectPresentation *>    _presentationAnimations;
 	Common::Array<Text *>                  _texts;
-	Common::Array<SoundItem *>             _soundItems;
+	AssociativeArray<SoundItem *>          _soundItems;
 	AssociativeArray<Visual *>             _visuals;
 	uint32 _field_24;
 	byte   _field_28;
