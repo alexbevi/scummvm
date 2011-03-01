@@ -148,12 +148,8 @@ private:
 	void onAnimationNextFrameZoneN2(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
 
 	//////////////////////////////////////////////////////////////////////////
-	// Zone and helper functions
+	// Zone switching
 	//////////////////////////////////////////////////////////////////////////
-	void sub_433EE0();
-	void sub_433FA0();
-	void sub_4340C0();
-
 	void onSwitchZoneNI(uint32 type);
 	void onSwitchZoneRH(uint32 type);
 	void onSwitchZoneFO(uint32 type);
@@ -161,6 +157,16 @@ private:
 	void onSwitchZoneWA(uint32 type);
 	void onSwitchZoneAS(uint32 type);
 	void onSwitchZoneN2(uint32 type);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Helper functions
+	//////////////////////////////////////////////////////////////////////////
+	void sub_433EE0();
+	void sub_433FA0();
+	void sub_4340C0();
+
+	// NI
+	void sub_445A10();
 };
 
 } // End of namespace Ring
