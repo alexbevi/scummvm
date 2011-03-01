@@ -151,6 +151,8 @@ private:
 	// Zone and helper functions
 	//////////////////////////////////////////////////////////////////////////
 	void sub_433EE0();
+	void sub_433FA0();
+	void sub_4340C0();
 
 	void onSwitchZoneNI(uint32 type);
 	void onSwitchZoneRH(uint32 type);

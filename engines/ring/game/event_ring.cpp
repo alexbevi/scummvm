@@ -3225,7 +3225,61 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 }
 
 void EventHandlerRing::onAnimationNextFrameZoneWA(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
-	error("[EventHandlerRing::onAnimationNextFrameZoneNI] Not implemented");
+	if (animationId == 50001) {
+		if (_app->varGetByte(50007) == 1 && _app->varGetByte(50009) == 1) {
+			if (frame == 35 || frame == 12) {
+				_app->objectPresentationPauseAnimation(kObject50600, 0);
+				_app->objectPresentationHide(kObject50600, 1);
+				_app->objectPresentationHide(kObject50600, 6);
+				_app->objectPresentationHide(kObject50600, 7);
+				_app->soundStop(50018, 1024);
+
+				if (_app->varGetByte(50012) == 6) {
+					_app->varSetFloat(90008, _app->varGetFloat(90008) - 5.0f);
+					_app->varSetByte(50012, 5);
+				}
+			}
+		}
+
+		if (_app->varGetByte(50008) == 1 && _app->varGetByte(50010) == 1) {
+			if (frame == 49 || frame == 24) {
+				_app->objectPresentationPauseAnimation(kObject50600, 0);
+				_app->objectPresentationHide(kObject50600, 1);
+				_app->objectPresentationHide(kObject50600, 6);
+				_app->objectPresentationShow(kObject50600, 7);
+				_app->soundStop(50018, 1024);
+
+				if (_app->varGetByte(50012) == 6) {
+					_app->varSetFloat(90008, _app->varGetFloat(90008) - 5.0f);
+					_app->varSetByte(50012, 5);
+				}
+			}
+		}
+
+		if (_app->varGetByte(50008) == 1 && _app->varGetByte(50009) == 1) {
+			if (frame == 17 || frame == 41) {
+				_app->objectPresentationPauseAnimation(kObject50600, 0);
+				_app->objectPresentationHide(kObject50600, 1);
+				_app->objectPresentationHide(kObject50600, 7);
+				_app->objectPresentationShow(kObject50600, 6);
+				_app->soundStop(50018, 1024);
+				_app->varSetByte(50012, 6);
+				_app->varSetFloat(90008, _app->varGetFloat(90008) + 5.0f);
+			}
+		}
+
+		if (_app->varGetByte(50007) == 1 && _app->varGetByte(50010) == 1) {
+			if (frame == 4 || frame == 30) {
+				_app->objectPresentationPauseAnimation(kObject50600, 0);
+				_app->objectPresentationHide(kObject50600, 1);
+				_app->objectPresentationHide(kObject50600, 7);
+				_app->objectPresentationShow(kObject50600, 6);
+				_app->soundStop(50018, 1024);
+				_app->varSetByte(50012, 6);
+				_app->varSetFloat(90008, _app->varGetFloat(90008) + 5.0f);
+			}
+		}
+	}
 }
 
 void EventHandlerRing::onAnimationNextFrameZoneAS(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
@@ -3242,25 +3296,210 @@ void EventHandlerRing::onAnimationNextFrameZoneAS(Id animationId, const Common::
 }
 
 void EventHandlerRing::onAnimationNextFrameZoneN2(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
-	error("[EventHandlerRing::onAnimationNextFrameZoneN2] Not implemented");
+	switch (animationId) {
+	default:
+		break;
+
+	case 70300:
+		if (frame == 3)
+			_app->soundPlay(70301);
+		break;
+
+	case 70102:
+		switch (frame) {
+		default:
+			break;
+
+		case 1:
+			_app->soundPlay(70103);
+			break;
+
+		case 36:
+			_app->puzzleSetActive(kPuzzle70100);
+			_app->objectPresentationHide(kObject70101, 4);
+			_app->objectPresentationHide(kObject70101, 0);
+			_app->objectPresentationHide(kObject70101, 5);
+			_app->objectSetAccessibilityOn(kObject70101, 0, 0);
+			_app->objectSetAccessibilityOn(kObject70102, 0, 0);
+			_app->objectSetAccessibilityOn(kObject70101, 2, 2);
+			_app->objectSetAccessibilityOn(kObject70102, 2, 2);
+			_app->objectSetAccessibilityOn(kObject70100);
+			_app->objectSetAccessibilityOn(kObject70103);
+			break;
+		}
+		break;
+
+	case 70103:
+		switch (frame) {
+		default:
+			break;
+
+		case 1:
+			_app->objectSetAccessibilityOn(kObject70101, 1, 1);
+			_app->objectPresentationShow(kObject70100, 1);
+			break;
+
+		case 36:
+			_app->soundPlay(70102);
+			break;
+		}
+		break;
+
+	case 70104:
+		switch (frame) {
+		default:
+			break;
+
+		case 1:
+			_app->soundPlay(70104);
+			break;
+
+		case 15:
+			_app->soundStop(70104, 1024);
+			_app->objectSetAccessibilityOn(kObject70102, 1, 1);
+			_app->objectSetAccessibilityOn(kObject70105, 0, 0);
+			break;
+		}
+		break;
+
+	case 70106:
+		switch (frame) {
+		default:
+			break;
+
+		case 1:
+			_app->soundStop(70105, 1024);
+			_app->objectPresentationHide(kObject70101, 0);
+			_app->objectPresentationHide(kObject70102, 0);
+			_app->puzzleSetActive(kPuzzle70100);
+			_app->objectSetAccessibilityOn(kObject70101, 0, 0);
+			_app->objectSetAccessibilityOn(kObject70102, 0, 0);
+			_app->objectSetAccessibilityOn(kObject70101, 2, 2);
+			_app->objectSetAccessibilityOn(kObject70102, 2, 2);
+			_app->objectSetAccessibilityOn(kObject70100);
+			_app->objectSetAccessibilityOn(kObject70103);
+			break;
+
+		case 15:
+			_app->soundPlay(70105);
+			break;
+		}
+		break;
+
+	case 70422:
+		switch (frame) {
+		default:
+			break;
+
+		case 1:
+			_app->objectSetAccessibilityOn(kObject70404, 1, 2);
+			break;
+
+		case 2:
+			_app->soundStop(70407, 1024);
+			break;
+
+		case 14:
+			_app->soundPlay(70407);
+			break;
+
+		case 15:
+			_app->soundStop(70405, 1024);
+			break;
+
+		case 26:
+			_app->soundPlay(70405);
+			break;
+		}
+		break;
+
+	case 70423:
+		switch (frame) {
+		default:
+			break;
+
+		case 2:
+			_app->soundPlay(70408, kSoundOnce);
+			break;
+
+		case 15:
+			_app->soundPlay(70406, kSoundOnce);
+			break;
+
+		case 26:
+			_app->soundStop(70406, 1024);
+			_app->soundStop(70408, 1024);
+			break;
+
+		case 27:
+			_app->puzzleSetMovabilityOn(70411);
+			_app->objectSetAccessibilityOn(kObject70404, 0, 0);
+			break;
+		}
+		break;
+
+	case 70424:
+		switch (frame) {
+		default:
+			break;
+
+		case 1:
+			_app->objectPresentationShow(kObject70404, 6);
+			_app->objectSetAccessibilityOn(kObject70404, 1, 2);
+			break;
+
+		case 2:
+			_app->soundStop(70407, 1024);
+			break;
+
+		case 14:
+			_app->soundPlay(70407);
+			break;
+
+		case 15:
+			_app->soundStop(70405, 1024);
+			break;
+
+		case 26:
+			_app->soundPlay(70405);
+			_app->objectPresentationHide(kObject70406);
+			sub_433FA0();
+			break;
+		}
+		break;
+
+	case 70425:
+		switch (frame) {
+		default:
+			break;
+
+		case 2:
+			_app->soundPlay(70408);
+			_app->objectPresentationHide(kObject70404, 6);
+			break;
+
+		case 15:
+			_app->soundPlay(70406);
+			break;
+
+		case 26:
+			_app->puzzleSetMovabilityOn(70411);
+			_app->objectSetAccessibilityOn(kObject70404, 0, 0);
+			_app->varSetByte(70005, 1);
+			_app->objectPresentationShow(kObject70406);
+			sub_4340C0();
+
+			if (!_app->varGetByte(70012))
+				_app->objectPresentationShow(kObjectFire);
+			break;
+		}
+		break;
+	}
 }
 
 #pragma endregion
 
-#pragma region Zone and helper functions
-
-void EventHandlerRing::sub_433EE0() {
-	if (_app->varGetByte(70012) == 1
-	 && _app->varGetByte(70001) == 0
-	 && _app->bagHas(kObjectCage)
-	 && _app->bagHas(kObjectCentaur)
-	 && _app->bagHas(kObjectDragon)
-	 && _app->bagHas(kObjectPhoenix1)) {
-		_app->varSetByte(70013, 11);
-		_app->puzzleSetActive(kPuzzle70305, 1, 1);
-		_app->soundPlay(70017);
-	}
-}
+#pragma region OnSwitchZone functions
 
 void EventHandlerRing::onSwitchZoneNI(uint32 type) {
 	switch (type) {
@@ -3425,6 +3664,65 @@ void EventHandlerRing::onSwitchZoneN2(uint32 type) {
 		else
 			_app->setupZone(kZoneN2, kSetupTypeNone);
 	}
+}
+
+#pragma endregion
+
+#pragma region Helper functions
+
+void EventHandlerRing::sub_433EE0() {
+	if (_app->varGetByte(70012) == 1
+		&& _app->varGetByte(70001) == 0
+		&& _app->bagHas(kObjectCage)
+		&& _app->bagHas(kObjectCentaur)
+		&& _app->bagHas(kObjectDragon)
+		&& _app->bagHas(kObjectPhoenix1)) {
+			_app->varSetByte(70013, 11);
+			_app->puzzleSetActive(kPuzzle70305, 1, 1);
+			_app->soundPlay(70017);
+	}
+}
+
+void EventHandlerRing::sub_433FA0() {
+	_app->puzzleSet3DSoundOff(kPuzzle70410, 70412);
+	_app->rotationSet3DSoundOff(70400, 70412);
+
+	for (int i = 95; i > 70; i--) {
+		_app->puzzleSet3DSoundVolume(kPuzzle70411, 70412, i);
+		handleEvents();
+	}
+
+	_app->puzzleSet3DSoundOff(kPuzzle70411, 70412);
+	_app->rotationSet3DSoundOff(70000, 70107);
+	_app->rotationSet3DSoundOff(70001, 70107);
+	_app->rotationSet3DSoundOff(70400, 70107);
+	_app->rotationSet3DSoundOff(70100, 70107);
+	_app->rotationSet3DSoundOff(70101, 70107);
+	_app->puzzleSet3DSoundOff(kPuzzle70100, 70107);
+	_app->puzzleSet3DSoundOff(kPuzzle70102, 70107);
+	_app->soundPlay(70000);
+
+}
+
+void EventHandlerRing::sub_4340C0() {
+	_app->soundStop(70000, 1024);
+	_app->puzzleSet3DSoundOn(kPuzzle70411, 70412);
+	_app->puzzleSet3DSoundOn(kPuzzle70410, 70412);
+	_app->rotationSet3DSoundOn(70400, 70412);
+
+	for (int i = 70; i < 95; i--) {
+		_app->puzzleSet3DSoundVolume(kPuzzle70411, 70412, i);
+		handleEvents();
+	}
+
+	_app->rotationSet3DSoundOn(70000, 70107);
+	_app->rotationSet3DSoundOn(70001, 70107);
+	_app->rotationSet3DSoundOn(70400, 70107);
+	_app->rotationSet3DSoundOn(70100, 70107);
+	_app->rotationSet3DSoundOn(70101, 70107);
+	_app->puzzleSet3DSoundOn(kPuzzle70100, 70107);
+	_app->puzzleSet3DSoundOn(kPuzzle70102, 70107);
+
 }
 
 #pragma endregion
