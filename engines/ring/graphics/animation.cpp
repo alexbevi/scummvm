@@ -318,11 +318,63 @@ void AnimationImage::init(Common::String name, ImageType imageType, const Common
 }
 
 void AnimationImage::alloc() {
-	error("[AnimationImage::alloc] Not implemented");
+	for	(uint32 i = 0; i < _imageHandles.size(); i++) {
+		ImageHandle *image = _imageHandles[i];
+
+		if (image->isInitialized())
+			continue;
+
+		// Compute filename
+		Common::String filename = Common::String::format("%s/%s.%04d.%s", image->getNameId().c_str(), image->getNameId().c_str(), i + 1, Application::getFileExtension(image->getImageType()).c_str());
+		Common::String path;
+		if (image->getArchiveType() == kArchiveArt) {
+			switch (image->getLoadFrom()) {
+			default:
+				break;
+
+			case kLoadFromCd:
+			case kLoadFromDisk:
+				path = Common::String::format("/ANI/%s", filename.c_str());
+				break;
+
+			case kLoadFromCursor:
+				path = Common::String::format("/CURSOR/%s", filename.c_str());
+				break;
+
+			case kLoadFromListIcon:
+				path = Common::String::format("/LSTICON/%s", filename.c_str());
+				break;
+			}
+		} else if (image->getArchiveType() == kArchiveFile) {
+			switch (image->getLoadFrom()) {
+			default:
+				break;
+
+			case kLoadFromCd:
+			case kLoadFromDisk:
+				path = Common::String::format("DATA/%s/ANI/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
+				break;
+
+			case kLoadFromCursor:
+				path = Common::String::format("DATA/%s/CURSOR/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
+				break;
+
+			case kLoadFromListIcon:
+				path = Common::String::format("DATA/%s/LSTICON/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
+				break;
+			}
+		}
+
+		// Load image
+		if (!image->load(path, image->getArchiveType(), image->getZone(), image->getLoadFrom()))
+			error("[AnimationImage::alloc] Cannot load image (%s)", filename.c_str());
+	}
 }
 
 void AnimationImage::dealloc() {
-	error("[AnimationImage::dealloc] Not implemented");
+	for	(Common::Array<ImageHandle *>::iterator it = _imageHandles.begin(); it != _imageHandles.end(); it++)
+		if ((*it)->isInitialized())
+			(*it)->destroy();
 }
 
 void AnimationImage::drawActiveFrame() {
@@ -333,8 +385,9 @@ void AnimationImage::drawActiveFrame(const Common::Point &point) {
 	error("[AnimationImage::drawActiveFrame] Not implemented");
 }
 
-void AnimationImage::draw() {
-	warning("[AnimationImage::draw] Not implemented");
+void AnimationImage::draw(const Common::Point &point) {
+	getCurrentFrame();
+	drawActiveFrame(point);
 }
 
 void AnimationImage::setCoordinates(const Common::Point &point) {

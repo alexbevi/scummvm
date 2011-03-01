@@ -90,6 +90,7 @@ public:
 	DrawType getDrawType() { return _drawType; }
 	uint32 getPriority() { return _priority; }
 	uint32 getField6C() { return _field_6C; }
+	ImageType getImageType() { return _imageType; }
 	ObjectPresentation *getObjectPresentation() { return _objectPresentation; }
 	AnimationImage *getAnimation() { return _animation; }
 	Zone getZone() { return _zone; }

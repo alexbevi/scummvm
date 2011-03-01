@@ -110,7 +110,7 @@ public:
 
 	void drawActiveFrame();
 	void drawActiveFrame(const Common::Point &point);
-	void draw();
+	void draw(const Common::Point &point);
 
 	// Accessors
 	void setField89() { _field_89 = 1; }

@@ -103,6 +103,9 @@ void Image::destroy() {
 }
 
 bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+	if (filename.empty())
+		return false;
+
 	debugC(kRingDebugGraphics, "Loading image: %s", filename.c_str());
 	_filename = filename;
 
@@ -164,17 +167,7 @@ void Image::draw(Graphics::Surface *surface, Common::Point dest) {
 	Common::Rect rect(dest.x, dest.y, _surface->w, _surface->h);
 	rect.clip(640, 480);
 
-	//surface->fillRect(rect, Color(255, 0, 0).getColor());
-
-	byte *origin = (byte*)_surface->pixels;
-	byte *destination = (byte *)surface->pixels;
-	uint32 height = _surface->h;
-
-	while (height--) {
-		memcpy(origin + dest.y * surface->pitch + dest.x, origin, _surface->w);
-		destination += surface->w;
-		origin += _surface->w;
-	}
+	surface->fillRect(rect, Color(255, 0, 0).getColor());
 }
 
 void Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset) {
