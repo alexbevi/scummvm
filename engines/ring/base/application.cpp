@@ -672,13 +672,13 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 	}
 
 	// Create new surface to hold the difference frame
-	surface.create(imageFrom->getWidth(), imageFrom->getHeight(), 3);
+	surface.create(imageFrom->getWidth(), imageFrom->getHeight(), imageFrom->getBPP() / 8);
 
 	// Put difference frame data into surface
 	diff    = (uint16 *)surface.pixels;
 	srcFrom = (uint16 *)imageFrom->getSurface()->pixels;
 	srcTo   = (uint16 *)imageTo->getSurface()->pixels;
-	for (uint32 i = 0; i < (uint32)(surface.w * surface.h * 3); i++)
+	for (uint32 i = 0; i < (uint32)(surface.w * surface.h * surface.bytesPerPixel); i++)
 		diff[i] = (srcFrom[i] - srcTo[i]) / frameCount;
 
 	// Create animation
@@ -692,7 +692,7 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 		uint32 currentFrame = 1;
 		while (!checkEscape()) {
 			// Update imageFrom buffer
-			for (uint32 i = 0; i < (uint32)(surface.w * surface.h * 3); i++)
+			for (uint32 i = 0; i < (uint32)(surface.w * surface.h * surface.bytesPerPixel); i++)
 				srcFrom[i] -= diff[i];
 
 			// Draw updated frame
