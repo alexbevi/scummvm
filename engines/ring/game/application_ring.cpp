@@ -213,7 +213,56 @@ void ApplicationRing::startMenu(bool savegame) {
 }
 
 void ApplicationRing::showMenu(Zone zone, uint32 a2) {
-	error("[ApplicationPompeii::showMenu] Not implemented");
+	ArchiveType archiveType = _configuration.artSY ? kArchiveArt : kArchiveFile;
+
+	switch (zone) {
+	default:
+		break;
+
+	case kZoneNI:
+	case kZoneRH:
+		setZoneAndEnableBag(kZoneSY);
+
+		switch (a2){
+		default:
+			break;
+
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			showImage("End.bmp", Common::Point(0, 16), 4000, kLoadFromDisk, archiveType);
+			break;
+		}
+
+		startMenu(false);
+		break;
+
+	case kZoneN2:
+		setZoneAndEnableBag(kZoneSY);
+
+		switch (a2){
+		default:
+			break;
+
+		case 1:
+		case 2:
+			showImage("End.bmp", Common::Point(0, 16), 4000, kLoadFromDisk, archiveType);
+			break;
+		}
+
+		startMenu(false);
+		break;
+
+	case kZoneAS:
+		if (!a2) {
+			setZoneAndEnableBag(kZoneSY);
+			puzzleSetActive(kPuzzleMenu);
+			objectPresentationShow(kObject7, 0);
+			soundPlay(90001);
+		}
+		break;
+	}
 }
 
 void ApplicationRing::showCredits() {
