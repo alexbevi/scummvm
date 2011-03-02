@@ -535,7 +535,7 @@ void SoundItem::init(SoundEntry *entry, uint32 volume, int32 pan, bool isTurnedO
 	_field_3D = 0.0f;
 
 	setVolume(volume);
-	setPan(pan);
+	setPanOnEntry(pan);
 }
 
 void SoundItem::on() {
@@ -560,7 +560,7 @@ void SoundItem::turnOn() {
 		_entry->stop();
 
 	setVolume(_volume);
-	setPan(_pan);
+	setPanOnEntry(_pan);
 
 	_entry->play(true);
 
@@ -579,7 +579,7 @@ void SoundItem::setVolume(int32 volume) {
 	_volume = volume;
 }
 
-void SoundItem::setPan(int32 pan) {
+void SoundItem::setPanOnEntry(int32 pan) {
 	if (_entry)
 		_entry->setPan(pan);
 
@@ -618,7 +618,7 @@ void SoundItem::computeAndSetPan(float alp, bool apply) {
 	_pan = computePan(alp);
 
 	if (apply)
-		setPan(_pan);
+		setPanOnEntry(_pan);
 }
 
 bool SoundItem::checkCurrentPuzzle() {

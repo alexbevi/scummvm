@@ -207,7 +207,6 @@ public:
 	void turnOn();
 	void turnOff();
 	void setVolume(int32 volume);
-	void setPan(int32 pan);
 
 	// Serializable
 	void saveLoadWithSerializer(Common::Serializer &s);
@@ -218,6 +217,12 @@ public:
 	void setAngle(float angle);
 	void setVolumes(float volume1, float volume2);
 	void setPans(float pan1, float pan2);
+
+	void setPan(int32 pan) { _pan = pan; }
+	void setVolume1(float volume1) { _volume1 = volume1; }
+	void setPan1(float pan1) { _pan1 = pan1; }
+	void setField35(uint32 val) { _field_35 = val; }
+	void setField39(uint32 val) { _field_39 = val; }
 
 	float getVolume() { return _volume; }
 	float getPan() { return _pan; }
@@ -248,6 +253,7 @@ private:
 	float       _field_3D;
 
 	bool checkCurrentPuzzle();
+	void setPanOnEntry(int32 pan);
 };
 
 class SoundHandler {
