@@ -41,44 +41,83 @@
 
 namespace Ring {
 
-#pragma region Node
+#pragma region ImageHeaderEntry
 
-Node::Node() {
+ImageHeaderEntry::ImageHeaderEntry() {
 	_field_0 = 0;
 	_field_4 = 0;
 	_field_8 = 0;
-	_field_5C = 0;
+	_field_1C = 0;
+	_field_20 = 0;
+	_field_24 = 0;
+	_field_28 = 0;
+	_buffer = NULL;
+	_field_38 = 0;
+	_field_3C = 0;
 }
 
-Node::~Node() {
-}
-
-void Node::update(uint32 val) {
-	if (_field_5C != val) {
-		_field_5C = val;
-		_field_4 = 1;
-	}
+ImageHeaderEntry::~ImageHeaderEntry() {
+	SAFE_DELETE(_buffer);
 }
 
 #pragma endregion
 
-#pragma region RotationData
+#pragma region ImageHeader
 
-RotationData::RotationData(uint32 count, Common::String path) {
+ImageHeader::ImageHeader() {
+	_field_0 = 0;
+	_field_4 = 0;
+	_field_4C = -1;
+}
+
+ImageHeader::~ImageHeader() {
+	CLEAR_ARRAY(ImageHeaderEntry, _headers);
+}
+
+#pragma endregion
+
+#pragma region AquatorImageHeader
+
+AquatorImageHeader::AquatorImageHeader() {
+	_field_0 = 0;
+	_field_4 = 0;
+	_field_8 = 0;
+	_channel = 0;
+}
+
+AquatorImageHeader::~AquatorImageHeader() {
+}
+
+void AquatorImageHeader::setChannel(uint32 channel) {
+	if (_channel != channel) {
+ 		_channel = channel;
+ 		_field_4 = 1;
+ 	}
+}
+
+#pragma endregion
+
+#pragma region AquatorStream
+
+AquatorStream::AquatorStream(uint32 count, Common::String path) {
 	_path = path;
 
 	for (uint32 i = 0; i < count; i++)
-		_nodes.push_back(new Node());
+		_headers.push_back(new AquatorImageHeader());
 
 	_count = count;
 }
 
-RotationData::~RotationData() {
-	CLEAR_ARRAY(Node, _nodes);
+AquatorStream::~AquatorStream() {
+	CLEAR_ARRAY(AquatorImageHeader, _headers);
 }
 
-void RotationData::update(uint32 index, uint32 val) {
-	_nodes[index]->update(val);
+void AquatorStream::setChannel(uint32 index, uint32 channel) {
+	_headers[index]->setChannel(channel);
+}
+
+uint32 AquatorStream::getChannel(uint32 index) {
+	return _headers[index]->getChannel();
 }
 
 #pragma endregion
@@ -98,8 +137,8 @@ Rotation::Rotation(Id id, Common::String name, byte a3, LoadFrom, uint32 nodeCou
 
 	_field_28 = a3;
 
-	// Init nodes
-	_data = new RotationData(nodeCount, _path);
+	// Init stream
+	_stream = new AquatorStream(nodeCount, _path);
 
 	_field_31  = 1.0f;
 	_field_35  = 0.3f;
@@ -133,7 +172,7 @@ Rotation::~Rotation() {
 	CLEAR_ARRAY(SoundItem,          _soundItems);
 
 	SAFE_DELETE(_imageHandle);
-	SAFE_DELETE(_data);
+	SAFE_DELETE(_stream);
 }
 
 void Rotation::dealloc() {
@@ -266,8 +305,25 @@ Animation *Rotation::addPresentationAnimation(ObjectPresentation *presentation, 
 	return animation;
 }
 
-void Rotation::updateNode(uint32 index, uint32 val) {
-	_data->update(index, val);
+void Rotation::setChannel(uint32 index, uint32 channel) {
+	if (!_stream)
+		error("[Rotation::getLayerCount] Stream not initialized!");
+
+	_stream->setChannel(index, channel);
+}
+
+uint32 Rotation::getChannel(uint32 index) {
+	if (!_stream)
+		error("[Rotation::getLayerCount] Stream not initialized!");
+
+	return _stream->getChannel(index);
+}
+
+uint32 Rotation::getLayerCount() {
+	if (!_stream)
+		error("[Rotation::getLayerCount] Stream not initialized!");
+
+	return _stream->getCount();
 }
 
 void Rotation::addAmbientSound(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7) {
@@ -348,21 +404,12 @@ void Rotation::setAmplitudeAndSpeed(float amplitude, float speed) {
 	_speed = speed;
 }
 
-uint32 Rotation::getLayerCount() {
-	if (!_data)
-		error("[Rotation::getLayerCount] Data not initialized!");
-
-	return _data->getCount();
-}
-
 Movability *Rotation::getMovability(uint32 index) {
 	if (index >= _movabilities.size())
 		error("[Rotation::getMovability] Invalid movability index (was: %d, max:%d)", index, _movabilities.size() - 1);
 
 	return _movabilities[index];
 }
-
-#pragma endregion
 
 #pragma region Helpers
 
@@ -382,6 +429,8 @@ SoundItem *Rotation::getSoundItem(Id soundId) {
 void Rotation::saveLoadWithSerializer(Common::Serializer &s) {
 	error("[Rotation::saveLoadWithSerializer] Not implemented!");
 }
+
+#pragma endregion
 
 #pragma endregion
 

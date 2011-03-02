@@ -41,81 +41,66 @@ class SoundEntry;
 class SoundItem;
 class Text;
 
-struct NodeData {
-	uint32 field_0;
-	uint32 field_4;
-	uint32 field_8;
-	uint32 field_1C;
-	uint32 field_20;
-	uint32 field_24;
-	uint32 field_28;
-	uint32 *field_34;
-	uint32 field_38;
-	uint32 field_3C;
-
-	NodeData() {
-		field_0 = 0;
-		field_4 = 0;
-		field_8 = 0;
-		field_1C = 0;
-		field_20 = 0;
-		field_24 = 0;
-		field_28 = 0;
-		field_34 = NULL;
-		field_38 = 0;
-		field_3C = 0;
-	}
-
-	~NodeData() {
-		SAFE_DELETE(field_34);
-	}
-};
-
-struct NodeInfo {
-	uint32 field_0;
-	uint32 field_4;
-	Common::Array<NodeData *> nodeDatas;
-	NodeData nodeData;
-	int32 field_4C;
-
-	NodeInfo() {
-		field_0 = 0;
-		field_4 = 0;
-		field_4C = -1;
-	}
-
-	~NodeInfo() {
-		CLEAR_ARRAY(NodeData, nodeDatas);
-	}
-};
-
-class Node {
+class ImageHeaderEntry {
 public:
-	Node();
-	~Node();
+	ImageHeaderEntry();
+	~ImageHeaderEntry();
 
-	void update(uint32 val);
+private:
+	uint32  _field_0;
+	uint32  _field_4;
+	uint32  _field_8;
+	uint32  _field_1C;
+	uint32  _field_20;
+	uint32  _field_24;
+	uint32  _field_28;
+	uint32 *_buffer;
+	uint32  _field_38;
+	uint32  _field_3C;
+};
+
+class ImageHeader {
+public:
+	ImageHeader();
+	~ImageHeader();
+
+private:
+	uint32 _field_0;
+	uint32 _field_4;
+	Common::Array<ImageHeaderEntry *> _headers;
+	ImageHeaderEntry *_current;
+	int32 _field_4C;
+};
+
+class AquatorImageHeader {
+public:
+	AquatorImageHeader();
+	~AquatorImageHeader();
+
+	void setChannel(uint32 val);
+	uint32 getChannel() { return _channel; }
 
 private:
 	uint32 _field_0;
 	uint32 _field_4;
 	uint32 _field_8;
-	NodeInfo _info;
-	uint32 _field_5C;
+	ImageHeader _header;
+	uint32 _channel;
 };
 
-class RotationData {
+class AquatorStream {
 public:
-	RotationData(uint32 count, Common::String path);
-	~RotationData();
+	AquatorStream(uint32 count, Common::String path);
+	~AquatorStream();
 
-	void update(uint32 index, uint32 val);
+	void setChannel(uint32 index, uint32 channel);
+	uint32 getChannel(uint32 index);
 	uint32 getCount() { return _count; }
 
 private:
-	Common::Array<Node *> _nodes;
+	Common::Array<AquatorImageHeader *> _headers;
 	Common::String _path;
-	NodeData _nodeData;
+	ImageHeaderEntry _entry;
 	uint32 _count;
 };
 
@@ -157,8 +142,10 @@ public:
 	// Presentation
 	Animation *addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 frameCount, float frameRate, byte a5);
 
-	// Nodes
-	void updateNode(uint32 index, uint32 val);
+	// Stream
+	void setChannel(uint32 index, uint32 channel);
+	uint32 getChannel(uint32 index);
+	uint32 getLayerCount();
 
 	// Sound
 	void addAmbientSound(SoundEntry *entry, uint32 volume, int32 pan, bool isOn, uint32 fadeFrames, uint32 a6, uint32 a7);
@@ -175,7 +162,6 @@ public:
 	// Accessors
 	void setFreOnOff(bool state);
 	void setAmplitudeAndSpeed(float amplitude, float speed);
-	uint32 getLayerCount();
 	void setComBufferLength(uint32 length) { _comBufferLength = length; }
 	Movability *getMovability(uint32 index);
 	void setField28(byte val) { _field_28 = val; }
@@ -194,7 +180,7 @@ private:
 	AssociativeArray<SoundItem *>       _soundItems;
 	byte                                _field_28;
 	ImageHandle                        *_imageHandle;
-	RotationData                       *_data;
+	AquatorStream                      *_stream;
 	float                               _field_31;
 	float                               _field_35;
 	float                               _amplitude;

@@ -245,10 +245,10 @@ void ObjectPresentation::show() {
 		(*it)->setTicks(g_system->getMillis());
 
 	for (uint32 i = 0; i < _layerImagePtr.size(); i++)
-		_layImageRotationPtr[i]->updateNode(*(_layerImagePtr[i]), 1);
+		_layImageRotationPtr[i]->setChannel(*(_layerImagePtr[i]), 1);
 
 	for (uint32 i = 0; i < _layerAnimationRotation.size(); i++)
-		_layerAnimationRotationPtr[i]->updateNode(_layerAnimationRotation[i]->id(), 1);
+		_layerAnimationRotationPtr[i]->setChannel(_layerAnimationRotation[i]->id(), 1);
 }
 
 void ObjectPresentation::hide() {
@@ -259,10 +259,10 @@ void ObjectPresentation::hide() {
 		(*it)->sub_416710();
 
 	for (uint32 i = 0; i < _layerImagePtr.size(); i++)
-		_layImageRotationPtr[i]->updateNode(*(_layerImagePtr[i]), 0);
+		_layImageRotationPtr[i]->setChannel(*(_layerImagePtr[i]), 0);
 
 	for (uint32 i = 0; i < _layerAnimationRotation.size(); i++)
-		_layerAnimationRotationPtr[i]->updateNode(_layerAnimationRotation[i]->id(), 0);
+		_layerAnimationRotationPtr[i]->setChannel(_layerAnimationRotation[i]->id(), 0);
 }
 
 void ObjectPresentation::hideAndRemove() {
