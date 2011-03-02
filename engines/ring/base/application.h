@@ -345,6 +345,8 @@ public:
 	void visualListRemove(Id visualId, PuzzleId puzzleId, const ObjectId &objectId, bool removeObject);
 	void visualListRemove(Id visualId, PuzzleId puzzleId, bool removeObject);
 	uint32 visualListGetItemCount(Id visualId, PuzzleId puzzleId);
+	int32 visualListGetImageIndexClicked(Id visualId, PuzzleId puzzleId);
+	ObjectId visualListGetObjectClicked(Id visualId, PuzzleId puzzleId);
 
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor) = 0;
 

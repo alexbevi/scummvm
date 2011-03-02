@@ -102,6 +102,8 @@ public:
 
 	// Accessors
 	uint32 getItemCount() { return _itemCount; }
+	int32 getImageIndexClicked() { return _imageIndexClicked; }
+	ObjectId getObjectClicked() { return _objectClicked; }
 
 private:
 	Common::String _iconPath;
@@ -152,8 +154,8 @@ private:
 	uint32 _field_C1;
 	uint32 _itemCount;
 	uint32 _field_C9;
-	int32 _field_CD;
-	int32 _field_D1;
+	ObjectId _objectClicked;
+	int32 _imageIndexClicked;
 	ArchiveType _archiveType;
 	Text  *_text1;
 	Text  *_text2;

@@ -2229,6 +2229,28 @@ uint32 Application::visualListGetItemCount(Id visualId, PuzzleId puzzleId) {
 	return ((VisualObjectList *)puzzle->getVisual(visualId))->getItemCount();
 }
 
+int32 Application::visualListGetImageIndexClicked(Id visualId, PuzzleId puzzleId) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+
+	return ((VisualObjectList *)puzzle->getVisual(visualId))->getImageIndexClicked();
+}
+
+ObjectId Application::visualListGetObjectClicked(Id visualId, PuzzleId puzzleId) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+
+	return ((VisualObjectList *)puzzle->getVisual(visualId))->getObjectClicked();
+}
+
 #pragma endregion
 
 #pragma region DragControl

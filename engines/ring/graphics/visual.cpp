@@ -76,8 +76,8 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_field_65 = 0;
 	_field_69 = 0;
 	_field_6D = 0;
-	_field_CD = -1;
-	_field_D1 = -1;
+	_objectClicked = -1;
+	_imageIndexClicked = -1;
 	_field_71 = 0;
 	_field_75 = 0;
 	_field_79 = 0;
@@ -424,8 +424,8 @@ bool VisualObjectList::function4(const Common::Point &point) {
 void VisualObjectList::add(ObjectId objectId) {
 	if (_objects.has(objectId)) {
 		_field_C9 = 0;
-		_field_CD = -1;
-		_field_D1 = -1;
+		_objectClicked = -1;
+		_imageIndexClicked = -1;
 
 		return;
 	}
@@ -455,8 +455,8 @@ void VisualObjectList::add(ObjectId objectId) {
 	if (_itemCount > _field_BD)
 		_field_C1 = 0;
 	_field_C9 = 0;
-	_field_CD = -1;
-	_field_D1 = -1;
+	_objectClicked = -1;
+	_imageIndexClicked = -1;
 }
 
 void VisualObjectList::remove(ObjectId objectId, bool removeObject) {
@@ -476,8 +476,8 @@ void VisualObjectList::remove(ObjectId objectId, bool removeObject) {
 	if (_itemCount <= _field_BD)
 		_field_C1 = 0;
 	_field_C9 = 0;
-	_field_CD = -1;
-	_field_D1 = -1;
+	_objectClicked = -1;
+	_imageIndexClicked = -1;
 }
 
 void VisualObjectList::removeAll(bool removeObject) {
@@ -496,8 +496,8 @@ void VisualObjectList::removeAll(bool removeObject) {
 	_field_C1 = 0;
 	_itemCount = _objects.size();
 	_field_C9 = 0;
-	_field_CD = -1;
-	_field_D1 = -1;
+	_objectClicked = -1;
+	_imageIndexClicked = -1;
 }
 
 

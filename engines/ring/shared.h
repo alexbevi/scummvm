@@ -212,10 +212,11 @@ enum PuzzleIdEnum {
 };
 
 enum ObjectIdEnum {
+	kObjectNone    = -1,
 	kObjectInvalid = 0
 };
 
-typedef uint32 Id;
+typedef int32 Id;
 
 class BaseId {
 public:
@@ -225,22 +226,22 @@ public:
 	operator uint32() { return _id;	}
 	uint32 id()       { return _id; }
 
-	bool operator==(const uint32 &i) {
+	bool operator==(const int32 &i) {
 		return _id == i;
 	}
 
 protected:
-	uint32 _id;
+	int32 _id;
 };
 
 class PuzzleId : public BaseId {
 public:
 	PuzzleId() : BaseId(0) {}
 	PuzzleId(PuzzleIdEnum i) : BaseId(i) {}
-	PuzzleId(uint32 i) : BaseId(i) {}
+	PuzzleId(int32 i) : BaseId(i) {}
 
 	bool operator==(const PuzzleIdEnum &i) {
-		return _id == (uint32)i;
+		return _id == (int32)i;
 	}
 };
 
@@ -248,13 +249,13 @@ class ObjectId : public BaseId {
 public:
 	ObjectId() : BaseId(0) {}
 	ObjectId(ObjectIdEnum i) : BaseId(i) {}
-	ObjectId(uint32 i) : BaseId(i) {}
+	ObjectId(int32 i) : BaseId(i) {}
 
 	bool operator==(const ObjectIdEnum &i) {
-		return _id == (uint32)i;
+		return _id == (int32)i;
 	}
 
-	bool operator==(const uint32 &i) {
+	bool operator==(const int32 &i) {
 		return _id == i;
 	}
 };
