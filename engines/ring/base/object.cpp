@@ -238,6 +238,8 @@ void ObjectPresentation::playRotationAnimations(uint32 ticks) {
 }
 
 void ObjectPresentation::show() {
+	_isShown = true;
+
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
 		(*it)->setTicks(g_system->getMillis());
 
@@ -252,6 +254,8 @@ void ObjectPresentation::show() {
 }
 
 void ObjectPresentation::hide() {
+	_isShown = false;
+
 	for (Common::Array<AnimationImage *>::iterator it = _animationPuzzle.begin(); it != _animationPuzzle.end(); it++)
 		(*it)->sub_416710();
 
