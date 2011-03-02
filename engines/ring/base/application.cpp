@@ -327,10 +327,6 @@ void Application::loadConfiguration() {
 	delete archive;
 }
 
-void Application::initObjectCursors(ObjectId objectId) {
-	error("[Application::initObjectCursors] Not implemented!");
-}
-
 void Application::exitZone() {
 	soundStopAll(128);
 	_soundManager->clear();
@@ -442,9 +438,9 @@ void Application::update(const Common::Point &point) {
 	// Handle drag control
 	if (_dragControl->getField20() && _dragControl->getField45() == 2) {
 		if (_dragControl->getHotspot() && _dragControl->getHotspot()->contains(point))
-			cursorSelect(kCursor4);
+			cursorSelect(kCursorActiveDraw);
 		else
-			cursorSelect(kCursor3);
+			cursorSelect(kCursorPassiveDraw);
 
 		return;
 	}
@@ -503,9 +499,9 @@ void Application::update(const Common::Point &point) {
 
 label_end:
 	if (_dragControl->getField20())
-		cursorSelect(kCursor3);
+		cursorSelect(kCursorPassiveDraw);
 	else if (bagHasClickedObject())
-		cursorSelect(kCursor1);
+		cursorSelect(kCursorPassive);
 	else
 		cursorSelect(kCursorIdle);
 
@@ -823,18 +819,18 @@ void Application::fontAdd(FontId id, Common::String filename, Common::String fac
 	_fontHandler->add(id, filename, facename, height, smallWeight, underline, italic, strikeout, langId);
 }
 
-void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte frameCount, LoadFrom loadFrom, ArchiveType archiveType) {
+void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte imageCount, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (!_cursorHandler)
 		error("[Application::cursorAdd] Cursor handler is not initialized properly");
 
-	_cursorHandler->add(id, name, cursorType, frameCount, 0, 0, 0, loadFrom, archiveType);
+	_cursorHandler->add(id, name, cursorType, imageCount, 0, 0, 0, loadFrom, archiveType);
 }
 
-void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a4, float a5, byte a6, LoadFrom loadFrom, ArchiveType archiveType) {
+void Application::cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte imageCount, uint32 frameCount, float frameRate, byte a6, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (!_cursorHandler)
 		error("[Application::cursorAdd] Cursor handler is not initialized properly");
 
-	_cursorHandler->add(id, name, cursorType, frameCount, a4, a5, a6, loadFrom, archiveType);
+	_cursorHandler->add(id, name, cursorType, imageCount, frameCount, frameRate, a6, loadFrom, archiveType);
 }
 
 void Application::cursorSetOffset(CursorId id, const Common::Point &offset) {
@@ -1379,32 +1375,32 @@ void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationI
 
 #pragma endregion
 
-void Application::objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
+void Application::objectSetActiveCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId.id());
 
-	_objects.get(objectId)->setActiveCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
+	_objects.get(objectId)->setActiveCursor(point, a4, type, a6, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetPassiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
+void Application::objectSetPassiveCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetPassiveCursor] Object Id doesn't exist (%d)", objectId.id());
 
-	_objects.get(objectId)->setPassiveCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
+	_objects.get(objectId)->setPassiveCursor(point, a4, type, a6, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetActiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
+void Application::objectSetActiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetActiveDrawCursor] Object Id doesn't exist (%d)", objectId.id());
 
-	_objects.get(objectId)->setActiveDrawCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
+	_objects.get(objectId)->setActiveDrawCursor(point, a4, type, a6, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetPassiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8) {
+void Application::objectSetPassiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetPassiveDrawCursor] Object Id doesn't exist (%d)", objectId.id());
 
-	_objects.get(objectId)->setPassiveDrawCursor(a2, a3, a4, a5, a6, a7, a8, _configuration.artBAG ? kArchiveArt : kArchiveFile);
+	_objects.get(objectId)->setPassiveDrawCursor(point, a4, type, a6, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
 void Application::objectAddPresentation(ObjectId objectId) {
@@ -1617,6 +1613,89 @@ void Application::objectPresentationHideAndRemove(ObjectId objectId) {
 		error("[Application::objectPresentationHide] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->hideAndRemove();
+}
+
+
+void Application::initObjectCursors(ObjectId objectId) {
+	if (!_objects.has(objectId))
+		return;
+
+	Object *object = _objects.get(objectId);
+
+	// Passive cursor
+	ObjectCursor *passiveCursor = object->getPassiveCursor();
+	switch (passiveCursor->type){
+	default:
+		break;
+
+	case kCursorTypeImage:
+		cursorAdd(kCursorPassive, Common::String::format("%s_p", object->getName().c_str()), kCursorTypeImage, 2, passiveCursor->loadFrom, passiveCursor->archiveType);
+		break;
+
+	case kCursorTypeAnimated:
+		cursorAdd(kCursorPassive, object->getName(), kCursorTypeAnimated, 2, passiveCursor->frameCount, passiveCursor->frameRate, passiveCursor->field_14, passiveCursor->loadFrom, passiveCursor->archiveType);
+		break;
+	}
+
+	cursorSetOffset(kCursorPassive, passiveCursor->offset);
+
+	// Active cursor
+	ObjectCursor *activeCursor = object->getActiveCursor();
+	switch (activeCursor->type){
+	default:
+		break;
+
+	case kCursorTypeImage:
+		cursorAdd(kCursorActive, Common::String::format("%s_a", object->getName().c_str()), kCursorTypeImage, 2, activeCursor->loadFrom, activeCursor->archiveType);
+		break;
+
+	case kCursorTypeAnimated:
+		cursorAdd(kCursorActive, object->getName(), kCursorTypeAnimated, 2, activeCursor->frameCount, activeCursor->frameRate, activeCursor->field_14, activeCursor->loadFrom, activeCursor->archiveType);
+		break;
+	}
+
+	cursorSetOffset(kCursorActive, passiveCursor->offset);
+}
+
+void Application::initObjectDrawCursors(ObjectId objectId) {
+	if (!_objects.has(objectId))
+		return;
+
+	Object *object = _objects.get(objectId);
+
+	// Passive draw cursor
+	ObjectCursor *passiveCursor = object->getPassiveDrawCursor();
+	switch (passiveCursor->type){
+	default:
+		break;
+
+	case kCursorTypeImage:
+		cursorAdd(kCursorPassiveDraw, Common::String::format("%s_dp", object->getName().empty() ? "dummy" : object->getName().c_str()), kCursorTypeImage, 3, passiveCursor->loadFrom, passiveCursor->archiveType);
+		break;
+
+	case kCursorTypeAnimated:
+		cursorAdd(kCursorPassiveDraw, object->getName(), kCursorTypeAnimated, 3, passiveCursor->frameCount, passiveCursor->frameRate, passiveCursor->field_14, passiveCursor->loadFrom, passiveCursor->archiveType);
+		break;
+	}
+
+	cursorSetOffset(kCursorPassive, passiveCursor->offset);
+
+	// Active draw cursor
+	ObjectCursor *activeCursor = object->getActiveDrawCursor();
+	switch (activeCursor->type){
+	default:
+		break;
+
+	case kCursorTypeImage:
+		cursorAdd(kCursorActiveDraw, Common::String::format("%s_da", object->getName().empty() ? "dummy" : object->getName().c_str()), kCursorTypeImage, 2, activeCursor->loadFrom, activeCursor->archiveType);
+		break;
+
+	case kCursorTypeAnimated:
+		cursorAdd(kCursorActiveDraw, object->getName(), kCursorTypeAnimated, 3, activeCursor->frameCount, activeCursor->frameRate, activeCursor->field_14, activeCursor->loadFrom, activeCursor->archiveType);
+		break;
+	}
+
+	cursorSetOffset(kCursorActive, passiveCursor->offset);
 }
 
 #pragma endregion

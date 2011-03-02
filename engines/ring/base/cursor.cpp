@@ -89,13 +89,13 @@ CursorImage::~CursorImage() {
 	SAFE_DELETE(_image);
 }
 
-void CursorImage::init(CursorId id, Common::String name, CursorType cursorType, byte frameCount, ArchiveType archiveType) {
-	CursorBase::init(id, name, cursorType, frameCount);
+void CursorImage::init(CursorId id, Common::String name, CursorType cursorType, byte imageCount, ArchiveType archiveType) {
+	CursorBase::init(id, name, cursorType, imageCount);
 
 	_archiveType = archiveType;
 	_image = new Image();
 
-	if (frameCount == 1)
+	if (imageCount == 1)
 		alloc();
 }
 
@@ -161,7 +161,7 @@ CursorHandler::~CursorHandler() {
 	CLEAR_ARRAY(CursorBase, _cursors);
 }
 
-void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a4, float a5, byte a6, LoadFrom loadFrom, ArchiveType archiveType) {
+void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType, byte imageCount, uint32 frameCount, float frameRate, byte a6, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (_cursors.has(id))
 		error("[CursorHandler::add] ID already exists (%d)", id);
 
@@ -174,7 +174,7 @@ void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType,
 	case kCursorTypeNormal:
 	case kCursorType2:
 		cursor = new Cursor();
-		cursor->init(id, name, cursorType, frameCount);
+		cursor->init(id, name, cursorType, imageCount);
 		break;
 
 	case kCursorTypeImage: {
@@ -200,13 +200,13 @@ void CursorHandler::add(CursorId id, Common::String name, CursorType cursorType,
 		}
 
 
-		((CursorImage *)cursor)->init(id, path, cursorType, frameCount, archiveType);
+		((CursorImage *)cursor)->init(id, path, cursorType, imageCount, archiveType);
 		}
 		break;
 
 	case kCursorTypeAnimated:
 		cursor = new CursorAnimation();
-		((CursorAnimation *)cursor)->init(id, name, cursorType, frameCount, a4, a5, a6, loadFrom, archiveType);
+		((CursorAnimation *)cursor)->init(id, name, cursorType, imageCount, frameCount, frameRate, a6, loadFrom, archiveType);
 		break;
 	}
 

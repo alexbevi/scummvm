@@ -908,15 +908,15 @@ void ApplicationRing::initZoneSY() {
 	objectAddPresentation(kObjectPreferencesSliderVolume);
 	objectPresentationAddImageToPuzzle(kObjectPreferencesSliderVolume, 0, kPuzzlePreferences, "pr_slider.tga", Common::Point(314, 155), true, kDrawType3, 1000);
 	objectPresentationShow(kObjectPreferencesSliderVolume);
-	objectSetActiveDrawCursor(kObjectPreferencesSliderVolume, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObjectPreferencesSliderVolume, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObjectPreferencesSliderVolume, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObjectPreferencesSliderVolume, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectPreferencesSliderDialog, "", "ni_handsel", 4);
 	objectAddPuzzleAccessibility(kObjectPreferencesSliderDialog, kPuzzlePreferences, Common::Rect(300, 197, 600, 237), true, 57, 1);
 	objectAddPresentation(kObjectPreferencesSliderDialog);
 	objectPresentationAddImageToPuzzle(kObjectPreferencesSliderDialog, 0, kPuzzlePreferences, "pr_slider.tga", Common::Point(314, 212), true, kDrawType3, 1000);
 	objectPresentationShow(kObjectPreferencesSliderDialog);
-	objectSetActiveDrawCursor(kObjectPreferencesSliderDialog, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObjectPreferencesSliderDialog, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObjectPreferencesSliderDialog, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObjectPreferencesSliderDialog, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObject90107, "", "", 1);
 	objectAddPuzzleAccessibility(kObject90107, kPuzzlePreferences, Common::Rect(0, 448, 20, 640), true, 57, 1);
 
@@ -1244,16 +1244,16 @@ void ApplicationRing::initZoneNI() {
 	objectPresentationShow(kObject10003, 1);
 	objectAdd(kObjectBrutality, "SP/Brutality", "NI_Brutality", 1);
 	objectAddBagAnimation(kObjectBrutality, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectBrutality, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectBrutality, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectBrutality, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectBrutality, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectMinerals, "Minerals", "NI_Minerals", 1);
 	objectAddBagAnimation(kObjectMinerals, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMinerals, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMinerals, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMinerals, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMinerals, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectGlug, "Glug", "NI_Glug", 1);
 	objectAddBagAnimation(kObjectGlug, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectGlug, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectGlug, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectGlug, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectGlug, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectGlug, kPuzzle10000, Common::Rect(227, 206, 410, 394), true, 52, 0);
 	objectAddPuzzleAccessibility(kObjectGlug, kPuzzle10001, Common::Rect(48, 40, 567, 416), true, 52, 1);
 	objectAddPuzzleAccessibility(kObjectGlug, kPuzzle10002, Common::Rect(246, 188, 383, 322), true, 52, 2);
@@ -1326,8 +1326,8 @@ void ApplicationRing::initZoneNI() {
 	objectPresentationAddImageToPuzzle(kObject10102, 4, kPuzzle10100, "NIS01N01P01S03.0002.bmp", Common::Point(385, 299), true, kDrawType1, 1000);
 	objectAdd(kObject10103, "CCHandle", "NI_HandSel", 4);
 	objectAddPuzzleAccessibility(kObject10103, kPuzzle10100, Common::Rect(497, 192, 543, 249), true, 10000, 1);
-	objectSetActiveDrawCursor(kObject10103, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject10103, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject10103, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject10103, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 14; i++) {
 		objectAddPresentation(kObject10103);
@@ -1360,8 +1360,8 @@ void ApplicationRing::initZoneNI() {
 	objectAddPuzzleAccessibility(kObject10105, kPuzzle10100, Common::Rect(140, 170, 430, 380), false, 52, 0);
 	objectAdd(kObject10106, "CCHoloCross", "NI_HandSel", 4);
 	objectAddPuzzleAccessibility(kObject10106, kPuzzle10102, Common::Rect(203, 236, 283, 316), true, 10000, 0);
-	objectSetActiveDrawCursor(kObject10106, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject10106, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject10106, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject10106, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 20; i++) {
 		objectAddPresentation(kObject10106);
@@ -1380,8 +1380,8 @@ void ApplicationRing::initZoneNI() {
 	objectAdd(kObject10107, "CCHoloDam1", "NI_HandSel", 4);
 	objectAddPuzzleAccessibility(kObject10107, kPuzzle10102, Common::Rect(295, 255, 345, 315), true,  10000, 0);
 	objectAddPuzzleAccessibility(kObject10107, kPuzzle10102, Common::Rect(295, 315, 345, 375), false, 10000, 1);
-	objectSetActiveDrawCursor(kObject10107, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject10107, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject10107, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject10107, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 15; i++) {
 		objectAddPresentation(kObject10107);
@@ -1401,8 +1401,8 @@ void ApplicationRing::initZoneNI() {
 	objectPresentationAddAnimationToPuzzle(kObject10200, 3, kPuzzle10205, "NIS02N01P02S03", kImageTypeBMP, Common::Point(97, 185), kDrawType1, 1000, 20, 12.5f, 4);
 	objectAdd(kObject10201, "Handle", "NI_HandSel", 4);
 	objectAddPuzzleAccessibility(kObject10201, kPuzzle10200, Common::Rect(300, 210, 430, 270), false, 10000, 0);
-	objectSetActiveDrawCursor(kObject10201, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject10201, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject10201, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject10201, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 15; i++) {
 		objectAddPresentation(kObject10201);
@@ -1423,8 +1423,8 @@ void ApplicationRing::initZoneNI() {
 	objectPresentationAddAnimationToPuzzle(kObject10300, 3, kPuzzle10392, "NIS03N01P03S01", kImageTypeBMP, Common::Point(246, 183), kDrawType1, 1000, 20, 12.5f, 4);
 	objectAdd(kObjectLogeTear, "Loge's Tear", "NI_Tear", 1);
 	objectAddBagAnimation(kObjectLogeTear, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectLogeTear, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectLogeTear, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectLogeTear, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectLogeTear, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectLogeTear, kPuzzle10300, Common::Rect(470, 254, 541, 328), true, 52, 0);
 	objectAddPresentation(kObjectLogeTear);
 	objectPresentationAddImageToPuzzle(kObjectLogeTear, 0, kPuzzle10300, "NIS03N01P02L02.0001.bmp", Common::Point(466, 249), true, kDrawType1, 1000);
@@ -1434,21 +1434,21 @@ void ApplicationRing::initZoneNI() {
 	objectAdd(kObjectGold, "Rhine Gold", "RhineGold", 1);
 	objectAdd(kObjectTile, "Tile", "NI_Mosaic", 1);
 	objectAddBagAnimation(kObjectTile, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectTile, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectTile, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectTile, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectTile, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectTile, kPuzzle10300, Common::Rect(247, 24, 337, 126), true, 52, 0);
 	objectAddPresentation(kObjectTile);
 	objectPresentationAddImageToPuzzle(kObjectTile, 0, kPuzzle10300, "NIS03N01P02L01.0001.bmp", Common::Point(251, 45), true, kDrawType1, 1000);
 	objectAdd(kObjectMagicFrog, "Frog", "NI_Frog", 1);
 	objectAddBagAnimation(kObjectMagicFrog, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMagicFrog, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMagicFrog, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMagicFrog, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMagicFrog, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectMagicFrog, kPuzzle10300, Common::Rect(300, 230, 430, 430), true, 52, 0);
 	objectAdd(kObject10420, "LValve", "NI_HandSel", 4);
 	objectAddPuzzleAccessibility(kObject10420, kPuzzle10400, Common::Rect(287, 223, 344, 252), true, 10000, 0);
 	objectAddPuzzleAccessibility(kObject10420, kPuzzle10400, Common::Rect(312, 274, 368, 300), false, 10000, 1);
-	objectSetActiveDrawCursor(kObject10420, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject10420, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject10420, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject10420, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPresentation(kObject10420);
 	objectPresentationAddImageToPuzzle(kObject10420, 0, kPuzzle10400, "NIS04N02P01L01S01.0012.bmp", Common::Point(257, 211), true, kDrawType1, 1000);
 
@@ -1460,8 +1460,8 @@ void ApplicationRing::initZoneNI() {
 	objectAdd(kObject10421, "RValve", "NI_HandSel", 4);
 	objectAddPuzzleAccessibility(kObject10421, kPuzzle10401, Common::Rect(291, 221, 357, 257), true,  10000, 0);
 	objectAddPuzzleAccessibility(kObject10421, kPuzzle10401, Common::Rect(271, 268, 336, 308), false, 10000, 1);
-	objectSetActiveDrawCursor(kObject10421, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject10421, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject10421, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject10421, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPresentation(kObject10421);
 	objectPresentationAddImageToPuzzle(kObject10421, 0, kPuzzle10401, "NIS04N02P02L01S01.0012.bmp", Common::Point(227, 204), true, kDrawType1, 1000);
 
@@ -1520,26 +1520,26 @@ void ApplicationRing::initZoneNI() {
 
 	objectAdd(kObjectDivingHelmet2, "Helmet&Frog", "NI_HelmetFrog", 1);
 	objectAddBagAnimation(kObjectDivingHelmet2, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectDivingHelmet2, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectDivingHelmet2, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectDivingHelmet2, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectDivingHelmet2, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectDivingHelmet, "Helmet", "NI_Helmet", 1);
 	objectAddBagAnimation(kObjectDivingHelmet, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectDivingHelmet, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectDivingHelmet, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectDivingHelmet, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectDivingHelmet, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectDivingHelmet, kPuzzle10501, Common::Rect(218, 249, 419, 346), true, 52, 0);
 	objectAddPresentation(kObjectDivingHelmet);
 	objectPresentationAddImageToPuzzle(kObjectDivingHelmet, 0, kPuzzle10501, "NIS05N01P01L02.0001.bmp", Common::Point(229, 252), true, kDrawType1, 1000);
 	objectAdd(kObjectAntiGCells, "AGCells", "RH_AntiG", 1);
 	objectAddBagAnimation(kObjectAntiGCells, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectAntiGCells, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectAntiGCells, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectAntiGCells, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectAntiGCells, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObjectAntiGCells, 10501, Common::Rect(2921, 68, 3185, 477), true, 52, 0);
 	objectAdd(kObject10600, "UTiles", "", 1);
 	objectAddPuzzleAccessibility(kObject10600, kPuzzle10600, Common::Rect(0, 420, 640, 464),  true, 55, 0);
 	objectAdd(kObject10601, "UTile1", "NI_HandSel", 4);
 	objectAddPuzzleAccessibility(kObject10601, kPuzzle10600, Common::Rect(215, 73, 430, 207), true, 10000, 0);
-	objectSetActiveDrawCursor(kObject10601, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject10601, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject10601, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject10601, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 49; i++) {
 		objectAddPresentation(kObject10601);
@@ -1548,8 +1548,8 @@ void ApplicationRing::initZoneNI() {
 
 	objectAdd(kObject10602, "UTile2", "NI_HandSel", 4);
 	objectAddPuzzleAccessibility(kObject10602, kPuzzle10600, Common::Rect(222, 211, 420, 266), true, 10000, 0);
-	objectSetActiveDrawCursor(kObject10602, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject10602, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject10602, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject10602, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 49; i++) {
 		objectAddPresentation(kObject10602);
@@ -1558,8 +1558,8 @@ void ApplicationRing::initZoneNI() {
 
 	objectAdd(kObject10603, "UTile3", "NI_HandSel", 4);
 	objectAddPuzzleAccessibility(kObject10603, kPuzzle10600, Common::Rect(216, 272, 424, 398), true, 10000, 0);
-	objectSetActiveDrawCursor(kObject10603, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject10603, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject10603, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject10603, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 49; i++) {
 		objectAddPresentation(kObject10603);
@@ -1902,29 +1902,29 @@ void ApplicationRing::initZoneRH() {
 	objectPresentationAddImageToPuzzle(kObject20003, 4, kPuzzle20031, "RHS00N03P01S01SD1.0001.BMP", Common::Point(62, 353), true, kDrawType1, 998);
 	objectAdd(kObjectKeyIndifference, "Indifference", "RH_Key1", 9);
 	objectAddBagAnimation(kObjectKeyIndifference, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectKeyIndifference, 2, 43, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectKeyIndifference, 2, 43, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectKeyIndifference, Common::Point(2, 43), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectKeyIndifference, Common::Point(2, 43), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectKeyIndifference, kPuzzle20011, Common::Rect(288, 284, 362, 422), false, 52, 0);
 	objectAddPresentation(kObjectKeyIndifference);
 	objectPresentationAddAnimationToPuzzle(kObjectKeyIndifference, 0, kPuzzle20011, "RHS00N01P01SA01", kImageTypeTGA, Common::Point(270, 286), kDrawType3, 1000, 20, 12.5f, 4);
 	objectAdd(kObjectKeyMistrust, "Mistrust", "RH_Key1", 9);
 	objectAddBagAnimation(kObjectKeyMistrust, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectKeyMistrust, 2, 43, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectKeyMistrust, 2, 43, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectKeyMistrust, Common::Point(2, 43), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectKeyMistrust, Common::Point(2, 43), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectKeyMistrust, kPuzzle20021, Common::Rect(288, 284, 362, 422), false, 52, 0);
 	objectAddPresentation(kObjectKeyMistrust);
 	objectPresentationAddAnimationToPuzzle(kObjectKeyMistrust, 0, kPuzzle20021, "RHS00N01P01SA01", kImageTypeTGA, Common::Point(270, 286), kDrawType3, 1000, 20, 12.5f, 4);
 	objectAdd(kObjectKeySelfishness, "Selfishness", "RH_Key1", 9);
 	objectAddBagAnimation(kObjectKeySelfishness, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectKeySelfishness, 2, 43, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectKeySelfishness, 2, 43, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectKeySelfishness, Common::Point(2, 43), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectKeySelfishness, Common::Point(2, 43), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectKeySelfishness, kPuzzle20031, Common::Rect(288, 284, 362, 422), false, 52, 0);
 	objectAddPresentation(kObjectKeySelfishness);
 	objectPresentationAddAnimationToPuzzle(kObjectKeySelfishness, 0, kPuzzle20031, "RHS00N01P01SA01", kImageTypeTGA, Common::Point(270, 286), kDrawType3, 1000, 20, 12.5f, 4);
 	objectAdd(kObjectKeyDisgust, "Disgust", "RH_Key1", 9);
 	objectAddBagAnimation(kObjectKeyDisgust, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectKeyDisgust, 2, 43, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectKeyDisgust, 2, 43, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectKeyDisgust, Common::Point(2, 43), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectKeyDisgust, Common::Point(2, 43), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObjectKeyDisgust, 20101, Common::Rect(3529, 151, 3600, 296), true, 52, 0);
 	objectAddRotationAccessibility(kObjectKeyDisgust, 20101, Common::Rect(0, 151, 52, 296), true, 52, 0);
 	objectAddPresentation(kObjectKeyDisgust);
@@ -1936,8 +1936,8 @@ void ApplicationRing::initZoneRH() {
 	objectPresentationShow(kObjectKeyDisgust, 1);
 	objectAdd(kObjectRedfish, "GoldFish", "RH_GoldFish", 9);
 	objectAddBagAnimation(kObjectRedfish, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectRedfish, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectRedfish, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectRedfish, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectRedfish, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObjectRedfish, 20201, Common::Rect(792, 141, 1140, 291), true, 52, 1);
 	objectAddPresentation(kObjectRedfish);
 	objectPresentationAddAnimationToRotation(kObjectRedfish, 0, 20201, 0, 30, 12.5f, 4);
@@ -1959,8 +1959,8 @@ void ApplicationRing::initZoneRH() {
 	objectPresentationAddAnimationToPuzzle(kObjectDolphin, 3, kPuzzle20203, "RHS02N01P02S03SD", kImageTypeBMP, Common::Point(274, 94), kDrawType1, 1000, 20, 12.5f, 4);
 	objectAdd(kObjectMedallion, "Necklace", "RH_Medallion", 1);
 	objectAddBagAnimation(kObjectMedallion, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMedallion, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMedallion, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMedallion, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMedallion, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObject20204, "", "", 1);
 	objectAddRotationAccessibility(kObject20204, 20202, Common::Rect(2343, 326, 2487, 408), true, 52, 0);
 	objectAddPresentation(kObject20204);
@@ -2012,8 +2012,8 @@ void ApplicationRing::initZoneRH() {
 	objectPresentationShow(kObject20402, 1);
 	objectAdd(kObjectAntiGCells2, "Anti gravitation cells", "RH_AntiG", 1);
 	objectAddBagAnimation(kObjectAntiGCells2, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectAntiGCells2, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectAntiGCells2, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectAntiGCells2, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectAntiGCells2, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectAntiGCells2, kPuzzle20401, Common::Rect(250, 121, 345, 346), true, 52, 0);
 	objectAdd(kObject20404, "", "", 1);
 	objectAddRotationAccessibility(kObject20404, 20402, Common::Rect(2315, 207, 2409, 272), true, 52, 0);
@@ -2045,8 +2045,8 @@ void ApplicationRing::initZoneRH() {
 	objectAddRotationAccessibility(kObjectDivingHelmet2, 20601, Common::Rect(337, -75, 557, 195), true, 53, 0);
 	objectAdd(kObject20700, "Rhine Gold", "RH_Gold", 1);
 	objectAddBagAnimation(kObject20700, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObject20700, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObject20700, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObject20700, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObject20700, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObject20700, 20701, Common::Rect(381, 61, 530, 231), true, 52, 0);
 	soundAdd(23005, kSoundTypeAmbientMusic, "1746.was", _configuration.ambientMusic.loadFrom, 2, _configuration.backgroundMusic.soundChunck);
 	rotationAddAmbientSound(20010, 23005, 100, 0, 1, 1, 10);
@@ -2380,29 +2380,29 @@ void ApplicationRing::initZoneFO() {
 	puzzleAddMovabilityToRotation(kPuzzle35100, 30003, "", Common::Rect(0, 420, 640, 464), true, 55, 0);
 	objectAdd(kObjectWolfInstinct, "Wolf Vision", "FO_WolfVision", 1);
 	objectAddBagAnimation(kObjectWolfInstinct, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectWolfInstinct, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectWolfInstinct, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectWolfInstinct, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectWolfInstinct, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectIngot, "Panel", "FO_Panel01_", 1);
 	objectAddBagAnimation(kObjectIngot, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectIngot, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectIngot, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectIngot, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectIngot, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectIngot2, "Panel", "FO_Panel01_", 1);
 	objectAddBagAnimation(kObjectIngot2, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectIngot2, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectIngot2, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectIngot2, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectIngot2, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectIngot3, "Panel", "FO_Panel01_", 1);
 	objectAddBagAnimation(kObjectIngot3, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectIngot3, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectIngot3, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectIngot3, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectIngot3, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectLogeTear2, "Loge's Tear", "NI_Tear", 1);
 	objectAddBagAnimation(kObjectLogeTear2, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectLogeTear2, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectLogeTear2, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectLogeTear2, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectLogeTear2, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObject30001, "", "", 1);
 	objectAdd(kObjectWolfBadge, "Medallion", "FO_WolfLogo", 1);
 	objectAddBagAnimation(kObjectWolfBadge, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectWolfBadge, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectWolfBadge, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectWolfBadge, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectWolfBadge, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPresentation(kObject30001);
 	objectPresentationAddImageToPuzzle(kObject30001, 0, kPuzzle35011, "FOS03N01P01L01.bmp", Common::Point(170, 133), true, kDrawType1, 1000);
 	objectAddPresentation(kObject30001);
@@ -2421,32 +2421,32 @@ void ApplicationRing::initZoneFO() {
 	objectSetAccessibilityOff(kObject30001, 1, 4);
 	objectAdd(kObjectPatience, "Saturn", "FO_Scroll01_", 1);
 	objectAddBagAnimation(kObjectPatience, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectPatience, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectPatience, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectPatience, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectPatience, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectMovementAndIntuition, "Mercury", "FO_Scroll01_", 1);
 	objectAddBagAnimation(kObjectMovementAndIntuition, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMovementAndIntuition, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMovementAndIntuition, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMovementAndIntuition, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMovementAndIntuition, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectLove, "Venus", "FO_Scroll01_", 1);
 	objectAddBagAnimation(kObjectLove, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectLove, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectLove, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectLove, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectLove, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectImagination, "Moon", "FO_Scroll01_", 1);
 	objectAddBagAnimation(kObjectImagination, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectImagination, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectImagination, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectImagination, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectImagination, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectDestruction, "Mars", "FO_Scroll01_", 1);
 	objectAddBagAnimation(kObjectDestruction, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectDestruction, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectDestruction, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectDestruction, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectDestruction, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectJudgementAndDirection, "Jupiter", "FO_Scroll01_", 1);
 	objectAddBagAnimation(kObjectJudgementAndDirection, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectJudgementAndDirection, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectJudgementAndDirection, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectJudgementAndDirection, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectJudgementAndDirection, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectWill, "Sun", "FO_Scroll01_", 1);
 	objectAddBagAnimation(kObjectWill, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectWill, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectWill, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectWill, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectWill, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObject30002, "", "", 1);
 	objectAddRotationAccessibility(kObject30002, 30301, Common::Rect(1858, 280, 2021, 366), true, 52, 0);
 	objectAdd(kObject30003, "", "", 1);
@@ -2464,8 +2464,8 @@ void ApplicationRing::initZoneFO() {
 	objectAdd(kObject30027, "", "", 1);
 	objectAddPuzzleAccessibility(kObject30027, kPuzzle35001, Common::Rect(410, 230, 466, 273), true, 53, 0);
 	objectAdd(kObject30016, "", "", 4);
-	objectSetPassiveDrawCursor(kObject30016, 20, 20, 0, 3, 0, 0, 3);
-	objectSetActiveDrawCursor(kObject30016, 20, 20, 0, 3, 0, 0, 3);
+	objectSetPassiveDrawCursor(kObject30016, Common::Point(20, 20), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetActiveDrawCursor(kObject30016, Common::Point(20, 20), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 51; i++) {
 		objectAddPresentation(kObject30016);
@@ -2476,12 +2476,12 @@ void ApplicationRing::initZoneFO() {
 	objectAddPuzzleAccessibility(kObject30016, kPuzzle35001, Common::Rect(349, 164, 532, 332), true, 10000, 0);
 	objectAdd(kObjectBerries, "Berries", "FO_Berries", 1);
 	objectAddBagAnimation(kObjectBerries, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectBerries, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectBerries, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectBerries, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectBerries, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectSleepingBerries, "Poison berries", "FO_BerriesPoison", 1);
 	objectAddBagAnimation(kObjectSleepingBerries, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectSleepingBerries, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectSleepingBerries, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectSleepingBerries, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectSleepingBerries, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectBerries, kPuzzle35002, Common::Rect(232, 322, 346, 436), true, 52, 0);
 	objectAddPuzzleAccessibility(kObjectBerries, kPuzzle35002, Common::Rect(110, 120, 492, 305), true, 52, 1);
 	objectAddPuzzleAccessibility(kObjectBerries, kPuzzle35002, Common::Rect(116, 296, 205, 426), true, 52, 2);
@@ -2497,12 +2497,12 @@ void ApplicationRing::initZoneFO() {
 	objectPresentationAddImageToPuzzle(kObjectBerries, 3, kPuzzle35002, "FOS08N01P01L04.BMP", Common::Point(209, 319), true, kDrawType1, 1000);
 	objectAdd(kObjectBerriesJuice, "Berries juice", "FO_BerriesJuice", 1);
 	objectAddBagAnimation(kObjectBerriesJuice, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectBerriesJuice, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectBerriesJuice, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectBerriesJuice, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectBerriesJuice, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectSleepingPotion2, "Poison berries juice", "FO_BerriesPoisonJuice", 1);
 	objectAddBagAnimation(kObjectSleepingPotion2, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectSleepingPotion2, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectSleepingPotion2, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectSleepingPotion2, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectSleepingPotion2, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectBerries, kPuzzle35005, Common::Rect(155, 283, 407, 447), true, 52, 5);
 	objectAddPresentation(kObjectBerries);
 	objectPresentationAddImageToPuzzle(kObjectBerries, 4, kPuzzle35005, "FOS06N01P05L01.BMP", Common::Point(209, 281), true, kDrawType1, 1000);
@@ -2517,12 +2517,12 @@ void ApplicationRing::initZoneFO() {
 	objectAddRotationAccessibility(kObjectSleepingPotion, 30003, Common::Rect(1476, -50, 1741, 245), true, 53, 1);
 	objectAdd(kObjectHare, "Rabbit hare", "FO_Hares", 1);
 	objectAddBagAnimation(kObjectHare, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectHare, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectHare, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectHare, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectHare, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectBow, "Hunting bow", "FO_HuntingBow", 1);
 	objectAddBagAnimation(kObjectBow, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectBow, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectBow, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectBow, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectBow, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectBow, kPuzzle35003, Common::Rect(240, 200, 400, 410), true, 52, 0);
 	objectAddPuzzleAccessibility(kObjectBow, kPuzzle35003, Common::Rect(230, 219, 278, 275), true, 52, 1);
 	objectAddPuzzleAccessibility(kObjectBow, kPuzzle35003, Common::Rect(237, 280, 273, 334), true, 52, 2);
@@ -2558,40 +2558,40 @@ void ApplicationRing::initZoneFO() {
 	objectAdd(kObject30040, "", "", 1);
 	objectAdd(kObjectMetals, "Ignots", "FO_Ignots", 1);
 	objectAddBagAnimation(kObjectMetals, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMetals, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMetals, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMetals, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMetals, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectMould, "Pan", "FO_Pan", 1);
 	objectAddBagAnimation(kObjectMould, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMould, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMould, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMould, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMould, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectMeltedGold, "Gold", "FO_IgnotGld", 1);
 	objectAddBagAnimation(kObjectMeltedGold, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMeltedGold, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMeltedGold, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMeltedGold, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMeltedGold, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectMeltedSilver, "Silver", "FO_IgnotSil", 1);
 	objectAddBagAnimation(kObjectMeltedSilver, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMeltedSilver, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMeltedSilver, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMeltedSilver, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMeltedSilver, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectMeltedCopper, "Copper", "FO_IgnotCop", 1);
 	objectAddBagAnimation(kObjectMeltedCopper, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMeltedCopper, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMeltedCopper, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMeltedCopper, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMeltedCopper, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectMeltedLead, "Lead", "FO_IgnotLed", 1);
 	objectAddBagAnimation(kObjectMeltedLead, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMeltedLead, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMeltedLead, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMeltedLead, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMeltedLead, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectMeltedSteel, "Steel", "FO_IgnotSte", 1);
 	objectAddBagAnimation(kObjectMeltedSteel, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMeltedSteel, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMeltedSteel, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMeltedSteel, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMeltedSteel, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectMeltedTin, "Tin", "FO_IgnotTin", 1);
 	objectAddBagAnimation(kObjectMeltedTin, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMeltedTin, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMeltedTin, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMeltedTin, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMeltedTin, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectQuicksilver, "Mercury", "FO_IgnotMer", 1);
 	objectAddBagAnimation(kObjectQuicksilver, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectQuicksilver, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectQuicksilver, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectQuicksilver, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectQuicksilver, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObject30040, kPuzzle35006, Common::Rect(293, 132, 351, 173), true, 52, 0);
 	objectAddPuzzleAccessibility(kObject30040, kPuzzle35006, Common::Rect(285, 207, 354, 245), true, 52, 1);
 	objectAddPuzzleAccessibility(kObject30040, kPuzzle35006, Common::Rect(173, 229, 244, 271), true, 52, 2);
@@ -2643,8 +2643,8 @@ void ApplicationRing::initZoneFO() {
 	objectPresentationAddImageToPuzzle(kObject30042, 8, kPuzzle35007, "FOS06N01P03L01.bmp", Common::Point(0, 16), true, kDrawType1, 1000);
 	objectAdd(kObjectGolem, "Golem", "FO_Golem", 1);
 	objectAddBagAnimation(kObjectGolem, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectGolem, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectGolem, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectGolem, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectGolem, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObject30044, "", "", 1);
 	objectAddPuzzleAccessibility(kObject30044, kPuzzle35008, Common::Rect(253, 206, 333, 300), true, 52, 0);
 	objectAddPuzzleAccessibility(kObject30044, kPuzzle35008, Common::Rect(203, 262, 300, 379), true, 52, 1);
@@ -2680,20 +2680,20 @@ void ApplicationRing::initZoneFO() {
 	objectPresentationShow(kObject30045, 7);
 	objectAdd(kObjectFishingRod, "Fishing pole", "FO_Fishing", 1);
 	objectAddBagAnimation(kObjectFishingRod, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectFishingRod, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectFishingRod, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectFishingRod, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectFishingRod, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectFish, "Fish", "FO_Fish", 1);
 	objectAddBagAnimation(kObjectFish, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectFish, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectFish, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectFish, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectFish, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectFishingRodWithWorms, "Fishing pole and worms", "FO_FishingWorms", 1);
 	objectAddBagAnimation(kObjectFishingRodWithWorms, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectFishingRodWithWorms, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectFishingRodWithWorms, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectFishingRodWithWorms, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectFishingRodWithWorms, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectKey, "Key form the fish", "FO_FishKey", 1);
 	objectAddBagAnimation(kObjectKey, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectKey, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectKey, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectKey, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectKey, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectFishingRod, kPuzzle35010, Common::Rect(0, 208, 639, 384), true, 52, 0);
 	objectAddPuzzleAccessibility(kObjectFishingRod, kPuzzle35010, Common::Rect(0, 208, 639, 384), true, 52, 1);
 	objectAddPuzzleAccessibility(kObjectFishingRod, kPuzzle35010, Common::Rect(0,  63, 639, 197), true, 52, 2);
@@ -2705,8 +2705,8 @@ void ApplicationRing::initZoneFO() {
 	objectPresentationAddImageToPuzzle(kObjectFishingRod, 1, kPuzzle35010, "FOS07N03P01L02.bmp", Common::Point(0, 16), true, kDrawType1, 1000);
 	objectAdd(kObjectWorms, "Worms", "FO_Worms", 1);
 	objectAddBagAnimation(kObjectWorms, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectWorms, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectWorms, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectWorms, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectWorms, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPresentation(kObjectWorms);
 	objectPresentationAddImageToPuzzle(kObjectWorms, 0, kPuzzle35020, "FOS07N04P01L01.bmp", Common::Point(0, 16), true, kDrawType1, 1000);
 	objectAddPresentation(kObjectWorms);
@@ -2727,8 +2727,8 @@ void ApplicationRing::initZoneFO() {
 	objectAdd(kObject30052, "", "", 1);
 	objectAdd(kObjectBurningArrow, "Inflamed arrow and bow", "FO_BowFire", 1);
 	objectAddBagAnimation(kObjectBurningArrow, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectBurningArrow, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectBurningArrow, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectBurningArrow, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectBurningArrow, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObject30051, 30011, Common::Rect(411, 0, 511, 57), false, 52, 0);
 	objectAddRotationAccessibility(kObject30051, 30011, Common::Rect(958, 102, 1105, 333), true, 52, 1);
 	objectAddRotationAccessibility(kObject30051, 30011, Common::Rect(0, 0, 0, 0), true, 52, 2);
@@ -2747,8 +2747,8 @@ void ApplicationRing::initZoneFO() {
 	objectAddPuzzleAccessibility(kObject30100, kPuzzle35100, Common::Rect(311, 249, 397, 463), false, 52, 1);
 	objectAdd(kObjectWolfBrooch, "Sieglinde's Medallion", "FO_WolfLogo", 1);
 	objectAddBagAnimation(kObjectWolfBrooch, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectWolfBrooch, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectWolfBrooch, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectWolfBrooch, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectWolfBrooch, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObject30101, "", "", 1);
 	objectAddPresentation(kObject30101);
 	objectPresentationAddAnimationToPuzzle(kObject30101, 0, kPuzzle35101, "FOS00N03P02S02", kImageTypeBMP, Common::Point(297, 209), kDrawType1, 1000, 20, 12.5f, 4);
@@ -3131,16 +3131,16 @@ void ApplicationRing::initZoneRO() {
 	puzzleSetMovabilityToRotation(kPuzzle40060, 0, 0, 22.0f, 85.7f);
 	objectAdd(kObjectFirePower, "Fire Power", "RO_Fire_", 1);
 	objectAddBagAnimation(kObjectFirePower, kImageTypeTGA, kDrawType3, 13, 12.5f, 4);
-	objectSetActiveCursor(kObjectFirePower, 22, 22, 13, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectFirePower, 22, 22, 1, 4, 1.0f, 4, 4);
+	objectSetActiveCursor(kObjectFirePower, Common::Point(22, 22), 13, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectFirePower, Common::Point(22, 22), 1, kCursorTypeAnimated, 1.0f, 4, kLoadFromListIcon);
 	objectAdd(kObjectRing, "Ring", "RO_Ring", 1);
 	objectAddBagAnimation(kObjectRing, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectRing, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectRing, 22, 22, 1, 4, 1.0f, 4, 4);
+	objectSetActiveCursor(kObjectRing, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectRing, Common::Point(22, 22), 1, kCursorTypeAnimated, 1.0f, 4, kLoadFromListIcon);
 	objectAdd(kObjectCrown, "Crown", "RO_Crown", 1);
 	objectAddBagAnimation(kObjectCrown, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectCrown, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectCrown, 22, 22, 1, 4, 1.0f, 4, 4);
+	objectSetActiveCursor(kObjectCrown, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectCrown, Common::Point(22, 22), 1, kCursorTypeAnimated, 1.0f, 4, kLoadFromListIcon);
 	objectAdd(kObject40010, "The Egg", "RO_Egg", 1);
 	objectAddPuzzleAccessibility(kObject40010, kPuzzle40010, Common::Rect(200,  80, 440, 350), true,  52, 0);
 	objectAddPuzzleAccessibility(kObject40010, kPuzzle40011, Common::Rect(200,  80, 440, 350), false, 52, 1);
@@ -3161,8 +3161,8 @@ void ApplicationRing::initZoneRO() {
 	objectAddPresentation(kObject40203);
 	objectPresentationAddImageToRotation(kObject40203, 4, 40004, 0);
 	objectAdd(kObject40101, "", "NI_HandSel", 4);
-	objectSetActiveDrawCursor(kObject40101, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject40101, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject40101, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject40101, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 99; i++) {
 		objectAddPresentation(kObject40101);
@@ -3170,8 +3170,8 @@ void ApplicationRing::initZoneRO() {
 	}
 
 	objectAdd(kObject40102, "", "NI_HandSel", 4);
-	objectSetActiveDrawCursor(kObject40102, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject40102, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject40102, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject40102, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 99; i++) {
 		objectAddPresentation(kObject40102);
@@ -3179,8 +3179,8 @@ void ApplicationRing::initZoneRO() {
 	}
 
 	objectAdd(kObject40103, "", "NI_HandSel", 4);
-	objectSetActiveDrawCursor(kObject40103, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject40103, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject40103, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject40103, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 99; i++) {
 		objectAddPresentation(kObject40103);
@@ -3188,8 +3188,8 @@ void ApplicationRing::initZoneRO() {
 	}
 
 	objectAdd(kObject40104, "", "NI_HandSel", 4);
-	objectSetActiveDrawCursor(kObject40104, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject40104, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject40104, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject40104, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 99; i++) {
 		objectAddPresentation(kObject40104);
@@ -3197,8 +3197,8 @@ void ApplicationRing::initZoneRO() {
 	}
 
 	objectAdd(kObject40105, "", "NI_HandSel", 4);
-	objectSetActiveDrawCursor(kObject40105, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject40105, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject40105, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject40105, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 99; i++) {
 		objectAddPresentation(kObject40105);
@@ -3254,8 +3254,8 @@ void ApplicationRing::initZoneRO() {
 	objectPresentationShow(kObject40011, 2);
 	objectPresentationShow(kObject40011, 3);
 	objectAdd(kObject40060, "", "NI_HandSel", 4);
-	objectSetActiveDrawCursor(kObject40060, 15, 15, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject40060, 15, 15, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject40060, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject40060, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 73; i++) {
 		objectAddPresentation(kObject40060);
@@ -3756,40 +3756,40 @@ void ApplicationRing::initZoneWA() {
 	objectPresentationAddAnimationToPuzzle(kObject51000, 7, kPuzzle51013, "TR_WA_KS", kImageTypeBMP, Common::Point(210, 70), kDrawType1, 1000, 19, 12.5f, 4);
 	objectAdd(kObjectMagicLance, "Beam of light", "WA_Lance", 1);
 	objectAddBagAnimation(kObjectMagicLance, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectMagicLance, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectMagicLance, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectMagicLance, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectMagicLance, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectFeather, "Feather", "WA_Feather", 1);
 	objectAddBagAnimation(kObjectFeather, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectFeather, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectFeather, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectFeather, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectFeather, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectDeadLeaf, "DeadLeaf", "WA_ItemLeaf", 1);
 	objectAddBagAnimation(kObjectDeadLeaf, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectDeadLeaf, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectDeadLeaf, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectDeadLeaf, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectDeadLeaf, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectInk, "Ink", "WA_Ink", 8);
 	objectAddBagAnimation(kObjectInk, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectInk, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectInk, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectInk, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectInk, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectInk, kPuzzle50100, Common::Rect(446, 399, 488, 457), true, 52, 0);
 	objectAdd(kObjectPaper, "Paper", "WA_Paper", 8);
 	objectAddBagAnimation(kObjectPaper, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectPaper, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectPaper, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectPaper, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectPaper, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectPaper, kPuzzle50100, Common::Rect(487, 386, 526, 453), true, 52, 1);
 	objectAdd(kObjectStylet, "Stylet", "WA_Staylet", 8);
 	objectAddBagAnimation(kObjectStylet, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectStylet, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectStylet, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectStylet, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectStylet, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectStylet, kPuzzle50100, Common::Rect(526, 414, 556, 450), true, 52, 2);
 	objectAddPuzzleAccessibility(kObjectStylet, kPuzzle50100, Common::Rect(220, 395, 283, 456), true, 52, 8);
 	objectAdd(kObjectInkedStylet, "Ink & Stylet", "WA_StyletInk", 8);
 	objectAddBagAnimation(kObjectInkedStylet, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectInkedStylet, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectInkedStylet, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectInkedStylet, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectInkedStylet, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectInkedStylet, kPuzzle50100, Common::Rect(326, 399, 374, 446), true, 52, 9);
 	objectAdd(kObject50105, "Ashes", "", 1);
-	objectSetActiveCursor(kObject50105, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObject50105, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObject50105, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObject50105, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObject50105, kPuzzle50100, Common::Rect(318, 31, 379, 102), true, 52, 0);
 	objectAdd(kObject50100, "", "", 1);
 	objectAddRotationAccessibility(kObject50100, 50108, Common::Rect(2701, -231, 3260, 345), true, 52, 0);
@@ -3850,8 +3850,8 @@ void ApplicationRing::initZoneWA() {
 	objectPresentationAddAnimationToPuzzle(kObject50001, 1, kPuzzle50001, "WAS00N01P01S02", kImageTypeBMP, Common::Point(256, 263), kDrawType1, 1000, 20, 12.5f, 4);
 	objectAdd(kObjectGolem1, "Golem", "FO_Golem", 1);
 	objectAddBagAnimation(kObjectGolem1, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectGolem1, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectGolem1, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectGolem1, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectGolem1, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectGolem1, kPuzzle50400, Common::Rect(232, 168, 422, 403), true, 52, 0);
 	objectAddPresentation(kObjectGolem1);
 	objectPresentationAddImageToRotation(kObjectGolem1, 0, 50402, 0);
@@ -3860,8 +3860,8 @@ void ApplicationRing::initZoneWA() {
 	objectPresentationAddImageToPuzzle(kObjectGolem1, 1, kPuzzle50400, "WAS04N02P01L02.bmp", Common::Point(212, 178), true, kDrawType1, 998);
 	objectAdd(kObjectFronthead, "Head front", "WA_GolemHeadF", 8);
 	objectAddBagAnimation(kObjectFronthead, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectFronthead, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectFronthead, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectFronthead, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectFronthead, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectFronthead, kPuzzle50400, Common::Rect(298, 159, 355, 233), false, 52, 0);
 	objectAddPuzzleAccessibility(kObjectFronthead, kPuzzle50400, Common::Rect(215,  92, 269, 160), false, 52, 1);
 	objectAddPresentation(kObjectFronthead);
@@ -3870,8 +3870,8 @@ void ApplicationRing::initZoneWA() {
 	objectPresentationAddImageToPuzzle(kObjectFronthead, 1, kPuzzle50400, "WAS04N02P01L03.bmp", Common::Point(209, 87), true, kDrawType1, 1000);
 	objectAdd(kObjectBackhead, "Head back", "WA_GolemHeadB", 8);
 	objectAddBagAnimation(kObjectBackhead, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectBackhead, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectBackhead, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectBackhead, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectBackhead, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectBackhead, kPuzzle50400, Common::Rect(298, 159, 355, 233), false, 52, 0);
 	objectAddPuzzleAccessibility(kObjectBackhead, kPuzzle50400, Common::Rect(399,  93, 450, 158), false, 52, 20);
 	objectAddPresentation(kObjectBackhead);
@@ -3880,8 +3880,8 @@ void ApplicationRing::initZoneWA() {
 	objectPresentationAddImageToPuzzle(kObjectBackhead, 1, kPuzzle50400, "WAS04N02P01L06.bmp", Common::Point(403, 89), true, kDrawType1, 1000);
 	objectAdd(kObjectBelly, "Belly", "WA_GolemStomak", 8);
 	objectAddBagAnimation(kObjectBelly, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectBelly, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectBelly, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectBelly, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectBelly, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectBelly, kPuzzle50400, Common::Rect(298, 257, 358, 299), false, 52, 0);
 	objectAddPuzzleAccessibility(kObjectBelly, kPuzzle50400, Common::Rect(135, 301, 212, 358), false, 52, 300);
 	objectAddPresentation(kObjectBelly);
@@ -3891,8 +3891,8 @@ void ApplicationRing::initZoneWA() {
 	objectPresentationAddImageToPuzzle(kObjectBelly, 1, kPuzzle50400, "WAS04N02P01L07.bmp", Common::Point(142, 302), true, kDrawType1, 1000);
 	objectAdd(kObjectRightArm, "Arm right", "WA_GolemArmR", 8);
 	objectAddBagAnimation(kObjectRightArm, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectRightArm, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectRightArm, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectRightArm, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectRightArm, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectRightArm, kPuzzle50400, Common::Rect(241, 213, 276, 253), false, 52, 0);
 	objectAddPuzzleAccessibility(kObjectRightArm, kPuzzle50400, Common::Rect(151, 206, 200, 255), false, 52, 4000);
 	objectAddPresentation(kObjectRightArm);
@@ -3901,8 +3901,8 @@ void ApplicationRing::initZoneWA() {
 	objectPresentationAddImageToPuzzle(kObjectRightArm, 1, kPuzzle50400, "WAS04N02P01L04.bmp", Common::Point(147, 206), true, kDrawType1, 1000);
 	objectAdd(kObjectLeftArm, "Arm left", "WA_GolemArmL", 8);
 	objectAddBagAnimation(kObjectLeftArm, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectLeftArm, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectLeftArm, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectLeftArm, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectLeftArm, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectLeftArm, kPuzzle50400, Common::Rect(380, 217, 414, 249), false, 52, 0);
 	objectAddPuzzleAccessibility(kObjectLeftArm, kPuzzle50400, Common::Rect(443, 211, 488, 253), false, 52, 50000);
 	objectAddPresentation(kObjectLeftArm);
@@ -3911,8 +3911,8 @@ void ApplicationRing::initZoneWA() {
 	objectPresentationAddImageToPuzzle(kObjectLeftArm, 1, kPuzzle50400, "WAS04N02P01L05.bmp", Common::Point(440, 208), true, kDrawType1, 1000);
 	objectAdd(kObjectLegs, "Legs", "WA_GolemLeg", 8);
 	objectAddBagAnimation(kObjectLegs, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectLegs, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectLegs, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectLegs, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectLegs, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectLegs, kPuzzle50400, Common::Rect(268, 306, 384, 391), false, 52, 0);
 	objectAddPuzzleAccessibility(kObjectLegs, kPuzzle50400, Common::Rect(445, 297, 534, 349), false, 52, 600000);
 	objectAddPresentation(kObjectLegs);
@@ -3926,8 +3926,8 @@ void ApplicationRing::initZoneWA() {
 	objectPresentationAddImageToPuzzle(kObjectLegs, 1, kPuzzle50400, "WAS04N02P01L08.bmp", Common::Point(440, 301), true, kDrawType1, 1000);
 	objectAdd(kObjectHeart, "Heart", "WA_GolemHeart", 8);
 	objectAddBagAnimation(kObjectHeart, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectHeart, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectHeart, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectHeart, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectHeart, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectHeart, kPuzzle50400, Common::Rect(342, 231, 363, 251), false, 52, 0);
 	objectAddPuzzleAccessibility(kObjectHeart, kPuzzle50400, Common::Rect(325,  50, 340,  95), false, 52, 7000000);
 	objectAddPresentation(kObjectHeart);
@@ -3944,8 +3944,8 @@ void ApplicationRing::initZoneWA() {
 
 	int16 val = 115;
 	for (uint32 i = 0; i < 7; i++) {
-		objectSetActiveCursor((ObjectId)(kObject50451 + i), 22, 22, 0, 3, 0, 0, 3);
-		objectSetPassiveCursor((ObjectId)(kObject50451 + i), 22, 22, 0, 3, 0, 0, 3);
+		objectSetActiveCursor((ObjectId)(kObject50451 + i), Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+		objectSetPassiveCursor((ObjectId)(kObject50451 + i), Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 		objectAddPuzzleAccessibility((ObjectId)(kObject50451 + i), kPuzzle50401, Common::Rect(125, val, 160, i >= 6 ? (int16)(val + 35) : val), i >= 6 ? false : true, 52, 0);
 		objectAddPresentation((ObjectId)(kObject50451 + i));
 		objectPresentationAddImageToPuzzle((ObjectId)(kObject50451 + i), 0, kPuzzle50401, Common::String::format("WAS04N02P02_L%d.tga", i + 1), Common::Point(125, val), true, kDrawType3, 1000);
@@ -3975,8 +3975,8 @@ void ApplicationRing::initZoneWA() {
 
 	objectAdd(kObjectThread, "Rope", "WA_Rope", 1);
 	objectAddBagAnimation(kObjectThread, kImageTypeTGA, kDrawType3, 1, 12.5f, 4);
-	objectSetActiveCursor(kObjectThread, 22, 22, 1, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectThread, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectThread, Common::Point(22, 22), 1, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectThread, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObjectTree, "", "", 1);
 	objectAddPresentation(kObjectTree);
 	objectPresentationAddImageToRotation(kObjectTree, 0, 50502, 0);
@@ -4015,8 +4015,8 @@ void ApplicationRing::initZoneWA() {
 	objectPresentationAddAnimationToPuzzle(kObject50700, 3, kPuzzle50702, "WAS07N01P01S02", kImageTypeBMP, Common::Point(304, 65), kDrawType1, 1000, 20, 12.5f, 4);
 	objectAdd(kObjectCounch1, "Conch", "WA_Conch", 1);
 	objectAddBagAnimation(kObjectCounch1, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectCounch1, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectCounch1, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectCounch1, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectCounch1, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObjectCounch1, 50304, Common::Rect(1582, -54, 2009, 247), true, 52, 0);
 	objectAddRotationAccessibility(kObjectCounch1, 50304, Common::Rect(2424, -10, 2612, 136), false, 52, 1);
 	objectAddPuzzleAccessibility(kObjectCounch1, kPuzzle50304, Common::Rect(184, 191, 389, 391), true, 52, 0);
@@ -4058,26 +4058,26 @@ void ApplicationRing::initZoneWA() {
 	objectAdd(kObjectCounch, "", "", 1);
 	objectAdd(kObjectBark, "Bark", "WA_ItemBark", 9);
 	objectAddBagAnimation(kObjectBark, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectBark, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectBark, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectBark, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectBark, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObjectBark, 50302, Common::Rect(2858, 251, 3011, 512), false, 52, 0);
 	objectAdd(kObjectFlower, "Flower", "WA_ItemFlower", 9);
 	objectAddBagAnimation(kObjectFlower, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectFlower, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectFlower, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectFlower, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectFlower, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObjectFlower, 50402, Common::Rect(2689, 190, 2937, 301), true, 52, 0);
 	objectAddPresentation(kObjectFlower);
 	objectPresentationAddImageToRotation(kObjectFlower, 0, 50402, 1);
 	objectPresentationShow(kObjectFlower);
 	objectAdd(kObjectDragonSword, "Sword", "WA_Sword", 1);
 	objectAddBagAnimation(kObjectDragonSword, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectDragonSword, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectDragonSword, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectDragonSword, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectDragonSword, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObjectDragonSword, 50502, Common::Rect(1093, 176, 1383, 381), true, 52, 0);
 	objectAdd(kObjectApple, "Apple", "WA_ItemFruit", 1);
 	objectAddBagAnimation(kObjectApple, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectApple, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectApple, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectApple, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectApple, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObjectApple, 50502, Common::Rect(407, 190, 513, 289), true, 52, 0);
 	objectAdd(kObjectTotems, "", "", 1);
 	objectAddPuzzleAccessibility(kObjectTotems, kPuzzle50501, Common::Rect(223, 134, 430, 409), true, 52, 0);
@@ -4352,8 +4352,8 @@ void ApplicationRing::initZoneAS() {
 	objectAddRotationAccessibility(kObject80007, 80101, Common::Rect(1314, 183, 1397, 226), true, 52, 0);
 	objectAdd(kObjectDeath, "Death", "AS_Nor_d", 1);
 	objectAddBagAnimation(kObjectDeath, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectDeath, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectDeath, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectDeath, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectDeath, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObject80012, "", "", 1);
 	objectAddRotationAccessibility(kObject80012, 80005, Common::Rect(3097, -1, 3197, 176), true, 52, 0);
 	objectAddRotationAccessibility(kObject80012, 80005, Common::Rect(1318, -66, 1381, 191), true, 52, 1);
@@ -4729,8 +4729,8 @@ void ApplicationRing::initZoneN2() {
 	objectPresentationShow(kObject70001, 3);
 	objectAdd(kObjectFire, "Fire", "N2_Fire", 1);
 	objectAddBagAnimation(kObjectFire, kImageTypeTGA, kDrawType3, 13, 12.5f, 4);
-	objectSetActiveCursor(kObjectFire, 22, 22, 13, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectFire, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectFire, Common::Point(22, 22), 13, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectFire, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObjectFire, 70600, Common::Rect(2413, -256, 2970, 256), true, 52, 0);
 	objectAddPresentation(kObjectFire);
 	objectPresentationAddAnimationToRotation(kObjectFire, 0, 70000, 0, 25, 10.0f, 4);
@@ -4793,8 +4793,8 @@ void ApplicationRing::initZoneN2() {
 	objectAdd(kObject70103, "CCHandle", "NI_HandSel", 4);
 	objectAddRotationAccessibility(kObject70103, 70100, Common::Rect(3406, 26, 3541, 155), true, 52, 0);
 	objectAddPuzzleAccessibility(kObject70103, kPuzzle70100, Common::Rect(497, 192, 543, 249), true, 10000, 1);
-	objectSetActiveDrawCursor(kObject70103, 5, 5, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject70103, 5, 5, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject70103, Common::Point(5, 5), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject70103, Common::Point(5, 5), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 14; i++) {
 		objectAddPresentation(kObject70103);
@@ -4806,8 +4806,8 @@ void ApplicationRing::initZoneN2() {
 	objectAddPuzzleAccessibility(kObject70105, kPuzzle70100, Common::Rect(140, 170, 430, 380), false, 52, 0);
 	objectAdd(kObject70106, "CCHoloCross", "NI_HandSel", 4);
 	objectAddPuzzleAccessibility(kObject70106, kPuzzle70102, Common::Rect(203, 236, 283, 316), true, 10000, 0);
-	objectSetActiveDrawCursor(kObject70106, 5, 5, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject70106, 5, 5, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject70106, Common::Point(5, 5), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject70106, Common::Point(5, 5), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 20; i++) {
 		objectAddPresentation(kObject70106);
@@ -4818,8 +4818,8 @@ void ApplicationRing::initZoneN2() {
 	objectAdd(kObject70108, "CCHoloDam2", "NI_HandSel", 4);
 	objectAddPuzzleAccessibility(kObject70108, kPuzzle70102, Common::Rect(389, 270, 434, 330), true,  10000, 0);
 	objectAddPuzzleAccessibility(kObject70108, kPuzzle70102, Common::Rect(389, 330, 434, 390), false, 10000, 1);
-	objectSetActiveDrawCursor(kObject70108, 5, 5, 0, 3, 0, 0, 3);
-	objectSetPassiveDrawCursor(kObject70108, 5, 5, 0, 3, 0, 0, 3);
+	objectSetActiveDrawCursor(kObject70108, Common::Point(5, 5), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject70108, Common::Point(5, 5), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 
 	for (uint32 i = 0; i < 15; i++) {
 		objectAddPresentation(kObject70108);
@@ -4831,8 +4831,8 @@ void ApplicationRing::initZoneN2() {
 	objectPresentationAddImageToPuzzle(kObject70108, 14, kPuzzle70102, "N2S01N01P03L01S03B.bmp", Common::Point(311, 179), true, kDrawType1, 1000);
 	objectAdd(kObjectLogeTear3, "Loge's Tear", "NI_Tear", 1);
 	objectAddBagAnimation(kObjectLogeTear3, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectLogeTear3, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectLogeTear3, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectLogeTear3, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectLogeTear3, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAdd(kObject70300, "Mime", "", 1);
 	objectAddRotationAccessibility(kObject70300, 70300, Common::Rect(1937, -26, 2079, 88), true, 52, 0);
 	objectAddPresentation(kObject70300);
@@ -4854,8 +4854,8 @@ void ApplicationRing::initZoneN2() {
 	objectPresentationAddAnimationToPuzzle(kObject70300, 7, kPuzzle70306, "N2S03N01P01S03", kImageTypeBMP, Common::Point(270, 135), kDrawType1, 1000, 20, 12.5f, 4);
 	objectAdd(kObjectCage, "Cage", "N2_Cage", 1);
 	objectAddBagAnimation(kObjectCage, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectCage, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectCage, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectCage, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectCage, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPresentation(kObjectCage);
 	objectPresentationAddImageToRotation(kObjectCage, 0, 70300, 1);
 	objectAdd(kObject70404, "TearCasing", "", 3);
@@ -4896,8 +4896,8 @@ void ApplicationRing::initZoneN2() {
 
 	objectAdd(kObjectCentaur, "Centaur", "N2_Centaur", 1);
 	objectAddBagAnimation(kObjectCentaur, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectCentaur, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectCentaur, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectCentaur, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectCentaur, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectCentaur, kPuzzle70501, Common::Rect(270, 250, 364, 363), true, 52, 0);
 	objectAddPuzzleAccessibility(kObjectCentaur, kPuzzle70000, Common::Rect(320,  16, 640, 464), true, 52, 1);
 	objectAddPresentation(kObjectCentaur);
@@ -4905,8 +4905,8 @@ void ApplicationRing::initZoneN2() {
 	objectPresentationShow(kObjectCentaur);
 	objectAdd(kObjectDragon, "Dragon", "N2_Dragon", 1);
 	objectAddBagAnimation(kObjectDragon, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectDragon, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectDragon, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectDragon, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectDragon, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectDragon, kPuzzle70511, Common::Rect(290, 260, 380, 371), true, 52, 0);
 	objectAddPuzzleAccessibility(kObjectDragon, kPuzzle70000, Common::Rect(320,  16, 640, 464), true, 52, 1);
 	objectAddPresentation(kObjectDragon);
@@ -4914,8 +4914,8 @@ void ApplicationRing::initZoneN2() {
 	objectPresentationShow(kObjectDragon);
 	objectAdd(kObjectPhoenix1, "Phoenix", "N2_Phoenix", 1);
 	objectAddBagAnimation(kObjectPhoenix1, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectPhoenix1, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectPhoenix1, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectPhoenix1, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectPhoenix1, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObjectPhoenix1, kPuzzle70521, Common::Rect(265, 255, 356, 358), true, 52, 0);
 	objectAddPuzzleAccessibility(kObjectPhoenix1, kPuzzle70000, Common::Rect(320,  16, 640, 464), true, 52, 1);
 	objectAddPresentation(kObjectPhoenix1);
@@ -4923,8 +4923,8 @@ void ApplicationRing::initZoneN2() {
 	objectPresentationShow(kObjectPhoenix1);
 	objectAdd(kObjectChrysoberyl, "Chrysoberyl", "N2_Beryllium", 1);
 	objectAddBagAnimation(kObjectChrysoberyl, kImageTypeTGA, kDrawType3, 20, 12.5f, 4);
-	objectSetActiveCursor(kObjectChrysoberyl, 22, 22, 20, 4, 12.5f, 4, 4);
-	objectSetPassiveCursor(kObjectChrysoberyl, 22, 22, 0, 3, 0, 0, 3);
+	objectSetActiveCursor(kObjectChrysoberyl, Common::Point(22, 22), 20, kCursorTypeAnimated, 12.5f, 4, kLoadFromListIcon);
+	objectSetPassiveCursor(kObjectChrysoberyl, Common::Point(22, 22), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectAddRotationAccessibility(kObjectChrysoberyl, 70500, Common::Rect(3483, -22, 3600, 155), true, 52, 0);
 	objectAddRotationAccessibility(kObjectChrysoberyl, 70500, Common::Rect(0, -22, 103, 155), true, 52, 0);
 	objectAddPresentation(kObjectChrysoberyl);

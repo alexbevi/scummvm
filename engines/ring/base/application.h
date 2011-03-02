@@ -71,8 +71,6 @@ public:
 	virtual void setup() = 0;
 	virtual void initZones() = 0;
 
-	void initObjectCursors(ObjectId objectId);
-
 	void exitZone();
 	void exitToMenu(uint32 a1);
 
@@ -115,8 +113,8 @@ public:
 
 	void fontAdd(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
 
-	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte frameCount, LoadFrom loadFrom, ArchiveType archiveType);
-	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a4, float a5, byte a6, LoadFrom loadFrom, ArchiveType archiveType);
+	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte imageCount, LoadFrom loadFrom, ArchiveType archiveType);
+	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte imageCount, uint32 frameCount, float frameRate, byte a6, LoadFrom loadFrom, ArchiveType archiveType);
 	void cursorSetOffset(CursorId id, const Common::Point &offset);
 
 	void subtitleSetColor(const Color &color);
@@ -208,10 +206,10 @@ public:
 
 	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
 
-	void objectSetActiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8);
-	void objectSetPassiveCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8);
-	void objectSetActiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8);
-	void objectSetPassiveDrawCursor(ObjectId objectId, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8);
+	void objectSetActiveCursor(ObjectId objectId,  const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom);
+	void objectSetPassiveCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom);
+	void objectSetActiveDrawCursor(ObjectId objectId,  const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom);
+	void objectSetPassiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom);
 
 	void objectAddPresentation(ObjectId objectId);
 	void objectAddBagAnimation(ObjectId objectId, ImageType imageType, DrawType drawType, uint32 frameCount, float framerate, uint32 a6);
@@ -245,6 +243,9 @@ public:
 	void objectPresentationHide(ObjectId objectId);
 	void objectPresentationHideAndRemove(ObjectId objectId, uint32 presentationIndex);
 	void objectPresentationHideAndRemove(ObjectId objectId);
+
+	void initObjectCursors(ObjectId objectId);
+	void initObjectDrawCursors(ObjectId objectId);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Rotation

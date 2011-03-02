@@ -562,31 +562,30 @@ void Object::pauseFrameAnimation(uint32 presentationIndex, uint32 frame, uint32 
 
 #pragma region Cursor
 
-void Object::setCursor(ObjectCursor *cursor, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType) {
-	cursor->_field_0     = a2;
-	cursor->_field_4     = a3;
-	cursor->_field_8     = a4;
-	cursor->_field_C     = a5;
-	cursor->_field_10    = a6;
-	cursor->_field_14    = a7;
-	cursor->_field_18    = a8;
-	cursor->_archiveType = archiveType;
+void Object::setCursor(ObjectCursor *cursor, const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType) {
+	cursor->offset      = point;
+	cursor->frameCount  = frameCount;
+	cursor->type        = type;
+	cursor->frameRate   = frameRate;
+	cursor->field_14    = a7;
+	cursor->loadFrom    = loadFrom;
+	cursor->archiveType = archiveType;
 }
 
-void Object::setActiveCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType) {
-	setCursor(&_activeCursor, a2, a3, a4, a5, a6, a7, a8, archiveType);
+void Object::setActiveCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType) {
+	setCursor(&_activeCursor, point, frameCount, type, frameRate, a7, loadFrom, archiveType);
 }
 
-void Object::setPassiveCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType) {
-	setCursor(&_passiveCursor, a2, a3, a4, a5, a6, a7, a8, archiveType);
+void Object::setPassiveCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType) {
+	setCursor(&_passiveCursor, point, frameCount, type, frameRate, a7, loadFrom, archiveType);
 }
 
-void Object::setActiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType) {
-	setCursor(&_activeDrawCursor, a2, a3, a4, a5, a6, a7, a8, archiveType);
+void Object::setActiveDrawCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType) {
+	setCursor(&_activeDrawCursor, point, frameCount, type, frameRate, a7, loadFrom, archiveType);
 }
 
-void Object::setPassiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType) {
-	setCursor(&_passiveDrawCursor, a2, a3, a4, a5, a6, a7, a8, archiveType);
+void Object::setPassiveDrawCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType) {
+	setCursor(&_passiveDrawCursor, point, frameCount, type, frameRate, a7, loadFrom, archiveType);
 }
 
 #pragma endregion

@@ -73,18 +73,19 @@ enum FontId {
 };
 
 enum CursorId {
-	kCursorInvalid    = 0,
-	kCursor1          = 1,
-	kCursor3          = 3,
-	kCursor4          = 4,
-	kCursorIdle       = 50,
-	kCursorBusy       = 51,
-	kCursorHotspot    = 52,
-	kCursorMove       = 53,
-	kCursorDefault    = 54,
-	kCursorBack       = 55,
-	kCursorMenuIdle   = 56,
-	kCursorMenuActive = 57,
+	kCursorInvalid      = 0,
+	kCursorPassive      = 1,
+	kCursorActive       = 2,
+	kCursorPassiveDraw  = 3,
+	kCursorActiveDraw   = 4,
+	kCursorIdle         = 50,
+	kCursorBusy         = 51,
+	kCursorHotspot      = 52,
+	kCursorMove         = 53,
+	kCursorDefault      = 54,
+	kCursorBack         = 55,
+	kCursorMenuIdle     = 56,
+	kCursorMenuActive   = 57,
 
 	kCursorHandSelection = 10000
 };

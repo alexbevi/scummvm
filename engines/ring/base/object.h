@@ -42,6 +42,25 @@ class Puzzle;
 class Rotation;
 class Text;
 
+struct ObjectCursor {
+	Common::Point offset;
+	uint32      frameCount;
+	CursorType  type;
+	float       frameRate;
+	uint32      field_14;
+	LoadFrom    loadFrom;
+	ArchiveType archiveType;
+
+	ObjectCursor() {
+		frameCount  = 0;
+		type        = kCursorTypeImage;
+		frameRate   = 0.0f;
+		field_14    = 0;
+		loadFrom    = kLoadFromCursor;
+		archiveType = kArchiveFile;
+	}
+};
+
 class ObjectPresentation : public Common::Serializable {
 public:
 	ObjectPresentation(Object *object);
@@ -151,42 +170,24 @@ public:
 	void pauseFrameAnimation(uint32 presentationIndex, uint32 frame, uint32 a3, uint32 a4);
 
 	// Cursor
-	void setActiveCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
-	void setPassiveCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
-	void setActiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
-	void setPassiveDrawCursor(uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
+	void setActiveCursor(const Common::Point &point,  uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType);
+	void setPassiveCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType);
+	void setActiveDrawCursor(const Common::Point &point,  uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType);
+	void setPassiveDrawCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType);
 
 	// Accessors
 	Common::String getName() { return _name; }
 	void setAnimationImage(AnimationImage *image) { _animationImage = image; }
 	AnimationImage *getAnimationImage() { return _animationImage; }
+	ObjectCursor *getActiveCursor() { return &_activeCursor; }
+	ObjectCursor *getPassiveCursor() { return &_passiveCursor; }
+	ObjectCursor *getActiveDrawCursor() { return &_activeDrawCursor; }
+	ObjectCursor *getPassiveDrawCursor() { return &_passiveDrawCursor; }
 
 	// Serializable
 	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
-	struct ObjectCursor {
-		uint32      _field_0;
-		uint32      _field_4;
-		uint32      _field_8;
-		uint32      _field_C;
-		float       _field_10;
-		uint32      _field_14;
-		uint32      _field_18;
-		ArchiveType _archiveType;
-
-		ObjectCursor() {
-			_field_0     = 0;
-			_field_4     = 0;
-			_field_8     = 0;
-			_field_C     = 3;
-			_field_10    = 0;
-			_field_14    = 0;
-			_field_18    = 3;
-			_archiveType = kArchiveFile;
-		}
-	};
-
 	Application *_application;
 
 	Common::String _description;
@@ -200,7 +201,7 @@ private:
 	ObjectCursor _activeDrawCursor;
 	AnimationImage *_animationImage;
 
-	void setCursor(ObjectCursor *cursor, uint32 a2, uint32 a3, uint32 a4, uint32 a5, float a6, uint32 a7, uint32 a8, ArchiveType archiveType);
+	void setCursor(ObjectCursor *cursor, const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType);
 };
 
 class ObjectInfo : public BaseObject {

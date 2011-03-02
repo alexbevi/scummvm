@@ -114,7 +114,7 @@ public:
 	CursorHandler();
 	~CursorHandler();
 
-	void add(CursorId id, Common::String name, CursorType cursorType, byte frameCount, uint32 a4, float a5, byte a6, LoadFrom loadFrom, ArchiveType archiveType);
+	void add(CursorId id, Common::String name, CursorType cursorType, byte imageCount, uint32 frameCount, float frameRate, byte a6, LoadFrom loadFrom, ArchiveType archiveType);
 	void removeByType(CursorType cursorType);
 
 	void draw();
