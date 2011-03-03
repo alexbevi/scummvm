@@ -30,6 +30,7 @@
 #include "ring/base/application.h"
 #include "ring/base/movability.h"
 #include "ring/base/object.h"
+#include "ring/base/saveload.h"
 #include "ring/base/sound.h"
 #include "ring/base/text.h"
 
@@ -452,7 +453,41 @@ SoundItem *Rotation::getSoundItem(Id soundId) {
 #pragma region Serializable
 
 void Rotation::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[Rotation::saveLoadWithSerializer] Not implemented!");
+	_imageHandle->saveLoadWithSerializer(s);
+	SaveManager::syncArray(s, &_movabilities);
+
+	// Save animations with channel
+	for (uint32 i = 0; i < _animations.size(); i++) {
+		_animations[i]->saveLoadWithSerializer(s);
+
+		uint32 channel = getChannel(i);
+		s.syncAsUint32LE(channel);
+
+		if (s.isLoading())
+			setChannel(i, channel);
+	}
+
+	SaveManager::syncArray(s, &_soundItems);
+	s.syncAsByte(_field_28);
+	s.syncAsUint32LE(_field_31);
+	s.syncAsUint32LE(_field_35);
+	s.syncAsUint32LE(_amplitude);
+	s.syncAsUint32LE(_field_3D);
+	s.syncAsUint32LE(_speed);
+	s.syncAsUint32LE(_field_45);
+	s.syncAsUint32LE(_field_49);
+	s.syncAsUint32LE(_field_4D);
+	s.syncAsUint32LE(_field_51);
+	s.syncAsUint32LE(_field_55);
+	s.syncAsUint32LE(_field_59);
+	s.syncAsUint32LE(_field_5D);
+	s.syncAsUint32LE(_field_61);
+	s.syncAsByte(_field_65);
+	s.syncAsByte(_field_66);
+	s.syncAsByte(_fre);
+	s.syncAsUint32LE(_alp);
+	s.syncAsUint32LE(_bet);
+	s.syncAsUint32LE(_ran);
 }
 
 #pragma endregion

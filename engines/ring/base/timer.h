@@ -30,14 +30,25 @@
 
 namespace Ring {
 
-class Timer : public BaseId {
+class Timer : public BaseObject, public Common::Serializable {
 public:
+	Timer() : BaseObject(0) {}
 	Timer(TimerId id, uint32 elapseTime);
 	~Timer();
 
+	void start();
 	void incrementFiredCount() { ++_fired; }
+
+	// Accessors
+	void setTickStart(uint32 ticks) { _tickStart = ticks; }
 	void setFiredCount(uint32 count) { _fired = count; }
+
+	uint32 getTickStart() { return _tickStart; }
 	uint32 getFiredCount() { return _fired; }
+	uint32 getElapseTime() { return _elapseTime; }
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
 	uint32 _tickStart;

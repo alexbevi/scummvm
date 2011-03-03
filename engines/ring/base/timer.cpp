@@ -25,19 +25,36 @@
 
 #include "ring/base/timer.h"
 
+#include "ring/base/application.h"
+#include "ring/base/saveload.h"
+
+#include "ring/ring.h"
 #include "ring/helpers.h"
 
 namespace Ring {
 
 #pragma region Timer
 
-Timer::Timer(TimerId timerId, uint32 elapseTime): BaseId(timerId), _elapseTime(elapseTime) {
+Timer::Timer(TimerId timerId, uint32 elapseTime): BaseObject(timerId), _elapseTime(elapseTime) {
 	_fired = 0;
 	_tickStart = g_system->getMillis();
 }
 
 Timer::~Timer() {
 	// FIXME g_system->getTimerManager()->stopEventTimer(_id);
+}
+
+void Timer::start() {
+	// Start timer
+	// FIXME g_system->getTimerManager()->startEventTimer(id, elapseTime);
+}
+
+// Serializable
+void Timer::saveLoadWithSerializer(Common::Serializer &s) {
+	s.syncAsUint32LE(_id);
+	s.syncAsUint32LE(_tickStart);
+	s.syncAsUint32LE(_fired);
+	s.syncAsUint32LE(_elapseTime);
 }
 
 #pragma endregion
@@ -56,9 +73,6 @@ void TimerHandler::start(TimerId id, uint32 elapseTime) {
 		error("[TimerHandler::start] Timer with that id already exists (%d)", id);
 
 	_timers.push_back(new Timer(id, elapseTime));
-
-	// Start timer
-	// FIXME g_system->getTimerManager()->startEventTimer(id, elapseTime);
 }
 
 void TimerHandler::stop(TimerId id) {
@@ -86,7 +100,26 @@ void TimerHandler::incrementFiredCount(TimerId id) {
 #pragma region Serializable
 
 void TimerHandler::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[TimerHandler::saveLoadWithSerializer] Not implemented!");
+	// FIXME: Original checks if the timer should be started (but seems to always call with the value set to true)
+	uint32 count = _timers.size();
+	s.syncAsUint32LE(count);
+
+	for (uint32 i = 0; i < count; i++) {
+		if (s.isSaving()) {
+			_timers[i]->saveLoadWithSerializer(s);
+		}
+
+		if (s.isLoading()) {
+			Timer *timer = new Timer();
+			timer->saveLoadWithSerializer(s);
+
+			// Update start ticks
+			timer->setTickStart(getApp()->getSaveManager()->getTicks() - timer->getTickStart());
+			timer->start();
+
+			_timers.push_back(timer);
+		}
+	}
 }
 
 #pragma endregion
