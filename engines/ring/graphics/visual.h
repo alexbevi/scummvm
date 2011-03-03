@@ -44,9 +44,9 @@ public:
 	virtual ~Visual();
 
 	virtual void draw() = 0;
-	virtual bool function3(const Common::Point &point) = 0;
-	virtual bool function4(const Common::Point &point) = 0;
-	virtual bool function5(Common::Point point) { return false; }
+	virtual bool handleLeftButtonUp(const Common::Point &point) = 0;
+	virtual bool handleUpdate(const Common::Point &point) = 0;
+	virtual bool handleLeftButtonDown(Common::Point point) { return false; }
 	virtual bool handleKey(Common::KeyCode key) { return false; }
 	virtual void alloc() = 0;
 	virtual void dealloc() = 0;
@@ -69,8 +69,8 @@ public:
 	~VisualObjectList();
 
 	virtual void draw();
-	virtual bool function3(const Common::Point &point);
-	virtual bool function4(const Common::Point &point);
+	virtual bool handleLeftButtonUp(const Common::Point &point);
+	virtual bool handleUpdate(const Common::Point &point);
 	virtual void alloc();
 	virtual void dealloc();
 

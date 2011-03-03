@@ -409,11 +409,11 @@ void VisualObjectList::draw() {
 	error("[VisualObjectList::draw] Not implemented!");
 }
 
-bool VisualObjectList::function3(const Common::Point &point) {
+bool VisualObjectList::handleLeftButtonUp(const Common::Point &point) {
 	error("[VisualObjectList::function3] Not implemented!");
 }
 
-bool VisualObjectList::function4(const Common::Point &point) {
+bool VisualObjectList::handleUpdate(const Common::Point &point) {
 	error("[VisualObjectList::function4] Not implemented!");
 }
 

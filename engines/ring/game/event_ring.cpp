@@ -87,7 +87,7 @@ void EventHandlerRing::onMouseLeftButtonDown(Common::Event &evt) {
 	Puzzle *puzzleMenu = _app->getPuzzle(kPuzzleMenu);
 	if (puzzleMenu) {
 
-		if (puzzleMenu->checkVisual5(evt.mouse)) {
+		if (puzzleMenu->visualHandleLeftButtonDown(evt.mouse)) {
 			_app->update(evt.mouse);
 			return;
 		}

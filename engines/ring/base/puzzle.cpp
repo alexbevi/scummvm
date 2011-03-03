@@ -367,27 +367,27 @@ void Puzzle::addVisual(Visual *visual) {
 	_visuals.push_back(visual);
 }
 
-bool Puzzle::checkVisual3(const Common::Point &point) {
+bool Puzzle::visualHandleLeftButtonUp(const Common::Point &point) {
 	for (Common::Array<Visual *>::iterator it = _visuals.begin(); it != _visuals.end(); it++) {
-		if ((*it)->function3(point))
+		if ((*it)->handleLeftButtonUp(point))
 			return true;
 	}
 
 	return false;
 }
 
-bool Puzzle::checkVisual4(const Common::Point &point) {
+bool Puzzle::visualHandleUpdate(const Common::Point &point) {
 	for (Common::Array<Visual *>::iterator it = _visuals.begin(); it != _visuals.end(); it++) {
-		if ((*it)->function4(point))
+		if ((*it)->handleUpdate(point))
 			return true;
 	}
 
 	return false;
 }
 
-bool Puzzle::checkVisual5(const Common::Point &point) {
+bool Puzzle::visualHandleLeftButtonDown(const Common::Point &point) {
 	for (Common::Array<Visual *>::iterator it = _visuals.begin(); it != _visuals.end(); it++) {
-		if ((*it)->function5(point))
+		if ((*it)->handleLeftButtonDown(point))
 			return true;
 	}
 

@@ -74,9 +74,9 @@ public:
 
 	// Visual
 	void addVisual(Visual *visual);
-	bool checkVisual3(const Common::Point &point);
-	bool checkVisual4(const Common::Point &point);
-	bool checkVisual5(const Common::Point &point);
+	bool visualHandleLeftButtonUp(const Common::Point &point);
+	bool visualHandleUpdate(const Common::Point &point);
+	bool visualHandleLeftButtonDown(const Common::Point &point);
 	bool visualHandleKey(Common::KeyCode key);
 
 	// Sound
