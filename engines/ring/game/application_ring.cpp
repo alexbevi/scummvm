@@ -322,7 +322,7 @@ void ApplicationRing::draw() {
 				_rotation->drawText();
 			}
 		} else {
-			_rotation->load();
+			_rotation->alloc();
 			_rotation->update();
 			_rotation->setCoordinates(_vm->getCoordinates());
 			_rotation->draw(_screenManager);

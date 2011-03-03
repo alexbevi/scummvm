@@ -62,7 +62,7 @@ namespace Ring {
 
 Application::Application(RingEngine *engine) : _vm(engine),
 	_screenManager(NULL),  _artHandler(NULL),          _fontHandler(NULL),   _dialogHandler(NULL), _languageHandler(NULL),
-	_field_54(1),          _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
+	_isRotationCompressed(true),          _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
 	_soundHandler(NULL),   _state(kStateNone),         _field_6A(0),         _zoneString("A0"),      _zone(kZoneNone),
 	_field_6F(0),          _field_70(0),               _field_74(0),         _field_75(0),         _field_76(false),
 	_field_77(0),          _field_78(false),           _puzzle(NULL),        _rotation(NULL),      _bag(NULL),
@@ -171,7 +171,7 @@ void Application::init() {
 	_field_77 = 1;
 	_field_78 = true;
 	_loadFrom = kLoadFromCd;
-	_field_54 = 1;
+	_isRotationCompressed = true;
 	_archiveType = kArchiveFile;
 	_field_6F = 0;
 
@@ -1707,15 +1707,15 @@ void Application::rotationAdd(Id rotationId, Common::String name, byte a3, uint3
 		error("[Application::rotationAdd] Rotation Id already exists (%d)", rotationId);
 
 	// Compute path
-	//  Note: .aqi files do not seem to exists in the data
-	Common::String path = Common::String::format("DATA/NODE/%s.%s", name.c_str(), _field_54 ? "aqc" : "aqi");
+	//  Note: .aqi files are uncompressed rotation files (not present in the distributed game)
+	Common::String path = Common::String::format("DATA/NODE/%s.%s", name.c_str(), _isRotationCompressed ? "aqc" : "aqi");
 
 	// Check for single node file
 	if (_field_5E && !Common::File::exists(path))
 		error("[Application::rotationAdd] Node file doesn't exist (%s)", path.c_str());
 
 	// Check for node channel files
-	if (_field_5E && !_field_54 && nodeCount > 0) {
+	if (_field_5E && !_isRotationCompressed && nodeCount > 0) {
 		for (uint i = 0; i < nodeCount; i++) {
 			Common::String nodePath = Common::String::format("DATA/NODE/%s_%03d.aqc", name.c_str(), i);
 
@@ -1725,7 +1725,7 @@ void Application::rotationAdd(Id rotationId, Common::String name, byte a3, uint3
 	}
 
 	// Create rotation
-	Rotation *rotation = new Rotation(rotationId, name, a3, _loadFrom, nodeCount, _field_54);
+	Rotation *rotation = new Rotation(rotationId, name, a3, _loadFrom, nodeCount, _isRotationCompressed);
 
 	_rotations.push_back(rotation);
 }
@@ -1963,7 +1963,7 @@ void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
 
 	puzzleReset();
 	_rotation = _rotations.get(id);
-	_rotation->load();
+	_rotation->alloc();
 
 	g_system->warpMouse(320, 240);
 

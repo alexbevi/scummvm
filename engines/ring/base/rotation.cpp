@@ -100,16 +100,27 @@ void AquatorImageHeader::setChannel(uint32 channel) {
 #pragma region AquatorStream
 
 AquatorStream::AquatorStream(uint32 count, Common::String path) {
+	_entry = new ImageHeaderEntry();
+
 	_path = path;
 
 	for (uint32 i = 0; i < count; i++)
 		_headers.push_back(new AquatorImageHeader());
-
-	_count = count;
 }
 
 AquatorStream::~AquatorStream() {
 	CLEAR_ARRAY(AquatorImageHeader, _headers);
+}
+
+void AquatorStream::alloc(bool isCompressed, byte a2, int a3, byte a4, int a5, byte a6, uint32 a7, uint32 size) {
+	error("[AquatorStream::alloc] Not implemented");
+}
+
+void AquatorStream::dealloc() {
+	CLEAR_ARRAY(AquatorImageHeader, _headers);
+
+	delete _entry;
+	_entry = new ImageHeaderEntry();
 }
 
 void AquatorStream::setChannel(uint32 index, uint32 channel) {
@@ -124,8 +135,8 @@ uint32 AquatorStream::getChannel(uint32 index) {
 
 #pragma region Rotation
 
-Rotation::Rotation(Id id, Common::String name, byte a3, LoadFrom, uint32 nodeCount, uint32 a6) : BaseObject(id) {
-	_field_8 = a6;
+Rotation::Rotation(Id id, Common::String name, byte a3, LoadFrom, uint32 nodeCount, bool isCompressedStream) : BaseObject(id) {
+	_isCompressedStream = isCompressedStream;
 	_comBufferLength = 0;
 
 	// Compute path (Original checks loadFrom)
@@ -175,12 +186,13 @@ Rotation::~Rotation() {
 	SAFE_DELETE(_stream);
 }
 
-void Rotation::dealloc() {
-	error("[Rotation::dealloc] Not implemented");
+void Rotation::alloc() {
+	error("[Rotation::alloc] Not implemented");
 }
 
-void Rotation::load() {
-	error("[Rotation::load] Not implemented");
+void Rotation::dealloc() {
+	if (_stream->isInitialized())
+		_stream->dealloc();
 }
 
 void Rotation::update() {

@@ -394,7 +394,7 @@ protected:
 	//Common::String                _cdPath;
 	//Common::String                _currentDirectory
 	Configuration                 _configuration;
-	uint32                        _field_54;
+	bool                          _isRotationCompressed;
 	ArchiveType                   _archiveType;
 	CursorHandler                *_cursorHandler;
 	LoadFrom                      _loadFrom;

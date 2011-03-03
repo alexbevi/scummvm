@@ -46,6 +46,8 @@ public:
 	ImageHeaderEntry();
 	~ImageHeaderEntry();
 
+	bool isInitialized() { return _buffer != NULL; }
+
 private:
 	uint32  _field_0;
 	uint32  _field_4;
@@ -93,25 +95,29 @@ public:
 	AquatorStream(uint32 count, Common::String path);
 	~AquatorStream();
 
+	void alloc(bool isCompressed, byte a2, int a3, byte a4, int a5, byte a6, uint32 a7, uint32 size);
+	void dealloc();
+
 	void setChannel(uint32 index, uint32 channel);
 	uint32 getChannel(uint32 index);
-	uint32 getCount() { return _count; }
+	uint32 getCount() { return _headers.size(); }
+
+	bool isInitialized() { return _entry->isInitialized(); }
 
 private:
 	Common::Array<AquatorImageHeader *> _headers;
 	Common::String _path;
-	ImageHeaderEntry _entry;
-	uint32 _count;
+	ImageHeaderEntry *_entry;
 };
 
 class Rotation : public BaseObject, public Common::Serializable {
 public:
-	Rotation(Id id, Common::String name, byte a3, LoadFrom loadFrom, uint32 nodeCount, uint32 a6);
+	Rotation(Id id, Common::String name, byte a3, LoadFrom loadFrom, uint32 nodeCount, bool isCompressedStream);
 	~Rotation();
 
+	void alloc();
 	void dealloc();
 
-	void load();
 	void update();
 	void setCoordinates(const Common::Point &point);
 	void loadImage();
@@ -170,7 +176,7 @@ public:
 
 private:
 	Common::String                      _path;
-	uint32                              _field_8;
+	bool                                _isCompressedStream;
 	uint32                              _comBufferLength;
 	Common::Array<Movability *>         _movabilities;
 	Common::Array<Accessibility *>      _accessibilities;
