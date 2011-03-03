@@ -70,6 +70,10 @@ void ApplicationPompeii::showCredits() {
 	error("[ApplicationPompeii::showCredits] Not implemented");
 }
 
+void ApplicationPompeii::loadPreferences() {
+	error("[ApplicationPompeii::loadPreferences] Not implemented");
+}
+
 #pragma endregion
 
 #pragma region Drawing

@@ -70,6 +70,10 @@ void ApplicationJerusalem::showCredits() {
 	error("[ApplicationJerusalem::showCredits] Not implemented");
 }
 
+void ApplicationJerusalem::loadPreferences() {
+	error("[ApplicationJerusalem::loadPreferences] Not implemented");
+}
+
 #pragma endregion
 
 #pragma region Drawing

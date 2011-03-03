@@ -29,6 +29,7 @@
 #include "ring/base/bag.h"
 #include "ring/base/cursor.h"
 #include "ring/base/dialog.h"
+#include "ring/base/preferences.h"
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
@@ -279,6 +280,15 @@ void ApplicationRing::showCredits() {
 	}
 
 	soundStop(51002, 1024);
+}
+
+void ApplicationRing::loadPreferences() {
+	if (!_preferenceHandler)
+		error("[] Preference handler not initialized properly");
+
+	_preferenceHandler->load();
+
+	setupZone(kZoneAS, kSetupType999);
 }
 
 #pragma endregion

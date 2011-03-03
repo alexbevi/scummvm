@@ -48,6 +48,7 @@ public:
 	virtual void startMenu(bool savegame);
 	virtual void showMenu(Zone zone, uint32 a2);
 	virtual void showCredits();
+	virtual void loadPreferences();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Drawing

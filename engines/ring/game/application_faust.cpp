@@ -70,6 +70,10 @@ void ApplicationFaust::showCredits() {
 	error("[ApplicationFaust::showCredits] Not implemented");
 }
 
+void ApplicationFaust::loadPreferences() {
+	error("[ApplicationFaust::loadPreferences] Not implemented");
+}
+
 #pragma endregion
 
 #pragma region Drawing

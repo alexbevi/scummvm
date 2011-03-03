@@ -80,6 +80,7 @@ public:
 	virtual void startMenu(bool savegame) = 0;
 	virtual void showMenu(Zone zone, uint32 a2) = 0;
 	virtual void showCredits() = 0;
+	virtual void loadPreferences() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Event handling

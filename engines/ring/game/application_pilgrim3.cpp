@@ -70,6 +70,10 @@ void ApplicationPilgrim3::showCredits() {
 	error("[ApplicationPilgrim3::showCredits] Not implemented");
 }
 
+void ApplicationPilgrim3::loadPreferences() {
+	error("[ApplicationPilgrim3::loadPreferences] Not implemented");
+}
+
 #pragma endregion
 
 #pragma region Drawing
