@@ -42,7 +42,7 @@ class Puzzle;
 class Rotation;
 class Text;
 
-struct ObjectCursor {
+struct ObjectCursor : public Common::Serializable {
 	Common::Point offset;
 	uint32      frameCount;
 	CursorType  type;
@@ -50,6 +50,9 @@ struct ObjectCursor {
 	uint32      field_14;
 	LoadFrom    loadFrom;
 	ArchiveType archiveType;
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 	ObjectCursor() {
 		frameCount  = 0;

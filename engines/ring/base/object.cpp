@@ -29,6 +29,7 @@
 #include "ring/base/application.h"
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
+#include "ring/base/saveload.h"
 #include "ring/base/text.h"
 
 #include "ring/graphics/animation.h"
@@ -42,6 +43,21 @@
 #include "common/tokenizer.h"
 
 namespace Ring {
+
+#pragma region ObjectCursor
+
+void ObjectCursor::saveLoadWithSerializer(Common::Serializer &s) {
+	s.syncAsSint16LE(offset.x);
+	s.syncAsSint16LE(offset.y);
+	s.syncAsUint32LE(frameCount);
+	s.syncAsUint32LE(type);
+	s.syncAsUint32LE(frameRate);
+	s.syncAsUint32LE(field_14);
+	s.syncAsUint32LE(loadFrom);
+	s.syncAsUint32LE(archiveType);
+}
+
+#pragma endregion
 
 #pragma region ObjectPresentation
 
@@ -294,7 +310,12 @@ void ObjectPresentation::hideAndRemove() {
 #pragma region Serializable
 
 void ObjectPresentation::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[ObjectPresentation::saveLoadWithSerializer] Not implemented!");
+	SaveManager::syncArray(s, &_imagePuzzle);
+	SaveManager::syncArray(s, &_animationPuzzle);
+	SaveManager::syncArray(s, &_textPuzzle);
+	SaveManager::syncArray(s, &_textRotation);
+
+	s.syncAsByte(_isShown);
 }
 
 #pragma endregion
@@ -597,7 +618,15 @@ void Object::setPassiveDrawCursor(const Common::Point &point, uint32 frameCount,
 #pragma region Serializable
 
 void Object::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[Object::saveLoadWithSerializer] Not implemented!");
+	_passiveCursor.saveLoadWithSerializer(s);
+	_activeCursor.saveLoadWithSerializer(s);
+	_passiveDrawCursor.saveLoadWithSerializer(s);
+	_activeDrawCursor.saveLoadWithSerializer(s);
+
+	SaveManager::syncArray(s, &_accessibilities);
+	SaveManager::syncArray(s, &_presentations);
+
+	_animationImage->saveLoadWithSerializer(s);
 }
 
 #pragma endregion
