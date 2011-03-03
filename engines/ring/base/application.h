@@ -354,10 +354,30 @@ public:
 	// DragControl
 	void dragControlSetField45(uint32 a1);
 	void dragControlSetHotspot(const Common::Rect &rect);
+	void dragControlSetCoords1(const Common::Point &point);
+	bool dragControlYLower();
+	bool dragControlYEqual();
+	bool dragControlYHigher();
+	bool dragControlXLower();
+	bool dragControlXEqual();
+	bool dragControlXHigher();
+	bool dragControlYLower0();
+	bool dragControlYHigher0();
+	bool dragControlXLower0();
+	bool dragControlXHigher0();
+	bool dragControlYLower1();
+	bool dragControlYHigher1();
+	bool dragControlXLower1();
+	bool dragControlXHigher1();
 
 	uint32 dragControlGetOffsetX();
 	uint32 dragControlGetOffsetY();
 	uint32 dragControlGetDistance();
+
+	uint32 dragControlGetOffsetX0();
+	uint32 dragControlGetOffsetY0();
+	uint32 dragControlGetOffsetX1();
+	uint32 dragControlGetOffsetY1();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors

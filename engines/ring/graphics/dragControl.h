@@ -49,6 +49,11 @@ public:
 	uint32 getDistance();
 
 	// Accessors
+	Common::Point getCoords0() { return _coords0; }
+	Common::Point getCoords1() { return _coords1; }
+	Common::Point getOldCoords() { return _oldCoords; }
+	Common::Point getCurrentCoords() { return _currentCoords; }
+
 	bool getField20() { return _field_20; }
 	ObjectId getObjectId() { return _objectId; }
 	Hotspot *getHotspot2() { return _hotspot2; }
@@ -58,6 +63,7 @@ public:
 	uint32 getField45() { return _field_45; }
 	Hotspot *getHotspot() { return _hotspot; }
 
+	void SetCoords1(const Common::Point &coords) { _coords1 = coords; }
 	void setField45(uint32 val) { _field_45 = val; }
 
 private:

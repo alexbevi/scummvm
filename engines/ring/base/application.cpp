@@ -2269,6 +2269,112 @@ void Application::dragControlSetHotspot(const Common::Rect &rect) {
 	_dragControl->setHotspot(rect);
 }
 
+void Application::dragControlSetCoords1(const Common::Point &point) {
+	if (!_dragControl)
+		error("[Application::dragControlSetCoords1] DragControl not initialized properly!");
+
+	_dragControl->SetCoords1(point);
+}
+
+bool Application::dragControlYLower() {
+	if (!_dragControl)
+		error("[Application::dragControlYLower] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().y < _dragControl->getOldCoords().y;
+}
+
+bool Application::dragControlYEqual() {
+	if (!_dragControl)
+		error("[Application::dragControlYEqual] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().y == _dragControl->getOldCoords().y;
+}
+
+bool Application::dragControlYHigher() {
+	if (!_dragControl)
+		error("[Application::dragControlYHigher] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().y > _dragControl->getOldCoords().y;
+}
+
+bool Application::dragControlXLower() {
+	if (!_dragControl)
+		error("[Application::dragControlXLower] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().x < _dragControl->getOldCoords().x;
+}
+
+bool Application::dragControlXEqual() {
+	if (!_dragControl)
+		error("[Application::dragControlXEqual] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().x == _dragControl->getOldCoords().x;
+}
+
+bool Application::dragControlXHigher() {
+	if (!_dragControl)
+		error("[Application::dragControlXHigher] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().x > _dragControl->getOldCoords().x;
+}
+
+bool Application::dragControlYLower0() {
+	if (!_dragControl)
+		error("[Application::dragControlYLower0] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().y < _dragControl->getCoords0().y;
+}
+
+bool Application::dragControlYHigher0() {
+	if (!_dragControl)
+		error("[Application::dragControlYHigher0] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().y > _dragControl->getCoords0().y;
+}
+
+bool Application::dragControlXLower0() {
+	if (!_dragControl)
+		error("[Application::dragControlXLower0] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().x < _dragControl->getCoords0().x;
+}
+
+bool Application::dragControlXHigher0() {
+	if (!_dragControl)
+		error("[Application::dragControlXHigher0] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().x > _dragControl->getCoords0().x;
+}
+
+bool Application::dragControlYLower1() {
+	if (!_dragControl)
+		error("[Application::dragControlYLower1] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().y < _dragControl->getCoords1().y;
+}
+
+bool Application::dragControlYHigher1() {
+	if (!_dragControl)
+		error("[Application::dragControlYHigher1] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().y > _dragControl->getCoords1().y;
+}
+
+bool Application::dragControlXLower1() {
+	if (!_dragControl)
+		error("[Application::dragControlXLower1] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().x < _dragControl->getCoords1().x;
+}
+
+bool Application::dragControlXHigher1() {
+	if (!_dragControl)
+		error("[Application::dragControlXHigher1] DragControl not initialized properly!");
+
+	return _dragControl->getCurrentCoords().x > _dragControl->getCoords1().x;
+}
+
+
 uint32 Application::dragControlGetOffsetX() {
 	if (!_dragControl)
 		error("[Application::dragControlGetOffsetX] DragControl not initialized properly!");
@@ -2289,6 +2395,35 @@ uint32 Application::dragControlGetDistance() {
 
 	return _dragControl->getDistance();
 }
+
+uint32 Application::dragControlGetOffsetX0() {
+	if (!_dragControl)
+		error("[Application::dragControlGetOffsetX0] DragControl not initialized properly!");
+
+	return abs(_dragControl->getCurrentCoords().x - _dragControl->getCoords0().x);
+}
+
+uint32 Application::dragControlGetOffsetY0() {
+	if (!_dragControl)
+		error("[Application::dragControlGetOffsetY0] DragControl not initialized properly!");
+
+	return abs(_dragControl->getCurrentCoords().y - _dragControl->getCoords0().y);
+}
+
+uint32 Application::dragControlGetOffsetX1() {
+	if (!_dragControl)
+		error("[Application::dragControlGetOffsetX1] DragControl not initialized properly!");
+
+	return abs(_dragControl->getCurrentCoords().x - _dragControl->getCoords1().x);
+}
+
+uint32 Application::dragControlGetOffsetY1() {
+	if (!_dragControl)
+		error("[Application::dragControlGetOffsetY1] DragControl not initialized properly!");
+
+	return abs(_dragControl->getCurrentCoords().y - _dragControl->getCoords1().y);
+}
+
 
 #pragma endregion
 
