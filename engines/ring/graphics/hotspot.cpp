@@ -46,7 +46,15 @@ bool Hotspot::contains(const Common::Point &point) const {
 #pragma region Serializable
 
 void Hotspot::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[Hotspot::saveLoadWithSerializer] Not implemented!");
+	s.syncAsSint16LE(_rect.left);
+	s.syncAsSint16LE(_rect.top);
+	s.syncAsSint16LE(_rect.right);
+	s.syncAsSint16LE(_rect.bottom);
+	s.syncAsByte(_enabled);
+	s.syncAsUint32LE(_field_11);
+	s.syncAsUint32LE(_field_15);
+	s.syncAsUint32LE(_field_19);
+	s.syncAsUint32LE(_key);
 }
 
 #pragma endregion

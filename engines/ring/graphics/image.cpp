@@ -70,7 +70,15 @@ void ImageHandle::init(Common::String nameId, const Common::Point &point, bool a
 #pragma region Serializable
 
 void ImageHandle::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[ImageHandle::saveLoadWithSerializer] Not implemented!");
+	s.syncString(_directory);
+	s.syncString(_nameId);
+	s.syncAsSint16LE(_coordinates.x);
+	s.syncAsSint16LE(_coordinates.y);
+	s.syncAsByte(_isActive);
+	s.syncAsUint32LE(_zone);
+	s.syncAsUint32LE(_loadFrom);
+	s.syncAsUint32LE(_imageType);
+	s.syncAsUint32LE(_archiveType);
 }
 
 #pragma endregion

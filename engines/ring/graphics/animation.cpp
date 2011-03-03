@@ -412,7 +412,11 @@ void AnimationImage::updateCurrentImage() {
 #pragma region Serializable
 
 void AnimationImage::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[AnimationImage::saveLoadWithSerializer] Not implemented!");
+	Animation::saveLoadWithSerializer(s);
+
+	s.syncAsSint16LE(_coordinates.x);
+	s.syncAsSint16LE(_coordinates.y);
+	s.syncAsByte(_field_89);
 }
 
 #pragma endregion

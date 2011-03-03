@@ -107,7 +107,15 @@ Common::Rect Text::getBoundingBox() {
 #pragma region Serializable
 
 void Text::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[Text::saveLoadWithSerializer] Not implemented!");
+	s.syncString(_text);
+	s.syncAsUint32LE(_fontId);
+	s.syncAsSint16LE(_point.x);
+	s.syncAsSint16LE(_point.y);
+	s.syncAsUint32LE(_foregroundColor);
+	s.syncAsUint32LE(_width);
+	s.syncAsUint32LE(_height);
+	s.syncAsByte(_transparentBackground);
+	s.syncAsUint32LE(_backgroundColor);
 }
 
 #pragma endregion

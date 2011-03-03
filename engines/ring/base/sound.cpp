@@ -639,7 +639,9 @@ bool SoundItem::checkCurrentPuzzle() {
 #pragma region Serializable
 
 void SoundItem::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[SoundItem::saveLoadWithSerializer] Not implemented!");
+	s.syncAsSint32LE(_volume);
+	s.syncAsSint32LE(_pan);
+	s.syncAsByte(_isOn);
 }
 
 #pragma endregion

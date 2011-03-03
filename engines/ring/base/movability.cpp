@@ -89,7 +89,17 @@ void Movability::disableHotspot() {
 #pragma region Serializable
 
 void Movability::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[Movability::saveLoadWithSerializer] Not implemented!");
+	_hotspot->saveLoadWithSerializer(s);
+	s.syncString(_name);
+	s.syncAsUint32LE(_to);
+	s.syncAsUint32LE(_field_18);
+	s.syncAsUint32LE(_field_1C);
+	s.syncAsUint32LE(_field_20);
+	s.syncAsUint32LE(_field_24);
+	s.syncAsByte(_field_28);
+	s.syncAsUint32LE(_field_29);
+	s.syncAsUint32LE(_field_2D);
+	s.syncAsUint32LE(_field_31);
 }
 
 #pragma endregion
