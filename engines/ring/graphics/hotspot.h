@@ -49,6 +49,7 @@ public:
 
 	// Accessors
 	void setKey(Common::KeyCode key) { _key = key; }
+	uint32 getField19() { return _field_19; }
 	Common::KeyCode getKey() { return _key; }
 
 private:

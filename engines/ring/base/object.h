@@ -179,8 +179,10 @@ public:
 	void setPassiveDrawCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType);
 
 	// Accessors
-	Common::String getName() { return _name; }
 	void setAnimationImage(AnimationImage *image) { _animationImage = image; }
+
+	Common::String getName() { return _name; }
+	byte getFieldC() { return _field_C; }
 	AnimationImage *getAnimationImage() { return _animationImage; }
 	ObjectCursor *getActiveCursor() { return &_activeCursor; }
 	ObjectCursor *getPassiveCursor() { return &_passiveCursor; }

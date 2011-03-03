@@ -257,6 +257,30 @@ void Rotation::addAccessibility(Accessibility *accessibility) {
 	_accessibilities.push_back(accessibility);
 }
 
+int32 Rotation::getAccessibilityIndex(const Common::Point &point) {
+	for (uint32 i = 0; i < _accessibilities.size(); i++) {
+		if (!_accessibilities[i]->getHotspot()->isEnabled())
+			continue;
+
+		if (_accessibilities[i]->getHotspot()->contains(point))
+			return i;
+	}
+
+	return -1;
+}
+
+Accessibility *Rotation::getAccessibility(const Common::Point &point) {
+	for (Common::Array<Accessibility *>::iterator it = _accessibilities.begin(); it != _accessibilities.end(); it++) {
+		if (!(*it)->getHotspot()->isEnabled())
+			continue;
+
+		if ((*it)->getHotspot()->contains(point))
+			return (*it);
+	}
+
+	return NULL;
+}
+
 Accessibility *Rotation::getAccessibility(Common::KeyCode key) {
 	for (Common::Array<Accessibility *>::iterator it = _accessibilities.begin(); it != _accessibilities.end(); it++) {
 		if (!(*it)->getHotspot()->isEnabled())

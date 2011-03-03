@@ -27,6 +27,7 @@
 
 #include "ring/base/accessibility.h"
 #include "ring/base/bag.h"
+#include "ring/base/object.h"
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
@@ -93,10 +94,8 @@ void EventHandlerRing::onMouseLeftButtonDown(Common::Event &evt) {
 		}
 
 		Accessibility *accessibility = puzzleMenu->getAccessibility(evt.mouse);
-		if (accessibility) {
-			error("[EventHandlerRing::onMouseLeftButtonDown] menu puzzle accessibility not implemented");
-
-		}
+		if (handleLeftButtonDown(accessibility, puzzleMenu->getAccessibilityIndex(evt.mouse), puzzleMenu->getId(), evt.mouse))
+			return;
 
 		if (puzzleMenu->getField24() == 2)
 			return;
@@ -105,14 +104,56 @@ void EventHandlerRing::onMouseLeftButtonDown(Common::Event &evt) {
 	// Handle current puzzle
 	Puzzle *currentPuzzle = _app->getCurrentPuzzle();
 	if (currentPuzzle) {
-		error("[EventHandlerRing::onMouseLeftButtonDown] current puzzle not implemented");
+		if (currentPuzzle->visualHandleLeftButtonDown(evt.mouse)) {
+			_app->update(evt.mouse);
+			return;
+		}
+
+		Accessibility *accessibility = currentPuzzle->getAccessibility(evt.mouse);
+		if (handleLeftButtonDown(accessibility, currentPuzzle->getAccessibilityIndex(evt.mouse), currentPuzzle->getId(), evt.mouse))
+			return;
 	}
 
 	// Handle current rotation
 	Rotation *currentRotation = _app->getCurrentRotation();
 	if (currentRotation) {
-		error("[EventHandlerRing::onMouseLeftButtonDown] current rotation not implemented");
+		Accessibility *accessibility = currentRotation->getAccessibility(evt.mouse);
+		if (handleLeftButtonDown(accessibility, currentRotation->getAccessibilityIndex(evt.mouse), currentRotation->getId(), evt.mouse))
+			return;
 	}
+}
+
+bool EventHandlerRing::handleLeftButtonDown(Accessibility *accessibility, uint32 index, Id id, const Common::Point &point) {
+	if (!accessibility)
+		return false;
+
+	Object *object = accessibility->getObject();
+	Hotspot *hotspot = accessibility->getHotspot();
+
+	if (object->getFieldC() & 2) {
+		onButtonDown(object->getId(), hotspot->getField19(), id, 1, point);
+
+		if (_app->getState() == kStateShowMenu)
+			return true;
+	}
+
+	if (!(object->getFieldC() & 4)) {
+		_app->update(point);
+		return true;
+	}
+
+	_app->getDragControl()->init(point, object->getId(), index, hotspot, hotspot->getField19(), id, 1);
+	onBag(object->getId(), hotspot->getField19(), id, 1, _app->getDragControl(), 1);
+
+	if (_app->getState() != kStateShowMenu) {
+		if (!_app->getField76())
+			_app->getDragControl()->reset();
+
+		_app->setField76(1);
+		_app->update(point);
+	}
+
+	return true;
 }
 
 void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
@@ -249,6 +290,58 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 
 		// FIXME: Ring calls a method that doesn't do anything useful (get the menu puzzle if the bag has a clicked object)
 	}
+}
+
+#pragma endregion
+
+#pragma region Left Button Down
+
+void EventHandlerRing::onButtonDown(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	debugC(kRingDebugLogic, "onButtonDown (ObjectId: %d, coords: (%d, %d))", id.id(), point.x, point.y);
+
+	if (puzzleRotationId == 1 && a4 == 1)
+		return;
+
+	switch (_app->getCurrentZone()) {
+	default:
+	case kZoneSY:
+	case kZoneRH:
+	case kZoneWA:
+	case kZoneAS:
+		break;
+
+	case kZoneNI:
+		onButtonDownZoneNI(id, a2, puzzleRotationId, a4, point);
+		break;
+
+	case kZoneFO:
+		onButtonDownZoneFO(id, a2, puzzleRotationId, a4, point);
+		break;
+
+	case kZoneRO:
+		onButtonDownZoneRO(id, a2, puzzleRotationId, a4, point);
+		break;
+
+	case kZoneN2:
+		onButtonDownZoneN2(id, a2, puzzleRotationId, a4, point);
+		break;
+	}
+}
+
+void EventHandlerRing::onButtonDownZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonDownZoneNI] Not implemented");
+}
+
+void EventHandlerRing::onButtonDownZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonDownZoneFO] Not implemented");
+}
+
+void EventHandlerRing::onButtonDownZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonDownZoneRO] Not implemented");
+}
+
+void EventHandlerRing::onButtonDownZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonDownZoneN2] Not implemented");
 }
 
 #pragma endregion

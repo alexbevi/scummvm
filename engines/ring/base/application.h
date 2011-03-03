@@ -386,7 +386,10 @@ public:
 	Common::String getCurrentZoneString() { return getZoneString(_zone); }
 	ArchiveType getArchiveType() { return _archiveType; }
 	char getField6F() { return _field_6F; }
+	State getState() { return _state; }
+	bool getField76() { return _field_76; }
 
+	void setField76(bool state) { _field_76 = state; }
 	void setField78(bool state) { _field_78 = state; }
 
 

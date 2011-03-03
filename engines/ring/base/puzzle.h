@@ -55,7 +55,7 @@ public:
 	void update(ScreenManager *screen);
 
 	void setBackgroundImage(Common::String filename, const Common::Point &point, bool isActive, LoadFrom loadFrom);
-	void setMod(uint32 a2, uint32 a3);
+	void setMod(uint32 a2, Id selectedId);
 
 	void addPresentationText(Text *text);
 	void addPresentationImage(ImageHandle *image);
@@ -64,6 +64,7 @@ public:
 	// Accessibility
 	void addAccessibility(Accessibility *accessibility);
 	Accessibility *getAccessibility(const Common::Point &point);
+	int32 getAccessibilityIndex(const Common::Point &point);
 	Accessibility *getAccessibility(Common::KeyCode key);
 
 	// Movability
@@ -92,6 +93,7 @@ public:
 	// Accessors
 	Movability *getMovability(uint32 index);
 	uint32 getField24() { return _field_24; }
+	Id getSelectedId() { return _selectedId; }
 
 	bool hasVisual(Id visualId) { return _visuals.has(visualId); }
 	Visual *getVisual(Id visualId) { return _visuals.get(visualId); }
@@ -112,7 +114,7 @@ private:
 	AssociativeArray<Visual *>             _visuals;
 	uint32 _field_24;
 	byte   _field_28;
-	uint32 _field_29;
+	Id     _selectedId;
 
 	SoundItem *getSoundItem(Id soundId);
 

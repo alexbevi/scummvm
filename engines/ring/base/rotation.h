@@ -130,6 +130,8 @@ public:
 
 	// Accessibility
 	void addAccessibility(Accessibility *accessibility);
+	Accessibility *getAccessibility(const Common::Point &point);
+	int32 getAccessibilityIndex(const Common::Point &point);
 	Accessibility *getAccessibility(Common::KeyCode key);
 
 	// Movability

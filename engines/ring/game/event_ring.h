@@ -30,6 +30,7 @@
 
 namespace Ring {
 
+class Accessibility;
 class ApplicationRing;
 
 class EventHandlerRing : public EventHandler {
@@ -64,6 +65,16 @@ private:
 	// Event Handling
 	//////////////////////////////////////////////////////////////////////////
 	void onMouseLeftButtonUp(Common::Event &evt);
+	bool handleLeftButtonDown(Accessibility *accessibility, uint32 index, Id id, const Common::Point &point);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Left button down
+	//////////////////////////////////////////////////////////////////////////
+	void onButtonDown(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonDownZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonDownZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonDownZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonDownZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Key down

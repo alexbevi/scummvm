@@ -49,7 +49,7 @@ Puzzle::Puzzle(Application *application, PuzzleId id) : BaseObject(id), _applica
 	_background = NULL;
 	_field_24 = 1;
 	_field_28 = 0;
-	_field_29 = 0;
+	_selectedId = 0;
 }
 
 Puzzle::~Puzzle() {
@@ -254,6 +254,18 @@ void Puzzle::addAccessibility(Accessibility *accessibility) {
 	_accessibilities.push_back(accessibility);
 }
 
+int32 Puzzle::getAccessibilityIndex(const Common::Point &point) {
+	for (uint32 i = 0; i < _accessibilities.size(); i++) {
+		if (!_accessibilities[i]->getHotspot()->isEnabled())
+			continue;
+
+		if (_accessibilities[i]->getHotspot()->contains(point))
+			return i;
+	}
+
+	return -1;
+}
+
 Accessibility *Puzzle::getAccessibility(const Common::Point &point) {
 	for (Common::Array<Accessibility *>::iterator it = _accessibilities.begin(); it != _accessibilities.end(); it++) {
 		if (!(*it)->getHotspot()->isEnabled())
@@ -332,9 +344,9 @@ Movability *Puzzle::getMovability(const Common::Point &point) {
 
 #pragma endregion
 
-void Puzzle::setMod(uint32 a2, uint32 a3) {
+void Puzzle::setMod(uint32 a2, Id selectedId) {
 	_field_24 = a2;
-	_field_29 = a3;
+	_selectedId = selectedId;
 
 	switch (a2){
 	default:
@@ -502,7 +514,7 @@ void Puzzle::saveLoadWithSerializer(Common::Serializer &s) {
 
 	s.syncAsUint32LE(_field_24);
 	s.syncAsByte(_field_28);
-	s.syncAsUint32LE(_field_29);
+	s.syncAsUint32LE(_selectedId);
 }
 
 #pragma endregion
