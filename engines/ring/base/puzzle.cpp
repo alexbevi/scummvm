@@ -30,6 +30,7 @@
 #include "ring/base/bag.h"
 #include "ring/base/movability.h"
 #include "ring/base/object.h"
+#include "ring/base/saveload.h"
 #include "ring/base/sound.h"
 #include "ring/base/text.h"
 
@@ -481,7 +482,15 @@ bool Puzzle::imagePriorityCompare(ImageHandle *image1, ImageHandle *image2) {
 #pragma region Serializable
 
 void Puzzle::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[Puzzle::saveLoadWithSerializer] Not implemented!");
+	_background->saveLoadWithSerializer(s);
+
+	SaveManager::syncArray(s, &_movabilities);
+	SaveManager::syncArray(s, &_soundItems);
+	SaveManager::syncArray(s, &_visuals);
+
+	s.syncAsUint32LE(_field_24);
+	s.syncAsByte(_field_28);
+	s.syncAsUint32LE(_field_29);
 }
 
 #pragma endregion

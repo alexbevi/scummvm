@@ -397,7 +397,30 @@ bool Bag::has(ObjectId objectId) {
 #pragma region Serializable
 
 void Bag::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[Bag::saveLoadWithSerializer] Not implemented!");
+	uint32 count = _objects.size();
+	s.syncAsUint32LE(count);
+
+	// Store each object id
+	if (s.isSaving()) {
+		for (Common::Array<Object *>::iterator it = _objects.begin(); it != _objects.end(); it++) {
+			Id id = (*it)->getId();
+			s.syncAsUint32LE(id);
+		}
+	}
+
+	// Add a new object into the bag for each stored object
+	if (s.isLoading()) {
+		_objects.clear();
+
+		for (uint32 i = 0; i < count; i++) {
+			Id id = 0;
+			s.syncAsUint32LE(id);
+
+			add(id);
+		}
+	}
+
+	s.syncAsUint32LE(_clickedObject);
 }
 
 #pragma endregion

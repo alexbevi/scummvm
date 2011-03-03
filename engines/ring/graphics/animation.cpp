@@ -26,6 +26,7 @@
 #include "ring/graphics/animation.h"
 
 #include "ring/base/application.h"
+#include "ring/base/saveload.h"
 
 #include "ring/graphics/image.h"
 
@@ -264,7 +265,88 @@ void Animation::pauseOnFrame(uint32 frame, uint32 a2, uint32 a3) {
 #pragma region Serializable
 
 void Animation::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[Animation::saveLoadWithSerializer] Not implemented!");
+	uint32 currentTicks = getApp()->getSaveManager()->getTicks();
+	uint32 field_28 = 0;
+	uint32 field_32 = 0;
+	uint32 field_4A = 0;
+	uint32 ticks = 0;
+
+	if (s.isSaving()) {
+		if (_field_28 > 1.0)
+			field_28 = currentTicks - _field_28;
+		else
+			field_28 = _field_28;
+
+		if (_field_32 > 1.0)
+			field_32 = currentTicks - _field_32;
+		else
+			field_32 = _field_32;
+
+		if (_field_4A > 1.0)
+			field_4A = currentTicks - _field_4A;
+		else
+			field_4A = _field_4A;
+
+		if (_ticks)
+			ticks = currentTicks - _ticks;
+		else
+			ticks = 0;
+	}
+
+	s.syncString(_name);
+	s.syncAsUint32LE(_framerate);
+	s.syncAsUint32LE(_startFrame);
+	s.syncAsUint32LE(_field_14);
+	s.syncAsUint32LE(_field_18);
+	s.syncAsUint32LE(_priority);
+	s.syncAsByte(_field_20);
+	s.syncAsByte(_field_21);
+	s.syncAsUint32LE(_activeFrame);
+	s.syncAsByte(_field_26);
+	s.syncAsByte(_paused);
+	s.syncAsUint32LE(field_28);
+	s.syncAsByte(_field_2C);
+	s.syncAsByte(_field_2D);
+	s.syncAsUint32LE(_field_2E);
+	s.syncAsUint32LE(_field_32);
+	s.syncAsUint32LE(_field_36);
+	s.syncAsUint32LE(_field_3A);
+	s.syncAsUint32LE(_field_3E);
+	s.syncAsUint32LE(_field_42);
+	s.syncAsUint32LE(_field_46);
+	s.syncAsUint32LE(_field_4A);
+	s.syncAsByte(_field_4E);
+	s.syncAsUint32LE(_ticks);
+	s.syncAsUint32LE(_field_53);
+	s.syncAsByte(_field_57);
+	s.syncAsUint32LE(_field_58);
+	s.syncAsUint32LE(_field_5C);
+	s.syncAsByte(_field_60);
+	s.syncAsSint32LE(_field_61);
+	s.syncAsUint32LE(_field_65);
+
+	// Adjust ticks
+	if (s.isLoading()) {
+		if (field_28 > 1.0)
+			_field_28 = currentTicks - field_28;
+		else
+			_field_28 = field_28;
+
+		if (field_32 > 1.0)
+			_field_32 = currentTicks - field_32;
+		else
+			_field_32 = field_32;
+
+		if (field_4A > 1.0)
+			_field_4A = currentTicks - field_4A;
+		else
+			_field_4A = field_4A;
+
+		if (ticks)
+			_ticks = currentTicks - ticks;
+		else
+			_ticks = 0;
+	}
 }
 
 #pragma endregion

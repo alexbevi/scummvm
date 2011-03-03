@@ -35,6 +35,8 @@ SaveManager::SaveManager(Application *application) : _app(application) {
 	_rotationId = 0;
 	_puzzleId = kPuzzleInvalid;
 	_setupType = kSetupTypeNone;
+
+	_currentTicks = 0;
 }
 
 

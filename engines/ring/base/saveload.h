@@ -42,6 +42,12 @@ public:
 
 	bool has(Common::String filename);
 
+	uint32 getTicks() { return _currentTicks; }
+
+	// Helper
+	template<class T>
+	static void syncArray(Common::Serializer &s, Common::Array<T *> *arr);
+
 	// Accessors
 	Zone getZone() const { return _zone; }
 	bool hasRotation() const { return _hasRotation; }
@@ -61,7 +67,15 @@ private:
 	Id _rotationId;
 	PuzzleId _puzzleId;
 	SetupType _setupType;
+
+	uint32 _currentTicks; // Ticks at the time of loading/saving
 };
+
+template<class T>
+void SaveManager::syncArray(Common::Serializer &s, Common::Array<T *> *arr) {
+	for (Common::Array<T *>::iterator it = arr->begin(); it != arr->end(); it++)
+		(*it)->saveLoadWithSerializer(s);
+}
 
 } // End of namespace Ring
 
