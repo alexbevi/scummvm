@@ -266,6 +266,18 @@ Accessibility *Puzzle::getAccessibility(const Common::Point &point) {
 	return NULL;
 }
 
+Accessibility *Puzzle::getAccessibility(Common::KeyCode key) {
+	for (Common::Array<Accessibility *>::iterator it = _accessibilities.begin(); it != _accessibilities.end(); it++) {
+		if (!(*it)->getHotspot()->isEnabled())
+			continue;
+
+		if ((*it)->getHotspot()->getKey() == key)
+			return (*it);
+	}
+
+	return NULL;
+}
+
 #pragma endregion
 
 #pragma region Movability
@@ -382,9 +394,9 @@ bool Puzzle::checkVisual5(const Common::Point &point) {
 	return false;
 }
 
-bool Puzzle::checkVisual6(Common::KeyCode key) {
+bool Puzzle::visualHandleKey(Common::KeyCode key) {
 	for (Common::Array<Visual *>::iterator it = _visuals.begin(); it != _visuals.end(); it++) {
-		if ((*it)->function6(key))
+		if ((*it)->handleKey(key))
 			return true;
 	}
 

@@ -47,7 +47,7 @@ public:
 	virtual bool function3(const Common::Point &point) = 0;
 	virtual bool function4(const Common::Point &point) = 0;
 	virtual bool function5(Common::Point point) { return false; }
-	virtual bool function6(Common::KeyCode key) { return false; }
+	virtual bool handleKey(Common::KeyCode key) { return false; }
 	virtual void alloc() = 0;
 	virtual void dealloc() = 0;
 

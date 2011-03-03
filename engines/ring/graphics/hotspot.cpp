@@ -43,6 +43,10 @@ bool Hotspot::contains(const Common::Point &point) const {
 	return _enabled && _rect.contains(point);
 }
 
+Common::Point Hotspot::getCenter() {
+	return Common::Point(_rect.left + _rect.width() / 2, _rect.top + _rect.height() / 2);
+}
+
 #pragma region Serializable
 
 void Hotspot::saveLoadWithSerializer(Common::Serializer &s) {

@@ -34,6 +34,7 @@
 #include "ring/base/text.h"
 
 #include "ring/graphics/animation.h"
+#include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
 #include "ring/graphics/screen.h"
 
@@ -253,6 +254,18 @@ void Rotation::addAccessibility(Accessibility *accessibility) {
 		error("[Rotation::addAccessibility] Accessibility is NULL!");
 
 	_accessibilities.push_back(accessibility);
+}
+
+Accessibility *Rotation::getAccessibility(Common::KeyCode key) {
+	for (Common::Array<Accessibility *>::iterator it = _accessibilities.begin(); it != _accessibilities.end(); it++) {
+		if (!(*it)->getHotspot()->isEnabled())
+			continue;
+
+		if ((*it)->getHotspot()->getKey() == key)
+			return (*it);
+	}
+
+	return NULL;
 }
 
 void Rotation::addMovability(Movability *movability) {

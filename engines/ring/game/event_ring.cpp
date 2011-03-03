@@ -25,6 +25,7 @@
 
 #include "ring/game/event_ring.h"
 
+#include "ring/base/accessibility.h"
 #include "ring/base/bag.h"
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
@@ -34,6 +35,7 @@
 #include "ring/game/application_ring.h"
 
 #include "ring/graphics/dragControl.h"
+#include "ring/graphics/hotspot.h"
 
 #include "ring/helpers.h"
 #include "ring/ring.h"
@@ -145,25 +147,107 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 	if (evt.kbd.keycode == Common::KEYCODE_ESCAPE)
 		_app->soundStopType(kSoundTypeDialog, 4098);
 
-	// Handle menu
+	// Check menu and simulate button click
 	Puzzle *puzzleMenu = getApp()->getPuzzle(kPuzzleMenu);
 	if (puzzleMenu) {
-		error("[EventHandlerRing::onKeyDown] Not implemented");
+		if (puzzleMenu->visualHandleKey(evt.kbd.keycode))
+			return;
+
+		if (puzzleMenu->getField24() == 2) {
+			Accessibility *accessibility = puzzleMenu->getAccessibility(evt.kbd.keycode);
+			if (!accessibility)
+				return;
+
+			// Center rotation
+			if (_app->hasCurrentRotation())
+				_app->getCurrentRotation()->setCoordinates(accessibility->getHotspot()->getCenter());
+
+			bool controlPressed = (evt.kbd.flags & Common::KBD_CTRL);
+
+			// Modify event to be a mouse click on the center of the hotspot
+			Hotspot *hotspot = accessibility->getHotspot();
+			evt.mouse = hotspot->getCenter();
+
+			// Simulate click
+			if (_app->getBag()->getField94()) {
+				onMouseLeftButtonUp(evt, controlPressed);
+				return;
+			}
+
+			onMouseLeftButtonUp(evt, controlPressed);
+
+			if (evt.mouse.y >= 16)
+				return;
+
+			// FIXME: Ring calls a method that doesn't do anything useful (get the menu puzzle if the bag has a clicked object)
+			return;
+		}
 	}
 
 	// Handle events on zone
 	onKeyDownZone(evt.kbd);
 
-	// Handle current puzzle
+	// Check current puzzle and simulate button click
 	Puzzle *currentPuzzle = _app->getCurrentPuzzle();
 	if (currentPuzzle) {
-		error("[EventHandlerRing::onKeyDown] current puzzle not implemented");
+		if (currentPuzzle->visualHandleKey(evt.kbd.keycode))
+			return;
+
+		if (currentPuzzle->getField24() == 2) {
+			Accessibility *accessibility = puzzleMenu->getAccessibility(evt.kbd.keycode);
+			if (!accessibility)
+				return;
+
+			bool controlPressed = (evt.kbd.flags & Common::KBD_CTRL);
+
+			// Modify event to be a mouse click on the center of the hotspot
+			Hotspot *hotspot = accessibility->getHotspot();
+			evt.mouse = hotspot->getCenter();
+
+			// Simulate click
+			if (_app->getBag()->getField94()) {
+				onMouseLeftButtonUp(evt, controlPressed);
+				return;
+			}
+
+			onMouseLeftButtonUp(evt, controlPressed);
+
+			if (evt.mouse.y >= 16)
+				return;
+
+			// FIXME: Ring calls a method that doesn't do anything useful (get the menu puzzle if the bag has a clicked object)
+			return;
+		}
 	}
 
-	// Handle current rotation
+	// Check current rotation and simulate button click
 	Rotation *currentRotation = _app->getCurrentRotation();
 	if (currentRotation) {
-		error("[EventHandlerRing::onKeyDown] current rotation not implemented");
+		Accessibility *accessibility = currentRotation->getAccessibility(evt.kbd.keycode);
+		if (!currentRotation)
+			return;
+
+		bool controlPressed = (evt.kbd.flags & Common::KBD_CTRL);
+
+		// Modify event to be a mouse click on the center of the hotspot
+		Hotspot *hotspot = accessibility->getHotspot();
+		evt.mouse = hotspot->getCenter();
+
+		// Center rotation
+		currentRotation->setCoordinates(evt.mouse);
+
+		// Simulate click
+		if (_app->getBag()->getField94()) {
+			onMouseLeftButtonUp(evt, controlPressed);
+			return;
+		}
+
+		onMouseLeftButtonUp(evt, controlPressed);
+
+		if (evt.mouse.y >= 16)
+			return;
+
+		// FIXME: Ring calls a method that doesn't do anything useful (get the menu puzzle if the bag has a clicked object)
 	}
 }
 

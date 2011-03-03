@@ -42,6 +42,8 @@ public:
 	bool isEnabled() { return _enabled; }
 	bool contains(const Common::Point &point) const;
 
+	Common::Point getCenter();
+
 	// Serializable
 	void saveLoadWithSerializer(Common::Serializer &s);
 

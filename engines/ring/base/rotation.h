@@ -29,6 +29,8 @@
 #include "ring/helpers.h"
 #include "ring/shared.h"
 
+#include "common/keyboard.h"
+
 namespace Ring {
 
 class Accessibility;
@@ -128,6 +130,7 @@ public:
 
 	// Accessibility
 	void addAccessibility(Accessibility *accessibility);
+	Accessibility *getAccessibility(Common::KeyCode key);
 
 	// Movability
 	void addMovability(Movability *movability);
