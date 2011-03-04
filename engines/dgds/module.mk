@@ -2,7 +2,8 @@ MODULE := engines/dgds
 
 MODULE_OBJS = \
 	detection.o \
-	dgds.o
+	dgds.o \
+	resourcemanager.o
 
 # This module can be built as a plugin
 ifdef BUILD_PLUGINS
