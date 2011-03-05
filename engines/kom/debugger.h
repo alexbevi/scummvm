@@ -43,6 +43,7 @@ protected:
 	bool Cmd_Proc(int argc, const char **argv);
 	bool Cmd_Day(int argc, const char **argv);
 	bool Cmd_Night(int argc, const char **argv);
+	bool Cmd_Gold(int argc, const char **argv);
 
 private:
 

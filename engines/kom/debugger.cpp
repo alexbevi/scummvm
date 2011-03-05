@@ -38,6 +38,7 @@ Debugger::Debugger(KomEngine *vm) : GUI::Debugger(), _vm(vm) {
 	DCmd_Register("proc", WRAP_METHOD(Debugger, Cmd_Proc));
 	DCmd_Register("day", WRAP_METHOD(Debugger, Cmd_Day));
 	DCmd_Register("night", WRAP_METHOD(Debugger, Cmd_Night));
+	DCmd_Register("gold", WRAP_METHOD(Debugger, Cmd_Gold));
 }
 
 bool Debugger::Cmd_Room(int argc, const char **argv) {
@@ -103,7 +104,6 @@ bool Debugger::Cmd_Proc(int argc, const char **argv) {
 	return true;
 }
 
-
 bool Debugger::Cmd_Day(int argc, const char **argv) {
 	_vm->game()->setDay();
 	return false;
@@ -111,6 +111,18 @@ bool Debugger::Cmd_Day(int argc, const char **argv) {
 
 bool Debugger::Cmd_Night(int argc, const char **argv) {
 	_vm->game()->setNight();
+	return false;
+}
+
+bool Debugger::Cmd_Gold(int argc, const char **argv) {
+	if (argc == 2) {
+		Character *chr = _vm->database()->getChar(0);
+		int amount = atoi(argv[1]);
+		chr->_gold += amount;
+
+		if (chr->_gold < 0)
+			chr->_gold = 0;
+	}
 	return false;
 }
 
