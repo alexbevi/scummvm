@@ -118,6 +118,7 @@ struct Player {
 	uint8 selectedChar; // 0 - thidney. 1 - shahron
 	uint8 selectedQuest;
 	uint8 isNight;
+	int oldGold;
 	uint16 sleepTimer;
 	bool spriteCutMoving;
 	int16 spriteCutX;

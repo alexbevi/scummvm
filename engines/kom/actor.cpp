@@ -52,6 +52,7 @@ ActorManager::~ActorManager() {
 	delete _donutActor;
 	delete _objectsActor;
 	delete _charIconActor;
+	delete _coinageActor;
 }
 
 int ActorManager::load(const char *filename) {
@@ -103,6 +104,11 @@ void ActorManager::loadExtras() {
 	_charIconActor->enable(0);
 	_charIconActor->setEffect(4);
 	_charIconActor->setMaskDepth(0, 1);
+
+	_coinageActor = new Actor(_vm, "kom/oneoffs/coins.act", false);
+	_coinageActor->enable(0);
+	_coinageActor->setEffect(4);
+	_coinageActor->setMaskDepth(0, 1);
 }
 
 void ActorManager::displayAll() {

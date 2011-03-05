@@ -101,7 +101,7 @@ void Panel::update() {
 		if (_vm->game()->isNarratorPlaying())
 			_gotObjTime = 24;
 
-		Actor *objects = _vm->actorMan()->getObjects();
+		Actor *objectActor = _vm->actorMan()->getObjects();
 		uint16 xRatio, yRatio;
 		uint8 frame;
 		int currObj = *_gotObjects.begin();
@@ -112,42 +112,43 @@ void Panel::update() {
 		if (currObj > 0) {
 
 			// Regular object
-			if (currObj < 1000) {
+			if (currObj < 10000) {
 				frame = currObj + 1;
 				if (_gotObjTime == 16)
 					_vm->sound()->playSampleSFX(_vm->_swipeSample, false);
 
 			// Money
 			} else {
-				currObj -= 1000;
+				objectActor = _vm->actorMan()->getCoinage();
+				currObj -= 10000;
 				frame = currObj;
 				if (_gotObjTime == 16)
 					_vm->sound()->playSampleSFX(_vm->_cashSample, false);
 			}
 
-			objects->enable(1);
+			objectActor->enable(1);
 
 			// Zoom into screen
 			if (_gotObjTime > 16) {
 				xRatio = yRatio = 0x600 - 0x600 / (24 - _gotObjTime);
-				objects->setEffect(0);
-				objects->setPos(303, 185);
-				objects->setRatio(xRatio, yRatio);
-				objects->setFrame(frame);
+				objectActor->setEffect(0);
+				objectActor->setPos(303, 185);
+				objectActor->setRatio(xRatio, yRatio);
+				objectActor->setFrame(frame);
 
 			// Stay on screen
 			} else if (_gotObjTime > 8) {
-				objects->setEffect(4);
-				objects->setPos(303, 185);
-				objects->setRatio(1024, 1024);
-				objects->setFrame(frame);
+				objectActor->setEffect(4);
+				objectActor->setPos(303, 185);
+				objectActor->setRatio(1024, 1024);
+				objectActor->setFrame(frame);
 
 			// Move below screen
 			} else {
-				objects->setEffect(4);
-				objects->setPos(303, 185 + (8 - _gotObjTime)*(8 - _gotObjTime));
-				objects->setRatio(1024, 1024);
-				objects->setFrame(frame);
+				objectActor->setEffect(4);
+				objectActor->setPos(303, 185 + (8 - _gotObjTime)*(8 - _gotObjTime));
+				objectActor->setRatio(1024, 1024);
+				objectActor->setFrame(frame);
 			}
 
 		// Lost object
@@ -159,46 +160,47 @@ void Panel::update() {
 				_vm->sound()->playSampleSFX(_vm->_loseItemSample, false);
 
 			// Regular object
-			if (currObj < 1000) {
+			if (currObj < 10000) {
 				frame = currObj + 1;
 				if (_gotObjTime == 12)
 					_vm->sound()->playSampleSFX(_vm->_swipeSample, false);
 
 			// Money
 			} else {
-				currObj -= 1000;
+				objectActor = _vm->actorMan()->getCoinage();
+				currObj -= 10000;
 				frame = currObj;
 			}
 
-			objects->enable(1);
+			objectActor->enable(1);
 
 			// Move from below screen
 			if (_gotObjTime > 16) {
-				objects->setEffect(4);
-				objects->setPos(303, 185 + (_gotObjTime - 16)*(_gotObjTime - 16));
-				objects->setRatio(1024, 1024);
-				objects->setFrame(frame);
+				objectActor->setEffect(4);
+				objectActor->setPos(303, 185 + (_gotObjTime - 16)*(_gotObjTime - 16));
+				objectActor->setRatio(1024, 1024);
+				objectActor->setFrame(frame);
 
 			// Stay on screen
 			} else if (_gotObjTime > 8) {
-				objects->setEffect(4);
-				objects->setPos(303, 185);
-				objects->setRatio(1024, 1024);
-				objects->setFrame(frame);
+				objectActor->setEffect(4);
+				objectActor->setPos(303, 185);
+				objectActor->setRatio(1024, 1024);
+				objectActor->setFrame(frame);
 
 			// Zoom out of screen
 			} else {
 				xRatio = yRatio = 0x2710 / (24 - _gotObjTime);
-				objects->setEffect(0);
-				objects->setPos(303, 185);
-				objects->setRatio(xRatio, yRatio);
-				objects->setFrame(frame);
+				objectActor->setEffect(0);
+				objectActor->setPos(303, 185);
+				objectActor->setRatio(xRatio, yRatio);
+				objectActor->setFrame(frame);
 			}
 		}
 
 		// Display object
-		objects->display();
-		objects->enable(0);
+		objectActor->display();
+		objectActor->enable(0);
 		if (_gotObjTime == 0)
 			_gotObjects.pop_front();
 	}

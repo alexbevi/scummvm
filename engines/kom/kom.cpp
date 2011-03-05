@@ -147,6 +147,10 @@ Common::Error KomEngine::run() {
 	return Common::kNoError;
 }
 
+static const int goldLookup[] = {
+	0, 1, 2, 2, 3, 3, 3
+};
+
 void KomEngine::gameLoop() {
 	// TODO:
 	// setFrameRate(24)
@@ -157,6 +161,7 @@ void KomEngine::gameLoop() {
 	_game->player()->commandState = 0;
 	_game->player()->narratorTalking = false;
 	_database->getChar(0)->_isBusy = false;
+	_game->player()->oldGold = _database->getChar(0)->_gold;
 	_game->settings()->objectNum = _game->settings()->object2Num = -1;
 	_game->settings()->overType = _game->settings()->oldOverType = 0;
 	_game->settings()->overNum = _game->settings()->oldOverNum = -1;
@@ -233,7 +238,25 @@ void KomEngine::gameLoop() {
 		_game->loopSpriteCut();
 		// loopSpells
 		_game->loopTimeouts();
-		// lose/get gold
+
+		// Draw lost/received gold
+		int goldOffset = _database->getChar(0)->_gold - _game->player()->oldGold;
+		if (goldOffset != 0)
+		{
+			int obj;
+
+			if (ABS(goldOffset) >= 8)
+				obj = 4;
+			else
+				obj = goldLookup[ABS(goldOffset)-1];
+
+			if (goldOffset > 0)
+				_game->doActionGotObject(10000 + obj);
+			else
+				_game->doActionLostObject(10000 + obj);
+			_game->player()->oldGold = _database->getChar(0)->_gold;
+		}
+
 		if (_game->player()->narratorTalking &&
 		    !_game->isNarratorPlaying())
 			_game->narratorStop();
