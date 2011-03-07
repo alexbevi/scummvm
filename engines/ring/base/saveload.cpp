@@ -31,9 +31,18 @@ namespace Ring {
 
 SaveManager::SaveManager(Application *application) : _app(application) {
 	_zone = kZoneNone;
+
+	_loadFrom = kLoadFromInvalid;
+	_archiveType = kArchiveInvalid;
+
+	_hasPuzzle = false;
+	_puzzleId = kPuzzleInvalid;
+
 	_hasRotation = false;
 	_rotationId = 0;
-	_puzzleId = kPuzzleInvalid;
+	_rotationFre = false;
+	_isRotationCompressed = true;
+
 	_setupType = kSetupTypeNone;
 
 	_currentTicks = 0;
@@ -61,6 +70,14 @@ bool SaveManager::has(Common::String filename) {
 	warning("[SaveManager::has] Not implemented");
 
 	return false;
+}
+
+bool SaveManager::isSaving() {
+	error("[SaveManager::isSaving] Not implemented");
+}
+
+void SaveManager::process(Common::Serializable *ser) {
+	error("[SaveManager::process] Not implemented");
 }
 
 } // End of namespace Ring

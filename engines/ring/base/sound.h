@@ -152,7 +152,7 @@ private:
 	uint32         _field_13E;
 };
 
-class SoundManager {
+class SoundManager : public Common::Serializable {
 public:
 	SoundManager(Application *application, Audio::Mixer *mixer);
 	~SoundManager();
@@ -172,7 +172,7 @@ public:
 	bool isPlayingType(SoundType soundType);
 	void clear();
 
-	void sub_4696F0();
+	void playSounds();
 
 	// Sound entries
 	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk);
@@ -181,6 +181,9 @@ public:
 	// Accessors
 	float getGlobalVolume() { return _globalVolume; }
 	Audio::Mixer *getMixer() { return _mixer; }
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
 	Application                    *_app;

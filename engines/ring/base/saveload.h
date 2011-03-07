@@ -28,6 +28,8 @@
 
 #include "ring/shared.h"
 
+#include "common/serializer.h"
+
 namespace Ring {
 
 class Application;
@@ -44,15 +46,27 @@ public:
 
 	uint32 getTicks() { return _currentTicks; }
 
+	bool isSaving();
+
+	void process(Common::Serializable *ser);
+
 	// Helper
 	template<class T>
 	static void syncArray(Common::Serializer &s, Common::Array<T *> *arr);
 
 	// Accessors
 	Zone getZone() const { return _zone; }
+	bool hasPuzzle() const { return _hasPuzzle; }
+	PuzzleId getPuzzleId() const { return _puzzleId; }
+
 	bool hasRotation() const { return _hasRotation; }
 	Id getRotationId() const { return _rotationId; }
-	PuzzleId getPuzzleId() const { return _puzzleId; }
+	bool getRotationFre() { return _rotationFre; }
+	bool isRotationCompressed() { return _isRotationCompressed; }
+
+	ArchiveType getArchiveType() { return _archiveType; }
+	LoadFrom getLoadFrom() { return _loadFrom; }
+
 	SetupType getSetupType() const { return _setupType; }
 	Common::String *getName() { return &_savename; }
 
@@ -61,11 +75,20 @@ public:
 private:
 	Application *_app;
 
+	ArchiveType _archiveType;
+	LoadFrom _loadFrom;
+
 	Common::String _savename;
 	Zone _zone;
+
+	bool _hasPuzzle;
+	PuzzleId _puzzleId;
+
 	bool _hasRotation;
 	Id _rotationId;
-	PuzzleId _puzzleId;
+	bool _rotationFre;
+	bool _isRotationCompressed;
+
 	SetupType _setupType;
 
 	uint32 _currentTicks; // Ticks at the time of loading/saving

@@ -565,7 +565,28 @@ void ApplicationRing::setZone(Zone zone, SetupType type) {
 	}
 
 	if (type == 1000) {
-		error("[ApplicationRing::setZone] Not implemented (type == 1000)");
+		if (getSaveManager()->hasPuzzle())
+			puzzleSetActive(getSaveManager()->getPuzzleId(), false, true);
+
+		if (getSaveManager()->hasRotation()) {
+			rotationSetActive(getSaveManager()->getRotationId(), false, true);
+
+			getCurrentRotation()->setFreOnOff(getSaveManager()->getRotationFre());
+		}
+
+		_loadFrom = getSaveManager()->getLoadFrom();
+		_isRotationCompressed = getSaveManager()->isRotationCompressed();
+		_archiveType = getSaveManager()->getArchiveType();
+
+		getSaveManager()->process(_soundManager);
+		if (getSaveManager()->isSaving()) {
+			_soundManager->playSounds();
+		} else {
+			_preferenceHandler->load();
+			_soundManager->playSounds();
+		}
+
+		return;
 	}
 
 	// Setup zone

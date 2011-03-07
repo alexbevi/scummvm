@@ -452,8 +452,8 @@ void SoundManager::clear() {
 	CLEAR_ARRAY(SoundEntry, _entries);
 }
 
-void SoundManager::sub_4696F0() {
-	error("[SoundManager::sub_4696F0] Not implemented");
+void SoundManager::playSounds() {
+	error("[SoundManager::playSounds] Not implemented");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -478,6 +478,10 @@ SoundEntry *SoundManager::getEntry(Id soundId) {
 		return NULL;
 
 	return _entries.get(soundId);
+}
+
+void SoundManager::saveLoadWithSerializer(Common::Serializer &s) {
+	error("[SoundManager::saveLoadWithSerializer] Not implemented");
 }
 
 #pragma endregion
