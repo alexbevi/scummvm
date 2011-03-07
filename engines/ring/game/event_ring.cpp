@@ -1131,11 +1131,244 @@ void EventHandlerRing::onSetupLoadTimers(Common::String zoneName, Id testId1, Id
 #pragma region Update
 
 void EventHandlerRing::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {
-	error("[EventHandlerRing::onUpdateBefore] Not implemented");
+	if (movabilityIndex == 1 || a4 == 1) {
+		onUpdateBeforeZoneSY(movabilityFrom, movabilityTo, movabilityIndex, a4, movabilityType, point);
+		return;
+	}
+
+	switch (_app->getCurrentZone()) {
+	default:
+		break;
+
+	case kZoneSY:
+		onUpdateBeforeZoneSY(movabilityFrom, movabilityTo, movabilityIndex, a4, movabilityType, point);
+		break;
+
+	case kZoneNI:
+		onUpdateBeforeZoneNI(movabilityFrom, movabilityTo, movabilityIndex, a4, movabilityType, point);
+		break;
+
+	case kZoneN2:
+		onUpdateBeforeZoneN2(movabilityFrom, movabilityTo, movabilityIndex, a4, movabilityType, point);
+		break;
+	}
 }
 
 void EventHandlerRing::onUpdateBag(const Common::Point &point) {
-	error("[EventHandlerRing::onUpdateBag] Not implemented");
+	if (_app->getCurrentZone() == kZoneSY)
+		onUpdateBagZoneSY(point);
+}
+
+void EventHandlerRing::onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {
+	switch (movabilityFrom) {
+	default:
+		break;
+
+	case 2:
+		switch (movabilityTo) {
+		default:
+			break;
+
+		case 0:
+			_app->objectPresentationHide(kObject2, 1);
+			_app->objectPresentationShow(kObject2, 2);
+			break;
+
+		case 1:
+			_app->objectPresentationHide(kObject2, 2);
+			_app->objectPresentationShow(kObject2, 1);
+			break;
+		}
+		break;
+
+	case 3:
+		_app->objectPresentationShow(kObject3, 1);
+		break;
+
+	case 4: {
+		int32 val = movabilityTo & 0x80000001;
+		bool state = (val < 0 ? ((val - 1) | 0xFFFFFFFE) == -1 : val == 0);
+
+		if (state) {
+			_app->objectPresentationHide(kObject4, 2);
+			_app->objectPresentationShow(kObject4, 1);
+		} else {
+			_app->objectPresentationHide(kObject4, 1);
+			_app->objectPresentationShow(kObject4, 2);
+		}
+		}
+		break;
+
+	case 90000:
+		_app->objectPresentationHide(kObjectMenuNewGame, 0);
+		_app->objectPresentationHide(kObjectMenuPreferences, 0);
+		_app->objectPresentationHide(kObjectMenuLoad, 0);
+		_app->objectPresentationHide(kObjectMenuSave, 0);
+		_app->objectPresentationHide(kObjectMenuContinue, 0);
+		_app->objectPresentationHide(kObjectMenuExit, 0);
+		_app->objectPresentationShow(kObjectMenuNewGame, 0);
+		break;
+
+	case 90001:
+		_app->objectPresentationHide(kObjectMenuNewGame, 0);
+		_app->objectPresentationHide(kObjectMenuPreferences, 0);
+		_app->objectPresentationHide(kObjectMenuLoad, 0);
+		_app->objectPresentationHide(kObjectMenuSave, 0);
+		_app->objectPresentationHide(kObjectMenuContinue, 0);
+		_app->objectPresentationHide(kObjectMenuStatus, 0);
+		_app->objectPresentationHide(kObjectMenuExit, 0);
+		_app->objectPresentationShow(kObjectMenuPreferences, 0);
+		break;
+
+	case 90002:
+		_app->objectPresentationHide(kObjectMenuNewGame, 0);
+		_app->objectPresentationHide(kObjectMenuPreferences, 0);
+		_app->objectPresentationHide(kObjectMenuLoad, 0);
+		_app->objectPresentationHide(kObjectMenuSave, 0);
+		_app->objectPresentationHide(kObjectMenuContinue, 0);
+		_app->objectPresentationHide(kObjectMenuStatus, 0);
+		_app->objectPresentationHide(kObjectMenuExit, 0);
+		_app->objectPresentationShow(kObjectMenuLoad, 0);
+		break;
+
+	case 90003:
+		_app->objectPresentationHide(kObjectMenuNewGame, 0);
+		_app->objectPresentationHide(kObjectMenuPreferences, 0);
+		_app->objectPresentationHide(kObjectMenuLoad, 0);
+		_app->objectPresentationHide(kObjectMenuSave, 0);
+		_app->objectPresentationHide(kObjectMenuContinue, 0);
+		_app->objectPresentationHide(kObjectMenuStatus, 0);
+		_app->objectPresentationHide(kObjectMenuExit, 0);
+		_app->objectPresentationShow(kObjectMenuSave, 0);
+		break;
+
+	case 90005:
+		_app->objectPresentationHide(kObjectMenuNewGame, 0);
+		_app->objectPresentationHide(kObjectMenuPreferences, 0);
+		_app->objectPresentationHide(kObjectMenuLoad, 0);
+		_app->objectPresentationHide(kObjectMenuSave, 0);
+		_app->objectPresentationHide(kObjectMenuContinue, 0);
+		_app->objectPresentationHide(kObjectMenuStatus, 0);
+		_app->objectPresentationHide(kObjectMenuExit, 0);
+		_app->objectPresentationShow(kObjectMenuStatus, 0);
+		break;
+
+	case 90004:
+		_app->objectPresentationHide(kObjectMenuNewGame, 0);
+		_app->objectPresentationHide(kObjectMenuPreferences, 0);
+		_app->objectPresentationHide(kObjectMenuLoad, 0);
+		_app->objectPresentationHide(kObjectMenuSave, 0);
+		_app->objectPresentationHide(kObjectMenuContinue, 0);
+		_app->objectPresentationHide(kObjectMenuStatus, 0);
+		_app->objectPresentationHide(kObjectMenuExit, 0);
+		_app->objectPresentationShow(kObjectMenuContinue, 0);
+		break;
+
+	case 90006:
+		_app->objectPresentationHide(kObjectMenuNewGame, 0);
+		_app->objectPresentationHide(kObjectMenuPreferences, 0);
+		_app->objectPresentationHide(kObjectMenuLoad, 0);
+		_app->objectPresentationHide(kObjectMenuSave, 0);
+		_app->objectPresentationHide(kObjectMenuContinue, 0);
+		_app->objectPresentationHide(kObjectMenuStatus, 0);
+		_app->objectPresentationHide(kObjectMenuExit, 0);
+		_app->objectPresentationShow(kObjectMenuExit, 0);
+		break;
+
+	case 90101:
+		_app->objectPresentationShow(kObjectPreferencesCancel, 0);
+		_app->objectPresentationHide(kObjectPreferencesOk, 0);
+		break;
+
+	case 90102:
+		_app->objectPresentationHide(kObjectPreferencesCancel, 0);
+		_app->objectPresentationShow(kObjectPreferencesOk, 0);
+		break;
+
+	case 90104:
+		_app->objectPresentationShow(kObjectPreferences3dSound, 2);
+		break;
+
+	case 90207:
+		_app->objectPresentationHide(kObjectLoadOk, 0);
+		_app->objectPresentationShow(kObjectLoadCancel, 0);
+		break;
+
+	case 90208:
+		_app->objectPresentationShow(kObjectLoadOk, 0);
+		_app->objectPresentationHide(kObjectLoadCancel, 0);
+		break;
+
+	case 90401:
+		_app->objectPresentationShow(kObjectStatusOk, 0);
+		break;
+
+	case 90309:
+		_app->objectPresentationShow(kObjectSaveOk, 0);
+		_app->objectPresentationHide(kObjectSaveCancel, 0);
+		break;
+
+	case 90310:
+		_app->objectPresentationHide(kObjectSaveOk, 0);
+		_app->objectPresentationShow(kObjectSaveCancel, 0);
+		break;
+
+	case 90912:
+		_app->objectPresentationShow(kObject90912, 0);
+		break;
+	}
+}
+
+void EventHandlerRing::onUpdateBeforeZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {
+	if (movabilityFrom == 10100 && movabilityTo == 0) {
+		_app->rotationSetActive(10101);
+		_app->objectSetAccessibilityOn(kObject10101, 0, 0);
+		_app->objectSetAccessibilityOn(kObject10102, 0, 0);
+		_app->objectSetAccessibilityOn(kObject10101, 2, 2);
+		_app->objectSetAccessibilityOn(kObject10102, 2, 2);
+		_app->objectSetAccessibilityOn(kObject10100, 4, 4);
+
+		g_system->warpMouse(point.x, point.y);
+	}
+}
+
+void EventHandlerRing::onUpdateBeforeZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {
+	if (movabilityFrom == 70100 && movabilityTo == 0) {
+		_app->rotationSetActive(70100);
+		_app->objectSetAccessibilityOn(kObject70101, 0, 0);
+		_app->objectSetAccessibilityOn(kObject70102, 0, 0);
+		_app->objectSetAccessibilityOn(kObject70101, 2, 2);
+		_app->objectSetAccessibilityOn(kObject70102, 2, 2);
+		_app->objectSetAccessibilityOn(kObject70100, 4, 4);
+
+		g_system->warpMouse(point.x, point.y);
+	}
+}
+
+void EventHandlerRing::onUpdateBagZoneSY(const Common::Point &point) {
+	_app->objectPresentationHide(kObjectMenuNewGame, 0);
+	_app->objectPresentationHide(kObjectMenuPreferences, 0);
+	_app->objectPresentationHide(kObjectMenuLoad, 0);
+	_app->objectPresentationHide(kObjectMenuSave, 0);
+	_app->objectPresentationHide(kObjectMenuContinue, 0);
+	_app->objectPresentationHide(kObjectMenuExit, 0);
+	_app->objectPresentationHide(kObjectPreferencesCancel, 0);
+	_app->objectPresentationHide(kObjectPreferencesOk, 0);
+	_app->objectPresentationHide(kObjectPreferences3dSound, 2);
+	_app->objectPresentationHide(kObjectLoadOk, 0);
+	_app->objectPresentationHide(kObjectLoadCancel, 0);
+	_app->objectPresentationHide(kObjectSaveOk, 0);
+	_app->objectPresentationHide(kObjectSaveCancel, 0);
+	_app->objectPresentationHide(kObjectMenuStatus, 0);
+	_app->objectPresentationHide(kObjectStatusOk, 0);
+	_app->objectPresentationHide(kObject2, 1);
+	_app->objectPresentationHide(kObject2, 2);
+	_app->objectPresentationHide(kObject4, 1);
+	_app->objectPresentationHide(kObject4, 2);
+	_app->objectPresentationHide(kObject3, 1);
+	_app->objectPresentationHide(kObject90912, 0);
+
+	_app->cursorSelect(kCursorMenuIdle);
 }
 
 #pragma endregion

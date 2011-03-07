@@ -118,6 +118,14 @@ private:
 	void onSetupLoadTimers(Common::String zoneName, Id testId1, Id puzzleRotationId, Id testId2);
 
 	//////////////////////////////////////////////////////////////////////////
+	// Update
+	//////////////////////////////////////////////////////////////////////////
+	void onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point);
+	void onUpdateBeforeZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point);
+	void onUpdateBeforeZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point);
+	void onUpdateBagZoneSY(const Common::Point &point);
+
+	//////////////////////////////////////////////////////////////////////////
 	// Timer
 	//////////////////////////////////////////////////////////////////////////
 	void onTimerZoneNI(TimerId id);
