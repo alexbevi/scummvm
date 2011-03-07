@@ -193,7 +193,7 @@ public:
 	// Object
 	void objectAdd(ObjectId objectId, Common::String description, Common::String name, byte a5);
 	void objectRemove(ObjectId objectId);
-	Object *objectGet(ObjectId objectId);
+	Object *getObject(ObjectId objectId);
 
 	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
 	void objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key);
@@ -250,6 +250,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Rotation
+	Rotation *getRotation(Id rotationId);
 	void rotationAdd(Id rotationId, Common::String name, byte a3, uint32 nodeCount);
 	void rotationSetComBufferLength(Id rotationId, uint32 length);
 	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
@@ -387,9 +388,16 @@ public:
 	ArchiveType getArchiveType() { return _archiveType; }
 	char getField6F() { return _field_6F; }
 	State getState() { return _state; }
+	bool getField74() { return _field_74; }
+	bool getField75() { return _field_75; }
 	bool getField76() { return _field_76; }
+	bool getField77() { return _field_77; }
+	bool getField78() { return _field_78; }
 
+	void setField74(bool state) { _field_74 = state; }
+	void setField75(bool state) { _field_75 = state; }
 	void setField76(bool state) { _field_76 = state; }
+	void setField77(bool state) { _field_77 = state; }
 	void setField78(bool state) { _field_78 = state; }
 
 
@@ -430,10 +438,10 @@ protected:
 	Zone                          _zone;          // original uses byte
 	char                          _field_6F;
 	uint32                        _field_70;
-	char                          _field_74;
-	char                          _field_75;
+	bool                          _field_74;
+	bool                          _field_75;
 	bool                          _field_76;
-	char                          _field_77;
+	bool                          _field_77;
 	bool                          _field_78;
 	AssociativeArray<Object *>    _objects;
 	AssociativeArray<Puzzle *>    _puzzles;

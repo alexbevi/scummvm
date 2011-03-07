@@ -39,36 +39,53 @@ public:
 	Movability(BaseId from, BaseId to, Common::String name, MovabilityType type);
 	~Movability();
 
-	void update(float a1, float a2, float a3, float a4, byte a5, float a6, float a7, float a8);
+	void update(float a1, float a2, float a3, float a4, byte a5, float alpAfter, float betAfter, float ranAfter);
 
 	void setHotspot(const Common::Rect &rect, bool enabled, uint32 a3, uint32 a4);
 	Hotspot *getHotspot();
 	void enableHotspot();
 	void disableHotspot();
 
+	// Accessors
+	BaseId getTo() { return _to; }
 	MovabilityType getType() { return _type; }
-
 	Common::String getRideName() { return _name; }
+	float getAlpBefore() { return _beforeRide.alp; }
+	float getBetBefore() { return _beforeRide.bet; }
+	float getRanBefore() { return _beforeRide.ran; }
+	float getAlpAfter() { return _afterRide.alp; }
+	float getBetAfter() { return _afterRide.bet; }
+	float getRanAfter() { return _afterRide.ran; }
+	byte getUpdateType() { return _updateType; }
+
 	void setRideName(Common::String name) { _name = name; }
 
 	// Serializable
 	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
+	struct Coords {
+		float alp;
+		float bet;
+		float ran;
+
+		Coords() {
+			alp	= 0.0f;
+			bet	= 0.0f;
+			ran	= 0.0f;
+		}
+	};
+
 	uint32            _field_0;
 	BaseId            _from;
 	Hotspot          *_hotspot;
 	BaseId            _to;
 	Common::String    _name;
 	MovabilityType    _type;
-	float             _field_18;
-	float             _field_1C;
-	float             _field_20;
+	Coords            _beforeRide;
 	float             _field_24;
-	byte              _field_28;
-	float             _field_29;
-	float             _field_2D;
-	float             _field_31;
+	byte              _updateType;
+	Coords            _afterRide;
 };
 
 } // End of namespace Ring

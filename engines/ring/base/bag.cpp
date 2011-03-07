@@ -200,6 +200,10 @@ void Bag::sub_417E00() {
 	error("[Bag::sub_417E00] Not implemented!");
 }
 
+uint32 Bag::checkHotspots(const Common::Point &point) {
+	error("[Bag::checkHotspots] Not implemented!");
+}
+
 bool Bag::sub_418A70(const Common::Point &point) {
 	error("[Bag::sub_418A70] Not implemented!");
 }
@@ -316,7 +320,7 @@ void Bag::add(ObjectId objectId) {
 	if (_objects.has(objectId))
 		return;
 
-	Object *object = getApp()->objectGet(objectId);
+	Object *object = getApp()->getObject(objectId);
 	_objects.push_back(object);
 
 	// Setup animation image

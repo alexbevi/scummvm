@@ -40,29 +40,29 @@ Movability::Movability(BaseId from, BaseId to, Common::String name, MovabilityTy
 	_hotspot = NULL;
 	_to = to;
 	_type = type;
-	_field_18 = 0.0f;
-	_field_1C = 0.0f;
-	_field_20 = 85.0f;
+	_beforeRide.alp = 0.0f;
+	_beforeRide.bet = 0.0f;
+	_beforeRide.ran = 85.0f;
 	_field_24 = 0.0f;
-	_field_28 = 2;
-	_field_29 = 0.0f;
-	_field_2D = 0.0f;
-	_field_31 = 85.0f;
+	_updateType = 2;
+	_afterRide.alp = 0.0f;
+	_afterRide.bet = 0.0f;
+	_afterRide.ran = 85.0f;
 }
 
 Movability::~Movability() {
 	SAFE_DELETE(_hotspot);
 }
 
-void Movability::update(float a1, float a2, float a3, float a4, byte a5, float a6, float a7, float a8) {
-	_field_18 = a1;
-	_field_1C = a2;
-	_field_20 = a3;
+void Movability::update(float alpBefore, float betBefore, float ranBefore, float a4, byte updateType, float alpAfter, float betAfter, float ranAfter) {
+	_beforeRide.alp = alpBefore;
+	_beforeRide.bet = betBefore;
+	_beforeRide.ran = ranBefore;
 	_field_24 = a4;
-	_field_28 = a5;
-	_field_29 = a6;
-	_field_2D = a7;
-	_field_31 = a8;
+	_updateType = updateType;
+	_afterRide.alp = alpAfter;
+	_afterRide.bet = betAfter;
+	_afterRide.ran = ranAfter;
 }
 
 Hotspot *Movability::getHotspot() {
@@ -92,14 +92,14 @@ void Movability::saveLoadWithSerializer(Common::Serializer &s) {
 	_hotspot->saveLoadWithSerializer(s);
 	s.syncString(_name);
 	s.syncAsUint32LE(_to);
-	s.syncAsUint32LE(_field_18);
-	s.syncAsUint32LE(_field_1C);
-	s.syncAsUint32LE(_field_20);
+	s.syncAsUint32LE(_beforeRide.alp);
+	s.syncAsUint32LE(_beforeRide.bet);
+	s.syncAsUint32LE(_beforeRide.ran);
 	s.syncAsUint32LE(_field_24);
-	s.syncAsByte(_field_28);
-	s.syncAsUint32LE(_field_29);
-	s.syncAsUint32LE(_field_2D);
-	s.syncAsUint32LE(_field_31);
+	s.syncAsByte(_updateType);
+	s.syncAsUint32LE(_afterRide.alp);
+	s.syncAsUint32LE(_afterRide.bet);
+	s.syncAsUint32LE(_afterRide.ran);
 }
 
 #pragma endregion

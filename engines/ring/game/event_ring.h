@@ -32,6 +32,7 @@ namespace Ring {
 
 class Accessibility;
 class ApplicationRing;
+class Movability;
 
 class EventHandlerRing : public EventHandler {
 public:
@@ -67,6 +68,9 @@ private:
 	void onMouseLeftButtonUp(Common::Event &evt);
 	bool handleLeftButtonDown(Accessibility *accessibility, uint32 index, Id id, const Common::Point &point);
 
+	bool handleLeftButtonUp(Accessibility *accessibility, Id id, const Common::Point &point);
+	bool handleLeftButtonUp(Movability *movability, uint32 index, Id id, bool isRotation = false);
+
 	//////////////////////////////////////////////////////////////////////////
 	// Left button down
 	//////////////////////////////////////////////////////////////////////////
@@ -75,6 +79,21 @@ private:
 	void onButtonDownZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	void onButtonDownZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	void onButtonDownZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+
+	void onButtonUp(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneRH(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneWA(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneAS(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+
+	void onButtonUp2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUp2ZoneWA(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+
+	// Loading/Saving
+	void onSaveLoad(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Key down

@@ -72,6 +72,7 @@ public:
 	void setMovabilityOnOrOff(bool enableHotspot);
 	void setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability);
 	Movability *getMovability(const Common::Point &point);
+	int32 getMovabilityIndex(const Common::Point &point);
 
 	// Visual
 	void addVisual(Visual *visual);

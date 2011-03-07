@@ -430,7 +430,7 @@ void VisualObjectList::add(ObjectId objectId) {
 		return;
 	}
 
-	Object *object = getApp()->objectGet(objectId);
+	Object *object = getApp()->getObject(objectId);
 	ImageHandle *image = NULL;
 
 	if (object->getAnimationImage()) {

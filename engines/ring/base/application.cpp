@@ -61,12 +61,12 @@
 namespace Ring {
 
 Application::Application(RingEngine *engine) : _vm(engine),
-	_screenManager(NULL),  _artHandler(NULL),          _fontHandler(NULL),   _dialogHandler(NULL), _languageHandler(NULL),
-	_isRotationCompressed(true),          _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
-	_soundHandler(NULL),   _state(kStateNone),         _field_6A(0),         _zoneString("A0"),      _zone(kZoneNone),
-	_field_6F(0),          _field_70(0),               _field_74(0),         _field_75(0),         _field_76(false),
-	_field_77(0),          _field_78(false),           _puzzle(NULL),        _rotation(NULL),      _bag(NULL),
-	_timerHandler(NULL),   _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL), _preferenceHandler(NULL),
+	_screenManager(NULL),        _artHandler(NULL),          _fontHandler(NULL),   _dialogHandler(NULL),        _languageHandler(NULL),
+	_isRotationCompressed(true), _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
+	_soundHandler(NULL),         _state(kStateNone),         _field_6A(0),         _zoneString("A0"),           _zone(kZoneNone),
+	_field_6F(0),                _field_70(0),               _field_74(false),     _field_75(false),            _field_76(false),
+	_field_77(false),            _field_78(false),           _puzzle(NULL),        _rotation(NULL),             _bag(NULL),
+	_timerHandler(NULL),         _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL),        _preferenceHandler(NULL),
 	_eventHandler(NULL) {
 
 	// Start managers
@@ -77,8 +77,6 @@ Application::Application(RingEngine *engine) : _vm(engine),
 }
 
 Application::~Application() {
-	// TODO delete global image buffer
-
 	SAFE_DELETE(_screenManager);
 	SAFE_DELETE(_artHandler);
 	SAFE_DELETE(_fontHandler);
@@ -1302,7 +1300,7 @@ void Application::objectRemove(ObjectId id) {
 	_objects.remove(id);
 }
 
-Object *Application::objectGet(ObjectId objectId) {
+Object *Application::getObject(ObjectId objectId) {
 	if (!_objects.has(objectId))
 		error("[Application::objectGet] Object Id doesn't exist (%d)", objectId.id());
 
@@ -1701,6 +1699,13 @@ void Application::initObjectDrawCursors(ObjectId objectId) {
 #pragma endregion
 
 #pragma region Rotation
+
+Rotation *Application::getRotation(Id rotationId) {
+	if (!_rotations.has(rotationId))
+		return NULL;
+
+	return _rotations.get(rotationId);
+}
 
 void Application::rotationAdd(Id rotationId, Common::String name, byte a3, uint32 nodeCount) {
 	if (_rotations.has(rotationId))

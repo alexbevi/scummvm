@@ -272,9 +272,11 @@ public:
 	void reset();
 
 	// Accessors
-	void setReverseStereo(int32 reverseStereo);
 	float getDirection() { return _direction; }
 	bool getField0() { return _field_0; }
+
+	void setField0(bool state) { _field_0 = state; }
+	void setReverseStereo(int32 reverseStereo);
 	void setSounds1(AssociativeArray<SoundItem *>* sounds) { _sounds1 = sounds; }
 	void setSounds2(AssociativeArray<SoundItem *>* sounds) { _sounds2 = sounds; }
 

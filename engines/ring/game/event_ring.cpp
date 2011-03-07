@@ -27,6 +27,7 @@
 
 #include "ring/base/accessibility.h"
 #include "ring/base/bag.h"
+#include "ring/base/movability.h"
 #include "ring/base/object.h"
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
@@ -75,7 +76,290 @@ void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt, bool isControlPre
 void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt) {
 	debugC(kRingDebugLogic, "onMouseLeftButtonUp");
 
-	error("[EventHandlerRing::onMouseLeftButtonUp] Not implemented");
+	// Handle clicks on bag
+	Bag *bag = _app->getBag();
+	if (bag->getField94()) {
+		if (bag->checkHotspots(evt.mouse) == 1) {
+
+			// Handle clicked object event
+			onBagClickedObject(_app->getBag()->getClickedObject());
+
+			if (_app->getField77()) {
+				bag->sub_419350();
+				_app->setFreOffCurrentRotation();
+
+				if (_app->getField78()) {
+					_app->initObjectCursors(bag->getClickedObject());
+				} else {
+					_app->setField78(true);
+					_app->cursorDelete();
+				}
+
+				// Center cursor on screen
+				g_system->warpMouse(320, 240);
+
+			} else {
+				_app->setField77(true);
+				_app->cursorDelete();
+			}
+		}
+
+		return;
+	}
+
+	// Handle clicks on drag control
+	DragControl *dragControl = _app->getDragControl();
+	if (dragControl->getField20()) {
+		onBag(dragControl->getObjectId(), dragControl->getField31(), dragControl->getPuzzleRotationId(), dragControl->getField39(), dragControl, 2);
+
+		if (_app->getState() == kStateShowMenu)
+			return;
+
+		dragControl->reset();
+
+		if (dragControl->getField45() == 2)
+			return;
+	}
+
+	// Handle clicks on menu
+	Puzzle *puzzleMenu = _app->getPuzzle(kPuzzleMenu);
+	if (puzzleMenu) {
+		if (puzzleMenu->visualHandleLeftButtonUp(evt.mouse)) {
+			_app->update(evt.mouse);
+			return;
+		}
+
+		Accessibility *accessibility = puzzleMenu->getAccessibility(evt.mouse);
+		if (handleLeftButtonUp(accessibility, puzzleMenu->getId(), evt.mouse))
+			return;
+
+		if (puzzleMenu->getField24() == 1) {
+			Movability *movability = puzzleMenu->getMovability(evt.mouse);
+			if (handleLeftButtonUp(movability, puzzleMenu->getMovabilityIndex(evt.mouse), puzzleMenu->getId()))
+				return;
+		}
+
+		if (puzzleMenu->getField24() == 2)
+			return;
+	}
+
+	// Handle current puzzle
+	Puzzle *currentPuzzle = _app->getCurrentPuzzle();
+	if (currentPuzzle) {
+		if (puzzleMenu->visualHandleLeftButtonUp(evt.mouse)) {
+			_app->update(evt.mouse);
+			return;
+		}
+
+		Accessibility *accessibility = currentPuzzle->getAccessibility(evt.mouse);
+		if (handleLeftButtonUp(accessibility, currentPuzzle->getId(), evt.mouse))
+			return;
+
+		Movability *movability = currentPuzzle->getMovability(evt.mouse);
+		if (handleLeftButtonUp(movability, currentPuzzle->getMovabilityIndex(evt.mouse), currentPuzzle->getId()))
+			return;
+	}
+
+	// Handle current rotation
+	Rotation *currentRotation = _app->getCurrentRotation();
+	if (currentRotation) {
+		if (!currentRotation->getField28())
+			return;
+
+		Accessibility *accessibility = currentRotation->getAccessibility(evt.mouse);
+		if (handleLeftButtonUp(accessibility, currentRotation->getId(), evt.mouse))
+			return;
+
+		Movability *movability = currentPuzzle->getMovability(evt.mouse);
+		if (handleLeftButtonUp(movability, currentPuzzle->getMovabilityIndex(evt.mouse), currentPuzzle->getId(), true))
+			return;
+
+		if (_app->getField75())
+			_app->cursorDelete();
+
+		_app->setField75(true);
+	}
+}
+
+bool EventHandlerRing::handleLeftButtonUp(Accessibility *accessibility, Id id, const Common::Point &point) {
+	if (!accessibility)
+		return false;
+
+	Object *object = accessibility->getObject();
+	Hotspot *hotspot = accessibility->getHotspot();
+
+	if (object->getFieldC() & 1) {
+		onButtonUp(object->getId(), hotspot->getField19(), id, 1, point);
+
+		if (_app->getState() == kStateShowMenu)
+			return true;
+	}
+
+	if (!(object->getFieldC() & 8)) {
+		_app->update(point);
+		return true;
+	}
+
+	onButtonUp2(object->getId(), hotspot->getField19(), id, 1, point);
+
+	if (_app->getState() != kStateShowMenu) {
+		if (_app->getField74()) {
+			_app->cursorDelete();
+			_app->getBag()->setClickedObject(object->getId());
+			_app->initObjectCursors(object->getId());
+		}
+
+		_app->setField74(true);
+
+		_app->update(point);
+	}
+
+	return true;
+}
+
+bool EventHandlerRing::handleLeftButtonUp(Movability *movability, uint32 index, Id id, bool isRotation) {
+	if (!movability)
+		return false;
+
+	Hotspot *hotspot = movability->getHotspot();
+
+	//////////////////////////////////////////////////////////////////////////
+	// Before Ride
+	//////////////////////////////////////////////////////////////////////////
+	onBeforeRide(id, movability->getTo(), index, hotspot->getField19(), movability->getType());
+
+	if (_app->getState() == kStateShowMenu)
+		return true;
+
+	bool showRide = _controlNotPressed;
+
+	int updateType = 0;
+	if (isRotation) {
+		if (_controlNotPressed) {
+			updateType = movability->getUpdateType();
+		} else {
+			updateType = 2;
+			showRide = false;
+		}
+
+		switch (updateType) {
+		default:
+			break;
+
+		case 0:
+			showRide = _app->getCurrentRotation()->setRolTo(movability->getAlpBefore(), movability->getBetBefore(), movability->getRanBefore());
+			break;
+
+		case 1:
+			_app->getCurrentRotation()->updateAndDraw(movability->getAlpBefore(), movability->getBetBefore(), movability->getRanBefore());
+			break;
+		}
+
+	}
+
+	_app->puzzleReset();
+
+	switch (movability->getType()) {
+	default:
+		break;
+
+	case kMovabilityRotationToRotation:
+	case kMovabilityPuzzleToRotation:
+		if (isRotation)
+			break;
+
+		if (_app->getRotation(movability->getTo())) {
+			Rotation *rotation = _app->getRotation(movability->getTo());
+
+			float alp = movability->getAlpAfter() - 135.0f;
+			if (alp < 0.0f)
+				alp += 360.0f;
+
+			rotation->setAlp(alp);
+
+			rotation->updateAmbientSoundPan(false);
+
+			_app->getSoundHandler()->setSounds2(rotation->getSoundItems());
+			_app->getSoundHandler()->setField0(true);
+
+			if (!_app->getSoundHandler()->processSounds()) {
+				_app->getSoundHandler()->setField0(false);
+				_app->getSoundHandler()->turnOffSounds1(true);
+			}
+		}
+		break;
+
+	case kMovabilityRotationToPuzzle:
+	case kMovabilityPuzzleToPuzzle:
+		if (_app->getPuzzle((PuzzleId)movability->getTo())) {
+			Puzzle *puzzle = _app->getPuzzle((PuzzleId)movability->getTo());
+
+			_app->getSoundHandler()->setSounds2(puzzle->getSoundItems());
+			_app->getSoundHandler()->setField0(true);
+
+			if (!_app->getSoundHandler()->processSounds()) {
+				_app->getSoundHandler()->setField0(false);
+				_app->getSoundHandler()->turnOffSounds1(true);
+			}
+		}
+		break;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// Ride
+	//////////////////////////////////////////////////////////////////////////
+	if (showRide)
+		_app->playMovie(movability->getRideName());
+
+	//////////////////////////////////////////////////////////////////////////
+	// After ride
+	//////////////////////////////////////////////////////////////////////////
+	if (_app->getSoundHandler()->getField0()) {
+		_app->getSoundHandler()->turnOffItems1();
+
+		if (!_app->getSoundHandler()->sub_41AEE0(2)) {
+			_app->getSoundHandler()->turnOffSounds1(true);
+			_app->getSoundHandler()->setField0(false);
+		}
+	}
+
+	if (_app->getSoundHandler()->getField0()) {
+		_app->getSoundHandler()->sub_41B180(3.0f);
+		_app->getSoundHandler()->sub_41B350(3.0f);
+	}
+
+	switch (movability->getType()){
+	default:
+		break;
+
+	case kMovabilityRotationToRotation:
+	case kMovabilityPuzzleToRotation:
+		_app->rotationSetActive(movability->getTo());
+		_app->getCurrentRotation()->updateAndDraw(movability->getAlpAfter(), movability->getBetAfter(), movability->getRanAfter());
+
+		onAfterRide(_app->getCurrentRotationId(), id, index, hotspot->getField19(), movability->getType());
+
+		if (_app->getState() == kStateShowMenu)
+			return true;
+		break;
+
+	case kMovabilityRotationToPuzzle:
+	case kMovabilityPuzzleToPuzzle:
+		_app->puzzleSetActive((PuzzleId)movability->getTo());
+
+		onAfterRide(_app->getCurrentRotationId(), id, index, hotspot->getField19(), movability->getType());
+
+		if (_app->getState() == kStateShowMenu)
+			return true;
+		break;
+	}
+
+	if (_app->getField75())
+		_app->cursorDelete();
+
+	_app->setField75(true);
+
+	return true;
 }
 
 void EventHandlerRing::onMouseLeftButtonDown(Common::Event &evt) {
@@ -294,7 +578,7 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 
 #pragma endregion
 
-#pragma region Left Button Down
+#pragma region Left Button Up/Down
 
 void EventHandlerRing::onButtonDown(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
 	debugC(kRingDebugLogic, "onButtonDown (ObjectId: %d, coords: (%d, %d))", id.id(), point.x, point.y);
@@ -342,6 +626,116 @@ void EventHandlerRing::onButtonDownZoneRO(ObjectId id, uint32 a2, Id puzzleRotat
 
 void EventHandlerRing::onButtonDownZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
 	error("[EventHandlerRing::onButtonDownZoneN2] Not implemented");
+}
+
+void EventHandlerRing::onButtonUp(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	debugC(kRingDebugLogic, "onButtonUp (ObjectId: %d, coords: (%d, %d))", id.id(), point.x, point.y);
+
+	if (puzzleRotationId == 1 && a4 == 1) {
+		onSaveLoad(id, a2, puzzleRotationId, a4, point);
+		return;
+	}
+
+	switch (_app->getCurrentZone()) {
+	default:
+		break;
+
+	case kZoneSY:
+		onSaveLoad(id, a2, puzzleRotationId, a4, point);
+		break;
+
+	case kZoneNI:
+		onButtonUpZoneNI(id, a2, puzzleRotationId, a4, point);
+		break;
+
+	case kZoneRH:
+		onButtonUpZoneRH(id, a2, puzzleRotationId, a4, point);
+		break;
+
+	case kZoneFO:
+		onButtonUpZoneFO(id, a2, puzzleRotationId, a4, point);
+		break;
+
+	case kZoneRO:
+		onButtonUpZoneRO(id, a2, puzzleRotationId, a4, point);
+		break;
+
+	case kZoneWA:
+		onButtonUpZoneWA(id, a2, puzzleRotationId, a4, point);
+		break;
+
+	case kZoneAS:
+		onButtonUpZoneAS(id, a2, puzzleRotationId, a4, point);
+		break;
+
+	case kZoneN2:
+		onButtonUpZoneN2(id, a2, puzzleRotationId, a4, point);
+		break;
+	}
+}
+
+void EventHandlerRing::onButtonUpZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonUpZoneNI] Not implemented");
+}
+
+void EventHandlerRing::onButtonUpZoneRH(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonUpZoneRH] Not implemented");
+}
+
+void EventHandlerRing::onButtonUpZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonUpZoneFO] Not implemented");
+}
+
+void EventHandlerRing::onButtonUpZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonUpZoneRO] Not implemented");
+}
+
+void EventHandlerRing::onButtonUpZoneWA(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonUpZoneWA] Not implemented");
+}
+
+void EventHandlerRing::onButtonUpZoneAS(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonUpZoneAS] Not implemented");
+}
+
+void EventHandlerRing::onButtonUpZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonUpZoneN2] Not implemented");
+}
+
+void EventHandlerRing::onButtonUp2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	debugC(kRingDebugLogic, "onButtonUp2 (ObjectId: %d, coords: (%d, %d))", id.id(), point.x, point.y);
+
+	if (puzzleRotationId == 1 && a4 == 1) {
+		return;
+	}
+
+	switch (_app->getCurrentZone()) {
+	default:
+	case kZoneSY:
+	case kZoneNI:
+	case kZoneRH:
+	case kZoneRO:
+	case kZoneAS:
+	case kZoneN2:
+		break;
+
+	case kZoneFO:
+		onButtonDownZoneFO(id, a2, puzzleRotationId, a4, point);
+		break;
+
+	case kZoneWA:
+		onButtonUp2ZoneWA(id, a2, puzzleRotationId, a4, point);
+		break;
+	}
+}
+
+void EventHandlerRing::onButtonUp2ZoneWA(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonUp2ZoneWA] Not implemented");
+}
+
+// Loading/Saving
+void EventHandlerRing::onSaveLoad(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onSaveLoad] Not implemented");
 }
 
 #pragma endregion

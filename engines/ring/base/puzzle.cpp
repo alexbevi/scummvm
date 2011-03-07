@@ -342,6 +342,18 @@ Movability *Puzzle::getMovability(const Common::Point &point) {
 	return NULL;
 }
 
+int32 Puzzle::getMovabilityIndex(const Common::Point &point) {
+	for (uint32 i = 0; i < _movabilities.size(); i++) {
+		if (!_movabilities[i]->getHotspot()->isEnabled())
+			continue;
+
+		if (_movabilities[i]->getHotspot()->contains(point))
+			return i;
+	}
+
+	return -1;
+}
+
 #pragma endregion
 
 void Puzzle::setMod(uint32 a2, Id selectedId) {

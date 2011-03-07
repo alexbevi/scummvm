@@ -60,7 +60,7 @@ void DragControl::init(Common::Point coords, ObjectId objectId, uint32 a3, Hotsp
 	_field_20 = 1;
 	_objectId = objectId;
 	_field_25 = a3;
-	_object = getApp()->objectGet(objectId);
+	_object = getApp()->getObject(objectId);
 	_hotspot2 = hostpot;
 	_field_31 = a5;
 	_puzzleRotationId = puzzleRotationId;

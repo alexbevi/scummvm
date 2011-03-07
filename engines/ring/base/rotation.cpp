@@ -201,6 +201,10 @@ void Rotation::update() {
 	error("[Rotation::update] Not implemented");
 }
 
+void Rotation::updateAndDraw(float alp, float bet, float ran) {
+	error("[Rotation::updateAndDraw] Not implemented");
+}
+
 void Rotation::setCoordinates(const Common::Point &point){
 	error("[Rotation::setCoordinates] Not implemented");
 }
@@ -336,7 +340,7 @@ void Rotation::setMovabilityRideName(uint32 movabilityIndex, Common::String name
 	_movabilities[movabilityIndex]->setRideName(name);
 }
 
-void Rotation::setRolTo(float a2, float a3, float a4) {
+bool Rotation::setRolTo(float a2, float a3, float a4) {
 	error("[Rotation::SetRolTo] Not implemented");
 }
 
