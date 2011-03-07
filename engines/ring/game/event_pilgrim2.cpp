@@ -67,6 +67,7 @@ void EventHandlerPilgrim2::onSetup(Zone zone, SetupType type) {
 
 #pragma endregion
 
+
 #pragma region Timer
 
 void EventHandlerPilgrim2::onTimer(TimerId timerId) {

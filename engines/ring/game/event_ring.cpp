@@ -1123,7 +1123,19 @@ void EventHandlerRing::onSetupLoadTimers(Common::String zoneName, Id testId1, Id
 	if (!_app->getSaveManager()->loadSaveTimer(zoneName, kLoadSaveRead))
 		error("[EventHandlerRing::onSetupLoadTimers] Cannot load timers (%s)!", zoneName.c_str());
 
-	_app->getSoundManager()->sub_4696F0();
+	_app->getSoundManager()->playSounds();
+}
+
+#pragma endregion
+
+#pragma region Update
+
+void EventHandlerRing::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {
+	error("[EventHandlerRing::onUpdateBefore] Not implemented");
+}
+
+void EventHandlerRing::onUpdateBag(const Common::Point &point) {
+	error("[EventHandlerRing::onUpdateBag] Not implemented");
 }
 
 #pragma endregion

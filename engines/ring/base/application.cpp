@@ -425,7 +425,7 @@ void Application::update(const Common::Point &point) {
 	// Handle bag
 	if (_bag->getField94()) {
 		if (_bag->sub_418A70(point)) {
-			_eventHandler->onBagUnknown(point);
+			_eventHandler->onUpdateBag(point);
 
 			return;
 		}
@@ -502,7 +502,7 @@ label_end:
 	else
 		cursorSelect(kCursorIdle);
 
-	_eventHandler->onBagUnknown(point);
+	_eventHandler->onUpdateBag(point);
 }
 
 void Application::updateBag(const Common::Point &point) {
