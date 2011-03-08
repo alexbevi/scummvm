@@ -599,7 +599,8 @@ void EventHandlerRing::onButtonDown(ObjectId id, uint32 a2, Id puzzleRotationId,
 		break;
 
 	case kZoneFO:
-		onButtonDownZoneFO(id, a2, puzzleRotationId, a4, point);
+		// Function does not seem to change anything (gets the current bag object)
+		//onButtonDownZoneFO(id, a2, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneRO:
@@ -614,10 +615,6 @@ void EventHandlerRing::onButtonDown(ObjectId id, uint32 a2, Id puzzleRotationId,
 
 void EventHandlerRing::onButtonDownZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
 	error("[EventHandlerRing::onButtonDownZoneNI] Not implemented");
-}
-
-void EventHandlerRing::onButtonDownZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerRing::onButtonDownZoneFO] Not implemented");
 }
 
 void EventHandlerRing::onButtonDownZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
@@ -724,7 +721,8 @@ void EventHandlerRing::onButtonUp2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 		break;
 
 	case kZoneFO:
-		onButtonDownZoneFO(id, a2, puzzleRotationId, a4, point);
+		// Function does not seem to change anything (gets the current bag object)
+		// onButtonDownZoneFO(id, a2, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneWA:
