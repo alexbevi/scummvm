@@ -720,7 +720,7 @@ void EventHandlerRing::onButtonDownZoneNI(ObjectId id, uint32 a2, Id puzzleRotat
 				}
 			} else {
 				_app->rotationSetRolTo(10101, 270.4f, 10.4f, 85.7f);
-				_app->puzzleSetActive(kPuzzle10100, 1, 1);
+				_app->puzzleSetActive(kPuzzle10100);
 				_app->objectPresentationShow(kObject10102, 4);
 
 				// FIXME: Original calls it 4 times. Check why.
@@ -1175,7 +1175,7 @@ void EventHandlerRing::onButtonUpZoneFO(ObjectId id, uint32 a2, Id puzzleRotatio
 			_app->rotationSetMovabilityOn(30402, 2, 2);
 			_app->objectPresentationShow(kObject30050, 0);
 			_app->objectPresentationShow(kObject30050, 2);
-			_app->rotationSetActive(30501, 1, 1);
+			_app->rotationSetActive(30501);
 			_app->rotationSetAlp(30501, 88.0);
 			_app->rotationSetBet(30501, 13.0);
 			_app->objectSetAccessibilityOff(kObject30002);
@@ -2547,7 +2547,7 @@ void EventHandlerRing::onButtonUpZoneN2(ObjectId id, uint32 a2, Id puzzleRotatio
 		if (_app->bagHasClickedObject()) {
 			if (_app->bagGetClickedObject() == kObjectFire) {
 				_app->varSetFloat(90006, _app->varGetFloat(90006) + 2.0f);
-				_app->playMovie("1389", 0.0);
+				_app->playMovie("1389");
 				_app->rotationSetAlp(70500, 243.0f);
 				_app->rotationSetRan(70500, 85.7f);
 				_app->rotationSetActive(70500);
@@ -4518,8 +4518,8 @@ void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uin
 
 	case kMovabilityPuzzleToPuzzle:
 		if (a4 == 55) {
-			_app->playMovie("1537", 0.0);
-			_app->puzzleSetActive(kPuzzle12001, 1, 1);
+			_app->playMovie("1537");
+			_app->puzzleSetActive(kPuzzle12001);
 			_app->soundPlay(12001);
 		}
 		break;
@@ -5216,7 +5216,7 @@ void EventHandlerRing::onSoundZoneFO(Id id, SoundType type, uint32 a3, bool proc
 		break;
 
 	case 30101:
-		_app->playMovie("1179", 0.0);
+		_app->playMovie("1179");
 		_app->rotationSetActive(30101);
 		_app->rotationSetAlp(30101, 130.0);
 		_app->rotationSetBet(30101, 20.0);
@@ -5421,12 +5421,12 @@ void EventHandlerRing::onSoundZoneFO(Id id, SoundType type, uint32 a3, bool proc
 		_app->bagRemoveAll();
 		_app->timerStopAll();
 		_app->soundStopAll(1024);
-		_app->playMovie("1215", 0.0);
+		_app->playMovie("1215");
 		onSwitchZoneAS(3);
 		break;
 
 	case 30161:
-		_app->playMovie("1212", 0.0);
+		_app->playMovie("1212");
 		_app->puzzleSetActive(kPuzzle35108);
 		_app->soundPlay(30109);
 		break;
@@ -7211,7 +7211,7 @@ void EventHandlerRing::sub_433EE0() {
 		&& _app->bagHas(kObjectDragon)
 		&& _app->bagHas(kObjectPhoenix1)) {
 			_app->varSetByte(70013, 11);
-			_app->puzzleSetActive(kPuzzle70305, 1, 1);
+			_app->puzzleSetActive(kPuzzle70305);
 			_app->soundPlay(70017);
 	}
 }
