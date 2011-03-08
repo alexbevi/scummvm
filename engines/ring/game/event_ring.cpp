@@ -1368,7 +1368,7 @@ void EventHandlerRing::onButtonUpZoneFO(ObjectId id, uint32 a2, Id puzzleRotatio
 		case 2:
 		case 3:
 		case 4:
-			_app->soundPlay(30512, kSoundOnce);
+			_app->soundPlay(30512);
 			_app->objectPresentationHide(kObjectBow, a2);
 			_app->objectSetAccessibilityOff(kObjectBow, a2, a2);
 			_app->varSetByte(a2 + 30049, 1);
@@ -1382,7 +1382,7 @@ void EventHandlerRing::onButtonUpZoneFO(ObjectId id, uint32 a2, Id puzzleRotatio
 
 		case 5:
 		case 6:
-			_app->soundPlay(30512, kSoundOnce);
+			_app->soundPlay(30512);
 			_app->objectPresentationHide(kObjectBow, a2);
 			_app->objectSetAccessibilityOff(kObjectBow, a2, a2);
 			_app->varSetByte(a2 + 30049, 1);
@@ -1964,7 +1964,7 @@ void EventHandlerRing::onButtonUpZoneFO(ObjectId id, uint32 a2, Id puzzleRotatio
 		if (!_app->bagHasClickedObject()) {
 			if (!_app->varGetByte(30035)) {
 				_app->objectPresentationShow(kObject30050, 1);
-				_app->soundPlay(30514, kSoundOnce);
+				_app->soundPlay(30514);
 			}
 
 			if (_app->varGetByte(30035) == 1) {
@@ -2285,7 +2285,257 @@ void EventHandlerRing::onButtonUpZoneWA(ObjectId id, uint32 a2, Id puzzleRotatio
 }
 
 void EventHandlerRing::onButtonUpZoneAS(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerRing::onButtonUpZoneAS] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kObject80019:
+		if (_app->bagHasClickedObject()) {
+			_app->cursorDelete();
+			break;
+		}
+
+		switch (a2) {
+		default:
+			break;
+
+		case 0:
+			if (!_app->varGetByte(90001)) {
+				_app->timerStopAll();
+				onSwitchZoneNI(0);
+			}
+			break;
+
+		case 1:
+			if (!_app->varGetByte(90002)) {
+				_app->timerStopAll();
+				onSwitchZoneN2(0);
+			}
+			break;
+
+		case 2:
+			if (!_app->varGetByte(90001)) {
+				_app->timerStopAll();
+				onSwitchZoneNI(0);
+			}
+			break;
+
+		case 3:
+			if (!_app->varGetByte(90003)) {
+				_app->timerStopAll();
+				onSwitchZoneFO(0);
+			}
+			break;
+
+		case 4:
+			if (!_app->varGetByte(90002)) {
+				_app->timerStopAll();
+				onSwitchZoneN2(0);
+			}
+			break;
+
+		case 5:
+			if (!_app->varGetByte(90004)) {
+				_app->timerStopAll();
+				onSwitchZoneWA(0);
+			}
+			break;
+		}
+		break;
+
+	case kObject80021:
+		if (_app->bagHasClickedObject()) {
+			_app->cursorDelete();
+			break;
+		}
+
+		switch (a2) {
+		default:
+			break;
+
+		case 0:
+			if (_app->varGetByte(80004) == 1) {
+				if (_app->varGetByte(90001)) {
+					_app->puzzleSetActive(kPuzzle80006);
+					_app->playMovie("1142");
+					_app->objectPresentationShow(kObject80019, 0);
+				} else {
+					_app->puzzleSetActive(kPuzzle80006);
+					_app->playMovie("1141");
+				}
+			}
+
+			if (_app->varGetByte(80004) == 11) {
+				_app->puzzleSetActive(kPuzzle80007);
+				_app->playMovie("1143");
+			}
+
+			if (_app->varGetByte(80004) == 21) {
+				_app->puzzleSetActive(kPuzzle80009);
+				_app->playMovie("1144");
+			}
+
+			if (_app->varGetByte(80004) == 31) {
+				_app->puzzleSetActive(kPuzzle80008);
+				_app->playMovie("1145");
+			}
+
+			if (_app->varGetByte(80004) == 41) {
+				_app->puzzleSetActive(kPuzzle80010);
+				_app->playMovie("1146");
+			}
+			break;
+
+		case 1:
+			_app->soundPlay(80208);
+			_app->soundPlay(80210);
+
+			_app->varSetByte(80004, _app->varGetByte(80005) + 10);
+			if (_app->varGetByte(80004) >= 50)
+				_app->varSetByte(80004, _app->varGetByte(80004) - 50);
+
+			_app->objectPresentationUnpauseAnimation(kObject80018, 1);
+			_app->objectSetAccessibilityOff(kObject80021, 0, 4);
+			break;
+
+		case 2:
+			_app->soundPlay(80208);
+			_app->soundPlay(80210);
+
+			_app->varSetByte(80004, _app->varGetByte(80005) + 20);
+			if (_app->varGetByte(80004) >= 50)
+				_app->varSetByte(80004, _app->varGetByte(80004) - 50);
+
+			_app->objectPresentationUnpauseAnimation(kObject80018, 1);
+			_app->objectSetAccessibilityOff(kObject80021, 0, 4);
+			break;
+
+		case 3:
+			_app->soundPlay(80208);
+			_app->soundPlay(80210);
+
+			_app->varSetByte(80004, _app->varGetByte(80005) + 30);
+			if (_app->varGetByte(80004) >= 50)
+				_app->varSetByte(80004, _app->varGetByte(80004) - 50);
+
+			_app->objectPresentationUnpauseAnimation(kObject80018, 1);
+			_app->objectSetAccessibilityOff(kObject80021, 0, 4);
+			break;
+
+		case 4:
+			_app->soundPlay(80208);
+			_app->soundPlay(80210);
+
+			_app->varSetByte(80004, _app->varGetByte(80005) + 40);
+			if (_app->varGetByte(80004) >= 50)
+				_app->varSetByte(80004, _app->varGetByte(80004) - 50);
+
+			_app->objectPresentationUnpauseAnimation(kObject80018, 1);
+			_app->objectSetAccessibilityOff(kObject80021, 0, 4);
+			break;
+		}
+		break;
+
+	case kObject80007:
+		if (_app->bagHasClickedObject()) {
+			if (_app->bagGetClickedObject() == kObjectDeath) {
+				_app->bagRemoveAll();
+				_app->soundStopAll(1024);
+				_app->timerStopAll();
+				_app->setupZone(kZoneAS, kSetupType6);
+			}
+
+			_app->cursorDelete();
+		}
+		break;
+
+	case kObject80012:
+		if (_app->bagHasClickedObject()) {
+			_app->cursorDelete();
+			break;
+		}
+
+		switch (a2) {
+		default:
+			break;
+
+		case 0:
+			_app->soundPlay(80028);
+			break;
+
+		case 1:
+			_app->soundPlay(80025);
+			break;
+		case 2:
+			_app->soundPlay(80021);
+			break;
+		case 3:
+			_app->soundPlay(80024);
+			break;
+		case 4:
+			_app->soundPlay(80022);
+			break;
+		case 5:
+			_app->soundPlay(80026);
+			break;
+		case 6:
+			_app->soundPlay(80027);
+			break;
+		case 7:
+			_app->soundPlay(80023);
+			break;
+		}
+		break;
+
+	case kObject80018:
+		if (_app->bagHasClickedObject()) {
+			_app->cursorDelete();
+			break;
+		}
+
+		switch (a2) {
+		default:
+			break;
+
+		case 0:
+			if (_app->varGetByte(90001) == 1) {
+				_app->puzzleSetActive(kPuzzle80002);
+				_app->soundSetVolume(80201, 80);
+				_app->soundPlay(80040);
+			}
+			break;
+
+		case 1:
+			if (_app->varGetByte(90002) == 1) {
+				_app->puzzleSetActive(kPuzzle80003);
+				_app->soundSetVolume(80203, 90);
+				_app->soundPlay(80049);
+			}
+			break;
+		case 2:
+			if (_app->varGetByte(90003) == 1) {
+				_app->puzzleSetActive(kPuzzle80004);
+				_app->soundSetVolume(80204, 90);
+				_app->soundPlay(80058);
+			}
+			break;
+		case 3:
+			if (_app->varGetByte(90004) == 1) {
+				_app->puzzleSetActive(kPuzzle80005);
+				_app->soundSetVolume(80205, 80);
+				_app->soundPlay(80068);
+			}
+			break;
+		}
+		break;
+
+	case kObject80022:
+		if (_app->bagHasClickedObject())
+			_app->cursorDelete();
+		else
+			onSwitchZoneAS(5);
+		break;
+	}
 }
 
 void EventHandlerRing::onButtonUpZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
@@ -2404,7 +2654,7 @@ void EventHandlerRing::onButtonUpZoneN2(ObjectId id, uint32 a2, Id puzzleRotatio
 					_app->objectSetAccessibilityOff(kObjectCentaur);
 					_app->objectSetAccessibilityOff(kObjectDragon);
 					_app->objectSetAccessibilityOff(kObjectPhoenix1);
-					_app->soundPlay(_app->varGetByte(70015) + 71010, kSoundOnce);
+					_app->soundPlay(_app->varGetByte(70015) + 71010);
 				}
 			}
 
