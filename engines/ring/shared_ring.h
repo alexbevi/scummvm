@@ -456,7 +456,7 @@ enum ObjectId {
 	kObjectPreferences3dSound       = 90104,
 	kObjectPreferencesSliderVolume  = 90105,
 	kObjectPreferencesSliderDialog  = 90106,
-	kObject90107                    = 90107,
+	kObjectCredits                  = 90107,
 	kObjectLoadCancel               = 90207,
 	kObjectLoadOk                   = 90208,
 	kObjectSaveOk                   = 90309,

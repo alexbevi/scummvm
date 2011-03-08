@@ -110,7 +110,7 @@ public:
 	void setSubtitleColor(Color color) { _subtitleColor = color; }
 	void setSubtitleBackgroundColor(Color color) { _subtitlesBackgroundColor = color; }
 
-	void setField28(uint32 val) { _field_28 = val; }
+	void showSubtitles(bool state) { _showSubtitles = state; }
 
 private:
 	FontId _fontId;
@@ -119,7 +119,7 @@ private:
 	uint32 _field_1C;
 	uint32 _field_20;
 	AssociativeArray<Dialog *> _dialogs;
-	uint32 _field_28;
+	bool _showSubtitles;
 };
 
 } // End of namespace Ring

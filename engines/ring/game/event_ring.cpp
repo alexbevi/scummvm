@@ -29,6 +29,7 @@
 #include "ring/base/bag.h"
 #include "ring/base/movability.h"
 #include "ring/base/object.h"
+#include "ring/base/preferences.h"
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
@@ -55,8 +56,14 @@ EventHandlerRing::EventHandlerRing(ApplicationRing *application) : _app(applicat
 	_disableTimerRH = false;
 	_frameNumberTimerRH = 0;
 
-	// Sound and bag
+	// Local event data
 	_presentationIndexRO = 0;
+
+	_presentationIndexSY = 0;
+	_prefsSubtitles = false;
+	_prefsVolume = 0;
+	_prefsVolumeDialog = 0;
+	_object1Visible = false;
 }
 
 
@@ -920,7 +927,167 @@ void EventHandlerRing::onButtonUp(ObjectId id, uint32 a2, Id puzzleRotationId, u
 }
 
 void EventHandlerRing::onButtonUpZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerRing::onButtonUpZoneSY] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kObject1:
+		if (!_app->bagHasClickedObject()) {
+			if (_object1Visible) {
+				_app->objectPresentationHideAndRemove(kObject1);
+				_object1Visible = false;
+			} else {
+				_app->objectPresentationShow(kObject1);
+				_app->rotationSet3DSoundOn(50004, 1);
+				_app->puzzleSet3DSoundOn(kPuzzle50001, 1);
+				_object1Visible = true;
+			}
+		}
+		break;
+
+	case kObject2:
+		switch (a2) {
+		default:
+			break;
+
+		case 0:
+			_app->objectPresentationHideAndRemove(kObject2);
+			_app->objectSetAccessibilityOff(kObject2);
+			_app->puzzleSetMod(kPuzzleMenu, 1, 0);
+			break;
+
+		case 1:
+			g_engine->shouldQuit();
+			break;
+		}
+		break;
+
+	case kObject3:
+		_app->messageHideWarning(a2);
+		break;
+
+	case kObject4:
+		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (kObject4)");
+		break;
+
+	case kObjectMenuNewGame:
+		_app->messageGet("DoYouWantToStartNewGame");
+		_app->messageShowQuestion(2);
+		break;
+
+	case kObjectMenuPreferences:
+		_app->puzzleSetActive(kPuzzlePreferences);
+
+		_prefsVolume = _app->getPreferenceHandler()->getVolume();
+		_prefsVolumeDialog = _app->getPreferenceHandler()->getVolumeDialog();
+		_presentationIndexSY = _app->getPreferenceHandler()->getReverseStereo() == 1;
+		_prefsSubtitles = _app->getPreferenceHandler()->getShowSubtitles();
+
+		// Original forces subtitles on if no sound is available
+
+		if (_prefsSubtitles) {
+			_app->objectPresentationShow(kObjectPreferencesSubtitles, 0);
+			_app->objectPresentationHide(kObjectPreferencesSubtitles, 1);
+		} else {
+			_app->objectPresentationHide(kObjectPreferencesSubtitles, 0);
+			_app->objectPresentationShow(kObjectPreferencesSubtitles, 1);
+		}
+
+		_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderVolume, 0, 0, Common::Point(5 * _prefsVolume + 84, 155));
+		_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderDialog, 0, 0, Common::Point(5 * _prefsVolumeDialog + 84, 212));
+		_app->objectPresentationHide(kObjectPreferences3dSound);
+		_app->objectPresentationShow(kObjectPreferences3dSound, _presentationIndexSY);
+
+		break;
+
+	case kObjectPreferences3dSound:
+		_presentationIndexSY = (_presentationIndexSY != 1) ? 1 : 0;
+		_app->objectPresentationHide(kObjectPreferences3dSound);
+		_app->objectPresentationShow(kObjectPreferences3dSound, _presentationIndexSY);
+		break;
+
+	case kObjectPreferencesSubtitles:
+		if (a2) {
+			_app->objectPresentationHide(kObjectPreferencesSubtitles, 0);
+			_app->objectPresentationShow(kObjectPreferencesSubtitles, 1);
+			_prefsSubtitles = false;
+		} else {
+			_app->objectPresentationShow(kObjectPreferencesSubtitles, 0);
+			_app->objectPresentationHide(kObjectPreferencesSubtitles, 1);
+			_prefsSubtitles = true;
+		}
+		break;
+
+	case kObjectPreferencesOk:
+		_app->puzzleSetActive(kPuzzleGeneralMenu);
+		_app->getPreferenceHandler()->save(_prefsVolume, _prefsVolumeDialog, _presentationIndexSY != 0 ? 2 : 0, _prefsSubtitles);
+		break;
+
+	case kObjectCredits:
+		_app->showCredits();
+		break;
+
+	case kObjectMenuLoad:
+		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (MenuLoad)");
+		break;
+
+	case kObjectMenuSave:
+		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (MenuLoad)");
+		break;
+
+	case kObjectMenuContinue:
+		_app->cursorSelect(kCursorBusy);
+
+		((RingEngine *)g_engine)->setFlag(false);
+		handleEvents();
+
+		_app->exitZone();
+		_app->initZones();
+
+		if (!_app->getSaveManager()->loadSave("SaveGame", kLoadSaveRead)) {
+			_app->exitZone();
+			_app->initZones();
+			_app->loadPreferences();
+			_app->messageGet("CanNotCountineGame"); // Typo is normal :S
+			_app->messageShowWarning(0);
+		}
+		break;
+
+	case kObjectLoadOk:
+		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (Load)");
+		break;
+
+	case kObjectSaveOk:
+		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (Save)");
+		break;
+
+	case kObjectLoadCancel:
+		_app->puzzleSetActive(kPuzzleGeneralMenu);
+		_app->visualListRemove(1, kPuzzleLoad, true);
+		break;
+
+	case kObjectMenuStatus:
+		_app->puzzleSetActive(kPuzzleGameStatus);
+		break;
+
+	case kObjectStatusOk:
+	case kObjectSaveCancel:
+	case kObjectPreferencesCancel:
+		_app->puzzleSetActive(kPuzzleGeneralMenu);
+		break;
+
+	case kObjectMenuExit:
+		if (_app->puzzleSetMod(kPuzzleMenu, 2, 2)) {
+			_app->objectPresentationShow(kObject2, 0);
+			_app->objectSetAccessibilityOn(kObject2);
+		}
+		break;
+
+	// Original also handles clicks on Object 90911 (that doesn't exist)
+	case kObject90912:
+		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (90912)");
+		break;
+	}
 }
 
 void EventHandlerRing::onButtonUpZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {

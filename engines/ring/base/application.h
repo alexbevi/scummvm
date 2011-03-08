@@ -404,15 +404,16 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Handlers and shared data
 	//CursorHandler *getCursorHandler() { return _cursorHandler; }
-	ArtHandler    *getArtHandler()    { return _artHandler; }
-	Bag           *getBag()           { return _bag; }
-	DialogHandler *getDialogHandler() { return _dialogHandler; }
-	DragControl   *getDragControl()   { return _dragControl; }
-	FontHandler   *getFontHandler()   { return _fontHandler; }
-	SaveManager   *getSaveManager()   { return _saveManager; }
-	ScreenManager *getScreenManager() { return _screenManager; }
-	SoundHandler  *getSoundHandler()  { return _soundHandler; }
-	SoundManager  *getSoundManager()  { return _soundManager; }
+	ArtHandler        *getArtHandler()        { return _artHandler; }
+	Bag               *getBag()               { return _bag; }
+	DialogHandler     *getDialogHandler()     { return _dialogHandler; }
+	DragControl       *getDragControl()       { return _dragControl; }
+	FontHandler       *getFontHandler()       { return _fontHandler; }
+	PreferenceHandler *getPreferenceHandler() { return _preferenceHandler; }
+	SaveManager       *getSaveManager()       { return _saveManager; }
+	ScreenManager     *getScreenManager()     { return _screenManager; }
+	SoundHandler      *getSoundHandler()      { return _soundHandler; }
+	SoundManager      *getSoundManager()      { return _soundManager; }
 
 protected:
 	RingEngine *_vm;

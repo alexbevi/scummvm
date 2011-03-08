@@ -38,7 +38,13 @@ public:
 	~PreferenceHandler();
 
 	void load();
-	void save();
+	void save(int32 volume, int32 volumeDialog, int32 reverseStereo, bool showSubtitles);
+
+	// Accessors
+	int32 getVolume() { return _volume; }
+	int32 getVolumeDialog() { return _volumeDialog; }
+	int32 getReverseStereo() { return _reverseStereo; }
+	bool getShowSubtitles() { return _showSubtitles; }
 
 private:
 	Application *_app;
@@ -46,10 +52,10 @@ private:
 	int32 _volume;
 	int32 _volumeDialog;
 	int32 _reverseStereo;
-	int32 _pref4;
+	bool  _showSubtitles;
 
 	void loadDefaults();
-	void set(int32 volume, int32 volumeDialog, int32 reverseStereo, int32 pref4);
+	void set(int32 volume, int32 volumeDialog, int32 reverseStereo, bool showSubtitles);
 	void setup();
 };
 

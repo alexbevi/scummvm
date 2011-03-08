@@ -37,7 +37,7 @@ PreferenceHandler::PreferenceHandler(Application *application) : _app(applicatio
 	_volume = 0;
 	_volumeDialog = 0;
 	_reverseStereo = 0;
-	_pref4 = 0;
+	_showSubtitles = false;
 }
 
 PreferenceHandler::~PreferenceHandler() {
@@ -69,23 +69,23 @@ void PreferenceHandler::loadDefaults() {
 	int32 volume;
 	int32 volumeDialog;
 	int32 reverseStereo;
-	int32 pref4;
-	if (sscanf(line.c_str(), "%d %d %d %d", &volume, &volumeDialog, &reverseStereo, &pref4) != 4)
+	int32 showSubtitles;
+	if (sscanf(line.c_str(), "%d %d %d %d", &volume, &volumeDialog, &reverseStereo, &showSubtitles) != 4)
 		error("[PreferenceHandler::load] Invalid configuration format");
 
-	set(volume, volumeDialog, reverseStereo, pref4);
+	set(volume, volumeDialog, reverseStereo, showSubtitles);
 	setup();
 }
 
-void PreferenceHandler::save() {
+void PreferenceHandler::save(int32 volume, int32 volumeDialog, int32 reverseStereo, bool showSubtitles) {
 	error("[PreferenceHandler::save] No implemented");
 }
 
-void PreferenceHandler::set(int32 volume, int32 volumeDialog, int32 reverseStereo, int32 pref4) {
+void PreferenceHandler::set(int32 volume, int32 volumeDialog, int32 reverseStereo, bool showSubtitles) {
 	_volume = volume;
 	_volumeDialog = volumeDialog;
 	_reverseStereo = reverseStereo;
-	_pref4 = pref4;
+	_showSubtitles = showSubtitles;
 }
 
 void PreferenceHandler::setup() {
@@ -96,7 +96,7 @@ void PreferenceHandler::setup() {
 		_app->getSoundHandler()->setReverseStereo(_reverseStereo);
 
 	if (_app->getDialogHandler())
-		_app->getDialogHandler()->setField28(_pref4 ? 1 : 0);
+		_app->getDialogHandler()->showSubtitles(_showSubtitles);
 }
 
 } // End of namespace Ring

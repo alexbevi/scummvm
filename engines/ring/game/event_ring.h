@@ -65,6 +65,12 @@ private:
 	bool         _disableTimerRH;
 	uint32       _frameNumberTimerRH;
 
+	uint32       _presentationIndexSY;
+	bool         _prefsSubtitles;
+	uint32       _prefsVolume;
+	uint32       _prefsVolumeDialog;
+	bool         _object1Visible;
+
 	//////////////////////////////////////////////////////////////////////////
 	// Event Handling
 	//////////////////////////////////////////////////////////////////////////

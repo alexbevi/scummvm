@@ -997,8 +997,8 @@ void ApplicationRing::initZoneSY() {
 	objectPresentationShow(kObjectPreferencesSliderDialog);
 	objectSetActiveDrawCursor(kObjectPreferencesSliderDialog, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
 	objectSetPassiveDrawCursor(kObjectPreferencesSliderDialog, Common::Point(15, 15), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
-	objectAdd(kObject90107, "", "", 1);
-	objectAddPuzzleAccessibility(kObject90107, kPuzzlePreferences, Common::Rect(0, 448, 20, 640), true, 57, 1);
+	objectAdd(kObjectCredits, "", "", 1);
+	objectAddPuzzleAccessibility(kObjectCredits, kPuzzlePreferences, Common::Rect(0, 448, 20, 640), true, 57, 1);
 
 	// Loading screen objects
 	objectAdd(kObjectLoadOk, "", "", 1);

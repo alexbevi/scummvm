@@ -282,7 +282,7 @@ DialogHandler::DialogHandler() {
 	_fontId = kFontInvalid;
 	_field_1C = 0;
 	_field_20 = 0;
-	_field_28 = 1;
+	_showSubtitles = true;
 }
 
 DialogHandler::~DialogHandler() {
@@ -351,7 +351,7 @@ void DialogHandler::play() {
 			}
 		}
 
-		if (_field_28) {
+		if (_showSubtitles) {
 			if (line1)
 				line1->draw();
 
