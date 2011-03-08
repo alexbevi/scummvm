@@ -614,15 +614,263 @@ void EventHandlerRing::onButtonDown(ObjectId id, uint32 a2, Id puzzleRotationId,
 }
 
 void EventHandlerRing::onButtonDownZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerRing::onButtonDownZoneNI] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kObject10101:
+		if (_app->bagHasClickedObject()) {
+			_app->cursorDelete();
+			return;
+		}
+
+		switch (puzzleRotationId) {
+		default:
+			break;
+
+		case 0:
+			_app->soundPlay(10103);
+			_app->objectSetAccessibilityOff(kObject10101, 1, 2);
+			_app->objectSetAccessibilityOff(kObject10104);
+			_app->objectSetAccessibilityOff(kObject10109);
+			_app->objectSetAccessibilityOff(kObject10110);
+			_app->objectPresentationShow(kObject10101, _app->varGetByte(10102) ? 4 : 3);
+			_app->objectPresentationHide(kObject10100);
+			_app->objectPresentationHide(kObject10109);
+			break;
+
+		case 1:
+			_app->rotationSetRolTo(10101, 270.4f, 10.4f, 85.7f);
+			_app->puzzleSetActive(kPuzzle10100);
+			_app->objectPresentationHide(kObject10102);
+			_app->soundPlay(10102);
+			_app->objectSetAccessibilityOff(kObject10101, 1, 2);
+			_app->objectSetAccessibilityOff(kObject10102, 1, 2);
+			_app->objectSetAccessibilityOff(kObject10100);
+			_app->objectSetAccessibilityOff(kObject10103);
+
+			if (_app->varGetByte(10102)) {
+				if (_app->varGetByte(10113) == 9) {
+					_app->objectPresentationHide(kObject10101, 0);
+					_app->objectPresentationShow(kObject10101, 5);
+				} else {
+					_app->objectSetAccessibilityOn(kObject10110);
+				}
+
+				_app->objectPresentationShow(kObject10100, 1);
+				_app->objectPresentationShow(kObject10101, 2);
+			} else {
+				_app->objectPresentationShow(kObject10101, 0);
+				_app->objectPresentationShow(kObject10101, 1);
+			}
+
+			_app->objectPresentationShow(kObject10100, 0);
+			break;
+		}
+		break;
+
+	case kObject10102:
+		if (_app->bagHasClickedObject()) {
+			_app->cursorDelete();
+			return;
+		}
+
+		if (_app->varGetByte(10113) != 9)
+			break;
+
+		switch (puzzleRotationId) {
+		default:
+			break;
+
+		case 0:
+			_app->objectSetAccessibilityOff(kObject10102, 1, 2);
+
+			if (_app->varGetByte(10103)) {
+				_app->soundPlay(10105);
+				_app->objectSetAccessibilityOff(kObject10105);
+				_app->objectPresentationShow(kObject10102, 3);
+				_app->objectPresentationHide(kObject10100);
+			} else {
+				_app->objectSetAccessibilityOff(kObject10105);
+				_app->puzzleSetActive(kPuzzle10100);
+				_app->objectPresentationHide(kObject10102, 0);
+				_app->objectPresentationHide(kObject10100);
+				_app->objectSetAccessibilityOn(kObject10102, 0, 0);
+				_app->objectSetAccessibilityOn(kObject10102, 2, 2);
+			}
+			break;
+
+		case 1:
+			_app->objectPresentationHide(kObject10102);
+			if (_app->varGetByte(10102) == 1) {
+				_app->soundPlay(10104);
+				_app->objectSetAccessibilityOff(kObject10101, 1, 2);
+				_app->objectSetAccessibilityOff(kObject10102, 1, 2);
+				_app->objectSetAccessibilityOff(kObject10100);
+				_app->objectSetAccessibilityOff(kObject10103);
+				_app->rotationSetRolTo(10101, 270.4f, 10.4f, 85.7f);
+				_app->puzzleSetActive(kPuzzle10100);
+				_app->objectPresentationShow(kObject10102, 0);
+
+				if (_app->varGetByte(10103)) {
+					_app->objectPresentationShow(kObject10100, 2);
+					_app->objectPresentationShow(kObject10102, 2);
+				} else {
+					_app->objectPresentationShow(kObject10102, 1);
+				}
+			} else {
+				_app->rotationSetRolTo(10101, 270.4f, 10.4f, 85.7f);
+				_app->puzzleSetActive(kPuzzle10100, 1, 1);
+				_app->objectPresentationShow(kObject10102, 4);
+
+				// FIXME: Original calls it 4 times. Check why.
+				for (uint32 i = 0; i < 4; i++)
+					handleEvents();
+
+
+				_app->objectPresentationHide(kObject10102, 4);
+				_app->objectSetAccessibilityOn(kObject10101, 0, 0);
+				_app->objectSetAccessibilityOn(kObject10101, 2, 2);
+			}
+			break;
+		}
+		break;
+
+	case kObject10109:
+		if (!_app->bagHasClickedObject()) {
+			_app->soundPlay(10106);
+			_app->objectPresentationHide(kObject10109);
+			_app->objectPresentationShow(kObject10109, puzzleRotationId);
+
+			if (puzzleRotationId) {
+				_app->varSetByte(_app->varGetByte(10113) + 10108, puzzleRotationId);
+				_app->varSetByte(10113, _app->varGetByte(10113) + 1);
+			}
+		}
+		break;
+
+	case kObject10430:
+		_app->objectSetAccessibilityOff(kObject10430, 1, 2);
+		_app->objectPresentationShow(kObject10430, _app->varGetByte(10430) ? 5 : 3);
+		_app->objectPresentationHide(kObject10430, 0);
+		_app->objectPresentationHide(kObject10430, 1);
+		break;
+	}
 }
 
 void EventHandlerRing::onButtonDownZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerRing::onButtonDownZoneRO] Not implemented");
+	if (id != kObject40202)
+		return;
+
+	if (_app->bagHasClickedObject()) {
+		_app->cursorDelete();
+		return;
+	}
+
+	for (uint32 i = 1; i < 16; i++)
+		_app->objectPresentationHide(kObject40202, i);
+
+	_app->objectPresentationShow(kObject40202, a2 + 1);
+
+	if (a2 >= 7) {
+		_app->soundPlay(a2 + 40500);
+
+		// TODO check validity
+		Common::String current = _app->varGetString(40902);
+		current.deleteLastChar();
+		_app->varSetString(40902, Common::String::format("%s%1d", current.c_str(), a2 - 7));
+
+		if (_app->varGetString(40902) == "01276534"
+		 || _app->varGetString(40902) == "01476534"
+		 || _app->varGetString(40902) == "01276532"
+		 || _app->varGetString(40902) == "01476532") {
+			_app->varSetFloat(90006, 100.0f);
+			_app->soundPlay(40603);
+		}
+	} else {
+		_app->soundPlay(a2 + 40500);
+	}
 }
 
 void EventHandlerRing::onButtonDownZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerRing::onButtonDownZoneN2] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kObject70101:
+		if (_app->bagHasClickedObject()) {
+			_app->cursorDelete();
+			return;
+		}
+
+		switch (a2) {
+		default:
+			break;
+
+		case 0:
+			_app->objectSetAccessibilityOff(kObject70101, 1, 2);
+			_app->objectSetAccessibilityOff(kObject70101, 1, 2);
+			_app->objectPresentationShow(kObject70101, 4);
+			_app->objectPresentationHide(kObject70100);
+			break;
+
+		case 1:
+			_app->rotationSetRolTo(70100, 270.4f, 10.4f, 85.7f);
+			_app->puzzleSetActive(kPuzzle70100);
+			_app->objectPresentationHide(kObject70102);
+			_app->objectSetAccessibilityOff(kObject70101, 1, 2);
+			_app->objectSetAccessibilityOff(kObject70102, 1, 2);
+			_app->objectSetAccessibilityOff(kObject70100);
+			_app->objectSetAccessibilityOff(kObject70103);
+			_app->objectPresentationShow(kObject70101, 5);
+			_app->objectPresentationShow(kObject70100, 1);
+			_app->objectPresentationShow(kObject70101, 2);
+			break;
+		}
+		break;
+
+	case kObject70102:
+		if (_app->bagHasClickedObject()) {
+			_app->cursorDelete();
+			return;
+		}
+
+		switch (a2) {
+		default:
+			break;
+
+		case 0:
+			_app->objectSetAccessibilityOff(kObject70102, 1, 2);
+			_app->objectSetAccessibilityOff(kObject70105);
+			_app->objectPresentationShow(kObject70102, 3);
+			_app->objectPresentationHide(kObject70100);
+			break;
+
+		case 1:
+			_app->rotationSetRolTo(70100, 270.4f, 10.4f, 85.7f);
+			_app->puzzleSetActive(kPuzzle70100);
+			_app->objectPresentationHide(kObject70102);
+			_app->objectSetAccessibilityOff(kObject70101, 1, 2);
+			_app->objectSetAccessibilityOff(kObject70102, 1, 2);
+			_app->objectSetAccessibilityOff(kObject70100);
+			_app->objectSetAccessibilityOff(kObject70103);
+			_app->objectPresentationShow(kObject70102, 0);
+			_app->objectPresentationShow(kObject70100, 2);
+			_app->objectPresentationShow(kObject70102, 2);
+			break;
+		}
+		break;
+
+	case kObject70404:
+		if (a2 == 2) {
+			_app->objectSetAccessibilityOff(kObject70404, 1, 2);
+			_app->objectPresentationShow(kObject70404, _app->varGetByte(70001) ? 5 : 3);
+			_app->objectPresentationHide(kObject70404, 0);
+			_app->objectPresentationHide(kObject70404, 1);
+
+		}
+		break;
+	}
 }
 
 void EventHandlerRing::onButtonUp(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
