@@ -43,7 +43,7 @@ public:
 	virtual void init(CursorId id, Common::String name, CursorType cursorType, byte frameCount);
 	virtual void alloc() = 0;
 	virtual void dealloc() = 0;
-	virtual void draw() {}
+	virtual void draw() = 0;
 
 	// Accessors
 	void setName(Common::String name) { _name = name; }
@@ -54,7 +54,7 @@ public:
 	void setType(CursorType type) { _type = type; }
 	CursorType getType() { return _type; }
 
-private:
+protected:
 	Common::String _name;
 	CursorType _type;
 	Common::Point _offset;
@@ -70,6 +70,7 @@ public:
 	virtual void init(CursorId id, Common::String name, CursorType cursorType, byte a4);
 	virtual void alloc();
 	virtual void dealloc();
+	virtual void draw();
 
 private:
 	uint32 _field_19; // HCURSOR
@@ -87,6 +88,7 @@ public:
 	void init(CursorId id, Common::String name, CursorType cursorType, byte frameCount, ArchiveType archiveType);
 	virtual void alloc();
 	virtual void dealloc();
+	virtual void draw();
 
 private:
 	Image *_image;

@@ -69,11 +69,47 @@ void Cursor::init(CursorId id, Common::String name, CursorType cursorType, byte 
 }
 
 void Cursor::alloc() {
-	warning("[Cursor::alloc] Not implemented (win32 resource)");
+	// Default arrow cursor
+	if (_name.empty() || _name == "IDC_ARROW") {
+		warning("[Cursor::alloc] Not implemented (default arrow cursor)");
+
+		_isDefaultCursor = true;
+
+		return;
+	}
+
+	// Check default win32 cursors
+	if (_name == "IDC_APPSTARTING"
+	 || _name == "IDC_CROSS"
+	 || _name == "IDC_IBEAM"
+	 || _name == "IDC_ICON"
+	 || _name == "IDC_NO"
+	 || _name == "IDC_SIZE"
+	 || _name == "IDC_SIZEALL"
+	 || _name == "IDC_SIZENESW"
+	 || _name == "IDC_SIZENS"
+	 || _name == "IDC_SIZENWSE"
+	 || _name == "IDC_SIZEWE"
+	 || _name == "IDC_UPARROW"
+	 || _name == "IDC_WAIT") {
+		 warning("[Cursor::alloc] Not implemented (win32 default cursors: %s)", _name.c_str());
+	}
+
+	// Load cursor from exe
+	warning("[Cursor::alloc] Not implemented (win32 resource: %s)", _name.c_str());
+
+	if (1 /* || _neCursor */)
+		_isDefaultCursor = true;
 }
 
 void Cursor::dealloc() {
-	error("[Cursor::dealloc] Not implemented");
+	_isDefaultCursor = false;
+
+	// TODO: Destroy cursor instance
+}
+
+void Cursor::draw() {
+	// FIXME: Update cursor through cursor manager
 }
 
 #pragma endregion
@@ -118,6 +154,10 @@ void CursorImage::dealloc() {
 
 	if (_image->isInitialized())
 		_image->destroy();
+}
+
+void CursorImage::draw() {
+	// FIXME: Update cursor through cursor manager
 }
 
 #pragma endregion
