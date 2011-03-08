@@ -29,7 +29,10 @@
 #include "ring/base/dialog.h"
 #include "ring/base/sound.h"
 
+#include "engines/engine.h"
+
 #include "common/archive.h"
+#include "common/config-manager.h"
 
 namespace Ring {
 
@@ -48,7 +51,17 @@ PreferenceHandler::~PreferenceHandler() {
 void PreferenceHandler::load() {
 	loadDefaults();
 
-	warning("[PreferenceHandler::load] Loading from ScummVM preferences not implemented");
+	// Register default values
+	ConfMan.registerDefault("music_volume", _volume);
+	ConfMan.registerDefault("speech_volume", _volumeDialog);
+	ConfMan.registerDefault("subtitles", _showSubtitles);
+	ConfMan.registerDefault("reverse_stereo", _reverseStereo);
+
+	// Get values from ScummVM preferences
+	_volume = ConfMan.getInt("music_volume");
+	_volumeDialog = ConfMan.getInt("speech_volume");
+	_showSubtitles = ConfMan.getBool("subtitles");
+	_reverseStereo = ConfMan.getInt("reverse_stereo");
 }
 
 void PreferenceHandler::loadDefaults() {
@@ -78,7 +91,13 @@ void PreferenceHandler::loadDefaults() {
 }
 
 void PreferenceHandler::save(int32 volume, int32 volumeDialog, int32 reverseStereo, bool showSubtitles) {
-	error("[PreferenceHandler::save] No implemented");
+	set(volume, volumeDialog, reverseStereo, showSubtitles);
+	setup();
+
+	ConfMan.setInt("music_volume", _volume);
+	ConfMan.setInt("speech_volume", _volumeDialog);
+	ConfMan.setBool("subtitles", _showSubtitles);
+	ConfMan.setBool("reverse_stereo", _reverseStereo);
 }
 
 void PreferenceHandler::set(int32 volume, int32 volumeDialog, int32 reverseStereo, bool showSubtitles) {
@@ -97,6 +116,8 @@ void PreferenceHandler::setup() {
 
 	if (_app->getDialogHandler())
 		_app->getDialogHandler()->showSubtitles(_showSubtitles);
+
+	g_engine->syncSoundSettings();
 }
 
 } // End of namespace Ring
