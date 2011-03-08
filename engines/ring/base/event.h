@@ -53,6 +53,7 @@ public:
 	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) = 0;
 	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) = 0;
 	virtual void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) = 0;
+	virtual void onVisualList(Id id, uint32 type, const Common::Point &point) = 0;
 };
 
 } // End of namespace LastExpress

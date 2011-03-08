@@ -7953,6 +7953,24 @@ void EventHandlerRing::onSwitchZoneN2(uint32 type) {
 
 #pragma endregion
 
+#pragma region VisualList
+
+void EventHandlerRing::onVisualList(Id id, uint32 type, const Common::Point &point) {
+	if (_app->getCurrentZone() == kZoneSY)
+		onVisualListZoneSY(id, type, point);
+}
+
+void EventHandlerRing::onVisualListZoneSY(Id id, uint32 type, const Common::Point &point) {
+	if (id == 1) {
+		if (type > 0 && type <= 3) {
+			_app->objectPresentationHide(kObjectLoadOk, 0);
+			_app->objectPresentationHide(kObjectLoadCancel, 0);
+		}
+	}
+}
+
+#pragma endregion
+
 #pragma region Helper functions
 
 void EventHandlerRing::sub_433EE0() {
