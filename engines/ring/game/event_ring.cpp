@@ -3435,11 +3435,11 @@ void EventHandlerRing::onTimerZoneN2(TimerId id) {
 
 #pragma region Bag
 
-void EventHandlerRing::onBag(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+void EventHandlerRing::onBag(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
 	debugC(kRingDebugLogic, "onBag (object: %d)", id.id());
 
 	if (puzzleRotationId == 1 && a4 == 1) {
-		onBagZoneSY(id, a2, 1, 1, dragControl, a6);
+		onBagZoneSY(id, a2, 1, 1, dragControl, type);
 		return;
 	}
 
@@ -3451,44 +3451,152 @@ void EventHandlerRing::onBag(ObjectId id, uint32 a2, Id puzzleRotationId, uint32
 		break;
 
 	case kZoneSY:
-		onBagZoneSY(id, a2, puzzleRotationId, a4, dragControl, a6);
+		onBagZoneSY(id, a2, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneNI:
-		onBagZoneNI(id, a2, puzzleRotationId, a4, dragControl, a6);
+		onBagZoneNI(id, a2, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneFO:
-		onBagZoneFO(id, a2, puzzleRotationId, a4, dragControl, a6);
+		onBagZoneFO(id, a2, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneRO:
-		onBagZoneRO(id, a2, puzzleRotationId, a4, dragControl, a6);
+		onBagZoneRO(id, a2, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneN2:
-		onBagZoneN2(id, a2, puzzleRotationId, a4, dragControl, a6);
+		onBagZoneN2(id, a2, puzzleRotationId, a4, dragControl, type);
 		break;
 	}
 }
 
-void EventHandlerRing::onBagZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+void EventHandlerRing::onBagZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
 	error("[EventHandlerRing::onBagZoneSY] Not implemented");
 }
 
-void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
 	error("[EventHandlerRing::onBagZoneNI] Not implemented");
 }
 
-void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
-	error("[EventHandlerRing::onBagZoneFO] Not implemented");
+void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
+	if (id != kObject30016)
+		return;
+
+	switch (type) {
+	default:
+		break;
+
+	case 1:
+		_app->dragControlSetField45(2);
+		_app->soundPlay(30500);
+		_app->dragControlSetCoords1(Common::Point(440, 248));
+		break;
+
+	case 2:
+		_app->soundStop(30500, 1024);
+		break;
+
+	case 3:
+		if (_app->dragControlXHigher1() && _app->dragControlYLower1()) {
+			if (_app->dragControlXHigher() && _app->dragControlYHigher()) {
+
+				_app->varSetByte(30016, _app->varGetByte(30016) + 1);
+				if (_app->varGetByte(30016) > 48)
+					_app->varSetByte(30016, 0);
+
+				_app->objectPresentationHide(kObject30016);
+				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+			}
+
+			if (_app->dragControlXLower() && _app->dragControlYLower()) {
+
+				_app->varSetByte(30016, _app->varGetByte(30016) - 1);
+				if (_app->varGetByte(30016) < 0)
+					_app->varSetByte(30016, 48);
+
+				_app->objectPresentationHide(kObject30016);
+				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+			}
+		}
+
+		if (_app->dragControlXHigher1() && _app->dragControlYHigher1()) {
+			if (_app->dragControlXLower() && _app->dragControlYHigher()) {
+
+				_app->varSetByte(30016, _app->varGetByte(30016) + 1);
+				if (_app->varGetByte(30016) > 48)
+					_app->varSetByte(30016, 0);
+
+				_app->objectPresentationHide(kObject30016);
+				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+			}
+
+			if (_app->dragControlXHigher() && _app->dragControlYLower()) {
+
+				_app->varSetByte(30016, _app->varGetByte(30016) - 1);
+				if (_app->varGetByte(30016) < 0)
+					_app->varSetByte(30016, 48);
+
+				_app->objectPresentationHide(kObject30016);
+				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+			}
+		}
+
+		if (_app->dragControlXLower1() && _app->dragControlYHigher1()) {
+			if (_app->dragControlXLower() && _app->dragControlYLower()) {
+
+				_app->varSetByte(30016, _app->varGetByte(30016) + 1);
+				if (_app->varGetByte(30016) > 48)
+					_app->varSetByte(30016, 0);
+
+				_app->objectPresentationHide(kObject30016);
+				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+			}
+
+			if (_app->dragControlXHigher() && _app->dragControlYHigher()) {
+
+				_app->varSetByte(30016, _app->varGetByte(30016) - 1);
+				if (_app->varGetByte(30016) < 0)
+					_app->varSetByte(30016, 48);
+
+				_app->objectPresentationHide(kObject30016);
+				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+			}
+		}
+
+		if (_app->dragControlXLower1() && _app->dragControlYLower1()) {
+			if (_app->dragControlXHigher() && _app->dragControlYLower()) {
+
+				_app->varSetByte(30016, _app->varGetByte(30016) + 1);
+				if (_app->varGetByte(30016) > 48)
+					_app->varSetByte(30016, 0);
+
+				_app->objectPresentationHide(kObject30016);
+				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+			}
+
+			if (_app->dragControlXLower() &&_app->dragControlYHigher()) {
+
+				_app->varSetByte(30016, _app->varGetByte(30016) - 1);
+				if (_app->varGetByte(30016) < 0)
+					_app->varSetByte(30016, 48);
+
+				_app->objectPresentationHide(kObject30016);
+				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+			}
+		}
+
+		_app->soundSetVolume(30500, _app->dragControlGetDistance() + 80.0f);
+		break;
+	}
 }
 
-void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
 	error("[EventHandlerRing::onBagZoneRO] Not implemented");
 }
 
-void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {
+void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
 	error("[EventHandlerRing::onBagZoneN2] Not implemented");
 }
 
