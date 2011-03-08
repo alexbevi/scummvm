@@ -84,6 +84,7 @@ private:
 	void onButtonDownZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
 	void onButtonUp(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	void onButtonUpZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	void onButtonUpZoneRH(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	void onButtonUpZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
@@ -94,9 +95,6 @@ private:
 
 	void onButtonUp2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	void onButtonUp2ZoneWA(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-
-	// Loading/Saving
-	void onSaveLoad(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Key down

@@ -632,7 +632,7 @@ void EventHandlerRing::onButtonUp(ObjectId id, uint32 a2, Id puzzleRotationId, u
 	debugC(kRingDebugLogic, "onButtonUp (ObjectId: %d, coords: (%d, %d))", id.id(), point.x, point.y);
 
 	if (puzzleRotationId == 1 && a4 == 1) {
-		onSaveLoad(id, a2, puzzleRotationId, a4, point);
+		onButtonUpZoneSY(id, a2, puzzleRotationId, a4, point);
 		return;
 	}
 
@@ -641,7 +641,7 @@ void EventHandlerRing::onButtonUp(ObjectId id, uint32 a2, Id puzzleRotationId, u
 		break;
 
 	case kZoneSY:
-		onSaveLoad(id, a2, puzzleRotationId, a4, point);
+		onButtonUpZoneSY(id, a2, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneNI:
@@ -672,6 +672,10 @@ void EventHandlerRing::onButtonUp(ObjectId id, uint32 a2, Id puzzleRotationId, u
 		onButtonUpZoneN2(id, a2, puzzleRotationId, a4, point);
 		break;
 	}
+}
+
+void EventHandlerRing::onButtonUpZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	error("[EventHandlerRing::onButtonUpZoneSY] Not implemented");
 }
 
 void EventHandlerRing::onButtonUpZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
@@ -731,11 +735,6 @@ void EventHandlerRing::onButtonUp2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 
 void EventHandlerRing::onButtonUp2ZoneWA(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
 	error("[EventHandlerRing::onButtonUp2ZoneWA] Not implemented");
-}
-
-// Loading/Saving
-void EventHandlerRing::onSaveLoad(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerRing::onSaveLoad] Not implemented");
 }
 
 #pragma endregion
