@@ -232,7 +232,7 @@ bool Movie::readSound() {
 
 	// Check remaining file size
 	if ((_cinematic->pos() + offset) >= (uint32)_cinematic->size()) {
-		warning("[Movie::readSound] Invalid sound offset (would read after end of file)", offset);
+		warning("[Movie::readSound] Invalid sound offset (would read after end of file: %d)", offset);
 		deinit();
 		return false;
 	}

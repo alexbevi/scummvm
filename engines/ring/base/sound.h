@@ -40,7 +40,7 @@ class Application;
 class SoundEntry : public BaseObject {
 public:
 	SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format);
-	~SoundEntry();
+	virtual ~SoundEntry();
 
 	virtual void play(bool loop) = 0;
 	virtual void preload() = 0;

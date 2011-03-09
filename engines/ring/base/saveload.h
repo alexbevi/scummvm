@@ -28,6 +28,7 @@
 
 #include "ring/shared.h"
 
+#include "common/array.h"
 #include "common/serializer.h"
 
 namespace Ring {
@@ -96,7 +97,7 @@ private:
 
 template<class T>
 void SaveManager::syncArray(Common::Serializer &s, Common::Array<T *> *arr) {
-	for (Common::Array<T *>::iterator it = arr->begin(); it != arr->end(); it++)
+	for (typename Common::Array<T *>::iterator it = arr->begin(); it != arr->end(); it++)
 		(*it)->saveLoadWithSerializer(s);
 }
 

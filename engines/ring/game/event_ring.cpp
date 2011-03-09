@@ -4656,7 +4656,7 @@ void EventHandlerRing::onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, 
 
 	case 4: {
 		int32 val = movabilityTo & 0x80000001;
-		bool state = (val < 0 ? ((val - 1) | 0xFFFFFFFE) == -1 : val == 0);
+		bool state = (val < 0 ? (int32)((val - 1) | 0xFFFFFFFE) == -1 : val == 0);
 
 		if (state) {
 			_app->objectPresentationHide(kObject4, 2);
