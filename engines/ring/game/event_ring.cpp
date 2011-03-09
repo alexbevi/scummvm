@@ -8503,6 +8503,52 @@ void EventHandlerRing::onAnimationNextFrameZoneN2(Id animationId, const Common::
 	}
 }
 
+void EventHandlerRing::onAnimation(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5) {
+	if (_app->getCurrentZone() == kZoneWA)
+		onAnimationZoneWA(type, animationId, name, frame, a5);
+}
+
+void EventHandlerRing::onAnimationZoneWA(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5) {
+	switch (animationId) {
+	default:
+		break;
+
+	case 50003:
+		if (type == 1) {
+			_app->varSetByte(50011, 1);
+		} else if (type == 2) {
+			_app->varSetByte(50011, 0);
+			_app->objectPresentationHide(kObject50100, 3);
+			_app->objectPresentationHide(kObject50100, 4);
+			_app->objectPresentationHide(kObject50100, 5);
+			_app->objectPresentationHide(kObject50100, 6);
+			_app->objectPresentationShow(kObject50100, 0);
+			_app->objectPresentationShow(kObject50100, 1);
+			_app->objectPresentationShow(kObject50100, 2);
+			_app->varSetWord(50101, 0);
+			_app->varSetWord(50102, 0);
+			_app->varSetWord(50103, 0);
+			_app->varSetWord(50104, 0);
+			_app->varSetWord(50105, 0);
+			_app->objectSetAccessibilityOn(kObjectInk);
+			_app->objectSetAccessibilityOn(kObjectPaper);
+			_app->objectSetAccessibilityOn(kObjectStylet);
+			_app->objectSetAccessibilityOn(kObjectInkedStylet);
+
+		}
+		break;
+
+	case 50004:
+		if (type == 2) {
+			_app->objectPresentationHide(kObject50100);
+			_app->rotationSetAlp(50601, 250.0);
+			_app->rotationSetActive(50601);
+			_app->playMovie("1872");
+		}
+		break;
+	}
+}
+
 #pragma endregion
 
 #pragma region OnSwitchZone functions

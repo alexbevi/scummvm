@@ -54,6 +54,7 @@ public:
 	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
 	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
 	virtual void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+	virtual void onAnimation(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
 	virtual void onVisualList(Id id, uint32 type, const Common::Point &point);
 
 private:
@@ -191,6 +192,8 @@ private:
 	void onAnimationNextFrameZoneWA(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
 	void onAnimationNextFrameZoneAS(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
 	void onAnimationNextFrameZoneN2(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+
+	void onAnimationZoneWA(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Zone switching
