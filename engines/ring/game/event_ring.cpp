@@ -782,10 +782,11 @@ void EventHandlerRing::onButtonDownZoneRO(ObjectId id, uint32 a2, Id puzzleRotat
 	if (a2 >= 7) {
 		_app->soundPlay(a2 + 40500);
 
-		// TODO check validity
-		Common::String current = _app->varGetString(40902);
-		current.deleteLastChar();
-		_app->varSetString(40902, Common::String::format("%s%1d", current.c_str(), a2 - 7));
+		Common::String str = _app->varGetString(40902);
+		while (str.size() > 7)
+			str.deleteLastChar();
+
+		_app->varSetString(40902, Common::String::format("%s%1d", str.c_str(), a2 - 7));
 
 		if (_app->varGetString(40902) == "01276534"
 		 || _app->varGetString(40902) == "01476534"
@@ -2444,7 +2445,240 @@ void EventHandlerRing::onButtonUpZoneFO(ObjectId id, uint32 a2, Id puzzleRotatio
 }
 
 void EventHandlerRing::onButtonUpZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerRing::onButtonUpZoneRO] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kObject40010:
+		if (!_app->bagHasClickedObject()) {
+			if (!a2) {
+				if (_app->varGetByte(40000)) {
+					if (!_app->varGetByte(40701)
+					 && !_app->varGetByte(40702)
+					 && !_app->varGetByte(40703)) {
+						_app->puzzleSetActive(kPuzzle40011);
+						_app->objectPresentationShow(kObject40011);
+						_app->objectSetAccessibilityOn(kObject40011);
+					}
+
+					if (_app->varGetByte(40701) == 1
+					 && !_app->varGetByte(40702)
+					 && !_app->varGetByte(40703))
+						_app->puzzleSetActive(kPuzzle40013);
+
+					if (_app->varGetByte(40701) == 1
+					 && _app->varGetByte(40702) == 1
+					 && !_app->varGetByte(40703))
+						_app->puzzleSetActive(kPuzzle40012);
+
+				} else {
+					_app->puzzleSetActive(kPuzzle40010);
+				}
+			}
+			break;
+		}
+
+		switch (a2) {
+		default:
+			_app->cursorDelete();
+			break;
+
+		case 0:
+			if (_app->bagGetClickedObject() != kObject40000 || _app->varGetByte(40000)) {
+				_app->cursorDelete();
+				break;
+			}
+
+			_app->playMovie("1780");
+			_app->varSetFloat(90006, 51.8f);
+			_app->puzzleSetActive(kPuzzle40011);
+
+			handleEvents();
+
+			if (_app->varGetByte(40701)) {
+				handleEvents();
+
+				_app->varSetByte(40000, 1);
+				_app->cursorDelete();
+				break;
+			}
+
+			for (uint32 i = 2000; i >= 1; i--) {
+				a2 = (rnd(4) + 1) + 10 * (rnd(4) + 2);
+
+				if (_app->varGetByte(a2 + 40501)) {
+					uint32 presentationIndex = _app->varGetByte(a2 + 40501) / 10 - 2;
+					uint32 imageIndex = _app->varGetByte(a2 + 40501) % 10 - 1;
+					Common::Point coords = _app->objectPresentationGetImageCoordinatesOnPuzzle(40011, presentationIndex, imageIndex);
+
+					if (!_app->varGetByte(a2 + 40491)) {
+						_app->varSetByte(a2 + 40491, _app->varGetByte(a2 + 40501));
+						_app->varSetByte(a2 + 40501, 0);
+						_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject40011, presentationIndex, imageIndex, Common::Point(coords.x, coords.y - _app->varGetByte(40805)));
+						continue;
+					}
+
+					if (!_app->varGetByte(a2 + 40511)) {
+						_app->varSetByte(a2 + 40511, _app->varGetByte(a2 + 40501));
+						_app->varSetByte(a2 + 40501, 0);
+						_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject40011, presentationIndex, imageIndex, Common::Point(coords.x, coords.y + _app->varGetByte(40805)));
+						continue;
+					}
+
+					if (!_app->varGetByte(a2 + 40500)) {
+						_app->varSetByte(a2 + 40500, _app->varGetByte(a2 + 40501));
+						_app->varSetByte(a2 + 40501, 0);
+						_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject40011, presentationIndex, imageIndex, Common::Point(coords.x - _app->varGetByte(40805), coords.y));
+						continue;
+					}
+
+					if (!_app->varGetByte(a2 + 40502)) {
+						_app->varSetByte(a2 + 40502, _app->varGetByte(a2 + 40501));
+						_app->varSetByte(a2 + 40501, 0);
+						_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject40011, presentationIndex, imageIndex, Common::Point(coords.x + _app->varGetByte(40805), coords.y));
+						continue;
+					}
+				}
+			}
+
+			handleEvents();
+
+			_app->varSetByte(40000, 1);
+			_app->cursorDelete();
+			break;
+
+		case 2:
+			if (_app->bagGetClickedObject() == kObjectRing) {
+				_app->objectPresentationShow(kObject40010, 0);
+				_app->bagRemove(kObjectRing);
+				_app->varSetByte(40801, 1);
+			}
+
+			if (_app->bagGetClickedObject() == kObjectCrown && _app->varGetByte(40801) == 1) {
+				_app->objectPresentationHide(kObject40010, 0);
+				_app->playMovie("1781");
+				_app->varSetFloat(90006, 78.6f);
+				_app->bagRemove(kObjectCrown);
+				_app->varSetByte(40703, 1);
+				_app->puzzleSetActive(kPuzzle40103);
+				_app->soundStop(40002, 1024);
+				_app->puzzleSetActive(kPuzzle40101);
+				_app->soundPlay(40706);
+			}
+
+			_app->cursorDelete();
+			break;
+		}
+		break;
+
+	case kObject40011:
+		if (_app->bagHasClickedObject()) {
+			_app->cursorDelete();
+			break;
+		}
+
+		if (_app->varGetByte(a2 + 40501)) {
+			uint32 presentationIndex = _app->varGetByte(a2 + 40501) / 10 - 2;
+			uint32 imageIndex = _app->varGetByte(a2 + 40501) % 10 - 1;
+			Common::Point coords = _app->objectPresentationGetImageCoordinatesOnPuzzle(40011, presentationIndex, imageIndex);
+
+			if (_app->varGetByte(a2 + 40491)) {
+				if (!_app->varGetByte(a2 + 40511)) {
+					_app->varSetByte(a2 + 40511, _app->varGetByte(a2 + 40501));
+					_app->varSetByte(a2 + 40501, 0);
+					_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject40011, presentationIndex, imageIndex, Common::Point(coords.x, coords.y + _app->varGetByte(40805)));
+
+					if (a2 == 12) {
+						uint32 counter = 1;
+						for (uint32 i = 0; i < _app->varGetByte(40522); i++) {
+							++counter;
+
+							if (counter >= 5) {
+								counter = 1;
+
+								// Original does some checks on a2, but they seem useless :S
+
+								handleEvents();
+
+								_app->objectPresentationHide(kObject40011);
+								_app->objectSetAccessibilityOff(kObject40011);
+								_app->objectSetAccessibilityOff(kObject40010, 1, 1);
+								_app->objectSetAccessibilityOn(kObject40010, 2, 2);
+								_app->varSetByte(40701, 1);
+								_app->playMovie("1782");
+								_app->varSetFloat(90006, 64.3f);
+								_app->puzzleSetActive(kPuzzle40013);
+								_app->objectPresentationShow(kObject40101, 0);
+								_app->objectPresentationShow(kObject40102, 0);
+								_app->objectPresentationShow(kObject40103, 0);
+								_app->objectPresentationShow(kObject40104, 0);
+								_app->objectPresentationShow(kObject40105, 0);
+								_app->timerStart(kTimer0, 50);
+								_app->timerStart(kTimer1, 30);
+								break;
+							}
+						}
+					}
+
+					_app->soundSetVolume(40103, rnd(20) + 80);
+					_app->soundPlay(40103);
+					break;
+				}
+
+				if (!_app->varGetByte(a2 + 40500)) {
+					_app->varSetByte(a2 + 40500, _app->varGetByte(a2 + 40501));
+					_app->varSetByte(a2 + 40501, 0);
+					_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject40011, presentationIndex, imageIndex, Common::Point(coords.x - _app->varGetByte(40805), coords.y));
+					_app->soundSetVolume(40103, rnd(20) + 80);
+					_app->soundPlay(40103);
+					break;
+				}
+
+				if (_app->varGetByte(a2 + 40502)) {
+					_app->soundSetVolume(40103, rnd(20) + 80);
+					_app->soundPlay(40103);
+					break;
+				}
+
+				_app->varSetByte(a2 + 40502, _app->varGetByte(a2 + 40501));
+				_app->varSetByte(a2 + 40501, 0);
+				_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject40011, presentationIndex, imageIndex, Common::Point(coords.x + _app->varGetByte(40805), coords.y));
+				_app->soundSetVolume(40103, rnd(20) + 80);
+				_app->soundPlay(40103);
+			} else {
+				_app->varSetByte(a2 + 40491, _app->varGetByte(a2 + 40501));
+				_app->varSetByte(a2 + 40501, 0);
+				_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject40011, presentationIndex, imageIndex, Common::Point(coords.x, coords.y - _app->varGetByte(40805)));
+				_app->soundSetVolume(40103, rnd(20) + 80);
+				_app->soundPlay(40103);
+			}
+		}
+		break;
+
+	case kObject40201:
+		if (_app->bagHasClickedObject()) {
+			_app->cursorDelete();
+			break;
+		}
+
+		_app->objectSetAccessibilityOff(kObject40060);
+		_app->puzzleSetMovabilityOff(kPuzzle40060, 0, 0);
+		if (_presentationIndexRO / 10 == a2 + 1) {
+			_app->objectPresentationShow(kObject40201, a2);
+
+			Common::String str = _app->varGetString(40901);
+			while (str.size() > 6)
+				str.deleteLastChar();
+
+			_app->varSetString(40901, Common::String::format("%s%d", str.c_str(), a2));
+		} else {
+			_app->varSetByte(a2 + 40200, _app->varGetByte(a2 + 40200) ? 0 : 1);
+			_app->objectPresentationShow(kObject40201, a2 + 7);
+			_app->soundSetVolume(40602, rnd(20) + 80);
+			_app->soundPlay(40602);
+		}
+		break;
+	}
 }
 
 void EventHandlerRing::onButtonUpZoneWA(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point) {

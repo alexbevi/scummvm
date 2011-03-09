@@ -340,6 +340,7 @@ enum ObjectId {
 	kObject30109                    = 30109,
 	kObject30110                    = 30110,
 	kObject30200                    = 30200,
+	kObject40000                    = 40000,
 	kObject40010                    = 40010,
 	kObject40011                    = 40011,
 	kObjectRing                     = 40012,
