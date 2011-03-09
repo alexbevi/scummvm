@@ -8794,6 +8794,25 @@ void EventHandlerRing::sub_4340C0() {
 	_app->puzzleSet3DSoundOn(kPuzzle70102, 70107);
 }
 
+void EventHandlerRing::sub_445930() {
+	if (_app->varGetByte(10105) == 1) {
+
+		_app->objectPresentationHide(kObject10106);
+		_app->objectPresentationShow(kObject10106, 38);
+		_app->objectPresentationShow(kObject10106, _app->varGetWord(10100) + 19);
+
+		if (!_app->varGetWord(10100)) {
+			_app->objectPresentationShow(kObject10106, 39);
+			_app->varSetByte(10106, 1);
+		}
+
+	} else {
+		_app->objectPresentationHide(kObject10106);
+		_app->objectPresentationShow(kObject10106, _app->varGetWord(10100));
+		_app->varSetByte(10106, 0);
+	}
+}
+
 void EventHandlerRing::sub_445A10() {
 	uint32 val1 = _app->varGetByte(10106) + _app->varGetByte(10431);
 	uint32 val2 = _app->varGetByte(10420) + _app->varGetByte(10421);

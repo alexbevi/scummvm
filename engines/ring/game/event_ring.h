@@ -219,6 +219,7 @@ private:
 	void sub_4340C0();
 
 	// NI
+	void sub_445930();
 	void sub_445A10();
 };
 
