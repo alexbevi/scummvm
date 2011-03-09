@@ -617,7 +617,7 @@ void Application::updateBag(const Common::Point &point) {
 
 	if (hotspot && hotspot->contains(point)) {
 		_dragControl->updateCoordinates(point);
-		_eventHandler->onBag(_dragControl->getObjectId(), _dragControl->getField31(), _dragControl->getPuzzleRotationId(), _dragControl->getField39(), _dragControl, 3);
+		_eventHandler->onBag(_dragControl->getObjectId(), _dragControl->getTarget(), _dragControl->getPuzzleRotationId(), _dragControl->getField39(), _dragControl, 3);
 
 		if (_state != kStateShowMenu) {
 			if (!_field_76)

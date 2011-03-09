@@ -40,7 +40,7 @@ DragControl::DragControl() {
 	_accessibilityIndex = 0;
 	_object = NULL;
 	_hotspot2 = NULL;
-	_field_31 = 0;
+	_target = 0;
 	_puzzleRotationId = 0;
 	_field_39 = 0;
 	_ticks = 0;
@@ -55,14 +55,14 @@ DragControl::~DragControl() {
 	SAFE_DELETE(_hotspot);
 }
 
-void DragControl::init(Common::Point coords, ObjectId objectId, uint32 accessibilityIndex, Hotspot *hostpot, uint32 a5, Id puzzleRotationId, uint32 a7) {
+void DragControl::init(Common::Point coords, ObjectId objectId, uint32 accessibilityIndex, Hotspot *hostpot, Id target, Id puzzleRotationId, uint32 a7) {
 	_coords0 = _coords1 = _oldCoords = _currentCoords = coords;
 	_field_20 = 1;
 	_objectId = objectId;
 	_accessibilityIndex = accessibilityIndex;
 	_object = getApp()->getObject(objectId);
 	_hotspot2 = hostpot;
-	_field_31 = a5;
+	_target = target;
 	_puzzleRotationId = puzzleRotationId;
 	_field_39 = a7;
 	_ticks = g_system->getMillis();
@@ -79,7 +79,7 @@ void DragControl::reset() {
 	_accessibilityIndex = 0;
 	_object = NULL;
 	_hotspot2 = NULL;
-	_field_31 = 0;
+	_target = 0;
 	_puzzleRotationId = 0;
 	_field_39 = 0;
 	_ticks = 0;

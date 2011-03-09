@@ -46,13 +46,13 @@ public:
 	virtual void onTimer(TimerId id);
 	virtual void onSound(Id id, SoundType type, uint32 a3);
 	virtual void onSetup(Zone zone, SetupType type);
-	virtual void onBag(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
+	virtual void onBag(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
 	virtual void onBagClickedObject(ObjectId id);
 	virtual void onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point);
 	virtual void onUpdateAfter(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {}
 	virtual void onUpdateBag(const Common::Point &point);
-	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
+	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
 	virtual void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
 	virtual void onAnimation(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
 	virtual void onVisualList(Id id, uint32 type, const Common::Point &point);
@@ -90,23 +90,23 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	// Left button down
 	//////////////////////////////////////////////////////////////////////////
-	void onButtonDown(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonDownZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonDownZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonDownZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonDown(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonDownZoneNI(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonDownZoneRO(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonDownZoneN2(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
-	void onButtonUp(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneRH(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneWA(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneAS(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneRH(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneFO(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneRO(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneWA(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneAS(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneN2(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
-	void onButtonUp2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUp2ZoneWA(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUp2(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUp2ZoneWA(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Key down

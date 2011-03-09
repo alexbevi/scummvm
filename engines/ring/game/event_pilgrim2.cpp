@@ -59,27 +59,10 @@ void EventHandlerPilgrim2::onKeyDown(Common::Event &evt) {
 
 #pragma endregion
 
-#pragma region Zone Setup
-
-void EventHandlerPilgrim2::onSetup(Zone zone, SetupType type) {
-	error("[EventHandlerPilgrim2::onSetup] Not implemented");
-}
-
-#pragma endregion
-
-
 #pragma region Timer
 
 void EventHandlerPilgrim2::onTimer(TimerId timerId) {
 	error("[EventHandlerPilgrim2::onTimer] Not implemented");
-}
-
-#pragma endregion
-
-#pragma region Sound
-
-void EventHandlerPilgrim2::onSound(Id id, SoundType type, uint32 a3) {
-	error("[EventHandlerPilgrim2::onSound] Not implemented");
 }
 
 #pragma endregion

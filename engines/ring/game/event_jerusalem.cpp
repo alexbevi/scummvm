@@ -59,26 +59,10 @@ void EventHandlerJerusalem::onKeyDown(Common::Event &evt) {
 
 #pragma endregion
 
-#pragma region Zone Setup
-
-void EventHandlerJerusalem::onSetup(Zone zone, SetupType type) {
-	error("[EventHandlerJerusalem::onSetup] Not implemented");
-}
-
-#pragma endregion
-
 #pragma region Timer
 
 void EventHandlerJerusalem::onTimer(TimerId timerId) {
 	error("[EventHandlerJerusalem::onTimer] Not implemented");
-}
-
-#pragma endregion
-
-#pragma region Sound
-
-void EventHandlerJerusalem::onSound(Id id, SoundType type, uint32 a3) {
-	error("[EventHandlerJerusalem::onSound] Not implemented");
 }
 
 #pragma endregion

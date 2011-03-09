@@ -38,7 +38,7 @@ public:
 	DragControl();
 	~DragControl();
 
-	void init(Common::Point coords, ObjectId objectId, uint32 accessibilityIndex, Hotspot *hostpot, uint32 a5, Id puzzleRotationId, uint32 a7);
+	void init(Common::Point coords, ObjectId objectId, uint32 accessibilityIndex, Hotspot *hostpot, Id target, Id puzzleRotationId, uint32 a7);
 	void reset();
 
 	void updateCoordinates(const Common::Point &point);
@@ -58,7 +58,7 @@ public:
 	ObjectId getObjectId() { return _objectId; }
 	uint32 getAccessibilityIndex() { return _accessibilityIndex; }
 	Hotspot *getHotspot2() { return _hotspot2; }
-	uint32 getField31() { return _field_31; }
+	Id getTarget() { return _target; }
 	uint32 getPuzzleRotationId() { return _puzzleRotationId; }
 	uint32 getField39() { return _field_39; }
 	uint32 getField45() { return _field_45; }
@@ -77,7 +77,7 @@ private:
 	uint32        _accessibilityIndex;
 	Object       *_object;
 	Hotspot      *_hotspot2;
-	uint32        _field_31;
+	Id            _target;
 	Id            _puzzleRotationId;
 	uint32        _field_39;
 	uint32        _ticks;

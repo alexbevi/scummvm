@@ -59,26 +59,10 @@ void EventHandlerPompeii::onKeyDown(Common::Event &evt) {
 
 #pragma endregion
 
-#pragma region Zone Setup
-
-void EventHandlerPompeii::onSetup(Zone zone, SetupType type) {
-	error("[EventHandlerPompeii::onSetup] Not implemented");
-}
-
-#pragma endregion
-
 #pragma region Timer
 
 void EventHandlerPompeii::onTimer(TimerId timerId) {
 	error("[EventHandlerPompeii::onTimer] Not implemented");
-}
-
-#pragma endregion
-
-#pragma region Sound
-
-void EventHandlerPompeii::onSound(Id id, SoundType type, uint32 a3) {
-	error("[EventHandlerPompeii::onSound] Not implemented");
 }
 
 #pragma endregion

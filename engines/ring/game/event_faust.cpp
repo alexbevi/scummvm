@@ -59,42 +59,10 @@ void EventHandlerFaust::onKeyDown(Common::Event &evt) {
 
 #pragma endregion
 
-#pragma region Zone Setup
-
-void EventHandlerFaust::onSetup(Zone zone, SetupType type) {
-	error("[EventHandlerFaust::onSetup] Not implemented");
-}
-
-#pragma endregion
-
-#pragma region Update
-
-void EventHandlerFaust::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerRing::onUpdateBefore] Not implemented");
-}
-
-void EventHandlerFaust::onUpdateAfter(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {
-	error("[EventHandlerRing::onUpdateAfter] Not implemented");
-}
-
-void EventHandlerFaust::onUpdateBag(const Common::Point &point) {
-	error("[EventHandlerRing::onUpdateBag] Not implemented");
-}
-
-#pragma endregion
-
 #pragma region Timer
 
 void EventHandlerFaust::onTimer(TimerId timerId) {
 	error("[EventHandlerFaust::onTimer] Not implemented");
-}
-
-#pragma endregion
-
-#pragma region Sound
-
-void EventHandlerFaust::onSound(Id id, SoundType type, uint32 a3) {
-	error("[EventHandlerFaust::onSound] Not implemented");
 }
 
 #pragma endregion
