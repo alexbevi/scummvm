@@ -63,10 +63,15 @@ private:
 	// Data & State
 	bool         _controlNotPressed;
 	uint32       _dword_4A1C00;
-	uint32       _presentationIndexRO;
 	bool         _disableTimerRH;
 	uint32       _frameNumberTimerRH;
 
+	// RO
+	uint32       _presentationIndexRO;
+	float        _presentationIndexBagRO;
+	uint32       _presentationIndexBagRO2;
+
+	// SY
 	uint32       _presentationIndexSY;
 	bool         _prefsSubtitles;
 	uint32       _prefsVolume;

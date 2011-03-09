@@ -58,6 +58,8 @@ EventHandlerRing::EventHandlerRing(ApplicationRing *application) : _app(applicat
 
 	// Local event data
 	_presentationIndexRO = 0;
+	_presentationIndexBagRO = 0;
+	_presentationIndexBagRO2 = 0;
 
 	_presentationIndexSY = 0;
 	_prefsSubtitles = false;
@@ -5316,7 +5318,204 @@ void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 }
 
 void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
-	error("[EventHandlerRing::onBagZoneRO] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kObject40060:
+		switch (type) {
+		default:
+			break;
+
+		case 1:
+			_app->dragControlSetField45(2);
+			_app->dragControlSetHotspot(Common::Rect(0, 0, 640, 480));
+
+			_app->soundPlay(40102, kSoundLoop);
+
+			_presentationIndexBagRO2 = 71;
+			_presentationIndexBagRO = _app->varGetByte(40804);
+			break;
+
+		case 2: {
+			_app->soundStop(40102, 1024);
+
+			_presentationIndexRO = _presentationIndexBagRO;
+			float test = 10 * (_presentationIndexBagRO * 0.1000000014901161f);
+			float index = test;
+			int direction = -1;
+
+			if ((test + 5) < _presentationIndexBagRO) {
+				direction = 1;
+				index = test + 10;
+			}
+
+			if (_presentationIndexBagRO != index) {
+				do {
+					_presentationIndexRO += direction;
+
+					_app->objectPresentationHide(kObject40060);
+					_app->objectPresentationShow(kObject40060, _presentationIndexRO);
+
+					handleEvents();
+					if (checkEscape())
+						break;
+
+				} while (_presentationIndexRO != index);
+			}
+
+			_app->objectSetAccessibilityOff(kObject40060);
+			_app->objectSetAccessibilityOn(kObject40060, _presentationIndexRO / 10, _presentationIndexRO / 10);
+			_app->varSetByte(40804, _presentationIndexRO);
+			}
+			break;
+
+		case 3: {
+			if (_app->bagHasClickedObject()) {
+				_app->cursorDelete();
+				break;
+			}
+
+			if (_app->dragControlXEqual()) {
+				_app->soundStop(40102, 1024);
+				break;
+			}
+
+			if (!_app->soundIsPlaying(40102))
+				_app->soundPlay(40102, kSoundLoop);
+
+			_app->soundSetVolume(40102, _app->dragControlGetOffsetX() / 2 + 80);
+
+			float offset = _app->dragControlGetOffsetX() * 0.1666666666666667f;
+
+			if (_app->dragControlXLower())
+				_presentationIndexBagRO += offset;
+
+			if (_app->dragControlXHigher())
+				_presentationIndexBagRO -= offset;
+
+			if (_presentationIndexBagRO < 0)
+				_presentationIndexBagRO = 0;
+
+			if (_presentationIndexBagRO > _presentationIndexBagRO2)
+				_presentationIndexBagRO = _presentationIndexBagRO2;
+
+			_app->objectPresentationHide(kObject40060);
+			_app->objectPresentationShow(kObject40060, _presentationIndexBagRO);
+			}
+			break;
+		}
+		break;
+
+	case kObject40101:
+		switch (type) {
+		default:
+			break;
+
+		case 1:
+			_presentationIndexBagRO = _app->varGetByte(a2 + 40601);
+			_app->dragControlSetField45(2);
+			_app->dragControlSetHotspot(Common::Rect(0, 0, 640, 480));
+			_app->soundPlay(40102, kSoundLoop);
+			// Original sets unused value
+			_presentationIndexBagRO2 = 97;
+			break;
+
+		case 2: {
+			_presentationIndexRO = _presentationIndexBagRO;
+
+			float test = 10 * (_presentationIndexBagRO * 0.1000000014901161f);
+			float index = test;
+			int direction = -1;
+
+			if ((test + 5) < _presentationIndexBagRO) {
+				direction = 1;
+				index = test + 10;
+			}
+
+			if (_presentationIndexBagRO != index) {
+				do {
+					_presentationIndexRO += direction;
+
+					_app->objectPresentationHide((ObjectId)(a2 + 40101));
+					_app->objectPresentationShow((ObjectId)(a2 + 40101), _presentationIndexRO);
+
+					handleEvents();
+					if (checkEscape())
+						break;
+
+				} while (_presentationIndexRO != index);
+			}
+
+			_app->soundStop(40102, 1024);
+			_app->varSetByte(a2 + 40601, _presentationIndexRO);
+
+			if (_app->varGetByte(40601) == 10
+			 && _app->varGetByte(40602) == 90
+			 && _app->varGetByte(40603) == 60
+			 && _app->varGetByte(40604) == 50
+			 && (_app->varGetByte(40605) == 50 || _app->varGetByte(40605) == 40)) {
+				_app->varSetByte(40702, 1);
+				_app->objectPresentationHide(kObject40101);
+				_app->objectPresentationHide(kObject40102);
+				_app->objectPresentationHide(kObject40103);
+				_app->objectPresentationHide(kObject40104);
+				_app->objectPresentationHide(kObject40105);
+				_app->objectSetAccessibilityOff(kObject40101);
+				_app->objectSetAccessibilityOff(kObject40102);
+				_app->objectSetAccessibilityOff(kObject40103);
+				_app->objectSetAccessibilityOff(kObject40104);
+				_app->objectSetAccessibilityOff(kObject40105);
+
+				if (_app->varGetByte(40605) == 50)
+					_app->playMovie("1783");
+
+				if (_app->varGetByte(40605) == 40)
+					_app->playMovie("1784");
+
+				_app->varSetFloat(90006, 75.0);
+
+				_app->puzzleSetActive(kPuzzle40012);
+			}
+			}
+			break;
+
+		case 3:
+			if (_app->bagHasClickedObject()) {
+				_app->cursorDelete();
+				break;
+			}
+
+			if (!_app->dragControlYEqual()) 	{
+				if (!_app->soundIsPlaying(40102))
+					_app->soundPlay(40102, kSoundLoop);
+
+				// Original sets unused value
+
+				_app->soundSetVolume(40102, _app->dragControlGetOffsetY() / 2 + 80);
+
+				if (_app->dragControlYHigher())
+					_presentationIndexBagRO += _app->dragControlGetOffsetY();
+
+				if (_app->dragControlYLower())
+					_presentationIndexBagRO -= _app->dragControlGetOffsetY();
+
+				if (_presentationIndexBagRO < 0)
+					_presentationIndexBagRO = _presentationIndexBagRO2;
+
+				if (_presentationIndexBagRO2 < _presentationIndexBagRO)
+					_presentationIndexBagRO = 0;
+
+				_app->objectPresentationHide((ObjectId)(a2 + 40101));
+				_app->objectPresentationShow((ObjectId)(a2 + 40101), _presentationIndexBagRO);
+				break;
+			}
+
+			_app->soundStop(40102, 1024);
+			break;
+		}
+		break;
+	}
 }
 
 void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
