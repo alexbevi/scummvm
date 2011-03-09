@@ -483,7 +483,7 @@ void Application::update(const Common::Point &point) {
 						_cursorHandler->select(hotspot->getCursorId());
 				}
 
-				_eventHandler->onUpdateBefore(object->getId(), hotspot->getField19(), accessibilityIndex, 1, point);
+				_eventHandler->onUpdateBefore(object->getId(), hotspot->getTarget(), accessibilityIndex, 1, point);
 				return;
 			}
 		}
@@ -496,7 +496,7 @@ void Application::update(const Common::Point &point) {
 
 				_cursorHandler->select(hotspot->getCursorId());
 
-				_eventHandler->onUpdateAfter(puzzleMenu->getId(), movability->getTo(), puzzleMenu->getMovabilityIndex(point), hotspot->getField19(), movability->getType(), point);
+				_eventHandler->onUpdateAfter(puzzleMenu->getId(), movability->getTo(), puzzleMenu->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
 				return;
 			}
 		}
@@ -538,7 +538,7 @@ void Application::update(const Common::Point &point) {
 					_cursorHandler->select(hotspot->getCursorId());
 			}
 
-			_eventHandler->onUpdateBefore(object->getId(), hotspot->getField19(), accessibilityIndex, 0, point);
+			_eventHandler->onUpdateBefore(object->getId(), hotspot->getTarget(), accessibilityIndex, 0, point);
 			return;
 		}
 
@@ -549,7 +549,7 @@ void Application::update(const Common::Point &point) {
 
 			_cursorHandler->select(hotspot->getCursorId());
 
-			_eventHandler->onUpdateAfter(_rotation->getId(), movability->getTo(), _rotation->getMovabilityIndex(point), hotspot->getField19(), movability->getType(), point);
+			_eventHandler->onUpdateAfter(_rotation->getId(), movability->getTo(), _rotation->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
 			return;
 		}
 	}
@@ -578,7 +578,7 @@ void Application::update(const Common::Point &point) {
 					_cursorHandler->select(hotspot->getCursorId());
 			}
 
-			_eventHandler->onUpdateBefore(object->getId(), hotspot->getField19(), accessibilityIndex, 0, point);
+			_eventHandler->onUpdateBefore(object->getId(), hotspot->getTarget(), accessibilityIndex, 0, point);
 			return;
 		}
 
@@ -589,7 +589,7 @@ void Application::update(const Common::Point &point) {
 
 			_cursorHandler->select(hotspot->getCursorId());
 
-			_eventHandler->onUpdateAfter(_puzzle->getId(), movability->getTo(), _rotation->getMovabilityIndex(point), hotspot->getField19(), movability->getType(), point);
+			_eventHandler->onUpdateAfter(_puzzle->getId(), movability->getTo(), _rotation->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
 			return;
 		}
 

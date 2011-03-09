@@ -196,7 +196,7 @@ bool EventHandlerRing::handleLeftButtonUp(Accessibility *accessibility, Id id, c
 	Hotspot *hotspot = accessibility->getHotspot();
 
 	if (object->getFieldC() & 1) {
-		onButtonUp(object->getId(), hotspot->getField19(), id, 1, point);
+		onButtonUp(object->getId(), hotspot->getTarget(), id, 1, point);
 
 		if (_app->getState() == kStateShowMenu)
 			return true;
@@ -207,7 +207,7 @@ bool EventHandlerRing::handleLeftButtonUp(Accessibility *accessibility, Id id, c
 		return true;
 	}
 
-	onButtonUp2(object->getId(), hotspot->getField19(), id, 1, point);
+	onButtonUp2(object->getId(), hotspot->getTarget(), id, 1, point);
 
 	if (_app->getState() != kStateShowMenu) {
 		if (_app->getField74()) {
@@ -233,7 +233,7 @@ bool EventHandlerRing::handleLeftButtonUp(Movability *movability, uint32 index, 
 	//////////////////////////////////////////////////////////////////////////
 	// Before Ride
 	//////////////////////////////////////////////////////////////////////////
-	onBeforeRide(id, movability->getTo(), index, hotspot->getField19(), movability->getType());
+	onBeforeRide(id, movability->getTo(), index, hotspot->getTarget(), movability->getType());
 
 	if (_app->getState() == kStateShowMenu)
 		return true;
@@ -344,7 +344,7 @@ bool EventHandlerRing::handleLeftButtonUp(Movability *movability, uint32 index, 
 		_app->rotationSetActive(movability->getTo());
 		_app->getCurrentRotation()->updateAndDraw(movability->getAlpAfter(), movability->getBetAfter(), movability->getRanAfter());
 
-		onAfterRide(_app->getCurrentRotationId(), id, index, hotspot->getField19(), movability->getType());
+		onAfterRide(_app->getCurrentRotationId(), id, index, hotspot->getTarget(), movability->getType());
 
 		if (_app->getState() == kStateShowMenu)
 			return true;
@@ -354,7 +354,7 @@ bool EventHandlerRing::handleLeftButtonUp(Movability *movability, uint32 index, 
 	case kMovabilityPuzzleToPuzzle:
 		_app->puzzleSetActive((PuzzleId)movability->getTo());
 
-		onAfterRide(_app->getCurrentRotationId(), id, index, hotspot->getField19(), movability->getType());
+		onAfterRide(_app->getCurrentRotationId(), id, index, hotspot->getTarget(), movability->getType());
 
 		if (_app->getState() == kStateShowMenu)
 			return true;
@@ -422,7 +422,7 @@ bool EventHandlerRing::handleLeftButtonDown(Accessibility *accessibility, uint32
 	Hotspot *hotspot = accessibility->getHotspot();
 
 	if (object->getFieldC() & 2) {
-		onButtonDown(object->getId(), hotspot->getField19(), id, 1, point);
+		onButtonDown(object->getId(), hotspot->getTarget(), id, 1, point);
 
 		if (_app->getState() == kStateShowMenu)
 			return true;
@@ -433,8 +433,8 @@ bool EventHandlerRing::handleLeftButtonDown(Accessibility *accessibility, uint32
 		return true;
 	}
 
-	_app->getDragControl()->init(point, object->getId(), index, hotspot, hotspot->getField19(), id, 1);
-	onBag(object->getId(), hotspot->getField19(), id, 1, _app->getDragControl(), 1);
+	_app->getDragControl()->init(point, object->getId(), index, hotspot, hotspot->getTarget(), id, 1);
+	onBag(object->getId(), hotspot->getTarget(), id, 1, _app->getDragControl(), 1);
 
 	if (_app->getState() != kStateShowMenu) {
 		if (!_app->getField76())
