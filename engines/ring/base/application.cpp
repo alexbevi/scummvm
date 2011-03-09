@@ -454,15 +454,18 @@ void Application::update(const Common::Point &point) {
 		// Check accessibilities
 		Accessibility *accessibility = puzzleMenu->getAccessibility(point);
 		if (accessibility) {
+			Object *object = accessibility->getObject();
+			Hotspot *hotspot = accessibility->getHotspot();
+			uint32 accessibilityIndex = puzzleMenu->getAccessibilityIndex(point);
 			bool handle = true;
 
 			if (puzzleMenu->getField24() == 2)
-				if (accessibility->getObject()->getId()	!= puzzleMenu->getSelectedId())
+				if (object->getId()	!= puzzleMenu->getSelectedId())
 					handle = false;
 
 			if (handle) {
 				if (_dragControl->getField20()) {
-					if (_dragControl->getAccessibilityIndex() == (uint32)puzzleMenu->getAccessibilityIndex(point))
+					if (_dragControl->getAccessibilityIndex() == accessibilityIndex)
 						_cursorHandler->select(kCursorActiveDraw);
 					else
 						_cursorHandler->select(kCursorPassiveDraw);
@@ -470,10 +473,10 @@ void Application::update(const Common::Point &point) {
 					if (bagHasClickedObject())
 						_cursorHandler->select(kCursorActive);
 					else
-						_cursorHandler->select(accessibility->getHotspot()->getCursorId());
+						_cursorHandler->select(hotspot->getCursorId());
 				}
 
-				error("[Application::update] Menu puzzle update not implemented");
+				_eventHandler->onUpdateBefore(object->getId(), hotspot->getField19(), accessibilityIndex, 0, point);
 				return;
 			}
 		}
@@ -481,16 +484,27 @@ void Application::update(const Common::Point &point) {
 		// Check movabilities
 		if (puzzleMenu->getField24() == 1) {
 			Movability *movability = puzzleMenu->getMovability(point);
-			if (!movability)
+			if (movability) {
+				Hotspot *hotspot = accessibility->getHotspot();
+
+				_cursorHandler->select(hotspot->getCursorId());
+
+				_eventHandler->onUpdateAfter(puzzleMenu->getId(), movability->getTo(), puzzleMenu->getMovabilityIndex(point), hotspot->getField19(), movability->getType(), point);
 				return;
+			}
+		}
 
+		if (puzzleMenu->getField24() == 2) {
+			if (_dragControl->getField20()) {
+				_cursorHandler->select(kCursorPassiveDraw);
+			} else {
+				if (bagHasClickedObject())
+					_cursorHandler->select(kCursorPassive);
+				else
+					_cursorHandler->select(kCursorIdle);
+			}
 
-
-			error("[Application::update] Menu puzzle update not implemented");
-		} else if (puzzleMenu->getField24() == 2) {
-			error("[Application::update] Menu puzzle update not implemented");
-
-
+			_eventHandler->onUpdateBag(point);
 			return;
 		}
 	}
