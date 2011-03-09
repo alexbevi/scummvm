@@ -4177,7 +4177,7 @@ void EventHandlerRing::onButtonUpZoneN2(ObjectId id, Id target, Id puzzleRotatio
 	}
 }
 
-void EventHandlerRing::onButtonUp2(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonUp2(ObjectId id, uint32 index, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
 	debugC(kRingDebugLogic, "onButtonUp2 (ObjectId: %d, coords: (%d, %d))", id.id(), point.x, point.y);
 
 	if (puzzleRotationId == 1 && a4 == 1) {
@@ -4200,13 +4200,333 @@ void EventHandlerRing::onButtonUp2(ObjectId id, Id target, Id puzzleRotationId, 
 		break;
 
 	case kZoneWA:
-		onButtonUp2ZoneWA(id, target, puzzleRotationId, a4, point);
+		onButtonUp2ZoneWA(id, index, puzzleRotationId, a4, point);
 		break;
 	}
 }
 
-void EventHandlerRing::onButtonUp2ZoneWA(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerRing::onButtonUp2ZoneWA] Not implemented");
+void EventHandlerRing::onButtonUp2ZoneWA(ObjectId objectId, uint32 index, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	switch (objectId) {
+	default:
+		break;
+
+	case kObjectMagnet:
+		if (_app->bagHasClickedObject()) {
+			if (_app->bagGetClickedObject() >= kObject50451
+			 && _app->bagGetClickedObject() <= kObject50457) {
+
+				_app->objectPresentationSetImageCoordinatesOnPuzzle(_app->bagGetClickedObject(), 0, Common::Point(53 * index / 10 + 162, 37 * index % 10 + 115));
+				_app->varSetDword(index + 51000, _app->bagGetClickedObject());
+				_app->objectSetAccessibilityOn(_app->bagGetClickedObject(), index / 10 + 1 + 7 * index % 10, index / 10 + 1 + 7 * index % 10);
+				_app->objectSetAccessibilityOff(kObjectMagnet, index / 10 + 7 * index % 10, index / 10 + 7 * index % 10);
+				_app->objectPresentationShow(_app->bagGetClickedObject());
+
+				if (_app->varGetDword(51030) == 50451
+				 && _app->bagGetClickedObject() == kObject50451)
+					_app->varSetFloat(90008, _app->varGetFloat(90008) + 1.0f);
+
+				if (_app->varGetDword(51061) == 50452
+				 && _app->bagGetClickedObject() == kObject50452)
+					_app->varSetFloat(90008, _app->varGetFloat(90008) + 1.0f);
+
+				if (_app->varGetDword(51001) == 50453
+				 && _app->bagGetClickedObject() == kObject50453)
+					_app->varSetFloat(90008, _app->varGetFloat(90008) + 1.0f);
+
+				if (_app->varGetDword(51033) == 50454
+				 && _app->bagGetClickedObject() == kObject50454)
+					_app->varSetFloat(90008, _app->varGetFloat(90008) + 1.0f);
+
+				if (_app->varGetDword(51026) == 50455
+				 && _app->bagGetClickedObject() == kObject50455)
+					_app->varSetFloat(90008, _app->varGetFloat(90008) + 1.0f);
+
+				if (_app->varGetDword(51046) == 50456
+				 && _app->bagGetClickedObject() == kObject50456)
+					_app->varSetFloat(90008, _app->varGetFloat(90008) + 1.0f);
+
+				if (_app->varGetDword(51042) == 50457
+				 && _app->bagGetClickedObject() == kObject50457)
+					_app->varSetFloat(90008, _app->varGetFloat(90008) + 1.0f);
+
+				_app->bagRemove(_app->bagGetClickedObject());
+
+				if (_app->varGetDword(51030) == 50451
+				 && _app->varGetDword(51061) == 50452
+				 && _app->varGetDword(51001) == 50453
+				 && _app->varGetDword(51033) == 50454
+				 && _app->varGetDword(51026) == 50455
+				 && _app->varGetDword(51046) == 50456) {
+
+					_app->objectSetAccessibilityOn(kObject50457, 0, 0);
+
+					if (_app->varGetDword(51042) == 50457) {
+						_app->playMovie("1867");
+						_app->rotationSetMovabilityOff(50402, 2, 2);
+						_app->bagAdd(kObjectFeather);
+						_app->varSetFloat(90008, _app->varGetFloat(90008) + 2.0f);
+						_app->rotationSetAlp(50402, 180.0f);
+						_app->rotationSetBet(50402, 0.3f);
+						_app->rotationSetActive(50402);
+						_app->varSetByte(50012, _app->varGetByte(50012) + 1);
+
+						if (_app->varGetByte(50012) == 2) {
+							_app->objectPresentationShow(kObject50700, 0);
+							_app->objectSetAccessibilityOff(kObject50700);
+							_app->objectSetAccessibilityOn(kObject50700, 1, 1);
+							_app->rotationSetMovabilityOff(50103, 2, 2);
+							_app->rotationSetMovabilityOn(50103, 3, 3);
+						}
+
+						if (_app->varGetByte(50012) == 4) {
+							_app->objectPresentationShow(kObject50700, 1);
+							_app->objectSetAccessibilityOff(kObject50700);
+							_app->objectSetAccessibilityOn(kObject50700, 2, 2);
+						}
+					}
+				}
+			}
+
+			_app->cursorDelete();
+		}
+
+		_app->setField74(false);
+		break;
+
+	case kObject50451:
+	case kObject50452:
+	case kObject50453:
+	case kObject50454:
+	case kObject50455:
+	case kObject50456:
+	case kObject50457:
+		if (_app->bagHasClickedObject()) {
+			if (_app->bagGetClickedObject() < kObject50451
+			 || _app->bagGetClickedObject() > kObject50457
+			 || (index && !_app->varGetDword(index + 50999))) {
+				_app->setField74(false);
+				_app->cursorDelete();
+				break;
+			}
+
+			_app->objectPresentationSetImageOriginalCoordinatesOnPuzzle(_app->bagGetClickedObject(), 0);
+
+			_app->objectSetAccessibilityOn(_app->bagGetClickedObject(), 0, 0);
+			_app->objectPresentationShow(_app->bagGetClickedObject());
+			_app->bagRemove(_app->bagGetClickedObject());
+			_app->setField74(false);
+			_app->cursorDelete();
+			break;
+		}
+
+		switch (index) {
+		default: {
+			if (_app->varGetDword(51030) == 50451
+				&& objectId == kObject50451)
+				_app->varSetFloat(90008, _app->varGetFloat(90008) - 1.0f);
+
+			if (_app->varGetDword(51061) == 50452
+				&& objectId == kObject50452)
+				_app->varSetFloat(90008, _app->varGetFloat(90008) - 1.0f);
+
+			if (_app->varGetDword(51001) == 50453
+				&& objectId == kObject50453)
+				_app->varSetFloat(90008, _app->varGetFloat(90008) - 1.0f);
+
+			if (_app->varGetDword(51033) == 50454
+				&& objectId == kObject50454)
+				_app->varSetFloat(90008, _app->varGetFloat(90008) - 1.0f);
+
+			if (_app->varGetDword(51026) == 50455
+				&& objectId == kObject50455)
+				_app->varSetFloat(90008, _app->varGetFloat(90008) - 1.0f);
+
+			if (_app->varGetDword(51046) == 50456
+				&& objectId == kObject50456)
+				_app->varSetFloat(90008, _app->varGetFloat(90008) - 1.0f);
+
+			if (_app->varGetDword(51042) == 50457
+				&& objectId == kObject50457)
+				_app->varSetFloat(90008, _app->varGetFloat(90008) - 1.0f);
+
+			_app->varSetDword(index + 50999, 0);
+
+			uint32 idx = (index - 1) / 10 + 7 * (index - 1) % 10;
+			_app->objectSetAccessibilityOff(objectId, idx + 1, idx + 1);
+			_app->objectSetAccessibilityOn(kObjectMagnet, idx, idx);
+			_app->objectPresentationHide(objectId);
+			_app->bagAdd(objectId);
+			}
+			break;
+
+		case 0:
+			_app->objectPresentationHide(objectId);
+			_app->bagAdd(objectId);
+			_app->objectSetAccessibilityOff(objectId, index, index);
+			break;
+		}
+		break;
+
+	case kObjectFronthead:
+	case kObjectBackhead:
+	case kObjectBelly:
+	case kObjectRightArm:
+	case kObjectLeftArm:
+	case kObjectLegs:
+	case kObjectHeart:
+		if (!_app->bagHasClickedObject()) {
+			if (!index && !_app->bagHas(objectId)) {
+				_app->objectPresentationHide(objectId, 0);
+				_app->bagAdd(objectId);
+				break;
+			}
+
+			_app->setField74(false);
+			break;
+		}
+
+		if (_app->bagGetClickedObject().id() == objectId && index > 0) {
+			_app->objectPresentationShow(objectId, 1);
+			_app->objectSetAccessibilityOff(objectId, 0, 1);
+			_app->varSetFloat(90008, _app->varGetFloat(90008) + 1.0f);
+			_app->varSetDword(50000, index + _app->varGetDword(50000));
+
+			if (_app->varGetDword(50000) == 7654321) {
+				_app->playMovie("1865");
+				_app->playMovie("1866");
+				_app->rotationSetMovabilityOff(50401, 1, 1);
+				_app->rotationSetMovabilityOn(50401, 2, 2);
+				_app->rotationSetMovabilityOff(50402, 1, 1);
+				_app->rotationSetMovabilityOn(50402, 2, 2);
+				_app->objectPresentationShow(kObjectGolem1, 0);
+				_app->rotationSetAlp(50402, 180.0f);
+				_app->rotationSetBet(50402, 0.3f);
+				_app->rotationSetActive(50402);
+			} else {
+				if (_app->varGetDword(50000) == 654321)
+					_app->objectSetAccessibilityOn(kObjectHeart);
+			}
+
+			_app->bagRemove(objectId);
+			_app->setField74(false);
+			_app->cursorDelete();
+			break;
+		}
+
+		if (_app->bagGetClickedObject() != kObjectFronthead
+		 && _app->bagGetClickedObject() != kObjectBackhead
+		 && _app->bagGetClickedObject() != kObjectBelly
+		 && _app->bagGetClickedObject() != kObjectRightArm
+		 && _app->bagGetClickedObject() != kObjectLeftArm
+		 && _app->bagGetClickedObject() != kObjectLegs
+		 && _app->bagGetClickedObject() != kObjectHeart) {
+		 	_app->setField74(false);
+			_app->cursorDelete();
+			break;
+		}
+
+		_app->objectPresentationShow(_app->bagGetClickedObject(), 0);
+		_app->bagRemove(_app->bagGetClickedObject());
+		_app->setField74(false);
+		_app->cursorDelete();
+		break;
+
+	case kObjectInk:
+	case kObjectPaper:
+	case kObjectStylet:
+	case kObjectInkedStylet:
+		if (_app->bagHasClickedObject()) {
+			switch (index) {
+			default:
+				break;
+
+			case 0:
+			case 1:
+			case 2:
+				if (_app->bagGetClickedObject().id() == objectId) {
+					_app->bagRemove(objectId);
+					_app->objectPresentationShow(kObject50100, index);
+					_app->setField74(false);
+					_app->cursorDelete();
+				}
+				break;
+
+			case 8:
+				if (_app->bagGetClickedObject() == kObjectPaper) {
+					_app->objectPresentationShow(kObject50100, 3);
+					_app->bagRemove(kObjectPaper);
+					_app->objectSetAccessibilityOff(kObjectPaper, 0, 0);
+					_app->varSetWord(50103, 102);
+					_app->setField74(false);
+					_app->cursorDelete();
+				}
+
+				if (_app->bagGetClickedObject() == kObjectInkedStylet
+				 && _app->varGetWord(50103) > 0) {
+					_app->objectPresentationShow(kObject50100, 5);
+					_app->bagRemove(kObjectInkedStylet);
+					_app->varSetWord(50105, 104);
+					_app->objectPresentationPauseAnimationFrame(kObject50100, 7, 30, 10000, 2);
+					_app->objectPresentationShow(kObject50100, 7);
+					_app->varSetFloat(90008, _app->varGetFloat(90008) + 5.0f);
+					_app->setField74(false);
+					_app->cursorDelete();
+				}
+				break;
+
+			case 9:
+				if (_app->bagGetClickedObject() == kObjectInk
+				 && !_app->varGetWord(50101)) {
+					_app->objectPresentationShow(kObject50100, 4);
+					_app->bagRemove(kObjectInk);
+					_app->objectSetAccessibilityOff(kObjectInk, 0, 0);
+					_app->varSetWord(50101, 101);
+					_app->setField74(false);
+					_app->cursorDelete();
+				}
+
+				if (_app->bagGetClickedObject() == kObjectStylet
+				 && _app->varGetWord(50101) > 0) {
+					_app->objectPresentationHide(kObject50100, 4);
+					_app->objectPresentationShow(kObject50100, 6);
+					_app->objectSetAccessibilityOff(kObjectStylet, 0, 0);
+					_app->bagRemove(kObjectStylet);
+					_app->varSetWord(50102, 103);
+					_app->setField74(false);
+					_app->cursorDelete();
+				}
+				break;
+			}
+
+			_app->setField74(false);
+			_app->cursorDelete();
+			break;
+		}
+
+		switch (index) {
+		default:
+			break;
+
+		case 0:
+		case 1:
+		case 2:
+			if (!_app->bagHas(objectId)) {
+				_app->bagAdd(objectId);
+				_app->objectPresentationHide(kObject50100, index);
+			}
+			break;
+
+		case 9:
+			if (_app->varGetWord(50102) > 0
+			&& !_app->bagHas(kObjectInkedStylet)) {
+				_app->objectPresentationHide(kObject50100, 6);
+				_app->bagAdd(kObjectInkedStylet);
+			}
+			break;
+		}
+		_app->setField74(false);
+		break;
+	}
 }
 
 #pragma endregion

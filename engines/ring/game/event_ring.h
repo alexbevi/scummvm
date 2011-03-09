@@ -105,8 +105,8 @@ private:
 	void onButtonUpZoneAS(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	void onButtonUpZoneN2(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
-	void onButtonUp2(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUp2ZoneWA(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUp2(ObjectId id, uint32 index, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUp2ZoneWA(ObjectId id, uint32 index, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Key down
