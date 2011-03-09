@@ -476,7 +476,7 @@ void Application::update(const Common::Point &point) {
 						_cursorHandler->select(hotspot->getCursorId());
 				}
 
-				_eventHandler->onUpdateBefore(object->getId(), hotspot->getField19(), accessibilityIndex, 0, point);
+				_eventHandler->onUpdateBefore(object->getId(), hotspot->getField19(), accessibilityIndex, 1, point);
 				return;
 			}
 		}
@@ -511,9 +511,40 @@ void Application::update(const Common::Point &point) {
 
 	// Current rotation
 	if (_rotation && !_rotation->getField28()) {
-		error("[Application::update] Current rotation update not implemented");
 
-		return;
+		// Check accessibilities
+		Accessibility *accessibility = _rotation->getAccessibility(point);
+		if (accessibility) {
+			Object *object = accessibility->getObject();
+			Hotspot *hotspot = accessibility->getHotspot();
+			uint32 accessibilityIndex = _rotation->getAccessibilityIndex(point);
+
+			if (_dragControl->getField20()) {
+				if (_dragControl->getAccessibilityIndex() == accessibilityIndex)
+					_cursorHandler->select(kCursorActiveDraw);
+				else
+					_cursorHandler->select(kCursorPassiveDraw);
+			} else {
+				if (bagHasClickedObject())
+					_cursorHandler->select(kCursorActive);
+				else
+					_cursorHandler->select(hotspot->getCursorId());
+			}
+
+			_eventHandler->onUpdateBefore(object->getId(), hotspot->getField19(), accessibilityIndex, 0, point);
+			return;
+		}
+
+		// Check movabilities
+		Movability *movability = _rotation->getMovability(point);
+		if (movability) {
+			Hotspot *hotspot = movability->getHotspot();
+
+			_cursorHandler->select(hotspot->getCursorId());
+
+			_eventHandler->onUpdateAfter(_rotation->getId(), movability->getTo(), _rotation->getMovabilityIndex(point), hotspot->getField19(), movability->getType(), point);
+			return;
+		}
 	}
 
 	// Current puzzle

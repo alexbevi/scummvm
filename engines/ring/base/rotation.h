@@ -140,6 +140,9 @@ public:
 	void setMovabilityOnOrOff(bool enableHotspot);
 	void setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, uint32 toMovability);
 	void setMovabilityRideName(uint32 movabilityIndex, Common::String name);
+	Movability *getMovability(const Common::Point &point);
+	int32 getMovabilityIndex(const Common::Point &point);
+	Movability *getMovability(uint32 index);
 
 	void setAlp(float alp) { _alp = alp; }
 	void setBet(float bet) { _bet = bet; }
@@ -175,7 +178,6 @@ public:
 	void setFreOnOff(bool state);
 	void setAmplitudeAndSpeed(float amplitude, float speed);
 	void setComBufferLength(uint32 length) { _comBufferLength = length; }
-	Movability *getMovability(uint32 index);
 	void setField28(byte val) { _field_28 = val; }
 	byte getField28() { return _field_28; }
 	bool hasImage() { return _imageHandle != NULL; }

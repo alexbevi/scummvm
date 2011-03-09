@@ -333,6 +333,37 @@ void Rotation::setMovabilityOnOrOff(bool enableHotspot, uint32 fromMovability, u
 	}
 }
 
+Movability *Rotation::getMovability(uint32 index) {
+	if (index >= _movabilities.size())
+		error("[Rotation::getMovability] Invalid movability index (was: %d, max:%d)", index, _movabilities.size() - 1);
+
+	return _movabilities[index];
+}
+
+int32 Rotation::getMovabilityIndex(const Common::Point &point) {
+	for (uint32 i = 0; i < _movabilities.size(); i++) {
+		if (!_movabilities[i]->getHotspot()->isEnabled())
+			continue;
+
+		if (_movabilities[i]->getHotspot()->contains(point))
+			return i;
+	}
+
+	return -1;
+}
+
+Movability *Rotation::getMovability(const Common::Point &point) {
+	for (Common::Array<Movability *>::iterator it = _movabilities.begin(); it != _movabilities.end(); it++) {
+		if (!(*it)->getHotspot()->isEnabled())
+			continue;
+
+		if ((*it)->getHotspot()->contains(point))
+			return (*it);
+	}
+
+	return NULL;
+}
+
 void Rotation::setMovabilityRideName(uint32 movabilityIndex, Common::String name) {
 	if (movabilityIndex >= _movabilities.size())
 		error("[Rotation::setMovabilityRideName] Invalid movability index (was:%d, max:%d)", movabilityIndex, _movabilities.size() - 1);
@@ -456,13 +487,6 @@ void Rotation::setAmplitudeAndSpeed(float amplitude, float speed) {
 	_field_66 = 1;
 	_amplitude = amplitude;
 	_speed = speed;
-}
-
-Movability *Rotation::getMovability(uint32 index) {
-	if (index >= _movabilities.size())
-		error("[Rotation::getMovability] Invalid movability index (was: %d, max:%d)", index, _movabilities.size() - 1);
-
-	return _movabilities[index];
 }
 
 #pragma region Helpers
