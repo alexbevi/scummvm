@@ -26,6 +26,8 @@
 #ifndef RING_HOTSPOT_H
 #define RING_HOTSPOT_H
 
+#include "ring/shared.h"
+
 #include "common/events.h"
 #include "common/serializer.h"
 
@@ -33,7 +35,7 @@ namespace Ring {
 
 class Hotspot : public Common::Serializable {
 public:
-	Hotspot(const Common::Rect &rect, bool enabled, uint32 a2, uint32 a3, uint32 a4);
+	Hotspot(const Common::Rect &rect, bool enabled, uint32 a2, CursorId cursorId, uint32 a4);
 	~Hotspot();
 
 	void update(const Common::Rect &rect) { _rect = rect;}
@@ -49,6 +51,8 @@ public:
 
 	// Accessors
 	void setKey(Common::KeyCode key) { _key = key; }
+
+	CursorId getCursorId() { return _cursorId; }
 	uint32 getField19() { return _field_19; }
 	Common::KeyCode getKey() { return _key; }
 
@@ -56,7 +60,7 @@ private:
 	Common::Rect    _rect;
 	bool            _enabled;
 	uint32          _field_11;
-	uint32          _field_15;
+	CursorId        _cursorId;
 	uint32          _field_19;
 	Common::KeyCode _key;
 };

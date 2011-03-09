@@ -25,6 +25,7 @@
 
 #include "ring/base/application.h"
 
+#include "ring/base/accessibility.h"
 #include "ring/base/art.h"
 #include "ring/base/bag.h"
 #include "ring/base/cursor.h"
@@ -453,14 +454,26 @@ void Application::update(const Common::Point &point) {
 		// Check accessibilities
 		Accessibility *accessibility = puzzleMenu->getAccessibility(point);
 		if (accessibility) {
+			bool handle = true;
 
-			if (puzzleMenu->getField24() == 2) {
+			if (puzzleMenu->getField24() == 2)
+				if (accessibility->getObject()->getId()	!= puzzleMenu->getSelectedId())
+					handle = false;
+
+			if (handle) {
+				if (_dragControl->getField20()) {
+					if (_dragControl->getAccessibilityIndex() == (uint32)puzzleMenu->getAccessibilityIndex(point))
+						_cursorHandler->select(kCursorActiveDraw);
+					else
+						_cursorHandler->select(kCursorPassiveDraw);
+				} else {
+					if (bagHasClickedObject())
+						_cursorHandler->select(kCursorActive);
+					else
+						_cursorHandler->select(accessibility->getHotspot()->getCursorId());
+				}
+
 				error("[Application::update] Menu puzzle update not implemented");
-
-
-			} else {
-				error("[Application::update] Menu puzzle update not implemented");
-
 				return;
 			}
 		}
@@ -470,6 +483,8 @@ void Application::update(const Common::Point &point) {
 			Movability *movability = puzzleMenu->getMovability(point);
 			if (!movability)
 				return;
+
+
 
 			error("[Application::update] Menu puzzle update not implemented");
 		} else if (puzzleMenu->getField24() == 2) {
@@ -1029,7 +1044,7 @@ void Application::puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String fil
 
 #pragma region Puzzle Movability
 
-void Application::puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10) {
 	if (!_puzzles.has(puzzleIdFrom))
 		error("[Application::puzzleAddMovabilityToPuzzle] Wrong FROM puzzle Id (%d)", puzzleIdFrom.id());
 
@@ -1037,12 +1052,12 @@ void Application::puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId pu
 		error("[Application::puzzleAddMovabilityToPuzzle] Wrong TO puzzle Id (%d)", puzzleIdTo.id());
 
 	Movability *movability = new Movability(puzzleIdFrom, puzzleIdTo, name, kMovabilityPuzzleToPuzzle);
-	movability->setHotspot(rect, enabled, a9, a10);
+	movability->setHotspot(rect, enabled, cursorId, a10);
 
 	_puzzles.get(puzzleIdFrom)->addMovability(movability);
 }
 
-void Application::puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10) {
 	if (!_rotations.has(rotationIdTo))
 		error("[Application::puzzleAddMovabilityToRotation] Wrong TO rotation Id (%d)", rotationIdTo);
 
@@ -1050,7 +1065,7 @@ void Application::puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotati
 		error("[Application::puzzleAddMovabilityToRotation] Wrong FROM puzzle Id (%d)", puzzleIdFrom.id());
 
 	Movability *movability = new Movability(puzzleIdFrom, rotationIdTo, name, kMovabilityPuzzleToRotation);
-	movability->setHotspot(rect, enabled, a9, a10);
+	movability->setHotspot(rect, enabled, cursorId, a10);
 
 	_puzzles.get(puzzleIdFrom)->addMovability(movability);
 }
@@ -1308,14 +1323,14 @@ Object *Application::getObject(ObjectId objectId) {
 
 #pragma region Object Accessibility
 
-void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10) {
 	if (!_objects.has(objectId))
 		error("[Application::objectAddPuzzleAccessibility] Object Id doesn't exist (%d)", objectId.id());
 
 	if (!_puzzles.has(puzzleId))
 		error("[Application::objectAddPuzzleAccessibility] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
-	_objects.get(objectId)->addPuzzleAccessibility(_puzzles.get(puzzleId), rect, enabled, a9, a10);
+	_objects.get(objectId)->addPuzzleAccessibility(_puzzles.get(puzzleId), rect, enabled, cursorId, a10);
 }
 
 void Application::objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key) {
@@ -1360,14 +1375,14 @@ void Application::objectSetAccessibilityOff(const ObjectId &objectId) {
 
 #pragma region Object Rotation
 
-void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationId, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10) {
 	if (!_objects.has(objectId))
 		error("[Application::objectAddRotationAccessibility] Object Id doesn't exist (%d)", objectId.id());
 
 	if (!_rotations.has(rotationId))
 		error("[Application::objectAddRotationAccessibility] Rotation Id doesn't exist (%d)", rotationId);
 
-	_objects.get(objectId)->addRotationAccessibility(_rotations.get(rotationId), rect, enabled, a9, a10);
+	_objects.get(objectId)->addRotationAccessibility(_rotations.get(rotationId), rect, enabled, cursorId, a10);
 }
 
 #pragma endregion
@@ -1741,7 +1756,7 @@ void Application::rotationSetComBufferLength(Id rotationId, uint32 length) {
 	_rotations.get(rotationId)->setComBufferLength(length);
 }
 
-void Application::rotationAddMovabilityToPuzzle(Id fromRotationId, PuzzleId toPuzzleId, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::rotationAddMovabilityToPuzzle(Id fromRotationId, PuzzleId toPuzzleId, Common::String name, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10) {
 	// Check ids
 	if (!_rotations.has(fromRotationId))
 		error("[Application::rotationAddMovabilityToRotation] Wrong From rotation Id (%d)", fromRotationId);
@@ -1751,7 +1766,7 @@ void Application::rotationAddMovabilityToPuzzle(Id fromRotationId, PuzzleId toPu
 
 	// Create movability
 	Movability *movability = new Movability(fromRotationId, toPuzzleId, name, kMovabilityRotationToPuzzle);
-	movability->setHotspot(rect, enabled, a9, a10);
+	movability->setHotspot(rect, enabled, cursorId, a10);
 
 	_rotations.get(fromRotationId)->addMovability(movability);
 }
@@ -1767,7 +1782,7 @@ void Application::rotationSetMovabilityToPuzzle(Id rotationId, uint32 movability
 	movability->update(a3, a4, a5, a6, a7, 0.0, 0.0, 85.0);
 }
 
-void Application::rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
+void Application::rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10) {
 	// Check ids
 	if (!_rotations.has(fromRotationId))
 		error("[Application::rotationAddMovabilityToRotation] Wrong From rotation Id (%d)", fromRotationId);
@@ -1777,7 +1792,7 @@ void Application::rotationAddMovabilityToRotation(Id fromRotationId, Id toRotati
 
 	// Create movability
 	Movability *movability = new Movability(fromRotationId, toRotationId, name, kMovabilityRotationToRotation);
-	movability->setHotspot(rect, enabled, a9, a10);
+	movability->setHotspot(rect, enabled, cursorId, a10);
 
 	_rotations.get(fromRotationId)->addMovability(movability);
 }

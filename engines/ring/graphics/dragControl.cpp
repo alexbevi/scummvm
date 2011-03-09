@@ -37,7 +37,7 @@ namespace Ring {
 DragControl::DragControl() {
 	_field_20 = false;
 	_objectId = kObjectInvalid;
-	_field_25 = 0;
+	_accessibilityIndex = 0;
 	_object = NULL;
 	_hotspot2 = NULL;
 	_field_31 = 0;
@@ -46,7 +46,7 @@ DragControl::DragControl() {
 	_ticks = 0;
 	_field_41 = 0;
 	_field_45 = 1;
-	_hotspot = new Hotspot(Common::Rect(0, 16, 640, 461), true, 0, 0, 0);
+	_hotspot = new Hotspot(Common::Rect(0, 16, 640, 461), true, 0, kCursorInvalid, 0);
 }
 
 DragControl::~DragControl() {
@@ -55,11 +55,11 @@ DragControl::~DragControl() {
 	SAFE_DELETE(_hotspot);
 }
 
-void DragControl::init(Common::Point coords, ObjectId objectId, uint32 a3, Hotspot *hostpot, uint32 a5, Id puzzleRotationId, uint32 a7) {
+void DragControl::init(Common::Point coords, ObjectId objectId, uint32 accessibilityIndex, Hotspot *hostpot, uint32 a5, Id puzzleRotationId, uint32 a7) {
 	_coords0 = _coords1 = _oldCoords = _currentCoords = coords;
 	_field_20 = 1;
 	_objectId = objectId;
-	_field_25 = a3;
+	_accessibilityIndex = accessibilityIndex;
 	_object = getApp()->getObject(objectId);
 	_hotspot2 = hostpot;
 	_field_31 = a5;
@@ -76,7 +76,7 @@ void DragControl::reset() {
 	_coords0 = _coords1 = _oldCoords = _currentCoords = Common::Point(0, 0);
 	_field_20 = 0;
 	_objectId = kObjectInvalid;
-	_field_25 = 0;
+	_accessibilityIndex = 0;
 	_object = NULL;
 	_hotspot2 = NULL;
 	_field_31 = 0;

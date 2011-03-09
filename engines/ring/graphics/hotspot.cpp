@@ -27,11 +27,11 @@
 
 namespace Ring {
 
-Hotspot::Hotspot(const Common::Rect &rect, bool enabled, uint32 a2, uint32 a3, uint32 a4) {
+Hotspot::Hotspot(const Common::Rect &rect, bool enabled, uint32 a2, CursorId cursorId, uint32 a4) {
 	_rect = rect;
 	_enabled = enabled;
 	_field_11 = a2;
-	_field_15 = a3;
+	_cursorId = cursorId;
 	_field_19 = a4;
 	_key = Common::KEYCODE_INVALID;
 }
@@ -56,7 +56,7 @@ void Hotspot::saveLoadWithSerializer(Common::Serializer &s) {
 	s.syncAsSint16LE(_rect.bottom);
 	s.syncAsByte(_enabled);
 	s.syncAsUint32LE(_field_11);
-	s.syncAsUint32LE(_field_15);
+	s.syncAsUint32LE(_cursorId);
 	s.syncAsUint32LE(_field_19);
 	s.syncAsUint32LE(_key);
 }

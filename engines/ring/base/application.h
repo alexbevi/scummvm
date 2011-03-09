@@ -160,8 +160,8 @@ public:
 	Puzzle *getPuzzle(PuzzleId puzzleId);
 
 	void puzzleAddBackgroundImage(PuzzleId puzzleId, Common::String filename, const Common::Point &point, bool isActive);
-	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
-	void puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
+	void puzzleAddMovabilityToPuzzle(PuzzleId puzzleIdFrom, PuzzleId puzzleIdTo, Common::String name, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10);
+	void puzzleAddMovabilityToRotation(PuzzleId puzzleIdFrom, Id rotationIdTo, Common::String name, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10);
 	void puzzleSetMovabilityToRotation(PuzzleId puzzleId, uint32 movabilityIndex, float a3, float a4, float a5);
 
 	void puzzleSetMovabilityOnOrOff(PuzzleId puzzleId, bool enableHotspot);
@@ -195,7 +195,7 @@ public:
 	void objectRemove(ObjectId objectId);
 	Object *getObject(ObjectId objectId);
 
-	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
+	void objectAddPuzzleAccessibility(ObjectId objectId, PuzzleId puzzleId, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10);
 	void objectSetPuzzleAccessibilityKey(ObjectId objectId, uint32 accessibilityIndex, Common::KeyCode key);
 
 	void objectSetAccessibilityOnOrOff(ObjectId objectId, bool enableHotspot);
@@ -205,7 +205,7 @@ public:
 	void objectSetAccessibilityOn(const ObjectId &objectId, uint32 fromAcceleration, uint32 toAcceleration);
 	void objectSetAccessibilityOff(const ObjectId &objectId, uint32 fromAcceleration, uint32 toAcceleration);
 
-	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
+	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10);
 
 	void objectSetActiveCursor(ObjectId objectId,  const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom);
 	void objectSetPassiveCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom);
@@ -253,9 +253,9 @@ public:
 	Rotation *getRotation(Id rotationId);
 	void rotationAdd(Id rotationId, Common::String name, byte a3, uint32 nodeCount);
 	void rotationSetComBufferLength(Id rotationId, uint32 length);
-	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
+	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10);
 	void rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, float a3, float a4, float a5, float a6, byte a7);
-	void rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
+	void rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10);
 	void rotationSetMovabilityToRotation(Id rotationId, uint32 movabilityIndex, float a3, float a4, float a5, float a6, byte a7, float a8, float a9, float a10);
 
 	void rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot);

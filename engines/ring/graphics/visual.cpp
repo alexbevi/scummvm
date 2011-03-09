@@ -324,7 +324,7 @@ void VisualObjectList::initHotspots() {
 	                                             (int16)(_field_85 + _field_4D + _field_8D)),
 	                                false,
 	                                0,
-	                                1,
+	                                kCursorPassive,
 	                                0));
 
 	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_49 + _field_91),
@@ -333,7 +333,7 @@ void VisualObjectList::initHotspots() {
 	                                             (int16)(_field_4D + _field_95 + _field_9D)),
 	                                false,
 	                                0,
-	                                2,
+	                                kCursorActive,
 	                                0));
 
 	if (_field_B9 & 1) {
@@ -345,7 +345,7 @@ void VisualObjectList::initHotspots() {
 			                                             (int16)(_field_4D + _field_5D + _field_65 / 2 + y)),
 			                                false,
 			                                0,
-			                                3,
+			                                kCursorPassiveDraw,
 			                                i));
 		}
 	}
@@ -359,7 +359,7 @@ void VisualObjectList::initHotspots() {
 			                                             (int16)(_field_4D + _field_5D + _field_65)),
 			                                false,
 			                                0,
-			                                3,
+			                                kCursorPassiveDraw,
 			                                i));
 		}
 	}

@@ -41,7 +41,7 @@ public:
 
 	void update(float a1, float a2, float a3, float a4, byte a5, float alpAfter, float betAfter, float ranAfter);
 
-	void setHotspot(const Common::Rect &rect, bool enabled, uint32 a3, uint32 a4);
+	void setHotspot(const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a4);
 	Hotspot *getHotspot();
 	void enableHotspot();
 	void disableHotspot();

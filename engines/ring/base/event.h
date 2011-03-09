@@ -46,7 +46,7 @@ public:
 	virtual void onSound(Id id, SoundType type, uint32 a3) = 0;
 	virtual void onSetup(Zone zone, SetupType type) = 0;
 	virtual void onBag(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) = 0;
-	virtual void onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) = 0;
+	virtual void onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) = 0;
 	virtual void onUpdateAfter(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) = 0;
 	virtual void onUpdateBag(const Common::Point &point) = 0;
 	virtual void onBagClickedObject(ObjectId id) = 0;

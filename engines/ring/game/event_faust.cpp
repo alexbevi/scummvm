@@ -69,7 +69,7 @@ void EventHandlerFaust::onSetup(Zone zone, SetupType type) {
 
 #pragma region Update
 
-void EventHandlerFaust::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {
+void EventHandlerFaust::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
 	error("[EventHandlerRing::onUpdateBefore] Not implemented");
 }
 

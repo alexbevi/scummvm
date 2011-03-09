@@ -50,8 +50,8 @@ Hotspot *Accessibility::getHotspot() {
 	return _hotspot;
 }
 
-void Accessibility::setHotspot(const Common::Rect &rect, bool enabled, uint32 a3, uint32 a4) {
-	_hotspot = new Hotspot(rect, enabled, 1, a3, a4);
+void Accessibility::setHotspot(const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a4) {
+	_hotspot = new Hotspot(rect, enabled, 1, cursorId, a4);
 }
 
 void Accessibility::enableHotspot() {

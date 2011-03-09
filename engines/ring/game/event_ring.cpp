@@ -4599,9 +4599,9 @@ void EventHandlerRing::onSetupLoadTimers(Common::String zoneName, Id testId1, Id
 
 #pragma region Update
 
-void EventHandlerRing::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {
+void EventHandlerRing::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
 	if (movabilityIndex == 1 || a4 == 1) {
-		onUpdateBeforeZoneSY(movabilityFrom, movabilityTo, movabilityIndex, a4, movabilityType, point);
+		onUpdateBeforeZoneSY(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		return;
 	}
 
@@ -4610,15 +4610,15 @@ void EventHandlerRing::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32
 		break;
 
 	case kZoneSY:
-		onUpdateBeforeZoneSY(movabilityFrom, movabilityTo, movabilityIndex, a4, movabilityType, point);
+		onUpdateBeforeZoneSY(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZoneNI:
-		onUpdateBeforeZoneNI(movabilityFrom, movabilityTo, movabilityIndex, a4, movabilityType, point);
+		onUpdateBeforeZoneNI(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZoneN2:
-		onUpdateBeforeZoneN2(movabilityFrom, movabilityTo, movabilityIndex, a4, movabilityType, point);
+		onUpdateBeforeZoneN2(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 	}
 }
@@ -4628,7 +4628,7 @@ void EventHandlerRing::onUpdateBag(const Common::Point &point) {
 		onUpdateBagZoneSY(point);
 }
 
-void EventHandlerRing::onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {
+void EventHandlerRing::onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
 	switch (movabilityFrom) {
 	default:
 		break;
@@ -4788,7 +4788,7 @@ void EventHandlerRing::onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, 
 	}
 }
 
-void EventHandlerRing::onUpdateBeforeZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {
+void EventHandlerRing::onUpdateBeforeZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
 	if (movabilityFrom == 10100 && movabilityTo == 0) {
 		_app->rotationSetActive(10101);
 		_app->objectSetAccessibilityOn(kObject10101, 0, 0);
@@ -4801,7 +4801,7 @@ void EventHandlerRing::onUpdateBeforeZoneNI(Id movabilityFrom, Id movabilityTo, 
 	}
 }
 
-void EventHandlerRing::onUpdateBeforeZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {
+void EventHandlerRing::onUpdateBeforeZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
 	if (movabilityFrom == 70100 && movabilityTo == 0) {
 		_app->rotationSetActive(70100);
 		_app->objectSetAccessibilityOn(kObject70101, 0, 0);

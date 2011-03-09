@@ -87,6 +87,11 @@ enum CursorId {
 	kCursorMenuIdle     = 56,
 	kCursorMenuActive   = 57,
 
+	kCursor1001         = 1001,
+	kCursor1002         = 1002,
+	kCursor1003         = 1003,
+	kCursor1005         = 1005,
+
 	kCursorHandSelection = 10000
 };
 

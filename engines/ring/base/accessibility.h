@@ -26,6 +26,8 @@
 #ifndef RING_ACCESSIBILITY_H
 #define RING_ACCESSIBILITY_H
 
+#include "ring/shared.h"
+
 #include "common/rect.h"
 #include "common/serializer.h"
 
@@ -39,7 +41,7 @@ public:
 	Accessibility(Object *object);
 	~Accessibility();
 
-	void setHotspot(const Common::Rect &rect, bool enabled, uint32 a3, uint32 a4);
+	void setHotspot(const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a4);
 	Hotspot *getHotspot();
 	void enableHotspot();
 	void disableHotspot();

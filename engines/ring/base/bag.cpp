@@ -121,7 +121,7 @@ void Bag::initHotspots() {
 	                                             (int16)(_field_4C + _field_20 + _field_54)),
 	                                false,
 	                                1000,
-	                                1001,
+	                                kCursor1001,
 	                                1001));
 
 	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_1C + _field_74),
@@ -130,19 +130,19 @@ void Bag::initHotspots() {
 	                                             (int16)(_field_20 + _field_78 + _field_80)),
 	                                false,
 	                                1000,
-	                                1002,
+	                                kCursor1002,
 	                                1002));
 
 	_hotspots.push_back(new Hotspot(Common::Rect(200, 0, 640, 30),
 	                                true,
 	                                1000,
-	                                1003,
+	                                kCursor1003,
 	                                1003));
 
 	_hotspots.push_back(new Hotspot(Common::Rect(90, 0, 150, 30),
 	                                _enabled,
 	                                1000,
-	                                1005,
+	                                kCursor1005,
 	                                1005));
 
 	for (uint32 i = 0; i < _field_24; ++i)
@@ -152,7 +152,7 @@ void Bag::initHotspots() {
 													 (int16)(_field_10 + _field_14 + 1 + _field_20)),
 										false,
 										1000,
-										i,
+										(CursorId)i,
 										1004));
 }
 

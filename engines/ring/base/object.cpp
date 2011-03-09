@@ -455,18 +455,18 @@ void Object::hideAndRemove() {
 
 #pragma region Accessibility
 
-void Object::addPuzzleAccessibility(Puzzle *puzzle, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
+void Object::addPuzzleAccessibility(Puzzle *puzzle, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10) {
 	Accessibility *accessibility = new Accessibility(this);
-	accessibility->setHotspot(rect, enabled, a9, a10);
+	accessibility->setHotspot(rect, enabled, cursorId, a10);
 
 	_accessibilities.push_back(accessibility);
 
 	puzzle->addAccessibility(accessibility);
 }
 
-void Object::addRotationAccessibility(Rotation *rotation, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10) {
+void Object::addRotationAccessibility(Rotation *rotation, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10) {
 	Accessibility *accessibility = new Accessibility(this);
-	accessibility->setHotspot(rect, enabled, a9, a10);
+	accessibility->setHotspot(rect, enabled, cursorId, a10);
 
 	_accessibilities.push_back(accessibility);
 

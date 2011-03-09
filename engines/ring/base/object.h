@@ -154,8 +154,8 @@ public:
 	void hideAndRemove();
 
 	// Accessibility
-	void addPuzzleAccessibility(Puzzle *puzzle, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
-	void addRotationAccessibility(Rotation *rotation, const Common::Rect &rect, bool enabled, uint32 a9, uint32 a10);
+	void addPuzzleAccessibility(Puzzle *puzzle, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10);
+	void addRotationAccessibility(Rotation *rotation, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10);
 	void setAccessibilityKey(uint32 accessibilityIndex, Common::KeyCode key);
 	void setAccessibilityOnOrOff(bool enableHotspot);
 	void setAccessibilityOnOrOff(bool enableHotspot, uint32 fromAcceleration, uint32 toAcceleration);
