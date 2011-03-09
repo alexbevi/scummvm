@@ -431,7 +431,14 @@ void Application::update(const Common::Point &point) {
 			return;
 		}
 
-		goto label_end;
+		if (_dragControl->getField20())
+			cursorSelect(kCursorPassiveDraw);
+		else if (bagHasClickedObject())
+			cursorSelect(kCursorPassive);
+		else
+			cursorSelect(kCursorIdle);
+
+		_eventHandler->onUpdateBag(point);
 	}
 
 	// Handle drag control
@@ -549,20 +556,52 @@ void Application::update(const Common::Point &point) {
 
 	// Current puzzle
 	if (_puzzle) {
-		error("[Application::update] Current puzzle update not implemented");
+		if (_puzzle->visualHandleUpdate(point))
+			return;
 
-		return;
+		// Check accessibilities
+		Accessibility *accessibility = _puzzle->getAccessibility(point);
+		if (accessibility) {
+			Object *object = accessibility->getObject();
+			Hotspot *hotspot = accessibility->getHotspot();
+			uint32 accessibilityIndex = _puzzle->getAccessibilityIndex(point);
+
+			if (_dragControl->getField20()) {
+				if (_dragControl->getAccessibilityIndex() == accessibilityIndex)
+					_cursorHandler->select(kCursorActiveDraw);
+				else
+					_cursorHandler->select(kCursorPassiveDraw);
+			} else {
+				if (bagHasClickedObject())
+					_cursorHandler->select(kCursorActive);
+				else
+					_cursorHandler->select(hotspot->getCursorId());
+			}
+
+			_eventHandler->onUpdateBefore(object->getId(), hotspot->getField19(), accessibilityIndex, 0, point);
+			return;
+		}
+
+		// Check movabilities
+		Movability *movability = _puzzle->getMovability(point);
+		if (movability) {
+			Hotspot *hotspot = movability->getHotspot();
+
+			_cursorHandler->select(hotspot->getCursorId());
+
+			_eventHandler->onUpdateAfter(_puzzle->getId(), movability->getTo(), _rotation->getMovabilityIndex(point), hotspot->getField19(), movability->getType(), point);
+			return;
+		}
+
+		if (_dragControl->getField20())
+			cursorSelect(kCursorPassiveDraw);
+		else if (bagHasClickedObject())
+			cursorSelect(kCursorPassive);
+		else
+			cursorSelect(kCursorIdle);
+
+		_eventHandler->onUpdateBag(point);
 	}
-
-label_end:
-	if (_dragControl->getField20())
-		cursorSelect(kCursorPassiveDraw);
-	else if (bagHasClickedObject())
-		cursorSelect(kCursorPassive);
-	else
-		cursorSelect(kCursorIdle);
-
-	_eventHandler->onUpdateBag(point);
 }
 
 void Application::updateBag(const Common::Point &point) {
