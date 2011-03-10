@@ -91,6 +91,9 @@ public:
 	void onKeyDown(Common::Event &evt);
 	void onTimer(TimerId id);
 	void onSound(Id id, SoundType type, uint32 a3);
+	void onAnimation(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
+	void onAnimation2(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
+	void onAnimation3(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
 	void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
 
 	void update(const Common::Point &point);

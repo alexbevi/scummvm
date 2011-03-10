@@ -430,6 +430,27 @@ void Application::onSound(Id id, SoundType type, uint32 a3) {
 	_eventHandler->onSound(id, type, a3);
 }
 
+void Application::onAnimation(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	if (!_eventHandler)
+		error("[Application::onAnimationNextFrame] Event handler not initialized properly!");
+
+	_eventHandler->onAnimation(type, animationId, name, frame, frameCount);
+}
+
+void Application::onAnimation2(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	if (!_eventHandler)
+		error("[Application::onAnimationNextFrame] Event handler not initialized properly!");
+
+	_eventHandler->onAnimation2(type, animationId, name, frame, frameCount);
+}
+
+void Application::onAnimation3(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+	if (!_eventHandler)
+		error("[Application::onAnimationNextFrame] Event handler not initialized properly!");
+
+	_eventHandler->onAnimation3(type, animationId, name, frame, frameCount);
+}
+
 void Application::onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
 	if (!_eventHandler)
 		error("[Application::onAnimationNextFrame] Event handler not initialized properly!");

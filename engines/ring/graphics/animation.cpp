@@ -50,10 +50,10 @@ Animation::Animation() : BaseObject(0) {
 	_activeFrame = 0;
 	_field_26 = 0;
 	_paused   = false;
-	_field_28 = 0;
+	_lastTicks = 0;
 	_field_2C = 0;
 	_field_2D = 0;
-	_field_2E = 0;
+	_tickInterval = 0;
 	_field_32 = 0;
 	_field_36 = 0;
 	_field_3A = 0;
@@ -118,10 +118,10 @@ void Animation::init(uint32 frameCount, float framerate, uint32 startFrame, byte
 
 	_field_26 = 0;
 	_paused = false;
-	_field_28 = 0;
+	_lastTicks = 0;
 	_field_2C = 1;
 	_field_2D = 0;
-	_field_2E = 0;
+	_tickInterval = 0;
 	_field_32 = 0;
 	_field_36 = 1;
 	_field_3A = 1;
@@ -146,11 +146,71 @@ void Animation::init(uint32 frameCount, float framerate, uint32 startFrame, byte
 }
 
 void Animation::sub_416710() {
-	error("[AnimationImage::sub_416710] Not implemented");
+	_field_26 = 0;
+	_field_4E = 1;
 }
 
-void Animation::sub_416720() {
-	error("[AnimationImage::sub_416710] Not implemented");
+int32 Animation::adjustTicks(uint32 ticks) {
+	if (_paused)
+		return _activeFrame;
+
+	if (_lastTicks) {
+		if ((ticks - _lastTicks) <= _tickInterval)
+			return _activeFrame;
+
+		onAnimation3();
+	}
+
+	switch (_field_4A) {
+	default:
+		if ((ticks - _field_4A) > _field_46) {
+			onAnimation();
+			return -1;
+		}
+		return _activeFrame;
+
+	case 0:
+		switch (_field_32) {
+		default:
+			if ((ticks - _field_32) <= _field_3E)
+				return _activeFrame;
+
+			onAnimation2();
+			break;
+
+		case 0:
+			// Do nothing
+			break;
+
+		case 1:
+			if (_activeFrame != _field_3A || _field_58 % _field_36 || !_field_60)
+				return -1;
+
+			_field_32 = ticks;
+
+			if (ticks == 1)
+				_field_32 = 2;
+
+			getApp()->onAnimation2(1, _id, _name, _activeFrame + 1, _field_3E);
+			return _activeFrame;
+		}
+		return -1;
+
+	case 1:
+		// Do nothing
+		break;
+	}
+
+	if (_activeFrame != _field_42 || !_field_60)
+		return -1;
+
+	_field_4A = ticks;
+	if (ticks == 1)
+		_field_4A = 2;
+
+	getApp()->onAnimation(1, _id, _name, _activeFrame + 1, _field_46);
+
+	return _activeFrame;
 }
 
 uint32 Animation::getCurrentFrame() {
@@ -162,6 +222,9 @@ uint32 Animation::computeCurrentFrame(uint32 ticks) {
 		return _activeFrame + 1;
 
 	if (!_field_4E) {
+		if (adjustTicks(ticks) != -1)
+			return _activeFrame + 1;
+
 		error("[AnimationImage::sub_416870] Not implemented");
 	}
 
@@ -262,6 +325,30 @@ void Animation::pauseOnFrame(uint32 frame, uint32 a2, uint32 a3) {
 	}
 }
 
+void Animation::onAnimation3() {
+	uint32 tickInterval = _tickInterval;
+
+	_lastTicks = 0;
+	_tickInterval = 0;
+
+	getApp()->onAnimation2(2, _id, _name, _activeFrame + 1, tickInterval);
+}
+
+void Animation::onAnimation2() {
+	_field_32 = 1;
+	_field_60 = 0;
+
+	getApp()->onAnimation2(2, _id, _name, _activeFrame + 1, _field_3E);
+}
+
+void Animation::onAnimation() {
+	_field_14 = _field_18;
+	_field_4A = 0;
+	_field_60 = 0;
+
+	getApp()->onAnimation(2, _id, _name, _activeFrame + 1, _field_46);
+}
+
 #pragma region Serializable
 
 void Animation::saveLoadWithSerializer(Common::Serializer &s) {
@@ -272,10 +359,10 @@ void Animation::saveLoadWithSerializer(Common::Serializer &s) {
 	uint32 ticks = 0;
 
 	if (s.isSaving()) {
-		if (_field_28 > 1.0)
-			field_28 = currentTicks - _field_28;
+		if (_lastTicks > 1.0)
+			field_28 = currentTicks - _lastTicks;
 		else
-			field_28 = _field_28;
+			field_28 = _lastTicks;
 
 		if (_field_32 > 1.0)
 			field_32 = currentTicks - _field_32;
@@ -307,7 +394,7 @@ void Animation::saveLoadWithSerializer(Common::Serializer &s) {
 	s.syncAsUint32LE(field_28);
 	s.syncAsByte(_field_2C);
 	s.syncAsByte(_field_2D);
-	s.syncAsUint32LE(_field_2E);
+	s.syncAsUint32LE(_tickInterval);
 	s.syncAsUint32LE(_field_32);
 	s.syncAsUint32LE(_field_36);
 	s.syncAsUint32LE(_field_3A);
@@ -328,9 +415,9 @@ void Animation::saveLoadWithSerializer(Common::Serializer &s) {
 	// Adjust ticks
 	if (s.isLoading()) {
 		if (field_28 > 1.0)
-			_field_28 = currentTicks - field_28;
+			_lastTicks = currentTicks - field_28;
 		else
-			_field_28 = field_28;
+			_lastTicks = field_28;
 
 		if (field_32 > 1.0)
 			_field_32 = currentTicks - field_32;

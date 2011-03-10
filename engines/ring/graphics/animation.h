@@ -43,15 +43,13 @@ public:
 	void pause() { _paused = true; }
 	void unpause() { _paused = false; }
 
+	void setTicks(uint32 ticks);
 	void sub_416710();
-	void sub_416720();
 	uint32 getCurrentFrame();
 	uint32 computeCurrentFrame(uint32 ticks);
-
-	void setStartFrame(uint32 frame);
 	void setActiveFrame(uint32 frame);
 	void pauseOnFrame(uint32 frame, uint32 a2, uint32 a3);
-	void setTicks(uint32 ticks);
+	void setStartFrame(uint32 frame);
 
 	// Serializable
 	void saveLoadWithSerializer(Common::Serializer &s);
@@ -77,10 +75,10 @@ protected:
 	uint32 _activeFrame;
 	byte   _field_26;
 	bool   _paused;
-	uint32 _field_28;
+	uint32 _lastTicks;
 	byte   _field_2C;
 	byte   _field_2D;
-	uint32 _field_2E;
+	uint32 _tickInterval;
 	uint32 _field_32;
 	uint32 _field_36;
 	uint32 _field_3A;
@@ -97,6 +95,13 @@ protected:
 	byte   _field_60;
 	int32  _field_61;
 	uint32 _field_65;
+
+	int32 adjustTicks(uint32 ticks);
+
+	// Event handling
+	void onAnimation3();
+	void onAnimation2();
+	void onAnimation();
 };
 
 class AnimationImage : public Animation {
