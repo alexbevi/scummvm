@@ -226,6 +226,8 @@ private:
 	// NI
 	void sub_445930();
 	void sub_445A10();
+
+	void waitTicks(uint32 ticks);
 };
 
 } // End of namespace Ring

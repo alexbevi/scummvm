@@ -214,6 +214,7 @@ enum ObjectId {
 	kObject10105                    = 10105,
 	kObject10106                    = 10106,
 	kObject10107                    = 10107,
+	kObject10108                    = 10108,
 	kObject10109                    = 10109,
 	kObject10110                    = 10110,
 	kObject10200                    = 10200,
