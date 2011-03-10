@@ -277,7 +277,7 @@ bool GraphicsManager::loadBackgroundPalette(Common::String paletteName) {
 	return true;
 }
 
-byte *GraphicsManager::toSystemPalette(Common::Array<PaletteEntry *> _palette) {
+byte *GraphicsManager::toSystemPalette(Common::Array<PaletteEntry *> palette) {
 	error("GraphicsManager::makeSoftTable: Not implemented!");
 }
 

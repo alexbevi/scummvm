@@ -97,10 +97,10 @@ OpcodeRet SoundManager::playWave(OpcodeParameters *parameters) {
 	if (index <= _waves.size() && _waves[index]->stream != NULL) {
 		_waves[index]->stream->rewind();
 
-		int32 volume = _effectsLevel;
-		convertVolume(volume);
+		int32 effectsVolume = _effectsLevel;
+		convertVolume(effectsVolume);
 
-		_mixer->playStream(Audio::Mixer::kSFXSoundType, _waves[index]->handle, (Audio::AudioStream *)_waves[index]->stream, -1, volume, 0, DisposeAfterUse::NO);
+		_mixer->playStream(Audio::Mixer::kSFXSoundType, _waves[index]->handle, (Audio::AudioStream *)_waves[index]->stream, -1, effectsVolume, 0, DisposeAfterUse::NO);
 	}
 
 	getWork()->getCurrent()->field_EC = parameters->getWord(4);
@@ -129,12 +129,12 @@ OpcodeRet SoundManager::playMusic(OpcodeParameters *parameters, bool useEffectLe
 		entry->level = Common::Rational(useEffectLevel ? _effectsLevel + 4000 : _musicLevel + 4000, entry->attenuation);
 		entry->volume = -4000;
 
-		int32 volume = (entry->attenuation ? entry->volume : 0);
-		convertVolume(volume);
+		int32 musicVolume = (entry->attenuation ? entry->volume : 0);
+		convertVolume(musicVolume);
 
 		// TODO identify other fields
 
-		_mixer->playStream(Audio::Mixer::kMusicSoundType, entry->handle, (Audio::AudioStream *)waveStream, -1, volume);
+		_mixer->playStream(Audio::Mixer::kMusicSoundType, entry->handle, (Audio::AudioStream *)waveStream, -1, musicVolume);
 	}
 
 	return kOpcodeRetDefault;

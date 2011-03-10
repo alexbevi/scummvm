@@ -119,7 +119,7 @@ OpcodeRet TextManager::exit(int32 index) {
 //////////////////////////////////////////////////////////////////////////
 
 int32 TextManager::getFirstEmptyText() {
-	for (int i = 1; i < sizeof(_arrayTextNumber); i++)
+	for (uint32 i = 1; i < sizeof(_arrayTextNumber); i++)
 		if (!_arrayTextNumber[i]) {
 			_arrayTextNumber[i] = 1;
 			return i;
@@ -129,7 +129,7 @@ int32 TextManager::getFirstEmptyText() {
 }
 
 void TextManager::freeNumberText(int32 index) {
-	if (index < 0 || index >= sizeof(_arrayTextNumber))
+	if (index < 0 || index >= (int32)sizeof(_arrayTextNumber))
 		error("Invalid text number: %d (must be in [0-%d]", index, sizeof(_arrayTextNumber));
 
 	_arrayTextNumber[index] = 0;
