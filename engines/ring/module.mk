@@ -33,6 +33,7 @@ MODULE_OBJS := \
 	game/event_pilgrim3.o \
 	game/event_pompeii.o \
 	game/event_ring.o \
+	game/visual_ring.o \
 	graphics/animation.o \
 	graphics/aquator.o \
 	graphics/dragControl.o \
