@@ -1,0 +1,61 @@
+diff --git a/audio/decoders/adpcm.cpp b/audio/decoders/adpcm.cpp
+index 7def89b..3052007 100644
+--- a/audio/decoders/adpcm.cpp
++++ b/audio/decoders/adpcm.cpp
+@@ -194,6 +194,35 @@ int Ima_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
+ #pragma mark -
+ 
+ 
++class Unity_ADPCMStream : public Ima_ADPCMStream {
++public:
++	Unity_ADPCMStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
++		: Ima_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
++	}
++
++	virtual int readBuffer(int16 *buffer, const int numSamples);
++};
++
++int Unity_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
++	int samples;
++	byte data;
++
++	assert(numSamples % 4 == 0);
++
++	for (samples = 0; samples < numSamples && !_stream->eos() && _stream->pos() < _endpos; samples += 4) {
++		data = _stream->readByte();
++		buffer[samples] = decodeIMA(data & 0x0f);
++		buffer[samples + 2] = decodeIMA((data >> 4) & 0x0f);
++		data = _stream->readByte();
++		buffer[samples + 1] = decodeIMA(data & 0x0f, _channels == 2 ? 1 : 0);
++		buffer[samples + 3] = decodeIMA((data >> 4) & 0x0f, _channels == 2 ? 1 : 0);
++	}
++	return samples;
++}
++
++#pragma mark -
++
++
+ class Apple_ADPCMStream : public Ima_ADPCMStream {
+ protected:
+ 	// Apple QuickTime IMA ADPCM
+@@ -838,6 +867,8 @@ RewindableAudioStream *makeADPCMStream(Common::SeekableReadStream *stream, Dispo
+ 		return new Tinsel8_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
+ 	case kADPCMIma:
+ 		return new Ima_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
++	case kADPCMUnity:
++		return new Unity_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
+ 	case kADPCMApple:
+ 		return new Apple_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
+ 	case kADPCMDK3:
+diff --git a/audio/decoders/adpcm.h b/audio/decoders/adpcm.h
+index 38ec870..2d29a9c 100644
+--- a/audio/decoders/adpcm.h
++++ b/audio/decoders/adpcm.h
+@@ -60,6 +60,7 @@ enum typesADPCM {
+ 	kADPCMTinsel6,             // 6-bit ADPCM used by the Tinsel engine
+ 	kADPCMTinsel8,             // 8-bit ADPCM used by the Tinsel engine
+ 	kADPCMIma,                 // Standard IMA ADPCM
++	kADPCMUnity,               // IMA ADPCM used by the Final Unity engine
+ 	kADPCMApple,               // Apple QuickTime IMA ADPCM
+ 	kADPCMDK3                  // Duck DK3 IMA ADPCM
+ };
