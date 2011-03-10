@@ -130,7 +130,7 @@ Common::Error RingEngine::run() {
 
 	// Start application
 	_application->showStartupScreen();
-	_application->startMenu(true);
+	_application->startMenu(false);
 
 	while (!shouldQuit()) {
 		// Show the debugger if required

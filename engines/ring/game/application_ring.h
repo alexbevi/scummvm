@@ -63,7 +63,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Setup
-	void setupZone(Zone zone, SetupType type);
+	virtual void setupZone(Zone zone, SetupType type);
 	void setZone(Zone zone, SetupType type);
 	void setZoneAndEnableBag(Zone zone);
 

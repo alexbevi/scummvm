@@ -145,6 +145,10 @@ void ApplicationPilgrim2::initZones() {
 	error("[ApplicationPilgrim2::initZones] Not implemented");
 }
 
+void ApplicationPilgrim2::setupZone(Zone zone, SetupType type) {
+	error("[ApplicationPilgrim2::setupZone] Not implemented");
+}
+
 #pragma endregion
 
 } // End of namespace Ring

@@ -145,6 +145,10 @@ void ApplicationJerusalem::initZones() {
 	error("[ApplicationJerusalem::initZones] Not implemented");
 }
 
+void ApplicationJerusalem::setupZone(Zone zone, SetupType type) {
+	error("[ApplicationJerusalem::setupZone] Not implemented");
+}
+
 #pragma endregion
 
 } // End of namespace Ring

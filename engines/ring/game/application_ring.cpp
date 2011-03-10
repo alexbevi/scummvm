@@ -481,17 +481,17 @@ void ApplicationRing::setupZone(Zone zone, SetupType type) {
 }
 
 bool ApplicationRing::isDataPresent(SetupType type) {
-	if (type != kSetupType1000 || _zone != kZoneAS)
+	if (type != kSetupTypeLoading || _zone != kZoneAS)
 		return false;
 
-	if (_saveManager->hasRotation()) {
-		if (_saveManager->getRotationId() == 80101)
+	if (_saveManager->getData()->hasCurrentRotation) {
+		if (_saveManager->getData()->rotationId == 80101)
 			return true;
 		else
 			return false;
 	}
 
-	PuzzleId id = _saveManager->getPuzzleId();
+	PuzzleId id = _saveManager->getData()->puzzleId;
 	if (id == (Id)kPuzzle80002
 	 || id == (Id)kPuzzle80003
 	 || id == (Id)kPuzzle80004
@@ -564,21 +564,25 @@ void ApplicationRing::setZone(Zone zone, SetupType type) {
 		}
 	}
 
+	// Finish loading savegame
 	if (type == 1000) {
-		if (getSaveManager()->hasPuzzle())
-			puzzleSetActive(getSaveManager()->getPuzzleId(), false, true);
+		SaveManager::SavegameData *data = getSaveManager()->getData();
 
-		if (getSaveManager()->hasRotation()) {
-			rotationSetActive(getSaveManager()->getRotationId(), false, true);
+		if (data->hasCurrentPuzzle)
+			puzzleSetActive(data->puzzleId, false, true);
 
-			getCurrentRotation()->setFreOnOff(getSaveManager()->getRotationFre());
+		if (data->hasCurrentRotation) {
+			rotationSetActive(data->rotationId, false, true);
+
+			getCurrentRotation()->setFreOnOff(data->rotationFre);
 		}
 
-		_loadFrom = getSaveManager()->getLoadFrom();
-		_isRotationCompressed = getSaveManager()->isRotationCompressed();
-		_archiveType = getSaveManager()->getArchiveType();
+		_loadFrom = data->loadFrom;
+		_isRotationCompressed = data->isRotationCompressed;
+		_archiveType = data->archiveType;
 
-		getSaveManager()->process(_soundManager);
+		getSaveManager()->loadSaveSounds();
+
 		if (getSaveManager()->isSaving()) {
 			_soundManager->playSounds();
 		} else {

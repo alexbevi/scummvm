@@ -626,7 +626,14 @@ void Object::saveLoadWithSerializer(Common::Serializer &s) {
 	SaveManager::syncArray(s, &_accessibilities);
 	SaveManager::syncArray(s, &_presentations);
 
-	_animationImage->saveLoadWithSerializer(s);
+	if (s.isSaving()) {
+		// FIXME: What happens when we try loading back that savegame?
+		if (_animationImage)
+			_animationImage->saveLoadWithSerializer(s);
+	}
+
+	if (s.isLoading())
+		_animationImage->saveLoadWithSerializer(s);
 }
 
 #pragma endregion

@@ -29,6 +29,7 @@
 #include "ring/shared.h"
 
 #include "common/array.h"
+#include "common/savefile.h"
 #include "common/serializer.h"
 
 namespace Ring {
@@ -37,36 +38,44 @@ class Application;
 
 class SaveManager {
 public:
+	struct SavegameHeader {
+		char code[12];
+		uint32 val1;
+		uint32 val2;
+	};
+
+	struct SavegameData {
+		State       state;
+		byte        field_6A;
+		Zone        zone;
+		bool        hasCurrentPuzzle;
+		PuzzleId    puzzleId;
+		bool        hasCurrentRotation;
+		Id          rotationId;
+		bool        rotationFre;
+		LoadFrom    loadFrom;
+		bool        isRotationCompressed;
+		ArchiveType archiveType;
+	};
+
 	SaveManager(Application *application);
 	~SaveManager();
 
 	bool loadSave(Common::String filename, LoadSaveType type);
 	bool loadSaveTimer(Common::String filename, LoadSaveType type);
+	void loadSaveSounds();
 
 	bool has(Common::String filename);
 
 	uint32 getTicks() { return _currentTicks; }
-
 	bool isSaving();
-
-	void process(Common::Serializable *ser);
 
 	// Helper
 	template<class T>
 	static void syncArray(Common::Serializer &s, Common::Array<T *> *arr);
 
 	// Accessors
-	Zone getZone() const { return _zone; }
-	bool hasPuzzle() const { return _hasPuzzle; }
-	PuzzleId getPuzzleId() const { return _puzzleId; }
-
-	bool hasRotation() const { return _hasRotation; }
-	Id getRotationId() const { return _rotationId; }
-	bool getRotationFre() { return _rotationFre; }
-	bool isRotationCompressed() { return _isRotationCompressed; }
-
-	ArchiveType getArchiveType() { return _archiveType; }
-	LoadFrom getLoadFrom() { return _loadFrom; }
+	SavegameData *getData() { return &_data; }
 
 	SetupType getSetupType() const { return _setupType; }
 	Common::String *getName() { return &_savename; }
@@ -76,23 +85,24 @@ public:
 private:
 	Application *_app;
 
-	ArchiveType _archiveType;
-	LoadFrom _loadFrom;
+	SavegameData _data;
 
 	Common::String _savename;
-	Zone _zone;
-
-	bool _hasPuzzle;
-	PuzzleId _puzzleId;
-
-	bool _hasRotation;
-	Id _rotationId;
-	bool _rotationFre;
-	bool _isRotationCompressed;
-
 	SetupType _setupType;
+	LoadSaveType _type;
 
 	uint32 _currentTicks; // Ticks at the time of loading/saving
+
+	// Current savegame
+	Common::Serializer  *_ser;
+	Common::InSaveFile  *_load;
+	Common::OutSaveFile *_save;
+
+	void checkHeader();
+	void initialize();
+
+	bool open(Common::String filename, LoadSaveType type);
+	void close();
 };
 
 template<class T>

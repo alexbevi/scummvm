@@ -467,7 +467,7 @@ void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
 		bag->sub_4192E0();
 
 		if (getApp()->getCurrentRotation())
-			bag->setCurrentRotationFre(getApp()->getCurrentRotation()->getFre());
+			bag->setRotationFre(getApp()->getCurrentRotation()->getFre());
 
 		getApp()->setupCurrentRotation();
 	}

@@ -82,7 +82,8 @@ public:
 	void setClickedObject(ObjectId object) { _clickedObject = object; }
 	ObjectId getClickedObject() { return _clickedObject; }
 
-	void setCurrentRotationFre(bool fre) { _fre = fre; }
+	bool getRotationFre() { return _fre; }
+	void setRotationFre(bool fre) { _fre = fre; }
 
 private:
 	// Bag data

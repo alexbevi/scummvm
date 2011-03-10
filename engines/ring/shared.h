@@ -168,19 +168,20 @@ enum SoundFormat {
 };
 
 enum LoadSaveType {
-	kLoadSaveRead  = 1,
-	kLoadSaveWrite = 2
+	kLoadSaveInvalid = 0,
+	kLoadSaveRead    = 1,
+	kLoadSaveWrite   = 2
 };
 
 enum SetupType {
-	kSetupTypeNone = 0,
-	kSetupType3    = 3,
-	kSetupType5    = 5,
-	kSetupType6    = 6,
-	kSetupType10   = 10,
-	kSetupType998  = 998,
-	kSetupType999  = 999,
-	kSetupType1000 = 1000
+	kSetupTypeNone    = 0,
+	kSetupType3       = 3,
+	kSetupType5       = 5,
+	kSetupType6       = 6,
+	kSetupType10      = 10,
+	kSetupType998     = 998,
+	kSetupType999     = 999,
+	kSetupTypeLoading = 1000
 };
 
 enum ImageType {
@@ -360,8 +361,8 @@ public:
 		uint32 count = this->size();
 		s.syncAsUint32LE(count);
 
-		for (uint32 i = 0; i < count; i++)
-			this[i].saveLoadWithSerializer(s);
+		for (typename Common::Array<T>::iterator it = this->begin(); it != this->end(); it++)
+			((Common::Serializable*) *it)->saveLoadWithSerializer(s);
 	}
 
 	T get(Id id) {

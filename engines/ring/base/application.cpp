@@ -107,6 +107,21 @@ Application::~Application() {
 	_vm = NULL;
 }
 
+void Application::saveLoadWithSerializer(Common::Serializer &s) {
+	for (Common::Array<Puzzle *>::iterator it = _puzzles.begin(); it != _puzzles.end(); it++)
+		(*it)->saveLoadWithSerializer(s);
+
+	for (Common::Array<Rotation *>::iterator it = _rotations.begin(); it != _rotations.end(); it++)
+		(*it)->saveLoadWithSerializer(s);
+
+	for (Common::Array<Object *>::iterator it = _objects.begin(); it != _objects.end(); it++)
+		(*it)->saveLoadWithSerializer(s);
+
+	_var->saveLoadWithSerializer(s);
+	_bag->saveLoadWithSerializer(s);
+	_timerHandler->saveLoadWithSerializer(s);
+}
+
 #pragma region Initialization
 
 void Application::init() {

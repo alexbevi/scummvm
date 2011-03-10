@@ -59,7 +59,7 @@ class TimerHandler;
 class Visual;
 class Var;
 
-class Application {
+class Application : public Common::Serializable {
 public:
 	Application(RingEngine *engine);
 	virtual ~Application();
@@ -70,6 +70,7 @@ public:
 	virtual void initFont() = 0;
 	virtual void setup() = 0;
 	virtual void initZones() = 0;
+	virtual void setupZone(Zone zone, SetupType type) = 0;
 
 	void exitZone();
 	void exitToMenu(uint32 a1);
@@ -384,9 +385,12 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
 	Zone getCurrentZone() { return _zone; }
+	byte getField6A() { return _field_6A; }
 	Common::String getCurrentZoneString() { return getZoneString(_zone); }
+	LoadFrom getLoadFrom() { return _loadFrom; }
+	bool isRotationCompressed() { return _isRotationCompressed; }
 	ArchiveType getArchiveType() { return _archiveType; }
-	char getField6F() { return _field_6F; }
+	byte getField6F() { return _field_6F; }
 	State getState() { return _state; }
 	bool getField74() { return _field_74; }
 	bool getField75() { return _field_75; }
@@ -394,12 +398,13 @@ public:
 	bool getField77() { return _field_77; }
 	bool getField78() { return _field_78; }
 
+	void setState(State state) { _state = state; }
+	void setField6A(bool state) { _field_6A = state; }
 	void setField74(bool state) { _field_74 = state; }
 	void setField75(bool state) { _field_75 = state; }
 	void setField76(bool state) { _field_76 = state; }
 	void setField77(bool state) { _field_77 = state; }
 	void setField78(bool state) { _field_78 = state; }
-
 
 	//////////////////////////////////////////////////////////////////////////
 	// Handlers and shared data
@@ -414,6 +419,10 @@ public:
 	ScreenManager     *getScreenManager()     { return _screenManager; }
 	SoundHandler      *getSoundHandler()      { return _soundHandler; }
 	SoundManager      *getSoundManager()      { return _soundManager; }
+	TimerHandler      *getTimerHandler()      { return _timerHandler; }
+
+	// Serializable
+	void saveLoadWithSerializer(Common::Serializer &s);
 
 protected:
 	RingEngine *_vm;
@@ -434,10 +443,10 @@ protected:
 	uint32                        _field_5E;
 	SoundHandler                 *_soundHandler;
 	State                         _state;
-	char                          _field_6A;
+	byte                          _field_6A;
 	Common::String                _zoneString;
 	Zone                          _zone;          // original uses byte
-	char                          _field_6F;
+	byte                          _field_6F;
 	uint32                        _field_70;
 	bool                          _field_74;
 	bool                          _field_75;

@@ -145,6 +145,11 @@ void ApplicationPompeii::initZones() {
 	error("[ApplicationPompeii::initZones] Not implemented");
 }
 
+void ApplicationPompeii::setupZone(Zone zone, SetupType type) {
+	error("[ApplicationPompeii::setupZone] Not implemented");
+}
+
+
 #pragma endregion
 
 } // End of namespace Ring

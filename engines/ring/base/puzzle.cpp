@@ -518,7 +518,14 @@ bool Puzzle::imagePriorityCompare(ImageHandle *image1, ImageHandle *image2) {
 #pragma region Serializable
 
 void Puzzle::saveLoadWithSerializer(Common::Serializer &s) {
-	_background->saveLoadWithSerializer(s);
+	if (s.isSaving()) {
+		// FIXME: What happens when we try loading back that savegame?
+		if (_background)
+			_background->saveLoadWithSerializer(s);
+	}
+
+	if (s.isLoading())
+		_background->saveLoadWithSerializer(s);
 
 	SaveManager::syncArray(s, &_movabilities);
 	SaveManager::syncArray(s, &_soundItems);

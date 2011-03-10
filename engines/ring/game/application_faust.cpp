@@ -145,6 +145,10 @@ void ApplicationFaust::initZones() {
 	error("[ApplicationFaust::initZones] Not implemented");
 }
 
+void ApplicationFaust::setupZone(Zone zone, SetupType type) {
+	error("[ApplicationFaust::setupZone] Not implemented");
+}
+
 #pragma endregion
 
 } // End of namespace Ring

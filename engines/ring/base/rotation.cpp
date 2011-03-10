@@ -505,7 +505,15 @@ SoundItem *Rotation::getSoundItem(Id soundId) {
 #pragma region Serializable
 
 void Rotation::saveLoadWithSerializer(Common::Serializer &s) {
-	_imageHandle->saveLoadWithSerializer(s);
+	if (s.isSaving()) {
+		// FIXME: What happens when we try loading back that savegame?
+		if (_imageHandle)
+			_imageHandle->saveLoadWithSerializer(s);
+	}
+
+	if (s.isLoading())
+		_imageHandle->saveLoadWithSerializer(s);
+
 	SaveManager::syncArray(s, &_movabilities);
 
 	// Save animations with channel
