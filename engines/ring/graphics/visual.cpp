@@ -26,6 +26,7 @@
 #include "ring/graphics/visual.h"
 
 #include "ring/base/application.h"
+#include "ring/base/event.h"
 #include "ring/base/object.h"
 #include "ring/base/text.h"
 
@@ -76,7 +77,7 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_field_65 = 0;
 	_field_69 = 0;
 	_field_6D = 0;
-	_objectClicked = -1;
+	_objectIndexClicked = -1;
 	_imageIndexClicked = -1;
 	_field_71 = 0;
 	_field_75 = 0;
@@ -100,8 +101,8 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_field_B5 = 0;
 	_field_B9 = 0;
 	_field_BD = 0;
-	_field_C9 = 0;
-	_field_C1 = 0;
+	_objectIdClicked = 0;
+	_objectIndex = 0;
 	_itemCount = 0;
 	_text1 = NULL;
 	_text2 = NULL;
@@ -158,6 +159,14 @@ void VisualObjectList::loadImage(ImageHandle *image) {
 	Common::String filename = Common::String::format("%s%s", image->getDirectory().c_str(), image->getNameId().c_str());
 
 	image->load(filename, image->getArchiveType(), image->getZone(), image->getLoadFrom());
+}
+
+Hotspot *VisualObjectList::getHotspot(const Common::Point &point) {
+	for (Common::Array<Hotspot *>::iterator it = _hotspots.begin(); it != _hotspots.end(); it++)
+		if ((*it)->contains(point))
+			return (*it);
+
+	return NULL;
 }
 
 void VisualObjectList::dealloc() {
@@ -409,12 +418,86 @@ void VisualObjectList::draw() {
 	error("[VisualObjectList::draw] Not implemented!");
 }
 
-bool VisualObjectList::handleLeftButtonUp(const Common::Point &point) {
-	error("[VisualObjectList::function3] Not implemented!");
+uint32 VisualObjectList::handleLeftButtonUp(const Common::Point &point) {
+	if (!_visible)
+		return false;
+
+	Hotspot *hotspot = getHotspot(point);
+	if (!hotspot)
+		return false;
+
+	switch (hotspot->getCursorId()) {
+	default:
+		break;
+
+	case kCursorPassive:
+		if (_objectIndex > 0)
+			--_objectIndex;
+
+		getApp()->getEventHandler()->onVisualList(_id, 1, point);
+		return 1;
+
+	case kCursorActive:
+		if (_objectIndex < _itemCount)
+			++_objectIndex;
+
+		getApp()->getEventHandler()->onVisualList(_id, 2, point);
+		return 2;
+
+	case kCursorPassiveDraw:
+		_imageIndexClicked  = _objectIndexClicked;
+		_objectIndexClicked = _objectIndex + hotspot->getTarget();
+		_objectIdClicked    = _objects[_objectIndexClicked]->getId();
+
+		getApp()->getEventHandler()->onVisualList(_id, 3, point);
+		return 3;
+	}
+
+	return 0;
 }
 
-bool VisualObjectList::handleUpdate(const Common::Point &point) {
-	error("[VisualObjectList::function4] Not implemented!");
+uint32 VisualObjectList::handleUpdate(const Common::Point &point) {
+	if (!_visible)
+		return false;
+
+	Hotspot *hotspot = getHotspot(point);
+	if (!hotspot)
+		return false;
+
+	switch (hotspot->getCursorId()) {
+	default:
+		break;
+
+	case kCursorPassive:
+		if (hotspot->isEnabled()) {
+			getApp()->cursorSelect(kCursorMenuActive);
+
+			if (_upGur->getNameId().empty())
+				getApp()->getScreenManager()->draw(_upGur, Common::Point(_field_49 + _field_71, _field_4D + _field_75), _upGur->getDrawType());
+		}
+
+		getApp()->getEventHandler()->onVisualList(_id, 1, point);
+		return 1;
+
+	case kCursorActive:
+		if (hotspot->isEnabled()) {
+			getApp()->cursorSelect(kCursorMenuActive);
+
+			if (_upGur->getNameId().empty())
+				getApp()->getScreenManager()->draw(_downGur, Common::Point(_field_49 + _field_79, _field_4D + _field_7D), _downGur->getDrawType());
+		}
+
+		getApp()->getEventHandler()->onVisualList(_id, 2, point);
+		return 2;
+
+	case kCursorPassiveDraw:
+		getApp()->cursorSelect(kCursorMenuActive);
+
+		getApp()->getEventHandler()->onVisualList(_id, 3, point);
+		return 3;
+	}
+
+	return 0;
 }
 
 #pragma endregion
@@ -423,8 +506,8 @@ bool VisualObjectList::handleUpdate(const Common::Point &point) {
 
 void VisualObjectList::add(ObjectId objectId) {
 	if (_objects.has(objectId)) {
-		_field_C9 = 0;
-		_objectClicked = -1;
+		_objectIdClicked = 0;
+		_objectIndexClicked = -1;
 		_imageIndexClicked = -1;
 
 		return;
@@ -453,9 +536,9 @@ void VisualObjectList::add(ObjectId objectId) {
 
 	_itemCount = _objects.size();
 	if (_itemCount > _field_BD)
-		_field_C1 = 0;
-	_field_C9 = 0;
-	_objectClicked = -1;
+		_objectIndex = 0;
+	_objectIdClicked = 0;
+	_objectIndexClicked = -1;
 	_imageIndexClicked = -1;
 }
 
@@ -474,9 +557,9 @@ void VisualObjectList::remove(ObjectId objectId, bool removeObject) {
 
 	_itemCount = _objects.size();
 	if (_itemCount <= _field_BD)
-		_field_C1 = 0;
-	_field_C9 = 0;
-	_objectClicked = -1;
+		_objectIndex = 0;
+	_objectIdClicked = 0;
+	_objectIndexClicked = -1;
 	_imageIndexClicked = -1;
 }
 
@@ -493,13 +576,12 @@ void VisualObjectList::removeAll(bool removeObject) {
 	// Remove all images
 	CLEAR_ARRAY(ImageHandle, _images);
 
-	_field_C1 = 0;
+	_objectIndex = 0;
 	_itemCount = _objects.size();
-	_field_C9 = 0;
-	_objectClicked = -1;
+	_objectIdClicked = 0;
+	_objectIndexClicked = -1;
 	_imageIndexClicked = -1;
 }
-
 
 #pragma endregion
 

@@ -44,9 +44,9 @@ public:
 	virtual ~Visual();
 
 	virtual void draw() = 0;
-	virtual bool handleLeftButtonUp(const Common::Point &point) = 0;
-	virtual bool handleUpdate(const Common::Point &point) = 0;
-	virtual bool handleLeftButtonDown(Common::Point point) { return false; }
+	virtual uint32 handleLeftButtonUp(const Common::Point &point) = 0;
+	virtual uint32 handleUpdate(const Common::Point &point) = 0;
+	virtual uint32 handleLeftButtonDown(Common::Point point) { return 0; }
 	virtual bool handleKey(Common::KeyCode key) { return false; }
 	virtual void alloc() = 0;
 	virtual void dealloc() = 0;
@@ -69,8 +69,8 @@ public:
 	~VisualObjectList();
 
 	virtual void draw();
-	virtual bool handleLeftButtonUp(const Common::Point &point);
-	virtual bool handleUpdate(const Common::Point &point);
+	virtual uint32 handleLeftButtonUp(const Common::Point &point);
+	virtual uint32 handleUpdate(const Common::Point &point);
 	virtual void alloc();
 	virtual void dealloc();
 
@@ -103,7 +103,7 @@ public:
 	// Accessors
 	uint32 getItemCount() { return _itemCount; }
 	int32 getImageIndexClicked() { return _imageIndexClicked; }
-	ObjectId getObjectClicked() { return _objectClicked; }
+	int32 getObjectIndexClicked() { return _objectIndexClicked; }
 
 private:
 	Common::String _iconPath;
@@ -151,10 +151,10 @@ private:
 	uint32 _field_B5;
 	uint32 _field_B9;
 	uint32 _field_BD;
-	uint32 _field_C1;
+	uint32 _objectIndex;
 	uint32 _itemCount;
-	uint32 _field_C9;
-	ObjectId _objectClicked;
+	ObjectId _objectIdClicked;
+	int32 _objectIndexClicked;
 	int32 _imageIndexClicked;
 	ArchiveType _archiveType;
 	Text  *_text1;
@@ -165,8 +165,8 @@ private:
 	Color  _backgroundColor;
 	bool   _allocated;
 
+	Hotspot *getHotspot(const Common::Point &point);
 	void loadImage(ImageHandle *image);
-
 };
 
 } // End of namespace Ring
