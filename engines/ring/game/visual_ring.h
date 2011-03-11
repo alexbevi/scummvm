@@ -38,8 +38,8 @@ public:
 	virtual void alloc();
 	virtual void dealloc();
 
-	virtual bool handleLeftButtonUp(const Common::Point &point) { return false; }
-	virtual bool handleUpdate(const Common::Point &point) { return false; }
+	virtual uint32 handleLeftButtonUp(const Common::Point &point) { return 0; }
+	virtual uint32 handleUpdate(const Common::Point &point) { return 0; }
 
 	void init(uint32 a1, uint32 a2, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 	virtual void draw();

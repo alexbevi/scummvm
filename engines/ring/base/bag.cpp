@@ -26,6 +26,7 @@
 #include "ring/base/bag.h"
 
 #include "ring/base/application.h"
+#include "ring/base/event.h"
 #include "ring/base/object.h"
 #include "ring/base/saveload.h"
 #include "ring/base/text.h"
@@ -238,7 +239,7 @@ uint32 Bag::checkHotspotClick(const Common::Point &point) {
 		return 3;
 
 	case kCursor1005:
-		getApp()->onBagZoneSwitch();
+		getApp()->getEventHandler()->onBagZoneSwitch();
 		return 4;
 	}
 }

@@ -85,17 +85,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Event handling
-	void onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed);
-	void onMouseLeftButtonDown(Common::Event &evt);
-	void onMouseRightButtonUp(Common::Event &evt);
-	void onKeyDown(Common::Event &evt);
 	void onTimer(TimerId id);
-	void onSound(Id id, SoundType type, uint32 a3);
-	void onAnimation(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
-	void onAnimation2(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
-	void onAnimation3(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
-	void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
-	void onBagZoneSwitch();
 
 	void update(const Common::Point &point);
 	void updateBag(const Common::Point &point);
@@ -353,7 +343,7 @@ public:
 	void visualListRemove(Id visualId, PuzzleId puzzleId, bool removeObject);
 	uint32 visualListGetItemCount(Id visualId, PuzzleId puzzleId);
 	int32 visualListGetImageIndexClicked(Id visualId, PuzzleId puzzleId);
-	ObjectId visualListGetObjectClicked(Id visualId, PuzzleId puzzleId);
+	int32 visualListGetObjectIndexClicked(Id visualId, PuzzleId puzzleId);
 
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor) = 0;
 
@@ -417,6 +407,7 @@ public:
 	Bag               *getBag()               { return _bag; }
 	DialogHandler     *getDialogHandler()     { return _dialogHandler; }
 	DragControl       *getDragControl()       { return _dragControl; }
+	EventHandler      *getEventHandler()      { return _eventHandler; }
 	FontHandler       *getFontHandler()       { return _fontHandler; }
 	PreferenceHandler *getPreferenceHandler() { return _preferenceHandler; }
 	SaveManager       *getSaveManager()       { return _saveManager; }

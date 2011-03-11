@@ -26,6 +26,7 @@
 #include "ring/graphics/animation.h"
 
 #include "ring/base/application.h"
+#include "ring/base/event.h"
 #include "ring/base/saveload.h"
 
 #include "ring/graphics/image.h"
@@ -192,7 +193,7 @@ int32 Animation::adjustTicks(uint32 ticks) {
 			if (ticks == 1)
 				_field_32 = 2;
 
-			getApp()->onAnimation2(1, _id, _name, _activeFrame + 1, _field_3E);
+			getApp()->getEventHandler()->onAnimation2(1, _id, _name, _activeFrame + 1, _field_3E);
 			return _activeFrame;
 		}
 		return -1;
@@ -209,7 +210,7 @@ int32 Animation::adjustTicks(uint32 ticks) {
 	if (ticks == 1)
 		_field_4A = 2;
 
-	getApp()->onAnimation(1, _id, _name, _activeFrame + 1, _field_46);
+	getApp()->getEventHandler()->onAnimation(1, _id, _name, _activeFrame + 1, _field_46);
 
 	return _activeFrame;
 }
@@ -234,7 +235,7 @@ uint32 Animation::computeCurrentFrame(uint32 ticks) {
 	// Notify event handler
 	if (_field_61 != (int32)(_activeFrame + 1)) {
 		if (!_name.empty())
-			getApp()->onAnimationNextFrame(_id, _name, _activeFrame + 1, _frameCount);
+			getApp()->getEventHandler()->onAnimationNextFrame(_id, _name, _activeFrame + 1, _frameCount);
 	}
 
 	_field_61 = _activeFrame + 1;
@@ -332,14 +333,14 @@ void Animation::onAnimation3() {
 	_lastTicks = 0;
 	_tickInterval = 0;
 
-	getApp()->onAnimation2(2, _id, _name, _activeFrame + 1, tickInterval);
+	getApp()->getEventHandler()->onAnimation2(2, _id, _name, _activeFrame + 1, tickInterval);
 }
 
 void Animation::onAnimation2() {
 	_field_32 = 1;
 	_field_60 = 0;
 
-	getApp()->onAnimation2(2, _id, _name, _activeFrame + 1, _field_3E);
+	getApp()->getEventHandler()->onAnimation2(2, _id, _name, _activeFrame + 1, _field_3E);
 }
 
 void Animation::onAnimation() {
@@ -347,7 +348,7 @@ void Animation::onAnimation() {
 	_field_4A = 0;
 	_field_60 = 0;
 
-	getApp()->onAnimation(2, _id, _name, _activeFrame + 1, _field_46);
+	getApp()->getEventHandler()->onAnimation(2, _id, _name, _activeFrame + 1, _field_46);
 }
 
 #pragma region Serializable
@@ -507,7 +508,7 @@ void AnimationImage::allocActive() {
 		error("[AnimationImage::allocActive] Invalid active frame (%d)", _activeFrame);
 
 	_currentImage = _imageHandles[_activeFrame];
-	if (!_currentImage->isInitialized() {
+	if (!_currentImage->isInitialized()) {
 		Common::String path = computePath(_currentImage, _activeFrame);
 
 		if (!_currentImage->load(path, _currentImage->getArchiveType(), _currentImage->getZone(), _currentImage->getLoadFrom()))

@@ -26,6 +26,7 @@
 #include "ring/base/sound.h"
 
 #include "ring/base/application.h"
+#include "ring/base/event.h"
 #include "ring/base/dialog.h"
 
 #include "ring/helpers.h"
@@ -280,7 +281,7 @@ void SoundManager::updateQueue() {
 		if ((*it)->getType() == kSoundTypeDialog)
 			continue;
 
-		_app->onSound((*it)->getId(), (*it)->getType(), 4097);
+		_app->getEventHandler()->onSound((*it)->getId(), (*it)->getType(), 4097);
 	}
 }
 
@@ -295,7 +296,7 @@ void SoundManager::play(Id soundId, bool loop) {
 	} else if (entry->isPlaying()) {
 		entry->stop();
 
-		_app->onSound(soundId, entry->getType(), 32);
+		_app->getEventHandler()->onSound(soundId, entry->getType(), 32);
 	}
 
 	// Setup and play entry
@@ -322,12 +323,12 @@ void SoundManager::stop(Id soundId, uint32 a2) {
 			entry->stop();
 
 		if (_app->getDialogHandler()->removeDialog(soundId))
-			_app->onSound(soundId, entry->getType(), a2);
+			_app->getEventHandler()->onSound(soundId, entry->getType(), a2);
 	} else {
 		if (entry->isPlaying())
 			entry->stop();
 
-		_app->onSound(soundId, entry->getType(), a2);
+		_app->getEventHandler()->onSound(soundId, entry->getType(), a2);
 	}
 }
 
@@ -358,7 +359,7 @@ void SoundManager::stopType(SoundType soundType, uint32 a2) {
 				entry->stop();
 
 			if (_app->getDialogHandler()->removeDialog(entry->getId())) {
-				_app->onSound(entry->getId(), entry->getType(), a2);
+				_app->getEventHandler()->onSound(entry->getId(), entry->getType(), a2);
 
 				stopDialog = false;
 			}
@@ -366,7 +367,7 @@ void SoundManager::stopType(SoundType soundType, uint32 a2) {
 			if (entry->isPlaying()) {
 				entry->stop();
 
-				_app->onSound(entry->getId(), entry->getType(), a2);
+				_app->getEventHandler()->onSound(entry->getId(), entry->getType(), a2);
 			}
 		}
 	}
@@ -401,7 +402,7 @@ void SoundManager::stopAll(uint32 a1) {
 				entry->stop();
 
 			if (_app->getDialogHandler()->removeDialog(entry->getId())) {
-				_app->onSound(entry->getId(), entry->getType(), a1);
+				_app->getEventHandler()->onSound(entry->getId(), entry->getType(), a1);
 
 				stopDialog = false;
 			}
@@ -409,7 +410,7 @@ void SoundManager::stopAll(uint32 a1) {
 			if (entry->isPlaying()) {
 				entry->stop();
 
-				_app->onSound(entry->getId(), entry->getType(), a1);
+				_app->getEventHandler()->onSound(entry->getId(), entry->getType(), a1);
 			}
 		}
 	}

@@ -382,34 +382,6 @@ void Application::exitToMenu(uint32 a1) {
 
 #pragma region Event handling
 
-void Application::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
-	if (!_eventHandler)
-		error("[Application::onMouseLeftButtonUp] Event handler not initialized properly!");
-
-	_eventHandler->onMouseLeftButtonUp(evt, isControlPressed);
-}
-
-void Application::onMouseLeftButtonDown(Common::Event &evt) {
-	if (!_eventHandler)
-		error("[Application::onMouseLeftButtonDown] Event handler not initialized properly!");
-
-	_eventHandler->onMouseLeftButtonDown(evt);
-}
-
-void Application::onMouseRightButtonUp(Common::Event &evt) {
-	if (!_eventHandler)
-		error("[Application::onMouseRightButtonUp] Event handler not initialized properly!");
-
-	_eventHandler->onMouseRightButtonUp(evt);
-}
-
-void Application::onKeyDown(Common::Event &evt) {
-	if (!_eventHandler)
-		error("[Application::onKeyDown] Event handler not initialized properly!");
-
-	_eventHandler->onKeyDown(evt);
-}
-
 void Application::onTimer(TimerId id) {
 	if (!_eventHandler)
 		error("[Application::onTimer] Event handler not initialized properly!");
@@ -421,48 +393,6 @@ void Application::onTimer(TimerId id) {
 
 	if (_timerHandler)
 		_timerHandler->incrementFiredCount(id);
-}
-
-void Application::onSound(Id id, SoundType type, uint32 a3) {
-	if (!_eventHandler)
-		error("[Application::onSound] Event handler not initialized properly!");
-
-	_eventHandler->onSound(id, type, a3);
-}
-
-void Application::onAnimation(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
-	if (!_eventHandler)
-		error("[Application::onAnimationNextFrame] Event handler not initialized properly!");
-
-	_eventHandler->onAnimation(type, animationId, name, frame, frameCount);
-}
-
-void Application::onAnimation2(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
-	if (!_eventHandler)
-		error("[Application::onAnimationNextFrame] Event handler not initialized properly!");
-
-	_eventHandler->onAnimation2(type, animationId, name, frame, frameCount);
-}
-
-void Application::onAnimation3(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
-	if (!_eventHandler)
-		error("[Application::onAnimationNextFrame] Event handler not initialized properly!");
-
-	_eventHandler->onAnimation3(type, animationId, name, frame, frameCount);
-}
-
-void Application::onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
-	if (!_eventHandler)
-		error("[Application::onAnimationNextFrame] Event handler not initialized properly!");
-
-	_eventHandler->onAnimationNextFrame(animationId, name, frame, frameCount);
-}
-
-void Application::onBagZoneSwitch() {
-	if (!_eventHandler)
-		error("[Application::onAnimationNextFrame] Event handler not initialized properly!");
-
-	_eventHandler->onBagZoneSwitch();
 }
 
 void Application::update(const Common::Point &point) {
@@ -2386,7 +2316,7 @@ int32 Application::visualListGetImageIndexClicked(Id visualId, PuzzleId puzzleId
 	return ((VisualObjectList *)puzzle->getVisual(visualId))->getImageIndexClicked();
 }
 
-ObjectId Application::visualListGetObjectClicked(Id visualId, PuzzleId puzzleId) {
+int32 Application::visualListGetObjectIndexClicked(Id visualId, PuzzleId puzzleId) {
 	if (!_puzzles.has(puzzleId))
 		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
@@ -2394,7 +2324,7 @@ ObjectId Application::visualListGetObjectClicked(Id visualId, PuzzleId puzzleId)
 	if (!puzzle->hasVisual(visualId))
 		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
 
-	return ((VisualObjectList *)puzzle->getVisual(visualId))->getObjectClicked();
+	return ((VisualObjectList *)puzzle->getVisual(visualId))->getObjectIndexClicked();
 }
 
 #pragma endregion

@@ -26,6 +26,7 @@
 #include "ring/base/dialog.h"
 
 #include "ring/base/application.h"
+#include "ring/base/event.h"
 #include "ring/base/text.h"
 
 #include "ring/ring.h"
@@ -370,7 +371,7 @@ void DialogHandler::play() {
 
 	Id dialogId = dialog->getId();
 	removeDialog(dialogId);
-	getApp()->onSound(dialogId, kSoundTypeDialog, 4097);
+	getApp()->getEventHandler()->onSound(dialogId, kSoundTypeDialog, 4097);
 }
 
 bool DialogHandler::isPlaying(Id id) {
