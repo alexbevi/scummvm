@@ -422,9 +422,9 @@ void Bag::draw(){
 
 	for (uint32 i = 0; i < _field_24; i++) {
 		if (i >= (count - _field_28))
-			_hotspots[i]->disable();
+			_hotspots[i + 4]->disable();
 		else
-			_hotspots[i]->enable();
+			_hotspots[i + 4]->enable();
 	}
 }
 

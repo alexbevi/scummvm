@@ -1046,7 +1046,7 @@ void ApplicationRing::initZoneSY() {
 	                      "down_gua.tga", "load_gun.tga", "load_gua.tga",
 	                      kDrawType3, Common::Point(0, 0), Common::Point(0, 0), 335, 127, 300, 35, 45,
 	                      3, Common::Point(330, 349), 320, 339, 40, 40, Common::Point(330, 380), 320,
-	                      370, 40, 40, 0, 0, kImageTypeBMP, 1, 311, 137, 4,
+	                      370, 40, 40, Common::Point(0, 0), kImageTypeBMP, kDrawType1, 311, 137, 4,
 	                      Color(255, 95, 0), Color(245, 235, 50), Color(-1, -1, -1), kFontDefault,
 	                      kArchiveFile);
 

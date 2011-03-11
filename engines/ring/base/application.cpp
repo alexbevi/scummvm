@@ -2227,8 +2227,8 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 	                                    Common::String filename11, Common::String filename12, Common::String filename13,
 							            DrawType drawType, const Common::Point &origin, const Common::Point &backgroundOffset, uint32 a22, uint32 a23, uint32 a24, uint32 a25, uint32 a26,
 	                                    uint32 a27, const Common::Point &upOffset, uint32 a30, uint32 a31, uint32 a32, uint32 a33, const Common::Point &downOffset, uint32 a36,
-	                                    uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, ImageType imageType, uint32 a43, uint32 a44, uint32 a45, uint32 a46,
-							            Color foreground1, Color foreground2, Color background, FontId fontId,
+	                                    uint32 a37, uint32 a38, uint32 a39, const Common::Point &imageCoords, ImageType imageType, DrawType imageDrawType, uint32 a44, uint32 a45, uint32 a46,
+							            Color foreground, Color foregroundSelected, Color background, FontId fontId,
 							            ArchiveType archiveType) {
 
 
@@ -2250,11 +2250,11 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 	list->sub_46DDA0(a30, a31, a32, a33);
 	list->setDownOffset(downOffset);
 	list->sub_46DDD0(a36, a37, a38, a39);
-	list->sub_46DE00(a40, a41, imageType, a43);
+	list->setImageInfo(imageCoords, imageType, imageDrawType);
 	list->sub_46DE30(a44, a45);
 	list->sub_46E330(a46);
 	list->initHotspots();
-	list->setTextForegroundColor(foreground1, foreground2);
+	list->setTextForegroundColor(foreground, foregroundSelected);
 	list->setTextBackgroundColor(background);
 	list->setFontId(fontId);
 

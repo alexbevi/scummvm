@@ -87,11 +87,11 @@ public:
 	void setDownOffset(const Common::Point &point) { _downOffset = point; }
 	void sub_46DDA0(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
 	void sub_46DDD0(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
-	void sub_46DE00(uint32 a1, uint32 a2, ImageType imageType, uint32 a4);
+	void setImageInfo(const Common::Point &point, ImageType imageType, DrawType drawType);
 	void sub_46DE30(uint32 a1, uint32 a2);
 	void initHotspots();
 	void sub_46E330(uint32 a1);
-	void setTextForegroundColor(Color foreground, Color foreground2);
+	void setTextForegroundColor(Color foreground, Color foregroundSelected);
 	void setTextBackgroundColor(Color background);
 	void setFontId(FontId fontId);
 
@@ -139,10 +139,9 @@ private:
 	uint32 _field_95;
 	uint32 _field_99;
 	uint32 _field_9D;
-	uint32 _field_A1;
-	uint32 _field_A5;
+	Common::Point _imageCoords;
 	ImageType _imageType;
-	uint32 _field_AD;
+	DrawType _drawType;
 	uint32 _field_B1;
 	uint32 _field_B5;
 	uint32 _field_B9;
@@ -156,8 +155,8 @@ private:
 	Text  *_text1;
 	Text  *_text2;
 	FontId _fontId;
-	Color  _foregroundColor1;
-	Color  _foregroundColor2;
+	Color  _foregroundColor;
+	Color  _foregroundColorSelected;
 	Color  _backgroundColor;
 	bool   _allocated;
 

@@ -39,6 +39,7 @@
 #include "ring/helpers.h"
 
 #include "common/file.h"
+#include "common/tokenizer.h"
 
 namespace Ring {
 
@@ -75,20 +76,18 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_field_6D = 0;
 	_objectIndexClicked = -1;
 	_imageIndexClicked = -1;
-	_foregroundColor1 = Color(200, 200, 30);
+	_foregroundColor = Color(200, 200, 30);
 	_field_81 = 0;
 	_field_85 = 0;
-	_foregroundColor2 = Color(255, 255, 255);
+	_foregroundColorSelected = Color(255, 255, 255);
 	_field_89 = 0;
 	_field_8D = 0;
 	_field_91 = 0;
 	_field_95 = 0;
 	_field_99 = 0;
 	_field_9D = 0;
-	_field_A1 = 0;
-	_field_A5 = 0;
 	_imageType = kImageTypeBMP;
-	_field_AD = 0;
+	_drawType = kDrawTypeInvalid;
 	_field_B1 = 0;
 	_field_B5 = 0;
 	_field_B9 = 0;
@@ -255,10 +254,10 @@ void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String 
 	_cliImageA->setDirectory(path);
 
 	_text1 = new Text();
-	_text1->init("", Common::Point(0, 0), _fontId, _foregroundColor1, _backgroundColor);
+	_text1->init("", Common::Point(0, 0), _fontId, _foregroundColor, _backgroundColor);
 
 	_text2 = new Text();
-	_text2->init("", Common::Point(0, 0), _fontId, _foregroundColor2, _backgroundColor);
+	_text2->init("", Common::Point(0, 0), _fontId, _foregroundColorSelected, _backgroundColor);
 }
 
 void VisualObjectList::sub_46DD30(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6) {
@@ -285,11 +284,10 @@ void VisualObjectList::sub_46DDD0(uint32 a1, uint32 a2, uint32 a3, uint32 a4) {
 	_field_9D = a4;
 }
 
-void VisualObjectList::sub_46DE00(uint32 a1, uint32 a2, ImageType imageType, uint32 a4) {
-	_field_A1 = a1;
-	_field_A5 = a2;
+void VisualObjectList::setImageInfo(const Common::Point &point, ImageType imageType, DrawType drawType) {
+	_imageCoords = point;
 	_imageType = imageType;
-	_field_AD = a4;
+	_drawType = drawType;
 }
 
 void VisualObjectList::sub_46DE30(uint32 a1, uint32 a2) {
@@ -349,16 +347,16 @@ void VisualObjectList::sub_46E330(uint32 a1) {
 	_field_BD = a1;
 }
 
-void VisualObjectList::setTextForegroundColor(Color foreground1, Color foreground2) {
+void VisualObjectList::setTextForegroundColor(Color foreground, Color foregroundSelected) {
 	if (_text1)
-		_text1->setForegroundColor(foreground1);
+		_text1->setForegroundColor(foreground);
 
 	if (_text2)
-		_text2->setForegroundColor(foreground2);
+		_text2->setForegroundColor(foregroundSelected);
 
 	if (_text1 || _text2) {
-		_foregroundColor1 = foreground1;
-		_foregroundColor2 = foreground2;
+		_foregroundColor = foreground;
+		_foregroundColorSelected = foregroundSelected;
 	}
 }
 
@@ -422,7 +420,98 @@ void VisualObjectList::draw() {
 			_hotspots[1]->enable();
 	}
 
-	error("[VisualObjectList::draw] Not implemented!");
+	// Show objects
+	uint32 offset = _origin.x + _field_59;
+	uint32 count = _objectIndex + _field_BD;
+	if (count >= _itemCount)
+		count = _itemCount;
+
+	if (_objectIndex < count) {
+		for (uint32 i = _objectIndex; i < count; i++) {
+			Object *object = _objects[i];
+
+			// Draw description
+			Common::String description = object->getDescription();
+			if (!description.empty()) {
+				// Set object text
+				Common::StringTokenizer line(description, "#");
+				if (!line.empty()) {
+					_text1->set(line.nextToken());
+					_text2->set(line.nextToken());
+				} else {
+					_text1->set(description);
+					_text2->set("");
+				}
+
+				// Set text coordinates
+				if (_field_B9 & 1) {
+					uint32 text1Y = _origin.y + i * _field_69 + _field_5D + (_field_69 - _text1->getHeight()) / 2;
+					_text1->setCoordinates(Common::Point(offset, text1Y));
+					_text2->setCoordinates(Common::Point(offset, text1Y + _text1->getHeight() + _field_6D));
+				}
+
+				if (_field_B9 & 2) {
+					uint32 textX = _origin.x + i * _field_69 + _field_59 + (_field_69 - _text1->getWidth()) / 2;
+					_text1->setCoordinates(Common::Point(textX, _origin.y + _field_5D));
+					_text2->setCoordinates(Common::Point(textX, _origin.y + _field_5D + _text1->getHeight() + _field_6D));
+				}
+
+				if (_objectIdClicked == object->getId()) {
+					_text1->setForegroundColor(_foregroundColorSelected);
+					_text2->setForegroundColor(_foregroundColorSelected);
+
+					error("[VisualObjectList::draw] Not implemented (image drawing)!");
+				} else {
+					_text1->setForegroundColor(_foregroundColor);
+					_text2->setForegroundColor(_foregroundColor);
+
+					//screen->draw(_cliImageP, , _cliImageP->getDrawType());
+					error("[VisualObjectList::draw] Not implemented (image drawing)!");
+				}
+
+				// Draw text
+				screen->drawText(_text1);
+				screen->drawText(_text2);
+			}
+
+			// Draw images
+			if (_field_B9 & 64) {
+
+				if (_imageIndexClicked != -1)
+					_images[_imageIndexClicked]->destroy();
+
+				if (_objectIndexClicked != -1) {
+					ImageHandle *imageClicked = _images[_objectIndexClicked];
+
+					if (imageClicked->getField6C() == 1) {
+						bool loaded = true;
+						if (!imageClicked->isInitialized()) {
+							Common::String path = Common::String::format("%s%s.%s", _iconPath.c_str(), _objects[_objectIndexClicked]->getName().c_str(), Application::getFileExtension(_imageType).c_str());
+							loaded = imageClicked->load(path, kArchiveFile, kZoneNone, kLoadFromInvalid);
+						}
+
+						if (loaded)
+							screen->draw(imageClicked, _imageCoords, _drawType);
+					} else {
+						AnimationImage *animation = imageClicked->getAnimation();
+						animation->allocActive();
+						animation->computeCurrentFrame(g_system->getMillis());
+						animation->playFrame(_imageCoords);
+					}
+				}
+
+			}
+		}
+	}
+
+	// Update hotspots
+	for (uint32 i = 0; i < _field_BD; i++) {
+		if (i >= (count - _objectIndex))
+			_hotspots[i + 2]->disable();
+		else
+			_hotspots[i + 2]->enable();
+	}
+
 }
 
 uint32 VisualObjectList::handleLeftButtonUp(const Common::Point &point) {

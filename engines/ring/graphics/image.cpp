@@ -172,7 +172,7 @@ void Image::draw(Graphics::Surface *surface, Common::Point dest) {
 	//warning("[Image::draw] Not implemented (normal case)!");
 
 	// DEBUG: Create drawing rect
-	Common::Rect rect(dest.x, dest.y, _surface->w, _surface->h);
+	Common::Rect rect(dest.x, dest.y, dest.x + _surface->w, dest.y + _surface->h);
 	rect.clip(640, 480);
 
 	surface->fillRect(rect, Color(255, 0, 0).getColor());
@@ -181,9 +181,8 @@ void Image::draw(Graphics::Surface *surface, Common::Point dest) {
 void Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset) {
 	//warning("[Image::draw] Not implemented (offset case)!");
 
-	Common::Rect rect(dest.x, dest.y, srcWidth, srcHeight);
+	Common::Rect rect(dest.x, dest.y, dest.x + srcWidth, dest.y + srcHeight);
 	rect.clip(640, 480);
-
 
 	surface->fillRect(rect, Color(245, 125, 0).getColor());
 }
