@@ -27,6 +27,7 @@
 
 #include "ring/base/application.h"
 #include "ring/base/object.h"
+#include "ring/base/saveload.h"
 #include "ring/base/text.h"
 
 #include "ring/graphics/animation.h"
@@ -216,11 +217,47 @@ void Bag::sub_417E00() {
 	}
 }
 
-uint32 Bag::checkHotspots(const Common::Point &point) {
-	error("[Bag::checkHotspots] Not implemented!");
+uint32 Bag::checkHotspotClick(const Common::Point &point) {
+	Hotspot *hotspot = getHotspot(point);
+	if (!hotspot)
+		return 0;
+
+	switch (hotspot->getCursorId()) {
+	default: {
+		uint32 index = _field_28 + hotspot->getCursorId();
+
+		if (index < _objects.size())
+			_clickedObject = _objects[index]->getId();
+		else
+			_clickedObject = kObjectInvalid;
+		}
+		return 1;
+
+	case kCursor1001:
+		if (_field_28 > 0) {
+			--_field_28;
+			_ticks = g_system->getMillis();
+		}
+		return 2;
+
+	case kCursor1002:
+		if (_field_28 < _objectCount) {
+			++_field_28;
+			_ticks = g_system->getMillis();
+		}
+		return 2;
+
+	case kCursor1003:
+		getApp()->startMenu(true);
+		return 3;
+
+	case kCursor1005:
+		getApp()->onBagZoneSwitch();
+		return 4;
+	}
 }
 
-uint32 Bag::update(const Common::Point &point) {
+uint32 Bag::checkHotspot(const Common::Point &point) {
 	Hotspot *hotspot = getHotspot(point);
 	if (!hotspot)
 		return 0;

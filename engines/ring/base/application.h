@@ -95,6 +95,7 @@ public:
 	void onAnimation2(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
 	void onAnimation3(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
 	void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+	void onBagZoneSwitch();
 
 	void update(const Common::Point &point);
 	void updateBag(const Common::Point &point);

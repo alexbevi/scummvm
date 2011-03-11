@@ -53,8 +53,8 @@ public:
 	void sub_417DD0(uint32 a1);
 	void sub_417DE0(uint32 a1, uint32 a2);
 	void sub_417E00();
-	uint32 checkHotspots(const Common::Point &point);
-	uint32 update(const Common::Point &point);
+	uint32 checkHotspotClick(const Common::Point &point);
+	uint32 checkHotspot(const Common::Point &point);
 	void draw();
 	void sub_419280(uint32 a1);
 	void sub_4192A0(uint32 a1, uint32 a2);

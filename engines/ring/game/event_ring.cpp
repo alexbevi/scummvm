@@ -88,7 +88,7 @@ void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt) {
 	// Handle clicks on bag
 	Bag *bag = _app->getBag();
 	if (bag->getField94()) {
-		if (bag->checkHotspots(evt.mouse) == 1) {
+		if (bag->checkHotspotClick(evt.mouse) == 1) {
 
 			// Handle clicked object event
 			onBagClickedObject(_app->getBag()->getClickedObject());
@@ -6372,6 +6372,95 @@ void EventHandlerRing::onBagClickedObject(ObjectId id) {
 
 	case kZoneFO:
 		onBagClickedObjectZoneFO(id);
+		break;
+	}
+}
+
+void EventHandlerRing::onBagZoneSwitch() {
+	switch (getApp()->getCurrentZone()) {
+	default:
+		break;
+
+	case kZoneSY:
+	case kZoneAS:
+		error("[EventHandlerRing::onBagZoneSwitch] Erda should not be active on this zone (%d)", getApp()->getCurrentZone());
+
+	case kZoneNI:
+	case kZoneRH:
+		if (!getApp()->getSaveManager()->loadSaveTimer("alb", kLoadSaveWrite))
+			error("[EventHandlerRing::onBagZoneSwitch] Failed loading timer (alb)");
+
+		_app->varSetDword(90013, _app->getCurrentZone());
+		_app->varSetByte(90009, 1);
+
+		if (_app->hasCurrentPuzzle()) {
+			_app->varSetByte(90017, 1);
+			_app->varSetDword(90021, _app->getCurrentPuzzleId());
+		} else {
+			_app->varSetByte(90017, 0);
+			_app->varSetDword(90021, _app->getCurrentRotationId());
+			_app->varSetByte(90025, getApp()->getBag()->getRotationFre());
+		}
+
+		onSwitchZoneAS(13);
+		break;
+
+	case kZoneFO:
+		if (!getApp()->getSaveManager()->loadSaveTimer("sie", kLoadSaveWrite))
+			error("[EventHandlerRing::onBagZoneSwitch] Failed loading timer (sie)");
+
+		_app->varSetDword(90015, _app->getCurrentZone());
+		_app->varSetByte(90011, 1);
+
+		if (_app->hasCurrentPuzzle()) {
+			_app->varSetByte(90019, 1);
+			_app->varSetDword(90023, _app->getCurrentPuzzleId());
+		} else {
+			_app->varSetByte(90019, 0);
+			_app->varSetDword(90023, _app->getCurrentRotationId());
+			_app->varSetByte(90027, getApp()->getBag()->getRotationFre());
+		}
+
+		onSwitchZoneAS(13);
+		break;
+
+	case kZoneRO:
+	case kZoneN2:
+		if (!getApp()->getSaveManager()->loadSaveTimer("log", kLoadSaveWrite))
+			error("[EventHandlerRing::onBagZoneSwitch] Failed loading timer (log)");
+
+		_app->varSetDword(90014, _app->getCurrentZone());
+		_app->varSetByte(90010, 1);
+
+		if (_app->hasCurrentPuzzle()) {
+			_app->varSetByte(90018, 1);
+			_app->varSetDword(90022, _app->getCurrentPuzzleId());
+		} else {
+			_app->varSetByte(90018, 0);
+			_app->varSetDword(90022, _app->getCurrentRotationId());
+			_app->varSetByte(90026, getApp()->getBag()->getRotationFre());
+		}
+
+		onSwitchZoneAS(13);
+		break;
+
+	case kZoneWA:
+		if (!getApp()->getSaveManager()->loadSaveTimer("bru", kLoadSaveWrite))
+			error("[EventHandlerRing::onBagZoneSwitch] Failed loading timer (bru)");
+
+		_app->varSetDword(90016, _app->getCurrentZone());
+		_app->varSetByte(90012, 1);
+
+		if (_app->hasCurrentPuzzle()) {
+			_app->varSetByte(90020, 1);
+			_app->varSetDword(90024, _app->getCurrentPuzzleId());
+		} else {
+			_app->varSetByte(90020, 0);
+			_app->varSetDword(90024, _app->getCurrentRotationId());
+			_app->varSetByte(90028, getApp()->getBag()->getRotationFre());
+		}
+
+		onSwitchZoneAS(13);
 		break;
 	}
 }

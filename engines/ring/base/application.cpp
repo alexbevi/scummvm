@@ -458,10 +458,17 @@ void Application::onAnimationNextFrame(Id animationId, const Common::String &nam
 	_eventHandler->onAnimationNextFrame(animationId, name, frame, frameCount);
 }
 
+void Application::onBagZoneSwitch() {
+	if (!_eventHandler)
+		error("[Application::onAnimationNextFrame] Event handler not initialized properly!");
+
+	_eventHandler->onBagZoneSwitch();
+}
+
 void Application::update(const Common::Point &point) {
 	// Handle bag
 	if (_bag->getField94()) {
-		if (_bag->update(point)) {
+		if (_bag->checkHotspot(point)) {
 			_eventHandler->onUpdateBag(point);
 
 			return;

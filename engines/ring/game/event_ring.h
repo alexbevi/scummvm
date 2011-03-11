@@ -48,6 +48,7 @@ public:
 	virtual void onSetup(Zone zone, SetupType type);
 	virtual void onBag(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
 	virtual void onBagClickedObject(ObjectId id);
+	virtual void onBagZoneSwitch();
 	virtual void onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point);
 	virtual void onUpdateAfter(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {}
 	virtual void onUpdateBag(const Common::Point &point);
