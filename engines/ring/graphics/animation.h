@@ -111,11 +111,11 @@ public:
 
 	void init(Common::String name, ImageType imageType, const Common::Point &point, uint32 a5, DrawType drawType, uint32 frameCount, float framerate, uint32 startFrame, byte a10, byte imageCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType);
 	void alloc();
-	void alloc2();
+	void allocActive();
 	void dealloc();
 
-	void drawActiveFrame();
-	void drawActiveFrame(const Common::Point &point);
+	void playFrame();
+	void playFrame(const Common::Point &point);
 	void draw(const Common::Point &point);
 
 	// Accessors
@@ -139,6 +139,8 @@ private:
 	uint32 _imageCount;
 	ImageHandle *_currentImage;
 	byte _field_89;
+
+	Common::String computePath(ImageHandle *image, uint32 index);
 };
 
 } // End of namespace Ring

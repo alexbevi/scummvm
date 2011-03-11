@@ -405,12 +405,12 @@ void Bag::draw(){
 
 		} else {
 			AnimationImage *animation = image->getAnimation();
-			animation->alloc2();
+			animation->allocActive();
 
 			// Get active frame to draw
 			animation->updateCurrentImage();
 			animation->computeCurrentFrame(ticks);
-			animation->drawActiveFrame(Common::Point(offset + (_field_18 + animation->getCurrentImage()->getWidth()) / 2, _origin.y + _field_10));
+			animation->playFrame(Common::Point(offset + (_field_18 + animation->getCurrentImage()->getWidth()) / 2, _origin.y + _field_10));
 		}
 
 		// Update image coordinates

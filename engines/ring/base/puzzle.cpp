@@ -192,7 +192,7 @@ void Puzzle::update(ScreenManager *screen) {
 			if (!image->getAnimation())
 				error("[Puzzle::update] Invalid animation in image!");
 
-			image->getAnimation()->drawActiveFrame();
+			image->getAnimation()->playFrame();
 
 			continue;
 		}

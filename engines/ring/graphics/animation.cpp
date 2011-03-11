@@ -29,6 +29,7 @@
 #include "ring/base/saveload.h"
 
 #include "ring/graphics/image.h"
+#include "ring/graphics/screen.h"
 
 #include "ring/ring.h"
 
@@ -493,55 +494,25 @@ void AnimationImage::alloc() {
 		if (image->isInitialized())
 			continue;
 
-		// Compute filename
-		Common::String filename = Common::String::format("%s/%s.%04d.%s", image->getNameId().c_str(), image->getNameId().c_str(), i + 1, Application::getFileExtension(image->getImageType()).c_str());
-		Common::String path;
-		if (image->getArchiveType() == kArchiveArt) {
-			switch (image->getLoadFrom()) {
-			default:
-				break;
-
-			case kLoadFromCd:
-			case kLoadFromDisk:
-				path = Common::String::format("/ANI/%s", filename.c_str());
-				break;
-
-			case kLoadFromCursor:
-				path = Common::String::format("/CURSOR/%s", filename.c_str());
-				break;
-
-			case kLoadFromListIcon:
-				path = Common::String::format("/LSTICON/%s", filename.c_str());
-				break;
-			}
-		} else if (image->getArchiveType() == kArchiveFile) {
-			switch (image->getLoadFrom()) {
-			default:
-				break;
-
-			case kLoadFromCd:
-			case kLoadFromDisk:
-				path = Common::String::format("DATA/%s/ANI/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
-				break;
-
-			case kLoadFromCursor:
-				path = Common::String::format("DATA/%s/CURSOR/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
-				break;
-
-			case kLoadFromListIcon:
-				path = Common::String::format("DATA/%s/LSTICON/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
-				break;
-			}
-		}
-
 		// Load image
+		Common::String path = computePath(image, i);
 		if (!image->load(path, image->getArchiveType(), image->getZone(), image->getLoadFrom()))
-			error("[AnimationImage::alloc] Cannot load image (%s)", filename.c_str());
+			error("[AnimationImage::alloc] Cannot load image (%s)", path.c_str());
 	}
 }
 
-void AnimationImage::alloc2() {
-	error("[AnimationImage::alloc2] Not implemented");
+void AnimationImage::allocActive() {
+	// Check current image
+	if (_activeFrame >= _imageHandles.size())
+		error("[AnimationImage::allocActive] Invalid active frame (%d)", _activeFrame);
+
+	_currentImage = _imageHandles[_activeFrame];
+	if (!_currentImage->isInitialized() {
+		Common::String path = computePath(_currentImage, _activeFrame);
+
+		if (!_currentImage->load(path, _currentImage->getArchiveType(), _currentImage->getZone(), _currentImage->getLoadFrom()))
+			error("[AnimationImage::alloc] Cannot load image (%s)", path.c_str());
+	}
 }
 
 void AnimationImage::dealloc() {
@@ -550,17 +521,38 @@ void AnimationImage::dealloc() {
 			(*it)->destroy();
 }
 
-void AnimationImage::drawActiveFrame() {
-	drawActiveFrame(_coordinates);
+void AnimationImage::playFrame() {
+	playFrame(_coordinates);
 }
 
-void AnimationImage::drawActiveFrame(const Common::Point &point) {
-	error("[AnimationImage::drawActiveFrame] Not implemented");
+void AnimationImage::playFrame(const Common::Point &point) {
+	if (_field_2D || _field_89)
+		if (_currentImage)
+			_currentImage->destroy();
+
+	// Check current image
+	if (_activeFrame >= _imageHandles.size())
+		error("[AnimationImage::playFrame] Invalid active frame (%d)", _activeFrame);
+
+	ImageHandle *image = _imageHandles[_activeFrame];
+	if (_field_26 && ((!_paused && !_lastTicks && _field_32 <= 1) || _field_2C)) {
+
+		// Set current image and initialize if needed
+		_currentImage = image;
+		if (!image->isInitialized()) {
+			Common::String path = computePath(image, _activeFrame);
+			if (!image->load(path, image->getArchiveType(), image->getZone(), image->getLoadFrom()))
+				error("[AnimationImage::playFrame] Cannot load frame (%s)", path.c_str());
+		}
+
+		// Draw frame
+		getApp()->getScreenManager()->draw(image, point, _drawType);
+	}
 }
 
 void AnimationImage::draw(const Common::Point &point) {
 	getCurrentFrame();
-	drawActiveFrame(point);
+	playFrame(point);
 }
 
 void AnimationImage::setCoordinates(const Common::Point &point) {
@@ -580,6 +572,51 @@ void AnimationImage::updateCurrentImage() {
 		error("[AnimationImage::updateCurrentImage] Current index is not valid (%d)", _activeFrame);
 
 	_currentImage = _imageHandles[_activeFrame];
+}
+
+Common::String AnimationImage::computePath(ImageHandle *image, uint32 index) {
+	// Compute filename
+	Common::String filename = Common::String::format("%s/%s.%04d.%s", image->getNameId().c_str(), image->getNameId().c_str(), index + 1, Application::getFileExtension(image->getImageType()).c_str());
+	Common::String path;
+	if (image->getArchiveType() == kArchiveArt) {
+		switch (image->getLoadFrom()) {
+		default:
+			break;
+
+		case kLoadFromCd:
+		case kLoadFromDisk:
+			path = Common::String::format("/ANI/%s", filename.c_str());
+			break;
+
+		case kLoadFromCursor:
+			path = Common::String::format("/CURSOR/%s", filename.c_str());
+			break;
+
+		case kLoadFromListIcon:
+			path = Common::String::format("/LSTICON/%s", filename.c_str());
+			break;
+		}
+	} else if (image->getArchiveType() == kArchiveFile) {
+		switch (image->getLoadFrom()) {
+		default:
+			break;
+
+		case kLoadFromCd:
+		case kLoadFromDisk:
+			path = Common::String::format("DATA/%s/ANI/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
+			break;
+
+		case kLoadFromCursor:
+			path = Common::String::format("DATA/%s/CURSOR/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
+			break;
+
+		case kLoadFromListIcon:
+			path = Common::String::format("DATA/%s/LSTICON/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
+			break;
+		}
+	}
+
+	return path;
 }
 
 #pragma region Serializable
