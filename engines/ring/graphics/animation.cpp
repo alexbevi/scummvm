@@ -540,6 +540,10 @@ void AnimationImage::alloc() {
 	}
 }
 
+void AnimationImage::alloc2() {
+	error("[AnimationImage::alloc2] Not implemented");
+}
+
 void AnimationImage::dealloc() {
 	for	(Common::Array<ImageHandle *>::iterator it = _imageHandles.begin(); it != _imageHandles.end(); it++)
 		if ((*it)->isInitialized())

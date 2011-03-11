@@ -111,6 +111,7 @@ public:
 
 	void init(Common::String name, ImageType imageType, const Common::Point &point, uint32 a5, DrawType drawType, uint32 frameCount, float framerate, uint32 startFrame, byte a10, byte imageCount, uint32 priority, LoadFrom loadFrom, ArchiveType archiveType);
 	void alloc();
+	void alloc2();
 	void dealloc();
 
 	void drawActiveFrame();

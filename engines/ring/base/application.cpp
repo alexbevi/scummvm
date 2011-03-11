@@ -196,9 +196,9 @@ void Application::init() {
 		_archiveType = kArchiveArt;
 
 	_bag= new Bag();
-	_bag->sub_417D20(0, 0);
+	_bag->setOrigin(Common::Point(0, 0));
 	_bag->sub_417D40(18, 42, 44, 100);
-	_bag->sub_417D60(0, 0);
+	_bag->setBackgroundOffset(Common::Point(0, 0));
 	_bag->sub_417DD0(6);
 	_bag->sub_417D80(0, 24, 30, 448);
 	_bag->sub_417DA0(610, 24, 30, 448);

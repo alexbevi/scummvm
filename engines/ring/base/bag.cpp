@@ -48,13 +48,9 @@ Bag::Bag() {
 	_field_10 = 0;
 	_field_14 = 0;
 	_field_18 = 0;
-	_field_1C = 0;
-	_field_20 = 0;
 	_field_24 = 0;
 	_field_28 = 0;
 	_objectCount = 0;
-	_field_30 = 0;
-	_field_34 = 0;
 	_background = NULL;
 	_image2 = NULL;
 	_image3 = NULL;
@@ -121,19 +117,19 @@ Bag::~Bag() {
 #pragma region Initialization
 
 void Bag::initHotspots() {
-	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_48 + _field_1C),
-	                                             (int16)(_field_4C + _field_20),
-	                                             (int16)(_field_48 + _field_1C + _field_50),
-	                                             (int16)(_field_4C + _field_20 + _field_54)),
+	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_48),
+	                                             (int16)(_origin.y + _field_4C),
+	                                             (int16)(_origin.x + _field_48 + _field_50),
+	                                             (int16)(_origin.y + _field_4C + _field_54)),
 	                                false,
 	                                1000,
 	                                kCursor1001,
 	                                1001));
 
-	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_1C + _field_74),
-	                                             (int16)(_field_20 + _field_78),
-	                                             (int16)(_field_1C + _field_74 + _field_7C),
-	                                             (int16)(_field_20 + _field_78 + _field_80)),
+	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_74),
+	                                             (int16)(_origin.y + _field_78),
+	                                             (int16)(_origin.x + _field_74 + _field_7C),
+	                                             (int16)(_origin.y + _field_78 + _field_80)),
 	                                false,
 	                                1000,
 	                                kCursor1002,
@@ -152,19 +148,14 @@ void Bag::initHotspots() {
 	                                1005));
 
 	for (uint32 i = 0; i < _field_24; ++i)
-		_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_C + i * _field_18 + _field_1C + 1),
-													 (int16)(_field_20 + _field_10),
-													 (int16)(_field_18 * (i + 1) + _field_C + _field_1C - 1),
-													 (int16)(_field_10 + _field_14 + 1 + _field_20)),
+		_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_C + i * _field_18 + 1),
+													 (int16)(_origin.y + _field_10),
+													 (int16)(_origin.x + _field_18 * (i + 1) + _field_C - 1),
+													 (int16)(_origin.y +_field_10 + _field_14 + 1)),
 										false,
 										1000,
 										(CursorId)i,
 										1004));
-}
-
-void Bag::sub_417D20(uint32 a1, uint32 a2) {
-	_field_1C = a1;
-	_field_20 = a2;
 }
 
 void Bag::sub_417D40(uint32 a1, uint32 a2, uint32 a3, uint32 a4) {
@@ -172,11 +163,6 @@ void Bag::sub_417D40(uint32 a1, uint32 a2, uint32 a3, uint32 a4) {
 	_field_10 = a2;
 	_field_14 = a3;
 	_field_18 = a4;
-}
-
-void Bag::sub_417D60(uint32 a1, uint32 a2) {
-	_field_30 = a1;
-	_field_34 = a2;
 }
 
 void Bag::sub_417D80(uint32 a1, uint32 a2, uint32 a3, uint32 a4) {
@@ -332,7 +318,113 @@ Hotspot *Bag::getHotspot(const Common::Point &point) {
 }
 
 void Bag::draw(){
-	error("[Bag::draw] Not implemented!");
+	if (!_background->isInitialized()
+	 || !_image3->isInitialized()
+	 || !_image6->isInitialized()
+	 || !_image8->isInitialized())
+		return;
+
+	uint32 ticks = g_system->getMillis();
+	ScreenManager *screen = getApp()->getScreenManager();
+
+	// Background
+	screen->draw(_background, Common::Point(_origin.x + _backgroundOffset.x, _origin.y + _backgroundOffset.y), kDrawType3);
+
+	// Bag elements
+	if (_field_28 <= 0) {
+		if (_hotspots.size() > 0)
+			_hotspots[0]->disable();
+	} else {
+		screen->draw(_image3, Common::Point(_origin.x + _field_58, _origin.y + _field_5C), kDrawType3);
+
+		if (_hotspots.size() > 0)
+			_hotspots[0]->enable();
+	}
+
+	if ((_field_28 + _field_24) >= _objectCount) {
+		if (_hotspots.size() > 1)
+			_hotspots[1]->disable();
+	} else {
+		screen->draw(_image6, Common::Point(_origin.x + _field_60, _origin.y + _field_64), kDrawType3);
+
+		if (_hotspots.size() > 1)
+			_hotspots[1]->enable();
+	}
+
+	if (_drawImage8) {
+		screen->draw(_image8, Common::Point(_origin.x + _field_88, _origin.y + _field_8C), kDrawType3);
+
+		_drawImage8 = false;
+	}
+
+	if (_enabled) {
+		if (_drawImageErdaGur) {
+			if (_imageErdaGur)
+				screen->draw(_imageErdaGur, Common::Point(_origin.x + 103, _origin.y), kDrawType3);
+
+			_drawImageErdaGur = false;
+		} else {
+			if (_imageErdaGun)
+				screen->draw(_imageErdaGun, Common::Point(_origin.x + 103, _origin.y), kDrawType3);
+		}
+	}
+
+	// Show objects
+	uint32 offset = _field_C + _origin.x;
+	uint32 count = _field_28 + _field_24;
+	if (count >= _objectCount)
+		count = _objectCount;
+
+	for (uint32 i = _field_28; i < count; i++) {
+		ImageHandle *image = _images[i];
+
+		if (image->getField6C() == 1) {
+			bool loaded = true;
+			if (!image->isInitialized()) {
+				// Compute image path
+				Common::String filename;
+				switch (image->getArchiveType()) {
+				default:
+					error("[Bag::draw] Invalid archive type %d for image", image->getArchiveType());
+					break;
+
+				case kArchiveFile:
+					filename = Common::String::format("DATA/LSTICON/%s.tga", _objects[i]->getName().c_str());
+					break;
+
+				case kArchiveArt:
+					filename = Common::String::format("/LSTICON/%s.tga", _objects[i]->getName().c_str());
+					break;
+				}
+
+				loaded = image->load(filename, image->getArchiveType(), image->getZone(), image->getLoadFrom());
+			}
+
+			if (loaded)
+				screen->draw(image, Common::Point(offset + (_field_18 + image->getWidth()) / 2, _origin.y + _field_10), kDrawType3);
+
+		} else {
+			AnimationImage *animation = image->getAnimation();
+			animation->alloc2();
+
+			// Get active frame to draw
+			animation->updateCurrentImage();
+			animation->computeCurrentFrame(ticks);
+			animation->drawActiveFrame(Common::Point(offset + (_field_18 + animation->getCurrentImage()->getWidth()) / 2, _origin.y + _field_10));
+		}
+
+		// Update image coordinates
+		image->setCoordinates(Common::Point(offset + (_field_18 - _field_18 / 32) / 2, _field_C5));
+
+		offset += _field_18;
+	}
+
+	for (uint32 i = 0; i < _field_24; i++) {
+		if (i >= (count - _field_28))
+			_hotspots[i]->disable();
+		else
+			_hotspots[i]->enable();
+	}
 }
 
 void Bag::sub_419280(uint32 a1) {

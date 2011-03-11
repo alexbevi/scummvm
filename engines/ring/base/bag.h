@@ -45,9 +45,9 @@ public:
 	// Initialization
 	void initHotspots();
 
-	void sub_417D20(uint32 a1, uint32 a2);
+	void setOrigin(const Common::Point &point) { _origin = point; }
 	void sub_417D40(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
-	void sub_417D60(uint32 a1, uint32 a2);
+	void setBackgroundOffset(const Common::Point &point) { _backgroundOffset = point; }
 	void sub_417D80(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
 	void sub_417DA0(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
 	void sub_417DD0(uint32 a1);
@@ -94,13 +94,11 @@ private:
 	uint32      _field_10;
 	uint32      _field_14;
 	uint32      _field_18;
-	uint32      _field_1C;
-	uint32      _field_20;
+	Common::Point _origin;
 	uint32      _field_24;
 	uint32      _field_28;
 	uint32      _objectCount;
-	uint32      _field_30;
-	uint32      _field_34;
+	Common::Point _backgroundOffset;
 	Image      *_background;
 	Image      *_image2;
 	Image      *_image3;
