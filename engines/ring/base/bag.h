@@ -54,7 +54,7 @@ public:
 	void sub_417DE0(uint32 a1, uint32 a2);
 	void sub_417E00();
 	uint32 checkHotspots(const Common::Point &point);
-	bool sub_418A70(const Common::Point &point);
+	uint32 update(const Common::Point &point);
 	void draw();
 	void sub_419280(uint32 a1);
 	void sub_4192A0(uint32 a1, uint32 a2);
@@ -127,7 +127,7 @@ private:
 	bool        _field_94;
 	ObjectId    _clickedObject;
 	uint32      _field_99;
-	uint32      _field_9D;
+	uint32      _tickInterval;
 	uint32      _ticks;
 	Text       *_text;
 	FontId      _fontId;
@@ -142,7 +142,13 @@ private:
 	// Current rotation fre
 	bool _fre;
 
+	// Drawing flags
+	bool _drawImage8;
+	bool _drawImageErdaGur;
+
 	void loadImage(Common::String filename, Image **image, ArchiveType archiveType) const;
+
+	Hotspot *getHotspot(const Common::Point &point);
 };
 
 } // End of namespace Ring

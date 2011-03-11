@@ -182,6 +182,7 @@ public:
 	void setAnimationImage(AnimationImage *image) { _animationImage = image; }
 
 	Common::String getName() { return _name; }
+	Common::String getDescription() { return _description; }
 	byte getFieldC() { return _field_C; }
 	AnimationImage *getAnimationImage() { return _animationImage; }
 	ObjectCursor *getActiveCursor() { return &_activeCursor; }

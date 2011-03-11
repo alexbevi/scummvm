@@ -32,6 +32,7 @@
 #include "ring/graphics/animation.h"
 #include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
+#include "ring/graphics/screen.h"
 
 #include "ring/ring.h"
 
@@ -79,7 +80,7 @@ Bag::Bag() {
 	_field_94 = false;
 	_clickedObject = kObjectInvalid;
 	_field_99 = 0;
-	_field_9D = 0;
+	_tickInterval = 0;
 	_ticks = 0;
 	_text = NULL;
 	_fontId = kFontDefault;
@@ -92,6 +93,10 @@ Bag::Bag() {
 	_enabled = false;
 
 	_fre = false;
+
+	// Flags
+	_drawImage8 = false;
+	_drawImageErdaGur = false;
 }
 
 Bag::~Bag() {
@@ -197,15 +202,96 @@ void Bag::sub_417DE0(uint32 a1, uint32 a2) {
 }
 
 void Bag::sub_417E00() {
-	error("[Bag::sub_417E00] Not implemented!");
+	for (Common::Array<ImageHandle *>::iterator it = _images.begin(); _images.end(); it++) {
+		ImageHandle *image = (*it);
+
+		if (image->getField6C() == 2) {
+			if (image->getAnimation()) {
+				image->getAnimation()->sub_416710();
+				image->getAnimation()->dealloc();
+			}
+		} else {
+			image->destroy();
+		}
+	}
 }
 
 uint32 Bag::checkHotspots(const Common::Point &point) {
 	error("[Bag::checkHotspots] Not implemented!");
 }
 
-bool Bag::sub_418A70(const Common::Point &point) {
-	error("[Bag::sub_418A70] Not implemented!");
+uint32 Bag::update(const Common::Point &point) {
+	Hotspot *hotspot = getHotspot(point);
+	if (!hotspot)
+		return 0;
+
+	switch (hotspot->getTarget()) {
+	default:
+		break;
+
+	case 1001:
+		if (_field_28 && (g_system->getMillis() - _ticks) > _tickInterval) {
+			--_field_28;
+			_ticks = g_system->getMillis();
+		}
+		return 1;
+
+	case 1002:
+		if (_field_28 && (g_system->getMillis() - _ticks) > _tickInterval) {
+			++_field_28;
+			_ticks = g_system->getMillis();
+		}
+		return 2;
+
+	case 1003:
+		_drawImage8 = true;
+		break;
+
+	case 1004: {
+		uint32 index = _field_28 + hotspot->getCursorId();
+
+		// Show object description
+		if (index < _objects.size()) {
+			Object *object = _objects[index];
+
+			if (!object->getDescription().empty()) {
+				_text->set(object->getDescription());
+
+				// Compute coordinates
+				ImageHandle *image = _images[index];
+
+				uint32 x = image->getCoordinates().x + _text->getCoordinates().x;
+				if (x < 0)
+					x = 0;
+
+				if (x > 640)
+					x = 640 - _text->getCoordinates().x;
+
+				_text->setCoordinates(Common::Point(x, image->getCoordinates().y));
+
+				// Draw description
+				getApp()->getScreenManager()->drawText(_text);
+			}
+		}
+		}
+		return 3;
+
+	case 1005:
+		if (_enabled)
+			_drawImageErdaGur = true;
+		break;
+	}
+
+	return 0;
+}
+
+Hotspot *Bag::getHotspot(const Common::Point &point) {
+	for (Common::Array<Hotspot *>::iterator it = _hotspots.begin(); it != _hotspots.end(); it++) {
+		if ((*it)->contains(point))
+			return (*it);
+	}
+
+	return NULL;
 }
 
 void Bag::draw(){
@@ -213,7 +299,7 @@ void Bag::draw(){
 }
 
 void Bag::sub_419280(uint32 a1) {
-	_field_9D = a1;
+	_tickInterval = a1;
 	_ticks = g_system->getMillis();
 }
 

@@ -461,7 +461,7 @@ void Application::onAnimationNextFrame(Id animationId, const Common::String &nam
 void Application::update(const Common::Point &point) {
 	// Handle bag
 	if (_bag->getField94()) {
-		if (_bag->sub_418A70(point)) {
+		if (_bag->update(point)) {
 			_eventHandler->onUpdateBag(point);
 
 			return;
