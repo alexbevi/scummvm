@@ -2225,8 +2225,8 @@ void Application::visualAddShowToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3,
 	                                    Common::String imagePath, Common::String iconPath, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10,
 	                                    Common::String filename11, Common::String filename12, Common::String filename13,
-							            DrawType drawType, uint32 a18, uint32 a19, uint32 a20, uint32 a21, uint32 a22, uint32 a23, uint32 a24, uint32 a25, uint32 a26,
-	                                    uint32 a27, uint32 a28, uint32 a29, uint32 a30, uint32 a31, uint32 a32, uint32 a33, uint32 a34, uint32 a35, uint32 a36,
+							            DrawType drawType, const Common::Point &origin, const Common::Point &backgroundOffset, uint32 a22, uint32 a23, uint32 a24, uint32 a25, uint32 a26,
+	                                    uint32 a27, const Common::Point &upOffset, uint32 a30, uint32 a31, uint32 a32, uint32 a33, const Common::Point &downOffset, uint32 a36,
 	                                    uint32 a37, uint32 a38, uint32 a39, uint32 a40, uint32 a41, ImageType imageType, uint32 a43, uint32 a44, uint32 a45, uint32 a46,
 							            Color foreground1, Color foreground2, Color background, FontId fontId,
 							            ArchiveType archiveType) {
@@ -2243,12 +2243,12 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 	list->init(a3, imagePath, iconPath, filename3, filename4, filename5, filename6, filename7, filename8, filename9, filename10, filename11, filename12, filename13, drawType, archiveType);
 	list->setField8(1);
 	list->setVisible(1);
-	list->sub_46DCF0(a18, a19);
-	list->sub_46DD11(a20, a21);
+	list->setOrigin(origin);
+	list->setBackgroundOffset(backgroundOffset);
 	list->sub_46DD30(a22, a23, a24, a25, a26, a27);
-	list->sub_46DD60(a28, a29);
+	list->setUpOffset(upOffset);
 	list->sub_46DDA0(a30, a31, a32, a33);
-	list->sub_46DD80(a34, a35);
+	list->setDownOffset(downOffset);
 	list->sub_46DDD0(a36, a37, a38, a39);
 	list->sub_46DE00(a40, a41, imageType, a43);
 	list->sub_46DE30(a44, a45);

@@ -67,10 +67,6 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_downGua = NULL;
 	_cliImageP = NULL;
 	_cliImageA = NULL;
-	_field_49 = 0;
-	_field_4D = 0;
-	_field_51 = 0;
-	_field_55 = 0;
 	_field_59 = 0;
 	_field_5D = 0;
 	_field_61 = 0;
@@ -79,11 +75,7 @@ VisualObjectList::VisualObjectList(Id id) : Visual(id) {
 	_field_6D = 0;
 	_objectIndexClicked = -1;
 	_imageIndexClicked = -1;
-	_field_71 = 0;
-	_field_75 = 0;
-	_field_79 = 0;
 	_foregroundColor1 = Color(200, 200, 30);
-	_field_7D = 0;
 	_field_81 = 0;
 	_field_85 = 0;
 	_foregroundColor2 = Color(255, 255, 255);
@@ -269,16 +261,6 @@ void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String 
 	_text2->init("", Common::Point(0, 0), _fontId, _foregroundColor2, _backgroundColor);
 }
 
-void VisualObjectList::sub_46DCF0(uint32 a1, uint32 a2) {
-	_field_49 = a1;
-	_field_4D = a2;
-}
-
-void VisualObjectList::sub_46DD11(uint32 a1, uint32 a2) {
-	_field_51 = a1;
-	_field_55 = a2;
-}
-
 void VisualObjectList::sub_46DD30(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6) {
 	_field_59 = a1;
 	_field_5D = a2;
@@ -287,17 +269,6 @@ void VisualObjectList::sub_46DD30(uint32 a1, uint32 a2, uint32 a3, uint32 a4, ui
 	_field_69 = a5;
 	_field_6D = a6;
 }
-
-void VisualObjectList::sub_46DD60(uint32 a1, uint32 a2) {
-	_field_71 = a1;
-	_field_75 = a2;
-}
-
-void VisualObjectList::sub_46DD80(uint32 a1, uint32 a2) {
-	_field_79 = a1;
-	_field_7D = a2;
-}
-
 
 void VisualObjectList::sub_46DDA0(uint32 a1, uint32 a2, uint32 a3, uint32 a4) {
 	_field_81 = a1;
@@ -327,19 +298,19 @@ void VisualObjectList::sub_46DE30(uint32 a1, uint32 a2) {
 }
 
 void VisualObjectList::initHotspots() {
-	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_81 + _field_49),
-	                                             (int16)(_field_85 + _field_4D),
-	                                             (int16)(_field_81 + _field_49 + _field_89),
-	                                             (int16)(_field_85 + _field_4D + _field_8D)),
+	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_81),
+	                                             (int16)(_origin.y + _field_85),
+	                                             (int16)(_origin.x + _field_81 + _field_89),
+	                                             (int16)(_origin.y + _field_85 + _field_8D)),
 	                                false,
 	                                0,
 	                                kCursorPassive,
 	                                0));
 
-	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_49 + _field_91),
-	                                             (int16)(_field_4D + _field_95),
-	                                             (int16)(_field_49 + _field_91 + _field_99),
-	                                             (int16)(_field_4D + _field_95 + _field_9D)),
+	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_91),
+	                                             (int16)(_origin.y + _field_95),
+												 (int16)(_origin.x + _field_91 + _field_99),
+												 (int16)(_origin.y + _field_95 + _field_9D)),
 	                                false,
 	                                0,
 	                                kCursorActive,
@@ -348,10 +319,10 @@ void VisualObjectList::initHotspots() {
 	if (_field_B9 & 1) {
 		for (uint32 i = 0; i < _field_BD; i++) {
 			uint32 y = i * _field_69 + _field_69 / 2;
-			_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_49 + _field_59),
-			                                             (int16)(_field_4D + _field_5D + y - _field_65 / 2),
-			                                             (int16)(_field_49 + _field_59 + _field_61),
-			                                             (int16)(_field_4D + _field_5D + _field_65 / 2 + y)),
+			_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_59),
+			                                             (int16)(_origin.y + _field_5D + y - _field_65 / 2),
+														 (int16)(_origin.x + _field_59 + _field_61),
+														 (int16)(_origin.y + _field_5D + _field_65 / 2 + y)),
 			                                false,
 			                                0,
 			                                kCursorPassiveDraw,
@@ -362,10 +333,10 @@ void VisualObjectList::initHotspots() {
 	if (_field_B9 & 2) {
 		for (uint32 i = 0; i < _field_BD; i++) {
 			uint32 y = i * _field_69 + _field_69 / 2;
-			_hotspots.push_back(new Hotspot(Common::Rect((int16)(_field_49 + _field_59 + _field_61 / 2 + y),
-			                                             (int16)(_field_4D + _field_5D),
-			                                             (int16)(_field_49 + _field_59 + _field_61 / 2 + y),
-			                                             (int16)(_field_4D + _field_5D + _field_65)),
+			_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_59 + _field_61 / 2 + y),
+			                                             (int16)(_origin.y + _field_5D),
+														 (int16)(_origin.x + _field_59 + _field_61 / 2 + y),
+														 (int16)(_origin.y + _field_5D + _field_65)),
 			                                false,
 			                                0,
 			                                kCursorPassiveDraw,
@@ -415,6 +386,42 @@ void VisualObjectList::setFontId(FontId fontId) {
 }
 
 void VisualObjectList::draw() {
+	if (!_visible)
+		return;
+
+	ScreenManager *screen = getApp()->getScreenManager();
+
+	if (_backgroundImage->getNameId().empty())
+		screen->draw(_backgroundImage, _origin + _backgroundOffset, _backgroundImage->getDrawType());
+
+	if (_objectIndex <= 0) {
+		if (_upGun->getNameId().empty())
+			screen->draw(_upGun, _origin + _upOffset, _upGun->getDrawType());
+
+		if (_hotspots.size() > 0)
+			_hotspots[0]->disable();
+	} else {
+		if (_upGua->getNameId().empty())
+			screen->draw(_upGua, _origin + _upOffset, _upGua->getDrawType());
+
+		if (_hotspots.size() > 0)
+			_hotspots[0]->enable();
+	}
+
+	if ((_objectIndex + _field_BD) >= _itemCount) {
+		if (_downGun->getNameId().empty())
+			screen->draw(_downGun, _origin + _downOffset, _downGun->getDrawType());
+
+		if (_hotspots.size() > 1)
+			_hotspots[1]->disable();
+	} else {
+		if (_downGua->getNameId().empty())
+			screen->draw(_downGua, _origin + _downOffset, _downGua->getDrawType());
+
+		if (_hotspots.size() > 1)
+			_hotspots[1]->enable();
+	}
+
 	error("[VisualObjectList::draw] Not implemented!");
 }
 
@@ -473,7 +480,7 @@ uint32 VisualObjectList::handleUpdate(const Common::Point &point) {
 			getApp()->cursorSelect(kCursorMenuActive);
 
 			if (_upGur->getNameId().empty())
-				getApp()->getScreenManager()->draw(_upGur, Common::Point(_field_49 + _field_71, _field_4D + _field_75), _upGur->getDrawType());
+				getApp()->getScreenManager()->draw(_upGur, _origin + _upOffset, _upGur->getDrawType());
 		}
 
 		getApp()->getEventHandler()->onVisualList(_id, 1, point);
@@ -484,7 +491,7 @@ uint32 VisualObjectList::handleUpdate(const Common::Point &point) {
 			getApp()->cursorSelect(kCursorMenuActive);
 
 			if (_upGur->getNameId().empty())
-				getApp()->getScreenManager()->draw(_downGur, Common::Point(_field_49 + _field_79, _field_4D + _field_7D), _downGur->getDrawType());
+				getApp()->getScreenManager()->draw(_downGur, _origin + _downOffset, _downGur->getDrawType());
 		}
 
 		getApp()->getEventHandler()->onVisualList(_id, 2, point);

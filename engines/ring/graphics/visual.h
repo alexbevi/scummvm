@@ -80,11 +80,11 @@ public:
 	          Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10,
 	          Common::String filename11, Common::String filename12, Common::String filename13,
 	          DrawType drawType, ArchiveType archiveType);
-	void sub_46DCF0(uint32 a1, uint32 a2);
-	void sub_46DD11(uint32 a1, uint32 a2);
+	void setOrigin(const Common::Point &point) { _origin = point; }
+	void setBackgroundOffset(const Common::Point &point) { _backgroundOffset = point; }
 	void sub_46DD30(uint32 a1, uint32 a2, uint32 a3, uint32 a4, uint32 a5, uint32 a6);
-	void sub_46DD60(uint32 a1, uint32 a2);
-	void sub_46DD80(uint32 a1, uint32 a2);
+	void setUpOffset(const Common::Point &point) { _upOffset = point; }
+	void setDownOffset(const Common::Point &point) { _downOffset = point; }
 	void sub_46DDA0(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
 	void sub_46DDD0(uint32 a1, uint32 a2, uint32 a3, uint32 a4);
 	void sub_46DE00(uint32 a1, uint32 a2, ImageType imageType, uint32 a4);
@@ -121,20 +121,16 @@ private:
 	ImageHandle *_downGua;
 	ImageHandle *_cliImageP;
 	ImageHandle *_cliImageA;
-	uint32 _field_49;
-	uint32 _field_4D;
-	uint32 _field_51;
-	uint32 _field_55;
+	Common::Point _origin;
+	Common::Point _backgroundOffset;
 	uint32 _field_59;
 	uint32 _field_5D;
 	uint32 _field_61;
 	uint32 _field_65;
 	uint32 _field_69;
 	uint32 _field_6D;
-	uint32 _field_71;
-	uint32 _field_75;
-	uint32 _field_79;
-	uint32 _field_7D;
+	Common::Point _upOffset;
+	Common::Point _downOffset;
 	uint32 _field_81;
 	uint32 _field_85;
 	uint32 _field_89;
