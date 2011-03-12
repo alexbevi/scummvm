@@ -27,6 +27,7 @@
 
 #include "ring/base/application.h"
 #include "ring/base/dialog.h"
+#include "ring/base/sound.h"
 
 #include "ring/graphics/image.h"
 #include "ring/graphics/imageLoader.h"
@@ -69,7 +70,7 @@ Cinematic::Cinematic() {
 	_isSoundInitialized = false;
 	_field_53 = 0;
 	_framerate = 0.0f;
-	_removeDialog = false;
+	_hasDialog = false;
 	_channel = 0;
 }
 
@@ -94,9 +95,25 @@ void Cinematic::deinit() {
 	//warning("[Cinematic::deinit] Not implemented!");
 }
 
+void Cinematic::readFrameHeader() {
+	error("[Cinematic::readFrameHeader] Not implemented!");
+}
+
+bool Cinematic::tControl() {
+	error("[Cinematic::tControl] Not implemented!");
+}
+
+#pragma region Sound
+
 void Cinematic::setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset) {
 	error("[Cinematic::setSoundBuffer] Not implemented!");
 }
+
+void Cinematic::sub_46A4B0() {
+	error("[Cinematic::sub_46A4B0] Not implemented!");
+}
+
+#pragma endregion
 
 #pragma region ReadStream
 
@@ -205,8 +222,187 @@ void Movie::deinit() {
 	_cinematic->setField53(true);
 }
 
-void Movie::play(uint32 a1, uint32 a2) {
-	warning("[Movie::play] Not implemented");
+void Movie::play(const Common::Point &point) {
+	if (!_cinematic)
+		error("[Movie::play] cinematic not initialized properly");
+
+	SoundHandler *soundHandler = getApp()->getSoundHandler();
+	ScreenManager *screen = getApp()->getScreenManager();
+
+	// Setup
+	Image *image = new Image();
+	bool setupSound = true;
+	bool readFrame = false;
+	uint32 chunkIndex = 0;
+	uint32 waitChunk = 0;
+	uint32 ticks = g_system->getMillis();
+
+	// Setup header and state
+	_cinematic->setField8(false);
+	uint32 chunkCount = _imageCIN->getHeader()->chunkCount;
+
+	// Parse cinematic
+	if (chunkCount) {
+		while (!_cinematic->eos() && !_cinematic->err()) {
+
+			// Interrupt playing on escape
+			if (checkEscape()) {
+				if (soundHandler->getField0()) {
+					soundHandler->sub_41B180(chunkCount);
+					soundHandler->sub_41B350(chunkCount);
+				}
+				break;
+			}
+
+			// Read chunk type
+			byte chunkType = _cinematic->readByte();
+			if (_cinematic->eos() || _cinematic->err())
+				error("[Movie::play] Cannot read chunk type");
+
+			switch (chunkType) {
+			default:
+				error("[Movie::play] Invalid chunk type (%d)", chunkType);
+
+			case 65:
+				switch (_cinematic->getChannel()) {
+				default:
+					if (!skipSound())
+						error("[Movie::play] Cannot skip sound (index: %d)", chunkIndex);
+					break;
+
+				case 2:
+					if (!readSound())
+						error("[Movie::play] Cannot read sound (index: %d)", chunkIndex);
+
+					if (setupSound) {
+						if (_cinematic->isSoundInitialized())
+							_cinematic->sub_46A4B0();
+
+						setupSound = false;
+					}
+					break;
+				}
+				break;
+
+			case 66:
+				switch (_cinematic->getChannel()) {
+				default:
+					if (!skipSound())
+						error("[Movie::play] Cannot skip sound (index: %d)", chunkIndex);
+					break;
+
+				case 3:
+					if (!readSound())
+						error("[Movie::play] Cannot read sound (index: %d)", chunkIndex);
+
+					if (setupSound) {
+						if (_cinematic->isSoundInitialized())
+							_cinematic->sub_46A4B0();
+
+						setupSound = false;
+					}
+					break;
+				}
+				break;
+
+			case 83:
+				if (_cinematic->getField53()) {
+					uint32 tickInterval = (g_system->getMillis() - ticks);
+
+					if (((chunkIndex + 1) * _cinematic->getFramerate()) < tickInterval) {
+						if (readFrame) {
+							_cinematic->readFrameHeader();
+
+							// Process sound
+							if (soundHandler->getField0()) {
+								soundHandler->sub_41B180(chunkCount);
+								soundHandler->sub_41B350(chunkCount);
+							}
+
+							++chunkIndex;
+							waitChunk = chunkIndex;
+							break;
+						}
+
+						readFrame = true;
+						ticks = g_system->getMillis();
+
+					} else {
+						if (!readFrame) {
+							readFrame = true;
+							ticks = g_system->getMillis();
+						} else {
+							// Wait for tick interval
+							while ((waitChunk * _cinematic->getFramerate()) > (tickInterval + 50))
+								checkEvents();
+						}
+					}
+				}
+
+				if (!_imageCIN->readImage(image))
+					error("[Movie::play] Error reading image (index: %d)", chunkIndex);
+
+				if (_cinematic->hasDialog()) {
+					screen->draw(image, point, kDrawType1);
+					getApp()->getDialogHandler()->play();
+
+					screen->updateScreen();
+				} else {
+					screen->drawAndUpdate(image, point);
+				}
+
+				// Process sound
+				if (soundHandler->getField0()) {
+					soundHandler->sub_41B180(chunkCount);
+					soundHandler->sub_41B350(chunkCount);
+				}
+
+				++chunkIndex;
+				waitChunk = chunkIndex;
+				break;
+
+			case 84:
+				if (!_cinematic->tControl())
+					error("[Movie::play] Error reading T control (index: %d)", chunkIndex);
+				break;
+
+			case 90:
+				switch (_cinematic->getChannel()) {
+				default:
+					if (!skipSound())
+						error("[Movie::play] Cannot skip sound (index: %d)", chunkIndex);
+					break;
+
+				case 0:
+				case 1:
+					if (!readSound())
+						error("[Movie::play] Cannot read sound (index: %d)", chunkIndex);
+
+					if (setupSound) {
+						if (_cinematic->isSoundInitialized())
+							_cinematic->sub_46A4B0();
+
+						setupSound = false;
+					}
+					break;
+				}
+				break;
+			}
+
+			// Stop after processing all chunks
+			if (chunkIndex >= chunkCount)
+				break;
+		}
+	}
+
+	// Cleanup
+	delete image;
+
+	if (_cinematic->isSoundInitialized())
+		_cinematic->deinit();
+
+	if (_cinematic->hasDialog())
+		getApp()->getDialogHandler()->removeDialog(500001);
 }
 
 bool Movie::readSound() {

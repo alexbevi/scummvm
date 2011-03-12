@@ -812,7 +812,7 @@ void Application::playMovie(Common::String filename, float frameDivider) {
 		if (frameDivider != 0.0f)
 			movie->setFramerate(1000.0f / frameDivider);
 
-		movie->play(0, 16);
+		movie->play(Common::Point(0, 16));
 	}
 
 	delete movie;
@@ -834,7 +834,7 @@ void Application::playMovieChannel(Common::String filename, uint32 channel) {
 
 	Movie *movie = new Movie(_screenManager);
 	if (movie->init(path, filename, 1, channel))
-		movie->play(0, 16);
+		movie->play(Common::Point(0, 16));
 
 	delete movie;
 }

@@ -45,7 +45,13 @@ public:
 	bool init(Common::String name);
 	void deinit();
 
+	void readFrameHeader();
+	bool tControl();
+	bool sControl(void* buffer);
+
+	// Sound
 	void setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset);
+	void sub_46A4B0();
 
 	// ReadStream
 	virtual bool eos() const;
@@ -57,13 +63,18 @@ public:
 	virtual bool seek(int32 offset, int whence = SEEK_SET);
 
 	// Accessors
+	void setField8(bool state) { _field_8 = state; }
 	void setChannel(uint32 channel) { _channel = channel; }
 	void setSoundInitialized(bool state) { _isSoundInitialized = state; }
 	void setField53(bool state) { _field_53 = state; }
-	void setRemoveDialog(bool state) { _removeDialog = state; }
+	void setRemoveDialog(bool state) { _hasDialog = state; }
 	void setFramerate(uint32 framerate) { _framerate = framerate; }
 
 	bool isSoundInitialized() { return _isSoundInitialized; }
+	bool getField53() { return _field_53; }
+	float getFramerate() { return _framerate; }
+	bool hasDialog() { return _hasDialog; }
+	uint32 getChannel() { return _channel; }
 
 private:
 	Common::SeekableReadStream *_stream;    ///< The movie file stream
@@ -92,7 +103,7 @@ private:
 	bool   _isSoundInitialized; // FIXME remove (our sound mixer is always initialized)
 	bool   _field_53;
 	float  _framerate;
-	bool   _removeDialog;
+	bool   _hasDialog;
 	uint32 _channel;
 };
 
@@ -104,7 +115,7 @@ public:
 	bool init(Common::String path, Common::String filename, uint32 a3, uint32 channel);
 	void deinit();
 
-	void play(uint32 a1, uint32 a2);
+	void play(const Common::Point &point);
 
 	void setFramerate(float rate) { _cinematic->setFramerate(rate); }
 

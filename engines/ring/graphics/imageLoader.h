@@ -141,20 +141,37 @@ private:
 
 class ImageLoaderCIN : public ImageLoader {
 public:
+	struct Header {
+		uint32 field_0;
+		uint32 field_4;
+		uint32 field_8;
+		uint16 field_C;
+		uint32 chunkCount;
+		uint16 field_12;
+		byte   field_16;
+		uint32 width;
+		uint32 height;
+		byte   field_1F;
+		uint32 field_20;
+		uint32 field_24;
+		uint32 field_28;
+		uint32 field_2C;
+		uint32 field_30;
+		uint32 field_34;
+		uint32 field_38;
+		uint32 field_3C;
+	};
+
 	virtual ~ImageLoaderCIN();
 
 	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
+	bool readImage(Image *image);
 
 	bool init(Common::String filename);
 
-private:
-	struct Header {
-		// More fields
-		uint32 width;
-		uint32 height;
-		// More fields
-	};
+	Header *getHeader() { return &_header; }
 
+private:
 	Cinematic *_cinematic;
 	Header _header;
 	//uint32 _field_1084;
@@ -163,7 +180,6 @@ private:
 	void deinit();
 
 	bool readHeader();
-	bool readImage(Image *image);
 };
 
 } // End of namespace Ring
