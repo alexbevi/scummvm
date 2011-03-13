@@ -25,16 +25,19 @@ namespace Unity {
 Sound::Sound(UnityEngine *_engine) : _vm(_engine) {
 	_speechSoundHandle = NULL;
 	_sfxSoundHandle = NULL;
+	_musicSoundHandle = NULL;
 }
 
 Sound::~Sound() {
 	delete _speechSoundHandle;
 	delete _sfxSoundHandle;
+	delete _musicSoundHandle;
 }
 
 void Sound::init() {
 	_sfxSoundHandle = new Audio::SoundHandle();
 	_speechSoundHandle = new Audio::SoundHandle();
+	_musicSoundHandle = new Audio::SoundHandle();
 }
 
 void Sound::playSpeech(Common::String name) {
@@ -42,14 +45,35 @@ void Sound::playSpeech(Common::String name) {
 	stopSpeech();
 	Common::SeekableReadStream *audioFileStream = _vm->data.openFile(name);
 	Audio::AudioStream *sampleStream = Audio::makeADPCMStream(
-		audioFileStream, DisposeAfterUse::YES, 0, Audio::kADPCMIma,
+		audioFileStream, DisposeAfterUse::YES, 0, Audio::kADPCMUnity,
 		22050, 1);
 	if (!sampleStream) error("couldn't make sample stream");
 	_vm->_mixer->playStream(Audio::Mixer::kSpeechSoundType, _speechSoundHandle, sampleStream);
 }
 
+void Sound::playMusic(Common::String name, byte volume, int loopPos) {
+	debug(1, "playing music: %s, loop %d, vol %d", name.c_str(), loopPos, volume);
+	Common::SeekableReadStream *audioFileStream = _vm->data.openFile(name);
+	Audio::RewindableAudioStream *sampleStream = Audio::makeADPCMStream(
+		audioFileStream, DisposeAfterUse::YES, 0, Audio::kADPCMUnity,
+		22050, 2, loopPos);
+	if (!sampleStream) error("couldn't make sample stream");
+	Audio::AudioStream *audioStream = sampleStream;
+	if (loopPos != -1)
+		audioStream = makeLoopingAudioStream(sampleStream, 0);
+	_vm->_mixer->playStream(Audio::Mixer::kMusicSoundType, _musicSoundHandle, audioStream, -1, volume);
+}
+
+bool Sound::musicPlaying() {
+	return _vm->_mixer->isSoundHandleActive(*_musicSoundHandle);
+}
+
 bool Sound::speechPlaying() {
 	return _vm->_mixer->isSoundHandleActive(*_speechSoundHandle);
+}
+
+void Sound::stopMusic() {
+	_vm->_mixer->stopHandle(*_musicSoundHandle);
 }
 
 void Sound::stopSpeech() {
@@ -59,10 +83,163 @@ void Sound::stopSpeech() {
 void Sound::playAudioBuffer(unsigned int length, byte *data) {
 	Common::MemoryReadStream *audioFileStream = new Common::MemoryReadStream(data, length);
 	Audio::AudioStream *sampleStream = Audio::makeADPCMStream(
-		audioFileStream, DisposeAfterUse::YES, 0, Audio::kADPCMIma,
+		audioFileStream, DisposeAfterUse::YES, 0, Audio::kADPCMUnity,
 		22050, 1);
 	if (!sampleStream) error("couldn't make sample stream");
 	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, _sfxSoundHandle, sampleStream);
+}
+
+void Sound::playIntroMusic() {
+	stopMusic();
+
+	// FIXME
+}
+
+void Sound::updateMusic() {
+	if (musicPlaying())
+		return;
+
+	// This is hard-coded, with loop offsets and volumes.
+	switch (_vm->data.current_screen.world) {
+	case 2:
+		// Allanor
+		switch (_vm->data.current_screen.screen) {
+		case 1:
+		case 2:
+			playMusic("adamb01.rac", 0x1f, 0xab40);
+			break;
+		case 3:
+			playMusic("adamb03.rac", 0x19, 0xae80);
+			break;
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+			playMusic("adamb04.rac", 0x1f, 0xcbc0);
+			break;
+		case 8:
+		case 9:
+		case 10:
+		case 12:
+			playMusic("adamb08.rac", 0x19, 0xa1c0);
+			break;
+		default:
+			playMusic("adamb11.rac", 0x19, 0xab40);
+			break;
+		}
+		break;
+
+	case 3:
+		// Zoo World
+		switch (_vm->data.current_screen.screen) {
+		case 3:
+		case 10:
+			playMusic("zootree.rac", 0x30, 0x548e);
+			break;
+		case 4:
+			playMusic("zoolab.rac", 0x30, 0x5b9c);
+			break;
+		case 6:
+			playMusic("zoodesrt.rac", 0x30, 0x8b82);
+			break;
+		case 7:
+			playMusic("zooswamp.rac", 0x30, 0x5c08);
+			break;
+		case 8:
+			playMusic("zoosulfr.rac", 0x30, 0x419c);
+			break;
+		case 16:
+			playMusic("powersta.rac", 0x30, 0xad80);
+			break;
+		default:
+			playMusic("zoobirds.rac", 0x30, 0x1b1ee);
+			break;
+		}
+		break;
+
+	case 4:
+		// Lab (Orbital Station)
+		switch (_vm->data.current_screen.screen) {
+		case 2:
+		case 3:
+		case 4:
+			playMusic("lbbigfar.rac", 0x3f, 0x3160);
+			break;
+		case 6:
+			// Probe room - music depends on whether probe is still present.
+			if (_vm->data.getObject(objectID(4, 6, 3))->flags & OBJFLAG_ACTIVE)
+				playMusic("probroom.rac", 0x3f, 0x5a00);
+			else
+				playMusic("lbbignr.rac", 0x3f, 0x4ebc);
+			break;
+		case 10:
+		case 11:
+			playMusic("lbctnear.rac", 0x3f, 0x4896);
+			break;
+		default:
+			playMusic("lbctrfar.rac", 0x3f, 0x4e9c);
+			break;
+		}
+		break;
+
+	case 5:
+		// Frigis
+		switch (_vm->data.current_screen.screen) {
+		case 1:
+		case 2:
+			playMusic("s5amb01.rac", 0x1f, 0xa7c0);
+			break;
+		case 3:
+			playMusic("s5amb03.rac", 0x1f, 0xeb80);
+			break;
+		case 4:
+			playMusic("s5amb04.rac", 0x1f, 0xb778);
+			break;
+		case 5:
+			playMusic("s5amb05.rac", 0x1f, 0x9a00);
+			break;
+		case 6:
+			playMusic("s5amb06.rac", 0x1f, 0xb0c0);
+			break;
+		case 7:
+			playMusic("s5amb07.rac", 0x1f, 0xb980);
+			break;
+		default:
+			playMusic("s5amb08.rac", 0x1f, 0x13388);
+			break;
+		}
+		break;
+
+	case 6:
+		// Unity Device
+		switch (_vm->data.current_screen.screen) {
+		case 1:
+			playMusic("udamb01.rac", 0x1f, 0x4c00);
+			break;
+		case 2:
+			playMusic("udamb02.rac", 0x1f, 0x6c32);
+			break;
+		case 6:
+			playMusic("udamb06.rac", 0x1f, 0x7a40);
+			break;
+		case 9:
+			playMusic("udamb09.rac", 0x1f, 0x62c0);
+			break;
+		case 12:
+			playMusic("udamb12.rac", 0x1f, 0x5c80);
+			break;
+		default:
+			// default to Horst III music
+			playMusic("h3amb01.rac", 0x2f, 0x162b0);
+			break;
+		}
+		break;
+
+	case 7:
+		// Horst III
+		playMusic("h3amb01.rac", 0x2f, 0x162b0);
+		break;
+	}
 }
 
 }

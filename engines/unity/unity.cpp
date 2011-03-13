@@ -93,6 +93,8 @@ Common::Error UnityEngine::init() {
 }
 
 void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
+	_snd->stopMusic(); // FIXME: find a better place
+
 	Common::String filename = Common::String::format("sl%03d.scr", world);
 	Common::SeekableReadStream *locstream = data.openFile(filename);
 
@@ -712,6 +714,8 @@ void UnityEngine::checkEvents() {
 				break;
 		}
 	}
+
+	_snd->updateMusic(); // TODO
 }
 
 void UnityEngine::handleBridgeMouseMove(unsigned int x, unsigned int y) {
