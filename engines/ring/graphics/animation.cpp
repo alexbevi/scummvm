@@ -70,7 +70,7 @@ Animation::Animation() : BaseObject(0) {
 	_field_58 = 0;
 	_field_5C = 0;
 	_field_60 = 0;
-	_field_61 = 0;
+	_currentFrame = 0;
 	_field_65 = 0;
 }
 
@@ -143,7 +143,7 @@ void Animation::init(uint32 frameCount, float framerate, uint32 startFrame, byte
 	_field_58 = 0;
 	_field_5C = 1;
 	_field_60 = 0;
-	_field_61 = -5;
+	_currentFrame = -5;
 	_field_65 = 0;
 }
 
@@ -227,20 +227,122 @@ uint32 Animation::computeCurrentFrame(uint32 ticks) {
 		if (adjustTicks(ticks) != -1)
 			return _activeFrame + 1;
 
-		error("[AnimationImage::sub_416870] Not implemented");
+		uint32 offset = 0;
+		switch (_field_21) {
+		default:
+			break;
+
+		case 1:
+			if ((ticks - _ticks) <= _field_53)
+				break;
+
+			offset = 1;
+
+			_ticks = ticks;
+			++_field_5C;
+			_field_60 = 1;
+
+			if (_field_65 && ((_field_5C % _field_65) == 1)) {
+				_activeFrame = rnd(_frameCount);
+				offset = 0;
+			}
+			break;
+
+		case 2:
+			if (((ticks - _ticks) / _field_53) == 0)
+				break;
+
+			_ticks = ticks;
+			++_field_5C;
+			_field_60 = 1;
+
+			if (_field_65 && ((_field_5C % _field_65) == 1)) {
+				_activeFrame = rnd(_frameCount);
+				offset = 0;
+			}
+			break;
+		}
+
+		switch (_field_14) {
+		default:
+			break;
+
+		case 4:
+			if (offset)
+				_activeFrame += offset;
+
+			if (_activeFrame >= _frameCount) {
+				_activeFrame = _startFrame;
+
+				++_field_58;
+				if (_field_2D)
+					sub_416710();
+			}
+			break;
+
+		case 8:
+			if (offset)
+				_activeFrame -= offset;
+
+			if (_activeFrame < _frameCount) {
+				_activeFrame = _frameCount - 1;
+
+				++_field_58;
+				if (_field_2D)
+					sub_416710();
+			}
+			break;
+
+		case 16:
+		case 32:
+			switch (_field_57) {
+			default:
+				break;
+
+			case 1:
+				if (offset)
+					_activeFrame += offset;
+
+				if (_activeFrame >= _frameCount) {
+					_field_57 = 2;
+					_activeFrame = _frameCount - 1;
+
+					++_field_58;
+					if (_field_2D)
+						sub_416710();
+				}
+				break;
+
+			case 2:
+				if (offset)
+					_activeFrame -= offset;
+
+
+				if (_activeFrame < _frameCount) {
+					_field_57 = 1;
+					_activeFrame = _startFrame;
+
+					++_field_58;
+					if (_field_2D)
+						sub_416710();
+				}
+				break;
+			}
+			break;
+		}
+	} else {
+		_field_4E = 0;
 	}
 
-	_field_4E = 0;
-
 	// Notify event handler
-	if (_field_61 != (int32)(_activeFrame + 1)) {
+	if (_currentFrame != (int32)(_activeFrame + 1)) {
 		if (!_name.empty())
 			getApp()->getEventHandler()->onAnimationNextFrame(_id, _name, _activeFrame + 1, _frameCount);
 	}
 
-	_field_61 = _activeFrame + 1;
+	_currentFrame = _activeFrame + 1;
 
-	return _field_61;
+	return _currentFrame;
 }
 
 void Animation::setTicks(uint32 ticks) {
@@ -268,7 +370,7 @@ void Animation::setTicks(uint32 ticks) {
 			_field_57 = 2;
 	}
 
-	_field_61 = -5;
+	_currentFrame = -5;
 	_ticks = ticks;
 	_field_58 = 0;
 	_field_5C = 1;
@@ -411,7 +513,7 @@ void Animation::saveLoadWithSerializer(Common::Serializer &s) {
 	s.syncAsUint32LE(_field_58);
 	s.syncAsUint32LE(_field_5C);
 	s.syncAsByte(_field_60);
-	s.syncAsSint32LE(_field_61);
+	s.syncAsSint32LE(_currentFrame);
 	s.syncAsUint32LE(_field_65);
 
 	// Adjust ticks

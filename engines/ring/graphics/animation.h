@@ -93,7 +93,7 @@ protected:
 	uint32 _field_58;
 	uint32 _field_5C;
 	byte   _field_60;
-	int32  _field_61;
+	int32  _currentFrame;
 	uint32 _field_65;
 
 	int32 adjustTicks(uint32 ticks);
