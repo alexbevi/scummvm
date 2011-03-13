@@ -144,7 +144,10 @@ public:
 	struct Header {
 		uint32 field_0;
 		uint32 field_4;
-		uint32 field_8;
+		byte   field_8;
+		byte   field_9;
+		byte   field_A;
+		byte   field_B;
 		uint16 field_C;
 		uint32 chunkCount;
 		uint16 field_12;

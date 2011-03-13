@@ -50,8 +50,10 @@ public:
 	bool sControl(void* buffer);
 
 	// Sound
-	void setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset);
+	void sub_46A0E0(uint32 a1, uint32 a2, uint32 a3, int32 a4);
+	void setVolume(uint32 volume);
 	void sub_46A4B0();
+	void setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset);
 
 	// ReadStream
 	virtual bool eos() const;

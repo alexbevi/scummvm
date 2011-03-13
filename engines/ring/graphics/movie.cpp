@@ -27,6 +27,7 @@
 
 #include "ring/base/application.h"
 #include "ring/base/dialog.h"
+#include "ring/base/preferences.h"
 #include "ring/base/sound.h"
 
 #include "ring/graphics/image.h"
@@ -105,12 +106,20 @@ bool Cinematic::tControl() {
 
 #pragma region Sound
 
-void Cinematic::setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset) {
-	error("[Cinematic::setSoundBuffer] Not implemented!");
+void Cinematic::sub_46A0E0(uint32 a1, uint32 a2, uint32 a3, int32 a4) {
+	error("[Cinematic::sub_46A0E0] Not implemented!");
+}
+
+void Cinematic::setVolume(uint32 volume) {
+	error("[Cinematic::setVolume] Not implemented!");
 }
 
 void Cinematic::sub_46A4B0() {
 	error("[Cinematic::sub_46A4B0] Not implemented!");
+}
+
+void Cinematic::setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset) {
+	error("[Cinematic::setSoundBuffer] Not implemented!");
 }
 
 #pragma endregion
@@ -193,14 +202,24 @@ bool Movie::init(Common::String path, Common::String filename, uint32 a3, uint32
 	_cinematic->setChannel(channel);
 	_cinematic->setSoundInitialized(true);
 
-	// TODO Setup sound
-	warning("[Movie::init] sound setup not implemented");
+	// Setup sound
+	_cinematic->sub_46A0E0(_imageCIN->getHeader()->field_8 + 1, _imageCIN->getHeader()->field_9, _imageCIN->getHeader()->field_A, -CINEMATIC_BUFFER_SIZE);
+	_cinematic->setVolume(getApp()->getPreferenceHandler()->getVolume());
 
-	// TODO Setup framerate
-	warning("[Movie::init] framerate setup not implemented");
+	// Setup framerate
+	_cinematic->setField53(1);
+	_cinematic->setFramerate(1000.0f / (_imageCIN->getHeader()->field_12 * 0.01f));
 
-	// TODO Setup sound handler
-	warning("[Movie::init] sound handler setup not implemented");
+	// Setup sound handler
+	SoundHandler *soundHandler = getApp()->getSoundHandler();
+	if (soundHandler->getField0()) {
+		soundHandler->turnOffItems1();
+
+		if (!soundHandler->sub_41AEE0(_imageCIN->getHeader()->chunkCount)) {
+			soundHandler->turnOffSounds1(true);
+			soundHandler->setField0(false);
+		}
+	}
 
 	// Init dialog
 	Common::String dialogPath = Common::String::format("DATA/%s/DIA/%s/%s", getApp()->getCurrentZoneString().c_str(), getApp()->getLanguageFolder().c_str(), filename.c_str());
