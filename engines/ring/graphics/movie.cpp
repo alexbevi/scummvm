@@ -97,7 +97,17 @@ void Cinematic::deinit() {
 }
 
 void Cinematic::readFrameHeader() {
-	error("[Cinematic::readFrameHeader] Not implemented!");
+	// Reset tControl buffer
+	memset(&_tControlBuffer, 0, CINEMATIC_BUFFER_SIZE);
+
+	// Read offset
+	uint32 offset = readUint32LE();
+
+	// Skip rest of header
+	skip(16);
+
+	// Move to beginning of frame
+	seek(offset, SEEK_CUR);
 }
 
 bool Cinematic::tControl() {

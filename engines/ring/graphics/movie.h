@@ -90,7 +90,7 @@ private:
 	uint32 _field_16;
 	uint32 _field_1A;
 	// CinTControlKosiGlobal
-	// CinTControlKosi
+	byte *_tControlBuffer;
 	// cacheBufferGlobal
 	// cacheBuffer
 	uint32 _field_2E;
