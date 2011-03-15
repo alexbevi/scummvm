@@ -54,8 +54,8 @@ public:
 	Sound *_snd;
 	Graphics *_gfx;
 
-	bool on_bridge;
-	AwayTeamMode mode;
+	bool _on_bridge;
+	AwayTeamMode _mode;
 
 	Object *_current_away_team_member;
 	SpritePlayer *_current_away_team_icon;
@@ -66,22 +66,23 @@ public:
 	void addToInventory(Object *obj);
 	void removeFromInventory(Object *obj);
 
-	Common::String status_text;
+	Common::String _status_text;
 
-	bool in_dialog;
-	bool dialog_choosing;
-	Common::String dialog_text;
-	Common::Array<Common::String> choice_list;
+	unsigned int _dialog_x, _dialog_y;
+	bool _in_dialog;
+	bool _dialog_choosing;
+	Common::String _dialog_text;
+	Common::Array<Common::String> _choice_list;
 	void setSpeaker(objectID s);
 
 	// TODO: horrible hack
-	unsigned int dialog_choice_situation;
-	Common::Array<unsigned int> dialog_choice_states;
+	unsigned int _dialog_choice_situation;
+	Common::Array<unsigned int> _dialog_choice_states;
 
 	Conversation *_next_conversation;
 	unsigned int _next_situation;
 
-	uint16 beam_world, beam_screen;
+	uint16 _beam_world, _beam_screen;
 
 	unsigned int _viewscreen_sprite_id;
 

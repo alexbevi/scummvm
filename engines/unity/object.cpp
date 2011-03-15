@@ -1020,7 +1020,7 @@ void Object::runHail(const Common::String &hail) {
 
 	bool immediate = (hail[0] == '1');
 	if ((immediate && hail[1] != '@') || (!immediate && hail[0] != '@')) {
-		_vm->dialog_text = hail.c_str() + (immediate ? 1 : 0);
+		_vm->_dialog_text = hail.c_str() + (immediate ? 1 : 0);
 
 		// TODO: this is VERY not good
 		_vm->setSpeaker(id);
@@ -1675,8 +1675,8 @@ ResultType ConversationBlock::execute(UnityEngine *_vm, Action *context) {
 ResultType BeamBlock::execute(UnityEngine *_vm, Action *context) {
 	debug(1, "BeamBlock::execute with %04x, %04x", world_id, screen_id);
 
-	_vm->beam_world = world_id;
-	_vm->beam_screen = screen_id;
+	_vm->_beam_world = world_id;
+	_vm->_beam_screen = screen_id;
 
 	return 0;
 }
@@ -1831,7 +1831,7 @@ void TextBlock::readFrom(Common::SeekableReadStream *stream) {
 
 void TextBlock::execute(UnityEngine *_vm, Object *speaker) {
 	if (text.size()) {
-		_vm->dialog_text = text;
+		_vm->_dialog_text = text;
 
 		_vm->setSpeaker(speaker->id);
 		debug(1, "%s says '%s'", speaker->identify().c_str(), text.c_str());
@@ -2083,7 +2083,7 @@ void Response::execute(UnityEngine *_vm, Object *speaker, Conversation *src) {
 		// TODO: response escape strings
 		// (search backwards between two '@'s, format: '0' + %c, %1x, %02x)
 
-		_vm->dialog_text = text;
+		_vm->_dialog_text = text;
 
 		// TODO: this is VERy not good
 		_vm->setSpeaker(speaker->id);
@@ -2160,33 +2160,33 @@ void Conversation::execute(UnityEngine *_vm, Object *speaker, unsigned int situa
 
 		resp->execute(_vm, speaker, this);
 
-		_vm->dialog_choice_states.clear();
+		_vm->_dialog_choice_states.clear();
 		if (resp->next_situation != 0xffff) {
 			situation = resp->next_situation;
-			_vm->dialog_choice_situation = situation; // XXX: hack
+			_vm->_dialog_choice_situation = situation; // XXX: hack
 
 			for (unsigned int i = 0; i < responses.size(); i++) {
 				if (responses[i]->id == situation) {
 					if (responses[i]->response_state == RESPONSE_ENABLED) {
 						if (responses[i]->validFor(_vm, speaker->id)) {
-							_vm->dialog_choice_states.push_back(responses[i]->state);
+							_vm->_dialog_choice_states.push_back(responses[i]->state);
 						}
 					}
 				}
 			}
 
-			if (!_vm->dialog_choice_states.size()) {
+			if (!_vm->_dialog_choice_states.size()) {
 				// see first conversation in space station
 				warning("didn't find a next situation");
 				return;
 			}
 
-			if (_vm->dialog_choice_states.size() > 1) {
+			if (_vm->_dialog_choice_states.size() > 1) {
 				debug(1, "continuing with conversation, using choices");
 				state = _vm->runDialogChoice(this);
 			} else {
 				debug(1, "continuing with conversation, using single choice");
-				state = _vm->dialog_choice_states[0];
+				state = _vm->_dialog_choice_states[0];
 			}
 		} else {
 			debug(1, "end of conversation");

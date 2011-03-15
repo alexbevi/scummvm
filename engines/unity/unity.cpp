@@ -35,17 +35,21 @@
 namespace Unity {
 
 UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
-	in_dialog = false;
-	dialog_choosing = false;
+	_in_dialog = false;
+	_dialog_choosing = false;
 	_icon = NULL;
 	_next_conversation = NULL;
 	_next_situation = 0xffffffff;
-	beam_world = 0;
-	mode = mode_Look;
+	_beam_world = 0;
+	_mode = mode_Look;
 	_current_away_team_member = NULL;
 	_current_away_team_icon = NULL;
 	_inventory_index = 0;
 	_viewscreen_sprite_id = ~0; // should be set by startup scripts
+
+	// TODO: de-hardcode
+	_dialog_x = 100;
+	_dialog_y = 280;
 }
 
 UnityEngine::~UnityEngine() {
@@ -312,7 +316,7 @@ void UnityEngine::startBridge() {
 	}
 
 	_gfx->setBackgroundImage("bridge.rm");
-	on_bridge = true;
+	_on_bridge = true;
 	handleBridgeMouseMove(0, 0);
 }
 
@@ -419,7 +423,7 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte en
 		data.current_screen.objects[i]->y = data.current_screen.entrypoints[entrance][i].y;
 	}
 
-	on_bridge = false;
+	_on_bridge = false;
 	handleAwayTeamMouseMove(0, 0);
 }
 
@@ -549,7 +553,7 @@ void UnityEngine::playDescriptionFor(Object *obj) {
 	}
 
 	Description &desc = obj->descriptions[i];
-	dialog_text = desc.text;
+	_dialog_text = desc.text;
 	setSpeaker(_current_away_team_member->id);
 
 	// 'l' for look :)
@@ -648,7 +652,7 @@ void UnityEngine::checkEvents() {
 			case Common::EVENT_KEYUP:
 				switch (event.kbd.keycode) {
 				case Common::KEYCODE_n:
-					if (!on_bridge) {
+					if (!_on_bridge) {
 						printf("trying anim %d\n", anim);
 						anim++;
 						anim %= objects[0]->sprite->numAnims();
@@ -665,32 +669,32 @@ void UnityEngine::checkEvents() {
 				break;
 
 			case Common::EVENT_RBUTTONUP:
-				if (on_bridge) break;
+				if (_on_bridge) break;
 
 				// cycle through away team modes
-				switch (mode) {
+				switch (_mode) {
 				case mode_Look:
-					mode = mode_Use;
+					_mode = mode_Use;
 					break;
 				case mode_Use:
-					mode = mode_Walk;
+					_mode = mode_Walk;
 					break;
 				case mode_Walk:
-					mode = mode_Talk;
+					_mode = mode_Talk;
 					break;
 				case mode_Talk:
-					mode = mode_Look;
+					_mode = mode_Look;
 					break;
 				}
 				handleAwayTeamMouseMove(0, 0); // TODO
 				break;
 
 			case Common::EVENT_MOUSEMOVE:
-				if (in_dialog) {
+				if (_in_dialog) {
 					break;
 				}
 
-				if (on_bridge) {
+				if (_on_bridge) {
 					handleBridgeMouseMove(event.mouse.x, event.mouse.y);
 				} else {
 					handleAwayTeamMouseMove(event.mouse.x, event.mouse.y);
@@ -698,12 +702,12 @@ void UnityEngine::checkEvents() {
 				break;
 
 			case Common::EVENT_LBUTTONUP:
-				if (in_dialog) {
-					in_dialog = false;
+				if (_in_dialog) {
+					_in_dialog = false;
 					break;
 				}
 
-				if (on_bridge) {
+				if (_on_bridge) {
 					handleBridgeMouseClick(event.mouse.x, event.mouse.y);
 				} else {
 					handleAwayTeamMouseClick(event.mouse.x, event.mouse.y);
@@ -719,7 +723,7 @@ void UnityEngine::checkEvents() {
 }
 
 void UnityEngine::handleBridgeMouseMove(unsigned int x, unsigned int y) {
-	status_text.clear();
+	_status_text.clear();
 
 	for (unsigned int i = 0; i < data.bridge_items.size(); i++) {
 		BridgeItem &item = data.bridge_items[i];
@@ -728,7 +732,7 @@ void UnityEngine::handleBridgeMouseMove(unsigned int x, unsigned int y) {
 		if (x > item.x + item.width) continue;
 		if (y > item.y + item.height) continue;
 
-		status_text = item.description;
+		_status_text = item.description;
 
 		// TODO: this is kinda random :)
 		if (item.unknown1 < 0x32)
@@ -745,43 +749,43 @@ void UnityEngine::handleBridgeMouseMove(unsigned int x, unsigned int y) {
 void UnityEngine::handleAwayTeamMouseMove(unsigned int x, unsigned int y) {
 	Object *obj = objectAt(x, y);
 	if (obj) {
-		switch (mode) {
+		switch (_mode) {
 		case mode_Look:
-			status_text = "Look at " + obj->name;
+			_status_text = "Look at " + obj->name;
 			_gfx->setCursor(1, false);
 			break;
 		case mode_Use:
-			status_text = "Use " + obj->name;
+			_status_text = "Use " + obj->name;
 			if (obj->talk_string.size() && obj->talk_string[obj->talk_string.size() - 1] == '-') {
 				// handle custom USE strings
 				// TODO: this doesn't really belong here (and isn't right anyway?)
-				status_text.clear();
+				_status_text.clear();
 				unsigned int i = obj->talk_string.size() - 1;
 				while (obj->talk_string[i] == '-' && i > 0) {
 					i--;
 				}
 				while (obj->talk_string[i] != '-' && obj->talk_string[i] != ' ' && i > 0) {
-					status_text = obj->talk_string[i] + status_text; i--;
+					_status_text = obj->talk_string[i] + _status_text; i--;
 				}
-				status_text = status_text + " " + obj->name;
+				_status_text = _status_text + " " + obj->name;
 			}
 			_gfx->setCursor(3, false);
 			break;
 		case mode_Walk:
-			status_text = "Walk to " + obj->name;
+			_status_text = "Walk to " + obj->name;
 			if (obj->cursor_flag == 1) // TODO
 				_gfx->setCursor(8 + obj->cursor_id, false);
 			else
 				_gfx->setCursor(7, false);
 			break;
 		case mode_Talk:
-			status_text = "Talk to " + obj->name;
+			_status_text = "Talk to " + obj->name;
 			_gfx->setCursor(5, false);
 			break;
 		}
 	} else {
-		status_text.clear();
-		switch (mode) {
+		_status_text.clear();
+		switch (_mode) {
 		case mode_Look:
 			_gfx->setCursor(0, false);
 			break;
@@ -817,22 +821,22 @@ void UnityEngine::handleBridgeMouseClick(unsigned int x, unsigned int y) {
 					// TODO
 					break;
 				case 1: // turbolift (menu)
-					dialog_text.clear();
-					assert(!choice_list.size());
-					choice_list.clear();
-					assert(!dialog_choosing);
+					_dialog_text.clear();
+					assert(!_choice_list.size());
+					_choice_list.clear();
+					assert(!_dialog_choosing);
 
 					for (unsigned int j = 0; j < data.bridge_screen_entries.size(); j++) {
-						choice_list.push_back(data.bridge_screen_entries[j].text);
+						_choice_list.push_back(data.bridge_screen_entries[j].text);
 					}
 					runDialog();
 
 					// TODO: do this properly
-					if (beam_world != 0) {
-						startAwayTeam(beam_world, beam_screen);
+					if (_beam_world != 0) {
+						startAwayTeam(_beam_world, _beam_screen);
 					}
 
-					choice_list.clear();
+					_choice_list.clear();
 					break;
 				case 2: // comms
 					// TODO
@@ -862,7 +866,7 @@ void UnityEngine::handleAwayTeamMouseClick(unsigned int x, unsigned int y) {
 	Object *obj = objectAt(x, y);
 	if (!obj) return;
 
-	switch (mode) {
+	switch (_mode) {
 	case mode_Look:
 		handleLook(obj);
 		break;
@@ -975,9 +979,7 @@ void UnityEngine::drawDialogFrameAround(unsigned int x, unsigned int y, unsigned
 }
 
 void UnityEngine::drawDialogWindow() {
-	// TODO: de-hardcode
-	unsigned int x = 100;
-	unsigned int y = 280;
+	unsigned int y = _dialog_y;
 
 	// calculate required bounding box
 	// TODO: some kind of scrolling
@@ -985,14 +987,14 @@ void UnityEngine::drawDialogWindow() {
 	unsigned int height = 0;
 
 	Common::Array<unsigned int> heights;
-	if (!choice_list.size()) {
+	if (!_choice_list.size()) {
 		unsigned int newheight = 0;
-		_gfx->calculateStringMaxBoundary(width, newheight, dialog_text, 2);
+		_gfx->calculateStringMaxBoundary(width, newheight, _dialog_text, 2);
 		height += newheight;
 	} else {
-		for (unsigned int i = 0; i < choice_list.size(); i++) {
-			Common::String our_str = choice_list[i];
-			if (i != choice_list.size() - 1) our_str += "\n";
+		for (unsigned int i = 0; i < _choice_list.size(); i++) {
+			Common::String our_str = _choice_list[i];
+			if (i != _choice_list.size() - 1) our_str += "\n";
 			unsigned int newheight = 0;
 			_gfx->calculateStringMaxBoundary(width, newheight, our_str, 2);
 			heights.push_back(newheight);
@@ -1001,21 +1003,21 @@ void UnityEngine::drawDialogWindow() {
 	}
 	if (height > 160) height = 160;
 
-	bool show_icon = choice_list.size() == 0;
-	bool thick_frame = choice_list.size() != 0 && (!dialog_choosing);
-	drawDialogFrameAround(x, y, width, height, thick_frame, show_icon);
+	bool show_icon = _choice_list.size() == 0;
+	bool thick_frame = _choice_list.size() != 0 && (!_dialog_choosing);
+	drawDialogFrameAround(_dialog_x, y, width, height, thick_frame, show_icon);
 
-	if (!choice_list.size()) {
-		_gfx->drawString(x, y, width, height, dialog_text, 2);
+	if (!_choice_list.size()) {
+		_gfx->drawString(_dialog_x, y, width, height, _dialog_text, 2);
 	} else {
 		// note this code changes y/height as it goes..
-		for (unsigned int i = 0; i < choice_list.size(); i++) {
+		for (unsigned int i = 0; i < _choice_list.size(); i++) {
 			// font 2 is normal, font 3 is highlighted
 			bool selected = (i == 0); // TODO
 
-			Common::String our_str = choice_list[i];
-			if (i != choice_list.size() - 1) our_str += "\n";
-			_gfx->drawString(x, y, width, height, our_str, selected ? 3 : 2);
+			Common::String our_str = _choice_list[i];
+			if (i != _choice_list.size() - 1) our_str += "\n";
+			_gfx->drawString(_dialog_x, y, width, height, our_str, selected ? 3 : 2);
 			if (heights[i] > height) break;
 			y += heights[i];
 			height -= heights[i];
@@ -1079,7 +1081,7 @@ void UnityEngine::drawBridgeUI() {
 	snprintf(buffer, 30, "WARP: %d.%d", warp_hi, warp_lo);
 	_gfx->drawString(168, 395, 9999, 9999, buffer, 2);
 
-	snprintf(buffer, 30, "%s", status_text.c_str());
+	snprintf(buffer, 30, "%s", _status_text.c_str());
 	Common::Array<unsigned int> strwidths, starts; unsigned int height;
 	_gfx->calculateStringBoundary(110, strwidths, starts, height, buffer, 2);
 	// draw centered, with 544 being the centre
@@ -1105,14 +1107,14 @@ void UnityEngine::drawAwayTeamUI() {
 	_gfx->drawMRG(&mrg, 23, 100, 426);
 
 	// mode icons
-	_gfx->drawMRG(&mrg, 13 + (mode == mode_Look ? 1 : 0), 108, 424);
-	_gfx->drawMRG(&mrg, 19 + (mode == mode_Use ? 1 : 0), 149, 424);
-	_gfx->drawMRG(&mrg, 17 + (mode == mode_Talk ? 1 : 0), 108, 451);
+	_gfx->drawMRG(&mrg, 13 + (_mode == mode_Look ? 1 : 0), 108, 424);
+	_gfx->drawMRG(&mrg, 19 + (_mode == mode_Use ? 1 : 0), 149, 424);
+	_gfx->drawMRG(&mrg, 17 + (_mode == mode_Talk ? 1 : 0), 108, 451);
 	// TODO: 21 is disabled walk?
-	_gfx->drawMRG(&mrg, 15 + (mode == mode_Walk ? 1 : 0), 149, 451);
+	_gfx->drawMRG(&mrg, 15 + (_mode == mode_Walk ? 1 : 0), 149, 451);
 
 	// status text
-	_gfx->drawString(0, 403, 9999, 9999, status_text.c_str(), 2);
+	_gfx->drawString(0, 403, 9999, 9999, _status_text.c_str(), 2);
 
 	// inventory
 	for (unsigned int i = 0; i < 6; i++) {
@@ -1176,13 +1178,13 @@ Common::Error UnityEngine::run() {
 		_gfx->drawBackgroundPolys(data.current_screen.polygons);
 
 		drawObjects();
-		if (on_bridge) {
+		if (_on_bridge) {
 			drawBridgeUI();
 		} else {
 			drawAwayTeamUI();
 		}
 
-		assert(!in_dialog);
+		assert(!_in_dialog);
 
 		while (_next_situation != 0xffffffff) {
 			assert(_next_conversation);
@@ -1206,40 +1208,40 @@ Common::Error UnityEngine::run() {
 
 unsigned int UnityEngine::runDialogChoice(Conversation *conversation) {
 	assert(conversation);
-	assert(dialog_choice_states.size() > 1);
+	assert(_dialog_choice_states.size() > 1);
 
-	dialog_text.clear();
-	assert(!choice_list.size());
-	choice_list.clear();
-	dialog_choosing = true;
+	_dialog_text.clear();
+	assert(!_choice_list.size());
+	_choice_list.clear();
+	_dialog_choosing = true;
 
-	for (unsigned int i = 0; i < dialog_choice_states.size(); i++) {
-		Response *r = conversation->getResponse(dialog_choice_situation,
-			dialog_choice_states[i]);
+	for (unsigned int i = 0; i < _dialog_choice_states.size(); i++) {
+		Response *r = conversation->getResponse(_dialog_choice_situation,
+			_dialog_choice_states[i]);
 		assert(r);
-		choice_list.push_back(r->text + "\n");
+		_choice_list.push_back(r->text + "\n");
 	}
 	runDialog();
 
-	choice_list.clear();
-	dialog_choosing = false;
+	_choice_list.clear();
+	_dialog_choosing = false;
 
 	// TODO: don't always run the first choice, actually offer a choice? :)
-	return dialog_choice_states[0];
+	return _dialog_choice_states[0];
 }
 
 void UnityEngine::runDialog() {
-	in_dialog = true;
+	_in_dialog = true;
 	_gfx->setCursor(0xffffffff, false);
 
-	while (in_dialog) {
+	while (_in_dialog) {
 		checkEvents();
 
 		_gfx->drawBackgroundImage();
 		_gfx->drawBackgroundPolys(data.current_screen.polygons);
 
 		drawObjects();
-		if (on_bridge) {
+		if (_on_bridge) {
 			drawBridgeUI();
 		} else {
 			drawAwayTeamUI();
