@@ -326,15 +326,15 @@ bool EventHandlerRing::handleLeftButtonUp(Movability *movability, uint32 index, 
 	if (_app->getSoundHandler()->getField0()) {
 		_app->getSoundHandler()->turnOffItems1();
 
-		if (!_app->getSoundHandler()->sub_41AEE0(2)) {
+		if (!_app->getSoundHandler()->updateItems(2)) {
 			_app->getSoundHandler()->turnOffSounds1(true);
 			_app->getSoundHandler()->setField0(false);
 		}
 	}
 
 	if (_app->getSoundHandler()->getField0()) {
-		_app->getSoundHandler()->sub_41B180(3.0f);
-		_app->getSoundHandler()->sub_41B350(3.0f);
+		_app->getSoundHandler()->updateItems2(3);
+		_app->getSoundHandler()->updateItems3(3);
 	}
 
 	switch (movability->getType()){

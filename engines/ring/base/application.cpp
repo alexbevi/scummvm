@@ -1266,10 +1266,10 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 
 		_soundHandler->turnOffItems1();
 
-		if (_soundHandler->sub_41AEE0(2)) {
+		if (_soundHandler->updateItems(2)) {
 
-			_soundHandler->sub_41B180(3);
-			_soundHandler->sub_41B350(3);
+			_soundHandler->updateItems2(3);
+			_soundHandler->updateItems3(3);
 			_soundHandler->turnOnItems4();
 
 			_soundHandler->reset();
@@ -2059,10 +2059,10 @@ void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
 
 		_soundHandler->turnOffItems1();
 
-		if (_soundHandler->sub_41AEE0(2)) {
+		if (_soundHandler->updateItems(2)) {
 
-			_soundHandler->sub_41B180(3);
-			_soundHandler->sub_41B350(3);
+			_soundHandler->updateItems2(3);
+			_soundHandler->updateItems3(3);
 			_soundHandler->turnOnItems4();
 
 			_soundHandler->reset();

@@ -778,10 +778,34 @@ bool SoundHandler::processSounds() {
 	return true;
 }
 
-bool SoundHandler::sub_41AEE0(uint32 a1) {
-	warning("[SoundHandler::sub_41AEE0] Not implemented");
+bool SoundHandler::updateItems(uint32 chunkCount) {
+	if (_soundItems2.size() == 0)
+		return false;
 
-	return false;
+	for (Common::Array<SoundItem *>::iterator it = _soundItems2.begin(); it != _soundItems2.end(); it++) {
+		SoundItem *item = (*it);
+
+		int32 field3D = (chunkCount >= item->getField19()) ? item->getField19() : chunkCount - 1;
+		if (field3D <= 0)
+			return false;
+
+		item->setField3D(field3D);
+		item->setField35(-(item->getVolume1() - item->getVolume2()) / field3D);
+		item->setField39(-(item->getPan1() - item->getPan2()) / field3D);
+	}
+
+	if ((chunkCount - 1) <= 0)
+		return false;
+
+	for (Common::Array<SoundItem *>::iterator it = _soundItems3.begin(); it != _soundItems3.end(); it++) {
+		SoundItem *item = (*it);
+
+		item->setField3D(chunkCount - 1);
+		item->setField35(-(item->getVolume1() - item->getVolume2()) / (chunkCount - 1));
+		item->setField39(-(item->getPan1() - item->getPan2()) / (chunkCount - 1));
+	}
+
+	return true;
 }
 
 
@@ -790,12 +814,53 @@ void SoundHandler::turnOffItems1() {
 		(*it)->turnOff();
 }
 
-void SoundHandler::sub_41B180(float a1) {
-	warning("[SoundHandler::sub_41B180] Not implemented");
+bool SoundHandler::updateItems2(uint32 chunkCount) {
+	if (_soundItems2.size() == 0)
+		return false;
+
+	for (uint32 i = 0; i < _soundItems2.size();) {
+		SoundItem *item = _soundItems2[i];
+
+		if (item->getField3D() <= chunkCount) {
+			item->turnOff();
+
+			// Remove item
+			SAFE_DELETE(item);
+			_soundItems2.remove_at(i);
+		} else {
+			item->setPan1(item->getPan1() + item->getField39());
+			item->getEntry()->setPan(item->getPan1());
+
+			item->setVolume1(item->getVolume1() + item->getField35());
+			item->getEntry()->setVolume(item->getVolume1());
+
+			i++;
+		}
+	}
+
+	return true;
 }
 
-void SoundHandler::sub_41B350(float a1) {
-	warning("[SoundHandler::sub_41B350] Not implemented");
+bool SoundHandler::updateItems3(uint32 chunkCount) {
+	if (_soundItems3.size() == 0)
+		return false;
+
+	for (Common::Array<SoundItem *>::iterator it = _soundItems3.begin(); it != _soundItems3.end(); it++) {
+		SoundItem *item = (*it);
+
+		if (item->getField3D() <= chunkCount) {
+			item->getEntry()->setVolume(item->getVolume2());
+			item->getEntry()->setPan(item->getPan2());
+		} else {
+			item->setPan1(item->getPan1() + item->getField39());
+			item->getEntry()->setPan(item->getPan1());
+
+			item->setVolume1(item->getVolume1() + item->getField35());
+			item->getEntry()->setVolume(item->getVolume1());
+		}
+	}
+
+	return true;
 }
 
 void SoundHandler::turnOnItems4() {

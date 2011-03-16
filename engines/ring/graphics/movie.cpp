@@ -225,7 +225,7 @@ bool Movie::init(Common::String path, Common::String filename, uint32 a3, uint32
 	if (soundHandler->getField0()) {
 		soundHandler->turnOffItems1();
 
-		if (!soundHandler->sub_41AEE0(_imageCIN->getHeader()->chunkCount)) {
+		if (!soundHandler->updateItems(_imageCIN->getHeader()->chunkCount)) {
 			soundHandler->turnOffSounds1(true);
 			soundHandler->setField0(false);
 		}
@@ -277,8 +277,8 @@ void Movie::play(const Common::Point &point) {
 			// Interrupt playing on escape
 			if (checkEscape()) {
 				if (soundHandler->getField0()) {
-					soundHandler->sub_41B180(chunkCount);
-					soundHandler->sub_41B350(chunkCount);
+					soundHandler->updateItems2(chunkCount);
+					soundHandler->updateItems3(chunkCount);
 				}
 				break;
 			}
@@ -344,8 +344,8 @@ void Movie::play(const Common::Point &point) {
 
 							// Process sound
 							if (soundHandler->getField0()) {
-								soundHandler->sub_41B180(chunkCount);
-								soundHandler->sub_41B350(chunkCount);
+								soundHandler->updateItems2(chunkCount);
+								soundHandler->updateItems3(chunkCount);
 							}
 
 							++chunkIndex;
@@ -382,8 +382,8 @@ void Movie::play(const Common::Point &point) {
 
 				// Process sound
 				if (soundHandler->getField0()) {
-					soundHandler->sub_41B180(chunkCount);
-					soundHandler->sub_41B350(chunkCount);
+					soundHandler->updateItems2(chunkCount);
+					soundHandler->updateItems3(chunkCount);
 				}
 
 				++chunkIndex;

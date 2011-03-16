@@ -226,11 +226,21 @@ public:
 	void setPan1(float pan1) { _pan1 = pan1; }
 	void setField35(uint32 val) { _field_35 = val; }
 	void setField39(uint32 val) { _field_39 = val; }
+	void setField3D(float val) { _field_3D = val; }
 
+	SoundEntry *getEntry() { return _entry; }
 	float getVolume() { return _volume; }
+	float getVolume1() { return _volume1; }
+	float getVolume2() { return _volume2; }
 	float getPan() { return _pan; }
+	float getPan1() { return _pan1; }
+	float getPan2() { return _pan2; }
 	uint32 getField10() { return _field_10; }
 	uint32 getField14() { return _field_14; }
+	uint32 getField19() { return _field_19; }
+	uint32 getField35() { return _field_35; }
+	uint32 getField39() { return _field_39; }
+	uint32 getField3D() { return _field_3D; }
 	bool isOn() { return _isOn; }
 
 	// Helpers
@@ -266,10 +276,10 @@ public:
 
 	void turnOffSounds1(bool process);
 	bool processSounds();
-	bool sub_41AEE0(uint32 a1);
+	bool updateItems(uint32 chunkCount);
 	void turnOffItems1();
-	void sub_41B180(float a1);
-	void sub_41B350(float a1);
+	bool updateItems2(uint32 chunkCount);
+	bool updateItems3(uint32 chunkCount);
 	void turnOnItems4();
 
 	void reset();
