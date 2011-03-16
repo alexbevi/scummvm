@@ -47,8 +47,8 @@ public:
 	Image *zoom(uint32 xZoom, uint32 yZoom);
 
 	// Drawing
-	void draw(Graphics::Surface *surface, Common::Point dest);
-	void draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset);
+	Common::Rect draw(Graphics::Surface *surface, Common::Point dest);
+	Common::Rect draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset);
 
 	// Accessors
 	uint32 getBPP()    { return _surface ? _surface->bytesPerPixel * 8: 0; }

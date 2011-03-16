@@ -168,23 +168,31 @@ bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom 
 	return true;
 }
 
-void Image::draw(Graphics::Surface *surface, Common::Point dest) {
-	//warning("[Image::draw] Not implemented (normal case)!");
-
-	// DEBUG: Create drawing rect
-	Common::Rect rect(dest.x, dest.y, dest.x + _surface->w, dest.y + _surface->h);
-	rect.clip(640, 480);
-
-	surface->fillRect(rect, Color(255, 0, 0).getColor());
+Common::Rect Image::draw(Graphics::Surface *surface, Common::Point dest) {
+	return draw(surface, dest, _surface->w, _surface->h, 0, 0);
 }
 
-void Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset) {
-	//warning("[Image::draw] Not implemented (offset case)!");
+Common::Rect Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset) {
+	if (srcX != 0 || offset != 0)
+		warning("[Image::draw] Not implemented (srcX / offset case)!");
 
-	Common::Rect rect(dest.x, dest.y, dest.x + srcWidth, dest.y + srcHeight);
-	rect.clip(640, 480);
+	Common::Rect destRect(dest.x, dest.y, dest.x + srcWidth, dest.y + srcHeight);
+	destRect.clip(640, 480);
 
-	surface->fillRect(rect, Color(245, 125, 0).getColor());
+	// DEBUG: Draw destination rect
+	surface->fillRect(destRect, Color(255, 0, 0).getColor());
+
+	byte *src  = (byte*)_surface->pixels;
+	byte *dst = (byte *)surface->pixels;
+	uint32 height = destRect.height();
+
+	while (--height) {
+		memcpy(dst + destRect.top * surface->pitch + destRect.left, src, destRect.width() * _surface->bytesPerPixel);
+		dst += surface->pitch;
+		src += _surface->pitch;
+	}
+
+	return destRect;
 }
 
 void Image::setSurface(Graphics::Surface *surface) {
