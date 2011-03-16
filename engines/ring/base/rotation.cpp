@@ -83,6 +83,9 @@ Rotation::Rotation(Id id, Common::String name, byte a3, LoadFrom, uint32 nodeCou
 	_ran       = 85.0f;
 
 	_imageHandle = NULL;
+
+	_ticks       = 0;
+	_startTicks  = 0;
 }
 
 Rotation::~Rotation() {
@@ -107,7 +110,36 @@ void Rotation::dealloc() {
 }
 
 void Rotation::update() {
-	error("[Rotation::update] Not implemented");
+	_ticks = g_system->getMillis();
+	float timeOffset = (_ticks - _startTicks) * 0.001f;
+
+	// Update presentations
+	for (Common::Array<ObjectPresentation *>::iterator it = _presentations.begin(); it != _presentations.end(); it++) {
+		ObjectPresentation *presentation = (*it);
+
+		presentation->playPuzzleAnimations(_ticks);
+		presentation->playRotationAnimations(_ticks);
+	}
+
+	// Update aquator
+	for (uint32 i = 0; i < _stream->getCount(); i++) {
+		if (!_stream->sub_410F50(i))
+			continue;
+
+		if (_animations[i]->getField26())
+			_stream->sub_411530(i, _animations[i]->getField2D());
+		else
+			_stream->setChannel(i, 0);
+	}
+
+	updateAmbientSoundPan(true);
+	_stream->sub_4114C0(timeOffset);
+
+	if (_field_31 < 1.0f)
+		_field_31 += timeOffset;
+
+	if (_field_31 > 1.0f)
+		_field_31 = 1.0f;
 }
 
 void Rotation::updateAndDraw(float alp, float bet, float ran) {

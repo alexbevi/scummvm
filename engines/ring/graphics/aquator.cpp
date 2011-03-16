@@ -142,7 +142,7 @@ void AquatorStream::dealloc() {
 }
 
 void AquatorStream::initNode(Common::SeekableReadStream *stream, byte a2, int a3, byte a4, int a5, byte a6, uint32 a7) {
-	error("[AquatorStream::alloc] Not implemented");
+	error("[AquatorStream::initNode] Not implemented");
 }
 
 void AquatorStream::initStream(uint32 index) {
@@ -155,11 +155,15 @@ void AquatorStream::initStream(uint32 index) {
 }
 
 void AquatorStream::initChannel(Common::SeekableReadStream *stream, uint32 index) {
-	error("[AquatorStream::alloc] Not implemented");
+	error("[AquatorStream::initChannel] Not implemented");
 }
 
 uint32 AquatorStream::sub_410F50(uint32 index) {
 	return _headers[index]->getField0();
+}
+
+void AquatorStream::sub_4114C0(float timeOffset) {
+	error("[AquatorStream::sub_4114C0] Not implemented");
 }
 
 void AquatorStream::sub_411530(uint32 index, uint32 a2) {

@@ -94,6 +94,7 @@ public:
 
 	uint32 sub_410F50(uint32 index);
 	uint32 getCount() { return _headers.size(); }
+	void sub_4114C0(float timeOffset);
 	void sub_411530(uint32 index, uint32 a2);
 	void setChannel(uint32 index, uint32 channel);
 	uint32 getChannel(uint32 index);

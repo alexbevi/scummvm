@@ -147,6 +147,10 @@ private:
 	float                               _bet;
 	float                               _ran;
 
+	// Working data
+	uint32                              _ticks;
+	uint32                              _startTicks;
+
 	SoundItem *getSoundItem(Id soundId);
 };
 
