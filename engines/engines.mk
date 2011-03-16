@@ -131,6 +131,11 @@ DEFINES += -DENABLE_QUEEN=$(ENABLE_QUEEN)
 MODULES += engines/queen
 endif
 
+ifdef ENABLE_RING
+DEFINES += -DENABLE_RING=$(ENABLE_RING)
+MODULES += engines/ring
+endif
+
 ifdef ENABLE_SAGA
 DEFINES += -DENABLE_SAGA=$(ENABLE_SAGA)
 MODULES += engines/saga
