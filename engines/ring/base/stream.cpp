@@ -185,6 +185,14 @@ void CompressedStream::decompressIndexed(uint32 blockSize, uint32 seqSize, uint3
 	_memoryStream = new Common::MemoryReadStream(_buffer, bufferSize, DisposeAfterUse::YES);
 }
 
+void CompressedStream::decompressNode() {
+	error("[CompressedStream::decompressNode] Not implemented!");
+}
+
+void CompressedStream::decompressChannel() {
+	error("[CompressedStream::decompressChannel] Not implemented!");
+}
+
 uint32 CompressedStream::decompress(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte* buffer) {
 	// Reset decompression buffer
 	memset(&_decBuffer, 0, sizeof(_decBuffer));
