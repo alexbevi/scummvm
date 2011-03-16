@@ -25,7 +25,11 @@
 
 #include "ring/graphics/aquator.h"
 
+#include "ring/base/stream.h"
+
 #include "ring/helpers.h"
+
+#include "common/archive.h"
 
 namespace Ring {
 
@@ -101,7 +105,33 @@ AquatorStream::~AquatorStream() {
 }
 
 void AquatorStream::alloc(bool isCompressed, byte a2, int a3, byte a4, int a5, byte a6, uint32 a7, uint32 size) {
-	error("[AquatorStream::alloc] Not implemented");
+	if (isCompressed) {
+		Common::String filename = Common::String::format("%s.aqi", _path.c_str());
+
+		// Decompress node
+		CompressedStream *stream = new CompressedStream();
+		if (!stream->init(filename, 2, size))
+			error("[AquatorStream::alloc] Cannot init compressed stream for aquator file (%s)", filename.c_str());
+
+		initNode(stream->decompressNode(), a2, a3, a4, a5, a6, a7);
+
+		// Decompress each channel
+		for (uint32 i = 0; i < _headers.size(); i++)
+			initChannel(stream->decompressChannel(), i);
+
+	} else {
+		// Open a stream to the uncompressed aquator file
+		Common::String filename = Common::String::format("%s.aqi", _path.c_str());
+		Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember(filename);
+		if (!archive)
+			error("[AquatorStream::alloc] Error opening uncompressed aquator (%s)", filename.c_str());
+
+		initNode(archive, a2, a3, a4, a5, a6, a7);
+
+		// Init channels
+		for (uint32 i = 0; i < _headers.size(); i++)
+			initStream(i);
+	}
 }
 
 void AquatorStream::dealloc() {
@@ -109,6 +139,34 @@ void AquatorStream::dealloc() {
 
 	delete _entry;
 	_entry = new ImageHeaderEntry();
+}
+
+void AquatorStream::initNode(Common::SeekableReadStream *stream, byte a2, int a3, byte a4, int a5, byte a6, uint32 a7) {
+	error("[AquatorStream::alloc] Not implemented");
+}
+
+void AquatorStream::initStream(uint32 index) {
+	Common::String filename = Common::String::format("%s_%03i.aqc", _path.c_str(), index);
+	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember(filename);
+	if (!archive)
+		error("[AquatorStream::initStream] Error opening aquator channel (%s)", filename.c_str());
+
+	initChannel(archive, index);
+}
+
+void AquatorStream::initChannel(Common::SeekableReadStream *stream, uint32 index) {
+	error("[AquatorStream::alloc] Not implemented");
+}
+
+uint32 AquatorStream::sub_410F50(uint32 index) {
+	return _headers[index]->getField0();
+}
+
+void AquatorStream::sub_411530(uint32 index, uint32 a2) {
+	if (_headers[index]->getField8() != a2) {
+		_headers[index]->setField8(a2);
+		_headers[index]->setField4(_headers[index]->getChannel());
+	}
 }
 
 void AquatorStream::setChannel(uint32 index, uint32 channel) {

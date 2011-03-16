@@ -185,11 +185,11 @@ void CompressedStream::decompressIndexed(uint32 blockSize, uint32 seqSize, uint3
 	_memoryStream = new Common::MemoryReadStream(_buffer, bufferSize, DisposeAfterUse::YES);
 }
 
-void CompressedStream::decompressNode() {
+Common::MemoryReadStream *CompressedStream::decompressNode() {
 	error("[CompressedStream::decompressNode] Not implemented!");
 }
 
-void CompressedStream::decompressChannel() {
+Common::MemoryReadStream *CompressedStream::decompressChannel() {
 	error("[CompressedStream::decompressChannel] Not implemented!");
 }
 
