@@ -57,7 +57,6 @@ ImageHeaderEntry::~ImageHeaderEntry() {
 #pragma region ImageHeader
 
 ImageHeader::ImageHeader() {
-	_field_0 = 0;
 	_field_4 = 0;
 	_field_4C = -1;
 }
@@ -66,18 +65,29 @@ ImageHeader::~ImageHeader() {
 	CLEAR_ARRAY(ImageHeaderEntry, _headers);
 }
 
+void ImageHeader::init(Common::SeekableReadStream *stream) {
+	error("[ImageHeader::init] Not implemented");
+}
+
+void ImageHeader::update(ImageHeaderEntry* entry) {
+	error("[ImageHeader::update] Not implemented");
+}
+
 #pragma endregion
 
 #pragma region AquatorImageHeader
 
 AquatorImageHeader::AquatorImageHeader() {
-	_field_0 = 0;
+	_field_0 = false;
 	_field_4 = 0;
 	_field_8 = 0;
 	_channel = 0;
+
+	_header = new ImageHeader();
 }
 
 AquatorImageHeader::~AquatorImageHeader() {
+	delete _header;
 }
 
 void AquatorImageHeader::setChannel(uint32 channel) {
@@ -156,7 +166,22 @@ void AquatorStream::initStream(uint32 index) {
 }
 
 void AquatorStream::initChannel(Common::SeekableReadStream *stream, uint32 index) {
-	error("[AquatorStream::initChannel] Not implemented");
+	AquatorImageHeader *aquatorHeader = _headers[index];
+	ImageHeader *imageHeader = aquatorHeader->getHeader();
+
+	imageHeader->init(stream);
+
+	// Cleanup
+	delete stream;
+
+	imageHeader->update(_entry);
+
+	if (imageHeader->getField4() == 0)
+		aquatorHeader->setField0(false);
+	else
+		aquatorHeader->setField0(true);
+
+	aquatorHeader->setField4(aquatorHeader->getChannel());
 }
 
 uint32 AquatorStream::sub_410F50(uint32 index) {

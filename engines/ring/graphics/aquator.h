@@ -55,8 +55,14 @@ public:
 	ImageHeader();
 	~ImageHeader();
 
+	void init(Common::SeekableReadStream *stream);
+	void update(ImageHeaderEntry* entry);
+
+	uint32 getCount() { return _headers.size(); }
+	uint32 getField4() { return _field_4; }
+
 private:
-	uint32 _field_0;
+	// uint32 _field_0; // count
 	uint32 _field_4;
 	Common::Array<ImageHeaderEntry *> _headers;
 	ImageHeaderEntry *_current;
@@ -68,19 +74,21 @@ public:
 	AquatorImageHeader();
 	~AquatorImageHeader();
 
+	void setField0(bool state) { _field_0 = state; }
 	void setField4(uint32 val) { _field_4 = val; }
 	void setField8(uint32 val) { _field_8 = val; }
 	void setChannel(uint32 val);
 
-	uint32 getField0() { return _field_0; }
+	bool getField0() { return _field_0; }
 	uint32 getField8() { return _field_8; }
+	ImageHeader *getHeader() { return _header; }
 	uint32 getChannel() { return _channel; }
 
 private:
-	uint32 _field_0;
+	bool _field_0;
 	uint32 _field_4;
 	uint32 _field_8;
-	ImageHeader _header;
+	ImageHeader *_header;
 	uint32 _channel;
 };
 

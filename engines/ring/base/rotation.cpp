@@ -158,8 +158,12 @@ void Rotation::updateAndDraw(float alp, float bet, float ran) {
 	getApp()->getScreenManager()->updateScreen();
 }
 
-void Rotation::setCoordinates(const Common::Point &point){
+void Rotation::setCoordinates(const Common::Point &point) {
 	error("[Rotation::setCoordinates] Not implemented");
+}
+
+void Rotation::updateView() {
+	error("[Rotation::updateView] Not implemented");
 }
 
 void Rotation::loadImage() {
