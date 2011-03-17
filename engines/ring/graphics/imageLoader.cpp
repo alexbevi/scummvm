@@ -181,7 +181,6 @@ bool ImageLoaderBMA::readImage(Image *image) {
 	// Read from compressed stream
 	_stream->read(surface->pixels, _header.seqWidth * _header.seqHeight * 2);
 
-
 	image->setSurface(surface);
 
 	return true;
@@ -437,11 +436,28 @@ bool ImageLoaderCIN::readHeader() {
 	memset(&_header, 0, sizeof(_header));
 
 	// Read header (size: 0x40)
-	// TODO read missing fields properly
-	_cinematic->skip(5 * 4 + 2 + 1);
-	_header.width  = _cinematic->readUint32LE();
-	_header.height = _cinematic->readUint32LE();
-	_cinematic->skip(1 +  8 * 4);
+	_header.field_0    = _cinematic->readUint32LE();
+	_header.field_4    = _cinematic->readUint32LE();
+	_header.field_8    = _cinematic->readUint32LE();
+	_header.field_C    = _cinematic->readUint16LE();
+	_header.chunkCount = _cinematic->readUint32LE();
+	_header.field_12   = _cinematic->readUint32LE();
+	_header.field_16   = _cinematic->readByte();
+	_header.width      = _cinematic->readUint32LE();
+	_header.height     = _cinematic->readUint32LE();
+	_header.field_1F   = _cinematic->readByte();
+	_header.field_20   = _cinematic->readUint32LE();
+	_header.field_24   = _cinematic->readUint32LE();
+	_header.field_28   = _cinematic->readUint32LE();
+	_header.field_2C   = _cinematic->readUint32LE();
+	_header.field_30   = _cinematic->readUint32LE();
+	_header.field_34   = _cinematic->readUint32LE();
+	_header.field_38   = _cinematic->readUint32LE();
+	_header.field_3C   = _cinematic->readUint32LE();
+
+	// Update width and height
+	_width = _header.width;
+	_height = _header.height;
 
 	return true;
 }
@@ -450,7 +466,18 @@ bool ImageLoaderCIN::readImage(Image *image) {
 	if (!image || !image->isInitialized())
 		error("[ImageLoaderCNM::readImage] Invalid image pointer or image not initialized!");
 
-	return false;
+	// Create surface to hold the data
+	Graphics::Surface *surface = new Graphics::Surface();
+	surface->create(_width, _height, 2);
+
+	// Update image data
+	_field_1088 = _width + 3;
+	_field_1084 = _field_1088 * 3;
+
+	if (!_cinematic->sControl(surface->pixels))
+		error("[ImageLoaderCIN::readImage] Cannot read image");
+
+	return true;
 }
 
 #pragma endregion

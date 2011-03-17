@@ -114,6 +114,10 @@ bool Cinematic::tControl() {
 	error("[Cinematic::tControl] Not implemented!");
 }
 
+bool Cinematic::sControl(void* buffer) {
+	error("[Cinematic::sControl] Not implemented!");
+}
+
 #pragma region Sound
 
 void Cinematic::sub_46A0E0(uint32 a1, uint32 a2, uint32 a3, int32 a4) {

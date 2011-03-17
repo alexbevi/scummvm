@@ -177,8 +177,10 @@ public:
 private:
 	Cinematic *_cinematic;
 	Header _header;
-	//uint32 _field_1084;
-	//uint32 _field_1088;
+	uint32 _field_1084;
+	uint32 _field_1088;
+	uint32 _width;
+	uint32 _height;
 
 	void deinit();
 
