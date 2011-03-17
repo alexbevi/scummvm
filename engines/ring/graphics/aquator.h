@@ -35,6 +35,8 @@ public:
 	ImageHeaderEntry();
 	~ImageHeaderEntry();
 
+	void init(Common::SeekableReadStream *stream, bool a2);
+
 	bool isInitialized() { return _buffer != NULL; }
 
 private:
@@ -55,16 +57,17 @@ public:
 	ImageHeader();
 	~ImageHeader();
 
+	void reset();
+
 	void init(Common::SeekableReadStream *stream);
 	void update(ImageHeaderEntry* entry);
 
-	uint32 getCount() { return _headers.size(); }
+	bool hasEntries() { return _entries.size() != 0; }
 	uint32 getField4() { return _field_4; }
 
 private:
-	// uint32 _field_0; // count
 	uint32 _field_4;
-	Common::Array<ImageHeaderEntry *> _headers;
+	Common::Array<ImageHeaderEntry *> _entries;
 	ImageHeaderEntry *_current;
 	int32 _field_4C;
 };

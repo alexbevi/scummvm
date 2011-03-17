@@ -52,6 +52,10 @@ ImageHeaderEntry::~ImageHeaderEntry() {
 	SAFE_DELETE(_buffer);
 }
 
+void ImageHeaderEntry::init(Common::SeekableReadStream *stream, bool a2) {
+	error("[ImageHeader::update] Not implemented");
+}
+
 #pragma endregion
 
 #pragma region ImageHeader
@@ -62,11 +66,30 @@ ImageHeader::ImageHeader() {
 }
 
 ImageHeader::~ImageHeader() {
-	CLEAR_ARRAY(ImageHeaderEntry, _headers);
+	reset();
+}
+
+void ImageHeader::reset() {
+	CLEAR_ARRAY(ImageHeaderEntry, _entries);
+	SAFE_DELETE(_current);
 }
 
 void ImageHeader::init(Common::SeekableReadStream *stream) {
-	error("[ImageHeader::init] Not implemented");
+	reset();
+
+	uint32 count = stream->readUint32LE();
+	_field_4  = stream->readUint32LE();
+	_field_4C = stream->readUint32LE();
+
+	// Create entries
+	for (uint32 i = 0; i < count; i++)
+		_entries.push_back(new ImageHeaderEntry());
+
+	if (count == 1)
+		_field_4C = -1;
+
+	for (uint32 i = 0; i < count; i++)
+		_entries[i]->init(stream, false);
 }
 
 void ImageHeader::update(ImageHeaderEntry* entry) {
@@ -153,7 +176,12 @@ void AquatorStream::dealloc() {
 }
 
 void AquatorStream::initNode(Common::SeekableReadStream *stream, byte a2, int a3, byte a4, int a5, byte a6, uint32 a7) {
-	error("[AquatorStream::initNode] Not implemented");
+	_entry->init(stream, true);
+
+	SAFE_DELETE(stream);
+
+	// Init entry buffer
+	error("[AquatorStream::initNode] Not implemented (entry buffer)");
 }
 
 void AquatorStream::initStream(uint32 index) {
