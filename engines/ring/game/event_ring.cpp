@@ -66,6 +66,9 @@ EventHandlerRing::EventHandlerRing(ApplicationRing *application) : _app(applicat
 	_prefsVolume = 0;
 	_prefsVolumeDialog = 0;
 	_object1Visible = false;
+	_offsetX = 0;
+	_offsetX0 = 0;
+	_coordX = 0;
 }
 
 
@@ -6041,7 +6044,70 @@ void EventHandlerRing::onBag(ObjectId id, Id target, Id puzzleRotationId, uint32
 }
 
 void EventHandlerRing::onBagZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
-	error("[EventHandlerRing::onBagZoneSY] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kObjectPreferencesSliderVolume:
+	case kObjectPreferencesSliderDialog:
+		switch (type) {
+		default:
+			break;
+
+		case 1:
+			_app->dragControlSetField45(2);
+
+			if (id == kObjectPreferencesSliderVolume)
+				_app->dragControlSetHotspot(Common::Rect(310, 140, 600, 180));
+			else
+				_app->dragControlSetHotspot(Common::Rect(310, 197, 600, 237));
+
+			_offsetX = (_app->getDragControl()->getCurrentCoords().x - 314) / 5;
+			if (_offsetX <= 54) {
+				if (_offsetX < 0)
+					_offsetX = 0;
+			} else {
+				_offsetX = 54;
+			}
+
+			_coordX = 5 * _offsetX + 314;
+			_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderVolume, 0, 0, Common::Point(_coordX, (id == kObjectPreferencesSliderVolume) ? 155 : 212));
+			break;
+
+		case 2:
+			_offsetX = (_offsetX0 + _coordX - 314) / 5;
+			if (_offsetX <= 54) {
+				if (_offsetX < 0)
+					_offsetX = 0;
+
+				_prefsVolume = _offsetX + 46;
+			} else {
+				_offsetX = 54;
+				_prefsVolume = 100;
+			}
+
+			_coordX = 5 * _offsetX + 314;
+			_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderVolume, 0, 0, Common::Point(_coordX, (id == kObjectPreferencesSliderVolume) ? 155 : 212));
+			break;
+
+		case 3:
+			_offsetX0 = _app->dragControlGetOffsetX0();
+			if (_app->dragControlXLower0())
+				_offsetX0 = -(int32)_app->dragControlGetOffsetX0();
+
+			_offsetX = (_offsetX0 + _coordX - 314) / 5;
+			if (_offsetX <= 54) {
+				if (_offsetX < 0)
+					_offsetX = 0;
+			} else {
+				_offsetX = 54;
+			}
+
+			_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderVolume, 0, 0, Common::Point(_offsetX0 + _coordX, (id == kObjectPreferencesSliderVolume) ? 155 : 212));
+			break;
+		}
+		break;
+	}
 }
 
 void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {

@@ -78,6 +78,9 @@ private:
 	uint32       _prefsVolume;
 	uint32       _prefsVolumeDialog;
 	bool         _object1Visible;
+	int32        _offsetX;
+	int32        _offsetX0;
+	int32        _coordX;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Event Handling
