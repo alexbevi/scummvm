@@ -36,24 +36,56 @@ namespace Ring {
 #pragma region ImageHeaderEntry
 
 ImageHeaderEntry::ImageHeaderEntry() {
-	_field_0 = 0;
-	_field_4 = 0;
-	_field_8 = 0;
+	_field_0  = 0;
+	_field_4  = 0;
+	_field_8  = 0;
+	_field_C  = 0;
+	_field_10 = 0;
+	_field_14 = 0;
+	_field_18 = 0;
 	_field_1C = 0;
 	_field_20 = 0;
 	_field_24 = 0;
 	_field_28 = 0;
+	_field_2C = 0;
+	_field_30 = 0;
 	_buffer = NULL;
 	_field_38 = 0;
 	_field_3C = 0;
 }
 
 ImageHeaderEntry::~ImageHeaderEntry() {
+	reset();
+}
+
+void ImageHeaderEntry::reset() {
 	SAFE_DELETE(_buffer);
+
+	_field_38 = 0;
 }
 
 void ImageHeaderEntry::init(Common::SeekableReadStream *stream, bool a2) {
-	error("[ImageHeader::update] Not implemented");
+	error("[ImageHeaderEntry::init] Not implemented");
+}
+
+void ImageHeaderEntry::init(ImageHeaderEntry *entry) {
+	error("[ImageHeaderEntry::init] (copy) Not implemented");
+}
+
+void ImageHeaderEntry::update(ImageHeaderEntry *entry, bool updateCaller) {
+	error("[ImageHeaderEntry::update] Not implemented");
+}
+
+void ImageHeaderEntry::prepareBuffer() {
+	error("[ImageHeaderEntry::prepareBuffer] Not implemented");
+}
+
+void ImageHeaderEntry::drawBuffer() {
+	error("[ImageHeaderEntry::drawBuffer] Not implemented");
+}
+
+void ImageHeaderEntry::allocBuffer(bool doubleSize) {
+	error("[ImageHeaderEntry::allocBuffer] Not implemented");
 }
 
 #pragma endregion
@@ -62,6 +94,7 @@ void ImageHeaderEntry::init(Common::SeekableReadStream *stream, bool a2) {
 
 ImageHeader::ImageHeader() {
 	_field_4 = 0;
+	_current = NULL;
 	_field_4C = -1;
 }
 
@@ -93,7 +126,15 @@ void ImageHeader::init(Common::SeekableReadStream *stream) {
 }
 
 void ImageHeader::update(ImageHeaderEntry* entry) {
-	error("[ImageHeader::update] Not implemented");
+	_current->init(_entries[0]);
+	entry->update(_current, false);
+}
+
+ImageHeaderEntry *ImageHeader::get(uint32 index) {
+	if (index >= _entries.size())
+		error("[ImageHeader::get] Invalid index (was:%d, max:%d)", index, _entries.size() - 1);
+
+	return _entries[index];
 }
 
 #pragma endregion
@@ -216,8 +257,18 @@ uint32 AquatorStream::sub_410F50(uint32 index) {
 	return _headers[index]->getField0();
 }
 
-void AquatorStream::sub_4114C0(float timeOffset) {
-	error("[AquatorStream::sub_4114C0] Not implemented");
+void AquatorStream::updateEntries(float timeOffset) {
+	for	(Common::Array<AquatorImageHeader *>::iterator it = _headers.begin(); it != _headers.end(); it++) {
+		AquatorImageHeader *header = (*it);
+
+		if (!header->getHeader()->hasEntries())
+			continue;
+
+		if (header->getField4()) {
+			_entry->update(header->getChannel() ? header->getHeader()->get(header->getField8() * 64) : header->getHeader()->getCurrent());
+			header->setField4(0);
+		}
+	}
 }
 
 void AquatorStream::sub_411530(uint32 index, uint32 a2) {

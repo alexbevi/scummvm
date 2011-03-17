@@ -36,6 +36,12 @@ public:
 	~ImageHeaderEntry();
 
 	void init(Common::SeekableReadStream *stream, bool a2);
+	void init(ImageHeaderEntry *entry);
+	void update(ImageHeaderEntry *entry, bool updateCaller = true);
+
+	// Buffer
+	void prepareBuffer();
+	void drawBuffer();
 
 	bool isInitialized() { return _buffer != NULL; }
 
@@ -43,13 +49,22 @@ private:
 	uint32  _field_0;
 	uint32  _field_4;
 	uint32  _field_8;
+	uint32  _field_C;
+	uint32  _field_10;
+	uint32  _field_14;
+	uint32  _field_18;
 	uint32  _field_1C;
 	uint32  _field_20;
 	uint32  _field_24;
 	uint32  _field_28;
+	uint32  _field_2C;
+	uint32  _field_30;
 	uint32 *_buffer;
 	uint32  _field_38;
 	uint32  _field_3C;
+
+	void reset();
+	void allocBuffer(bool doubleSize);
 };
 
 class ImageHeader {
@@ -64,6 +79,8 @@ public:
 
 	bool hasEntries() { return _entries.size() != 0; }
 	uint32 getField4() { return _field_4; }
+	ImageHeaderEntry *get(uint32 index);
+	ImageHeaderEntry *getCurrent() { return _current; }
 
 private:
 	uint32 _field_4;
@@ -83,6 +100,7 @@ public:
 	void setChannel(uint32 val);
 
 	bool getField0() { return _field_0; }
+	uint32 getField4() { return _field_4; }
 	uint32 getField8() { return _field_8; }
 	ImageHeader *getHeader() { return _header; }
 	uint32 getChannel() { return _channel; }
@@ -104,10 +122,12 @@ public:
 	void dealloc();
 
 	uint32 sub_410F50(uint32 index);
-	uint32 getCount() { return _headers.size(); }
-	void sub_4114C0(float timeOffset);
+	void updateEntries(float timeOffset);
 	void sub_411530(uint32 index, uint32 a2);
 	void setChannel(uint32 index, uint32 channel);
+
+	ImageHeaderEntry *getEntry() { return _entry; }
+	uint32 getCount() { return _headers.size(); }
 	uint32 getChannel(uint32 index);
 
 	bool isInitialized() { return _entry->isInitialized(); }

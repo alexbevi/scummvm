@@ -311,22 +311,20 @@ void ApplicationRing::draw() {
 		if (!_rotation)
 			error("[ApplicationRing::draw] No active rotation!");
 
-		// TODO: check for pressed key SPACE and skip drawing image
-
-		if (_rotation->getField28() != 0) {
-			if (_rotation->getField28() != 3) {
-				_rotation->destroyImage();
-				_rotation->setField28(0);
+		if (!checkEscape()) {
+			if (_rotation->getField28() != 0) {
+				if (_rotation->getField28() == 3) {
+					_rotation->destroyImage();
+					_rotation->setField28(0);
+				}
+			} else {
+				if (_rotation->hasImage())
+					_rotation->setField28(3);
 			}
-		} else {
-			if (_rotation->hasImage())
-				_rotation->setField28(3);
 		}
 
-		// TODO: loop and check for pressed key SPACE
-
 		if (_rotation->getField28() != 0) {
-			if (_rotation->getField28() != 3) {
+			if (_rotation->getField28() == 3) {
 				_rotation->loadImage();
 				_rotation->drawImage();
 				_rotation->drawText();

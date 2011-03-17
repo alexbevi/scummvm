@@ -133,7 +133,7 @@ void Rotation::update() {
 	}
 
 	updateAmbientSoundPan(true);
-	_stream->sub_4114C0(timeOffset);
+	_stream->updateEntries(timeOffset);
 
 	if (_field_31 < 1.0f)
 		_field_31 += timeOffset;
@@ -203,13 +203,17 @@ void Rotation::drawImage() {
 }
 
 void Rotation::draw() {
-	error("[Rotation::draw] Not implemented");
+	if (!_stream->isInitialized())
+		return;
+
+	_stream->getEntry()->prepareBuffer();
+	_stream->getEntry()->drawBuffer();
 }
 
 void Rotation::drawText() {
-	error("[Rotation::drawText] Not implemented");
+	for (Common::Array<Text *>::iterator it = _texts.begin(); it != _texts.end(); it++)
+		getApp()->getScreenManager()->drawText(*it);
 }
-
 
 void Rotation::addAccessibility(Accessibility *accessibility) {
 	if (accessibility == NULL)
