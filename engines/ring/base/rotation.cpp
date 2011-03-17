@@ -143,7 +143,19 @@ void Rotation::update() {
 }
 
 void Rotation::updateAndDraw(float alp, float bet, float ran) {
-	error("[Rotation::updateAndDraw] Not implemented");
+	update();
+
+	// Update coordinates
+	_alp = alp - 135.0f;
+	if (_alp < 0.0f)
+		_alp += 360.0f;
+
+	_ran = ran;
+	_bet = bet;
+
+	updateView();
+	draw();
+	getApp()->getScreenManager()->updateScreen();
 }
 
 void Rotation::setCoordinates(const Common::Point &point){
@@ -181,12 +193,12 @@ void Rotation::destroyImage() {
 		_imageHandle->destroy();
 }
 
-void Rotation::drawImage(ScreenManager *screen) {
+void Rotation::drawImage() {
 	if (_imageHandle)
-		screen->draw(_imageHandle, _imageHandle->getCoordinates(), kDrawType1);
+		getApp()->getScreenManager()->draw(_imageHandle, _imageHandle->getCoordinates(), kDrawType1);
 }
 
-void Rotation::draw(ScreenManager *screen) {
+void Rotation::draw() {
 	error("[Rotation::draw] Not implemented");
 }
 
@@ -312,8 +324,66 @@ void Rotation::setMovabilityRideName(uint32 movabilityIndex, Common::String name
 	_movabilities[movabilityIndex]->setRideName(name);
 }
 
-bool Rotation::setRolTo(float a2, float a3, float a4) {
-	error("[Rotation::SetRolTo] Not implemented");
+bool Rotation::setRolTo(float alp, float bet, float ran) {
+	alp -= 135.0f;
+	if (alp < 0.0f)
+		alp += 360.0f;
+
+	// Compute differences
+	float betDiff = abs(bet - _bet);
+	float alpDiff = abs(alp - _alp);
+	float ranDiff = abs(ran - _ran);
+
+	// Get the higher difference
+	if (alpDiff > 180) {
+		alpDiff = 360 - alpDiff;
+	}
+
+	if (alpDiff <= betDiff)
+		alpDiff = betDiff;
+
+	if (alpDiff <= ranDiff)
+		alpDiff = ranDiff;
+
+	// Compute alp
+	if ((alp - _alp) <= 180.0f) {
+		if ((alp - _alp) < -180.0f)
+			alp += 360.0f;
+	} else {
+		alp -= 360.0f;
+	}
+
+	// Compute count
+	uint32 count = alpDiff * 0.8;
+	if (count == 0)
+		return true;
+
+	for (uint32 i = 0; i < count; i++) {
+		float delta = i;
+		if (count != 1)
+			delta /= (count - 1);
+
+		// Update alp, bet and ran
+		_alp = _alp * (1.0f - delta) + alp * delta;
+		if (_alp > 360.0f)
+			_alp -= 360.0f;
+
+		_ran = _ran * (1.0f - delta) + ran * delta;
+		_bet = _bet * (1.0f - delta) + bet * delta;
+
+		_field_31 = 1.0f - delta;
+
+		// Update rotation
+		update();
+		updateView();
+		draw();
+		getApp()->getScreenManager()->updateScreen();
+
+		if (checkEscape())
+			return false;
+	}
+
+	return true;
 }
 
 Animation *Rotation::addPresentationAnimation(ObjectPresentation *presentation, uint32 layer, uint32 frameCount, float frameRate, byte a5) {

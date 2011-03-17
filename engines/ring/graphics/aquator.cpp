@@ -119,6 +119,7 @@ void AquatorStream::alloc(bool isCompressed, byte a2, int a3, byte a4, int a5, b
 		for (uint32 i = 0; i < _headers.size(); i++)
 			initChannel(stream->decompressChannel(), i);
 
+		delete stream;
 	} else {
 		// Open a stream to the uncompressed aquator file
 		Common::String filename = Common::String::format("%s.aqi", _path.c_str());

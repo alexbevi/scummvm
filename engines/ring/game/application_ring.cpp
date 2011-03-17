@@ -328,14 +328,14 @@ void ApplicationRing::draw() {
 		if (_rotation->getField28() != 0) {
 			if (_rotation->getField28() != 3) {
 				_rotation->loadImage();
-				_rotation->drawImage(_screenManager);
+				_rotation->drawImage();
 				_rotation->drawText();
 			}
 		} else {
 			_rotation->alloc();
 			_rotation->update();
 			_rotation->setCoordinates(_vm->getCoordinates());
-			_rotation->draw(_screenManager);
+			_rotation->draw();
 			_rotation->drawText();
 		}
 

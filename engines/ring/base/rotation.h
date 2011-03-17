@@ -57,8 +57,8 @@ public:
 	void setCoordinates(const Common::Point &point);
 	void loadImage();
 	void destroyImage();
-	void drawImage(ScreenManager *screen);
-	void draw(ScreenManager *screen);
+	void drawImage();
+	void draw();
 	void drawText();
 
 	// Accessibility
@@ -79,7 +79,7 @@ public:
 	void setAlp(float alp) { _alp = alp; }
 	void setBet(float bet) { _bet = bet; }
 	void setRan(float ran) { _ran = ran; }
-	bool setRolTo(float a2, float a3, float a4);
+	bool setRolTo(float alp, float bet, float ran);
 
 	float getAlp() { return _alp; };
 	float getBet() { return _bet; }
@@ -152,6 +152,7 @@ private:
 	uint32                              _startTicks;
 
 	SoundItem *getSoundItem(Id soundId);
+	void updateView();
 };
 
 } // End of namespace Ring
