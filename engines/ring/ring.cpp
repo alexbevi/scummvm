@@ -27,6 +27,7 @@
 
 #include "ring/base/application.h"
 #include "ring/base/event.h"
+#include "ring/base/saveload.h"
 #include "ring/base/sound.h"
 
 #include "ring/game/application_faust.h"
@@ -250,10 +251,6 @@ bool RingEngine::isMultiLanguage() {
 	}
 
 	return false;
-}
-
-bool RingEngine::hasFeature(EngineFeature f) const {
-	return (f == kSupportsRTL);
 }
 
 void RingEngine::errorString(const char *buf_input, char *buf_output, int buf_output_size) {

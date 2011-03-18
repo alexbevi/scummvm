@@ -76,7 +76,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 
 	_currentRotation = NULL;
 
-	_gameImage = NULL;
+	_thumbnail = NULL;
 }
 
 Application::~Application() {
@@ -105,7 +105,7 @@ Application::~Application() {
 	_rotation = NULL;
 	_currentRotation = NULL;
 
-	SAFE_DELETE(_gameImage);
+	SAFE_DELETE(_thumbnail);
 
 	// Zero-out passed pointers
 	_vm = NULL;
@@ -374,7 +374,7 @@ void Application::exitZone() {
 	_currentGameZone = kZoneNone;
 
 	// Destroys the savegame current image
-	SAFE_DELETE(_gameImage);
+	SAFE_DELETE(_thumbnail);
 }
 
 void Application::exitToMenu(uint32 a1) {

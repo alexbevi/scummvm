@@ -379,7 +379,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
-	Image *getGameImage() { return _gameImage; }
+	Image *getThumbnail() { return _thumbnail; }
 	Zone getCurrentZone() { return _zone; }
 	byte getField6A() { return _field_6A; }
 	Common::String getCurrentZoneString() { return getZoneString(_zone); }
@@ -425,7 +425,7 @@ protected:
 	RingEngine *_vm;
 
 	// Game screen (when showing menu)
-	Image                        *_gameImage;
+	Image                        *_thumbnail;
 
 	// Application objects
 	ScreenManager                *_screenManager;

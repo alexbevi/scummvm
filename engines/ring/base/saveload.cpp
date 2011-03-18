@@ -33,8 +33,14 @@
 #include "ring/graphics/image.h"
 
 #include "ring/helpers.h"
+#include "ring/ring.h"
+
+#include "graphics/thumbnail.h"
 
 namespace Ring {
+
+#define RING_SAVEGAME_VERSION 1
+static const char *ringSavegameIdentification = "ArxSav";
 
 SaveManager::SaveManager(Application *application) : _app(application) {
 	_setupType = kSetupTypeNone;
@@ -53,6 +59,61 @@ SaveManager::~SaveManager() {
 	_app = NULL;
 
 	close();
+}
+
+// Header
+bool SaveManager::readSavegameHeader(Common::InSaveFile *in, RingSavegameHeader &header) {
+	char saveIdent[6];
+	header.thumbnail = NULL;
+
+	// Validate the header Id
+	in->read(saveIdent, 6);
+	if (strcmp(saveIdent, ringSavegameIdentification))
+		return false;
+
+	header.version = in->readByte();
+	if (header.version != RING_SAVEGAME_VERSION)
+		return false;
+
+	// Read in name and description
+	header.name.clear();
+	char ch;
+	while ((ch = (char)in->readByte()) != '\0') header.name += ch;
+
+	header.description.clear();
+	while ((ch = (char)in->readByte()) != '\0') header.description += ch;
+
+	header.date = in->readUint32LE();
+	header.time = in->readUint16LE();
+	header.playtime = in->readUint32LE();
+
+	// Get the thumbnail
+	header.setThumbnail(new Graphics::Surface());
+	if (!Graphics::loadThumbnail(*in, *header.thumbnail)) {
+		header.thumbnail->free();
+		delete header.thumbnail;
+		header.thumbnail = NULL;
+		return false;
+	}
+
+	return true;
+}
+
+void SaveManager::writeSavegameHeader(Common::OutSaveFile *out, RingSavegameHeader &header) {
+	// Write out a savegame header
+	out->write(ringSavegameIdentification, 6);
+	out->writeByte(RING_SAVEGAME_VERSION);
+
+	// Write savegame name and description
+	out->write(header.name.c_str(), header.name.size() + 1);
+	out->write(header.description.c_str(), header.description.size() + 1);
+
+	out->writeUint32LE(header.date);
+	out->writeUint16LE(header.time);
+	out->writeUint32LE(header.playtime);
+
+	// Create a thumbnail and save it
+	Graphics::saveThumbnail(*out, *header.thumbnail);
 }
 
 bool SaveManager::open(Common::String filename, LoadSaveType type) {
@@ -87,7 +148,6 @@ bool SaveManager::open(Common::String filename, LoadSaveType type) {
 	return true;
 }
 
-
 void SaveManager::close() {
 	SAFE_DELETE(_ser);
 	SAFE_DELETE(_load);
@@ -99,20 +159,19 @@ bool SaveManager::loadSave(Common::String filename, LoadSaveType type) {
 		return false;
 
 	// Handle header
-	Common::String code = "ArxSav 1.00";
+	RingSavegameHeader header;
 	switch (type) {
 	default:
 		error("[SaveManager::loadSave] Invalid type (%d)", type);
 		break;
 
 	case kLoadSaveRead:
-		checkHeader();
+		// Read savegame header
+		readSavegameHeader(_load, _header);
 		break;
 
 	case kLoadSaveWrite:
-		_ser->syncString(code);
-		// TODO sync other header data
-		_ser->skip(8);
+		writeSavegameHeader(_save, _header);
 		break;
 	}
 
@@ -166,11 +225,6 @@ bool SaveManager::loadSaveTimer(Common::String filename, LoadSaveType type) {
 	return true;
 }
 
-void SaveManager::checkHeader() {
-	warning("[SaveManager::checkHeader] Not implemented");
-	_ser->skip(20);
-}
-
 void SaveManager::initialize() {
 	_data.state = _app->getState();
 	_data.field_6A = _app->getField6A();
@@ -209,12 +263,31 @@ void SaveManager::loadSaveSounds() {
 	close();
 }
 
-void SaveManager::saveImage(Image *image) {
-	error("[SaveManager::saveImage] Not implemented!");
+void SaveManager::setThumbnail(Image *image) {
+	_header.setThumbnail(image->getSurface());
+}
+
+void SaveManager::setDescription(const Common::String &description) {
+	_header.description = description;
+
+	// Update current date/time and total playtime
+	TimeDate curTime;
+	g_system->getTimeAndDate(curTime);
+	_header.date = ((curTime.tm_mday & 0xFF) << 24) | (((curTime.tm_mon + 1) & 0xFF) << 16) | ((curTime.tm_year + 1900) & 0xFFFF);
+	_header.time = ((curTime.tm_hour & 0xFF) << 8) | ((curTime.tm_min) & 0xFF);
+	_header.playtime = g_engine->getTotalPlayTime() / 1000;
 }
 
 bool SaveManager::remove(uint32 slot) {
-	error("[SaveManager::remove] Not implemented!");
+	return g_system->getSavefileManager()->removeSavefile(Ring::SaveManager::getSavegameFile(((RingEngine *)g_engine)->getGameDescription()->desc.gameid, slot));
+}
+
+const char *SaveManager::getSavegameFile(const char *gameid, int slot) {
+	static char buffer[54];
+	assert(strlen(gameid) < 50);
+
+	sprintf(buffer, "%s.s%02d", gameid, slot);
+	return buffer;
 }
 
 } // End of namespace Ring

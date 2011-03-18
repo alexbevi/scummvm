@@ -185,13 +185,13 @@ void ApplicationRing::startMenu(bool savegame) {
 			error("[ApplicationRing::startMenu] Cannot save game in SaveGame.ars");
 
 		// Save a copy of the screen surface for savegame
-		SAFE_DELETE(_gameImage);
+		SAFE_DELETE(_thumbnail);
 
-		_gameImage = new Image();
-		_gameImage->create(24, 2, 640, 480);
+		_thumbnail = new Image();
+		_thumbnail->create(24, 2, 640, 480);
 
 		// Save a copy of the screen to our image
-		_screenManager->copySurface(_gameImage, 0, 0);
+		_screenManager->copySurface(_thumbnail, 0, 0);
 	}
 
 	_currentGameZone = _zone;

@@ -32,6 +32,10 @@
 #include "common/savefile.h"
 #include "common/serializer.h"
 
+#include "engines/savestate.h"
+
+#include "graphics/surface.h"
+
 namespace Ring {
 
 class Application;
@@ -39,10 +43,23 @@ class Image;
 
 class SaveManager {
 public:
-	struct SavegameHeader {
-		char code[12];
-		uint32 val1;
-		uint32 val2;
+	struct RingSavegameHeader {
+		uint8 version;
+		Common::String name;
+		Common::String description;
+		uint32 date;
+		uint16 time;
+		uint32 playtime;
+		Graphics::Surface *thumbnail;
+
+		void setThumbnail(Graphics::Surface *surface) {
+			if (thumbnail) {
+				thumbnail->free();
+				delete thumbnail;
+			}
+
+			thumbnail->copyFrom(*surface);
+		}
 	};
 
 	struct SavegameData {
@@ -62,39 +79,44 @@ public:
 	SaveManager(Application *application);
 	~SaveManager();
 
+	// Header
+	static bool readSavegameHeader(Common::InSaveFile *in, RingSavegameHeader &header);
+	static void writeSavegameHeader(Common::OutSaveFile *out, RingSavegameHeader &header);
+
+	// Loading & Saving
 	bool loadSave(Common::String filename, LoadSaveType type);
 	bool loadSaveTimer(Common::String filename, LoadSaveType type);
 	void loadSaveSounds();
 
-	void saveImage(Image *image);
+	static const char *getSavegameFile(const char *gameid, int slot);
 
+	// Management
 	bool remove(uint32 slot);
 
-	bool has(Common::String filename);
+	// Thumbnail image
+	void setThumbnail(Image *image);
 
-	uint32 getTicks() { return _currentTicks; }
+	// Accessors
 	bool isSaving();
+	bool has(Common::String filename);
+	SavegameData *getData() { return &_data; }
+	SetupType getSetupType() const { return _setupType; }
+	Common::String *getName() { return &_header.name; }
+	uint32 getTicks() { return _currentTicks; }
+
+	void setDescription(const Common::String &description);
+	void setSetupType(SetupType type) { _setupType = type; }
 
 	// Helper
 	template<class T>
 	static void syncArray(Common::Serializer &s, Common::Array<T *> *arr);
 
-	// Accessors
-	SavegameData *getData() { return &_data; }
-
-	SetupType getSetupType() const { return _setupType; }
-	Common::String *getName() { return &_savename; }
-
-	void setDescription(const Common::String &description) { _description = description; }
-	void setSetupType(SetupType type) { _setupType = type; }
-
 private:
 	Application *_app;
 
+	RingSavegameHeader _header;
 	SavegameData _data;
 
-	Common::String _savename;
-	Common::String _description;
 	SetupType _setupType;
 	LoadSaveType _type;
 
@@ -105,7 +127,6 @@ private:
 	Common::InSaveFile  *_load;
 	Common::OutSaveFile *_save;
 
-	void checkHeader();
 	void initialize();
 
 	bool open(Common::String filename, LoadSaveType type);

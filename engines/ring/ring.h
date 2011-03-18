@@ -98,7 +98,6 @@ protected:
 	// Engine APIs
 	Common::Error run();
 	virtual void errorString(const char *buf_input, char *buf_output, int buf_output_size);
-	virtual bool hasFeature(EngineFeature f) const;
 	virtual Debugger *getDebugger() { return _debugger; }
 
 public:
@@ -109,6 +108,7 @@ public:
 	void update();
 
 	// Game type
+	const RingGameDescription *getGameDescription() { return _gameDescription; }
 	RingGameType getGameType() { return (RingGameType)_gameDescription->gameType; }
 	bool isMultiLanguage();
 

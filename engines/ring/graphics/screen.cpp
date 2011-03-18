@@ -38,6 +38,7 @@
 #include "common/system.h"
 
 #include "graphics/fonts/winfont.h"
+#include "graphics/thumbnail.h"
 
 namespace Ring {
 
@@ -160,7 +161,9 @@ void ScreenManager::drawText(Text *text) {
 }
 
 void ScreenManager::copySurface(Image *image, uint32 a2, uint32 a3) {
-	error("[ScreenManager::copySurface] Not implemented");
+	// TODO use parameters?
+
+	image->getSurface()->copyFrom(_screen);
 }
 
 void ScreenManager::updateScreen() {

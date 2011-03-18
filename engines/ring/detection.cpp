@@ -24,6 +24,13 @@
  */
 
 #include "ring/ring.h"
+#include "ring/base/saveload.h"
+
+#include "common/system.h"
+
+#include "graphics/surface.h"
+
+#include "metaengine.h"
 
 namespace Ring {
 
@@ -222,8 +229,103 @@ public:
 		return "Ring Engine (C) 1999 Arxel Tribe";
 	}
 
+	virtual bool hasFeature(MetaEngineFeature f) const;
+	virtual int getMaximumSaveSlot() const { return 99; }
+	virtual SaveStateList listSaves(const char *target) const;
+	virtual void removeSaveState(const char *target, int slot) const;
+	virtual SaveStateDescriptor querySaveMetaInfos(const char *target, int slot) const;
 	bool createInstance(OSystem *syst, Engine **engine, const ADGameDescription *gd) const;
+
+private:
+	static const char *gameIdFromTarget(const char *target);
 };
+
+bool RingMetaEngine::hasFeature(MetaEngineFeature f) const {
+	return (f == kSupportsListSaves) ||
+	       (f == kSupportsDeleteSave) ||
+	       (f == kSavesSupportMetaInfo) ||
+	       (f == kSavesSupportThumbnail) ||
+	       (f == kSavesSupportCreationDate) ||
+	       (f == kSavesSupportPlayTime);
+}
+
+SaveStateList RingMetaEngine::listSaves(const char *target) const {
+	const char* gameid = gameIdFromTarget(target);
+
+	Common::SaveFileManager *saveFileMan = g_system->getSavefileManager();
+	Common::StringArray filenames;
+	Common::String pattern = Common::String::format("%s.s??", gameid);
+
+	filenames = saveFileMan->listSavefiles(pattern);
+	sort(filenames.begin(), filenames.end());	// Sort (hopefully ensuring we are sorted numerically..)
+
+	SaveStateList saveList;
+	for (Common::StringArray::const_iterator file = filenames.begin(); file != filenames.end(); ++file) {
+		// Obtain the last 2 digits of the filename, since they correspond to the save slot
+		int slotNum = atoi(file->c_str() + file->size() - 2);
+
+		if (slotNum >= 0 && slotNum <= 99) {
+			Common::InSaveFile *in = saveFileMan->openForLoading(*file);
+			if (in) {
+				Ring::SaveManager::RingSavegameHeader header;
+				if (Ring::SaveManager::readSavegameHeader(in, header)) {
+					saveList.push_back(SaveStateDescriptor(slotNum, header.name));
+					if (header.thumbnail) {
+						header.thumbnail->free();
+						delete header.thumbnail;
+					}
+				}
+				delete in;
+			}
+		}
+	}
+
+	return saveList;
+}
+
+void RingMetaEngine::removeSaveState(const char *target, int slot) const {
+	// TODO: Infer gameid from target
+	g_system->getSavefileManager()->removeSavefile(Ring::SaveManager::getSavegameFile(gameIdFromTarget(target), slot));
+}
+
+SaveStateDescriptor RingMetaEngine::querySaveMetaInfos(const char *target, int slot) const {
+	Common::InSaveFile *f = g_system->getSavefileManager()->openForLoading(Ring::SaveManager::getSavegameFile(gameIdFromTarget(target), slot));
+	assert(f);
+
+	Ring::SaveManager::RingSavegameHeader header;
+	Ring::SaveManager::readSavegameHeader(f, header);
+	delete f;
+
+	// Create the return descriptor
+	SaveStateDescriptor desc(slot, header.name);
+	desc.setDeletableFlag(true);
+	desc.setWriteProtectedFlag(false);
+	desc.setThumbnail(header.thumbnail);
+
+	int day = (header.date >> 24) & 0xFF;
+	int month = (header.date >> 16) & 0xFF;
+	int year = header.date & 0xFFFF;
+	desc.setSaveDate(year, month, day);
+
+	int hour = (header.time >> 8) & 0xFF;
+	int minutes = header.time & 0xFF;
+	desc.setSaveTime(hour, minutes);
+
+	desc.setPlayTime(header.playtime * 1000);
+
+	return desc;
+}
+
+const char *RingMetaEngine::gameIdFromTarget(const char *target) {
+	// Get the game id from the target: remove everything after the first -
+	static char buffer[54];
+	assert(strlen(target) < 50);
+
+	char *tok = strtok((char *)target, "-");
+	sprintf(buffer, "%s", (tok == NULL) ? target : tok);
+
+	return buffer;
+}
 
 bool RingMetaEngine::createInstance(OSystem *syst, Engine **engine, const ADGameDescription *desc) const {
 	if (desc)
