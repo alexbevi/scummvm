@@ -47,6 +47,7 @@ SaveManager::SaveManager(Application *application) : _app(application) {
 	_type = kLoadSaveInvalid;
 
 	_currentTicks = 0;
+	_slot = 0;
 
 	_ser = NULL;
 	_load = NULL;
@@ -154,9 +155,11 @@ void SaveManager::close() {
 	SAFE_DELETE(_save);
 }
 
-bool SaveManager::loadSave(Common::String filename, LoadSaveType type) {
-	if (!open(filename, type))
+bool SaveManager::loadSave(uint32 slot, LoadSaveType type) {
+	if (!open(SaveManager::getSavegameFile(slot), type))
 		return false;
+
+	_slot = slot;
 
 	// Handle header
 	RingSavegameHeader header;
@@ -211,8 +214,8 @@ bool SaveManager::loadSave(Common::String filename, LoadSaveType type) {
 	return true;
 }
 
-bool SaveManager::loadSaveTimer(Common::String filename, LoadSaveType type) {
-	if (!open(filename, type))
+bool SaveManager::loadSaveTimer(Common::String zone, LoadSaveType type) {
+	if (!open(getTimerFile(zone), type))
 		return false;
 
 	// Load/Save data
@@ -241,6 +244,10 @@ void SaveManager::initialize() {
 	_data.loadFrom = _app->getLoadFrom();
 	_data.isRotationCompressed = _app->isRotationCompressed();
 	_data.archiveType = _app->getArchiveType();
+}
+
+bool SaveManager::hasTimer(Common::String zone) {
+	return has(getTimerFile(zone));
 }
 
 bool SaveManager::has(Common::String filename) {
@@ -279,7 +286,11 @@ void SaveManager::setDescription(const Common::String &description) {
 }
 
 bool SaveManager::remove(uint32 slot) {
-	return g_system->getSavefileManager()->removeSavefile(Ring::SaveManager::getSavegameFile(((RingEngine *)g_engine)->getGameDescription()->desc.gameid, slot));
+	return g_system->getSavefileManager()->removeSavefile(SaveManager::getSavegameFile(slot));
+}
+
+const char *SaveManager::getSavegameFile(int slot) {
+	return getSavegameFile(((RingEngine *)g_engine)->getGameDescription()->desc.gameid, slot);
 }
 
 const char *SaveManager::getSavegameFile(const char *gameid, int slot) {
@@ -288,6 +299,10 @@ const char *SaveManager::getSavegameFile(const char *gameid, int slot) {
 
 	sprintf(buffer, "%s.s%02d", gameid, slot);
 	return buffer;
+}
+
+Common::String SaveManager::getTimerFile(Common::String zone) {
+	return Common::String::format("%s_%s.s%02d", ((RingEngine *)g_engine)->getGameDescription()->desc.gameid, zone.c_str(), _slot);
 }
 
 } // End of namespace Ring

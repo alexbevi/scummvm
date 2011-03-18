@@ -942,6 +942,8 @@ void EventHandlerRing::onButtonUp(ObjectId id, Id target, Id puzzleRotationId, u
 }
 
 void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+	RingEngine *engine = ((RingEngine *)g_engine);
+
 	switch (id) {
 	default:
 		break;
@@ -1094,7 +1096,7 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 		break;
 
 	case kObjectMenuLoad:
-		// Get the list of savegames
+		// Get the list of games
 
 
 		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (MenuLoad)");
@@ -1147,7 +1149,7 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 		_app->exitZone();
 		_app->initZones();
 
-		if (!_app->getSaveManager()->loadSave("SaveGame", kLoadSaveRead)) {
+		if (!_app->getSaveManager()->loadSave(0, kLoadSaveRead)) {
 			_app->exitZone();
 			_app->initZones();
 			_app->loadPreferences();
@@ -1156,8 +1158,46 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 		}
 		break;
 
-	case kObjectLoadOk:
-		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (Load)");
+	case kObjectLoadOk: {
+		_app->cursorSelect(kCursorBusy);
+
+		unsetFlag();
+		handleEvents();
+
+		int32 imageIndex  = _app->visualListGetImageIndexClicked(1, 90002);
+		if (imageIndex == -1) {
+			_app->messageGet("SelectGame");
+			_app->messageShowWarning(0);
+			break;
+		}
+
+		// Compute slot
+		uint32 slot = _app->visualListGetItemCount(1, kObjectMenuLoad) - imageIndex - 1;
+
+		// Get a list of saves
+		SaveStateList list = engine->listSaves(engine->getGameDescription()->desc.gameid);
+
+		// Prepare loading of game
+		_app->visualListRemove(1, kPuzzleLoad, true);
+		_app->exitZone();
+		_app->initZones();
+
+		// Get info about game
+		Common::String name = list[slot].description();
+
+		// Try loading the game, and fallback to autosave if it doesn't work
+		if (!_app->getSaveManager()->loadSave(slot, kLoadSaveRead)) {
+			// Try to reload auto-save
+			if (!_app->getSaveManager()->loadSave(0, kLoadSaveRead)) {
+				_app->exitZone();
+				_app->initZones();
+				_app->loadPreferences();
+			}
+
+			_app->messageFormat("CanNotLoadGame", name);
+			_app->messageShowWarning(0);
+		}
+		}
 		break;
 
 	case kObjectSaveOk:
@@ -1165,6 +1205,8 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 
 		unsetFlag();
 		handleEvents();
+
+		// TODO Rename the autosave file to the current slot file
 
 		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (Save)");
 		break;
@@ -5179,7 +5221,7 @@ void EventHandlerRing::onKeyDownZoneSY(Common::KeyState keyState) {
 	PuzzleId puzzleId = _app->getCurrentPuzzleId();
 	switch (puzzleId) {
 	default:
-		error("[EventHandlerRing::onKeyDownZoneSY] Invalid puzzle Id (%d)", puzzleId.id());
+		break;
 
 	case kPuzzleLoad:
 		if (keyState.keycode == Common::KEYCODE_DELETE) {
@@ -5529,7 +5571,7 @@ void EventHandlerRing::onSetupZoneN2(SetupType type) {
 }
 
 void EventHandlerRing::onSetupLoadTimers(Common::String zoneName, Id testId1, Id puzzleRotationId, Id testId2) {
-	if (!_app->getSaveManager()->has(zoneName + ".ars"))
+	if (!_app->getSaveManager()->hasTimer(zoneName))
 		error("[EventHandlerRing::onSetupLoadTimers] Cannot find savegame (%s.ars)!", zoneName.c_str());
 
 	_app->bagRemoveAll();

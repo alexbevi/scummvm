@@ -84,10 +84,11 @@ public:
 	static void writeSavegameHeader(Common::OutSaveFile *out, RingSavegameHeader &header);
 
 	// Loading & Saving
-	bool loadSave(Common::String filename, LoadSaveType type);
+	bool loadSave(uint32 slot, LoadSaveType type);
 	bool loadSaveTimer(Common::String filename, LoadSaveType type);
 	void loadSaveSounds();
 
+	static const char *getSavegameFile(int slot);
 	static const char *getSavegameFile(const char *gameid, int slot);
 
 	// Management
@@ -98,7 +99,7 @@ public:
 
 	// Accessors
 	bool isSaving();
-	bool has(Common::String filename);
+	bool hasTimer(Common::String zone);
 	SavegameData *getData() { return &_data; }
 	SetupType getSetupType() const { return _setupType; }
 	Common::String *getName() { return &_header.name; }
@@ -116,6 +117,7 @@ private:
 
 	RingSavegameHeader _header;
 	SavegameData _data;
+	uint32 _slot;
 
 	SetupType _setupType;
 	LoadSaveType _type;
@@ -129,6 +131,9 @@ private:
 
 	void initialize();
 
+	Common::String getTimerFile(Common::String zone);
+
+	bool has(Common::String filename);
 	bool open(Common::String filename, LoadSaveType type);
 	void close();
 };

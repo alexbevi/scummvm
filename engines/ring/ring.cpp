@@ -253,6 +253,83 @@ bool RingEngine::isMultiLanguage() {
 	return false;
 }
 
+SaveStateList RingEngine::listSaves(const char *target) const {
+	const char* gameid = gameIdFromTarget(target);
+
+	Common::SaveFileManager *saveFileMan = g_system->getSavefileManager();
+	Common::StringArray filenames;
+	Common::String pattern = Common::String::format("%s.s??", gameid);
+
+	filenames = saveFileMan->listSavefiles(pattern);
+	sort(filenames.begin(), filenames.end());	// Sort (hopefully ensuring we are sorted numerically..)
+
+	SaveStateList saveList;
+	for (Common::StringArray::const_iterator file = filenames.begin(); file != filenames.end(); ++file) {
+		// Obtain the last 2 digits of the filename, since they correspond to the save slot
+		int slotNum = atoi(file->c_str() + file->size() - 2);
+
+		if (slotNum >= 0 && slotNum <= 99) {
+			Common::InSaveFile *in = saveFileMan->openForLoading(*file);
+			if (in) {
+				Ring::SaveManager::RingSavegameHeader header;
+				if (Ring::SaveManager::readSavegameHeader(in, header)) {
+					saveList.push_back(SaveStateDescriptor(slotNum, header.name));
+					if (header.thumbnail) {
+						header.thumbnail->free();
+						delete header.thumbnail;
+					}
+				}
+				delete in;
+			}
+		}
+	}
+
+	return saveList;
+}
+
+void RingEngine::removeSaveState(const char *target, int slot) const {
+	g_system->getSavefileManager()->removeSavefile(Ring::SaveManager::getSavegameFile(gameIdFromTarget(target), slot));
+}
+
+SaveStateDescriptor RingEngine::querySaveMetaInfos(const char *target, int slot) const {
+	Common::InSaveFile *f = g_system->getSavefileManager()->openForLoading(Ring::SaveManager::getSavegameFile(gameIdFromTarget(target), slot));
+	assert(f);
+
+	Ring::SaveManager::RingSavegameHeader header;
+	Ring::SaveManager::readSavegameHeader(f, header);
+	delete f;
+
+	// Create the return descriptor
+	SaveStateDescriptor desc(slot, header.name);
+	desc.setDeletableFlag(true);
+	desc.setWriteProtectedFlag(false);
+	desc.setThumbnail(header.thumbnail);
+
+	int day = (header.date >> 24) & 0xFF;
+	int month = (header.date >> 16) & 0xFF;
+	int year = header.date & 0xFFFF;
+	desc.setSaveDate(year, month, day);
+
+	int hour = (header.time >> 8) & 0xFF;
+	int minutes = header.time & 0xFF;
+	desc.setSaveTime(hour, minutes);
+
+	desc.setPlayTime(header.playtime * 1000);
+
+	return desc;
+}
+
+const char *RingEngine::gameIdFromTarget(const char *target) {
+	// Get the game id from the target: remove everything after the first -
+	static char buffer[54];
+	assert(strlen(target) < 50);
+
+	char *tok = strtok((char *)target, "-");
+	sprintf(buffer, "%s", (tok == NULL) ? target : tok);
+
+	return buffer;
+}
+
 void RingEngine::errorString(const char *buf_input, char *buf_output, int buf_output_size) {
 	snprintf(buf_output, (uint)buf_output_size, "%s", buf_input);
 }

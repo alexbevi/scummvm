@@ -181,8 +181,8 @@ void ApplicationRing::startMenu(bool savegame) {
 		_vm->update();
 		getBag()->sub_419350();
 
-		if (!_saveManager->loadSave("SaveGame", kLoadSaveWrite))
-			error("[ApplicationRing::startMenu] Cannot save game in SaveGame.ars");
+		if (!_saveManager->loadSave(0, kLoadSaveWrite))
+			error("[ApplicationRing::startMenu] Cannot save game in slot 0");
 
 		// Save a copy of the screen surface for savegame
 		SAFE_DELETE(_thumbnail);

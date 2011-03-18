@@ -112,6 +112,11 @@ public:
 	RingGameType getGameType() { return (RingGameType)_gameDescription->gameType; }
 	bool isMultiLanguage();
 
+	// Enhanced save/load
+	virtual SaveStateList listSaves(const char *target) const;
+	virtual void removeSaveState(const char *target, int slot) const;
+	virtual SaveStateDescriptor querySaveMetaInfos(const char *target, int slot) const;
+
 	// Accessors and helpers
 	Application *getApplication() { return _application; }
 	Common::RandomSource getRandom() const {return _random; }
@@ -135,6 +140,8 @@ private:
 	bool _mouseButtonPressed;
 	Common::Point _coordinates;
 	bool _flag;
+
+	static const char *gameIdFromTarget(const char *target);
 };
 
 } // End of namespace Ring
