@@ -44,6 +44,7 @@ class EventHandler;
 class LanguageHandler;
 class FontHandler;
 class Game;
+class Image;
 class ObjectHandler;
 class Object;
 class PreferenceHandler;
@@ -378,13 +379,14 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
+	Image *getGameImage() { return _gameImage; }
 	Zone getCurrentZone() { return _zone; }
 	byte getField6A() { return _field_6A; }
 	Common::String getCurrentZoneString() { return getZoneString(_zone); }
 	LoadFrom getLoadFrom() { return _loadFrom; }
 	bool isRotationCompressed() { return _isRotationCompressed; }
 	ArchiveType getArchiveType() { return _archiveType; }
-	byte getField6F() { return _field_6F; }
+	Zone getCurrentGameZone() { return _currentGameZone; }
 	State getState() { return _state; }
 	bool getField74() { return _field_74; }
 	bool getField75() { return _field_75; }
@@ -422,6 +424,9 @@ public:
 protected:
 	RingEngine *_vm;
 
+	// Game screen (when showing menu)
+	Image                        *_gameImage;
+
 	// Application objects
 	ScreenManager                *_screenManager;
 	ArtHandler                   *_artHandler;
@@ -441,7 +446,7 @@ protected:
 	byte                          _field_6A;
 	Common::String                _zoneString;
 	Zone                          _zone;          // original uses byte
-	byte                          _field_6F;
+	Zone                          _currentGameZone;
 	uint32                        _field_70;
 	bool                          _field_74;
 	bool                          _field_75;

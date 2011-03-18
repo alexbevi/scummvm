@@ -38,6 +38,7 @@
 #include "ring/game/event_ring.h"
 #include "ring/game/visual_ring.h"
 
+#include "ring/graphics/image.h"
 #include "ring/graphics/screen.h"
 
 #include "ring/ring.h"
@@ -171,7 +172,7 @@ void ApplicationRing::showStartupScreen() {
 }
 
 void ApplicationRing::startMenu(bool savegame) {
-	if (_field_6F)
+	if (_currentGameZone)
 		return;
 
 	if (savegame) {
@@ -183,10 +184,17 @@ void ApplicationRing::startMenu(bool savegame) {
 		if (!_saveManager->loadSave("SaveGame", kLoadSaveWrite))
 			error("[ApplicationRing::startMenu] Cannot save game in SaveGame.ars");
 
-		// TODO: Original saves a copy of the screen surface
+		// Save a copy of the screen surface for savegame
+		SAFE_DELETE(_gameImage);
+
+		_gameImage = new Image();
+		_gameImage->create(24, 2, 640, 480);
+
+		// Save a copy of the screen to our image
+		_screenManager->copySurface(_gameImage, 0, 0);
 	}
 
-	_field_6F = _zone;
+	_currentGameZone = _zone;
 
 	soundStopAll(4);
 	setZoneAndEnableBag(kZoneSY);

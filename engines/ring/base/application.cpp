@@ -65,7 +65,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_screenManager(NULL),        _artHandler(NULL),          _fontHandler(NULL),   _dialogHandler(NULL),        _languageHandler(NULL),
 	_isRotationCompressed(true), _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
 	_soundHandler(NULL),         _state(kStateNone),         _field_6A(0),         _zoneString("A0"),           _zone(kZoneNone),
-	_field_6F(0),                _field_70(0),               _field_74(false),     _field_75(false),            _field_76(false),
+	_currentGameZone(kZoneNone), _field_70(0),               _field_74(false),     _field_75(false),            _field_76(false),
 	_field_77(false),            _field_78(false),           _puzzle(NULL),        _rotation(NULL),             _bag(NULL),
 	_timerHandler(NULL),         _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL),        _preferenceHandler(NULL),
 	_eventHandler(NULL) {
@@ -75,6 +75,8 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_soundManager = new SoundManager(this, _vm->_mixer);
 
 	_currentRotation = NULL;
+
+	_gameImage = NULL;
 }
 
 Application::~Application() {
@@ -102,6 +104,8 @@ Application::~Application() {
 	_puzzle = NULL;
 	_rotation = NULL;
 	_currentRotation = NULL;
+
+	SAFE_DELETE(_gameImage);
 
 	// Zero-out passed pointers
 	_vm = NULL;
@@ -187,7 +191,7 @@ void Application::init() {
 	_loadFrom = kLoadFromCd;
 	_isRotationCompressed = true;
 	_archiveType = kArchiveFile;
-	_field_6F = 0;
+	_currentGameZone = kZoneNone;
 
 	_rotation = NULL;
 
@@ -367,9 +371,10 @@ void Application::exitZone() {
 	if (_soundHandler)
 		_soundHandler->reset();
 
-	_field_6F = 0;
+	_currentGameZone = kZoneNone;
 
-	// Original destroys the savegame current image
+	// Destroys the savegame current image
+	SAFE_DELETE(_gameImage);
 }
 
 void Application::exitToMenu(uint32 a1) {

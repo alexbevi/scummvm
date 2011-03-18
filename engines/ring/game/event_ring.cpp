@@ -39,6 +39,7 @@
 
 #include "ring/graphics/dragControl.h"
 #include "ring/graphics/hotspot.h"
+#include "ring/graphics/image.h"
 
 #include "ring/helpers.h"
 #include "ring/ring.h"
@@ -463,7 +464,7 @@ bool EventHandlerRing::handleLeftButtonDown(Accessibility *accessibility, uint32
 void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
 	debugC(kRingDebugLogic, "onMouseRightButtonUp");
 
-	if (getApp()->getDragControl()->getField20() || getApp()->getField6F())
+	if (getApp()->getDragControl()->getField20() || getApp()->getCurrentGameZone())
 		return;
 
 	Puzzle *puzzleMenu = getApp()->getPuzzle(kPuzzleMenu);
@@ -1096,8 +1097,40 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (MenuLoad)");
 		break;
 
-	case kObjectMenuSave:
-		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (MenuLoad)");
+	case kObjectMenuSave: {
+		_app->cursorSelect(kCursorBusy);
+
+		unsetFlag();
+		handleEvents();
+
+		// Reset name and description
+		_app->getSaveManager()->getName()->clear();
+
+		_app->objectPresentationSetTextToPuzzle(kObjectSaveName, 0, 0, *_app->getSaveManager()->getName());
+		_app->objectPresentationSetTextCoordinatesToPuzzle(kObjectSaveName, 0, 0, Common::Point(344, 181));
+		_app->objectPresentationSetAnimationCoordinatesOnPuzzle(kObjectSaveName, 0, Common::Point(346, 181));
+
+		TimeDate date;
+		g_system->getTimeAndDate(date);
+		Common::String description = Common::String::format("%s %02d:%02d:%02d %02d/%02d/%d",
+		                                                    _app->getZoneLongName(_app->getCurrentGameZone()).c_str(),
+		                                                    date.tm_hour, date.tm_min, date.tm_sec,
+		                                                    date.tm_mon, date.tm_mday, date.tm_year + 1900);
+
+		_app->getSaveManager()->setDescription(description);
+
+		_app->objectPresentationSetTextToPuzzle(kObjectSaveName, 0, 1, description);
+		_app->objectPresentationSetTextCoordinatesToPuzzle(kObjectSaveName, 0, 1, Common::Point(344, 155));
+
+		// Store the screen image
+		if (_app->getGameImage() != NULL) {
+			Image *zoomed = _app->getGameImage()->zoom(0.40645f, 1.0f);
+			_app->getSaveManager()->saveImage(zoomed);
+			delete zoomed;
+		}
+
+		_app->puzzleSetActive(kPuzzleSave);
+		}
 		break;
 
 	case kObjectMenuContinue:

@@ -35,6 +35,7 @@
 namespace Ring {
 
 class Application;
+class Image;
 
 class SaveManager {
 public:
@@ -65,6 +66,8 @@ public:
 	bool loadSaveTimer(Common::String filename, LoadSaveType type);
 	void loadSaveSounds();
 
+	void saveImage(Image *image);
+
 	bool remove(uint32 slot);
 
 	bool has(Common::String filename);
@@ -82,6 +85,7 @@ public:
 	SetupType getSetupType() const { return _setupType; }
 	Common::String *getName() { return &_savename; }
 
+	void setDescription(const Common::String &description) { _description = description; }
 	void setSetupType(SetupType type) { _setupType = type; }
 
 private:
@@ -90,6 +94,7 @@ private:
 	SavegameData _data;
 
 	Common::String _savename;
+	Common::String _description;
 	SetupType _setupType;
 	LoadSaveType _type;
 

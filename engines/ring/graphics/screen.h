@@ -55,6 +55,8 @@ public:
 	void drawText(Common::String text, Common::Point coords, Color color);
 	void drawText(Text *text);
 
+	void copySurface(Image *image, uint32 a2, uint32 a3);
+
 	void updateScreen();
 
 	void setOffset(Common::Point offset) { _offset = offset; }

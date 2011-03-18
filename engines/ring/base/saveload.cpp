@@ -30,6 +30,8 @@
 #include "ring/base/sound.h"
 #include "ring/base/timer.h"
 
+#include "ring/graphics/image.h"
+
 #include "ring/helpers.h"
 
 namespace Ring {
@@ -205,6 +207,10 @@ void SaveManager::loadSaveSounds() {
 	_app->getSoundManager()->saveLoadWithSerializer(*_ser);
 
 	close();
+}
+
+void SaveManager::saveImage(Image *image) {
+	error("[SaveManager::saveImage] Not implemented!");
 }
 
 bool SaveManager::remove(uint32 slot) {

@@ -168,6 +168,10 @@ bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom 
 	return true;
 }
 
+Image *Image::zoom(uint32 xZoom, uint32 yZoom) {
+	error("[Image::zoom] Not implemented");
+}
+
 Common::Rect Image::draw(Graphics::Surface *surface, Common::Point dest) {
 	return draw(surface, dest, _surface->w, _surface->h, 0, 0);
 }

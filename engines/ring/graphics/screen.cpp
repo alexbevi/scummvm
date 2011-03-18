@@ -159,6 +159,10 @@ void ScreenManager::drawText(Text *text) {
 	font->drawString(&_screen, text->getString(), text->getCoordinates().x, text->getCoordinates().y, text->getWidth(), text->getForegroundColor());
 }
 
+void ScreenManager::copySurface(Image *image, uint32 a2, uint32 a3) {
+	error("[ScreenManager::copySurface] Not implemented");
+}
+
 void ScreenManager::updateScreen() {
 	g_system->fillScreen(0);
 	g_system->copyRectToScreen((byte *)_screen.getBasePtr(0, 0), 640 * 2, 0, 0, 640, 480);
