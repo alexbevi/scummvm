@@ -78,6 +78,10 @@ private:
 	int32        _indexOffsetNI;
 	int32        _distNI;
 
+	// N2
+	uint32       _presentationIndexN2;
+	int32        _distN2;
+
 	// SY
 	uint32       _presentationIndexSY;
 	bool         _prefsSubtitles;
