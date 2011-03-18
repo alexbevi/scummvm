@@ -981,7 +981,58 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 		break;
 
 	case kObject4:
-		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (kObject4)");
+		switch (target) {
+		default:
+		case 0:
+		case 1:
+			_app->messageHideQuestion(0);
+			break;
+
+		case 2:
+			_app->cursorSelect(kCursorBusy);
+			unsetFlag();
+			handleEvents();
+			_app->exitZone();
+			_app->initZones();
+			_app->loadPreferences();
+			_app->messageHideQuestion(2);
+			break;
+
+		case 3:
+			_app->messageHideQuestion(2);
+			break;
+
+		// Delete savegame
+		case 4: {
+			int32 imageIndex  = _app->visualListGetImageIndexClicked(1, 90002);
+			int32 objectIndex = _app->visualListGetObjectIndexClicked(1, kPuzzleLoad);
+
+			if (!objectIndex) {
+				_app->messageHideQuestion(4);
+				_app->messageGet("SelectGame");
+				_app->messageShowWarning(0);
+				_app->messageHideQuestion(4);
+				break;
+			}
+
+			// Delete selected savegame
+			if (!_app->getSaveManager()->remove(_app->visualListGetItemCount(1, kObjectMenuLoad) - imageIndex - 1)) {
+				_app->messageHideQuestion(4);
+				_app->messageGet("CanNotDeleteSavedGame");
+				_app->messageShowWarning(0);
+				_app->messageHideQuestion(4);
+				break;
+			}
+
+			// Hide delete question
+			_app->messageHideQuestion(4);
+			}
+			break;
+
+		case 5:
+			_app->messageHideQuestion(4);
+			break;
+		}
 		break;
 
 	case kObjectMenuNewGame:
@@ -1052,7 +1103,7 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 	case kObjectMenuContinue:
 		_app->cursorSelect(kCursorBusy);
 
-		((RingEngine *)g_engine)->setFlag(false);
+		unsetFlag();
 		handleEvents();
 
 		_app->exitZone();
@@ -1072,6 +1123,11 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 		break;
 
 	case kObjectSaveOk:
+		_app->cursorSelect(kCursorBusy);
+
+		unsetFlag();
+		handleEvents();
+
 		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (Save)");
 		break;
 
@@ -1099,7 +1155,13 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 
 	// Original also handles clicks on Object 90911 (that doesn't exist)
 	case kObject90912:
-		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (90912)");
+		// Check current Cd
+		if (target > 0 && target <=8) {
+			// Original checks the cd number in data/cd.ini
+
+			_app->setZoneAndEnableBag((Zone)target);
+			_app->setZone((Zone)target, _app->getSaveManager()->getSetupType());
+		}
 		break;
 	}
 }

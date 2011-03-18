@@ -65,6 +65,8 @@ public:
 	bool loadSaveTimer(Common::String filename, LoadSaveType type);
 	void loadSaveSounds();
 
+	bool remove(uint32 slot);
+
 	bool has(Common::String filename);
 
 	uint32 getTicks() { return _currentTicks; }

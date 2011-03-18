@@ -207,4 +207,8 @@ void SaveManager::loadSaveSounds() {
 	close();
 }
 
+bool SaveManager::remove(uint32 slot) {
+	error("[SaveManager::remove] Not implemented!");
+}
+
 } // End of namespace Ring
