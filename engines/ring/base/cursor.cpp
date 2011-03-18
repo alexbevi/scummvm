@@ -35,6 +35,37 @@
 
 namespace Ring {
 
+static const byte defaultCursorPalette[] = {
+	0x00, 0x00, 0x00,	// Black
+	0xFF, 0xFF, 0xFF	// White
+};
+
+/**
+ * A black and white Windows-style arrow cursor (12x20).
+ */
+static const byte defaultCursor[] = {
+	1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0,
+	1, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0,
+	1, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0,
+	1, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0,
+	1, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0,
+	1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0,
+	1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0,
+	1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1,
+	1, 2, 2, 2, 1, 2, 2, 1, 0, 0, 0, 0,
+	1, 2, 2, 1, 1, 2, 2, 1, 0, 0, 0, 0,
+	1, 2, 1, 0, 1, 1, 2, 2, 1, 0, 0, 0,
+	1, 1, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0,
+	1, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0,
+	0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0,
+	0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0
+};
+
 #pragma region CursorBase
 
 CursorBase::CursorBase() : BaseObject(kCursorInvalid) {
@@ -74,8 +105,6 @@ void Cursor::init(CursorId id, Common::String name, CursorType cursorType, byte 
 void Cursor::alloc() {
 	// Default arrow cursor
 	if (_name.empty() || _name == "IDC_ARROW") {
-		warning("[Cursor::alloc] Not implemented (default arrow cursor)");
-
 		_isDefaultCursor = true;
 
 		return;
@@ -107,12 +136,25 @@ void Cursor::alloc() {
 
 void Cursor::dealloc() {
 	_isDefaultCursor = false;
-
-	// TODO: Destroy cursor instance
 }
 
 void Cursor::draw() {
 	error("[Cursor::draw] Normal cursors are not drawn through the draw method!");
+}
+
+void Cursor::set() {
+	if (_name.empty() || _name == "IDC_ARROW") {
+		CursorMan.replaceCursor(defaultCursor, 12, 20, _offset.x, _offset.y, 0);
+		CursorMan.replaceCursorPalette(defaultCursorPalette, 1, 2);
+		CursorMan.disableCursorPalette(false);
+		return;
+	}
+
+	//warning("[Cursor::set] Only the arrow cursor is supported for now (wanted: %s)!", _name.c_str());
+	CursorMan.replaceCursor(defaultCursor, 12, 20, _offset.x, _offset.y, 0);
+	CursorMan.replaceCursorPalette(defaultCursorPalette, 1, 2);
+	CursorMan.disableCursorPalette(false);
+	CursorMan.showMouse(true);
 }
 
 #pragma endregion
@@ -168,8 +210,10 @@ void CursorImage::draw() {
 		alloc();
 
 	// Replace cursor
-	Graphics::PixelFormat format = g_system->getScreenFormat();
+	Graphics::PixelFormat format = g_system->getScreenFormat(); //Graphics::PixelFormat(4, 8, 8, 8, 8, 8, 16, 24, 0);
 	CursorMan.replaceCursor((byte *)_image->getSurface()->pixels, _image->getWidth(), _image->getHeight(), _offset.x, _offset.y, 0, 1, &format);
+	CursorMan.disableCursorPalette(true);
+	CursorMan.showMouse(true);
 }
 
 #pragma endregion
@@ -203,6 +247,8 @@ void CursorAnimation::draw() {
 	// Replace cursor
 	Graphics::PixelFormat format = g_system->getScreenFormat();
 	CursorMan.replaceCursor((byte *)getCurrentImage()->getSurface()->pixels, getCurrentImage()->getWidth(), getCurrentImage()->getHeight(), _offset.x, _offset.y, 0, 1, &format);
+	CursorMan.disableCursorPalette(true);
+	CursorMan.showMouse(true);
 }
 
 #pragma endregion
@@ -294,6 +340,9 @@ void CursorHandler::select(CursorId id) {
 		error("[CursorHandler::select] ID doesn't exist (%d)", id);
 
 	_index = _cursors.getIndex(id);
+
+	// FIXME Find where this is done in the original
+	_cursors.get(id)->set();
 }
 
 void CursorHandler::setOffset(CursorId id, const Common::Point &offset) {

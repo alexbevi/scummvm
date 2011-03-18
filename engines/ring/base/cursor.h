@@ -44,6 +44,7 @@ public:
 	virtual void alloc() = 0;
 	virtual void dealloc() = 0;
 	virtual void draw() = 0;
+	virtual void set() {}
 
 	// Accessors
 	void setName(Common::String name) { _name = name; }
@@ -71,6 +72,7 @@ public:
 	virtual void alloc();
 	virtual void dealloc();
 	virtual void draw();
+	virtual void set();
 
 private:
 	uint32 _field_19; // HCURSOR
