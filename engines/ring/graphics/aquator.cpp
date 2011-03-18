@@ -35,23 +35,60 @@ namespace Ring {
 
 #pragma region ImageHeaderEntry
 
+#define IMAGEHEADER_BUFFER_SIZE 129600
+
+ImageHeaderEntry::Header::Header() {
+	field_0  = 0;
+	field_4  = 0;
+	field_8  = 0;
+	field_C  = 0;
+	field_10 = 0;
+	field_14 = 0;
+	field_18 = 0;
+	field_1C = 0;
+	field_20 = 0;
+	field_24 = 0;
+	field_28 = 0;
+	field_2C = 0;
+	field_30 = 0;
+}
+
+void ImageHeaderEntry::Header::update(const Header &header) {
+	field_0  = header.field_0;
+	field_4  = header.field_4;
+	field_8  = header.field_8;
+	field_C  = header.field_C;
+	field_10 = header.field_10;
+	field_14 = header.field_14;
+	field_18 = header.field_18;
+	field_1C = header.field_1C;
+	field_20 = header.field_20;
+	field_24 = header.field_24;
+	field_28 = header.field_28;
+	field_2C = header.field_2C;
+	field_30 = header.field_30;
+}
+
+void ImageHeaderEntry::Header::load(Common::SeekableReadStream *stream) {
+	field_0  = stream->readUint32LE();
+	field_4  = stream->readUint32LE();
+	field_8  = stream->readUint32LE();
+	field_C  = stream->readUint32LE();
+	field_10 = stream->readUint32LE();
+	field_14 = stream->readUint32LE();
+	field_18 = stream->readUint32LE();
+	field_1C = stream->readUint32LE();
+	field_20 = stream->readUint32LE();
+	field_24 = stream->readUint32LE();
+	field_28 = stream->readUint32LE();
+	field_2C = stream->readUint32LE();
+	field_30 = stream->readUint32LE();
+}
+
 ImageHeaderEntry::ImageHeaderEntry() {
-	_field_0  = 0;
-	_field_4  = 0;
-	_field_8  = 0;
-	_field_C  = 0;
-	_field_10 = 0;
-	_field_14 = 0;
-	_field_18 = 0;
-	_field_1C = 0;
-	_field_20 = 0;
-	_field_24 = 0;
-	_field_28 = 0;
-	_field_2C = 0;
-	_field_30 = 0;
-	_buffer = NULL;
-	_field_38 = 0;
-	_field_3C = 0;
+	_buffer      = NULL;
+	_bufferData  = NULL;
+	_hasAdditionnalData = false;
 }
 
 ImageHeaderEntry::~ImageHeaderEntry() {
@@ -59,17 +96,55 @@ ImageHeaderEntry::~ImageHeaderEntry() {
 }
 
 void ImageHeaderEntry::reset() {
-	SAFE_DELETE(_buffer);
+	free(_buffer);
+	_buffer = NULL;
 
-	_field_38 = 0;
+	_bufferData = 0;
 }
 
-void ImageHeaderEntry::init(Common::SeekableReadStream *stream, bool a2) {
-	error("[ImageHeaderEntry::init] Not implemented");
+void ImageHeaderEntry::init(Common::SeekableReadStream *stream, bool hasAdditionnalData) {
+	reset();
+
+	// Read entry header
+	_header.load(stream);
+	initData();
+
+	// Allocate buffer and setup pointers
+	_buffer = allocBuffer(hasAdditionnalData);
+	if (hasAdditionnalData)
+		_bufferData = (byte *)_buffer + IMAGEHEADER_BUFFER_SIZE;
+
+	// Read buffers
+	stream->read(_bufferData, _header.field_2C / 4);
+
+	if (hasAdditionnalData)
+		stream->read(_buffer, IMAGEHEADER_BUFFER_SIZE);
+
+	_hasAdditionnalData = hasAdditionnalData;
 }
 
 void ImageHeaderEntry::init(ImageHeaderEntry *entry) {
-	error("[ImageHeaderEntry::init] (copy) Not implemented");
+	reset();
+
+	// Copy header information
+	_header.update(entry->getHeader());
+	initData();
+
+	// ALlocate new buffer
+	_buffer = allocBuffer(true);
+	_bufferData = (byte *)_buffer + IMAGEHEADER_BUFFER_SIZE;
+	_hasAdditionnalData = true;
+}
+
+void ImageHeaderEntry::initData() {
+	if (!_header.field_20)
+		_header.field_20 = _header.field_0;
+
+	if (!_header.field_28)
+		_header.field_28 = _header.field_4;
+
+	_header.field_30 = _header.field_8  * (_header.field_20 - _header.field_1C);
+	_header.field_2C = _header.field_30 * (_header.field_28 - _header.field_24);
 }
 
 void ImageHeaderEntry::update(ImageHeaderEntry *entry, bool updateCaller) {
@@ -84,8 +159,14 @@ void ImageHeaderEntry::drawBuffer() {
 	error("[ImageHeaderEntry::drawBuffer] Not implemented");
 }
 
-void ImageHeaderEntry::allocBuffer(bool doubleSize) {
-	error("[ImageHeaderEntry::allocBuffer] Not implemented");
+void *ImageHeaderEntry::allocBuffer(bool hasAdditionnalData) {
+	uint32 size = _header.field_2C / 4 + (hasAdditionnalData ? IMAGEHEADER_BUFFER_SIZE : 0);
+
+	void *buffer = malloc(size + 1024);
+	if (!buffer)
+		error("[ImageHeaderEntry::allocBuffer] Cannot allocate buffer of size %d", size + 1024);
+
+	return buffer;
 }
 
 #pragma endregion

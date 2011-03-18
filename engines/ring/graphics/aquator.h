@@ -32,10 +32,30 @@ namespace Ring {
 
 class ImageHeaderEntry {
 public:
+	struct Header {
+		uint32  field_0;
+		uint32  field_4;
+		uint32  field_8;
+		uint32  field_C;
+		uint32  field_10;
+		uint32  field_14;
+		uint32  field_18;
+		uint32  field_1C;
+		uint32  field_20;
+		uint32  field_24;
+		uint32  field_28;
+		uint32  field_2C;
+		uint32  field_30;
+
+		Header();
+		void update(const Header &header);
+		void load(Common::SeekableReadStream *stream);
+	};
+
 	ImageHeaderEntry();
 	~ImageHeaderEntry();
 
-	void init(Common::SeekableReadStream *stream, bool a2);
+	void init(Common::SeekableReadStream *stream, bool hasAdditionnalData);
 	void init(ImageHeaderEntry *entry);
 	void update(ImageHeaderEntry *entry, bool updateCaller = true);
 
@@ -44,27 +64,17 @@ public:
 	void drawBuffer();
 
 	bool isInitialized() { return _buffer != NULL; }
+	const Header &getHeader() { return _header; }
 
 private:
-	uint32  _field_0;
-	uint32  _field_4;
-	uint32  _field_8;
-	uint32  _field_C;
-	uint32  _field_10;
-	uint32  _field_14;
-	uint32  _field_18;
-	uint32  _field_1C;
-	uint32  _field_20;
-	uint32  _field_24;
-	uint32  _field_28;
-	uint32  _field_2C;
-	uint32  _field_30;
-	uint32 *_buffer;
-	uint32  _field_38;
-	uint32  _field_3C;
+	Header  _header;
+	void   *_buffer;
+	void   *_bufferData;
+	bool    _hasAdditionnalData;
 
 	void reset();
-	void allocBuffer(bool doubleSize);
+	void *allocBuffer(bool hasAdditionnalData);
+	void initData();
 };
 
 class ImageHeader {
