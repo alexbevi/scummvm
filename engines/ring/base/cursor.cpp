@@ -30,6 +30,9 @@
 
 #include "ring/helpers.h"
 
+#include "graphics/cursorman.h"
+#include "graphics/surface.h"
+
 namespace Ring {
 
 #pragma region CursorBase
@@ -109,7 +112,7 @@ void Cursor::dealloc() {
 }
 
 void Cursor::draw() {
-	// FIXME: Update cursor through cursor manager
+	error("[Cursor::draw] Normal cursors are not drawn through the draw method!");
 }
 
 #pragma endregion
@@ -157,7 +160,16 @@ void CursorImage::dealloc() {
 }
 
 void CursorImage::draw() {
-	// FIXME: Update cursor through cursor manager
+	// TODO Check and do not replace cursor every frame if the data did not change
+	if (!_image)
+		return;
+
+	if (!_image->isInitialized())
+		alloc();
+
+	// Replace cursor
+	Graphics::PixelFormat format = g_system->getScreenFormat();
+	CursorMan.replaceCursor((byte *)_image->getSurface()->pixels, _image->getWidth(), _image->getHeight(), _offset.x, _offset.y, 0, 1, &format);
 }
 
 #pragma endregion
@@ -185,8 +197,12 @@ void CursorAnimation::dealloc() {
 }
 
 void CursorAnimation::draw() {
-	// FIXME: Update cursor through cursor manager
-	//AnimationImage::draw();
+	// Compute current frame, but do not draw on screen
+	playFrame(false);
+
+	// Replace cursor
+	Graphics::PixelFormat format = g_system->getScreenFormat();
+	CursorMan.replaceCursor((byte *)getCurrentImage()->getSurface()->pixels, getCurrentImage()->getWidth(), getCurrentImage()->getHeight(), _offset.x, _offset.y, 0, 1, &format);
 }
 
 #pragma endregion

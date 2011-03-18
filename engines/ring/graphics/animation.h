@@ -114,8 +114,8 @@ public:
 	void allocActive();
 	void dealloc();
 
-	void playFrame();
-	void playFrame(const Common::Point &point);
+	void playFrame(bool visible = true);
+	void playFrame(const Common::Point &point, bool visible = true);
 	void draw(const Common::Point &point);
 
 	// Accessors

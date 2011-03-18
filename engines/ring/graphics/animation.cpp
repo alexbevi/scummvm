@@ -624,11 +624,11 @@ void AnimationImage::dealloc() {
 			(*it)->destroy();
 }
 
-void AnimationImage::playFrame() {
+void AnimationImage::playFrame(bool visible) {
 	playFrame(_coordinates);
 }
 
-void AnimationImage::playFrame(const Common::Point &point) {
+void AnimationImage::playFrame(const Common::Point &point, bool visible) {
 	if (_field_2D || _field_89)
 		if (_currentImage)
 			_currentImage->destroy();
@@ -649,7 +649,8 @@ void AnimationImage::playFrame(const Common::Point &point) {
 		}
 
 		// Draw frame
-		getApp()->getScreenManager()->draw(image, point, _drawType);
+		if (visible)
+			getApp()->getScreenManager()->draw(image, point, _drawType);
 	}
 }
 
