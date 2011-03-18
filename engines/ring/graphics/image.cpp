@@ -187,12 +187,12 @@ Common::Rect Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 
 	surface->fillRect(destRect, Color(255, 0, 0).getColor());
 
 	byte *src  = (byte*)_surface->pixels;
-	byte *dst = (byte *)surface->pixels;
+	byte *dst = (byte *)surface->getBasePtr(640, 480);
 	uint32 height = destRect.height();
 
 	while (--height) {
-		memcpy(dst + destRect.top * surface->pitch + destRect.left, src, destRect.width() * _surface->bytesPerPixel);
-		dst += surface->pitch;
+		memcpy(dst - (destRect.top * surface->pitch + destRect.left), src, destRect.width() * _surface->bytesPerPixel);
+		dst -= surface->pitch;
 		src += _surface->pitch;
 	}
 
