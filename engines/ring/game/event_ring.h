@@ -72,6 +72,12 @@ private:
 	float        _presentationIndexBagRO;
 	uint32       _presentationIndexBagRO2;
 
+	// NI
+	bool         _stateBagNI;
+	uint32       _presentationIndexNI;
+	int32        _indexOffsetNI;
+	int32        _distNI;
+
 	// SY
 	uint32       _presentationIndexSY;
 	bool         _prefsSubtitles;

@@ -61,6 +61,11 @@ EventHandlerRing::EventHandlerRing(ApplicationRing *application) : _app(applicat
 	_presentationIndexBagRO = 0;
 	_presentationIndexBagRO2 = 0;
 
+	_stateBagNI = false;
+	_presentationIndexNI = 0;
+	_indexOffsetNI = 0;
+	_distNI = 0;
+
 	_presentationIndexSY = 0;
 	_prefsSubtitles = false;
 	_prefsVolume = 0;
@@ -1123,7 +1128,7 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotatio
 		if (_app->bagHasClickedObject()) {
 			if (_app->bagGetClickedObject() == kObjectTile) {
 				if (!_app->varGetByte(10102)) {
-					_app->soundPlay(10106, kSoundOnce);
+					_app->soundPlay(10106);
 					_app->varSetByte(10102, 1);
 					_app->varSetFloat(90005, _app->varGetFloat(90005) + 5.0f);
 					_app->objectPresentationShow(kObject10100, 1);
@@ -1339,7 +1344,7 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotatio
 			}
 
 			_app->puzzleSetActive(kPuzzle10390, 1, 1);
-			_app->soundPlay(rnd(3) + 10015, kSoundOnce);
+			_app->soundPlay(rnd(3) + 10015);
 		}
 
 		_app->cursorDelete();
@@ -6111,7 +6116,661 @@ void EventHandlerRing::onBagZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, 
 }
 
 void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
-	error("[EventHandlerRing::onBagZoneNI] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kObject10103:
+		switch (type) {
+		default:
+			break;
+
+		case 1:
+			_presentationIndexNI = 0;
+			_app->dragControlSetField45(2);
+			_app->dragControlSetHotspot(Common::Rect(495, 194, 598, 284));
+			break;
+
+		case 2:
+			if (!_app->soundIsPlaying(10401))
+				_app->soundStop(10401, 1024);
+
+			_app->objectSetAccessibilityOff(kObject10103);
+
+			if (_presentationIndexNI <= 6) {
+				while (_presentationIndexNI > 0) {
+					--_presentationIndexNI;
+
+					_app->objectPresentationHide(kObject10103);
+					_app->objectPresentationShow(kObject10103, _presentationIndexNI);
+
+					handleEvents();
+				}
+
+				_app->objectSetAccessibilityOn(kObject10103);
+			} else {
+				while (_presentationIndexNI < 12) {
+					++_presentationIndexNI;
+
+					_app->objectPresentationHide(kObject10103);
+					_app->objectPresentationShow(kObject10103, _presentationIndexNI);
+
+					handleEvents();
+				}
+
+				uint32 startTick = g_system->getMillis();
+				while (g_system->getMillis() - startTick < 1000)
+					handleEvents();
+
+				while (_presentationIndexNI > 0) {
+					--_presentationIndexNI;
+
+					_app->objectPresentationHide(kObject10103);
+					_app->objectPresentationShow(kObject10103, _presentationIndexNI);
+
+					handleEvents();
+				}
+
+				_app->objectSetAccessibilityOn(kObject10103);
+				_app->objectPresentationHide(kObject10003, 8);
+				_app->objectPresentationHide(kObject10003, 9);
+				_app->objectPresentationHide(kObject10003, 10);
+				_app->objectPresentationHide(kObject10003, 11);
+				_app->objectPresentationHide(kObject10003, 12);
+				_app->objectPresentationShow(kObject10003, 3);
+				_app->objectPresentationShow(kObject10003, 4);
+				_app->objectPresentationShow(kObject10003, 5);
+				_app->objectPresentationShow(kObject10003, 6);
+				_app->objectPresentationShow(kObject10003, 7);
+				_app->playMovie("1511");
+				_app->rotationSetAlp(10005, 270.0f);
+				_app->rotationSetRan(10005, 85.7f);
+				_app->rotationSetActive(10005);
+				_app->rotationSetMovabilityOff(10005);
+				_app->rotationSetMovabilityOn(10005, 1, 1);
+				_app->soundPlay(10901, kSoundLoop);
+			}
+			break;
+
+		case 3:
+			if (!_app->dragControlXEqual()) {
+				_presentationIndexNI = _app->dragControlGetOffsetX0() / 5;
+
+				if (_app->dragControlXLower0()) {
+					_presentationIndexNI = 0;
+				} else if (_presentationIndexNI >= 0) {
+					if (_presentationIndexNI > 12)
+						_presentationIndexNI = 12;
+				} else {
+					_presentationIndexNI = 0;
+				}
+
+				_app->objectPresentationHide(kObject10103);
+				_app->objectPresentationShow(10103, _presentationIndexNI);
+
+				if (!_app->soundIsPlaying(10401))
+					_app->soundPlay(10401);
+			}
+			break;
+		}
+		break;
+
+	case kObject10106:
+		switch (type) {
+		default:
+			break;
+
+		case 1: {
+			_app->dragControlSetCoords1(Common::Point(243, 276));
+
+			int32 val1 = 0;
+			int32 val2 = 0;
+			int32 offsetX1 = 0;
+			int32 offsetY1 = 0;
+
+			if (_app->dragControlXLower1())
+				offsetX1 = -(int32)_app->dragControlGetOffsetX1();
+			else
+				offsetX1 = _app->dragControlGetOffsetX1();
+
+			if (_app->dragControlYLower1())
+				offsetY1 = -(int32)_app->dragControlGetOffsetY1();
+			else
+				offsetY1 = _app->dragControlGetOffsetY1();
+
+			if (offsetX1 <= 0) {
+				if (offsetY1 > 0) {
+					val1 = (offsetY1 + offsetX1 + 40) / 6;
+					val2 = 30;
+				} else {
+					val1 = ((offsetY1 - offsetX1) + 40) / 6;
+					val2 = 20;
+				}
+			} else {
+				if (offsetY1 > 0) {
+					val1 = ((offsetX1 - offsetY1) + 40) / 6;
+					val2 = 0;
+				} else {
+					val1 = (40 - (offsetX1 + offsetY1)) / 6;
+					val2 = 10;
+				}
+			}
+
+			if (val1 < 0)
+				val1 = 0;
+
+			_distNI = val1 + val2 - _app->varGetWord(10100);
+			if (_distNI < 0)
+				_distNI	= 0;
+
+			if (_distNI > 18)
+				_distNI %= 19;
+
+			_indexOffsetNI = (_app->varGetByte(10105) == 1) ? 19 : 256;
+			}
+			break;
+
+		case 2: {
+			int32 offset = 0;
+			bool update = true;
+
+			switch (_presentationIndexNI) {
+			default:
+				offset = 2;
+				break;
+
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 13:
+			case 14:
+			case 15:
+				offset = -1;
+				break;
+
+			case 7:
+			case 8:
+			case 9:
+			case 10:
+			case 11:
+			case 16:
+			case 17:
+			case 18:
+				offset = 1;
+				break;
+
+			case 12:
+				// Skip update
+				update = false;
+				return;
+			}
+
+			if (update) {
+				do {
+					_presentationIndexNI += offset;
+
+					if (_presentationIndexNI <= 18) {
+						if (_presentationIndexNI < 0)
+							_presentationIndexNI = 0;
+					} else {
+						_presentationIndexNI = 0;
+					}
+
+					_app->objectPresentationHideAndRemove(kObject10106);
+					_app->objectPresentationShow(kObject10106, _presentationIndexNI + _indexOffsetNI);
+					sub_445930();
+
+					handleEvents();
+
+				} while (_presentationIndexNI != 12);
+			}
+
+			_app->varSetWord(10100, _presentationIndexNI);
+
+			if (_presentationIndexNI == 12) {
+				_app->varSetByte(10104, 1);
+
+				sub_445A10();
+
+				if (_app->varGetByte(10106) == 1)
+					_app->soundPlay(10101);
+
+				_app->rotationSetMovabilityOff(10102, 1, 1);
+				_app->rotationSetMovabilityOn(10102, 2, 2);
+
+				sub_445930();
+			} else {
+				_app->varSetByte(10104, 0);
+
+				sub_445A10();
+
+				if (_app->varGetByte(10106) == 1)
+					_app->soundPlay(10101);
+
+				_app->rotationSetMovabilityOn(10102, 1, 1);
+				_app->rotationSetMovabilityOff(10102, 2, 2);
+				sub_445930();
+			}
+			}
+			break;
+
+		case 3:
+			if (!_app->dragControlXEqual()) {
+				int32 val1 = 0;
+				int32 val2 = 0;
+				int32 offsetX1 = 0;
+				int32 offsetY1 = 0;
+
+				if (_app->dragControlXLower1())
+					offsetX1 = -(int32)_app->dragControlGetOffsetX1();
+				else
+					offsetX1 = _app->dragControlGetOffsetX1();
+
+				if (_app->dragControlYLower1())
+					offsetY1 = -(int32)_app->dragControlGetOffsetY1();
+				else
+					offsetY1 = _app->dragControlGetOffsetY1();
+
+				// Check interval
+				if (offsetX1 > 40 || offsetY1 > 40 || offsetX1 < -40 || offsetY1 < -40)
+					break;
+
+				if (offsetX1 <= 0) {
+					if (offsetY1 > 0) {
+						val1 = (offsetY1 + offsetX1 + 40) / 6;
+						val2 = 30;
+					} else {
+						val1 = ((offsetY1 - offsetX1) + 40) / 6;
+						val2 = 20;
+					}
+				} else {
+					if (offsetY1 > 0) {
+						val1 = ((offsetX1 - offsetY1) + 40) / 6;
+						val2 = 0;
+					} else {
+						val1 = (40 - (offsetX1 + offsetY1)) / 6;
+						val2 = 10;
+					}
+				}
+
+				if (val1 < 0)
+					val1 = 0;
+
+				_presentationIndexNI = val1 + val2 + _distNI;
+				if (_presentationIndexNI < 0)
+					_presentationIndexNI	= 0;
+
+				if (_presentationIndexNI > 18)
+					_presentationIndexNI %= 19;
+
+				_app->objectPresentationHide(kObject10106);
+				_app->objectPresentationShow(kObject10106, _presentationIndexNI + _indexOffsetNI);
+				_app->varSetWord(10100, _presentationIndexNI);
+				sub_445930();
+			}
+			break;
+		}
+		break;
+
+	case kObject10107:
+		switch (type) {
+		default:
+			break;
+
+		case 1:
+			_app->dragControlSetField45(2);
+			_app->dragControlSetHotspot(Common::Rect(295, 255, 345, 375));
+			break;
+
+		case 2:
+			_app->objectPresentationHide(kObject10107);
+
+			if (a2) {
+				if (_app->dragControlGetOffsetY0() < 20) {
+					_app->objectPresentationShow(kObject10107, 13);
+					_app->varSetByte(10105, 0);
+					sub_445A10();
+					sub_445930();
+					break;
+				}
+
+				if (_app->dragControlYHigher0()) {
+					_app->objectPresentationShow(kObject10107, 13);
+					_app->varSetByte(10105, 1);
+				} else {
+					_app->objectPresentationShow(kObject10107, 0);
+					_app->objectSetAccessibilityOn(kObject10107, 0, 0);
+					_app->objectSetAccessibilityOff(kObject10107, 1, 1);
+					_app->varSetByte(10105, 0);
+				}
+
+				sub_445A10();
+
+				if (_app->varGetByte(10106) == 1)
+					_app->soundPlay(10101);
+
+			} else {
+				if (_app->dragControlGetOffsetY0() < 20) {
+					_app->objectPresentationShow(kObject10107, 0);
+					_app->varSetByte(10105, 0);
+					sub_445A10();
+					sub_445930();
+					break;
+				}
+
+				if (_app->dragControlYLower0()) {
+					_app->objectPresentationShow(kObject10107, 0);
+					_app->varSetByte(10105, 0);
+				} else {
+					_app->objectPresentationShow(kObject10107, 13);
+					_app->objectSetAccessibilityOff(kObject10107, 0, 0);
+					_app->objectSetAccessibilityOn(kObject10107, 1, 1);
+					_app->varSetByte(10105, 1);
+				}
+
+				sub_445A10();
+
+				if (_app->varGetByte(10106) == 1)
+					_app->soundPlay(10101);
+			}
+
+			sub_445930();
+			break;
+
+		case 3:
+			if (!_app->dragControlYEqual()) {
+				uint32 index = 0;
+
+				if (a2) {
+					index = 13 - _app->dragControlGetOffsetY0() / 3;
+
+					if (_app->dragControlYHigher0())
+						index = 13;
+				} else {
+					index = _app->dragControlGetOffsetY0() / 3;
+
+					if (_app->dragControlYLower0())
+						index = 0;
+				}
+
+				_app->varSetByte(10105, 0);
+
+				if (index >= 0) {
+					if (index > 12) {
+						index = 13;
+						_app->varSetByte(10105, 1);
+					}
+				} else {
+					index = 0;
+				}
+
+				sub_445930();
+				_app->objectPresentationHide(kObject10107);
+				_app->objectPresentationShow(kObject10107, index);
+				sub_445930();
+			}
+			break;
+		}
+		break;
+
+	case kObject10201:
+		switch (type) {
+		default:
+			break;
+
+		case 1:
+			_app->dragControlSetField45(2);
+			_app->dragControlSetHotspot(Common::Rect(299, 214, 431, 356));
+			break;
+
+		case 2:
+			if (!_app->soundIsPlaying(10401))
+				_app->soundStop(10401, 1024);
+
+			if (_presentationIndexNI <= 3) {
+				while (_presentationIndexNI > 0) {
+					--_presentationIndexNI;
+
+					_app->objectPresentationHide(kObject10201);
+					_app->objectPresentationShow(kObject10201, _presentationIndexNI);
+
+					handleEvents();
+				}
+			} else {
+				if (_presentationIndexNI <= 10) {
+					uint32 offset = (_presentationIndexNI >= 6) ? -1 : 1;
+					while (_presentationIndexNI != 6) {
+						_presentationIndexNI += offset;
+
+						_app->objectPresentationHide(kObject10201);
+						_app->objectPresentationShow(kObject10201, _presentationIndexNI);
+
+						handleEvents();
+					}
+
+					uint32 startTick = g_system->getMillis();
+					while (g_system->getMillis() - startTick < 1000)
+						handleEvents();
+
+					while (_presentationIndexNI > 0) {
+						--_presentationIndexNI;
+
+						_app->objectPresentationHide(kObject10201);
+						_app->objectPresentationShow(kObject10201, _presentationIndexNI);
+
+						handleEvents();
+					}
+
+					_app->playMovie("1527");
+
+					if (_app->varGetByte(10200)) {
+						_app->puzzleSetActive(kPuzzle10202);
+						_app->soundPlay(10030);
+					} else {
+						_app->varSetByte(10200, 1);
+						_app->puzzleSetActive(kPuzzle10203);
+						_app->soundPlay(10027);
+						_app->varSetFloat(90005, _app->varGetFloat(90005) + 2.0f);
+					}
+				} else {
+					_app->objectSetAccessibilityOff(kObject10201);
+					while (_presentationIndexNI < 13) {
+						++_presentationIndexNI;
+
+						_app->objectPresentationHide(kObject10201);
+						_app->objectPresentationShow(kObject10201, _presentationIndexNI);
+
+						handleEvents();
+					}
+
+					uint32 startTick = g_system->getMillis();
+					while (g_system->getMillis() - startTick < 1000)
+						handleEvents();
+
+					while (_presentationIndexNI > 0) {
+						--_presentationIndexNI;
+
+						_app->objectPresentationHide(kObject10201);
+						_app->objectPresentationShow(kObject10201, _presentationIndexNI);
+
+						handleEvents();
+					}
+
+					_app->playMovie("1525");
+					_app->playMovie("1526");
+					_app->objectSetAccessibilityOn(kObject10200);
+				}
+			}
+			break;
+
+		case 3:
+			if (!_app->dragControlYEqual()) {
+				_presentationIndexNI = _app->dragControlGetOffsetY0() / 5;
+
+				if (_app->dragControlYLower0()) {
+					_presentationIndexNI = 0;
+				} else if (_presentationIndexNI >= 0) {
+					if (_presentationIndexNI > 13)
+						_presentationIndexNI = 13;
+				} else {
+					_presentationIndexNI = 0;
+				}
+
+				_app->objectPresentationHide(kObject10201);
+				_app->objectPresentationShow(10201, _presentationIndexNI);
+
+				if (!_app->soundIsPlaying(10401))
+					_app->soundPlay(10401);
+			}
+			break;
+		}
+		break;
+
+	case kObject10420:
+	case kObject10421:
+		switch (type) {
+		default:
+			break;
+
+		case 1:
+			_app->dragControlSetField45(2);
+			_app->dragControlSetHotspot(Common::Rect(263, 206, 390, 341));
+			_stateBagNI = (a2 != 0);
+			break;
+
+		case 2:
+			_app->objectPresentationHide(id);
+			if (a2) {
+				if (_app->dragControlGetOffsetY0() < 30 || _app->dragControlYHigher0()) {
+					_app->objectPresentationShow(id, 12);
+					_app->varSetByte(id, 1);
+				} else {
+					_app->objectPresentationShow(id, 1);
+					_app->objectSetAccessibilityOn(id, 0, 0);
+					_app->objectSetAccessibilityOff(id, 1, 1);
+					_app->varSetByte(id, 0);
+				}
+			} else {
+				if (_app->dragControlGetOffsetY0() < 30 || _app->dragControlYLower0()) {
+					_app->objectPresentationShow(id, 1);
+					_app->varSetByte(id, 0);
+				} else {
+					_app->objectPresentationShow(id, 12);
+					_app->objectSetAccessibilityOff(id, 0, 0);
+					_app->objectSetAccessibilityOn(id, 1, 1);
+					_app->varSetByte(id, 1);
+				}
+			}
+
+			sub_445A10();
+			break;
+
+		case 3:
+			if (!_app->dragControlYEqual()) {
+				int32 offset = 0;
+				if (a2) {
+					offset = 11 - _app->dragControlGetOffsetY0() / 5;
+
+					if (_app->dragControlXHigher0())
+						offset = 12;
+				} else {
+					offset = _app->dragControlGetOffsetY0() / 5 + 1;
+
+					if (_app->dragControlXLower0())
+						offset = 1;
+				}
+
+				if (offset < 1)
+					offset = 1;
+
+				if (offset > 12)
+					offset = 12;
+
+				_app->objectPresentationHideAndRemove(id);
+				_app->objectPresentationShow(id, offset);
+
+				if (offset <= 8 || _stateBagNI) {
+					if (offset < 5 && _stateBagNI) {
+						_app->soundStop(10404, 1024);
+						_app->soundPlay(10403);
+						_app->varSetFloat(90005, _app->varGetFloat(90005) - 3.0f);
+
+						_stateBagNI = false;
+					}
+				} else {
+					_app->soundPlay(10402);
+					_app->varSetFloat(90005, _app->varGetFloat(90005) + 3.0f);
+
+					_stateBagNI = true;
+
+					if (_app->varGetByte(10107)) {
+						_app->varSetByte(10432, _app->varGetByte(10432) / 2);
+
+						if (id == kObject10420)
+							_app->objectSetAccessibilityOff(kObject10420);
+
+						_app->soundPlay(10404);
+						sub_445A10();
+					}
+				}
+			}
+			break;
+		}
+		break;
+
+	case kObject10601:
+	case kObject10602:
+	case kObject10603:
+		switch (type) {
+		default:
+			break;
+
+		case 1:
+			_presentationIndexNI = _app->varGetWord(id - 1);
+			break;
+
+		case 2:
+			_app->varSetWord(id - 1, _presentationIndexNI);
+
+			if (!_app->varGetWord(10600)
+			 && !_app->varGetWord(10601)
+			 && !_app->varGetWord(10602)) {
+				_app->varSetWord(10600, 12);
+				_app->varSetWord(10601, 0);
+				_app->varSetWord(10602, 24);
+				_app->playMovie("1524");
+				_app->rotationSetAlp(10501, 232.0f);
+				_app->rotationSetActive(10501);
+			}
+			break;
+
+		case 3:
+			if (!_app->dragControlXEqual()) {
+				if (_app->dragControlXLower0()) {
+					_presentationIndexNI = _app->varGetWord(id - 1) - (_app->dragControlGetOffsetX0() / 12);
+				} else if (_app->dragControlXHigher0()) {
+					_presentationIndexNI = _app->varGetWord(id - 1) + (_app->dragControlGetOffsetX0() / 12);
+				}
+
+				if (_presentationIndexNI < 0)
+					_presentationIndexNI  = 47;
+
+				if (_presentationIndexNI > 47)
+					_presentationIndexNI %= 48;
+
+				_app->objectPresentationHideAndRemove(id);
+				_app->objectPresentationShow(id);
+
+				if (!_app->soundIsPlaying(10401))
+					_app->soundPlay(10401);
+			}
+			break;
+		}
+		break;
+	}
 }
 
 void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
