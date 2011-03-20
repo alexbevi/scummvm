@@ -159,6 +159,7 @@ bool SaveManager::loadSave(uint32 slot, LoadSaveType type) {
 	if (!open(SaveManager::getSavegameFile(slot), type))
 		return false;
 
+	// Set slot (will be used to load timers)
 	_slot = slot;
 
 	// Handle header

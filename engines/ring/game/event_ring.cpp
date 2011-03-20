@@ -1095,11 +1095,17 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 		_app->showCredits();
 		break;
 
-	case kObjectMenuLoad:
+	case kObjectMenuLoad: {
 		// Get the list of games
+		SaveStateList list = engine->listSaves(engine->getGameDescription()->desc.gameid);
 
+		for (uint32 i = 0; i < list.size(); i++) {
+			SaveStateDescriptor desc = list[i];
 
-		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (MenuLoad)");
+			_app->objectAdd((ObjectId)(90500 + i), Common::String::format("#%d", i), desc.description(), 1);
+			_app->visualListAdd(1, kPuzzleLoad, (ObjectId)(90500 + i));
+		}
+		}
 		break;
 
 	case kObjectMenuSave: {
@@ -1186,7 +1192,7 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 		Common::String name = list[slot].description();
 
 		// Try loading the game, and fallback to autosave if it doesn't work
-		if (!_app->getSaveManager()->loadSave(slot, kLoadSaveRead)) {
+		if (_app->getSaveManager()->loadSave(slot, kLoadSaveRead)) {
 			// Try to reload auto-save
 			if (!_app->getSaveManager()->loadSave(0, kLoadSaveRead)) {
 				_app->exitZone();
@@ -1200,15 +1206,32 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 		}
 		break;
 
-	case kObjectSaveOk:
+	case kObjectSaveOk: {
 		_app->cursorSelect(kCursorBusy);
 
 		unsetFlag();
 		handleEvents();
 
-		// TODO Rename the autosave file to the current slot file
-
+		// TODO Copy the autosave (and timer saves) to the selected slot
 		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (Save)");
+		bool saved = false;
+
+		if (!saved) {
+			_app->exitZone();
+			_app->initZones();
+
+			// Try reloading autosave
+			if (_app->getSaveManager()->loadSave(0, kLoadSaveRead))
+				break;
+
+			_app->exitZone();
+			_app->initZones();
+			_app->loadPreferences();
+
+			_app->messageFormat("CanNotSaveGame", *_app->getSaveManager()->getName());
+			_app->messageShowWarning(0);
+		}
+		}
 		break;
 
 	case kObjectLoadCancel:
