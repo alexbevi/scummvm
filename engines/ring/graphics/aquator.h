@@ -62,9 +62,12 @@ public:
 	// Buffer
 	void prepareBuffer();
 	void drawBuffer();
+	void updateBuffer(Common::Point *point);
+	void updateCoordinates(Common::Point *point);
 
 	bool isInitialized() { return _buffer != NULL; }
 	const Header &getHeader() { return _header; }
+	void *getBuffer() { return _buffer; }
 
 private:
 	Header  _header;

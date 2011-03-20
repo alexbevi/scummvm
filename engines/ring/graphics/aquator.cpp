@@ -159,6 +159,17 @@ void ImageHeaderEntry::drawBuffer() {
 	error("[ImageHeaderEntry::drawBuffer] Not implemented");
 }
 
+void ImageHeaderEntry::updateBuffer(Common::Point *point) {
+	error("[ImageHeaderEntry::updateBuffer] Not implemented");
+}
+
+void ImageHeaderEntry::updateCoordinates(Common::Point *point) {
+	uint32 *buffer = (uint32 *)_bufferData;
+
+	point->x = (point->x * (float)buffer[8227] * 10.0f) / 2048.0f;
+	point->y = (point->y - (float)buffer[8230] * 0.5f) * (float)buffer[8225] / (float)buffer[8230] + (float)buffer[8226] + 10.0f;
+}
+
 void *ImageHeaderEntry::allocBuffer(bool hasAdditionnalData) {
 	uint32 size = _header.field_2C / 4 + (hasAdditionnalData ? IMAGEHEADER_BUFFER_SIZE : 0);
 
@@ -303,7 +314,17 @@ void AquatorStream::initNode(Common::SeekableReadStream *stream, byte a2, int a3
 	SAFE_DELETE(stream);
 
 	// Init entry buffer
-	error("[AquatorStream::initNode] Not implemented (entry buffer)");
+	int16 *buffer = (int16 *)_entry->getBuffer();
+
+	// TODO cleanup
+	for (uint32 i = 0; i < 64800; i++) {
+		int16 val1 = (8 * (buffer[0] & 31)) >> (8 - a3);
+		int16 val2 = (buffer[0] >> 8 ) & 248;
+
+		buffer[0] = ((((8 - a7) >> 3) & 252) >> (8 - a5) << a4) | (val2 >> (8 - a7) << a6) | (val1 << a2);
+
+		++buffer;
+	}
 }
 
 void AquatorStream::initStream(uint32 index) {

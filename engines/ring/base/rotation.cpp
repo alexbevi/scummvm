@@ -158,8 +158,32 @@ void Rotation::updateAndDraw(float alp, float bet, float ran) {
 	getApp()->getScreenManager()->updateScreen();
 }
 
-void Rotation::setCoordinates(const Common::Point &point) {
-	error("[Rotation::setCoordinates] Not implemented");
+void Rotation::setCoordinates(Common::Point *point, Common::KeyCode keycode) {
+
+	if (!_fre) {
+		float alpDiff = point->x * 0.0015625f - 0.5f;
+		float betDiff = point->y * 0.0020833f - 0.5f;
+
+		if (abs(alpDiff) > 0.25f)
+			_alp += (abs(alpDiff) - 0.25f) * 48.0f * alpDiff;
+
+		if (abs(betDiff) > 0.25f)
+			_bet += (abs(betDiff) - 0.25f) * 48.0f * betDiff;
+
+		if (keycode == Common::KEYCODE_UP)
+			_ran -= 1.0f;
+
+		if (keycode == Common::KEYCODE_DOWN)
+			_ran += 1.0f;
+	}
+
+	point->y -= 16;
+
+	if (_stream->isInitialized()) {
+		updateView();
+		_stream->getEntry()->updateBuffer(point);
+		_stream->getEntry()->updateCoordinates(point);
+	}
 }
 
 void Rotation::updateView() {

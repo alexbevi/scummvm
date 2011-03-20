@@ -340,7 +340,8 @@ void ApplicationRing::draw() {
 		} else {
 			_rotation->alloc();
 			_rotation->update();
-			_rotation->setCoordinates(_vm->getCoordinates());
+			Common::Point point = _vm->getCoordinates();
+			_rotation->setCoordinates(&point, Common::KEYCODE_INVALID);
 			_rotation->draw();
 			_rotation->drawText();
 		}

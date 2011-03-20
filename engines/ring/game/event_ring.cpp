@@ -505,14 +505,13 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 				return;
 
 			// Center rotation
+			Common::Point point = accessibility->getHotspot()->getCenter();
 			if (_app->hasCurrentRotation())
-				_app->getCurrentRotation()->setCoordinates(accessibility->getHotspot()->getCenter());
-
-			bool controlPressed = (evt.kbd.flags & Common::KBD_CTRL);
+				_app->getCurrentRotation()->setCoordinates(&point, evt.kbd.keycode);
 
 			// Modify event to be a mouse click on the center of the hotspot
-			Hotspot *hotspot = accessibility->getHotspot();
-			evt.mouse = hotspot->getCenter();
+			bool controlPressed = (evt.kbd.flags & Common::KBD_CTRL);
+			evt.mouse = point;
 
 			// Simulate click
 			if (_app->getBag()->getField94()) {
@@ -580,7 +579,7 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 		evt.mouse = hotspot->getCenter();
 
 		// Center rotation
-		currentRotation->setCoordinates(evt.mouse);
+		currentRotation->setCoordinates(&evt.mouse, evt.kbd.keycode);
 
 		// Simulate click
 		if (_app->getBag()->getField94()) {
