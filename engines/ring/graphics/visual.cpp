@@ -444,29 +444,35 @@ void VisualObjectList::draw() {
 				}
 
 				// Set text coordinates
+				Common::Point imageCoords;
 				if (_field_B9 & 1) {
 					uint32 text1Y = _origin.y + i * _field_69 + _field_5D + (_field_69 - _text1->getHeight()) / 2;
 					_text1->setCoordinates(Common::Point(offset, text1Y));
 					_text2->setCoordinates(Common::Point(offset, text1Y + _text1->getHeight() + _field_6D));
+
+					imageCoords = Common::Point(_origin.x + _field_B1, _origin.y + i * _field_69 + _field_B5 - (_field_69 - _cliImageP->getHeight()) / 2);
 				}
 
 				if (_field_B9 & 2) {
 					uint32 textX = _origin.x + i * _field_69 + _field_59 + (_field_69 - _text1->getWidth()) / 2;
 					_text1->setCoordinates(Common::Point(textX, _origin.y + _field_5D));
 					_text2->setCoordinates(Common::Point(textX, _origin.y + _field_5D + _text1->getHeight() + _field_6D));
+
+					imageCoords = Common::Point(_origin.x + i * _field_69 + _field_B1 + (_field_69 - _text1->getWidth()) / 2, _origin.y + _field_B5);
 				}
 
 				if (_objectIdClicked == object->getId()) {
 					_text1->setForegroundColor(_foregroundColorSelected);
 					_text2->setForegroundColor(_foregroundColorSelected);
 
-					error("[VisualObjectList::draw] Not implemented (image drawing)!");
+					if (!_cliImageA->getNameId().empty())
+						screen->draw(_cliImageA, imageCoords, _cliImageP->getDrawType());
 				} else {
 					_text1->setForegroundColor(_foregroundColor);
 					_text2->setForegroundColor(_foregroundColor);
 
-					//screen->draw(_cliImageP, , _cliImageP->getDrawType());
-					error("[VisualObjectList::draw] Not implemented (image drawing)!");
+					if (!_cliImageP->getNameId().empty())
+						screen->draw(_cliImageP, imageCoords, _cliImageP->getDrawType());
 				}
 
 				// Draw text
