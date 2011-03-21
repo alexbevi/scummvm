@@ -168,7 +168,7 @@ bool ImageLoaderBMA::readHeader() {
 
 bool ImageLoaderBMA::readImage(Image *image) {
 	_stream->decompressIndexed(_blockSize,
-	                           _seqSize,  2 * _header.seqWidth * (_header.seqHeight / _header.coreHeight),
+	                           _seqSize,  (2 * _header.seqWidth * _header.seqHeight) / _header.coreHeight,
 	                           _coreSize, 2 * _header.coreWidth * _header.coreHeight,
 	                           _header.seqWidth * _header.seqHeight * 16,
 							   2 * _header.seqWidth * _header.seqHeight - 6,

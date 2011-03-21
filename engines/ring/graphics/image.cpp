@@ -169,7 +169,34 @@ bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom 
 }
 
 Image *Image::zoom(uint32 xZoom, uint32 yZoom) {
-	error("[Image::zoom] Not implemented");
+	if (!isInitialized())
+		error("[Image::zoom] Image not initialized!");
+
+	if (getBPP() != 24)
+		error("[Image::zoom] Not a 24bpp image!");
+
+	// Create new image to store zoomed image
+	uint32 width = getWidth() * xZoom;
+	uint32 height = getHeight() * yZoom;
+
+	Image *image = new Image();
+	image->create(24, 2, width, height);
+
+	byte *zoomedData = (byte *)image->getSurface()->getBasePtr(0, 0);
+
+	for (uint32 j = 0; j < height; j++) {
+		for (uint32 i = 0; i < width; i++) {
+			byte *data = (byte *)_surface->getBasePtr(i / xZoom, j / yZoom);
+
+			zoomedData[0] = data[0];
+			zoomedData[1] = data[1];
+			zoomedData[2] = data[2];
+
+			zoomedData += 3;
+		}
+	}
+
+	return image;
 }
 
 Common::Rect Image::draw(Graphics::Surface *surface, Common::Point dest) {
@@ -177,16 +204,16 @@ Common::Rect Image::draw(Graphics::Surface *surface, Common::Point dest) {
 }
 
 Common::Rect Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset) {
-	if (srcX != 0 || offset != 0)
-		warning("[Image::draw] Not implemented (srcX / offset case)!");
-
+	// Compute destination rectangle
 	Common::Rect destRect(dest.x, dest.y, dest.x + srcWidth, dest.y + srcHeight);
 	destRect.clip(640, 480);
 
+	//////////////////////////////////////////////////////////////////////////
 	// DEBUG: Draw destination rect
 	surface->fillRect(destRect, Color(255, 0, 0).getColor());
+	//////////////////////////////////////////////////////////////////////////
 
-	byte *src  = (byte*)_surface->pixels;
+	byte *src  = (byte*)surface->getBasePtr(srcX, getHeight() - (srcHeight + offset));
 	byte *dst = (byte *)surface->getBasePtr(640, 480);
 	uint32 height = destRect.height();
 
