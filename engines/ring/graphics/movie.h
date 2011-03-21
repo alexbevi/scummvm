@@ -65,48 +65,49 @@ public:
 	virtual bool seek(int32 offset, int whence = SEEK_SET);
 
 	// Accessors
-	void setField8(bool state) { _field_8 = state; }
-	void setChannel(uint32 channel) { _channel = channel; }
-	void setSoundInitialized(bool state) { _isSoundInitialized = state; }
-	void setField53(bool state) { _field_53 = state; }
-	void setRemoveDialog(bool state) { _hasDialog = state; }
-	void setFramerate(uint32 framerate) { _framerate = framerate; }
-
-	bool isSoundInitialized() { return _isSoundInitialized; }
-	bool getField53() { return _field_53; }
-	float getFramerate() { return _framerate; }
-	bool hasDialog() { return _hasDialog; }
-	uint32 getChannel() { return _channel; }
+	void setField10(bool state) { _field_10 = state; }
 
 private:
+	struct TControlHeader {
+		uint32 field_0;
+		uint32 field_4;
+		uint16 field_8;
+		uint16 field_A;
+		byte   field_C;
+
+		TControlHeader() {
+			field_0 = 0;
+			field_4 = 0;
+			field_8 = 0;
+			field_A = 0;
+			field_C = 0;
+		}
+
+		void load(Common::SeekableReadStream *stream) {
+			field_0 = stream->readUint32LE();
+			field_4 = stream->readUint32LE();
+			field_8 = stream->readUint16LE();
+			field_A = stream->readUint16LE();
+			field_C = stream->readByte();
+		}
+	};
+
 	Common::SeekableReadStream *_stream;    ///< The movie file stream
-	// buffer
-	// buffer 2
-	byte   _field_8;
-	// backbufferGlobal
-	// backBuffer
-	byte   _field_11;
-	uint32 _field_12;
-	uint32 _field_16;
-	uint32 _field_1A;
-	// CinTControlKosiGlobal
-	byte *_tControlBuffer;
-	// cacheBufferGlobal
-	// cacheBuffer
-	uint32 _field_2E;
-	uint32 _field_32;
-	uint32 _field_36;
-	uint32 _field_3A;
-	// event
-	bool _isStreaming; // uint32
-	uint32 _field_46;
-	uint32 _field_4A;
-	float  _field_4E;
-	bool   _isSoundInitialized; // FIXME remove (our sound mixer is always initialized)
-	bool   _field_53;
-	float  _framerate;
-	bool   _hasDialog;
-	uint32 _channel;
+	byte   *_buffer;
+	byte   *_buffer2;
+	bool    _field_10;
+	byte   *_backBuffer;
+	TControlHeader _tControlHeader;
+	byte   *_tControlBuffer;
+	byte   *_cacheBuffer;
+	byte   *_tControlData;
+	uint32  _field_3A;
+	uint32  _field_3E;
+	uint32  _field_42;
+	uint32  _field_46;
+	bool    _isStreaming;
+
+	uint32 decompress(uint32 a1, byte* buffer, uint32 a3);
 };
 
 class Movie {
@@ -119,12 +120,18 @@ public:
 
 	void play(const Common::Point &point);
 
-	void setFramerate(float rate) { _cinematic->setFramerate(rate); }
+	void setFramerate(float rate) { _framerate = rate; }
 
 private:
-	ScreenManager  *_screen;
 	ImageLoaderCIN *_imageCIN;
+	ScreenManager  *_screen;
 	Cinematic      *_cinematic;
+	float           _field_56;
+	bool            _isSoundInitialized;
+	bool            _field_5B;
+	float           _framerate;
+	bool            _hasDialog;
+	uint32          _channel;
 
 	bool readSound();
 	bool skipSound();
