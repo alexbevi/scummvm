@@ -28,6 +28,7 @@
 
 #include "ring/shared.h"
 
+#include "audio/audiostream.h"
 #include "audio/mixer.h"
 
 namespace Ring {
@@ -43,9 +44,11 @@ public:
 	virtual ~SoundEntry();
 
 	virtual void play(bool loop) = 0;
-	virtual void preload() = 0;
 	virtual void stop() = 0;
-	virtual bool isPreloaded() = 0;
+	virtual void stopAndClear() = 0;
+	virtual void preload() {}
+	virtual void unload() {}
+	virtual bool isPreloaded() { return false; }
 	bool isPlaying();
 
     void setVolume(int32 volume);
@@ -110,20 +113,19 @@ protected:
 	static void convertPan(int32 &pan);
 };
 
-class SoundEntryS : public SoundEntry {
+class SoundEntryStream : public SoundEntry {
 public:
-	SoundEntryS(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, uint32 soundChunk);
-	~SoundEntryS();
+	SoundEntryStream(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, uint32 soundChunk);
+	~SoundEntryStream();
 
 	virtual void play(bool loop);
-	virtual void preload();
 	virtual void stop();
-	virtual bool isPreloaded() { return false; }
+	virtual void stopAndClear();
 
 private:
 	uint32         _field_126;
 	uint32         _field_12A;
-	uint32         _field_12E;
+	Audio::RewindableAudioStream *_audioStream;
 	uint32         _field_132;
 	uint32         _field_136;
 	uint32         _field_13A;
@@ -134,31 +136,39 @@ private:
 	uint32         _field_14E;
 	uint32         _field_152;
 	uint32         _field_156;
-	uint32         _field_15A;
-	uint32         _field_15E;
-	uint32         _field_162;
+	//uint32         _event1;
+	//uint32         _event2;
+	bool           _isBufferPlaying;
 	//uint32         _event;
 	uint32         _soundChunk;
+
+	void initSoundBuffer(bool loop, const Common::String &path, uint32 soundChunk, SoundFormat format);
+	void stopAndReleaseSoundBuffer();
 };
 
-class SoundEntryD : public SoundEntry {
+class SoundEntryData : public SoundEntry {
 public:
-	SoundEntryD(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format);
-	~SoundEntryD();
+	SoundEntryData(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format);
+	~SoundEntryData();
 
 	virtual void play(bool loop);
-	virtual void preload();
 	virtual void stop();
+	virtual void stopAndClear();
+	virtual void preload();
+	virtual void unload();
 	virtual bool isPreloaded() { return _isPreloaded; }
 
 private:
 	uint32         _field_126;
-	uint32         _field_12A;
+	Audio::RewindableAudioStream *_audioStream;
 	uint32         _field_12E;
 	uint32         _field_132;
 	uint32         _field_136;
 	uint32         _field_13A;
 	uint32         _isPreloaded;
+
+	void initSoundBuffer(const Common::String &path);
+	void stopAndReleaseSoundBuffer();
 };
 
 class SoundManager : public Common::Serializable {

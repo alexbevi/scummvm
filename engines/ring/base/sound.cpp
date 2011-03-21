@@ -32,6 +32,8 @@
 #include "ring/helpers.h"
 #include "ring/ring.h"
 
+#include "common/file.h"
+
 namespace Ring {
 
 #define SOUND_FRAC_VALUE .01745328888888889f
@@ -183,10 +185,10 @@ void SoundEntry::convertPan(int32 &pan) {
 
 #pragma region SoundEntryS
 
-SoundEntryS::SoundEntryS(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, uint32 soundChunk) : SoundEntry(soundId, type, name, loadFrom, format) {
+SoundEntryStream::SoundEntryStream(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, uint32 soundChunk) : SoundEntry(soundId, type, name, loadFrom, format) {
 	_field_126 = 0;
 	_field_12A = 0;
-	_field_12E = 0;
+	_audioStream = NULL;
 	_field_132 = 0;
 	_field_136 = 0;
 	_field_13A = 0;
@@ -197,37 +199,69 @@ SoundEntryS::SoundEntryS(Id soundId, SoundType type, Common::String name, LoadFr
 	_field_14E = 0;
 	_field_152 = 0;
 	_field_156 = 0;
-	_field_15A = 0;
-	_field_15E = 0;
-	_field_162 = 0;
+	//_event1 = 0;
+	//_event2 = 0;
+	_isBufferPlaying = false;
 	//_event = NULL;
 	_soundChunk = soundChunk;
 }
 
-SoundEntryS::~SoundEntryS() {
+SoundEntryStream::~SoundEntryStream() {
+	stopAndReleaseSoundBuffer();
 }
 
-void SoundEntryS::play(bool loop) {
-	error("[SoundEntryS::play] Not implemented");
+void SoundEntryStream::play(bool loop) {
+	// Compute sound path
+	Common::String path;
+	if (_type == kSoundTypeDialog)
+		path = Common::String::format("DATA/%s/SOUND/%s/%s", getApp()->getCurrentZoneString().c_str(), getApp()->getLanguageFolder().c_str(), _name.c_str());
+	else
+		path = Common::String::format("DATA/%s/SOUND/%s", getApp()->getCurrentZoneString().c_str(), _name.c_str());
+
+	if (!Common::File::exists(path))
+		error("[SoundEntryS::play] File doesn't exist (%s)", path.c_str());
+
+	initSoundBuffer(loop, path, _soundChunk, _format);
+
+	// Rewind and play sound
+	stop();
+
+	if (_audioStream) {
+		_audioStream->rewind();
+		g_system->getMixer()->playStream(Audio::Mixer::kPlainSoundType, &_handle, makeLoopingAudioStream(_audioStream, loop ? 0 : 1));
+
+		setVolumeAndPan();
+		_isPlaying = true;
+	}
+
 }
 
-void SoundEntryS::preload() {
-	error("[SoundEntryS::preload] Not implemented");
-}
-
-void SoundEntryS::stop() {
+void SoundEntryStream::stop() {
 	getSound()->getMixer()->stopHandle(_handle);
 
 	_isPlaying = false;
+}
+
+void SoundEntryStream::stopAndClear() {
+	stop();
+	stopAndReleaseSoundBuffer();
+}
+
+void SoundEntryStream::initSoundBuffer(bool loop, const Common::String &path, uint32 soundChunk, SoundFormat format) {
+	error("[SoundEntryS::initSoundBuffer] Not implemented");
+}
+
+void SoundEntryStream::stopAndReleaseSoundBuffer() {
+	error("[SoundEntryS::stopAndReleaseSoundBuffer] Not implemented");
 }
 
 #pragma endregion
 
 #pragma region SoundEntryD
 
-SoundEntryD::SoundEntryD(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format) : SoundEntry(soundId, type, name, loadFrom, format) {
+SoundEntryData::SoundEntryData(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format) : SoundEntry(soundId, type, name, loadFrom, format) {
 	_field_126 = 0;
-	_field_12A = 0;
+	_audioStream = NULL;
 	_field_12E = 0;
 	_field_132 = 0;
 	_field_136 = 0;
@@ -235,21 +269,69 @@ SoundEntryD::SoundEntryD(Id soundId, SoundType type, Common::String name, LoadFr
 	_isPreloaded = 0;
 }
 
-SoundEntryD::~SoundEntryD() {
+SoundEntryData::~SoundEntryData() {
+	stopAndReleaseSoundBuffer();
 }
 
-void SoundEntryD::play(bool loop) {
-	error("[SoundEntryD::play] Not implemented");
+void SoundEntryData::play(bool loop) {
+	if (!_audioStream)
+		preload();
+
+	// Rewind and play sound
+	_audioStream->rewind();
+	g_system->getMixer()->playStream(Audio::Mixer::kPlainSoundType, &_handle, makeLoopingAudioStream(_audioStream, loop ? 0 : 1));
+
+	setVolumeAndPan();
+	_isPlaying = !loop;
 }
 
-void SoundEntryD::preload() {
-	error("[SoundEntryD::preload] Not implemented");
-}
-
-void SoundEntryD::stop() {
+void SoundEntryData::stop() {
 	getSound()->getMixer()->stopHandle(_handle);
 
+	if (!_isPreloaded)
+		stopAndReleaseSoundBuffer();
+
 	_isPlaying = false;
+}
+
+void SoundEntryData::stopAndClear() {
+	stop();
+	stopAndReleaseSoundBuffer();
+}
+
+void SoundEntryData::preload() {
+	_isPreloaded = true;
+
+	// Compute sound path
+	Common::String path;
+	if (_type == kSoundTypeDialog)
+		path = Common::String::format("DATA/%s/SOUND/%s/%s", getApp()->getCurrentZoneString().c_str(), getApp()->getLanguageFolder().c_str(), _name.c_str());
+	else
+		path = Common::String::format("DATA/%s/SOUND/%s", getApp()->getCurrentZoneString().c_str(), _name.c_str());
+
+	if (!Common::File::exists(path))
+		error("[SoundEntryD::preload] File doesn't exist (%s)", path.c_str());
+
+	initSoundBuffer(path);
+}
+
+void SoundEntryData::unload() {
+	if (_isPreloaded)
+		stopAndReleaseSoundBuffer();
+
+	_isPreloaded = false;
+}
+
+void SoundEntryData::initSoundBuffer(const Common::String &path) {
+	error("[SoundEntryD::initSoundBuffer] Not implemented");
+}
+
+void SoundEntryData::stopAndReleaseSoundBuffer() {
+	if (!_audioStream)
+		return;
+
+	stop();
+	SAFE_DELETE(_audioStream);
 }
 
 #pragma endregion
@@ -467,9 +549,9 @@ void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename,
 
 	SoundEntry *entry = NULL;
 	if (a4)
-		entry = new SoundEntryS(soundId, type, filename, loadFrom, format, soundChunk);
+		entry = new SoundEntryStream(soundId, type, filename, loadFrom, format, soundChunk);
 	else
-		entry = new SoundEntryD(soundId, type, filename, loadFrom, format);
+		entry = new SoundEntryData(soundId, type, filename, loadFrom, format);
 
 	_entries.push_back(entry);
 }
