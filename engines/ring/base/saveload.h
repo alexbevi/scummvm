@@ -88,8 +88,11 @@ public:
 	bool loadSaveTimer(Common::String filename, LoadSaveType type);
 	void loadSaveSounds();
 
-	static const char *getSavegameFile(int slot);
-	static const char *getSavegameFile(const char *gameid, int slot);
+	static const char *getSavegameFile(uint32 slot);
+	static const char *getSavegameFile(const char *gameid, uint32 slot);
+	static Common::String getTimerFile(Common::String zone, uint32 slot);
+
+	uint32 getNextSlot();
 
 	// Management
 	bool remove(uint32 slot);
@@ -130,8 +133,6 @@ private:
 	Common::OutSaveFile *_save;
 
 	void initialize();
-
-	Common::String getTimerFile(Common::String zone);
 
 	bool has(Common::String filename);
 	bool open(Common::String filename, LoadSaveType type);

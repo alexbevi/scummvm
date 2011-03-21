@@ -242,6 +242,10 @@ private:
 	void sub_445A10();
 
 	void waitTicks(uint32 ticks);
+
+	// Savegames
+	bool copySavedTimers(uint32 slot);
+	bool removeSavedTimers(uint32 slot);
 };
 
 } // End of namespace Ring

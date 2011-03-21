@@ -895,7 +895,7 @@ void EventHandlerRing::onButtonDownZoneN2(ObjectId id, Id target, Id puzzleRotat
 }
 
 void EventHandlerRing::onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	debugC(kRingDebugLogic, "onButtonUp (ObjectId: %d, coords: (%d, %d))", id.id(), point.x, point.y);
+	debugC(kRingDebugLogic, "onButtonUp (ObjectId: %d, target: %d, coords: (%d, %d))", id.id(), target, point.x, point.y);
 
 	if (puzzleRotationId == 1 && a4 == 1) {
 		onButtonUpZoneSY(id, target, puzzleRotationId, a4, point);
@@ -1018,7 +1018,9 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 			}
 
 			// Delete selected savegame
-			if (!_app->getSaveManager()->remove(_app->visualListGetItemCount(1, kObjectMenuLoad) - imageIndex - 1)) {
+			uint32 slot = _app->visualListGetItemCount(1, kObjectMenuLoad) - imageIndex - 1;
+			if (!_app->getSaveManager()->remove(slot)
+			 || !removeSavedTimers(slot)) {
 				_app->messageHideQuestion(4);
 				_app->messageGet("CanNotDeleteSavedGame");
 				_app->messageShowWarning(0);
@@ -1211,11 +1213,11 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 		unsetFlag();
 		handleEvents();
 
-		// TODO Copy the autosave (and timer saves) to the selected slot
-		error("[EventHandlerRing::onButtonUpZoneSY] Not implemented (Save)");
-		bool saved = false;
+		// Compute the next slot to save to
+		uint32 slot = _app->getSaveManager()->getNextSlot();
 
-		if (!saved) {
+		if (!g_engine->getSaveFileManager()->copySavefile(SaveManager::getSavegameFile(0), SaveManager::getSavegameFile(slot))
+		 || !copySavedTimers(slot)) {
 			_app->exitZone();
 			_app->initZones();
 
@@ -11245,6 +11247,39 @@ void EventHandlerRing::waitTicks(uint32 ticks) {
 	uint32 startTicks = g_system->getMillis();
 	while (g_system->getMillis() - startTicks < ticks)
 		handleEvents();
+}
+
+bool EventHandlerRing::copySavedTimers(uint32 slot) {
+	if (!g_engine->getSaveFileManager()->copySavefile(SaveManager::getTimerFile("ALB", 0), SaveManager::getTimerFile("ALB", slot)))
+		return false;
+
+	if (!g_engine->getSaveFileManager()->copySavefile(SaveManager::getTimerFile("LOG", 0), SaveManager::getTimerFile("LOG", slot)))
+		return false;
+
+	if (!g_engine->getSaveFileManager()->copySavefile(SaveManager::getTimerFile("SIE", 0), SaveManager::getTimerFile("SIE", slot)))
+		return false;
+
+	if (!g_engine->getSaveFileManager()->copySavefile(SaveManager::getTimerFile("BRU", 0), SaveManager::getTimerFile("BRU", slot)))
+		return false;
+
+	return true;
+}
+
+bool EventHandlerRing::removeSavedTimers(uint32 slot) {
+	if (!g_engine->getSaveFileManager()->removeSavefile(SaveManager::getTimerFile("ALB", slot)))
+		return false;
+
+	if (!g_engine->getSaveFileManager()->removeSavefile(SaveManager::getTimerFile("LOG", slot)))
+		return false;
+
+	if (!g_engine->getSaveFileManager()->removeSavefile(SaveManager::getTimerFile("SIE", slot)))
+		return false;
+
+	if (!g_engine->getSaveFileManager()->removeSavefile(SaveManager::getTimerFile("BRU", slot)))
+		return false;
+
+
+	return true;
 }
 
 #pragma endregion
