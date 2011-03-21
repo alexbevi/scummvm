@@ -132,14 +132,14 @@ private:
 	float                               _amplitude;
 	float                               _field_3D;
 	float                               _speed;
-	uint32                              _field_45;
-	uint32                              _field_49;
-	uint32                              _field_4D;
-	uint32                              _field_51;
-	uint32                              _field_55;
-	uint32                              _field_59;
-	uint32                              _field_5D;
-	uint32                              _field_61;
+	float                               _field_45;
+	float                               _field_49;
+	float                               _field_4D;
+	float                               _field_51;
+	float                               _field_55;
+	float                               _field_59;
+	float                               _field_5D;
+	float                               _field_61;
 	byte                                _field_65;
 	byte                                _field_66;
 	bool                                _fre;
@@ -150,6 +150,12 @@ private:
 	// Working data
 	uint32                              _ticks;
 	uint32                              _startTicks;
+	int32                               _rotationTable[2048];
+	float                               _float1;
+	float                               _float2;
+	float                               _float3;
+	float                               _float4;
+	float                               _float5;
 
 	SoundItem *getSoundItem(Id soundId);
 	void updateView();

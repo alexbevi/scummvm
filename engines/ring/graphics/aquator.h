@@ -33,19 +33,19 @@ namespace Ring {
 class ImageHeaderEntry {
 public:
 	struct Header {
-		uint32  field_0;
-		uint32  field_4;
-		uint32  field_8;
-		uint32  field_C;
-		uint32  field_10;
-		uint32  field_14;
-		uint32  field_18;
-		uint32  field_1C;
-		uint32  field_20;
-		uint32  field_24;
-		uint32  field_28;
-		uint32  field_2C;
-		uint32  field_30;
+		float field_0;
+		float field_4;
+		float field_8;
+		float field_C;
+		float field_10;
+		float field_14;
+		float field_18;
+		float field_1C;
+		float field_20;
+		float field_24;
+		float field_28;
+		float field_2C;
+		float field_30;
 
 		Header();
 		void update(const Header &header);

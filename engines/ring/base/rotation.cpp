@@ -86,6 +86,14 @@ Rotation::Rotation(Id id, Common::String name, byte a3, LoadFrom, uint32 nodeCou
 
 	_ticks       = 0;
 	_startTicks  = 0;
+
+	memset(_rotationTable, 0, sizeof(_rotationTable));
+
+	_float1 = 0.0f;
+	_float2 = 0.0f;
+	_float3 = 0.0f;
+	_float4 = 0.0f;
+	_float5 = 0.0f;
 }
 
 Rotation::~Rotation() {
@@ -101,7 +109,38 @@ Rotation::~Rotation() {
 }
 
 void Rotation::alloc() {
-	error("[Rotation::alloc] Not implemented");
+	if (_stream->isInitialized())
+		return;
+
+	_stream->alloc(_isCompressedStream, g_system->getScreenFormat(), _comBufferLength);
+
+	_field_31 = 0;
+
+	// Init ticks
+	_startTicks = g_system->getMillis();
+	_ticks= _startTicks;
+
+	// Initialize rotation data and tables
+	ImageHeaderEntry::Header header = _stream->getEntry()->getHeader();
+	_float1 = header.field_4;
+	_float2 = header.field_10 - header.field_C;
+	_float3 = (header.field_10 + header.field_C) * 0.5f;
+	_float4 = header.field_18 - header.field_14;
+	_float5 = (header.field_18 + header.field_14) * 0.5f;
+
+	for (uint32 i = 0; i < ARRAYSIZE(_rotationTable); i += 64) {
+		for (uint32 j = 0; j < 32; j++)
+			_rotationTable[i + j] = rnd(_amplitude);
+	}
+
+	_field_45 = rnd(_field_35);
+	_field_49 = rnd(_field_35);
+	_field_4D = rnd(_field_35);
+	_field_51 = rnd(_field_35);
+	_field_55 = rnd(_field_35);
+	_field_59 = rnd(_field_35);
+	_field_5D = rnd(_field_35);
+	_field_61 = rnd(_field_35);
 }
 
 void Rotation::dealloc() {
