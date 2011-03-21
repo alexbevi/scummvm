@@ -230,6 +230,10 @@ Common::MemoryReadStream *CompressedStream::decompressChannel() {
 	//return new Common::MemoryReadStream(buffer, bufferSize, DisposeAfterUse::YES);
 }
 
+uint32 CompressedStream::decodeSound(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte* buffer) {
+	return decode(stream, a2, a3, start, end, buffer, 16);
+}
+
 uint32 CompressedStream::decodeNode(Common::SeekableReadStream *stream, uint32 start, uint32 end, byte *buffer) {
 	return decode(stream, 16, 8, start, end, buffer);
 }
@@ -238,7 +242,7 @@ uint32 CompressedStream::decodeChannel(Common::SeekableReadStream *stream, uint3
 	return decode(stream, 13, 8, start, end, buffer);
 }
 
-uint32 CompressedStream::decode(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte* buffer) {
+uint32 CompressedStream::decode(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte* buffer, uint32 multiplier) {
 	// Reset decompression buffer
 	memset(&_decBuffer, 0, sizeof(_decBuffer));
 
@@ -307,7 +311,7 @@ uint32 CompressedStream::decode(Common::SeekableReadStream *stream, uint32 a2, u
 			}
 
 		} else {
-			uint32 decoded = (uint32)(var << (32 - position)) >> (32 - a2);
+			uint32 decoded = multiplier * (uint32)(var << (32 - position)) >> (32 - a2);
 
 			*(uint16 *)buffer = decoded;
 			buffer += 2;

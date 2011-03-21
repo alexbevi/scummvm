@@ -59,7 +59,8 @@ private:
 	void initDecompression();
 	uint32 decodeNode(Common::SeekableReadStream *stream, uint32 start, uint32 end, byte *buffer);
 	uint32 decodeChannel(Common::SeekableReadStream *stream, uint32 start, uint32 end, byte *buffer);
-	uint32 decode(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte *buffer);
+	uint32 decodeSound(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte *buffer);
+	uint32 decode(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte *buffer, uint32 multiplier = 1);
 };
 
 } // End of namespace Ring
