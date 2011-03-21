@@ -167,19 +167,21 @@ bool ImageLoaderBMA::readHeader() {
 }
 
 bool ImageLoaderBMA::readImage(Image *image) {
-	_stream->decompressIndexed(_blockSize,
-	                           _seqSize,  (2 * _header.seqWidth * _header.seqHeight) / _header.coreHeight,
-	                           _coreSize, 2 * _header.coreWidth * _header.coreHeight,
-	                           _header.seqWidth * _header.seqHeight * 16,
-							   2 * _header.seqWidth * _header.seqHeight - 6,
-							   _header.field_C, _header.field_10);
+	Common::MemoryReadStream *imageData = NULL;
+	imageData = _stream->decompressIndexed(_blockSize,
+	                                       _seqSize,  (2 * _header.seqWidth * _header.seqHeight) / _header.coreHeight,
+	                                       _coreSize, 2 * _header.coreWidth * _header.coreHeight,
+	                                       _header.seqWidth * _header.seqHeight * 16,
+							               2 * _header.seqWidth * _header.seqHeight - 6,
+							               _header.field_C, _header.field_10);
 
 	// Create surface to hold the data
 	Graphics::Surface *surface = new Graphics::Surface();
 	surface->create(_header.seqWidth, _header.seqHeight, 2); // FIXME: Always 16bpp BMPs?
 
 	// Read from compressed stream
-	_stream->read(surface->pixels, _header.seqWidth * _header.seqHeight * 2);
+	imageData->read(surface->pixels, _header.seqWidth * _header.seqHeight * 2);
+	delete imageData;
 
 	image->setSurface(surface);
 
@@ -201,19 +203,20 @@ bool ImageLoaderTGC::load(Image *image, ArchiveType type, Zone zone, LoadFrom lo
 	_stream = NULL;
 	_filename = image->getName();
 
-	if (!init(type, zone, loadFrom)){
+	Common::SeekableReadStream *decompressedData = init(type, zone, loadFrom);
+	if (!decompressedData){
 		warning("[ImageLoaderTGC::load] Error opening image file (%s)", _filename.c_str());
 		goto cleanup;
 	}
 
 	// Read header
-	if (!readHeader(_stream)) {
+	if (!readHeader(decompressedData)) {
 		warning("[ImageLoaderTGC::load] Error reading header (%s)", _filename.c_str());
 		goto cleanup;
 	}
 
 	// Read image data
-	if (!readImage(_stream, image)) {
+	if (!readImage(decompressedData, image)) {
 		warning("[ImageLoaderTGC::load] Error reading image (%s)", _filename.c_str());
 		goto cleanup;
 	}
@@ -227,23 +230,23 @@ cleanup:
 	return false;
 }
 
-bool ImageLoaderTGC::init(ArchiveType type, Zone zone, LoadFrom loadFrom) {
+Common::SeekableReadStream *ImageLoaderTGC::init(ArchiveType type, Zone zone, LoadFrom loadFrom) {
 	_stream = new CompressedStream();
 
 	// Initialize stream
 	switch (type) {
 	default:
 		warning("[ImageLoaderTGC::init] Invalid archive type (%d)!", type);
-		return false;
+		return NULL;
 
 	case kArchiveFile:
 		if (!_stream->init(_filename, 1, 0))
-			return false;
+			return NULL;
 		break;
 
 	case kArchiveArt:
 		if (!_stream->initArt(_filename, zone, loadFrom))
-			return false;
+			return NULL;
 		break;
 	}
 
@@ -252,9 +255,7 @@ bool ImageLoaderTGC::init(ArchiveType type, Zone zone, LoadFrom loadFrom) {
 	uint32 chunks = stream->readUint32LE();
 	uint32 size = stream->readUint32LE();
 
-	_stream->decompressChuncks(chunks, size);
-
-	return true;
+	return _stream->decompressChuncks(chunks, size);
 }
 
 void ImageLoaderTGC::deinit() {

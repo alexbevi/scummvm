@@ -33,7 +33,7 @@
 
 namespace Ring {
 
-class CompressedStream : public Common::SeekableReadStream {
+class CompressedStream {
 public:
 	CompressedStream();
 	~CompressedStream();
@@ -44,35 +44,22 @@ public:
 	Common::SeekableReadStream *getCompressedStream();
 
 	// Decompression functions
-	void decompressChuncks(uint32 chuncks, uint32 size);
-	void decompressIndexed(uint32 blockSize, uint32 seqSize, uint32 seqDataSize, uint32 coreSize, uint32 coreDataSize, uint32 size, uint32 indexEnd, uint32 field_C, uint16 field_10);
+	Common::MemoryReadStream *decompressChuncks(uint32 chuncks, uint32 size);
+	Common::MemoryReadStream *decompressIndexed(uint32 blockSize, uint32 seqSize, uint32 seqDataSize, uint32 coreSize, uint32 coreDataSize, uint32 size, uint32 indexEnd, uint32 field_C, uint16 field_10);
 	Common::MemoryReadStream *decompressNode();
 	Common::MemoryReadStream *decompressChannel();
-
-	// ReadStream
-	virtual bool eos() const;
-	virtual uint32 read(void *dataPtr, uint32 dataSize);
-
-	// SeekableReadStream
-	virtual int32 pos() const;
-	virtual int32 size() const;
-	virtual bool seek(int32 offset, int whence = SEEK_SET);
 
 private:
 	Common::SeekableReadStream *_fileStream;    ///< The file stream
 	Common::SeekableReadStream *_artStream;     ///< The art stream
-	Common::MemoryReadStream   *_memoryStream;  ///< Memory data buffer stream
 
-	byte *_buffer;  ///< The buffer to hold decompressed data
-
-	uint32 _field_8;
-	uint32 _field_C;
 	byte   _decBuffer[512];
 	byte   _type;
-	uint32 _field_211;
 
 	void initDecompression();
-	uint32 decompress(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte *buffer);
+	uint32 decodeNode(Common::SeekableReadStream *stream, uint32 start, uint32 end, byte *buffer);
+	uint32 decodeChannel(Common::SeekableReadStream *stream, uint32 start, uint32 end, byte *buffer);
+	uint32 decode(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte *buffer);
 };
 
 } // End of namespace Ring

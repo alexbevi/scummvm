@@ -132,7 +132,7 @@ public:
 private:
 	CompressedStream *_stream;
 
-	bool init(ArchiveType type, Zone zone, LoadFrom loadFrom);
+	Common::SeekableReadStream *init(ArchiveType type, Zone zone, LoadFrom loadFrom);
 	void deinit();
 };
 
