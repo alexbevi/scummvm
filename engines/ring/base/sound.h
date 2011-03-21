@@ -45,6 +45,7 @@ public:
 	virtual void play(bool loop) = 0;
 	virtual void preload() = 0;
 	virtual void stop() = 0;
+	virtual bool isPreloaded() = 0;
 	bool isPlaying();
 
     void setVolume(int32 volume);
@@ -59,6 +60,12 @@ public:
 	void setField125(uint32 val) { _field_125 = val; }
 	void setPlaying(bool state) { _isPlaying = state; }
 
+	int32 getVolume() { return _volume; }
+	int32 getMultiplier() { return _multiplier; }
+	int32 getPan() { return _pan; }
+	bool isLooping() { return _loop; }
+	void setSoundInfo(int32 volume, int32 multiplier, int32 pan) { _volume = volume; _multiplier = multiplier; _pan = pan; }
+
 	static SoundFormat getFormat(Common::String filename);
 
 protected:
@@ -69,7 +76,7 @@ protected:
 	int32          _volume;
 	int32          _multiplier;
 	int32          _pan;
-	uint32         _field_11D;
+	bool           _loop;
 	SoundFormat    _format;
 	uint32         _field_125;
 
@@ -111,6 +118,7 @@ public:
 	virtual void play(bool loop);
 	virtual void preload();
 	virtual void stop();
+	virtual bool isPreloaded() { return false; }
 
 private:
 	uint32         _field_126;
@@ -141,6 +149,7 @@ public:
 	virtual void play(bool loop);
 	virtual void preload();
 	virtual void stop();
+	virtual bool isPreloaded() { return _isPreloaded; }
 
 private:
 	uint32         _field_126;
@@ -149,7 +158,7 @@ private:
 	uint32         _field_132;
 	uint32         _field_136;
 	uint32         _field_13A;
-	uint32         _field_13E;
+	uint32         _isPreloaded;
 };
 
 class SoundManager : public Common::Serializable {
@@ -172,6 +181,7 @@ public:
 	bool isPlayingType(SoundType soundType);
 	void clear();
 
+	// Play loaded sounds
 	void playSounds();
 
 	// Sound entries
@@ -186,10 +196,23 @@ public:
 	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
+	struct SavedSound {
+		Id soundId;
+		bool loop;
+
+		SavedSound() {
+			soundId = 0;
+			loop = false;
+		}
+	};
+
 	Application                    *_app;
 	Audio::Mixer                   *_mixer;
 	AssociativeArray<SoundEntry *>  _entries;
 	float                           _globalVolume;
+
+	// Saved sounds
+	Common::Array<SavedSound *> _savedSounds;
 };
 
 //////////////////////////////////////////////////////////////////////////

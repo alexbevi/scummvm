@@ -46,7 +46,7 @@ SoundEntry::SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom
 	_volume     = 100;
 	_multiplier = 100;
 	_pan        = 0;
-	_field_11D  = 0;
+	_loop       = false;
 	_format     = format;
 	_field_125  = 1;
 }
@@ -221,7 +221,6 @@ void SoundEntryS::stop() {
 	_isPlaying = false;
 }
 
-
 #pragma endregion
 
 #pragma region SoundEntryD
@@ -233,7 +232,7 @@ SoundEntryD::SoundEntryD(Id soundId, SoundType type, Common::String name, LoadFr
 	_field_132 = 0;
 	_field_136 = 0;
 	_field_13A = 0;
-	_field_13E = 0;
+	_isPreloaded = 0;
 }
 
 SoundEntryD::~SoundEntryD() {
@@ -252,7 +251,6 @@ void SoundEntryD::stop() {
 
 	_isPlaying = false;
 }
-
 
 #pragma endregion
 
@@ -454,7 +452,10 @@ void SoundManager::clear() {
 }
 
 void SoundManager::playSounds() {
-	error("[SoundManager::playSounds] Not implemented");
+	for (Common::Array<SavedSound *>::iterator it = _savedSounds.begin(); it != _savedSounds.end(); it++)
+		play((*it)->soundId, (*it)->loop);
+
+	CLEAR_ARRAY(SavedSound, _savedSounds);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -465,11 +466,10 @@ void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename,
 		return;
 
 	SoundEntry *entry = NULL;
-	if (a4) {
+	if (a4)
 		entry = new SoundEntryS(soundId, type, filename, loadFrom, format, soundChunk);
-	} else {
+	else
 		entry = new SoundEntryD(soundId, type, filename, loadFrom, format);
-	}
 
 	_entries.push_back(entry);
 }
@@ -482,7 +482,84 @@ SoundEntry *SoundManager::getEntry(Id soundId) {
 }
 
 void SoundManager::saveLoadWithSerializer(Common::Serializer &s) {
-	error("[SoundManager::saveLoadWithSerializer] Not implemented");
+	s.syncAsUint32LE(_globalVolume);
+
+	Common::Array<Id> _preloadedSounds;
+	uint32 preloadedCount = 0;
+	uint32 playingCount = 0;
+
+	// Load sound data
+	for (Common::Array<SoundEntry *>::iterator it = _entries.begin(); it != _entries.end(); it++) {
+		SoundEntry *entry = (*it);
+
+		int32 volume     = entry->getVolume();
+		int32 multiplier = entry->getVolume();
+		int32 pan        = entry->getVolume();
+
+		s.syncAsSint32LE(volume);
+		s.syncAsSint32LE(multiplier);
+		s.syncAsSint32LE(pan);
+
+		entry->setSoundInfo(volume, multiplier, pan);
+
+		if (s.isSaving()) {
+
+			if (entry->isPlaying()) {
+				SavedSound *savedSound = new SavedSound();
+				savedSound->soundId = entry->getId();
+				savedSound->loop = entry->isLooping();
+
+				_savedSounds.push_back(savedSound);
+			}
+
+			if (entry->isPreloaded())
+				_preloadedSounds.push_back(entry->getId());
+		}
+	}
+
+	// Compute playing and preloaded sounds
+	preloadedCount = _preloadedSounds.size();
+	playingCount   = _savedSounds.size();
+
+	// Handle preloaded sounds
+	s.syncAsUint32LE(preloadedCount);
+
+	for (uint32 i = 0; i < preloadedCount; i++) {
+		if (s.isSaving())
+			s.syncAsUint32LE(_preloadedSounds[i]);
+
+		if (s.isLoading()) {
+			for (uint32 i = 0; i < preloadedCount; i++) {
+				Id id = 0;
+				s.syncAsUint32LE(id);
+				preload(id);
+			}
+		}
+	}
+
+	// Handle saved sounds
+	if (s.isLoading())
+		CLEAR_ARRAY(SavedSound, _savedSounds);
+
+	s.syncAsUint32LE(playingCount);
+
+	for (uint32 i = 0; i < preloadedCount; i++) {
+		if (s.isSaving()) {
+			s.syncAsUint32LE(_savedSounds[i]->soundId);
+			s.syncAsByte(_savedSounds[i]->loop);
+		}
+
+		if (s.isLoading()) {
+			SavedSound *sound = new SavedSound();
+			s.syncAsUint32LE(sound->soundId);
+			s.syncAsByte(sound->loop);
+
+			_savedSounds.push_back(sound);
+		}
+	}
+
+	if (s.isSaving())
+		CLEAR_ARRAY(SavedSound, _savedSounds);
 }
 
 #pragma endregion
