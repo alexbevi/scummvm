@@ -47,7 +47,7 @@ public:
 
 	void readFrameHeader();
 	bool tControl();
-	bool sControl(void* buffer);
+	bool sControl(byte* buffer);
 
 	// Sound
 	void sub_46A0E0(uint32 a1, uint32 a2, uint32 a3, int32 a4);
@@ -68,6 +68,30 @@ public:
 	void setField10(bool state) { _field_10 = state; }
 
 private:
+	struct FrameHeader {
+		uint32 size;
+		uint32 field_4;
+		uint32 field_8;
+		uint32 field_C;
+		uint32 field_10;
+
+		FrameHeader() {
+			size     = 0;
+			field_4  = 0;
+			field_8  = 0;
+			field_C  = 0;
+			field_10 = 0;
+		}
+
+		void load(Common::SeekableReadStream *stream) {
+			size     = stream->readUint32LE();
+			field_4  = stream->readUint32LE();
+			field_8  = stream->readUint32LE();
+			field_C  = stream->readUint32LE();
+			field_10 = stream->readUint32LE();
+		}
+	};
+
 	struct TControlHeader {
 		uint32 field_0;
 		uint32 field_4;
@@ -100,7 +124,7 @@ private:
 	TControlHeader _tControlHeader;
 	byte   *_tControlBuffer;
 	byte   *_cacheBuffer;
-	byte   *_tControlData;
+	byte   *_controlData;
 	uint32  _field_3A;
 	uint32  _field_3E;
 	uint32  _field_42;

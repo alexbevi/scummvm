@@ -474,7 +474,7 @@ bool ImageLoaderCIN::readImage(Image *image) {
 	_field_1088 = _width + 3;
 	_field_1084 = _field_1088 * 3;
 
-	if (!_cinematic->sControl(surface->pixels))
+	if (!_cinematic->sControl((byte *)surface->pixels))
 		error("[ImageLoaderCIN::readImage] Cannot read image");
 
 	return true;

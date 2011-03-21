@@ -57,7 +57,7 @@ Cinematic::Cinematic() {
 	_backBuffer = NULL;
 	_tControlBuffer = NULL;
 	_cacheBuffer = NULL;
-	_tControlData = NULL;
+	_controlData = NULL;
 	_field_3A = 0;
 	_field_3E = 0;
 	_field_42 = 0;
@@ -96,7 +96,7 @@ bool Cinematic::init(Common::String filename) {
 	if (!_cacheBuffer)
 		error("[Cinematic::init] Error creating cache buffer!");
 
-	_tControlData = NULL;
+	_controlData = NULL;
 	_field_3A = 0;
 	_field_3E = 0;
 	_field_42 = 0;
@@ -115,7 +115,7 @@ void Cinematic::deinit() {
 	free(_backBuffer);
 	free(_tControlBuffer);
 	free(_cacheBuffer);
-	free(_tControlData);
+	free(_controlData);
 	_field_3A = 0;
 	_field_3E = 0;
 	_field_42 = 0;
@@ -126,14 +126,12 @@ void Cinematic::readFrameHeader() {
 	// Reset tControl buffer
 	memset(&_tControlBuffer, 0, CINEMATIC_TCONTROLBUFFER_SIZE);
 
-	// Read offset
-	uint32 offset = readUint32LE();
+	// Read frame header
+	FrameHeader header;
+	header.load(_stream);
 
-	// Skip rest of header
-	skip(16);
-
-	// Move to beginning of frame
-	seek(offset, SEEK_CUR);
+	// Skip frame?
+	seek(header.size, SEEK_CUR);
 }
 
 bool Cinematic::tControl() {
@@ -145,16 +143,16 @@ bool Cinematic::tControl() {
 
 	// Read data
 	uint32 size = 2 * _tControlHeader.field_C + 2;
-	free(_tControlData);
-	_tControlData = (byte *)malloc(size + _tControlHeader.field_0);
+	free(_controlData);
+	_controlData = (byte *)malloc(size + _tControlHeader.field_0);
 
-	_stream->read(_tControlData, size + _tControlHeader.field_0);
+	_stream->read(_controlData, size + _tControlHeader.field_0);
 
 	// Process
-	_field_3A = READ_LE_UINT32(_tControlData + size);
+	_field_3A = READ_LE_UINT32(_controlData + size);
 	_field_46 = _tControlHeader.field_8;
-	_field_42 = READ_LE_UINT32(_tControlData + _tControlHeader.field_0 - _tControlHeader.field_4) + size;
-	_field_3E = READ_LE_UINT32(_tControlData + 2 * (_tControlHeader.field_8 * _tControlHeader.field_A) + size);
+	_field_42 = READ_LE_UINT32(_controlData + _tControlHeader.field_0 - _tControlHeader.field_4) + size;
+	_field_3E = READ_LE_UINT32(_controlData + 2 * (_tControlHeader.field_8 * _tControlHeader.field_A) + size);
 
 	// Decompress data
 	uint32 decompressedSize = decompress(_field_3E, _backBuffer, _field_42 - _field_3E);
@@ -166,12 +164,35 @@ bool Cinematic::tControl() {
 	return true;
 }
 
-bool Cinematic::sControl(void* buffer) {
+bool Cinematic::sControl(byte* buffer) {
+	// Reset tControl buffer
+	memset(&_tControlBuffer, 0, CINEMATIC_TCONTROLBUFFER_SIZE);
+
+	// Read frame header
+	FrameHeader header;
+	header.load(_stream);
+
+	// Read data
 	error("[Cinematic::sControl] Not implemented!");
+
+
+	if (!(uint32)_tControlBuffer[15364]) {
+		// TODO update from backbuffer
+		error("[Cinematic::sControl] Not implemented!");
+	}
+
+
+	uint32 decompressedSize = decompress(_field_3E, buffer, _field_42 - _field_3E);
+	if (decompressedSize >= 577536) {
+		warning("[Cinematic::sControl] Buffer overrun");
+		return false;
+	}
+
+	return true;
 }
 
 uint32 Cinematic::decompress(uint32 a1, byte* buffer, uint32 a3) {
-	error("[Cinematic::sControl] Not implemented!");
+	error("[Cinematic::decompress] Not implemented!");
 }
 
 #pragma region Sound
