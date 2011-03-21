@@ -106,10 +106,12 @@ void ScreenManager::draw(Image *image, Common::Point point, DrawType type) {
 
 		case 2:
 			warning("[ScreenManager::draw] Not implemented type 2");
+			image->draw(&_screen, coords + _offset);
 			break;
 
 		case 3:
-			warning("[ScreenManager::draw] Not implemented type 2");
+			warning("[ScreenManager::draw] Not implemented type 3");
+			image->draw(&_screen, coords + _offset);
 			break;
 		}
 		}

@@ -213,7 +213,7 @@ Common::Rect Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 
 	surface->fillRect(destRect, Color(255, 0, 0).getColor());
 	//////////////////////////////////////////////////////////////////////////
 
-	byte *src  = (byte*)surface->getBasePtr(srcX, getHeight() - (srcHeight + offset));
+	byte *src  = (byte*)_surface->getBasePtr(srcX, getHeight() - (srcHeight + offset));
 	byte *dst = (byte *)surface->getBasePtr(640, 480);
 	uint32 height = destRect.height();
 
