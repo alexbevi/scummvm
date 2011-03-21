@@ -270,7 +270,7 @@ AquatorStream::~AquatorStream() {
 	CLEAR_ARRAY(AquatorImageHeader, _headers);
 }
 
-void AquatorStream::alloc(bool isCompressed, byte a2, int a3, byte a4, int a5, byte a6, uint32 a7, uint32 size) {
+void AquatorStream::alloc(bool isCompressed, Graphics::PixelFormat format, uint32 size) {
 	if (isCompressed) {
 		Common::String filename = Common::String::format("%s.aqi", _path.c_str());
 
@@ -279,7 +279,7 @@ void AquatorStream::alloc(bool isCompressed, byte a2, int a3, byte a4, int a5, b
 		if (!stream->init(filename, 2, size))
 			error("[AquatorStream::alloc] Cannot init compressed stream for aquator file (%s)", filename.c_str());
 
-		initNode(stream->decompressNode(), a2, a3, a4, a5, a6, a7);
+		initNode(stream->decompressNode(), format);
 
 		// Decompress each channel
 		for (uint32 i = 0; i < _headers.size(); i++)
@@ -293,7 +293,7 @@ void AquatorStream::alloc(bool isCompressed, byte a2, int a3, byte a4, int a5, b
 		if (!archive)
 			error("[AquatorStream::alloc] Error opening uncompressed aquator (%s)", filename.c_str());
 
-		initNode(archive, a2, a3, a4, a5, a6, a7);
+		initNode(archive, format);
 
 		// Init channels
 		for (uint32 i = 0; i < _headers.size(); i++)
@@ -308,7 +308,7 @@ void AquatorStream::dealloc() {
 	_entry = new ImageHeaderEntry();
 }
 
-void AquatorStream::initNode(Common::SeekableReadStream *stream, byte a2, int a3, byte a4, int a5, byte a6, uint32 a7) {
+void AquatorStream::initNode(Common::SeekableReadStream *stream, Graphics::PixelFormat format) {
 	_entry->init(stream, true);
 
 	SAFE_DELETE(stream);
@@ -316,12 +316,21 @@ void AquatorStream::initNode(Common::SeekableReadStream *stream, byte a2, int a3
 	// Init entry buffer
 	int16 *buffer = (int16 *)_entry->getBuffer();
 
-	// TODO cleanup
+	// Process buffer
 	for (uint32 i = 0; i < 64800; i++) {
-		int16 val1 = (8 * (buffer[0] & 31)) >> (8 - a3);
-		int16 val2 = (buffer[0] >> 8 ) & 248;
+		int16 green = (buffer[0] >> 3) & 252;
+		int16 blue  = (buffer[0] >> 3) & 31;
+		int16 red   = (buffer[0] >> 8) & 248;
 
-		buffer[0] = ((((8 - a7) >> 3) & 252) >> (8 - a5) << a4) | (val2 >> (8 - a7) << a6) | (val1 << a2);
+		green >>= format.gBits();
+		blue  >>= format.bBits();
+		red   >>= format.rBits();
+
+		green <<= format.gShift;
+		blue  <<= format.bShift;
+		red   <<= format.rShift;
+
+		buffer[0] = green | red | blue;
 
 		++buffer;
 	}
