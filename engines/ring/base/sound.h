@@ -142,7 +142,7 @@ private:
 	//uint32         _event;
 	uint32         _soundChunk;
 
-	void initSoundBuffer(bool loop, const Common::String &path, uint32 soundChunk, SoundFormat format);
+	void initSoundBuffer(const Common::String &path, uint32 soundChunk, bool loop, SoundFormat format);
 	void stopAndReleaseSoundBuffer();
 };
 

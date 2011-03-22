@@ -223,7 +223,7 @@ void SoundEntryStream::play(bool loop) {
 	if (!Common::File::exists(path))
 		error("[SoundEntryS::play] File doesn't exist (%s)", path.c_str());
 
-	initSoundBuffer(loop, path, _soundChunk, _format);
+	initSoundBuffer(path, _soundChunk, loop, _format);
 
 	// Rewind and play sound
 	stop();
@@ -249,11 +249,34 @@ void SoundEntryStream::stopAndClear() {
 	stopAndReleaseSoundBuffer();
 }
 
-void SoundEntryStream::initSoundBuffer(bool loop, const Common::String &path, uint32 soundChunk, SoundFormat format) {
-	error("[SoundEntryS::initSoundBuffer] Not implemented");
+void SoundEntryStream::initSoundBuffer(const Common::String &path, uint32 soundChunk, bool loop, SoundFormat format) {
+	// Handle uncompressed wav file
+	if (format == kSoundFormatWAV) {
+		if (_audioStream)
+			delete _audioStream;
+
+		// Open stream to file
+		Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(path);
+		if (!stream)
+			error("[SoundEntryData::initSoundBuffer] Cannot open stream to file (%s)", path.c_str());
+
+		_audioStream = Audio::makeWAVStream(stream, DisposeAfterUse::YES);
+
+		return;
+	}
+
+	// Handle compressed sounds
+	error("[SoundEntryS::initSoundBuffer] Not implemented (compressed sounds)");
 }
 
 void SoundEntryStream::stopAndReleaseSoundBuffer() {
+	if (!_audioStream)
+		return;
+
+	stop();
+
+	SAFE_DELETE(_audioStream);
+
 	error("[SoundEntryS::stopAndReleaseSoundBuffer] Not implemented");
 }
 
