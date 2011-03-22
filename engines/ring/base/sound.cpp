@@ -32,6 +32,8 @@
 #include "ring/helpers.h"
 #include "ring/ring.h"
 
+#include "audio/decoders/wave.h"
+
 #include "common/file.h"
 
 namespace Ring {
@@ -260,12 +262,7 @@ void SoundEntryStream::stopAndReleaseSoundBuffer() {
 #pragma region SoundEntryD
 
 SoundEntryData::SoundEntryData(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format) : SoundEntry(soundId, type, name, loadFrom, format) {
-	_field_126 = 0;
 	_audioStream = NULL;
-	_field_12E = 0;
-	_field_132 = 0;
-	_field_136 = 0;
-	_field_13A = 0;
 	_isPreloaded = 0;
 }
 
@@ -323,7 +320,15 @@ void SoundEntryData::unload() {
 }
 
 void SoundEntryData::initSoundBuffer(const Common::String &path) {
-	error("[SoundEntryD::initSoundBuffer] Not implemented");
+	if (_audioStream)
+		delete _audioStream;
+
+	// Open stream to file
+	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(path);
+	if (!stream)
+		error("[SoundEntryData::initSoundBuffer] Cannot open stream to file (%s)", path.c_str());
+
+	_audioStream = Audio::makeWAVStream(stream, DisposeAfterUse::YES);
 }
 
 void SoundEntryData::stopAndReleaseSoundBuffer() {

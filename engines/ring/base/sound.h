@@ -159,12 +159,7 @@ public:
 	virtual bool isPreloaded() { return _isPreloaded; }
 
 private:
-	uint32         _field_126;
 	Audio::RewindableAudioStream *_audioStream;
-	uint32         _field_12E;
-	uint32         _field_132;
-	uint32         _field_136;
-	uint32         _field_13A;
 	uint32         _isPreloaded;
 
 	void initSoundBuffer(const Common::String &path);
