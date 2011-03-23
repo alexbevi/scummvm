@@ -34,6 +34,7 @@ namespace Ring {
 
 class AnimationImage;
 class ObjectPresentation;
+class ImageLoader;
 
 class Image {
 public:
@@ -43,7 +44,7 @@ public:
 	void create(uint32 depth, uint32 direction, uint32 width, uint32 height);
 	void destroy();
 
-	bool load(Common::String filename, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
+	bool load(Common::String filename, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
 	Image *zoom(float xZoom, float yZoom);
 
 	// Drawing
@@ -70,6 +71,8 @@ protected:
 	//uint32 _direction;
 	//uint32 _offset;
 	//Common::Rect _rect;
+
+	ImageLoader *getLoader(Common::String filename, ArchiveType type);
 };
 
 class ImageHandle : public Image, public Common::Serializable {

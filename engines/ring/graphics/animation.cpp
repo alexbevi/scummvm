@@ -602,7 +602,7 @@ void AnimationImage::alloc() {
 
 		// Load image
 		Common::String path = computePath(image, i);
-		if (!image->load(path, image->getArchiveType(), image->getZone(), image->getLoadFrom()))
+		if (!image->load(path, image->getArchiveType(), image->getZone(), image->getLoadFrom(), image->getDrawType()))
 			error("[AnimationImage::alloc] Cannot load image (%s)", path.c_str());
 	}
 }
@@ -616,7 +616,7 @@ void AnimationImage::allocActive() {
 	if (!_currentImage->isInitialized()) {
 		Common::String path = computePath(_currentImage, _activeFrame);
 
-		if (!_currentImage->load(path, _currentImage->getArchiveType(), _currentImage->getZone(), _currentImage->getLoadFrom()))
+		if (!_currentImage->load(path, _currentImage->getArchiveType(), _currentImage->getZone(), _currentImage->getLoadFrom(), _currentImage->getDrawType()))
 			error("[AnimationImage::alloc] Cannot load image (%s)", path.c_str());
 	}
 }
@@ -647,7 +647,7 @@ void AnimationImage::playFrame(const Common::Point &point, bool visible) {
 		_currentImage = image;
 		if (!image->isInitialized()) {
 			Common::String path = computePath(image, _activeFrame);
-			if (!image->load(path, image->getArchiveType(), image->getZone(), image->getLoadFrom()))
+			if (!image->load(path, image->getArchiveType(), image->getZone(), image->getLoadFrom(), image->getDrawType()))
 				error("[AnimationImage::playFrame] Cannot load frame (%s)", path.c_str());
 		}
 

@@ -114,7 +114,7 @@ void Puzzle::initializeImage(ImageHandle *image) const{
 		break;
 	}
 
-	if (!image->load(path, image->getArchiveType(), image->getZone(), image->getLoadFrom()))
+	if (!image->load(path, image->getArchiveType(), image->getZone(), image->getLoadFrom(), image->getDrawType()))
 		error("[Puzzle::initializeImage] Cannot load image (%s)!", path.c_str());
 }
 

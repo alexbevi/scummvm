@@ -657,7 +657,7 @@ void Application::showImage(Common::String filename, const Common::Point &point,
 		path = Common::String::format("/IMAGE/%s", filename.c_str());
 
 	Image *image = new Image();
-	if (!image->load(path, archiveType, getCurrentZone(), loadFrom)) {
+	if (!image->load(path, archiveType, getCurrentZone(), loadFrom, kDrawType1)) {
 		delete image;
 		return;
 	}
@@ -680,7 +680,7 @@ bool Application::scrollImage(Common::String filename, uint32 ticksWait, LoadFro
 		path = Common::String::format("/IMAGE/%s", filename.c_str());
 
 	Image *image = new Image();
-	if (!image->load(path, archiveType, getCurrentZone(), loadFrom)) {
+	if (!image->load(path, archiveType, getCurrentZone(), loadFrom, kDrawType1)) {
 		warning("[Application::scrollImage] Cannot load image (%s)", path.c_str());
 
 		delete image;
@@ -733,13 +733,13 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 
 	// Load images
 	Image *imageFrom = new Image();
-	if (!imageFrom->load(pathFrom, archiveType, getCurrentZone(), loadFrom)) {
+	if (!imageFrom->load(pathFrom, archiveType, getCurrentZone(), loadFrom, kDrawType1)) {
 		warning("[Application::displayFade] Cannot load imageFrom (%s)", pathFrom.c_str());
 		goto cleanup;
 	}
 
 	imageTo = new Image();
-	if (!imageTo->load(pathTo, archiveType, getCurrentZone(), loadFrom)) {
+	if (!imageTo->load(pathTo, archiveType, getCurrentZone(), loadFrom, kDrawType1)) {
 		warning("[Application::displayFade] Cannot load imageTo (%s)", pathTo.c_str());
 		goto cleanup;
 	}

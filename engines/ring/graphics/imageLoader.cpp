@@ -41,7 +41,7 @@ namespace Ring {
 
 #pragma region BMP
 
-bool ImageLoaderBMP::load(Image *image, ArchiveType, ZoneId, LoadFrom) {
+bool ImageLoaderBMP::load(Image *image, ArchiveType, ZoneId, LoadFrom, DrawType) {
 	if (!image)
 		error("[ImageLoaderBMP::load] Invalid image pointer!");
 
@@ -75,7 +75,7 @@ ImageLoaderBMA::~ImageLoaderBMA() {
 	deinit();
 }
 
-bool ImageLoaderBMA::load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom) {
+bool ImageLoaderBMA::load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType) {
 	if (!image)
 		error("[ImageLoaderBMA::load] Invalid image pointer!");
 
@@ -201,7 +201,7 @@ ImageLoaderTGC::~ImageLoaderTGC() {
 	deinit();
 }
 
-bool ImageLoaderTGC::load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom) {
+bool ImageLoaderTGC::load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType) {
 	if (!image)
 		error("[ImageLoaderTGC::load] Invalid image pointer!");
 
@@ -271,7 +271,7 @@ void ImageLoaderTGC::deinit() {
 
 #pragma region TGA
 
-bool ImageLoaderTGA::load(Image *image, ArchiveType, ZoneId, LoadFrom) {
+bool ImageLoaderTGA::load(Image *image, ArchiveType, ZoneId, LoadFrom, DrawType) {
 	if (!image)
 		error("[ImageLoaderTGA::load] Invalid image pointer!");
 
@@ -384,7 +384,7 @@ ImageLoaderCIN::~ImageLoaderCIN() {
 	deinit();
 }
 
-bool ImageLoaderCIN::load(Image *image, ArchiveType, ZoneId, LoadFrom) {
+bool ImageLoaderCIN::load(Image *image, ArchiveType, ZoneId, LoadFrom, DrawType) {
 	if (!image)
 		error("[ImageLoaderCNM::load] Invalid image pointer!");
 
@@ -499,5 +499,23 @@ bool ImageLoaderCIN::readImage(Image *image) {
 
 #pragma endregion
 
+#pragma region CI2
+
+ImageLoaderCI2::~ImageLoaderCI2() {
+
+}
+
+bool ImageLoaderCI2::load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType) {
+	if (!image)
+		error("[ImageLoaderCNM::load] Invalid image pointer!");
+
+	_filename = image->getName();
+
+	warning("[ImageLoaderCI2::load] Loading CI2 compressed image not implemented (%s)", _filename.c_str());
+
+	return true;
+}
+
+#pragma endregion
 
 } // End of namespace Ring

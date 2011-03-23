@@ -31,6 +31,7 @@
 
 #include "ring/debug.h"
 #include "ring/helpers.h"
+#include "ring/ring.h"
 
 namespace Ring {
 
@@ -128,12 +129,39 @@ void Image::destroy() {
 	SAFE_DELETE(_surface);
 }
 
-bool Image::load(Common::String filename, ArchiveType type, ZoneId zone, LoadFrom loadFrom) {
+bool Image::load(Common::String filename, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType) {
 	if (filename.empty())
 		return false;
 
 	debugC(kRingDebugGraphics, "Loading image: %s", filename.c_str());
 	_filename = filename;
+
+	ImageLoader *loader = getLoader(filename, type);
+	if (!loader)
+		error("[Image::load] Cannot find an image loader for file %s", filename.c_str());
+
+	if (!loader->load(this, type, zone, loadFrom, drawType)) {
+		delete loader;
+
+		return false;
+	}
+
+	delete loader;
+
+	return true;
+}
+
+ImageLoader *Image::getLoader(Common::String filename, ArchiveType type) {
+	switch (((RingEngine *)g_engine)->getGameType()) {
+	default:
+		break;
+
+	// Faust uses CI2 compression for all files stored in archives
+	case GameTypeFaust:
+		if (type == kArchiveArt)
+			return new ImageLoaderCI2();
+		break;
+	}
 
 	ImageLoader *loader = NULL;
 
@@ -164,6 +192,8 @@ bool Image::load(Common::String filename, ArchiveType type, ZoneId zone, LoadFro
 		loader = new ImageLoaderBMA();
 	} else if (filename.hasSuffix(".tgc")) {
 		loader = new ImageLoaderTGC();
+	} else if (filename.hasSuffix(".ci2")) {
+		loader = new ImageLoaderCI2();
 	} else {
 		// Defaults to BMP or BMA
 		if (type == kArchiveFile)
@@ -172,18 +202,7 @@ bool Image::load(Common::String filename, ArchiveType type, ZoneId zone, LoadFro
 			loader = new ImageLoaderBMA();
 	}
 
-	if (!loader)
-		error("[Image::load] Cannot find an image loader for file %s", filename.c_str());
-
-	if (!loader->load(this, type, zone, loadFrom)) {
-		delete loader;
-
-		return false;
-	}
-
-	delete loader;
-
-	return true;
+	return loader;
 }
 
 Image *Image::zoom(float xZoom, float yZoom) {

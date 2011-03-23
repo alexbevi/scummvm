@@ -401,7 +401,7 @@ void Bag::draw(){
 					break;
 				}
 
-				loaded = image->load(filename, image->getArchiveType(), image->getZone(), image->getLoadFrom());
+				loaded = image->load(filename, image->getArchiveType(), image->getZone(), image->getLoadFrom(), image->getDrawType());
 			}
 
 			if (loaded)
@@ -507,7 +507,7 @@ void Bag::loadImage(Common::String filename, Image **image, ArchiveType archiveT
 	SAFE_DELETE(*image);
 	*image = new Image();
 
-	if (!(*image)->load(path, archiveType, kZoneSY, kLoadFromDisk))
+	if (!(*image)->load(path, archiveType, kZoneSY, kLoadFromDisk, kDrawType1))
 		error("[Bag::LoadImage] Cannot load image: %s", path.c_str());
 }
 

@@ -252,7 +252,7 @@ void Rotation::loadImage() {
 		break;
 	}
 
-	_imageHandle->load(filename, _imageHandle->getArchiveType(), _imageHandle->getZone(), _imageHandle->getLoadFrom());
+	_imageHandle->load(filename, _imageHandle->getArchiveType(), _imageHandle->getZone(), _imageHandle->getLoadFrom(), _imageHandle->getDrawType());
 }
 
 void Rotation::destroyImage() {

@@ -39,7 +39,7 @@ class ImageLoader {
 public:
 	virtual ~ImageLoader() {};
 
-	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom) = 0;
+	virtual bool load(Image *image, ArchiveType archiveType, ZoneId zone, LoadFrom loadFrom, DrawType drawType) = 0;
 
 protected:
 	Common::String _filename;
@@ -50,7 +50,7 @@ class ImageLoaderBMP : public ImageLoader {
 public:
 	virtual ~ImageLoaderBMP() {};
 
-	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ class ImageLoaderBMA : public ImageLoader {
 public:
 	virtual ~ImageLoaderBMA();
 
-	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
 
 private:
 	struct Header {
@@ -88,7 +88,7 @@ class ImageLoaderTGA : public ImageLoader {
 public:
 	virtual ~ImageLoaderTGA() {};
 
-	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
 
 protected:
 	enum ImageType {
@@ -127,7 +127,7 @@ class ImageLoaderTGC : public ImageLoaderTGA {
 public:
 	virtual ~ImageLoaderTGC();
 
-	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
 
 private:
 	CompressedStream *_stream;
@@ -167,7 +167,7 @@ public:
 
 	virtual ~ImageLoaderCIN();
 
-	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
 	bool readImage(Image *image);
 
 	bool init(Common::String filename);
@@ -185,6 +185,15 @@ private:
 	void deinit();
 
 	bool readHeader();
+};
+
+class ImageLoaderCI2 : public ImageLoader {
+public:
+	virtual ~ImageLoaderCI2();
+
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
+
+private:
 };
 
 } // End of namespace Ring

@@ -149,7 +149,7 @@ void VisualObjectList::loadImage(ImageHandle *image) const {
 	// Compute file path
 	Common::String filename = Common::String::format("%s%s", image->getDirectory().c_str(), image->getNameId().c_str());
 
-	image->load(filename, image->getArchiveType(), image->getZone(), image->getLoadFrom());
+	image->load(filename, image->getArchiveType(), image->getZone(), image->getLoadFrom(), image->getDrawType());
 }
 
 Hotspot *VisualObjectList::getHotspot(const Common::Point &point) {
@@ -502,7 +502,7 @@ void VisualObjectList::draw() {
 						bool loaded = true;
 						if (!imageClicked->isInitialized()) {
 							Common::String path = Common::String::format("%s%s.%s", _iconPath.c_str(), _objects[_objectIndexClicked]->getName().c_str(), Application::getFileExtension(_imageType).c_str());
-							loaded = imageClicked->load(path, kArchiveFile, kZoneNone, kLoadFromInvalid);
+							loaded = imageClicked->load(path, kArchiveFile, kZoneNone, kLoadFromInvalid, imageClicked->getDrawType());
 						}
 
 						if (loaded)
