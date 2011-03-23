@@ -154,10 +154,15 @@ bool Image::load(Common::String filename, ArchiveType type, ZoneId zone, LoadFro
 ImageLoader *Image::getLoader(Common::String filename, ArchiveType type) {
 	switch (((RingEngine *)g_engine)->getGameType()) {
 	default:
+	case GameTypeRing:
 		break;
 
-	// Faust uses CI2 compression for all files stored in archives
+	// Games released after Ring uses CI2 compression for all files stored in archives
 	case GameTypeFaust:
+	case GameTypePompeii:
+	case GameTypePilgrim2:
+	case GameTypePilgrim3:
+	case GameTypeJerusalem:
 		if (type == kArchiveArt)
 			return new ImageLoaderCI2();
 		break;
