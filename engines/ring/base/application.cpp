@@ -69,7 +69,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_currentGameZone(kZoneNone), _field_70(0),               _field_74(false),     _field_75(false),            _field_76(false),
 	_field_77(false),            _field_78(false),           _puzzle(NULL),        _rotation(NULL),             _bag(NULL),
 	_timerHandler(NULL),         _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL),        _preferenceHandler(NULL),
-	_eventHandler(NULL),         _zoneHandler(NULL) {
+	_zoneHandler(NULL),          _eventHandler(NULL) {
 
 	// Start managers
 	_saveManager = new SaveManager(this);
@@ -1471,28 +1471,28 @@ void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationI
 
 #pragma endregion
 
-void Application::objectSetActiveCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom) {
+void Application::objectSetActiveCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setActiveCursor(point, a4, type, a6, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetPassiveCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom) {
+void Application::objectSetPassiveCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetPassiveCursor] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setPassiveCursor(point, a4, type, a6, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetActiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom) {
+void Application::objectSetActiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetActiveDrawCursor] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setActiveDrawCursor(point, a4, type, a6, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetPassiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom) {
+void Application::objectSetPassiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetPassiveDrawCursor] Object Id doesn't exist (%d)", objectId.id());
 

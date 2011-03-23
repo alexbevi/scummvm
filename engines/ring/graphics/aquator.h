@@ -44,7 +44,7 @@ public:
 		float field_20;
 		float field_24;
 		float field_28;
-		float field_2C;
+		uint32 field_2C;
 		float field_30;
 
 		Header();
@@ -76,7 +76,7 @@ private:
 	bool    _hasAdditionnalData;
 
 	void reset();
-	void *allocBuffer(bool hasAdditionnalData);
+	void *allocBuffer(bool hasAdditionnalData) const;
 	void initData();
 };
 
@@ -131,7 +131,7 @@ public:
 	AquatorStream(uint32 count, Common::String path);
 	~AquatorStream();
 
-	void alloc(bool isCompressed, Graphics::PixelFormat format, uint32 size);
+	void alloc(bool isCompressed, const Graphics::PixelFormat &format, uint32 size);
 	void dealloc();
 
 	uint32 sub_410F50(uint32 index);
@@ -150,7 +150,7 @@ private:
 	Common::String _path;
 	ImageHeaderEntry *_entry;
 
-	void initNode(Common::SeekableReadStream *stream, Graphics::PixelFormat format);
+	void initNode(Common::SeekableReadStream *stream, const Graphics::PixelFormat &format);
 	void initChannel(Common::SeekableReadStream *stream, uint32 index);
 
 	// Decompressed aquator

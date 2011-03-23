@@ -227,7 +227,7 @@ void Cinematic::sub_46A0E0(uint32 a1, uint32 a2, uint32 a3, int32 a4) {
 	error("[Cinematic::sub_46A0E0] Not implemented!");
 }
 
-void Cinematic::setVolume(uint32 volume) {
+void Cinematic::setVolume(int32 volume) {
 	error("[Cinematic::setVolume] Not implemented!");
 }
 
@@ -290,14 +290,20 @@ bool Cinematic::seek(int32 offset, int whence) {
 
 Movie::Movie(ScreenManager *screen) : _screen(screen) {
 	_imageCIN = NULL;
-	// bufferGlobal = NULL;
+	_screen   = NULL;
+	_field_56 = 0.0f;
+	_isSoundInitialized = false;
+	_field_5B = false;
+	_framerate = 0.0f;
+	_hasDialog = false;
+	_channel = 0;
+
 
 	_cinematic = new Cinematic();
 }
 
 Movie::~Movie() {
-	deinit();
-
+	SAFE_DELETE(_imageCIN);
 	SAFE_DELETE(_cinematic);
 
 	// Zero-out passed pointers
@@ -361,6 +367,9 @@ void Movie::deinit() {
 void Movie::play(const Common::Point &point) {
 	if (!_cinematic)
 		error("[Movie::play] cinematic not initialized properly");
+
+	if (!_imageCIN)
+		error("[Movie::play] image not initialized properly");
 
 	SoundHandler *soundHandler = getApp()->getSoundHandler();
 	ScreenManager *screen = getApp()->getScreenManager();
@@ -563,7 +572,7 @@ bool Movie::readSound() {
 	}
 
 	// Check remaining file size
-	if ((_cinematic->pos() + offset) >= (uint32)_cinematic->size()) {
+	if (((uint32)_cinematic->pos() + offset) >= (uint32)_cinematic->size()) {
 		warning("[Movie::readSound] Invalid sound offset (would read after end of file: %d)", offset);
 		deinit();
 		return false;
@@ -573,7 +582,7 @@ bool Movie::readSound() {
 	if (!_isSoundInitialized)
 		return true;
 
-	_cinematic->setSoundBuffer(new Common::SeekableSubReadStream(_cinematic, _cinematic->pos(), _cinematic->pos() + offset), offset);
+	_cinematic->setSoundBuffer(new Common::SeekableSubReadStream(_cinematic, (uint32)_cinematic->pos(), (uint32)_cinematic->pos() + offset), offset);
 
 	return true;
 }

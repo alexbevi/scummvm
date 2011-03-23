@@ -32,8 +32,6 @@
 #include "common/savefile.h"
 #include "common/serializer.h"
 
-#include "engines/savestate.h"
-
 #include "graphics/surface.h"
 
 namespace Ring {

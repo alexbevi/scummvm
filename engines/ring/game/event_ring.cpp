@@ -1215,7 +1215,8 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, uint32 target, Id, uint32, 
 		// Compute the next slot to save to
 		uint32 slot = _app->getSaveManager()->getNextSlot();
 
-		if (!g_engine->getSaveFileManager()->copySavefile(SaveManager::getSavegameFile(0), SaveManager::getSavegameFile(slot))
+        Common::SaveFileManager *saveFileMan = g_system->getSavefileManager();
+		if (!saveFileMan->copySavefile(SaveManager::getSavegameFile(0), SaveManager::getSavegameFile(slot))
 		 || !copySavedTimers(slot)) {
 			_app->exitZone();
 			_app->initZones();
@@ -11251,32 +11252,34 @@ void EventHandlerRing::waitTicks(uint32 ticks) const {
 }
 
 bool EventHandlerRing::copySavedTimers(uint32 slot) const {
-	if (!g_engine->getSaveFileManager()->copySavefile(SaveManager::getTimerFile("ALB", 0), SaveManager::getTimerFile("ALB", slot)))
+    Common::SaveFileManager *saveFileMan = g_system->getSavefileManager();
+	if (!saveFileMan->copySavefile(SaveManager::getTimerFile("ALB", 0), SaveManager::getTimerFile("ALB", slot)))
 		return false;
 
-	if (!g_engine->getSaveFileManager()->copySavefile(SaveManager::getTimerFile("LOG", 0), SaveManager::getTimerFile("LOG", slot)))
+	if (!saveFileMan->copySavefile(SaveManager::getTimerFile("LOG", 0), SaveManager::getTimerFile("LOG", slot)))
 		return false;
 
-	if (!g_engine->getSaveFileManager()->copySavefile(SaveManager::getTimerFile("SIE", 0), SaveManager::getTimerFile("SIE", slot)))
+	if (!saveFileMan->copySavefile(SaveManager::getTimerFile("SIE", 0), SaveManager::getTimerFile("SIE", slot)))
 		return false;
 
-	if (!g_engine->getSaveFileManager()->copySavefile(SaveManager::getTimerFile("BRU", 0), SaveManager::getTimerFile("BRU", slot)))
+	if (!saveFileMan->copySavefile(SaveManager::getTimerFile("BRU", 0), SaveManager::getTimerFile("BRU", slot)))
 		return false;
 
 	return true;
 }
 
 bool EventHandlerRing::removeSavedTimers(uint32 slot) const {
-	if (!g_engine->getSaveFileManager()->removeSavefile(SaveManager::getTimerFile("ALB", slot)))
+    Common::SaveFileManager *saveFileMan = g_system->getSavefileManager();
+	if (!saveFileMan->removeSavefile(SaveManager::getTimerFile("ALB", slot)))
 		return false;
 
-	if (!g_engine->getSaveFileManager()->removeSavefile(SaveManager::getTimerFile("LOG", slot)))
+	if (!saveFileMan->removeSavefile(SaveManager::getTimerFile("LOG", slot)))
 		return false;
 
-	if (!g_engine->getSaveFileManager()->removeSavefile(SaveManager::getTimerFile("SIE", slot)))
+	if (!saveFileMan->removeSavefile(SaveManager::getTimerFile("SIE", slot)))
 		return false;
 
-	if (!g_engine->getSaveFileManager()->removeSavefile(SaveManager::getTimerFile("BRU", slot)))
+	if (!saveFileMan->removeSavefile(SaveManager::getTimerFile("BRU", slot)))
 		return false;
 
 

@@ -147,7 +147,7 @@ void ImageHeaderEntry::initData() {
 		_header.field_28 = _header.field_4;
 
 	_header.field_30 = _header.field_8  * (_header.field_20 - _header.field_1C);
-	_header.field_2C = _header.field_30 * (_header.field_28 - _header.field_24);
+	_header.field_2C = (uint32)(_header.field_30 * (_header.field_28 - _header.field_24));
 }
 
 void ImageHeaderEntry::update(ImageHeaderEntry *entry, bool updateCaller) {
@@ -168,12 +168,14 @@ void ImageHeaderEntry::updateBuffer(Common::Point *point) {
 
 void ImageHeaderEntry::updateCoordinates(Common::Point *point) {
 	uint32 *buffer = (uint32 *)_bufferData;
+	if (!buffer)
+		error("[ImageHeaderEntry::updateCoordinates] Buffer not initialized properly");
 
-	point->x = (point->x * (float)buffer[8227] * 10.0f) / 2048.0f;
-	point->y = (point->y - (float)buffer[8230] * 0.5f) * (float)buffer[8225] / (float)buffer[8230] + (float)buffer[8226] + 10.0f;
+	point->x = (int16)((point->x * (float)buffer[8227] * 10.0f) / 2048.0f);
+	point->y = (int16)((point->y - (float)buffer[8230] * 0.5f) * (float)buffer[8225] / (float)buffer[8230] + (float)buffer[8226] + 10.0f);
 }
 
-void *ImageHeaderEntry::allocBuffer(bool hasAdditionnalData) {
+void *ImageHeaderEntry::allocBuffer(bool hasAdditionnalData) const {
 	uint32 size = _header.field_2C / 4 + (hasAdditionnalData ? IMAGEHEADER_BUFFER_SIZE : 0);
 
 	void *buffer = malloc(size + 1024);
@@ -221,6 +223,9 @@ void ImageHeader::init(Common::SeekableReadStream *stream) {
 }
 
 void ImageHeader::update(ImageHeaderEntry* entry) {
+	if (!_current)
+		error("[ImageHeader::update] entry not initialized properly");
+
 	_current->init(_entries[0]);
 	entry->update(_current, false);
 }
@@ -271,9 +276,10 @@ AquatorStream::AquatorStream(uint32 count, Common::String path) {
 
 AquatorStream::~AquatorStream() {
 	CLEAR_ARRAY(AquatorImageHeader, _headers);
+	SAFE_DELETE(_entry);
 }
 
-void AquatorStream::alloc(bool isCompressed, Graphics::PixelFormat format, uint32 size) {
+void AquatorStream::alloc(bool isCompressed, const Graphics::PixelFormat &format, uint32 size) {
 	if (isCompressed) {
 		Common::String filename = Common::String::format("%s.aqi", _path.c_str());
 
@@ -311,7 +317,7 @@ void AquatorStream::dealloc() {
 	_entry = new ImageHeaderEntry();
 }
 
-void AquatorStream::initNode(Common::SeekableReadStream *stream, Graphics::PixelFormat format) {
+void AquatorStream::initNode(Common::SeekableReadStream *stream, const Graphics::PixelFormat &format) {
 	_entry->init(stream, true);
 
 	SAFE_DELETE(stream);
