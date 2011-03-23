@@ -43,7 +43,8 @@ ApplicationFaust::~ApplicationFaust() {
 #pragma region Game setup
 
 void ApplicationFaust::initFont() {
-	error("[ApplicationFaust::initFont] Not implemented");
+	// Original asks for size 12, but the font only contains size 9
+	fontAdd(kFontDefault, "arxrin3.fon", "HelveticaLight", 9, true, false, false, false, getCurrentLanguage());
 }
 
 void ApplicationFaust::setup() {
