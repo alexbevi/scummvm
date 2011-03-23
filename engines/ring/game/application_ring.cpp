@@ -126,6 +126,16 @@ void ApplicationRing::initFont() {
 }
 
 void ApplicationRing::setup() {
+	// Add the list of zones
+	addZone(kZoneNI, "Alberich",   "NI", _configuration.artNI ? kArchiveArt : kArchiveFile, kLoadFromDisk);
+	addZone(kZoneRH, "Alberich",   "RH", _configuration.artRH ? kArchiveArt : kArchiveFile, kLoadFromDisk);
+	addZone(kZoneFO, "Siegmund",   "FO", _configuration.artFO ? kArchiveArt : kArchiveFile, kLoadFromDisk);
+	addZone(kZoneRO, "Loge",       "RO", _configuration.artRO ? kArchiveArt : kArchiveFile, kLoadFromDisk);
+	addZone(kZoneWA, "Brnnnhilde", "WA", _configuration.artWA ? kArchiveArt : kArchiveFile, kLoadFromDisk);
+	addZone(kZoneAS, "Dril",       "AS", _configuration.artAS ? kArchiveArt : kArchiveFile, kLoadFromDisk);
+	addZone(kZoneN2, "Loge",       "N2", _configuration.artN2 ? kArchiveArt : kArchiveFile, kLoadFromDisk);
+
+	// Setup system zone
 	setupZone(kZoneSY, kSetupTypeNone);
 
 	// Setup cursors
@@ -194,7 +204,7 @@ void ApplicationRing::startMenu(bool savegame) {
 		_screenManager->copySurface(_thumbnail, 0, 0);
 	}
 
-	_currentGameZone = _zone;
+	_currentGameZone = getCurrentZone();
 
 	soundStopAll(4);
 	setZoneAndEnableBag(kZoneSY);
@@ -360,7 +370,7 @@ void ApplicationRing::draw() {
 	case kStateShowMenu:
 		exitZone();
 		initZones();
-		showMenu(_zone, _field_70);
+		showMenu(getCurrentZone(), _field_70);
 		return;
 	}
 
@@ -453,7 +463,7 @@ void ApplicationRing::messageHideQuestion(uint32 accelerationIndex) {
 #pragma region Zone setup
 
 void ApplicationRing::setupZone(ZoneId zone, SetupType type) {
-	debugC(kRingDebugLogic, "Setting up zone %s", getZoneString(zone).c_str());
+	debugC(kRingDebugLogic, "Setting up zone %s", getZoneFolder(zone).c_str());
 
 	// Check saved data for zone and/or puzzle id
 	bool hasData = isDataPresent(type);
@@ -482,13 +492,13 @@ void ApplicationRing::setupZone(ZoneId zone, SetupType type) {
 		setZone(zone, type);
 	} else {
 		_saveManager->setSetupType(type);
-		messageFormat("InsertCD", Common::String::format("%d", getCdForZone(_zone)));
+		messageFormat("InsertCD", Common::String::format("%d", getCdForZone(getCurrentZone())));
 		messageInsertCd(zone);
 	}
 }
 
 bool ApplicationRing::isDataPresent(SetupType type) {
-	if (type != kSetupTypeLoading || _zone != kZoneAS)
+	if (type != kSetupTypeLoading || getCurrentZone() != kZoneAS)
 		return false;
 
 	if (_saveManager->getData()->hasCurrentRotation) {
@@ -548,8 +558,7 @@ uint32 ApplicationRing::getCdForZone(ZoneId zone) const {
 }
 
 void ApplicationRing::setZoneAndEnableBag(ZoneId zone) {
-	_zone = zone;
-	_zoneString = getZoneString(zone);
+	setCurrentZone(zone);
 
 	// Enable or disable bag
 	if (zone == kZoneSY || zone == kZoneAS)
@@ -559,11 +568,11 @@ void ApplicationRing::setZoneAndEnableBag(ZoneId zone) {
 }
 
 void ApplicationRing::setZone(ZoneId zone, SetupType type) {
-	debugC(kRingDebugLogic, "Setting zone %s", getZoneString(zone).c_str());
+	debugC(kRingDebugLogic, "Setting zone %s", getZoneFolder(zone).c_str());
 
 	bool hasData = isDataPresent(type);
 	if (zone != kZoneSY && !hasData) {
-		if (getReadFrom(zone) == kArchiveArt) {
+		if (getZoneArchiveType(zone) == kArchiveArt) {
 			if (!getArtHandler())
 				error("[ApplicationRing::setZone] Art handler is not initialized properly");
 
@@ -620,107 +629,6 @@ Visual *ApplicationRing::createVisual(Id visualId, uint32 a3, uint32 a4, uint32 
 
 #pragma endregion
 
-#pragma region Zone full names, short string and ReadFrom
-
-Common::String ApplicationRing::getZoneString(ZoneId zone) const {
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return "sy";
-
-	case kZoneNI:
-		return "ni";
-
-	case kZoneRH:
-		return "rh";
-
-	case kZoneFO:
-		return "fo";
-
-	case kZoneRO:
-		return "ro";
-
-	case kZoneWA:
-		return "wa";
-
-	case kZoneAS:
-		return "as";
-
-	case kZoneN2:
-		return "n2";
-	}
-
-	error("[Application::getZone] Invalid zone (%d)", zone);
-}
-
-Common::String ApplicationRing::getZoneLongName(ZoneId zone) const {
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return "";
-
-	case kZoneNI:
-	case kZoneRH:
-		return "Alberich";
-
-	case kZoneFO:
-		return "Siegmund";
-
-	case kZoneWA:
-		return "Brnnnhilde";
-
-	case kZoneAS:
-		return "Dril";
-
-	case kZoneRO:
-	case kZoneN2:
-		return "Loge";
-	}
-
-	error("[Application::getZoneName] Invalid zone (%d)", zone);
-}
-
-ArchiveType ApplicationRing::getReadFrom(ZoneId zone) const {
-	if (_archiveType == kArchiveFile)
-		return kArchiveFile;
-
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return _configuration.artSY ? kArchiveArt : kArchiveFile;
-
-	case kZoneNI:
-		return _configuration.artNI ? kArchiveArt : kArchiveFile;
-
-	case kZoneRH:
-		return _configuration.artRH ? kArchiveArt : kArchiveFile;
-
-	case kZoneFO:
-		return _configuration.artFO ? kArchiveArt : kArchiveFile;
-
-	case kZoneRO:
-		return _configuration.artRO ? kArchiveArt : kArchiveFile;
-
-	case kZoneWA:
-		return _configuration.artWA ? kArchiveArt : kArchiveFile;
-
-	case kZoneAS:
-		return _configuration.artAS ? kArchiveArt : kArchiveFile;
-
-	case kZoneN2:
-		return _configuration.artN2 ? kArchiveArt : kArchiveFile;
-	}
-
-	error("[ApplicationRing::getReadFrom] Invalid zone (%d)", zone);
-}
-
-#pragma endregion
 
 #pragma region Zone initialization
 

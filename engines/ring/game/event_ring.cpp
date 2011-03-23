@@ -1125,12 +1125,12 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, uint32 target, Id, uint32, 
 		TimeDate date;
 		g_system->getTimeAndDate(date);
 		Common::String description = Common::String::format("%s %02d:%02d:%02d %02d/%02d/%d",
-		                                                    _app->getZoneLongName(_app->getCurrentGameZone()).c_str(),
+		                                                    _app->getZoneName(_app->getCurrentGameZone()).c_str(),
 		                                                    date.tm_hour, date.tm_min, date.tm_sec,
 		                                                    date.tm_mon, date.tm_mday, date.tm_year + 1900);
 
 		// We only save the current zone here
-		_app->getSaveManager()->setDescription(_app->getZoneLongName(_app->getCurrentGameZone()));
+		_app->getSaveManager()->setDescription(_app->getZoneName(_app->getCurrentGameZone()));
 
 		_app->objectPresentationSetTextToPuzzle(kObjectSaveName, 0, 1, description);
 		_app->objectPresentationSetTextCoordinatesToPuzzle(kObjectSaveName, 0, 1, Common::Point(344, 155));
@@ -5290,7 +5290,7 @@ void EventHandlerRing::onKeyDownZoneSY(const Common::KeyState &keyState) {
 #pragma region Zone Setup
 
 void EventHandlerRing::onSetup(ZoneId zone, SetupType type) {
-	debugC(kRingDebugLogic, "onSetup (zone: %s, type: %d)", _app->getZoneString(zone).c_str(), type);
+	debugC(kRingDebugLogic, "onSetup (zone: %s, type: %d)", _app->getZoneFolder(zone).c_str(), type);
 
 	switch (zone) {
 	default:

@@ -51,7 +51,7 @@ Rotation::Rotation(Id id, Common::String name, byte a3, LoadFrom, uint32 nodeCou
 	_comBufferLength = 0;
 
 	// Compute path (Original checks loadFrom)
-	_path = Common::String::format("DATA/%s/NODE/%s", getApp()->getCurrentZoneString().c_str(), name.c_str());
+	_path = Common::String::format("DATA/%s/NODE/%s", getApp()->getCurrentZoneFolder().c_str(), name.c_str());
 
 	// Create animation for each node
 	for (uint32 i = 0; i < nodeCount; i++)
@@ -244,7 +244,7 @@ void Rotation::loadImage() {
 
 	case kArchiveFile:
 		// Original checks if we are loading from cd or from disk
-		filename = Common::String::format("DATA/%s/IMAGE/%s", getApp()->getZoneString(_imageHandle->getZone()).c_str(), _imageHandle->getNameId().c_str());
+		filename = Common::String::format("DATA/%s/IMAGE/%s", getApp()->getZoneFolder(_imageHandle->getZone()).c_str(), _imageHandle->getNameId().c_str());
 		break;
 
 	case kArchiveArt:

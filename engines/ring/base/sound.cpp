@@ -219,9 +219,9 @@ void SoundEntryStream::play(bool loop) {
 	// Compute sound path
 	Common::String path;
 	if (_type == kSoundTypeDialog)
-		path = Common::String::format("DATA/%s/SOUND/%s/%s", getApp()->getCurrentZoneString().c_str(), getApp()->getLanguageFolder().c_str(), _name.c_str());
+		path = Common::String::format("DATA/%s/SOUND/%s/%s", getApp()->getCurrentZoneFolder().c_str(), getApp()->getLanguageFolder().c_str(), _name.c_str());
 	else
-		path = Common::String::format("DATA/%s/SOUND/%s", getApp()->getCurrentZoneString().c_str(), _name.c_str());
+		path = Common::String::format("DATA/%s/SOUND/%s", getApp()->getCurrentZoneFolder().c_str(), _name.c_str());
 
 	if (!Common::File::exists(path))
 		error("[SoundEntryS::play] File doesn't exist (%s)", path.c_str());
@@ -330,9 +330,9 @@ void SoundEntryData::preload() {
 	// Compute sound path
 	Common::String path;
 	if (_type == kSoundTypeDialog)
-		path = Common::String::format("DATA/%s/SOUND/%s/%s", getApp()->getCurrentZoneString().c_str(), getApp()->getLanguageFolder().c_str(), _name.c_str());
+		path = Common::String::format("DATA/%s/SOUND/%s/%s", getApp()->getCurrentZoneFolder().c_str(), getApp()->getLanguageFolder().c_str(), _name.c_str());
 	else
-		path = Common::String::format("DATA/%s/SOUND/%s", getApp()->getCurrentZoneString().c_str(), _name.c_str());
+		path = Common::String::format("DATA/%s/SOUND/%s", getApp()->getCurrentZoneFolder().c_str(), _name.c_str());
 
 	if (!Common::File::exists(path))
 		error("[SoundEntryD::preload] File doesn't exist (%s)", path.c_str());

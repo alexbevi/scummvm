@@ -42,6 +42,7 @@
 #include "ring/base/sound.h"
 #include "ring/base/timer.h"
 #include "ring/base/var.h"
+#include "ring/base/zone.h"
 
 #include "ring/graphics/animation.h"
 #include "ring/graphics/dragControl.h"
@@ -64,11 +65,11 @@ namespace Ring {
 Application::Application(RingEngine *engine) : _vm(engine),
 	_screenManager(NULL),        _artHandler(NULL),          _fontHandler(NULL),   _dialogHandler(NULL),        _languageHandler(NULL),
 	_isRotationCompressed(true), _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
-	_soundHandler(NULL),         _state(kStateNone),         _field_6A(false),         _zoneString("A0"),           _zone(kZoneNone),
+	_soundHandler(NULL),         _state(kStateNone),         _field_6A(false),
 	_currentGameZone(kZoneNone), _field_70(0),               _field_74(false),     _field_75(false),            _field_76(false),
 	_field_77(false),            _field_78(false),           _puzzle(NULL),        _rotation(NULL),             _bag(NULL),
 	_timerHandler(NULL),         _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL),        _preferenceHandler(NULL),
-	_eventHandler(NULL) {
+	_eventHandler(NULL),         _zoneHandler(NULL) {
 
 	// Start managers
 	_saveManager = new SaveManager(this);
@@ -96,6 +97,7 @@ Application::~Application() {
 	SAFE_DELETE(_dragControl);
 	SAFE_DELETE(_objectHandler);
 	SAFE_DELETE(_preferenceHandler);
+	SAFE_DELETE(_zoneHandler);
 
 	SAFE_DELETE(_saveManager);
 	SAFE_DELETE(_soundManager);
@@ -132,6 +134,9 @@ void Application::saveLoadWithSerializer(Common::Serializer &s) {
 #pragma region Initialization
 
 void Application::init() {
+	// Setup zone handler
+	_zoneHandler = new ZoneHandler();
+
 	// Setup available languages
 	_languageHandler = new LanguageHandler();
 	languageAdd(kLanguageEnglish, "ENG", "ENG", 1);
@@ -149,6 +154,10 @@ void Application::init() {
 
 	// Load configuration
 	loadConfiguration();
+
+	// Setup system zone (needed by ArtHandler)
+	addEpisode(1, "System", 0);
+	addZone(kZoneSY, "System",     "SY", _configuration.artSY ? kArchiveArt : kArchiveFile, kLoadFromDisk);
 
 	// Setup video
 	_screenManager = new ScreenManager();
@@ -626,7 +635,7 @@ void Application::drawZoneName(ZoneId zone) {
 	// Draw the loading zone on screen
 	_screenManager->clear();
 
-	Common::String zoneName = (zone == kZoneSY) ? "System" : getZoneLongName(zone);
+	Common::String zoneName = (zone == kZoneSY) ? "System" : getZoneName(zone);
     Common::String message = Common::String::format("Loading zone %s...", zoneName.c_str());
 	_screenManager->drawText(message, Common::Point(10, 435), Color(246, 234, 219));
 
@@ -639,11 +648,11 @@ void Application::drawZoneName(ZoneId zone) {
 
 void Application::showImage(Common::String filename, const Common::Point &point, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (archiveType == kArchiveInvalid)
-		archiveType = getReadFrom(getCurrentZone());
+		archiveType = getZoneArchiveType(getCurrentZone());
 
 	Common::String path;
 	if (archiveType == kArchiveFile)
-		path = Common::String::format("/DATA/%s/IMAGE/%s", getCurrentZoneString().c_str(), filename.c_str());
+		path = Common::String::format("/DATA/%s/IMAGE/%s", getCurrentZoneFolder().c_str(), filename.c_str());
 	else
 		path = Common::String::format("/IMAGE/%s", filename.c_str());
 
@@ -662,11 +671,11 @@ void Application::showImage(Common::String filename, const Common::Point &point,
 
 bool Application::scrollImage(Common::String filename, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (archiveType == kArchiveInvalid)
-		archiveType = getReadFrom(getCurrentZone());
+		archiveType = getZoneArchiveType(getCurrentZone());
 
 	Common::String path;
 	if (archiveType == kArchiveFile)
-		path = Common::String::format("/DATA/%s/IMAGE/%s", getCurrentZoneString().c_str(), filename.c_str());
+		path = Common::String::format("/DATA/%s/IMAGE/%s", getCurrentZoneFolder().c_str(), filename.c_str());
 	else
 		path = Common::String::format("/IMAGE/%s", filename.c_str());
 
@@ -709,14 +718,14 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 	uint16 *srcTo = NULL;
 
 	if (archiveType == kArchiveInvalid)
-		archiveType = getReadFrom(getCurrentZone());
+		archiveType = getZoneArchiveType(getCurrentZone());
 
 	// Compute paths
 	Common::String pathFrom;
 	Common::String pathTo;
 	if (archiveType == kArchiveFile) {
-		pathFrom = Common::String::format("DATA/%s/IMAGE/%s", getCurrentZoneString().c_str(), filenameFrom.c_str());
-		pathTo   = Common::String::format("DATA/%s/IMAGE/%s", getCurrentZoneString().c_str(), filenameTo.c_str());
+		pathFrom = Common::String::format("DATA/%s/IMAGE/%s", getCurrentZoneFolder().c_str(), filenameFrom.c_str());
+		pathTo   = Common::String::format("DATA/%s/IMAGE/%s", getCurrentZoneFolder().c_str(), filenameTo.c_str());
 	} else {
 		pathFrom = Common::String::format("/IMAGE/%s", filenameFrom.c_str());
 		pathTo   = Common::String::format("/IMAGE/%s", filenameTo.c_str());
@@ -823,7 +832,7 @@ void Application::playMovie(Common::String filename, float frameDivider) {
 	if (!filename.hasSuffix(".cnm"))
 		filename += ".cnm";
 
-	Common::String path = Common::String::format("DATA/%s/PLA/", getCurrentZoneString().c_str());
+	Common::String path = Common::String::format("DATA/%s/PLA/", getCurrentZoneFolder().c_str());
 
 	Movie *movie = new Movie(_screenManager);
 	if (movie->init(path, filename, 1, 0)) {
@@ -848,7 +857,7 @@ void Application::playMovieChannel(Common::String filename, uint32 channel) {
 	if (!filename.hasSuffix(".cnm"))
 		filename += ".cnm";
 
-	Common::String path = Common::String::format("DATA/%s/PLA/", getCurrentZoneString().c_str());
+	Common::String path = Common::String::format("DATA/%s/PLA/", getCurrentZoneFolder().c_str());
 
 	Movie *movie = new Movie(_screenManager);
 	if (movie->init(path, filename, 1, channel))
@@ -2118,9 +2127,9 @@ void Application::soundAdd(Id soundId, SoundType type, Common::String filename, 
 	// Compute path
 	Common::String path;
 	if (type == kSoundTypeDialog)
-		path = Common::String::format("DATA/%s/SOUND/%s/%s", _zoneString.c_str(), getLanguageFolder().c_str(), filename.c_str());
+		path = Common::String::format("DATA/%s/SOUND/%s/%s", getCurrentZoneFolder().c_str(), getLanguageFolder().c_str(), filename.c_str());
 	else
-		path = Common::String::format("DATA/%s/SOUND/%s", _zoneString.c_str(), filename.c_str());
+		path = Common::String::format("DATA/%s/SOUND/%s", getCurrentZoneFolder().c_str(), filename.c_str());
 
 	if (!Common::File::exists(path))
 		error("[Application::soundAdd] File doesn't exist (%s)", path.c_str());
@@ -2518,6 +2527,41 @@ uint32 Application::dragControlGetOffsetY1() {
 	return (uint32)abs(_dragControl->getCurrentCoords().y - _dragControl->getCoords1().y);
 }
 
+#pragma endregion
+
+#pragma region Zone
+
+void Application::addEpisode(Id id, Common::String name, uint32 cd) {
+	_zoneHandler->addEpisode(id, name, cd);
+}
+
+void Application::addZone(ZoneId id, Common::String name, Common::String folder, ArchiveType archiveType, LoadFrom loadFrom) {
+	_zoneHandler->addZone(id, name, folder, archiveType, loadFrom);
+}
+
+void Application::setCurrentZone(ZoneId id) {
+	_zoneHandler->setCurrentZone(id);
+}
+
+ZoneId Application::getCurrentZone() {
+	return _zoneHandler->getCurrentZone();
+}
+
+Common::String Application::getCurrentZoneFolder() {
+	return _zoneHandler->getZone(_zoneHandler->getCurrentZone())->getFolder();
+}
+
+Common::String Application::getZoneName(ZoneId zone) const {
+	return _zoneHandler->getZone(zone)->getName();
+}
+
+Common::String Application::getZoneFolder(ZoneId zone) const {
+	return _zoneHandler->getZone(zone)->getFolder();
+}
+
+ArchiveType Application::getZoneArchiveType(ZoneId zone) const {
+	return _zoneHandler->getZone(zone)->getArchiveType();
+}
 
 #pragma endregion
 

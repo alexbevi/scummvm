@@ -710,15 +710,15 @@ Common::String AnimationImage::computePath(ImageHandle *image, uint32 index) con
 
 		case kLoadFromCd:
 		case kLoadFromDisk:
-			path = Common::String::format("DATA/%s/ANI/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
+			path = Common::String::format("DATA/%s/ANI/%s", getApp()->getZoneFolder(image->getZone()).c_str(), filename.c_str());
 			break;
 
 		case kLoadFromCursor:
-			path = Common::String::format("DATA/%s/CURSOR/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
+			path = Common::String::format("DATA/%s/CURSOR/%s", getApp()->getZoneFolder(image->getZone()).c_str(), filename.c_str());
 			break;
 
 		case kLoadFromListIcon:
-			path = Common::String::format("DATA/%s/LSTICON/%s", getApp()->getZoneString(image->getZone()).c_str(), filename.c_str());
+			path = Common::String::format("DATA/%s/LSTICON/%s", getApp()->getZoneFolder(image->getZone()).c_str(), filename.c_str());
 			break;
 		}
 	}

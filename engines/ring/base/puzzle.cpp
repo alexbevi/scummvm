@@ -97,7 +97,7 @@ void Puzzle::initializeImage(ImageHandle *image) const{
 
 	case kArchiveFile:
 		if (image->getLoadFrom() == kLoadFromCd || image->getLoadFrom() == kLoadFromDisk)
-			path = Common::String::format("DATA/%s/IMAGE/%s", getApp()->getZoneString(image->getZone()).c_str(), image->getNameId().c_str());
+			path = Common::String::format("DATA/%s/IMAGE/%s", getApp()->getZoneFolder(image->getZone()).c_str(), image->getNameId().c_str());
 		else if (image->getLoadFrom() == kLoadFrom5)
 			path = Common::String::format("%s%s", image->getDirectory().c_str(), image->getNameId().c_str());
 		else
@@ -216,7 +216,7 @@ void Puzzle::setBackgroundImage(Common::String filename, const Common::Point &po
 	SAFE_DELETE(_background);
 
 	ZoneId zone = _application->getCurrentZone();
-	ArchiveType archiveType = _application->getReadFrom(zone);
+	ArchiveType archiveType = _application->getZoneArchiveType(zone);
 
 	_background = new ImageHandle(filename, point, isActive, zone, loadFrom, kImageTypeBackground, archiveType);
 }

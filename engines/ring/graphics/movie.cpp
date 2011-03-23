@@ -339,7 +339,7 @@ bool Movie::init(Common::String path, Common::String filename, uint32 a3, uint32
 	}
 
 	// Init dialog
-	Common::String dialogPath = Common::String::format("DATA/%s/DIA/%s/%s", getApp()->getCurrentZoneString().c_str(), getApp()->getLanguageFolder().c_str(), filename.c_str());
+	Common::String dialogPath = Common::String::format("DATA/%s/DIA/%s/%s", getApp()->getCurrentZoneFolder().c_str(), getApp()->getLanguageFolder().c_str(), filename.c_str());
 	if (!Common::File::exists(dialogPath)) {
 		_hasDialog = false;
 		return true;

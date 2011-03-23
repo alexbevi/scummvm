@@ -206,7 +206,7 @@ void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String 
 	if (iconPath != "")
 		_iconPath = iconPath;
 	else
-		_iconPath = Common::String::format("DATA/%s/VISUAL/", getApp()->getCurrentZoneString().c_str());
+		_iconPath = Common::String::format("DATA/%s/VISUAL/", getApp()->getCurrentZoneFolder().c_str());
 
 	// Compute image path
 	Common::String path;
@@ -214,7 +214,7 @@ void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String 
 		path = imagePath;
 	} else {
 		if (_archiveType == kArchiveFile)
-			path = Common::String::format("DATA/%s/VISUAL/", getApp()->getCurrentZoneString().c_str());
+			path = Common::String::format("DATA/%s/VISUAL/", getApp()->getCurrentZoneFolder().c_str());
 		else
 			path = "/VISUAL/";
 	}

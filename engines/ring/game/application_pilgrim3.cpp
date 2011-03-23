@@ -96,49 +96,6 @@ Visual *ApplicationPilgrim3::createVisual(Id visualId, uint32 a3, uint32 a4, uin
 
 #pragma endregion
 
-#pragma region Zone full names, short string and ReadFrom
-
-Common::String ApplicationPilgrim3::getZoneString(ZoneId zone) const {
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return "sy";
-	}
-
-	error("[Application::getZone] Invalid zone (%d)", zone);
-}
-
-Common::String ApplicationPilgrim3::getZoneLongName(ZoneId zone) const {
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return "";
-	}
-
-	error("[Application::getZoneName] Invalid zone (%d)", zone);
-}
-
-ArchiveType ApplicationPilgrim3::getReadFrom(ZoneId zone) const {
-	if (_archiveType == kArchiveFile)
-		return kArchiveFile;
-
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return _configuration.artSY ? kArchiveArt : kArchiveFile;
-	}
-
-	error("[ApplicationPilgrim3::getReadFrom] Invalid zone (%d)", zone);
-}
-
-#pragma endregion
-
 #pragma region Zone initialization
 
 void ApplicationPilgrim3::initZones() {

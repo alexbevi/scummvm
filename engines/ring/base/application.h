@@ -59,6 +59,7 @@ class SoundManager;
 class TimerHandler;
 class Visual;
 class Var;
+class ZoneHandler;
 
 class Application : public Common::Serializable {
 public:
@@ -143,12 +144,6 @@ public:
 
 	bool messageGet(Common::String messageId);
 	void messageFormat(Common::String messageId, Common::String argument);
-
-	//////////////////////////////////////////////////////////////////////////
-	// Zone name, short string and readFrom
-	virtual Common::String getZoneString(ZoneId zone) const = 0;
-	virtual Common::String getZoneLongName(ZoneId zone) const = 0;
-	virtual ArchiveType getReadFrom(ZoneId zone) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Puzzle
@@ -378,11 +373,20 @@ public:
 	uint32 dragControlGetOffsetY1();
 
 	//////////////////////////////////////////////////////////////////////////
+	// Zone
+	void addEpisode(Id id, Common::String name, uint32 cd);
+	void addZone(ZoneId id, Common::String name, Common::String folder, ArchiveType archiveType, LoadFrom loadFrom);
+	void setCurrentZone(ZoneId id);
+	ZoneId getCurrentZone();
+	Common::String getCurrentZoneFolder();
+	Common::String getZoneFolder(ZoneId zone) const;
+	Common::String getZoneName(ZoneId zone) const;
+	ArchiveType getZoneArchiveType(ZoneId zone) const;
+
+	//////////////////////////////////////////////////////////////////////////
 	// Accessors
 	Image *getThumbnail() { return _thumbnail; }
-	ZoneId getCurrentZone() { return _zone; }
 	bool getField6A() { return _field_6A; }
-	Common::String getCurrentZoneString() { return getZoneString(_zone); }
 	LoadFrom getLoadFrom() { return _loadFrom; }
 	bool isRotationCompressed() { return _isRotationCompressed; }
 	ArchiveType getArchiveType() { return _archiveType; }
@@ -433,8 +437,6 @@ protected:
 	FontHandler                  *_fontHandler;
 	DialogHandler                *_dialogHandler;
 	LanguageHandler              *_languageHandler;
-	//Common::String                _cdPath;
-	//Common::String                _currentDirectory
 	Configuration                 _configuration;
 	bool                          _isRotationCompressed;
 	ArchiveType                   _archiveType;
@@ -444,9 +446,7 @@ protected:
 	SoundHandler                 *_soundHandler;
 	State                         _state;
 	bool                          _field_6A;
-	Common::String                _zoneString;
-	ZoneId                          _zone;          // original uses byte
-	ZoneId                          _currentGameZone;
+	ZoneId                        _currentGameZone;
 	uint32                        _field_70;
 	bool                          _field_74;
 	bool                          _field_75;
@@ -464,7 +464,7 @@ protected:
 	DragControl                  *_dragControl;
 	ObjectHandler                *_objectHandler;
 	PreferenceHandler            *_preferenceHandler;
-	//bool                          _controlNotPressed; // Moved to EventHandler
+	ZoneHandler                  *_zoneHandler;
 
 	// Save / Load games
 	SaveManager                     *_saveManager;

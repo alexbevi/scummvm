@@ -96,49 +96,6 @@ Visual *ApplicationPompeii::createVisual(Id visualId, uint32 a3, uint32 a4, uint
 
 #pragma endregion
 
-#pragma region Zone full names, short string and ReadFrom
-
-Common::String ApplicationPompeii::getZoneString(ZoneId zone) const {
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return "sy";
-	}
-
-	error("[Application::getZone] Invalid zone (%d)", zone);
-}
-
-Common::String ApplicationPompeii::getZoneLongName(ZoneId zone) const {
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return "";
-	}
-
-	error("[Application::getZoneName] Invalid zone (%d)", zone);
-}
-
-ArchiveType ApplicationPompeii::getReadFrom(ZoneId zone) const {
-	if (_archiveType == kArchiveFile)
-		return kArchiveFile;
-
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		return _configuration.artSY ? kArchiveArt : kArchiveFile;
-	}
-
-	error("[ApplicationPompeii::getReadFrom] Invalid zone (%d)", zone);
-}
-
-#pragma endregion
-
 #pragma region Zone initialization
 
 void ApplicationPompeii::initZones() {

@@ -164,11 +164,11 @@ void ArtHandler::open(ZoneId zone, LoadFrom loadFrom) {
 		error("[ArtHandler::open] Unsupported game type (%d)", ((RingEngine *)g_engine)->getGameType());
 
 	case GameTypePilgrim:
-		path = Common::String::format("%s/%s.art", getArtFolder(zone).c_str(), _app->getZoneString(zone).c_str());
+		path = Common::String::format("%s/%s.art", getArtFolder(zone).c_str(), _app->getZoneFolder(zone).c_str());
 		break;
 
 	case GameTypeRing:
-		path = Common::String::format("%s/%s.at2", getArtFolder(zone).c_str(), _app->getZoneString(zone).c_str());
+		path = Common::String::format("%s/%s.at2", getArtFolder(zone).c_str(), _app->getZoneFolder(zone).c_str());
 		break;
 
 	case GameTypeFaust:
@@ -176,7 +176,7 @@ void ArtHandler::open(ZoneId zone, LoadFrom loadFrom) {
 	case GameTypePilgrim2:
 	case GameTypePilgrim3:
 	case GameTypeJerusalem:
-		path = Common::String::format("%s/%s.at3", getArtFolder(zone).c_str(), _app->getZoneString(zone).c_str());
+		path = Common::String::format("%s/%s.at3", getArtFolder(zone).c_str(), _app->getZoneFolder(zone).c_str());
 		break;
 	}
 
