@@ -2218,11 +2218,11 @@ bool Application::hasTimer(TimerId id) {
 		_var->set##name(id, val); \
 	}
 
-IMPLEMENT_VAR_FUNCTIONS(Byte,   int8);
-IMPLEMENT_VAR_FUNCTIONS(Word,   int16);
-IMPLEMENT_VAR_FUNCTIONS(Dword,  int32);
-IMPLEMENT_VAR_FUNCTIONS(String, Common::String);
-IMPLEMENT_VAR_FUNCTIONS(Float,  float);
+IMPLEMENT_VAR_FUNCTIONS(Byte,   int8)
+IMPLEMENT_VAR_FUNCTIONS(Word,   int16)
+IMPLEMENT_VAR_FUNCTIONS(Dword,  int32)
+IMPLEMENT_VAR_FUNCTIONS(String, Common::String)
+IMPLEMENT_VAR_FUNCTIONS(Float,  float)
 
 #undef IMPLEMENT_VAR_FUNCTIONS
 

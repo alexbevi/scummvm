@@ -313,11 +313,11 @@ public:
 	type varGet##name(Id id); \
 	void varSet##name(Id id, type value);
 
-	DEFINE_VAR_FUNCTIONS(Byte,   int8);
-	DEFINE_VAR_FUNCTIONS(Word,   int16);
-	DEFINE_VAR_FUNCTIONS(Dword,  int32);
-	DEFINE_VAR_FUNCTIONS(String, Common::String);
-	DEFINE_VAR_FUNCTIONS(Float,  float);
+	DEFINE_VAR_FUNCTIONS(Byte,   int8)
+	DEFINE_VAR_FUNCTIONS(Word,   int16)
+	DEFINE_VAR_FUNCTIONS(Dword,  int32)
+	DEFINE_VAR_FUNCTIONS(String, Common::String)
+	DEFINE_VAR_FUNCTIONS(Float,  float)
 
 #undef DEFINE_VAR_FUNCTIONS
 

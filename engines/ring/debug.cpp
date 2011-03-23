@@ -37,7 +37,7 @@
 #include "common/events.h"
 #include "common/file.h"
 
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 // For mkdir
 

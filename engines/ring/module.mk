@@ -12,7 +12,6 @@ MODULE_OBJS := \
 	base/object.o \
 	base/movability.o \
 	base/preferences.o \
-	base/presentation.o \
 	base/puzzle.o \
 	base/rotation.o \
 	base/saveload.o \
