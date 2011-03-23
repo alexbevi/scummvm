@@ -65,10 +65,17 @@ void PreferenceHandler::load() {
 }
 
 void PreferenceHandler::loadDefaults() {
-	// Open a stream to the configuration file
-	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember("aPre.ini");
-	if (!archive)
-		error("[PreferenceHandler::load] Error opening configuration file (aPre.ini)");
+	// First, try opening per-user preferences
+	// TODO: Get per-user preference file name
+	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember("DATA/SAVE/aPre.ini");
+	if (!archive) {
+		warning("[PreferenceHandler::load] Cannot found per-user configuration file (aPre.ini)");
+
+		// Open a stream to the global configuration file
+		archive = SearchMan.createReadStreamForMember("aPre.ini");
+		if (!archive)
+			error("[PreferenceHandler::load] Error opening global configuration file (aPre.ini)");
+	}
 
 	Common::String line = archive->readLine();
 	if (archive->err()) {
