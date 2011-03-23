@@ -2532,35 +2532,77 @@ uint32 Application::dragControlGetOffsetY1() {
 #pragma region Zone
 
 void Application::addEpisode(Id id, Common::String name, uint32 cd) {
+	if (!_zoneHandler)
+		error("[Application::addEpisode] Zone handler not initialized properly");
+
 	_zoneHandler->addEpisode(id, name, cd);
 }
 
 void Application::addZone(ZoneId id, Common::String name, Common::String folder, ArchiveType archiveType, LoadFrom loadFrom) {
+	if (!_zoneHandler)
+		error("[Application::addZone] Zone handler not initialized properly");
+
 	_zoneHandler->addZone(id, name, folder, archiveType, loadFrom);
 }
 
+void Application::setSpace(ZoneId id) {
+	if (id != kZoneSY) {
+		_artHandler->reset();
+
+		if (getZoneArchiveType(id) == kArchiveArt)
+			_artHandler->open(id, getZoneLoadFrom(id));
+	}
+
+	setCurrentZone(id);
+}
+
 void Application::setCurrentZone(ZoneId id) {
+	if (!_zoneHandler)
+		error("[Application::setCurrentZone] Zone handler not initialized properly");
+
 	_zoneHandler->setCurrentZone(id);
 }
 
 ZoneId Application::getCurrentZone() {
+	if (!_zoneHandler)
+		error("[Application::getCurrentZone] Zone handler not initialized properly");
+
 	return _zoneHandler->getCurrentZone();
 }
 
 Common::String Application::getCurrentZoneFolder() {
+	if (!_zoneHandler)
+		error("[Application::getCurrentZoneFolder] Zone handler not initialized properly");
+
 	return _zoneHandler->getZone(_zoneHandler->getCurrentZone())->getFolder();
 }
 
 Common::String Application::getZoneName(ZoneId zone) const {
+	if (!_zoneHandler)
+		error("[Application::getZoneName] Zone handler not initialized properly");
+
 	return _zoneHandler->getZone(zone)->getName();
 }
 
 Common::String Application::getZoneFolder(ZoneId zone) const {
+	if (!_zoneHandler)
+		error("[Application::getZoneFolder] Zone handler not initialized properly");
+
 	return _zoneHandler->getZone(zone)->getFolder();
 }
 
 ArchiveType Application::getZoneArchiveType(ZoneId zone) const {
+	if (!_zoneHandler)
+		error("[Application::getZoneArchiveType] Zone handler not initialized properly");
+
 	return _zoneHandler->getZone(zone)->getArchiveType();
+}
+
+LoadFrom Application::getZoneLoadFrom(ZoneId zone) const {
+	if (!_zoneHandler)
+		error("[Application::getZoneLoadFrom] Zone handler not initialized properly");
+
+	return _zoneHandler->getZone(zone)->getLoadFrom();
 }
 
 #pragma endregion

@@ -111,10 +111,6 @@ public:
 
 	void fontAdd(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
 
-	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte imageCount, LoadFrom loadFrom, ArchiveType archiveType);
-	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte imageCount, uint32 frameCount, float frameRate, byte a6, LoadFrom loadFrom, ArchiveType archiveType);
-	void cursorSetOffset(CursorId id, const Common::Point &offset);
-
 	void subtitleSetColor(const Color &color);
 	void subtitleSetBackgroundColor(const Color &color);
 
@@ -130,6 +126,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Cursor
+	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte imageCount, LoadFrom loadFrom, ArchiveType archiveType);
+	void cursorAdd(CursorId id, Common::String name, CursorType cursorType, byte imageCount, uint32 frameCount, float frameRate, byte a6, LoadFrom loadFrom, ArchiveType archiveType);
+	void cursorSetOffset(CursorId id, const Common::Point &offset);
 	void cursorSelect(CursorId id);
 	void cursorDelete();
 	void cursorRemoveByType(CursorType type);
@@ -376,12 +375,14 @@ public:
 	// Zone
 	void addEpisode(Id id, Common::String name, uint32 cd);
 	void addZone(ZoneId id, Common::String name, Common::String folder, ArchiveType archiveType, LoadFrom loadFrom);
+	void setSpace(ZoneId id);
 	void setCurrentZone(ZoneId id);
 	ZoneId getCurrentZone();
 	Common::String getCurrentZoneFolder();
 	Common::String getZoneFolder(ZoneId zone) const;
 	Common::String getZoneName(ZoneId zone) const;
-	ArchiveType getZoneArchiveType(ZoneId zone) const;
+	ArchiveType    getZoneArchiveType(ZoneId zone) const;
+	LoadFrom       getZoneLoadFrom(ZoneId zone) const;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors

@@ -78,6 +78,7 @@ enum CursorId {
 	kCursorActive       = 2,
 	kCursorPassiveDraw  = 3,
 	kCursorActiveDraw   = 4,
+
 	kCursorIdle         = 50,
 	kCursorBusy         = 51,
 	kCursorHotspot      = 52,
@@ -86,6 +87,12 @@ enum CursorId {
 	kCursorBack         = 55,
 	kCursorMenuIdle     = 56,
 	kCursorMenuActive   = 57,
+	kCursorShoot        = 58,
+	kCursorZoom         = 59,
+	kCursorTake         = 60,
+	kCursorAction       = 61,
+	kCursorActionObject = 62,
+	kCursorDragDrop     = 63,
 
 	kCursor1001         = 1001,
 	kCursor1002         = 1002,
@@ -142,7 +149,25 @@ enum ZoneId {
 	kZoneNone    = 0,
 	kZoneSY      = 1,
 
-	// Game-specific zones
+	// Default zones
+	kZone2       = 2,
+	kZone3       = 3,
+	kZone4       = 4,
+	kZone5       = 5,
+	kZone6       = 6,
+	kZone7       = 7,
+	kZone8       = 8,
+	kZone9       = 9,
+	kZone10      = 10,
+	kZone11      = 11,
+	kZone12      = 12,
+	kZone13      = 13,
+	kZone14      = 14,
+	kZone15      = 15,
+	kZone16      = 16,
+	kZone17      = 17,
+
+	// Game-specific zones for Ring
 	kZoneNI      = 2,
 	kZoneRH      = 3,
 	kZoneFO      = 4,
