@@ -215,7 +215,7 @@ void Puzzle::update() {
 void Puzzle::setBackgroundImage(Common::String filename, const Common::Point &point, bool isActive, LoadFrom loadFrom) {
 	SAFE_DELETE(_background);
 
-	Zone zone = _application->getCurrentZone();
+	ZoneId zone = _application->getCurrentZone();
 	ArchiveType archiveType = _application->getReadFrom(zone);
 
 	_background = new ImageHandle(filename, point, isActive, zone, loadFrom, kImageTypeBackground, archiveType);

@@ -45,7 +45,7 @@ public:
 	virtual void onTimer(TimerId id) = 0;
 
 	virtual void onSound(Id id, SoundType type, uint32 a3) {}
-	virtual void onSetup(Zone zone, SetupType type) {}
+	virtual void onSetup(ZoneId zone, SetupType type) {}
 	virtual void onBag(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte a6) {}
 	virtual void onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, const Common::Point &point) {}
 	virtual void onUpdateAfter(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType, const Common::Point &point) {}

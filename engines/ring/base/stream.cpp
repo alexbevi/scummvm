@@ -57,7 +57,7 @@ bool CompressedStream::init(Common::String filename, uint32, uint32) {
 	return true;
 }
 
-bool CompressedStream::initArt(Common::String filename, Zone zone, LoadFrom loadFrom) {
+bool CompressedStream::initArt(Common::String filename, ZoneId zone, LoadFrom loadFrom) {
 	_artStream = getApp()->getArtHandler()->get(filename, zone, loadFrom);
 	if (!_artStream) {
 		warning("[CompressedStream::initArt] Error opening file (%s)", filename.c_str());

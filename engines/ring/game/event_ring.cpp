@@ -1262,8 +1262,8 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, uint32 target, Id, uint32, 
 		if (target > 0 && target <=8) {
 			// Original checks the cd number in data/cd.ini
 
-			_app->setZoneAndEnableBag((Zone)target);
-			_app->setZone((Zone)target, _app->getSaveManager()->getSetupType());
+			_app->setZoneAndEnableBag((ZoneId)target);
+			_app->setZone((ZoneId)target, _app->getSaveManager()->getSetupType());
 		}
 		break;
 	}
@@ -5289,7 +5289,7 @@ void EventHandlerRing::onKeyDownZoneSY(const Common::KeyState &keyState) {
 
 #pragma region Zone Setup
 
-void EventHandlerRing::onSetup(Zone zone, SetupType type) {
+void EventHandlerRing::onSetup(ZoneId zone, SetupType type) {
 	debugC(kRingDebugLogic, "onSetup (zone: %s, type: %d)", _app->getZoneString(zone).c_str(), type);
 
 	switch (zone) {
@@ -10937,7 +10937,7 @@ void EventHandlerRing::onSwitchZoneNI(uint32 type) {
 
 	case 0:
 		if (_app->varGetByte(90009))
-			_app->setupZone((Zone)_app->varGetDword(90013), kSetupType10);
+			_app->setupZone((ZoneId)_app->varGetDword(90013), kSetupType10);
 		else
 			_app->setupZone(kZoneNI, kSetupTypeNone);
 		break;
@@ -10960,7 +10960,7 @@ void EventHandlerRing::onSwitchZoneRH(uint32 type) {
 void EventHandlerRing::onSwitchZoneFO(uint32 type) {
 	if (type == 0) {
 		if (_app->varGetByte(90011))
-			_app->setupZone((Zone)_app->varGetDword(90015), kSetupType10);
+			_app->setupZone((ZoneId)_app->varGetDword(90015), kSetupType10);
 		else
 			_app->setupZone(kZoneRO, kSetupTypeNone);
 	}
@@ -11080,7 +11080,7 @@ void EventHandlerRing::onSwitchZoneAS(uint32 type) {
 void EventHandlerRing::onSwitchZoneWA(uint32 type) {
 	if (type == 0) {
 		if (_app->varGetByte(90012))
-			_app->setupZone((Zone)_app->varGetDword(90016), kSetupType10);
+			_app->setupZone((ZoneId)_app->varGetDword(90016), kSetupType10);
 		else
 			_app->setupZone(kZoneWA, kSetupTypeNone);
 	}
@@ -11089,7 +11089,7 @@ void EventHandlerRing::onSwitchZoneWA(uint32 type) {
 void EventHandlerRing::onSwitchZoneN2(uint32 type) {
 	if (type == 0) {
 		if (_app->varGetByte(90010))
-			_app->setupZone((Zone)_app->varGetDword(90014), kSetupType10);
+			_app->setupZone((ZoneId)_app->varGetDword(90014), kSetupType10);
 		else
 			_app->setupZone(kZoneN2, kSetupTypeNone);
 	}

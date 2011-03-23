@@ -221,7 +221,7 @@ void ApplicationRing::startMenu(bool savegame) {
 	}
 }
 
-void ApplicationRing::showMenu(Zone zone, uint32 a2) {
+void ApplicationRing::showMenu(ZoneId zone, uint32 a2) {
 	ArchiveType archiveType = _configuration.artSY ? kArchiveArt : kArchiveFile;
 
 	switch (zone) {
@@ -400,7 +400,7 @@ void ApplicationRing::draw() {
 
 #pragma region Message
 
-void ApplicationRing::messageInsertCd(Zone zone) {
+void ApplicationRing::messageInsertCd(ZoneId zone) {
 	setZoneAndEnableBag(kZoneSY);
 	objectPresentationSetTextToPuzzle(kObject90912, 1, 0, _messageType);
 	objectPresentationSetTextCoordinatesToPuzzle(kObject90912, 1, 0, Common::Point(225, 193));
@@ -452,7 +452,7 @@ void ApplicationRing::messageHideQuestion(uint32 accelerationIndex) {
 
 #pragma region Zone setup
 
-void ApplicationRing::setupZone(Zone zone, SetupType type) {
+void ApplicationRing::setupZone(ZoneId zone, SetupType type) {
 	debugC(kRingDebugLogic, "Setting up zone %s", getZoneString(zone).c_str());
 
 	// Check saved data for zone and/or puzzle id
@@ -513,7 +513,7 @@ bool ApplicationRing::isDataPresent(SetupType type) {
 	return false;
 }
 
-uint32 ApplicationRing::getCdForZone(Zone zone) const {
+uint32 ApplicationRing::getCdForZone(ZoneId zone) const {
 	if (!_configuration.checkCD)
 		return 1;
 
@@ -547,7 +547,7 @@ uint32 ApplicationRing::getCdForZone(Zone zone) const {
 	error("[ApplicationRing::getCdForZone] Invalid zone (%d)", zone);
 }
 
-void ApplicationRing::setZoneAndEnableBag(Zone zone) {
+void ApplicationRing::setZoneAndEnableBag(ZoneId zone) {
 	_zone = zone;
 	_zoneString = getZoneString(zone);
 
@@ -558,7 +558,7 @@ void ApplicationRing::setZoneAndEnableBag(Zone zone) {
 		getBag()->enable();
 }
 
-void ApplicationRing::setZone(Zone zone, SetupType type) {
+void ApplicationRing::setZone(ZoneId zone, SetupType type) {
 	debugC(kRingDebugLogic, "Setting zone %s", getZoneString(zone).c_str());
 
 	bool hasData = isDataPresent(type);
@@ -622,7 +622,7 @@ Visual *ApplicationRing::createVisual(Id visualId, uint32 a3, uint32 a4, uint32 
 
 #pragma region Zone full names, short string and ReadFrom
 
-Common::String ApplicationRing::getZoneString(Zone zone) const {
+Common::String ApplicationRing::getZoneString(ZoneId zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -655,7 +655,7 @@ Common::String ApplicationRing::getZoneString(Zone zone) const {
 	error("[Application::getZone] Invalid zone (%d)", zone);
 }
 
-Common::String ApplicationRing::getZoneLongName(Zone zone) const {
+Common::String ApplicationRing::getZoneLongName(ZoneId zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -684,7 +684,7 @@ Common::String ApplicationRing::getZoneLongName(Zone zone) const {
 	error("[Application::getZoneName] Invalid zone (%d)", zone);
 }
 
-ArchiveType ApplicationRing::getReadFrom(Zone zone) const {
+ArchiveType ApplicationRing::getReadFrom(ZoneId zone) const {
 	if (_archiveType == kArchiveFile)
 		return kArchiveFile;
 

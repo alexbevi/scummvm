@@ -44,7 +44,7 @@ Art::Art() : _zone(kZoneNone), _loadFrom(kLoadFromInvalid) {
 Art::~Art() {
 }
 
-void Art::init(const Common::String &path, Zone zone, LoadFrom loadFrom) {
+void Art::init(const Common::String &path, ZoneId zone, LoadFrom loadFrom) {
 	_path = path;
 	_zone = zone;
 	_loadFrom = loadFrom;
@@ -145,7 +145,7 @@ ArtHandler::~ArtHandler() {
 	_app = NULL;
 }
 
-void ArtHandler::open(Zone zone, LoadFrom loadFrom) {
+void ArtHandler::open(ZoneId zone, LoadFrom loadFrom) {
 	// Check if the archive is already loaded
 	if (isPresent(zone, loadFrom))
 		return;
@@ -199,7 +199,7 @@ void ArtHandler::reset() {
 	}
 }
 
-Common::SeekableReadStream *ArtHandler::get(Common::String filename, Zone zone, LoadFrom loadFrom) {
+Common::SeekableReadStream *ArtHandler::get(Common::String filename, ZoneId zone, LoadFrom loadFrom) {
 	int32 index = getIndex(zone, loadFrom);
 
 	if (index == -1) {
@@ -210,12 +210,12 @@ Common::SeekableReadStream *ArtHandler::get(Common::String filename, Zone zone, 
 	return _arts[index]->createReadStreamForMember(filename);
 }
 
-bool ArtHandler::isPresent(Zone zone, LoadFrom loadFrom) {
+bool ArtHandler::isPresent(ZoneId zone, LoadFrom loadFrom) {
 	return (getIndex(zone, loadFrom) != -1);
 }
 
-int32 ArtHandler::getIndex(Zone zone, LoadFrom loadFrom) {
-	Zone z = zone;
+int32 ArtHandler::getIndex(ZoneId zone, LoadFrom loadFrom) {
+	ZoneId z = zone;
 	LoadFrom l = loadFrom;
 
 	// Compute zone & loadFrom
@@ -234,7 +234,7 @@ int32 ArtHandler::getIndex(Zone zone, LoadFrom loadFrom) {
 	return -1;
 }
 
-Common::String ArtHandler::getArtFolder(Zone zone) {
+Common::String ArtHandler::getArtFolder(ZoneId zone) {
 	// For zones other than system, just read from the data folder
 	if (zone != kZoneSY)
 		return "DATA";

@@ -65,7 +65,7 @@ public:
 	struct SavegameData {
 		State       state;
 		bool        field_6A;
-		Zone        zone;
+		ZoneId        zone;
 		bool        hasCurrentPuzzle;
 		PuzzleId    puzzleId;
 		bool        hasCurrentRotation;

@@ -40,14 +40,14 @@ public:
 	virtual void initFont();
 	virtual void setup();
 	virtual void initZones();
-	virtual void setupZone(Zone zone, SetupType type);
+	virtual void setupZone(ZoneId zone, SetupType type);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Startup
 	// Startup & Menu
 	virtual void showStartupScreen();
 	virtual void startMenu(bool savegame);
-	virtual void showMenu(Zone zone, uint32 a2);
+	virtual void showMenu(ZoneId zone, uint32 a2);
 	virtual void showCredits();
 	virtual void loadPreferences();
 
@@ -61,9 +61,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Zone name, short string and readFrom
-	virtual Common::String getZoneString(Zone zone) const;
-	virtual Common::String getZoneLongName(Zone zone) const;
-	virtual ArchiveType getReadFrom(Zone zone) const;
+	virtual Common::String getZoneString(ZoneId zone) const;
+	virtual Common::String getZoneLongName(ZoneId zone) const;
+	virtual ArchiveType getReadFrom(ZoneId zone) const;
 
 private:
 	//////////////////////////////////////////////////////////////////////////

@@ -327,7 +327,7 @@ bool Debugger::cmdShow(int argc, const char ** argv) {
 		Common::String filename(const_cast<char *>(argv[1]));
 
 		Image *image = new Image();
-		if (!image->load(filename, kArchiveArt, (Zone)getNumber(argv[2]), kLoadFromDisk)) {
+		if (!image->load(filename, kArchiveArt, (ZoneId)getNumber(argv[2]), kLoadFromDisk)) {
 			DebugPrintf("Cannot load image: %s", filename.c_str());
 
 			delete image;

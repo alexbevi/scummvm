@@ -62,7 +62,7 @@ void ApplicationPompeii::startMenu(bool savegame) {
 	error("[ApplicationPompeii::startMenu] Not implemented");
 }
 
-void ApplicationPompeii::showMenu(Zone zone, uint32 a2) {
+void ApplicationPompeii::showMenu(ZoneId zone, uint32 a2) {
 	error("[ApplicationPompeii::showMenu] Not implemented");
 }
 
@@ -98,7 +98,7 @@ Visual *ApplicationPompeii::createVisual(Id visualId, uint32 a3, uint32 a4, uint
 
 #pragma region Zone full names, short string and ReadFrom
 
-Common::String ApplicationPompeii::getZoneString(Zone zone) const {
+Common::String ApplicationPompeii::getZoneString(ZoneId zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -110,7 +110,7 @@ Common::String ApplicationPompeii::getZoneString(Zone zone) const {
 	error("[Application::getZone] Invalid zone (%d)", zone);
 }
 
-Common::String ApplicationPompeii::getZoneLongName(Zone zone) const {
+Common::String ApplicationPompeii::getZoneLongName(ZoneId zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -122,7 +122,7 @@ Common::String ApplicationPompeii::getZoneLongName(Zone zone) const {
 	error("[Application::getZoneName] Invalid zone (%d)", zone);
 }
 
-ArchiveType ApplicationPompeii::getReadFrom(Zone zone) const {
+ArchiveType ApplicationPompeii::getReadFrom(ZoneId zone) const {
 	if (_archiveType == kArchiveFile)
 		return kArchiveFile;
 
@@ -145,7 +145,7 @@ void ApplicationPompeii::initZones() {
 	error("[ApplicationPompeii::initZones] Not implemented");
 }
 
-void ApplicationPompeii::setupZone(Zone zone, SetupType type) {
+void ApplicationPompeii::setupZone(ZoneId zone, SetupType type) {
 	error("[ApplicationPompeii::setupZone] Not implemented");
 }
 

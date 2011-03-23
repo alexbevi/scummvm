@@ -71,7 +71,7 @@ public:
 	virtual void initFont() = 0;
 	virtual void setup() = 0;
 	virtual void initZones() = 0;
-	virtual void setupZone(Zone zone, SetupType type) = 0;
+	virtual void setupZone(ZoneId zone, SetupType type) = 0;
 
 	void exitZone();
 	void exitToMenu(uint32 a1);
@@ -80,7 +80,7 @@ public:
 	// Startup & Menu
 	virtual void showStartupScreen() = 0;
 	virtual void startMenu(bool savegame) = 0;
-	virtual void showMenu(Zone zone, uint32 a2) = 0;
+	virtual void showMenu(ZoneId zone, uint32 a2) = 0;
 	virtual void showCredits() = 0;
 	virtual void loadPreferences() = 0;
 
@@ -94,7 +94,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Drawing
 	virtual void draw() = 0;
-	void drawZoneName(Zone zone);
+	void drawZoneName(ZoneId zone);
 
 	void playMovie(Common::String filename, float frameDivider = 0.0f);
 	void playMovieChannel(Common::String filename, uint32 channel);
@@ -135,7 +135,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Message
-	virtual void messageInsertCd(Zone zone) {}
+	virtual void messageInsertCd(ZoneId zone) {}
 	virtual void messageShowWarning(uint32 accelerationIndex) {}
 	virtual void messageHideWarning(uint32 accelerationIndex) {}
 	virtual void messageShowQuestion(uint32 accelerationIndex) {}
@@ -146,9 +146,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Zone name, short string and readFrom
-	virtual Common::String getZoneString(Zone zone) const = 0;
-	virtual Common::String getZoneLongName(Zone zone) const = 0;
-	virtual ArchiveType getReadFrom(Zone zone) const = 0;
+	virtual Common::String getZoneString(ZoneId zone) const = 0;
+	virtual Common::String getZoneLongName(ZoneId zone) const = 0;
+	virtual ArchiveType getReadFrom(ZoneId zone) const = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Puzzle
@@ -380,13 +380,13 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
 	Image *getThumbnail() { return _thumbnail; }
-	Zone getCurrentZone() { return _zone; }
+	ZoneId getCurrentZone() { return _zone; }
 	bool getField6A() { return _field_6A; }
 	Common::String getCurrentZoneString() { return getZoneString(_zone); }
 	LoadFrom getLoadFrom() { return _loadFrom; }
 	bool isRotationCompressed() { return _isRotationCompressed; }
 	ArchiveType getArchiveType() { return _archiveType; }
-	Zone getCurrentGameZone() { return _currentGameZone; }
+	ZoneId getCurrentGameZone() { return _currentGameZone; }
 	State getState() { return _state; }
 	bool getField74() { return _field_74; }
 	bool getField75() { return _field_75; }
@@ -445,8 +445,8 @@ protected:
 	State                         _state;
 	bool                          _field_6A;
 	Common::String                _zoneString;
-	Zone                          _zone;          // original uses byte
-	Zone                          _currentGameZone;
+	ZoneId                          _zone;          // original uses byte
+	ZoneId                          _currentGameZone;
 	uint32                        _field_70;
 	bool                          _field_74;
 	bool                          _field_75;

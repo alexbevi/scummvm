@@ -50,11 +50,11 @@ ImageHandle::ImageHandle() : Image() {
 	_archiveType = kArchiveInvalid;
 }
 
-ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) : Image() {
+ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, ZoneId zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) : Image() {
 	init(nameId, point, active, drawType, priority, imageCount, zone, loadFrom, imageType, archiveType);
 }
 
-ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) : Image() {
+ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, ZoneId zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) : Image() {
 	init(nameId, point, active, kDrawType1, 0, 0, zone, loadFrom, imageType, archiveType);
 }
 
@@ -64,7 +64,7 @@ ImageHandle::~ImageHandle() {
 	_animation = NULL;
 }
 
-void ImageHandle::init(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
+void ImageHandle::init(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, ZoneId zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
 	_nameId = nameId;
 	_coordinates = point;
 	_originalCoordinates = point;
@@ -128,7 +128,7 @@ void Image::destroy() {
 	SAFE_DELETE(_surface);
 }
 
-bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+bool Image::load(Common::String filename, ArchiveType type, ZoneId zone, LoadFrom loadFrom) {
 	if (filename.empty())
 		return false;
 

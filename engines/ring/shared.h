@@ -138,7 +138,7 @@ enum LoadFrom {
 	kLoadFrom5        = 5
 };
 
-enum Zone {
+enum ZoneId {
 	kZoneNone    = 0,
 	kZoneSY      = 1,
 

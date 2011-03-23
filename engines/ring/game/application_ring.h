@@ -45,7 +45,7 @@ public:
 	// Startup & Menu
 	virtual void showStartupScreen();
 	virtual void startMenu(bool savegame);
-	virtual void showMenu(Zone zone, uint32 a2);
+	virtual void showMenu(ZoneId zone, uint32 a2);
 	virtual void showCredits();
 	virtual void loadPreferences();
 
@@ -55,7 +55,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Messages
-	virtual void messageInsertCd(Zone zone);
+	virtual void messageInsertCd(ZoneId zone);
 	virtual void messageShowWarning(uint32 accelerationIndex);
 	virtual void messageHideWarning(uint32 accelerationIndex);
 	virtual void messageShowQuestion(uint32 accelerationIndex);
@@ -63,9 +63,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Setup
-	virtual void setupZone(Zone zone, SetupType type);
-	void setZone(Zone zone, SetupType type);
-	void setZoneAndEnableBag(Zone zone);
+	virtual void setupZone(ZoneId zone, SetupType type);
+	void setZone(ZoneId zone, SetupType type);
+	void setZoneAndEnableBag(ZoneId zone);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Visual
@@ -73,9 +73,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Zone name, short string and readFrom
-	virtual Common::String getZoneString(Zone zone) const;
-	virtual Common::String getZoneLongName(Zone zone) const;
-	virtual ArchiveType getReadFrom(Zone zone) const;
+	virtual Common::String getZoneString(ZoneId zone) const;
+	virtual Common::String getZoneLongName(ZoneId zone) const;
+	virtual ArchiveType getReadFrom(ZoneId zone) const;
 
 private:
 	//////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ private:
 	void initZoneAS();
 	void initZoneN2();
 
-	uint32 getCdForZone(Zone zone) const;
+	uint32 getCdForZone(ZoneId zone) const;
 	bool isDataPresent(SetupType type);
 };
 

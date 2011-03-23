@@ -45,7 +45,7 @@ public:
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
 	virtual void onSound(Id id, SoundType type, uint32 a3);
-	virtual void onSetup(Zone zone, SetupType type);
+	virtual void onSetup(ZoneId zone, SetupType type);
 	virtual void onBag(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
 	virtual void onBagClickedObject(ObjectId id);
 	virtual void onBagZoneSwitch();

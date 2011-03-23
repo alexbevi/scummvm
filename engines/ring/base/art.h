@@ -41,7 +41,7 @@ public:
 	Art();
 	~Art();
 
-	void init(const Common::String &path, Zone zone, LoadFrom loadFrom);
+	void init(const Common::String &path, ZoneId zone, LoadFrom loadFrom);
 
 	// Archive
 	bool hasFile(const Common::String &name);
@@ -51,7 +51,7 @@ public:
 
 	// Accessors
 	LoadFrom getLoadFrom() { return _loadFrom; }
-	Zone getZone() { return _zone; }
+	ZoneId getZone() { return _zone; }
 
 private:
 	// Art header
@@ -87,7 +87,7 @@ private:
 	RecordMap _records;             ///< List of files
 	Common::String _path;           ///< Path of the archive
 	Header _header;
-	Zone _zone;                     ///< The game zone
+	ZoneId _zone;                     ///< The game zone
 	LoadFrom _loadFrom;
 };
 
@@ -96,24 +96,24 @@ public:
 	ArtHandler(Application *application);
 	~ArtHandler();
 
-	void open(Zone zone, LoadFrom loadFrom);
+	void open(ZoneId zone, LoadFrom loadFrom);
 
 	/**
 	 * Removes all art entries that are not loaded from disk (ie. were on the CD in the original)
 	 */
 	void reset();
 
-	Common::SeekableReadStream *get(Common::String filename, Zone zone, LoadFrom loadFrom);
+	Common::SeekableReadStream *get(Common::String filename, ZoneId zone, LoadFrom loadFrom);
 
 private:
 	Application *_app;
 
 	Common::Array<Art *> _arts;
 
-	bool isPresent(Zone zone, LoadFrom loadFrom);
-	int32 getIndex(Zone zone, LoadFrom loadFrom);
+	bool isPresent(ZoneId zone, LoadFrom loadFrom);
+	int32 getIndex(ZoneId zone, LoadFrom loadFrom);
 
-	Common::String getArtFolder(Zone zone);
+	Common::String getArtFolder(ZoneId zone);
 };
 
 } // End of namespace Ring

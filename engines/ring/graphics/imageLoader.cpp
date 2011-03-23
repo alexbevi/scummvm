@@ -41,7 +41,7 @@ namespace Ring {
 
 #pragma region BMP
 
-bool ImageLoaderBMP::load(Image *image, ArchiveType, Zone, LoadFrom) {
+bool ImageLoaderBMP::load(Image *image, ArchiveType, ZoneId, LoadFrom) {
 	if (!image)
 		error("[ImageLoaderBMP::load] Invalid image pointer!");
 
@@ -75,7 +75,7 @@ ImageLoaderBMA::~ImageLoaderBMA() {
 	deinit();
 }
 
-bool ImageLoaderBMA::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+bool ImageLoaderBMA::load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom) {
 	if (!image)
 		error("[ImageLoaderBMA::load] Invalid image pointer!");
 
@@ -108,7 +108,7 @@ cleanup:
 	return false;
 }
 
-bool ImageLoaderBMA::init(ArchiveType type, Zone zone, LoadFrom loadFrom) {
+bool ImageLoaderBMA::init(ArchiveType type, ZoneId zone, LoadFrom loadFrom) {
 	_stream = new CompressedStream();
 
 	// Initialize stream
@@ -201,7 +201,7 @@ ImageLoaderTGC::~ImageLoaderTGC() {
 	deinit();
 }
 
-bool ImageLoaderTGC::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+bool ImageLoaderTGC::load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom) {
 	if (!image)
 		error("[ImageLoaderTGC::load] Invalid image pointer!");
 
@@ -235,7 +235,7 @@ cleanup:
 	return false;
 }
 
-Common::SeekableReadStream *ImageLoaderTGC::init(ArchiveType type, Zone zone, LoadFrom loadFrom) {
+Common::SeekableReadStream *ImageLoaderTGC::init(ArchiveType type, ZoneId zone, LoadFrom loadFrom) {
 	_stream = new CompressedStream();
 
 	// Initialize stream
@@ -271,7 +271,7 @@ void ImageLoaderTGC::deinit() {
 
 #pragma region TGA
 
-bool ImageLoaderTGA::load(Image *image, ArchiveType, Zone, LoadFrom) {
+bool ImageLoaderTGA::load(Image *image, ArchiveType, ZoneId, LoadFrom) {
 	if (!image)
 		error("[ImageLoaderTGA::load] Invalid image pointer!");
 
@@ -384,7 +384,7 @@ ImageLoaderCIN::~ImageLoaderCIN() {
 	deinit();
 }
 
-bool ImageLoaderCIN::load(Image *image, ArchiveType, Zone, LoadFrom) {
+bool ImageLoaderCIN::load(Image *image, ArchiveType, ZoneId, LoadFrom) {
 	if (!image)
 		error("[ImageLoaderCNM::load] Invalid image pointer!");
 

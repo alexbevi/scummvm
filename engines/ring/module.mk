@@ -21,6 +21,7 @@ MODULE_OBJS := \
 	base/text.o \
 	base/timer.o \
 	base/var.o \
+	base/zone.o \
 	game/application_faust.o \
 	game/application_jerusalem.o \
 	game/application_pilgrim2.o \

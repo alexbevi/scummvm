@@ -43,7 +43,7 @@ public:
 	void create(uint32 depth, uint32 direction, uint32 width, uint32 height);
 	void destroy();
 
-	bool load(Common::String filename, ArchiveType type, Zone zone, LoadFrom loadFrom);
+	bool load(Common::String filename, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
 	Image *zoom(float xZoom, float yZoom);
 
 	// Drawing
@@ -75,8 +75,8 @@ protected:
 class ImageHandle : public Image, public Common::Serializable {
 public:
 	ImageHandle();
-	ImageHandle(Common::String nameId, const Common::Point &point, bool active, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
-	ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
+	ImageHandle(Common::String nameId, const Common::Point &point, bool active, ZoneId zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
+	ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, ZoneId zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 	~ImageHandle();
 
 	// Serializable
@@ -94,7 +94,7 @@ public:
 	ImageType getImageType() { return _imageType; }
 	ObjectPresentation *getObjectPresentation() { return _objectPresentation; }
 	AnimationImage *getAnimation() { return _animation; }
-	Zone getZone() { return _zone; }
+	ZoneId getZone() { return _zone; }
 	LoadFrom getLoadFrom() { return _loadFrom; }
 	ArchiveType getArchiveType() { return _archiveType; }
 
@@ -117,11 +117,11 @@ private:
 	ImageType _imageType;
 	ObjectPresentation *_objectPresentation;
 	AnimationImage *_animation;
-	Zone _zone;
+	ZoneId _zone;
 	LoadFrom _loadFrom;
 	ArchiveType _archiveType;
 
-	void init(Common::String nameId, const Common::Point &point, bool isActive, DrawType drawType, uint32 priority, byte imageCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
+	void init(Common::String nameId, const Common::Point &point, bool isActive, DrawType drawType, uint32 priority, byte imageCount, ZoneId zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 };
 
 } // End of namespace Ring

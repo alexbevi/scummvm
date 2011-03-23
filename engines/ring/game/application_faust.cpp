@@ -62,7 +62,7 @@ void ApplicationFaust::startMenu(bool savegame) {
 	error("[ApplicationFaust::startMenu] Not implemented");
 }
 
-void ApplicationFaust::showMenu(Zone zone, uint32 a2) {
+void ApplicationFaust::showMenu(ZoneId zone, uint32 a2) {
 	error("[ApplicationFaust::startMenu] Not implemented");
 }
 
@@ -98,7 +98,7 @@ Visual *ApplicationFaust::createVisual(Id visualId, uint32 a3, uint32 a4, uint32
 
 #pragma region Zone full names, short string and ReadFrom
 
-Common::String ApplicationFaust::getZoneString(Zone zone) const {
+Common::String ApplicationFaust::getZoneString(ZoneId zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -110,7 +110,7 @@ Common::String ApplicationFaust::getZoneString(Zone zone) const {
 	error("[Application::getZone] Invalid zone (%d)", zone);
 }
 
-Common::String ApplicationFaust::getZoneLongName(Zone zone) const {
+Common::String ApplicationFaust::getZoneLongName(ZoneId zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -122,7 +122,7 @@ Common::String ApplicationFaust::getZoneLongName(Zone zone) const {
 	error("[Application::getZoneName] Invalid zone (%d)", zone);
 }
 
-ArchiveType ApplicationFaust::getReadFrom(Zone zone) const {
+ArchiveType ApplicationFaust::getReadFrom(ZoneId zone) const {
 	if (_archiveType == kArchiveFile)
 		return kArchiveFile;
 
@@ -145,7 +145,7 @@ void ApplicationFaust::initZones() {
 	error("[ApplicationFaust::initZones] Not implemented");
 }
 
-void ApplicationFaust::setupZone(Zone zone, SetupType type) {
+void ApplicationFaust::setupZone(ZoneId zone, SetupType type) {
 	error("[ApplicationFaust::setupZone] Not implemented");
 }
 

@@ -62,7 +62,7 @@ void ApplicationJerusalem::startMenu(bool savegame) {
 	error("[ApplicationJerusalem::startMenu] Not implemented");
 }
 
-void ApplicationJerusalem::showMenu(Zone zone, uint32 a2) {
+void ApplicationJerusalem::showMenu(ZoneId zone, uint32 a2) {
 	error("[ApplicationJerusalem::showMenu] Not implemented");
 }
 
@@ -98,7 +98,7 @@ Visual *ApplicationJerusalem::createVisual(Id visualId, uint32 a3, uint32 a4, ui
 
 #pragma region Zone full names, short string and ReadFrom
 
-Common::String ApplicationJerusalem::getZoneString(Zone zone) const {
+Common::String ApplicationJerusalem::getZoneString(ZoneId zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -110,7 +110,7 @@ Common::String ApplicationJerusalem::getZoneString(Zone zone) const {
 	error("[Application::getZone] Invalid zone (%d)", zone);
 }
 
-Common::String ApplicationJerusalem::getZoneLongName(Zone zone) const {
+Common::String ApplicationJerusalem::getZoneLongName(ZoneId zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -122,7 +122,7 @@ Common::String ApplicationJerusalem::getZoneLongName(Zone zone) const {
 	error("[Application::getZoneName] Invalid zone (%d)", zone);
 }
 
-ArchiveType ApplicationJerusalem::getReadFrom(Zone zone) const {
+ArchiveType ApplicationJerusalem::getReadFrom(ZoneId zone) const {
 	if (_archiveType == kArchiveFile)
 		return kArchiveFile;
 
@@ -145,7 +145,7 @@ void ApplicationJerusalem::initZones() {
 	error("[ApplicationJerusalem::initZones] Not implemented");
 }
 
-void ApplicationJerusalem::setupZone(Zone zone, SetupType type) {
+void ApplicationJerusalem::setupZone(ZoneId zone, SetupType type) {
 	error("[ApplicationJerusalem::setupZone] Not implemented");
 }
 

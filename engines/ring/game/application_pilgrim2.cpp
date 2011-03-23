@@ -62,7 +62,7 @@ void ApplicationPilgrim2::startMenu(bool savegame) {
 	error("[ApplicationPilgrim2::startMenu] Not implemented");
 }
 
-void ApplicationPilgrim2::showMenu(Zone zone, uint32 a2) {
+void ApplicationPilgrim2::showMenu(ZoneId zone, uint32 a2) {
 	error("[ApplicationPilgrim2::showMenu] Not implemented");
 }
 
@@ -98,7 +98,7 @@ Visual *ApplicationPilgrim2::createVisual(Id visualId, uint32 a3, uint32 a4, uin
 
 #pragma region Zone full names, short string and ReadFrom
 
-Common::String ApplicationPilgrim2::getZoneString(Zone zone) const {
+Common::String ApplicationPilgrim2::getZoneString(ZoneId zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -110,7 +110,7 @@ Common::String ApplicationPilgrim2::getZoneString(Zone zone) const {
 	error("[Application::getZone] Invalid zone (%d)", zone);
 }
 
-Common::String ApplicationPilgrim2::getZoneLongName(Zone zone) const {
+Common::String ApplicationPilgrim2::getZoneLongName(ZoneId zone) const {
 	switch (zone) {
 	default:
 		break;
@@ -122,7 +122,7 @@ Common::String ApplicationPilgrim2::getZoneLongName(Zone zone) const {
 	error("[Application::getZoneName] Invalid zone (%d)", zone);
 }
 
-ArchiveType ApplicationPilgrim2::getReadFrom(Zone zone) const {
+ArchiveType ApplicationPilgrim2::getReadFrom(ZoneId zone) const {
 	if (_archiveType == kArchiveFile)
 		return kArchiveFile;
 
@@ -145,7 +145,7 @@ void ApplicationPilgrim2::initZones() {
 	error("[ApplicationPilgrim2::initZones] Not implemented");
 }
 
-void ApplicationPilgrim2::setupZone(Zone zone, SetupType type) {
+void ApplicationPilgrim2::setupZone(ZoneId zone, SetupType type) {
 	error("[ApplicationPilgrim2::setupZone] Not implemented");
 }
 

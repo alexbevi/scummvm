@@ -619,7 +619,7 @@ void Application::updateBag(const Common::Point &point) {
 
 #pragma region Display and Movies
 
-void Application::drawZoneName(Zone zone) {
+void Application::drawZoneName(ZoneId zone) {
 	if (!_screenManager)
 		error("[Application::drawZoneName] Screen manager not initialized properly");
 

@@ -39,7 +39,7 @@ class ImageLoader {
 public:
 	virtual ~ImageLoader() {};
 
-	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) = 0;
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom) = 0;
 
 protected:
 	Common::String _filename;
@@ -50,7 +50,7 @@ class ImageLoaderBMP : public ImageLoader {
 public:
 	virtual ~ImageLoaderBMP() {};
 
-	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ class ImageLoaderBMA : public ImageLoader {
 public:
 	virtual ~ImageLoaderBMA();
 
-	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
 
 private:
 	struct Header {
@@ -77,7 +77,7 @@ private:
 
 	CompressedStream *_stream;
 
-	bool init(ArchiveType type, Zone zone, LoadFrom loadFrom);
+	bool init(ArchiveType type, ZoneId zone, LoadFrom loadFrom);
 	void deinit();
 	bool readHeader();
 	bool readImage(Image *image);
@@ -88,7 +88,7 @@ class ImageLoaderTGA : public ImageLoader {
 public:
 	virtual ~ImageLoaderTGA() {};
 
-	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
 
 protected:
 	enum ImageType {
@@ -127,12 +127,12 @@ class ImageLoaderTGC : public ImageLoaderTGA {
 public:
 	virtual ~ImageLoaderTGC();
 
-	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
 
 private:
 	CompressedStream *_stream;
 
-	Common::SeekableReadStream *init(ArchiveType type, Zone zone, LoadFrom loadFrom);
+	Common::SeekableReadStream *init(ArchiveType type, ZoneId zone, LoadFrom loadFrom);
 	void deinit();
 };
 
@@ -167,7 +167,7 @@ public:
 
 	virtual ~ImageLoaderCIN();
 
-	virtual bool load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom);
+	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
 	bool readImage(Image *image);
 
 	bool init(Common::String filename);
