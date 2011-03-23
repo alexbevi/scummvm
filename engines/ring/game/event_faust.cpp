@@ -41,20 +41,20 @@ EventHandlerFaust::~EventHandlerFaust() {
 
 #pragma region Event handling
 
-void EventHandlerFaust::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
-	error("[EventHandlerFaust::onMouseLeftButtonUp] Not implemented");
+void EventHandlerFaust::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
+	error("[EventHandlerFaust::onMouseLeftButtonUp] Not implemented (evt: %d, CTRL pressed: %d)", evt.type, isControlPressed);
 }
 
-void EventHandlerFaust::onMouseLeftButtonDown(Common::Event &evt) {
-	error("[EventHandlerFaust::onMouseLeftButtonDown] Not implemented");
+void EventHandlerFaust::onMouseLeftButtonDown(const Common::Event &evt) {
+	error("[EventHandlerFaust::onMouseLeftButtonDown] Not implemented (evt: %d)", evt.type);
 }
 
-void EventHandlerFaust::onMouseRightButtonUp(Common::Event &evt) {
-	error("[EventHandlerFaust::onMouseRightButtonUp] Not implemented");
+void EventHandlerFaust::onMouseRightButtonUp(const Common::Event &evt) {
+	error("[EventHandlerFaust::onMouseRightButtonUp] Not implemented (evt: %d)", evt.type);
 }
 
 void EventHandlerFaust::onKeyDown(Common::Event &evt) {
-	error("[EventHandlerFaust::onKeyDown] Not implemented");
+	error("[EventHandlerFaust::onKeyDown] Not implemented (evt: %d)", evt.type);
 }
 
 #pragma endregion
@@ -62,7 +62,7 @@ void EventHandlerFaust::onKeyDown(Common::Event &evt) {
 #pragma region Timer
 
 void EventHandlerFaust::onTimer(TimerId timerId) {
-	error("[EventHandlerFaust::onTimer] Not implemented");
+	error("[EventHandlerFaust::onTimer] Not implemented (id: %d)", timerId);
 }
 
 #pragma endregion

@@ -56,10 +56,12 @@ SaveManager::SaveManager(Application *application) : _app(application) {
 
 
 SaveManager::~SaveManager() {
+	SAFE_DELETE(_ser);
+	SAFE_DELETE(_load);
+	SAFE_DELETE(_save);
+
 	// Zero-out passed pointers
 	_app = NULL;
-
-	close();
 }
 
 // Header
@@ -163,7 +165,6 @@ bool SaveManager::loadSave(uint32 slot, LoadSaveType type) {
 	_slot = slot;
 
 	// Handle header
-	RingSavegameHeader header;
 	switch (type) {
 	default:
 		error("[SaveManager::loadSave] Invalid type (%d)", type);
@@ -251,14 +252,14 @@ bool SaveManager::hasTimer(Common::String zone) {
 	return has(getTimerFile(zone, _slot));
 }
 
-bool SaveManager::has(Common::String filename) {
+bool SaveManager::has(Common::String filename) const {
 	if (g_system->getSavefileManager()->listSavefiles(filename).size() == 0)
 		return false;
 
 	return true;
 }
 
-bool SaveManager::isSaving() {
+bool SaveManager::isSaving() const {
 	return (_type == kLoadSaveWrite);
 }
 
@@ -286,15 +287,15 @@ void SaveManager::setDescription(const Common::String &description) {
 	_header.playtime = g_engine->getTotalPlayTime() / 1000;
 }
 
-bool SaveManager::remove(uint32 slot) {
+bool SaveManager::remove(uint32 slot) const {
 	return g_system->getSavefileManager()->removeSavefile(SaveManager::getSavegameFile(slot));
 }
 
-const char *SaveManager::getSavegameFile(uint32 slot) {
+const char *SaveManager::getSavegameFile(int slot) {
 	return getSavegameFile(((RingEngine *)g_engine)->getGameDescription()->desc.gameid, slot);
 }
 
-const char *SaveManager::getSavegameFile(const char *gameid, uint32 slot) {
+const char *SaveManager::getSavegameFile(const char *gameid, int slot) {
 	static char buffer[54];
 	assert(strlen(gameid) < 50);
 
@@ -306,7 +307,7 @@ Common::String SaveManager::getTimerFile(Common::String zone, uint32 slot) {
 	return Common::String::format("%s_%s.s%02d", ((RingEngine *)g_engine)->getGameDescription()->desc.gameid, zone.c_str(), slot);
 }
 
-uint32 SaveManager::getNextSlot() {
+uint32 SaveManager::getNextSlot() const {
 	RingEngine *engine = (RingEngine *)g_engine;
 
 	return engine->listSaves(engine->getGameDescription()->desc.gameid).size() - 1;

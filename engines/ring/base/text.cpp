@@ -82,10 +82,6 @@ void Text::set(Common::String text) {
 	}
 }
 
-void Text::draw() {
-	error("[Text::draw] Not implemented");
-}
-
 void Text::setForegroundColor(Color foreground) {
 	_foregroundColor = foreground.getColor();
 }
@@ -101,7 +97,7 @@ void Text::setBackgroundColor(Color background) {
 }
 
 Common::Rect Text::getBoundingBox() {
-	return Common::Rect(_point.x, _point.y, _point.x + _width, _point.y + _height);
+	return Common::Rect(_point.x, _point.y, _point.x + (int16)_width, _point.y + (int16)_height);
 }
 
 #pragma region Serializable

@@ -49,7 +49,7 @@ public:
 	virtual void preload() {}
 	virtual void unload() {}
 	virtual bool isPreloaded() { return false; }
-	bool isPlaying();
+	bool isPlaying() const ;
 
     void setVolume(int32 volume);
 	void setMultiplier(int32 multiplier);
@@ -85,7 +85,7 @@ protected:
 
 	Audio::SoundHandle _handle;
 
-	void setVolumeAndPan();
+	void setVolumeAndPan() const ;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Conversion functions
@@ -178,7 +178,7 @@ public:
 	void preload(Id soundId);
 	void setVolume(Id soundId, uint32 volume);
 	void stopType(SoundType soundType, uint32 a2);
-	void setMultiplier(SoundType soundType, uint32 multiplier);
+	void setMultiplier(SoundType soundType, int32 multiplier);
 	void setMultiplierIfNotType(SoundType soundType, int32 multiplier);
 	void stopAll(uint32 a1);
 	void setPan(Id soundId, int32 pan);
@@ -190,7 +190,7 @@ public:
 	void playSounds();
 
 	// Sound entries
-	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk);
+	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, uint32 soundChunk);
 	SoundEntry *getEntry(Id soundId);
 
 	// Accessors
@@ -252,8 +252,8 @@ public:
 	void setPan(int32 pan) { _pan = pan; }
 	void setVolume1(float volume1) { _volume1 = volume1; }
 	void setPan1(float pan1) { _pan1 = pan1; }
-	void setField35(uint32 val) { _field_35 = val; }
-	void setField39(uint32 val) { _field_39 = val; }
+	void setField35(float val) { _field_35 = val; }
+	void setField39(float val) { _field_39 = val; }
 	void setField3D(float val) { _field_3D = val; }
 
 	SoundEntry *getEntry() { return _entry; }
@@ -266,13 +266,13 @@ public:
 	uint32 getField10() { return _field_10; }
 	uint32 getField14() { return _field_14; }
 	uint32 getField19() { return _field_19; }
-	uint32 getField35() { return _field_35; }
-	uint32 getField39() { return _field_39; }
+	float  getField35() { return _field_35; }
+	float  getField39() { return _field_39; }
 	uint32 getField3D() { return _field_3D; }
 	bool isOn() { return _isOn; }
 
 	// Helpers
-	int32 computePan(float angle);
+	int32 computePan(float angle) const;
 	void computeAndSetPan(float alp, bool apply);
 
 private:
@@ -289,11 +289,11 @@ private:
 	float       _pan1;
 	float       _volume2;
 	float       _pan2;
-	uint32      _field_35;
-	uint32      _field_39;
+	float       _field_35;
+	float       _field_39;
 	float       _field_3D;
 
-	bool checkCurrentPuzzle();
+	bool checkCurrentPuzzle() const;
 	void setPanOnEntry(int32 pan);
 };
 

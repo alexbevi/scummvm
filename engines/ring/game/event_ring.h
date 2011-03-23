@@ -39,9 +39,9 @@ public:
 	EventHandlerRing(ApplicationRing *application);
 	virtual ~EventHandlerRing();
 
-	virtual void onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed);
-	virtual void onMouseLeftButtonDown(Common::Event &evt);
-	virtual void onMouseRightButtonUp(Common::Event &evt);
+	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
+	virtual void onMouseLeftButtonDown(const Common::Event &evt);
+	virtual void onMouseRightButtonUp(const Common::Event &evt);
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
 	virtual void onSound(Id id, SoundType type, uint32 a3);
@@ -68,34 +68,34 @@ private:
 	uint32       _frameNumberTimerRH;
 
 	// RO
-	uint32       _presentationIndexRO;
-	float        _presentationIndexBagRO;
-	uint32       _presentationIndexBagRO2;
+	int32        _presentationIndexRO;
+	int32        _presentationIndexBagRO;
+	int32        _presentationIndexBagRO2;
 
 	// NI
 	bool         _stateBagNI;
-	uint32       _presentationIndexNI;
+	int32        _presentationIndexNI;
 	int32        _indexOffsetNI;
 	int32        _distNI;
 
 	// N2
-	uint32       _presentationIndexN2;
+	int32        _presentationIndexN2;
 	int32        _distN2;
 
 	// SY
 	uint32       _presentationIndexSY;
 	bool         _prefsSubtitles;
-	uint32       _prefsVolume;
-	uint32       _prefsVolumeDialog;
+	int32        _prefsVolume;
+	int32        _prefsVolumeDialog;
 	bool         _object1Visible;
-	int32        _offsetX;
-	int32        _offsetX0;
-	int32        _coordX;
+	int16        _offsetX;
+	int16        _offsetX0;
+	int16        _coordX;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Event Handling
 	//////////////////////////////////////////////////////////////////////////
-	void onMouseLeftButtonUp(Common::Event &evt);
+	void onMouseLeftButtonUp(const Common::Event &evt);
 	bool handleLeftButtonDown(Accessibility *accessibility, uint32 index, Id id, const Common::Point &point);
 
 	bool handleLeftButtonUp(Accessibility *accessibility, Id id, const Common::Point &point);
@@ -105,19 +105,19 @@ private:
 	// Left button down
 	//////////////////////////////////////////////////////////////////////////
 	void onButtonDown(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonDownZoneNI(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonDownZoneRO(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonDownZoneN2(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonDownZoneNI(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonDownZoneRO(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonDownZoneN2(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
 	void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneRH(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneFO(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneRO(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneWA(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneAS(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneN2(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneSY(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneNI(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneRH(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneFO(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneRO(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneWA(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneAS(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUpZoneN2(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
 	void onButtonUp2(ObjectId id, uint32 index, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	void onButtonUp2ZoneWA(ObjectId id, uint32 index, Id puzzleRotationId, uint32 a4, const Common::Point &point);
@@ -125,8 +125,8 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	// Key down
 	//////////////////////////////////////////////////////////////////////////
-	void onKeyDownZone(Common::KeyState keyState);
-	void onKeyDownZoneSY(Common::KeyState keyState);
+	void onKeyDownZone(const Common::KeyState &keyState);
+	void onKeyDownZoneSY(const Common::KeyState &keyState);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Setup
@@ -162,32 +162,32 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	// Bag
 	//////////////////////////////////////////////////////////////////////////
-	void onBagZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
-	void onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
-	void onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
-	void onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
-	void onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
+	void onBagZoneSY(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
+	void onBagZoneNI(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
+	void onBagZoneFO(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
+	void onBagZoneRO(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
+	void onBagZoneN2(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
 
 	void onBagClickedObjectZoneFO(ObjectId id);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Rides
 	//////////////////////////////////////////////////////////////////////////
-	void onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onBeforeRideZoneRH(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onBeforeRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onBeforeRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onBeforeRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onBeforeRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onBeforeRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onBeforeRideZoneRH(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onBeforeRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onBeforeRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onBeforeRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onBeforeRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onBeforeRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
 
-	void onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onAfterRideZoneRH(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onAfterRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onAfterRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onAfterRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onAfterRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
-	void onAfterRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType);
+	void onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onAfterRideZoneRH(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onAfterRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onAfterRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onAfterRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onAfterRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
+	void onAfterRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Sound
@@ -241,11 +241,11 @@ private:
 	void sub_445930();
 	void sub_445A10();
 
-	void waitTicks(uint32 ticks);
+	void waitTicks(uint32 ticks) const;
 
 	// Savegames
-	bool copySavedTimers(uint32 slot);
-	bool removeSavedTimers(uint32 slot);
+	bool copySavedTimers(uint32 slot) const;
+	bool removeSavedTimers(uint32 slot) const;
 };
 
 } // End of namespace Ring

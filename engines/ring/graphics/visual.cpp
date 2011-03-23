@@ -142,8 +142,8 @@ void VisualObjectList::alloc() {
 	_allocated = true;
 }
 
-void VisualObjectList::loadImage(ImageHandle *image) {
-	if (image->getNameId().empty())
+void VisualObjectList::loadImage(ImageHandle *image) const {
+	if (!image || image->getNameId().empty())
 		return;
 
 	// Compute file path
@@ -218,6 +218,8 @@ void VisualObjectList::init(uint32 a1, Common::String imagePath, Common::String 
 		else
 			path = "/VISUAL/";
 	}
+
+	_field_B9 = a1;
 
 	// Create images
 	_backgroundImage = new ImageHandle(filename3, Common::Point(0, 0), true, drawType, 1000, 0, getApp()->getCurrentZone(), kLoadFrom5, kImageTypeBackground, _archiveType);
@@ -296,19 +298,19 @@ void VisualObjectList::sub_46DE30(uint32 a1, uint32 a2) {
 }
 
 void VisualObjectList::initHotspots() {
-	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_81),
-	                                             (int16)(_origin.y + _field_85),
-	                                             (int16)(_origin.x + _field_81 + _field_89),
-	                                             (int16)(_origin.y + _field_85 + _field_8D)),
+	_hotspots.push_back(new Hotspot(Common::Rect(_origin.x + (int16)(_field_81),
+	                                             _origin.y + (int16)(_field_85),
+	                                             _origin.x + (int16)(_field_81 + _field_89),
+	                                             _origin.y + (int16)(_field_85 + _field_8D)),
 	                                false,
 	                                0,
 	                                kCursorPassive,
 	                                0));
 
-	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_91),
-	                                             (int16)(_origin.y + _field_95),
-												 (int16)(_origin.x + _field_91 + _field_99),
-												 (int16)(_origin.y + _field_95 + _field_9D)),
+	_hotspots.push_back(new Hotspot(Common::Rect(_origin.x + (int16)(_field_91),
+	                                             _origin.y + (int16)(_field_95),
+												 _origin.x + (int16)(_field_91 + _field_99),
+												 _origin.y + (int16)(_field_95 + _field_9D)),
 	                                false,
 	                                0,
 	                                kCursorActive,
@@ -317,10 +319,10 @@ void VisualObjectList::initHotspots() {
 	if (_field_B9 & 1) {
 		for (uint32 i = 0; i < _field_BD; i++) {
 			uint32 y = i * _field_69 + _field_69 / 2;
-			_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_59),
-			                                             (int16)(_origin.y + _field_5D + y - _field_65 / 2),
-														 (int16)(_origin.x + _field_59 + _field_61),
-														 (int16)(_origin.y + _field_5D + _field_65 / 2 + y)),
+			_hotspots.push_back(new Hotspot(Common::Rect(_origin.x + (int16)(_field_59),
+			                                             _origin.y + (int16)(_field_5D + y - _field_65 / 2),
+														 _origin.x + (int16)(_field_59 + _field_61),
+														 _origin.y + (int16)(_field_5D + _field_65 / 2 + y)),
 			                                false,
 			                                0,
 			                                kCursorPassiveDraw,
@@ -331,10 +333,10 @@ void VisualObjectList::initHotspots() {
 	if (_field_B9 & 2) {
 		for (uint32 i = 0; i < _field_BD; i++) {
 			uint32 y = i * _field_69 + _field_69 / 2;
-			_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_59 + _field_61 / 2 + y),
-			                                             (int16)(_origin.y + _field_5D),
-														 (int16)(_origin.x + _field_59 + _field_61 / 2 + y),
-														 (int16)(_origin.y + _field_5D + _field_65)),
+			_hotspots.push_back(new Hotspot(Common::Rect(_origin.x + (int16)(_field_59 + _field_61 / 2 + y),
+			                                             _origin.y + (int16)(_field_5D),
+														 _origin.x + (int16)(_field_59 + _field_61 / 2 + y),
+														 _origin.y + (int16)(_field_5D + _field_65)),
 			                                false,
 			                                0,
 			                                kCursorPassiveDraw,
@@ -347,7 +349,7 @@ void VisualObjectList::sub_46E330(uint32 a1) {
 	_field_BD = a1;
 }
 
-void VisualObjectList::setTextForegroundColor(Color foreground, Color foregroundSelected) {
+void VisualObjectList::setTextForegroundColor(const Color &foreground, const Color &foregroundSelected) {
 	if (_text1)
 		_text1->setForegroundColor(foreground);
 
@@ -360,7 +362,7 @@ void VisualObjectList::setTextForegroundColor(Color foreground, Color foreground
 	}
 }
 
-void VisualObjectList::setTextBackgroundColor(Color background) {
+void VisualObjectList::setTextBackgroundColor(const Color &background) {
 	if (_text1)
 		_text1->setBackgroundColor(background);
 
@@ -389,17 +391,17 @@ void VisualObjectList::draw() {
 
 	ScreenManager *screen = getApp()->getScreenManager();
 
-	if (_backgroundImage->getNameId().empty())
+	if (_backgroundImage && !_backgroundImage->getNameId().empty())
 		screen->draw(_backgroundImage, _origin + _backgroundOffset, _backgroundImage->getDrawType());
 
-	if (_objectIndex <= 0) {
-		if (_upGun->getNameId().empty())
+	if (_objectIndex == 0) {
+		if (_upGun && !_upGun->getNameId().empty())
 			screen->draw(_upGun, _origin + _upOffset, _upGun->getDrawType());
 
 		if (_hotspots.size() > 0)
 			_hotspots[0]->disable();
 	} else {
-		if (_upGua->getNameId().empty())
+		if (_upGua && !_upGua->getNameId().empty())
 			screen->draw(_upGua, _origin + _upOffset, _upGua->getDrawType());
 
 		if (_hotspots.size() > 0)
@@ -407,13 +409,13 @@ void VisualObjectList::draw() {
 	}
 
 	if ((_objectIndex + _field_BD) >= _itemCount) {
-		if (_downGun->getNameId().empty())
+		if (_downGun && !_downGun->getNameId().empty())
 			screen->draw(_downGun, _origin + _downOffset, _downGun->getDrawType());
 
 		if (_hotspots.size() > 1)
 			_hotspots[1]->disable();
 	} else {
-		if (_downGua->getNameId().empty())
+		if (_downGua && !_downGua->getNameId().empty())
 			screen->draw(_downGua, _origin + _downOffset, _downGua->getDrawType());
 
 		if (_hotspots.size() > 1)
@@ -421,10 +423,17 @@ void VisualObjectList::draw() {
 	}
 
 	// Show objects
-	uint32 offset = _origin.x + _field_59;
+	int16 offset = _origin.x + (int16)_field_59;
 	uint32 count = _objectIndex + _field_BD;
 	if (count >= _itemCount)
 		count = _itemCount;
+
+	// Check text
+	if (!_text1 || !_text2)
+		error("[VisualObjectList::draw] Text objects not initialized properly");
+
+	if (!_cliImageP || !_cliImageA)
+		error("[VisualObjectList::draw] Cli images not initialized properly");
 
 	if (_objectIndex < count) {
 		for (uint32 i = _objectIndex; i < count; i++) {
@@ -446,19 +455,19 @@ void VisualObjectList::draw() {
 				// Set text coordinates
 				Common::Point imageCoords;
 				if (_field_B9 & 1) {
-					uint32 text1Y = _origin.y + i * _field_69 + _field_5D + (_field_69 - _text1->getHeight()) / 2;
+					int16 text1Y = _origin.y + (int16)(i * _field_69 + _field_5D + (_field_69 - _text1->getHeight()) / 2);
 					_text1->setCoordinates(Common::Point(offset, text1Y));
-					_text2->setCoordinates(Common::Point(offset, text1Y + _text1->getHeight() + _field_6D));
+					_text2->setCoordinates(Common::Point(offset, text1Y + (int16)(_text1->getHeight() + _field_6D)));
 
-					imageCoords = Common::Point(_origin.x + _field_B1, _origin.y + i * _field_69 + _field_B5 - (_field_69 - _cliImageP->getHeight()) / 2);
+					imageCoords = Common::Point(_origin.x + (int16)_field_B1, _origin.y + (int16)(i * _field_69 + _field_B5 - (_field_69 - _cliImageP->getHeight()) / 2));
 				}
 
 				if (_field_B9 & 2) {
-					uint32 textX = _origin.x + i * _field_69 + _field_59 + (_field_69 - _text1->getWidth()) / 2;
-					_text1->setCoordinates(Common::Point(textX, _origin.y + _field_5D));
-					_text2->setCoordinates(Common::Point(textX, _origin.y + _field_5D + _text1->getHeight() + _field_6D));
+					int16 textX = _origin.x + (int16)(i * _field_69 + _field_59 + (_field_69 - _text1->getWidth()) / 2);
+					_text1->setCoordinates(Common::Point(textX, _origin.y + (int16)_field_5D));
+					_text2->setCoordinates(Common::Point(textX, _origin.y + (int16)(_field_5D + _text1->getHeight() + _field_6D)));
 
-					imageCoords = Common::Point(_origin.x + i * _field_69 + _field_B1 + (_field_69 - _text1->getWidth()) / 2, _origin.y + _field_B5);
+					imageCoords = Common::Point(_origin.x + (int16)(i * _field_69 + _field_B1 + (_field_69 - _text1->getWidth()) / 2), _origin.y + (int16)_field_B5);
 				}
 
 				if (_objectIdClicked == object->getId()) {
@@ -548,7 +557,7 @@ uint32 VisualObjectList::handleLeftButtonUp(const Common::Point &point) {
 
 	case kCursorPassiveDraw:
 		_imageIndexClicked  = _objectIndexClicked;
-		_objectIndexClicked = _objectIndex + hotspot->getTarget();
+		_objectIndexClicked = (int32)_objectIndex + hotspot->getTarget();
 		_objectIdClicked    = _objects[_objectIndexClicked]->getId();
 
 		getApp()->getEventHandler()->onVisualList(_id, 3, point);

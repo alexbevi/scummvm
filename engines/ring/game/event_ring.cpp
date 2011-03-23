@@ -88,13 +88,13 @@ EventHandlerRing::~EventHandlerRing() {
 
 #pragma region Event handling
 
-void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
+void EventHandlerRing::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
 	_controlNotPressed = !isControlPressed;
 
 	onMouseLeftButtonUp(evt);
 }
 
-void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt) {
+void EventHandlerRing::onMouseLeftButtonUp(const Common::Event &evt) {
 	debugC(kRingDebugLogic, "onMouseLeftButtonUp");
 
 	// Handle clicks on bag
@@ -156,7 +156,7 @@ void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt) {
 
 		if (puzzleMenu->getField24() == 1) {
 			Movability *movability = puzzleMenu->getMovability(evt.mouse);
-			if (handleLeftButtonUp(movability, puzzleMenu->getMovabilityIndex(evt.mouse), puzzleMenu->getId()))
+			if (handleLeftButtonUp(movability, (uint32)puzzleMenu->getMovabilityIndex(evt.mouse), puzzleMenu->getId()))
 				return;
 		}
 
@@ -167,7 +167,7 @@ void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt) {
 	// Handle current puzzle
 	Puzzle *currentPuzzle = _app->getCurrentPuzzle();
 	if (currentPuzzle) {
-		if (puzzleMenu->visualHandleLeftButtonUp(evt.mouse)) {
+		if (currentPuzzle->visualHandleLeftButtonUp(evt.mouse)) {
 			_app->update(evt.mouse);
 			return;
 		}
@@ -177,7 +177,7 @@ void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt) {
 			return;
 
 		Movability *movability = currentPuzzle->getMovability(evt.mouse);
-		if (handleLeftButtonUp(movability, currentPuzzle->getMovabilityIndex(evt.mouse), currentPuzzle->getId()))
+		if (handleLeftButtonUp(movability, (uint32)currentPuzzle->getMovabilityIndex(evt.mouse), currentPuzzle->getId()))
 			return;
 	}
 
@@ -191,8 +191,8 @@ void EventHandlerRing::onMouseLeftButtonUp(Common::Event &evt) {
 		if (handleLeftButtonUp(accessibility, currentRotation->getId(), evt.mouse))
 			return;
 
-		Movability *movability = currentPuzzle->getMovability(evt.mouse);
-		if (handleLeftButtonUp(movability, currentPuzzle->getMovabilityIndex(evt.mouse), currentPuzzle->getId(), true))
+		Movability *movability = currentRotation->getMovability(evt.mouse);
+		if (handleLeftButtonUp(movability, (uint32)currentRotation->getMovabilityIndex(evt.mouse), currentRotation->getId(), true))
 			return;
 
 		if (_app->getField75())
@@ -221,7 +221,7 @@ bool EventHandlerRing::handleLeftButtonUp(Accessibility *accessibility, Id id, c
 		return true;
 	}
 
-	onButtonUp2(object->getId(), hotspot->getTarget(), id, 1, point);
+	onButtonUp2(object->getId(), (uint32)hotspot->getTarget(), id, 1, point);
 
 	if (_app->getState() != kStateShowMenu) {
 		if (_app->getField74()) {
@@ -312,8 +312,8 @@ bool EventHandlerRing::handleLeftButtonUp(Movability *movability, uint32 index, 
 
 	case kMovabilityRotationToPuzzle:
 	case kMovabilityPuzzleToPuzzle:
-		if (_app->getPuzzle((PuzzleId)movability->getTo())) {
-			Puzzle *puzzle = _app->getPuzzle((PuzzleId)movability->getTo());
+		if (_app->getPuzzle(movability->getTo().id())) {
+			Puzzle *puzzle = _app->getPuzzle(movability->getTo().id());
 
 			_app->getSoundHandler()->setSounds2(puzzle->getSoundItems());
 			_app->getSoundHandler()->setField0(true);
@@ -366,7 +366,7 @@ bool EventHandlerRing::handleLeftButtonUp(Movability *movability, uint32 index, 
 
 	case kMovabilityRotationToPuzzle:
 	case kMovabilityPuzzleToPuzzle:
-		_app->puzzleSetActive((PuzzleId)movability->getTo());
+		_app->puzzleSetActive(movability->getTo().id());
 
 		onAfterRide(_app->getCurrentRotationId(), id, index, hotspot->getTarget(), movability->getType());
 
@@ -383,7 +383,7 @@ bool EventHandlerRing::handleLeftButtonUp(Movability *movability, uint32 index, 
 	return true;
 }
 
-void EventHandlerRing::onMouseLeftButtonDown(Common::Event &evt) {
+void EventHandlerRing::onMouseLeftButtonDown(const Common::Event &evt) {
 	debugC(kRingDebugLogic, "onMouseLeftButtonDown");
 
 	if (_app->getBag()->getField94())
@@ -399,7 +399,7 @@ void EventHandlerRing::onMouseLeftButtonDown(Common::Event &evt) {
 		}
 
 		Accessibility *accessibility = puzzleMenu->getAccessibility(evt.mouse);
-		if (handleLeftButtonDown(accessibility, puzzleMenu->getAccessibilityIndex(evt.mouse), puzzleMenu->getId(), evt.mouse))
+		if (handleLeftButtonDown(accessibility, (uint32)puzzleMenu->getAccessibilityIndex(evt.mouse), puzzleMenu->getId(), evt.mouse))
 			return;
 
 		if (puzzleMenu->getField24() == 2)
@@ -415,7 +415,7 @@ void EventHandlerRing::onMouseLeftButtonDown(Common::Event &evt) {
 		}
 
 		Accessibility *accessibility = currentPuzzle->getAccessibility(evt.mouse);
-		if (handleLeftButtonDown(accessibility, currentPuzzle->getAccessibilityIndex(evt.mouse), currentPuzzle->getId(), evt.mouse))
+		if (handleLeftButtonDown(accessibility, (uint32)currentPuzzle->getAccessibilityIndex(evt.mouse), currentPuzzle->getId(), evt.mouse))
 			return;
 	}
 
@@ -423,7 +423,7 @@ void EventHandlerRing::onMouseLeftButtonDown(Common::Event &evt) {
 	Rotation *currentRotation = _app->getCurrentRotation();
 	if (currentRotation) {
 		Accessibility *accessibility = currentRotation->getAccessibility(evt.mouse);
-		if (handleLeftButtonDown(accessibility, currentRotation->getAccessibilityIndex(evt.mouse), currentRotation->getId(), evt.mouse))
+		if (handleLeftButtonDown(accessibility, (uint32)currentRotation->getAccessibilityIndex(evt.mouse), currentRotation->getId(), evt.mouse))
 			return;
 	}
 }
@@ -454,14 +454,14 @@ bool EventHandlerRing::handleLeftButtonDown(Accessibility *accessibility, uint32
 		if (!_app->getField76())
 			_app->getDragControl()->reset();
 
-		_app->setField76(1);
+		_app->setField76(true);
 		_app->update(point);
 	}
 
 	return true;
 }
 
-void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
+void EventHandlerRing::onMouseRightButtonUp(const Common::Event &) {
 	debugC(kRingDebugLogic, "onMouseRightButtonUp");
 
 	if (getApp()->getDragControl()->getField20() || getApp()->getCurrentGameZone())
@@ -483,7 +483,6 @@ void EventHandlerRing::onMouseRightButtonUp(Common::Event &evt) {
 
 		getApp()->setupCurrentRotation();
 	}
-
 }
 
 void EventHandlerRing::onKeyDown(Common::Event &evt) {
@@ -510,7 +509,7 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 				_app->getCurrentRotation()->setCoordinates(&point, evt.kbd.keycode);
 
 			// Modify event to be a mouse click on the center of the hotspot
-			bool controlPressed = (evt.kbd.flags & Common::KBD_CTRL);
+			bool controlPressed = (bool)(evt.kbd.flags & Common::KBD_CTRL);
 			evt.mouse = point;
 
 			// Simulate click
@@ -539,11 +538,11 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 			return;
 
 		if (currentPuzzle->getField24() == 2) {
-			Accessibility *accessibility = puzzleMenu->getAccessibility(evt.kbd.keycode);
+			Accessibility *accessibility = currentPuzzle->getAccessibility(evt.kbd.keycode);
 			if (!accessibility)
 				return;
 
-			bool controlPressed = (evt.kbd.flags & Common::KBD_CTRL);
+			bool controlPressed = (bool)(evt.kbd.flags & Common::KBD_CTRL);
 
 			// Modify event to be a mouse click on the center of the hotspot
 			Hotspot *hotspot = accessibility->getHotspot();
@@ -572,7 +571,7 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 		if (!currentRotation)
 			return;
 
-		bool controlPressed = (evt.kbd.flags & Common::KBD_CTRL);
+		bool controlPressed = (bool)(evt.kbd.flags & Common::KBD_CTRL);
 
 		// Modify event to be a mouse click on the center of the hotspot
 		Hotspot *hotspot = accessibility->getHotspot();
@@ -615,7 +614,7 @@ void EventHandlerRing::onButtonDown(ObjectId id, Id target, Id puzzleRotationId,
 		break;
 
 	case kZoneNI:
-		onButtonDownZoneNI(id, target, puzzleRotationId, a4, point);
+		onButtonDownZoneNI(id, (uint32)target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneFO:
@@ -624,16 +623,16 @@ void EventHandlerRing::onButtonDown(ObjectId id, Id target, Id puzzleRotationId,
 		break;
 
 	case kZoneRO:
-		onButtonDownZoneRO(id, target, puzzleRotationId, a4, point);
+		onButtonDownZoneRO(id, (uint32)target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneN2:
-		onButtonDownZoneN2(id, target, puzzleRotationId, a4, point);
+		onButtonDownZoneN2(id, (uint32)target, puzzleRotationId, a4, point);
 		break;
 	}
 }
 
-void EventHandlerRing::onButtonDownZoneNI(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonDownZoneNI(ObjectId id, uint32, Id puzzleRotationId, uint32, const Common::Point &) {
 	switch (id) {
 	default:
 		break;
@@ -760,10 +759,10 @@ void EventHandlerRing::onButtonDownZoneNI(ObjectId id, Id target, Id puzzleRotat
 		if (!_app->bagHasClickedObject()) {
 			_app->soundPlay(10106);
 			_app->objectPresentationHide(kObject10109);
-			_app->objectPresentationShow(kObject10109, puzzleRotationId);
+			_app->objectPresentationShow(kObject10109, (uint32)puzzleRotationId);
 
 			if (puzzleRotationId) {
-				_app->varSetByte(_app->varGetByte(10113) + 10108, puzzleRotationId);
+				_app->varSetByte(_app->varGetByte(10113) + 10108, (byte)puzzleRotationId);
 				_app->varSetByte(10113, _app->varGetByte(10113) + 1);
 			}
 		}
@@ -778,7 +777,7 @@ void EventHandlerRing::onButtonDownZoneNI(ObjectId id, Id target, Id puzzleRotat
 	}
 }
 
-void EventHandlerRing::onButtonDownZoneRO(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonDownZoneRO(ObjectId id, uint32 target, Id, uint32, const Common::Point &) {
 	if (id != kObject40202)
 		return;
 
@@ -813,7 +812,7 @@ void EventHandlerRing::onButtonDownZoneRO(ObjectId id, Id target, Id puzzleRotat
 	}
 }
 
-void EventHandlerRing::onButtonDownZoneN2(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonDownZoneN2(ObjectId id, uint32 target, Id, uint32, const Common::Point &) {
 	switch (id) {
 	default:
 		break;
@@ -898,7 +897,7 @@ void EventHandlerRing::onButtonUp(ObjectId id, Id target, Id puzzleRotationId, u
 	debugC(kRingDebugLogic, "onButtonUp (ObjectId: %d, target: %d, coords: (%d, %d))", id.id(), target, point.x, point.y);
 
 	if (puzzleRotationId == 1 && a4 == 1) {
-		onButtonUpZoneSY(id, target, puzzleRotationId, a4, point);
+		onButtonUpZoneSY(id, (uint32)target, puzzleRotationId, a4, point);
 		return;
 	}
 
@@ -907,40 +906,40 @@ void EventHandlerRing::onButtonUp(ObjectId id, Id target, Id puzzleRotationId, u
 		break;
 
 	case kZoneSY:
-		onButtonUpZoneSY(id, target, puzzleRotationId, a4, point);
+		onButtonUpZoneSY(id, (uint32)target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneNI:
-		onButtonUpZoneNI(id, target, puzzleRotationId, a4, point);
+		onButtonUpZoneNI(id, (uint32)target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneRH:
-		onButtonUpZoneRH(id, target, puzzleRotationId, a4, point);
+		onButtonUpZoneRH(id, (uint32)target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneFO:
-		onButtonUpZoneFO(id, target, puzzleRotationId, a4, point);
+		onButtonUpZoneFO(id, (uint32)target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneRO:
-		onButtonUpZoneRO(id, target, puzzleRotationId, a4, point);
+		onButtonUpZoneRO(id, (uint32)target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneWA:
-		onButtonUpZoneWA(id, target, puzzleRotationId, a4, point);
+		onButtonUpZoneWA(id, (uint32)target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneAS:
-		onButtonUpZoneAS(id, target, puzzleRotationId, a4, point);
+		onButtonUpZoneAS(id, (uint32)target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneN2:
-		onButtonUpZoneN2(id, target, puzzleRotationId, a4, point);
+		onButtonUpZoneN2(id, (uint32)target, puzzleRotationId, a4, point);
 		break;
 	}
 }
 
-void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonUpZoneSY(ObjectId id, uint32 target, Id, uint32, const Common::Point &) {
 	RingEngine *engine = ((RingEngine *)g_engine);
 
 	switch (id) {
@@ -973,7 +972,7 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 			break;
 
 		case 1:
-			g_engine->shouldQuit();
+			Engine::quitGame();
 			break;
 		}
 		break;
@@ -1018,7 +1017,7 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 			}
 
 			// Delete selected savegame
-			uint32 slot = _app->visualListGetItemCount(1, kObjectMenuLoad) - imageIndex - 1;
+			uint32 slot = _app->visualListGetItemCount(1, kObjectMenuLoad) - ((uint32)imageIndex + 1);
 			if (!_app->getSaveManager()->remove(slot)
 			 || !removeSavedTimers(slot)) {
 				_app->messageHideQuestion(4);
@@ -1062,8 +1061,8 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 			_app->objectPresentationShow(kObjectPreferencesSubtitles, 1);
 		}
 
-		_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderVolume, 0, 0, Common::Point(5 * _prefsVolume + 84, 155));
-		_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderDialog, 0, 0, Common::Point(5 * _prefsVolumeDialog + 84, 212));
+		_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderVolume, 0, 0, Common::Point((int16)(5 * _prefsVolume + 84), 155));
+		_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderDialog, 0, 0, Common::Point((int16)(5 * _prefsVolumeDialog + 84), 212));
 		_app->objectPresentationHide(kObjectPreferences3dSound);
 		_app->objectPresentationShow(kObjectPreferences3dSound, _presentationIndexSY);
 
@@ -1179,7 +1178,7 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 		}
 
 		// Compute slot
-		uint32 slot = _app->visualListGetItemCount(1, kObjectMenuLoad) - imageIndex - 1;
+		uint32 slot = _app->visualListGetItemCount(1, kObjectMenuLoad) - ((uint32)imageIndex + 1);
 
 		// Get a list of saves
 		SaveStateList list = engine->listSaves(engine->getGameDescription()->desc.gameid);
@@ -1270,7 +1269,7 @@ void EventHandlerRing::onButtonUpZoneSY(ObjectId id, Id target, Id puzzleRotatio
 	}
 }
 
-void EventHandlerRing::onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonUpZoneNI(ObjectId id, uint32 target, Id puzzleRotationId, uint32, const Common::Point &) {
 	switch (id) {
 	default:
 		break;
@@ -1283,7 +1282,7 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotatio
 
 		if (target == 1) {
 			_app->rotationSetRolTo(10101, 270.4f, 10.4f, 85.7f);
-			_app->puzzleSetActive(kPuzzle10100, 1, 1);
+			_app->puzzleSetActive(kPuzzle10100);
 			_app->objectSetAccessibilityOn(kObject10101, 0, 0);
 			_app->objectSetAccessibilityOn(kObject10102, 0, 0);
 			_app->objectSetAccessibilityOn(kObject10101, 2, 2);
@@ -1410,7 +1409,7 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotatio
 
 		case 3:
 			_app->varSetDword(10000, puzzleRotationId);
-			_app->varSetDword(10001, _app->rotationGetAlp(puzzleRotationId));
+			_app->varSetDword(10001, (uint32)_app->rotationGetAlp(puzzleRotationId));
 			_app->puzzleSetActive(kPuzzle10000);
 
 			waitTicks(200);
@@ -1512,7 +1511,7 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotatio
 				break;
 			}
 
-			_app->puzzleSetActive(kPuzzle10390, 1, 1);
+			_app->puzzleSetActive(kPuzzle10390);
 			_app->soundPlay(rnd(3) + 10015);
 		}
 
@@ -1721,13 +1720,14 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotatio
 			break;
 		}
 
-		uint32 val1 = _app->varGetWord(10600) + 36;
+		int16 val1 = _app->varGetWord(10600) + 36;
 		if (val1 > 47)
 			val1 -= 48;
 
-		uint32 val2 = _app->varGetWord(10602) + 24;
+		int16 val2 = _app->varGetWord(10602) + 24;
 		if (val2 > 47)
 			val2 -= 48;
+
 		uint32 index = 0;
 		if (_app->varGetWord(10600) == 12)
 			index = 1;
@@ -1753,7 +1753,7 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotatio
 					++index;
 
 				_app->objectPresentationHideAndRemove(kObject10601);
-				_app->objectPresentationShow(kObject10601, _app->varGetWord(10600));
+				_app->objectPresentationShow(kObject10601, (uint16)_app->varGetWord(10600));
 			}
 
 			if (_app->varGetWord(10601)) {
@@ -1769,7 +1769,7 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotatio
 					++index;
 
 				_app->objectPresentationHideAndRemove(kObject10602);
-				_app->objectPresentationShow(kObject10602, _app->varGetWord(10601));
+				_app->objectPresentationShow(kObject10602, (uint16)_app->varGetWord(10601));
 			}
 
 			if (_app->varGetWord(10602) != 24) {
@@ -1785,7 +1785,7 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotatio
 					++index;
 
 				_app->objectPresentationHideAndRemove(kObject10603);
-				_app->objectPresentationShow(kObject10603, _app->varGetWord(10602));
+				_app->objectPresentationShow(kObject10603, (uint16)_app->varGetWord(10602));
 			}
 
 			handleEvents();
@@ -1797,7 +1797,7 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, Id target, Id puzzleRotatio
 	}
 }
 
-void EventHandlerRing::onButtonUpZoneRH(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonUpZoneRH(ObjectId id, uint32 target, Id, uint32, const Common::Point &) {
 	switch (id) {
 	default:
 		break;
@@ -1808,7 +1808,7 @@ void EventHandlerRing::onButtonUpZoneRH(ObjectId id, Id target, Id puzzleRotatio
 				_app->playMovie("1668");
 				_app->soundPlay(23010, kSoundLoop);
 				_app->rotationSetAlp(20701, 0.0);
-				_app->rotationSetActive(20701, 1, 1);
+				_app->rotationSetActive(20701);
 			}
 
 			_app->cursorDelete();
@@ -1852,7 +1852,7 @@ void EventHandlerRing::onButtonUpZoneRH(ObjectId id, Id target, Id puzzleRotatio
 		_app->objectSetAccessibilityOff(id);
 		_app->rotationSetMovabilityOff(10 * (_app->varGetByte(21001) + 2001), 0, 0);
 		_app->rotationSetMovabilityOn(10 * (_app->varGetByte(21001) + 2001), 1, 1);
-		_app->rotationSetActive(10 * (_app->varGetByte(21001) + 2001), 1, 1);
+		_app->rotationSetActive(10 * (_app->varGetByte(21001) + 2001));
 		if (_app->bagHas(kObjectKeyIndifference)
 		 && _app->bagHas(kObjectKeyMistrust)
 		 && _app->bagHas(kObjectKeySelfishness)
@@ -2039,7 +2039,7 @@ void EventHandlerRing::onButtonUpZoneRH(ObjectId id, Id target, Id puzzleRotatio
 			if (!_app->bagHas(kObjectMedallion)) {
 				_app->playMovie("1678");
 				_app->rotationSetAlp(20302, 10.0);
-				_app->rotationSetActive(20302, 1, 1);
+				_app->rotationSetActive(20302);
 				break;
 			}
 		}
@@ -2288,7 +2288,7 @@ void EventHandlerRing::onButtonUpZoneRH(ObjectId id, Id target, Id puzzleRotatio
 	}
 }
 
-void EventHandlerRing::onButtonUpZoneFO(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonUpZoneFO(ObjectId id, uint32 target, Id, uint32, const Common::Point &) {
 	switch (id) {
 	default:
 		break;
@@ -2883,7 +2883,7 @@ void EventHandlerRing::onButtonUpZoneFO(ObjectId id, Id target, Id puzzleRotatio
 			_app->objectSetAccessibilityOff(kObject30040, 1, 1);
 			_app->objectSetAccessibilityOn(kObject30040, 2, 2);
 			_app->soundPlay(30508);
-			break;;
+			break;
 
 		case 1:
 			if (_app->varGetByte(30023))
@@ -2931,6 +2931,7 @@ void EventHandlerRing::onButtonUpZoneFO(ObjectId id, Id target, Id puzzleRotatio
 			_app->objectPresentationHide(kObject30040, 1);
 			_app->objectSetAccessibilityOff(kObject30040, 4, 4);
 			_app->varSetByte(30024, 1);
+			break;
 
 		case 5:
 			_app->bagAdd(kObjectMetals);
@@ -2978,49 +2979,49 @@ void EventHandlerRing::onButtonUpZoneFO(ObjectId id, Id target, Id puzzleRotatio
 				break;
 
 			case kObjectMeltedGold:
-				_app->varSetByte(30025, target);
+				_app->varSetByte(30025, (byte)target);
 				_app->bagRemove(kObjectMeltedGold);
 				_app->objectPresentationShow(kObject30042, target);
 				_app->objectSetAccessibilityOff(kObject30042, target, target);
 				break;
 
 			case  kObjectMeltedSilver:
-				_app->varSetByte(30026, target);
+				_app->varSetByte(30026, (byte)target);
 				_app->bagRemove(kObjectMeltedSilver);
 				_app->objectPresentationShow(kObject30042, target);
 				_app->objectSetAccessibilityOff(kObject30042, target, target);
 				break;
 
 			case kObjectMeltedCopper:
-				_app->varSetByte(30027, target);
+				_app->varSetByte(30027, (byte)target);
 				_app->bagRemove(kObjectMeltedCopper);
 				_app->objectPresentationShow(kObject30042, target);
 				_app->objectSetAccessibilityOff(kObject30042, target, target);
 				break;
 
 			case kObjectMeltedLead:
-				_app->varSetByte(30028, target);
+				_app->varSetByte(30028, (byte)target);
 				_app->bagRemove(kObjectMeltedLead);
 				_app->objectPresentationShow(kObject30042, target);
 				_app->objectSetAccessibilityOff(kObject30042, target, target);
 				break;
 
 			case kObjectMeltedSteel:
-				_app->varSetByte(30029, target);
+				_app->varSetByte(30029, (byte)target);
 				_app->bagRemove(kObjectMeltedSteel);
 				_app->objectPresentationShow(kObject30042, target);
 				_app->objectSetAccessibilityOff(kObject30042, target, target);
 				break;
 
 			case kObjectMeltedTin:
-				_app->varSetByte(30030, target);
+				_app->varSetByte(30030, (byte)target);
 				_app->bagRemove(kObjectMeltedTin);
 				_app->objectPresentationShow(kObject30042, target);
 				_app->objectSetAccessibilityOff(kObject30042, target, target);
 				break;
 
 			case kObjectQuicksilver:
-				_app->varSetByte(30031, target);
+				_app->varSetByte(30031, (byte)target);
 				_app->bagRemove(kObjectQuicksilver);
 				_app->objectPresentationShow(kObject30042, target);
 				_app->objectSetAccessibilityOff(kObject30042, target, target);
@@ -3633,7 +3634,7 @@ void EventHandlerRing::onButtonUpZoneFO(ObjectId id, Id target, Id puzzleRotatio
 	}
 }
 
-void EventHandlerRing::onButtonUpZoneRO(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonUpZoneRO(ObjectId id, uint32 target, Id, uint32, const Common::Point &) {
 	switch (id) {
 	default:
 		break;
@@ -3696,8 +3697,8 @@ void EventHandlerRing::onButtonUpZoneRO(ObjectId id, Id target, Id puzzleRotatio
 				target = (rnd(4) + 1) + 10 * (rnd(4) + 2);
 
 				if (_app->varGetByte(target + 40501)) {
-					uint32 presentationIndex = _app->varGetByte(target + 40501) / 10 - 2;
-					uint32 imageIndex = _app->varGetByte(target + 40501) % 10 - 1;
+					uint32 presentationIndex = (uint8)_app->varGetByte(target + 40501) / 10 - 2;
+					uint32 imageIndex = (uint8)_app->varGetByte(target + 40501) % 10 - 1;
 					Common::Point coords = _app->objectPresentationGetImageCoordinatesOnPuzzle(40011, presentationIndex, imageIndex);
 
 					if (!_app->varGetByte(target + 40491)) {
@@ -3767,8 +3768,8 @@ void EventHandlerRing::onButtonUpZoneRO(ObjectId id, Id target, Id puzzleRotatio
 		}
 
 		if (_app->varGetByte(target + 40501)) {
-			uint32 presentationIndex = _app->varGetByte(target + 40501) / 10 - 2;
-			uint32 imageIndex = _app->varGetByte(target + 40501) % 10 - 1;
+			uint32 presentationIndex = (uint8)_app->varGetByte(target + 40501) / 10 - 2;
+			uint32 imageIndex = (uint8)_app->varGetByte(target + 40501) % 10 - 1;
 			Common::Point coords = _app->objectPresentationGetImageCoordinatesOnPuzzle(40011, presentationIndex, imageIndex);
 
 			if (_app->varGetByte(target + 40491)) {
@@ -3779,11 +3780,11 @@ void EventHandlerRing::onButtonUpZoneRO(ObjectId id, Id target, Id puzzleRotatio
 
 					if (target == 12) {
 						uint32 counter = 1;
-						for (uint32 i = 0; i < _app->varGetByte(40522); i++) {
+						for (uint32 i = 0; i < (uint8)_app->varGetByte(40522); i++) {
 							++counter;
 
 							if (counter >= 5) {
-								counter = 1;
+								//counter = 1;
 
 								// Original does some checks on a2, but they seem useless :S
 
@@ -3852,7 +3853,7 @@ void EventHandlerRing::onButtonUpZoneRO(ObjectId id, Id target, Id puzzleRotatio
 
 		_app->objectSetAccessibilityOff(kObject40060);
 		_app->puzzleSetMovabilityOff(kPuzzle40060, 0, 0);
-		if (_presentationIndexRO / 10 == (uint32)(target + 1)) {
+		if ((_presentationIndexRO / 10) == (int32)(target + 1)) {
 			_app->objectPresentationShow(kObject40201, target);
 
 			Common::String str = _app->varGetString(40901);
@@ -3870,7 +3871,7 @@ void EventHandlerRing::onButtonUpZoneRO(ObjectId id, Id target, Id puzzleRotatio
 	}
 }
 
-void EventHandlerRing::onButtonUpZoneWA(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonUpZoneWA(ObjectId id, uint32 target, Id, uint32, const Common::Point &) {
 	switch (id) {
 	default:
 		break;
@@ -4024,7 +4025,7 @@ void EventHandlerRing::onButtonUpZoneWA(ObjectId id, Id target, Id puzzleRotatio
 			break;
 		}
 
-		_app->puzzleSetActive(kPuzzle50701, 1, 1);
+		_app->puzzleSetActive(kPuzzle50701);
 		_app->varSetFloat(90008, _app->varGetFloat(90008) + 5.0f);
 		_app->soundPlay(50009);
 		break;
@@ -4034,7 +4035,7 @@ void EventHandlerRing::onButtonUpZoneWA(ObjectId id, Id target, Id puzzleRotatio
 			switch (target) {
 			default:
 				if (target > 9)
-					_app->puzzleSetActive((PuzzleId)(target + 50491), 1, 1);
+					_app->puzzleSetActive((PuzzleId)(target + 50491));
 				break;
 
 			case 0:
@@ -4236,7 +4237,7 @@ void EventHandlerRing::onButtonUpZoneWA(ObjectId id, Id target, Id puzzleRotatio
 		}
 
 		if (_app->varGetByte(50012) == 4) {
-			_app->rotationSetRolTo(50108, 250.0, 15.0, 85.69999694824219);
+			_app->rotationSetRolTo(50108, 250.0, 15.0, 85.7f);
 			_app->playMovie("1849");
 			_app->puzzleSetActive(kPuzzle50100);
 			_app->soundStop(51006, 1024);
@@ -4314,7 +4315,7 @@ void EventHandlerRing::onButtonUpZoneWA(ObjectId id, Id target, Id puzzleRotatio
 				}
 			}
 			else {
-				_app->puzzleSetActive(kPuzzle50304, 1, 1);
+				_app->puzzleSetActive(kPuzzle50304);
 			}
 			break;
 
@@ -4333,9 +4334,9 @@ void EventHandlerRing::onButtonUpZoneWA(ObjectId id, Id target, Id puzzleRotatio
 	case kObjectPhoenix:
 		if (_app->bagHasClickedObject()) {
 			if (_app->bagGetClickedObject() != 50000) {
-				_app->rotationSetActive(50303, 1, 1);
+				_app->rotationSetActive(50303);
 				_app->cursorDelete();
-				break;;
+				break;
 			}
 
 			_app->objectPresentationShow(kObjectPhoenix, 0);
@@ -4459,7 +4460,7 @@ void EventHandlerRing::onButtonUpZoneWA(ObjectId id, Id target, Id puzzleRotatio
 	}
 }
 
-void EventHandlerRing::onButtonUpZoneAS(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonUpZoneAS(ObjectId id, uint32 target, Id, uint32, const Common::Point &) {
 	switch (id) {
 	default:
 		break;
@@ -4713,7 +4714,7 @@ void EventHandlerRing::onButtonUpZoneAS(ObjectId id, Id target, Id puzzleRotatio
 	}
 }
 
-void EventHandlerRing::onButtonUpZoneN2(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonUpZoneN2(ObjectId id, uint32 target, Id, uint32, const Common::Point &) {
 	switch (id) {
 	default:
 		break;
@@ -4757,7 +4758,7 @@ void EventHandlerRing::onButtonUpZoneN2(ObjectId id, Id target, Id puzzleRotatio
 			break;
 		}
 
-		_app->objectPresentationShow(kObject70106, _app->varGetWord(70016));
+		_app->objectPresentationShow(kObject70106, (uint16)_app->varGetWord(70016));
 		_app->puzzleSetActive(kPuzzle70102);
 
 		break;
@@ -4825,7 +4826,7 @@ void EventHandlerRing::onButtonUpZoneN2(ObjectId id, Id target, Id puzzleRotatio
 				 || _app->bagGetClickedObject() == kObjectDragon
 				 || _app->bagGetClickedObject() == kObjectPhoenix1) {
 					_app->bagRemove(_app->bagGetClickedObject());
-					_app->varSetByte(70015, _app->bagGetClickedObject() - 100);
+					_app->varSetByte(70015, (byte)(_app->bagGetClickedObject() - 100));
 					_app->objectSetAccessibilityOff(kObjectCentaur);
 					_app->objectSetAccessibilityOff(kObjectDragon);
 					_app->objectSetAccessibilityOff(kObjectPhoenix1);
@@ -4905,7 +4906,7 @@ void EventHandlerRing::onButtonUp2(ObjectId id, uint32 index, Id puzzleRotationI
 	}
 }
 
-void EventHandlerRing::onButtonUp2ZoneWA(ObjectId objectId, uint32 index, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onButtonUp2ZoneWA(ObjectId objectId, uint32 index, Id, uint32, const Common::Point &) {
 	switch (objectId) {
 	default:
 		break;
@@ -4915,7 +4916,7 @@ void EventHandlerRing::onButtonUp2ZoneWA(ObjectId objectId, uint32 index, Id puz
 			if (_app->bagGetClickedObject() >= kObject50451
 			 && _app->bagGetClickedObject() <= kObject50457) {
 
-				_app->objectPresentationSetImageCoordinatesOnPuzzle(_app->bagGetClickedObject(), 0, Common::Point(53 * index / 10 + 162, 37 * index % 10 + 115));
+				_app->objectPresentationSetImageCoordinatesOnPuzzle(_app->bagGetClickedObject(), 0, Common::Point((int16)(53 * index / 10 + 162), (int16)(37 * index % 10 + 115)));
 				_app->varSetDword(index + 51000, _app->bagGetClickedObject());
 				_app->objectSetAccessibilityOn(_app->bagGetClickedObject(), index / 10 + 1 + 7 * index % 10, index / 10 + 1 + 7 * index % 10);
 				_app->objectSetAccessibilityOff(kObjectMagnet, index / 10 + 7 * index % 10, index / 10 + 7 * index % 10);
@@ -5089,7 +5090,7 @@ void EventHandlerRing::onButtonUp2ZoneWA(ObjectId objectId, uint32 index, Id puz
 			_app->objectPresentationShow(objectId, 1);
 			_app->objectSetAccessibilityOff(objectId, 0, 1);
 			_app->varSetFloat(90008, _app->varGetFloat(90008) + 1.0f);
-			_app->varSetDword(50000, index + _app->varGetDword(50000));
+			_app->varSetDword(50000, (int32)index + _app->varGetDword(50000));
 
 			if (_app->varGetDword(50000) == 7654321) {
 				_app->playMovie("1865");
@@ -5233,12 +5234,12 @@ void EventHandlerRing::onButtonUp2ZoneWA(ObjectId objectId, uint32 index, Id puz
 
 #pragma region Keydown
 
-void EventHandlerRing::onKeyDownZone(Common::KeyState keyState) {
+void EventHandlerRing::onKeyDownZone(const Common::KeyState &keyState) {
 	if (_app->getCurrentZone() == kZoneSY)
 		onKeyDownZoneSY(keyState);
 }
 
-void EventHandlerRing::onKeyDownZoneSY(Common::KeyState keyState) {
+void EventHandlerRing::onKeyDownZoneSY(const Common::KeyState &keyState) {
 	if (!_app->hasCurrentPuzzle())
 		return;
 
@@ -5279,7 +5280,7 @@ void EventHandlerRing::onKeyDownZoneSY(Common::KeyState keyState) {
 
 		_app->objectPresentationSetTextToPuzzle(kObjectSaveName, 0, 0, *_app->getSaveManager()->getName());
 		_app->objectPresentationSetTextCoordinatesToPuzzle(kObjectSaveName, 0, 0, Common::Point(344, 181));
-		_app->objectPresentationSetAnimationCoordinatesOnPuzzle(kObjectSaveName, 0, Common::Point(346 + _app->objectPresentationGetTextWidth(kObjectSaveName, 0, 0), 181));
+		_app->objectPresentationSetAnimationCoordinatesOnPuzzle(kObjectSaveName, 0, Common::Point(346 + (int16)_app->objectPresentationGetTextWidth(kObjectSaveName, 0, 0), 181));
 		break;
 	}
 }
@@ -5650,7 +5651,7 @@ void EventHandlerRing::onUpdateBag(const Common::Point &point) {
 		onUpdateBagZoneSY(point);
 }
 
-void EventHandlerRing::onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, uint32, uint32, const Common::Point &) {
 	switch (movabilityFrom) {
 	default:
 		break;
@@ -5677,8 +5678,8 @@ void EventHandlerRing::onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, 
 		break;
 
 	case 4: {
-		int32 val = movabilityTo & 0x80000001;
-		bool state = (val < 0 ? (int32)((val - 1) | 0xFFFFFFFE) == -1 : val == 0);
+		int32 val = (uint32)(movabilityTo) & 0x80000001;
+		bool state = (val < 0 ? ((int32)((val - 1) | 0xFFFFFFFE)) == -1 : val == 0);
 
 		if (state) {
 			_app->objectPresentationHide(kObject4, 2);
@@ -5810,7 +5811,7 @@ void EventHandlerRing::onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, 
 	}
 }
 
-void EventHandlerRing::onUpdateBeforeZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onUpdateBeforeZoneNI(Id movabilityFrom, Id movabilityTo, uint32, uint32, const Common::Point &point) {
 	if (movabilityFrom == 10100 && movabilityTo == 0) {
 		_app->rotationSetActive(10101);
 		_app->objectSetAccessibilityOn(kObject10101, 0, 0);
@@ -5823,7 +5824,7 @@ void EventHandlerRing::onUpdateBeforeZoneNI(Id movabilityFrom, Id movabilityTo, 
 	}
 }
 
-void EventHandlerRing::onUpdateBeforeZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
+void EventHandlerRing::onUpdateBeforeZoneN2(Id movabilityFrom, Id movabilityTo, uint32, uint32, const Common::Point &point) {
 	if (movabilityFrom == 70100 && movabilityTo == 0) {
 		_app->rotationSetActive(70100);
 		_app->objectSetAccessibilityOn(kObject70101, 0, 0);
@@ -5836,7 +5837,7 @@ void EventHandlerRing::onUpdateBeforeZoneN2(Id movabilityFrom, Id movabilityTo, 
 	}
 }
 
-void EventHandlerRing::onUpdateBagZoneSY(const Common::Point &point) {
+void EventHandlerRing::onUpdateBagZoneSY(const Common::Point &) {
 	_app->objectPresentationHide(kObjectMenuNewGame, 0);
 	_app->objectPresentationHide(kObjectMenuPreferences, 0);
 	_app->objectPresentationHide(kObjectMenuLoad, 0);
@@ -5910,21 +5911,21 @@ void EventHandlerRing::onTimerZoneNI(TimerId id) {
 		_app->varSetByte(10432, _app->varGetByte(10432) + 1);
 		if (_app->varGetByte(10432) > 10 && _app->varGetByte(10432) < 70) {
 			_app->objectPresentationHide(kObject10431);
-			_app->objectPresentationShow(kObject10431, (_app->varGetByte(10432) - 10) / 5);
+			_app->objectPresentationShow(kObject10431, ((uint8)_app->varGetByte(10432) - 10) / 5);
 		} else if (_app->varGetByte(10432) == 100) {
 			_app->objectPresentationShow(kObject10431, 12);
 		}
 
-		uint32 mod = (120 - _app->varGetByte(10432)) / 10;
+		uint32 mod = (uint8)(120 - _app->varGetByte(10432)) / 10;
 		if (mod < 5)
 			mod = 5;
 
-		if (!(_app->varGetByte(10432) % mod)) {
+		if (!((uint8)(_app->varGetByte(10432)) % mod)) {
 			_app->soundPlay(10415);
 			_app->objectPresentationShow(kObject10432, rnd(2) + 1);
 		}
 
-		uint32 volume = _app->varGetByte(10432) / 5 + 80;
+		uint32 volume = (uint8)_app->varGetByte(10432) / 5 + 80;
 		if (volume > 100)
 			volume = 100;
 
@@ -5965,7 +5966,7 @@ void EventHandlerRing::onTimerZoneRH(TimerId id) {
 
 	float alp = _app->rotationGetAlp(20401) - 35.0;
 	if (alp > 0.0f && alp < 146.0f) {
-		uint32 frame = (int)(alp * 0.2631578947368421f);
+		uint32 frame = (uint32)(alp * 0.2631578947368421f);
 
 		if (frame >= 1 && frame <= 28 && _frameNumberTimerRH != frame) {
 			_app->objectPresentationSetAnimationActiveFrame(20401, 0, frame);
@@ -6074,7 +6075,7 @@ void EventHandlerRing::onTimerZoneRO(TimerId id) {
 			_app->varSetByte(40601, 10);
 		}
 
-		_app->objectPresentationShow(kObject40101, _app->varGetByte(40806));
+		_app->objectPresentationShow(kObject40101, (uint8)_app->varGetByte(40806));
 		break;
 
 	case kTimer1:
@@ -6085,7 +6086,7 @@ void EventHandlerRing::onTimerZoneRO(TimerId id) {
 			_app->varSetByte(40602, 90);
 		}
 
-		_app->objectPresentationShow(kObject40102, _app->varGetByte(40807));
+		_app->objectPresentationShow(kObject40102, (uint8)_app->varGetByte(40807));
 		break;
 	}
 }
@@ -6184,7 +6185,7 @@ void EventHandlerRing::onBag(ObjectId id, Id target, Id puzzleRotationId, uint32
 	debugC(kRingDebugLogic, "onBag (object: %d)", id.id());
 
 	if (puzzleRotationId == 1 && a4 == 1) {
-		onBagZoneSY(id, target, 1, 1, dragControl, type);
+		onBagZoneSY(id, (uint32)target, 1, 1, dragControl, type);
 		return;
 	}
 
@@ -6196,28 +6197,28 @@ void EventHandlerRing::onBag(ObjectId id, Id target, Id puzzleRotationId, uint32
 		break;
 
 	case kZoneSY:
-		onBagZoneSY(id, target, puzzleRotationId, a4, dragControl, type);
+		onBagZoneSY(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneNI:
-		onBagZoneNI(id, target, puzzleRotationId, a4, dragControl, type);
+		onBagZoneNI(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneFO:
-		onBagZoneFO(id, target, puzzleRotationId, a4, dragControl, type);
+		onBagZoneFO(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneRO:
-		onBagZoneRO(id, target, puzzleRotationId, a4, dragControl, type);
+		onBagZoneRO(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneN2:
-		onBagZoneN2(id, target, puzzleRotationId, a4, dragControl, type);
+		onBagZoneN2(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
 		break;
 	}
 }
 
-void EventHandlerRing::onBagZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
+void EventHandlerRing::onBagZoneSY(ObjectId id, uint32, Id, uint32, DragControl *, byte type) {
 	switch (id) {
 	default:
 		break;
@@ -6244,7 +6245,7 @@ void EventHandlerRing::onBagZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, 
 				_offsetX = 54;
 			}
 
-			_coordX = 5 * _offsetX + 314;
+			_coordX = (int16)(5 * _offsetX + 314);
 			_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderVolume, 0, 0, Common::Point(_coordX, (id == kObjectPreferencesSliderVolume) ? 155 : 212));
 			break;
 
@@ -6260,14 +6261,14 @@ void EventHandlerRing::onBagZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, 
 				_prefsVolume = 100;
 			}
 
-			_coordX = 5 * _offsetX + 314;
+			_coordX = (int16)(5 * _offsetX + 314);
 			_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderVolume, 0, 0, Common::Point(_coordX, (id == kObjectPreferencesSliderVolume) ? 155 : 212));
 			break;
 
 		case 3:
-			_offsetX0 = _app->dragControlGetOffsetX0();
+			_offsetX0 = (int16)_app->dragControlGetOffsetX0();
 			if (_app->dragControlXLower0())
-				_offsetX0 = -(int32)_app->dragControlGetOffsetX0();
+				_offsetX0 = -(int16)_app->dragControlGetOffsetX0();
 
 			_offsetX = (_offsetX0 + _coordX - 314) / 5;
 			if (_offsetX <= 54) {
@@ -6284,7 +6285,7 @@ void EventHandlerRing::onBagZoneSY(ObjectId id, uint32 a2, Id puzzleRotationId, 
 	}
 }
 
-void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
+void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id, uint32, DragControl *, byte type) {
 	switch (id) {
 	default:
 		break;
@@ -6311,7 +6312,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					--_presentationIndexNI;
 
 					_app->objectPresentationHide(kObject10103);
-					_app->objectPresentationShow(kObject10103, _presentationIndexNI);
+					_app->objectPresentationShow(kObject10103, (uint32)_presentationIndexNI);
 
 					handleEvents();
 				}
@@ -6322,7 +6323,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					++_presentationIndexNI;
 
 					_app->objectPresentationHide(kObject10103);
-					_app->objectPresentationShow(kObject10103, _presentationIndexNI);
+					_app->objectPresentationShow(kObject10103, (uint32)_presentationIndexNI);
 
 					handleEvents();
 				}
@@ -6335,7 +6336,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					--_presentationIndexNI;
 
 					_app->objectPresentationHide(kObject10103);
-					_app->objectPresentationShow(kObject10103, _presentationIndexNI);
+					_app->objectPresentationShow(kObject10103, (uint32)_presentationIndexNI);
 
 					handleEvents();
 				}
@@ -6375,7 +6376,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 				}
 
 				_app->objectPresentationHide(kObject10103);
-				_app->objectPresentationShow(10103, _presentationIndexNI);
+				_app->objectPresentationShow(10103, (uint32)_presentationIndexNI);
 
 				if (!_app->soundIsPlaying(10401))
 					_app->soundPlay(10401);
@@ -6474,7 +6475,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 			case 12:
 				// Skip update
 				update = false;
-				return;
+				break;
 			}
 
 			if (update) {
@@ -6489,7 +6490,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					}
 
 					_app->objectPresentationHideAndRemove(kObject10106);
-					_app->objectPresentationShow(kObject10106, _presentationIndexNI + _indexOffsetNI);
+					_app->objectPresentationShow(kObject10106, (uint32)(_presentationIndexNI + _indexOffsetNI));
 					sub_445930();
 
 					handleEvents();
@@ -6497,7 +6498,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 				} while (_presentationIndexNI != 12);
 			}
 
-			_app->varSetWord(10100, _presentationIndexNI);
+			_app->varSetWord(10100, (int16)_presentationIndexNI);
 
 			if (_presentationIndexNI == 12) {
 				_app->varSetByte(10104, 1);
@@ -6576,8 +6577,8 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_presentationIndexNI %= 19;
 
 				_app->objectPresentationHide(kObject10106);
-				_app->objectPresentationShow(kObject10106, _presentationIndexNI + _indexOffsetNI);
-				_app->varSetWord(10100, _presentationIndexNI);
+				_app->objectPresentationShow(kObject10106, (uint32)(_presentationIndexNI + _indexOffsetNI));
+				_app->varSetWord(10100, (int16)_presentationIndexNI);
 				sub_445930();
 			}
 			break;
@@ -6651,7 +6652,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 
 		case 3:
 			if (!_app->dragControlYEqual()) {
-				uint32 index = 0;
+				int32 index = 0;
 
 				if (a2) {
 					index = 13 - _app->dragControlGetOffsetY0() / 3;
@@ -6678,7 +6679,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 
 				sub_445930();
 				_app->objectPresentationHide(kObject10107);
-				_app->objectPresentationShow(kObject10107, index);
+				_app->objectPresentationShow(kObject10107, (uint32)index);
 				sub_445930();
 			}
 			break;
@@ -6704,18 +6705,18 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					--_presentationIndexNI;
 
 					_app->objectPresentationHide(kObject10201);
-					_app->objectPresentationShow(kObject10201, _presentationIndexNI);
+					_app->objectPresentationShow(kObject10201, (uint32)_presentationIndexNI);
 
 					handleEvents();
 				}
 			} else {
 				if (_presentationIndexNI <= 10) {
-					uint32 offset = (_presentationIndexNI >= 6) ? -1 : 1;
+					int32 offset = (_presentationIndexNI >= 6) ? -1 : 1;
 					while (_presentationIndexNI != 6) {
 						_presentationIndexNI += offset;
 
 						_app->objectPresentationHide(kObject10201);
-						_app->objectPresentationShow(kObject10201, _presentationIndexNI);
+						_app->objectPresentationShow(kObject10201, (uint32)_presentationIndexNI);
 
 						handleEvents();
 					}
@@ -6728,7 +6729,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 						--_presentationIndexNI;
 
 						_app->objectPresentationHide(kObject10201);
-						_app->objectPresentationShow(kObject10201, _presentationIndexNI);
+						_app->objectPresentationShow(kObject10201, (uint32)_presentationIndexNI);
 
 						handleEvents();
 					}
@@ -6750,7 +6751,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 						++_presentationIndexNI;
 
 						_app->objectPresentationHide(kObject10201);
-						_app->objectPresentationShow(kObject10201, _presentationIndexNI);
+						_app->objectPresentationShow(kObject10201, (uint32)_presentationIndexNI);
 
 						handleEvents();
 					}
@@ -6763,7 +6764,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 						--_presentationIndexNI;
 
 						_app->objectPresentationHide(kObject10201);
-						_app->objectPresentationShow(kObject10201, _presentationIndexNI);
+						_app->objectPresentationShow(kObject10201, (uint32)_presentationIndexNI);
 
 						handleEvents();
 					}
@@ -6789,7 +6790,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 				}
 
 				_app->objectPresentationHide(kObject10201);
-				_app->objectPresentationShow(10201, _presentationIndexNI);
+				_app->objectPresentationShow(10201, (uint32)_presentationIndexNI);
 
 				if (!_app->soundIsPlaying(10401))
 					_app->soundPlay(10401);
@@ -6859,7 +6860,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					offset = 12;
 
 				_app->objectPresentationHideAndRemove(id);
-				_app->objectPresentationShow(id, offset);
+				_app->objectPresentationShow(id, (uint32)offset);
 
 				if (offset <= 8 || _stateBagNI) {
 					if (offset < 5 && _stateBagNI) {
@@ -6902,7 +6903,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 			break;
 
 		case 2:
-			_app->varSetWord(id - 1, _presentationIndexNI);
+			_app->varSetWord(id - 1, (int16)_presentationIndexNI);
 
 			if (!_app->varGetWord(10600)
 			 && !_app->varGetWord(10601)
@@ -6919,9 +6920,9 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 		case 3:
 			if (!_app->dragControlXEqual()) {
 				if (_app->dragControlXLower0()) {
-					_presentationIndexNI = _app->varGetWord(id - 1) - (_app->dragControlGetOffsetX0() / 12);
+					_presentationIndexNI = _app->varGetWord(id - 1) - ((int32)_app->dragControlGetOffsetX0() / 12);
 				} else if (_app->dragControlXHigher0()) {
-					_presentationIndexNI = _app->varGetWord(id - 1) + (_app->dragControlGetOffsetX0() / 12);
+					_presentationIndexNI = _app->varGetWord(id - 1) + ((int32)_app->dragControlGetOffsetX0() / 12);
 				}
 
 				if (_presentationIndexNI < 0)
@@ -6942,7 +6943,7 @@ void EventHandlerRing::onBagZoneNI(ObjectId id, uint32 a2, Id puzzleRotationId, 
 	}
 }
 
-void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
+void EventHandlerRing::onBagZoneFO(ObjectId id, uint32, Id, uint32, DragControl *, byte type) {
 	if (id != kObject30016)
 		return;
 
@@ -6969,7 +6970,7 @@ void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_app->varSetByte(30016, 0);
 
 				_app->objectPresentationHide(kObject30016);
-				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+				_app->objectPresentationShow(kObject30016, (uint8)_app->varGetByte(30016));
 			}
 
 			if (_app->dragControlXLower() && _app->dragControlYLower()) {
@@ -6979,7 +6980,7 @@ void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_app->varSetByte(30016, 48);
 
 				_app->objectPresentationHide(kObject30016);
-				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+				_app->objectPresentationShow(kObject30016, (uint8)_app->varGetByte(30016));
 			}
 		}
 
@@ -6991,7 +6992,7 @@ void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_app->varSetByte(30016, 0);
 
 				_app->objectPresentationHide(kObject30016);
-				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+				_app->objectPresentationShow(kObject30016, (uint8)_app->varGetByte(30016));
 			}
 
 			if (_app->dragControlXHigher() && _app->dragControlYLower()) {
@@ -7001,7 +7002,7 @@ void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_app->varSetByte(30016, 48);
 
 				_app->objectPresentationHide(kObject30016);
-				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+				_app->objectPresentationShow(kObject30016, (uint8)_app->varGetByte(30016));
 			}
 		}
 
@@ -7013,7 +7014,7 @@ void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_app->varSetByte(30016, 0);
 
 				_app->objectPresentationHide(kObject30016);
-				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+				_app->objectPresentationShow(kObject30016, (uint8)_app->varGetByte(30016));
 			}
 
 			if (_app->dragControlXHigher() && _app->dragControlYHigher()) {
@@ -7023,7 +7024,7 @@ void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_app->varSetByte(30016, 48);
 
 				_app->objectPresentationHide(kObject30016);
-				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+				_app->objectPresentationShow(kObject30016, (uint8)_app->varGetByte(30016));
 			}
 		}
 
@@ -7035,7 +7036,7 @@ void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_app->varSetByte(30016, 0);
 
 				_app->objectPresentationHide(kObject30016);
-				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+				_app->objectPresentationShow(kObject30016, (uint8)_app->varGetByte(30016));
 			}
 
 			if (_app->dragControlXLower() &&_app->dragControlYHigher()) {
@@ -7045,16 +7046,16 @@ void EventHandlerRing::onBagZoneFO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_app->varSetByte(30016, 48);
 
 				_app->objectPresentationHide(kObject30016);
-				_app->objectPresentationShow(kObject30016, _app->varGetByte(30016));
+				_app->objectPresentationShow(kObject30016, (uint8)_app->varGetByte(30016));
 			}
 		}
 
-		_app->soundSetVolume(30500, _app->dragControlGetDistance() + 80.0f);
+		_app->soundSetVolume(30500, _app->dragControlGetDistance() + 80);
 		break;
 	}
 }
 
-void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
+void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id, uint32, DragControl *, byte type) {
 	switch (id) {
 	default:
 		break;
@@ -7092,7 +7093,7 @@ void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_presentationIndexRO += direction;
 
 					_app->objectPresentationHide(kObject40060);
-					_app->objectPresentationShow(kObject40060, _presentationIndexRO);
+					_app->objectPresentationShow(kObject40060, (uint32)_presentationIndexRO);
 
 					handleEvents();
 					if (checkEscape())
@@ -7102,8 +7103,8 @@ void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 			}
 
 			_app->objectSetAccessibilityOff(kObject40060);
-			_app->objectSetAccessibilityOn(kObject40060, _presentationIndexRO / 10, _presentationIndexRO / 10);
-			_app->varSetByte(40804, _presentationIndexRO);
+			_app->objectSetAccessibilityOn(kObject40060, (uint32)_presentationIndexRO / 10, (uint32)_presentationIndexRO / 10);
+			_app->varSetByte(40804, (uint8)_presentationIndexRO);
 			}
 			break;
 
@@ -7123,7 +7124,7 @@ void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 
 			_app->soundSetVolume(40102, _app->dragControlGetOffsetX() / 2 + 80);
 
-			float offset = _app->dragControlGetOffsetX() * 0.1666666666666667f;
+			int32 offset = (int32)(_app->dragControlGetOffsetX() * 0.1666666666666667f);
 
 			if (_app->dragControlXLower())
 				_presentationIndexBagRO += offset;
@@ -7138,7 +7139,7 @@ void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 				_presentationIndexBagRO = _presentationIndexBagRO2;
 
 			_app->objectPresentationHide(kObject40060);
-			_app->objectPresentationShow(kObject40060, _presentationIndexBagRO);
+			_app->objectPresentationShow(kObject40060, (uint32)_presentationIndexBagRO);
 			}
 			break;
 		}
@@ -7175,7 +7176,7 @@ void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_presentationIndexRO += direction;
 
 					_app->objectPresentationHide((ObjectId)(a2 + 40101));
-					_app->objectPresentationShow((ObjectId)(a2 + 40101), _presentationIndexRO);
+					_app->objectPresentationShow((ObjectId)(a2 + 40101), (uint32)_presentationIndexRO);
 
 					handleEvents();
 					if (checkEscape())
@@ -7185,7 +7186,7 @@ void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 			}
 
 			_app->soundStop(40102, 1024);
-			_app->varSetByte(a2 + 40601, _presentationIndexRO);
+			_app->varSetByte(a2 + 40601, (int8)_presentationIndexRO);
 
 			if (_app->varGetByte(40601) == 10
 			 && _app->varGetByte(40602) == 90
@@ -7232,10 +7233,10 @@ void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 				_app->soundSetVolume(40102, _app->dragControlGetOffsetY() / 2 + 80);
 
 				if (_app->dragControlYHigher())
-					_presentationIndexBagRO += _app->dragControlGetOffsetY();
+					_presentationIndexBagRO += (int32)_app->dragControlGetOffsetY();
 
 				if (_app->dragControlYLower())
-					_presentationIndexBagRO -= _app->dragControlGetOffsetY();
+					_presentationIndexBagRO -= (int32)_app->dragControlGetOffsetY();
 
 				if (_presentationIndexBagRO < 0)
 					_presentationIndexBagRO = _presentationIndexBagRO2;
@@ -7244,7 +7245,7 @@ void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_presentationIndexBagRO = 0;
 
 				_app->objectPresentationHide((ObjectId)(a2 + 40101));
-				_app->objectPresentationShow((ObjectId)(a2 + 40101), _presentationIndexBagRO);
+				_app->objectPresentationShow((ObjectId)(a2 + 40101), (uint32)_presentationIndexBagRO);
 				break;
 			}
 
@@ -7255,7 +7256,7 @@ void EventHandlerRing::onBagZoneRO(ObjectId id, uint32 a2, Id puzzleRotationId, 
 	}
 }
 
-void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type) {
+void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id, uint32, DragControl *, byte type) {
 	switch (id) {
 	default:
 		break;
@@ -7282,7 +7283,7 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					--_presentationIndexN2;
 
 					_app->objectPresentationHide(kObject70103);
-					_app->objectPresentationShow(kObject70103, _presentationIndexN2);
+					_app->objectPresentationShow(kObject70103, (uint32)_presentationIndexN2);
 
 					handleEvents();
 				}
@@ -7293,7 +7294,7 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					++_presentationIndexN2;
 
 					_app->objectPresentationHide(kObject70103);
-					_app->objectPresentationShow(kObject70103, _presentationIndexN2);
+					_app->objectPresentationShow(kObject70103, (uint32)_presentationIndexN2);
 
 					handleEvents();
 				}
@@ -7306,7 +7307,7 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					--_presentationIndexN2;
 
 					_app->objectPresentationHide(kObject70103);
-					_app->objectPresentationShow(kObject70103, _presentationIndexN2);
+					_app->objectPresentationShow(kObject70103, (uint32)_presentationIndexN2);
 
 					handleEvents();
 				}
@@ -7334,7 +7335,7 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 				}
 
 				_app->objectPresentationHide(kObject70103);
-				_app->objectPresentationShow(kObject70103, _presentationIndexN2);
+				_app->objectPresentationShow(kObject70103, (uint32)_presentationIndexN2);
 
 				if (!_app->soundIsPlaying(70401))
 					_app->soundPlay(70401);
@@ -7431,7 +7432,7 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 			case 12:
 				// Skip update
 				update = false;
-				return;
+				break;
 			}
 
 			if (update) {
@@ -7446,14 +7447,14 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					}
 
 					_app->objectPresentationHideAndRemove(kObject70106);
-					_app->objectPresentationShow(kObject70106, _presentationIndexN2);
+					_app->objectPresentationShow(kObject70106, (uint32)_presentationIndexN2);
 
 					handleEvents();
 
 				} while (_presentationIndexN2 != 12);
 			}
 
-			_app->varSetWord(70016, offset);
+			_app->varSetWord(70016, (int16)offset);
 
 			if (_presentationIndexN2 == 12 ) {
 				_app->varSetByte(10104, 1);
@@ -7517,8 +7518,8 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_presentationIndexNI %= 19;
 
 				_app->objectPresentationHide(kObject70106);
-				_app->objectPresentationShow(kObject70106, _presentationIndexN2);
-				_app->varSetWord(70016, _presentationIndexN2);
+				_app->objectPresentationShow(kObject70106, (uint32)_presentationIndexN2);
+				_app->varSetWord(70016, (int16)_presentationIndexN2);
 			}
 			break;
 		}
@@ -7542,7 +7543,7 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_app->objectPresentationShow(kObject70108, 13);
 					_app->varSetByte(70012, 1);
 					_app->objectPresentationShow(kObject70108, 14);
-					break;;
+					break;
 				}
 
 				_app->objectPresentationShow(kObject70108, 0);
@@ -7567,7 +7568,7 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					_app->objectPresentationHide(kObject70700);
 					_app->soundStop(70701, 1024);
 					_app->rotationSet3DSoundOff(70200, 70701);
-					break;;
+					break;
 				}
 
 				_app->objectPresentationShow(kObject70108, 0);
@@ -7579,7 +7580,7 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 
 		case 3:
 			if (!_app->dragControlYEqual()) {
-				uint32 offset = 0;
+				int32 offset = 0;
 
 				if (a2) {
 					offset = 13 - _app->dragControlGetOffsetY0() / 3;
@@ -7602,7 +7603,7 @@ void EventHandlerRing::onBagZoneN2(ObjectId id, uint32 a2, Id puzzleRotationId, 
 					offset = 13;
 
 				_app->objectPresentationShow(kObject70108, 14);
-				_app->objectPresentationShow(kObject70108, offset);
+				_app->objectPresentationShow(kObject70108, (uint32)offset);
 			}
 			break;
 		}
@@ -7807,36 +7808,36 @@ void EventHandlerRing::onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 m
 		break;
 
 	case kZoneNI:
-		onBeforeRideZoneNI(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onBeforeRideZoneNI(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneRH:
-		onBeforeRideZoneRH(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onBeforeRideZoneRH(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneFO:
-		onBeforeRideZoneFO(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onBeforeRideZoneFO(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneRO:
-		onBeforeRideZoneRO(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onBeforeRideZoneRO(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneWA:
-		onBeforeRideZoneWA(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onBeforeRideZoneWA(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneAS:
-		onBeforeRideZoneAS(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onBeforeRideZoneAS(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneN2:
-		onBeforeRideZoneN2(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onBeforeRideZoneN2(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 	}
 }
 
-void EventHandlerRing::onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32, MovabilityType movabilityType) {
 	switch (movabilityType) {
 	default:
 		break;
@@ -7923,12 +7924,12 @@ void EventHandlerRing::onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, ui
 	}
 }
 
-void EventHandlerRing::onBeforeRideZoneRH(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onBeforeRideZoneRH(Id movabilityFrom, Id, uint32, uint32, MovabilityType) {
 	if (movabilityFrom == 20401)
 		_app->timerStop(kTimer0);
 }
 
-void EventHandlerRing::onBeforeRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onBeforeRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32, uint32, MovabilityType movabilityType) {
 	switch (movabilityType) {
 	default:
 		break;
@@ -8066,7 +8067,7 @@ void EventHandlerRing::onBeforeRideZoneFO(Id movabilityFrom, Id movabilityTo, ui
 	}
 }
 
-void EventHandlerRing::onBeforeRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onBeforeRideZoneRO(Id movabilityFrom, Id, uint32, uint32, MovabilityType movabilityType) {
 	if (movabilityType != kMovabilityPuzzleToRotation)
 		return;
 
@@ -8077,7 +8078,7 @@ void EventHandlerRing::onBeforeRideZoneRO(Id movabilityFrom, Id movabilityTo, ui
 		if (_app->varGetByte(40804) > 4) {
 			do {
 				_app->objectPresentationHide(kObject40060);
-				_app->objectPresentationShow(kObject40060, _app->varGetByte(40804));
+				_app->objectPresentationShow(kObject40060, (uint8)_app->varGetByte(40804));
 
 				handleEvents();
 
@@ -8106,7 +8107,7 @@ void EventHandlerRing::onBeforeRideZoneRO(Id movabilityFrom, Id movabilityTo, ui
 	}
 }
 
-void EventHandlerRing::onBeforeRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onBeforeRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32, uint32, MovabilityType movabilityType) {
 	if (movabilityType != kMovabilityRotationToRotation)
 		return;
 
@@ -8144,7 +8145,7 @@ void EventHandlerRing::onBeforeRideZoneWA(Id movabilityFrom, Id movabilityTo, ui
 	}
 }
 
-void EventHandlerRing::onBeforeRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onBeforeRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32, uint32, MovabilityType movabilityType) {
 	if (movabilityType != kMovabilityPuzzleToRotation)
 		return;
 
@@ -8183,7 +8184,7 @@ void EventHandlerRing::onBeforeRideZoneAS(Id movabilityFrom, Id movabilityTo, ui
 	}
 }
 
-void EventHandlerRing::onBeforeRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onBeforeRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32, uint32, MovabilityType movabilityType) {
 	if (movabilityFrom == 70000 || movabilityFrom == 70001)
 		_app->timerStop(kTimer0);
 
@@ -8206,39 +8207,39 @@ void EventHandlerRing::onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 mo
 		break;
 
 	case kZoneNI:
-		onAfterRideZoneNI(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onAfterRideZoneNI(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneRH:
-		onAfterRideZoneRH(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onAfterRideZoneRH(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneFO:
-		onAfterRideZoneFO(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onAfterRideZoneFO(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneRO:
-		onAfterRideZoneRO(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onAfterRideZoneRO(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneWA:
-		onAfterRideZoneWA(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onAfterRideZoneWA(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneAS:
-		onAfterRideZoneAS(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onAfterRideZoneAS(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 
 	case kZoneN2:
-		onAfterRideZoneN2(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
+		onAfterRideZoneN2(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
 		break;
 	}
 }
 
-void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
-	if (a4 == 100) {
+void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32, uint32 target, MovabilityType movabilityType) {
+	if (target == 100) {
 		_app->rotationSetMovabilityOff(movabilityFrom, 0, 0);
-	} else if (a4 == 110) {
+	} else if (target == 110) {
 		if (_app->soundIsPlaying(10800))
 			_app->soundStop(10800, 1024);
 
@@ -8282,7 +8283,7 @@ void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uin
 			}
 		}
 
-		switch (a4) {
+		switch (target) {
 		default:
 			break;
 
@@ -8366,7 +8367,7 @@ void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uin
 		break;
 
 	case kMovabilityPuzzleToPuzzle:
-		if (a4 == 55) {
+		if (target == 55) {
 			_app->playMovie("1537");
 			_app->puzzleSetActive(kPuzzle12001);
 			_app->soundPlay(12001);
@@ -8375,7 +8376,7 @@ void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uin
 	}
 }
 
-void EventHandlerRing::onAfterRideZoneRH(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onAfterRideZoneRH(Id movabilityFrom, Id, uint32, uint32, MovabilityType movabilityType) {
 	if (movabilityFrom == 20401)
 		_app->timerStart(kTimer0, 50);
 
@@ -8423,7 +8424,7 @@ void EventHandlerRing::onAfterRideZoneRH(Id movabilityFrom, Id movabilityTo, uin
 	}
 }
 
-void EventHandlerRing::onAfterRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onAfterRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32, uint32, MovabilityType movabilityType) {
 	switch (movabilityType) {
 	default:
 		break;
@@ -8508,7 +8509,7 @@ void EventHandlerRing::onAfterRideZoneFO(Id movabilityFrom, Id movabilityTo, uin
 	}
 }
 
-void EventHandlerRing::onAfterRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onAfterRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32, uint32, MovabilityType movabilityType) {
 	switch (movabilityType) {
 	default:
 		break;
@@ -8530,7 +8531,7 @@ void EventHandlerRing::onAfterRideZoneRO(Id movabilityFrom, Id movabilityTo, uin
 	}
 }
 
-void EventHandlerRing::onAfterRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onAfterRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32, uint32, MovabilityType movabilityType) {
 	if (movabilityType != kMovabilityRotationToRotation)
 		return;
 
@@ -8620,22 +8621,22 @@ void EventHandlerRing::onAfterRideZoneWA(Id movabilityFrom, Id movabilityTo, uin
 	}
 }
 
-void EventHandlerRing::onAfterRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onAfterRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32, uint32, MovabilityType movabilityType) {
 	if (movabilityType == kMovabilityPuzzleToRotation && movabilityFrom == 80101)
 		if (movabilityTo == 80006 || movabilityTo == 80007 || movabilityTo == 80008
 		 || movabilityTo == 80009 || movabilityTo == 80010)
 			_app->varSetByte(80003, 0);
 }
 
-void EventHandlerRing::onAfterRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType) {
+void EventHandlerRing::onAfterRideZoneN2(Id movabilityFrom, Id, uint32, uint32 target, MovabilityType movabilityType) {
 	if (movabilityFrom == 70000 || movabilityFrom == 70001)
 		if (!_app->varGetByte(70012))
 			_app->timerStart(kTimer0, 10000);
 
 	if (movabilityType == kMovabilityRotationToRotation) {
-		if (a4 == 7)
+		if (target == 7)
 			sub_433EE0();
-		else if (a4 == 16)
+		else if (target == 16)
 			_app->exitToMenu(1);
 	}
 }
@@ -8688,7 +8689,7 @@ void EventHandlerRing::onSound(Id id, SoundType type, uint32 a3) {
 	}
 }
 
-void EventHandlerRing::onSoundZoneSY(Id id, SoundType type, uint32 a3, bool process) {
+void EventHandlerRing::onSoundZoneSY(Id id, SoundType, uint32, bool process) {
 	if (!process)
 		return;
 
@@ -8699,7 +8700,7 @@ void EventHandlerRing::onSoundZoneSY(Id id, SoundType type, uint32 a3, bool proc
 	}
 }
 
-void EventHandlerRing::onSoundZoneNI(Id id, SoundType type, uint32 a3, bool process) {
+void EventHandlerRing::onSoundZoneNI(Id id, SoundType, uint32, bool process) {
 	if (!process)
 		return;
 
@@ -8889,7 +8890,7 @@ void EventHandlerRing::onSoundZoneNI(Id id, SoundType type, uint32 a3, bool proc
 	}
 }
 
-void EventHandlerRing::onSoundZoneRH(Id id, SoundType type, uint32 a3, bool process) {
+void EventHandlerRing::onSoundZoneRH(Id id, SoundType, uint32, bool process) {
 	if (!process)
 		return;
 
@@ -9052,7 +9053,7 @@ void EventHandlerRing::onSoundZoneRH(Id id, SoundType type, uint32 a3, bool proc
 	}
 }
 
-void EventHandlerRing::onSoundZoneFO(Id id, SoundType type, uint32 a3, bool process) {
+void EventHandlerRing::onSoundZoneFO(Id id, SoundType, uint32, bool process) {
 	if (!process)
 		return;
 
@@ -9294,7 +9295,7 @@ void EventHandlerRing::onSoundZoneFO(Id id, SoundType type, uint32 a3, bool proc
 	}
 }
 
-void EventHandlerRing::onSoundZoneRO(Id id, SoundType type, uint32 a3, bool process) {
+void EventHandlerRing::onSoundZoneRO(Id id, SoundType, uint32, bool process) {
 	if (!process)
 		return;
 
@@ -9401,7 +9402,7 @@ void EventHandlerRing::onSoundZoneRO(Id id, SoundType type, uint32 a3, bool proc
 	}
 }
 
-void EventHandlerRing::onSoundZoneWA(Id id, SoundType type, uint32 a3, bool process) {
+void EventHandlerRing::onSoundZoneWA(Id id, SoundType, uint32, bool process) {
 	if (!process)
 		return;
 
@@ -9565,7 +9566,7 @@ void EventHandlerRing::onSoundZoneWA(Id id, SoundType type, uint32 a3, bool proc
 	}
 }
 
-void EventHandlerRing::onSoundZoneAS(Id id, SoundType type, uint32 a3, bool process) {
+void EventHandlerRing::onSoundZoneAS(Id id, SoundType, uint32, bool process) {
 	if (!process)
 		return;
 
@@ -9677,7 +9678,7 @@ void EventHandlerRing::onSoundZoneAS(Id id, SoundType type, uint32 a3, bool proc
 	}
 }
 
-void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool process) {
+void EventHandlerRing::onSoundZoneN2(Id id, SoundType, uint32, bool process) {
 	if (!process)
 		return;
 
@@ -9707,7 +9708,7 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 	case 71002:
 	case 71003:
 		_app->playMovie(Common::String::format("N2_%dA", _app->varGetByte(70014)));
-		_app->objectPresentationShow(kObject70001, _app->varGetByte(70014) - 1);
+		_app->objectPresentationShow(kObject70001, (uint8)_app->varGetByte(70014) - 1);
 		break;
 
 	case 72001:
@@ -9778,7 +9779,7 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 	case 70052:
 	case 70053:
 	case 70054: {
-		byte index = _app->varGetByte(70013);
+		int8 index = _app->varGetByte(70013);
 		char str = _app->varGetString(70099)[index];
 		if (str > '0')
 			_app->puzzleSetActive((PuzzleId)(str + 70551));
@@ -9813,7 +9814,7 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 	case 70063:
 	case 70064:
 	case 70065: {
-		byte index = _app->varGetByte(70013);
+		int8 index = _app->varGetByte(70013);
 		char str = _app->varGetString(70099)[index];
 		_app->puzzleSetActive((PuzzleId)(str + 70251));
 
@@ -9855,7 +9856,7 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType type, uint32 a3, bool proc
 	case 71001:
 		_app->playMovie(Common::String::format("N2_%dA", _app->varGetByte(70014)));
 		_app->objectSetAccessibilityOn(kObjectCentaur, 1, 1);
-		_app->objectPresentationShow(kObject70001, _app->varGetByte(70014) - 1);
+		_app->objectPresentationShow(kObject70001, (uint8)_app->varGetByte(70014) - 1);
 		break;
 
 	case 71010:
@@ -9961,7 +9962,7 @@ void EventHandlerRing::onAnimationNextFrame(Id animationId, const Common::String
 	}
 }
 
-void EventHandlerRing::onAnimationNextFrameZoneNI(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+void EventHandlerRing::onAnimationNextFrameZoneNI(Id animationId, const Common::String &, uint32 frame, uint32) {
 	switch (animationId) {
 	default:
 		break;
@@ -10178,7 +10179,7 @@ void EventHandlerRing::onAnimationNextFrameZoneNI(Id animationId, const Common::
 	}
 }
 
-void EventHandlerRing::onAnimationNextFrameZoneRH(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+void EventHandlerRing::onAnimationNextFrameZoneRH(Id animationId, const Common::String &, uint32 frame, uint32) {
 	switch (animationId){
 	default:
 		break;
@@ -10198,7 +10199,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRH(Id animationId, const Common::
 	}
 }
 
-void EventHandlerRing::onAnimationNextFrameZoneFO(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+void EventHandlerRing::onAnimationNextFrameZoneFO(Id animationId, const Common::String &, uint32 frame, uint32) {
 	switch (animationId) {
 	default:
 		break;
@@ -10310,7 +10311,7 @@ void EventHandlerRing::onAnimationNextFrameZoneFO(Id animationId, const Common::
 	}
 }
 
-void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::String &, uint32 frame, uint32) {
 	switch (animationId) {
 	default:
 		break;
@@ -10348,11 +10349,11 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 					_app->varSetByte(40802, 1);
 					_app->varSetString(40901, "0000000");
 					_app->soundPlay(40400);
-					_app->varSetFloat(90006, 85.69999694824219);
+					_app->varSetFloat(90006, 85.7f);
 					_app->objectSetAccessibilityOff(kObject40060);
 					_app->objectSetAccessibilityOff(kObject40201);
 
-					for (int i = 10; i > 0; i--) {
+					for (uint32 i = 10; i > 0; i--) {
 						_app->objectPresentationHide(kObject40060);
 						_app->objectPresentationShow(kObject40060, i);
 						handleEvents();
@@ -10365,13 +10366,13 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 			break;
 		}
 
-		_app->varSetByte(40911, frame);
+		_app->varSetByte(40911, (int8)frame);
 		return;
 
 	case 40101:
 		switch (frame) {
 		default:
-			_app->varSetByte(40912, frame);
+			_app->varSetByte(40912, (int8)frame);
 			break;
 
 		case 1:
@@ -10388,10 +10389,10 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 
 			if (_app->varGetByte(40201)) {
 				_app->soundPlay(40201);
-				_app->varSetByte(40912, frame);
+				_app->varSetByte(40912, (int8)frame);
 			} else {
 				_app->soundPlay(40301);
-				_app->varSetByte(40912, frame);
+				_app->varSetByte(40912, (int8)frame);
 			}
 			break;
 
@@ -10399,7 +10400,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 			_app->objectSetAccessibilityOn(kObject40060, 2, 2);
 			_app->objectSetAccessibilityOn(kObject40201);
 			_app->puzzleSetMovabilityOn(kPuzzle40060, 0, 0);
-			_app->varSetByte(40912, frame);
+			_app->varSetByte(40912, (int8)frame);
 			break;
 		}
 		break;
@@ -10407,7 +10408,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 	case 40102:
 		switch (frame) {
 		default:
-			_app->varSetByte(40913, frame);
+			_app->varSetByte(40913, (int8)frame);
 			break;
 
 		case 1:
@@ -10424,10 +10425,10 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 
 			if (_app->varGetByte(40202)) {
 				_app->soundPlay(40202);
-				_app->varSetByte(40913, frame);
+				_app->varSetByte(40913, (int8)frame);
 			} else {
 				_app->soundPlay(40302);
-				_app->varSetByte(40913, frame);
+				_app->varSetByte(40913, (int8)frame);
 			}
 			break;
 
@@ -10435,7 +10436,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 			_app->objectSetAccessibilityOn(kObject40060, 3, 3);
 			_app->objectSetAccessibilityOn(kObject40201);
 			_app->puzzleSetMovabilityOn(kPuzzle40060, 0, 0);
-			_app->varSetByte(40913, frame);
+			_app->varSetByte(40913, (int8)frame);
 			break;
 		}
 		break;
@@ -10443,7 +10444,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 	case 40103:
 		switch (frame) {
 		default:
-			_app->varSetByte(40914, frame);
+			_app->varSetByte(40914, (int8)frame);
 			break;
 
 		case 1:
@@ -10461,10 +10462,10 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 
 			if (_app->varGetByte(40203)) {
 				_app->soundPlay(40203);
-				_app->varSetByte(40914, frame);
+				_app->varSetByte(40914, (int8)frame);
 			} else {
 				_app->soundPlay(40303);
-				_app->varSetByte(40914, frame);
+				_app->varSetByte(40914, (int8)frame);
 			}
 			break;
 
@@ -10472,7 +10473,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 			_app->objectSetAccessibilityOn(kObject40060, 4, 4);
 			_app->objectSetAccessibilityOn(kObject40201);
 			_app->puzzleSetMovabilityOn(kPuzzle40060, 0, 0);
-			_app->varSetByte(40914, frame);
+			_app->varSetByte(40914, (int8)frame);
 			break;
 		}
 		break;
@@ -10480,7 +10481,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 	case 40104:
 		switch (frame) {
 		default:
-			_app->varSetByte(40915, frame);
+			_app->varSetByte(40915, (int8)frame);
 			break;
 
 		case 1:
@@ -10497,10 +10498,10 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 
 			if (_app->varGetByte(40204)) {
 				_app->soundPlay(40204);
-				_app->varSetByte(40915, frame);
+				_app->varSetByte(40915, (int8)frame);
 			} else {
 				_app->soundPlay(40304);
-				_app->varSetByte(40915, frame);
+				_app->varSetByte(40915, (int8)frame);
 			}
 			break;
 
@@ -10508,7 +10509,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 			_app->objectSetAccessibilityOn(kObject40060, 5, 5);
 			_app->objectSetAccessibilityOn(kObject40201);
 			_app->puzzleSetMovabilityOn(kPuzzle40060, 0, 0);
-			_app->varSetByte(40915, frame);
+			_app->varSetByte(40915, (int8)frame);
 			break;
 		}
 		break;
@@ -10516,7 +10517,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 	case 40105:
 		switch (frame) {
 		default:
-			_app->varSetByte(40916, frame);
+			_app->varSetByte(40916, (int8)frame);
 			break;
 
 		case 1:
@@ -10533,10 +10534,10 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 
 			if (_app->varGetByte(40205)) {
 				_app->soundPlay(40205);
-				_app->varSetByte(40916, frame);
+				_app->varSetByte(40916, (int8)frame);
 			} else {
 				_app->soundPlay(40305);
-				_app->varSetByte(40916, frame);
+				_app->varSetByte(40916, (int8)frame);
 			}
 			break;
 
@@ -10544,7 +10545,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 			_app->objectSetAccessibilityOn(kObject40060, 6, 6);
 			_app->objectSetAccessibilityOn(kObject40201);
 			_app->puzzleSetMovabilityOn(kPuzzle40060, 0, 0);
-			_app->varSetByte(40916, frame);
+			_app->varSetByte(40916, (int8)frame);
 			break;
 		}
 		break;
@@ -10552,7 +10553,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 	case 40106:
 		switch (frame) {
 		default:
-			_app->varSetByte(40917, frame);
+			_app->varSetByte(40917, (int8)frame);
 			break;
 
 		case 1:
@@ -10570,10 +10571,10 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 
 			if (_app->varGetByte(40206)) {
 				_app->soundPlay(40206);
-				_app->varSetByte(40917, frame);
+				_app->varSetByte(40917, (int8)frame);
 			} else {
 				_app->soundPlay(40306);
-				_app->varSetByte(40917, frame);
+				_app->varSetByte(40917, (int8)frame);
 			}
 			break;
 
@@ -10581,7 +10582,7 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 			_app->objectSetAccessibilityOn(kObject40060, 7, 7);
 			_app->objectSetAccessibilityOn(kObject40201);
 			_app->puzzleSetMovabilityOn(kPuzzle40060, 0, 0);
-			_app->varSetByte(40917, frame);
+			_app->varSetByte(40917, (int8)frame);
 			break;
 		}
 		break;
@@ -10593,20 +10594,20 @@ void EventHandlerRing::onAnimationNextFrameZoneRO(Id animationId, const Common::
 	case 40205:
 	case 40206:
 	case 40207:
-		_app->varSetByte(frame + 700, frame); // id: frame + 700 = 4090x
+		_app->varSetByte(frame + 700, (int8)frame); // id: frame + 700 = 4090x
 
 		if (_app->varGetByte(40901) == 26 && _app->varGetByte(40902) == 26 && _app->varGetByte(40903) == 26 && _app->varGetByte(40904) == 26 \
 		 && _app->varGetByte(40905) == 26 && _app->varGetByte(40906) == 26 && _app->varGetByte(40907) == 26 && _app->varGetByte(40911) == 70 \
 		 && _app->varGetByte(40912) == 70 && _app->varGetByte(40913) == 70 && _app->varGetByte(40914) == 70 && _app->varGetByte(40915) == 70 \
 		 && _app->varGetByte(40916) == 70 && _app->varGetByte(40917) == 70) {
-			_app->objectSetAccessibilityOn(kObject40060, _app->varGetByte(40804) / 10, _app->varGetByte(40804) / 10);
+			_app->objectSetAccessibilityOn(kObject40060, (uint8)_app->varGetByte(40804) / 10, (uint8)_app->varGetByte(40804) / 10);
 			_app->puzzleSetMovabilityOn(kPuzzle40060, 0, 0);
 		}
 		break;
 	}
 }
 
-void EventHandlerRing::onAnimationNextFrameZoneWA(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+void EventHandlerRing::onAnimationNextFrameZoneWA(Id animationId, const Common::String &, uint32 frame, uint32) {
 	if (animationId == 50001) {
 		if (_app->varGetByte(50007) == 1 && _app->varGetByte(50009) == 1) {
 			if (frame == 35 || frame == 12) {
@@ -10664,20 +10665,20 @@ void EventHandlerRing::onAnimationNextFrameZoneWA(Id animationId, const Common::
 	}
 }
 
-void EventHandlerRing::onAnimationNextFrameZoneAS(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+void EventHandlerRing::onAnimationNextFrameZoneAS(Id animationId, const Common::String &, uint32 frame, uint32) {
 	if (animationId == 80001) {
-		if (frame == _app->varGetByte(80004)) {
+		if ((int32)frame == _app->varGetByte(80004)) {
 			_app->objectPresentationPauseAnimation(kObject80018, 1);
 			_app->objectSetAccessibilityOn(kObject80021, 0, 4);
 			_app->soundStop(80210, 1024);
 			_app->soundPlay(80209);
 		}
 
-		_app->varSetByte(80005, frame);
+		_app->varSetByte(80005, (int8)frame);
 	}
 }
 
-void EventHandlerRing::onAnimationNextFrameZoneN2(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
+void EventHandlerRing::onAnimationNextFrameZoneN2(Id animationId, const Common::String &, uint32 frame, uint32) {
 	switch (animationId) {
 	default:
 		break;
@@ -10884,7 +10885,7 @@ void EventHandlerRing::onAnimation(uint32 type, Id animationId, const Common::St
 		onAnimationZoneWA(type, animationId, name, frame, a5);
 }
 
-void EventHandlerRing::onAnimationZoneWA(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5) {
+void EventHandlerRing::onAnimationZoneWA(uint32 type, Id animationId, const Common::String &, uint32, uint32) {
 	switch (animationId) {
 	default:
 		break;
@@ -11103,7 +11104,7 @@ void EventHandlerRing::onVisualList(Id id, uint32 type, const Common::Point &poi
 		onVisualListZoneSY(id, type, point);
 }
 
-void EventHandlerRing::onVisualListZoneSY(Id id, uint32 type, const Common::Point &point) {
+void EventHandlerRing::onVisualListZoneSY(Id id, uint32 type, const Common::Point &) {
 	if (id == 1) {
 		if (type > 0 && type <= 3) {
 			_app->objectPresentationHide(kObjectLoadOk, 0);
@@ -11156,7 +11157,7 @@ void EventHandlerRing::sub_4340C0() {
 	_app->puzzleSet3DSoundOn(kPuzzle70410, 70412);
 	_app->rotationSet3DSoundOn(70400, 70412);
 
-	for (int i = 70; i < 95; i--) {
+	for (int i = 70; i < 95; i++) {
 		_app->puzzleSet3DSoundVolume(kPuzzle70411, 70412, i);
 		handleEvents();
 	}
@@ -11175,7 +11176,7 @@ void EventHandlerRing::sub_445930() {
 
 		_app->objectPresentationHide(kObject10106);
 		_app->objectPresentationShow(kObject10106, 38);
-		_app->objectPresentationShow(kObject10106, _app->varGetWord(10100) + 19);
+		_app->objectPresentationShow(kObject10106, (uint16)_app->varGetWord(10100) + 19);
 
 		if (!_app->varGetWord(10100)) {
 			_app->objectPresentationShow(kObject10106, 39);
@@ -11184,14 +11185,14 @@ void EventHandlerRing::sub_445930() {
 
 	} else {
 		_app->objectPresentationHide(kObject10106);
-		_app->objectPresentationShow(kObject10106, _app->varGetWord(10100));
+		_app->objectPresentationShow(kObject10106, (uint16)_app->varGetWord(10100));
 		_app->varSetByte(10106, 0);
 	}
 }
 
 void EventHandlerRing::sub_445A10() {
-	uint32 val1 = _app->varGetByte(10106) + _app->varGetByte(10431);
-	uint32 val2 = _app->varGetByte(10420) + _app->varGetByte(10421);
+	int32 val1 = _app->varGetByte(10106) + _app->varGetByte(10431);
+	int32 val2 = _app->varGetByte(10420) + _app->varGetByte(10421);
 
 	if (!_app->varGetByte(10107)) {
 
@@ -11243,13 +11244,13 @@ void EventHandlerRing::sub_445A10() {
 	}
 }
 
-void EventHandlerRing::waitTicks(uint32 ticks) {
+void EventHandlerRing::waitTicks(uint32 ticks) const {
 	uint32 startTicks = g_system->getMillis();
 	while (g_system->getMillis() - startTicks < ticks)
 		handleEvents();
 }
 
-bool EventHandlerRing::copySavedTimers(uint32 slot) {
+bool EventHandlerRing::copySavedTimers(uint32 slot) const {
 	if (!g_engine->getSaveFileManager()->copySavefile(SaveManager::getTimerFile("ALB", 0), SaveManager::getTimerFile("ALB", slot)))
 		return false;
 
@@ -11265,7 +11266,7 @@ bool EventHandlerRing::copySavedTimers(uint32 slot) {
 	return true;
 }
 
-bool EventHandlerRing::removeSavedTimers(uint32 slot) {
+bool EventHandlerRing::removeSavedTimers(uint32 slot) const {
 	if (!g_engine->getSaveFileManager()->removeSavefile(SaveManager::getTimerFile("ALB", slot)))
 		return false;
 

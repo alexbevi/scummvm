@@ -166,6 +166,8 @@ bool Debugger::cmdListFiles(int argc, const char **argv) {
 		DebugPrintf("Number of matches: %d\n", count);
 		for (Common::ArchiveMemberList::iterator it = list.begin(); it != list.end(); ++it)
 			DebugPrintf(" %s\n", (*it)->getName().c_str());
+
+		delete archive;
 	} else {
 		DebugPrintf("Syntax: ls <filter> (<archive>) (use * for all) \n");
 	}
@@ -245,7 +247,7 @@ void Debugger::dumpFile(Common::String filename) {
 		Common::String name = (*it)->getName();
 		Common::SeekableReadStream *stream = archive->createReadStreamForMember(name);
 
-		byte *data = (byte *)calloc(stream->size(), 1);
+		byte *data = (byte *)calloc((size_t)stream->size(), 1);
 		if (!data) {
 			DebugPrintf("Cannot allocated data for file %s (size: %d)", name.c_str(), stream->size());
 			delete archive;
@@ -253,8 +255,8 @@ void Debugger::dumpFile(Common::String filename) {
 			return;
 		}
 
-		memset(data, 0, stream->size());
-		stream->read(data, stream->size());
+		memset(data, 0, (size_t)stream->size());
+		stream->read(data, (size_t)stream->size());
 
 		Common::String outPath = dumpPath;
 		Common::String outFilename = name;
@@ -309,10 +311,13 @@ bool Debugger::cmdShow(int argc, const char ** argv) {
 		Image *image = new Image();
 		if (!image->load(filename, kArchiveFile, kZoneNone, kLoadFromDisk)) {
 			DebugPrintf("Cannot load image: %s", filename.c_str());
+
+			delete image;
 			return true;
 		}
 
 		_engine->getApplication()->_screenManager->drawImage(image, Common::Point(0, 0), image->getWidth(), image->getHeight(), 0, 0);
+		delete image;
 
 		// Refresh screen
 		_engine->getApplication()->_screenManager->updateScreen();
@@ -324,10 +329,13 @@ bool Debugger::cmdShow(int argc, const char ** argv) {
 		Image *image = new Image();
 		if (!image->load(filename, kArchiveArt, (Zone)getNumber(argv[2]), kLoadFromDisk)) {
 			DebugPrintf("Cannot load image: %s", filename.c_str());
+
+			delete image;
 			return true;
 		}
 
 		_engine->getApplication()->_screenManager->drawImage(image, Common::Point(0, 0), image->getWidth(), image->getHeight(), 0, 0);
+		delete image;
 
 		// Refresh screen
 		_engine->getApplication()->_screenManager->updateScreen();

@@ -350,7 +350,7 @@ void ApplicationRing::draw() {
 
 	case kStateUpdatePuzzle:
 		_puzzle->alloc();
-		_puzzle->update(_screenManager);
+		_puzzle->update();
 		break;
 
 	case kStateDrawBag:
@@ -369,7 +369,7 @@ void ApplicationRing::draw() {
 		Puzzle *puzzleMenu = _puzzles.get(kPuzzleMenu);
 
 		puzzleMenu->alloc();
-		puzzleMenu->update(_screenManager);
+		puzzleMenu->update();
 	}
 
 	// Draw bag
@@ -409,7 +409,7 @@ void ApplicationRing::messageInsertCd(Zone zone) {
 	objectPresentationShow(kObject90912, 0);
 	objectSetAccessibilityOff(kObject90912);
 	objectSetAccessibilityOn(kObject90912, zone, zone);
-	puzzleSetActive(kPuzzleInsertCd, 1, 1);
+	puzzleSetActive(kPuzzleInsertCd);
 }
 
 void ApplicationRing::messageShowWarning(uint32 accelerationIndex) {
@@ -513,7 +513,7 @@ bool ApplicationRing::isDataPresent(SetupType type) {
 	return false;
 }
 
-uint32 ApplicationRing::getCdForZone(Zone zone) {
+uint32 ApplicationRing::getCdForZone(Zone zone) const {
 	if (!_configuration.checkCD)
 		return 1;
 

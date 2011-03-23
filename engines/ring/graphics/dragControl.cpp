@@ -50,14 +50,15 @@ DragControl::DragControl() {
 }
 
 DragControl::~DragControl() {
-	reset();
+	_object = NULL;
+	_hotspot2 = NULL;
 
 	SAFE_DELETE(_hotspot);
 }
 
-void DragControl::init(Common::Point coords, ObjectId objectId, uint32 accessibilityIndex, Hotspot *hostpot, Id target, Id puzzleRotationId, uint32 a7) {
+void DragControl::init(const Common::Point &coords, const ObjectId &objectId, uint32 accessibilityIndex, Hotspot *hostpot, Id target, Id puzzleRotationId, uint32 a7) {
 	_coords0 = _coords1 = _oldCoords = _currentCoords = coords;
-	_field_20 = 1;
+	_field_20 = true;
 	_objectId = objectId;
 	_accessibilityIndex = accessibilityIndex;
 	_object = getApp()->getObject(objectId);
@@ -74,7 +75,7 @@ void DragControl::init(Common::Point coords, ObjectId objectId, uint32 accessibi
 
 void DragControl::reset() {
 	_coords0 = _coords1 = _oldCoords = _currentCoords = Common::Point(0, 0);
-	_field_20 = 0;
+	_field_20 = false;
 	_objectId = kObjectInvalid;
 	_accessibilityIndex = 0;
 	_object = NULL;
@@ -98,16 +99,16 @@ void DragControl::updateCoordinates(const Common::Point &point) {
 	++_field_41;
 }
 
-uint32 DragControl::getOffsetX() {
-	return abs(_currentCoords.x - _oldCoords.x);
+uint32 DragControl::getOffsetX() const {
+	return (uint32)abs(_currentCoords.x - _oldCoords.x);
 }
 
-uint32 DragControl::getOffsetY() {
-	return abs(_currentCoords.y - _oldCoords.y);
+uint32 DragControl::getOffsetY() const {
+	return (uint32)abs(_currentCoords.y - _oldCoords.y);
 }
 
-uint32 DragControl::getDistance() {
-	return sqrt(pow((double)getOffsetX(), 2) + pow((double)getOffsetY(), 2));
+uint32 DragControl::getDistance() const {
+	return (uint32)sqrt(pow((double)getOffsetX(), 2) + pow((double)getOffsetY(), 2));
 }
 
 void DragControl::setHotspot(const Common::Rect &rect) {

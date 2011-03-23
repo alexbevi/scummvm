@@ -70,7 +70,7 @@ void VisualElementRing::alloc() {
 	_initialized = true;
 }
 
-void VisualElementRing::setupProgress(Id progressId, uint32 textIndex, float *width) {
+void VisualElementRing::setupProgress(Id progressId, uint32 textIndex, float *width) const {
 	float progress = getApp()->varGetFloat(progressId);
 	if (progress > 100.0f)
 		progress = 100.0f;
@@ -80,7 +80,7 @@ void VisualElementRing::setupProgress(Id progressId, uint32 textIndex, float *wi
 
 	getApp()->objectPresentationSetTextToPuzzle(kObjectStatusProgress, 0, textIndex, Common::String::format("%3.1f", progress));
 
-	*width = ceil(_progressMultiplier * progress * 0.01);
+	*width = (float)ceil(_progressMultiplier * progress * 0.01);
 }
 
 void VisualElementRing::dealloc() {
@@ -102,10 +102,10 @@ void VisualElementRing::draw() {
 	if (!_visible)
 		return;
 
-	getApp()->getScreenManager()->drawRectangle(Common::Rect(_left, _top,                    _left + _progress1, _top + _height),                    _progressColor);
-	getApp()->getScreenManager()->drawRectangle(Common::Rect(_left, _top + _offsetY + 1,     _left + _progress2, _top + _offsetY + _height + 1),     _progressColor);
-	getApp()->getScreenManager()->drawRectangle(Common::Rect(_left, _top + 2 * _offsetY + 1, _left + _progress3, _top + 2 * _offsetY + _height + 1), _progressColor);
-	getApp()->getScreenManager()->drawRectangle(Common::Rect(_left, _top + 3 * _offsetY - 1, _left + _progress4, _top + 3 * _offsetY + _height - 1), _progressColor);
+	getApp()->getScreenManager()->drawRectangle(Common::Rect((int16)_left, (int16)(_top),                    (int16)(_left + _progress1), (int16)(_top + _height)),                    _progressColor);
+	getApp()->getScreenManager()->drawRectangle(Common::Rect((int16)_left, (int16)(_top + _offsetY + 1),     (int16)(_left + _progress2), (int16)(_top + _offsetY + _height + 1)),     _progressColor);
+	getApp()->getScreenManager()->drawRectangle(Common::Rect((int16)_left, (int16)(_top + 2 * _offsetY + 1), (int16)(_left + _progress3), (int16)(_top + 2 * _offsetY + _height + 1)), _progressColor);
+	getApp()->getScreenManager()->drawRectangle(Common::Rect((int16)_left, (int16)(_top + 3 * _offsetY - 1), (int16)(_left + _progress4), (int16)(_top + 3 * _offsetY + _height - 1)), _progressColor);
 }
 
 #pragma endregion

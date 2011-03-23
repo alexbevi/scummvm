@@ -59,7 +59,14 @@ private:
 	float  _progress3;
 	float  _progress4;
 
-	void setupProgress(Id progressId, uint32 textIndex, float *progress);
+	/**
+	 * 	Sets up the progress.
+	 *
+	 * @param	progressId			Identifier for the progress.
+	 * @param	textIndex			Zero-based index of the text.
+	 * @param [in,out]	progress	If non-null, the progress.
+	 */
+	void setupProgress(Id progressId, uint32 textIndex, float *progress) const;
 };
 
 } // End of namespace Ring

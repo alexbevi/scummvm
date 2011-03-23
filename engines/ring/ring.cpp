@@ -119,6 +119,7 @@ Common::Error RingEngine::run() {
 
 	case Ring::GameTypePilgrim3:
 		_application = new ApplicationPilgrim3(this);
+		break;
 
 	case Ring::GameTypeJerusalem:
 		_application = new ApplicationJerusalem(this);
@@ -231,7 +232,7 @@ void RingEngine::update() {
 	_application->getSoundManager()->updateQueue();
 }
 
-bool RingEngine::isMultiLanguage() {
+bool RingEngine::isMultiLanguage() const {
 	// Check if the game supports multiple languages
 	switch (_gameDescription->features) {
 	default:
@@ -247,7 +248,7 @@ bool RingEngine::isMultiLanguage() {
 	case LANG_SLO:
 	case LANG_SPA:
 	case LANG_SWE:
-		return false;
+		break;
 	}
 
 	return false;
@@ -258,7 +259,7 @@ SaveStateList RingEngine::listSaves(const char *target) const {
 
 	Common::SaveFileManager *saveFileMan = g_system->getSavefileManager();
 	Common::StringArray filenames;
-	Common::String pattern = Common::String::format("%s.s??", gameid);
+	Common::String pattern = Common::String::format("%s.s\?\?", gameid);
 
 	filenames = saveFileMan->listSavefiles(pattern);
 	sort(filenames.begin(), filenames.end());	// Sort (hopefully ensuring we are sorted numerically..)
@@ -324,7 +325,7 @@ const char *RingEngine::gameIdFromTarget(const char *target) {
 	static char buffer[54];
 	assert(strlen(target) < 50);
 
-	char *tok = strtok((char *)target, "-");
+	char *tok = strtok(const_cast<char *>(target), "-");
 	sprintf(buffer, "%s", (tok == NULL) ? target : tok);
 
 	return buffer;

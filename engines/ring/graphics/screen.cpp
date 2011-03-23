@@ -62,7 +62,7 @@ void ScreenManager::drawAndUpdate(Image *image) {
 	drawAndUpdate(image, Common::Point(0, 0));
 }
 
-void ScreenManager::drawAndUpdate(Image *image, Common::Point point) {
+void ScreenManager::drawAndUpdate(Image *image, const Common::Point &point) {
 	draw(image, point, kDrawType1);
 	updateScreen();
 }
@@ -71,7 +71,7 @@ void ScreenManager::draw(Image *image, DrawType type) {
 	draw(image, Common::Point(0, 0), type);
 }
 
-void ScreenManager::draw(Image *image, Common::Point point, DrawType type) {
+void ScreenManager::draw(Image *image, const Common::Point &point, DrawType type) {
 	if (!image)
 		error("[ScreenManager::draw] Invalid image pointer!");
 
@@ -100,16 +100,16 @@ void ScreenManager::draw(Image *image, Common::Point point, DrawType type) {
 		default:
 			error("[ScreenManager::draw] Invalid draw type (%d)!", type);
 
-		case 1:
+		case kDrawType1:
 			image->draw(&_screen, coords + _offset);
 			break;
 
-		case 2:
+		case kDrawType2:
 			warning("[ScreenManager::draw] Not implemented type 2");
 			image->draw(&_screen, coords + _offset);
 			break;
 
-		case 3:
+		case kDrawType3:
 			warning("[ScreenManager::draw] Not implemented type 3");
 			image->draw(&_screen, coords + _offset);
 			break;
@@ -119,23 +119,23 @@ void ScreenManager::draw(Image *image, Common::Point point, DrawType type) {
 	}
 }
 
-void ScreenManager::drawImage(Image *image, Common::Point dest, int srcWidth, int srcHeight, int srcX, int offset) {
+void ScreenManager::drawImage(Image *image, const Common::Point &dest, uint32 srcWidth, uint32 srcHeight, int32 srcX, int32 offset) {
 	image->draw(&_screen, dest, srcWidth, srcHeight, srcX, offset);
 
 	updateScreen();
 }
 
-void ScreenManager::drawRectangle(Common::Rect rect, uint32 color) {
+void ScreenManager::drawRectangle(const Common::Rect &rect, uint32 color) {
 	_screen.frameRect(rect, color);
 }
 
-void ScreenManager::drawText(Common::String text, Common::Point coords, Color color) {
+void ScreenManager::drawText(Common::String text, const Common::Point &coords, Color color) {
 	Graphics::WinFont *font = getApp()->getFontHandler()->getFont(kFontDefault);
 	if (!font)
 		error("[ScreenManager::drawText] Cannot get the font to draw text (id: %d)", kFontDefault);
 
 	// Draw text
-	uint32 width = font->getStringWidth(text);
+	int width = font->getStringWidth(text);
 	font->drawString(&_screen, text, coords.x, coords.y, width, color.getColor());
 }
 
@@ -162,7 +162,7 @@ void ScreenManager::drawText(Text *text) {
 	font->drawString(&_screen, text->getString(), text->getCoordinates().x, text->getCoordinates().y, text->getWidth(), text->getForegroundColor());
 }
 
-void ScreenManager::copySurface(Image *image, uint32 a2, uint32 a3) {
+void ScreenManager::copySurface(Image *image, uint32, uint32) const {
 	// TODO use parameters?
 
 	image->getSurface()->copyFrom(_screen);

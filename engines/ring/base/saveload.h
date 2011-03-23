@@ -64,7 +64,7 @@ public:
 
 	struct SavegameData {
 		State       state;
-		byte        field_6A;
+		bool        field_6A;
 		Zone        zone;
 		bool        hasCurrentPuzzle;
 		PuzzleId    puzzleId;
@@ -88,20 +88,20 @@ public:
 	bool loadSaveTimer(Common::String filename, LoadSaveType type);
 	void loadSaveSounds();
 
-	static const char *getSavegameFile(uint32 slot);
-	static const char *getSavegameFile(const char *gameid, uint32 slot);
+	static const char *getSavegameFile(int slot);
+	static const char *getSavegameFile(const char *gameid, int slot);
 	static Common::String getTimerFile(Common::String zone, uint32 slot);
 
-	uint32 getNextSlot();
+	uint32 getNextSlot() const;
 
 	// Management
-	bool remove(uint32 slot);
+	bool remove(uint32 slot) const;
 
 	// Thumbnail image
 	void setThumbnail(Image *image);
 
 	// Accessors
-	bool isSaving();
+	bool isSaving() const;
 	bool hasTimer(Common::String zone);
 	SavegameData *getData() { return &_data; }
 	SetupType getSetupType() const { return _setupType; }
@@ -114,6 +114,8 @@ public:
 	// Helper
 	template<class T>
 	static void syncArray(Common::Serializer &s, Common::Array<T *> *arr);
+	template<class T>
+	static void syncWithFlag(Common::Serializer &s, T *instance);
 
 private:
 	Application *_app;
@@ -134,7 +136,7 @@ private:
 
 	void initialize();
 
-	bool has(Common::String filename);
+	bool has(Common::String filename) const;
 	bool open(Common::String filename, LoadSaveType type);
 	void close();
 };
@@ -143,6 +145,26 @@ template<class T>
 void SaveManager::syncArray(Common::Serializer &s, Common::Array<T *> *arr) {
 	for (typename Common::Array<T *>::iterator it = arr->begin(); it != arr->end(); it++)
 		(*it)->saveLoadWithSerializer(s);
+}
+
+template<class T>
+void SaveManager::syncWithFlag(Common::Serializer &s, T *instance) {
+	// Check hotspot
+	bool isPresent = (instance != NULL);
+	s.syncAsByte(isPresent);
+
+	if (s.isSaving())
+		if (instance)
+			instance->saveLoadWithSerializer(s);
+
+	if (s.isLoading()) {
+		if (instance) {
+			if (!instance)
+				instance = new T();
+
+			instance->saveLoadWithSerializer(s);
+		}
+	}
 }
 
 } // End of namespace Ring

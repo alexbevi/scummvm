@@ -64,37 +64,37 @@ public:
 
 protected:
 	Common::String _name;
-	uint32 _frameCount;
-	float  _framerate;
-	uint32 _startFrame;
-	uint32 _field_14;
-	uint32 _field_18;
-	uint32 _priority;
-	byte   _field_20;
-	byte   _field_21;
-	uint32 _activeFrame;
-	byte   _field_26;
-	bool   _paused;
-	uint32 _lastTicks;
-	byte   _field_2C;
-	byte   _field_2D;
-	uint32 _tickInterval;
-	uint32 _field_32;
-	uint32 _field_36;
-	uint32 _field_3A;
-	uint32 _field_3E;
-	uint32 _field_42;
-	uint32 _field_46;
-	uint32 _field_4A;
-	byte   _field_4E;
-	uint32 _ticks;
-	float  _field_53;
-	byte   _field_57;
-	uint32 _field_58;
-	uint32 _field_5C;
-	byte   _field_60;
-	int32  _currentFrame;
-	uint32 _field_65;
+	uint32         _frameCount;
+	float          _framerate;
+	uint32         _startFrame;
+	uint32         _field_14;
+	uint32         _field_18;
+	uint32         _priority;
+	byte           _field_20;
+	byte           _field_21;
+	uint32         _activeFrame;
+	byte           _field_26;
+	bool           _paused;
+	uint32         _lastTicks;
+	byte           _field_2C;
+	byte           _field_2D;
+	uint32         _tickInterval;
+	uint32         _field_32;
+	uint32         _field_36;
+	uint32         _field_3A;
+	uint32         _field_3E;
+	uint32         _field_42;
+	uint32         _field_46;
+	uint32         _field_4A;
+	byte           _field_4E;
+	uint32         _ticks;
+	float          _field_53;
+	byte           _field_57;
+	uint32         _field_58;
+	uint32         _field_5C;
+	byte           _field_60;
+	int32          _currentFrame;
+	uint32         _field_65;
 
 	int32 adjustTicks(uint32 ticks);
 
@@ -132,15 +132,15 @@ public:
 
 private:
 	Common::Array<ImageHandle *> _imageHandles;
-	ImageType _imageType;
-	Common::Point _coordinates;
-	uint32 _field_79;
-	DrawType _drawType;
-	uint32 _imageCount;
-	ImageHandle *_currentImage;
-	byte _field_89;
+	ImageType                    _imageType;
+	Common::Point                _coordinates;
+	uint32                       _field_79;
+	DrawType                     _drawType;
+	uint32                       _imageCount;
+	ImageHandle                 *_currentImage;
+	byte                         _field_89;
 
-	Common::String computePath(ImageHandle *image, uint32 index);
+	Common::String computePath(ImageHandle *image, uint32 index) const;
 };
 
 } // End of namespace Ring

@@ -84,7 +84,7 @@ ObjectPresentation::~ObjectPresentation() {
 	_object = NULL;
 }
 
-void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background) {
+void ObjectPresentation::addTextToPuzzle(Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, const Color &foreground, const Color &background) {
 	Text *textObject = new Text();
 	textObject->init(text, point, fontId, foreground, background);
 	textObject->setObjectPresentation(this);
@@ -173,7 +173,7 @@ void ObjectPresentation::addAnimationToPuzzle(Puzzle *puzzle, Common::String fil
 	puzzle->addPresentationAnimation(this);
 }
 
-void ObjectPresentation::addAnimationToRotation(Rotation *rotation, uint32 layer, uint32 a3, float a4, uint32 a5) {
+void ObjectPresentation::addAnimationToRotation(Rotation *rotation, uint32 layer, uint32 a3, float a4, byte a5) {
 	Animation *animation = rotation->addPresentationAnimation(this, layer, a3, a4, a5);
 
 	if (!(a5 & 2))
@@ -263,10 +263,10 @@ void ObjectPresentation::show() {
 		(*it)->setTicks(g_system->getMillis());
 
 	for (uint32 i = 0; i < _layerImagePtr.size(); i++)
-		_layImageRotationPtr[i]->setChannel(*(_layerImagePtr[i]), 1);
+		_layImageRotationPtr[i]->setChannel((uint32)*(_layerImagePtr[i]), 1);
 
 	for (uint32 i = 0; i < _layerAnimationRotation.size(); i++)
-		_layerAnimationRotationPtr[i]->setChannel(_layerAnimationRotation[i]->id(), 1);
+		_layerAnimationRotationPtr[i]->setChannel((uint32)_layerAnimationRotation[i]->id(), 1);
 }
 
 void ObjectPresentation::hide() {
@@ -279,10 +279,10 @@ void ObjectPresentation::hide() {
 		(*it)->sub_416710();
 
 	for (uint32 i = 0; i < _layerImagePtr.size(); i++)
-		_layImageRotationPtr[i]->setChannel(*(_layerImagePtr[i]), 0);
+		_layImageRotationPtr[i]->setChannel((uint32)*(_layerImagePtr[i]), 0);
 
 	for (uint32 i = 0; i < _layerAnimationRotation.size(); i++)
-		_layerAnimationRotationPtr[i]->setChannel(_layerAnimationRotation[i]->id(), 0);
+		_layerAnimationRotationPtr[i]->setChannel((uint32)_layerAnimationRotation[i]->id(), 0);
 }
 
 void ObjectPresentation::hideAndRemove() {
@@ -346,7 +346,7 @@ void Object::addPresentation() {
 	_presentations.push_back(new ObjectPresentation(this));
 }
 
-void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background) {
+void Object::addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, const Color &foreground, const Color &background) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addTextToPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
@@ -520,7 +520,7 @@ void Object::addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Comm
 	_presentations[presentationIndex]->addAnimationToPuzzle(puzzle, name, imageType, point, a8, drawType, priority, frameCount, a12, a13, a14, loadFrom);
 }
 
-void Object::addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7) {
+void Object::addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, byte a7) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::addAnimationToRotation] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
@@ -587,7 +587,7 @@ void Object::pauseFrameAnimation(uint32 presentationIndex, uint32 frame, uint32 
 
 #pragma region Cursor
 
-void Object::setCursor(ObjectCursor *cursor, const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType) {
+void Object::setCursor(ObjectCursor *cursor, const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType) const{
 	cursor->offset      = point;
 	cursor->frameCount  = frameCount;
 	cursor->type        = type;
@@ -597,19 +597,19 @@ void Object::setCursor(ObjectCursor *cursor, const Common::Point &point, uint32 
 	cursor->archiveType = archiveType;
 }
 
-void Object::setActiveCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType) {
+void Object::setActiveCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType) {
 	setCursor(&_activeCursor, point, frameCount, type, frameRate, a7, loadFrom, archiveType);
 }
 
-void Object::setPassiveCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType) {
+void Object::setPassiveCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType) {
 	setCursor(&_passiveCursor, point, frameCount, type, frameRate, a7, loadFrom, archiveType);
 }
 
-void Object::setActiveDrawCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType) {
+void Object::setActiveDrawCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType) {
 	setCursor(&_activeDrawCursor, point, frameCount, type, frameRate, a7, loadFrom, archiveType);
 }
 
-void Object::setPassiveDrawCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType) {
+void Object::setPassiveDrawCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType) {
 	setCursor(&_passiveDrawCursor, point, frameCount, type, frameRate, a7, loadFrom, archiveType);
 }
 
@@ -626,14 +626,7 @@ void Object::saveLoadWithSerializer(Common::Serializer &s) {
 	SaveManager::syncArray(s, &_accessibilities);
 	SaveManager::syncArray(s, &_presentations);
 
-	if (s.isSaving()) {
-		// FIXME: What happens when we try loading back that savegame?
-		if (_animationImage)
-			_animationImage->saveLoadWithSerializer(s);
-	}
-
-	if (s.isLoading())
-		_animationImage->saveLoadWithSerializer(s);
+	SaveManager::syncWithFlag(s, _animationImage);
 }
 
 #pragma endregion

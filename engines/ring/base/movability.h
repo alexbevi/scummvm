@@ -36,7 +36,7 @@ class Rotation;
 
 class Movability : public Common::Serializable {
 public:
-	Movability(BaseId from, BaseId to, Common::String name, MovabilityType type);
+	Movability(const BaseId &from, const BaseId &to, Common::String name, MovabilityType type);
 	~Movability();
 
 	void update(float a1, float a2, float a3, float a4, byte a5, float alpAfter, float betAfter, float ranAfter);

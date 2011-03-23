@@ -209,9 +209,9 @@ public:
 	void objectSetPassiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, uint32 a7, LoadFrom loadFrom);
 
 	void objectAddPresentation(ObjectId objectId);
-	void objectAddBagAnimation(ObjectId objectId, ImageType imageType, DrawType drawType, uint32 frameCount, float framerate, uint32 a6);
+	void objectAddBagAnimation(ObjectId objectId, ImageType imageType, DrawType drawType, uint32 frameCount, float framerate, byte a6);
 
-	void objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background);
+	void objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, const Common::Point &point, FontId fontId, const Color &foreground, const Color &background);
 	void objectPresentationSetTextToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, Common::String text);
 	void objectPresentationSetTextCoordinatesToPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 textIndex, const Common::Point &point);
 	uint32 objectPresentationGetTextWidth(ObjectId objectId, uint32 presentationIndex, uint32 textIndex);
@@ -223,8 +223,8 @@ public:
 	void objectPresentationSetImageOriginalCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex);
 	Common::Point objectPresentationGetImageCoordinatesOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 imageIndex);
 
-	void objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, ImageType imageType, const Common::Point &point, DrawType drawType, uint32 priority, uint32 a10, float a11, uint32 a12);
-	void objectPresentationAddAnimationToRotation(ObjectId, uint32 presentationIndex, Id rotationId, uint32 a4, uint32 a5, float a6, uint32 a7);
+	void objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, ImageType imageType, const Common::Point &point, DrawType drawType, uint32 priority, uint32 a10, float a11, byte a12);
+	void objectPresentationAddAnimationToRotation(ObjectId, uint32 presentationIndex, Id rotationId, uint32 a4, uint32 a5, float a6, byte a7);
 	void objectPresentationSetAnimationOnPuzzle(ObjectId id, uint32 presentationIndex, uint32 animationIndex, const ObjectId &targetId);
 	void objectPresentationSetAnimationOnRotation(ObjectId id, uint32 presentationIndex, uint32 animationIndex, const ObjectId &targetId);
 	void objectPresentationSetAnimationCoordinatesOnPuzzle(ObjectId id, uint32 presentationIndex, const Common::Point &point);
@@ -292,12 +292,12 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Sound
 	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom);
-	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk);
+	void soundAdd(Id soundId, SoundType soundType, Common::String filename, LoadFrom loadFrom, uint32 a4, uint32 soundChunk);
 	void soundPlay(Id soundId, SoundLoopType loop = kSoundOnce);
 	void soundStop(Id soundId, uint32 a2);
 	void soundSetVolume(Id soundId, uint32 volume);
 	void soundStopType(SoundType soundType, uint32 a2);
-	void soundSetMultiplier(SoundType soundType, uint32 a2);
+	void soundSetMultiplier(SoundType soundType, int32 multiplier);
 	void soundSetMultiplierIfNotType(SoundType soundType, int32 multiplier);
 	void soundStopAll(uint32 a1);
 	void soundSetPan(Id soundId, int32 pan);
@@ -318,7 +318,7 @@ public:
 	type varGet##name(Id id); \
 	void varSet##name(Id id, type value);
 
-	DEFINE_VAR_FUNCTIONS(Byte,   byte);
+	DEFINE_VAR_FUNCTIONS(Byte,   int8);
 	DEFINE_VAR_FUNCTIONS(Word,   int16);
 	DEFINE_VAR_FUNCTIONS(Dword,  int32);
 	DEFINE_VAR_FUNCTIONS(String, Common::String);
@@ -337,7 +337,7 @@ public:
 							   DrawType drawType, const Common::Point &origin, const Common::Point &backgroundOffset, uint32 a22, uint32 a23, uint32 a24, uint32 a25, uint32 a26,
 							   uint32 a27, const Common::Point &upOffset, uint32 a30, uint32 a31, uint32 a32, uint32 a33, const Common::Point &downOffset, uint32 a36,
 							   uint32 a37, uint32 a38, uint32 a39, const Common::Point &imageCoords, ImageType imageType, DrawType imageDrawType, uint32 a44, uint32 a45, uint32 a46,
-							   Color foreground, Color foregroundSelected, Color background, FontId fontId,
+							   const Color &foreground, const Color &foregroundSelected, const Color &background, FontId fontId,
 							   ArchiveType archiveType);
 	void visualListAdd(Id visualId, PuzzleId puzzleId, const ObjectId &objectId);
 	void visualListRemove(Id visualId, PuzzleId puzzleId, const ObjectId &objectId, bool removeObject);
@@ -368,9 +368,9 @@ public:
 	bool dragControlXLower1();
 	bool dragControlXHigher1();
 
-	uint32 dragControlGetOffsetX();
-	uint32 dragControlGetOffsetY();
-	uint32 dragControlGetDistance();
+	uint32 dragControlGetOffsetX() const;
+	uint32 dragControlGetOffsetY() const;
+	uint32 dragControlGetDistance() const;
 
 	uint32 dragControlGetOffsetX0();
 	uint32 dragControlGetOffsetY0();
@@ -381,7 +381,7 @@ public:
 	// Accessors
 	Image *getThumbnail() { return _thumbnail; }
 	Zone getCurrentZone() { return _zone; }
-	byte getField6A() { return _field_6A; }
+	bool getField6A() { return _field_6A; }
 	Common::String getCurrentZoneString() { return getZoneString(_zone); }
 	LoadFrom getLoadFrom() { return _loadFrom; }
 	bool isRotationCompressed() { return _isRotationCompressed; }
@@ -443,7 +443,7 @@ protected:
 	uint32                        _field_5E;
 	SoundHandler                 *_soundHandler;
 	State                         _state;
-	byte                          _field_6A;
+	bool                          _field_6A;
 	Common::String                _zoneString;
 	Zone                          _zone;          // original uses byte
 	Zone                          _currentGameZone;
@@ -479,10 +479,10 @@ protected:
 	void loadConfiguration();
 
 	// Display and movies
-	void showImage(Common::String filename, Common::Point point, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
+	void showImage(Common::String filename, const Common::Point &point, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	bool scrollImage(Common::String filename, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
-	void waitForEscape(uint32 ticksWait);
+	void waitForEscape(uint32 ticksWait) const;
 
 	// Current rotation
 	Rotation *_currentRotation;

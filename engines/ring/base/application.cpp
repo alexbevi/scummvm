@@ -64,7 +64,7 @@ namespace Ring {
 Application::Application(RingEngine *engine) : _vm(engine),
 	_screenManager(NULL),        _artHandler(NULL),          _fontHandler(NULL),   _dialogHandler(NULL),        _languageHandler(NULL),
 	_isRotationCompressed(true), _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
-	_soundHandler(NULL),         _state(kStateNone),         _field_6A(0),         _zoneString("A0"),           _zone(kZoneNone),
+	_soundHandler(NULL),         _state(kStateNone),         _field_6A(false),         _zoneString("A0"),           _zone(kZoneNone),
 	_currentGameZone(kZoneNone), _field_70(0),               _field_74(false),     _field_75(false),            _field_76(false),
 	_field_77(false),            _field_78(false),           _puzzle(NULL),        _rotation(NULL),             _bag(NULL),
 	_timerHandler(NULL),         _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL),        _preferenceHandler(NULL),
@@ -112,6 +112,9 @@ Application::~Application() {
 }
 
 void Application::saveLoadWithSerializer(Common::Serializer &s) {
+	if (!_var || !_bag || !_timerHandler)
+		error("[Application::saveLoadWithSerializer] Application not initialized properly");
+
 	for (Common::Array<Puzzle *>::iterator it = _puzzles.begin(); it != _puzzles.end(); it++)
 		(*it)->saveLoadWithSerializer(s);
 
@@ -183,10 +186,10 @@ void Application::init() {
 
 	// Setup data
 	_field_70 = 0;
-	_field_74 = 1;
-	_field_75 = 1;
+	_field_74 = true;
+	_field_75 = true;
 	_field_76 = true;
-	_field_77 = 1;
+	_field_77 = true;
 	_field_78 = true;
 	_loadFrom = kLoadFromCd;
 	_isRotationCompressed = true;
@@ -278,31 +281,31 @@ void Application::loadConfiguration() {
 				_configuration.checkCD = atoi((char *)&val);
 
 			if (Common::String(token) == "SOUNDCHUNCK_BGRMUS:")
-				_configuration.backgroundMusic.soundChunck = atoi((char *)&val);
+				_configuration.backgroundMusic.soundChunck = (uint32)atoi((char *)&val);
 
 			if (Common::String(token) == "LOADFROM_BGRMUS:")
 				_configuration.backgroundMusic.loadFrom = (LoadFrom)atoi((char *)&val);
 
 			if (Common::String(token) == "SOUNDCHUNCK_AMBMUS:")
-				_configuration.ambientMusic.soundChunck = atoi((char *)&val);
+				_configuration.ambientMusic.soundChunck = (uint32)atoi((char *)&val);
 
 			if (Common::String(token) == "LOADFROM_AMBMUS:")
 				_configuration.ambientMusic.loadFrom = (LoadFrom)atoi((char *)&val);
 
 			if (Common::String(token) == "SOUNDCHUNCK_AMBEFE:")
-				_configuration.ambientEffect.soundChunck = atoi((char *)&val);
+				_configuration.ambientEffect.soundChunck = (uint32)atoi((char *)&val);
 
 			if (Common::String(token) == "LOADFROM_AMBEFE:")
 				_configuration.ambientEffect.loadFrom = (LoadFrom)atoi((char *)&val);
 
 			if (Common::String(token) == "SOUNDCHUNCK_EFE:")
-				_configuration.effect.soundChunck = atoi((char *)&val);
+				_configuration.effect.soundChunck = (uint32)atoi((char *)&val);
 
 			if (Common::String(token) == "LOADFROM_EFE:")
 				_configuration.effect.loadFrom = (LoadFrom)atoi((char *)&val);
 
 			if (Common::String(token) == "SOUNDCHUNCK_DIA:")
-				_configuration.dialog.soundChunck = atoi((char *)&val);
+				_configuration.dialog.soundChunck = (uint32)atoi((char *)&val);
 
 			if (Common::String(token) == "LOADFROM_DIA")
 				_configuration.dialog.loadFrom = (LoadFrom)atoi((char *)&val);
@@ -349,11 +352,11 @@ void Application::exitZone() {
 	soundStopAll(128);
 	_soundManager->clear();
 
-	_field_74 = 1;
-	_field_75 = 1;
+	_field_74 = true;
+	_field_75 = true;
 	_field_76 = true;
-	_field_77 = 1;
-	_field_78 = 1;
+	_field_77 = true;
+	_field_78 = true;
 
 	timerStopAll();
 	varRemoveAll();
@@ -401,6 +404,9 @@ void Application::onTimer(TimerId id) {
 }
 
 void Application::update(const Common::Point &point) {
+	if (!_bag || !_eventHandler || !_dragControl)
+		error("[Application::update] Application not initialized properly");
+
 	// Handle bag
 	if (_bag->getField94()) {
 		if (_bag->checkHotspot(point)) {
@@ -441,7 +447,7 @@ void Application::update(const Common::Point &point) {
 		if (accessibility) {
 			Object *object = accessibility->getObject();
 			Hotspot *hotspot = accessibility->getHotspot();
-			uint32 accessibilityIndex = puzzleMenu->getAccessibilityIndex(point);
+			uint32 accessibilityIndex = (uint32)puzzleMenu->getAccessibilityIndex(point);
 			bool handle = true;
 
 			if (puzzleMenu->getField24() == 2)
@@ -470,11 +476,11 @@ void Application::update(const Common::Point &point) {
 		if (puzzleMenu->getField24() == 1) {
 			Movability *movability = puzzleMenu->getMovability(point);
 			if (movability) {
-				Hotspot *hotspot = accessibility->getHotspot();
+				Hotspot *hotspot = movability->getHotspot();
 
 				_cursorHandler->select(hotspot->getCursorId());
 
-				_eventHandler->onUpdateAfter(puzzleMenu->getId(), movability->getTo(), puzzleMenu->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
+				_eventHandler->onUpdateAfter(puzzleMenu->getId(), movability->getTo(), (uint32)puzzleMenu->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
 				return;
 			}
 		}
@@ -502,7 +508,7 @@ void Application::update(const Common::Point &point) {
 		if (accessibility) {
 			Object *object = accessibility->getObject();
 			Hotspot *hotspot = accessibility->getHotspot();
-			uint32 accessibilityIndex = _rotation->getAccessibilityIndex(point);
+			uint32 accessibilityIndex = (uint32)_rotation->getAccessibilityIndex(point);
 
 			if (_dragControl->getField20()) {
 				if (_dragControl->getAccessibilityIndex() == accessibilityIndex)
@@ -527,7 +533,7 @@ void Application::update(const Common::Point &point) {
 
 			_cursorHandler->select(hotspot->getCursorId());
 
-			_eventHandler->onUpdateAfter(_rotation->getId(), movability->getTo(), _rotation->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
+			_eventHandler->onUpdateAfter(_rotation->getId(), movability->getTo(), (uint32)_rotation->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
 			return;
 		}
 	}
@@ -542,7 +548,7 @@ void Application::update(const Common::Point &point) {
 		if (accessibility) {
 			Object *object = accessibility->getObject();
 			Hotspot *hotspot = accessibility->getHotspot();
-			uint32 accessibilityIndex = _puzzle->getAccessibilityIndex(point);
+			uint32 accessibilityIndex = (uint32)_puzzle->getAccessibilityIndex(point);
 
 			if (_dragControl->getField20()) {
 				if (_dragControl->getAccessibilityIndex() == accessibilityIndex)
@@ -567,7 +573,7 @@ void Application::update(const Common::Point &point) {
 
 			_cursorHandler->select(hotspot->getCursorId());
 
-			_eventHandler->onUpdateAfter(_puzzle->getId(), movability->getTo(), _rotation->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
+			_eventHandler->onUpdateAfter(_puzzle->getId(), movability->getTo(), (uint32)_puzzle->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
 			return;
 		}
 
@@ -583,6 +589,9 @@ void Application::update(const Common::Point &point) {
 }
 
 void Application::updateBag(const Common::Point &point) {
+	if (!_bag || !_eventHandler || !_dragControl)
+		error("[Application::updateBag] Application not initialized properly");
+
 	if (_bag->getField94() || !_dragControl->getField20())
 		return;
 
@@ -611,6 +620,9 @@ void Application::updateBag(const Common::Point &point) {
 #pragma region Display and Movies
 
 void Application::drawZoneName(Zone zone) {
+	if (!_screenManager)
+		error("[Application::drawZoneName] Screen manager not initialized properly");
+
 	// Draw the loading zone on screen
 	_screenManager->clear();
 
@@ -625,7 +637,7 @@ void Application::drawZoneName(Zone zone) {
 	_vm->pollEvents();
 }
 
-void Application::showImage(Common::String filename, Common::Point point, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
+void Application::showImage(Common::String filename, const Common::Point &point, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (archiveType == kArchiveInvalid)
 		archiveType = getReadFrom(getCurrentZone());
 
@@ -689,9 +701,8 @@ bool Application::scrollImage(Common::String filename, uint32 ticksWait, LoadFro
 }
 
 void Application::displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
-	Image *imageFrom = NULL;
-	Image *imageTo = NULL;
 	Graphics::Surface surface;
+	Image *imageTo = NULL;
 	Animation *animation = NULL;
 	uint16 *diff = NULL;
 	uint16 *srcFrom = NULL;
@@ -712,7 +723,7 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 	}
 
 	// Load images
-	imageFrom = new Image();
+	Image *imageFrom = new Image();
 	if (!imageFrom->load(pathFrom, archiveType, getCurrentZone(), loadFrom)) {
 		warning("[Application::displayFade] Cannot load imageFrom (%s)", pathFrom.c_str());
 		goto cleanup;
@@ -742,14 +753,14 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 	}
 
 	// Create new surface to hold the difference frame
-	surface.create(imageFrom->getWidth(), imageFrom->getHeight(), imageFrom->getBPP() / 8);
+	surface.create((uint16)imageFrom->getWidth(), (uint16)imageFrom->getHeight(), (uint8)(imageFrom->getBPP() / 8));
 
 	// Put difference frame data into surface
 	diff    = (uint16 *)surface.pixels;
 	srcFrom = (uint16 *)imageFrom->getSurface()->pixels;
 	srcTo   = (uint16 *)imageTo->getSurface()->pixels;
 	for (uint32 i = 0; i < (uint32)(surface.w * surface.h * surface.bytesPerPixel); i++)
-		diff[i] = (srcFrom[i] - srcTo[i]) / frameCount;
+		diff[i] = (srcFrom[i] - srcTo[i]) / (uint16)frameCount;
 
 	// Create animation
 	animation = new Animation();
@@ -769,7 +780,8 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 			_screenManager->drawAndUpdate(imageFrom, Common::Point(0, 16));
 
 			// Progress to next frame
-			while (animation->getCurrentFrame() == currentFrame);
+			while (animation->getCurrentFrame() == currentFrame)
+				handleEvents();
 
 			uint32 nextFrame = animation->getActiveFrame() + 1;
 			if (nextFrame < currentFrame)
@@ -791,11 +803,12 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 	waitForEscape(ticksWait);
 
 cleanup:
+	SAFE_DELETE(animation);
 	SAFE_DELETE(imageFrom);
 	SAFE_DELETE(imageTo);
 }
 
-void Application::waitForEscape(uint32 ticksWait) {
+void Application::waitForEscape(uint32 ticksWait) const {
 	for (uint32 i = 0; i < ticksWait; i++)
 		if (checkEscape())
 			break;
@@ -1254,7 +1267,7 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 	puzzleReset();
 	_puzzle = _puzzles.get(id);
 	_puzzle->alloc();
-	_puzzle->update(_screenManager);
+	_puzzle->update();
 
 	_state = kStateUpdatePuzzle;
 
@@ -1360,7 +1373,7 @@ void Application::objectAdd(ObjectId objectId, Common::String description, Commo
 	_objects.push_back(new Object(this, objectId, processedDescription, processedName, a5));
 }
 
-void Application::objectAddBagAnimation(ObjectId objectId, ImageType imageType, DrawType drawType, uint32 frameCount, float framerate, uint32 a6) {
+void Application::objectAddBagAnimation(ObjectId objectId, ImageType imageType, DrawType drawType, uint32 frameCount, float framerate, byte a6) {
 	if (!_objects.has(objectId))
 		error("[Application::objectAddBagAnimation] Object Id doesn't exist (%d)", objectId.id());
 
@@ -1484,7 +1497,7 @@ void Application::objectAddPresentation(ObjectId objectId) {
 	_objects.get(objectId)->addPresentation();
 }
 
-void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background) {
+void Application::objectPresentationAddTextToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String text, const Common::Point &point, FontId fontId, const Color &foreground, const Color &background) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationAddTextToPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
@@ -1567,7 +1580,7 @@ Common::Point Application::objectPresentationGetImageCoordinatesOnPuzzle(ObjectI
 	return _objects.get(objectId)->getImageCoordinatesOnPuzzle(presentationIndex, imageIndex);
 }
 
-void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, ImageType imageType, const Common::Point &point, DrawType drawType, uint32 priority, uint32 a10, float a11, uint32 a12) {
+void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint32 presentationIndex, PuzzleId puzzleId, Common::String filename, ImageType imageType, const Common::Point &point, DrawType drawType, uint32 priority, uint32 a10, float a11, byte a12) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationAddAnimationToPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
@@ -1577,7 +1590,7 @@ void Application::objectPresentationAddAnimationToPuzzle(ObjectId objectId, uint
 	_objects.get(objectId)->addAnimationToPuzzle(presentationIndex, _puzzles.get(puzzleId), filename, imageType, point, 1, drawType, priority, 0, a10, a11, a12, _loadFrom);
 }
 
-void Application::objectPresentationAddAnimationToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer, uint32 a5, float a6, uint32 a7) {
+void Application::objectPresentationAddAnimationToRotation(ObjectId objectId, uint32 presentationIndex, Id rotationId, uint32 layer, uint32 a5, float a6, byte a7) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationAddImageToRotation] Object Id doesn't exist (%d)", objectId.id());
 
@@ -2078,7 +2091,7 @@ void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
 
 	_soundHandler->turnOffSounds1(a3);
 
-	_rotation->updateSoundItems();
+	_rotation->updateSoundItems(updateSoundItems);
 
 	_soundHandler->reset();
 	_soundHandler->setSounds1(_rotation->getSoundItems());
@@ -2092,7 +2105,7 @@ void Application::soundAdd(Id soundId, SoundType type, Common::String filename, 
 	soundAdd(soundId, type, filename, loadFrom, 2, 3);
 }
 
-void Application::soundAdd(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, uint32 a4, int soundChunk) {
+void Application::soundAdd(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, uint32 a4, uint32 soundChunk) {
 	// Check filename
 	if (filename.size() <= 4)
 		error("[Application::soundAdd] Wrong filename (%s)", filename.c_str());
@@ -2131,7 +2144,7 @@ void Application::soundStopType(SoundType soundType, uint32 a2) {
 	_soundManager->stopType(soundType, a2);
 }
 
-void Application::soundSetMultiplier(SoundType soundType, uint32 multiplier) {
+void Application::soundSetMultiplier(SoundType soundType, int32 multiplier) {
 	_soundManager->setMultiplier(soundType, multiplier);
 }
 
@@ -2182,21 +2195,21 @@ bool Application::hasTimer(TimerId id) {
 #define IMPLEMENT_VAR_FUNCTIONS(name, type) \
 	void Application::varDefine##name(Id id, type val) { \
 		if (!_var) \
-			error("[Application::varDefine##name] Var not initialized properly"); \
+			error("[Application::varDefine" #name "] Var not initialized properly"); \
 		_var->define##name(id, val); \
 	} \
 	type Application::varGet##name(Id id) { \
 		if (!_var) \
-			error("[Application::varGet##name] Var not initialized properly"); \
+			error("[Application::varGet" #name "] Var not initialized properly"); \
 		return _var->get##name(id); \
 	} \
 	void Application::varSet##name(Id id, type val) { \
 		if (!_var) \
-			error("[Application::varSet##name] Var not initialized properly"); \
+			error("[Application::varSet" #name "] Var not initialized properly"); \
 		_var->set##name(id, val); \
 	}
 
-IMPLEMENT_VAR_FUNCTIONS(Byte,   byte);
+IMPLEMENT_VAR_FUNCTIONS(Byte,   int8);
 IMPLEMENT_VAR_FUNCTIONS(Word,   int16);
 IMPLEMENT_VAR_FUNCTIONS(Dword,  int32);
 IMPLEMENT_VAR_FUNCTIONS(String, Common::String);
@@ -2233,7 +2246,7 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 							            DrawType drawType, const Common::Point &origin, const Common::Point &backgroundOffset, uint32 a22, uint32 a23, uint32 a24, uint32 a25, uint32 a26,
 	                                    uint32 a27, const Common::Point &upOffset, uint32 a30, uint32 a31, uint32 a32, uint32 a33, const Common::Point &downOffset, uint32 a36,
 	                                    uint32 a37, uint32 a38, uint32 a39, const Common::Point &imageCoords, ImageType imageType, DrawType imageDrawType, uint32 a44, uint32 a45, uint32 a46,
-							            Color foreground, Color foregroundSelected, Color background, FontId fontId,
+							            const Color &foreground, const Color &foregroundSelected, const Color &background, FontId fontId,
 							            ArchiveType archiveType) {
 
 
@@ -2456,21 +2469,21 @@ bool Application::dragControlXHigher1() {
 }
 
 
-uint32 Application::dragControlGetOffsetX() {
+uint32 Application::dragControlGetOffsetX() const {
 	if (!_dragControl)
 		error("[Application::dragControlGetOffsetX] DragControl not initialized properly!");
 
 	return _dragControl->getOffsetX();
 }
 
-uint32 Application::dragControlGetOffsetY() {
+uint32 Application::dragControlGetOffsetY() const {
 	if (!_dragControl)
 		error("[Application::dragControlGetOffsetY] DragControl not initialized properly!");
 
 	return _dragControl->getOffsetY();
 }
 
-uint32 Application::dragControlGetDistance() {
+uint32 Application::dragControlGetDistance() const {
 	if (!_dragControl)
 		error("[Application::dragControlGetDistance] DragControl not initialized properly!");
 
@@ -2481,28 +2494,28 @@ uint32 Application::dragControlGetOffsetX0() {
 	if (!_dragControl)
 		error("[Application::dragControlGetOffsetX0] DragControl not initialized properly!");
 
-	return abs(_dragControl->getCurrentCoords().x - _dragControl->getCoords0().x);
+	return (uint32)abs(_dragControl->getCurrentCoords().x - _dragControl->getCoords0().x);
 }
 
 uint32 Application::dragControlGetOffsetY0() {
 	if (!_dragControl)
 		error("[Application::dragControlGetOffsetY0] DragControl not initialized properly!");
 
-	return abs(_dragControl->getCurrentCoords().y - _dragControl->getCoords0().y);
+	return (uint32)abs(_dragControl->getCurrentCoords().y - _dragControl->getCoords0().y);
 }
 
 uint32 Application::dragControlGetOffsetX1() {
 	if (!_dragControl)
 		error("[Application::dragControlGetOffsetX1] DragControl not initialized properly!");
 
-	return abs(_dragControl->getCurrentCoords().x - _dragControl->getCoords1().x);
+	return (uint32)abs(_dragControl->getCurrentCoords().x - _dragControl->getCoords1().x);
 }
 
 uint32 Application::dragControlGetOffsetY1() {
 	if (!_dragControl)
 		error("[Application::dragControlGetOffsetY1] DragControl not initialized properly!");
 
-	return abs(_dragControl->getCurrentCoords().y - _dragControl->getCoords1().y);
+	return (uint32)abs(_dragControl->getCurrentCoords().y - _dragControl->getCoords1().y);
 }
 
 

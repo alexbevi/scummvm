@@ -38,9 +38,9 @@ class EventHandler {
 public:
 	virtual ~EventHandler() {}
 
-	virtual void onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) = 0;
-	virtual void onMouseLeftButtonDown(Common::Event &evt) = 0;
-	virtual void onMouseRightButtonUp(Common::Event &evt) = 0;
+	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) = 0;
+	virtual void onMouseLeftButtonDown(const Common::Event &evt) = 0;
+	virtual void onMouseRightButtonUp(const Common::Event &evt) = 0;
 	virtual void onKeyDown(Common::Event &evt) = 0;
 	virtual void onTimer(TimerId id) = 0;
 

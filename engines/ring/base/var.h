@@ -59,7 +59,7 @@ public:
 	type get##name(Id id) { return get(&storage, id); } \
 	void set##name(Id id, type value) { set(&storage, id, value); }
 
-	DEFINE_FUNCTIONS(Byte,   byte,           _bytes);
+	DEFINE_FUNCTIONS(Byte,   int8,           _bytes);
 	DEFINE_FUNCTIONS(Word,   int16,          _words);
 	DEFINE_FUNCTIONS(Dword,  int32,          _dwords);
 	DEFINE_FUNCTIONS(String, Common::String, _strings);
@@ -71,7 +71,7 @@ public:
 	void saveLoadWithSerializer(Common::Serializer &s);
 
 private:
-	AssociativeArray<VarEntry<byte> *>           _bytes;
+	AssociativeArray<VarEntry<int8> *>           _bytes;
 	AssociativeArray<VarEntry<int16> *>          _words;
 	AssociativeArray<VarEntry<int32> *>          _dwords;
 	AssociativeArray<VarEntry<Common::String> *> _strings;

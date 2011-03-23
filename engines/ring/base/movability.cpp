@@ -27,6 +27,7 @@
 
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
+#include "ring/base/saveload.h"
 
 #include "ring/graphics/hotspot.h"
 
@@ -34,11 +35,12 @@
 
 namespace Ring {
 
-Movability::Movability(BaseId from, BaseId to, Common::String name, MovabilityType type) {
+Movability::Movability(const BaseId &from, const BaseId &to, Common::String name, MovabilityType type) {
 	_field_0 = 0;
 	_from = from;
 	_hotspot = NULL;
 	_to = to;
+	_name = name;
 	_type = type;
 	_beforeRide.alp = 0.0f;
 	_beforeRide.bet = 0.0f;
@@ -89,7 +91,8 @@ void Movability::disableHotspot() {
 #pragma region Serializable
 
 void Movability::saveLoadWithSerializer(Common::Serializer &s) {
-	_hotspot->saveLoadWithSerializer(s);
+	SaveManager::syncWithFlag(s, _hotspot);
+
 	s.syncString(_name);
 	s.syncAsUint32LE(_to);
 	s.syncAsUint32LE(_beforeRide.alp);

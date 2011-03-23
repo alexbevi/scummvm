@@ -91,8 +91,8 @@ public:
 	void sub_46DE30(uint32 a1, uint32 a2);
 	void initHotspots();
 	void sub_46E330(uint32 a1);
-	void setTextForegroundColor(Color foreground, Color foregroundSelected);
-	void setTextBackgroundColor(Color background);
+	void setTextForegroundColor(const Color &foreground, const Color &foregroundSelected);
+	void setTextBackgroundColor(const Color &background);
 	void setFontId(FontId fontId);
 
 	// Management
@@ -161,7 +161,7 @@ private:
 	bool   _allocated;
 
 	Hotspot *getHotspot(const Common::Point &point);
-	void loadImage(ImageHandle *image);
+	void loadImage(ImageHandle *image) const;
 };
 
 } // End of namespace Ring

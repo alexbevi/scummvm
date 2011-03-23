@@ -45,7 +45,7 @@ CompressedStream::~CompressedStream() {
 	SAFE_DELETE(_artStream);
 }
 
-bool CompressedStream::init(Common::String filename, uint32 type, uint32) {
+bool CompressedStream::init(Common::String filename, uint32, uint32) {
 	_fileStream = SearchMan.createReadStreamForMember(filename);
 	if (!_fileStream) {
 		warning("[CompressedStream::init] Error opening file (%s)", filename.c_str());
@@ -95,6 +95,9 @@ Common::MemoryReadStream *CompressedStream::decompressChuncks(uint32 chuncks, ui
 
 	// Initialize buffer
 	byte *buffer = (byte *)malloc(bufferSize + 1024);
+	if (!buffer)
+		error("[CompressedStream::decompressChuncks] Cannot allocate buffer");
+
 	memset(buffer, 0, bufferSize + 1024);
 	byte *pBuffer = buffer;
 
@@ -104,7 +107,7 @@ Common::MemoryReadStream *CompressedStream::decompressChuncks(uint32 chuncks, ui
 		uint32 chunkSize = stream->readUint32LE();
 		uint32 chunkDataSize = stream->readUint32LE();
 
-		decompSize += decode(stream, 16, 6, stream->pos() * 8, (stream->pos() + chunkSize) * 8, pBuffer);
+		decompSize += decode(stream, 16, 6, (uint32)stream->pos() * 8, ((uint32)stream->pos() + chunkSize) * 8, pBuffer);
 
 		// Advance stream and buffer
 		streamPosition += chunkSize + 8;
@@ -126,11 +129,17 @@ Common::MemoryReadStream *CompressedStream::decompressIndexed(uint32 blockSize, 
 
 	// Initialize buffer
 	byte *buffer = (byte *)malloc(bufferSize + 1024);
+	if (!buffer)
+		error("[CompressedStream::decompressIndexed] Cannot allocate buffer");
+
 	memset(buffer, 0, bufferSize + 1024);
 	byte *pBuffer = buffer;
 
 	// Decompress seq
 	byte *seqBuffer = (byte *)malloc(seqDataSize + 1024);
+	if (!seqBuffer)
+		error("[CompressedStream::decompressIndexed] Cannot allocate seq buffer");
+
 	memset(seqBuffer, 0, seqDataSize + 1024);
 
 	uint32 decompressSize = decode(stream, blockSize, 6, 608, 8 * seqSize + 608, seqBuffer);
@@ -139,6 +148,9 @@ Common::MemoryReadStream *CompressedStream::decompressIndexed(uint32 blockSize, 
 
 	// Decompress core
 	byte *coreBuffer = (byte *)malloc(coreDataSize + 1024);
+	if (!coreBuffer)
+		error("[CompressedStream::decompressIndexed] Cannot allocate core buffer");
+
 	memset(coreBuffer, 0, coreDataSize + 1024);
 
 	uint32 start = 8 * seqSize + 640;
@@ -186,7 +198,7 @@ Common::MemoryReadStream *CompressedStream::decompressNode() {
 	stream->seek(offset, SEEK_CUR);
 	uint32 chunkSize = stream->readUint32LE();
 	stream->seek(NODE_HEADER_SIZE + 4, SEEK_SET);
-	int32 streamPosition = stream->pos();
+	uint32 streamPosition = (uint32)stream->pos();
 
 	// Compute buffer size
 	uint32 size = READ_LE_UINT32(header) * READ_LE_UINT32(header + 4) * READ_LE_UINT32(header + 8) / 4;
@@ -198,19 +210,22 @@ Common::MemoryReadStream *CompressedStream::decompressNode() {
 
 	// Initialize buffer
 	byte *buffer = (byte *)malloc(bufferSize + 1024);
+	if (!buffer)
+		error("[CompressedStream::decompressNode] Cannot allocate buffer");
+
 	memset(buffer, 0, bufferSize + 1024);
 
 	// Copy header
 	memcpy(buffer, &header, NODE_HEADER_SIZE);
 
 	// Decode channel and nodes
-	uint32 decodedChannelSize = decodeChannel(stream, stream->pos() * 8, (stream->pos() + offset) * 8, buffer + NODE_HEADER_SIZE);
+	uint32 decodedChannelSize = decodeChannel(stream, (uint32)stream->pos() * 8, ((uint32)stream->pos() + offset) * 8, buffer + NODE_HEADER_SIZE);
 
 	// Advance stream and buffer
 	streamPosition += offset + 4;
 	stream->seek(streamPosition, SEEK_SET);
 
-	uint32 decodedNodeSize = decodeNode(stream, stream->pos() * 8, (stream->pos() + chunkSize) * 8, buffer + NODE_HEADER_SIZE + size);
+	uint32 decodedNodeSize = decodeNode(stream, (uint32)stream->pos() * 8, ((uint32)stream->pos() + chunkSize) * 8, buffer + NODE_HEADER_SIZE + size);
 
 	streamPosition += chunkSize;
 	stream->seek(streamPosition, SEEK_SET);
@@ -246,13 +261,13 @@ uint32 CompressedStream::decode(Common::SeekableReadStream *stream, uint32 a2, u
 	// Reset decompression buffer
 	memset(&_decBuffer, 0, sizeof(_decBuffer));
 
-#define CHECK_BIT(var,pos) !!((var) & (1<<(pos)))
+#define CHECK_BIT(var, pos) !!((var) & (1 << (pos)))
 
 	// Store buffer position
 	byte *bufferStart = buffer;
 
-	uint16 index0 = 0;
-	uint16 index1 = 0;
+	uint32 index0 = 0;
+	uint32 index1 = 0;
 
 	while (start < end) {
 		stream->seek(start >> 3, SEEK_SET);
@@ -268,7 +283,7 @@ uint32 CompressedStream::decode(Common::SeekableReadStream *stream, uint32 a2, u
 			if (CHECK_BIT(var, position)) {
 				start += 2;
 
-				*(uint16 *)buffer = *(uint16 *)(buffer - 2);
+				WRITE_UINT16(buffer, READ_UINT16(buffer - 2));
 				buffer += 2;
 
 				*(uint32 *)&_decBuffer[8 * index0 + 2] = start;
@@ -276,7 +291,7 @@ uint32 CompressedStream::decode(Common::SeekableReadStream *stream, uint32 a2, u
 				if (index1 == index0) {
 					uint32 minVal = *(uint32 *)&_decBuffer[2];
 
-					for (int i = 1; i < 64; i++) {
+					for (uint32 i = 1; i < 64; i++) {
 						uint32 current = *(uint32 *)&_decBuffer[i * 8 + 2];
 
 						if (current < minVal) {
@@ -288,18 +303,18 @@ uint32 CompressedStream::decode(Common::SeekableReadStream *stream, uint32 a2, u
 			} else {
 				uint32 decoded = (var << (32 - position)) >> (32 - a3);
 
-				*(uint16 *)buffer = *(uint16 *)&_decBuffer[8 * decoded];
+				WRITE_UINT16(buffer, READ_UINT16(&_decBuffer[8 * decoded]));
 				buffer += 2;
 
 				start += a3 + 2;
 
 				index0 = decoded;
-				*(uint32 *)&_decBuffer[8 * decoded + 2] = start;
+				WRITE_UINT32(&_decBuffer[8 * decoded + 2], start);
 
 				if (index1 == index0) {
 					uint32 minVal = *(uint32 *)&_decBuffer[2];
 
-					for (int i = 1; i < 64; i++) {
+					for (uint32 i = 1; i < 64; i++) {
 						uint32 current = *(uint32 *)&_decBuffer[i * 8 + 2];
 
 						if (current < minVal) {
@@ -311,21 +326,21 @@ uint32 CompressedStream::decode(Common::SeekableReadStream *stream, uint32 a2, u
 			}
 
 		} else {
-			uint32 decoded = multiplier * (uint32)(var << (32 - position)) >> (32 - a2);
+			uint32 decoded = (multiplier * (uint32)(var << (32 - position))) >> (32 - a2);
 
-			*(uint16 *)buffer = decoded;
+			WRITE_UINT16(buffer, (uint16)decoded);
 			buffer += 2;
 
 			// Store decoded value
 			index0 = index1;
-			*(uint16 *)&_decBuffer[8 * index1] = decoded;
+			WRITE_UINT16(&_decBuffer[8 * index1], (uint16)decoded);
 
 			// Advance buffer start pointer
 			start += a2 + 1;
 		}
 	}
 
-	return buffer - bufferStart;
+	return (uint32)(buffer - bufferStart);
 }
 
 #pragma endregion

@@ -88,7 +88,7 @@ void Puzzle::alloc() {
 		(*it)->alloc();
 }
 
-void Puzzle::initializeImage(ImageHandle *image) {
+void Puzzle::initializeImage(ImageHandle *image) const{
 	Common::String path;
 	switch (image->getArchiveType()) {
 	default:
@@ -143,7 +143,7 @@ void Puzzle::dealloc() {
 		(*it)->dealloc();
 }
 
-void Puzzle::update(ScreenManager *screen) {
+void Puzzle::update() {
 	if (_background && _background->isActive()) {
 
 		// Initialize background if needed
@@ -518,14 +518,7 @@ bool Puzzle::imagePriorityCompare(ImageHandle *image1, ImageHandle *image2) {
 #pragma region Serializable
 
 void Puzzle::saveLoadWithSerializer(Common::Serializer &s) {
-	if (s.isSaving()) {
-		// FIXME: What happens when we try loading back that savegame?
-		if (_background)
-			_background->saveLoadWithSerializer(s);
-	}
-
-	if (s.isLoading())
-		_background->saveLoadWithSerializer(s);
+	SaveManager::syncWithFlag(s, _background);
 
 	SaveManager::syncArray(s, &_movabilities);
 	SaveManager::syncArray(s, &_soundItems);

@@ -58,7 +58,7 @@ SoundEntry::SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom
 SoundEntry::~SoundEntry() {
 }
 
-bool SoundEntry::isPlaying() {
+bool SoundEntry::isPlaying() const {
 	return getSound()->getMixer()->isSoundHandleActive(_handle);
 }
 
@@ -102,7 +102,7 @@ bool SoundEntry::checkPlaying() {
 	return (playing == false);
 }
 
-void SoundEntry::setVolumeAndPan() {
+void SoundEntry::setVolumeAndPan() const {
 	// Compute volume and pan
 
 	int32 volume = (int32)(-10000.0f - _multiplier * 0.01f * _volume * 0.01f * getSound()->getGlobalVolume() * -10000.0f);
@@ -210,6 +210,9 @@ SoundEntryStream::SoundEntryStream(Id soundId, SoundType type, Common::String na
 
 SoundEntryStream::~SoundEntryStream() {
 	stopAndReleaseSoundBuffer();
+
+	// Duplicated?
+	SAFE_DELETE(_audioStream);
 }
 
 void SoundEntryStream::play(bool loop) {
@@ -291,6 +294,8 @@ SoundEntryData::SoundEntryData(Id soundId, SoundType type, Common::String name, 
 
 SoundEntryData::~SoundEntryData() {
 	stopAndReleaseSoundBuffer();
+
+	SAFE_DELETE(_audioStream); // Duplicated?
 }
 
 void SoundEntryData::play(bool loop) {
@@ -481,7 +486,7 @@ void SoundManager::stopType(SoundType soundType, uint32 a2) {
 	}
 }
 
-void SoundManager::setMultiplier(SoundType soundType, uint32 multiplier) {
+void SoundManager::setMultiplier(SoundType soundType, int32 multiplier) {
 	for (Common::Array<SoundEntry *>::iterator it = _entries.begin(); it != _entries.end(); it++) {
 		SoundEntry *entry = (*it);
 
@@ -570,7 +575,7 @@ void SoundManager::playSounds() {
 
 //////////////////////////////////////////////////////////////////////////
 // Sound Entries
-void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int soundChunk) {
+void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, uint32 soundChunk) {
 	// Check if we already have a sound entry for this id
 	if (getEntry(soundId))
 		return;
@@ -595,8 +600,6 @@ void SoundManager::saveLoadWithSerializer(Common::Serializer &s) {
 	s.syncAsUint32LE(_globalVolume);
 
 	Common::Array<Id> _preloadedSounds;
-	uint32 preloadedCount = 0;
-	uint32 playingCount = 0;
 
 	// Load sound data
 	for (Common::Array<SoundEntry *>::iterator it = _entries.begin(); it != _entries.end(); it++) {
@@ -628,8 +631,8 @@ void SoundManager::saveLoadWithSerializer(Common::Serializer &s) {
 	}
 
 	// Compute playing and preloaded sounds
-	preloadedCount = _preloadedSounds.size();
-	playingCount   = _savedSounds.size();
+	uint32 preloadedCount = _preloadedSounds.size();
+	uint32 playingCount   = _savedSounds.size();
 
 	// Handle preloaded sounds
 	s.syncAsUint32LE(preloadedCount);
@@ -639,11 +642,9 @@ void SoundManager::saveLoadWithSerializer(Common::Serializer &s) {
 			s.syncAsUint32LE(_preloadedSounds[i]);
 
 		if (s.isLoading()) {
-			for (uint32 i = 0; i < preloadedCount; i++) {
-				Id id = 0;
-				s.syncAsUint32LE(id);
-				preload(id);
-			}
+			Id id = 0;
+			s.syncAsUint32LE(id);
+			preload(id);
 		}
 	}
 
@@ -782,7 +783,7 @@ void SoundItem::setField1D(int32 val) {
 	if (val > 100 || val < 0)
 		return;
 
-	_field_1D = val;
+	_field_1D = (uint32)val;
 }
 
 void SoundItem::setAngle(float angle) {
@@ -802,7 +803,7 @@ void SoundItem::setPans(float pan1, float pan2) {
 	_pan2 = pan2;
 }
 
-int32 SoundItem::computePan(float angle) {
+int32 SoundItem::computePan(float angle) const {
 	return (int32)(getSoundDirection() * (sin(angle * SOUND_FRAC_VALUE + _angle) * _field_1D));
 }
 
@@ -813,7 +814,7 @@ void SoundItem::computeAndSetPan(float alp, bool apply) {
 		setPanOnEntry(_pan);
 }
 
-bool SoundItem::checkCurrentPuzzle() {
+bool SoundItem::checkCurrentPuzzle() const {
 	Id id = 0;
 
 	if (getApp()->hasCurrentPuzzle())
@@ -855,6 +856,10 @@ SoundHandler::~SoundHandler() {
 	CLEAR_ARRAY(SoundItem, _soundItems2);
 	CLEAR_ARRAY(SoundItem, _soundItems3);
 	CLEAR_ARRAY(SoundItem, _soundItems4);
+
+	// Zero-out passed pointers
+	_sounds1 = NULL;
+	_sounds2 = NULL;
 }
 
 void SoundHandler::reset() {
@@ -891,6 +896,9 @@ bool SoundHandler::processSounds() {
 				else
 					foundType = 2;
 			}
+		} else {
+			// FIXME: Check that this is intended
+			item2 = _sounds2->front();
 		}
 
 		switch (foundType){
@@ -981,7 +989,7 @@ bool SoundHandler::updateItems(uint32 chunkCount) {
 		item->setField39(-(item->getPan1() - item->getPan2()) / field3D);
 	}
 
-	if ((chunkCount - 1) <= 0)
+	if (chunkCount <= 1)
 		return false;
 
 	for (Common::Array<SoundItem *>::iterator it = _soundItems3.begin(); it != _soundItems3.end(); it++) {
@@ -1016,10 +1024,10 @@ bool SoundHandler::updateItems2(uint32 chunkCount) {
 			_soundItems2.remove_at(i);
 		} else {
 			item->setPan1(item->getPan1() + item->getField39());
-			item->getEntry()->setPan(item->getPan1());
+			item->getEntry()->setPan((uint32)item->getPan1());
 
 			item->setVolume1(item->getVolume1() + item->getField35());
-			item->getEntry()->setVolume(item->getVolume1());
+			item->getEntry()->setVolume((uint32)item->getVolume1());
 
 			i++;
 		}
@@ -1036,14 +1044,14 @@ bool SoundHandler::updateItems3(uint32 chunkCount) {
 		SoundItem *item = (*it);
 
 		if (item->getField3D() <= chunkCount) {
-			item->getEntry()->setVolume(item->getVolume2());
-			item->getEntry()->setPan(item->getPan2());
+			item->getEntry()->setVolume((uint32)item->getVolume2());
+			item->getEntry()->setPan((uint32)item->getPan2());
 		} else {
 			item->setPan1(item->getPan1() + item->getField39());
-			item->getEntry()->setPan(item->getPan1());
+			item->getEntry()->setPan((uint32)item->getPan1());
 
 			item->setVolume1(item->getVolume1() + item->getField35());
-			item->getEntry()->setVolume(item->getVolume1());
+			item->getEntry()->setVolume((uint32)item->getVolume1());
 		}
 	}
 

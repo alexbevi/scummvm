@@ -27,6 +27,14 @@
 
 namespace Ring {
 
+Hotspot::Hotspot() {
+	_enabled = false;
+	_field_11 = 0;
+	_cursorId = kCursorInvalid;
+	_target = 0;
+	_key = Common::KEYCODE_INVALID;
+}
+
 Hotspot::Hotspot(const Common::Rect &rect, bool enabled, uint32 a2, CursorId cursorId, Id target) {
 	_rect = rect;
 	_enabled = enabled;
@@ -43,7 +51,7 @@ bool Hotspot::contains(const Common::Point &point) const {
 	return _enabled && _rect.contains(point);
 }
 
-Common::Point Hotspot::getCenter() {
+Common::Point Hotspot::getCenter() const {
 	return Common::Point(_rect.left + _rect.width() / 2, _rect.top + _rect.height() / 2);
 }
 

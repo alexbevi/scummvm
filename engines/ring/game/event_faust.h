@@ -37,9 +37,9 @@ public:
 	EventHandlerFaust(Application *application);
 	virtual ~EventHandlerFaust();
 
-	virtual void onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed);
-	virtual void onMouseLeftButtonDown(Common::Event &evt);
-	virtual void onMouseRightButtonUp(Common::Event &evt);
+	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
+	virtual void onMouseLeftButtonDown(const Common::Event &evt);
+	virtual void onMouseRightButtonUp(const Common::Event &evt);
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
 

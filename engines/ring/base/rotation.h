@@ -100,7 +100,7 @@ public:
 	void setAmbientSoundOn(Id soundId);
 	void setAmbientSoundOff(Id soundId);
 	void updateAmbientSoundPan(bool apply);
-	void updateSoundItems();
+	void updateSoundItems(bool updateItems);
 	AssociativeArray<SoundItem *> *getSoundItems() { return &_soundItems; }
 
 	// Serializable

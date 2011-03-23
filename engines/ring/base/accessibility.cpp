@@ -67,6 +67,9 @@ void Accessibility::disableHotspot() {
 #pragma region Serializable
 
 void Accessibility::saveLoadWithSerializer(Common::Serializer &s) {
+	if (!_hotspot)
+		error("[Accessibility::saveLoadWithSerializer] Hotspot is not initialized properly");
+
 	_hotspot->saveLoadWithSerializer(s);
 }
 

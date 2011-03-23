@@ -36,11 +36,25 @@ namespace Ring {
 
 #pragma region ImageHandle
 
-ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
+ImageHandle::ImageHandle() : Image() {
+	_isActive = false;
+	_drawType = kDrawTypeInvalid;
+	_priority = 0;
+	_imageCount = 0;
+	_field_6C = 0;
+	_imageType = kImageTypeBMP;
+	_objectPresentation = NULL;
+	_animation = NULL;
+	_zone = kZoneNone;
+	_loadFrom = kLoadFromInvalid;
+	_archiveType = kArchiveInvalid;
+}
+
+ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) : Image() {
 	init(nameId, point, active, drawType, priority, imageCount, zone, loadFrom, imageType, archiveType);
 }
 
-ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) {
+ImageHandle::ImageHandle(Common::String nameId, const Common::Point &point, bool active, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType) : Image() {
 	init(nameId, point, active, kDrawType1, 0, 0, zone, loadFrom, imageType, archiveType);
 }
 
@@ -65,6 +79,10 @@ void ImageHandle::init(Common::String nameId, const Common::Point &point, bool a
 	_zone = zone;
 	_loadFrom = loadFrom;
 	_archiveType = archiveType;
+
+	_filename = "";
+	_directory = "";
+	_surface = NULL;
 }
 
 #pragma region Serializable
@@ -95,12 +113,12 @@ Image::~Image() {
 	destroy();
 }
 
-void Image::create(uint32 depth, uint32 direction, uint32 width, uint32 height) {
+void Image::create(uint32 depth, uint32, uint32 width, uint32 height) {
 	if (_surface)
 		_surface->free();
 
 	_surface = new Graphics::Surface();
-	_surface->create(width, height, depth);
+	_surface->create((uint16)width, (uint16)height, (uint8)depth);
 }
 
 void Image::destroy() {
@@ -168,7 +186,7 @@ bool Image::load(Common::String filename, ArchiveType type, Zone zone, LoadFrom 
 	return true;
 }
 
-Image *Image::zoom(uint32 xZoom, uint32 yZoom) {
+Image *Image::zoom(float xZoom, float yZoom) {
 	if (!isInitialized())
 		error("[Image::zoom] Image not initialized!");
 
@@ -176,8 +194,8 @@ Image *Image::zoom(uint32 xZoom, uint32 yZoom) {
 		error("[Image::zoom] Not a 24bpp image!");
 
 	// Create new image to store zoomed image
-	uint32 width = getWidth() * xZoom;
-	uint32 height = getHeight() * yZoom;
+	uint32 width = (uint32)(getWidth() * xZoom);
+	uint32 height = (uint32)(getHeight() * yZoom);
 
 	Image *image = new Image();
 	image->create(24, 2, width, height);
@@ -186,7 +204,7 @@ Image *Image::zoom(uint32 xZoom, uint32 yZoom) {
 
 	for (uint32 j = 0; j < height; j++) {
 		for (uint32 i = 0; i < width; i++) {
-			byte *data = (byte *)_surface->getBasePtr(i / xZoom, j / yZoom);
+			byte *data = (byte *)_surface->getBasePtr((uint32)(i / xZoom), (uint32)(j / yZoom));
 
 			zoomedData[0] = data[0];
 			zoomedData[1] = data[1];
@@ -199,13 +217,16 @@ Image *Image::zoom(uint32 xZoom, uint32 yZoom) {
 	return image;
 }
 
-Common::Rect Image::draw(Graphics::Surface *surface, Common::Point dest) {
+Common::Rect Image::draw(Graphics::Surface *surface, const Common::Point &dest) {
 	return draw(surface, dest, _surface->w, _surface->h, 0, 0);
 }
 
-Common::Rect Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset) {
+Common::Rect Image::draw(Graphics::Surface *surface, const Common::Point &dest, uint32 srcWidth, uint32 srcHeight, int32 srcX, int32 offset) {
+	if (!_surface)
+		error("[Image::draw] Image surface not initialized properly");
+
 	// Compute destination rectangle
-	Common::Rect destRect(dest.x, dest.y, dest.x + srcWidth, dest.y + srcHeight);
+	Common::Rect destRect(dest.x, dest.y, dest.x + (int16)srcWidth, dest.y + (int16)srcHeight);
 	destRect.clip(640, 480);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -213,12 +234,12 @@ Common::Rect Image::draw(Graphics::Surface *surface, Common::Point dest, uint32 
 	surface->fillRect(destRect, Color(255, 0, 0).getColor());
 	//////////////////////////////////////////////////////////////////////////
 
-	byte *src  = (byte*)_surface->getBasePtr(srcX, getHeight() - (srcHeight + offset));
+	byte *src  = (byte*)_surface->getBasePtr(srcX, getHeight() - (srcHeight + (uint32)offset));
 	byte *dst = (byte *)surface->getBasePtr(640, 480);
-	uint32 height = destRect.height();
+	int16 height = destRect.height();
 
 	while (--height) {
-		memcpy(dst - (destRect.top * surface->pitch + destRect.left), src, destRect.width() * _surface->bytesPerPixel);
+		memcpy(dst - (destRect.top * surface->pitch + destRect.left), src, (uint16)destRect.width() * _surface->bytesPerPixel);
 		dst -= surface->pitch;
 		src += _surface->pitch;
 	}

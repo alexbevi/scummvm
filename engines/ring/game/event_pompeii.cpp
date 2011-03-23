@@ -41,20 +41,20 @@ EventHandlerPompeii::~EventHandlerPompeii() {
 
 #pragma region Event handling
 
-void EventHandlerPompeii::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
-	error("[EventHandlerPompeii::onMouseLeftButtonUp] Not implemented");
+void EventHandlerPompeii::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
+	error("[EventHandlerPompeii::onMouseLeftButtonUp] Not implemented (evt: %d, CTRL pressed: %d)", evt.type, isControlPressed);
 }
 
-void EventHandlerPompeii::onMouseLeftButtonDown(Common::Event &evt) {
-	error("[EventHandlerPompeii::onMouseLeftButtonDown] Not implemented");
+void EventHandlerPompeii::onMouseLeftButtonDown(const Common::Event &evt) {
+	error("[EventHandlerPompeii::onMouseLeftButtonDown] Not implemented (evt: %d)", evt.type);
 }
 
-void EventHandlerPompeii::onMouseRightButtonUp(Common::Event &evt) {
-	error("[EventHandlerPompeii::onMouseRightButtonUp] Not implemented");
+void EventHandlerPompeii::onMouseRightButtonUp(const Common::Event &evt) {
+	error("[EventHandlerPompeii::onMouseRightButtonUp] Not implemented (evt: %d)", evt.type);
 }
 
 void EventHandlerPompeii::onKeyDown(Common::Event &evt) {
-	error("[EventHandlerPompeii::onKeyDown] Not implemented");
+	error("[EventHandlerPompeii::onKeyDown] Not implemented (evt: %d)", evt.type);
 }
 
 #pragma endregion
@@ -62,7 +62,7 @@ void EventHandlerPompeii::onKeyDown(Common::Event &evt) {
 #pragma region Timer
 
 void EventHandlerPompeii::onTimer(TimerId timerId) {
-	error("[EventHandlerPompeii::onTimer] Not implemented");
+	error("[EventHandlerPompeii::onTimer] Not implemented (id: %d)", timerId);
 }
 
 #pragma endregion

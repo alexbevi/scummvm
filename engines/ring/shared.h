@@ -139,7 +139,7 @@ enum LoadFrom {
 };
 
 enum Zone {
-	kZoneNone = 0,
+	kZoneNone    = 0,
 	kZoneSY      = 1,
 
 	// Game-specific zones
@@ -228,10 +228,10 @@ typedef int32 Id;
 class BaseId {
 public:
 	BaseId() : _id(0) {}
-	BaseId(uint32 i) : _id(i) {}
+	BaseId(int32 i) : _id(i) {}
 
-	operator uint32() { return _id;	}
-	uint32 id()       { return _id; }
+	operator int32()  { return _id; }
+	int32 id()        { return _id; }
 
 	bool operator==(const int32 &i) {
 		return _id == i;
@@ -295,7 +295,7 @@ struct Color {
 
 // Configuration data
 struct SoundConfiguration {
-	int soundChunck;
+	uint32 soundChunck;
 	LoadFrom loadFrom;
 
 	SoundConfiguration() {

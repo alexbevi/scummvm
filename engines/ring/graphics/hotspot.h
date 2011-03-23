@@ -35,6 +35,7 @@ namespace Ring {
 
 class Hotspot : public Common::Serializable {
 public:
+	Hotspot();
 	Hotspot(const Common::Rect &rect, bool enabled, uint32 a2, CursorId cursorId, Id target);
 	~Hotspot();
 
@@ -44,7 +45,7 @@ public:
 	bool isEnabled() { return _enabled; }
 	bool contains(const Common::Point &point) const;
 
-	Common::Point getCenter();
+	Common::Point getCenter() const;
 
 	// Serializable
 	void saveLoadWithSerializer(Common::Serializer &s);

@@ -47,7 +47,7 @@ struct ObjectCursor : public Common::Serializable {
 	uint32      frameCount;
 	CursorType  type;
 	float       frameRate;
-	uint32      field_14;
+	byte        field_14;
 	LoadFrom    loadFrom;
 	ArchiveType archiveType;
 
@@ -70,7 +70,7 @@ public:
 	~ObjectPresentation();
 
 	// Text
-	void addTextToPuzzle(Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background);
+	void addTextToPuzzle(Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, const Color &foreground, const Color &background);
 	void setTextToPuzzle(uint32 textIndex, Common::String text);
 	void setTextCoordinatesToPuzzle(uint32 textIndex, const Common::Point &point);
 	uint32 getTextWidth(uint32 textIndex);
@@ -85,7 +85,7 @@ public:
 
 	// Animation
 	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32 a7, DrawType drawType, uint32 priority, byte imageCount, uint32 frameCount, float frameRate, byte a13, LoadFrom loadFrom);
-	void addAnimationToRotation(Rotation *rotation, uint32 layer, uint32 a3, float a4, uint32 a5);
+	void addAnimationToRotation(Rotation *rotation, uint32 layer, uint32 a3, float a4, byte a5);
 	void setAnimationOnPuzzle(uint32 animationIndex, ObjectId objectId);
 	void setAnimationOnRotation(uint32 animationIndex, ObjectId objectId);
 	void setAnimationStartFrame(uint32 startFrame);
@@ -134,7 +134,7 @@ public:
 
 	// Presentation
 	void addPresentation();
-	void addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background);
+	void addTextToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String text, const Common::Point &point, FontId fontId, const Color &foreground, const Color &background);
 	void setTextToPuzzle(uint32 presentationIndex, uint32 textIndex, Common::String text);
 	void setTextCoordinatesToPuzzle(uint32 presentationIndex, uint32 textIndex, const Common::Point &point);
 	uint32 getTextWidth(uint32 presentationIndex, uint32 textIndex);
@@ -162,7 +162,7 @@ public:
 
 	// Animation
 	void addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, ImageType imageType, const Common::Point &point, uint32 a8, DrawType drawType, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom);
-	void addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, uint32 a7);
+	void addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, byte a7);
 	void setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId);
 	void setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId);
 	void setAnimationStartFrame(uint32 presentationIndex, uint32 startFrame);
@@ -173,10 +173,10 @@ public:
 	void pauseFrameAnimation(uint32 presentationIndex, uint32 frame, uint32 a3, uint32 a4);
 
 	// Cursor
-	void setActiveCursor(const Common::Point &point,  uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType);
-	void setPassiveCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType);
-	void setActiveDrawCursor(const Common::Point &point,  uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType);
-	void setPassiveDrawCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType);
+	void setActiveCursor(const Common::Point &point,  uint32 frameCount, CursorType type, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType);
+	void setPassiveCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType);
+	void setActiveDrawCursor(const Common::Point &point,  uint32 frameCount, CursorType type, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType);
+	void setPassiveDrawCursor(const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType);
 
 	// Accessors
 	void setAnimationImage(AnimationImage *image) { _animationImage = image; }
@@ -207,7 +207,7 @@ private:
 	ObjectCursor _activeDrawCursor;
 	AnimationImage *_animationImage;
 
-	void setCursor(ObjectCursor *cursor, const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, uint32 a7, LoadFrom loadFrom, ArchiveType archiveType);
+	void setCursor(ObjectCursor *cursor, const Common::Point &point, uint32 frameCount, CursorType type, float frameRate, byte a7, LoadFrom loadFrom, ArchiveType archiveType) const;
 };
 
 class ObjectInfo : public BaseObject {

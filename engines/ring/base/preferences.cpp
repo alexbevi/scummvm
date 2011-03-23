@@ -39,7 +39,7 @@ namespace Ring {
 PreferenceHandler::PreferenceHandler(Application *application) : _app(application) {
 	_volume = 0;
 	_volumeDialog = 0;
-	_reverseStereo = 0;
+	_reverseStereo = false;
 	_showSubtitles = false;
 }
 
@@ -86,7 +86,7 @@ void PreferenceHandler::loadDefaults() {
 	if (sscanf(line.c_str(), "%d %d %d %d", &volume, &volumeDialog, &reverseStereo, &showSubtitles) != 4)
 		error("[PreferenceHandler::load] Invalid configuration format");
 
-	set(volume, volumeDialog, reverseStereo, showSubtitles);
+	set(volume, volumeDialog, reverseStereo, (bool)showSubtitles);
 	setup();
 }
 
@@ -97,7 +97,7 @@ void PreferenceHandler::save(int32 volume, int32 volumeDialog, int32 reverseSter
 	ConfMan.setInt("music_volume", _volume);
 	ConfMan.setInt("speech_volume", _volumeDialog);
 	ConfMan.setBool("subtitles", _showSubtitles);
-	ConfMan.setBool("reverse_stereo", _reverseStereo);
+	ConfMan.setInt("reverse_stereo", _reverseStereo);
 }
 
 void PreferenceHandler::set(int32 volume, int32 volumeDialog, int32 reverseStereo, bool showSubtitles) {

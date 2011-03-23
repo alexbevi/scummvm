@@ -110,7 +110,7 @@ public:
 	// Game type
 	const RingGameDescription *getGameDescription() { return _gameDescription; }
 	RingGameType getGameType() { return (RingGameType)_gameDescription->gameType; }
-	bool isMultiLanguage();
+	bool isMultiLanguage() const;
 
 	// Enhanced save/load
 	virtual SaveStateList listSaves(const char *target) const;

@@ -128,19 +128,19 @@ void Rotation::alloc() {
 	_float4 = header.field_18 - header.field_14;
 	_float5 = (header.field_18 + header.field_14) * 0.5f;
 
-	for (uint32 i = 0; i < ARRAYSIZE(_rotationTable); i += 64) {
+	for (uint32 i = 0; i < ARRAYSIZE(_rotationTable) - 64; i += 64) {
 		for (uint32 j = 0; j < 32; j++)
-			_rotationTable[i + j] = rnd(_amplitude);
+			_rotationTable[i + j] = rnd((uint32)_amplitude);
 	}
 
-	_field_45 = rnd(_field_35);
-	_field_49 = rnd(_field_35);
-	_field_4D = rnd(_field_35);
-	_field_51 = rnd(_field_35);
-	_field_55 = rnd(_field_35);
-	_field_59 = rnd(_field_35);
-	_field_5D = rnd(_field_35);
-	_field_61 = rnd(_field_35);
+	_field_45 = rnd((uint32)_field_35);
+	_field_49 = rnd((uint32)_field_35);
+	_field_4D = rnd((uint32)_field_35);
+	_field_51 = rnd((uint32)_field_35);
+	_field_55 = rnd((uint32)_field_35);
+	_field_59 = rnd((uint32)_field_35);
+	_field_5D = rnd((uint32)_field_35);
+	_field_61 = rnd((uint32)_field_35);
 }
 
 void Rotation::dealloc() {
@@ -425,7 +425,7 @@ bool Rotation::setRolTo(float alp, float bet, float ran) {
 	}
 
 	// Compute count
-	uint32 count = alpDiff * 0.8;
+	uint32 count = (uint32)(alpDiff * 0.8f);
 	if (count == 0)
 		return true;
 
@@ -545,8 +545,11 @@ void Rotation::updateAmbientSoundPan(bool apply) {
 	}
 }
 
-void Rotation::updateSoundItems() {
+void Rotation::updateSoundItems(bool updateItems) {
 	updateAmbientSoundPan(false);
+
+	if (!updateItems)
+		return;
 
 	for (Common::Array<SoundItem *>::iterator it = _soundItems.begin(); it != _soundItems.end(); it++) {
 		SoundItem *item = (*it);
@@ -587,14 +590,7 @@ SoundItem *Rotation::getSoundItem(Id soundId) {
 #pragma region Serializable
 
 void Rotation::saveLoadWithSerializer(Common::Serializer &s) {
-	if (s.isSaving()) {
-		// FIXME: What happens when we try loading back that savegame?
-		if (_imageHandle)
-			_imageHandle->saveLoadWithSerializer(s);
-	}
-
-	if (s.isLoading())
-		_imageHandle->saveLoadWithSerializer(s);
+	SaveManager::syncWithFlag(s, _imageHandle);
 
 	SaveManager::syncArray(s, &_movabilities);
 

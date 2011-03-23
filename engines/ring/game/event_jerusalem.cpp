@@ -41,20 +41,20 @@ EventHandlerJerusalem::~EventHandlerJerusalem() {
 
 #pragma region Event handling
 
-void EventHandlerJerusalem::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
-	error("[EventHandlerJerusalem::onMouseLeftButtonUp] Not implemented");
+void EventHandlerJerusalem::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
+	error("[EventHandlerJerusalem::onMouseLeftButtonUp] Not implemented (evt: %d, CTRL pressed: %d)", evt.type, isControlPressed);
 }
 
-void EventHandlerJerusalem::onMouseLeftButtonDown(Common::Event &evt) {
-	error("[EventHandlerJerusalem::onMouseLeftButtonDown] Not implemented");
+void EventHandlerJerusalem::onMouseLeftButtonDown(const Common::Event &evt) {
+	error("[EventHandlerJerusalem::onMouseLeftButtonDown] Not implemented (evt: %d)", evt.type);
 }
 
-void EventHandlerJerusalem::onMouseRightButtonUp(Common::Event &evt) {
-	error("[EventHandlerJerusalem::onMouseRightButtonUp] Not implemented");
+void EventHandlerJerusalem::onMouseRightButtonUp(const Common::Event &evt) {
+	error("[EventHandlerJerusalem::onMouseRightButtonUp] Not implemented (evt: %d)", evt.type);
 }
 
 void EventHandlerJerusalem::onKeyDown(Common::Event &evt) {
-	error("[EventHandlerJerusalem::onKeyDown] Not implemented");
+	error("[EventHandlerJerusalem::onKeyDown] Not implemented (evt: %d)", evt.type);
 }
 
 #pragma endregion
@@ -62,7 +62,7 @@ void EventHandlerJerusalem::onKeyDown(Common::Event &evt) {
 #pragma region Timer
 
 void EventHandlerJerusalem::onTimer(TimerId timerId) {
-	error("[EventHandlerJerusalem::onTimer] Not implemented");
+	error("[EventHandlerJerusalem::onTimer] Not implemented (id: %d)", timerId);
 }
 
 #pragma endregion

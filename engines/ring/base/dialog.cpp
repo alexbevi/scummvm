@@ -29,6 +29,8 @@
 #include "ring/base/event.h"
 #include "ring/base/text.h"
 
+#include "ring/graphics/screen.h"
+
 #include "ring/ring.h"
 #include "ring/helpers.h"
 
@@ -216,6 +218,8 @@ void Dialog::parseLyrics(Common::String line) {
 	for (Common::String::iterator c = dialogLine->line2.begin(); c != dialogLine->line2.end(); ++c)
 		if (*c == 'á')
 			*c = ' ';
+
+	_lines.push_back(dialogLine);
 }
 
 bool Dialog::readAnimation(Common::String filename) {
@@ -332,32 +336,34 @@ void DialogHandler::play() {
 		Text *line2 = NULL;
 
 		// Create text from dialog lines
-		if (!dialog->getLine1(index).empty()) {
+		Common::String dialogLine1 = dialog->getLine1((uint32)index);
+		if (!dialogLine1.empty()) {
 			line1 = new Text();
-			line1->init(dialog->getLine1(index), Common::Point(0, 0), _fontId, _subtitleColor, _subtitlesBackgroundColor);
+			line1->init(dialogLine1, Common::Point(0, 0), _fontId, _subtitleColor, _subtitlesBackgroundColor);
 		}
 
-		if (!dialog->getLine2(index).empty()) {
+		Common::String dialogLine2 = dialog->getLine2((uint32)index);
+		if (!dialogLine2.empty()) {
 			line2 = new Text();
-			line2->init(dialog->getLine2(index), Common::Point(0, 0), _fontId, _subtitleColor, _subtitlesBackgroundColor);
+			line2->init(dialogLine2, Common::Point(0, 0), _fontId, _subtitleColor, _subtitlesBackgroundColor);
 		}
 
 		// Set text coordinates
 		if (line1) {
 			if (line2) {
-				line1->setCoordinates(Common::Point(320 - line1->getWidth() / 2, _field_1C - line1->getHeight() - _field_20 - line2->getHeight()));
-				line2->setCoordinates(Common::Point(320 - line2->getWidth() / 2, _field_1C - line2->getHeight()));
+				line1->setCoordinates(Common::Point((int16)(320 - line1->getWidth() / 2), (int16)(_field_1C - (line1->getHeight() + _field_20 + line2->getHeight()))));
+				line2->setCoordinates(Common::Point((int16)(320 - line2->getWidth() / 2), (int16)(_field_1C - line2->getHeight())));
 			} else {
-				line1->setCoordinates(Common::Point(320 - line1->getWidth() / 2, _field_1C - line1->getHeight()));
+				line1->setCoordinates(Common::Point((int16)(320 - line1->getWidth() / 2), (int16)(_field_1C - line1->getHeight())));
 			}
 		}
 
 		if (_showSubtitles) {
 			if (line1)
-				line1->draw();
+				getApp()->getScreenManager()->drawText(line1);
 
 			if (line2)
-				line2->draw();
+				getApp()->getScreenManager()->drawText(line2);
 		}
 
 		SAFE_DELETE(line1);

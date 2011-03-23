@@ -41,20 +41,20 @@ EventHandlerPilgrim3::~EventHandlerPilgrim3() {
 
 #pragma region Event handling
 
-void EventHandlerPilgrim3::onMouseLeftButtonUp(Common::Event &evt, bool isControlPressed) {
-	error("[EventHandlerPilgrim3::onMouseLeftButtonUp] Not implemented");
+void EventHandlerPilgrim3::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
+	error("[EventHandlerPilgrim3::onMouseLeftButtonUp] Not implemented (evt: %d, CTRL pressed: %d)", evt.type, isControlPressed);
 }
 
-void EventHandlerPilgrim3::onMouseLeftButtonDown(Common::Event &evt) {
-	error("[EventHandlerPilgrim3::onMouseLeftButtonDown] Not implemented");
+void EventHandlerPilgrim3::onMouseLeftButtonDown(const Common::Event &evt) {
+	error("[EventHandlerPilgrim3::onMouseLeftButtonDown] Not implemented (evt: %d)", evt.type);
 }
 
-void EventHandlerPilgrim3::onMouseRightButtonUp(Common::Event &evt) {
-	error("[EventHandlerPilgrim3::onMouseRightButtonUp] Not implemented");
+void EventHandlerPilgrim3::onMouseRightButtonUp(const Common::Event &evt) {
+	error("[EventHandlerPilgrim3::onMouseRightButtonUp] Not implemented (evt: %d)", evt.type);
 }
 
 void EventHandlerPilgrim3::onKeyDown(Common::Event &evt) {
-	error("[EventHandlerPilgrim3::onKeyDown] Not implemented");
+	error("[EventHandlerPilgrim3::onKeyDown] Not implemented (evt: %d)", evt.type);
 }
 
 #pragma endregion
@@ -62,7 +62,7 @@ void EventHandlerPilgrim3::onKeyDown(Common::Event &evt) {
 #pragma region Timer
 
 void EventHandlerPilgrim3::onTimer(TimerId timerId) {
-	error("[EventHandlerPilgrim3::onTimer] Not implemented");
+	error("[EventHandlerPilgrim3::onTimer] Not implemented (id: %d)", timerId);
 }
 
 #pragma endregion

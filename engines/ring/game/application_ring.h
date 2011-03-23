@@ -90,7 +90,7 @@ private:
 	void initZoneAS();
 	void initZoneN2();
 
-	uint32 getCdForZone(Zone zone);
+	uint32 getCdForZone(Zone zone) const;
 	bool isDataPresent(SetupType type);
 };
 

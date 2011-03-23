@@ -66,7 +66,16 @@ Cinematic::Cinematic() {
 }
 
 Cinematic::~Cinematic() {
-	deinit();
+	SAFE_DELETE(_stream);
+
+	// Free buffers
+	free(_buffer);
+	_buffer2 = NULL;
+
+	free(_backBuffer);
+	free(_tControlBuffer);
+	free(_cacheBuffer);
+	free(_controlData);
 }
 
 bool Cinematic::init(Common::String filename) {
@@ -123,8 +132,11 @@ void Cinematic::deinit() {
 }
 
 void Cinematic::readFrameHeader() {
+	if (!_tControlBuffer)
+		error("[Cinematic::readFrameHeader] Control buffer not initialized");
+
 	// Reset tControl buffer
-	memset(&_tControlBuffer, 0, CINEMATIC_TCONTROLBUFFER_SIZE);
+	memset(_tControlBuffer, 0, CINEMATIC_TCONTROLBUFFER_SIZE);
 
 	// Read frame header
 	FrameHeader header;
@@ -135,24 +147,35 @@ void Cinematic::readFrameHeader() {
 }
 
 bool Cinematic::tControl() {
+	if (!_tControlBuffer)
+		error("[Cinematic::tControl] Control buffer not initialized");
+
+	if (!_stream)
+		error("[Cinematic::tControl] Stream not initialized");
+
+	if (!_controlData)
+		error("[Cinematic::tControl] Control data not initialized");
+
 	// Reset tControl buffer
-	memset(&_tControlBuffer, 0, CINEMATIC_TCONTROLBUFFER_SIZE);
+	memset(_tControlBuffer, 0, CINEMATIC_TCONTROLBUFFER_SIZE);
 
 	// Read tControl header
 	_tControlHeader.load(_stream);
 
 	// Read data
-	uint32 size = 2 * _tControlHeader.field_C + 2;
+	uint32 dataSize = 2 * _tControlHeader.field_C + 2;
 	free(_controlData);
-	_controlData = (byte *)malloc(size + _tControlHeader.field_0);
+	_controlData = (byte *)malloc(dataSize + _tControlHeader.field_0);
+	if (!_controlData)
+		error("[Cinematic::tControl] Cannot allocated memory for control data");
 
-	_stream->read(_controlData, size + _tControlHeader.field_0);
+	_stream->read(_controlData, dataSize + _tControlHeader.field_0);
 
 	// Process
-	_field_3A = READ_LE_UINT32(_controlData + size);
+	_field_3A = READ_LE_UINT32(_controlData + dataSize);
 	_field_46 = _tControlHeader.field_8;
-	_field_42 = READ_LE_UINT32(_controlData + _tControlHeader.field_0 - _tControlHeader.field_4) + size;
-	_field_3E = READ_LE_UINT32(_controlData + 2 * (_tControlHeader.field_8 * _tControlHeader.field_A) + size);
+	_field_42 = READ_LE_UINT32(_controlData + _tControlHeader.field_0 - _tControlHeader.field_4) + dataSize;
+	_field_3E = READ_LE_UINT32(_controlData + 2 * (_tControlHeader.field_8 * _tControlHeader.field_A) + dataSize);
 
 	// Decompress data
 	uint32 decompressedSize = decompress(_field_3E, _backBuffer, _field_42 - _field_3E);
@@ -165,8 +188,11 @@ bool Cinematic::tControl() {
 }
 
 bool Cinematic::sControl(byte* buffer) {
+	if (!_tControlBuffer)
+		error("[Cinematic::readFrameHeader] Control buffer not initialized");
+
 	// Reset tControl buffer
-	memset(&_tControlBuffer, 0, CINEMATIC_TCONTROLBUFFER_SIZE);
+	memset(_tControlBuffer, 0, CINEMATIC_TCONTROLBUFFER_SIZE);
 
 	// Read frame header
 	FrameHeader header;

@@ -41,7 +41,7 @@ namespace Ring {
 
 #pragma region BMP
 
-bool ImageLoaderBMP::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+bool ImageLoaderBMP::load(Image *image, ArchiveType, Zone, LoadFrom) {
 	if (!image)
 		error("[ImageLoaderBMP::load] Invalid image pointer!");
 
@@ -132,6 +132,9 @@ void ImageLoaderBMA::deinit() {
 }
 
 bool ImageLoaderBMA::readHeader() {
+	if (!_stream)
+		error("[ImageLoaderBMA::readHeader] Stream not initialized");
+
 	Common::SeekableReadStream *data = _stream->getCompressedStream();
 	if (!data) {
 		warning("[ImageLoaderBMA::readHeader] Cannot get compressed stream (%s)", _filename.c_str());
@@ -167,17 +170,19 @@ bool ImageLoaderBMA::readHeader() {
 }
 
 bool ImageLoaderBMA::readImage(Image *image) {
-	Common::MemoryReadStream *imageData = NULL;
-	imageData = _stream->decompressIndexed(_blockSize,
-	                                       _seqSize,  (2 * _header.seqWidth * _header.seqHeight) / _header.coreHeight,
-	                                       _coreSize, 2 * _header.coreWidth * _header.coreHeight,
-	                                       _header.seqWidth * _header.seqHeight * 16,
-							               2 * _header.seqWidth * _header.seqHeight - 6,
-							               _header.field_C, _header.field_10);
+	if (!_stream)
+		error("[ImageLoaderBMA::readImage] Stream not initialized");
+
+	Common::MemoryReadStream *imageData = _stream->decompressIndexed(_blockSize,
+	                                                                 _seqSize,  (2 * _header.seqWidth * _header.seqHeight) / _header.coreHeight,
+	                                                                 _coreSize, 2 * _header.coreWidth * _header.coreHeight,
+	                                                                 _header.seqWidth * _header.seqHeight * 16,
+							                                         2 * _header.seqWidth * _header.seqHeight - 6,
+							                                         _header.field_C, _header.field_10);
 
 	// Create surface to hold the data
 	Graphics::Surface *surface = new Graphics::Surface();
-	surface->create(_header.seqWidth, _header.seqHeight, 2); // FIXME: Always 16bpp BMPs?
+	surface->create((uint16)_header.seqWidth, (uint16)_header.seqHeight, 2); // FIXME: Always 16bpp BMPs?
 
 	// Read from compressed stream
 	imageData->read(surface->pixels, _header.seqWidth * _header.seqHeight * 2);
@@ -266,7 +271,7 @@ void ImageLoaderTGC::deinit() {
 
 #pragma region TGA
 
-bool ImageLoaderTGA::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+bool ImageLoaderTGA::load(Image *image, ArchiveType, Zone, LoadFrom) {
 	if (!image)
 		error("[ImageLoaderTGA::load] Invalid image pointer!");
 
@@ -379,7 +384,7 @@ ImageLoaderCIN::~ImageLoaderCIN() {
 	deinit();
 }
 
-bool ImageLoaderCIN::load(Image *image, ArchiveType type, Zone zone, LoadFrom loadFrom) {
+bool ImageLoaderCIN::load(Image *image, ArchiveType, Zone, LoadFrom) {
 	if (!image)
 		error("[ImageLoaderCNM::load] Invalid image pointer!");
 
@@ -434,15 +439,21 @@ void ImageLoaderCIN::deinit() {
 }
 
 bool ImageLoaderCIN::readHeader() {
+	if (!_cinematic)
+		error("[ImageLoaderCIN::readHeader] Cinematic not initialized properly");
+
 	memset(&_header, 0, sizeof(_header));
 
 	// Read header (size: 0x40)
 	_header.field_0    = _cinematic->readUint32LE();
 	_header.field_4    = _cinematic->readUint32LE();
-	_header.field_8    = _cinematic->readUint32LE();
+	_header.field_8    = _cinematic->readByte();
+	_header.field_9    = _cinematic->readByte();
+	_header.field_A    = _cinematic->readByte();
+	_header.field_B    = _cinematic->readByte();
 	_header.field_C    = _cinematic->readUint16LE();
 	_header.chunkCount = _cinematic->readUint32LE();
-	_header.field_12   = _cinematic->readUint32LE();
+	_header.field_12   = _cinematic->readUint16LE();
 	_header.field_16   = _cinematic->readByte();
 	_header.width      = _cinematic->readUint32LE();
 	_header.height     = _cinematic->readUint32LE();
@@ -464,12 +475,15 @@ bool ImageLoaderCIN::readHeader() {
 }
 
 bool ImageLoaderCIN::readImage(Image *image) {
+	if (!_cinematic)
+		error("[ImageLoaderCIN::readImage] Cinematic not initialized properly");
+
 	if (!image || !image->isInitialized())
 		error("[ImageLoaderCNM::readImage] Invalid image pointer or image not initialized!");
 
 	// Create surface to hold the data
 	Graphics::Surface *surface = new Graphics::Surface();
-	surface->create(_width, _height, 2);
+	surface->create((uint16)_width, (uint16)_height, 2);
 
 	// Update image data
 	_field_1088 = _width + 3;
@@ -477,6 +491,8 @@ bool ImageLoaderCIN::readImage(Image *image) {
 
 	if (!_cinematic->sControl((byte *)surface->pixels))
 		error("[ImageLoaderCIN::readImage] Cannot read image");
+
+	delete surface;
 
 	return true;
 }

@@ -44,11 +44,11 @@ public:
 	void destroy();
 
 	bool load(Common::String filename, ArchiveType type, Zone zone, LoadFrom loadFrom);
-	Image *zoom(uint32 xZoom, uint32 yZoom);
+	Image *zoom(float xZoom, float yZoom);
 
 	// Drawing
-	Common::Rect draw(Graphics::Surface *surface, Common::Point dest);
-	Common::Rect draw(Graphics::Surface *surface, Common::Point dest, uint32 srcWidth, uint32 srcHeight, uint32 srcX, uint32 offset);
+	Common::Rect draw(Graphics::Surface *surface, const Common::Point &dest);
+	Common::Rect draw(Graphics::Surface *surface, const Common::Point &dest, uint32 srcWidth, uint32 srcHeight, int32 srcX, int32 offset);
 
 	// Accessors
 	uint32 getBPP()    { return _surface ? _surface->bytesPerPixel * 8: 0; }
@@ -74,6 +74,7 @@ protected:
 
 class ImageHandle : public Image, public Common::Serializable {
 public:
+	ImageHandle();
 	ImageHandle(Common::String nameId, const Common::Point &point, bool active, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 	ImageHandle(Common::String nameId, const Common::Point &point, bool active, DrawType drawType, uint32 priority, byte imageCount, Zone zone, LoadFrom loadFrom, ImageType imageType, ArchiveType archiveType);
 	~ImageHandle();

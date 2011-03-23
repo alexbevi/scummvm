@@ -44,18 +44,18 @@ public:
 	//void createFont()
 	void clear();
 	void drawAndUpdate(Image *image);
-	void drawAndUpdate(Image *image, Common::Point point);
-	void draw(Image *image, Common::Point point, DrawType type);
+	void drawAndUpdate(Image *image, const Common::Point &point);
+	void draw(Image *image, const Common::Point &point, DrawType type);
 	void draw(Image *image, DrawType type);
-	void drawImage(Image *image, Common::Point dest, int srcWidth, int srcHeight, int srcX, int offset);
-	void drawRectangle(Common::Rect rect, uint32 color);
+	void drawImage(Image *image, const Common::Point &dest, uint32 srcWidth, uint32 srcHeight, int32 srcX, int32 offset);
+	void drawRectangle(const Common::Rect &rect, uint32 color);
 	//
 	//void readPalette();
 	//
-	void drawText(Common::String text, Common::Point coords, Color color);
+	void drawText(Common::String text, const Common::Point &coords, Color color);
 	void drawText(Text *text);
 
-	void copySurface(Image *image, uint32 a2, uint32 a3);
+	void copySurface(Image *image, uint32 a2, uint32 a3) const;
 
 	void updateScreen();
 

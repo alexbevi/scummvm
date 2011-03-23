@@ -185,6 +185,9 @@ int32 Animation::adjustTicks(uint32 ticks) {
 			break;
 
 		case 1:
+			if (_field_36 == 0)
+				error("[Animation::adjustTicks] Animation not initialized properly");
+
 			if (_activeFrame != _field_3A || _field_58 % _field_36 || !_field_60)
 				return -1;
 
@@ -342,7 +345,7 @@ uint32 Animation::computeCurrentFrame(uint32 ticks) {
 
 	_currentFrame = _activeFrame + 1;
 
-	return _currentFrame;
+	return (uint32)_currentFrame;
 }
 
 void Animation::setTicks(uint32 ticks) {
@@ -550,7 +553,7 @@ AnimationImage::AnimationImage() : Animation() {
 	_imageType = kImageTypeBMP;
 	_field_79 = 0;
 	_drawType = kDrawTypeInvalid;
-	_frameCount = 0;
+	_imageCount = 0;
 	_currentImage = NULL;
 	_field_89 = 0;
 }
@@ -625,7 +628,7 @@ void AnimationImage::dealloc() {
 }
 
 void AnimationImage::playFrame(bool visible) {
-	playFrame(_coordinates);
+	playFrame(_coordinates, visible);
 }
 
 void AnimationImage::playFrame(const Common::Point &point, bool visible) {
@@ -678,7 +681,7 @@ void AnimationImage::updateCurrentImage() {
 	_currentImage = _imageHandles[_activeFrame];
 }
 
-Common::String AnimationImage::computePath(ImageHandle *image, uint32 index) {
+Common::String AnimationImage::computePath(ImageHandle *image, uint32 index) const {
 	// Compute filename
 	Common::String filename = Common::String::format("%s/%s.%04d.%s", image->getNameId().c_str(), image->getNameId().c_str(), index + 1, Application::getFileExtension(image->getImageType()).c_str());
 	Common::String path;

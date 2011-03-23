@@ -52,7 +52,7 @@ public:
 
 	void alloc();
 	void dealloc();
-	void update(ScreenManager *screen);
+	void update();
 
 	void setBackgroundImage(Common::String filename, const Common::Point &point, bool isActive, LoadFrom loadFrom);
 	void setMod(uint32 a2, Id selectedId);
@@ -121,7 +121,7 @@ private:
 
 	static bool imagePriorityCompare(ImageHandle *image1, ImageHandle *image2);
 
-	void initializeImage(ImageHandle *image);
+	void initializeImage(ImageHandle *image) const;
 };
 
 } // End of namespace Ring

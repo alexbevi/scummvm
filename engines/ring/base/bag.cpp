@@ -1,4 +1,4 @@
-/* ScummVM - Graphic Adventure Engine
+	/* ScummVM - Graphic Adventure Engine
  *
  * ScummVM is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
@@ -118,19 +118,19 @@ Bag::~Bag() {
 #pragma region Initialization
 
 void Bag::initHotspots() {
-	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_48),
-	                                             (int16)(_origin.y + _field_4C),
-	                                             (int16)(_origin.x + _field_48 + _field_50),
-	                                             (int16)(_origin.y + _field_4C + _field_54)),
+	_hotspots.push_back(new Hotspot(Common::Rect(_origin.x + (int16)_field_48,
+	                                             _origin.y + (int16)_field_4C,
+	                                             _origin.x + (int16)(_field_48 + _field_50),
+	                                             _origin.y + (int16)(_field_4C + _field_54)),
 	                                false,
 	                                1000,
 	                                kCursor1001,
 	                                1001));
 
-	_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_74),
-	                                             (int16)(_origin.y + _field_78),
-	                                             (int16)(_origin.x + _field_74 + _field_7C),
-	                                             (int16)(_origin.y + _field_78 + _field_80)),
+	_hotspots.push_back(new Hotspot(Common::Rect(_origin.x + (int16)_field_74,
+	                                             _origin.y + (int16)_field_78,
+	                                             _origin.x + (int16)(_field_74 + _field_7C),
+	                                             _origin.y + (int16)(_field_78 + _field_80)),
 	                                false,
 	                                1000,
 	                                kCursor1002,
@@ -149,10 +149,10 @@ void Bag::initHotspots() {
 	                                1005));
 
 	for (uint32 i = 0; i < _field_24; ++i)
-		_hotspots.push_back(new Hotspot(Common::Rect((int16)(_origin.x + _field_C + i * _field_18 + 1),
-													 (int16)(_origin.y + _field_10),
-													 (int16)(_origin.x + _field_18 * (i + 1) + _field_C - 1),
-													 (int16)(_origin.y +_field_10 + _field_14 + 1)),
+		_hotspots.push_back(new Hotspot(Common::Rect(_origin.x + (int16)(_field_C + i * _field_18 + 1),
+													 _origin.y + (int16)(_field_10),
+													 _origin.x + (int16)(_field_18 * (i + 1) + _field_C - 1),
+													 _origin.y + (int16)(_field_10 + _field_14 + 1)),
 										false,
 										1000,
 										(CursorId)i,
@@ -190,7 +190,7 @@ void Bag::sub_417DE0(uint32 a1, uint32 a2) {
 }
 
 void Bag::sub_417E00() {
-	for (Common::Array<ImageHandle *>::iterator it = _images.begin(); _images.end(); it++) {
+	for (Common::Array<ImageHandle *>::iterator it = _images.begin(); it != _images.end(); it++) {
 		ImageHandle *image = (*it);
 
 		if (image->getField6C() == 2) {
@@ -284,7 +284,7 @@ uint32 Bag::checkHotspot(const Common::Point &point) {
 				// Compute coordinates
 				ImageHandle *image = _images[index];
 
-				uint32 x = image->getCoordinates().x + _text->getCoordinates().x;
+				int16 x = image->getCoordinates().x + _text->getCoordinates().x;
 				if (x < 0)
 					x = 0;
 
@@ -319,6 +319,9 @@ Hotspot *Bag::getHotspot(const Common::Point &point) {
 }
 
 void Bag::draw(){
+	if (!_background || !_image3 || !_image6 || !_image8)
+		return;
+
 	if (!_background->isInitialized()
 	 || !_image3->isInitialized()
 	 || !_image6->isInitialized()
@@ -332,11 +335,11 @@ void Bag::draw(){
 	screen->draw(_background, Common::Point(_origin.x + _backgroundOffset.x, _origin.y + _backgroundOffset.y), kDrawType3);
 
 	// Bag elements
-	if (_field_28 <= 0) {
+	if (_field_28 == 0) {
 		if (_hotspots.size() > 0)
 			_hotspots[0]->disable();
 	} else {
-		screen->draw(_image3, Common::Point(_origin.x + _field_58, _origin.y + _field_5C), kDrawType3);
+		screen->draw(_image3, Common::Point(_origin.x + (int16)_field_58, _origin.y + (int16)_field_5C), kDrawType3);
 
 		if (_hotspots.size() > 0)
 			_hotspots[0]->enable();
@@ -346,14 +349,14 @@ void Bag::draw(){
 		if (_hotspots.size() > 1)
 			_hotspots[1]->disable();
 	} else {
-		screen->draw(_image6, Common::Point(_origin.x + _field_60, _origin.y + _field_64), kDrawType3);
+		screen->draw(_image6, Common::Point(_origin.x + (int16)_field_60, _origin.y + (int16)_field_64), kDrawType3);
 
 		if (_hotspots.size() > 1)
 			_hotspots[1]->enable();
 	}
 
 	if (_drawImage8) {
-		screen->draw(_image8, Common::Point(_origin.x + _field_88, _origin.y + _field_8C), kDrawType3);
+		screen->draw(_image8, Common::Point(_origin.x + (int16)_field_88, _origin.y + (int16)_field_8C), kDrawType3);
 
 		_drawImage8 = false;
 	}
@@ -371,7 +374,7 @@ void Bag::draw(){
 	}
 
 	// Show objects
-	uint32 offset = _field_C + _origin.x;
+	int16 offset = (int16)_field_C + _origin.x;
 	uint32 count = _field_28 + _field_24;
 	if (count >= _objectCount)
 		count = _objectCount;
@@ -402,7 +405,7 @@ void Bag::draw(){
 			}
 
 			if (loaded)
-				screen->draw(image, Common::Point(offset + (_field_18 + image->getWidth()) / 2, _origin.y + _field_10), kDrawType3);
+				screen->draw(image, Common::Point(offset + (int16)(_field_18 + image->getWidth()) / 2, _origin.y + (int16)_field_10), kDrawType3);
 
 		} else {
 			AnimationImage *animation = image->getAnimation();
@@ -411,13 +414,13 @@ void Bag::draw(){
 			// Get active frame to draw
 			animation->updateCurrentImage();
 			animation->computeCurrentFrame(ticks);
-			animation->playFrame(Common::Point(offset + (_field_18 + animation->getCurrentImage()->getWidth()) / 2, _origin.y + _field_10));
+			animation->playFrame(Common::Point(offset + (int16)(_field_18 + animation->getCurrentImage()->getWidth()) / 2, _origin.y + (int16)_field_10));
 		}
 
 		// Update image coordinates
-		image->setCoordinates(Common::Point(offset + (_field_18 - _field_18 / 32) / 2, _field_C5));
+		image->setCoordinates(Common::Point(offset + (int16)_field_18 / 2, (int16)_field_C5));
 
-		offset += _field_18;
+		offset += (int16)_field_18;
 	}
 
 	for (uint32 i = 0; i < _field_24; i++) {

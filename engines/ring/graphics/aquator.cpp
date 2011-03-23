@@ -92,14 +92,17 @@ ImageHeaderEntry::ImageHeaderEntry() {
 }
 
 ImageHeaderEntry::~ImageHeaderEntry() {
-	reset();
+	free(_buffer);
+	_buffer = NULL;
+
+	_bufferData = NULL;
 }
 
 void ImageHeaderEntry::reset() {
 	free(_buffer);
 	_buffer = NULL;
 
-	_bufferData = 0;
+	_bufferData = NULL;
 }
 
 void ImageHeaderEntry::init(Common::SeekableReadStream *stream, bool hasAdditionnalData) {

@@ -40,7 +40,6 @@ public:
 
 	void init(Common::String text, const Common::Point &point, FontId fontId, Color foreground, Color background);
 	void set(Common::String text);
-	void draw();
 	Common::Rect getBoundingBox();
 
 	// Accessors
