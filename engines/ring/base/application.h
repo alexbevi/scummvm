@@ -389,6 +389,11 @@ public:
 	LoadFrom       getZoneLoadFrom(ZoneId zone) const;
 
 	//////////////////////////////////////////////////////////////////////////
+	// User
+	void setUser(Common::String name) { _username = name; }
+	Common::String getUser() { return _username; }
+
+	//////////////////////////////////////////////////////////////////////////
 	// Accessors
 	ArchiveType getArchiveType(ZoneId zone) const;
 	Image *getThumbnail() { return _thumbnail; }
@@ -471,6 +476,7 @@ protected:
 	ObjectHandler                *_objectHandler;
 	PreferenceHandler            *_preferenceHandler;
 	ZoneHandler                  *_zoneHandler;
+	Common::String                _username;
 
 	// Save / Load games
 	SaveManager                     *_saveManager;
