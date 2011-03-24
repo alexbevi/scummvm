@@ -77,6 +77,7 @@ Rotation::Rotation(Id id, Common::String name, byte a3, LoadFrom, uint32 nodeCou
 	_field_61  = 0;
 	_field_65  = 0;
 	_field_66  = 0;
+	_nodeCount = nodeCount;
 	_fre       = false;
 	_alp       = 225.0f;
 	_bet       = 0;

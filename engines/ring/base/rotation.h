@@ -142,6 +142,7 @@ private:
 	float                               _field_61;
 	byte                                _field_65;
 	byte                                _field_66;
+	uint32                              _nodeCount;
 	bool                                _fre;
 	float                               _alp;
 	float                               _bet;
