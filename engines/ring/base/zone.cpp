@@ -31,7 +31,7 @@ namespace Ring {
 
 #pragma region Zone
 
-Zone::Zone(Id id, Common::String name, Common::String folder, ArchiveType archiveType, LoadFrom loadFrom) : BaseObject(id) {
+Zone::Zone(ZoneId id, Common::String name, Common::String folder, ArchiveType archiveType, LoadFrom loadFrom) : BaseObject(id) {
 	_name = name;
 	_folder = folder;
 	_archiveType = archiveType;
@@ -42,7 +42,7 @@ Zone::Zone(Id id, Common::String name, Common::String folder, ArchiveType archiv
 
 #pragma region Episode
 
-Episode::Episode(Id id, Common::String name, uint32 cd) : BaseObject(id) {
+Episode::Episode(ZoneId id, Common::String name, uint32 cd) : BaseObject(id) {
 	_name = name;
 	_cd = cd;
 }
@@ -53,7 +53,7 @@ Episode::Episode(Id id, Common::String name, uint32 cd) : BaseObject(id) {
 
 ZoneHandler::ZoneHandler() {
 	_zone = kZoneNone;
-	_episode = 0;
+	_episode = kZoneNone;
 }
 
 ZoneHandler::~ZoneHandler() {
@@ -79,14 +79,14 @@ Zone *ZoneHandler::getZone(ZoneId id) {
 
 //////////////////////////////////////////////////////////////////////////
 // Episodes
-void ZoneHandler::addEpisode(Id id, Common::String name, uint32 cd) {
+void ZoneHandler::addEpisode(ZoneId id, Common::String name, uint32 cd) {
 	if (_episodes.has(id))
 		error("[ZoneHandler::addEpisode] Episode already exists (%d)", id);
 
 	_episodes.push_back(new Episode(id, name, cd));
 }
 
-Episode *ZoneHandler::getEpisode(Id id) {
+Episode *ZoneHandler::getEpisode(ZoneId id) {
 	if (!_episodes.has(id))
 		error("[ZoneHandler::getEpisode] Episode doesn't exist (%d)", id);
 
@@ -95,7 +95,7 @@ Episode *ZoneHandler::getEpisode(Id id) {
 
 //////////////////////////////////////////////////////////////////////////
 // Current values
-void ZoneHandler::setCurrentEpisode(Id id) {
+void ZoneHandler::setCurrentEpisode(ZoneId id) {
 	if (!_episodes.has(id))
 		error("[ZoneHandler::setCurrentEpisode] Episode doesn't exist (%d)", id);
 

@@ -278,7 +278,7 @@ bool EventHandlerRing::handleLeftButtonUp(Movability *movability, uint32 index, 
 
 	}
 
-	_app->puzzleReset();
+	_app->reset();
 
 	switch (movability->getType()) {
 	default:

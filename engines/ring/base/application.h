@@ -173,7 +173,7 @@ public:
 
 	void puzzleSetActive(PuzzleId id, bool a2 = true, bool a3 = true);
 
-	void puzzleReset();
+	void reset();
 
 	bool hasCurrentPuzzle() { return _puzzle != NULL; }
 	Puzzle *getCurrentPuzzle() { return _puzzle; }
@@ -373,7 +373,11 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Zone
-	void addEpisode(Id id, Common::String name, uint32 cd);
+	void addEpisode(ZoneId id, Common::String name, uint32 cd);
+	void setCurrentEpisode(ZoneId id);
+	Id getCurrentEpisode();
+	uint32 getEpisodeCd(ZoneId id);
+
 	void addZone(ZoneId id, Common::String name, Common::String folder, ArchiveType archiveType, LoadFrom loadFrom);
 	void setSpace(ZoneId id);
 	void setCurrentZone(ZoneId id);

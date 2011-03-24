@@ -25,9 +25,15 @@
 
 #include "ring/game/application_faust.h"
 
+#include "ring/base/art.h"
+#include "ring/base/saveload.h"
+#include "ring/base/sound.h"
+
 #include "ring/game/event_faust.h"
 
 #include "ring/graphics/screen.h"
+
+#include "ring/debug.h"
 
 //using namespace FaustGame;
 
@@ -49,14 +55,14 @@ void ApplicationFaust::initFont() {
 
 void ApplicationFaust::setup() {
 	// Add the list of episodes
-	addEpisode(2, "One",   2);
-	addEpisode(3, "Two",   2);
-	addEpisode(4, "Three", 4);
-	addEpisode(5, "Four",  3);
-	addEpisode(6, "Five",  3);
-	addEpisode(7, "Six",   1);
-	addEpisode(8, "Seven", 4);
-	addEpisode(9, "Eight", 5);
+	addEpisode(kZone2, "One",   2);
+	addEpisode(kZone3, "Two",   2);
+	addEpisode(kZone4, "Three", 4);
+	addEpisode(kZone5, "Four",  3);
+	addEpisode(kZone6, "Five",  3);
+	addEpisode(kZone7, "Six",   1);
+	addEpisode(kZone8, "Seven", 4);
+	addEpisode(kZone9, "Eight", 5);
 
 	// Add the list of zones
 	addZone(kZone2,  "A01S01", "a01s01", kArchiveArt, kLoadFromCd);
@@ -168,7 +174,53 @@ void ApplicationFaust::initZones() {
 }
 
 void ApplicationFaust::setupZone(ZoneId zone, SetupType type) {
-	error("[ApplicationFaust::setupZone] Not implemented");
+	debugC(kRingDebugLogic, "Setting up zone %s", getZoneName(zone).c_str());
+
+	bool hasLanguage = true;
+	bool hasData = false;
+
+	if (zone == kZoneSY) {
+		hasData = true;
+	} else {
+		// The original checks for the correct CD,
+		// we should instead check that the zone folder
+		// has been copied properly
+		warning("[ApplicationFaust::setupZone] Zone CD check not implemented");
+
+		hasLanguage = hasLanguagePack();
+	}
+
+	reset();
+	soundStopAll(8);
+
+	if (_soundHandler)
+		_soundHandler->reset();
+
+	if (zone != kZoneSY)
+		_artHandler->reset();
+
+	if (hasData && hasLanguage) {
+		setCurrentEpisode(zone);
+		setZone(zone, type);
+	} else {
+		_saveManager->setSetupType(type);
+
+		if (hasData)
+			messageGet("TurnDVD");
+		else {
+			messageFormat("InsertCD", Common::String::format("%d", getEpisodeCd(zone)));
+		}
+
+		messageInsertCd(zone);
+	}
+}
+
+bool ApplicationFaust::hasLanguagePack() {
+	error("[ApplicationFaust::hasLanguagePack] Not implemented");
+}
+
+void ApplicationFaust::setZone(ZoneId zone, SetupType type) {
+	error("[ApplicationFaust::setZone] Not implemented");
 }
 
 #pragma endregion

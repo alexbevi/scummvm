@@ -156,7 +156,7 @@ void Application::init() {
 	loadConfiguration();
 
 	// Setup system zone (needed by ArtHandler)
-	addEpisode(1, "System", 0);
+	addEpisode(kZoneSY, "System", 0);
 	addZone(kZoneSY, "System",     "SY", _configuration.artSY ? kArchiveArt : kArchiveFile, kLoadFromDisk);
 
 	// Setup video
@@ -371,7 +371,7 @@ void Application::exitZone() {
 	varRemoveAll();
 	cursorDelete();
 	bagRemoveAll();
-	puzzleReset();
+	reset();
 
 	CLEAR_ARRAY(Puzzle,   _puzzles);
 	CLEAR_ARRAY(Rotation, _rotations);
@@ -1273,7 +1273,7 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 	if (!_puzzles.has(id))
 		return;
 
-	puzzleReset();
+	reset();
 	_puzzle = _puzzles.get(id);
 	_puzzle->alloc();
 	_puzzle->update();
@@ -1314,7 +1314,7 @@ void Application::puzzleSetActive(PuzzleId id, bool updateSoundItems, bool a3) {
 	_soundHandler->setSounds1(_puzzle->getSoundItems());
 }
 
-void Application::puzzleReset() {
+void Application::reset() {
 	// Those are reference to existing objects in the _puzzles and _rotations arrays
 	if (_puzzle)
 		_puzzle->dealloc();
@@ -2064,7 +2064,7 @@ void Application::rotationSetActive(Id id, bool updateSoundItems, bool a3) {
 	if (!_rotations.has(id))
 		return;
 
-	puzzleReset();
+	reset();
 	_rotation = _rotations.get(id);
 	_rotation->alloc();
 
@@ -2529,13 +2529,37 @@ uint32 Application::dragControlGetOffsetY1() {
 
 #pragma endregion
 
-#pragma region Zone
+#pragma region Zone & Episode
 
-void Application::addEpisode(Id id, Common::String name, uint32 cd) {
+void Application::addEpisode(ZoneId id, Common::String name, uint32 cd) {
 	if (!_zoneHandler)
 		error("[Application::addEpisode] Zone handler not initialized properly");
 
 	_zoneHandler->addEpisode(id, name, cd);
+}
+
+void Application::setCurrentEpisode(ZoneId id) {
+	if (!_zoneHandler)
+		error("[Application::setCurrentEpisode] Zone handler not initialized properly");
+
+	_zoneHandler->setCurrentEpisode(id);
+}
+
+Id Application::getCurrentEpisode() {
+	if (!_zoneHandler)
+		error("[Application::getCurrentEpisode] Zone handler not initialized properly");
+
+	return _zoneHandler->getCurrentEpisode();
+}
+
+uint32 Application::getEpisodeCd(ZoneId id) {
+	if (!_zoneHandler)
+		error("[Application::getCurrentEpisode] Zone handler not initialized properly");
+
+	if (!_configuration.checkCD)
+		return 1;
+
+	return _zoneHandler->getEpisode(id)->getCd();
 }
 
 void Application::addZone(ZoneId id, Common::String name, Common::String folder, ArchiveType archiveType, LoadFrom loadFrom) {

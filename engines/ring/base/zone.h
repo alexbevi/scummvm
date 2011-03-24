@@ -32,7 +32,7 @@ namespace Ring {
 
 class Zone : public BaseObject {
 public:
-	Zone(Id id, Common::String name, Common::String folder, ArchiveType archiveType, LoadFrom loadFrom);
+	Zone(ZoneId id, Common::String name, Common::String folder, ArchiveType archiveType, LoadFrom loadFrom);
 	~Zone() {}
 
 	// Accessors
@@ -50,7 +50,7 @@ private:
 
 class Episode : public BaseObject {
 public:
-	Episode(Id id, Common::String name, uint32 cd);
+	Episode(ZoneId id, Common::String name, uint32 cd);
 	~Episode() {}
 
 	// Accessors
@@ -72,12 +72,12 @@ public:
 	Zone *getZone(ZoneId id);
 
 	// Episodes
-	void addEpisode(Id id, Common::String name, uint32 cd);
-	Episode *getEpisode(Id id);
+	void addEpisode(ZoneId id, Common::String name, uint32 cd);
+	Episode *getEpisode(ZoneId id);
 
 	// Current values
-	void   setCurrentEpisode(Id id);
-	Id     getCurrentEpisode() { return _episode; }
+	void   setCurrentEpisode(ZoneId id);
+	ZoneId getCurrentEpisode() { return _episode; }
 
 	void   setCurrentZone(ZoneId id);
 	ZoneId getCurrentZone() { return _zone; }
@@ -86,7 +86,7 @@ private:
 	AssociativeArray<Zone *>    _zones;
 	AssociativeArray<Episode *> _episodes;
 	ZoneId                      _zone;
-	Id                          _episode;
+	ZoneId                      _episode;
 };
 
 } // End of namespace Ring

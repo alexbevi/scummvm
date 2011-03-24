@@ -463,7 +463,7 @@ void ApplicationRing::messageHideQuestion(uint32 accelerationIndex) {
 #pragma region Zone setup
 
 void ApplicationRing::setupZone(ZoneId zone, SetupType type) {
-	debugC(kRingDebugLogic, "Setting up zone %s", getZoneFolder(zone).c_str());
+	debugC(kRingDebugLogic, "Setting up zone %s", getZoneName(zone).c_str());
 
 	// Check saved data for zone and/or puzzle id
 	bool hasData = isDataPresent(type);
@@ -478,14 +478,14 @@ void ApplicationRing::setupZone(ZoneId zone, SetupType type) {
 		}
 	}
 
-	puzzleReset();
+	reset();
 	soundStopAll(8);
 
-	if (getSoundHandler())
-		getSoundHandler()->reset();
+	if (_soundHandler)
+		_soundHandler->reset();
 
 	if (zone != kZoneSY)
-		getArtHandler()->reset();
+		_artHandler->reset();
 
 	if (hasData) {
 		setZoneAndEnableBag(zone);

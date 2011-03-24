@@ -40,7 +40,6 @@ public:
 	virtual void initFont();
 	virtual void setup();
 	virtual void initZones();
-	virtual void setupZone(ZoneId zone, SetupType type);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Startup & Menu
@@ -55,10 +54,18 @@ public:
 	virtual void draw();
 
 	//////////////////////////////////////////////////////////////////////////
+	// Setup
+	virtual void setupZone(ZoneId zone, SetupType type);
+	void setZone(ZoneId zone, SetupType type);
+
+	//////////////////////////////////////////////////////////////////////////
 	// Visual
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 
 private:
+
+	bool hasLanguagePack();
+
 	//////////////////////////////////////////////////////////////////////////
 	// Zone initialization
 	//////////////////////////////////////////////////////////////////////////
