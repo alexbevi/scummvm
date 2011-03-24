@@ -43,8 +43,22 @@ public:
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
 
+	//virtual void onSound(Id id, SoundType type, uint32 a3);
+	virtual void onSetup(ZoneId zone, SetupType type);
+
 private:
 	Application *_app;
+
+	//////////////////////////////////////////////////////////////////////////
+	// Setup
+	//////////////////////////////////////////////////////////////////////////
+	void onSetupZone2(SetupType type);
+	void onSetupZone3(SetupType type);
+	void onSetupZone4(SetupType type);
+	void onSetupZone5(SetupType type);
+	void onSetupZone6(SetupType type);
+	void onSetupZone7(SetupType type);
+	void onSetupZone8(SetupType type);
 };
 
 } // End of namespace Ring

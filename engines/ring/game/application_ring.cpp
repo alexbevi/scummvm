@@ -581,7 +581,7 @@ void ApplicationRing::setZone(ZoneId zone, SetupType type) {
 	}
 
 	// Finish loading savegame
-	if (type == 1000) {
+	if (type == kSetupTypeLoading) {
 		SaveManager::SavegameData *data = getSaveManager()->getData();
 
 		if (data->hasCurrentPuzzle)

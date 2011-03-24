@@ -26,6 +26,8 @@
 #include "ring/game/application_faust.h"
 
 #include "ring/base/art.h"
+#include "ring/base/preferences.h"
+#include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 #include "ring/base/sound.h"
 
@@ -220,7 +222,38 @@ bool ApplicationFaust::hasLanguagePack() {
 }
 
 void ApplicationFaust::setZone(ZoneId zone, SetupType type) {
-	error("[ApplicationFaust::setZone] Not implemented");
+
+	// Finish loading savegame if needed
+	if (type == kSetupTypeLoading) {
+		SaveManager::SavegameData *data = getSaveManager()->getData();
+
+		setSpace(data->zone);
+
+		if (data->hasCurrentPuzzle)
+			puzzleSetActive(data->puzzleId, false, true);
+
+		if (data->hasCurrentRotation) {
+			rotationSetActive(data->rotationId, false, true);
+
+			getCurrentRotation()->setFreOnOff(data->rotationFre);
+		}
+
+		_loadFrom = data->loadFrom;
+		_isRotationCompressed = data->isRotationCompressed;
+		_archiveType = data->archiveType;
+
+		getSaveManager()->loadSaveSounds();
+
+		if (getSaveManager()->isSaving()) {
+			_soundManager->playSounds();
+		} else {
+			_preferenceHandler->load();
+			_soundManager->playSounds();
+		}
+	}
+
+	// Setup zone
+	_eventHandler->onSetup(zone, type);
 }
 
 #pragma endregion

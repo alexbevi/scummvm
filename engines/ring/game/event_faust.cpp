@@ -67,4 +67,71 @@ void EventHandlerFaust::onTimer(TimerId timerId) {
 
 #pragma endregion
 
+#pragma region Zone
+
+void EventHandlerFaust::onSetup(ZoneId zone, SetupType type) {
+	switch (zone) {
+	default:
+		break;
+
+	case kZone2:
+		onSetupZone2(type);
+		break;
+
+	case kZone3:
+		onSetupZone3(type);
+		break;
+
+	case kZone4:
+		onSetupZone4(type);
+		break;
+
+	case kZone5:
+		onSetupZone5(type);
+		break;
+
+	case kZone6:
+		onSetupZone6(type);
+		break;
+
+	case kZone7:
+		onSetupZone7(type);
+		break;
+
+	case kZone8:
+		onSetupZone8(type);
+		break;
+	}
+}
+
+void EventHandlerFaust::onSetupZone2(SetupType type) {
+	error("[EventHandlerFaust::onSetupZone2] Not implemented");
+}
+
+void EventHandlerFaust::onSetupZone3(SetupType type) {
+	error("[EventHandlerFaust::onSetupZone3] Not implemented");
+}
+
+void EventHandlerFaust::onSetupZone4(SetupType type) {
+	error("[EventHandlerFaust::onSetupZone4] Not implemented");
+}
+
+void EventHandlerFaust::onSetupZone5(SetupType type) {
+	error("[EventHandlerFaust::onSetupZone5] Not implemented");
+}
+
+void EventHandlerFaust::onSetupZone6(SetupType type) {
+	error("[EventHandlerFaust::onSetupZone6] Not implemented");
+}
+
+void EventHandlerFaust::onSetupZone7(SetupType type) {
+	error("[EventHandlerFaust::onSetupZone7] Not implemented");
+}
+
+void EventHandlerFaust::onSetupZone8(SetupType type) {
+	error("[EventHandlerFaust::onSetupZone8] Not implemented");
+}
+
+#pragma endregion
+
 } // End of namespace Ring
