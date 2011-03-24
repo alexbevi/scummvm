@@ -390,6 +390,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors
+	ArchiveType getArchiveType(ZoneId zone) const;
 	Image *getThumbnail() { return _thumbnail; }
 	bool getField6A() { return _field_6A; }
 	LoadFrom getLoadFrom() { return _loadFrom; }

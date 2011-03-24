@@ -648,7 +648,7 @@ void Application::drawZoneName(ZoneId zone) {
 
 void Application::showImage(Common::String filename, const Common::Point &point, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (archiveType == kArchiveInvalid)
-		archiveType = getZoneArchiveType(getCurrentZone());
+		archiveType = getArchiveType(getCurrentZone());
 
 	Common::String path;
 	if (archiveType == kArchiveFile)
@@ -671,7 +671,7 @@ void Application::showImage(Common::String filename, const Common::Point &point,
 
 bool Application::scrollImage(Common::String filename, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType) {
 	if (archiveType == kArchiveInvalid)
-		archiveType = getZoneArchiveType(getCurrentZone());
+		archiveType = getArchiveType(getCurrentZone());
 
 	Common::String path;
 	if (archiveType == kArchiveFile)
@@ -718,7 +718,7 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 	uint16 *srcTo = NULL;
 
 	if (archiveType == kArchiveInvalid)
-		archiveType = getZoneArchiveType(getCurrentZone());
+		archiveType = getArchiveType(getCurrentZone());
 
 	// Compute paths
 	Common::String pathFrom;
@@ -2573,7 +2573,7 @@ void Application::setSpace(ZoneId id) {
 	if (id != kZoneSY) {
 		_artHandler->reset();
 
-		if (getZoneArchiveType(id) == kArchiveArt)
+		if (getArchiveType(id) == kArchiveArt)
 			_artHandler->open(id, getZoneLoadFrom(id));
 	}
 
@@ -2627,6 +2627,16 @@ LoadFrom Application::getZoneLoadFrom(ZoneId zone) const {
 		error("[Application::getZoneLoadFrom] Zone handler not initialized properly");
 
 	return _zoneHandler->getZone(zone)->getLoadFrom();
+}
+
+ArchiveType Application::getArchiveType(ZoneId zone) const {
+	if (!_zoneHandler)
+		error("[Application::getZoneArchiveType] Zone handler not initialized properly");
+
+	if (_archiveType != kArchiveFile)
+		return _zoneHandler->getZone(zone)->getArchiveType();
+
+	return _archiveType;
 }
 
 #pragma endregion

@@ -572,7 +572,7 @@ void ApplicationRing::setZone(ZoneId zone, SetupType type) {
 
 	bool hasData = isDataPresent(type);
 	if (zone != kZoneSY && !hasData) {
-		if (getZoneArchiveType(zone) == kArchiveArt) {
+		if (getArchiveType(zone) == kArchiveArt) {
 			if (!getArtHandler())
 				error("[ApplicationRing::setZone] Art handler is not initialized properly");
 
