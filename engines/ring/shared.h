@@ -232,6 +232,14 @@ enum SoundLoopType {
 	kSoundLoop = 2
 };
 
+enum MenuAction {
+	kMenuAction0 = 0,
+	kMenuAction1 = 1,
+	kMenuAction2 = 2,
+	kMenuAction3 = 3,
+	kMenuAction4 = 4
+};
+
 #pragma endregion
 
 //////////////////////////////////////////////////////////////////////////

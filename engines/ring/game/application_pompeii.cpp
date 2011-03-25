@@ -67,7 +67,7 @@ void ApplicationPompeii::startMenu(bool savegame) {
 	error("[ApplicationPompeii::startMenu] Not implemented");
 }
 
-void ApplicationPompeii::showMenu(ZoneId zone, uint32 a2) {
+void ApplicationPompeii::showMenu(ZoneId zone, MenuAction menuAction) {
 	error("[ApplicationPompeii::showMenu] Not implemented");
 }
 

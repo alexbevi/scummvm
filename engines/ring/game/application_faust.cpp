@@ -160,7 +160,7 @@ void ApplicationFaust::startMenu(bool savegame) {
 	error("[ApplicationFaust::startMenu] Not implemented");
 }
 
-void ApplicationFaust::showMenu(ZoneId zone, uint32 a2) {
+void ApplicationFaust::showMenu(ZoneId zone, MenuAction menuAction) {
 	error("[ApplicationFaust::startMenu] Not implemented");
 }
 

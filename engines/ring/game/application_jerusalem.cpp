@@ -67,7 +67,7 @@ void ApplicationJerusalem::startMenu(bool savegame) {
 	error("[ApplicationJerusalem::startMenu] Not implemented");
 }
 
-void ApplicationJerusalem::showMenu(ZoneId zone, uint32 a2) {
+void ApplicationJerusalem::showMenu(ZoneId zone, MenuAction menuAction) {
 	error("[ApplicationJerusalem::showMenu] Not implemented");
 }
 

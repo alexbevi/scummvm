@@ -246,7 +246,7 @@ void ApplicationRing::startMenu(bool savegame) {
 	}
 }
 
-void ApplicationRing::showMenu(ZoneId zone, uint32 a2) {
+void ApplicationRing::showMenu(ZoneId zone, MenuAction menuAction) {
 	ArchiveType archiveType = _configuration.artSY ? kArchiveArt : kArchiveFile;
 
 	switch (zone) {
@@ -257,14 +257,14 @@ void ApplicationRing::showMenu(ZoneId zone, uint32 a2) {
 	case kZoneRH:
 		setZoneAndEnableBag(kZoneSY);
 
-		switch (a2){
+		switch (menuAction){
 		default:
 			break;
 
-		case 1:
-		case 2:
-		case 3:
-		case 4:
+		case kMenuAction1:
+		case kMenuAction2:
+		case kMenuAction3:
+		case kMenuAction4:
 			showImage("End.bmp", Common::Point(0, 16), 4000, kLoadFromDisk, archiveType);
 			break;
 		}
@@ -275,12 +275,12 @@ void ApplicationRing::showMenu(ZoneId zone, uint32 a2) {
 	case kZoneN2:
 		setZoneAndEnableBag(kZoneSY);
 
-		switch (a2){
+		switch (menuAction){
 		default:
 			break;
 
-		case 1:
-		case 2:
+		case kMenuAction1:
+		case kMenuAction2:
 			showImage("End.bmp", Common::Point(0, 16), 4000, kLoadFromDisk, archiveType);
 			break;
 		}
@@ -289,7 +289,7 @@ void ApplicationRing::showMenu(ZoneId zone, uint32 a2) {
 		break;
 
 	case kZoneAS:
-		if (!a2) {
+		if (menuAction == kMenuAction0) {
 			setZoneAndEnableBag(kZoneSY);
 			puzzleSetActive(kPuzzleMenu);
 			objectPresentationShow(kObject7, 0);
@@ -385,7 +385,7 @@ void ApplicationRing::draw() {
 	case kStateShowMenu:
 		exitZone();
 		initZones();
-		showMenu(getCurrentZone(), _field_70);
+		showMenu(getCurrentZone(), _menuAction);
 		return;
 	}
 

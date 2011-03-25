@@ -46,7 +46,7 @@ public:
 	// Startup & Menu
 	virtual void showStartupScreen();
 	virtual void startMenu(bool savegame);
-	virtual void showMenu(ZoneId zone, uint32 a2);
+	virtual void showMenu(ZoneId zone, MenuAction menuAction);
 	virtual void showCredits();
 	virtual void loadPreferences();
 

@@ -67,7 +67,7 @@ void ApplicationPilgrim3::startMenu(bool savegame) {
 	error("[ApplicationPilgrim3::startMenu] Not implemented");
 }
 
-void ApplicationPilgrim3::showMenu(ZoneId zone, uint32 a2) {
+void ApplicationPilgrim3::showMenu(ZoneId zone, MenuAction menuAction) {
 	error("[ApplicationPilgrim3::showMenu] Not implemented");
 }
 

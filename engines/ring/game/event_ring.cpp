@@ -1653,7 +1653,7 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, uint32 target, Id puzzleRot
 				}
 
 				_app->playMovie("1518");
-				_app->exitToMenu(2);
+				_app->exitToMenu(kMenuAction2);
 				break;
 			}
 			break;
@@ -1661,10 +1661,10 @@ void EventHandlerRing::onButtonUpZoneNI(ObjectId id, uint32 target, Id puzzleRot
 
 		if (_app->varGetByte(10106) == 1) {
 			_app->playMovie("1518");
-			_app->exitToMenu(2);
+			_app->exitToMenu(kMenuAction2);
 		} else {
 			_app->playMovie("1519");
-			_app->exitToMenu(1);
+			_app->exitToMenu(kMenuAction1);
 		}
 		break;
 
@@ -1815,7 +1815,7 @@ void EventHandlerRing::onButtonUpZoneRH(ObjectId id, uint32 target, Id, uint32, 
 			_app->cursorDelete();
 		} else {
 			_app->playMovie("1669");
-			_app->exitToMenu(3);
+			_app->exitToMenu(kMenuAction3);
 		}
 		break;
 
@@ -2046,7 +2046,7 @@ void EventHandlerRing::onButtonUpZoneRH(ObjectId id, uint32 target, Id, uint32, 
 		}
 
 		_app->playMovie("1677");
-		_app->exitToMenu(1);
+		_app->exitToMenu(kMenuAction1);
 		break;
 
 	case kObject20302:
@@ -2068,7 +2068,7 @@ void EventHandlerRing::onButtonUpZoneRH(ObjectId id, uint32 target, Id, uint32, 
 			}
 
 			_app->playMovie("1681");
-			_app->exitToMenu(1);
+			_app->exitToMenu(kMenuAction1);
 			break;
 
 		case 1:
@@ -2127,7 +2127,7 @@ void EventHandlerRing::onButtonUpZoneRH(ObjectId id, uint32 target, Id, uint32, 
 		case 1:
 			_app->rotationSetRolTo(20303, 140.0f, 26.0f, 85.7f);
 			_app->playMovie("1686");
-			_app->exitToMenu(3);
+			_app->exitToMenu(kMenuAction3);
 			break;
 
 		case 9:
@@ -2223,7 +2223,7 @@ void EventHandlerRing::onButtonUpZoneRH(ObjectId id, uint32 target, Id, uint32, 
 				}
 			} else {
 				_app->playMovie("1670");
-				_app->exitToMenu(4);
+				_app->exitToMenu(kMenuAction4);
 			}
 			break;
 
@@ -2283,7 +2283,7 @@ void EventHandlerRing::onButtonUpZoneRH(ObjectId id, uint32 target, Id, uint32, 
 		}
 		else {
 			_app->playMovie("1667");
-			_app->exitToMenu(2);
+			_app->exitToMenu(kMenuAction2);
 		}
 		break;
 	}
@@ -5937,7 +5937,7 @@ void EventHandlerRing::onTimerZoneNI(TimerId id) {
 			_app->soundStopType(kSoundTypeAmbientEffect, 1024);
 			_app->soundStopType(kSoundTypeBackgroundMusic, 1024);
 			_app->playMovie("1538");
-			_app->exitToMenu(4);
+			_app->exitToMenu(kMenuAction4);
 		}
 		}
 		break;
@@ -8322,7 +8322,7 @@ void EventHandlerRing::onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uin
 			break;
 
 		case 16:
-			_app->exitToMenu(3);
+			_app->exitToMenu(kMenuAction3);
 			return;
 
 		case 41:
@@ -8638,7 +8638,7 @@ void EventHandlerRing::onAfterRideZoneN2(Id movabilityFrom, Id, uint32, uint32 t
 		if (target == 7)
 			sub_433EE0();
 		else if (target == 16)
-			_app->exitToMenu(1);
+			_app->exitToMenu(kMenuAction1);
 	}
 }
 
@@ -9674,7 +9674,7 @@ void EventHandlerRing::onSoundZoneAS(Id id, SoundType, uint32, bool process) {
 		break;
 	case 80107:
 		_app->playMovie("1159");
-		_app->showMenu(kZoneAS, 0);
+		_app->showMenu(kZoneAS, kMenuAction0);
 		break;
 	}
 }
@@ -9900,7 +9900,7 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType, uint32, bool process) {
 	case 71129:
 		if (_app->varGetByte(70014) >= 3) {
 			if (_app->varGetByte(70015) != 2) {
-				_app->exitToMenu(2);
+				_app->exitToMenu(kMenuAction2);
 				break;
 			}
 
@@ -9908,7 +9908,7 @@ void EventHandlerRing::onSoundZoneN2(Id id, SoundType, uint32, bool process) {
 			_app->soundPlay(70001);
 		} else {
 			if (_app->varGetByte(70014) == 2 && !_app->varGetByte(70015)) {
-				_app->exitToMenu(2);
+				_app->exitToMenu(kMenuAction2);
 				break;
 			}
 

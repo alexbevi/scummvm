@@ -66,7 +66,7 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_screenManager(NULL),        _artHandler(NULL),          _fontHandler(NULL),   _dialogHandler(NULL),        _languageHandler(NULL),
 	_isRotationCompressed(true), _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
 	_soundHandler(NULL),         _state(kStateNone),         _field_6A(false),
-	_currentGameZone(kZoneNone), _field_70(0),               _field_74(false),     _field_75(false),            _field_76(false),
+	_currentGameZone(kZoneNone), _menuAction(kMenuAction0),               _field_74(false),     _field_75(false),            _field_76(false),
 	_field_77(false),            _field_78(false),           _puzzle(NULL),        _rotation(NULL),             _bag(NULL),
 	_timerHandler(NULL),         _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL),        _preferenceHandler(NULL),
 	_zoneHandler(NULL),          _eventHandler(NULL) {
@@ -194,7 +194,7 @@ void Application::init() {
 	_soundHandler = new SoundHandler();
 
 	// Setup data
-	_field_70 = 0;
+	_menuAction = kMenuAction0;
 	_field_74 = true;
 	_field_75 = true;
 	_field_76 = true;
@@ -378,9 +378,9 @@ void Application::exitZone() {
 	SAFE_DELETE(_thumbnail);
 }
 
-void Application::exitToMenu(uint32 a1) {
+void Application::exitToMenu(MenuAction menuAction) {
 	_state = kStateShowMenu;
-	_field_70 = a1;
+	_menuAction = menuAction;
 	soundStopAll(64);
 }
 

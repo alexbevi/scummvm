@@ -76,7 +76,7 @@ public:
 	virtual void initBag() = 0;
 
 	void exitZone();
-	void exitToMenu(uint32 a1);
+	void exitToMenu(MenuAction a1);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Startup & Menu
@@ -459,7 +459,7 @@ protected:
 	State                         _state;
 	bool                          _field_6A;
 	ZoneId                        _currentGameZone;
-	uint32                        _field_70;
+	MenuAction                    _menuAction;
 	bool                          _field_74;
 	bool                          _field_75;
 	bool                          _field_76;
