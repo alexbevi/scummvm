@@ -82,7 +82,7 @@ public:
 	// Startup & Menu
 	virtual void showStartupScreen() = 0;
 	virtual void startMenu(bool savegame) = 0;
-	virtual void showMenu(ZoneId zone, uint32 a2) = 0;
+	virtual void showMenu(ZoneId zone, MenuAction menuAction) = 0;
 	virtual void showCredits() = 0;
 	virtual void loadPreferences() = 0;
 
@@ -391,6 +391,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// User
+	void startLogin();
 	void setUser(Common::String name) { _username = name; }
 	Common::String getUser() { return _username; }
 

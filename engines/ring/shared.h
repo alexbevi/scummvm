@@ -201,6 +201,7 @@ enum LoadSaveType {
 
 enum SetupType {
 	kSetupTypeNone    = 0,
+	kSetupType2       = 2,
 	kSetupType3       = 3,
 	kSetupType5       = 5,
 	kSetupType6       = 6,
@@ -233,11 +234,24 @@ enum SoundLoopType {
 };
 
 enum MenuAction {
-	kMenuAction0 = 0,
-	kMenuAction1 = 1,
-	kMenuAction2 = 2,
-	kMenuAction3 = 3,
-	kMenuAction4 = 4
+	kMenuAction0  = 0,
+	kMenuAction1  = 1,
+	kMenuAction2  = 2,
+	kMenuAction3  = 3,
+	kMenuAction4  = 4,
+	kMenuAction10 = 10
+};
+
+enum ProgressState {
+	kProgressStateNone = 0,
+	kProgressState1    = 1,
+	kProgressState2    = 2,
+	kProgressState3    = 3,
+	kProgressState4    = 4,
+	kProgressState5    = 5,
+	kProgressState6    = 6,
+	kProgressState7    = 7,
+	kProgressState8    = 8
 };
 
 #pragma endregion

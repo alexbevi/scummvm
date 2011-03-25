@@ -37,13 +37,17 @@
 #include "ring/graphics/screen.h"
 
 #include "ring/debug.h"
+#include "ring/shared_faust.h"
 
-//using namespace FaustGame;
+using namespace FaustGame;
 
 namespace Ring {
 
 ApplicationFaust::ApplicationFaust(RingEngine *engine) : Application(engine) {
 	_eventHandler = new EventHandlerFaust(this);
+
+	_progressState = kProgressStateNone;
+	_flagZoneSY = -1;
 }
 
 ApplicationFaust::~ApplicationFaust() {
@@ -161,7 +165,199 @@ void ApplicationFaust::startMenu(bool savegame) {
 }
 
 void ApplicationFaust::showMenu(ZoneId zone, MenuAction menuAction) {
-	error("[ApplicationFaust::startMenu] Not implemented");
+	if (zone != kZoneSY) {
+		exitZone();
+		initZones();
+	}
+
+	switch (zone) {
+	default:
+		break;
+
+	case kZoneSY:
+		switch (menuAction) {
+		default:
+			break;
+
+		case kMenuAction0:
+			loadAndStartLogin();
+			break;
+
+		case kMenuAction1:
+			loadAndInitZone();
+			break;
+
+		case kMenuAction3:
+			initZone();
+			break;
+
+		case kMenuAction10:
+			exitZone();
+			initZones();
+			startLogin();
+			break;
+		}
+		break;
+
+	case kZone2:
+		if (menuAction == kMenuAction1) {
+			setCurrentZone(kZoneSY);
+			_flagZoneSY = -1;
+			startMenu(false);
+		}
+		break;
+
+	case kZone3:
+		if (menuAction == kMenuAction0)
+			setupZone(kZone2, kSetupType2);
+		break;
+
+	case kZone4:
+		if (menuAction == kMenuAction0)
+			setProgressAndShowMenu(kProgressState7);
+		break;
+
+	case kZone6:
+		if (menuAction == kMenuAction0)
+			setProgressAndShowMenu(kProgressState2);
+		break;
+
+	case kZone7:
+		if (menuAction == kMenuAction0)
+			setupZone(kZone2, kSetupType3);
+		break;
+
+	case kZone8:
+		switch (menuAction) {
+		default:
+			break;
+
+		case kMenuAction0:
+			setCurrentZone(kZoneSY);
+			varSetByte(98001, kProgressState8);
+			setCurrentZone(kZoneSY);
+			_flagZoneSY = -1;
+			startMenu(false);
+			break;
+
+		case kMenuAction2:
+			setupZone(kZone8, kSetupType2);
+			break;
+
+		case 3:
+			varSetByte(98001, kProgressState8);
+			setCurrentZone(kZoneSY);
+			_flagZoneSY = -1;
+			startMenu(false);
+			break;
+		}
+		break;
+
+	case kZone9:
+		if (menuAction == kMenuAction0)
+			setupZone(kZone6, kSetupType3);
+		break;
+
+	case kZone10:
+		switch (menuAction) {
+		default:
+			break;
+
+		case kMenuAction2:
+			setupZone(kZone6, kSetupType2);
+			break;
+
+		case kMenuAction4:
+			setSpace(kZone14);
+			playMovie("1001");
+			fadeOut(15, Color(0, 0, 0), 0);
+
+			setProgressAndShowMenu(kProgressState3);
+			break;
+		}
+		break;
+
+	case kZone11:
+		switch (menuAction) {
+		default:
+			break;
+
+		case kMenuAction1:
+			_saveManager->loadSave("Rabbit", kLoadSaveRead);
+			puzzleSetMod(kPuzzle1, 1, 0);
+			break;
+
+		case kMenuAction4:
+			setProgressAndShowMenu(kProgressState4);
+			break;
+		}
+		break;
+
+	case kZone12:
+		if (menuAction == kMenuAction0)
+			setupZone(kZone4, kSetupType3);
+		break;
+
+	case kZone13:
+		if (menuAction == kMenuAction0)
+			setProgressAndShowMenu(kProgressState4);
+		break;
+
+	case kZone14:
+		switch (menuAction) {
+		default:
+			break;
+
+		case kMenuAction0:
+			setupZone(kZone3, kSetupType3);
+			break;
+
+		case kMenuAction1:
+		case kMenuAction2:
+			playMovie("1002");
+			break;
+		}
+		break;
+
+	case kZone15:
+		if (menuAction == kMenuAction0)
+			setupZone(kZone5, kSetupType2);
+		break;
+
+	case kZone16:
+		if (menuAction == kMenuAction0)
+			setProgressAndShowMenu(kProgressState5);
+		break;
+
+	case kZone17:
+		if (menuAction == kMenuAction0)
+			setProgressAndShowMenu(kProgressState6);
+		break;
+	}
+}
+
+void ApplicationFaust::setProgressAndShowMenu(ProgressState progress) {
+	if (_progressState < progress) {
+		_progressState = progress;
+		getSaveManager()->saveProgress(progress);
+	}
+
+	varSetByte(98001, progress);
+	setCurrentZone(kZoneSY);
+	_flagZoneSY = -1;
+	startMenu(false);
+}
+
+void ApplicationFaust::loadAndStartLogin() {
+	error("[ApplicationFaust::loadAndStartLogin] Not implemented");
+}
+
+void ApplicationFaust::loadAndInitZone() {
+	error("[ApplicationFaust::loadAndInitZone] Not implemented");
+}
+
+void ApplicationFaust::initZone() {
+	error("[ApplicationFaust::initZone] Not implemented");
 }
 
 void ApplicationFaust::showCredits() {

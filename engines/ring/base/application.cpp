@@ -2633,4 +2633,12 @@ ArchiveType Application::getArchiveType(ZoneId zone) const {
 
 #pragma endregion
 
+#pragma region Login
+
+void Application::startLogin() {
+	error("[Application::startLogin] Not implemented");
+}
+
+#pragma endregion
+
 } // End of namespace Ring

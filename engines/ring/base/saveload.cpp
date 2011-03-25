@@ -157,6 +157,10 @@ void SaveManager::close() {
 	SAFE_DELETE(_save);
 }
 
+bool SaveManager::loadSave(Common::String name, LoadSaveType type) {
+	error("[SaveManager::loadSave] Not implemented");
+}
+
 bool SaveManager::loadSave(uint32 slot, LoadSaveType type) {
 	if (!open(SaveManager::getSavegameFile(slot), type))
 		return false;
@@ -265,11 +269,19 @@ bool SaveManager::isSaving() const {
 
 void SaveManager::loadSaveSounds() {
 	if (_type == kLoadSaveInvalid || _ser == NULL)
-		error("[SaveManager::loadSaveSounds] Savegame not initialized!");
+		error("[SaveManager::loadSaveSounds] Savegame not initialized");
 
 	_app->getSoundManager()->saveLoadWithSerializer(*_ser);
 
 	close();
+}
+
+void SaveManager::loadProgress() {
+	error("[SaveManager::loadProgress] Not implemented");
+}
+
+void SaveManager::saveProgress(ProgressState progress) {
+	error("[SaveManager::saveProgress] Not implemented");
 }
 
 void SaveManager::setThumbnail(Image *image) {
