@@ -704,7 +704,7 @@ bool ImageLoaderCI2::readImage(Image *image, uint32 bitdepth, DrawType drawType)
 		}
 
 		// TODO Copy to image
-		error("[ImageLoaderCI2::readImage] image copy for kDrawType3 not implemented");
+		warning("[ImageLoaderCI2::readImage] image copy for kDrawType3 not implemented");
 	} else {
 		if (!_cinematic->sControl(image->getSurface()->pixels, bitdepth)) {
 			warning("[ImageLoaderCI2::readImage] Error when decompressing image %s", _filename.c_str());

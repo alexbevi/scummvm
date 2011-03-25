@@ -189,7 +189,7 @@ void CursorImage::alloc() {
 
 	if (_image->getBPP() != 32) {
 		dealloc();
-		error("[CursorImage::alloc] Only 32bpp TGA are supported as cursors images");
+		warning("[CursorImage::alloc] Only 32bpp TGA are supported as cursors images");
 	}
 }
 
