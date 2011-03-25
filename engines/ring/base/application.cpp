@@ -805,6 +805,10 @@ cleanup:
 	SAFE_DELETE(imageTo);
 }
 
+void Application::fadeOut(uint32 frameCount, Color colorTo, uint32 ticksWait) {
+	warning("[Application::fadeOut] Not implemented");
+}
+
 void Application::waitForEscape(uint32 ticksWait) const {
 	for (uint32 i = 0; i < ticksWait; i++)
 		if (checkEscape())

@@ -144,7 +144,16 @@ void ApplicationFaust::initBag() {
 #pragma region Startup
 
 void ApplicationFaust::showStartupScreen() {
-	error("[ApplicationFaust::showStartupScreen] Not implemented");
+	setCurrentZone(kZoneSY);
+
+	playMovie("1003");
+	fadeOut(15, Color(0, 0, 0), 0);
+
+	playMovie("1004");
+	fadeOut(15, Color(0, 0, 0), 0);
+
+	playMovie("1005");
+	fadeOut(15, Color(0, 0, 0), 0);
 }
 
 void ApplicationFaust::startMenu(bool savegame) {
