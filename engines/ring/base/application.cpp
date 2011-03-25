@@ -624,8 +624,7 @@ void Application::drawZoneName(ZoneId zone) {
 	// Draw the loading zone on screen
 	_screenManager->clear();
 
-	Common::String zoneName = (zone == kZoneSY) ? "System" : getZoneName(zone);
-    Common::String message = Common::String::format("Loading zone %s...", zoneName.c_str());
+    Common::String message = Common::String::format("Loading zone %s...", getZoneName(zone).c_str());
 	_screenManager->drawText(message, Common::Point(10, 435), Color(246, 234, 219));
 
 	_screenManager->updateScreen();

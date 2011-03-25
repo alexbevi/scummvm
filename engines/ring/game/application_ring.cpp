@@ -692,7 +692,7 @@ void ApplicationRing::initZones() {
 	else
 		_archiveType = kArchiveFile;
 
-	_state = kStateNone;
+	setState(kStateNone);
 
 	// Clear screen
 	_screenManager->clear();

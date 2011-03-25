@@ -188,7 +188,91 @@ Visual *ApplicationFaust::createVisual(Id visualId, uint32 a3, uint32 a4, uint32
 #pragma region Zone initialization
 
 void ApplicationFaust::initZones() {
-	error("[ApplicationFaust::initZones] Not implemented");
+	debugC(kRingDebugLogic, "Init zone data");
+
+	_loadFrom = kLoadFromDisk;
+
+	drawZoneName(kZoneSY);
+	_archiveType = getZoneArchiveType(kZoneSY);
+	initZoneSY();
+
+	_loadFrom = kLoadFromCd;
+
+	drawZoneName(kZone2);
+	_archiveType = getZoneArchiveType(kZone2);
+	initZone2();
+
+	drawZoneName(kZone2);
+	_archiveType = getZoneArchiveType(kZone3);
+	initZone3();
+
+	drawZoneName(kZone4);
+	_archiveType = getZoneArchiveType(kZone4);
+	initZone4();
+
+	drawZoneName(kZone5);
+	_archiveType = getZoneArchiveType(kZone5);
+	initZone5();
+
+	drawZoneName(kZone6);
+	_archiveType = getZoneArchiveType(kZone6);
+	initZone6();
+
+	drawZoneName(kZone7);
+	_archiveType = getZoneArchiveType(kZone7);
+	initZone7();
+
+	drawZoneName(kZone8);
+	_archiveType = getZoneArchiveType(kZone8);
+	initZone8();
+
+	drawZoneName(kZone9);
+	_archiveType = getZoneArchiveType(kZone9);
+	initZone9();
+
+	drawZoneName(kZone10);
+	_archiveType = getZoneArchiveType(kZone10);
+	initZone10();
+
+	_loadFrom = kLoadFromDisk;
+
+	drawZoneName(kZone11);
+	_archiveType = getZoneArchiveType(kZone11);
+	initZone11();
+
+	_loadFrom = kLoadFromCd;
+
+	drawZoneName(kZone12);
+	_archiveType = getZoneArchiveType(kZone12);
+	initZone12();
+
+	drawZoneName(kZone13);
+	_archiveType = getZoneArchiveType(kZone13);
+	initZone13();
+
+	drawZoneName(kZone14);
+	_archiveType = getZoneArchiveType(kZone14);
+	initZone14();
+
+	drawZoneName(kZone15);
+	_archiveType = getZoneArchiveType(kZone15);
+	initZone15();
+
+	drawZoneName(kZone16);
+	_archiveType = getZoneArchiveType(kZone16);
+	initZone16();
+
+	drawZoneName(kZone17);
+	_archiveType = getZoneArchiveType(kZone17);
+	initZone17();
+
+	_archiveType = getZoneArchiveType(getCurrentZone());
+
+	setState(kStateNone);
+
+	// Clear screen
+	_screenManager->clear();
+	g_system->updateScreen();
 }
 
 void ApplicationFaust::setupZone(ZoneId zone, SetupType type) {
@@ -271,6 +355,79 @@ void ApplicationFaust::setZone(ZoneId zone, SetupType type) {
 	// Setup zone
 	_eventHandler->onSetup(zone, type);
 }
+
+#pragma endregion
+
+#pragma region Zone initialization
+
+void ApplicationFaust::initZoneSY() {
+	warning("[ApplicationFaust::initZoneSY] Not implemented!");
+}
+
+void ApplicationFaust::initZone2() {
+	warning("[ApplicationFaust::initZone2] Not implemented!");
+}
+
+void ApplicationFaust::initZone3() {
+	warning("[ApplicationFaust::initZone3] Not implemented!");
+}
+
+void ApplicationFaust::initZone4() {
+	warning("[ApplicationFaust::initZone4] Not implemented!");
+}
+
+void ApplicationFaust::initZone5() {
+	warning("[ApplicationFaust::initZone5] Not implemented!");
+}
+
+void ApplicationFaust::initZone6() {
+	warning("[ApplicationFaust::initZone6] Not implemented!");
+}
+
+void ApplicationFaust::initZone7() {
+	warning("[ApplicationFaust::initZone7] Not implemented!");
+}
+
+void ApplicationFaust::initZone8() {
+	warning("[ApplicationFaust::initZone8] Not implemented!");
+}
+
+void ApplicationFaust::initZone9() {
+	warning("[ApplicationFaust::initZone9] Not implemented!");
+}
+
+void ApplicationFaust::initZone10() {
+	warning("[ApplicationFaust::initZone10] Not implemented!");
+}
+
+void ApplicationFaust::initZone11() {
+	warning("[ApplicationFaust::initZone11] Not implemented!");
+}
+
+void ApplicationFaust::initZone12() {
+	warning("[ApplicationFaust::initZone12] Not implemented!");
+}
+
+void ApplicationFaust::initZone13() {
+	warning("[ApplicationFaust::initZone13] Not implemented!");
+}
+
+void ApplicationFaust::initZone14() {
+	warning("[ApplicationFaust::initZone14] Not implemented!");
+}
+
+void ApplicationFaust::initZone15() {
+	warning("[ApplicationFaust::initZone15] Not implemented!");
+}
+
+void ApplicationFaust::initZone16() {
+	warning("[ApplicationFaust::initZone16] Not implemented!");
+}
+
+void ApplicationFaust::initZone17() {
+	warning("[ApplicationFaust::initZone17] Not implemented!");
+}
+
 
 #pragma endregion
 
