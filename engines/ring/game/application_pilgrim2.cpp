@@ -51,6 +51,10 @@ void ApplicationPilgrim2::setup() {
 	error("[ApplicationPilgrim2::setup] Not implemented");
 }
 
+void ApplicationPilgrim2::initBag() {
+	error("[ApplicationPilgrim2::initBag] Not implemented");
+}
+
 #pragma endregion
 
 #pragma region Startup

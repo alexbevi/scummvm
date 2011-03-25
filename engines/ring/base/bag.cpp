@@ -479,16 +479,25 @@ void Bag::sub_419350() {
 	}
 }
 
-void Bag::loadBackground(Common::String filename1, Common::String, Common::String filename3, Common::String, Common::String, Common::String filename6, Common::String, Common::String filename8, ArchiveType archiveType) {
+void Bag::loadBackground(Common::String background, Common::String, Common::String filename3, Common::String, Common::String, Common::String filename6, Common::String, Common::String filename8, ArchiveType archiveType, bool loadAdditionalImages) {
 	_archiveType = archiveType;
 
 	// Load images
-	loadImage(filename1, &_background, archiveType);
-	loadImage(filename3, &_image3, archiveType);
-	loadImage(filename6, &_image6, archiveType);
-	loadImage(filename8, &_image8, archiveType);
-	loadImage("erda_gun.tga", &_imageErdaGun, archiveType);
-	loadImage("erda_gur.tga", &_imageErdaGur, archiveType);
+	loadImage(background, &_background, archiveType);
+
+	if (!filename3.empty())
+		loadImage(filename3, &_image3, archiveType);
+
+	if (!filename6.empty())
+		loadImage(filename6, &_image6, archiveType);
+
+	if (!filename8.empty())
+		loadImage(filename8, &_image8, archiveType);
+
+	if (loadAdditionalImages) {
+		loadImage("erda_gun.tga", &_imageErdaGun, archiveType);
+		loadImage("erda_gur.tga", &_imageErdaGur, archiveType);
+	}
 
 	// Setup text
 	SAFE_DELETE(_text);

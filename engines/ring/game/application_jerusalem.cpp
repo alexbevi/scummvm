@@ -51,6 +51,10 @@ void ApplicationJerusalem::setup() {
 	error("[ApplicationJerusalem::setup] Not implemented");
 }
 
+void ApplicationJerusalem::initBag() {
+	error("[ApplicationJerusalem::initBag] Not implemented");
+}
+
 #pragma endregion
 
 #pragma region Startup

@@ -212,18 +212,7 @@ void Application::init() {
 		_archiveType = kArchiveArt;
 
 	_bag= new Bag();
-	_bag->setOrigin(Common::Point(0, 0));
-	_bag->sub_417D40(18, 42, 44, 100);
-	_bag->setBackgroundOffset(Common::Point(0, 0));
-	_bag->sub_417DD0(6);
-	_bag->sub_417D80(0, 24, 30, 448);
-	_bag->sub_417DA0(610, 24, 30, 448);
-	_bag->sub_4192A0(7, 48);
-	_bag->sub_4192C0(627, 48);
-	_bag->sub_417DE0(335, 8);
-	_bag->sub_419280(500);
-	_bag->loadBackground("bagbgr.tga", "", "bagarr.tga", "", "", "bagarr.tga", "", "menu_gur.tga", _archiveType);
-	_bag->initHotspots();
+	initBag();
 
 	_archiveType = kArchiveFile;
 

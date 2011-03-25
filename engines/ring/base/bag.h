@@ -62,7 +62,7 @@ public:
 	void sub_4192E0();
 	void sub_419350();
 
-	void loadBackground(Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, ArchiveType filetype);
+	void loadBackground(Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, ArchiveType filetype, bool loadAdditionalImages = false);
 
 	// Enable/Disable
 	void enable();

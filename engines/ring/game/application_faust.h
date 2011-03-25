@@ -40,6 +40,7 @@ public:
 	virtual void initFont();
 	virtual void setup();
 	virtual void initZones();
+	virtual void initBag();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Startup & Menu
@@ -54,7 +55,7 @@ public:
 	virtual void draw();
 
 	//////////////////////////////////////////////////////////////////////////
-	// Setup
+	// Zone
 	virtual void setupZone(ZoneId zone, SetupType type);
 	void setZone(ZoneId zone, SetupType type);
 

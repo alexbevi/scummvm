@@ -40,6 +40,7 @@ public:
 	virtual void initFont();
 	virtual void setup();
 	virtual void initZones();
+	virtual void initBag();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Startup & Menu

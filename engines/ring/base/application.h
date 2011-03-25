@@ -73,6 +73,7 @@ public:
 	virtual void setup() = 0;
 	virtual void initZones() = 0;
 	virtual void setupZone(ZoneId zone, SetupType type) = 0;
+	virtual void initBag() = 0;
 
 	void exitZone();
 	void exitToMenu(uint32 a1);

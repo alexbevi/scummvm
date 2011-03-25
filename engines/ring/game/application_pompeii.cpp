@@ -51,6 +51,10 @@ void ApplicationPompeii::setup() {
 	error("[ApplicationPompeii::setup] Not implemented");
 }
 
+void ApplicationPompeii::initBag() {
+	error("[ApplicationPompeii::initBag] Not implemented");
+}
+
 #pragma endregion
 
 #pragma region Startup

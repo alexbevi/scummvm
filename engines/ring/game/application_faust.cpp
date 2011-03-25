@@ -26,6 +26,7 @@
 #include "ring/game/application_faust.h"
 
 #include "ring/base/art.h"
+#include "ring/base/bag.h"
 #include "ring/base/preferences.h"
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
@@ -121,6 +122,21 @@ void ApplicationFaust::setup() {
 	// Setup subtitles
 	subtitleSetColor(Color(255, 255, 255));
 	subtitleSetBackgroundColor(Color(50, 50, 50));
+}
+
+void ApplicationFaust::initBag() {
+	_bag->setOrigin(Common::Point(0, 0));
+	_bag->sub_417D40(15, 26, 40, 61);
+	_bag->setBackgroundOffset(Common::Point(0, 0));
+	_bag->sub_417DD0(10);
+	_bag->sub_417D80(0, 0, 30, 448);
+	_bag->sub_417DA0(610, 0, 30, 448);
+	_bag->sub_4192A0(6, 12);
+	_bag->sub_4192C0(622, 12);
+	_bag->sub_417DE0(99, 0);
+	_bag->sub_419280(500);
+	_bag->loadBackground("bagbgr.tga", "", "", "", "", "", "", "bag_hl.bmp", _archiveType);
+	_bag->initHotspots();
 }
 
 #pragma endregion
