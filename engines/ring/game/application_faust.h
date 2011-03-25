@@ -65,7 +65,7 @@ public:
 
 private:
 	ProgressState _progressState;
-	int32 _flagZoneSY;
+	int32 _slot;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Utils and helpers

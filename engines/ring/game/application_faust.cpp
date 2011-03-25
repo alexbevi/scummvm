@@ -49,7 +49,7 @@ ApplicationFaust::ApplicationFaust(RingEngine *engine) : Application(engine) {
 	_eventHandler = new EventHandlerFaust(this);
 
 	_progressState = kProgressStateNone;
-	_flagZoneSY = -1;
+	_slot = -1;
 }
 
 ApplicationFaust::~ApplicationFaust() {
@@ -249,7 +249,7 @@ void ApplicationFaust::showMenu(ZoneId zone, MenuAction menuAction) {
 	case kZone2:
 		if (menuAction == kMenuAction1) {
 			setCurrentZone(kZoneSY);
-			_flagZoneSY = -1;
+			_slot = -1;
 			startMenu(false);
 		}
 		break;
@@ -283,7 +283,7 @@ void ApplicationFaust::showMenu(ZoneId zone, MenuAction menuAction) {
 			setCurrentZone(kZoneSY);
 			varSetByte(98001, kProgressState8);
 			setCurrentZone(kZoneSY);
-			_flagZoneSY = -1;
+			_slot = -1;
 			startMenu(false);
 			break;
 
@@ -294,7 +294,7 @@ void ApplicationFaust::showMenu(ZoneId zone, MenuAction menuAction) {
 		case 3:
 			varSetByte(98001, kProgressState8);
 			setCurrentZone(kZoneSY);
-			_flagZoneSY = -1;
+			_slot = -1;
 			startMenu(false);
 			break;
 		}
@@ -391,7 +391,7 @@ void ApplicationFaust::setProgressAndShowMenu(ProgressState progress) {
 
 	varSetByte(98001, progress);
 	setCurrentZone(kZoneSY);
-	_flagZoneSY = -1;
+	_slot = -1;
 	startMenu(false);
 }
 
@@ -409,15 +409,117 @@ void ApplicationFaust::initZone() {
 
 
 void ApplicationFaust::initMenuSave(bool savegame)  {
-	error("[ApplicationFaust::initMenuSave] Not implemented");
+	byte slot = varGetByte(98001);
+
+	varSetByte(99000, 0);
+	varSetByte(99001, 1);
+	varSetByte(99002, 1);
+	varSetByte(99003, 0);
+	varSetByte(99004, 0);
+	varSetByte(99005, 0);
+	varSetByte(99006, 0);
+	varSetByte(99007, 0);
+	varSetByte(99008, 0);
+	varSetByte(99009, 0);
+
+	if (slot <= 0) {
+		if (slot == 0) {
+			varSetByte(99005, 1);
+			varSetByte(99006, 1);
+			varSetByte(99007, 1);
+			varSetByte(99008, 1);
+			varSetByte(99009, 1);
+		}
+	} else {
+		varSetByte(99005, 0);
+
+		if (slot == _progressState) {
+			varSetByte(99001, 0);
+		} else if (slot < _progressState) {
+			varSetByte(99000, 1);
+			varSetByte(99001, 0);
+		} else {
+			varSetByte(99000, 1);
+		}
+	}
+
+	if (savegame) {
+		_slot = slot;
+		varSetByte(98089, 0);
+	}
+
+	if (_slot == slot) {
+		varSetByte(99000, 0);
+		varSetByte(99002, 0);
+	} else {
+		varSetByte(99002, 1);
+	}
+
+	for (int32 i = 1; i < _progressState; i++) {
+		if (i < 9)
+			objectPresentationShow(99600, i - 1);
+	}
+
+	if (varGetByte(98012) == _progressState)
+		if (varGetByte(98012) > 0)
+			objectPresentationShow(99600, _progressState - 1);
+
+	if (_progressState > 1 && _progressState >= slot) {
+		objectPresentationShow(99600, 7);
+		objectSetAccessibilityOn(14, 2, 2);
+
+		switch (slot) {
+		default:
+			break;
+
+		case 1:
+		case 3:
+		case 5:
+		case 7:
+			if (_progressState > slot)
+				objectSetAccessibilityOn(99100);
+			break;
+		}
+	}
+
+	puzzleSetMod(kPuzzleMenu, 1, 0);
+	objectSetAccessibilityOff(21);
+	objectSetAccessibilityOff(22);
+	objectSetAccessibilityOff(20);
+	objectSetAccessibilityOff(114503);
 }
 
 void ApplicationFaust::initMenu2()  {
-	error("[ApplicationFaust::initMenu2] Not implemented");
+	byte slot = varGetByte(98001);
+
+	objectPresentationShow(99012, 0);
+	objectPresentationHide(99011);
+
+	if (slot >= 8)
+		objectPresentationShow(99011, 7);
+	else
+		objectPresentationShow(99011, slot);
+
+	for (uint32 i = 99000; i < 99010; i++) {
+		objectPresentationHide(i, 0);
+		objectPresentationHide(i, 1);
+
+		if (varGetByte(i) > 0)
+			objectPresentationShow(i, 1);
+	}
+
+	objectPresentationShow(99010, 0);
+	objectPresentationShow(99010, 1);
+	objectPresentationShow(99010, 3);
 }
 
 void ApplicationFaust::initMenu3() {
-	error("[ApplicationFaust::initZone] Not implemented");
+	for (uint32 i = 99000; i < 99010; i++) {
+		objectSetAccessibilityOn(i);
+
+		if (varGetByte(i) > 0)
+			objectSetAccessibilityOff(i);
+	}
 }
 
 void ApplicationFaust::showCredits() {
