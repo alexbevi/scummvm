@@ -185,13 +185,7 @@ enum PuzzleId {
 	kPuzzle80011       = 80011,
 	kPuzzle80012       = 80012,
 	kPuzzle80013       = 80013,
-	kPuzzle80014       = 80014,
-	kPuzzleGeneralMenu = 90000,
-	kPuzzlePreferences = 90001,
-	kPuzzleLoad        = 90002,
-	kPuzzleSave        = 90003,
-	kPuzzleGameStatus  = 90004,
-	kPuzzleInsertCd    = 90005
+	kPuzzle80014       = 80014
 };
 
 enum ObjectId {

@@ -32,7 +32,7 @@ namespace FaustGame {
 // Ring Enumerations
 //////////////////////////////////////////////////////////////////////////
 enum PuzzleId {
-	kPuzzleGeneralMenu = 90000,
+	kPuzzle1
 };
 
 enum ObjectId {
