@@ -26,6 +26,7 @@
 #include "ring/graphics/movie.h"
 
 #include "ring/base/application.h"
+#include "ring/base/art.h"
 #include "ring/base/dialog.h"
 #include "ring/base/preferences.h"
 #include "ring/base/sound.h"
@@ -131,18 +132,18 @@ void Cinematic::deinit() {
 	_field_46 = 0;
 }
 
-void Cinematic::readFrameHeader() {
+void Cinematic::skipFrame() {
 	if (!_tControlBuffer)
-		error("[Cinematic::readFrameHeader] Control buffer not initialized");
+		error("[Cinematic::skipFrame] Control buffer not initialized");
 
 	// Reset tControl buffer
 	memset(_tControlBuffer, 0, CINEMATIC_TCONTROLBUFFER_SIZE);
 
 	// Read frame header
 	FrameHeader header;
-	header.load(_stream);
+	header.read(_stream);
 
-	// Skip frame?
+	// Skip frame
 	seek(header.size, SEEK_CUR);
 }
 
@@ -196,7 +197,7 @@ bool Cinematic::sControl(byte* buffer) {
 
 	// Read frame header
 	FrameHeader header;
-	header.load(_stream);
+	header.read(_stream);
 
 	// Read data
 	error("[Cinematic::sControl] Not implemented!");
@@ -278,6 +279,120 @@ int32 Cinematic::size() const {
 bool Cinematic::seek(int32 offset, int whence) {
 	if (!_stream)
 		error("[Cinematic::seek] Not initialized properly!");
+
+	return _stream->seek(offset, whence);
+}
+
+#pragma endregion
+
+#pragma endregion
+
+#pragma region Cinematic2
+
+Cinematic2::Cinematic2() {
+	_stream = NULL;
+	_seqBuffer = NULL;
+
+	_field_5404C = false;
+	_field_5404D = NULL;
+}
+
+Cinematic2::~Cinematic2() {
+	SAFE_DELETE(_stream);
+
+	free(_seqBuffer);
+	_seqBuffer = NULL;
+
+	free(_field_5404D);
+	_field_5404D = 0;
+}
+
+bool Cinematic2::init(Common::String filename, ArchiveType type, ZoneId zone, LoadFrom loadFrom) {
+	// Initialize stream
+	switch (type) {
+	default:
+		warning("[Cinematic2::init] Invalid archive type (%d)!", type);
+		return false;
+
+	case kArchiveFile:
+		_stream = SearchMan.createReadStreamForMember(filename);
+
+	case kArchiveArt:
+		_stream = getApp()->getArtHandler()->get(filename, zone, loadFrom);
+	}
+
+	if (_stream == NULL)
+		return false;
+
+	_field_5404C = false;
+	_seqBuffer = NULL;
+
+	return true;
+}
+
+bool Cinematic2::allocBuffer(size_t size) {
+	_seqBuffer = malloc(size);
+
+	return _seqBuffer != NULL;
+}
+
+void Cinematic2::skipFrame() {
+	// Read frame header
+	FrameHeader header;
+	header.read(_stream);
+
+	// Skip frame
+	seek(header.size, SEEK_CUR);
+}
+
+bool Cinematic2::tControl() {
+	error("[Cinematic2::tControl] Not implemented");
+}
+
+bool Cinematic2::sControl(void* buffer, uint32 bitdepth) {
+	warning("[Cinematic2::sControl] Not implemented");
+
+	return true;
+}
+
+
+#pragma region ReadStream
+
+bool Cinematic2::eos() const {
+	if (!_stream)
+		error("[Cinematic2::eos] Not initialized properly");
+
+	return _stream->eos();
+}
+
+uint32 Cinematic2::read(void *dataPtr, uint32 dataSize) {
+	if (!_stream)
+		error("[Cinematic2::read] Not initialized properly");
+
+	return _stream->read(dataPtr, dataSize);
+}
+
+#pragma endregion
+
+#pragma region SeekableReadStream
+
+int32 Cinematic2::pos() const {
+	if (!_stream)
+		error("[Cinematic2::pos] Not initialized properly");
+
+	return _stream->pos();
+}
+
+int32 Cinematic2::size() const {
+	if (!_stream)
+		error("[Cinematic2::size] Not initialized properly");
+
+	return _stream->size();
+}
+
+bool Cinematic2::seek(int32 offset, int whence) {
+	if (!_stream)
+		error("[Cinematic2::seek] Not initialized properly");
 
 	return _stream->seek(offset, whence);
 }
@@ -456,7 +571,7 @@ void Movie::play(const Common::Point &point) {
 
 					if (((chunkIndex + 1) * _framerate) < tickInterval) {
 						if (readFrame) {
-							_cinematic->readFrameHeader();
+							_cinematic->skipFrame();
 
 							// Process sound
 							if (soundHandler->getField0()) {

@@ -31,6 +31,7 @@
 namespace Ring {
 
 class Cinematic;
+class Cinematic2;
 class CompressedStream;
 class Image;
 
@@ -137,7 +138,7 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-#define CINEMATIC_FORMAT 83
+#define CINEMATIC_FORMAT 0x53
 
 class ImageLoaderCIN : public ImageLoader {
 public:
@@ -177,23 +178,112 @@ public:
 private:
 	Cinematic *_cinematic;
 	Header _header;
-	uint32 _field_1084;
-	uint32 _field_1088;
+	uint32 _stride;
+	uint32 _widthAndPadding;
 	uint32 _width;
 	uint32 _height;
 
 	void deinit();
-
 	bool readHeader();
 };
 
 class ImageLoaderCI2 : public ImageLoader {
 public:
+	struct Header {
+		uint32 field_0;
+		uint32 field_4;
+		uint32 field_8;
+		byte   field_C;
+		uint32 field_D;
+		uint32 width;
+		uint32 height;
+		byte   field_19;
+		byte   field_1A;
+		byte   soundChannelCount;
+		uint32 controlTableSize;
+		uint32 field_20;
+		uint32 field_24;
+		uint32 field_28;
+		uint32 field_2C;
+		uint32 field_30;
+		uint32 field_34;
+		uint32 field_38;
+		uint32 field_3C;
+		uint32 field_40;
+		uint32 field_44;
+		uint32 field_48;
+		uint32 field_4C;
+		uint32 field_50;
+		uint32 field_54;
+		uint32 field_58;
+		uint32 field_5C;
+		uint32 field_60;
+		uint32 field_64;
+		uint32 field_68;
+		uint32 field_6C;
+		uint32 field_70;
+		uint32 field_74;
+		uint32 field_78;
+		uint32 field_7C;
+		uint32 field_80;
+		uint32 field_84;
+		uint32 field_88;
+		uint32 field_8C;
+		uint32 field_90;
+		uint32 field_94;
+		uint32 field_98;
+		uint32 field_9C;
+		uint32 field_A0;
+		uint32 field_A4;
+		uint32 field_A8;
+		uint32 field_AC;
+		uint32 field_B0;
+		uint32 field_B4;
+		uint32 field_B8;
+		uint32 field_BC;
+	};
+
+	struct SoundTable {
+		byte   _field_0;
+		byte   _field_1;
+		uint32 _field_4;
+		uint16 _field_6;
+		uint32 _field_8;
+		uint32 _field_C;
+
+		SoundTable() {
+			_field_0 = 0;
+			_field_1 = 0;
+			_field_4 = 0;
+			_field_6 = 0;
+			_field_8 = 0;
+			_field_C = 0;
+		}
+
+		bool read(Common::SeekableReadStream *stream);
+	};
+
 	virtual ~ImageLoaderCI2();
 
-	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
+	virtual bool load(Image *image, ArchiveType archiveType, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
+
+	bool init(Common::String path, ArchiveType archiveType, ZoneId zone, LoadFrom loadFrom);
+	bool readImage(Image *image, uint32 bitdepth, DrawType drawType);
+
+	Header *getHeader() { return &_header; }
 
 private:
+	Cinematic2 *_cinematic;
+	Header      _header;
+	SoundTable  _soundTables[4];
+	void       *_controlTable;
+	uint32      _widthAndPadding;
+	uint32      _stride;
+	uint32      _width;
+	uint32      _height;
+
+	void deinit();
+	bool readHeader();
 };
 
 } // End of namespace Ring

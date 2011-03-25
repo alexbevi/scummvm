@@ -310,7 +310,7 @@ bool ImageLoaderTGA::readHeader(Common::SeekableReadStream *stream) {
 		return false;
 	}
 
-memset(&_header, 0, sizeof(_header));
+	memset(&_header, 0, sizeof(_header));
 
 	_header.identsize       = stream->readByte();
 	_header.colourmaptype   = stream->readByte();
@@ -478,16 +478,20 @@ bool ImageLoaderCIN::readImage(Image *image) {
 	if (!_cinematic)
 		error("[ImageLoaderCIN::readImage] Cinematic not initialized properly");
 
-	if (!image || !image->isInitialized())
-		error("[ImageLoaderCNM::readImage] Invalid image pointer or image not initialized!");
+	if (!image)
+		error("[ImageLoaderCNM::readImage] Invalid image pointer!");
 
+	if (!image->isInitialized())
+		error("[ImageLoaderCNM::readImage] Invalid image!");
+
+	// TODO Create image instead
 	// Create surface to hold the data
 	Graphics::Surface *surface = new Graphics::Surface();
 	surface->create((uint16)_width, (uint16)_height, 2);
 
-	// Update image data
-	_field_1088 = _width + 3;
-	_field_1084 = _field_1088 * 3;
+	// Compute stride
+	_widthAndPadding = _width + 3;
+	_stride = _widthAndPadding * 3;
 
 	if (!_cinematic->sControl((byte *)surface->pixels))
 		error("[ImageLoaderCIN::readImage] Cannot read image");
@@ -501,19 +505,220 @@ bool ImageLoaderCIN::readImage(Image *image) {
 
 #pragma region CI2
 
-ImageLoaderCI2::~ImageLoaderCI2() {
+bool ImageLoaderCI2::SoundTable::read(Common::SeekableReadStream *stream) {
+	_field_0 = stream->readByte();
+	_field_1 = stream->readByte();
+	_field_4 = stream->readUint32LE();
+	_field_6 = stream->readUint16LE();
+	_field_8 = stream->readUint32LE();
+	_field_C = stream->readUint32LE();
 
+	return (!stream->err() && !stream->eos());
 }
 
-bool ImageLoaderCI2::load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType) {
-	if (!image)
-		error("[ImageLoaderCNM::load] Invalid image pointer!");
+ImageLoaderCI2::~ImageLoaderCI2() {
+	deinit();
+}
 
+bool ImageLoaderCI2::load(Image *image, ArchiveType archiveType, ZoneId zone, LoadFrom loadFrom, DrawType drawType) {
+	if (!image)
+		error("[ImageLoaderCI2::load] Invalid image pointer");
+
+	byte format = 0;
 	_filename = image->getName();
 
-	warning("[ImageLoaderCI2::load] Loading CI2 compressed image not implemented (%s)", _filename.c_str());
+	if (!init(_filename, archiveType, zone, loadFrom)) {
+		warning("[ImageLoaderCI2::load] Error initializing image reader (%s)", _filename.c_str());
+		goto cleanup;
+	}
+
+	// Check cinematic format
+	format = _cinematic->readByte();
+	if (_cinematic->eos() || _cinematic->err() || format != CINEMATIC_FORMAT) {
+		warning("[ImageLoaderCI2::load] Wrong cinematic format for %s (was: %d, valid: %d)", _filename.c_str(), format, CINEMATIC_FORMAT);
+		goto cleanup;
+	}
+
+	// Read image data
+	if (!readImage(image, 32, drawType)) {
+		warning("[ImageLoaderCI2::load] Error reading image (%s)", _filename.c_str());
+		goto cleanup;
+	}
+
+	deinit();
 
 	return true;
+
+cleanup:
+	deinit();
+	return false;
+}
+
+bool ImageLoaderCI2::init(Common::String filename, ArchiveType archiveType, ZoneId zone, LoadFrom loadFrom) {
+	_controlTable = NULL;
+	_cinematic = new Cinematic2();
+
+	if (!_cinematic->init(filename, archiveType, zone, loadFrom)) {
+		warning("[ImageLoaderCI2::init] Error initializing cinematic (%s)", _filename.c_str());
+		return false;
+	}
+
+	if (!readHeader()) {
+		warning("[ImageLoaderCI2::init] Error reading header (%s)", _filename.c_str());
+		return false;
+	}
+
+	if (!_cinematic->allocBuffer(_header.width * _header.height + 128)) {
+		warning("[ImageLoaderCIN::init] Error allocating cinematic buffer (%s)", _filename.c_str());
+		return false;
+	}
+
+	if (_header.field_1A)
+		_cinematic->setField5404C();
+
+	return true;
+}
+
+bool ImageLoaderCI2::readHeader() {
+	if (!_cinematic)
+		error("[ImageLoaderCI2::readHeader] Cinematic not initialized properly");
+
+	memset(&_header, 0, sizeof(_header));
+
+	// Read header (size: 0xC0)
+	_header.field_0           = _cinematic->readUint32LE();
+	_header.field_4           = _cinematic->readUint32LE();
+	_header.field_8           = _cinematic->readUint32LE();
+	_header.field_C           = _cinematic->readByte();
+	_header.field_D           = _cinematic->readUint32LE();
+	_header.width             = _cinematic->readUint32LE();
+	_header.height            = _cinematic->readUint32LE();
+	_header.field_19          = _cinematic->readByte();
+	_header.field_1A          = _cinematic->readByte();
+	_header.soundChannelCount = _cinematic->readByte();
+	_header.controlTableSize  = _cinematic->readUint32LE();
+	_header.field_20          = _cinematic->readUint32LE();
+	_header.field_24          = _cinematic->readUint32LE();
+	_header.field_28          = _cinematic->readUint32LE();
+	_header.field_2C          = _cinematic->readUint32LE();
+	_header.field_30          = _cinematic->readUint32LE();
+	_header.field_34          = _cinematic->readUint32LE();
+	_header.field_38          = _cinematic->readUint32LE();
+	_header.field_3C          = _cinematic->readUint32LE();
+	_header.field_40          = _cinematic->readUint32LE();
+	_header.field_44          = _cinematic->readUint32LE();
+	_header.field_48          = _cinematic->readUint32LE();
+	_header.field_4C          = _cinematic->readUint32LE();
+	_header.field_50          = _cinematic->readUint32LE();
+	_header.field_54          = _cinematic->readUint32LE();
+	_header.field_58          = _cinematic->readUint32LE();
+	_header.field_5C          = _cinematic->readUint32LE();
+	_header.field_60          = _cinematic->readUint32LE();
+	_header.field_64          = _cinematic->readUint32LE();
+	_header.field_68          = _cinematic->readUint32LE();
+	_header.field_6C          = _cinematic->readUint32LE();
+	_header.field_70          = _cinematic->readUint32LE();
+	_header.field_74          = _cinematic->readUint32LE();
+	_header.field_78          = _cinematic->readUint32LE();
+	_header.field_7C          = _cinematic->readUint32LE();
+	_header.field_80          = _cinematic->readUint32LE();
+	_header.field_84          = _cinematic->readUint32LE();
+	_header.field_88          = _cinematic->readUint32LE();
+	_header.field_8C          = _cinematic->readUint32LE();
+	_header.field_90          = _cinematic->readUint32LE();
+	_header.field_94          = _cinematic->readUint32LE();
+	_header.field_98          = _cinematic->readUint32LE();
+	_header.field_9C          = _cinematic->readUint32LE();
+	_header.field_A0          = _cinematic->readUint32LE();
+	_header.field_A4          = _cinematic->readUint32LE();
+	_header.field_A8          = _cinematic->readUint32LE();
+	_header.field_AC          = _cinematic->readUint32LE();
+	_header.field_B0          = _cinematic->readUint32LE();
+	_header.field_B4          = _cinematic->readUint32LE();
+	_header.field_B8          = _cinematic->readUint32LE();
+	_header.field_BC          = _cinematic->readUint32LE();
+
+	// Update width and height
+	_width = _header.width;
+	_height = _header.height;
+
+	// Check width and height
+	if (_width > 4096 || _height == 0) {
+		warning("[ImageLoaderCIN::init] Invalid size for image %s (width:%d, height:%d)", _filename.c_str(), _width, _height);
+		return false;
+	}
+
+	// Check channel count
+	if (_header.soundChannelCount > 4) {
+		warning("[ImageLoaderCIN::init] Invalid sound channel count for image %s (count: %d)", _filename.c_str(), _header.soundChannelCount);
+		return false;
+	}
+
+	// Read sound tables
+	for (uint32 i = 0; i < _header.soundChannelCount; i++)
+		_soundTables[i].read(_cinematic);
+
+	// Allocate control table
+	uint32 tableSize = 8 * _header.controlTableSize;
+	_controlTable = malloc(tableSize + 64);
+	if (!_controlTable) {
+		warning("[ImageLoaderCIN::init] Cannot allocate control table for image %s", _filename.c_str());
+		return false;
+	}
+
+	// Read control table
+	uint32 readData = _cinematic->read(_controlTable, tableSize);
+	if (readData != tableSize || _cinematic->err() || _cinematic->eos()) {
+		warning("[ImageLoaderCIN::init] Cannot read control table for image %s", _filename.c_str());
+		return false;
+	}
+
+	return true;
+}
+
+bool ImageLoaderCI2::readImage(Image *image, uint32 bitdepth, DrawType drawType) {
+	if (!_cinematic)
+		error("[ImageLoaderCI2::readImage] Cinematic not initialized properly");
+
+	if (!image)
+		error("[ImageLoaderCI2::readImage] Invalid image pointer");
+
+	if (!image->isInitialized())
+		image->create(bitdepth, 2, _width, _height);
+
+	// Compute stride
+	_widthAndPadding = _width + 3;
+	_stride = _widthAndPadding * 3;
+
+	if (drawType == kDrawType3) {
+		// Create buffer to hold the data
+		void *buffer = malloc(_width * _stride + 64);
+		if (!buffer) {
+			warning("[ImageLoaderCI2::readImage] Cannot create buffer for image %s", _filename.c_str());
+			return false;
+		}
+
+		if (!_cinematic->sControl(buffer, bitdepth)) {
+			warning("[ImageLoaderCI2::readImage] Error when decompressing image %s", _filename.c_str());
+			return false;
+		}
+
+		// TODO Copy to image
+		error("[ImageLoaderCI2::readImage] image copy for kDrawType3 not implemented");
+	} else {
+		if (!_cinematic->sControl(image->getSurface()->pixels, bitdepth)) {
+			warning("[ImageLoaderCI2::readImage] Error when decompressing image %s", _filename.c_str());
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void ImageLoaderCI2::deinit() {
+	SAFE_DELETE(_cinematic);
+	free(_controlTable);
+	_controlTable = NULL;
 }
 
 #pragma endregion

@@ -37,7 +37,7 @@ class ImageLoaderCIN;
 class Movie;
 class ScreenManager;
 
-class Cinematic : public Common::SeekableReadStream  {
+class Cinematic : public Common::SeekableReadStream {
 public:
 	Cinematic();
 	~Cinematic();
@@ -45,7 +45,7 @@ public:
 	bool init(Common::String name);
 	void deinit();
 
-	void readFrameHeader();
+	void skipFrame();
 	bool tControl();
 	bool sControl(byte* buffer);
 
@@ -83,7 +83,7 @@ private:
 			field_10 = 0;
 		}
 
-		void load(Common::SeekableReadStream *stream) {
+		void read(Common::SeekableReadStream *stream) {
 			size     = stream->readUint32LE();
 			field_4  = stream->readUint32LE();
 			field_8  = stream->readUint32LE();
@@ -132,6 +132,87 @@ private:
 	bool    _isStreaming;
 
 	uint32 decompress(uint32 a1, byte* buffer, uint32 a3);
+};
+
+class Cinematic2 : public Common::SeekableReadStream {
+public:
+	Cinematic2();
+	~Cinematic2();
+
+	bool init(Common::String filename, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
+
+	bool allocBuffer(size_t size);
+
+	void skipFrame();
+	bool tControl();
+	bool sControl(void* buffer, uint32 bitdepth);
+
+	void setField5404C() { _field_5404C = true; }
+
+	// ReadStream
+	virtual bool eos() const;
+	virtual uint32 read(void *dataPtr, uint32 dataSize);
+
+	// SeekableReadStream
+	virtual int32 pos() const;
+	virtual int32 size() const;
+	virtual bool seek(int32 offset, int whence = SEEK_SET);
+
+private:
+	struct FrameHeader {
+		uint32 size;
+		uint32 field_4;
+		uint32 field_8;
+		uint32 field_C;
+		uint32 field_10;
+		uint32 field_14;
+		uint32 field_18;
+		uint32 field_20;
+		uint32 field_24;
+		uint32 field_28;
+		uint16 field_2C;
+		byte   field_2E;
+
+		FrameHeader() {
+			size     = 0;
+			field_4  = 0;
+			field_8  = 0;
+			field_C  = 0;
+			field_10 = 0;
+			field_14 = 0;
+			field_18 = 0;
+			field_20 = 0;
+			field_24 = 0;
+			field_28 = 0;
+			field_2C = 0;
+			field_2E = 0;
+		}
+
+		void read(Common::SeekableReadStream *stream) {
+			size     = stream->readUint32LE();
+			field_4  = stream->readUint32LE();
+			field_8  = stream->readUint32LE();
+			field_C  = stream->readUint32LE();
+			field_10 = stream->readUint32LE();
+			field_14 = stream->readUint32LE();
+			field_18 = stream->readUint32LE();
+			field_20 = stream->readUint32LE();
+			field_24 = stream->readUint32LE();
+			field_28 = stream->readUint32LE();
+			field_2C = stream->readUint16LE();
+			field_2E = stream->readByte();
+		}
+	};
+
+	Common::SeekableReadStream *_stream;    ///< The movie file stream
+
+	void        *_seqBuffer;
+	bool         _field_5404C;
+	void        *_field_5404D;
+	FrameHeader  _header;
+	uint32       _field_54080;
+	uint32       _field_54084;
+	// Original stores a flag to know if the data is streamed or not (movie: true - images: false)
 };
 
 class Movie {
