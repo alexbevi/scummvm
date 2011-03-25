@@ -34,8 +34,10 @@
 
 #include "ring/game/event_faust.h"
 
+#include "ring/graphics/image.h"
 #include "ring/graphics/screen.h"
 
+#include "ring/ring.h"
 #include "ring/debug.h"
 #include "ring/shared_faust.h"
 
@@ -161,7 +163,52 @@ void ApplicationFaust::showStartupScreen() {
 }
 
 void ApplicationFaust::startMenu(bool savegame) {
-	error("[ApplicationFaust::startMenu] Not implemented");
+	// TODO 3 functions
+	initMenuSave(savegame);
+	initMenu2();
+	initMenu3();
+
+	if (_currentGameZone)
+		return;
+
+	if (savegame) {
+		cursorSelect(kCursorBusy);
+		_vm->setFlag(false);
+		_bag->reset();
+
+		byte slot = varGetByte(98001);
+		if (!_saveManager->loadSave(slot, kLoadSaveWrite))
+			error("[ApplicationRing::startMenu] Cannot save game in slot %d", slot);
+
+		// Save a copy of the screen surface for savegame
+		SAFE_DELETE(_thumbnail);
+
+		_thumbnail = new Image();
+		_thumbnail->create(24, 2, 640, 480);
+
+		// Save a copy of the screen to our image
+		_screenManager->copySurface(_thumbnail, 0, 0);
+	}
+
+	_currentGameZone = getCurrentEpisode();
+
+	soundStopAll(4);
+	timerStopAll();
+	setupZone(kZoneSY, kSetupTypeNone);
+	setSpace(kZoneSY);
+	puzzleSetActive(kPuzzleGeneralMenu, true, true);
+	puzzleSetMod(kPuzzleMenu, 1, 0);
+
+	for (uint32 i = 1; i < 25; i++) {
+		objectSetAccessibilityOff((ObjectId)i);
+		objectPresentationHideAndRemove((ObjectId)i);
+	}
+
+	Bag *bag = getBag();
+	if (bag && bag->isInitialized())
+		bag->reset();
+
+	cursorDelete();
 }
 
 void ApplicationFaust::showMenu(ZoneId zone, MenuAction menuAction) {
@@ -284,7 +331,7 @@ void ApplicationFaust::showMenu(ZoneId zone, MenuAction menuAction) {
 
 		case kMenuAction1:
 			_saveManager->loadSave("Rabbit", kLoadSaveRead);
-			puzzleSetMod(kPuzzle1, 1, 0);
+			puzzleSetMod(kPuzzleMenu, 1, 0);
 			break;
 
 		case kMenuAction4:
@@ -357,6 +404,19 @@ void ApplicationFaust::loadAndInitZone() {
 }
 
 void ApplicationFaust::initZone() {
+	error("[ApplicationFaust::initZone] Not implemented");
+}
+
+
+void ApplicationFaust::initMenuSave(bool savegame)  {
+	error("[ApplicationFaust::initMenuSave] Not implemented");
+}
+
+void ApplicationFaust::initMenu2()  {
+	error("[ApplicationFaust::initMenu2] Not implemented");
+}
+
+void ApplicationFaust::initMenu3() {
 	error("[ApplicationFaust::initZone] Not implemented");
 }
 

@@ -376,7 +376,7 @@ public:
 	// Zone
 	void addEpisode(ZoneId id, Common::String name, uint32 cd);
 	void setCurrentEpisode(ZoneId id);
-	Id getCurrentEpisode();
+	ZoneId getCurrentEpisode();
 	uint32 getEpisodeCd(ZoneId id);
 
 	void addZone(ZoneId id, Common::String name, Common::String folder, ArchiveType archiveType, LoadFrom loadFrom);

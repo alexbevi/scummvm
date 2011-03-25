@@ -371,8 +371,8 @@ void Puzzle::setMod(uint32 a2, Id selectedId) {
 	case 2:
 		getApp()->setupCurrentRotation();
 
-		if (getApp()->getBag() && getApp()->getBag()->getField94())
-			getApp()->getBag()->sub_419350();
+		if (getApp()->getBag() && getApp()->getBag()->isInitialized())
+			getApp()->getBag()->reset();
 
 		getApp()->cursorDelete();
 		break;

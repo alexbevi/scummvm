@@ -59,8 +59,8 @@ public:
 	void sub_419280(uint32 a1);
 	void sub_4192A0(uint32 a1, uint32 a2);
 	void sub_4192C0(uint32 a1, uint32 a2);
-	void sub_4192E0();
-	void sub_419350();
+	void initialize();
+	void reset();
 
 	void loadBackground(Common::String filename1, Common::String filename2, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, ArchiveType filetype, bool loadAdditionalImages = false);
 
@@ -78,7 +78,7 @@ public:
 	void saveLoadWithSerializer(Common::Serializer &s);
 
 	// Accessors
-	bool getField94() { return _field_94; }
+	bool isInitialized() { return _isInitialized; }
 	void setClickedObject(ObjectId object) { _clickedObject = object; }
 	ObjectId getClickedObject() { return _clickedObject; }
 
@@ -122,7 +122,7 @@ private:
 	uint32      _field_88;
 	uint32      _field_8C;
 	uint32      _field_90;
-	bool        _field_94;
+	bool        _isInitialized;
 	ObjectId    _clickedObject;
 	uint32      _field_99;
 	uint32      _tickInterval;

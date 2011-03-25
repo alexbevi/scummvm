@@ -75,7 +75,7 @@ Bag::Bag() {
 	_field_88 = 0;
 	_field_8C = 0;
 	_field_90 = 6;
-	_field_94 = false;
+	_isInitialized = false;
 	_clickedObject = kObjectInvalid;
 	_field_99 = 0;
 	_tickInterval = 0;
@@ -446,8 +446,8 @@ void Bag::sub_4192C0(uint32 a1, uint32 a2) {
 	_field_64 = a2;
 }
 
-void Bag::sub_4192E0() {
-	_field_94 = true;
+void Bag::initialize() {
+	_isInitialized = true;
 
 	for (Common::Array<ImageHandle *>::iterator it = _images.begin(); it != _images.end(); it++) {
 		if ((*it)->getField6C() != 2)
@@ -459,8 +459,8 @@ void Bag::sub_4192E0() {
 	}
 }
 
-void Bag::sub_419350() {
-	_field_94 = false;
+void Bag::reset() {
+	_isInitialized = false;
 
 	for (uint i = 0; i < _images.size();) {
 		if (_images[i]->getField6C() == 2) {

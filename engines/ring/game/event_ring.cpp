@@ -99,14 +99,14 @@ void EventHandlerRing::onMouseLeftButtonUp(const Common::Event &evt) {
 
 	// Handle clicks on bag
 	Bag *bag = _app->getBag();
-	if (bag->getField94()) {
+	if (bag->isInitialized()) {
 		if (bag->checkHotspotClick(evt.mouse) == 1) {
 
 			// Handle clicked object event
 			onBagClickedObject(_app->getBag()->getClickedObject());
 
 			if (_app->getField77()) {
-				bag->sub_419350();
+				bag->reset();
 				_app->setFreOffCurrentRotation();
 
 				if (_app->getField78()) {
@@ -386,7 +386,7 @@ bool EventHandlerRing::handleLeftButtonUp(Movability *movability, uint32 index, 
 void EventHandlerRing::onMouseLeftButtonDown(const Common::Event &evt) {
 	debugC(kRingDebugLogic, "onMouseLeftButtonDown");
 
-	if (_app->getBag()->getField94())
+	if (_app->getBag()->isInitialized())
 		return;
 
 	// Handle menu
@@ -472,11 +472,11 @@ void EventHandlerRing::onMouseRightButtonUp(const Common::Event &) {
 		return;
 
 	Bag *bag = getApp()->getBag();
-	if (bag->getField94()) {
-		bag->sub_419350();
+	if (bag->isInitialized()) {
+		bag->reset();
 	} else {
 		getApp()->cursorDelete();
-		bag->sub_4192E0();
+		bag->initialize();
 
 		if (getApp()->getCurrentRotation())
 			bag->setRotationFre(getApp()->getCurrentRotation()->getFre());
@@ -513,7 +513,7 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 			evt.mouse = point;
 
 			// Simulate click
-			if (_app->getBag()->getField94()) {
+			if (_app->getBag()->isInitialized()) {
 				onMouseLeftButtonUp(evt, controlPressed);
 				return;
 			}
@@ -549,7 +549,7 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 			evt.mouse = hotspot->getCenter();
 
 			// Simulate click
-			if (_app->getBag()->getField94()) {
+			if (_app->getBag()->isInitialized()) {
 				onMouseLeftButtonUp(evt, controlPressed);
 				return;
 			}
@@ -581,7 +581,7 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 		currentRotation->setCoordinates(&evt.mouse, evt.kbd.keycode);
 
 		// Simulate click
-		if (_app->getBag()->getField94()) {
+		if (_app->getBag()->isInitialized()) {
 			onMouseLeftButtonUp(evt, controlPressed);
 			return;
 		}
@@ -11069,7 +11069,7 @@ void EventHandlerRing::onSwitchZoneAS(uint32 type) {
 		_app->rotationSetRan(80101, 85.3f);
 		_app->rotationSetActive(80101);
 
-		_app->getBag()->sub_419350();
+		_app->getBag()->reset();
 
 		_app->timerStart(kTimer2, 100000);
 		_app->timerStart(kTimer3, 220000);

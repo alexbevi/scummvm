@@ -79,6 +79,9 @@ private:
 	void loadAndStartLogin();
 	void loadAndInitZone();
 	void initZone();
+	void initMenuSave(bool savegame);
+	void initMenu2();
+	void initMenu3();
 
 	////////////////////////////////////////////////////////////////////////////
 	// Zone initialization

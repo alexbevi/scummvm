@@ -204,7 +204,7 @@ void ApplicationRing::startMenu(bool savegame) {
 		cursorSelect(kCursorBusy);
 		_vm->setFlag(false);
 		_vm->update();
-		getBag()->sub_419350();
+		_bag->reset();
 
 		if (!_saveManager->loadSave(0, kLoadSaveWrite))
 			error("[ApplicationRing::startMenu] Cannot save game in slot 0");
@@ -232,8 +232,8 @@ void ApplicationRing::startMenu(bool savegame) {
 	}
 
 	Bag *bag = getBag();
-	if (bag && bag->getField94())
-		bag->sub_419350();
+	if (bag && bag->isInitialized())
+		bag->reset();
 
 	cursorDelete();
 
@@ -399,7 +399,7 @@ void ApplicationRing::draw() {
 
 	// Draw bag
 	Bag *bag = getBag();
-	if (bag && bag->getField94())
+	if (bag && bag->isInitialized())
 		bag->draw();
 
 	// Open bag

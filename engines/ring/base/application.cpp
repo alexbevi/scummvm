@@ -406,7 +406,7 @@ void Application::update(const Common::Point &point) {
 		error("[Application::update] Application not initialized properly");
 
 	// Handle bag
-	if (_bag->getField94()) {
+	if (_bag->isInitialized()) {
 		if (_bag->checkHotspot(point)) {
 			_eventHandler->onUpdateBag(point);
 
@@ -590,7 +590,7 @@ void Application::updateBag(const Common::Point &point) {
 	if (!_bag || !_eventHandler || !_dragControl)
 		error("[Application::updateBag] Application not initialized properly");
 
-	if (_bag->getField94() || !_dragControl->getField20())
+	if (_bag->isInitialized() || !_dragControl->getField20())
 		return;
 
 	Hotspot *hotspot = NULL;
@@ -2537,7 +2537,7 @@ void Application::setCurrentEpisode(ZoneId id) {
 	_zoneHandler->setCurrentEpisode(id);
 }
 
-Id Application::getCurrentEpisode() {
+ZoneId Application::getCurrentEpisode() {
 	if (!_zoneHandler)
 		error("[Application::getCurrentEpisode] Zone handler not initialized properly");
 
