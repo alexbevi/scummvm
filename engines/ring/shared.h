@@ -270,7 +270,8 @@ enum PuzzleIdEnum {
 	kPuzzleLoad        = 90002,
 	kPuzzleSave        = 90003,
 	kPuzzleGameStatus  = 90004,
-	kPuzzleInsertCd    = 90005
+	kPuzzleInsertCd    = 90005,
+	kPuzzle90006       = 90006
 };
 
 enum ObjectIdEnum {
