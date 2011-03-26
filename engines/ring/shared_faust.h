@@ -32,7 +32,8 @@ namespace FaustGame {
 // Ring Enumerations
 //////////////////////////////////////////////////////////////////////////
 enum PuzzleId {
-	kPuzzle1
+	kPuzzle49000,
+	kPuzzle49001
 };
 
 enum ObjectId {
@@ -53,6 +54,7 @@ enum ObjectId {
 	kObject15                            = 15,
 	kObject16                            = 16,
 	kObject17                            = 17,
+	kObject19                            = 19,
 	kObject20                            = 20,
 	kObjectPipe                          = 21,
 	kObject22                            = 22,
@@ -94,6 +96,9 @@ enum ObjectId {
 	kObjectReel                          = 17302,
 	kObjectHandle                        = 17303,
 	kObjectRolodex                       = 31004,
+	kObject49000                         = 49000,
+	kObject49002                         = 49002,
+	kObject49003                         = 49003,
 	kObjectBathtubKey                    = 52222,
 	kObjectKey2                          = 53112,
 	kObjectMatches2                      = 53125,
