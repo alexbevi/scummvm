@@ -59,6 +59,25 @@ private:
 	void onSetupZone6(SetupType type);
 	void onSetupZone7(SetupType type);
 	void onSetupZone8(SetupType type);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Timer
+	//////////////////////////////////////////////////////////////////////////
+	void onTimerZoneSY(TimerId id);
+	void onTimerZone2(TimerId id);
+	void onTimerZone3(TimerId id);
+	void onTimerZone4(TimerId id);
+	void onTimerZone5(TimerId id);
+	void onTimerZone6(TimerId id);
+	void onTimerZone8(TimerId id);
+	void onTimerZone9(TimerId id);
+	void onTimerZone10(TimerId id);
+	void onTimerZone11(TimerId id);
+	void onTimerZone12(TimerId id);
+	void onTimerZone13(TimerId id);
+	void onTimerZone14(TimerId id);
+	void onTimerZone15(TimerId id);
+	void onTimerZone16(TimerId id);
 };
 
 } // End of namespace Ring

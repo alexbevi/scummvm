@@ -62,7 +62,130 @@ void EventHandlerFaust::onKeyDown(Common::Event &evt) {
 #pragma region Timer
 
 void EventHandlerFaust::onTimer(TimerId timerId) {
-	error("[EventHandlerFaust::onTimer] Not implemented (id: %d)", timerId);
+	switch (_app->getCurrentZone()) {
+	default:
+		break;
+
+	case kZoneSY:
+		onTimerZoneSY(timerId);
+		break;
+
+	case kZone2:
+		onTimerZone2(timerId);
+		break;
+
+	case kZone3:
+		onTimerZone3(timerId);
+		break;
+
+	case kZone4:
+		onTimerZone4(timerId);
+		break;
+
+	case kZone5:
+		onTimerZone5(timerId);
+		break;
+
+	case kZone6:
+		onTimerZone6(timerId);
+		break;
+
+	case kZone8:
+		onTimerZone8(timerId);
+		break;
+
+	case kZone9:
+		onTimerZone9(timerId);
+		break;
+
+	case kZone10:
+		onTimerZone10(timerId);
+		break;
+
+	case kZone11:
+		onTimerZone11(timerId);
+		break;
+
+	case kZone12:
+		onTimerZone12(timerId);
+		break;
+
+	case kZone13:
+		onTimerZone13(timerId);
+		break;
+
+	case kZone14:
+		onTimerZone14(timerId);
+		break;
+
+	case kZone15:
+		onTimerZone15(timerId);
+		break;
+
+	case kZone16:
+		onTimerZone16(timerId);
+		break;
+	}
+}
+
+void EventHandlerFaust::onTimerZoneSY(TimerId id) {
+	error("[EventHandlerFaust::onTimerZoneSY] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone2(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone2] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone3(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone3] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone4(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone4] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone5(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone5] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone6(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone6] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone8(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone8] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone9(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone9] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone10(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone10] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone11(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone11] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone12(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone12] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone13(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone13] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone14(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone14] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone15(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone15] Not implemented");
+}
+
+void EventHandlerFaust::onTimerZone16(TimerId id) {
+	error("[EventHandlerFaust::onTimerZone16] Not implemented");
 }
 
 #pragma endregion
