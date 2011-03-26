@@ -2261,7 +2261,7 @@ void Application::visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a
 	VisualObjectList *list = new VisualObjectList(visualId);
 	list->init(a3, imagePath, iconPath, filename3, filename4, filename5, filename6, filename7, filename8, filename9, filename10, filename11, filename12, filename13, drawType, archiveType);
 	list->setField8(1);
-	list->setVisible(1);
+	list->setVisible(true);
 	list->setOrigin(origin);
 	list->setBackgroundOffset(backgroundOffset);
 	list->sub_46DD30(a22, a23, a24, a25, a26, a27);
@@ -2293,57 +2293,123 @@ void Application::visualListAdd(Id visualId, PuzzleId puzzleId, const ObjectId &
 
 void Application::visualListRemove(Id visualId, PuzzleId puzzleId, const ObjectId &objectId, bool removeObject) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
+		error("[Application::visualListRemove] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (!puzzle->hasVisual(visualId))
-		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+		error("[Application::visualListRemove] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
 
 	((VisualObjectList *)puzzle->getVisual(visualId))->remove(objectId, removeObject);
 }
 
 void Application::visualListRemove(Id visualId, PuzzleId puzzleId, bool removeObject) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
+		error("[Application::visualListRemove] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (!puzzle->hasVisual(visualId))
-		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+		error("[Application::visualListRemove] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
 
 	((VisualObjectList *)puzzle->getVisual(visualId))->removeAll(removeObject);
 }
 
-uint32 Application::visualListGetItemCount(Id visualId, PuzzleId puzzleId) {
+bool Application::visualListIsIn(Id visualId, PuzzleId puzzleId, const Common::String &description) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
+		error("[Application::visualListResetObjectClicked] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (!puzzle->hasVisual(visualId))
-		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+		error("[Application::visualListResetObjectClicked] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+
+	return ((VisualObjectList *)puzzle->getVisual(visualId))->isIn(description);
+}
+
+void Application::visualListSetOn(Id visualId, PuzzleId puzzleId) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListResetObjectClicked] Puzzle Id doesn't exist (%d)", puzzleId.id());
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListResetObjectClicked] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+
+	((VisualObjectList *)puzzle->getVisual(visualId))->setVisible(true);
+}
+
+void Application::visualListSetOff(Id visualId, PuzzleId puzzleId) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListResetObjectClicked] Puzzle Id doesn't exist (%d)", puzzleId.id());
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListResetObjectClicked] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+
+	((VisualObjectList *)puzzle->getVisual(visualId))->setVisible(false);
+}
+
+void Application::visualListSetIconDirectory(Id visualId, PuzzleId puzzleId, const Common::String &directory) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListResetObjectClicked] Puzzle Id doesn't exist (%d)", puzzleId.id());
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListResetObjectClicked] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+
+	((VisualObjectList *)puzzle->getVisual(visualId))->setIconDirectory(directory);
+}
+
+uint32 Application::visualListGetItemCount(Id visualId, PuzzleId puzzleId) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListGetItemCount] Puzzle Id doesn't exist (%d)", puzzleId.id());
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListGetItemCount] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
 
 	return ((VisualObjectList *)puzzle->getVisual(visualId))->getItemCount();
 }
 
 int32 Application::visualListGetImageIndexClicked(Id visualId, PuzzleId puzzleId) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
+		error("[Application::visualListGetImageIndexClicked] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (!puzzle->hasVisual(visualId))
-		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+		error("[Application::visualListGetImageIndexClicked] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
 
 	return ((VisualObjectList *)puzzle->getVisual(visualId))->getImageIndexClicked();
 }
 
-int32 Application::visualListGetObjectIndexClicked(Id visualId, PuzzleId puzzleId) {
+ObjectId Application::visualListGetObjectIdClicked(Id visualId, PuzzleId puzzleId) {
 	if (!_puzzles.has(puzzleId))
-		error("[Application::visualListAdd] Puzzle Id doesn't exist (%d)", puzzleId.id());
+		error("[Application::visualListGetObjectIdClicked] Puzzle Id doesn't exist (%d)", puzzleId.id());
 
 	Puzzle *puzzle = _puzzles.get(puzzleId);
 	if (!puzzle->hasVisual(visualId))
-		error("[Application::visualListAdd] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+		error("[Application::visualListGetObjectIdClicked] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+
+	return ((VisualObjectList *)puzzle->getVisual(visualId))->getObjectIdClicked();
+}
+
+int32 Application::visualListGetObjectIndexClicked(Id visualId, PuzzleId puzzleId) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListGetObjectIndexClicked] Puzzle Id doesn't exist (%d)", puzzleId.id());
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListGetObjectIndexClicked] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
 
 	return ((VisualObjectList *)puzzle->getVisual(visualId))->getObjectIndexClicked();
+}
+
+void Application::visualListResetObjectClicked(Id visualId, PuzzleId puzzleId) {
+	if (!_puzzles.has(puzzleId))
+		error("[Application::visualListResetObjectClicked] Puzzle Id doesn't exist (%d)", puzzleId.id());
+
+	Puzzle *puzzle = _puzzles.get(puzzleId);
+	if (!puzzle->hasVisual(visualId))
+		error("[Application::visualListResetObjectClicked] Visual (%d) is not on puzzle (%d)", visualId, puzzleId.id());
+
+	((VisualObjectList *)puzzle->getVisual(visualId))->resetObjectClicked();
 }
 
 #pragma endregion

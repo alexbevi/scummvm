@@ -385,6 +385,14 @@ void VisualObjectList::setFontId(FontId fontId) {
 		_fontId = fontId;
 }
 
+void VisualObjectList::setIconDirectory(const Common::String &directory) {
+	if (directory.empty()) {
+		_iconPath = Common::String::format("DATA/%s/VISUAL/", getApp()->getCurrentZoneFolder());
+	} else {
+		_iconPath = directory;
+	}
+}
+
 void VisualObjectList::draw() {
 	if (!_visible)
 		return;
@@ -690,6 +698,21 @@ void VisualObjectList::removeAll(bool removeObject) {
 	_objectIndex = 0;
 	_itemCount = _objects.size();
 	_objectIdClicked = 0;
+	_objectIndexClicked = -1;
+	_imageIndexClicked = -1;
+}
+
+bool VisualObjectList::isIn(const Common::String &description) {
+	for (Common::Array<Object *>::iterator it = _objects.begin(); it != _objects.end(); it++) {
+		if ((*it)->getDescription() == description)
+			return true;
+	}
+
+	return false;
+}
+
+void VisualObjectList::resetObjectClicked() {
+	_objectIdClicked = kObjectNone;
 	_objectIndexClicked = -1;
 	_imageIndexClicked = -1;
 }

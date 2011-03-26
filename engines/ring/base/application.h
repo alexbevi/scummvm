@@ -337,9 +337,16 @@ public:
 	void visualListAdd(Id visualId, PuzzleId puzzleId, const ObjectId &objectId);
 	void visualListRemove(Id visualId, PuzzleId puzzleId, const ObjectId &objectId, bool removeObject);
 	void visualListRemove(Id visualId, PuzzleId puzzleId, bool removeObject);
+	bool visualListIsIn(Id visualId, PuzzleId puzzleId, const Common::String &description);
+	void visualListSetOn(Id visualId, PuzzleId puzzleId);
+	void visualListSetOff(Id visualId, PuzzleId puzzleId);
+	void visualListSetIconDirectory(Id visualId, PuzzleId puzzleId, const Common::String &directory);
 	uint32 visualListGetItemCount(Id visualId, PuzzleId puzzleId);
 	int32 visualListGetImageIndexClicked(Id visualId, PuzzleId puzzleId);
+	ObjectId visualListGetObjectIdClicked(Id visualId, PuzzleId puzzleId);
 	int32 visualListGetObjectIndexClicked(Id visualId, PuzzleId puzzleId);
+	void visualListResetObjectClicked(Id visualId, PuzzleId puzzleId);
+
 
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor) = 0;
 

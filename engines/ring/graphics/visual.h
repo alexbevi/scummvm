@@ -56,11 +56,11 @@ public:
 
 	// Accessors
 	void setField8(uint32 val) { _field_8 = val; }
-	void setVisible(uint32 val) { _visible = val; }
+	void setVisible(bool state) { _visible = state; }
 
 protected:
 	uint32 _field_8;
-	uint32 _visible;
+	bool _visible;
 };
 
 class VisualObjectList : public Visual {
@@ -94,14 +94,18 @@ public:
 	void setTextForegroundColor(const Color &foreground, const Color &foregroundSelected);
 	void setTextBackgroundColor(const Color &background);
 	void setFontId(FontId fontId);
+	void setIconDirectory(const Common::String &directory);
 
 	// Management
 	void add(ObjectId objectId);
 	void remove(ObjectId objectId, bool removeObject);
 	void removeAll(bool removeObject);
+	bool isIn(const Common::String &description);
+	void resetObjectClicked();
 
 	// Accessors
 	uint32 getItemCount() { return _itemCount; }
+	ObjectId getObjectIdClicked() { return _objectIdClicked; }
 	int32 getImageIndexClicked() { return _imageIndexClicked; }
 	int32 getObjectIndexClicked() { return _objectIndexClicked; }
 
