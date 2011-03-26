@@ -45,6 +45,23 @@ using namespace FaustGame;
 
 namespace Ring {
 
+// List of credits screens
+static const struct {
+	Common::String filename;
+	uint32 ticksWait;
+	LoadFrom loadFrom;
+	ArchiveType archiveType;
+} creditsScreens[7] = {
+	{"cre1.bmp",    0, kLoadFromDisk, kArchiveArt},
+	{"cre2.bmp",    0, kLoadFromDisk, kArchiveArt},
+	{"cre3.bmp",    0, kLoadFromDisk, kArchiveArt},
+	{"cre4.bmp",    0, kLoadFromDisk, kArchiveArt},
+	{"cre5.bmp",    0, kLoadFromDisk, kArchiveArt},
+	{"cre6.bmp",    0, kLoadFromDisk, kArchiveArt},
+	{"cre7.bmp", 5000, kLoadFromDisk, kArchiveArt},
+};
+
+
 ApplicationFaust::ApplicationFaust(RingEngine *engine) : Application(engine) {
 	_eventHandler = new EventHandlerFaust(this);
 
@@ -523,7 +540,19 @@ void ApplicationFaust::initMenu3() {
 }
 
 void ApplicationFaust::showCredits() {
-	error("[ApplicationFaust::showCredits] Not implemented");
+	soundStopAll(1024);
+	setCurrentZone(kZoneSY);
+	soundSetVolume(52000, 100);
+	soundPlay(52000, kSoundLoop);
+
+	// Scroll credits
+	for (uint i = 0; i < ARRAYSIZE(creditsScreens); i++) {
+		if (scrollImage(creditsScreens[i].filename, creditsScreens[i].ticksWait, creditsScreens[i].loadFrom, creditsScreens[i].archiveType))
+			break;
+	}
+
+	fadeOut(15, Color(0, 0, 0), 0);
+	soundStop(52000, 1024);
 }
 
 void ApplicationFaust::loadPreferences() {
