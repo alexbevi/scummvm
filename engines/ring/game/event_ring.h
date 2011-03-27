@@ -44,14 +44,15 @@ public:
 	virtual void onMouseRightButtonUp(const Common::Event &evt);
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
+
 	virtual void onSound(Id id, SoundType type, uint32 a3);
 	virtual void onSetup(ZoneId zone, SetupType type);
 	virtual void onBag(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
 	virtual void onBagClickedObject(ObjectId id);
 	virtual void onBagZoneSwitch();
+	virtual void onUpdateBag(const Common::Point &point);
 	virtual void onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point);
 	virtual void onUpdateAfter(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {}
-	virtual void onUpdateBag(const Common::Point &point);
 	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
 	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
 	virtual void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
@@ -102,7 +103,7 @@ private:
 	bool handleLeftButtonUp(Movability *movability, uint32 index, Id id, bool isRotation = false);
 
 	//////////////////////////////////////////////////////////////////////////
-	// Left button down
+	// Button down
 	//////////////////////////////////////////////////////////////////////////
 	void onButtonDown(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	void onButtonDownZoneNI(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
