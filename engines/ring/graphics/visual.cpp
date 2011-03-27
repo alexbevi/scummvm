@@ -522,7 +522,6 @@ void VisualObjectList::draw() {
 						animation->playFrame(_imageCoords);
 					}
 				}
-
 			}
 		}
 	}
@@ -591,7 +590,7 @@ uint32 VisualObjectList::handleUpdate(const Common::Point &point) {
 		if (hotspot->isEnabled()) {
 			getApp()->cursorSelect(kCursorMenuActive);
 
-			if (_upGur->getNameId().empty())
+			if (!_upGur->getNameId().empty())
 				getApp()->getScreenManager()->draw(_upGur, _origin + _upOffset, _upGur->getDrawType());
 		}
 
@@ -602,7 +601,7 @@ uint32 VisualObjectList::handleUpdate(const Common::Point &point) {
 		if (hotspot->isEnabled()) {
 			getApp()->cursorSelect(kCursorMenuActive);
 
-			if (_upGur->getNameId().empty())
+			if (!_upGur->getNameId().empty())
 				getApp()->getScreenManager()->draw(_downGur, _origin + _downOffset, _downGur->getDrawType());
 		}
 
