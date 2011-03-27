@@ -82,7 +82,7 @@ public:
 	static void writeSavegameHeader(Common::OutSaveFile *out, RingSavegameHeader &header);
 
 	// Loading & Saving
-	bool loadSave(Common::String name, LoadSaveType type);
+	bool loadSave(const Common::String &name, LoadSaveType type);
 	bool loadSave(uint32 slot, LoadSaveType type);
 	bool loadSaveTimer(Common::String filename, LoadSaveType type);
 	void loadSaveSounds();

@@ -151,7 +151,7 @@ bool Image::load(Common::String filename, ArchiveType type, ZoneId zone, LoadFro
 	return true;
 }
 
-ImageLoader *Image::getLoader(Common::String filename, ArchiveType type) {
+ImageLoader *Image::getLoader(Common::String filename, ArchiveType type) const {
 	switch (((RingEngine *)g_engine)->getGameType()) {
 	default:
 	case GameTypeRing:

@@ -387,7 +387,7 @@ void VisualObjectList::setFontId(FontId fontId) {
 
 void VisualObjectList::setIconDirectory(const Common::String &directory) {
 	if (directory.empty()) {
-		_iconPath = Common::String::format("DATA/%s/VISUAL/", getApp()->getCurrentZoneFolder());
+		_iconPath = Common::String::format("DATA/%s/VISUAL/", getApp()->getCurrentZoneFolder().c_str());
 	} else {
 		_iconPath = directory;
 	}

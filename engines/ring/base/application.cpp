@@ -1463,32 +1463,32 @@ void Application::objectAddRotationAccessibility(ObjectId objectId, Id rotationI
 
 #pragma endregion
 
-void Application::objectSetActiveCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom) {
+void Application::objectSetActiveCursor(ObjectId objectId, const Common::Point &point, uint32 frameCount, CursorType type, float framerate, byte a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetActiveCursor] Object Id doesn't exist (%d)", objectId.id());
 
-	_objects.get(objectId)->setActiveCursor(point, a4, type, a6, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
+	_objects.get(objectId)->setActiveCursor(point, frameCount, type, framerate, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetPassiveCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom) {
+void Application::objectSetPassiveCursor(ObjectId objectId, const Common::Point &point, uint32 frameCount, CursorType type, float framerate, byte a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetPassiveCursor] Object Id doesn't exist (%d)", objectId.id());
 
-	_objects.get(objectId)->setPassiveCursor(point, a4, type, a6, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
+	_objects.get(objectId)->setPassiveCursor(point, frameCount, type, framerate, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetActiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom) {
+void Application::objectSetActiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 frameCount, CursorType type, float framerate, byte a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetActiveDrawCursor] Object Id doesn't exist (%d)", objectId.id());
 
-	_objects.get(objectId)->setActiveDrawCursor(point, a4, type, a6, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
+	_objects.get(objectId)->setActiveDrawCursor(point, frameCount, type, framerate, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
-void Application::objectSetPassiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom) {
+void Application::objectSetPassiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 frameCount, CursorType type, float framerate, byte a7, LoadFrom loadFrom) {
 	if (!_objects.has(objectId))
 		error("[Application::objectSetPassiveDrawCursor] Object Id doesn't exist (%d)", objectId.id());
 
-	_objects.get(objectId)->setPassiveDrawCursor(point, a4, type, a6, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
+	_objects.get(objectId)->setPassiveDrawCursor(point, frameCount, type, framerate, a7, loadFrom, _configuration.artBAG ? kArchiveArt : kArchiveFile);
 }
 
 void Application::objectAddPresentation(ObjectId objectId) {

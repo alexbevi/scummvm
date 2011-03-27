@@ -295,6 +295,9 @@ Cinematic2::Cinematic2() {
 
 	_field_5404C = false;
 	_field_5404D = NULL;
+
+	_field_54080 = 0;
+	_field_54084 = 0;
 }
 
 Cinematic2::~Cinematic2() {
@@ -316,9 +319,11 @@ bool Cinematic2::init(Common::String filename, ArchiveType type, ZoneId zone, Lo
 
 	case kArchiveFile:
 		_stream = SearchMan.createReadStreamForMember(filename);
+		break;
 
 	case kArchiveArt:
 		_stream = getApp()->getArtHandler()->get(filename, zone, loadFrom);
+		break;
 	}
 
 	if (_stream == NULL)
@@ -330,8 +335,8 @@ bool Cinematic2::init(Common::String filename, ArchiveType type, ZoneId zone, Lo
 	return true;
 }
 
-bool Cinematic2::allocBuffer(size_t size) {
-	_seqBuffer = malloc(size);
+bool Cinematic2::allocBuffer(size_t bufferSize) {
+	_seqBuffer = malloc(bufferSize);
 
 	return _seqBuffer != NULL;
 }
@@ -354,7 +359,6 @@ bool Cinematic2::sControl(void* buffer, uint32 bitdepth) {
 
 	return true;
 }
-
 
 #pragma region ReadStream
 

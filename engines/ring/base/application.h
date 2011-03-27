@@ -198,10 +198,10 @@ public:
 
 	void objectAddRotationAccessibility(ObjectId objectId, Id rotationId, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10);
 
-	void objectSetActiveCursor(ObjectId objectId,      const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom);
-	void objectSetPassiveCursor(ObjectId objectId,     const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom);
-	void objectSetActiveDrawCursor(ObjectId objectId,  const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom);
-	void objectSetPassiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 a4, CursorType type, float a6, byte a7, LoadFrom loadFrom);
+	void objectSetActiveCursor(ObjectId objectId,      const Common::Point &point, uint32 framecount, CursorType type, float framerate, byte a7, LoadFrom loadFrom);
+	void objectSetPassiveCursor(ObjectId objectId,     const Common::Point &point, uint32 framecount, CursorType type, float framerate, byte a7, LoadFrom loadFrom);
+	void objectSetActiveDrawCursor(ObjectId objectId,  const Common::Point &point, uint32 framecount, CursorType type, float framerate, byte a7, LoadFrom loadFrom);
+	void objectSetPassiveDrawCursor(ObjectId objectId, const Common::Point &point, uint32 framecount, CursorType type, float framerate, byte a7, LoadFrom loadFrom);
 
 	void objectAddPresentation(ObjectId objectId);
 	void objectAddBagAnimation(ObjectId objectId, ImageType imageType, DrawType drawType, uint32 frameCount, float framerate, byte a6);

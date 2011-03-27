@@ -72,7 +72,7 @@ protected:
 	//uint32 _offset;
 	//Common::Rect _rect;
 
-	ImageLoader *getLoader(Common::String filename, ArchiveType type);
+	ImageLoader *getLoader(Common::String filename, ArchiveType type) const;
 };
 
 class ImageHandle : public Image, public Common::Serializable {

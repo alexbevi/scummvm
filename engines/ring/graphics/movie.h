@@ -141,7 +141,7 @@ public:
 
 	bool init(Common::String filename, ArchiveType type, ZoneId zone, LoadFrom loadFrom);
 
-	bool allocBuffer(size_t size);
+	bool allocBuffer(size_t bufferSize);
 
 	void skipFrame();
 	bool tControl();

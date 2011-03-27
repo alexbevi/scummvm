@@ -157,7 +157,7 @@ void SaveManager::close() {
 	SAFE_DELETE(_save);
 }
 
-bool SaveManager::loadSave(Common::String name, LoadSaveType type) {
+bool SaveManager::loadSave(const Common::String &name, LoadSaveType type) {
 	error("[SaveManager::loadSave] Not implemented");
 }
 
