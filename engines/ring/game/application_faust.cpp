@@ -193,7 +193,7 @@ void ApplicationFaust::startMenu(bool savegame) {
 		_vm->setFlag(false);
 		_bag->reset();
 
-		byte slot = varGetByte(98001);
+		byte slot = (byte)varGetByte(98001);
 		if (!_saveManager->loadSave(slot, kLoadSaveWrite))
 			error("[ApplicationRing::startMenu] Cannot save game in slot %d", slot);
 
@@ -308,7 +308,7 @@ void ApplicationFaust::showMenu(ZoneId zone, MenuAction menuAction) {
 			setupZone(kZone8, kSetupType2);
 			break;
 
-		case 3:
+		case kMenuAction3:
 			varSetByte(98001, kProgressState8);
 			setCurrentZone(kZoneSY);
 			_slot = -1;
@@ -426,7 +426,7 @@ void ApplicationFaust::initZone() {
 
 
 void ApplicationFaust::initMenuSave(bool savegame)  {
-	byte slot = varGetByte(98001);
+	int8 slot = varGetByte(98001);
 
 	varSetByte(99000, 0);
 	varSetByte(99001, 1);
@@ -472,7 +472,7 @@ void ApplicationFaust::initMenuSave(bool savegame)  {
 		varSetByte(99002, 1);
 	}
 
-	for (int32 i = 1; i < _progressState; i++) {
+	for (uint32 i = 1; i < (uint32)_progressState; i++) {
 		if (i < 9)
 			objectPresentationShow(99600, i - 1);
 	}
@@ -507,7 +507,7 @@ void ApplicationFaust::initMenuSave(bool savegame)  {
 }
 
 void ApplicationFaust::initMenu2()  {
-	byte slot = varGetByte(98001);
+	int8 slot = varGetByte(98001);
 
 	objectPresentationShow(99012, 0);
 	objectPresentationHide(99011);
@@ -515,7 +515,7 @@ void ApplicationFaust::initMenu2()  {
 	if (slot >= 8)
 		objectPresentationShow(99011, 7);
 	else
-		objectPresentationShow(99011, slot);
+		objectPresentationShow(99011, (byte)slot);
 
 	for (uint32 i = 99000; i < 99010; i++) {
 		objectPresentationHide(i, 0);
@@ -1040,7 +1040,7 @@ void ApplicationFaust::initZoneSY() {
 	objectAddPuzzleAccessibility(kObject14, kPuzzleGeneralMenu, Common::Rect(0, 420, 640, 480), false, kCursorBack, 99);
 	objectAdd(kObject15, "", "", 1);
 	objectAddPresentation(kObject15);
-	objectPresentationAddAnimationToPuzzle(kObject15, 0, kPuzzleMenu, "limbo", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 2200, 183, 15.0, 6);
+	objectPresentationAddAnimationToPuzzle(kObject15, 0, kPuzzleMenu, "limbo", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 2200, 183, 15.0f, 6);
 	objectAdd(kObject16, "", "", 1);
 	objectAddPresentation(kObject16);
 	objectPresentationAddImageToPuzzle(kObject16, 0, kPuzzleMenu, "a01s02_mephisto.tga", Common::Point(80, 57), true, kDrawType3, 2100);
@@ -1361,14 +1361,14 @@ void ApplicationFaust::initZoneSY() {
 	objectAddPresentation(kObject99044);
 	objectPresentationAddImageToPuzzle(kObject99044, 1, kPuzzleGeneralMenu, "Pref_rev.tga", Common::Point(300, 257), true, kDrawType3, 2300);
 	objectAdd(kObject99045, "", "CUR_DRAG", 4);
-	objectSetActiveDrawCursor(kObject99045, Common::Point(15, 15), 0, kCursorTypeImage, 0.0, 0, kLoadFromCursor);
-	objectSetPassiveDrawCursor(kObject99045, Common::Point(15, 15), 0, kCursorTypeImage, 0.0, 0, kLoadFromCursor);
+	objectSetActiveDrawCursor(kObject99045, Common::Point(15, 15), 0, kCursorTypeImage, 0.0f, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject99045, Common::Point(15, 15), 0, kCursorTypeImage, 0.0f, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObject99045, kPuzzleGeneralMenu, Common::Rect(150, 160, 492, 184), false, kCursorDragDrop, 0);
 	objectAddPresentation(kObject99045);
 	objectPresentationAddImageToPuzzle(kObject99045, 0, kPuzzleGeneralMenu, "Volume.tga", Common::Point(0, 0), true, kDrawType3, 2200);
 	objectAdd(kObject99046, "", "CUR_DRAG", 4);
-	objectSetActiveDrawCursor(kObject99046, Common::Point(15, 15), 0, kCursorTypeImage, 0.0, 0, kLoadFromCursor);
-	objectSetPassiveDrawCursor(kObject99046, Common::Point(15, 15), 0, kCursorTypeImage, 0.0, 0, kLoadFromCursor);
+	objectSetActiveDrawCursor(kObject99046, Common::Point(15, 15), 0, kCursorTypeImage, 0.0f, 0, kLoadFromCursor);
+	objectSetPassiveDrawCursor(kObject99046, Common::Point(15, 15), 0, kCursorTypeImage, 0.0f, 0, kLoadFromCursor);
 	objectAddPuzzleAccessibility(kObject99046, kPuzzleGeneralMenu, Common::Rect(150, 204, 492, 228), false, kCursorDragDrop, 0);
 	objectAddPresentation(kObject99046);
 	objectPresentationAddImageToPuzzle(kObject99046, 0, kPuzzleGeneralMenu, "Volume.tga", Common::Point(0, 0), true, kDrawType3, 2200);
@@ -1737,27 +1737,27 @@ void ApplicationFaust::initZone7() {
 	objectAdd(kObject49000, "", "", 1);
 	objectAddRotationAccessibility(kObject49000, 41001, Common::Rect(316, 5, 611, 318), true, kCursorAction, 0);
 	objectAddPresentation(kObject49000);
-	objectPresentationAddAnimationToPuzzle(kObject49000, 0, kPuzzle49000, "a04s01n02a01", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 100, 12.5, 6);
+	objectPresentationAddAnimationToPuzzle(kObject49000, 0, kPuzzle49000, "a04s01n02a01", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 100, 12.5f, 6);
 	objectAddPresentation(kObject49000);
-	objectPresentationAddAnimationToPuzzle(kObject49000, 1, kPuzzle49000, "a04s02n01p01s01", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 70, 12.5, 6);
+	objectPresentationAddAnimationToPuzzle(kObject49000, 1, kPuzzle49000, "a04s02n01p01s01", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 70, 12.5f, 6);
 	objectAddPresentation(kObject49000);
-	objectPresentationAddAnimationToPuzzle(kObject49000, 2, kPuzzle49000, "a04s02n01p01s02", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 23, 15.0, 6);
+	objectPresentationAddAnimationToPuzzle(kObject49000, 2, kPuzzle49000, "a04s02n01p01s02", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 23, 15.0f, 6);
 	objectAddPresentation(kObject49000);
-	objectPresentationAddAnimationToPuzzle(kObject49000, 3, kPuzzle49000, "a04s02n01p01s03", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 17, 12.5, 6);
+	objectPresentationAddAnimationToPuzzle(kObject49000, 3, kPuzzle49000, "a04s02n01p01s03", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 17, 12.5f, 6);
 	objectAddPresentation(kObject49000);
-	objectPresentationAddAnimationToPuzzle(kObject49000, 4, kPuzzle49000, "a04s02n01p01s04", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 15, 12.5, 6);
+	objectPresentationAddAnimationToPuzzle(kObject49000, 4, kPuzzle49000, "a04s02n01p01s04", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 15, 12.5f, 6);
 	objectAddPresentation(kObject49000);
-	objectPresentationAddAnimationToPuzzle(kObject49000, 5, kPuzzle49000, "a04s02n01p01s05", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 63, 12.5, 6);
+	objectPresentationAddAnimationToPuzzle(kObject49000, 5, kPuzzle49000, "a04s02n01p01s05", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 63, 12.5f, 6);
 	objectAddPresentation(kObject49000);
-	objectPresentationAddAnimationToPuzzle(kObject49000, 6, kPuzzle49000, "a04s02n01p01s06", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 58, 12.5, 6);
+	objectPresentationAddAnimationToPuzzle(kObject49000, 6, kPuzzle49000, "a04s02n01p01s06", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 58, 12.5f, 6);
 	objectAddPresentation(kObject49000);
-	objectPresentationAddAnimationToPuzzle(kObject49000, 7, kPuzzle49000, "a04s02n01p01s07", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 70, 12.5, 6);
+	objectPresentationAddAnimationToPuzzle(kObject49000, 7, kPuzzle49000, "a04s02n01p01s07", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 70, 12.5f, 6);
 	objectAddPresentation(kObject49000);
-	objectPresentationAddAnimationToPuzzle(kObject49000, 8, kPuzzle49000, "a04s02n01p01s08", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 60, 12.5, 6);
+	objectPresentationAddAnimationToPuzzle(kObject49000, 8, kPuzzle49000, "a04s02n01p01s08", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 60, 12.5f, 6);
 	objectAddPresentation(kObject49000);
-	objectPresentationAddAnimationToPuzzle(kObject49000, 9, kPuzzle49000, "a04s02n01p01s09", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 70, 12.5, 6);
+	objectPresentationAddAnimationToPuzzle(kObject49000, 9, kPuzzle49000, "a04s02n01p01s09", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 70, 12.5f, 6);
 	objectAddPresentation(kObject49000);
-	objectPresentationAddAnimationToPuzzle(kObject49000, 10, kPuzzle49000, "a04s02n01p01s10", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 60, 12.5, 6);
+	objectPresentationAddAnimationToPuzzle(kObject49000, 10, kPuzzle49000, "a04s02n01p01s10", kImageTypeBMP, Common::Point(0, 16), kDrawType1, 1000, 60, 12.5f, 6);
 	objectAdd(kObject49003, "", "", 1);
 	objectAddRotationAccessibility(kObject49003, 41002, Common::Rect(704, 187, 847, 317), true, kCursorZoom, 0);
 	objectAddPuzzleAccessibility(kObject49003, kPuzzle49001, Common::Rect(278, 280, 396, 330), true, kCursorZoom, 1);
@@ -1809,7 +1809,77 @@ void ApplicationFaust::initZone10() {
 }
 
 void ApplicationFaust::initZone11() {
-	warning("[ApplicationFaust::initZone11] Not implemented!");
+	setCurrentZone(kZone11);
+	rotationAdd(72014, "1555", 0, 6);
+	objectAdd(kObject72000, "", "", 1);
+	objectAddRotationAccessibility(kObject72000, 72014, Common::Rect(174,  92,   230, 158), true, kCursorShoot, 0);
+	objectAddRotationAccessibility(kObject72000, 72014, Common::Rect(567,  134,  638, 204), true, kCursorShoot, 1);
+	objectAddRotationAccessibility(kObject72000, 72014, Common::Rect(1355, 129, 1423, 204), true, kCursorShoot, 2);
+	objectAddRotationAccessibility(kObject72000, 72014, Common::Rect(2341, 150, 2408, 230), true, kCursorShoot, 3);
+	objectAddRotationAccessibility(kObject72000, 72014, Common::Rect(2408, 68,  2459, 115), true, kCursorShoot, 4);
+	objectAddRotationAccessibility(kObject72000, 72014, Common::Rect(3014, 132, 3090, 212), true, kCursorShoot, 5);
+	objectAddPresentation(kObject72000);
+	objectPresentationAddAnimationToRotation(kObject72000, 0, 72014, 0, 31, 12.5f, 6);
+	objectPresentationSetAnimationOnRotation(kObject72000, 0, 0, kObject72000);
+	objectAddPresentation(kObject72000);
+	objectPresentationAddAnimationToRotation(kObject72000, 1, 72014, 1, 31, 12.5f, 6);
+	objectPresentationSetAnimationOnRotation(kObject72000, 1, 0, kObject72001);
+	objectAddPresentation(kObject72000);
+	objectPresentationAddAnimationToRotation(kObject72000, 2, 72014, 2, 31, 12.5f, 6);
+	objectPresentationSetAnimationOnRotation(kObject72000, 2, 0, kObject72002);
+	objectAddPresentation(kObject72000);
+	objectPresentationAddAnimationToRotation(kObject72000, 3, 72014, 3, 31, 12.5f, 6);
+	objectPresentationSetAnimationOnRotation(kObject72000, 3, 0, kObject72003);
+	objectAddPresentation(kObject72000);
+	objectPresentationAddAnimationToRotation(kObject72000, 4, 72014, 4, 31, 12.5f, 6);
+	objectPresentationSetAnimationOnRotation(kObject72000, 4, 0, kObject72004);
+	objectAddPresentation(kObject72000);
+	objectPresentationAddAnimationToRotation(kObject72000, 5, 72014, 5, 31, 12.5f, 6);
+	objectPresentationSetAnimationOnRotation(kObject72000, 5, 0, kObject72005);
+	objectAdd(kObject72001, "", "", 1);
+	objectAddRotationAccessibility(kObject72001, 72014, Common::Rect(0, -600, 3600, 600), true, kCursorShoot, 0);
+	soundAdd(72000, kSoundTypeEffect, "1556.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(72001, kSoundTypeEffect, "1557.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(72002, kSoundTypeEffect, "1558.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(72003, kSoundTypeEffect, "1559.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(72004, kSoundTypeEffect, "1560.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(72005, kSoundTypeEffect, "1561.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(72012, kSoundTypeEffect, "1562.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(72006, kSoundTypeAmbientEffect, "1563.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.ambientEffect.soundChunck);
+	rotationAdd3DSound(72014, 72006, 1, 1, 25, 88, 335.0f, 10);
+	rotationSet3DSoundOff(72014, 72006);
+	soundAdd(72007, kSoundTypeAmbientEffect, "1563.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.ambientEffect.soundChunck);
+	rotationAdd3DSound(72014, 72007, 1, 1, 25, 90, 15.0f, 10);
+	rotationSet3DSoundOff(72014, 72007);
+	soundAdd(72008, kSoundTypeAmbientEffect, "1563.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.ambientEffect.soundChunck);
+	rotationAdd3DSound(72014, 72008, 1, 1, 25, 92, 96.0f, 10);
+	rotationSet3DSoundOff(72014, 72008);
+	soundAdd(72009, kSoundTypeAmbientEffect, "1563.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.ambientEffect.soundChunck);
+	rotationAdd3DSound(72014, 72009, 1, 1, 25, 95, 199.0f, 10);
+	rotationSet3DSoundOff(72014, 72009);
+	soundAdd(72010, kSoundTypeAmbientEffect, "1563.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.ambientEffect.soundChunck);
+	rotationAdd3DSound(72014, 72010, 1, 1, 25, 83, 195.0f, 10);
+	rotationSet3DSoundOff(72014, 72010);
+	soundAdd(72011, kSoundTypeAmbientEffect, "1563.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.ambientEffect.soundChunck);
+	rotationAdd3DSound(72014, 72011, 1, 1, 25, 93, 260.0f, 10);
+	rotationSet3DSoundOff(72014, 72011);
+	soundAdd(72014, kSoundTypeAmbientEffect, "1564.was", _configuration.ambientEffect.loadFrom, 2, _configuration.ambientEffect.soundChunck);
+	rotationAdd3DSound(72014, 72014, 1, 1, 15, 100, 0.0f, 10);
+	soundAdd(72015, kSoundTypeAmbientEffect, "1565.was", _configuration.ambientEffect.loadFrom, 2, _configuration.ambientEffect.soundChunck);
+	rotationAdd3DSound(72014, 72015, 1, 1, 15, 100, 90.0f, 10);
+	soundAdd(72016, kSoundTypeAmbientEffect, "1566.was", _configuration.ambientEffect.loadFrom, 2, _configuration.ambientEffect.soundChunck);
+	rotationAdd3DSound(72014, 72016, 1, 1, 15, 100, 270.0f, 10);
+	soundAdd(72013, kSoundTypeBackgroundMusic, "1567.was", _configuration.backgroundMusic.loadFrom, 2, _configuration.backgroundMusic.soundChunck);
+	soundSetVolume(72013, 90);
+	varDefineByte(72000, 0);
+	varDefineByte(72001, 0);
+	varDefineByte(72002, 0);
+	varDefineByte(72003, 0);
+	varDefineByte(72004, 0);
+	varDefineByte(72005, 0);
+	varDefineByte(72006, 0);
+	varDefineByte(72007, 15);
+	varDefineWord(72000, 270);
 }
 
 void ApplicationFaust::initZone12() {
@@ -1833,7 +1903,52 @@ void ApplicationFaust::initZone16() {
 }
 
 void ApplicationFaust::initZone17() {
-	warning("[ApplicationFaust::initZone17] Not implemented!");
+	setCurrentZone(kZone17);
+	rotationAdd(141101, "2178", 0, 0);
+	rotationAdd(141102, "2179", 0, 1);
+	rotationAdd(141201, "2180", 0, 0);
+	rotationAdd(141202, "2181", 0, 2);
+	rotationAddMovabilityToRotation(141101, 141102, "", Common::Rect(3127, -68, 3396, 143), true, kCursorMove, 0);
+	rotationSetMovabilityToRotation(141101, 0, 280.0f, 0.0f, 87.0f, 0.0f, 2, 270.0f, 6.0f, 87.0f);
+	rotationAddMovabilityToRotation(141102, 141201, "", Common::Rect(2626, -75, 2868, 368), false, kCursorMove, 0);
+	rotationSetMovabilityToRotation(141102, 0, 230.0f, 0.0f, 87.0f, 0.0f, 2, 250.0f, 0.0f, 87.0f);
+	rotationAddMovabilityToRotation(141102, 141101, "", Common::Rect(1335, -101, 1687, 233), true, kCursorMove, 0);
+	rotationSetMovabilityToRotation(141102, 1, 100.0f, 0.0f, 87.0f, 0.0f, 2, 100.0f, 0.0f, 87.0f);
+	rotationAddMovabilityToRotation(141201, 141202, "", Common::Rect(2831, -233, 3074, 301), true, kCursorMove, 0);
+	rotationSetMovabilityToRotation(141201, 0, 250.0f, 0.0f, 87.0f, 0.0f, 2, 250.0f, 0.0f, 87.0f);
+	rotationAddMovabilityToRotation(141201, 141102, "", Common::Rect(1030, -143, 1877, 550), true, kCursorMove, 0);
+	rotationSetMovabilityToRotation(141201, 1, 100.0f, 0.0f, 87.0f, 0.0f, 2, 100.0f, 0.0f, 87.0f);
+	objectAdd(kObject142003, "", "", 1);
+	objectAddRotationAccessibility(kObject142003, 141202, Common::Rect(1204, -186, 1771, 550), true, kCursorMove, 0);
+	objectAdd(kObject141001, "", "", 1);
+	objectAddRotationAccessibility(kObject141001, 141102, Common::Rect(3091, -34, 3418, 380), true, kCursorAction, 0);
+	objectAddRotationAccessibility(kObject141001, 141102, Common::Rect(2997, 357, 3127, 438), true, kCursorTake, 1);
+	objectAddPresentation(kObject141001);
+	objectPresentationAddImageToRotation(141001, 0, 141102, 0);
+	objectAdd(kObject142002, "", "", 1);
+	objectAddRotationAccessibility(kObject142002, 141202, Common::Rect(3561, 22, 3600, 291), false, kCursorAction, 0);
+	objectAddRotationAccessibility(kObject142002, 141202, Common::Rect(0, 22, 277, 291), false, kCursorAction, 0);
+	objectAdd(kObjectMovieReel, "Movie reel", "a06_Reel", 9);
+	objectSetActiveCursor(kObjectMovieReel, Common::Point(20, 20), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectSetPassiveCursor(kObjectMovieReel, Common::Point(20, 20), 0, kCursorTypeImage, 0, 0, kLoadFromCursor);
+	objectAddRotationAccessibility(kObjectMovieReel, 141202, Common::Rect(548, 115, 710, 173), true, kCursorTake, 0);
+	objectAddRotationAccessibility(kObjectMovieReel, 141202, Common::Rect(3561, 22, 3600, 291), true, kCursorActionObject, 1);
+	objectAddRotationAccessibility(kObjectMovieReel, 141202, Common::Rect(0, 22, 277, 291), true, kCursorActionObject, 1);
+	objectAddPresentation(kObjectMovieReel);
+	objectPresentationAddImageToRotation(142001, 0, 141202, 0);
+	objectAddPresentation(kObjectMovieReel);
+	objectPresentationAddImageToRotation(142001, 1, 141202, 1);
+	objectPresentationShow(kObjectMovieReel, 0);
+	soundAdd(142005, kSoundTypeAmbientEffect, "1326.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.ambientEffect.soundChunck);
+	soundAdd(141001, kSoundTypeAmbientMusic, "1792.was", _configuration.ambientEffect.loadFrom, 2, _configuration.backgroundMusic.soundChunck);
+	rotationAddAmbientSound(141101, 141001, 90, 0, 1, 1, 10);
+	rotationAddAmbientSound(141102, 141001, 90, 0, 1, 1, 10);
+	soundAdd(142002, kSoundTypeAmbientEffect, "1850.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(142003, kSoundTypeAmbientEffect, "1853.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(142004, kSoundTypeAmbientEffect, "1860.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(143001, kSoundTypeDialog, "1339.wav", _configuration.dialog.loadFrom, 2, _configuration.dialog.soundChunck);
+	soundAdd(143002, kSoundTypeDialog, "1340.wav", _configuration.dialog.loadFrom, 2, _configuration.dialog.soundChunck);
+	soundAdd(143003, kSoundTypeDialog, "1341.wav", _configuration.dialog.loadFrom, 2, _configuration.dialog.soundChunck);
 }
 
 

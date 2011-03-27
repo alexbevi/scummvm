@@ -32,8 +32,8 @@ namespace FaustGame {
 // Ring Enumerations
 //////////////////////////////////////////////////////////////////////////
 enum PuzzleId {
-	kPuzzle49000,
-	kPuzzle49001
+	kPuzzle49000       = 49000,
+	kPuzzle49001       = 49001
 };
 
 enum ObjectId {
@@ -116,6 +116,12 @@ enum ObjectId {
 	kObjectWhip2                         = 61900,
 	kObjectRing2                         = 71001,
 	kObjectFuse                          = 71004,
+	kObject72000                         = 72000,
+	kObject72001                         = 72001,
+	kObject72002                         = 72002,
+	kObject72003                         = 72003,
+	kObject72004                         = 72004,
+	kObject72005                         = 72005,
 	kObjectFrankFirstPrize               = 81207,
 	kObjectThinPencil                    = 81209,
 	kObjectCompassNeedle                 = 81210,
@@ -127,7 +133,6 @@ enum ObjectId {
 	kObjectYellowBulb                    = 81402,
 	kObjectRedBulb                       = 81403,
 	kObjectDiaryOfASeducer               = 81407,
-
 	kObjectHomunculus                    = 97001,
 	kObject99000                         = 99000,
 	kObject99001                         = 99001,
@@ -220,7 +225,11 @@ enum ObjectId {
 	kObjectMixedHerbs                    = 120055,
 	kObjectCompletedMask                 = 120057,
 	kObjectCork                          = 120062,
+	kObject141001                        = 141001,
 	kObjectMovieReel                     = 142001,
+	kObject142002                        = 142002,
+	kObject142003                        = 142003,
+
 	kObjectIHaveADreamMartinLutherKing   = 310003,
 	kObjectTheodoreRooseveltTheNewDeal   = 310004,
 	kObjectLostParadisesMilton           = 310005,
@@ -233,6 +242,7 @@ enum ObjectId {
 	kObjectContractAndRelatedObligation  = 310011,
 	kObjectWithWilliamBurroughs          = 310013,
 	kObjectMephistoKlausMann             = 310014,
+
 	kObjectSpoon                         = 531001,
 	kObjectApple                         = 531011,
 	kObjectCola                          = 531012,
