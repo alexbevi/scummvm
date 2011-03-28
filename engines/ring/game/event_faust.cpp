@@ -89,11 +89,19 @@ void EventHandlerFaust::onButtonDown(ObjectId id, Id target, Id puzzleRotationId
 }
 
 void EventHandlerFaust::onButtonDownZoneSY(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerFaust::onButtonDownZoneSY] Not implemented");
+	if (id == kObject22 && target == 2) {
+		_app->objectPresentationShow(kObject12, 2);
+		_app->varSetByte(114101, 1);
+	}
 }
 
 void EventHandlerFaust::onButtonDownZone5(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerFaust::onButtonDownZone5] Not implemented");
+	if (id == kObject17022) {
+		if (_app->bagHasClickedObject())
+			_app->cursorDelete();
+		else
+			_app->objectPresentationShow(kObject17022, target);
+	}
 }
 
 void EventHandlerFaust::onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {

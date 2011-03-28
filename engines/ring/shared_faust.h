@@ -90,6 +90,7 @@ enum ObjectId {
 	kObjectBaseballBat                   = 13135,
 	kObjectLotteryTicket2                = 13899,
 	kObjectRat                           = 17021,
+	kObject17022                         = 17022,
 	kObjectKey                           = 17101,
 	kObjectCylinder                      = 17202,
 	kObjectWhip                          = 17301,
