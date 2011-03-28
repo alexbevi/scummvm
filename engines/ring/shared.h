@@ -201,6 +201,7 @@ enum LoadSaveType {
 
 enum SetupType {
 	kSetupTypeNone    = 0,
+	kSetupType1       = 1,
 	kSetupType2       = 2,
 	kSetupType3       = 3,
 	kSetupType5       = 5,

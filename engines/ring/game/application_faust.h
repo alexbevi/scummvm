@@ -70,6 +70,7 @@ public:
 private:
 	ProgressState _progressState;
 	int32 _slot;
+	ZoneId _zone;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Start menu

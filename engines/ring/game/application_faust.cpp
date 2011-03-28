@@ -67,6 +67,7 @@ ApplicationFaust::ApplicationFaust(RingEngine *engine) : Application(engine) {
 
 	_progressState = kProgressStateNone;
 	_slot = -1;
+	_zone = kZoneNone;
 }
 
 ApplicationFaust::~ApplicationFaust() {
@@ -421,7 +422,50 @@ void ApplicationFaust::loadAndInitZone() {
 }
 
 void ApplicationFaust::initZone() {
-	error("[ApplicationFaust::initZone] Not implemented");
+	bool resetZones = true;
+
+	switch (varGetByte(98001)) {
+	default:
+		resetZones = false;
+		break;
+
+	case kZoneSY:
+		setupZone(kZone2, kSetupType1);
+		break;
+
+	case kZone2:
+		setupZone(kZone3, kSetupType1);
+		break;
+
+	case kZone3:
+		setupZone(kZone4, kSetupType1);
+		break;
+
+	case kZone4:
+		setupZone(kZone5, kSetupType1);
+		break;
+
+	case kZone5:
+		setupZone(kZone6, kSetupType1);
+		break;
+
+	case kZone6:
+		setupZone(kZone7, kSetupType1);
+		break;
+
+	case kZone7:
+		setupZone(kZone8, kSetupType1);
+		break;
+	}
+
+	if (resetZones) {
+		exitZone();
+		initZones();
+	}
+
+	varSetByte(98003, 0);
+	varSetByte(98002, 1);
+	varSetByte(98001, _zone);
 }
 
 
