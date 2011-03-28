@@ -581,7 +581,31 @@ Visual *ApplicationFaust::createVisual(Id visualId, uint32 a3, uint32 a4, uint32
 
 #pragma endregion
 
-#pragma region Zone initialization
+#pragma region Message
+
+void ApplicationFaust::messageInsertCd(ZoneId zone) {
+	setupZone(kZoneSY, kSetupTypeNone);
+	setSpace(kZoneSY);
+
+	for (uint32 i = 0; i <= 25; i++) {
+		objectSetAccessibilityOff(i);
+		objectPresentationHideAndRemove(i);
+	}
+
+	objectPresentationSetTextToPuzzle(kObject55, 1, 0, _messageType);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject55, 1, 0, Common::Point(225, 193));
+	objectPresentationSetTextToPuzzle(kObject55, 1, 1, _message);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject55, 1, 1, Common::Point(225, 213));
+	objectPresentationShow(kObject55, 0);
+	objectSetAccessibilityOff(kObject55);
+	objectSetAccessibilityOn(kObject55, zone, zone);
+	objectSetAccessibilityOn(kObject55, 10, 10);
+	puzzleSetActive(kPuzzleInsertCd);
+}
+
+#pragma endregion
+
+#pragma region Zone setup
 
 void ApplicationFaust::initZones() {
 	debugC(kRingDebugLogic, "Init zone data");
@@ -1094,28 +1118,28 @@ void ApplicationFaust::initZoneSY() {
 	objectSetPuzzleAccessibilityKey(kObject4, 8, Common::KEYCODE_RETURN);
 	objectSetPuzzleAccessibilityKey(kObject4, 9, Common::KEYCODE_ESCAPE);
 	objectAdd(kObject5, "", "", 1);
-	puzzleAdd(kPuzzle90006);
-	puzzleAddBackgroundImage(kPuzzle90006, "insertcd.bmp", Common::Point(0, 16), true);
+	puzzleAdd(kPuzzleInsertCd);
+	puzzleAddBackgroundImage(kPuzzleInsertCd, "insertcd.bmp", Common::Point(0, 16), true);
 	objectAdd(kObject55, "", "", 1);
 	objectAddPresentation(kObject55);
-	objectPresentationAddImageToPuzzle(kObject55, 0, kPuzzle90006, "box_yes.tga", Common::Point(291, 261), true, kDrawType3, 1000);
+	objectPresentationAddImageToPuzzle(kObject55, 0, kPuzzleInsertCd, "box_yes.tga", Common::Point(291, 261), true, kDrawType3, 1000);
 	objectAddPresentation(kObject55);
-	objectPresentationAddTextToPuzzle(kObject55, 1, kPuzzle90006, "", Common::Point(320, 240), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
-	objectPresentationAddTextToPuzzle(kObject55, 1, kPuzzle90006, "", Common::Point(320, 260), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObject55, 1, kPuzzleInsertCd, "", Common::Point(320, 240), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
+	objectPresentationAddTextToPuzzle(kObject55, 1, kPuzzleInsertCd, "", Common::Point(320, 260), kFontDefault, Color(255, 95, 0), Color(-1, -1, -1));
 	objectAddPresentation(kObject55);
-	objectPresentationAddImageToPuzzle(kObject55, 2, kPuzzle90006, "box_no.tga", Common::Point(371, 261), true, kDrawType3, 1000);
+	objectPresentationAddImageToPuzzle(kObject55, 2, kPuzzleInsertCd, "box_no.tga", Common::Point(371, 261), true, kDrawType3, 1000);
 	objectPresentationShow(kObject55, 1);
-	objectAddPuzzleAccessibility(kObject55, kPuzzle90006, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 0);
-	objectAddPuzzleAccessibility(kObject55, kPuzzle90006, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 1);
-	objectAddPuzzleAccessibility(kObject55, kPuzzle90006, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 2);
-	objectAddPuzzleAccessibility(kObject55, kPuzzle90006, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 3);
-	objectAddPuzzleAccessibility(kObject55, kPuzzle90006, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 4);
-	objectAddPuzzleAccessibility(kObject55, kPuzzle90006, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 5);
-	objectAddPuzzleAccessibility(kObject55, kPuzzle90006, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 6);
-	objectAddPuzzleAccessibility(kObject55, kPuzzle90006, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 7);
-	objectAddPuzzleAccessibility(kObject55, kPuzzle90006, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 8);
-	objectAddPuzzleAccessibility(kObject55, kPuzzle90006, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 9);
-	objectAddPuzzleAccessibility(kObject55, kPuzzle90006, Common::Rect(371, 261, 450, 311), true, kCursorMenuActive, 99);
+	objectAddPuzzleAccessibility(kObject55, kPuzzleInsertCd, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 0);
+	objectAddPuzzleAccessibility(kObject55, kPuzzleInsertCd, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 1);
+	objectAddPuzzleAccessibility(kObject55, kPuzzleInsertCd, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 2);
+	objectAddPuzzleAccessibility(kObject55, kPuzzleInsertCd, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 3);
+	objectAddPuzzleAccessibility(kObject55, kPuzzleInsertCd, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 4);
+	objectAddPuzzleAccessibility(kObject55, kPuzzleInsertCd, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 5);
+	objectAddPuzzleAccessibility(kObject55, kPuzzleInsertCd, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 6);
+	objectAddPuzzleAccessibility(kObject55, kPuzzleInsertCd, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 7);
+	objectAddPuzzleAccessibility(kObject55, kPuzzleInsertCd, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 8);
+	objectAddPuzzleAccessibility(kObject55, kPuzzleInsertCd, Common::Rect(291, 261, 370, 311), true, kCursorMenuActive, 9);
+	objectAddPuzzleAccessibility(kObject55, kPuzzleInsertCd, Common::Rect(371, 261, 450, 311), true, kCursorMenuActive, 99);
 	objectSetPuzzleAccessibilityKey(kObject55, 0, Common::KEYCODE_RETURN);
 	objectSetPuzzleAccessibilityKey(kObject55, 1, Common::KEYCODE_RETURN);
 	objectSetPuzzleAccessibilityKey(kObject55, 2, Common::KEYCODE_RETURN);

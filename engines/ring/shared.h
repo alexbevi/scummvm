@@ -261,22 +261,27 @@ enum ProgressState {
 //////////////////////////////////////////////////////////////////////////
 
 enum PuzzleIdEnum {
-	kPuzzleInvalid     = 0,
-	kPuzzleMenu        = 1,
+	kPuzzleInvalid          = 0,
+	kPuzzleMenu             = 1,
 
 	// Shared menu puzzles
-	kPuzzleGeneralMenu = 90000,
-	kPuzzlePreferences = 90001,
-	kPuzzleLoad        = 90002,
-	kPuzzleSave        = 90003,
-	kPuzzleGameStatus  = 90004,
-	kPuzzleInsertCd    = 90005,
-	kPuzzle90006       = 90006
+	kPuzzleGeneralMenu      = 90000,
+	kPuzzlePreferences      = 90001,
+	kPuzzleLoad             = 90002,
+	kPuzzleSave             = 90003,
+	kPuzzleGameStatus       = 90004
 };
 
 enum ObjectIdEnum {
-	kObjectNone    = -1,
-	kObjectInvalid = 0
+	kObjectNone                     = -1,
+	kObjectInvalid                  = 0,
+	kObject1                        = 1,
+	kObject2                        = 2,
+	kObject3                        = 3,
+	kObject4                        = 4,
+	kObject5                        = 5,
+	kObject6                        = 6,
+	kObject7                        = 7,
 };
 
 typedef int32 Id;

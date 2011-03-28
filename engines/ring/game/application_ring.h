@@ -62,11 +62,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Messages
-	void messageInsertCd(ZoneId zone);
-	void messageShowWarning(uint32 accelerationIndex);
-	void messageHideWarning(uint32 accelerationIndex);
-	void messageShowQuestion(uint32 accelerationIndex);
-	void messageHideQuestion(uint32 accelerationIndex);
+	virtual void messageInsertCd(ZoneId zone);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Visual

@@ -33,17 +33,12 @@ namespace FaustGame {
 //////////////////////////////////////////////////////////////////////////
 enum PuzzleId {
 	kPuzzle49000       = 49000,
-	kPuzzle49001       = 49001
+	kPuzzle49001       = 49001,
+
+	kPuzzleInsertCd    = 90006
 };
 
 enum ObjectId {
-	kObject1                             = 1,
-	kObject2                             = 2,
-	kObject3                             = 3,
-	kObject4                             = 4,
-	kObject5                             = 5,
-	kObject6                             = 6,
-	kObject7                             = 7,
 	kObject8                             = 8,
 	kObject9                             = 9,
 	kObject10                            = 10,

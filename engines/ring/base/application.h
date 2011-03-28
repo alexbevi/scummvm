@@ -138,10 +138,10 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Message
 	virtual void messageInsertCd(ZoneId zone) {}
-	virtual void messageShowWarning(uint32 accelerationIndex) {}
-	virtual void messageHideWarning(uint32 accelerationIndex) {}
-	virtual void messageShowQuestion(uint32 accelerationIndex) {}
-	virtual void messageHideQuestion(uint32 accelerationIndex) {}
+	virtual void messageShowWarning(uint32 accelerationIndex);
+	virtual void messageHideWarning(uint32 accelerationIndex);
+	virtual void messageShowQuestion(uint32 accelerationIndex);
+	virtual void messageHideQuestion(uint32 accelerationIndex);
 
 	bool messageGet(Common::String messageId);
 	void messageFormat(Common::String messageId, Common::String argument);

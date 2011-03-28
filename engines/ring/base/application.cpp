@@ -1073,6 +1073,42 @@ void Application::cursorRemoveByType(CursorType type) {
 
 #pragma region Message
 
+void Application::messageShowWarning(uint32 accelerationIndex) {
+	if (!puzzleSetMod(kPuzzleMenu, 2, 3))
+		return;
+
+	objectPresentationSetTextToPuzzle(kObject3, 0, 0, _messageType);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject3, 0, 0, Common::Point(225, 193));
+	objectPresentationSetTextToPuzzle(kObject3, 0, 1, _message);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject3, 0, 1, Common::Point(225, 213));
+	objectPresentationShow(kObject3, 0);
+	objectSetAccessibilityOn(kObject3, accelerationIndex, accelerationIndex);
+}
+
+void Application::messageHideWarning(uint32 accelerationIndex) {
+	objectPresentationHideAndRemove(kObject3);
+	objectSetAccessibilityOff(kObject3, accelerationIndex, accelerationIndex);
+	puzzleSetMod(kPuzzleMenu, 1, 0);
+}
+
+void Application::messageShowQuestion(uint32 accelerationIndex) {
+	if (!puzzleSetMod(kPuzzleMenu, 2, 4))
+		return;
+
+	objectPresentationSetTextToPuzzle(kObject4, 0, 0, _messageType);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject4, 0, 0, Common::Point(225, 193));
+	objectPresentationSetTextToPuzzle(kObject4, 0, 1, _message);
+	objectPresentationSetTextCoordinatesToPuzzle(kObject4, 0, 1, Common::Point(225, 213));
+	objectPresentationShow(kObject4, 0);
+	objectSetAccessibilityOn(kObject4, accelerationIndex, accelerationIndex + 1);
+}
+
+void Application::messageHideQuestion(uint32 accelerationIndex) {
+	objectPresentationHideAndRemove(kObject4);
+	objectSetAccessibilityOff(kObject4, accelerationIndex, accelerationIndex + 1);
+	puzzleSetMod(kPuzzleMenu, 1, 0);
+}
+
 bool Application::messageGet(Common::String messageId) {
 	// Open a stream to the message file
 	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember("ames.ini");
