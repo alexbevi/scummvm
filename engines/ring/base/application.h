@@ -252,6 +252,7 @@ public:
 
 	void rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot);
 	void rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot, uint32 fromMovability, uint32 toMovability);
+	void rotationSetMovabilityOn(Id rotationId);
 	void rotationSetMovabilityOff(Id rotationId);
 	void rotationSetMovabilityOn(Id rotationId, uint32 fromMovability, uint32 toMovability);
 	void rotationSetMovabilityOff(Id rotationId, uint32 fromMovability, uint32 toMovability);

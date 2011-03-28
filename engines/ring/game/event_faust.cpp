@@ -26,6 +26,7 @@
 #include "ring/game/event_faust.h"
 
 #include "ring/base/application.h"
+#include "ring/base/saveload.h"
 
 #include "ring/debug.h"
 #include "ring/helpers.h"
@@ -1013,7 +1014,23 @@ void EventHandlerFaust::onSound(Id id, SoundType type, uint32 a3) {
 }
 
 void EventHandlerFaust::onSoundZoneSY(Id id, SoundType type, uint32 a3, bool process) {
-	error("[EventHandlerFaust::onSoundZoneSY] Not implemented");
+	if (!process)
+		return;
+
+	switch (id) {
+	default:
+		break;
+
+	case 90806:
+		_app->exitToMenu(kMenuAction1);
+		break;
+
+	case 111042:
+		_app->objectPresentationHide(kObject15);
+		_app->objectSetAccessibilityOff(kObject1);
+		sub_468290(3);
+		break;
+	}
 }
 
 void EventHandlerFaust::onSoundZone3(Id id, SoundType type, uint32 a3, bool process) {
@@ -1025,7 +1042,15 @@ void EventHandlerFaust::onSoundZone4(Id id, SoundType type, uint32 a3, bool proc
 }
 
 void EventHandlerFaust::onSoundZone5(Id id, SoundType type, uint32 a3, bool process) {
-	error("[EventHandlerFaust::onSoundZone5] Not implemented");
+	if (!process)
+		return;
+
+	if (id == 17002) {
+		_app->playMovie("1357");
+		_app->objectPresentationHide(kObject17204, 0);
+		_app->rotationSetMovabilityOn(17002);
+		_app->objectSetAccessibilityOff(kObject18, 1, 1);
+	}
 }
 
 void EventHandlerFaust::onSoundZone8(Id id, SoundType type, uint32 a3, bool process) {
@@ -1116,7 +1141,8 @@ void EventHandlerFaust::onAnimationNextFrame(Id animationId, const Common::Strin
 }
 
 void EventHandlerFaust::onAnimationNextFrameZoneSY(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
-	error("[EventHandlerFaust::onAnimationNextFrameZoneSY] Not implemented");
+	if (animationId == 2 && frame == _app->getSaveManager()->getProgress())
+		_app->objectPresentationPauseAnimation(kObject99090, 0);
 }
 
 void EventHandlerFaust::onAnimationNextFrameZone3(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
@@ -1185,6 +1211,14 @@ void EventHandlerFaust::onVisualList(Id id, uint32 type, const Common::Point &po
 
 void EventHandlerFaust::onVisualListZoneSY(Id id, uint32 type, const Common::Point &) {
 	error("[EventHandlerFaust::onVisualListZoneSY] Not implemented");
+}
+
+#pragma endregion
+
+#pragma region Helpers
+
+void EventHandlerFaust::sub_468290(uint32 a1) {
+	error("[EventHandlerFaust::sub_468290] Not implemented");
 }
 
 #pragma endregion

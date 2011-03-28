@@ -48,6 +48,7 @@ SaveManager::SaveManager(Application *application) : _app(application) {
 
 	_currentTicks = 0;
 	_slot = 0;
+	_progress = 0;
 
 	_ser = NULL;
 	_load = NULL;

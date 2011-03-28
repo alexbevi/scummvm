@@ -109,6 +109,7 @@ public:
 	SetupType getSetupType() const { return _setupType; }
 	Common::String *getName() { return &_header.name; }
 	uint32 getTicks() { return _currentTicks; }
+	uint32 getProgress() { return _progress; }
 
 	void setDescription(const Common::String &description);
 	void setSetupType(SetupType type) { _setupType = type; }
@@ -125,6 +126,8 @@ private:
 	RingSavegameHeader _header;
 	SavegameData _data;
 	uint32 _slot;
+
+	uint32 _progress;
 
 	SetupType _setupType;
 	LoadSaveType _type;

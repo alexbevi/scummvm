@@ -1971,6 +1971,10 @@ void Application::rotationSetMovabilityOnOrOff(Id rotationId, bool enableHotspot
 	_rotations.get(rotationId)->setMovabilityOnOrOff(enableHotspot, fromMovability, toMovability);
 }
 
+void Application::rotationSetMovabilityOn(Id rotationId) {
+	rotationSetMovabilityOnOrOff(rotationId, true);
+}
+
 void Application::rotationSetMovabilityOff(Id rotationId) {
 	rotationSetMovabilityOnOrOff(rotationId, false);
 }
