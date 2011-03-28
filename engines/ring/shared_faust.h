@@ -121,6 +121,7 @@ enum ObjectId {
 	kObjectWhip2                         = 61900,
 	kObjectRing2                         = 71001,
 	kObjectFuse                          = 71004,
+	kObject71201                         = 71201,
 	kObject72000                         = 72000,
 	kObject72001                         = 72001,
 	kObject72002                         = 72002,

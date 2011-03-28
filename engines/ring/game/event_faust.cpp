@@ -625,7 +625,17 @@ void EventHandlerFaust::onTimerZone9(TimerId id) {
 }
 
 void EventHandlerFaust::onTimerZone10(TimerId id) {
-	error("[EventHandlerFaust::onTimerZone10] Not implemented");
+	if (id == kTimer0) {
+		if (rnd(5) == 3) {
+			_app->objectPresentationHide(kObject71201, 2);
+			_app->objectPresentationShow(kObject71201, 0);
+
+			handleEvents();
+
+			_app->objectPresentationHide(kObject71201, 0);
+			_app->objectPresentationShow(kObject71201, 2);
+		}
+	}
 }
 
 void EventHandlerFaust::onTimerZone11(TimerId id) {
@@ -935,7 +945,24 @@ void EventHandlerFaust::onAfterRideZone8(Id movabilityFrom, Id movabilityTo, uin
 }
 
 void EventHandlerFaust::onAfterRideZone10(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
-	error("[EventHandlerFaust::onAfterRideZone10] Not implemented");
+	_app->soundPlay(71009);
+
+	if (movabilityType == kMovabilityRotationToRotation) {
+		switch (movabilityFrom) {
+		default:
+			break;
+
+		case 71011:
+			if (movabilityTo == 71008)
+				_app->soundPlay(71010);
+			break;
+
+		case 71008:
+			if (movabilityTo == 71011)
+				_app->soundPlay(71010);
+			break;
+		}
+	}
 }
 
 void EventHandlerFaust::onAfterRideZone12(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
