@@ -455,23 +455,30 @@ void EventHandlerFaust::onUpdateBagZoneSY(const Common::Point &point) {
 }
 
 void EventHandlerFaust::onUpdateBagZone3(const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBagZone3] Not implemented");
+	_app->soundStop(_app->varGetDword(12001), 1024);
+	_app->varSetDword(12001, 0);
 }
 
 void EventHandlerFaust::onUpdateBagZone4(const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBagZone4] Not implemented");
+	_app->soundStop(_app->varGetDword(13001), 1024);
+	_app->varSetDword(13001, 0);
 }
 
 void EventHandlerFaust::onUpdateBagZone6(const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBagZone6] Not implemented");
+	_app->soundStop(_app->varGetDword(31000), 1024);
+	_app->varSetDword(31000, 0);
 }
 
 void EventHandlerFaust::onUpdateBagZone12(const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBagZone12] Not implemented");
+	_app->soundStop(_app->varGetDword(81001), 1024);
+	_app->varSetDword(81001, 0);
 }
 
 void EventHandlerFaust::onUpdateBagZone14(const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBagZone14] Not implemented");
+	if (_app->varGetByte(112023)) {
+		_app->soundStop(111000 + _app->varGetByte(112023), 1024);
+		_app->varSetByte(112023, 0);
+	}
 }
 
 void EventHandlerFaust::onUpdateBagZone15(const Common::Point &point) {
