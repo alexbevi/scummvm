@@ -1065,7 +1065,62 @@ void EventHandlerFaust::onSoundZoneSY(Id id, SoundType type, uint32 a3, bool pro
 }
 
 void EventHandlerFaust::onSoundZone3(Id id, SoundType type, uint32 a3, bool process) {
-	error("[EventHandlerFaust::onSoundZone3] Not implemented");
+	if (!process)
+		return;
+
+	switch (id) {
+	default:
+		break;
+
+	case 12001:
+		_app->soundPlay(12002);
+		break;
+
+	case 12002:
+		_app->soundPlay(12003);
+		break;
+
+	case 12004:
+		_app->soundPlay(12005);
+		break;
+
+	case 12005:
+		_app->soundPlay(12006);
+		break;
+
+	case 12008:
+		_app->soundPlay(12009);
+		break;
+
+	case 12009:
+		_app->soundPlay(12010);
+		break;
+
+	case 12010:
+		_app->soundPlay(12011);
+		break;
+
+	case 12014:
+		_app->soundPlay(12015);
+		break;
+
+	case 12015:
+		_app->soundPlay(12016);
+		break;
+
+	case 12017:
+		_app->soundPlay(12018);
+		break;
+
+	case 12018:
+		_app->soundPlay(12019);
+		break;
+
+	case 12024:
+	case 12025:
+		_app->objectPresentationHide(kObject16);
+		break;
+	}
 }
 
 void EventHandlerFaust::onSoundZone4(Id id, SoundType type, uint32 a3, bool process) {
@@ -1089,7 +1144,30 @@ void EventHandlerFaust::onSoundZone8(Id id, SoundType type, uint32 a3, bool proc
 }
 
 void EventHandlerFaust::onSoundZone12(Id id, SoundType type, uint32 a3, bool process) {
-	error("[EventHandlerFaust::onSoundZone12] Not implemented");
+	if (!process)
+		return;
+
+	switch (id) {
+	default:
+		break;
+
+	case 81030:
+		_app->soundPlay(81031);
+		break;
+
+	case 81040:
+		if (_app->varGetByte(81012) == 1
+		 && _app->varGetByte(81022) == 1
+		 && _app->bagHas(kObjectDiaryOfASeducer)) {
+			_app->soundStopAll(1024);
+			_app->exitToMenu(kMenuAction0);
+		}
+		break;
+
+	case 81041:
+		_app->playMovie("1717");
+		break;
+	}
 }
 
 void EventHandlerFaust::onSoundZone14(Id id, SoundType type, uint32 a3, bool process) {
@@ -1101,7 +1179,28 @@ void EventHandlerFaust::onSoundZone15(Id id, SoundType type, uint32 a3, bool pro
 }
 
 void EventHandlerFaust::onSoundZone17(Id id, SoundType type, uint32 a3, bool process) {
-	error("[EventHandlerFaust::onSoundZone17] Not implemented");
+	if (!process)
+		return;
+
+	switch (id) {
+	default:
+		break;
+
+	case 143001:
+		_app->soundPlay(143002);
+		break;
+
+	case 143002:
+		_app->playMovie("2183");
+		_app->soundPlay(143003);
+		break;
+
+	case 143003:
+		_app->playMovie("2184");
+		_app->fadeOut(15, Color(0, 0, 0), 0);
+		_app->exitToMenu(kMenuAction0);
+		break;
+	}
 }
 
 #pragma endregion
