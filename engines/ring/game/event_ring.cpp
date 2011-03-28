@@ -34,6 +34,7 @@
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 #include "ring/base/sound.h"
+#include "ring/base/timer.h"
 
 #include "ring/game/application_ring.h"
 
@@ -5901,6 +5902,8 @@ void EventHandlerRing::onTimer(TimerId timerId) {
 		onTimerZoneN2(timerId);
 		break;
 	}
+
+	_app->getTimerHandler()->incrementFiredCount(timerId);
 }
 
 void EventHandlerRing::onTimerZoneNI(TimerId id) {

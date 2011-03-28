@@ -27,6 +27,7 @@
 
 #include "ring/base/application.h"
 #include "ring/base/saveload.h"
+#include "ring/base/timer.h"
 
 #include "ring/debug.h"
 #include "ring/helpers.h"
@@ -571,6 +572,9 @@ void EventHandlerFaust::onTimer(TimerId timerId) {
 		onTimerZone16(timerId);
 		break;
 	}
+
+	if (_app->getState() != kStateShowMenu)
+		_app->getTimerHandler()->incrementFiredCount(timerId);
 }
 
 void EventHandlerFaust::onTimerZoneSY(TimerId id) {

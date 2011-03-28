@@ -396,9 +396,6 @@ void Application::onTimer(TimerId id) {
 		return;
 
 	_eventHandler->onTimer(id);
-
-	if (_timerHandler)
-		_timerHandler->incrementFiredCount(id);
 }
 
 void Application::update(const Common::Point &point) {
