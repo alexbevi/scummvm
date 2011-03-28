@@ -1738,7 +1738,90 @@ void ApplicationFaust::initZone5() {
 }
 
 void ApplicationFaust::initZone6() {
-	warning("[ApplicationFaust::initZone6] Not implemented!");
+	setCurrentZone(kZone6);
+
+	puzzleAdd(kPuzzle31001);
+	puzzleAddBackgroundImage(kPuzzle31001, "a03s01n03p02.bmp", Common::Point(0, 16), true);
+	puzzleAdd(kPuzzle31002);
+	puzzleAddBackgroundImage(kPuzzle31002, "a03s01n03p01.bmp", Common::Point(0, 16), true);
+	puzzleAdd(kPuzzle31003);
+	puzzleAddBackgroundImage(kPuzzle31003, "a03s01n02p01.bmp", Common::Point(0, 16), true);
+	rotationAdd(31011, "1358", 0, 0);
+	rotationAdd(31012, "1359", 0, 0);
+	rotationAdd(31013, "1360", 0, 10);
+	rotationSetCompressionBufferLength(31013, 2500000);
+	rotationAddMovabilityToRotation(31011, 31012, "", Common::Rect(283, -167, 653, 388), true, kCursorMove, 0);
+	rotationSetMovabilityToRotation(31011, 0, 0.0f, -13.0f, 87.0f, 0.0f, 2, 0.0f, 0.0f, 87.0f);
+	rotationAddMovabilityToRotation(31012, 31011, "", Common::Rect(2130, 231, 2441, 544), true, kCursorMove, 0);
+	rotationSetMovabilityToRotation(31012, 0, 180.0f, 26.0f, 87.0f, 0.0f, 2, 180.0f, 0.0f, 87.0f);
+	rotationAddMovabilityToRotation(31012, 31013, "", Common::Rect(295, 68, 669, 444), true, kCursorMove, 0);
+	rotationSetMovabilityToRotation(31012, 1, 0.0f, 0.0f, 87.0f, 0.0f, 2, 157.5, 0.0f, 87.0f);
+	rotationAddMovabilityToPuzzle(31012, kPuzzle31003, "", Common::Rect(3447, -592, 3600, -285), true, kCursorZoom, 0);
+	rotationSetMovabilityToPuzzle(31012, 2, 180.0f, 26.0f, 87.0f, 0.0f, 2);
+	rotationAddMovabilityToPuzzle(31012, kPuzzle31003, "", Common::Rect(0, -592, 798, -285), true, kCursorZoom, 0);
+	rotationSetMovabilityToPuzzle(31012, 3, 180.0f, 26.0f, 87.0f, 0.0f, 2);
+	rotationAddMovabilityToRotation(31013, 31012, "", Common::Rect(2058, -20, 2453, 259), true, kCursorMove, 0);
+	rotationSetMovabilityToRotation(31013, 0, 180.0f, 5.0f, 87.0f, 0.0f, 2, 180.0f, 26.0f, 87.0f);
+	rotationAddMovabilityToPuzzle(31013, kPuzzle31001, "", Common::Rect(2227, 497, 2269, 523), true, kCursorZoom, 0);
+	rotationSetMovabilityToPuzzle(31013, 1, 180.0f, 26.0f, 87.0f, 0.0f, 2);
+	rotationAddMovabilityToPuzzle(31013, kPuzzle31002, "", Common::Rect(1105, -144, 1149, -94), true, kCursorZoom, 0);
+	rotationSetMovabilityToPuzzle(31013, 2, 180.0f, 26.0f, 87.0f, 0.0f, 2);
+	puzzleAddMovabilityToRotation(kPuzzle31001, 31013, "", Common::Rect(0, 420, 640, 464), true, kCursorBack, 0);
+	puzzleSetMovabilityToRotation(kPuzzle31001, 0, 180.0f, 26.0f, 87.0f);
+	puzzleAddMovabilityToRotation(kPuzzle31002, 31013, "", Common::Rect(0, 420, 640, 464), true, kCursorBack, 0);
+	puzzleSetMovabilityToRotation(kPuzzle31002, 0, 71.0f, -5.0f, 87.0f);
+	puzzleAddMovabilityToRotation(kPuzzle31003, 31012, "", Common::Rect(0, 420, 640, 464), true, kCursorBack, 0);
+	puzzleSetMovabilityToRotation(kPuzzle31003, 0, 0.0f, -41.0f, 87.0f);
+
+	objectAdd(kObject31001, "", "", 1);
+
+	for (uint32 i = 0; i < 9; i++) {
+		objectAddPresentation(kObject31001);
+		objectPresentationAddImageToRotation(kObject31001, i, 31013, i);
+	}
+
+	objectAdd(kObject31002, "", "", 1);
+	objectAddPuzzleAccessibility(kObject31002, kPuzzle31001, Common::Rect(263, 205, 370, 286), true, kCursorAction, 0);
+	objectAddPresentation(kObject31002);
+	objectPresentationAddImageToPuzzle(kObject31002, 0, kPuzzle31001, "a03s01n03p02l01.bmp", Common::Point(261, 205), true, kDrawType1, 1000);
+	objectAddPresentation(kObject31002);
+	objectPresentationAddAnimationToPuzzle(kObject31002, 1, kPuzzle31001, "a03s01n03p02s01", kImageTypeBMP, Common::Point(261, 205), kDrawType1, 1000, 10, 15.0f, 6);
+	objectPresentationSetAnimationOnPuzzle(kObject31002, 1, 0, 31000);
+	objectAdd(kObject31003, "", "", 1);
+	objectAdd(kObjectRolodex, "Rolodex", "A01_Dummy", 1);
+	objectSetActiveCursor(kObjectRolodex, Common::Point(11, 11), 0, kCursorTypeImage, 0.0f, 0, kLoadFromCursor);
+	objectSetPassiveCursor(kObjectRolodex, Common::Point(11, 11), 0, kCursorTypeImage, 0.0f, 0, kLoadFromCursor);
+	objectAddPuzzleAccessibility(kObject31003, kPuzzle31002, Common::Rect(241, 109, 423, 367), true, kCursorAction, 0);
+	objectAddPuzzleAccessibility(kObject31003, kPuzzle31002, Common::Rect(355, 253, 418, 365), true, kCursorTake, 1);
+	objectAddPresentation(kObject31003);
+	objectPresentationAddImageToPuzzle(kObject31003, 0, kPuzzle31002, "a03s01n03p01l01.bmp", Common::Point(73, 73), true, kDrawType1, 1000);
+	objectAddPresentation(kObject31003);
+	objectPresentationAddImageToPuzzle(kObject31003, 1, kPuzzle31002, "a03s01n03p01l02.bmp", Common::Point(67, 69), true, kDrawType1, 1000);
+	objectAddPresentation(kObject31003);
+	objectPresentationAddImageToRotation(31003, 2, 31013, 9);
+	soundAdd(31003, kSoundTypeBackgroundMusic, "1361.wac", _configuration.backgroundMusic.loadFrom, 2, _configuration.backgroundMusic.soundChunck);
+	soundSetVolume(31003, 90);
+	soundAdd(31001, kSoundTypeEffect, "1362.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(31002, kSoundTypeEffect, "1363.was", _configuration.ambientEffect.loadFrom, 2, _configuration.backgroundMusic.soundChunck);
+	soundSetPan(31002, -8);
+	soundAdd(31004, kSoundTypeEffect, "1364.was", _configuration.ambientEffect.loadFrom, 2, _configuration.backgroundMusic.soundChunck);
+	soundAdd(31005, kSoundTypeEffect, "1365.was", _configuration.ambientEffect.loadFrom, 2, _configuration.backgroundMusic.soundChunck);
+	soundAdd(31006, kSoundTypeEffect, "1366.was", _configuration.ambientEffect.loadFrom, 2, _configuration.backgroundMusic.soundChunck);
+	soundAdd(31007, kSoundTypeEffect, "1367.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(31008, kSoundTypeEffect, "1368.was", _configuration.ambientEffect.loadFrom, 2, _configuration.backgroundMusic.soundChunck);
+	soundAdd(31009, kSoundTypeEffect, "1369.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(31010, kSoundTypeEffect, "1370.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(31011, kSoundTypeEffect, "1371.wav", _configuration.ambientEffect.loadFrom, 1, _configuration.backgroundMusic.soundChunck);
+	soundAdd(31012, kSoundTypeEffect, "1372.wav", _configuration.ambientEffect.loadFrom, 2, _configuration.backgroundMusic.soundChunck);
+	soundAdd(31101, kSoundTypeDialog, "1373.wav", _configuration.dialog.loadFrom, 1, _configuration.dialog.soundChunck);
+	varDefineByte(31001, 0);
+	varDefineByte(31002, 0);
+	varDefineByte(31003, 0);
+	varDefineFloat(31001, 4.0f);
+	objectPresentationShow(kObject31001, varGetFloat(31001));
+	varDefineFloat(31003, 4.0f);
+	varDefineFloat(31002, 0.0f);
+	varDefineDword(31000, 0);
 }
 
 void ApplicationFaust::initZone7() {
