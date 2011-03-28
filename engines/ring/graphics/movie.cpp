@@ -422,11 +422,11 @@ bool Cinematic2::sControl(byte* buffer, uint32 bitdepth) {
 }
 
 void Cinematic2::decompressTControl(byte *buffer, uint16 bufferSize, uint16 decompressedSize) {
-	error("[Cinematic2::decompressTControl] Not implemented");
+	warning("[Cinematic2::decompressTControl] Not implemented");
 }
 
 void Cinematic2::decompressSeq(byte *buffer) {
-	error("[Cinematic2::decompressSeq] Not implemented");
+	warning("[Cinematic2::decompressSeq] Not implemented");
 }
 
 #pragma region ReadStream
