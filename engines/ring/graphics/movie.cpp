@@ -294,10 +294,9 @@ Cinematic2::Cinematic2() {
 	_seqBuffer = NULL;
 
 	_field_5404C = false;
-	_field_5404D = NULL;
 
-	_field_54080 = 0;
-	_field_54084 = 0;
+	_frameBuffer = NULL;
+	_tControlBuffer = NULL;
 }
 
 Cinematic2::~Cinematic2() {
@@ -306,8 +305,11 @@ Cinematic2::~Cinematic2() {
 	free(_seqBuffer);
 	_seqBuffer = NULL;
 
-	free(_field_5404D);
-	_field_5404D = 0;
+	free(_frameBuffer);
+	_frameBuffer = 0;
+
+	free(_tControlBuffer);
+	_tControlBuffer = 0;
 }
 
 bool Cinematic2::init(Common::String filename, ArchiveType type, ZoneId zone, LoadFrom loadFrom) {
@@ -343,21 +345,88 @@ bool Cinematic2::allocBuffer(size_t bufferSize) {
 
 void Cinematic2::skipFrame() {
 	// Read frame header
-	FrameHeader header;
-	header.read(_stream);
+	if (!_frameHeader.read(_stream))
+		error("[Cinematic2::skipFrame] Cannot read frame header");
 
 	// Skip frame
-	seek(header.size, SEEK_CUR);
+	seek(_frameHeader.size, SEEK_CUR);
 }
 
 bool Cinematic2::tControl() {
-	error("[Cinematic2::tControl] Not implemented");
-}
+	if (!_stream)
+		error("[Cinematic2::tControl] Stream not initialized");
 
-bool Cinematic2::sControl(void* buffer, uint32 bitdepth) {
-	warning("[Cinematic2::sControl] Not implemented");
+	// Read tControl header
+	if (!_tControlHeader.read(_stream)) {
+		error("[Cinematic2::tControl] Cannot read tControl header");
+		return false;
+	}
+
+	// Reset buffer
+	if (_tControlBuffer)
+		free(_tControlBuffer);
+
+	_tControlBuffer = (byte *)malloc(_tControlHeader.size);
+	if (!_tControlBuffer) {
+		warning("[Cinematic2::tControl] Cannot allocate tControl buffer");
+		return false;
+	}
+
+	// Read buffer
+	_stream->read(_tControlBuffer, _tControlHeader.size);
+	if (_stream->eos() || _stream->err()) {
+		warning("[Cinematic2::tControl] Cannot read tControl data");
+		return false;
+	}
+
+	// Decompress
+	decompressTControl(_tControlBuffer, 4 * _tControlHeader.bufferSize, _tControlHeader.decompressedSize);
 
 	return true;
+}
+
+bool Cinematic2::sControl(byte* buffer, uint32 bitdepth) {
+	if (!_stream)
+		error("[Cinematic2::sControl] Stream not initialized");
+
+	// Read frame header
+	if (!_frameHeader.read(_stream)) {
+		warning("[Cinematic2::sControl] Cannot read frame header");
+		return false;
+	}
+
+	// Reset buffer
+	if (_frameBuffer)
+		free(_frameBuffer);
+
+	_frameBuffer = (byte *)malloc(_frameHeader.size);
+	if (!_frameBuffer) {
+		warning("[Cinematic2::sControl] Cannot allocate frame buffer");
+		return false;
+	}
+
+	// Read buffer
+	_stream->read(_frameBuffer, _frameHeader.size);
+	if (_stream->eos() || _stream->err()) {
+		warning("[Cinematic2::sControl] Cannot read frame data");
+		return false;
+	}
+
+	if (_frameHeader.offset < _frameHeader.size)
+		decompressTControl(_frameBuffer + _frameHeader.offset, 4 * _frameHeader.bufferSize, _frameHeader.decompressedSize);
+
+	if (bitdepth == 32)
+		decompressSeq(buffer);
+
+	return true;
+}
+
+void Cinematic2::decompressTControl(byte *buffer, uint16 bufferSize, uint16 decompressedSize) {
+	error("[Cinematic2::decompressTControl] Not implemented");
+}
+
+void Cinematic2::decompressSeq(byte *buffer) {
+	error("[Cinematic2::decompressSeq] Not implemented");
 }
 
 #pragma region ReadStream
