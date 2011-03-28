@@ -32,12 +32,16 @@ namespace FaustGame {
 // Ring Enumerations
 //////////////////////////////////////////////////////////////////////////
 enum PuzzleId {
+	kPuzzle12001       = 12001,
+
 	kPuzzle31001       = 31001,
 	kPuzzle31002       = 31002,
 	kPuzzle31003       = 31003,
 
 	kPuzzle49000       = 49000,
 	kPuzzle49001       = 49001,
+
+	kPuzzle53110       = 53110,
 
 	kPuzzleInsertCd    = 90006
 };

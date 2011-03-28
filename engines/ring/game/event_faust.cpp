@@ -782,15 +782,37 @@ void EventHandlerFaust::onBagClickedObjectZone2(ObjectId id) {
 }
 
 void EventHandlerFaust::onBagClickedObjectZone3(ObjectId id) {
-	error("[EventHandlerFaust::onBagClickedObjectZone3] Not implemented");
+	if (id == kObjectStrainer) {
+		if (_app->hasCurrentPuzzle() && _app->getCurrentPuzzleId() == kPuzzle12001) {
+			_app->objectPresentationShow(kObjectStrainer, 1);
+			_app->objectSetAccessibilityOn(kObjectStrainer, 1, 1);
+			_app->cursorDelete();
+		}
+	}
 }
 
 void EventHandlerFaust::onBagClickedObjectZone4(ObjectId id) {
-	error("[EventHandlerFaust::onBagClickedObjectZone4] Not implemented");
+	if (id == kObjectMatches)
+		_app->soundPlay(13033);
 }
 
 void EventHandlerFaust::onBagClickedObjectZone8(ObjectId id) {
-	error("[EventHandlerFaust::onBagClickedObjectZone8] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kObjectMatches2:
+		_app->soundPlay(53125);
+		break;
+
+	case kObjectTeddyBear:
+		if (_app->getCurrentPuzzleId() != kPuzzle53110) {
+			_app->puzzleSetMod(kPuzzleMenu, 2, 17);
+			_app->objectPresentationShow(kObject17);
+			_app->objectSetAccessibilityOn(kObject17);
+		}
+		break;
+	}
 }
 
 void EventHandlerFaust::onBagClickedObjectZone14(ObjectId id) {
@@ -854,7 +876,24 @@ void EventHandlerFaust::onBeforeRideZone5(Id movabilityFrom, Id movabilityTo, ui
 }
 
 void EventHandlerFaust::onBeforeRideZone8(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
-	error("[EventHandlerFaust::onBeforeRideZone8] Not implemented");
+	_app->objectPresentationHide(kObject25);
+
+	switch (movabilityType) {
+	default:
+		break;
+
+	case kMovabilityRotationToPuzzle:
+		if (movabilityFrom == 52021 && movabilityTo == 52220)
+			if (_app->varGetByte(52230) == 1)
+				_app->soundPlay(52212);
+		break;
+
+	case kMovabilityPuzzleToRotation:
+		if (movabilityFrom == 53110 && movabilityTo == 53011)
+			if (_app->varGetByte(531101) == 1)
+				_app->soundPlay(53218);
+		break;
+	}
 }
 
 void EventHandlerFaust::onBeforeRideZone14(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
@@ -989,7 +1028,22 @@ void EventHandlerFaust::onAfterRideZone16(Id movabilityFrom, Id movabilityTo, ui
 }
 
 void EventHandlerFaust::onAfterRideZone17(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
-	error("[EventHandlerFaust::onAfterRideZone17] Not implemented");
+	if (movabilityType == kMovabilityRotationToRotation) {
+		switch (movabilityFrom) {
+		default:
+			break;
+
+		case 141102:
+			if (movabilityTo == 141201)
+				_app->soundPlay(142004);
+			break;
+
+		case 141201:
+		case 141202:
+			_app->soundPlay(142004);
+			break;
+		}
+	}
 }
 
 #pragma endregion
