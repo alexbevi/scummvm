@@ -900,6 +900,43 @@ uint32 Application::getLanguageChannel() {
 	return _languageHandler->getChannel(id);
 }
 
+bool Application::hasLanguagePack() {
+	uint32 packId = 1;
+
+	switch (getCurrentLanguage()) {
+	default:
+		break;
+
+	case kLanguageItalian:
+	case kLanguageSpanish:
+	case kLanguageSwedish:
+	case kLanguageDutch:
+		packId = 2;
+		break;
+	}
+
+	// Open pack.ini and check language pack id
+	Common::SeekableReadStream *archive = SearchMan.createReadStreamForMember("pack.ini");
+	if (!archive) {
+		warning("[Application::hasLanguagePack] Error opening pack.ini file");
+		return false;
+	}
+
+	Common::String pack = archive->readLine();
+	if (archive->eos() || archive->err()) {
+		warning("[Application::hasLanguagePack] Cannot read from pack.ini file");
+		return false;
+	}
+
+	uint32 id = 0;
+	if (sscanf(pack.c_str(), "%d", (int *)&id) != 1) {
+		warning("[Application::hasLanguagePack] Cannot parse pack from pack.ini (%s)", pack.c_str());
+		return false;
+	}
+
+	return (id == packId);
+}
+
 void Application::fontAdd(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId) {
 	if (!_fontHandler)
 		error("[Application::fontAdd] Font handler is not initialized properly");

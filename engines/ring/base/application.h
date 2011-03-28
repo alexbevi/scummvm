@@ -109,6 +109,7 @@ public:
 	LanguageId getCurrentLanguage();
 	Common::String getLanguageFolder();
 	uint32 getLanguageChannel();
+	bool hasLanguagePack();
 
 	void fontAdd(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
 

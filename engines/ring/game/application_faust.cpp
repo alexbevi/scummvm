@@ -713,10 +713,6 @@ void ApplicationFaust::setupZone(ZoneId zone, SetupType type) {
 	}
 }
 
-bool ApplicationFaust::hasLanguagePack() {
-	error("[ApplicationFaust::hasLanguagePack] Not implemented");
-}
-
 void ApplicationFaust::setZone(ZoneId zone, SetupType type) {
 
 	// Finish loading savegame if needed
@@ -1950,7 +1946,6 @@ void ApplicationFaust::initZone17() {
 	soundAdd(143002, kSoundTypeDialog, "1340.wav", _configuration.dialog.loadFrom, 2, _configuration.dialog.soundChunck);
 	soundAdd(143003, kSoundTypeDialog, "1341.wav", _configuration.dialog.loadFrom, 2, _configuration.dialog.soundChunck);
 }
-
 
 #pragma endregion
 
