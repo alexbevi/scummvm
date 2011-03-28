@@ -117,6 +117,8 @@ void SoundEntry::setVolumeAndPan() const {
 }
 
 SoundFormat SoundEntry::getFormat(Common::String filename) {
+	filename.toLowercase();
+
 	if (filename.hasSuffix("wav"))
 		return kSoundFormatWAV;
 
