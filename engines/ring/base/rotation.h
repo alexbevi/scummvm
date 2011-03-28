@@ -109,7 +109,7 @@ public:
 	// Accessors
 	void setFreOnOff(bool state);
 	void setAmplitudeAndSpeed(float amplitude, float speed);
-	void setComBufferLength(uint32 length) { _comBufferLength = length; }
+	void setCompressionBufferLength(uint32 length) { _comBufferLength = length; }
 	void setField28(byte val) { _field_28 = val; }
 	byte getField28() { return _field_28; }
 	bool hasImage() { return _imageHandle != NULL; }

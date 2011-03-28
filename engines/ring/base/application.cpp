@@ -1898,11 +1898,11 @@ void Application::rotationAdd(Id rotationId, Common::String name, byte a3, uint3
 	_rotations.push_back(rotation);
 }
 
-void Application::rotationSetComBufferLength(Id rotationId, uint32 length) {
+void Application::rotationSetCompressionBufferLength(Id rotationId, uint32 length) {
 	if (!_rotations.has(rotationId))
 		error("[Application::rotationAdd] Rotation Id doesn't exist (%d)", rotationId);
 
-	_rotations.get(rotationId)->setComBufferLength(length);
+	_rotations.get(rotationId)->setCompressionBufferLength(length);
 }
 
 void Application::rotationAddMovabilityToPuzzle(Id fromRotationId, PuzzleId toPuzzleId, Common::String name, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10) {

@@ -1001,18 +1001,18 @@ void ApplicationRing::initZoneNI() {
 	rotationAdd(10000, "NIS00N01", 0, 2);
 	rotationAdd(10001, "NIS00N03", 0, 2);
 	rotationAdd(10002, "NIS00N04", 0, 2);
-	rotationSetComBufferLength(10002, 1300000);
+	rotationSetCompressionBufferLength(10002, 1300000);
 	rotationAdd(10003, "NIS00N05", 0, 2);
 	rotationAdd(10004, "NIS00N06", 0, 2);
 	rotationAdd(10005, "NIS00N07", 0, 2);
 	rotationAdd(10101, "NIS01N01", 0, 1);
-	rotationSetComBufferLength(10101, 1300000);
+	rotationSetCompressionBufferLength(10101, 1300000);
 	rotationAdd(10102, "NIS01N02", 0, 1);
 	rotationAdd(10201, "NIS02N01", 0, 1);
 	rotationAdd(10301, "NIS03N01", 0, 1);
 	rotationAdd(10401, "NIS04N01", 0, 2);
 	rotationAdd(10402, "NIS04N02", 0, 2);
-	rotationSetComBufferLength(10402, 1300000);
+	rotationSetCompressionBufferLength(10402, 1300000);
 	rotationAdd(10403, "NIS04N03", 0, 0);
 	rotationAdd(10404, "NIS04N04", 0, 0);
 	rotationAdd(10405, "NIS04N05", 0, 0);
@@ -1733,12 +1733,12 @@ void ApplicationRing::initZoneRH() {
 	rotationAdd(20020, "RHS00N02", 0, 0);
 	rotationAdd(20030, "RHS00N03", 0, 0);
 	rotationAdd(20101, "RHS01N01", 0, 2);
-	rotationSetComBufferLength(20101, 1300000);
+	rotationSetCompressionBufferLength(20101, 1300000);
 	rotationAdd(20201, "RHS02N01", 0, 1);
 	rotationAdd(20202, "RHS02N02", 0, 1);
 	rotationAdd(20203, "RHS02N03", 0, 1);
 	rotationAdd(20301, "RHS03N01", 0, 2);
-	rotationSetComBufferLength(20301, 1300000);
+	rotationSetCompressionBufferLength(20301, 1300000);
 	rotationAdd(20302, "RHS03N02", 0, 0);
 	rotationAdd(20303, "RHS03N03", 0, 0);
 	rotationAdd(20304, "RHS03N04", 0, 1);
@@ -2165,7 +2165,7 @@ void ApplicationRing::initZoneFO() {
 	rotationAdd(30001, "FOS00N01", 0, 1);
 	rotationAdd(30002, "FOS00N02", 0, 0);
 	rotationAdd(30003, "FOS00N03", 0, 1);
-	rotationSetComBufferLength(30003, 1400000);
+	rotationSetCompressionBufferLength(30003, 1400000);
 	rotationAdd(30004, "FOS00N04", 0, 0);
 	rotationAdd(30005, "FOS00N05", 0, 0);
 	rotationAdd(30006, "FOS00N06", 0, 0);
@@ -2173,10 +2173,10 @@ void ApplicationRing::initZoneFO() {
 	rotationAdd(30009, "FOS00N09", 0, 1);
 	rotationAdd(30010, "FOS00N10", 0, 1);
 	rotationAdd(30011, "FOS00N11", 0, 3);
-	rotationSetComBufferLength(30011, 1500000);
+	rotationSetCompressionBufferLength(30011, 1500000);
 	rotationAdd(30012, "FOS00N12", 0, 0);
 	rotationAdd(30101, "FOS01N01", 0, 4);
-	rotationSetComBufferLength(30101, 2000000);
+	rotationSetCompressionBufferLength(30101, 2000000);
 	rotationAdd(30301, "FOS03N01", 0, 1);
 	rotationAdd(30302, "FOS03N02", 0, 0);
 	rotationAdd(30303, "FOS03N03", 0, 0);
@@ -2185,7 +2185,7 @@ void ApplicationRing::initZoneFO() {
 	rotationAdd(30501, "FOS05N01", 0, 3);
 	rotationAdd(30601, "FOS06N01", 0, 1);
 	rotationAdd(30602, "FOS06N02", 0, 1);
-	rotationSetComBufferLength(30602, 1750000);
+	rotationSetCompressionBufferLength(30602, 1750000);
 	rotationAdd(30701, "FOS07N01", 0, 0);
 	rotationAdd(30702, "FOS07N02", 0, 1);
 	rotationAdd(30703, "FOS07N03", 0, 1);
@@ -3572,7 +3572,7 @@ void ApplicationRing::initZoneWA() {
 	rotationAdd(50302, "WAS03N02", 0, 1);
 	rotationAdd(50303, "WAS03N03", 0, 1);
 	rotationAdd(50304, "WAS03N04", 0, 6);
-	rotationSetComBufferLength(50304, 1400000);
+	rotationSetCompressionBufferLength(50304, 1400000);
 	rotationAdd(50401, "WAS04N01", 0, 1);
 	rotationAdd(50402, "WAS04N02", 0, 2);
 	rotationAdd(50501, "WAS05N01", 0, 2);
@@ -3580,7 +3580,7 @@ void ApplicationRing::initZoneWA() {
 	rotationAdd(50601, "WAS06N01", 0, 0);
 	rotationAdd(50602, "WAS06N02", 0, 0);
 	rotationAdd(50701, "WAS07N01", 0, 2);
-	rotationSetComBufferLength(50701, 1600000);
+	rotationSetCompressionBufferLength(50701, 1600000);
 	rotationAddMovabilityToRotation(50001, 50101, "1883", Common::Rect(3341, -249, 3599, 242), true, kCursorMove, 0);
 	rotationSetMovabilityToRotation(50001, 0, 312.0f, 0.3f, 85.3f, 0, 0, 354.0f, 0.3f, 85.3f);
 	rotationAddMovabilityToRotation(50001, 50101, "1883", Common::Rect(0, -249, 145, 242), true, kCursorMove, 0);
@@ -4202,7 +4202,7 @@ void ApplicationRing::initZoneAS() {
 	rotationAdd(80101, "ASS01N01", 0, 6);
 	_loadFrom = kLoadFromCd;
 
-	rotationSetComBufferLength(80101, 1800000);
+	rotationSetCompressionBufferLength(80101, 1800000);
 	rotationAddMovabilityToRotation(80001, 80002, "1001", Common::Rect(757, -71, 928, 85), true, kCursorMove, 0);
 	rotationSetMovabilityToRotation(80001, 0, 52.0f, 0, 85.3f, 0, 0, 52.0f, 0, 85.3f);
 	rotationAddMovabilityToRotation(80001, 80003, "1002", Common::Rect(1251, -64, 1444, 95), true, kCursorMove, 0);

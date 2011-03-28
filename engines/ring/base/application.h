@@ -244,7 +244,7 @@ public:
 	// Rotation
 	Rotation *getRotation(Id rotationId);
 	void rotationAdd(Id rotationId, Common::String name, byte a3, uint32 nodeCount);
-	void rotationSetComBufferLength(Id rotationId, uint32 length);
+	void rotationSetCompressionBufferLength(Id rotationId, uint32 length);
 	void rotationAddMovabilityToPuzzle(Id rotationId, PuzzleId puzzleId, Common::String name, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10);
 	void rotationSetMovabilityToPuzzle(Id rotationId, uint32 movabilityIndex, float a3, float a4, float a5, float a6, byte a7);
 	void rotationAddMovabilityToRotation(Id fromRotationId, Id toRotationId, Common::String name, const Common::Rect &rect, bool enabled, CursorId cursorId, uint32 a10);
