@@ -28,6 +28,7 @@
 #include "ring/base/application.h"
 
 #include "ring/debug.h"
+#include "ring/helpers.h"
 #include "ring/ring.h"
 #include "ring/shared_faust.h"
 
@@ -474,11 +475,15 @@ void EventHandlerFaust::onUpdateBagZone14(const Common::Point &point) {
 }
 
 void EventHandlerFaust::onUpdateBagZone15(const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBagZone15] Not implemented");
+	_app->soundStop(_app->varGetDword(120006), 1024);
+	_app->varSetDword(120006, 0);
+
+	_app->objectPresentationHide(kObject120058);
 }
 
 void EventHandlerFaust::onUpdateBagZone16(const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBagZone16] Not implemented");
+	_app->soundStop(_app->varGetDword(311001), 1024);
+	_app->varSetDword(311001, 0);
 }
 
 #pragma endregion
@@ -557,7 +562,22 @@ void EventHandlerFaust::onTimerZoneSY(TimerId id) {
 }
 
 void EventHandlerFaust::onTimerZone2(TimerId id) {
-	error("[EventHandlerFaust::onTimerZone2] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0:
+		_app->timerStop(kTimer0);
+		_app->timerStart(kTimer0, 8000 + rnd(5000));
+		_app->soundPlay(11102 + rnd(2));
+		break;
+
+	case kTimer1:
+		_app->timerStop(kTimer1);
+		_app->soundSetVolume(11106 + rnd(7), 80);
+		_app->soundPlay(1);
+		break;
+	}
 }
 
 void EventHandlerFaust::onTimerZone3(TimerId id) {
@@ -726,7 +746,9 @@ void EventHandlerFaust::onBagClickedObject(ObjectId id) {
 }
 
 void EventHandlerFaust::onBagClickedObjectZone2(ObjectId id) {
-	error("[EventHandlerFaust::onBagClickedObjectZone2] Not implemented");
+	if (id == kObjectHomunculus)
+		if (_app->varGetByte(11002) == 1)
+			_app->objectSetAccessibilityOn(kObject11004, 2, 2);
 }
 
 void EventHandlerFaust::onBagClickedObjectZone3(ObjectId id) {
@@ -746,7 +768,8 @@ void EventHandlerFaust::onBagClickedObjectZone14(ObjectId id) {
 }
 
 void EventHandlerFaust::onBagClickedObjectZone15(ObjectId id) {
-	error("[EventHandlerFaust::onBagClickedObjectZone15] Not implemented");
+	if (id == kObjectMatches4)
+		_app->soundPlay(120022);
 }
 
 #pragma endregion
@@ -788,8 +811,8 @@ void EventHandlerFaust::onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 
 	}
 }
 
-void EventHandlerFaust::onBeforeRideZone2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
-	error("[EventHandlerFaust::onBeforeRideZone2] Not implemented");
+void EventHandlerFaust::onBeforeRideZone2(Id, Id, uint32, uint32, MovabilityType) {
+	_app->objectPresentationHide(kObject25);
 }
 
 void EventHandlerFaust::onBeforeRideZone4(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
@@ -912,7 +935,10 @@ void EventHandlerFaust::onAfterRideZone15(Id movabilityFrom, Id movabilityTo, ui
 }
 
 void EventHandlerFaust::onAfterRideZone16(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
-	error("[EventHandlerFaust::onAfterRideZone16] Not implemented");
+	if (movabilityType == kMovabilityRotationToPuzzle && movabilityFrom == 310001 && movabilityTo == 311251) {
+		_app->soundPlay(310103, kSoundLoop);
+		_app->timerStart(kTimer0, 30);
+	}
 }
 
 void EventHandlerFaust::onAfterRideZone17(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
@@ -1091,7 +1117,10 @@ void EventHandlerFaust::onAnimationNextFrameZone5(Id animationId, const Common::
 }
 
 void EventHandlerFaust::onAnimationNextFrameZone6(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
-	error("[EventHandlerFaust::onAnimationNextFrameZone6] Not implemented");
+	if (animationId == 31000 && frame == 10) {
+		_app->objectPresentationShow(kObject31002, 0);
+		_app->varSetByte(31001, 1);
+	}
 }
 
 void EventHandlerFaust::onAnimationNextFrameZone7(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
