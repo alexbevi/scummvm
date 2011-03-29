@@ -901,7 +901,20 @@ void EventHandlerFaust::onBeforeRideZone14(Id movabilityFrom, Id movabilityTo, u
 }
 
 void EventHandlerFaust::onBeforeRideZone15(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
-	error("[EventHandlerFaust::onBeforeRideZone15] Not implemented");
+	if (movabilityType == kMovabilityPuzzleToRotation) {
+		if (movabilityFrom == 120006 && movabilityTo == 120402) {
+			if (_app->varGetByte(120013) == 1 && _app->varGetByte(120003) == 1) {
+				_app->fadeOut(15, Color(0, 0, 0), 0);
+				_app->displayFade("a12_black.bmp", "a12s01_e04m10_S.bmp", 12, 0, kLoadFromCd, kArchiveArt);
+				_app->playMovie("2130");
+				_app->displayFade("a12s01_e04m10_E.bmp", "a12_black.bmp", 12, 0, kLoadFromCd, kArchiveArt);
+				_app->varSetByte(98088, 0);
+				_app->objectSetAccessibilityOff(kObject6);
+				_app->objectPresentationHideAndRemove(kObject6);
+				_app->exitToMenu(kMenuAction0);
+			}
+		}
+	}
 }
 
 void EventHandlerFaust::onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType) {

@@ -101,6 +101,7 @@ public:
 	void playMovie(Common::String filename, float frameDivider = 0.0f);
 	void playMovieChannel(Common::String filename, uint32 channel);
 
+	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	void fadeOut(uint32 frameCount, Color colorTo, uint32 ticksWait);
 
 	static Common::String getFileExtension(ImageType imageType);
@@ -506,7 +507,6 @@ protected:
 	// Display and movies
 	void showImage(Common::String filename, const Common::Point &point, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	bool scrollImage(Common::String filename, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
-	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	void waitForEscape(uint32 ticksWait) const;
 
 	// Current rotation
