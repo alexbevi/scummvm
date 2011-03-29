@@ -157,6 +157,27 @@ Resource *ResourceManager::getResource(ResourceFileInfo const &resourceFileInfo)
 		resourceFileInfo.offset + resourceFileInfo.size), resourceFileInfo.hasSubres);
 }
 
+Common::String ResourceManager::findGDS(void) {
+	Common::String name;
+
+	// Search a GDS file inside the volumes
+	ResourceFiles::const_iterator _resIter = _resourceFiles.begin();
+	while (!name.size() && _resIter != _resourceFiles.end()) {
+		if (_resIter->_key.hasSuffix(".GDS"))
+			name = _resIter->_key;
+
+		++_resIter;
+	}
+
+	// Get just the name without the extension
+	if (name.size()) {
+		name = Common::String(name.c_str(), name.size() - 4);
+		name.toUppercase();
+	}
+
+	return name;
+}
+
 void ResourceManager::dumpResources(Common::String const &path, bool subres) {
 	Common::FSNode node(path);
 	if (!node.isDirectory()) {

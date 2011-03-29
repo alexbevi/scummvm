@@ -27,8 +27,8 @@
 
 namespace Dgds {
 
-WillyBeamish::WillyBeamish(DgdsEngine *engine): Game(engine) {
-	// TODO Auto-generated constructor stub
+WillyBeamish::WillyBeamish(DgdsEngine *engine, ResourceManager *resman): Game(engine, resman) {
+	init();
 
 }
 

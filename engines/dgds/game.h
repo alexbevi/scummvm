@@ -34,17 +34,20 @@ class DgdsEngine;
 
 class Game {
 public:
-	Game(DgdsEngine *engine);
+	Game(DgdsEngine *engine, ResourceManager *resman);
 	virtual ~Game();
-	bool load(ResourceManager *resman, Common::String const &gameName);
 
 	int32 getGameID() { return _gameID; }
 	Common::String getVersion() { return _version; }
+
+protected:
+	bool init();
 
 private:
 	bool loadINF(Resource *resINF);
 	bool loadSDS(Resource *resSDS);
 
+	ResourceManager *_resMan;
 	int32 _gameID;
 	Common::String _version;
 	DgdsEngine *_vm;

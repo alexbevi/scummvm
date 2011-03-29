@@ -69,7 +69,7 @@ Common::Error DgdsEngine::run() {
 	if (!_resMgr && Common::File::exists("resource.map"))
 		_resMgr = new ResourceManager("resource.map");
 	if (!_resMgr)
-		_resMgr = new ResourceManager("");
+		error("No valid index files detected");
 
 	// XXX dump resources and tagged subresources
 	// to the specified folders
@@ -77,18 +77,16 @@ Common::Error DgdsEngine::run() {
 	//_resMgr->dumpResources("dump_subres/", true);
 	//return Common::kNoError;
 
-	Common::String gameName = findGDS();
+	Common::String gameName = _resMgr->findGDS();
 	if(!gameName.size())
 		return Common::kNoGameDataFoundError;
 
 	if (gameName == "WILLY") {
 			printf("Starting Willy Beamish\n");
-			_game = new WillyBeamish(this);
+			_game = new WillyBeamish(this, _resMgr);
 	} else {
 		error("DGDS Title %s currently not supported", gameName.c_str());
 	}
-
-	_game->load(_resMgr, gameName);
 
 	bool end = false;
 	Common::EventManager *em = _system->getEventManager();
@@ -106,25 +104,6 @@ Common::Error DgdsEngine::run() {
 	return Common::kNoError;
 }
 
-Common::String DgdsEngine::findGDS(void) {
-	Common::String name;
 
-	// Search a GDS file inside the volumes
-	ResourceFiles::const_iterator _resIter = _resMgr->_resourceFiles.begin();
-	while (!name.size() && _resIter != _resMgr->_resourceFiles.end()) {
-		if (_resIter->_key.hasSuffix(".GDS"))
-			name = _resIter->_key;
-
-		++_resIter;
-	}
-
-	// Get just the name without the extension
-	if (name.size()) {
-		name = Common::String(name.c_str(), name.size() - 4);
-		name.toUppercase();
-	}
-
-	return name;
-}
 
 } // End of namespace Dgds

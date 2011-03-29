@@ -47,6 +47,7 @@ public:
 
 	Resource *getResource(Common::String const &resourceName);
 
+	Common::String findGDS(void);
 
 	void dumpResources(Common::String const &path, bool subres);
 

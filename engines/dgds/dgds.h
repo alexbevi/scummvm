@@ -54,8 +54,6 @@ private:
 	Common::Language     _language;
 	Common::RandomSource _rnd;
 
-	Common::String findGDS(void);
-
 	Game *_game;
 	ResourceManager *_resMgr;
 };
