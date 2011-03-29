@@ -35,22 +35,13 @@ WillyBeamish::WillyBeamish(DgdsEngine *engine, ResourceManager *resman): Game(en
 	// initialization
 
 	Resource *res = _resMan->getResource("SDS.RES");
-	Common::String entry = "";
 
 	while (!res->eos()) {
-		byte char1 = res->readByte();
-
-		entry += char1;
-
-		if (char1 == 0x0D) {
-			char1 = res->readByte();
-			if (char1 == 0x0A) {
-				_sdsRes.push_back(entry);
-				entry = "";
-			}
-		}
+		Common::String entry = res->readLine();
+		_sdsRes.push_back(entry);
 	}
 
+	delete res;
 }
 
 WillyBeamish::~WillyBeamish() {
