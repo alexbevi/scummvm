@@ -239,7 +239,7 @@ private:
 	TControlHeader  _tControlHeader;
 	// Original stores a flag to know if the data is streamed or not (movie: true - images: false)
 
-	void decompressTControl(byte *buffer, uint16 bufferSize, uint16 decompressedSize);
+	void decompressTControl(byte *buffer, uint32 bufferSize, uint16 decompressedSize);
 	void decompressSeq(byte *buffer);
 };
 

@@ -102,7 +102,7 @@ public:
 	void playMovieChannel(Common::String filename, uint32 channel);
 
 	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
-	void fadeOut(uint32 frameCount, Color colorTo, uint32 ticksWait);
+	void fadeOut(uint32 frameCount, const Color &colorTo, uint32 ticksWait);
 
 	static Common::String getFileExtension(ImageType imageType);
 

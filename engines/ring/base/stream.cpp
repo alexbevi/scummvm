@@ -261,7 +261,7 @@ uint32 CompressedStream::decode(Common::SeekableReadStream *stream, uint32 a2, u
 	// Reset decompression buffer
 	memset(&_decBuffer, 0, sizeof(_decBuffer));
 
-#define CHECK_BIT(var, pos) !!((var) & (1 << (pos)))
+#define CHECK_BIT(var, pos) !!((var) & ((uint32)1 << (pos)))
 
 	// Store buffer position
 	byte *bufferStart = buffer;

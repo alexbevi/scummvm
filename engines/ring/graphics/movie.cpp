@@ -421,7 +421,7 @@ bool Cinematic2::sControl(byte* buffer, uint32 bitdepth) {
 	return true;
 }
 
-void Cinematic2::decompressTControl(byte *buffer, uint16 bufferSize, uint16 decompressedSize) {
+void Cinematic2::decompressTControl(byte *buffer, uint32 bufferSize, uint16 decompressedSize) {
 	warning("[Cinematic2::decompressTControl] Not implemented");
 }
 

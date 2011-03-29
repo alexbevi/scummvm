@@ -802,7 +802,7 @@ cleanup:
 	SAFE_DELETE(imageTo);
 }
 
-void Application::fadeOut(uint32 frameCount, Color colorTo, uint32 ticksWait) {
+void Application::fadeOut(uint32 frameCount, const Color &colorTo, uint32 ticksWait) {
 	warning("[Application::fadeOut] Not implemented");
 }
 

@@ -37,8 +37,7 @@
 #include "common/events.h"
 #include "common/file.h"
 
-//#define DEBUG
-#ifdef DEBUG
+#ifdef RING_DUMP
 // For mkdir
 
 #ifdef WIN32
@@ -97,7 +96,10 @@ Debugger::Debugger(RingEngine *engine) : _engine(engine) {
 
 	// Data
 	DCmd_Register("ls",        WRAP_METHOD(Debugger, cmdListFiles));
+
+#ifdef RING_DUMP
 	DCmd_Register("dump",      WRAP_METHOD(Debugger, cmdDumpArchive));
+#endif
 
 	// Graphics
 	DCmd_Register("clear",     WRAP_METHOD(Debugger, cmdClear));
@@ -175,8 +177,8 @@ bool Debugger::cmdListFiles(int argc, const char **argv) {
 	return true;
 }
 
+#ifdef RING_DUMP
 bool Debugger::cmdDumpArchive(int argc, const char **argv) {
-#ifdef DEBUG
 	if (argc == 2) {
 		Common::String filename(const_cast<char *>(argv[1]));
 
@@ -193,15 +195,10 @@ bool Debugger::cmdDumpArchive(int argc, const char **argv) {
 		DebugPrintf("Syntax: dump <filename>.at2 (use * to dump all archives) \n");
 	}
 
-#else
-	DebugPrintf("dump is not supported release mode!\n");
-#endif
-
 	return true;
 }
 
 void Debugger::dumpFile(Common::String filename) {
-#ifdef DEBUG
 #define CREATE_FOLDER(name) { \
 	int ret = my_mkdir(name.c_str(), 600); \
 	if (ret == -1 && errno != EEXIST) { \
@@ -291,8 +288,8 @@ void Debugger::dumpFile(Common::String filename) {
 	delete archive;
 
 #undef CREATE_FOLDER
-#endif
 }
+#endif
 
 bool Debugger::cmdClear(int argc, const char **) {
 	if (argc == 1) {

@@ -350,14 +350,12 @@ SaveStateDescriptor RingEngine::querySaveMetaInfos(const char *target, int slot)
 }
 
 const char *RingEngine::gameIdFromTarget(const char *target) {
-	// Get the game id from the target: remove everything after the first -
-	static char buffer[54];
 	assert(strlen(target) < 50);
 
+	// Get the game id from the target: remove everything after the first -
 	char *tok = strtok(const_cast<char *>(target), "-");
-	sprintf(buffer, "%s", (tok == NULL) ? target : tok);
 
-	return buffer;
+	return Common::String::format("%s", (tok == NULL) ? target : tok).c_str();
 }
 
 void RingEngine::errorString(const char *buf_input, char *buf_output, int buf_output_size) {

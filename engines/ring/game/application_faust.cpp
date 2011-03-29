@@ -2361,7 +2361,7 @@ void ApplicationFaust::initZone6() {
 	varDefineByte(31002, 0);
 	varDefineByte(31003, 0);
 	varDefineFloat(31001, 4.0f);
-	objectPresentationShow(kObject31001, varGetFloat(31001));
+	objectPresentationShow(kObject31001, (uint32)varGetFloat(31001));
 	varDefineFloat(31003, 4.0f);
 	varDefineFloat(31002, 0.0f);
 	varDefineDword(31000, 0);
@@ -3447,9 +3447,9 @@ void ApplicationFaust::initZone12() {
 	varDefineByte(81030, 0);
 	varDefineByte(81031, 0);
 	varDefineFloat(81001, 0.0f);
-	objectPresentationShow(kObject81203, varGetFloat(81001));
+	objectPresentationShow(kObject81203, (uint32)varGetFloat(81001));
 	varDefineFloat(81002, 10.0f);
-	objectPresentationShow(kObject81202, varGetFloat(81002));
+	objectPresentationShow(kObject81202, (uint32)varGetFloat(81002));
 	varDefineFloat(81003, 1.0f);
 	varDefineFloat(81004, 0.0f);
 	varDefineFloat(81005, 0.0f);
