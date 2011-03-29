@@ -43,14 +43,15 @@ public:
 protected:
 	bool init();
 
+	ResourceManager *_resMan;
+	DgdsEngine *_vm;
+
 private:
 	bool loadINF(Resource *resINF);
 	bool loadSDS(Resource *resSDS);
 
-	ResourceManager *_resMan;
 	int32 _gameID;
 	Common::String _version;
-	DgdsEngine *_vm;
 };
 
 } // End of namespace Dgds

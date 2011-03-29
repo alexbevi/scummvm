@@ -26,6 +26,8 @@
 #ifndef DGDS_GAMEWILLY_H_
 #define DGDS_GAMEWILLY_H_
 
+#include "common/str-array.h"
+
 #include "dgds/game.h"
 
 namespace Dgds {
@@ -34,6 +36,9 @@ class WillyBeamish: public Game {
 public:
 	WillyBeamish(DgdsEngine *engine, ResourceManager *resman);
 	virtual ~WillyBeamish();
+
+private:
+	Common::Array<Common::String> _sdsRes;
 };
 
 }
