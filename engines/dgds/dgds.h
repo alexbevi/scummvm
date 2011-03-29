@@ -18,8 +18,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: https://scummvm-dgds.googlecode.com/svn/trunk/dgds.h $
+ * $Id: dgds.h 27 2010-03-31 10:03:41Z alexbevi $
  *
  */
 
@@ -27,12 +27,17 @@
 #define DGDS_H
 
 #include "engines/engine.h"
-
 #include "common/debug.h"
 #include "common/random.h"
-#include "common/util.h"
+
+#include "dgds/game.h"
+#include "dgds/resourcemanager.h"
 
 namespace Dgds {
+
+enum kDebug {
+	kDebugResources = 1 << 0
+};
 
 class DgdsEngine : public Engine {
 public:
@@ -44,11 +49,15 @@ public:
 	virtual bool hasFeature(EngineFeature f) const;
 
 private:
-
 	Common::Language     _language;
 	Common::RandomSource _rnd;
+
+	Common::String findGDS(void);
+
+	Game _game;
+	ResourceManager *_resMgr;
 };
 
 } // End of namespace Dgds
 
-#endif
+#endif // DGDS_H

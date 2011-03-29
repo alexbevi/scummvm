@@ -18,8 +18,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: https://scummvm-dgds.googlecode.com/svn/trunk/detection.cpp $
+ * $Id: detection.cpp 12 2010-01-23 12:01:58Z alexbevi $
  *
  */
 
@@ -37,6 +37,7 @@ static const PlainGameDescriptor DgdsGameTitles[] = {
 	{"china",  "Heart of China"},
 	{"dragon", "Rise of the Dragon"},
 	{"willy",  "The Adventures of Willy Beamish"},
+
 	{0, 0}
 };
 
@@ -44,6 +45,9 @@ namespace Dgds {
 
 /**
  * Detection entries for Dynamix games
+ *
+ * When adding a new entry, use Game.getVersion() for the
+ * version information.
  */
 static const ADGameDescription DgdsGameDescriptions[] = {
 	// Heart of China - Spanish PC
@@ -117,29 +121,21 @@ static const ADFileBasedFallback DgdsGameFallback[] = {
 static const ADParams detectionParams = {
 	(const byte *)Dgds::DgdsGameDescriptions,
 	sizeof(ADGameDescription),
-	0,                // number of md5 bytes
+	0, // number of md5 bytes
 	DgdsGameTitles,
-	0,                // no obsolete targets data
+	0, // no obsolete targets data
 	"dgds",
-	DgdsGameFallback, // file-based detection data to enable not yet
-	                  // known versions to start
+	DgdsGameFallback, // file-based detection data to enable not yet known versions to start
 	kADFlagPrintWarningOnFileBasedFallback,
-	Common::GUIO_NONE,
-	1,                // Maximum directory depth
-	0                 // List of directory globs
+	Common::GUIO_NONE
 };
 
 class DgdsMetaEngine : public AdvancedMetaEngine {
 public:
 	DgdsMetaEngine() : AdvancedMetaEngine(detectionParams) {}
 
-	virtual const char *getName() const {
-		return "Dynamix Game Development System";
-	}
-
-	virtual const char *getOriginalCopyright() const {
-		return "Dynamix Game Development System (c) Dynamix";
-	}
+	virtual const char *getName() const { return "Dynamix Game Development System"; }
+	virtual const char *getOriginalCopyright() const { return "Dynamix Game Development System (c) Dynamix"; }
 
 	virtual bool hasFeature(MetaEngineFeature f) const;
 	virtual bool createInstance(OSystem *syst, Engine **engine, const ADGameDescription *desc) const;
