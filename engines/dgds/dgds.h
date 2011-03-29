@@ -39,6 +39,8 @@ enum kDebug {
 	kDebugResources = 1 << 0
 };
 
+class WillyBeamish;
+
 class DgdsEngine : public Engine {
 public:
 	DgdsEngine(OSystem *sys, Common::Language lang);
@@ -54,7 +56,7 @@ private:
 
 	Common::String findGDS(void);
 
-	Game _game;
+	Game *_game;
 	ResourceManager *_resMgr;
 };
 

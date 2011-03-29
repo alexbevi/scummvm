@@ -5,6 +5,7 @@ MODULE_OBJS = \
 	detection.o \
 	dgds.o \
 	game.o \
+	game_willy.o \
 	resource.o \
 	resourcemanager.o
 

@@ -27,6 +27,14 @@
 
 namespace Dgds {
 
+Game::Game(DgdsEngine *engine): _vm(engine) {
+
+}
+
+Game::~Game() {
+
+}
+
 bool Game::load(ResourceManager *resman, Common::String const &gameName) {
 	bool ret = false;
 

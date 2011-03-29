@@ -18,38 +18,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL: https://scummvm-dgds.googlecode.com/svn/trunk/game.h $
- * $Id: game.h 12 2010-01-23 12:01:58Z alexbevi $
+ * $URL$
+ * $Id$
  *
  */
 
-#ifndef DGDS_GAME_H
-#define DGDS_GAME_H
+#ifndef DGDS_GAMEWILLY_H_
+#define DGDS_GAMEWILLY_H_
 
-#include "dgds/resourcemanager.h"
+#include "dgds/game.h"
 
 namespace Dgds {
 
-class DgdsEngine;
-
-class Game {
+class WillyBeamish: public Game {
 public:
-	Game(DgdsEngine *engine);
-	virtual ~Game();
-	bool load(ResourceManager *resman, Common::String const &gameName);
-
-	int32 getGameID() { return _gameID; }
-	Common::String getVersion() { return _version; }
-
-private:
-	bool loadINF(Resource *resINF);
-	bool loadSDS(Resource *resSDS);
-
-	int32 _gameID;
-	Common::String _version;
-	DgdsEngine *_vm;
+	WillyBeamish(DgdsEngine *engine);
+	virtual ~WillyBeamish();
 };
 
-} // End of namespace Dgds
+}
 
-#endif // DGDS_GAME_H
+#endif

@@ -32,6 +32,7 @@
 #include "engines/util.h"
 
 #include "dgds/dgds.h"
+#include "dgds/game_willy.h"
 
 namespace Dgds {
 
@@ -45,6 +46,9 @@ DgdsEngine::DgdsEngine(OSystem *syst, Common::Language lang): Engine(syst), _lan
 DgdsEngine::~DgdsEngine() {
 	if (_resMgr)
 		delete _resMgr;
+
+	if (_game)
+		delete _game;
 
 	DebugMan.clearAllDebugChannels();
 }
@@ -77,7 +81,14 @@ Common::Error DgdsEngine::run() {
 	if(!gameName.size())
 		return Common::kNoGameDataFoundError;
 
-	_game.load(_resMgr, gameName);
+	if (gameName == "WILLY") {
+			printf("Starting Willy Beamish\n");
+			_game = new WillyBeamish(this);
+	} else {
+		error("DGDS Title %s currently not supported", gameName.c_str());
+	}
+
+	_game->load(_resMgr, gameName);
 
 	bool end = false;
 	Common::EventManager *em = _system->getEventManager();
