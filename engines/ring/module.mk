@@ -21,19 +21,6 @@ MODULE_OBJS := \
 	base/timer.o \
 	base/var.o \
 	base/zone.o \
-	game/application_faust.o \
-	game/application_jerusalem.o \
-	game/application_pilgrim2.o \
-	game/application_pilgrim3.o \
-	game/application_pompeii.o \
-	game/application_ring.o \
-	game/event_faust.o \
-	game/event_jerusalem.o \
-	game/event_pilgrim2.o \
-	game/event_pilgrim3.o \
-	game/event_pompeii.o \
-	game/event_ring.o \
-	game/visual_ring.o \
 	graphics/animation.o \
 	graphics/aquator.o \
 	graphics/dragControl.o \
@@ -46,6 +33,44 @@ MODULE_OBJS := \
 	debug.o \
 	detection.o \
 	ring.o
+	
+
+ifdef ENABLE_RING1
+MODULE_OBJS += \
+	game/application_ring.o \
+	game/event_ring.o \
+	game/visual_ring.o
+endif
+
+ifdef ENABLE_FAUST
+MODULE_OBJS += \
+	game/application_faust.o \
+	game/event_faust.o
+endif
+
+ifdef ENABLE_POMPEII
+MODULE_OBJS += \
+	game/application_pompeii.o \
+	game/event_pompeii.o
+endif
+
+ifdef ENABLE_PILGRIM2
+MODULE_OBJS += \
+	game/application_pilgrim2.o \
+	game/event_pilgrim2.o
+endif
+
+ifdef ENABLE_PILGRIM3
+MODULE_OBJS += \
+	game/application_pilgrim3.o \
+	game/event_pilgrim3.o
+endif
+
+ifdef ENABLE_JERUSALEM
+MODULE_OBJS += \
+	game/application_jerusalem.o \
+	game/event_jerusalem.o
+endif
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_RING), DYNAMIC_PLUGIN)

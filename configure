@@ -105,7 +105,13 @@ add_engine riven "Riven: The Sequel to Myst" no
 add_engine myst "Myst" no
 add_engine parallaction "Parallaction" yes
 add_engine queen "Flight of the Amazon Queen" yes
-add_engine ring "Ring" no
+add_engine ring "Ring" no "ring1 faust pompeii pilgrim2 pilgrim3 jerusalem"
+add_engine ring1 "Ring: The Legend of the Nibelungen" no
+add_engine faust "Faust: Seven Games of the Soul" no
+add_engine pompeii "TimeScape: Journey to Pompeii" no
+add_engine pilgrim2 "Pilgrim 2: The Legend of the Prophet and the Assassin" no
+add_engine pilgrim3 "Pilgrim 3: The Secrets of Alamut" no
+add_engine jerusalem "Jerusalem: The Three Roads to the Holy Land" no
 add_engine saga "SAGA" yes "ihnm saga2"
 add_engine ihnm "IHNM" yes
 add_engine saga2 "SAGA 2 games" no

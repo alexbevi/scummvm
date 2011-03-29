@@ -30,12 +30,29 @@
 #include "ring/base/saveload.h"
 #include "ring/base/sound.h"
 
+#ifdef ENABLE_FAUST
 #include "ring/game/application_faust.h"
+#endif
+
+#ifdef ENABLE_JERUSALEM
 #include "ring/game/application_jerusalem.h"
+#endif
+
+#ifdef ENABLE_PILGRIM2
 #include "ring/game/application_pilgrim2.h"
+#endif
+
+#ifdef ENABLE_PILGRIM3
 #include "ring/game/application_pilgrim3.h"
+#endif
+
+#ifdef ENABLE_POMPEII
 #include "ring/game/application_pompeii.h"
+#endif
+
+#ifdef ENABLE_RING1
 #include "ring/game/application_ring.h"
+#endif
 
 #include "common/config-manager.h"
 #include "common/debug-channels.h"
@@ -101,29 +118,41 @@ Common::Error RingEngine::run() {
 	case Ring::GameTypePilgrim:
 		error("[RingEngine::run] Pilgrim support not implemented yet!");
 
+#ifdef ENABLE_RING1
 	case Ring::GameTypeRing:
 		_application = new ApplicationRing(this);
 		break;
+#endif
 
+#ifdef ENABLE_FAUST
 	case Ring::GameTypeFaust:
 		_application = new ApplicationFaust(this);
 		break;
+#endif
 
+#ifdef ENABLE_POMPEII
 	case Ring::GameTypePompeii:
 		_application = new ApplicationPompeii(this);
 		break;
+#endif
 
+#ifdef ENABLE_PILGRIM2
 	case Ring::GameTypePilgrim2:
 		_application = new ApplicationPilgrim2(this);
 		break;
+#endif
 
+#ifdef ENABLE_PILGRIM3
 	case Ring::GameTypePilgrim3:
 		_application = new ApplicationPilgrim3(this);
 		break;
+#endif
 
+#ifdef ENABLE_JERUSALEM
 	case Ring::GameTypeJerusalem:
 		_application = new ApplicationJerusalem(this);
 		break;
+#endif
 	}
 
 	// Init application
