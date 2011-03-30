@@ -42,7 +42,6 @@ enum PuzzleId {
 	kPuzzle12009       = 12009,
 	kPuzzle12010       = 12010,
 	kPuzzle12011       = 12011,
-
 	kPuzzle17021       = 17021,
 	kPuzzle17022       = 17022,
 	kPuzzle17031       = 17031,
@@ -62,6 +61,11 @@ enum PuzzleId {
 	kPuzzle49001       = 49001,
 
 	kPuzzle53110       = 53110,
+
+	kPuzzle61207       = 61207,
+	kPuzzle61208       = 61208,
+	kPuzzle61209       = 61209,
+	kPuzzle61901       = 61901,
 
 	kPuzzle81201       = 81201,
 	kPuzzle81202       = 81202,
@@ -106,7 +110,6 @@ enum PuzzleId {
 	kPuzzle112012      = 112212,
 	kPuzzle112013      = 112213,
 	kPuzzle112014      = 112214,
-
 	kPuzzle114001      = 114001,
 	kPuzzle114002      = 114002,
 	kPuzzle114003      = 114003,
@@ -142,7 +145,6 @@ enum PuzzleId {
 	kPuzzle114034      = 114034,
 	kPuzzle114035      = 114035,
 
-
 	kPuzzle120001      = 120001,
 	kPuzzle120002      = 120002,
 	kPuzzle120003      = 120003,
@@ -157,7 +159,7 @@ enum PuzzleId {
 	kPuzzle120012      = 120012,
 	kPuzzle120013      = 120013,
 	kPuzzle120014      = 120014,
-	kPuzzle120015      = 120015,
+	kPuzzle120015      = 120015
 };
 
 enum ObjectId {
@@ -283,8 +285,15 @@ enum ObjectId {
 	kObjectBootlegging                   = 55217,
 	kObjectBathOfGiselle                 = 55218,
 	kObjectPencil                        = 56003,
+
 	kObjectNecklace                      = 61202,
+	kObject61209                         = 61209,
+	kObject61302                         = 61302,
+	kObject61303                         = 61303,
+	kObject61304                         = 61304,
 	kObjectWhip2                         = 61900,
+	kObject61901                         = 61901,
+
 	kObjectRing2                         = 71001,
 	kObjectFuse                          = 71004,
 	kObject71201                         = 71201,
