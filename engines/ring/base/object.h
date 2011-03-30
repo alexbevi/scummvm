@@ -86,8 +86,8 @@ public:
 	// Animation
 	void addAnimationToPuzzle(Puzzle *puzzle, Common::String filename, ImageType imageType, const Common::Point &point, uint32 a7, DrawType drawType, uint32 priority, byte imageCount, uint32 frameCount, float frameRate, byte a13, LoadFrom loadFrom);
 	void addAnimationToRotation(Rotation *rotation, uint32 layer, uint32 a3, float a4, byte a5);
-	void setAnimationOnPuzzle(uint32 animationIndex, ObjectId objectId);
-	void setAnimationOnRotation(uint32 animationIndex, ObjectId objectId);
+	void setAnimationOnPuzzle(uint32 animationIndex, Id id);
+	void setAnimationOnRotation(uint32 animationIndex, Id id);
 	void setAnimationStartFrame(uint32 startFrame);
 	void setAnimationActiveFrame(uint32 activeFrame);
 	void setAnimationCoordinatesOnPuzzle(const Common::Point &point);
@@ -163,8 +163,8 @@ public:
 	// Animation
 	void addAnimationToPuzzle(uint32 presentationIndex, Puzzle *puzzle, Common::String name, ImageType imageType, const Common::Point &point, uint32 a8, DrawType drawType, uint32 priority, byte frameCount, uint32 a12, float a13, byte a14, LoadFrom loadFrom);
 	void addAnimationToRotation(uint32 presentationIndex, Rotation *rotation, uint32 layer, uint32 a5, float a6, byte a7);
-	void setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId);
-	void setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId);
+	void setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, Id id);
+	void setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, Id id);
 	void setAnimationStartFrame(uint32 presentationIndex, uint32 startFrame);
 	void setAnimationActiveFrame(uint32 presentationIndex, uint32 activeFrame);
 	void setAnimationCoordinatesOnPuzzle(uint32 presentationIndex, const Common::Point &point);

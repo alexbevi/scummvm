@@ -1675,14 +1675,14 @@ void Application::objectPresentationAddAnimationToRotation(ObjectId objectId, ui
 	_objects.get(objectId)->addAnimationToRotation(presentationIndex, rotation, layer, a5, a6, a7);
 }
 
-void Application::objectPresentationSetAnimationOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, const ObjectId &targetId) {
+void Application::objectPresentationSetAnimationOnPuzzle(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, Id targetId) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationSetAnimationOnPuzzle] Object Id doesn't exist (%d)", objectId.id());
 
 	_objects.get(objectId)->setAnimationOnPuzzle(presentationIndex, animationIndex, targetId);
 }
 
-void Application::objectPresentationSetAnimationOnRotation(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, const ObjectId &targetId) {
+void Application::objectPresentationSetAnimationOnRotation(ObjectId objectId, uint32 presentationIndex, uint32 animationIndex, Id targetId) {
 	if (!_objects.has(objectId))
 		error("[Application::objectPresentationSetAnimationOnRotation] Object Id doesn't exist (%d)", objectId.id());
 

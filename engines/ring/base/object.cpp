@@ -184,18 +184,18 @@ void ObjectPresentation::addAnimationToRotation(Rotation *rotation, uint32 layer
 	_layerAnimationRotationAnimation.push_back(animation);
 }
 
-void ObjectPresentation::setAnimationOnPuzzle(uint32 animationIndex, ObjectId objectId) {
+void ObjectPresentation::setAnimationOnPuzzle(uint32 animationIndex, Id id) {
 	if (animationIndex >= _animationPuzzle.size())
 		error("[ObjectPresentation::setAnimationOnPuzzle] Invalid animation index (was: %d, max: %d)", animationIndex, _animationPuzzle.size() - 1);
 
-	_animationPuzzle[animationIndex]->setId(objectId);
+	_animationPuzzle[animationIndex]->setId(id);
 }
 
-void ObjectPresentation::setAnimationOnRotation(uint32 animationIndex, ObjectId objectId) {
+void ObjectPresentation::setAnimationOnRotation(uint32 animationIndex, Id id) {
 	if (animationIndex >= _layerAnimationRotationAnimation.size())
 		error("[ObjectPresentation::setAnimationOnPuzzle] Invalid animation index (was: %d, max: %d)", animationIndex, _layerAnimationRotationAnimation.size() - 1);
 
-	_layerAnimationRotationAnimation[animationIndex]->setId(objectId);
+	_layerAnimationRotationAnimation[animationIndex]->setId(id);
 }
 
 void ObjectPresentation::setAnimationStartFrame(uint32 startFrame) {
@@ -527,18 +527,18 @@ void Object::addAnimationToRotation(uint32 presentationIndex, Rotation *rotation
 	_presentations[presentationIndex]->addAnimationToRotation(rotation, layer, a5, a6, a7);
 }
 
-void Object::setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId) {
+void Object::setAnimationOnPuzzle(uint32 presentationIndex, uint32 animationIndex, Id id) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::setAnimationOnPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
-	_presentations[presentationIndex]->setAnimationOnPuzzle(animationIndex, objectId);
+	_presentations[presentationIndex]->setAnimationOnPuzzle(animationIndex, id);
 }
 
-void Object::setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, const ObjectId &objectId) {
+void Object::setAnimationOnRotation(uint32 presentationIndex, uint32 animationIndex, Id id) {
 	if (presentationIndex >= _presentations.size())
 		error("[Object::setAnimationOnPuzzle] Invalid presentation index (was: %d, max: %d)", presentationIndex, _presentations.size() - 1);
 
-	_presentations[presentationIndex]->setAnimationOnRotation(animationIndex, objectId);
+	_presentations[presentationIndex]->setAnimationOnRotation(animationIndex, id);
 }
 
 void Object::setAnimationStartFrame(uint32 presentationIndex, uint32 startFrame) {
