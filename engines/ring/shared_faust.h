@@ -162,7 +162,9 @@ enum PuzzleId {
 	kPuzzle120012      = 120012,
 	kPuzzle120013      = 120013,
 	kPuzzle120014      = 120014,
-	kPuzzle120015      = 120015
+	kPuzzle120015      = 120015,
+
+	kPuzzle310001      = 310001
 };
 
 enum ObjectId {
@@ -569,6 +571,8 @@ enum ObjectId {
 	kObject142002                        = 142002,
 	kObject142003                        = 142003,
 
+	kObject310001                        = 310001,
+	kObject310002                        = 310002,
 	kObjectIHaveADreamMartinLutherKing   = 310003,
 	kObjectTheodoreRooseveltTheNewDeal   = 310004,
 	kObjectLostParadisesMilton           = 310005,
@@ -578,9 +582,13 @@ enum ObjectId {
 	kObjectAndTheAngelsSang              = 310009,
 	kObjectSignedWithTheirHonour         = 310010,
 	kObjectAMidSummerNightDream          = 310011,
-	kObjectContractAndRelatedObligation  = 310011,
+	kObjectContractAndRelatedObligation  = 310012,
 	kObjectWithWilliamBurroughs          = 310013,
 	kObjectMephistoKlausMann             = 310014,
+	kObject310015                        = 310015,
+	kObject310016                        = 310016,
+	kObject310017                        = 310017,
+	kObject310018                        = 310018,
 
 	kObjectSpoon                         = 531001,
 	kObjectApple                         = 531011,
