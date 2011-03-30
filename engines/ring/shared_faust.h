@@ -103,6 +103,8 @@ enum PuzzleId {
 
 	kPuzzleInsertCd    = 90006,
 
+	kPuzzle91001       = 91001,
+
 	kPuzzle112000      = 112000,
 	kPuzzle112001      = 112201,
 	kPuzzle112002      = 112202,
@@ -362,6 +364,11 @@ enum ObjectId {
 	kObject81902                         = 81902,
 	kObject81903                         = 81903,
 	kObject81904                         = 81904,
+	kObject91001                         = 91001,
+	kObject91002                         = 91002,
+	kObject91003                         = 91003,
+	kObject91004                         = 91004,
+	kObject91301                         = 91301,
 	kObjectHomunculus                    = 97001,
 	kObject99000                         = 99000,
 	kObject99001                         = 99001,
