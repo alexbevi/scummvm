@@ -67,6 +67,9 @@ enum PuzzleId {
 	kPuzzle61209       = 61209,
 	kPuzzle61901       = 61901,
 
+	kPuzzle71001       = 71001,
+	kPuzzle71002       = 71002,
+
 	kPuzzle81201       = 81201,
 	kPuzzle81202       = 81202,
 	kPuzzle81205       = 81205,
@@ -295,6 +298,8 @@ enum ObjectId {
 	kObject61901                         = 61901,
 
 	kObjectRing2                         = 71001,
+	kObject71002                         = 71002,
+	kObject71003                         = 71003,
 	kObjectFuse                          = 71004,
 	kObject71201                         = 71201,
 	kObject72000                         = 72000,
