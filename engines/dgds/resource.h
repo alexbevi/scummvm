@@ -42,8 +42,12 @@ struct ResourceInfo {
 
 class Resource : public Common::SeekableReadStream {
 public:
-	Resource(Common::SeekableReadStream *stream, bool hasSubres);
+	Resource(Common::String name, Common::SeekableReadStream *stream, bool hasSubres);
 	~Resource();
+
+	const char *getName() {
+		return _name.c_str();
+	}
 
 	Resource *getSubResource(Common::String const &tag);
 	Common::Array<Resource *> getSubResourceCollection(Common::String const &tag);
@@ -73,6 +77,7 @@ protected:
 private:
 	Resource *getSubResource(ResourceInfo const &subResourceInfo);
 
+	Common::String _name;
 	Common::SeekableReadStream *_stream;
 	Common::Array<ResourceInfo> _subResources;
 };

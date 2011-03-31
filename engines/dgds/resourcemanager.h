@@ -54,7 +54,7 @@ public:
 	ResourceFiles _resourceFiles; //XXX: make private
 
 private:
-	Resource *getResource(ResourceFileInfo const &resourceFileInfo);
+	Resource *getResource(Common::String const &resourceName, ResourceFileInfo const &resourceFileInfo);
 
 	Common::String _currentOpenFilename;
 	Common::File   _currentOpenFile;

@@ -132,17 +132,17 @@ Resource *ResourceManager::getResource(Common::String const &resourceName) {
 		char tmp[4];
 		file->read(tmp, 4);
 
-		res = new Resource(file, tmp[3] == ':');
+		res = new Resource(resourceName, file, tmp[3] == ':');
 	} else if (_resourceFiles.contains(resourceName)) {
 		// Return the resource from the volume files
 		ResourceFileInfo resourceFileInfo = _resourceFiles.getVal(resourceName);
-		res = getResource(resourceFileInfo);
+		res = getResource(resourceName, resourceFileInfo);
 	}
 
 	return res;
 }
 
-Resource *ResourceManager::getResource(ResourceFileInfo const &resourceFileInfo) {
+Resource *ResourceManager::getResource(Common::String const &resourceName, ResourceFileInfo const &resourceFileInfo) {
 	if (!_currentOpenFile.isOpen() || _currentOpenFilename != resourceFileInfo.fileName) {
 		// Close the old opened file
 		if (_currentOpenFile.isOpen())
@@ -153,7 +153,8 @@ Resource *ResourceManager::getResource(ResourceFileInfo const &resourceFileInfo)
 	}
 
 	// Return the substream corresponding to the resource
-	return new Resource(new Common::SeekableSubReadStream(&_currentOpenFile, resourceFileInfo.offset,
+	return new Resource(resourceName,
+		new Common::SeekableSubReadStream(&_currentOpenFile, resourceFileInfo.offset,
 		resourceFileInfo.offset + resourceFileInfo.size), resourceFileInfo.hasSubres);
 }
 
@@ -189,7 +190,7 @@ void ResourceManager::dumpResources(Common::String const &path, bool subres) {
 	ResourceFiles::const_iterator iter = _resourceFiles.begin();
 
 	while (iter != _resourceFiles.end()) {
-		Resource *res = getResource(iter->_value);
+		Resource *res = getResource(iter->_key, iter->_value);
 		res->dump(path + iter->_key, subres);
 		delete res;
 
