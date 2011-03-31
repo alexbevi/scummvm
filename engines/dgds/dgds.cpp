@@ -34,6 +34,8 @@
 #include "dgds/dgds.h"
 #include "dgds/game_willy.h"
 
+#include "dgds/resources/movie.h"
+
 namespace Dgds {
 
 DgdsEngine::DgdsEngine(OSystem *syst, Common::Language lang): Engine(syst), _language(lang), _resMgr(NULL) {
@@ -88,6 +90,14 @@ Common::Error DgdsEngine::run() {
 		error("DGDS Title %s currently not supported", gameName.c_str());
 	}
 
+	Resource *ttm = _resMgr->getResource("TITLE.TTM");
+	Movie *m = new Movie(ttm);
+	m->outputChunks();
+
+	delete ttm;
+	delete m;
+
+	/*
 	bool end = false;
 	Common::EventManager *em = _system->getEventManager();
 	while (!end) {
@@ -100,6 +110,7 @@ Common::Error DgdsEngine::run() {
 		}
 		_system->delayMillis(10);
 	}
+	*/
 
 	return Common::kNoError;
 }

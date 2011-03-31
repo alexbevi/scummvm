@@ -8,7 +8,8 @@ MODULE_OBJS = \
 	game_willy.o \
 	resource.o \
 	resourcemanager.o \
-	resources/font.o
+	resources/font.o \
+	resources/movie.o
 
 # This module can be built as a plugin
 ifdef BUILD_PLUGINS
