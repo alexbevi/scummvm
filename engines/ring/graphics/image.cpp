@@ -119,7 +119,7 @@ void Image::create(uint32 depth, uint32, uint32 width, uint32 height) {
 		_surface->free();
 
 	_surface = new Graphics::Surface();
-	_surface->create((uint16)width, (uint16)height, (uint8)depth);
+	_surface->create((uint16)width, (uint16)height, (uint8)(depth / 8));
 }
 
 void Image::destroy() {
