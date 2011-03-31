@@ -271,7 +271,7 @@ void SoundEntryStream::initSoundBuffer(const Common::String &path, uint32 soundC
 	}
 
 	// Handle compressed sounds
-	error("[SoundEntryS::initSoundBuffer] Not implemented (compressed sounds)");
+	warning("[SoundEntryS::initSoundBuffer] Not implemented (compressed sounds)");
 }
 
 void SoundEntryStream::stopAndReleaseSoundBuffer() {
