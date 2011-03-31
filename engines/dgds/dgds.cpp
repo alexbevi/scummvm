@@ -82,8 +82,8 @@ Common::Error DgdsEngine::run() {
 		return Common::kNoGameDataFoundError;
 
 	if (gameName == "WILLY") {
-			printf("Starting Willy Beamish\n");
-			_game = new WillyBeamish(this, _resMgr);
+		printf("Starting Willy Beamish\n");
+		_game = new WillyBeamish(this, _resMgr);
 	} else {
 		error("DGDS Title %s currently not supported", gameName.c_str());
 	}
@@ -103,7 +103,5 @@ Common::Error DgdsEngine::run() {
 
 	return Common::kNoError;
 }
-
-
 
 } // End of namespace Dgds
