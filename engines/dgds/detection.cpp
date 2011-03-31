@@ -37,7 +37,6 @@ static const PlainGameDescriptor DgdsGameTitles[] = {
 	{"china",  "Heart of China"},
 	{"dragon", "Rise of the Dragon"},
 	{"willy",  "The Adventures of Willy Beamish"},
-
 	{0, 0}
 };
 
@@ -185,7 +184,11 @@ static const ADParams detectionParams = {
 	"dgds",
 	DgdsGameFallback, // file-based detection data to enable not yet known versions to start
 	kADFlagPrintWarningOnFileBasedFallback,
-	Common::GUIO_NONE
+	Common::GUIO_NONE,
+	// Maximum directory depth
+	1,
+	// List of directory globs
+	0
 };
 
 class DgdsMetaEngine : public AdvancedMetaEngine {
