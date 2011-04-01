@@ -27,7 +27,8 @@
 
 namespace Dgds {
 
-WillyBeamish::WillyBeamish(DgdsEngine *engine, ResourceManager *resman): Game(engine, resman) {
+WillyBeamish::WillyBeamish(DgdsEngine *engine, ResourceManager *resman):
+	Game(engine, resman) {
 	init();
 
 	// parse the SDS.RES file.

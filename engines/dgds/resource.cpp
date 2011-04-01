@@ -110,7 +110,7 @@ Resource *Resource::getSubResource(Common::String const &tag) {
 	if (sub)
 		return sub;
 	else {
-		warning("tag [%s] not found", tag1.c_str());
+		warning("[Resource::getSubResource] tag [%s] not found", tag1.c_str());
 		return NULL;
 	}
 }

@@ -84,7 +84,6 @@ bool Game::loadSDS(Resource *resSDS) {
 	bool ret = false;
 
 	if (resSDS) {
-		Common::hexdump((const byte*)_version.c_str(), _version.size());
 		// TODO
 
 		delete resSDS;
