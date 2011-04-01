@@ -461,7 +461,62 @@ void EventHandlerFaust::onUpdateBag(const Common::Point &point) {
 }
 
 void EventHandlerFaust::onUpdateBagZoneSY(const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBagZoneSY] Not implemented");
+	if (_app->hasCurrentPuzzle() && _app->getCurrentPuzzleId() == kPuzzleMenu) {
+		_app->objectPresentationHide(kObject14, 2);
+		_app->objectPresentationHide(kObject14, 4);
+		_app->objectPresentationHide(kObject14, 6);
+	}
+
+	_app->objectPresentationHide(kObject99091, 1);
+	_app->objectPresentationHide(kObject99091, 2);
+	_app->objectPresentationHide(kObject99091, 3);
+	_app->objectPresentationHide(kObject2, 2);
+	_app->objectPresentationHide(kObject2, 1);
+	_app->objectPresentationHide(kObject4, 1);
+	_app->objectPresentationHide(kObject4, 2);
+	_app->objectPresentationHide(kObject3, 1);
+	_app->objectPresentationHide(kObject99500);
+	_app->objectPresentationHide(kObject99010, 2);
+	_app->objectPresentationHide(kObject99010, 4);
+	_app->objectPresentationHide(kObject99000, 0);
+
+	if (!_app->varGetByte(98003))
+		_app->objectPresentationHide(kObject99001, 0);
+
+	if (!_app->varGetByte(98004))
+		_app->objectPresentationHide(kObject99002, 0);
+
+	if (!_app->varGetByte(98005))
+		_app->objectPresentationHide(kObject99003, 0);
+
+	if (!_app->varGetByte(98006))
+		_app->objectPresentationHide(kObject99004, 0);
+
+	if (!_app->varGetByte(98007))
+		_app->objectPresentationHide(kObject99005, 0);
+
+	if (!_app->varGetByte(98008))
+		_app->objectPresentationHide(kObject99006, 0);
+
+	if (!_app->varGetByte(98009))
+		_app->objectPresentationHide(kObject99007, 0);
+
+	if (!_app->varGetByte(98010))
+		_app->objectPresentationHide(kObject99008, 0);
+
+	if (!_app->varGetByte(98011))
+		_app->objectPresentationHide(kObject99009, 0);
+
+	_app->objectPresentationHide(kObject99023, 0);
+	_app->objectPresentationHide(kObject99022, 0);
+	_app->objectPresentationHide(kObject99021, 0);
+	_app->objectPresentationHide(kObject99025, 0);
+	_app->objectPresentationHide(kObject99024, 0);
+	_app->objectPresentationHide(kObject99042, 0);
+	_app->objectPresentationHide(kObject99041, 0);
+	_app->objectPresentationHide(kObject99097, 0);
+	_app->objectPresentationHide(kObject55, 0);
+	_app->objectPresentationHide(kObject55, 2);
 }
 
 void EventHandlerFaust::onUpdateBagZone3(const Common::Point &point) {
