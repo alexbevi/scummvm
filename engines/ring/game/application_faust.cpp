@@ -27,7 +27,10 @@
 
 #include "ring/base/art.h"
 #include "ring/base/bag.h"
+#include "ring/base/cursor.h"
+#include "ring/base/dialog.h"
 #include "ring/base/preferences.h"
+#include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 #include "ring/base/sound.h"
@@ -613,7 +616,90 @@ void ApplicationFaust::draw() {
 	_screenManager->updateScreen();
 
 	// Update engine state
-	error("[ApplicationFaust::draw] Engine state update not implemented!");
+	switch (_state){
+	default:
+		break;
+
+	case kStateNone:
+		return;
+
+	case kStateUpdateRotation:
+		if (!_rotation)
+			error("[ApplicationRing::draw] No active rotation!");
+
+		if (!checkEscape()) {
+			if (_rotation->getField28() != 0) {
+				if (_rotation->getField28() == 3) {
+					_rotation->destroyImage();
+					_rotation->setField28(0);
+				}
+			} else {
+				if (_rotation->hasImage())
+					_rotation->setField28(3);
+			}
+		}
+
+		if (_rotation->getField28() != 0) {
+			if (_rotation->getField28() == 3) {
+				_rotation->loadImage();
+				_rotation->drawImage();
+				_rotation->drawText();
+			}
+		} else {
+			_rotation->alloc();
+			_rotation->update();
+			Common::Point point = _vm->getCoordinates();
+			_rotation->setCoordinates(&point, Common::KEYCODE_INVALID);
+			_rotation->draw();
+			_rotation->drawText();
+		}
+
+		break;
+
+	case kStateUpdatePuzzle:
+		_puzzle->alloc();
+		_puzzle->update();
+		break;
+
+	case kStateDrawBag:
+		getBag()->draw();
+		break;
+
+	case kStateShowMenu:
+		showMenu(getCurrentZone(), _menuAction);
+		return;
+	}
+
+	// Update menu puzzle
+	if (_puzzles.has(kPuzzleMenu)) {
+		Puzzle *puzzleMenu = _puzzles.get(kPuzzleMenu);
+
+		puzzleMenu->alloc();
+		puzzleMenu->update();
+	}
+
+	// Draw bag
+	Bag *bag = getBag();
+	if (bag && bag->isInitialized())
+		bag->draw();
+
+	// Open bag
+	if (_vm->isMouseButtonPressed())
+		updateBag(_vm->getCoordinates());
+
+	// Update bag, puzzle & rotation
+	if (_vm->getFlag())
+		update(_vm->getCoordinates());
+	else
+		_vm->setFlag(true);
+
+	// Play dialogs
+	if (_dialogHandler)
+		_dialogHandler->play();
+
+	// Update animated cursors
+	if (_cursorHandler->getType() == kCursorTypeImage || _cursorHandler->getType() == kCursorTypeAnimated)
+		_cursorHandler->draw();
 }
 
 #pragma endregion
