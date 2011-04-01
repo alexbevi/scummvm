@@ -155,20 +155,4 @@ void Resource::dump(Common::String const &outFilename, bool dumpSubres) {
 	}
 }
 
-Common::String Resource::to_s(bool rewind) {
-	Common::String out = "";
-
-	if (rewind)
-		_stream->seek(0);
-	while (!_stream->eos()) {
-		byte b = _stream->readByte();
-		if (b)
-			out += Common::String(b);
-		else
-			break;
-	}
-
-	return out;
-}
-
 } // End of namespace Dgds

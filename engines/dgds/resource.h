@@ -61,14 +61,6 @@ public:
 	int32  size() const { return _stream->size(); }
 	bool   seek(int32 offset, int whence = SEEK_SET) { return _stream->seek(offset, whence); }
 
-	/**
-	 * Process the stream contents as a null-terminated string
-	 *
-	 * @param rewind indicates if the stream should be read from
-	 *               the beginning, or from the current pos()
-	 */
-	Common::String to_s(bool rewind = true);
-
 	void listTags();
 
 protected:
