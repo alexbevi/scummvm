@@ -92,7 +92,7 @@ Common::Error DgdsEngine::run() {
 
 	Resource *ttm = _resMgr->getResource("TITLE.TTM");
 	Movie *m = new Movie(ttm);
-	m->outputChunks();
+	m->play();
 
 	delete ttm;
 	delete m;

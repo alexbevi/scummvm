@@ -36,7 +36,8 @@
 namespace Dgds {
 
 enum kDebug {
-	kDebugResources = 1 << 0
+	kDebugResources = 1 << 0,
+	kDebugMovies = 2 << 0
 };
 
 class WillyBeamish;

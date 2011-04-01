@@ -53,11 +53,13 @@ Movie::~Movie() {
 }
 
 void Movie::loadVER(Resource *res) {
+	res->seek(0);
 	_version = res->readLine();
 	debugC(1, "[%s] version: %s",res->getName(), _version.c_str());
 }
 
 void Movie::loadPAG(Resource *res) {
+	res->seek(0);
 	_pages = res->readUint16LE();
 	debugC(1, "[%s] pages: %d",res->getName(), _pages);
 }
@@ -100,149 +102,109 @@ void Movie::loadTT3(Resource *res) {
 	delete decomp;
 }
 
-void Movie::outputChunks() {
-	for ( unsigned int i = 0; i < _chunks.size(); i++ ) {
-		printf ( "%4d %04x %-39s: ", i, _chunks[i]->code, _chunks[i]->name.c_str() );
-		for ( unsigned int j = 0; j < _chunks[i]->data.size(); j++ )
-		{
-			printf ( " %4d", _chunks[i]->data[j] );
-		}
-		for ( unsigned int j = _chunks[i]->data.size(); j < 8; j++ )
-		{
-			printf ( "     " );
-		}
-		switch ( _chunks[i]->code )
-		{
-		case 0x0020:
-			printf ( " save background" );
+void Movie::play() {
+	for (uint32 i = 0; i < _chunks.size(); i++) {
+		printf("%4d %04x %-39s: ", i, _chunks[i]->code, _chunks[i]->name.c_str() );
+
+		for (uint32 j = 0; j < _chunks[i]->data.size(); j++)
+			printf(" %4d", _chunks[i]->data[j]);
+
+		for (uint32 j = _chunks[i]->data.size(); j < 8; j++)
+			printf("     ");
+
+		switch (_chunks[i]->code) {
+		case kChunkSaveBackground:
+			printf(" save background");
 			break;
-		case 0x0080:
-			printf ( " draw background" );
+		case kChunkDrawBackground:
+			printf(" draw background");
 			break;
-		case 0x00c0:
+		case kChunkPurgeSavedImages:
+			printf(" purge saved images");
 			break;
-		case 0x0110:
-			printf ( " purge saved images" );
+		case kChunkUpdate:
+			printf(" update");
 			break;
-		case 0x0400:
+		case kChunkDelay:
+			printf(" delay (delay)");
 			break;
-		case 0x0500:
+		case kChunkSelectImage:
+			printf(" select image (image)");
 			break;
-		case 0x0510:
+		case kChunkSelectPalette:
+			printf(" select palette (palette)");
 			break;
-		case 0x0ff0:
-			printf ( " update" );
+		case kChunkSetScene:
+			printf(" set scene (scene)");
 			break;
-		case 0x1020:
-			printf ( " delay (delay)" );
+		case kChunkSetFrame_1:
+			printf(" set frame (?, frame)");
 			break;
-		case 0x1050:
-			printf ( " select image (image)" );
+		case kChunkSetFrame_2:
+			printf(" set frame (?, frame)");
 			break;
-		case 0x1060:
-			printf ( " select palette (palette)" );
+		case kChunkSetWindow_1:
+			printf(" set window (x, y, w, h)");
 			break;
-		case 0x1070:
+		case kChunkFadeOut:
+			printf(" fade out (first, n, steps, delay)");
 			break;
-		case 0x1100:
+		case kChunkFadeIn:
+			printf(" fade in (first, n, steps, delay)");
 			break;
-		case 0x1110:
-			printf ( " set scene (scene)" );
+		case kChunkSaveImage_1:
+			printf(" save image (x, y, w, h)");
 			break;
-		case 0x1120:
+		case kChunkSaveImage_2:
+			printf(" save image (x, y, w, h)");
 			break;
-		case 0x1200:
+		case kChunkSetWindow_2:
+			printf(" set window (x, y, w, h)");
 			break;
-		case 0x2000:
-			printf ( " set frame (?, frame)" );
+		case kChunkDrawSprite_1:
+			printf(" draw sprite (x, y, frame, image)");
 			break;
-		case 0x2010:
-			printf ( " set frame (?, frame)" );
+		case kChunkDrawSprite_2:
+			printf(" draw sprite (x, y, frame, image)");
 			break;
-		case 0x2300:
+		case kChunkDrawSprite_3:
+			printf(" draw sprite (x, y, frame, image)");
 			break;
-		case 0x2310:
+		case kChunkDrawSprite_4:
+			printf(" draw sprite (x, y, frame, image)");
 			break;
-		case 0x2320:
+		case kChunkDrawScreen:
+			printf(" draw screen (x, y, w, h, ?, ?)");
 			break;
-		case 0x2400:
+		case kChunkLoadSound:
+			printf(" load sound resource");
 			break;
-		case 0x4000:
-			printf ( " set window (x, y, w, h)" );
+		case kChunkSelectSound:
+			printf(" select sound (sound)");
 			break;
-		case 0x4110:
-			printf ( " fade out (first, n, steps, delay)" );
+		case kChunkDisableSound:
+			printf(" disable sound (sound)");
 			break;
-		case 0x4120:
-			printf ( " fade in (first, n, steps, delay)" );
+		case kChunkPlaySound:
+			printf(" play sound (sound)");
 			break;
-		case 0x4200:
-			printf ( " save image (x, y, w, h)" );
+		case kChunkStopSound:
+			printf(" stop sound (sound)");
 			break;
-		case 0x4210:
-			printf ( " save image (x, y, w, h)" );
+		case kChunkLoadScreen:
+			printf(" load screen resource");
 			break;
-		case 0xa010:
+		case kChunkLoadImage:
+			printf(" load image resource");
 			break;
-		case 0xa030:
-			break;
-		case 0xa090:
-			break;
-		case 0xa0b0:
-			break;
-		case 0xa100:
-			printf ( " set window (x, y, w, h)" );
-			break;
-		case 0xa500:
-			printf ( " draw sprite (x, y, frame, image)" );
-			break;
-		case 0xa510:
-			printf ( " draw sprite (x, y, frame, image)" );
-			break;
-		case 0xa520:
-			printf ( " draw sprite (x, y, frame, image)" );
-			break;
-		case 0xa530:
-			printf ( " draw sprite (x, y, frame, image)" );
-			break;
-		case 0xa5a0:
-			break;
-		case 0xa600:
-			break;
-		case 0xb600:
-			printf ( " draw screen (x, y, w, h, ?, ?)" );
-			break;
-		case 0xc020:
-			printf ( " load sound resource" );
-			break;
-		case 0xc030:
-			printf ( " select sound (sound)" );
-			break;
-		case 0xc040:
-			printf ( " deselect sound (sound)" );
-			break;
-		case 0xc050:
-			printf ( " play sound (sound)" );
-			break;
-		case 0xc060:
-			printf ( " stop sound (sound)" );
-			break;
-		case 0xf010:
-			printf ( " load screen resource" );
-			break;
-		case 0xf020:
-			printf ( " load image resource" );
-			break;
-		case 0xf040:
-			break;
-		case 0xf050:
-			printf ( " load palette resource" );
+		case kChunkLoadPalette:
+			printf(" load palette resource");
 			break;
 		default:
-			printf ( " unknown" );
-			break;
+		printf(" unknown");
+		break;
 		}
-		printf ( "\n" );
+		printf("\n");
 	}
 }
 
