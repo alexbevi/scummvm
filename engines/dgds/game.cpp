@@ -27,8 +27,8 @@
 
 namespace Dgds {
 
-Game::Game(DgdsEngine *engine, ResourceManager *resman):
-	_vm(engine), _resMan(resman) {
+Game::Game(DgdsEngine *engine):
+	_vm(engine) {
 
 }
 
@@ -39,9 +39,9 @@ Game::~Game() {
 bool Game::init() {
 	bool ret = false;
 
-	Common::String gameName = _resMan->findGDS();
+	Common::String gameName = Resman.findGDS();
 
-	Resource *res = _resMan->getResource(gameName + ".GDS");
+	Resource *res = Resman.load(gameName + ".GDS");
 
 	if (res) {
 		Resource *resGDS = res->getSubResource("GDS:");

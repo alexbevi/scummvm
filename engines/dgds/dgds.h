@@ -31,7 +31,7 @@
 #include "common/random.h"
 
 #include "dgds/game.h"
-#include "dgds/resourcemanager.h"
+#include "dgds/managers/resman.h"
 
 namespace Dgds {
 

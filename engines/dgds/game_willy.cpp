@@ -27,15 +27,15 @@
 
 namespace Dgds {
 
-WillyBeamish::WillyBeamish(DgdsEngine *engine, ResourceManager *resman):
-	Game(engine, resman) {
+WillyBeamish::WillyBeamish(DgdsEngine *engine):
+	Game(engine) {
 	init();
 
 	// parse the SDS.RES file.
 	// This file contains common error messages that are used by DGDS during
 	// initialization
 
-	Resource *res = _resMan->getResource("SDS.RES");
+	Resource *res = Resman.load("SDS.RES");
 
 	while (!res->eos()) {
 		Common::String entry = res->readLine();

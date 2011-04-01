@@ -26,7 +26,7 @@
 #ifndef DGDS_GAME_H
 #define DGDS_GAME_H
 
-#include "dgds/resourcemanager.h"
+#include "dgds/managers/resman.h"
 
 namespace Dgds {
 
@@ -34,7 +34,7 @@ class DgdsEngine;
 
 class Game {
 public:
-	Game(DgdsEngine *engine, ResourceManager *resman);
+	Game(DgdsEngine *engine);
 	virtual ~Game();
 
 	int32 getGameID() { return _gameID; }
@@ -42,8 +42,6 @@ public:
 
 protected:
 	bool init();
-
-	ResourceManager *_resMan;
 	DgdsEngine *_vm;
 
 private:

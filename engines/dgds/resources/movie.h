@@ -96,7 +96,6 @@ public:
 
 	Common::String getVersion();
 	uint16 getPages() const;
-	void outputChunks();
 
 private:
 	void loadVER(Resource *res);

@@ -34,6 +34,7 @@
 #include "dgds/dgds.h"
 #include "dgds/game_willy.h"
 
+#include "dgds/resources/moviegroup.h"
 #include "dgds/resources/movie.h"
 
 namespace Dgds {
@@ -63,34 +64,18 @@ Common::Error DgdsEngine::init() {
 }
 
 Common::Error DgdsEngine::run() {
-	// Start the resource manager
-	if (Common::File::exists("volume.rmf"))
-		_resMgr = new ResourceManager("volume.rmf");
-	if (!_resMgr && Common::File::exists("volume.vga"))
-		_resMgr = new ResourceManager("volume.vga");
-	if (!_resMgr && Common::File::exists("resource.map"))
-		_resMgr = new ResourceManager("resource.map");
-	if (!_resMgr)
-		error("No valid index files detected");
-
-	// XXX dump resources and tagged subresources
-	// to the specified folders
-	//_resMgr->dumpResources("dump_res/", false);
-	//_resMgr->dumpResources("dump_subres/", true);
-	//return Common::kNoError;
-
-	Common::String gameName = _resMgr->findGDS();
+	Common::String gameName = Resman.findGDS();
 	if(!gameName.size())
 		return Common::kNoGameDataFoundError;
 
 	if (gameName == "WILLY") {
 		printf("Starting Willy Beamish\n");
-		_game = new WillyBeamish(this, _resMgr);
+		_game = new WillyBeamish(this);
 	} else {
 		error("DGDS Title %s currently not supported", gameName.c_str());
 	}
 
-	Resource *ttm = _resMgr->getResource("TITLE.TTM");
+	Resource *ttm = Resman.load("TITLE.TTM");
 	Movie *m = new Movie(ttm);
 	m->play();
 

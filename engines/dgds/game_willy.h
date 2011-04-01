@@ -34,7 +34,7 @@ namespace Dgds {
 
 class WillyBeamish: public Game {
 public:
-	WillyBeamish(DgdsEngine *engine, ResourceManager *resman);
+	WillyBeamish(DgdsEngine *engine);
 	virtual ~WillyBeamish();
 
 private:
