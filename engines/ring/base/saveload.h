@@ -105,6 +105,7 @@ public:
 	// Accessors
 	bool isSaving() const;
 	bool hasTimer(Common::String zone);
+	bool hasZoneSavegame();
 	SavegameData *getData() { return &_data; }
 	SetupType getSetupType() const { return _setupType; }
 	Common::String *getName() { return &_header.name; }

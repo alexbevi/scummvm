@@ -257,6 +257,10 @@ bool SaveManager::hasTimer(Common::String zone) {
 	return has(getTimerFile(zone, _slot));
 }
 
+bool SaveManager::hasZoneSavegame() {
+	error("[SaveManager::hasZoneSavegame] not implemented");
+}
+
 bool SaveManager::has(Common::String filename) const {
 	if (g_system->getSavefileManager()->listSavefiles(filename).size() == 0)
 		return false;

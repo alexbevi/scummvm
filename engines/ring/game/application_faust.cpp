@@ -418,11 +418,119 @@ void ApplicationFaust::setProgressAndShowMenu(ProgressState progress) {
 }
 
 void ApplicationFaust::loadAndStartLogin() {
-	error("[ApplicationFaust::loadAndStartLogin] Not implemented");
+	// Get clicked object
+	ObjectId objectId = visualListGetObjectIdClicked(4, kPuzzleGeneralMenu);
+	if (!objectId)
+		error("[ApplicationFaust::loadAndStartLogin] No object clicked");
+
+	// Get icon name
+	Common::String iconName = getObject(objectId)->getName();
+	if (iconName.empty())
+		error("[ApplicationFaust::loadAndStartLogin] Object does not have an icon name (%d)", objectId.id());
+
+	exitZone();
+	initZones();
+
+	if (getSaveManager()->loadSave(iconName, kLoadSaveRead)) {
+		varSetByte(98003, 0);
+	} else {
+		// Reload autosave
+		Common::String filename = Common::String::format("Savegame_%d", varGetByte(98001));
+
+		// Try reloading autosave
+		if (!getSaveManager()->loadSave(filename, kLoadSaveRead)) {
+			warning("[ApplicationFaust::loadAndStartLogin] Cannot reload autosave after failed load (%s)", filename.c_str());
+
+			exitZone();
+			initZones();
+			startLogin();
+		}
+
+		messageFormat("CanNotLoadGame", filename);
+		messageShowWarning(0);
+	}
 }
 
 void ApplicationFaust::loadAndInitZone() {
-	error("[ApplicationFaust::loadAndInitZone] Not implemented");
+	// Set current zone
+	ZoneId zone = (ZoneId)varGetByte(98001);
+	getSaveManager()->getData()->zone = zone;
+
+	if (getSaveManager()->hasZoneSavegame()) {
+		exitZone();
+		initZones();
+
+		Common::String filename = Common::String::format("Savegame_%d", zone);
+		if (!getSaveManager()->loadSave(filename, kLoadSaveRead)) {
+			warning("[ApplicationFaust::loadAndInitZone] Can not load game (%s)", filename.c_str());
+
+			exitZone();
+			initZones();
+			startLogin();
+
+			messageFormat("CanNotLoadGame", filename);
+			messageShowWarning(0);
+
+			return;
+		}
+
+		varSetByte(99000, -1);
+		varSetByte(98001, zone);
+
+		return;
+	}
+
+	// No savegame, setup the zone
+	switch (zone) {
+	default:
+		break;
+
+	case kZoneSY:
+		exitZone();
+		initZones();
+		setupZone(kZone2, kSetupType1);
+		break;
+
+	case kZone2:
+		exitZone();
+		initZones();
+		setupZone(kZone3, kSetupType1);
+		break;
+
+	case kZone3:
+		exitZone();
+		initZones();
+		setupZone(kZone4, kSetupType1);
+		break;
+
+	case kZone4:
+		exitZone();
+		initZones();
+		setupZone(kZone5, kSetupType1);
+		break;
+
+	case kZone5:
+		exitZone();
+		initZones();
+		setupZone(kZone6, kSetupType1);
+		break;
+
+	case kZone6:
+		exitZone();
+		initZones();
+		setupZone(kZone7, kSetupType1);
+		break;
+
+	case kZone7:
+		exitZone();
+		initZones();
+		setupZone(kZone8, kSetupType1);
+		break;
+	}
+
+	// Save zone
+	varSetByte(99000, -1);
+	varSetByte(98001, zone);
 }
 
 void ApplicationFaust::initZone() {
