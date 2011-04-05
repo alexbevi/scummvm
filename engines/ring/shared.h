@@ -61,6 +61,9 @@ enum TimerId {
 	kTimer5       = 5,
 	kTimer6       = 6,
 	kTimer9       = 9,
+	kTimer10      = 10,
+	kTimer11      = 11,
+	kTimer12      = 12,
 	kTimerInit    = 100,
 	kTimerStartup = 101,
 

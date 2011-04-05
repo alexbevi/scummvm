@@ -104,7 +104,10 @@ public:
 	void displayFade(Common::String filenameFrom, Common::String filenameTo, uint32 frameCount, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	void fadeOut(uint32 frameCount, const Color &colorTo, uint32 ticksWait);
 
+	//////////////////////////////////////////////////////////////////////////
+	// Misc
 	static Common::String getFileExtension(ImageType imageType);
+	void waitForEscape(uint32 ticksWait) const;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Language, Font, Cursor and Subtitle
@@ -433,7 +436,6 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Handlers and shared data
-	//CursorHandler *getCursorHandler() { return _cursorHandler; }
 	ArtHandler        *getArtHandler()        { return _artHandler; }
 	Bag               *getBag()               { return _bag; }
 	DialogHandler     *getDialogHandler()     { return _dialogHandler; }
@@ -507,7 +509,6 @@ protected:
 	// Display and movies
 	void showImage(Common::String filename, const Common::Point &point, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
 	bool scrollImage(Common::String filename, uint32 ticksWait, LoadFrom loadFrom, ArchiveType archiveType);
-	void waitForEscape(uint32 ticksWait) const;
 
 	// Current rotation
 	Rotation *_currentRotation;

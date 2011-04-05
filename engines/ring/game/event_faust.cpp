@@ -634,7 +634,12 @@ void EventHandlerFaust::onTimer(TimerId timerId) {
 }
 
 void EventHandlerFaust::onTimerZoneSY(TimerId id) {
-	error("[EventHandlerFaust::onTimerZoneSY] Not implemented");
+	if (id == kTimer12) {
+		_app->timerStop(kTimer12);
+		_app->varSetByte(97006, 1);
+		_app->objectPresentationHide(kObject14, 7);
+		_app->objectPresentationShow(kObject14, 8);
+	}
 }
 
 void EventHandlerFaust::onTimerZone2(TimerId id) {
@@ -661,7 +666,48 @@ void EventHandlerFaust::onTimerZone3(TimerId id) {
 }
 
 void EventHandlerFaust::onTimerZone4(TimerId id) {
-	error("[EventHandlerFaust::onTimerZone4] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0:
+		_app->objectPresentationHide(kObject13121, 4);
+		_app->timerStop(kTimer0);
+		break;
+
+	case kTimer1:
+		if (_app->varGetByte(13019) == 5)
+			_app->timerStop(kTimer1);
+
+		_app->soundPlay(_app->varGetByte(13019) + 13322);
+		_app->varSetByte(13019, _app->varGetByte(13019) + 1);
+		break;
+
+	case kTimer2:
+		_app->timerStop(kTimer2);
+		_app->soundPlay(13327);
+		break;
+
+	case kTimer3:
+		_app->varSetByte(13900, _app->varGetByte(13900) + 1);
+		_app->varGetByte(13900);
+		if (_app->varGetByte(13900) == 5)
+			_app->timerStop(kTimer3);
+		break;
+
+	case kTimer4:
+		_app->timerStop(kTimer4);
+		_app->timerStart(kTimer4, rnd(5000) + 10000);
+		_app->objectPresentationShow(kObject13140);
+		_app->timerStart(kTimer5, 100);
+		_app->soundPlay(13072);
+		break;
+
+	case kTimer5:
+		_app->timerStop(kTimer5);
+		_app->objectPresentationHide(kObject13140);
+		break;
+	}
 }
 
 void EventHandlerFaust::onTimerZone5(TimerId id) {
@@ -703,7 +749,30 @@ void EventHandlerFaust::onTimerZone12(TimerId id) {
 }
 
 void EventHandlerFaust::onTimerZone13(TimerId id) {
-	error("[EventHandlerFaust::onTimerZone13] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0:
+		_app->varSetFloat(91001, _app->varGetFloat(91001) - 1.0f);
+		_app->objectPresentationHide(kObject91004);
+		_app->objectPresentationShow(kObject91004, (uint32)_app->varGetFloat(91001));
+
+		if (floor(_app->varGetFloat(91001)) <= 1.0f) {
+			_app->timerStop(kTimer0);
+			_app->soundPlay(91107);
+			_app->waitForEscape(10);
+			_app->soundStop(91105, 1024);
+			_app->soundStop(91106, 1024);
+		}
+		break;
+
+	case kTimer1:
+		_app->timerStop(kTimer1);
+		_app->timerStart(kTimer1, rnd(15000) + 25000);
+		_app->soundPlay(91117 + rnd(3));
+		break;
+	}
 }
 
 void EventHandlerFaust::onTimerZone14(TimerId id) {
