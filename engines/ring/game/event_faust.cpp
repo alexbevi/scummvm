@@ -26,6 +26,7 @@
 #include "ring/game/event_faust.h"
 
 #include "ring/base/application.h"
+#include "ring/base/object.h"
 #include "ring/base/saveload.h"
 #include "ring/base/timer.h"
 
@@ -1462,7 +1463,44 @@ void EventHandlerFaust::onVisualList(Id id, uint32 type, const Common::Point &po
 }
 
 void EventHandlerFaust::onVisualListZoneSY(Id id, uint32 type, const Common::Point &) {
-	error("[EventHandlerFaust::onVisualListZoneSY] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case 1:
+		if (type == 3) {
+			ObjectId objectId = _app->visualListGetObjectIdClicked(1, kPuzzleGeneralMenu);
+			_app->objectPresentationSetTextToPuzzle(kObject99601, 1, 0, _app->getObject(objectId)->getName());
+
+			uint32 width = _app->objectPresentationGetTextWidth(kObject99601, 1, 0);
+			_app->objectPresentationSetAnimationCoordinatesOnPuzzle(kObject99601, 0, Common::Point(width + 233, 384));
+		}
+		break;
+
+	case 3:
+		if (type == 3) {
+			ObjectId objectId = _app->visualListGetObjectIdClicked(1, kPuzzlePreferences);
+			_app->objectPresentationSetTextToPuzzle(kObject99501, 0, 0, _app->getObject(objectId)->getName());
+
+			uint32 width = _app->objectPresentationGetTextWidth(kObject99501, 0, 0);
+			_app->objectPresentationSetAnimationCoordinatesOnPuzzle(kObject99501, 0, Common::Point(width + 233, 334));
+		}
+		break;
+
+	case 4:
+		if (type == 3) {
+			ObjectId objectId = _app->visualListGetObjectIdClicked(1, kPuzzleGeneralMenu);
+			_app->objectPresentationSetTextToPuzzle(kObject99601, 1, 0, _app->getObject(objectId)->getName());
+
+			uint32 width = _app->objectPresentationGetTextWidth(kObject99601, 1, 0);
+			_app->objectPresentationSetAnimationCoordinatesOnPuzzle(kObject99601, 0, Common::Point(width + 233, 384));
+
+			_app->objectSetAccessibilityOn(kObject99023);
+			_app->objectPresentationHide(kObject99023, 1);
+			_app->objectPresentationShow(kObject99023, 2);
+		}
+		break;
+	}
 }
 
 #pragma endregion
