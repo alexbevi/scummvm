@@ -719,7 +719,82 @@ void EventHandlerFaust::onTimerZone6(TimerId id) {
 }
 
 void EventHandlerFaust::onTimerZone8(TimerId id) {
-	error("[EventHandlerFaust::onTimerZone8] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0:
+		_app->timerStop(kTimer0);
+		_app->timerStart(kTimer0, rnd(5000) + 2000);
+		_app->soundPlay(51003 + rnd(4));
+		break;
+
+	case kTimer1:
+		_app->soundPlay(52211, kSoundLoop);
+		_app->objectPresentationShow(kObject52231, 0);
+		_app->timerStop(kTimer1);
+		break;
+
+	case kTimer3:
+		_app->timerStop(kTimer3);
+
+		if (!_app->varGetByte(53124)) {
+			_app->objectPresentationShow(kObject53121, 1);
+			_app->varSetByte(53124, 1);
+			_app->puzzleSetMovabilityOff(53102, 0, 0);
+		}
+
+		_app->timerStart(kTimer4, 10);
+
+		if (_app->varGetByte(53000) == 1) {
+			_app->soundPlay(53122, kSoundLoop);
+			_app->soundSetVolume(53122, _app->varGetByte(53123) - _app->varGetByte(53126));
+		}
+		break;
+
+	case kTimer4:
+		if (_app->varGetByte(53123) >= 100) {
+			_app->timerStop(kTimer4);
+		} else {
+			_app->varSetByte(53123, _app->varGetByte(53123) + 5);
+			_app->soundSetVolume(53122, _app->varGetByte(53123) - _app->varGetByte(53126));
+		}
+		break;
+
+	case kTimer5:
+		if (_app->varGetByte(53123) <= _app->varGetByte(53126)) {
+			_app->timerStop(kTimer5);
+			_app->soundStop(53122, 1024);
+			_app->varSetByte(53123, 50);
+		} else {
+			_app->varSetByte(53123, _app->varGetByte(53123) - 5);
+			_app->soundSetVolume(53122, _app->varGetByte(53123) - _app->varGetByte(53126));
+		}
+		break;
+
+	case kTimer6:
+		_app->timerStop(kTimer6);
+
+		_app->timerStart(kTimer6, rnd(30000) + 30000);
+
+		if (_app->varGetByte(53103)) {
+			_app->rotationSet3DSoundOff(53011, 53102);
+			_app->rotationSet3DSoundOff(53021, 53102);
+			_app->soundPlay(53104);
+			_app->soundSetVolume(53104, 90);
+			_app->soundStop(53103, 1024);
+			_app->varSetByte(53103, 0);
+		} else {
+			_app->rotationSet3DSoundOn(53011, 53102);
+			_app->rotationSet3DSoundOn(53021, 53102);
+			_app->soundPlay(53101);
+			_app->soundPlay(53103, kSoundLoop);
+			_app->soundSetVolume(53103, 90);
+			_app->soundSetVolume(53101, 90);
+			_app->varSetByte(53103, 1);
+		}
+		break;
+	}
 }
 
 void EventHandlerFaust::onTimerZone9(TimerId id) {
@@ -741,7 +816,55 @@ void EventHandlerFaust::onTimerZone10(TimerId id) {
 }
 
 void EventHandlerFaust::onTimerZone11(TimerId id) {
-	error("[EventHandlerFaust::onTimerZone11] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0: {
+		_app->timerStop(kTimer0);
+		_app->timerStart(kTimer0, rnd(2000) + 500);
+
+		uint32 index = rnd(6);
+		_app->objectPresentationShow(kObject72000, index);
+		_app->soundPlay(72006 + index);
+		}
+		break;
+
+	case kTimer1:
+		_app->timerStop(kTimer1);
+		_app->objectPresentationHideAndRemove(kObject8);
+		_app->objectPresentationHideAndRemove(kObject9);
+		_app->objectPresentationHideAndRemove(kObject10);
+		_app->exitToMenu(kMenuAction0);
+		break;
+
+	case kTimer2:
+		_app->timerStop(kTimer2);
+		_app->objectPresentationHideAndRemove(kObject8);
+		_app->objectPresentationHideAndRemove(kObject9);
+		_app->objectPresentationHideAndRemove(kObject10);
+		_app->exitToMenu(kMenuAction1);
+		break;
+
+	case kTimer3:
+		_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject10, 0, Common::Point(_app->varGetWord(72000), 18));
+		_app->varSetWord(72000, _app->varGetWord(72000) + 1);
+
+		if (_app->varGetWord(72000) == 434) {
+			_app->timerStop(kTimer3);
+			_app->objectPresentationHideAndRemove(kObject8);
+			_app->objectPresentationHideAndRemove(kObject9);
+			_app->objectPresentationHideAndRemove(kObject10);
+			_app->exitToMenu(kMenuAction1);
+		}
+		break;
+
+	case kTimer5:
+		_app->soundPlay(72013, kSoundLoop);
+		_app->rotationSet3DSoundOn(72014, 72014 + rnd(3));
+		_app->timerStop(kTimer5);
+		break;
+	}
 }
 
 void EventHandlerFaust::onTimerZone12(TimerId id) {
