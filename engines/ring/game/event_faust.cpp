@@ -1203,7 +1203,113 @@ void EventHandlerFaust::onTimerZone14(TimerId id) {
 }
 
 void EventHandlerFaust::onTimerZone15(TimerId id) {
-	error("[EventHandlerFaust::onTimerZone15] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0:
+		_app->objectPresentationHide(kObject120003, 1);
+		_app->timerStop(kTimer0);
+		break;
+
+	case kTimer1:
+		if (_app->varGetWord(120001) != 400 || _app->varGetByte(97001) != 1) {
+			_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject6, 1, Common::Point(_app->varGetWord(120001), 16));
+			_app->varSetWord(120001, _app->varGetWord(120001) + 1);
+		} else {
+			if (_app->varGetWord(120002) == 400) {
+				_app->varSetWord(120001, 401);
+				_app->objectPresentationHide(kObject6, 5);
+				_app->objectPresentationShow(kObject6, 3);
+				_app->objectPresentationHide(kObject6, 4);
+			}
+		}
+
+		if (_app->varGetWord(120001) == 400
+		 && _app->varGetByte(97001) == 0) {
+			_app->objectPresentationShow(kObject6, 3);
+			_app->objectPresentationHide(kObject6, 4);
+		}
+
+		if (_app->varGetWord(120001) == 440) {
+			if (_app->varGetByte(120003)) {
+				_app->objectSetAccessibilityOn(kObject120001, 1, 1);
+				_app->rotationSetMovabilityOn(120104, 3, 3);
+				_app->rotationSetMovabilityOn(120106, 1, 1);
+				_app->rotationSetMovabilityOn(120108, 3, 3);
+				_app->varSetByte(98088, 0);
+				_app->objectSetAccessibilityOff(kObject6);
+				_app->objectPresentationHideAndRemove(kObject6);
+				_app->timerStop(kTimer1);
+				_app->timerStop(kTimer2);
+				_app->rotationSetActive(120401);
+			} else {
+				_app->timerStop(kTimer1);
+				_app->timerStop(kTimer2);
+				_app->objectSetAccessibilityOff(kObject6);
+				_app->objectPresentationHideAndRemove(kObject6);
+
+				Id rotationId = _app->getCurrentRotationId();
+
+				_app->varSetDword(120007, rotationId);
+				_app->varSetWord(120006, (int16)_app->rotationGetAlp(rotationId));
+				_app->varSetWord(120007, (int16)_app->rotationGetBet(rotationId));
+				_app->varSetWord(120008, (int16)_app->rotationGetRan(rotationId));
+
+				_app->objectSetAccessibilityOn(kObject1);
+				_app->fadeOut(15, Color(0, 0, 0), 0);
+				_app->objectPresentationShow(kObject15);
+				_app->soundPlay(120150);
+			}
+		}
+		break;
+
+	case kTimer2:
+		_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject6, 2, Common::Point(_app->varGetWord(120002), 46));
+		_app->varSetWord(120002, _app->varGetWord(120002) + 1);
+		break;
+
+	case kTimer3:
+		_app->timerStop(kTimer3);
+		_app->objectPresentationShow(kObject120054, 0);
+		_app->soundPlay(120072);
+		break;
+
+	case kTimer4: {
+		_app->timerStop(kTimer4);
+		_app->timerStart(kTimer4, rnd(3000) + 2000);
+
+		Id soundId = 120003 + rnd(11);
+		_app->soundSetPan(soundId, rnd(10) - 10);
+		_app->soundPlay(soundId);
+		}
+		break;
+
+	case kTimer5: {
+		_app->timerStop(kTimer5);
+		_app->timerStart(kTimer5, rnd(3000) + 3000);
+
+		Id soundId = 120013 + rnd(4);
+		_app->soundSetPan(soundId, rnd(10) - 10);
+		_app->soundPlay(soundId);
+		}
+		break;
+
+	case kTimer6:
+		_app->timerStop(kTimer6);
+		_app->timerStart(kTimer6, rnd(3000) + 3000);
+		_app->objectPresentationShow(kObject120061);
+		_app->soundPlay(120067);
+		break;
+
+	case kTimer7:
+		_app->timerStop(kTimer7);
+		_app->varSetByte(120035, 0);
+		_app->objectPresentationHide(kObject120054, 1);
+		_app->objectSetAccessibilityOn(kObject120054, 2, 2);
+		_app->soundStop(120071, 1024);
+		break;
+	}
 }
 
 void EventHandlerFaust::onTimerZone16(TimerId id) {
