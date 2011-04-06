@@ -2776,7 +2776,22 @@ ArchiveType Application::getArchiveType(ZoneId zone) const {
 #pragma region Login
 
 void Application::startLogin() {
-	error("[Application::startLogin] Not implemented");
+	// Load the list of users
+	Common::Array<SaveManager::SaveEntry *> *users = getSaveManager()->loadUsers();
+
+	// Add list to login screen
+	for (uint32 i = 0; i < users->size(); i++) {
+		ObjectId objectId = i + 20000000;
+		objectAdd(objectId, (*users)[i]->description, (*users)[i]->filename, 1);
+		visualListAdd(3, kPuzzlePreferences, objectId);
+	}
+
+	// Setup game
+	timerStopAll();
+	setupZone(kZoneSY, kSetupTypeNone);
+	setSpace(kZoneSY);
+	puzzleSetActive(kPuzzlePreferences);
+	_currentGameZone = kZoneSY;
 }
 
 #pragma endregion

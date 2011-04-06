@@ -301,7 +301,7 @@ SaveStateList RingEngine::listSaves(const char *target) const {
 		if (slotNum >= 0 && slotNum <= 99) {
 			Common::InSaveFile *in = saveFileMan->openForLoading(*file);
 			if (in) {
-				Ring::SaveManager::RingSavegameHeader header;
+				Ring::SaveManager::SavegameHeader header;
 				if (Ring::SaveManager::readSavegameHeader(in, header)) {
 					saveList.push_back(SaveStateDescriptor(slotNum, header.name));
 					if (header.thumbnail) {
@@ -325,7 +325,7 @@ SaveStateDescriptor RingEngine::querySaveMetaInfos(const char *target, int slot)
 	Common::InSaveFile *f = g_system->getSavefileManager()->openForLoading(Ring::SaveManager::getSavegameFile(gameIdFromTarget(target), slot));
 	assert(f);
 
-	Ring::SaveManager::RingSavegameHeader header;
+	Ring::SaveManager::SavegameHeader header;
 	Ring::SaveManager::readSavegameHeader(f, header);
 	delete f;
 

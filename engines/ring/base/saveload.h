@@ -41,7 +41,12 @@ class Image;
 
 class SaveManager {
 public:
-	struct RingSavegameHeader {
+	struct SaveEntry {
+		Common::String filename;
+		Common::String description;
+	};
+
+	struct SavegameHeader {
 		uint8 version;
 		Common::String name;
 		Common::String description;
@@ -98,8 +103,8 @@ public:
 	~SaveManager();
 
 	// Header
-	static bool readSavegameHeader(Common::InSaveFile *in, RingSavegameHeader &header);
-	static void writeSavegameHeader(Common::OutSaveFile *out, RingSavegameHeader &header);
+	static bool readSavegameHeader(Common::InSaveFile *in, SavegameHeader &header);
+	static void writeSavegameHeader(Common::OutSaveFile *out, SavegameHeader &header);
 
 	// Loading & Saving
 	bool loadSave(const Common::String &name, LoadSaveType type);
@@ -107,14 +112,17 @@ public:
 	bool loadSaveTimer(Common::String filename, LoadSaveType type);
 	void loadSaveSounds();
 
-	void loadProgress();
-	void saveProgress(ProgressState progress);
-
 	static const char *getSavegameFile(int slot);
 	static const char *getSavegameFile(const char *gameid, int slot);
 	static Common::String getTimerFile(Common::String zone, uint32 slot);
-
 	uint32 getNextSlot() const;
+
+	// Progress
+	void loadProgress();
+	void saveProgress(ProgressState progress);
+
+	// Users
+	Common::Array<SaveEntry *> *loadUsers();
 
 	// Management
 	bool remove(uint32 slot) const;
@@ -143,7 +151,7 @@ public:
 private:
 	Application *_app;
 
-	RingSavegameHeader _header;
+	SavegameHeader _header;
 	SavegameData _data;
 	uint32 _slot;
 

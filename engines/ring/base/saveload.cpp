@@ -65,7 +65,7 @@ SaveManager::~SaveManager() {
 }
 
 // Header
-bool SaveManager::readSavegameHeader(Common::InSaveFile *in, RingSavegameHeader &header) {
+bool SaveManager::readSavegameHeader(Common::InSaveFile *in, SavegameHeader &header) {
 	char saveIdent[6];
 	header.thumbnail = NULL;
 
@@ -102,7 +102,7 @@ bool SaveManager::readSavegameHeader(Common::InSaveFile *in, RingSavegameHeader 
 	return true;
 }
 
-void SaveManager::writeSavegameHeader(Common::OutSaveFile *out, RingSavegameHeader &header) {
+void SaveManager::writeSavegameHeader(Common::OutSaveFile *out, SavegameHeader &header) {
 	// Write out a savegame header
 	out->write(ringSavegameIdentification, 6);
 	out->writeByte(RING_SAVEGAME_VERSION);
@@ -286,6 +286,10 @@ void SaveManager::loadProgress() {
 
 void SaveManager::saveProgress(ProgressState progress) {
 	error("[SaveManager::saveProgress] Not implemented");
+}
+
+Common::Array<SaveManager::SaveEntry *> *SaveManager::loadUsers() {
+	error("[SaveManager::loadUsers] Not implemented");
 }
 
 void SaveManager::setThumbnail(Image *image) {
