@@ -868,7 +868,208 @@ void EventHandlerFaust::onTimerZone11(TimerId id) {
 }
 
 void EventHandlerFaust::onTimerZone12(TimerId id) {
-	error("[EventHandlerFaust::onTimerZone12] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0:
+		if (_app->varGetFloat(81001) == 0.0f) {
+			_app->timerStop(kTimer0);
+
+			if (!_app->hasTimer(kTimer1)) {
+				_app->objectSetAccessibilityOn(kObject81201);
+				_app->objectSetAccessibilityOn(kObject81202);
+				_app->rotationSetAlp(82021, 152.0f);
+				_app->rotationSetBet(82021, 0);
+				_app->rotationSetRan(82021, 87.0f);
+				_app->rotationSetActive(82021);
+				_app->soundStop(81204, 1024);
+				_app->objectPresentationShow(kObject81221, 1);
+			}
+		} else {
+			_app->varSetFloat(81001, _app->varGetFloat(81001) - 1.0f);
+			if (_app->varGetFloat(81001) < 0.0f)
+				_app->varSetFloat(81001, 0);
+
+			_app->objectPresentationHide(kObject81203);
+			_app->objectPresentationShow(kObject81203, (uint32)_app->varGetFloat(81001));
+
+			if (_app->varGetFloat(81001) != 25.0f
+				&& _app->varGetFloat(81001) != 50.0f)
+				break;
+
+			_app->soundPlay(81203);
+		}
+		break;
+
+	case kTimer1:
+		if (_app->varGetFloat(81002) == 10.0f) {
+			_app->timerStop(kTimer1);
+
+			if (!_app->hasTimer(kTimer0)) {
+				_app->objectSetAccessibilityOn(kObject81201);
+				_app->objectSetAccessibilityOn(kObject81202);
+				_app->rotationSetAlp(82021, 152.0f);
+				_app->rotationSetBet(82021, 0);
+				_app->rotationSetRan(82021, 87.0f);
+				_app->rotationSetActive(82021);
+				_app->soundStop(81204, 1024);
+				_app->objectPresentationShow(kObject81221, 1);
+			}
+		} else {
+			_app->varSetFloat(81002, _app->varGetFloat(81002) + 1.0f);
+			if (_app->varGetFloat(81002) > 59.0f)
+				_app->varSetFloat(81002, 0);
+
+			_app->objectPresentationHide(kObject81202);
+			_app->objectPresentationShow(kObject81202, (uint32)_app->varGetFloat(81002));
+
+
+			if (_app->varGetFloat(81002) != 25.0f
+				&& _app->varGetFloat(81002) != 50.0f)
+				break;
+
+			_app->soundPlay(81203);
+		}
+		break;
+
+	case kTimer2:
+		_app->objectPresentationHide(kObject81404, 1);
+		_app->timerStop(kTimer2);
+
+		if (_app->varGetByte(81007) == 1) {
+			_app->objectPresentationHide(kObject81404);
+			_app->objectPresentationShow(kObject81404, 0);
+			_app->timerStart(kTimer3, 100);
+			_app->varSetByte(81007, 0);
+		} else {
+			_app->objectPresentationHide(kObject81404);
+			_app->rotationSetAlp(84021, 53.0f);
+			_app->rotationSetBet(84021, 0);
+			_app->rotationSetRan(84021, 87.0f);
+			_app->rotationSetActive(84021);
+
+			if (_app->varGetByte(81006) == 1)
+				_app->soundPlay(81409);
+
+			_app->soundStop(81410, 1024);
+			_app->varSetByte(81006, 0);
+		}
+
+		if (_app->varGetByte(81012) == 1
+		 && _app->varGetByte(81022) == 1
+		 && _app->bagHas(kObjectDiaryOfASeducer)) {
+			_app->soundStopAll(1024);
+			_app->exitToMenu(kMenuAction0);
+		}
+		break;
+
+	case kTimer3:
+		_app->objectPresentationHide(kObject81404, 0);
+		_app->bagAdd(81207);
+		_app->timerStop(kTimer3);
+		_app->rotationSetAlp(84021, 53.0f);
+		_app->rotationSetBet(84021, 0);
+		_app->rotationSetRan(84021, 87.0f);
+		_app->rotationSetActive(84021);
+
+		if (_app->varGetByte(81006) == 1)
+			_app->soundPlay(81409);
+		_app->soundStop(81410, 1024);
+		_app->varSetByte(81006, 0);
+		break;
+
+	case kTimer4:
+		_app->objectPresentationHide(kObject81306, _app->varGetByte(81021));
+		_app->timerStop(kTimer4);
+		break;
+
+	case kTimer5:
+		if (floor(_app->varGetFloat(81005)) == 0.0f
+		 && floor(_app->varGetFloat(81004)) == 0.0f) {
+			 _app->soundStop(81301, 1024);
+			 _app->timerStop(kTimer5);
+			 _app->rotationSetAlp(83031, 180.0f);
+			 _app->rotationSetBet(83031, -26.0f);
+			 _app->rotationSetRan(83031, 87.0f);
+			 _app->rotationSetActive(83031);
+			 break;
+		}
+
+		if (floor(_app->varGetFloat(81005)) != 0.0f) {
+			_app->varSetFloat(81005, _app->varGetFloat(81005) - 1.0f);
+			_app->objectPresentationHide(kObject81308);
+			_app->objectPresentationShow(kObject81308, (uint32)_app->varGetFloat(81005));
+		}
+
+		if (floor(_app->varGetFloat(81004)) != 0.0f) {
+			_app->varSetFloat(81004, _app->varGetFloat(81004) - 1.0f);
+			_app->objectPresentationHide(kObject81309);
+			_app->objectPresentationShow(kObject81309, (uint32)_app->varGetFloat(81004));
+		}
+		break;
+
+	case kTimer6:
+		_app->timerStop(kTimer6);
+		_app->objectPresentationHide(kObject81303, 6);
+		_app->objectPresentationHide(kObject81303, 8);
+		_app->rotationSetAlp(83031, 334.0f);
+		_app->rotationSetBet(83031, 16.0f);
+		_app->rotationSetRan(83031, 87.0f);
+		_app->rotationSetActive(83031);
+		break;
+
+	case kTimer7: {
+		_app->timerStop(kTimer7);
+		_app->timerStart(kTimer7, rnd(15000) + 15000);
+
+		Id soundId = 81102 + rnd(2);
+		_app->soundSetVolume(soundId, rnd(10) + 90);
+		_app->soundSetPan(soundId, rnd(10) - 10);
+		_app->soundPlay(soundId);
+		}
+		break;
+
+	case kTimer8: {
+		_app->timerStop(kTimer8);
+		_app->timerStart(kTimer8, rnd(3000) + 6000);
+		Id soundId = 81104 + rnd(3);
+		_app->soundSetVolume(soundId, rnd(10) + 90);
+		_app->soundSetPan(soundId, rnd(10) - 10);
+		_app->soundPlay(soundId);
+		}
+		break;
+
+	case kTimer9: {
+		_app->timerStop(kTimer9);
+		_app->timerStart(kTimer9, rnd(5000) + 5000);
+
+		Id soundId = 81415 + rnd(4);
+		_app->soundSetVolume(soundId, rnd(10) + 90);
+		_app->soundSetPan(soundId, rnd(10) - 10);
+		_app->soundPlay(soundId);
+		}
+		break;
+
+	case kTimer10: {
+		_app->timerStop(kTimer10);
+		_app->timerStart(kTimer10, rnd(10000) + 5000);
+
+		_app->objectPresentationShow(kObject81901);
+		if (!_app->varGetByte(81023))
+			_app->objectPresentationShow(kObject81902);
+
+		Id soundId = 81217 + rnd(6);
+		_app->soundSetVolume(soundId, 80 + rnd(10));
+		_app->soundPlay(soundId);
+		}
+		break;
+
+	case kTimer11:
+		_app->objectPresentationHide(kObject81222);
+		_app->timerStop(kTimer11);
+		break;
+	}
 }
 
 void EventHandlerFaust::onTimerZone13(TimerId id) {
