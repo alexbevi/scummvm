@@ -1861,7 +1861,53 @@ void EventHandlerFaust::onSoundZone5(Id id, SoundType type, uint32 a3, bool proc
 }
 
 void EventHandlerFaust::onSoundZone8(Id id, SoundType type, uint32 a3, bool process) {
-	error("[EventHandlerFaust::onSoundZone8] Not implemented");
+	if (!process)
+		return;
+
+	switch (id) {
+	default:
+		break;
+
+	case 53125:
+		if (_app->bagHasClickedObject()
+		 && _app->bagGetClickedObject() == kObjectMatches2)
+			_app->cursorDelete();
+		break;
+
+	case 53198:
+		_app->soundPlay(53145);
+		break;
+
+	case 522011:
+	case 522012:
+	case 522013:
+	case 531411:
+	case 531412:
+	case 531413:
+	case 542021:
+		_app->soundPlay(id + 1);
+		break;
+
+	case 531021:
+		if (_app->varGetByte(52999) > 3) {
+			_app->soundStop(52000, 1024);
+			_app->soundStop(53103, 1024);
+			_app->timerStop(kTimer6);
+			_app->rotationSet3DSoundOff(53011, 53102);
+			_app->rotationSet3DSoundOff(53021, 53102);
+
+			_app->displayFade("a05_black.bmp", "A15_E07M09a.bmp", 15, 0, kLoadFromCd, kArchiveArt);
+			_app->playMovie("1509");
+			_app->displayFade("A15_E07M09b.bmp", "a05_black", 15, 0, kLoadFromCd, kArchiveArt);
+
+			_app->rotationSetAlp(55011, 0.0f);
+			_app->rotationSetBet(55011, 0.0f);
+			_app->rotationSetRan(55011, 87.0f);
+			_app->rotationSetActive(55011);
+			_app->soundPlay(51001, kSoundLoop);
+		}
+		break;
+	}
 }
 
 void EventHandlerFaust::onSoundZone12(Id id, SoundType type, uint32 a3, bool process) {
@@ -1896,7 +1942,66 @@ void EventHandlerFaust::onSoundZone14(Id id, SoundType type, uint32 a3, bool pro
 }
 
 void EventHandlerFaust::onSoundZone15(Id id, SoundType type, uint32 a3, bool process) {
-	error("[EventHandlerFaust::onSoundZone15] Not implemented");
+	if (!process)
+		return;
+
+	switch (id) {
+	default:
+		break;
+
+	case 120101:
+	case 120102:
+	case 120110:
+	case 120120:
+	case 120130:
+	case 120131:
+	case 120132:
+	case 120133:
+	case 120134:
+	case 120136:
+	case 120137:
+	case 120138:
+	case 120145:
+	case 120146:
+	case 120147:
+		_app->soundPlay(id + 1);
+		break;
+
+	case 120022:
+		if (_app->bagHasClickedObject()
+		 && _app->bagGetClickedObject() == kObjectMatches4)
+			_app->cursorDelete();
+		break;
+
+	case 120139:
+		_app->playMovie("2148");
+		_app->displayFade("A12S06N02R01_FADE_02.bmp", "A12S06N02R01_FADE_01.bmp", 12, 0, kLoadFromCd, kArchiveArt);
+		_app->rotationSetAlp(120602, 98.0f);
+		_app->rotationSetBet(120602, 16.0f);
+		_app->rotationSetRan(120602, 71.0f);
+		_app->rotationSetActive(120602);
+		_app->rotationSetRolTo(120602, 98.0f, 16.0f, 87.0f);
+		break;
+
+	case 120150:
+		_app->objectPresentationHide(kObject15);
+		_app->objectSetAccessibilityOff(kObject1);
+		_app->rotationSetAlp(_app->varGetDword(120007), _app->varGetWord(120006));
+		_app->rotationSetBet(_app->varGetDword(120007), _app->varGetWord(120007));
+		_app->rotationSetRan(_app->varGetDword(120007), _app->varGetWord(120008));
+		_app->rotationSetActive(_app->varGetDword(120007));
+
+		_app->varSetWord(120001, 130);
+		_app->varSetWord(120002, 130);
+		_app->varSetByte(98088, 1);
+		_app->objectPresentationShow(kObject6, 0);
+		_app->objectPresentationShow(kObject6, 1);
+		_app->objectPresentationShow(kObject6, 2);
+		_app->timerStart(kTimer1, 2090);
+		_app->timerStart(kTimer2, 3136);
+		_app->objectSetAccessibilityOn(kObject6);
+		break;
+	}
 }
 
 void EventHandlerFaust::onSoundZone17(Id id, SoundType type, uint32 a3, bool process) {
