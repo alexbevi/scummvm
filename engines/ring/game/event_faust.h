@@ -222,6 +222,7 @@ private:
 	// Helpers
 	//////////////////////////////////////////////////////////////////////////
 	void sub_468290(uint32 a1);
+	void setupRotation(uint32 type);
 };
 
 } // End of namespace Ring

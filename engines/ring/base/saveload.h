@@ -72,6 +72,26 @@ public:
 		LoadFrom    loadFrom;
 		bool        isRotationCompressed;
 		ArchiveType archiveType;
+
+		// Progress
+		ProgressState progressState;
+		uint32        progress;
+
+		SavegameData() {
+			state                = kStateNone;
+			field_6A             = 0;
+			zone                 = kZoneNone;
+			hasCurrentPuzzle     = false;
+			puzzleId             = kPuzzleInvalid;
+			hasCurrentRotation   = false;
+			rotationId           = 0;
+			rotationFre          = false;
+			loadFrom             = kLoadFromInvalid;
+			isRotationCompressed = false;
+			archiveType          = kArchiveInvalid;
+			progressState        = kProgressStateNone;
+			progress             = 0;
+		}
 	};
 
 	SaveManager(Application *application);
@@ -110,7 +130,6 @@ public:
 	SetupType getSetupType() const { return _setupType; }
 	Common::String *getName() { return &_header.name; }
 	uint32 getTicks() { return _currentTicks; }
-	uint32 getProgress() { return _progress; }
 
 	void setDescription(const Common::String &description);
 	void setSetupType(SetupType type) { _setupType = type; }
@@ -127,8 +146,6 @@ private:
 	RingSavegameHeader _header;
 	SavegameData _data;
 	uint32 _slot;
-
-	uint32 _progress;
 
 	SetupType _setupType;
 	LoadSaveType _type;

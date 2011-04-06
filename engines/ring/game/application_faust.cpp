@@ -69,7 +69,6 @@ static const struct {
 ApplicationFaust::ApplicationFaust(RingEngine *engine) : Application(engine) {
 	_eventHandler = new EventHandlerFaust(this);
 
-	_progressState = kProgressStateNone;
 	_slot = -1;
 	_zone = kZoneNone;
 }
@@ -406,8 +405,8 @@ void ApplicationFaust::showMenu(ZoneId zone, MenuAction menuAction) {
 }
 
 void ApplicationFaust::setProgressAndShowMenu(ProgressState progress) {
-	if (_progressState < progress) {
-		_progressState = progress;
+	if (getSaveManager()->getData()->progressState < progress) {
+		getSaveManager()->getData()->progressState = progress;
 		getSaveManager()->saveProgress(progress);
 	}
 
@@ -606,9 +605,9 @@ void ApplicationFaust::initMenuSave(bool savegame)  {
 	} else {
 		varSetByte(99005, 0);
 
-		if (slot == _progressState) {
+		if (slot == getSaveManager()->getData()->progressState) {
 			varSetByte(99001, 0);
-		} else if (slot < _progressState) {
+		} else if (slot < getSaveManager()->getData()->progressState) {
 			varSetByte(99000, 1);
 			varSetByte(99001, 0);
 		} else {
@@ -628,16 +627,16 @@ void ApplicationFaust::initMenuSave(bool savegame)  {
 		varSetByte(99002, 1);
 	}
 
-	for (uint32 i = 1; i < (uint32)_progressState; i++) {
+	for (uint32 i = 1; i < (uint32)getSaveManager()->getData()->progressState; i++) {
 		if (i < 9)
 			objectPresentationShow(99600, i - 1);
 	}
 
-	if (varGetByte(98012) == _progressState)
+	if (varGetByte(98012) == getSaveManager()->getData()->progressState)
 		if (varGetByte(98012) > 0)
-			objectPresentationShow(99600, _progressState - 1);
+			objectPresentationShow(99600, getSaveManager()->getData()->progressState - 1);
 
-	if (_progressState > 1 && _progressState >= slot) {
+	if (getSaveManager()->getData()->progressState > 1 && getSaveManager()->getData()->progressState >= slot) {
 		objectPresentationShow(99600, 7);
 		objectSetAccessibilityOn(14, 2, 2);
 
@@ -649,7 +648,7 @@ void ApplicationFaust::initMenuSave(bool savegame)  {
 		case 3:
 		case 5:
 		case 7:
-			if (_progressState > slot)
+			if (getSaveManager()->getData()->progressState > slot)
 				objectSetAccessibilityOn(99100);
 			break;
 		}
@@ -1805,7 +1804,7 @@ void ApplicationFaust::initZoneSY() {
 	soundAdd(90707, kSoundTypeDialog, "2250.wav", _configuration.dialog.loadFrom, 2, _configuration.dialog.soundChunck);
 	soundAdd(90800, kSoundTypeDialog, "1125.wav", _configuration.dialog.loadFrom, 2, _configuration.dialog.soundChunck);
 	varDefineByte(97001, 0);
-	varDefineByte(98001, _progressState);
+	varDefineByte(98001, getSaveManager()->getData()->progressState);
 	varDefineByte(98002, 0);
 	varDefineByte(97002, 0);
 	varDefineByte(97006, 1);

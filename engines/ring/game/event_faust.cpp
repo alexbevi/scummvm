@@ -711,7 +711,106 @@ void EventHandlerFaust::onTimerZone4(TimerId id) {
 }
 
 void EventHandlerFaust::onTimerZone5(TimerId id) {
-	error("[EventHandlerFaust::onTimerZone5] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0:
+		_app->timerStop(kTimer0);
+		_app->soundStop(17047, 1024);
+		_app->soundPlay(17044);
+		_app->objectPresentationHide(kObject17401);
+
+		if (_app->varGetByte(17027) == 1) {
+			_app->objectPresentationHide(kObject17505);
+			_app->objectPresentationShow(kObject17505);
+		}
+		break;
+
+	case kTimer2:
+		_app->timerStop(kTimer2);
+		_app->puzzleSetActive(kPuzzle17022);
+		break;
+
+	case kTimer3:
+		if (_app->varGetByte(17030) == 5) {
+			_app->varSetByte(17030, 0);
+			_app->timerStop(kTimer3);
+
+			if (_app->varGetByte(17041) == 4) {
+				_app->varSetByte(17102, 1);
+
+				if ((_app->varGetByte(17101) + _app->varGetByte(17102)) >= 2) {
+					_app->playMovie("1356");
+					_app->fadeOut(15, Color(0, 0, 0), 0);
+
+					if (_app->getSaveManager()->getData()->progressState == 5 )
+						_app->getSaveManager()->getData()->progress++;
+
+					setupRotation(2);
+				}
+			}
+
+			_app->objectSetAccessibilityOn(kObjectHandle, 2, 2);
+
+		} else {
+			_app->varSetByte(17030, _app->varGetByte(17030) + 1);
+
+			uint32 index = _app->varGetByte(_app->varGetByte(17030) + 17030) + 1;
+			_app->objectPresentationSetAnimationOnPuzzle(kObjectHandle, index, 0, 17006);
+			_app->objectPresentationShow(kObjectHandle, index);
+			_app->soundPlay(17056);
+		}
+		break;
+
+	case kTimer4: {
+		_app->timerStop(kTimer4);
+		_app->objectSetAccessibilityOff(17301, 1, 5);
+
+		uint32 index = _app->varGetByte(_app->varGetByte(17030) + 17030);
+		_app->objectPresentationUnpauseAnimation(17303, index + 1);
+		_app->objectPresentationShow(kObjectHandle, index + 6);
+		_app->objectPresentationHide(kObjectHandle, index + 1);
+		_app->soundPlay(17055);
+		}
+		break;
+
+	case kTimer5:
+		if (rnd(2) == 0)
+			_app->soundPlay(17041 + rnd(3));
+		break;
+
+	case kTimer6:
+		_app->timerStop(kTimer6);
+		_app->soundStop(17047, 1024);
+		_app->soundPlay(17044);
+		_app->objectPresentationHide(kObject17401);
+
+		if (_app->varGetByte(17027) == 1) {
+			_app->objectPresentationHide(kObject17505);
+			_app->objectPresentationShow(kObject17505);
+		}
+
+		_app->varSetByte(17042, 1);
+		break;
+
+	case kTimer7:
+		_app->timerStop(kTimer7);
+		_app->timerStart(kTimer7, rnd(5000) + 8000);
+		_app->soundPlay(17020);
+		break;
+
+	case kTimer8:
+		_app->timerStop(kTimer8);
+		_app->soundStop(17047, 1024);
+		_app->objectPresentationHide(kObject17401);
+
+		if (_app->varGetByte(17027) == 1) {
+			_app->objectPresentationHide(kObject17505);
+			_app->objectPresentationShow(kObject17505);
+		}
+		break;
+	}
 }
 
 void EventHandlerFaust::onTimerZone6(TimerId id) {
@@ -1787,7 +1886,7 @@ void EventHandlerFaust::onAnimationNextFrame(Id animationId, const Common::Strin
 }
 
 void EventHandlerFaust::onAnimationNextFrameZoneSY(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
-	if (animationId == 2 && frame == _app->getSaveManager()->getProgress())
+	if (animationId == 2 && frame == _app->getSaveManager()->getData()->progress)
 		_app->objectPresentationPauseAnimation(kObject99090, 0);
 }
 
@@ -1902,6 +2001,41 @@ void EventHandlerFaust::onVisualListZoneSY(Id id, uint32 type, const Common::Poi
 
 void EventHandlerFaust::sub_468290(uint32 a1) {
 	error("[EventHandlerFaust::sub_468290] Not implemented");
+}
+
+void EventHandlerFaust::setupRotation(uint32 type) {
+	switch (type) {
+	default:
+		break;
+
+	case 2:
+		_app->soundStop(17019, 1024);
+		_app->setSpace(kZone10);
+		_app->rotationSetAlp(71009, 64.0f);
+		_app->rotationSetBet(71009, 0);
+		_app->rotationSetRan(71009, 87.0f);
+		_app->rotationSetActive(71009);
+		break;
+
+	case 3:
+		_app->setSpace(kZone9);
+		_app->soundPlay(61306, kSoundLoop);
+		_app->rotationSetAlp(61200, 0.0f);
+		_app->rotationSetBet(61200, 0);
+		_app->rotationSetRan(61200, 87.0f);
+		_app->rotationSetActive(61200);
+		break;
+
+	case 4:
+		_app->setSpace(kZone10);
+		_app->soundStop(61306, 1024);
+		_app->rotationSetAlp(71010, 270.0f);
+		_app->rotationSetBet(71010, 0);
+		_app->rotationSetRan(71010, 87.0f);
+		_app->rotationSetActive(71010);
+		_app->objectPresentationHide(kObject5);
+		break;
+	}
 }
 
 #pragma endregion
