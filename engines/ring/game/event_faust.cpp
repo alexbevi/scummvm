@@ -1470,7 +1470,49 @@ void EventHandlerFaust::onBagClickedObjectZone8(ObjectId id) {
 }
 
 void EventHandlerFaust::onBagClickedObjectZone14(ObjectId id) {
-	error("[EventHandlerFaust::onBagClickedObjectZone14] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kObjectPipe:
+		if (!_app->varGetByte(114522)) {
+			_app->cursorDelete();
+			_app->puzzleSetMod(kPuzzleMenu, 2, 21);
+			_app->objectSetAccessibilityOff(20, 13, 13);
+			_app->objectSetAccessibilityOff(kObject114503);
+			_app->objectPresentationHide(kObject11);
+			_app->objectPresentationShow(kObject11, 16);
+			_app->objectSetAccessibilityOn(kObjectPipe, 0, 0);
+			_app->objectSetAccessibilityOn(kObjectPipe, 2, 2);
+			_app->varSetByte(114522, 1);
+		}
+		break;
+
+	case kObjectCodingWheel:
+		if (!_app->varGetByte(114520)) {
+			_app->cursorDelete();
+			_app->puzzleSetMod(kPuzzleMenu, 2, 23);
+			_app->objectPresentationShow(kObjectCodingWheel, 35 - _app->varGetByte(114521));
+			_app->objectSetAccessibilityOn(kObject23);
+			_app->varSetByte(114520, 1);
+		}
+		break;
+
+	case kObjectPaperKnife:
+		if (_app->varGetByte(114100) > 0) {
+			if (_app->soundIsPlaying(112016)) {
+				sub_45FF30();
+			} else {
+				_app->objectPresentationShow(kObject12, 1);
+				_app->cursorDelete();
+				_app->objectSetAccessibilityOff(kObject22);
+				_app->objectSetAccessibilityOn(kObject22, 1, 2);
+				_app->soundPlay(112016, kSoundLoop);
+				_app->soundSetVolume(112016, 1);
+			}
+		}
+		break;
+	}
 }
 
 void EventHandlerFaust::onBagClickedObjectZone15(ObjectId id) {
@@ -2209,6 +2251,15 @@ void EventHandlerFaust::onVisualListZoneSY(Id id, uint32 type, const Common::Poi
 #pragma endregion
 
 #pragma region Helpers
+
+void EventHandlerFaust::sub_45FF30() {
+	if (_app->soundIsPlaying(112016)) {
+		_app->objectPresentationHide(kObject12, 1);
+		_app->objectSetAccessibilityOff(kObject22);
+		_app->soundStop(112016, 1024);
+		_app->varSetByte(114100, 0);
+	}
+}
 
 void EventHandlerFaust::sub_468290(uint32 a1) {
 	error("[EventHandlerFaust::sub_468290] Not implemented");
