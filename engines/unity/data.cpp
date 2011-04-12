@@ -380,11 +380,11 @@ uint32 getPEFArgument(Common::SeekableReadStream *stream, unsigned int &pos) {
 // so, the data segment in a PEF is compressed! whoo!
 Common::SeekableReadStream *decompressPEFDataSegment(Common::SeekableReadStream *stream, unsigned int segment_id) {
 	uint32 tag1 = stream->readUint32BE();
-	if (tag1 != MKID_BE('Joy!')) error("bad PEF tag1");
+	if (tag1 != MKTAG('J','o','y','!')) error("bad PEF tag1");
 	uint32 tag2 = stream->readUint32BE();
-	if (tag2 != MKID_BE('peff')) error("bad PEF tag2");
+	if (tag2 != MKTAG('p','e','f','f')) error("bad PEF tag2");
 	uint32 architecture = stream->readUint32BE();
-	if (architecture != MKID_BE('pwpc')) error("PEF header is not powerpc");
+	if (architecture != MKTAG('p','w','p','c')) error("PEF header is not powerpc");
 	uint32 formatVersion = stream->readUint32BE();
 	if (formatVersion != 1) error("PEF header is not version 1");
 	stream->skip(16); // dateTimeStamp, oldDefVersion, oldImpVersion, currentVersion

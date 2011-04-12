@@ -42,7 +42,7 @@ bool FVFDecoder::loadStream(Common::SeekableReadStream *stream) {
 	// *** signature
 	uint32 signature;
 	signature = _fileStream->readUint32BE();
-	if (signature != MKID_BE('FVF '))
+	if (signature != MKTAG('F','V','F',' '))
 		error("missing FVF header");
 
 	_fileStream->skip(12);
