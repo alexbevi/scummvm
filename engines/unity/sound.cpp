@@ -18,9 +18,59 @@
 #include "common/system.h"
 #include "common/memstream.h"
 #include "audio/audiostream.h"
-#include "audio/decoders/adpcm.h"
+#include "audio/decoders/adpcm_intern.h"
 
 namespace Unity {
+
+class Unity_ADPCMStream : public ::Audio::Ima_ADPCMStream {
+protected:
+	uint32 _loopPoint;
+	uint32 _currPos;
+	::Audio::ADPCMStream::ADPCMStatus _loopStatus;
+
+public:
+	Unity_ADPCMStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse, uint32 size, int rate, int channels, uint32 loopPoint = 0)
+		: Ima_ADPCMStream(stream, disposeAfterUse, size, rate, channels, 0), _loopPoint(loopPoint), _currPos(0) {
+		memset(&_loopStatus, 0, sizeof(_loopStatus));
+	}
+
+	virtual int readBuffer(int16 *buffer, const int numSamples);
+	virtual bool rewind();
+};
+
+int Unity_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
+	int samples;
+	byte data;
+
+	assert(numSamples % 4 == 0);
+	bool stereo = _channels == 2;
+
+	for (samples = 0; samples < numSamples && !_stream->eos() && _stream->pos() < _endpos; samples += 4) {
+		data = _stream->readByte();
+		if (_currPos == _loopPoint)
+			memcpy(&_loopStatus.ima_ch[0], &_status.ima_ch[0], sizeof(_status.ima_ch[0]));
+		buffer[samples] = decodeIMA(data & 0x0f);
+		buffer[samples + (stereo ? 2 : 1)] = decodeIMA((data >> 4) & 0x0f);
+
+		data = _stream->readByte();
+		if (_currPos + (stereo ? 0 : 2) == _loopPoint)
+			memcpy(&_loopStatus.ima_ch[stereo ? 1 : 0], &_status.ima_ch[stereo ? 1 : 0], sizeof(_status.ima_ch[0]));
+		buffer[samples + (stereo ? 1 : 2)] = decodeIMA(data & 0x0f, stereo ? 1 : 0);
+		buffer[samples + 3] = decodeIMA((data >> 4) & 0x0f, stereo ? 1 : 0);
+
+		_currPos += 2;
+	}
+	return samples;
+}
+
+bool Unity_ADPCMStream::rewind() {
+	if (_stream->pos() < _startpos + (int)_loopPoint)
+		return true;
+	memcpy(&_status, &_loopStatus, sizeof(_status));
+	_stream->seek(_startpos + _loopPoint);
+	_currPos = _loopPoint;
+	return true;
+}
 
 Sound::Sound(UnityEngine *_engine) : _vm(_engine) {
 	_speechSoundHandle = NULL;
@@ -44,9 +94,8 @@ void Sound::playSpeech(Common::String name) {
 	debug(1, "playing speech: %s", name.c_str());
 	stopSpeech();
 	Common::SeekableReadStream *audioFileStream = _vm->data.openFile(name);
-	Audio::AudioStream *sampleStream = Audio::makeADPCMStream(
-		audioFileStream, DisposeAfterUse::YES, 0, Audio::kADPCMUnity,
-		22050, 1);
+	Audio::AudioStream *sampleStream = new Unity_ADPCMStream(
+		audioFileStream, DisposeAfterUse::YES, audioFileStream->size(), 22050, 1);
 	if (!sampleStream) error("couldn't make sample stream");
 	_vm->_mixer->playStream(Audio::Mixer::kSpeechSoundType, _speechSoundHandle, sampleStream);
 }
@@ -54,9 +103,8 @@ void Sound::playSpeech(Common::String name) {
 void Sound::playMusic(Common::String name, byte volume, int loopPos) {
 	debug(1, "playing music: %s, loop %d, vol %d", name.c_str(), loopPos, volume);
 	Common::SeekableReadStream *audioFileStream = _vm->data.openFile(name);
-	Audio::RewindableAudioStream *sampleStream = Audio::makeADPCMStream(
-		audioFileStream, DisposeAfterUse::YES, 0, Audio::kADPCMUnity,
-		22050, 2, loopPos);
+	Audio::RewindableAudioStream *sampleStream = new Unity_ADPCMStream(
+		audioFileStream, DisposeAfterUse::YES, audioFileStream->size(), 22050, 2, loopPos);
 	if (!sampleStream) error("couldn't make sample stream");
 	Audio::AudioStream *audioStream = sampleStream;
 	if (loopPos != -1)
@@ -82,9 +130,8 @@ void Sound::stopSpeech() {
 
 void Sound::playAudioBuffer(unsigned int length, byte *data) {
 	Common::MemoryReadStream *audioFileStream = new Common::MemoryReadStream(data, length);
-	Audio::AudioStream *sampleStream = Audio::makeADPCMStream(
-		audioFileStream, DisposeAfterUse::YES, 0, Audio::kADPCMUnity,
-		22050, 1);
+	Audio::AudioStream *sampleStream = new Unity_ADPCMStream(
+		audioFileStream, DisposeAfterUse::YES, audioFileStream->size(), 22050, 1);
 	if (!sampleStream) error("couldn't make sample stream");
 	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, _sfxSoundHandle, sampleStream);
 }
