@@ -29,6 +29,7 @@
 #include "mohawk/mohawk.h"
 #include "mohawk/console.h"
 #include "mohawk/graphics.h"
+#include "mohawk/sound.h"
 
 #include "common/config-file.h"
 #include "common/substream.h"
@@ -216,6 +217,9 @@ enum {
 	kLBOpScriptEnable = 0x1b,
 	kLBOpUnknown1C = 0x1c,
 	kLBOpSendExpression = 0x1d,
+	kLBOpJumpUnlessExpression = 0xfffb,
+	kLBOpBreakExpression = 0xfffc,
+	kLBOpJumpToExpression = 0xfffd,
 	kLBOpRunSubentries = 0xfffe,
 	kLBOpRunCommand = 0xffff
 };
@@ -233,6 +237,7 @@ enum {
 };
 
 class MohawkEngine_LivingBooks;
+class LBPage;
 class LBGraphics;
 class LBAnimation;
 
@@ -263,6 +268,8 @@ struct LBScriptEntry {
 
 	// kLBOpSendExpression
 	uint32 offset;
+	// kLBOpJumpUnlessExpression
+	uint16 target;
 
 	Common::String command;
 	Common::Array<Common::String> conditions;
@@ -313,7 +320,7 @@ public:
 	void stop();
 
 	void playSound(uint16 resourceId);
-	bool soundPlaying(uint16 resourceId);
+	bool soundPlaying(uint16 resourceId, const Common::String &cue);
 
 	bool transparentAt(int x, int y);
 
@@ -335,7 +342,10 @@ protected:
 	Common::Array<LBAnimationNode *> _nodes;
 
 	uint16 _tempo;
+
 	uint16 _currentSound;
+	CueList _cueList;
+
 	uint32 _lastTime, _currentFrame;
 	bool _running;
 
@@ -348,7 +358,7 @@ class LBItem {
 	friend class LBCode;
 
 public:
-	LBItem(MohawkEngine_LivingBooks *vm, Common::Rect rect);
+	LBItem(MohawkEngine_LivingBooks *vm, LBPage *page, Common::Rect rect);
 	virtual ~LBItem();
 
 	void readFrom(Common::SeekableSubReadStreamEndian *stream);
@@ -376,11 +386,14 @@ public:
 	virtual void notify(uint16 data, uint16 from); // 0x1A
 
 	uint16 getId() { return _itemId; }
+	const Common::String &getName() { return _desc; }
+	const Common::Rect &getRect() { return _rect; }
 	uint16 getSoundPriority() { return _soundMode; }
 	bool isAmbient() { return _isAmbient; }
 
 protected:
 	MohawkEngine_LivingBooks *_vm;
+	LBPage *_page;
 
 	void setNextTime(uint16 min, uint16 max);
 	void setNextTime(uint16 min, uint16 max, uint32 start);
@@ -405,7 +418,7 @@ protected:
 
 	Common::Array<LBScriptEntry *> _scriptEntries;
 	void runScript(uint event, uint16 data = 0, uint16 from = 0);
-	void runScriptEntry(LBScriptEntry *entry);
+	int runScriptEntry(LBScriptEntry *entry);
 
 	LBValue parseValue(const Common::String &command, uint &pos);
 	void runCommand(const Common::String &command);
@@ -416,7 +429,7 @@ protected:
 
 class LBSoundItem : public LBItem {
 public:
-	LBSoundItem(MohawkEngine_LivingBooks *_vm, Common::Rect rect);
+	LBSoundItem(MohawkEngine_LivingBooks *_vm, LBPage *page, Common::Rect rect);
 	~LBSoundItem();
 
 	void update();
@@ -434,7 +447,7 @@ struct GroupEntry {
 
 class LBGroupItem : public LBItem {
 public:
-	LBGroupItem(MohawkEngine_LivingBooks *_vm, Common::Rect rect);
+	LBGroupItem(MohawkEngine_LivingBooks *_vm, LBPage *page, Common::Rect rect);
 
 	void readData(uint16 type, uint16 size, Common::SeekableSubReadStreamEndian *stream);
 
@@ -458,7 +471,7 @@ protected:
 
 class LBPaletteItem : public LBItem {
 public:
-	LBPaletteItem(MohawkEngine_LivingBooks *_vm, Common::Rect rect);
+	LBPaletteItem(MohawkEngine_LivingBooks *_vm, LBPage *page, Common::Rect rect);
 	~LBPaletteItem();
 
 	void readData(uint16 type, uint16 size, Common::SeekableSubReadStreamEndian *stream);
@@ -485,7 +498,7 @@ struct LiveTextPhrase {
 
 class LBLiveTextItem : public LBItem {
 public:
-	LBLiveTextItem(MohawkEngine_LivingBooks *_vm, Common::Rect rect);
+	LBLiveTextItem(MohawkEngine_LivingBooks *_vm, LBPage *page, Common::Rect rect);
 
 	void readData(uint16 type, uint16 size, Common::SeekableSubReadStreamEndian *stream);
 
@@ -514,7 +527,7 @@ protected:
 
 class LBPictureItem : public LBItem {
 public:
-	LBPictureItem(MohawkEngine_LivingBooks *_vm, Common::Rect rect);
+	LBPictureItem(MohawkEngine_LivingBooks *_vm, LBPage *page, Common::Rect rect);
 
 	void readData(uint16 type, uint16 size, Common::SeekableSubReadStreamEndian *stream);
 
@@ -525,7 +538,7 @@ public:
 
 class LBAnimationItem : public LBItem {
 public:
-	LBAnimationItem(MohawkEngine_LivingBooks *_vm, Common::Rect rect);
+	LBAnimationItem(MohawkEngine_LivingBooks *_vm, LBPage *page, Common::Rect rect);
 	~LBAnimationItem();
 
 	void setEnabled(bool enabled);
@@ -546,7 +559,7 @@ protected:
 
 class LBMovieItem : public LBItem {
 public:
-	LBMovieItem(MohawkEngine_LivingBooks *_vm, Common::Rect rect);
+	LBMovieItem(MohawkEngine_LivingBooks *_vm, LBPage *page, Common::Rect rect);
 	~LBMovieItem();
 
 	void update();
@@ -555,14 +568,14 @@ public:
 
 class LBMiniGameItem : public LBItem {
 public:
-	LBMiniGameItem(MohawkEngine_LivingBooks *_vm, Common::Rect rect);
+	LBMiniGameItem(MohawkEngine_LivingBooks *_vm, LBPage *page, Common::Rect rect);
 	~LBMiniGameItem();
 
 	bool togglePlaying(bool playing, bool restart);
 };
 
 struct NotifyEvent {
-	NotifyEvent(uint t, uint p) : type(t), param(p) { }
+	NotifyEvent(uint t, uint p) : type(t), param(p), newUnknown(0), newMode(0), newPage(0), newSubpage(0) { }
 	uint type;
 	uint param;
 
@@ -585,6 +598,30 @@ struct DelayedEvent {
 	DelayedEventType type;
 };
 
+class LBPage {
+public:
+	LBPage(MohawkEngine_LivingBooks *vm);
+	~LBPage();
+
+	void open(MohawkArchive *mhk, uint16 baseId);
+	uint16 getResourceVersion();
+
+	void itemDestroyed(LBItem *item);
+
+	LBCode *_code;
+
+protected:
+	MohawkEngine_LivingBooks *_vm;
+
+	MohawkArchive *_mhk;
+	Common::Array<LBItem *> _items;
+
+	uint16 _baseId;
+	bool _cascade;
+
+	void loadBITL(uint16 resourceId);
+};
+
 class MohawkEngine_LivingBooks : public MohawkEngine {
 protected:
 	Common::Error run();
@@ -605,7 +642,13 @@ public:
 	Common::Rect readRect(Common::SeekableSubReadStreamEndian *stream);
 	GUI::Debugger *getDebugger() { return _console; }
 
+	void addArchive(MohawkArchive *archive);
+	void removeArchive(MohawkArchive *Archive);
+	void addItem(LBItem *item);
+	void removeItems(const Common::Array<LBItem *> &items);
+
 	LBItem *getItemById(uint16 id);
+	LBItem *getItemByName(Common::String name);
 
 	void setFocus(LBItem *focus);
 	void setEnableForAll(bool enable, LBItem *except = 0);
@@ -624,10 +667,12 @@ public:
 	void prevPage();
 	void nextPage();
 
-	LBCode *_code;
-
 	// TODO: make private
 	Common::HashMap<Common::String, LBValue> _variables;
+
+	// helper functions, also used by LBProxyItem
+	Common::String getFileNameFromConfig(const Common::String &section, const Common::String &key, Common::String &leftover);
+	MohawkArchive *createMohawkArchive() const;
 
 private:
 	LivingBooksConsole *_console;
@@ -642,6 +687,7 @@ private:
 	LBMode _curMode;
 	uint16 _curPage, _curSubPage;
 	uint16 _phase;
+	LBPage *_page;
 	Common::Array<LBItem *> _items;
 	Common::Queue<DelayedEvent> _eventQueue;
 	LBItem *_focus;
@@ -654,8 +700,6 @@ private:
 	uint16 _soundLockOwner;
 	uint16 _maxSoundPriority;
 
-	uint16 getResourceVersion();
-	void loadBITL(uint16 resourceId);
 	void loadSHP(uint16 resourceId);
 
 	bool tryDefaultPage();
@@ -689,10 +733,6 @@ private:
 	Common::String getStringFromConfig(const Common::String &section, const Common::String &key);
 	Common::String getStringFromConfig(const Common::String &section, const Common::String &key, Common::String &leftover);
 	int getIntFromConfig(const Common::String &section, const Common::String &key);
-	Common::String getFileNameFromConfig(const Common::String &section, const Common::String &key, Common::String &leftover);
-
-	// Platform/Version functions
-	MohawkArchive *createMohawkArchive() const;
 };
 
 } // End of namespace Mohawk

@@ -101,6 +101,7 @@ OSystem_Android::OSystem_Android(int audio_sample_rate, int audio_buffer_size) :
 	_screen_changeid(0),
 	_egl_surface_width(0),
 	_egl_surface_height(0),
+	_htc_fail(false),
 	_force_redraw(false),
 	_game_texture(0),
 	_overlay_texture(0),
@@ -131,12 +132,24 @@ OSystem_Android::OSystem_Android(int audio_sample_rate, int audio_buffer_size) :
 	_touchpad_mode(true),
 	_touchpad_scale(66),
 	_dpad_scale(4),
+	_fingersDown(0),
 	_trackball_scale(2) {
-	LOGI("Running on: [%s] [%s] SDK:%s ABI:%s",
+	Common::String mf = getSystemProperty("ro.product.manufacturer");
+
+	LOGI("Running on: [%s] [%s] [%s] [%s] [%s] SDK:%s ABI:%s",
+			mf.c_str(),
+			getSystemProperty("ro.product.model").c_str(),
+			getSystemProperty("ro.product.brand").c_str(),
 			getSystemProperty("ro.build.fingerprint").c_str(),
 			getSystemProperty("ro.build.display.id").c_str(),
 			getSystemProperty("ro.build.version.sdk").c_str(),
 			getSystemProperty("ro.product.cpu.abi").c_str());
+
+	mf.toLowercase();
+	_htc_fail = mf.contains("htc");
+
+	if (_htc_fail)
+		LOGI("Enabling HTC workaround");
 }
 
 OSystem_Android::~OSystem_Android() {
@@ -350,7 +363,7 @@ void OSystem_Android::initBackend() {
 
 	_game_texture = new GLESFakePalette565Texture();
 	_overlay_texture = new GLES4444Texture();
-	_mouse_texture_palette = new GLESPalette5551Texture();
+	_mouse_texture_palette = new GLESFakePalette5551Texture();
 	_mouse_texture = _mouse_texture_palette;
 
 	initOverlay();

@@ -48,6 +48,7 @@
 // toggles start
 //#define ANDROID_DEBUG_ENTER
 //#define ANDROID_DEBUG_GL
+//#define ANDROID_DEBUG_GL_CALLS
 // toggles end
 
 extern const char *android_log_tag;
@@ -67,9 +68,23 @@ extern const char *android_log_tag;
 #ifdef ANDROID_DEBUG_GL
 extern void checkGlError(const char *expr, const char *file, int line);
 
+#ifdef ANDROID_DEBUG_GL_CALLS
+#define GLCALLLOG(x, before) \
+	do { \
+		if (before) \
+			LOGD("calling '%s' (%s:%d)", x, __FILE__, __LINE__); \
+		else \
+			LOGD("returned from '%s' (%s:%d)", x, __FILE__, __LINE__); \
+	} while (false)
+#else
+#define GLCALLLOG(x, before) do {  } while (false)
+#endif
+
 #define GLCALL(x) \
 	do { \
+		GLCALLLOG(#x, true); \
 		(x); \
+		GLCALLLOG(#x, false); \
 		checkGlError(#x, __FILE__, __LINE__); \
 	} while (false)
 
@@ -99,6 +114,7 @@ private:
 	int _screen_changeid;
 	int _egl_surface_width;
 	int _egl_surface_height;
+	bool _htc_fail;
 
 	bool _force_redraw;
 
@@ -113,7 +129,7 @@ private:
 
 	// Mouse layer
 	GLESBaseTexture *_mouse_texture;
-	GLESPaletteTexture *_mouse_texture_palette;
+	GLESBaseTexture *_mouse_texture_palette;
 	GLES5551Texture *_mouse_texture_rgb;
 	Common::Point _mouse_hotspot;
 	uint32 _mouse_keycolor;
@@ -218,6 +234,7 @@ private:
 	int _touchpad_scale;
 	int _trackball_scale;
 	int _dpad_scale;
+	int _fingersDown;
 
 	void clipMouse(Common::Point &p);
 	void scaleMouse(Common::Point &p, int x, int y, bool deductDrawRect = true);

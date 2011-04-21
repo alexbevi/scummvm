@@ -59,6 +59,9 @@ bool OSystem_Android::setGraphicsMode(int mode) {
 	if (_overlay_texture)
 		_overlay_texture->setLinearFilter(mode == 1);
 
+	if (_mouse_texture)
+		_mouse_texture->setLinearFilter(mode == 1);
+
 	_graphicsMode = mode;
 
 	return true;
@@ -235,8 +238,10 @@ void OSystem_Android::initViewport() {
 }
 
 void OSystem_Android::initOverlay() {
-	int overlay_width = _egl_surface_width;
-	int overlay_height = _egl_surface_height;
+	// minimum of 320x200
+	// (surface can get smaller when opening the virtual keyboard on *QVGA*)
+	int overlay_width = MAX(_egl_surface_width, 320);
+	int overlay_height = MAX(_egl_surface_height, 200);
 
 	// the 'normal' theme layout uses a max height of 400 pixels. if the
 	// surface is too big we use only a quarter of the size so that the widgets
@@ -244,7 +249,7 @@ void OSystem_Android::initOverlay() {
 	// enforces the 'lowres' layout, which will be scaled back up by factor 2x,
 	// but this looks way better than the 'normal' layout scaled by some
 	// calculated factors
-	if (overlay_height > 480) {
+	while (overlay_height > 480) {
 		overlay_width /= 2;
 		overlay_height /= 2;
 	}
@@ -428,7 +433,9 @@ void OSystem_Android::updateScreen() {
 	_force_redraw = false;
 
 	// clear pointer leftovers in dead areas
-	if (_show_overlay && !_fullscreen)
+	// also, HTC's GLES drivers are made of fail and don't preserve the buffer
+	// ( http://www.khronos.org/registry/egl/specs/EGLTechNote0001.html )
+	if ((_show_overlay || _htc_fail) && !_fullscreen)
 		clearScreen(kClear);
 
 	GLCALL(glPushMatrix());
@@ -613,10 +620,6 @@ void OSystem_Android::clearOverlay() {
 	GLTHREADCHECK;
 
 	_overlay_texture->fillBuffer(0);
-
-	// breaks more than it fixes, disabled for now
-	// Shouldn't need this, but works around a 'blank screen' bug on Nexus1
-	//updateScreen();
 }
 
 void OSystem_Android::grabOverlay(OverlayColor *buf, int pitch) {
@@ -646,9 +649,6 @@ void OSystem_Android::copyRectToOverlay(const OverlayColor *buf, int pitch,
 
 	// This 'pitch' is pixels not bytes
 	_overlay_texture->updateBuffer(x, y, w, h, buf, pitch * sizeof(buf[0]));
-
-	// Shouldn't need this, but works around a 'blank screen' bug on Nexus1?
-	//updateScreen();
 }
 
 int16 OSystem_Android::getOverlayHeight() {
@@ -687,6 +687,7 @@ void OSystem_Android::setMouseCursor(const byte *buf, uint w, uint h,
 
 			assert(!_mouse_texture_rgb);
 			_mouse_texture_rgb = new GLES5551Texture();
+			_mouse_texture_rgb->setLinearFilter(_graphicsMode == 1);
 		}
 
 		_mouse_texture = _mouse_texture_rgb;

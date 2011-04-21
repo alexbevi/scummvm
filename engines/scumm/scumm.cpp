@@ -201,8 +201,6 @@ ScummEngine::ScummEngine(OSystem *syst, const DetectorResult &dr)
 	_bootParam = 0;
 	_dumpScripts = false;
 	_debugMode = 0;
-	_heV7DiskOffsets = NULL;
-	_heV7RoomIntOffsets = NULL;
 	_objectOwnerTable = NULL;
 	_objectRoomTable = NULL;
 	_objectStateTable = NULL;
@@ -319,11 +317,6 @@ ScummEngine::ScummEngine(OSystem *syst, const DetectorResult &dr)
 	_2byteFontPtr = 0;
 	_V1TalkingActor = 0;
 	_NESStartStrip = 0;
-
-	_actorClipOverride.top = 0;
-	_actorClipOverride.bottom = 480;
-	_actorClipOverride.left = 0;
-	_actorClipOverride.right = 640;
 
 	_skipDrawObject = 0;
 
@@ -767,6 +760,12 @@ ScummEngine_v60he::ScummEngine_v60he(OSystem *syst, const DetectorResult &dr)
 	: ScummEngine_v6(syst, dr) {
 	memset(_hInFileTable, 0, sizeof(_hInFileTable));
 	memset(_hOutFileTable, 0, sizeof(_hOutFileTable));
+
+	_actorClipOverride.top = 0;
+	_actorClipOverride.bottom = 480;
+	_actorClipOverride.left = 0;
+	_actorClipOverride.right = 640;
+
 	memset(_heTimers, 0, sizeof(_heTimers));
 
 	if (_game.heversion >= 61)
@@ -787,7 +786,9 @@ ScummEngine_v70he::ScummEngine_v70he(OSystem *syst, const DetectorResult &dr)
 	else
 		_resExtractor = new Win32ResExtractor(this);
 
+	_heV7DiskOffsets = NULL;
 	_heV7RoomOffsets = NULL;
+	_heV7RoomIntOffsets = NULL;
 
 	_heSndSoundId = 0;
 	_heSndOffset = 0;
@@ -804,8 +805,8 @@ ScummEngine_v70he::ScummEngine_v70he(OSystem *syst, const DetectorResult &dr)
 ScummEngine_v70he::~ScummEngine_v70he() {
 	delete _resExtractor;
 	free(_heV7DiskOffsets);
-	free(_heV7RoomIntOffsets);
 	free(_heV7RoomOffsets);
+	free(_heV7RoomIntOffsets);
 	free(_storedFlObjects);
 }
 
@@ -1161,7 +1162,7 @@ Common::Error ScummEngine::init() {
 				warning("Starting game without the required 16bit color support.\nYou may experience color glitches");
 				initGraphics(screenWidth, screenHeight, (screenWidth > 320));
 			} else {
-				error("16bit color support is required for this game");
+				return Common::Error(Common::kUnsupportedColorMode, "16bit color support is required for this game");
 			}
 #endif
 		} else {
@@ -1576,7 +1577,7 @@ void ScummEngine_v3::resetScumm() {
 		// Load tile set and palette for the distaff
 		byte *roomptr = getResourceAddress(rtRoom, 90);
 		assert(roomptr);
-		const byte *palPtr = findResourceData(MKID_BE('CLUT'), roomptr);
+		const byte *palPtr = findResourceData(MKTAG('C','L','U','T'), roomptr);
 		assert(palPtr - 4);
 		setPCEPaletteFromPtr(palPtr);
 		_gdi->_distaff = true;

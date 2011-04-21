@@ -67,12 +67,12 @@ namespace Graphics {
 
 enum PNGChunks {
 	// == Critical chunks =====================================================
-	kChunkIHDR = MKID_BE('IHDR'),	// Image header
-	kChunkIDAT = MKID_BE('IDAT'),	// Image data
-	kChunkPLTE = MKID_BE('PLTE'),	// Palette
-	kChunkIEND = MKID_BE('IEND'),	// Image trailer
+	kChunkIHDR = MKTAG('I','H','D','R'),	// Image header
+	kChunkIDAT = MKTAG('I','D','A','T'),	// Image data
+	kChunkPLTE = MKTAG('P','L','T','E'),	// Palette
+	kChunkIEND = MKTAG('I','E','N','D'),	// Image trailer
 	// == Ancillary chunks ====================================================
-	kChunktRNS = MKID_BE('tRNS')	// Transparency
+	kChunktRNS = MKTAG('t','R','N','S')	// Transparency
 	// All of the other ancillary chunks are ignored. They're added here for
 	// reference only.
 	// cHRM - Primary chromacities and white point
@@ -98,8 +98,6 @@ enum PNGFilters {
 	kFilterAverage = 3,
 	kFilterPaeth   = 4
 };
-
-#define PNG_HEADER(a, b, c, d) CONSTANT_LE_32(d | (c << 8) | (b << 16) | (a << 24))
 
 PNG::PNG() : _compressedBuffer(0), _compressedBufferSize(0), 
 			_unfilteredSurface(0), _transparentColorSpecified(false) {
@@ -175,8 +173,16 @@ Graphics::Surface *PNG::getSurface(const PixelFormat &format) {
 
 		// Convert the indexed surface to the target pixel format
 		for (uint16 i = 0; i < output->h; i++) {
+			bool otherPixel = false;
+
 			for (uint16 j = 0; j < output->w; j++) {
-				index = *src;
+				if (_header.bitDepth != 4)
+					index = *src;
+				else if (!otherPixel)
+					index = (*src) >> 4;
+				else
+					index = (*src) & 0xf;
+
 				r = _palette[index * 4 + 0];
 				g = _palette[index * 4 + 1];
 				b = _palette[index * 4 + 2];
@@ -187,8 +193,13 @@ Graphics::Surface *PNG::getSurface(const PixelFormat &format) {
 				else
 					*((uint32 *)output->getBasePtr(j, i)) = format.ARGBToColor(a, r, g, b);
 
-				src++;
+				if (_header.bitDepth != 4 || otherPixel)
+					src++;
+				otherPixel = !otherPixel;
 			}
+			// The surface is a whole scanline wide, skip the rest of it.
+			if (_header.bitDepth == 4)
+				src += output->w / 2;
 		}
 	}
 
@@ -200,11 +211,11 @@ bool PNG::read(Common::SeekableReadStream *str) {
 	_stream = str;
 
 	// First, check the PNG signature
-	if (_stream->readUint32BE() != PNG_HEADER(0x89, 0x50, 0x4e, 0x47)) {
+	if (_stream->readUint32BE() != MKTAG(0x89, 0x50, 0x4e, 0x47)) {
 		delete _stream;
 		return false;
 	}
-	if (_stream->readUint32BE() != PNG_HEADER(0x0d, 0x0a, 0x1a, 0x0a)) {
+	if (_stream->readUint32BE() != MKTAG(0x0d, 0x0a, 0x1a, 0x0a)) {
 		delete _stream;
 		return false;
 	}

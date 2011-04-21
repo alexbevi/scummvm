@@ -92,7 +92,7 @@ typedef signed int Err;
 #define	CRYPT_KEY_SIERRA	"Avis Durgan"
 #define CRYPT_KEY_AGDS		"Alex Simkin"
 
-#define	MSG_BOX_COLOUR	0x0f	// White
+#define	MSG_BOX_COLOR	0x0f	// White
 #define MSG_BOX_TEXT	0x00	// Black
 #define MSG_BOX_LINE	0x04	// Red
 #define BUTTON_BORDER	0x00	// Black
@@ -727,7 +727,7 @@ protected:
 	virtual Common::Error run() {
 		Common::Error err;
 		err = init();
-		if (err != Common::kNoError)
+		if (err.getCode() != Common::kNoError)
 			return err;
 		return go();
 	}
@@ -935,7 +935,7 @@ public:
 private:
 	// Some submethods of testIfCode
 	uint8 testObjRight(uint8, uint8, uint8, uint8, uint8);
-	uint8 testObjCentre(uint8, uint8, uint8, uint8, uint8);
+	uint8 testObjCenter(uint8, uint8, uint8, uint8, uint8);
 	uint8 testObjInBox(uint8, uint8, uint8, uint8, uint8);
 	uint8 testPosn(uint8, uint8, uint8, uint8, uint8);
 	uint8 testSaid(uint8, uint8 *);

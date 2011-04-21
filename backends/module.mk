@@ -14,6 +14,7 @@ MODULE_OBJS := \
 	events/samsungtvsdl/samsungtvsdl-events.o \
 	events/sdl/sdl-events.o \
 	events/symbiansdl/symbiansdl-events.o \
+	events/webossdl/webossdl-events.o \
 	events/wincesdl/wincesdl-events.o \
 	fs/abstract-fs.o \
 	fs/stdiostream.o \
@@ -73,11 +74,6 @@ MODULE_OBJS := \
 	vkeybd/virtual-keyboard.o \
 	vkeybd/virtual-keyboard-gui.o \
 	vkeybd/virtual-keyboard-parser.o
-
-ifeq ($(BACKEND),dc)
-MODULE_OBJS += \
-	plugins/dc/dc-provider.o
-endif
 
 ifeq ($(BACKEND),ds)
 MODULE_OBJS += \

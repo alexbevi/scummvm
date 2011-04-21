@@ -64,6 +64,7 @@ Character::Character(ToonEngine *vm) : _vm(vm) {
 	_lastWalkTime = 0;
 	_numPixelToWalk = 0;
 	_nextIdleTime = _vm->getSystem()->getMillis() + (_vm->randRange(0, 600) + 300) * _vm->getTickLength();
+	_lineToSayId = 0;
 }
 
 Character::~Character(void) {
@@ -165,8 +166,9 @@ bool Character::walkTo(int32 newPosX, int32 newPosY) {
 
 	_vm->getPathFinding()->resetBlockingRects();
 
-	if (_id == 1) {
-		int32 sizeX = MAX<int32>(5, 40 * _vm->getDrew()->getScale() / 1024);
+	// don't allow flux to go at the same position as drew
+	if (_id == 1 ) {
+		int32 sizeX = MAX<int32>(5, 30 * _vm->getDrew()->getScale() / 1024);
 		int32 sizeY = MAX<int32>(2, 20 * _vm->getDrew()->getScale() / 1024);
 		_vm->getPathFinding()->addBlockingEllipse(_vm->getDrew()->getFinalX(), _vm->getDrew()->getFinalY(), sizeX, sizeY);
 	}

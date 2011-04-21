@@ -23,7 +23,7 @@
 #ifndef GPH_H
 #define GPH_H
 
-#if defined(GP2XWIZ) || defined(CAANOO)
+#if defined(GPH_DEVICE)
 
 #include "backends/base-backend.h"
 #include "backends/platform/sdl/sdl.h"
@@ -32,7 +32,6 @@
 #include "backends/events/gph/gph-events.h"
 
 #define __GP2XWIZ__
-#define MIXER_DOUBLE_BUFFERING 1
 
 #ifndef PATH_MAX
 	#define PATH_MAX 255

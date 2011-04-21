@@ -28,9 +28,9 @@
 #include "common/config-manager.h"
 #include "common/file.h"
 #include "common/memstream.h"
+#include "common/system.h"
 
 #include "audio/fmopl.h"
-#include "audio/softsynth/emumidi.h"
 
 #include "sci/resource.h"
 #include "sci/engine/features.h"
@@ -393,7 +393,7 @@ int MidiPlayer_Midi::getVolume() {
 
 void MidiPlayer_Midi::setReverb(int8 reverb) {
 	assert(reverb < kReverbConfigNr);
-	
+
 	if (_hasReverb && (_reverb != reverb))
 		sendMt32SysEx(0x100001, _reverbConfig[reverb], 3, true);
 
@@ -611,7 +611,7 @@ void MidiPlayer_Midi::readMt32DrvData() {
 		int size = f.size();
 
 		// Skip before-SysEx text
-		if (size == 1773 || size == 1759)	// XMAS88 / KQ4 early
+		if (size == 1773 || size == 1759 || size == 1747)	// XMAS88 / KQ4 early (0.000.253 / 0.000.274)
 			f.seek(0x59);
 		else if (size == 2771)				// LSL2 early
 			f.seek(0x29);

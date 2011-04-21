@@ -43,7 +43,8 @@ enum {
 	JE_SCROLL = 4,
 	JE_TAP = 5,
 	JE_DOUBLE_TAP = 6,
-	JE_BALL = 7,
+	JE_MULTI = 7,
+	JE_BALL = 8,
 	JE_QUIT = 0x1000
 };
 
@@ -51,7 +52,9 @@ enum {
 enum {
 	JACTION_DOWN = 0,
 	JACTION_UP = 1,
-	JACTION_MULTIPLE = 2
+	JACTION_MULTIPLE = 2,
+	JACTION_POINTER_DOWN = 5,
+	JACTION_POINTER_UP = 6
 };
 
 // system keys
@@ -251,8 +254,8 @@ void OSystem_Android::clipMouse(Common::Point &p) {
 	else
 		tex = _game_texture;
 
-	p.x = CLIP(p.x, int16(0), int16(tex->width()));
-	p.y = CLIP(p.y, int16(0), int16(tex->height()));
+	p.x = CLIP(p.x, int16(0), int16(tex->width() - 1));
+	p.y = CLIP(p.y, int16(0), int16(tex->height() - 1));
 }
 
 void OSystem_Android::scaleMouse(Common::Point &p, int x, int y,
@@ -549,6 +552,11 @@ void OSystem_Android::pushEvent(int type, int arg1, int arg2, int arg3,
 		return;
 
 	case JE_TAP:
+		if (_fingersDown > 0) {
+			_fingersDown = 0;
+			return;
+		}
+
 		e.type = Common::EVENT_MOUSEMOVE;
 
 		if (_touchpad_mode) {
@@ -643,6 +651,54 @@ void OSystem_Android::pushEvent(int type, int arg1, int arg2, int arg3,
 
 		return;
 
+	case JE_MULTI:
+		switch (arg2) {
+		case JACTION_POINTER_DOWN:
+			if (arg1 > _fingersDown)
+				_fingersDown = arg1;
+
+			return;
+
+		case JACTION_POINTER_UP:
+			if (arg1 != _fingersDown)
+				return;
+
+			{
+				Common::EventType up;
+
+				switch (_fingersDown) {
+				case 1:
+					e.type = Common::EVENT_RBUTTONDOWN;
+					up = Common::EVENT_RBUTTONUP;
+					break;
+				case 2:
+					e.type = Common::EVENT_MBUTTONDOWN;
+					up = Common::EVENT_MBUTTONUP;
+					break;
+				default:
+					LOGD("unmapped multi tap: %d", _fingersDown);
+					return;
+				}
+
+				e.mouse = getEventManager()->getMousePos();
+
+				lockMutex(_event_queue_lock);
+
+				_event_queue.push(e);
+				e.type = up;
+				_event_queue.push(e);
+
+				unlockMutex(_event_queue_lock);
+				return;
+
+			default:
+				LOGE("unhandled jaction on multi tap: %d", arg2);
+				return;
+			}
+		}
+
+		return;
+
 	case JE_BALL:
 		e.mouse = getEventManager()->getMousePos();
 
@@ -696,35 +752,19 @@ bool OSystem_Android::pollEvent(Common::Event &event) {
 	if (pthread_self() == _main_thread) {
 		if (_screen_changeid != JNI::surface_changeid) {
 			if (JNI::egl_surface_width > 0 && JNI::egl_surface_height > 0) {
-				if (_egl_surface_width > 0 && _egl_surface_height > 0) {
-					// surface still alive but changed
-					_screen_changeid = JNI::surface_changeid;
-					_egl_surface_width = JNI::egl_surface_width;
-					_egl_surface_height = JNI::egl_surface_height;
+				// surface changed
+				JNI::deinitSurface();
+				initSurface();
+				initViewport();
+				updateScreenRect();
+				updateEventScale();
 
-					initViewport();
-					updateScreenRect();
-					updateEventScale();
+				// double buffered, flip twice
+				clearScreen(kClearUpdate, 2);
 
-					// double buffered, flip twice
-					clearScreen(kClearUpdate, 2);
+				event.type = Common::EVENT_SCREEN_CHANGED;
 
-					event.type = Common::EVENT_SCREEN_CHANGED;
-
-					return true;
-				} else {
-					// new surface
-					initSurface();
-					updateScreenRect();
-					updateEventScale();
-
-					// double buffered, flip twice
-					clearScreen(kClearUpdate, 2);
-
-					event.type = Common::EVENT_SCREEN_CHANGED;
-
-					return true;
-				}
+				return true;
 			} else {
 				// surface lost
 				deinitSurface();

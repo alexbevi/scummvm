@@ -218,14 +218,17 @@ void KeyboardProcess(CORO_PARAM, const void *) {
 			continue;
 #endif
 
+		case Common::KEYCODE_1:
 		case Common::KEYCODE_F1:
 			// Options dialog
 			ProcessKeyEvent(PLR_MENU);
 			continue;
+		case Common::KEYCODE_5:
 		case Common::KEYCODE_F5:
 			// Save game
 			ProcessKeyEvent(PLR_SAVE);
 			continue;
+		case Common::KEYCODE_7:
 		case Common::KEYCODE_F7:
 			// Load game
 			ProcessKeyEvent(PLR_LOAD);
@@ -969,7 +972,7 @@ Common::Error TinselEngine::run() {
 	// errors when loading the save state.
 
 	if (ConfMan.hasKey("save_slot")) {
-		if (loadGameState(ConfMan.getInt("save_slot")) == Common::kNoError)
+		if (loadGameState(ConfMan.getInt("save_slot")).getCode() == Common::kNoError)
 			loadingFromGMM = true;
 	}
 
