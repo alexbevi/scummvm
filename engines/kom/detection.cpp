@@ -28,7 +28,6 @@
 #include "common/config-manager.h"
 #include "common/fs.h"
 #include "common/system.h"
-#include "common/md5.h"
 
 #include "kom/kom.h"
 

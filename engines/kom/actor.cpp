@@ -25,10 +25,8 @@
 
 #include <stdio.h>
 #include "common/file.h"
-#include "common/fs.h"
 #include "common/array.h"
 #include "common/memstream.h"
-#include "common/util.h"
 
 #include "kom/kom.h"
 #include "kom/actor.h"

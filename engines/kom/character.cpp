@@ -24,7 +24,6 @@
  */
 
 #include "common/str.h"
-#include "common/fs.h"
 #include "common/file.h"
 
 #include "kom/kom.h"

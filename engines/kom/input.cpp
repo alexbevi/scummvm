@@ -27,14 +27,9 @@
 
 #include "common/system.h"
 #include "common/events.h"
-#include "common/str.h"
 
 #include "kom/kom.h"
-#include "kom/actor.h"
-#include "kom/input.h"
 #include "kom/screen.h"
-
-using Common::String;
 
 namespace Kom {
 

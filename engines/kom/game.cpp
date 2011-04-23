@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "common/fs.h"
 #include "common/str.h"
 
 #include "kom/kom.h"

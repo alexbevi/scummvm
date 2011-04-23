@@ -26,7 +26,6 @@
 #include "common/file.h"
 #include "common/endian.h"
 
-#include "kom/kom.h"
 #include "kom/font.h"
 
 namespace Kom {
