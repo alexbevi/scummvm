@@ -28,6 +28,7 @@
 #include "common/config-manager.h"
 #include "common/fs.h"
 #include "common/system.h"
+#include "common/textconsole.h"
 
 #include "kom/kom.h"
 

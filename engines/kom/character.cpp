@@ -25,6 +25,7 @@
 
 #include "common/str.h"
 #include "common/file.h"
+#include "common/textconsole.h"
 
 #include "kom/kom.h"
 #include "kom/character.h"

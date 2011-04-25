@@ -27,6 +27,7 @@
 
 #include "common/system.h"
 #include "common/events.h"
+#include "common/textconsole.h"
 
 #include "kom/kom.h"
 #include "kom/screen.h"

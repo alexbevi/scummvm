@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "common/str.h"
+#include "common/textconsole.h"
 
 #include "kom/kom.h"
 #include "kom/game.h"

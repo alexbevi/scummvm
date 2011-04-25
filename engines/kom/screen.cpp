@@ -31,9 +31,11 @@
 #include "common/rect.h"
 #include "common/str.h"
 #include "common/util.h"
+#include "common/textconsole.h"
 #include "engines/util.h"
 #include "graphics/cursorman.h"
 #include "graphics/surface.h"
+#include "graphics/palette.h"
 
 #include "kom/screen.h"
 #include "kom/kom.h"

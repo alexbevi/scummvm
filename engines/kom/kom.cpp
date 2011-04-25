@@ -31,6 +31,7 @@
 #include "common/error.h"
 #include "common/fs.h"
 #include "common/config-manager.h"
+#include "common/textconsole.h"
 
 #include "kom/kom.h"
 #include "kom/actor.h"

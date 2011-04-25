@@ -27,6 +27,7 @@
 #include "common/file.h"
 #include "common/array.h"
 #include "common/memstream.h"
+#include "common/textconsole.h"
 
 #include "kom/kom.h"
 #include "kom/actor.h"

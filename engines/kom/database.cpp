@@ -29,6 +29,7 @@
 #include "common/file.h"
 #include "common/util.h"
 #include "common/endian.h"
+#include "common/textconsole.h"
 
 #include "kom/kom.h"
 #include "kom/database.h"

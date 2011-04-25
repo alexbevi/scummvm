@@ -30,6 +30,9 @@
 #include "common/util.h"
 #include "common/file.h"
 #include "common/str.h"
+#include "common/textconsole.h"
+
+#include "graphics/palette.h"
 
 #include "kom/kom.h"
 #include "kom/conv.h"

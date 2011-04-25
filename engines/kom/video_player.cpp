@@ -23,7 +23,10 @@
  *
  */
 
+#include "common/textconsole.h"
+
 #include "graphics/surface.h"
+#include "graphics/palette.h"
 #include "video/flic_decoder.h"
 #include "video/smk_decoder.h"
 
