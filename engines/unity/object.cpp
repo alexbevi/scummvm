@@ -22,6 +22,7 @@
 #include "graphics.h"
 
 #include "common/stream.h"
+#include "common/textconsole.h"
 
 namespace Unity {
 

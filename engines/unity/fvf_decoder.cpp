@@ -16,6 +16,9 @@
 
 #include "fvf_decoder.h"
 #include "common/stream.h"
+#include "common/system.h"
+#include "common/debug.h"
+#include "common/textconsole.h"
 
 #include "audio/decoders/raw.h"
 

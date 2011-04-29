@@ -17,6 +17,7 @@
 #include "trigger.h"
 #include "unity.h"
 #include "common/system.h"
+#include "common/textconsole.h"
 
 namespace Unity {
 

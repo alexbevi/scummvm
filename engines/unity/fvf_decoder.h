@@ -17,6 +17,8 @@
 #ifndef FVF_DECODER_H
 #define FVF_DECODER_H
 
+#include "common/rational.h"
+
 #include "video/video_decoder.h"
 #include "video/codecs/codec.h"
 #include "audio/audiostream.h"

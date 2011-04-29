@@ -20,6 +20,7 @@
 #include "common/stream.h"
 #include "common/archive.h"
 #include "common/rect.h"
+#include "common/hashmap.h"
 
 #include "object.h"
 #include "origdata.h"

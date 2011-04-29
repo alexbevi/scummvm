@@ -23,6 +23,8 @@
 
 #include "common/fs.h"
 #include "common/config-manager.h"
+#include "common/error.h"
+#include "common/textconsole.h"
 #include "engines/util.h"
 #include "common/events.h"
 #include "common/system.h"

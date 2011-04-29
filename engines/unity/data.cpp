@@ -23,6 +23,7 @@
 #include "common/macresman.h"
 #include "common/fs.h"
 #include "common/config-manager.h"
+#include "common/textconsole.h"
 #include "trigger.h"
 
 namespace Unity {
