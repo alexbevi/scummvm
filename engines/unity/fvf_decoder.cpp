@@ -19,6 +19,7 @@
 #include "common/system.h"
 #include "common/debug.h"
 #include "common/textconsole.h"
+#include "common/util.h"
 
 #include "audio/decoders/raw.h"
 
