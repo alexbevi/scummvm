@@ -29,10 +29,11 @@
 #include "common/list.h"
 #include "engines/engine.h"
 
-#include "kom/database.h"
 #include "kom/actor.h"
 
 namespace Kom {
+
+class Database;
 
 struct Character {
 public:

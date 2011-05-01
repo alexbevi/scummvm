@@ -28,6 +28,7 @@
 #include "kom/kom.h"
 #include "kom/debugger.h"
 #include "kom/database.h"
+#include "kom/game.h"
 
 namespace Kom {
 

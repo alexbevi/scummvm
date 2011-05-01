@@ -20,12 +20,15 @@
  *
  */
 
-#include <memory.h>
+#include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "common/array.h"
+#include "common/debug.h"
 #include "common/system.h"
 #include "common/file.h"
-#include "common/fs.h"
 #include "common/endian.h"
 #include "common/list.h"
 #include "common/rect.h"
@@ -42,6 +45,11 @@
 #include "kom/panel.h"
 #include "kom/actor.h"
 #include "kom/game.h"
+#include "kom/character.h"
+#include "kom/database.h"
+#include "kom/font.h"
+#include "kom/input.h"
+#include "kom/sound.h"
 #include "kom/video_player.h"
 
 using Common::File;

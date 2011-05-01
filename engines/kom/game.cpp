@@ -31,7 +31,9 @@
 
 #include "kom/kom.h"
 #include "kom/game.h"
+#include "kom/input.h"
 #include "kom/panel.h"
+#include "kom/screen.h"
 #include "kom/database.h"
 #include "kom/video_player.h"
 #include "kom/conv.h"

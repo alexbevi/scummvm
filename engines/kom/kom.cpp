@@ -23,22 +23,30 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 
 #include "engines/engine.h"
+#include "common/archive.h"
 #include "common/util.h"
 #include "common/file.h"
 #include "common/error.h"
 #include "common/fs.h"
 #include "common/config-manager.h"
+#include "common/str.h"
 #include "common/textconsole.h"
 
 #include "kom/kom.h"
 #include "kom/actor.h"
+#include "kom/character.h"
 #include "kom/database.h"
 #include "kom/input.h"
+#include "kom/panel.h"
+#include "kom/screen.h"
 #include "kom/sound.h"
 #include "kom/game.h"
+
+class OSystem;
 
 using Common::File;
 using Common::String;

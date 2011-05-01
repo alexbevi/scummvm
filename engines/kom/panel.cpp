@@ -27,6 +27,7 @@
 
 #include "kom/kom.h"
 #include "kom/panel.h"
+#include "kom/game.h"
 #include "kom/screen.h"
 
 using Common::File;

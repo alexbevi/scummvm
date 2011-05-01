@@ -26,20 +26,27 @@
 #ifndef KOM_SCREEN_H
 #define KOM_SCREEN_H
 
-#include "common/system.h"
-#include "common/fs.h"
-#include "common/list.h"
-#include "common/rect.h"
+#include "common/scummsys.h"
 #include "common/str.h"
 
-#include "kom/kom.h"
-#include "kom/font.h"
-#include "kom/game.h"
 #include "kom/video_player.h"
 
 class OSystem;
 
+namespace Common {
+struct Rect;
+template<typename t_T> class List;
+}
+
+namespace Graphics {
+struct Surface;
+}
+
 namespace Kom {
+
+class Font;
+class KomEngine;
+struct Inventory;
 
 enum {
 	SCREEN_W = 320,

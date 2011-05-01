@@ -26,13 +26,14 @@
 #ifndef KOM_DATABASE_H
 #define KOM_DATABASE_H
 
+#include "common/scummsys.h"
 #include "common/str.h"
 #include "common/list.h"
 #include "common/file.h"
-#include "engines/engine.h"
 
 #include "kom/character.h"
-#include "kom/actor.h"
+
+class OSystem;
 
 namespace Kom {
 

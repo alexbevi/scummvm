@@ -27,15 +27,14 @@
 #define KOM_SOUND_H
 
 #include "common/scummsys.h"
-#include "common/file.h"
-#include "common/mutex.h"
-#include "common/ptr.h"
 #include "common/str.h"
 
 #include "audio/mixer.h"
 #include "audio/audiostream.h"
 
 namespace Kom {
+
+class KomEngine;
 
 #define SOUND_HANDLES 16
 

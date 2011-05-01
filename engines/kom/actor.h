@@ -26,12 +26,7 @@
 #ifndef KOM_ACTOR_H
 #define KOM_ACTOR_H
 
-#include "common/scummsys.h"
-#include "common/fs.h"
-#include "common/str.h"
 #include "common/array.h"
-
-#include "kom/kom.h"
 
 namespace Kom {
 

@@ -24,10 +24,8 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "common/endian.h"
-#include "common/util.h"
 #include "common/file.h"
 #include "common/str.h"
 #include "common/textconsole.h"
@@ -35,7 +33,13 @@
 #include "graphics/palette.h"
 
 #include "kom/kom.h"
+#include "kom/character.h"
 #include "kom/conv.h"
+#include "kom/database.h"
+#include "kom/game.h"
+#include "kom/input.h"
+#include "kom/panel.h"
+#include "kom/screen.h"
 
 namespace Kom {
 

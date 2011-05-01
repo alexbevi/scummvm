@@ -31,6 +31,8 @@
 
 #include "kom/kom.h"
 #include "kom/screen.h"
+#include "kom/game.h"
+#include "kom/input.h"
 
 namespace Kom {
 

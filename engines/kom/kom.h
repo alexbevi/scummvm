@@ -27,18 +27,18 @@
 #define KOM_H
 
 #include "engines/engine.h"
-#include "common/fs.h"
 #include "common/error.h"
+#include "common/scummsys.h"
 
-#include "kom/screen.h"
-#include "kom/database.h"
-#include "kom/actor.h"
-#include "kom/panel.h"
-#include "kom/input.h"
 #include "kom/sound.h"
 #include "kom/debugger.h"
-#include "kom/game.h"
-#include "kom/font.h"
+
+class OSystem;
+
+namespace GUI {
+class Debugger;
+}
+
 
 /**
  * This is the namespace of the Kom engine.
@@ -50,12 +50,13 @@
  */
 namespace Kom {
 
-class Screen;
-class Database;
 class ActorManager;
-class Debugger;
-class Game;
+class Database;
 class Font;
+class Game;
+class Input;
+class Panel;
+class Screen;
 
 enum {
 	GAMELOOP_RUNNING = 0,
