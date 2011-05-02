@@ -119,8 +119,8 @@ bool Inventory::parse(DATFile &dat) {
 			it->cursor = _cursors->getCursor(it->cursorName);
 
 			if (!it->cursor) {
+				// This happens in the demo
 				warning("Inventory::parse(): Cursor \"%s\" does not exist", it->cursorName.c_str());
-				return false;
 			}
 		}
 	}
