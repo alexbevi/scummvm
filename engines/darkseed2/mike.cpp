@@ -93,7 +93,12 @@ bool Mike::loadAnimations(bool needPalette) {
 
 	if (needPalette) {
 		// Loading the fixed palette for Mike
-		if (!palette.loadFromPALRGBA(*_resources, "fix"))
+		bool foundPal = palette.loadFromPALRGBA(*_resources, "fix");
+
+		if (!foundPal)
+			foundPal = palette.loadFromPALRGBA(*_resources, "walkcyc");
+
+		if (!foundPal)
 			return false;
 
 		ImgConv.registerStandardPalette(palette);
