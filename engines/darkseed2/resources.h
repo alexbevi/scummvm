@@ -253,6 +253,9 @@ public:
 	/** Index all resources, based on a resource index file. */
 	bool index(const char *fileName);
 
+	/** Index all available demo resources.  */
+	bool indexDemo();
+
 	/** Index all availabe PGF resources. */
 	bool indexPGF();
 

@@ -260,9 +260,16 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 
 		_resources->setGameVersion(kGameVersionSaturn, getLanguage());
 	} else if (isWindowsPC()) {
-		if (!_resources->index(kResourceIndex)) {
-			warning("DarkSeed2Engine::init(): Couldn't index resources");
-			return false;
+		if (isDemo()) {
+			if (!_resources->indexDemo()) {
+				warning("DarkSeed2Engine::init(): Couldn't index resources");
+				return false;
+			}
+		} else {
+			if (!_resources->index(kResourceIndex)) {
+				warning("DarkSeed2Engine::init(): Couldn't index resources");
+				return false;
+			}
 		}
 
 		_resources->setGameVersion(kGameVersionWindows, getLanguage());

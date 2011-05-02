@@ -81,16 +81,13 @@ void GlueArchive::index(ResourceMap &map) {
 		Common::String resFile = (const char *)buffer;
 
 		// Was the resource also listed in the index file?
-		if (!map.contains(resFile)) {
-			warning("GlueArchive::index(): "
-					"Unindexed resource \"%s\" found", resFile.c_str());
+		if (map.contains(resFile) && map[resFile] != this) { 
+			warning("GlueArchive::index(): \"%s\" in wrong archive", resFile.c_str());
 			_file->skip(8);
 			continue;
 		}
 
-		// Just to make sure that the resource is the really in the glue file it should be
-		assert(map[resFile] == this);
-
+		map[resFile] = this;
 		_resources[i].fileName = resFile;
 		_resources[i].size = _file->readUint32LE();
 		_resources[i].offset = _file->readUint32LE();
@@ -735,6 +732,31 @@ bool Resources::index(const char *fileName) {
 		return false;
 	if (!readIndexResources(indexFile, resCount))
 		return false;
+
+	return true;
+}
+
+bool Resources::indexDemo() {
+	// Find all archives
+	Common::ArchiveMemberList files;
+	SearchMan.listMatchingMembers(files, "GL00_???.000");
+
+	uint32 archiveCount = files.size();
+
+	if (archiveCount == 0)
+		return false;
+
+	_archives.resize(archiveCount);
+
+	Common::ArchiveMemberList::const_iterator it = files.begin();
+	for (uint i = 0; it != files.end(); ++it, ++i) {
+		_archives[i] = new GlueArchive();
+
+		if (!_archives[i]->open((*it)->getName()))
+			return false;
+
+		_archives[i]->index(_resources);
+	}
 
 	return true;
 }
