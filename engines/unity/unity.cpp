@@ -79,7 +79,7 @@ Common::Error UnityEngine::init() {
 		filename.toLowercase();
 		if (filename.hasSuffix(".spr") || filename.hasSuffix(".spt")) {
 			Common::SeekableReadStream *ourstr = (*file)->createReadStream();
-			printf("trying '%s'\n", filename.c_str());
+			debugN("trying '%s'\n", filename.c_str());
 			Sprite spr(ourstr);
 		}
 	}*/
@@ -166,7 +166,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 		char _name[30], _desc[260];
 		locstream->read(_name, 30);
 		locstream->read(_desc, 260);
-		//printf("reading obj '%s' (%s)\n", _name, _desc);
+		//debugN("reading obj '%s' (%s)\n", _name, _desc);
 
 		Object *obj = data.getObject(id);
 		obj->loadSprite();
@@ -311,7 +311,7 @@ void UnityEngine::startBridge() {
 		obj->objwalktype = OBJWALKTYPE_NORMAL;
 		obj->sprite = new SpritePlayer(new Sprite(data.openFile(data.bridge_objects[i].filename)), obj, this);
 		obj->sprite->startAnim(0);
-		/*printf("%s: %d, %d\n", data.bridge_objects[i].filename.c_str(),
+		/*debugN("%s: %d, %d\n", data.bridge_objects[i].filename.c_str(),
 			data.bridge_objects[i].unknown1,
 			data.bridge_objects[i].unknown2);*/
 		data.current_screen.objects.push_back(obj);
@@ -638,7 +638,7 @@ void UnityEngine::DebugNextScreen() {
 		break;
 	default:error("huh?");
 	}
-	printf("moving to %d/%d\n", curr_loc, curr_screen);
+	debugN("moving to %d/%d\n", curr_loc, curr_screen);
 	startAwayTeam(curr_loc, curr_screen);
 }
 
@@ -655,7 +655,7 @@ void UnityEngine::checkEvents() {
 				switch (event.kbd.keycode) {
 				case Common::KEYCODE_n:
 					if (!_on_bridge) {
-						printf("trying anim %d\n", anim);
+						debugN("trying anim %d\n", anim);
 						anim++;
 						anim %= objects[0]->sprite->numAnims();
 						for (unsigned int i = 0; i < 4; i++)

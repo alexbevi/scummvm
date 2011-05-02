@@ -1101,18 +1101,18 @@ ResultType ConditionBlock::check(UnityEngine *_vm, Action *context) {
 
 	if (target.world == 0xff && target.screen == 0xff && target.id == 0xfe) {
 		// fail if other was passed in
-		printf("(checking if other was set) ");
+		debugN("(checking if other was set) ");
 		if (context->other.id != 0xff) {
-			printf("-- it was!\n");
+			debugN("-- it was!\n");
 			return RESULT_FAILOTHER;
 		}
 	} else if (target.world != 0xff && target.screen != 0xff && target.id != 0xff) {
 		// fail if source != other
-		printf("(checking if target %02x%02x%02x matches other %02x%02x%02x) ",
+		debugN("(checking if target %02x%02x%02x matches other %02x%02x%02x) ",
 			target.world, target.screen, target.id,
 			context->other.world, context->other.screen, context->other.id);
 		if (target != context->other) {
-			printf("-- it doesn't!\n");
+			debugN("-- it doesn't!\n");
 			return RESULT_FAILOTHER;
 		}
 		r |= RESULT_MATCHOTHER;
@@ -1135,11 +1135,11 @@ ResultType ConditionBlock::check(UnityEngine *_vm, Action *context) {
 
 	if ((WhoCan.id != 0xff) &&
 		!((WhoCan.world == 0) && (WhoCan.screen) == 0 && (WhoCan.id == 0x10))) {
-		printf("(checking if WhoCan %02x%02x%02x matches who %02x%02x%02x) ",
+		debugN("(checking if WhoCan %02x%02x%02x matches who %02x%02x%02x) ",
 			WhoCan.world, WhoCan.screen, WhoCan.id,
 			context->who.world, context->who.screen, context->who.id);
 		if (WhoCan != context->who) {
-			printf(" -- nope\n");
+			debugN(" -- nope\n");
 			return r | RESULT_AWAYTEAM;
 		}
 	}
@@ -1153,13 +1153,13 @@ ResultType ConditionBlock::check(UnityEngine *_vm, Action *context) {
 			// do when
 			if (counter_value) {
 				counter_value--;
-				printf("counter: not yet\n");
+				debugN("counter: not yet\n");
 				return r | RESULT_COUNTER_DOWHEN;
 			}
 		} else if (counter_when == 0) {
 			// do until
 			if (counter_value == 0xffff) {
-				printf("counter: not any more\n");
+				debugN("counter: not any more\n");
 				return r | RESULT_COUNTER_DOUNTIL;
 			}
 		}
@@ -1173,18 +1173,18 @@ ResultType ConditionBlock::check(UnityEngine *_vm, Action *context) {
 
 		Object *obj;
 		if (condition[i].world == 0 && condition[i].screen == 0 && condition[i].id == 0x10) {
-			printf("(got away team member) ");
+			debugN("(got away team member) ");
 			// TODO: what to do if not on away team?
 			obj = _vm->_current_away_team_member;
 		} else {
 			obj = _vm->data.getObject(condition[i]);
 		}
-		printf("checking state of %s", obj->identify().c_str());
+		debugN("checking state of %s", obj->identify().c_str());
 
 		if (check_state[i] != 0xff) {
-			printf(" (is state %x?)", check_state[i]);
+			debugN(" (is state %x?)", check_state[i]);
 			if (obj->state != check_state[i]) {
-				printf(" -- nope!\n");
+				debugN(" -- nope!\n");
 				return r | RESULT_FAILSTATE;
 			}
 		}
@@ -1196,7 +1196,7 @@ ResultType ConditionBlock::check(UnityEngine *_vm, Action *context) {
 			}
 
 			if (check_state[i] == 0xff) {
-				printf(" (object inactive!)\n");
+				debugN(" (object inactive!)\n");
 				return r | RESULT_INACTIVE;
 			}
 		}
@@ -1208,25 +1208,25 @@ ResultType ConditionBlock::check(UnityEngine *_vm, Action *context) {
 
 			if (check_status[i]) {
 				if (obj->id.world == 0 && obj->id.screen == 0 && obj->id.id < 0x10) {
-					printf(" (in away team?)");
+					debugN(" (in away team?)");
 					if (Common::find(_vm->_away_team_members.begin(),
 						_vm->_away_team_members.end(),
 						obj) == _vm->_away_team_members.end()) {
-						printf(" -- nope!\n");
+						debugN(" -- nope!\n");
 						return r | RESULT_AWAYTEAM;
 					}
 				} else {
-					printf(" (in inventory?)");
+					debugN(" (in inventory?)");
 					if (!(obj->flags & OBJFLAG_INVENTORY)) {
-						printf(" -- nope!\n");
+						debugN(" -- nope!\n");
 						return r | RESULT_INVENTORY;
 					}
 				}
 			} else {
 				// note that there is no inverse away team check
-				printf(" (not in inventory?)");
+				debugN(" (not in inventory?)");
 				if (obj->flags & OBJFLAG_INVENTORY) {
-					printf(" -- it is!\n");
+					debugN(" -- it is!\n");
 					return r | RESULT_INVENTORY;
 				}
 			}
@@ -1234,9 +1234,9 @@ ResultType ConditionBlock::check(UnityEngine *_vm, Action *context) {
 
 		if (check_x[i] != 0xffff) {
 			did_something = true;
-			printf(" (is x/y %x/%x?)", check_x[i], check_y[i]);
+			debugN(" (is x/y %x/%x?)", check_x[i], check_y[i]);
 			if (obj->x != check_x[i] || obj->y != check_y[i]) {
-				printf(" -- nope!\n");
+				debugN(" -- nope!\n");
 				return r | RESULT_FAILPOS;
 			}
 		}
@@ -1245,25 +1245,25 @@ ResultType ConditionBlock::check(UnityEngine *_vm, Action *context) {
 
 		if (check_univ_x[i] != 0xffff) {
 			did_something = true;
-			printf(" (is universe x/y/z %x/%x/%x?)", check_univ_x[i], check_univ_y[i], check_univ_z[i]);
+			debugN(" (is universe x/y/z %x/%x/%x?)", check_univ_x[i], check_univ_y[i], check_univ_z[i]);
 			if (obj->universe_x != check_univ_x[i] || obj->universe_y != check_univ_y[i] ||
 				obj->universe_z != check_univ_z[i]) {
-				printf(" -- nope!\n");
+				debugN(" -- nope!\n");
 				return r | RESULT_FAILPOS;
 			}
 		}
 
 		if (check_screen[i] != 0xff) {
 			did_something = true;
-			printf(" (is screen %x?)", check_screen[i]);
+			debugN(" (is screen %x?)", check_screen[i]);
 
 			if (obj->curr_screen != check_screen[i]) {
-				printf(" -- nope!\n");
+				debugN(" -- nope!\n");
 				return r | RESULT_FAILSCREEN;
 			}
 		}
 
-		printf("\n");
+		debugN("\n");
 	}
 
 	// TODO: stupid hardcoded tricorder sound
@@ -1609,23 +1609,23 @@ ResultType ScreenBlock::execute(UnityEngine *_vm, Action *context) {
 	}
 
 	// TODO: screen to bump?
-	if (unknown6 != 0xffff) printf ("6: %04x ", unknown6);
+	if (unknown6 != 0xffff) debugN ("6: %04x ", unknown6);
 
 	// unused??
-	if (unknown7 != 0xffffffff) printf ("7: %08x ", unknown7);
-	if (unknown8 != 0xff) printf ("8: %02x ", unknown8);
-	if (unknown9 != 0xffffffff) printf ("9: %08x ", unknown9);
-	if (unknown10 != 0xffffffff) printf ("10: %08x ", unknown10);
-	if (unknown11 != 0xffff) printf ("11: %04x ", unknown11);
-	if (unknown12 != 0xffff) printf ("12: %04x ", unknown12);
+	if (unknown7 != 0xffffffff) debugN ("7: %08x ", unknown7);
+	if (unknown8 != 0xff) debugN ("8: %02x ", unknown8);
+	if (unknown9 != 0xffffffff) debugN ("9: %08x ", unknown9);
+	if (unknown10 != 0xffffffff) debugN ("10: %08x ", unknown10);
+	if (unknown11 != 0xffff) debugN ("11: %04x ", unknown11);
+	if (unknown12 != 0xffff) debugN ("12: %04x ", unknown12);
 
 	// TODO: screen id + changes for screen?
-	if (unknown13 != 0xffff) printf ("13: %04x ", unknown13);
-	if (unknown14 != 0xff) printf ("14: %02x ", unknown14);
-	if (unknown15 != 0xff) printf ("15: %02x ", unknown15);
-	if (unknown16 != 0xff) printf ("16: %02x ", unknown16);
+	if (unknown13 != 0xffff) debugN ("13: %04x ", unknown13);
+	if (unknown14 != 0xff) debugN ("14: %02x ", unknown14);
+	if (unknown15 != 0xff) debugN ("15: %02x ", unknown15);
+	if (unknown16 != 0xff) debugN ("16: %02x ", unknown16);
 
-	printf("\n");
+	debugN("\n");
 
 	return 0;
 }
@@ -1815,14 +1815,14 @@ void TextBlock::readFrom(Common::SeekableReadStream *stream) {
 	voice_subgroup = stream->readUint16LE();
 
 	/*if (text.size()) {
-		printf("text '%s'", text.c_str());
+		debugN("text '%s'", text.c_str());
 		if (voice_id != 0xffffffff) {
-			printf(" (%02x??%02x%02x.vac)", voice_group, voice_subgroup, voice_id);
+			debugN(" (%02x??%02x%02x.vac)", voice_group, voice_subgroup, voice_id);
 		}
-		printf("\n");
+		debugN("\n");
 	} else {
 		// these fields look like they could mean something else?
-		printf("no text: %x, %x, %x\n", voice_group, voice_subgroup, voice_id);
+		debugN("no text: %x, %x, %x\n", voice_group, voice_subgroup, voice_id);
 	}*/
 
 	// XXX: work out what's going on here
@@ -1863,7 +1863,7 @@ void ChangeActionBlock::readFrom(Common::SeekableReadStream *stream, int _type) 
 	uint16 unknown6 = stream->readUint16LE();
 	assert(unknown6 == 0 || (unknown6 >= 7 && unknown6 <= 12));
 
-	/*printf("%s: response %d, state %d; unknowns: %x, %x, %x\n",
+	/*debugN("%s: response %d, state %d; unknowns: %x, %x, %x\n",
 		change_actor_names[type - BLOCK_CONV_CHANGEACT_DISABLE],
 		response_id, state_id, unknown4, unknown5, unknown6);*/
 }
@@ -1921,20 +1921,20 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 
 	uint16 unknown1 = stream->readUint16LE();
 	uint16 unknown2 = stream->readUint16LE();
-	//printf("(%04x, %04x), ", unknown1, unknown2);
+	//debugN("(%04x, %04x), ", unknown1, unknown2);
 	// the 0xfffb is somewhere after a USE on 070504, see 7/4
 	assert(unknown2 == 0 || (unknown2 >= 6 && unknown2 <= 15) || unknown2 == 0xffff || unknown2 == 0xfffb);
 
 	unknown1 = stream->readUint16LE();
-	//printf("(%04x), ", unknown1);
+	//debugN("(%04x), ", unknown1);
 
 	next_situation = stream->readUint16LE();
-	//printf("(next %04x), ", next_situation);
+	//debugN("(next %04x), ", next_situation);
 
 	for (unsigned int i = 0; i < 5; i++) {
 		uint16 unknown1 = stream->readUint16LE();
 		uint16 unknown2 = stream->readUint16LE();
-		//printf("(%04x, %04x), ", unknown1, unknown2);
+		//debugN("(%04x, %04x), ", unknown1, unknown2);
 		assert(unknown2 == 0 || (unknown2 >= 6 && unknown2 <= 15) || unknown2 == 0xffff);
 	}
 
@@ -1951,23 +1951,23 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	voice_subgroup = stream->readUint16LE();
 
 	/*
-	printf("%x: ", response_state);
-	printf("%04x -- (%04x, %04x, %04x, %04x)\n", unknown3, unknown4, unknown5, unknown6, unknown7);
-	printf("response %d, %d", id, state);
+	debugN("%x: ", response_state);
+	debugN("%04x -- (%04x, %04x, %04x, %04x)\n", unknown3, unknown4, unknown5, unknown6, unknown7);
+	debugN("response %d, %d", id, state);
 	if (text.size()) {
-		printf(": text '%s'", text.c_str());
+		debugN(": text '%s'", text.c_str());
 		if (voice_id != 0xffffffff) {
-			printf(" (%02x??%02x%02x.vac)", voice_group, voice_subgroup, voice_id);
+			debugN(" (%02x??%02x%02x.vac)", voice_group, voice_subgroup, voice_id);
 		}
 	}
-	printf("\n");
+	debugN("\n");
 	*/
 
 	int type;
 	while ((type = readBlockHeader(stream)) != -1) {
 		switch (type) {
 			case BLOCK_END_BLOCK:
-				//printf("\n");
+				//debugN("\n");
 				return;
 
 			case BLOCK_CONV_WHOCANSAY:

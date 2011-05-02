@@ -219,7 +219,7 @@ void Graphics::calculateStringBoundary(unsigned int maxwidth, Common::Array<unsi
 
 		unsigned char c = text[i];
 		if (c < f.start || c > f.end) {
-			printf("WARNING: can't render character %x in font %d: not between %x and %x\n",
+			warning("can't render character %x in font %d: not between %x and %x",
 				c, font, f.start, f.end);
 			continue;
 		}
@@ -300,7 +300,7 @@ void Graphics::drawString(unsigned int x, unsigned int y, unsigned int width, un
 
 		unsigned char c = text[i];
 		if (c < f.start || c > f.end) {
-			printf("WARNING: can't render character %x in font %d: not between %x and %x\n",
+			warning("WARNING: can't render character %x in font %d: not between %x and %x",
 				c, font, f.start, f.end);
 			continue;
 		}
@@ -447,7 +447,7 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 	byte *newpal = sprite->getPalette();
 	if (newpal) {
 		// new palette; used for things like the intro animation
-		printf("new sprite-embedded palette\n");
+		debug("new sprite-embedded palette");
 
 		delete[] palette;
 		palette = new byte[256 * 3];

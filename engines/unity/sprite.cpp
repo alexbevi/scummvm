@@ -14,6 +14,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "common/debug.h"
 #include "common/textconsole.h"
 
 #include "sprite.h"
@@ -87,7 +88,7 @@ SpriteEntry *Sprite::readBlock() {
 }
 
 SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
-	//printf("sprite parser: trying block type %c%c%c%c at %d\n",
+	//debugN("sprite parser: trying block type %c%c%c%c at %d\n",
 	//	blockType[3], blockType[2], blockType[1], blockType[0], _stream->pos() - 8);
 	if (!strncmp(blockType, SPRT, 4)) {
 		// start of a sprite
@@ -293,7 +294,7 @@ void Sprite::readCompressedImage(uint32 size, SpriteEntrySprite *img) {
 	// legaleze.spr uses 0xed
 	assert(unknown3 == 0xd || unknown3 == 0xed);
 
-	//printf("compressed image, size 0x%x x 0x%x (%d), actual size %d, param1 0x%x, param2 0x%x\n",
+	//debugN("compressed image, size 0x%x x 0x%x (%d), actual size %d, param1 0x%x, param2 0x%x\n",
 	//	width, height, width * height, size - 12, unknown3, unknown4);
 
 	uint32 targetsize = img->width * img->height;
@@ -440,7 +441,7 @@ void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsig
 		}
 	}
 
-	//printf("tried for %d, got %d\n", width * height, bytesout);
+	//debugN("tried for %d, got %d\n", width * height, bytesout);
 
 	// TODO: why are we overrunning? not detecting the end?
 	assert(bytesout >= width * height);
@@ -533,12 +534,12 @@ void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsig
 	bool dump = false;
 	if (dump) {
 		/*for (unsigned int i = 0; i < size - 12; i++) {
-		  if (i % 16 == 0) printf("\n");
-		  printf("%02x ", buf[i]);
+		  if (i % 16 == 0) debugN("\n");
+		  debugN("%02x ", buf[i]);
 		  }
-		  printf("\n, as binary:");*/
+		  debugN("\n, as binary:");*/
 		for (unsigned int j = bitoffset / 8; j < size; j++) {
-			if (j % 4 == 0) printf("\n");
+			if (j % 4 == 0) debugN("\n");
 			char n = buf[j];
 			unsigned int i;
 			i = 1<<(sizeof(n) * 8 - 1);
@@ -547,13 +548,13 @@ void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsig
 				if (bitoffset % 8)
 					bitoffset--;
 				else if (n & i)
-					printf("1");
+					debugN("1");
 				else
-					printf("0");
+					debugN("0");
 				i >>= 1;
 			}
 		}
-		printf("\n\n");
+		debugN("\n\n");
 	}
 }
 

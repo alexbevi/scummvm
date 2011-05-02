@@ -130,7 +130,7 @@ bool FVFDecoder::loadStream(Common::SeekableReadStream *stream) {
 	_fileStream->seek(data_offset);
 	readNextBlock();
 
-	_surface.create(_width, _height, getPixelFormat().bytesPerPixel);
+	_surface.create(_width, _height, getPixelFormat());
 
 	_audioStream = createAudioStream();
 	if (_audioStream)
