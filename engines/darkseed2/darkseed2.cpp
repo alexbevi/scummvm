@@ -369,7 +369,7 @@ void DarkSeed2Engine::clearAll() {
 }
 
 bool DarkSeed2Engine::isWindowsPC() const {
-	return getPlatform() == Common::kPlatformPC;
+	return getPlatform() == Common::kPlatformWindows;
 }
 
 bool DarkSeed2Engine::isSaturn() const {

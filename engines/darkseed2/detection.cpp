@@ -71,7 +71,7 @@ static const DS2GameDescription gameDescriptions[] = {
 				{"gl00_txt.000", 0, "0f1c8f78fa670e015115b9f2dcdcd4ae", 125377},
 			},
 			EN_ANY,
-			kPlatformPC,
+			kPlatformWindows,
 			ADGF_NO_FLAGS,
 			GUIO_NONE
 		},
@@ -85,7 +85,7 @@ static const DS2GameDescription gameDescriptions[] = {
 				{"gl00_txt.000", 0, "e195b792c29e53717a6364b66721731f", 140771},
 			},
 			DE_DEU,
-			kPlatformPC,
+			kPlatformWindows,
 			ADGF_NO_FLAGS,
 			GUIO_NONE
 		},
@@ -99,7 +99,7 @@ static const DS2GameDescription gameDescriptions[] = {
 				{"gl00_txt.000", 0, "edbd13f748c306a4e61eb4ca2f41d3d8", 139687},
 			},
 			FR_FRA,
-			kPlatformPC,
+			kPlatformWindows,
 			ADGF_NO_FLAGS,
 			GUIO_NONE
 		},
