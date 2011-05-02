@@ -104,6 +104,19 @@ static const DS2GameDescription gameDescriptions[] = {
 			GUIO_NONE
 		},
 	},
+	{ // English Demo version
+		{
+			"darkseed2",
+			"",
+			{
+				{"gl00_txt.000", 0, "3353aaa3cf28be529a2979cc78d89697", 57343},
+			},
+			EN_ANY,
+			kPlatformWindows,
+			ADGF_DEMO,
+			GUIO_NONE
+		},
+	},
 	{ // Japanese Sega Saturn version
 		{
 			"darkseed2",
