@@ -1,3 +1,12 @@
+#!/usr/bin/env ruby
+#
+# Scrape the ScummVM engines for detection entries or detection tables.
+# Once located, extract the relevant game entries to build a list of
+# titles that are currently supported
+#
+# NOTE
+# This currently only works on Unix-like systems
+#
 def replace_target(path, target)
   p = path.split('/')
   p[-1] = target
@@ -9,7 +18,9 @@ fallback      = "detection_tables.h"
 search_term   = "static const PlainGameDescriptor "
 fallback_term = "const PlainGameDescriptor "
 
-files = %x[find `pwd` -name '#{target}'].split("\n")
+# XXX assume we're running from the /devtools directory, so we need
+# to start searching from the parent folder
+files = %x[find '../' -name '#{target}'].split("\n")
 
 files.each do |f|
   offset  = %x[grep -n "#{search_term}" #{f}].split(':')[0].to_i
