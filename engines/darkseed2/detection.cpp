@@ -113,7 +113,7 @@ static const DS2GameDescription gameDescriptions[] = {
 	{ // English Demo version
 		{
 			"darkseed2",
-			"",
+			"Demo",
 			{
 				{"gl00_txt.000", 0, "3353aaa3cf28be529a2979cc78d89697", 57343},
 			},
