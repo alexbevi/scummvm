@@ -39,14 +39,20 @@ struct DS2GameDescription {
 const char *DarkSeed2Engine::getGameId() const {
 	return _gameDescription->desc.gameid;
 }
+
 Common::Language DarkSeed2Engine::getLanguage() const {
 	return _gameDescription->desc.language;
 }
+
 Common::Platform DarkSeed2Engine::getPlatform() const {
 	return _gameDescription->desc.platform;
 }
 
+bool DarkSeed2Engine::isDemo() const {
+	return (_gameDescription->desc.flags & ADGF_DEMO) != 0;
 }
+
+} // End of namespace DarkSeed2
 
 using namespace Common;
 

@@ -67,7 +67,6 @@
 namespace DarkSeed2 {
 
 // Files
-static const char *kExecutable    = "dark0001.exe";
 static const char *kResourceIndex = "gfile.hdr";
 static const char *kVariableIndex = "GAMEVAR";
 
@@ -222,29 +221,32 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 		}
 	}
 
-	_options        = new Options();
-	_variables      = new Variables(*_rnd);
-	_scriptRegister = new ScriptRegister();
-	_resources      = new Resources();
-	_fontMan        = new FontManager(*_resources);
-	_sound          = new Sound(*_mixer, *_variables);
-	_music          = new Music(*_mixer, *_midiDriver);
+	_options         = new Options();
+	_variables       = new Variables(*_rnd);
+	_scriptRegister  = new ScriptRegister();
+	_resources       = new Resources();
+	_fontMan         = new FontManager(*_resources);
+	_sound           = new Sound(*_mixer, *_variables);
+	_music           = new Music(*_mixer, *_midiDriver);
 
 	// The cursors need to be created after Resources but before Graphics
-	if (isWindowsPC())
-		_cursors    = new CursorsWindows(kExecutable);
-	else if (isSaturn())
-		_cursors    = new CursorsSaturn(*_resources);
+	if (isWindowsPC()) {
+		if (isDemo())
+			_cursors = new CursorsWindows("ds2_demo.exe");
+		else
+			_cursors = new CursorsWindows("dark0001.exe");
+	} else if (isSaturn())
+		_cursors     = new CursorsSaturn(*_resources);
 	else if (isMac())
-		_cursors    = new CursorsMac(*_macExeResFork);
+		_cursors     = new CursorsMac(*_macExeResFork);
 
-	_graphics       = new Graphics(width, height, *_resources, *_variables, *_cursors, *_fontMan);
-	_talkMan        = new TalkManager(_resources->getVersionFormats(), *_sound, *_graphics, *_fontMan);
-	_mike           = new Mike(*_resources, *_variables, *_graphics);
-	_movie          = new Movie(*_mixer, *_graphics, *_cursors, *_sound);
-	_roomConfMan    = new RoomConfigManager(*this);
-	_inter          = new ScriptInterpreter(*this);
-	_events         = new Events(*this);
+	_graphics        = new Graphics(width, height, *_resources, *_variables, *_cursors, *_fontMan);
+	_talkMan         = new TalkManager(_resources->getVersionFormats(), *_sound, *_graphics, *_fontMan);
+	_mike            = new Mike(*_resources, *_variables, *_graphics);
+	_movie           = new Movie(*_mixer, *_graphics, *_cursors, *_sound);
+	_roomConfMan     = new RoomConfigManager(*this);
+	_inter           = new ScriptInterpreter(*this);
+	_events          = new Events(*this);
 
 	syncSoundSettings();
 

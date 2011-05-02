@@ -110,6 +110,7 @@ public:
 	bool isWindowsPC() const;
 	bool isSaturn() const;
 	bool isMac() const;
+	bool isDemo() const;
 
 private:
 	struct SaveMeta {
