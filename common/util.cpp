@@ -212,6 +212,7 @@ const PlatformDescription g_platforms[] = {
 	{ "playstation", "psx", "psx", "Sony PlayStation", kPlatformPSX },
 	{ "cdi", "cdi", "cdi", "Philips CD-i", kPlatformCDi },
 	{ "ios", "ios", "ios", "Apple iOS", kPlatformIOS },
+	{ "saturn", "saturn", "saturn", "Sega Saturn", kPlatformSaturn },
 
 	{ 0, 0, 0, "Default", kPlatformUnknown }
 };
