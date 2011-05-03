@@ -25,8 +25,8 @@
 
 #include "common/util.h"
 
-#include "engines/darkseed2/datfile.h"
-#include "engines/darkseed2/resources.h"
+#include "darkseed2/datfile.h"
+#include "darkseed2/resources.h"
 
 namespace DarkSeed2 {
 

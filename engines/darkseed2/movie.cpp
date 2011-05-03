@@ -28,15 +28,15 @@
 #include "common/serializer.h"
 
 #include "video/avi_decoder.h"
-#include "engines/darkseed2/cpk_decoder.h"
+#include "darkseed2/cpk_decoder.h"
 
-#include "engines/darkseed2/movie.h"
-#include "engines/darkseed2/resources.h"
-#include "engines/darkseed2/palette.h"
-#include "engines/darkseed2/graphics.h"
-#include "engines/darkseed2/cursors.h"
-#include "engines/darkseed2/sound.h"
-#include "engines/darkseed2/saveload.h"
+#include "darkseed2/movie.h"
+#include "darkseed2/resources.h"
+#include "darkseed2/palette.h"
+#include "darkseed2/graphics.h"
+#include "darkseed2/cursors.h"
+#include "darkseed2/sound.h"
+#include "darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 

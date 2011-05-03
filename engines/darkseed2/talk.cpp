@@ -23,15 +23,17 @@
  *
  */
 
-#include "engines/darkseed2/talk.h"
-#include "engines/darkseed2/imageconverter.h"
-#include "engines/darkseed2/resources.h"
-#include "engines/darkseed2/options.h"
-#include "engines/darkseed2/sound.h"
-#include "engines/darkseed2/font.h"
-#include "engines/darkseed2/graphics.h"
-#include "engines/darkseed2/graphicalobject.h"
-#include "engines/darkseed2/conversationbox.h"
+#include "common/textconsole.h"
+
+#include "darkseed2/talk.h"
+#include "darkseed2/imageconverter.h"
+#include "darkseed2/resources.h"
+#include "darkseed2/options.h"
+#include "darkseed2/sound.h"
+#include "darkseed2/font.h"
+#include "darkseed2/graphics.h"
+#include "darkseed2/graphicalobject.h"
+#include "darkseed2/conversationbox.h"
 
 namespace DarkSeed2 {
 

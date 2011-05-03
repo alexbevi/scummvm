@@ -30,11 +30,11 @@
 #include "common/list.h"
 #include "common/frac.h"
 
-#include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/saveable.h"
-#include "engines/darkseed2/sortedlist.h"
-#include "engines/darkseed2/palette.h"
-#include "engines/darkseed2/sprite.h"
+#include "darkseed2/darkseed2.h"
+#include "darkseed2/saveable.h"
+#include "darkseed2/sortedlist.h"
+#include "darkseed2/palette.h"
+#include "darkseed2/sprite.h"
 
 namespace Common {
 	class SeekableReadStream;

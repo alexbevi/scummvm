@@ -33,8 +33,8 @@
 
 #include "common/list.h"
 
-#include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/graphics.h"
+#include "darkseed2/darkseed2.h"
+#include "darkseed2/graphics.h"
 
 namespace DarkSeed2 {
 

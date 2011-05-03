@@ -31,10 +31,10 @@
 
 #include "audio/midiparser.h"
 
-#include "engines/darkseed2/music.h"
-#include "engines/darkseed2/options.h"
-#include "engines/darkseed2/resources.h"
-#include "engines/darkseed2/saveload.h"
+#include "darkseed2/music.h"
+#include "darkseed2/options.h"
+#include "darkseed2/resources.h"
+#include "darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 

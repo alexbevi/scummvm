@@ -25,13 +25,13 @@
 
 #include "common/serializer.h"
 
-#include "engines/darkseed2/inventorybox.h"
-#include "engines/darkseed2/imageconverter.h"
-#include "engines/darkseed2/resources.h"
-#include "engines/darkseed2/variables.h"
-#include "engines/darkseed2/graphics.h"
-#include "engines/darkseed2/talk.h"
-#include "engines/darkseed2/saveload.h"
+#include "darkseed2/inventorybox.h"
+#include "darkseed2/imageconverter.h"
+#include "darkseed2/resources.h"
+#include "darkseed2/variables.h"
+#include "darkseed2/graphics.h"
+#include "darkseed2/talk.h"
+#include "darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 

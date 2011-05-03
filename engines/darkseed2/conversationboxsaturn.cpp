@@ -23,9 +23,11 @@
  *
  */
 
-#include "engines/darkseed2/conversationbox.h"
-#include "engines/darkseed2/imageconverter.h"
-#include "engines/darkseed2/graphics.h"
+#include "common/textconsole.h"
+
+#include "darkseed2/conversationbox.h"
+#include "darkseed2/imageconverter.h"
+#include "darkseed2/graphics.h"
 
 namespace DarkSeed2 {
 

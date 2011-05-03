@@ -28,11 +28,11 @@
 
 #include "common/frac.h"
 
-#include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/graphics.h"
-#include "engines/darkseed2/graphicalobject.h"
-#include "engines/darkseed2/pathfinder.h"
-#include "engines/darkseed2/saveable.h"
+#include "darkseed2/darkseed2.h"
+#include "darkseed2/graphics.h"
+#include "darkseed2/graphicalobject.h"
+#include "darkseed2/pathfinder.h"
+#include "darkseed2/saveable.h"
 
 namespace Common {
 	class String;

@@ -25,7 +25,7 @@
 
 #include "common/config-manager.h"
 
-#include "engines/darkseed2/options.h"
+#include "darkseed2/options.h"
 
 namespace DarkSeed2 {
 

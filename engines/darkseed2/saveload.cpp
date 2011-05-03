@@ -28,7 +28,7 @@
 #include "graphics/surface.h"
 #include "graphics/thumbnail.h"
 
-#include "engines/darkseed2/saveload.h"
+#include "darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 

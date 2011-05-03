@@ -30,8 +30,8 @@
 #include "common/array.h"
 #include "common/frac.h"
 
-#include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/font.h"
+#include "darkseed2/darkseed2.h"
+#include "darkseed2/font.h"
 
 namespace Common {
 	class String;

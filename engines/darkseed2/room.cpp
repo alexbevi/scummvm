@@ -25,17 +25,17 @@
 
 #include "common/serializer.h"
 
-#include "engines/darkseed2/room.h"
-#include "engines/darkseed2/versionformats.h"
-#include "engines/darkseed2/variables.h"
-#include "engines/darkseed2/resources.h"
-#include "engines/darkseed2/graphics.h"
-#include "engines/darkseed2/datfile.h"
-#include "engines/darkseed2/roomconfig.h"
-#include "engines/darkseed2/script.h"
-#include "engines/darkseed2/sprite.h"
-#include "engines/darkseed2/graphicalobject.h"
-#include "engines/darkseed2/saveload.h"
+#include "darkseed2/room.h"
+#include "darkseed2/versionformats.h"
+#include "darkseed2/variables.h"
+#include "darkseed2/resources.h"
+#include "darkseed2/graphics.h"
+#include "darkseed2/datfile.h"
+#include "darkseed2/roomconfig.h"
+#include "darkseed2/script.h"
+#include "darkseed2/sprite.h"
+#include "darkseed2/graphicalobject.h"
+#include "darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 

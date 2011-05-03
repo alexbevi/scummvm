@@ -23,8 +23,8 @@
  *
  */
 
-#include "engines/darkseed2/pathfinder.h"
-#include "engines/darkseed2/sprite.h"
+#include "darkseed2/pathfinder.h"
+#include "darkseed2/sprite.h"
 
 namespace DarkSeed2 {
 

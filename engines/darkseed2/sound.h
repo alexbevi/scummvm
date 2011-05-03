@@ -30,8 +30,8 @@
 
 #include "audio/mixer.h"
 
-#include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/versionformats.h"
+#include "darkseed2/darkseed2.h"
+#include "darkseed2/versionformats.h"
 
 namespace Common {
 	class SeekableReadStream;

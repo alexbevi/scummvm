@@ -25,15 +25,15 @@
 
 #include "common/frac.h"
 
-#include "engines/darkseed2/roomconfig.h"
-#include "engines/darkseed2/resources.h"
-#include "engines/darkseed2/variables.h"
-#include "engines/darkseed2/datfile.h"
-#include "engines/darkseed2/room.h"
-#include "engines/darkseed2/sound.h"
-#include "engines/darkseed2/music.h"
-#include "engines/darkseed2/mike.h"
-#include "engines/darkseed2/saveload.h"
+#include "darkseed2/roomconfig.h"
+#include "darkseed2/resources.h"
+#include "darkseed2/variables.h"
+#include "darkseed2/datfile.h"
+#include "darkseed2/room.h"
+#include "darkseed2/sound.h"
+#include "darkseed2/music.h"
+#include "darkseed2/mike.h"
+#include "darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 

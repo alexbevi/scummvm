@@ -30,7 +30,7 @@
 #include "common/list.h"
 #include "common/array.h"
 
-#include "engines/darkseed2/darkseed2.h"
+#include "darkseed2/darkseed2.h"
 
 namespace Common {
 	class SeekableReadStream;

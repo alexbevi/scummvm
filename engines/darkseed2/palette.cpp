@@ -26,8 +26,8 @@
 
 #include "common/algorithm.h"
 
-#include "engines/darkseed2/palette.h"
-#include "engines/darkseed2/resources.h"
+#include "darkseed2/palette.h"
+#include "darkseed2/resources.h"
 
 namespace DarkSeed2 {
 

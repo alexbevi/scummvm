@@ -24,13 +24,13 @@
  */
 
 
-#include "engines/darkseed2/conversation.h"
-#include "engines/darkseed2/datfile.h"
-#include "engines/darkseed2/resources.h"
-#include "engines/darkseed2/variables.h"
-#include "engines/darkseed2/talk.h"
-#include "engines/darkseed2/font.h"
-#include "engines/darkseed2/saveload.h"
+#include "darkseed2/conversation.h"
+#include "darkseed2/datfile.h"
+#include "darkseed2/resources.h"
+#include "darkseed2/variables.h"
+#include "darkseed2/talk.h"
+#include "darkseed2/font.h"
+#include "darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 

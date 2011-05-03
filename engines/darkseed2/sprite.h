@@ -34,11 +34,11 @@
 #include "graphics/font.h"
 #include "graphics/surface.h"
 
-#include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/saveable.h"
-#include "engines/darkseed2/versionformats.h"
-#include "engines/darkseed2/palette.h"
-#include "engines/darkseed2/font.h"
+#include "darkseed2/darkseed2.h"
+#include "darkseed2/saveable.h"
+#include "darkseed2/versionformats.h"
+#include "darkseed2/palette.h"
+#include "darkseed2/font.h"
 
 namespace Common {
 	class SeekableReadStream;

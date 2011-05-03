@@ -30,9 +30,9 @@
 #include "common/array.h"
 #include "common/list.h"
 
-#include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/objects.h"
-#include "engines/darkseed2/cursors.h"
+#include "darkseed2/darkseed2.h"
+#include "darkseed2/objects.h"
+#include "darkseed2/cursors.h"
 
 namespace DarkSeed2 {
 

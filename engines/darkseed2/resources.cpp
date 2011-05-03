@@ -29,7 +29,7 @@
 #include "common/archive.h"
 #include "common/macresman.h"
 
-#include "engines/darkseed2/resources.h"
+#include "darkseed2/resources.h"
 
 namespace DarkSeed2 {
 

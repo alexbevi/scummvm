@@ -23,19 +23,21 @@
  *
  */
 
-#include "engines/darkseed2/inter.h"
-#include "engines/darkseed2/variables.h"
-#include "engines/darkseed2/datfile.h"
-#include "engines/darkseed2/sound.h"
-#include "engines/darkseed2/music.h"
-#include "engines/darkseed2/movie.h"
-#include "engines/darkseed2/talk.h"
-#include "engines/darkseed2/mike.h"
-#include "engines/darkseed2/graphics.h"
-#include "engines/darkseed2/room.h"
-#include "engines/darkseed2/conversationbox.h"
-#include "engines/darkseed2/events.h"
-#include "engines/darkseed2/saveload.h"
+#include "common/textconsole.h"
+
+#include "darkseed2/inter.h"
+#include "darkseed2/variables.h"
+#include "darkseed2/datfile.h"
+#include "darkseed2/sound.h"
+#include "darkseed2/music.h"
+#include "darkseed2/movie.h"
+#include "darkseed2/talk.h"
+#include "darkseed2/mike.h"
+#include "darkseed2/graphics.h"
+#include "darkseed2/room.h"
+#include "darkseed2/conversationbox.h"
+#include "darkseed2/events.h"
+#include "darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 

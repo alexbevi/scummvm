@@ -23,15 +23,15 @@
  *
  */
 
-#include "engines/darkseed2/conversationbox.h"
-#include "engines/darkseed2/resources.h"
-#include "engines/darkseed2/variables.h"
-#include "engines/darkseed2/graphics.h"
-#include "engines/darkseed2/talk.h"
-#include "engines/darkseed2/conversation.h"
-#include "engines/darkseed2/graphicalobject.h"
-#include "engines/darkseed2/sprite.h"
-#include "engines/darkseed2/saveload.h"
+#include "darkseed2/conversationbox.h"
+#include "darkseed2/resources.h"
+#include "darkseed2/variables.h"
+#include "darkseed2/graphics.h"
+#include "darkseed2/talk.h"
+#include "darkseed2/conversation.h"
+#include "darkseed2/graphicalobject.h"
+#include "darkseed2/sprite.h"
+#include "darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 

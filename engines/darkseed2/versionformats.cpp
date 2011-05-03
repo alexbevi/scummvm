@@ -23,9 +23,11 @@
  *
  */
 
-#include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/versionformats.h"
-#include "engines/darkseed2/font.h"
+#include "common/textconsole.h"
+
+#include "darkseed2/darkseed2.h"
+#include "darkseed2/versionformats.h"
+#include "darkseed2/font.h"
 
 namespace DarkSeed2 {
 

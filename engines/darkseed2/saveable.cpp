@@ -26,7 +26,7 @@
 #include "common/system.h"
 #include "common/serializer.h"
 
-#include "engines/darkseed2/saveable.h"
+#include "darkseed2/saveable.h"
 
 namespace DarkSeed2 {
 

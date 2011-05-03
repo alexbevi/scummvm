@@ -26,7 +26,7 @@
 #ifndef DARKSEED2_OPTIONS_H
 #define DARKSEED2_OPTIONS_H
 
-#include "engines/darkseed2/darkseed2.h"
+#include "darkseed2/darkseed2.h"
 
 namespace DarkSeed2 {
 

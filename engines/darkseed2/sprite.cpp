@@ -29,11 +29,11 @@
 #include "graphics/fontman.h"
 #include "graphics/font.h"
 
-#include "engines/darkseed2/sprite.h"
-#include "engines/darkseed2/imageconverter.h"
-#include "engines/darkseed2/resources.h"
-#include "engines/darkseed2/cursors.h"
-#include "engines/darkseed2/saveload.h"
+#include "darkseed2/sprite.h"
+#include "darkseed2/imageconverter.h"
+#include "darkseed2/resources.h"
+#include "darkseed2/cursors.h"
+#include "darkseed2/saveload.h"
 
 namespace DarkSeed2 {
 

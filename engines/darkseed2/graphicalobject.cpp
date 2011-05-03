@@ -28,10 +28,10 @@
 #include "graphics/fontman.h"
 #include "graphics/font.h"
 
-#include "engines/darkseed2/graphicalobject.h"
-#include "engines/darkseed2/graphics.h"
-#include "engines/darkseed2/sprite.h"
-#include "engines/darkseed2/resources.h"
+#include "darkseed2/graphicalobject.h"
+#include "darkseed2/graphics.h"
+#include "darkseed2/sprite.h"
+#include "darkseed2/resources.h"
 
 namespace DarkSeed2 {
 

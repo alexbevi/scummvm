@@ -30,9 +30,9 @@
 
 #include "audio/mixer.h"
 
-#include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/sprite.h"
-#include "engines/darkseed2/saveable.h"
+#include "darkseed2/darkseed2.h"
+#include "darkseed2/sprite.h"
+#include "darkseed2/saveable.h"
 
 namespace Common {
 	class String;

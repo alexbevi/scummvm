@@ -28,9 +28,9 @@
 
 #include "common/frac.h"
 
-#include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/saveable.h"
-#include "engines/darkseed2/objects.h"
+#include "darkseed2/darkseed2.h"
+#include "darkseed2/saveable.h"
+#include "darkseed2/objects.h"
 
 namespace DarkSeed2 {
 

@@ -28,9 +28,9 @@
 
 #include "graphics/fontman.h"
 
-#include "engines/darkseed2/font.h"
-#include "engines/darkseed2/resources.h"
-#include "engines/darkseed2/imageconverter.h"
+#include "darkseed2/font.h"
+#include "darkseed2/resources.h"
+#include "darkseed2/imageconverter.h"
 
 namespace DarkSeed2 {
 

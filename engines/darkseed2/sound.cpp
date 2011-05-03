@@ -30,10 +30,10 @@
 #include "audio/decoders/aiff.h"
 #include "audio/decoders/mac_snd.h"
 
-#include "engines/darkseed2/sound.h"
-#include "engines/darkseed2/options.h"
-#include "engines/darkseed2/variables.h"
-#include "engines/darkseed2/resources.h"
+#include "darkseed2/sound.h"
+#include "darkseed2/options.h"
+#include "darkseed2/variables.h"
+#include "darkseed2/resources.h"
 
 namespace DarkSeed2 {
 

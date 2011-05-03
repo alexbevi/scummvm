@@ -30,11 +30,11 @@
 #include "common/str.h"
 #include "common/array.h"
 
-#include "engines/darkseed2/darkseed2.h"
-#include "engines/darkseed2/saveable.h"
-#include "engines/darkseed2/versionformats.h"
-#include "engines/darkseed2/sprite.h"
-#include "engines/darkseed2/font.h"
+#include "darkseed2/darkseed2.h"
+#include "darkseed2/saveable.h"
+#include "darkseed2/versionformats.h"
+#include "darkseed2/sprite.h"
+#include "darkseed2/font.h"
 
 namespace DarkSeed2 {
 
