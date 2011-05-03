@@ -133,7 +133,7 @@ static const DS2GameDescription gameDescriptions[] = {
 				{"conv0001.pgf", 0, "a2faad74e14ba51dbcf8e9fccfae1606", 10760}
 			},
 			JA_JPN,
-			kPlatformUnknown, // kPlatformSaturn
+			kPlatformSaturn,
 			ADGF_NO_FLAGS,
 			GUIO_NOSPEECH
 		},
@@ -173,7 +173,7 @@ static const DS2GameDescription fallbackDescs[] = {
 			"unknown",
 			AD_ENTRY1(0, 0),
 			UNK_LANG,
-			kPlatformUnknown, // kPlatformSaturn
+			kPlatformSaturn,
 			ADGF_NO_FLAGS,
 			GUIO_NONE
 		},

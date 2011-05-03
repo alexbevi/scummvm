@@ -382,8 +382,7 @@ bool DarkSeed2Engine::isWindowsPC() const {
 }
 
 bool DarkSeed2Engine::isSaturn() const {
-	// TODO: kPlatformSaturn
-	return getPlatform() == Common::kPlatformUnknown;
+	return getPlatform() == Common::kPlatformSaturn;
 }
 
 bool DarkSeed2Engine::isMac() const {
