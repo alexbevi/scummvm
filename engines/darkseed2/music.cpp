@@ -32,7 +32,6 @@
 #include "audio/midiparser.h"
 
 #include "darkseed2/music.h"
-#include "darkseed2/options.h"
 #include "darkseed2/resources.h"
 #include "darkseed2/saveload.h"
 

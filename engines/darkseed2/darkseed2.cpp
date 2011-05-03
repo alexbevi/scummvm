@@ -179,10 +179,11 @@ void DarkSeed2Engine::pauseEngineIntern(bool pause) {
 void DarkSeed2Engine::syncSoundSettings() {
 	Engine::syncSoundSettings();
 
+	// Use our music settings for plain audio
+	_mixer->setVolumeForSoundType(Audio::Mixer::kPlainSoundType, ConfMan.getInt("music_volume"));
+
 	_options->syncSettings();
 
-	_sound->syncSettings(*_options);
-	_music->syncSettings(*_options);
 	_talkMan->syncSettings(*_options);
 }
 

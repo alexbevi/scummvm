@@ -163,15 +163,6 @@ bool Sound::isIDPlaying(int id) {
 	return _mixer->isSoundIDActive(id);
 }
 
-void Sound::syncSettings(const Options &options) {
-	int volumeSFX    = options.getVolumeSFX();
-	int volumeSpeech = options.getVolumeSpeech();
-
-	// Setting values
-	_mixer->setVolumeForSoundType(Audio::Mixer::kSFXSoundType   , volumeSFX);
-	_mixer->setVolumeForSoundType(Audio::Mixer::kSpeechSoundType, volumeSpeech);
-}
-
 void Sound::stopAll() {
 	debugC(-1, kDebugSound, "Stopping all sounds");
 

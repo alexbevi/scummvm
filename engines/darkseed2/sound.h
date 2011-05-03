@@ -76,9 +76,6 @@ public:
 	/** Signal that a speech has ended. */
 	void signalSpeechEnd(int id);
 
-	/** Apply volume settings. */
-	void syncSettings(const Options &options);
-
 	/** Check for status changes. */
 	void updateStatus();
 
