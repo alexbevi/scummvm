@@ -5,7 +5,6 @@ MODULE_OBJS := \
 	conversationbox.o \
 	conversationboxsaturn.o \
 	conversationboxwindows.o \
-	cpk_decoder.o \
 	cursors.o \
 	darkseed2.o \
 	datfile.o \

@@ -28,7 +28,7 @@
 #include "common/serializer.h"
 
 #include "video/avi_decoder.h"
-#include "darkseed2/cpk_decoder.h"
+#include "video/segafilm_decoder.h"
 
 #include "darkseed2/movie.h"
 #include "darkseed2/resources.h"
@@ -82,7 +82,7 @@ Video::VideoDecoder *Movie::createDecoder(const Common::String &file) const {
 
 	realFile = Resources::addExtension(file, "CPK");
 	if (Common::File::exists(realFile)) {
-		Video::VideoDecoder *decoder = new SegaFILMDecoder(_mixer, Audio::Mixer::kSFXSoundType);
+		Video::VideoDecoder *decoder = new Video::SegaFILMDecoder(_mixer, Audio::Mixer::kSFXSoundType);
 
 		if (!decoder->loadFile(realFile)) {
 			delete decoder;

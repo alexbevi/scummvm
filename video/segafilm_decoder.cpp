@@ -29,10 +29,11 @@
 
 #include "audio/decoders/raw.h"
 
-#include "darkseed2/cpk_decoder.h"
+#include "video/segafilm_decoder.h"
 
-namespace DarkSeed2 {
+namespace Video {
 
+// TODO: Think about moving this to a separate codecs/raw.h file
 // For raw video, it seems to always be 24bpp RGB
 // We just convert to the current screen format for ease of use
 class SegaFilmRawCodec : public Video::Codec {
@@ -183,6 +184,7 @@ const ::Graphics::Surface *SegaFILMDecoder::decodeNextFrame() {
 		if (_sampleTable[_sampleTablePosition].sampleInfo1 == 0xFFFFFFFF) {
 			// Planar audio data. All left channel first and then left in stereo.
 			// TODO: Maybe move this to a new class?
+			// TODO: CRI ADX ADPCM is possible here too
 			byte *audioBuffer = (byte *)malloc(_sampleTable[_sampleTablePosition].length);
 
 			if (_audioFlags & Audio::FLAG_16BITS) {
@@ -273,4 +275,4 @@ void SegaFILMDecoder::close() {
 	delete _stream; _stream = 0;
 }
 
-} // End of namespace DarkSeed2
+} // End of namespace Video

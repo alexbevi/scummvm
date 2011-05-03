@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef CPK_DECODER_H
-#define CPK_DECODER_H
+#ifndef VIDEO_SEGAFILM_DECODER_H
+#define VIDEO_SEGAFILM_DECODER_H
 
 #include "common/system.h"
 #include "common/events.h"
@@ -41,7 +41,7 @@ namespace Common {
 	class SeekableReadStream;
 }
 
-namespace DarkSeed2 {
+namespace Video {
 
 struct SampleTableEntry {
 	uint32 offset;
@@ -50,7 +50,7 @@ struct SampleTableEntry {
 	uint32 sampleInfo2;
 };
 
-class SegaFILMDecoder : public Video::VideoDecoder {
+class SegaFILMDecoder : public VideoDecoder {
 public:
 	SegaFILMDecoder(Audio::Mixer *mixer,
 			Audio::Mixer::SoundType soundType = Audio::Mixer::kPlainSoundType);
@@ -86,10 +86,10 @@ protected:
 	uint32 _nextFrameStartTime;
 
 	uint32 _frameCount;
-	Video::Codec *_codec;
+	Codec *_codec;
 	uint16 _width, _height;
 };
 
-} // End of namespace DarkSeed2
+} // End of namespace Video
 
 #endif
