@@ -29,6 +29,8 @@
 
 #include "ring/graphics/screen.h"
 
+#include "common/textconsole.h"
+
 //using namespace Pilgrim3Game;
 
 namespace Ring {

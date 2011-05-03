@@ -36,6 +36,7 @@
 #include "ring/ring.h"
 
 #include "common/system.h"
+#include "common/textconsole.h"
 
 #include "graphics/fonts/winfont.h"
 #include "graphics/thumbnail.h"
@@ -50,7 +51,7 @@ ScreenManager::~ScreenManager() {
 }
 
 void ScreenManager::init() {
-	_screen.create(640, 480, g_system->getScreenFormat().bytesPerPixel);
+	_screen.create(640, 480, g_system->getScreenFormat());
 }
 
 void ScreenManager::clear() {
@@ -76,8 +77,8 @@ void ScreenManager::draw(Image *image, const Common::Point &point, DrawType type
 		error("[ScreenManager::draw] Invalid image pointer!");
 
 	// Check the screen surface bit depth (we only handle 16bpp)
-	if (_screen.bytesPerPixel != 2)
-		error("[ScreenManager::draw] Engine only handles 16bpp surfaces (was: %d)!", _screen.bytesPerPixel * 8);
+	if (_screen.format.bytesPerPixel != 2)
+		error("[ScreenManager::draw] Engine only handles 16bpp surfaces (was: %d)!", _screen.format.bytesPerPixel * 8);
 
 	// Check the image bit depth
 	switch (image->getBPP()) {

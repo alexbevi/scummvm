@@ -31,6 +31,8 @@
 #include "ring/shared.h"
 
 #include "common/archive.h"
+#include "common/hashmap.h"
+#include "common/hash-str.h"
 
 namespace Ring {
 

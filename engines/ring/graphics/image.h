@@ -28,6 +28,8 @@
 
 #include "ring/shared.h"
 
+#include "common/rect.h"
+
 #include "graphics/surface.h"
 
 namespace Ring {
@@ -52,7 +54,7 @@ public:
 	Common::Rect draw(Graphics::Surface *surface, const Common::Point &dest, uint32 srcWidth, uint32 srcHeight, int32 srcX, int32 offset);
 
 	// Accessors
-	uint32 getBPP()    { return _surface ? _surface->bytesPerPixel * 8: 0; }
+	uint32 getBPP()    { return _surface ? _surface->format.bytesPerPixel * 8: 0; }
 	uint32 getWidth()  { return _surface ? _surface->w : 0; }
 	uint32 getHeight() { return _surface ? _surface->h : 0; }
 

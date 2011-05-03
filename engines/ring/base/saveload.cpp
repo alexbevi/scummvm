@@ -35,6 +35,8 @@
 #include "ring/helpers.h"
 #include "ring/ring.h"
 
+#include "common/textconsole.h"
+
 #include "graphics/thumbnail.h"
 
 namespace Ring {

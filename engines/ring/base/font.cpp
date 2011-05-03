@@ -27,6 +27,8 @@
 
 #include "ring/helpers.h"
 
+#include "common/textconsole.h"
+
 #include "graphics/fonts/winfont.h"
 
 namespace Ring {

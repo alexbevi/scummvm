@@ -34,6 +34,8 @@
 #include "common/archive.h"
 #include "common/config-manager.h"
 
+#include "common/textconsole.h"
+
 namespace Ring {
 
 PreferenceHandler::PreferenceHandler(Application *application) : _app(application) {

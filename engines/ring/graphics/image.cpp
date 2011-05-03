@@ -33,6 +33,8 @@
 #include "ring/helpers.h"
 #include "ring/ring.h"
 
+#include "common/textconsole.h"
+
 namespace Ring {
 
 #pragma region ImageHandle
@@ -118,8 +120,11 @@ void Image::create(uint32 depth, uint32, uint32 width, uint32 height) {
 	if (_surface)
 		_surface->free();
 
+	Graphics::PixelFormat format = g_system->getScreenFormat();
+	format.bytesPerPixel = depth / 8;
+
 	_surface = new Graphics::Surface();
-	_surface->create((uint16)width, (uint16)height, (uint8)(depth / 8));
+	_surface->create((uint16)width, (uint16)height, format);
 }
 
 void Image::destroy() {
@@ -263,7 +268,7 @@ Common::Rect Image::draw(Graphics::Surface *surface, const Common::Point &dest, 
 	int16 height = destRect.height();
 
 	while (--height) {
-		memcpy(dst - (destRect.top * surface->pitch + destRect.left), src, (uint16)destRect.width() * _surface->bytesPerPixel);
+		memcpy(dst - (destRect.top * surface->pitch + destRect.left), src, (uint16)destRect.width() * _surface->format.bytesPerPixel);
 		dst -= surface->pitch;
 		src += _surface->pitch;
 	}

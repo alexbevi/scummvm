@@ -29,6 +29,7 @@
 #include "ring/shared.h"
 
 #include "common/keyboard.h"
+#include "common/rect.h"
 
 namespace Ring {
 

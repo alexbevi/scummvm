@@ -42,6 +42,8 @@
 
 #include "ring/ring.h"
 
+#include "common/textconsole.h"
+
 namespace Ring {
 
 #pragma region Rotation

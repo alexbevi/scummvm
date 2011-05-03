@@ -31,6 +31,8 @@
 
 #include "ring/helpers.h"
 
+#include "common/textconsole.h"
+
 namespace Ring {
 
 Accessibility::Accessibility(Object *object) : _object(object), _hotspot(NULL) {

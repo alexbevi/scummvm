@@ -46,6 +46,8 @@
 #include "ring/ring.h"
 #include "ring/shared_ring.h"
 
+#include "common/textconsole.h"
+
 using namespace RingGame;
 
 namespace Ring {

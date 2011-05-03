@@ -42,6 +42,8 @@
 #include "common/archive.h"
 #include "common/tokenizer.h"
 
+#include "common/textconsole.h"
+
 namespace Ring {
 
 #pragma region ObjectCursor

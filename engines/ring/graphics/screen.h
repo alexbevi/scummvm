@@ -30,6 +30,8 @@
 
 #include "ring/shared.h"
 
+#include "common/rect.h"
+
 namespace Ring {
 
 class Image;

@@ -41,6 +41,7 @@
 #include "ring/helpers.h"
 
 #include "common/file.h"
+#include "common/textconsole.h"
 
 namespace Ring {
 

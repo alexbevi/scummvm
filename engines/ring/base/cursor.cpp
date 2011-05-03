@@ -30,6 +30,8 @@
 
 #include "ring/helpers.h"
 
+#include "common/textconsole.h"
+
 #include "graphics/cursorman.h"
 #include "graphics/surface.h"
 

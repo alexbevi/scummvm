@@ -28,6 +28,7 @@
 
 #include "ring/shared.h"
 
+#include "common/rect.h"
 #include "common/stream.h"
 #include "common/substream.h"
 

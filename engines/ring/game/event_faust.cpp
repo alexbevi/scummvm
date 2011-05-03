@@ -35,6 +35,8 @@
 #include "ring/ring.h"
 #include "ring/shared_faust.h"
 
+#include "common/textconsole.h"
+
 using namespace FaustGame;
 
 namespace Ring {

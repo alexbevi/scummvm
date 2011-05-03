@@ -35,6 +35,7 @@
 #include "audio/decoders/wave.h"
 
 #include "common/file.h"
+#include "common/textconsole.h"
 
 namespace Ring {
 

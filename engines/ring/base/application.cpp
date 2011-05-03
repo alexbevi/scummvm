@@ -57,6 +57,7 @@
 
 #include "common/file.h"
 #include "common/tokenizer.h"
+#include "common/textconsole.h"
 
 #include "graphics/surface.h"
 
@@ -701,6 +702,7 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 	uint16 *diff = NULL;
 	uint16 *srcFrom = NULL;
 	uint16 *srcTo = NULL;
+	Graphics::PixelFormat format = g_system->getScreenFormat();
 
 	if (archiveType == kArchiveInvalid)
 		archiveType = getArchiveType(getCurrentZone());
@@ -747,13 +749,14 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 	}
 
 	// Create new surface to hold the difference frame
-	surface.create((uint16)imageFrom->getWidth(), (uint16)imageFrom->getHeight(), (uint8)(imageFrom->getBPP() / 8));
+	format.bytesPerPixel = imageFrom->getBPP() / 8;
+	surface.create((uint16)imageFrom->getWidth(), (uint16)imageFrom->getHeight(), format);
 
 	// Put difference frame data into surface
 	diff    = (uint16 *)surface.pixels;
 	srcFrom = (uint16 *)imageFrom->getSurface()->pixels;
 	srcTo   = (uint16 *)imageTo->getSurface()->pixels;
-	for (uint32 i = 0; i < (uint32)(surface.w * surface.h * surface.bytesPerPixel); i++)
+	for (uint32 i = 0; i < (uint32)(surface.w * surface.h * surface.format.bytesPerPixel); i++)
 		diff[i] = (srcFrom[i] - srcTo[i]) / (uint16)frameCount;
 
 	// Create animation
@@ -767,7 +770,7 @@ void Application::displayFade(Common::String filenameFrom, Common::String filena
 		uint32 currentFrame = 1;
 		while (!checkEscape()) {
 			// Update imageFrom buffer
-			for (uint32 i = 0; i < (uint32)(surface.w * surface.h * surface.bytesPerPixel); i++)
+			for (uint32 i = 0; i < (uint32)(surface.w * surface.h * surface.format.bytesPerPixel); i++)
 				srcFrom[i] -= diff[i];
 
 			// Draw updated frame

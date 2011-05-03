@@ -33,6 +33,7 @@
 
 #include "common/file.h"
 #include "common/substream.h"
+#include "common/textconsole.h"
 
 namespace Ring {
 

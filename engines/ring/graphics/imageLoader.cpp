@@ -37,6 +37,8 @@
 #include "graphics/imagedec.h"
 #include "graphics/surface.h"
 
+#include "common/textconsole.h"
+
 namespace Ring {
 
 #pragma region BMP
@@ -177,12 +179,15 @@ bool ImageLoaderBMA::readImage(Image *image) {
 	                                                                 _seqSize,  (2 * _header.seqWidth * _header.seqHeight) / _header.coreHeight,
 	                                                                 _coreSize, 2 * _header.coreWidth * _header.coreHeight,
 	                                                                 _header.seqWidth * _header.seqHeight * 16,
-							                                         2 * _header.seqWidth * _header.seqHeight - 6,
-							                                         _header.field_C, _header.field_10);
+	                                                                 2 * _header.seqWidth * _header.seqHeight - 6,
+	                                                                 _header.field_C, _header.field_10);
 
 	// Create surface to hold the data
+	Graphics::PixelFormat format = g_system->getScreenFormat();
+	format.bytesPerPixel = 2;
+
 	Graphics::Surface *surface = new Graphics::Surface();
-	surface->create((uint16)_header.seqWidth, (uint16)_header.seqHeight, 2); // FIXME: Always 16bpp BMPs?
+	surface->create((uint16)_header.seqWidth, (uint16)_header.seqHeight, format); // FIXME: Always 16bpp BMPs?
 
 	// Read from compressed stream
 	imageData->read(surface->pixels, _header.seqWidth * _header.seqHeight * 2);
@@ -350,8 +355,11 @@ bool ImageLoaderTGA::readImage(Common::SeekableReadStream *stream, Image *image)
 	if (_header.imagetype != kImageTypeRGB || _header.bits <= 16)
 		error("[ImageLoaderTGA::readImage] Unsupported image type (%s)!", _filename.c_str());
 
+	Graphics::PixelFormat format = g_system->getScreenFormat();
+	format.bytesPerPixel = _header.bits / 8;
+
 	Graphics::Surface *surface = new Graphics::Surface();
-	surface->create(_header.width, _header.height, _header.bits / 8);
+	surface->create(_header.width, _header.height, format);
 
 	uint32 size = _header.width * _header.height;
 
@@ -484,10 +492,13 @@ bool ImageLoaderCIN::readImage(Image *image) {
 	if (!image->isInitialized())
 		error("[ImageLoaderCNM::readImage] Invalid image!");
 
+	Graphics::PixelFormat format = g_system->getScreenFormat();
+	format.bytesPerPixel = 2;
+
 	// TODO Create image instead
 	// Create surface to hold the data
 	Graphics::Surface *surface = new Graphics::Surface();
-	surface->create((uint16)_width, (uint16)_height, 2);
+	surface->create((uint16)_width, (uint16)_height, format);
 
 	// Compute stride
 	_widthAndPadding = _width + 3;

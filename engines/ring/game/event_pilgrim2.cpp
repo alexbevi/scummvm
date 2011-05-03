@@ -27,6 +27,8 @@
 
 #include "ring/base/application.h"
 
+#include "common/textconsole.h"
+
 //using namespace Pilgrim2Game;
 
 namespace Ring {
