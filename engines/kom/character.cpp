@@ -423,7 +423,7 @@ void Character::setScopeX(int16 scope) {
 	// TODO - check spell effect and handle cabbage/grave/cutscene
 
 	if (scope == 100) {
-		printf("TODO: grave\n");
+		warning("TODO: grave");
 
 	// sprite cutscene
 	} else if (scope == 101) {
@@ -514,7 +514,7 @@ void Character::setScopeX(int16 scope) {
 			error("Illegal sprite type");
 		}
 	} else if (scope == 102) {
-		printf("TODO: cabbage\n");
+		warning("TODO: cabbage");
 
 	// regular scope
 	} else if (scope < 100) {

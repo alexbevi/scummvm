@@ -326,7 +326,7 @@ void Actor::display() {
 			_vm->screen()->drawMouseFrame((int8 *)(_framesData + frameStream.pos()),
 												  width, height, xStart, yStart);
 		} else {
-			//printf("drawing actor: %s\n", _name.c_str());
+			//debug("drawing actor: %s", _name.c_str());
 			switch (_effect) {
 			case 4:
 				_vm->screen()->drawActorFrame4((int8 *)(_framesData + frameStream.pos()),

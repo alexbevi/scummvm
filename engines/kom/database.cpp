@@ -206,7 +206,7 @@ void Database::initLocations() {
 	f.close();
 
 /*	for (int i = 0; i < _locationsNum; ++i) {
-		printf("%d %s %d %d %s\n",
+		debug("%d %s %d %d %s\n",
 			i,
 			_locations[i].name,
 			_locations[i].xtend,
@@ -283,7 +283,7 @@ void Database::initCharacters() {
 	f.close();
 
 /*	for (int i = 0; i < _charactersNum; ++i) {
-		printf("%d %s %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+		debug("%d %s %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
 			i,
 			_characters[i].name,
 			_characters[i].xtend,
@@ -384,7 +384,7 @@ void Database::initObjects() {
 	f.close();
 
 /*	for (int i = 0; i < _objectsNum; ++i) {
-		printf("%d %s %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+		debug("%d %s %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
 			i,
 			_objects[i].name,
 			_objects[i].data1,
@@ -440,9 +440,9 @@ void Database::initEvents() {
 	f.close();
 
 /*	for (int i = 0; i < _locationsNum; ++i) {
-		printf("location %d\n", i);
+		debug("location %d", i);
 		for (Common::List<EventLink>::iterator j = _locations[i].events.begin(); j != _locations[i].events.end(); ++j) {
-		printf("%d %d\n",
+		debug("%d %d",
 			j->exitBox, j->proc);
 		}
 	}*/

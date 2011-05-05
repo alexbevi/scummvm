@@ -796,7 +796,7 @@ bool Game::doStat(const Command *cmd) {
 			db->getChar(j->arg2)->_spellMode = j->arg3;
 			break;
 		case 492:
-			printf("TODO: give weapons\n");
+			warning("TODO: give weapons");
 			break;
 		case 494:
 			_vm->endGame();
@@ -1813,9 +1813,9 @@ void Game::doActionPlaySample(const char *name) {
 	_vm->actorMan()->pauseAnimAll(true);
 
 	while (isNarratorPlaying()) {
-		//printf("loop\n");
+		//warning("loop");
 		if (mode & 2) {
-			//printf("cond\n");
+			//warning("cond");
 			_cb.samplePlaying = true;
 			_vm->screen()->processGraphics(1);
 			_cb.samplePlaying = false;
@@ -1865,7 +1865,7 @@ bool Game::isNarratorPlaying() {
 }
 
 void Game::doGreet(int charId, int greeting) {
-	printf("TODO: doGreet(%d, %d)\n", charId, greeting);
+	warning("TODO: doGreet(%d, %d)", charId, greeting);
 }
 
 /**

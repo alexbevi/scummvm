@@ -374,7 +374,7 @@ void Screen::drawActorFrame0(const int8 *data, uint16 width, uint16 height, int1
 	int16 visibleHeight = yEnd - yStart;
 	int16 scaledHeight = visibleHeight;
 
-	//printf("drawActorFrame(%hu, %hu, %hd, %hd, %hu, %hu)\n", width, height, xStart, yStart, xEnd, yEnd);
+	//debug("drawActorFrame(%hu, %hu, %hd, %hd, %hu, %hu)", width, height, xStart, yStart, xEnd, yEnd);
 
 	if (visibleWidth == 0 || visibleHeight == 0) return;
 
@@ -389,7 +389,7 @@ void Screen::drawActorFrame0(const int8 *data, uint16 width, uint16 height, int1
 		d = div(-xStart * width, scaledWidth);
 		startCol = d.quot;
 		colSkip = d.rem;
-		//printf("startCol: %hu, colSkip: %d\n", startCol, colSkip);
+		//debug("startCol: %hu, colSkip: %d", startCol, colSkip);
 
 		xStart = 0;
 	}
@@ -410,7 +410,7 @@ void Screen::drawActorFrame0(const int8 *data, uint16 width, uint16 height, int1
 		d = div(-yStart * height, scaledHeight);
 		startLine = d.quot;
 		rowSkip = d.rem;
-		//printf("startLine: %hu, rowSkip: %d\n", startLine, rowSkip);
+		//debug("startLine: %hu, rowSkip: %d", startLine, rowSkip);
 
 		yStart = 0;
 	}
