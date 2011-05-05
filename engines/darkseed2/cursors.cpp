@@ -300,14 +300,14 @@ bool CursorsMac::load() {
 		palette.get()[keyColor * 3 + 1] = 0;
 		palette.get()[keyColor * 3 + 2] = 255;
 
-		free(rawPalette);
+		delete[] rawPalette;
 
 		cursor.sprite = new Sprite();
 		cursor.sprite->create(cursor.width, cursor.height);
 		cursor.sprite->setPalette(palette);
 		cursor.sprite->copyFrom(cursorData);
 
-		free(cursorData);
+		delete[] cursorData;
 
 		_cursors[cursor.name] = cursor;
 	}
