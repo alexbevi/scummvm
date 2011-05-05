@@ -50,7 +50,7 @@ class Sound;
 
 class Movie : public Saveable {
 public:
-	Movie(Audio::Mixer &mixer, Graphics &graphics, Cursors &cursors, Sound &sound);
+	Movie(Audio::Mixer &mixer, Graphics &graphics, Cursors &cursors, Sound &sound, Common::Platform platform);
 	~Movie();
 
 	/** Is a movie currently playing? */
@@ -84,6 +84,8 @@ private:
 	Sound        *_sound;
 
 	Common::String _fileName; ///< The current video's file name.
+
+	Common::Platform _platform;
 
 	int32 _x; ///< The X origin.
 	int32 _y; ///< The Y origin.

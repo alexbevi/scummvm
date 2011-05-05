@@ -244,7 +244,7 @@ bool DarkSeed2Engine::init(int32 width, int32 height) {
 	_graphics        = new Graphics(width, height, *_resources, *_variables, *_cursors, *_fontMan);
 	_talkMan         = new TalkManager(_resources->getVersionFormats(), *_sound, *_graphics, *_fontMan);
 	_mike            = new Mike(*_resources, *_variables, *_graphics);
-	_movie           = new Movie(*_mixer, *_graphics, *_cursors, *_sound);
+	_movie           = new Movie(*_mixer, *_graphics, *_cursors, *_sound, getPlatform());
 	_roomConfMan     = new RoomConfigManager(*this);
 	_inter           = new ScriptInterpreter(*this);
 	_events          = new Events(*this);

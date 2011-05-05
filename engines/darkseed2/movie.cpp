@@ -28,6 +28,7 @@
 #include "common/serializer.h"
 
 #include "video/avi_decoder.h"
+#include "video/qt_decoder.h"
 #include "video/segafilm_decoder.h"
 
 #include "darkseed2/movie.h"
@@ -40,11 +41,12 @@
 
 namespace DarkSeed2 {
 
-Movie::Movie(Audio::Mixer &mixer, Graphics &graphics, Cursors &cursors, Sound &sound) {
+Movie::Movie(Audio::Mixer &mixer, Graphics &graphics, Cursors &cursors, Sound &sound, Common::Platform platform) {
 	_mixer    = &mixer;
 	_graphics = &graphics;
 	_cursors  = &cursors;
 	_sound    = &sound;
+	_platform = platform;
 
 	_doubling = false;
 	_cursorVisible = false;
@@ -67,37 +69,35 @@ bool Movie::isPlaying() const {
 
 Video::VideoDecoder *Movie::createDecoder(const Common::String &file) const {
 	Common::String realFile;
+	Video::VideoDecoder *decoder = 0;
 
-	realFile = Resources::addExtension(file, "AVI");
-	if (Common::File::exists(realFile)) {
-		Video::VideoDecoder *decoder = new Video::AviDecoder(_mixer, Audio::Mixer::kSFXSoundType);
+	switch (_platform) {
+	case Common::kPlatformWindows:
+		// The Windows port uses AVI videos
+		realFile = Resources::addExtension(file, "AVI");
+		decoder = new Video::AviDecoder(_mixer, Audio::Mixer::kSFXSoundType);
+		break;
+	case Common::kPlatformSaturn:
+		// The Sega Saturn port uses Sega FILM videos
+		realFile = Resources::addExtension(file, "CPK");
+		decoder = new Video::SegaFILMDecoder(_mixer, Audio::Mixer::kSFXSoundType);
+		break;
+	case Common::kPlatformMacintosh:
+		// The Macintosh port uses QuickTime videos
+		realFile = Common::String("movies/") + Resources::addExtension(file, "MooV");
+		decoder = new Video::QuickTimeDecoder();
+		break;
+	case Common::kPlatformPSX:
+		// TODO: Probably PlayStation streams :P
+		break;
+	default:
+		break;
+	}
 
-		if (!decoder->loadFile(realFile)) {
-			delete decoder;
-			return 0;
-		}
-
+	if (decoder && decoder->loadFile(realFile))
 		return decoder;
-	}
 
-	realFile = Resources::addExtension(file, "CPK");
-	if (Common::File::exists(realFile)) {
-		Video::VideoDecoder *decoder = new Video::SegaFILMDecoder(_mixer, Audio::Mixer::kSFXSoundType);
-
-		if (!decoder->loadFile(realFile)) {
-			delete decoder;
-			return 0;
-		}
-
-		return decoder;
-	}
-
-	realFile = Common::String("movies/") + Resources::addExtension(file, "MooV");
-	if (Common::File::exists(realFile)) {
-		warning("STUB: Movie::createDecoder(): QuickTime");
-		return 0;
-	}
-
+	delete decoder;
 	return 0;
 }
 
