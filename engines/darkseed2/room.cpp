@@ -260,8 +260,12 @@ bool Room::parse(Resources &resources, const Common::String &base) {
 
 	debugC(-1, kDebugRooms, "Parsing room \"%s\"", _name.c_str());
 
-	return parse(resources, Resources::addExtension("ROOM" + base, "DAT"),
-	                        Resources::addExtension("OBJ_" + base, "DAT"));
+	// Try with the .DAT extension (Windows/Saturn)
+	if (parse(resources, Resources::addExtension("ROOM" + base, "DAT"), Resources::addExtension("OBJ_" + base, "DAT")))
+		return true;
+
+	// Try no extension (Macintosh)
+	return parse(resources, Common::String("ROOM") + base, Common::String("OBJ_") + base);
 }
 
 bool Room::setBackground(const Common::String &args) {
