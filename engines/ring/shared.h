@@ -29,6 +29,7 @@
 #include "common/array.h"
 #include "common/serializer.h"
 #include "common/system.h"
+#include "common/textconsole.h"
 
 namespace Ring {
 
