@@ -73,7 +73,7 @@ Common::Error PegasusEngine::run() {
 
 	loadItemLocationData();
 
-	if (!detectOpeningClosingDirectory()) {
+	if (!isDemo() && !detectOpeningClosingDirectory()) {
 		Common::String message = "Missing intro directory. ";
 
 		// Give Mac OS X a more specific message because we can
