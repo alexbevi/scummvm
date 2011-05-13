@@ -19,6 +19,7 @@
 #include "common/system.h"
 #include "common/events.h"
 #include "common/textconsole.h"
+#include "engines/util.h" // initGraphics
 #include "graphics/surface.h"
 #include "graphics/palette.h"
 #include "graphics/cursorman.h"
@@ -594,43 +595,16 @@ void Graphics::playMovie(Common::String filename) {
 	unsigned int vidheight = videoDecoder->getHeight();
 	unsigned int vidbpp = format.bytesPerPixel;
 
-	g_system->beginGFXTransaction();
-	g_system->initSize(vidwidth*2, vidheight*2, &format);
-	g_system->endGFXTransaction();
-
+	initGraphics(vidwidth, vidheight, false, &format);
 	assert(format.bytesPerPixel != 1);
-
-	byte *vidpixels = (byte *)alloca(vidwidth*2 * vidheight*2 * vidbpp);
-
 	g_system->showMouse(false);
 
 	while (!g_engine->shouldQuit() && !videoDecoder->endOfVideo() && !skipVideo) {
 		if (videoDecoder->needsUpdate()) {
 			const ::Graphics::Surface *frame = videoDecoder->decodeNextFrame();
 			if (frame) {
-				// TODO: this is some very slow 2x scaling
-				unsigned int x = 0, y = 0;
-
-				byte *in = (byte *)frame->pixels, *out = vidpixels;
-				for (unsigned int i = 0; i < vidheight; i++) {
-					for (unsigned int j = 0; j < vidwidth; j++) {
-						// first pixel, on two lines
-						memcpy(out, in, vidbpp);
-						memcpy(out + vidwidth*2*vidbpp, in, vidbpp);
-						out += vidbpp;
-						// second pixel, on two lines
-						memcpy(out, in, vidbpp);
-						memcpy(out + vidwidth*2*vidbpp, in, vidbpp);
-						out += vidbpp;
-
-						in += vidbpp;
-					}
-					// every other line already handled
-					out += vidwidth * 2 * vidbpp;
-				}
-
-				g_system->copyRectToScreen(vidpixels, vidwidth*2*vidbpp,
-					x, y, vidwidth*2, vidheight*2);
+				g_system->copyRectToScreen((byte *)frame->pixels, vidwidth*vidbpp,
+					0, 0, vidwidth, vidheight);
 
 				g_system->updateScreen();
 			}
@@ -647,9 +621,7 @@ void Graphics::playMovie(Common::String filename) {
 			g_system->delayMillis(10);
 	}
 
-	g_system->beginGFXTransaction();
-	g_system->initSize(640, 480);
-	g_system->endGFXTransaction();
+	initGraphics(640, 480, true);
 	g_system->showMouse(true);
 	if (palette) {
 		_vm->_system->getPaletteManager()->setPalette(palette, 0, 256);
