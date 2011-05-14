@@ -437,7 +437,7 @@ void UnityEngine::startupScreen() {
 	unsigned int anim = 0;
 	p->startAnim(anim);
 	uint32 waiting = 0;
-	while (true) {
+	while (!shouldQuit()) {
 		Common::Event event;
 		bool escape = false;
 		while (_eventMan->pollEvent(event)) {
@@ -1203,7 +1203,7 @@ Common::Error UnityEngine::run() {
 
 		assert(!_in_dialog);
 
-		while (_next_situation != 0xffffffff) {
+		while (_next_situation != 0xffffffff && !shouldQuit()) {
 			assert(_next_conversation);
 			unsigned int situation = _next_situation;
 			_next_situation = 0xffffffff;
