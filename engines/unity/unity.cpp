@@ -56,6 +56,7 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 
 UnityEngine::~UnityEngine() {
 	delete _snd;
+	delete _console;
 	delete _gfx;
 	delete data.data;
 	delete _icon;
@@ -66,6 +67,7 @@ Common::Error UnityEngine::init() {
 	g_eventRec.registerRandomSource(_rnd, "unity");
 
 	_gfx = new Graphics(this);
+	_console = new UnityConsole(this);
 	_snd = new Sound(this);
 
 	data.data = Common::makeZipArchive("STTNG.ZIP");
@@ -669,6 +671,19 @@ void UnityEngine::checkEvents() {
 					break;
 				}
 				break;
+
+			case Common::EVENT_KEYDOWN:
+				switch (event.kbd.keycode) {
+                        	case Common::KEYCODE_d:
+                                	if (event.kbd.hasFlags(Common::KBD_CTRL)) {
+                                	        this->getDebugger()->attach();
+                                	        this->getDebugger()->onFrame();
+                                	}
+                                	break;
+				default:
+					break;
+				}
+				break;			
 
 			case Common::EVENT_RBUTTONUP:
 				if (_on_bridge) break;

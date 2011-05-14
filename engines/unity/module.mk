@@ -1,6 +1,7 @@
 MODULE := engines/unity
 
 MODULE_OBJS := \
+	console.o \
 	data.o \
 	debug.o \
 	detection.o \

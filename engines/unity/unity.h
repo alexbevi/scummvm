@@ -20,6 +20,8 @@
 #include "engines/engine.h"
 #include "common/random.h"
 
+#include "unity/console.h"
+
 #include "data.h"
 
 namespace Unity {
@@ -44,6 +46,7 @@ public:
 
 	Common::Error init();
 	Common::Error run();
+        GUI::Debugger *getDebugger() { return _console; }
 
 	Object *objectAt(unsigned int x, unsigned int y);
 
@@ -98,6 +101,8 @@ public:
 	Common::String voiceFileFor(byte voice_group, byte voice_subgroup, objectID speaker, byte voice_id, char type = 0);
 
 protected:
+	UnityConsole *_console;
+
 	objectID _speaker;
 	SpritePlayer *_icon;
 
