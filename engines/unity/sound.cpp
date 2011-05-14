@@ -46,7 +46,6 @@ bool Unity_ADPCMStream::endOfData() const {
 }
 
 int Unity_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
-	assert(numSamples % 4 == 0);
 	bool stereo = _channels == 2;
 
 	int samples = 0;
