@@ -461,17 +461,15 @@ void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsig
 	unsigned int bitoffset = 0;
 	unsigned int bytesout = 0;
 	while (bitoffset < 8 * size) {
-		unsigned int i = bitoffset / 8; unsigned int shift = bitoffset % 8;
-		unsigned char x = buf[i] << shift;
-		if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
+		unsigned int i, shift; unsigned char x;
+		NEXT_BITS();
+
 		unsigned int decodetype = (x >> 6);
 		bitoffset += 2;
 
 		if (decodetype == 0) {
 			// read next 8 bits, output a run of that length
-			i = bitoffset / 8; shift = bitoffset % 8;
-			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
+			NEXT_BITS();
 			unsigned int length = x + 1;
 			if (shift == 0 || i + 1 < size) {
 				if (bytesout + length <= targetsize) {
@@ -488,22 +486,16 @@ void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsig
 			bitoffset += 8;
 		} else if (decodetype == 1) {
 			// read next 8 bits: one byte of data
-			i = bitoffset / 8; shift = bitoffset % 8;
-			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
+			NEXT_BITS();
 			data[bytesout] = x;
 			bytesout += 1;
 			bitoffset += 8;
 		} else if (decodetype == 2) {
 			// 8 bit colour + 3-bit length
-			i = bitoffset / 8; shift = bitoffset % 8;
-			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
+			NEXT_BITS();
 			char colour = x;
 			bitoffset += 8;
-			i = bitoffset / 8; shift = bitoffset % 8;
-			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
+			NEXT_BITS();
 			unsigned int length = (x >> 5) + 1;
 			for (unsigned int j = 0; j < length; j++) {
 				data[bytesout] = colour;
@@ -512,14 +504,10 @@ void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsig
 			bitoffset += 3;
 		} else {
 			// 8 bit colour + 8-bit length
-			i = bitoffset / 8; shift = bitoffset % 8;
-			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
+			NEXT_BITS();
 			char colour = x;
 			bitoffset += 8;
-			i = bitoffset / 8; shift = bitoffset % 8;
-			x = buf[i] << shift;
-			if (shift > 0 && i + 1 < size) x += (buf[i + 1] >> (8 - shift));
+			NEXT_BITS();
 			unsigned int length = x + 1;
 			for (unsigned int j = 0; j < length; j++) {
 				data[bytesout] = colour;
