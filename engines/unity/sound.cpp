@@ -17,6 +17,7 @@
 #include "sound.h"
 #include "common/system.h"
 #include "common/memstream.h"
+#include "common/queue.h"
 #include "audio/audiostream.h"
 #include "audio/decoders/adpcm_intern.h"
 
@@ -27,6 +28,7 @@ protected:
 	uint32 _loopPoint;
 	uint32 _currPos;
 	::Audio::ADPCMStream::ADPCMStatus _loopStatus;
+	Common::Queue<int16> _samplesBuffer;
 
 public:
 	Unity_ADPCMStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse, uint32 size, int rate, int channels, uint32 loopPoint = 0)
@@ -34,29 +36,52 @@ public:
 		memset(&_loopStatus, 0, sizeof(_loopStatus));
 	}
 
+	virtual bool endOfData() const;
 	virtual int readBuffer(int16 *buffer, const int numSamples);
 	virtual bool rewind();
 };
 
-int Unity_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
-	int samples;
-	byte data;
+bool Unity_ADPCMStream::endOfData() const {
+	return _samplesBuffer.empty() && ADPCMStream::endOfData();
+}
 
+int Unity_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
 	assert(numSamples % 4 == 0);
 	bool stereo = _channels == 2;
 
-	for (samples = 0; samples < numSamples && !_stream->eos() && _stream->pos() < _endpos; samples += 4) {
+	int samples = 0;
+
+	// First, use anything left over from last time.
+	int16 *target = buffer;
+	while (!_samplesBuffer.empty() && samples < numSamples) {
+		*(target++) = _samplesBuffer.pop();
+		samples++;
+	}
+
+	for (; samples < numSamples && !_stream->eos() && _stream->pos() < _endpos; samples += 4) {
+		byte data;
+		int16 block[4];
+
 		data = _stream->readByte();
 		if (_currPos == _loopPoint)
 			memcpy(&_loopStatus.ima_ch[0], &_status.ima_ch[0], sizeof(_status.ima_ch[0]));
-		buffer[samples] = decodeIMA(data & 0x0f);
-		buffer[samples + (stereo ? 2 : 1)] = decodeIMA((data >> 4) & 0x0f);
+		block[0] = decodeIMA(data & 0x0f);
+		block[stereo ? 2 : 1] = decodeIMA((data >> 4) & 0x0f);
 
 		data = _stream->readByte();
 		if (_currPos + (stereo ? 0 : 2) == _loopPoint)
 			memcpy(&_loopStatus.ima_ch[stereo ? 1 : 0], &_status.ima_ch[stereo ? 1 : 0], sizeof(_status.ima_ch[0]));
-		buffer[samples + (stereo ? 1 : 2)] = decodeIMA(data & 0x0f, stereo ? 1 : 0);
-		buffer[samples + 3] = decodeIMA((data >> 4) & 0x0f, stereo ? 1 : 0);
+		block[stereo ? 1 : 2] = decodeIMA(data & 0x0f, stereo ? 1 : 0);
+		block[3] = decodeIMA((data >> 4) & 0x0f, stereo ? 1 : 0);
+
+		// Put the result in the output buffer, storing anything left.
+		for (int i = 0; i < 4; i++) {
+			if (samples + i < numSamples) {
+				*(target++) = block[i];
+			} else {
+				_samplesBuffer.push(block[i]);
+			}
+		}
 
 		_currPos += 2;
 	}
