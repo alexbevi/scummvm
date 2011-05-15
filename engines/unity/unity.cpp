@@ -58,7 +58,8 @@ UnityEngine::~UnityEngine() {
 	delete _snd;
 	delete _console;
 	delete _gfx;
-	delete data.data;
+	// FIXME: Segfaults if deletion is done
+	//delete data.data;
 	delete _icon;
 	delete _current_away_team_icon;
 }
