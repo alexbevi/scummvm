@@ -98,7 +98,8 @@ void Graphics::loadCursors() {
 	}
 	delete stream;
 	stream = _vm->data.openFile("waitcurs.dat");
-	while (stream->pos() != stream->size()) {
+	// TODO: waitcursor stream has an extra byte on the end, so needs +1...
+	while (stream->pos() + 1 != stream->size()) {
 		Image img;
 		img.width = stream->readUint16LE();
 		img.height = stream->readUint16LE();
