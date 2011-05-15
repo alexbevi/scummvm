@@ -433,7 +433,8 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte en
 
 void UnityEngine::startupScreen() {
 	// play two animations (both logo anim followed by text) from one file
-	SpritePlayer *p = new SpritePlayer(new Sprite(data.openFile("legaleze.spr")), 0, this);
+	Sprite *sp = new Sprite(data.openFile("legaleze.spr"));
+	SpritePlayer *p = new SpritePlayer(sp, 0, this);
 	unsigned int anim = 0;
 	p->startAnim(anim);
 	uint32 waiting = 0;
@@ -475,6 +476,7 @@ void UnityEngine::startupScreen() {
 	}
 	_mixer->stopAll();
 	delete p;
+	delete sp;
 }
 
 void UnityEngine::processTriggers() {
