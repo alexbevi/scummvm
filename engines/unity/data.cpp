@@ -15,7 +15,7 @@
  */
 
 #include "unity.h"
-#include "sprite.h"
+#include "sprite_player.h"
 #include "object.h"
 #include "common/system.h"
 #include "common/memstream.h"

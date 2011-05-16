@@ -15,7 +15,7 @@
  */
 
 #include "graphics.h"
-#include "sprite.h"
+#include "sprite_player.h"
 #include "common/system.h"
 #include "common/events.h"
 #include "common/textconsole.h"

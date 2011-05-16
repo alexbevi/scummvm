@@ -16,7 +16,7 @@
 
 #include "object.h"
 #include "unity.h"
-#include "sprite.h"
+#include "sprite_player.h"
 #include "trigger.h"
 #include "sound.h"
 #include "graphics.h"

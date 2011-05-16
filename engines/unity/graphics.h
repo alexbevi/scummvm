@@ -15,7 +15,8 @@
  */
 
 #include "unity.h"
-#include "sprite.h"
+#include "sprite_player.h"
+
 #include "common/rect.h"
 
 namespace Unity {

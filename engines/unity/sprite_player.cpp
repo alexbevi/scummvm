@@ -15,11 +15,12 @@
  */
 
 #include "unity.h"
-#include "sprite.h"
-#include "common/system.h"
-#include "common/textconsole.h"
+#include "sprite_player.h"
 #include "object.h"
 #include "sound.h"
+
+#include "common/system.h"
+#include "common/textconsole.h"
 
 namespace Unity {
 
