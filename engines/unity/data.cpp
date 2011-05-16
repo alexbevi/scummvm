@@ -36,7 +36,7 @@ UnityData::~UnityData() {
 	for (Common::HashMap<unsigned int, Common::HashMap<unsigned int, Conversation *>*>::iterator i = conversations.begin();
 		i != conversations.end(); i++) {
 		for (Common::HashMap<unsigned int, Conversation *>::iterator j = i->_value->begin();
-			j != i->_value->end(); i++) {
+			j != i->_value->end(); j++) {
 			delete j->_value;
 		}
 		delete i->_value;
