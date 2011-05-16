@@ -178,7 +178,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 		char _name[30], _desc[260];
 		locstream->read(_name, 30);
 		locstream->read(_desc, 260);
-		//debugN("reading obj '%s' (%s)\n", _name, _desc);
+		debug(6, "reading obj '%s' (%s)", _name, _desc);
 
 		Object *obj = data.getObject(id);
 		obj->loadSprite();
@@ -196,9 +196,11 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 	// TODO: use these
 	uint16 advice_id = locstream->readUint16LE();
 	uint16 advice_timer = locstream->readUint16LE();
+	debug(6, "openLocation() advice_id: %d advice_timer: %d", advice_id, advice_timer);
 
 	byte unknown1 = locstream->readByte();
 	byte unknown2 = locstream->readByte();
+	debug(6, "openLocation() unknown1: %d unknown2: %d", unknown1, unknown2);
 
 	uint16 startup_screen = locstream->readUint16LE();
 	objectID target = readObjectID(locstream);
@@ -209,6 +211,8 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 	uint16 unknown4 = locstream->readUint16LE();
 	uint16 unknown5 = locstream->readUint16LE();
 	byte unknown6 = locstream->readByte();
+	debug(6, "openLocation() unknown3: %d unknown4: %d", unknown3, unknown4);
+	debug(6, "openLocation() unknown5: %d unknown6: %d", unknown5, unknown6);
 
 	if (startup_screen != 0xffff) {
 		assert(startup_screen == screen);

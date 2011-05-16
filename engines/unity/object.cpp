@@ -126,6 +126,7 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	curr_screen = objstream->readByte();
 
 	byte unknown3 = objstream->readByte(); // XXX: unused?
+	debug(2, "unknown3:%d", unknown3);
 
 	width = objstream->readSint16LE();
 	height = objstream->readSint16LE();
@@ -176,6 +177,7 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 			// but we do want to snaffle this, lurking in the middle
 			transition = readObjectID(objstream);
 		}
+		debug(2, "unknown(a:%d, b:%d, c:%d)", unknowna, unknownb, unknownc);
 	}
 
 	skills = objstream->readUint16LE();
@@ -195,6 +197,7 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	assert(zero16 == 0x0);
 
 	uint16 unknown21 = objstream->readUint16LE(); // XXX: unused?
+	debug(2, "unknown21: %d", unknown21);
 
 	voice_id = objstream->readUint32LE();
 	voice_group = objstream->readUint32LE();
@@ -204,7 +207,9 @@ void Object::loadObject(unsigned int for_world, unsigned int for_screen, unsigne
 	cursor_flag = objstream->readByte();
 
 	byte unknown26 = objstream->readByte(); // XXX
+	debug(2, "unknown26: %d", unknown26);
 	byte unknown27 = objstream->readByte(); // XXX
+	debug(2, "unknown27: %d", unknown27);
 
 	zero16 = objstream->readUint16LE();
 	assert(zero16 == 0x0);
@@ -964,6 +969,7 @@ void Object::readDescriptionBlock(Common::SeekableReadStream *objstream) {
 
 	// XXX: is this just corrupt entries and there should be a null byte here?
 	byte unknown2 = objstream->readByte();
+	debug(2, "unknown2: %d", unknown2);
 
 	int type = readBlockHeader(objstream);
 	if (type != BLOCK_SPEECH_INFO)
@@ -1062,7 +1068,7 @@ EntryList::~EntryList() {
 }
 
 ResultType EntryList::execute(UnityEngine *_vm, Action *context) {
-	debug(1, "");
+	debugN(1, "\n");
 	ResultType r = 0;
 	for (unsigned int i = 0; i < list.size(); i++) {
 		debug(1, "EntryList::execute: block %d of %d (size %d)", i + 1, list.size(), list[i]->size());
@@ -1088,7 +1094,7 @@ ResultType EntryList::execute(UnityEngine *_vm, Action *context) {
 		if (r & RESULT_STOPPED) break;
 	}
 	debug(1, "EntryList::execute: done with %d blocks", list.size());
-	debug(1, "");
+	debugN(1, "\n");
 	return r;
 }
 
@@ -1130,7 +1136,7 @@ ResultType ConditionBlock::check(UnityEngine *_vm, Action *context) {
 		//	run walk action with `who', return RESULT_WALKING|RESULT_DIDSOMETHING
 		// }
 		// TODO: (wth? checking `who' vs `who'?)
-		warning("unimplemented: ConditionCheck: ignoring HowClose");
+		warning("unimplemented: ConditionCheck: ignoring HowClose(x: %d y: %d)", x, y);
 	}
 
 	if ((WhoCan.id != 0xff) &&
@@ -1792,6 +1798,11 @@ void WhoCanSayBlock::readFrom(Common::SeekableReadStream *stream) {
 	byte unknown2 = stream->readByte();
 	byte unknown3 = stream->readByte();
 	byte unknown4 = stream->readByte();
+	debugN(3, "WhoCanSayBlack::readFrom()");
+	debugN(3, " unknown1: %d", unknown1);
+	debugN(3, " unknown2: %d", unknown2);
+	debugN(3, " unknown3: %d", unknown3);
+	debug(3, " unknown4: %d", unknown4);
 }
 
 void TextBlock::readFrom(Common::SeekableReadStream *stream) {
@@ -1863,9 +1874,9 @@ void ChangeActionBlock::readFrom(Common::SeekableReadStream *stream, int _type) 
 	uint16 unknown6 = stream->readUint16LE();
 	assert(unknown6 == 0 || (unknown6 >= 7 && unknown6 <= 12));
 
-	/*debugN("%s: response %d, state %d; unknowns: %x, %x, %x\n",
+	debug(4, "%s: response %d, state %d; unknowns: %x, %x, %x",
 		change_actor_names[type - BLOCK_CONV_CHANGEACT_DISABLE],
-		response_id, state_id, unknown4, unknown5, unknown6);*/
+		response_id, state_id, unknown4, unknown5, unknown6);
 }
 
 void ChangeActionBlock::execute(UnityEngine *_vm, Object *speaker, Conversation *src) {
@@ -1921,21 +1932,21 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 
 	uint16 unknown1 = stream->readUint16LE();
 	uint16 unknown2 = stream->readUint16LE();
-	//debugN("(%04x, %04x), ", unknown1, unknown2);
+	debugN(5, "(%04x, %04x), ", unknown1, unknown2);
 	// the 0xfffb is somewhere after a USE on 070504, see 7/4
 	assert(unknown2 == 0 || (unknown2 >= 6 && unknown2 <= 15) || unknown2 == 0xffff || unknown2 == 0xfffb);
 
 	unknown1 = stream->readUint16LE();
-	//debugN("(%04x), ", unknown1);
+	debugN(5, "(%04x), ", unknown1);
 
 	next_situation = stream->readUint16LE();
-	//debugN("(next %04x), ", next_situation);
+	debugN(5, "(next %04x), ", next_situation);
 
 	for (unsigned int i = 0; i < 5; i++) {
-		uint16 unknown1 = stream->readUint16LE();
-		uint16 unknown2 = stream->readUint16LE();
-		//debugN("(%04x, %04x), ", unknown1, unknown2);
-		assert(unknown2 == 0 || (unknown2 >= 6 && unknown2 <= 15) || unknown2 == 0xffff);
+		uint16 unknown01 = stream->readUint16LE();
+		uint16 unknown02 = stream->readUint16LE();
+		debugN(5, "(%04x, %04x), ", unknown01, unknown02);
+		assert(unknown02 == 0 || (unknown02 >= 6 && unknown02 <= 15) || unknown02 == 0xffff);
 	}
 
 	target = readObjectID(stream);
@@ -1950,24 +1961,22 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	voice_group = stream->readUint32LE();
 	voice_subgroup = stream->readUint16LE();
 
-	/*
-	debugN("%x: ", response_state);
-	debugN("%04x -- (%04x, %04x, %04x, %04x)\n", unknown3, unknown4, unknown5, unknown6, unknown7);
-	debugN("response %d, %d", id, state);
+	debugN(5, "%x: ", response_state);
+	debugN(5, "%04x -- (%04x, %04x, %04x, %04x)\n", unknown3, unknown4, unknown5, unknown6, unknown7);
+	debugN(5, "response %d, %d", id, state);
 	if (text.size()) {
-		debugN(": text '%s'", text.c_str());
+		debugN(5, ": text '%s'", text.c_str());
 		if (voice_id != 0xffffffff) {
-			debugN(" (%02x??%02x%02x.vac)", voice_group, voice_subgroup, voice_id);
+			debugN(5, " (%02x??%02x%02x.vac)", voice_group, voice_subgroup, voice_id);
 		}
 	}
-	debugN("\n");
-	*/
+	debugN(5, "\n");
 
 	int type;
 	while ((type = readBlockHeader(stream)) != -1) {
 		switch (type) {
 			case BLOCK_END_BLOCK:
-				//debugN("\n");
+				debugN(5, "\n");
 				return;
 
 			case BLOCK_CONV_WHOCANSAY:

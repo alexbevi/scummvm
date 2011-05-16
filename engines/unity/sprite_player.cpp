@@ -183,7 +183,7 @@ void SpritePlayer::update() {
 
 		case se_MouthPos:
 			{
-				SpriteEntryMouthPos *p = (SpriteEntryMouthPos *)e;
+				//SpriteEntryMouthPos *p = (SpriteEntryMouthPos *)e;
 				// TODO: okay, this isn't MouthPos :-) what is it?
 				// set on characters, drones, cable, welds..
 			}

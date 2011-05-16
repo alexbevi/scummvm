@@ -210,6 +210,7 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 	} else if (!strncmp(blockType, SNDF, 4)) {
 		// TODO: unknown is always 75, 95 or 100. volume?
 		uint32 unknown = _stream->readUint32LE();
+		debug(7, "SNDF Unknown(volume?): %d", unknown);
 		uint32 empty = _stream->readUint32LE();
 		assert(empty == 0);
 
