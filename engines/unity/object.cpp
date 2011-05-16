@@ -965,7 +965,7 @@ void Object::readDescriptionBlock(Common::SeekableReadStream *objstream) {
 
 	char text[150];
 	objstream->read(text, 149);
-	text[150] = 0;
+	text[149] = 0;
 
 	// XXX: is this just corrupt entries and there should be a null byte here?
 	byte unknown2 = objstream->readByte();
