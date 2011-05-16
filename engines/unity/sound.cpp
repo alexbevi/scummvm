@@ -84,6 +84,9 @@ int Unity_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
 
 		_currPos += 2;
 	}
+
+	if (samples > numSamples)
+		return numSamples;
 	return samples;
 }
 
