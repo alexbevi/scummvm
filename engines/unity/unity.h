@@ -39,6 +39,15 @@ enum AwayTeamMode {
 	mode_Talk
 };
 
+// Engine Debug Flags
+enum {
+	kDebugResource  = (1 << 0),
+	kDebugSaveLoad  = (1 << 1),
+	kDebugScript    = (1 << 2),
+	kDebugGraphics  = (1 << 3),
+	kDebugSound     = (1 << 4)
+};
+
 class UnityEngine : public Engine {
 public:
 	UnityEngine(class OSystem *syst);

@@ -32,11 +32,18 @@
 #include "common/file.h"
 #include "common/archive.h"
 #include "graphics/cursorman.h"
+#include "common/debug-channels.h"
 #include "common/EventRecorder.h"
 
 namespace Unity {
 
 UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
+	DebugMan.addDebugChannel(kDebugResource, "Resource", "Resource Debug Flag");
+	DebugMan.addDebugChannel(kDebugSaveLoad, "Saveload", "Saveload Debug Flag");
+	DebugMan.addDebugChannel(kDebugScript, "Script", "Script Debug Flag");
+	DebugMan.addDebugChannel(kDebugGraphics, "Graphics", "Graphics Debug Flag");
+	DebugMan.addDebugChannel(kDebugSound, "Sound", "Sound Debug Flag");
+
 	_in_dialog = false;
 	_dialog_choosing = false;
 	_icon = NULL;
@@ -62,6 +69,8 @@ UnityEngine::~UnityEngine() {
 	//delete data.data;
 	delete _icon;
 	delete _current_away_team_icon;
+
+	DebugMan.clearAllDebugChannels();
 }
 
 Common::Error UnityEngine::init() {
