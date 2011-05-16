@@ -329,8 +329,11 @@ void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsig
 
 	unsigned int bitoffset = 0;
 	unsigned int bytesout = 0;
+	unsigned int targetsize = width * height;
 	unsigned char last_colour = 0;
-	while (bitoffset < 8 * size) {
+	while (bytesout != targetsize) {
+		assert(bitoffset < 8 * size);
+
 		unsigned int i, shift; unsigned char x;
 		NEXT_BITS();
 
@@ -348,8 +351,8 @@ void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsig
 				colour = last_colour - 1 - (colour & 0x3);
 			}
 			last_colour = colour;
-			data[bytesout] = colour;
-			bytesout++;
+			assert(bytesout + 1 <= targetsize);
+			data[bytesout++] = colour;
 		} else if ((decodetype & 0x10) == 0) {
 			bitoffset += 2;
 
@@ -367,9 +370,9 @@ void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsig
 				colour = last_colour + 1 - colour;
 			}
 			last_colour = colour;
+			assert(bytesout + length <= targetsize);
 			for (unsigned int j = 0; j < length; j++) {
-				data[bytesout] = colour;
-				bytesout++;
+				data[bytesout++] = colour;
 			}
 		} else if ((decodetype & 0x8) == 0) {
 			bitoffset += 3;
@@ -383,9 +386,9 @@ void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsig
 			bitoffset += 1;
 
 			last_colour = colour;
+			assert(bytesout + length <= targetsize);
 			for (unsigned int j = 0; j < length; j++) {
-				data[bytesout] = colour;
-				bytesout++;
+				data[bytesout++] = colour;
 			}
 		} else if ((decodetype & 0x4) == 0) {
 			bitoffset += 4;
@@ -395,9 +398,9 @@ void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsig
 			bitoffset += 5;
 
 			last_colour = COLOUR_BLANK;
+			assert(bytesout + length <= targetsize);
 			for (unsigned int j = 0; j < length; j++) {
-				data[bytesout] = COLOUR_BLANK;
-				bytesout++;
+				data[bytesout++] = COLOUR_BLANK;
 			}
 		} else if ((decodetype & 0x2) == 0) {
 			bitoffset += 5;
@@ -411,9 +414,9 @@ void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsig
 			bitoffset += 4;
 
 			last_colour = colour;
+			assert(bytesout + length <= targetsize);
 			for (unsigned int j = 0; j < length; j++) {
-				data[bytesout] = colour;
-				bytesout++;
+				data[bytesout++] = colour;
 			}
 		} else if ((decodetype & 0x1) == 0) {
 			bitoffset += 6;
@@ -427,26 +430,20 @@ void Sprite::decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsig
 			bitoffset += 8;
 
 			last_colour = colour;
+			assert(bytesout + length <= targetsize);
 			for (unsigned int j = 0; j < length; j++) {
-				data[bytesout] = colour;
-				bytesout++;
+				data[bytesout++] = colour;
 			}
 		} else {
 			bitoffset += 7;
 
 			last_colour = COLOUR_BLANK;
+			assert(bytesout + width <= targetsize);
 			for (unsigned int j = 0; j < width; j++) {
-				data[bytesout] = COLOUR_BLANK;
-				bytesout++;
+				data[bytesout++] = COLOUR_BLANK;
 			}
 		}
 	}
-
-	//debugN("tried for %d, got %d\n", width * height, bytesout);
-
-	// TODO: why are we overrunning? not detecting the end?
-	assert(bytesout >= width * height);
-	assert(bytesout < 3 + width * height);
 }
 
 void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsigned int targetsize) {
@@ -461,7 +458,9 @@ void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsig
 
 	unsigned int bitoffset = 0;
 	unsigned int bytesout = 0;
-	while (bitoffset < 8 * size) {
+	while (bytesout != targetsize) {
+		assert(bitoffset < 8 * size);
+
 		unsigned int i, shift; unsigned char x;
 		NEXT_BITS();
 
@@ -472,24 +471,16 @@ void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsig
 			// read next 8 bits, output a run of that length
 			NEXT_BITS();
 			unsigned int length = x + 1;
-			if (shift == 0 || i + 1 < size) {
-				if (bytesout + length <= targetsize) {
-					for (unsigned int j = 0; j < length; j++) {
-						data[bytesout] = COLOUR_BLANK;
-						bytesout++;
-					}
-				} else {
-					// XXX: why do we go off the end sometimes?
-					assert(bytesout == targetsize);
-					assert(i + 2 > size);
-				}
+			assert(bytesout + length <= targetsize);
+			for (unsigned int j = 0; j < length; j++) {
+				data[bytesout++] = COLOUR_BLANK;
 			}
 			bitoffset += 8;
 		} else if (decodetype == 1) {
 			// read next 8 bits: one byte of data
 			NEXT_BITS();
-			data[bytesout] = x;
-			bytesout += 1;
+			assert(bytesout + 1 <= targetsize);
+			data[bytesout++] = x;
 			bitoffset += 8;
 		} else if (decodetype == 2) {
 			// 8 bit colour + 3-bit length
@@ -498,9 +489,9 @@ void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsig
 			bitoffset += 8;
 			NEXT_BITS();
 			unsigned int length = (x >> 5) + 1;
+			assert(bytesout + length <= targetsize);
 			for (unsigned int j = 0; j < length; j++) {
-				data[bytesout] = colour;
-				bytesout++;
+				data[bytesout++] = colour;
 			}
 			bitoffset += 3;
 		} else {
@@ -510,15 +501,13 @@ void Sprite::decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsig
 			bitoffset += 8;
 			NEXT_BITS();
 			unsigned int length = x + 1;
+			assert(bytesout + length <= targetsize);
 			for (unsigned int j = 0; j < length; j++) {
-				data[bytesout] = colour;
-				bytesout++;
+				data[bytesout++] = colour;
 			}
 			bitoffset += 8;
 		}
 	}
-	assert(bitoffset >= 8 * size);
-	assert(bytesout == targetsize);
 
 	bool dump = false;
 	if (dump) {
