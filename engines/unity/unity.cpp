@@ -71,10 +71,11 @@ UnityEngine::~UnityEngine() {
 	delete _current_away_team_icon;
 
 	DebugMan.clearAllDebugChannels();
+	delete _rnd;
 }
 
 Common::Error UnityEngine::init() {
-	g_eventRec.registerRandomSource(_rnd, "unity");
+	_rnd = new Common::RandomSource("unity");
 
 	_gfx = new Graphics(this);
 	_console = new UnityConsole(this);

@@ -59,7 +59,7 @@ public:
 
 	Object *objectAt(unsigned int x, unsigned int y);
 
-	Common::RandomSource _rnd;
+	Common::RandomSource *_rnd;
 
 	UnityData data;
 

@@ -213,7 +213,7 @@ void SpritePlayer::update() {
 
 		case se_RandomWait:
 			if (!wait_target) {
-				unsigned int wait = _vm->_rnd.getRandomNumberRng(0,
+				unsigned int wait = _vm->_rnd->getRandomNumberRng(0,
 					((SpriteEntryRandomWait *)e)->rand_amt);
 				// TODO: is /6 correct? see below
 				wait_target = g_system->getMillis() + ((SpriteEntryRandomWait *)e)->base/6 + wait/6;
