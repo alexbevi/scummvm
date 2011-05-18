@@ -18,9 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  */
 
 #include "draci/draci.h"
@@ -113,7 +110,7 @@ void Mouse::setCursorType(CursorType cur) {
 
 void Mouse::loadItemCursor(const GameItem *item, bool highlighted) {
 	const int itemID = item->_absNum;
-	const int archiveIndex = 2 * itemID + highlighted;
+	const int archiveIndex = 2 * itemID + (highlighted ? 1 : 0);
 	CursorType newCursor = static_cast<CursorType> (kItemCursor + archiveIndex);
 	if (newCursor == getCursorType()) {
 		return;

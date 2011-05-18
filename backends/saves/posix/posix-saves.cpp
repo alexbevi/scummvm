@@ -18,10 +18,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  */
+
+
+// Enable mkdir
+#define FORBIDDEN_SYMBOL_EXCEPTION_mkdir
+#define FORBIDDEN_SYMBOL_EXCEPTION_time_h	//On IRIX, sys/stat.h includes sys/time.h
 
 #include "common/scummsys.h"
 
@@ -31,6 +33,7 @@
 
 #include "common/config-manager.h"
 #include "common/savefile.h"
+#include "common/textconsole.h"
 
 #include <stdio.h>
 #include <string.h>

@@ -18,9 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  */
 
 #include "mohawk/cursors.h"
@@ -33,6 +30,8 @@
 #include "mohawk/myst_stacks/myst.h"
 
 #include "common/events.h"
+#include "common/system.h"
+#include "common/textconsole.h"
 
 #include "gui/message.h"
 
@@ -860,7 +859,6 @@ void Myst::o_fireplaceToggleButton(uint16 op, uint16 var, uint16 argc, uint16 *a
 		for (uint i = 4795; i >= 4779; i--) {
 			_vm->_gfx->copyImageToScreen(i, _invokingResource->getRect());
 			_vm->_system->updateScreen();
-			_vm->_system->delayMillis(1);
 		}
 		_fireplaceLines[var - 17] &= ~bitmask;
 	} else {
@@ -868,7 +866,6 @@ void Myst::o_fireplaceToggleButton(uint16 op, uint16 var, uint16 argc, uint16 *a
 		for (uint i = 4779; i <= 4795; i++) {
 			_vm->_gfx->copyImageToScreen(i, _invokingResource->getRect());
 			_vm->_system->updateScreen();
-			_vm->_system->delayMillis(1);
 		}
 		_fireplaceLines[var - 17] |= bitmask;
 	}

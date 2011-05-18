@@ -18,9 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  */
 
 #include "sci/sci.h"
@@ -128,7 +125,7 @@ reg_t kSetJump(EngineState *s, int argc, reg_t *argv) {
 	debugC(kDebugLevelBresen, "c: %d, tmp: %d", c, tmp);
 
 	// Compute x step
-	if (tmp != 0)
+	if (tmp != 0 && dx != 0)
 		vx = (int16)((float)(dx * sqrt(gy / (2.0 * tmp))));
 	else
 		vx = 0;

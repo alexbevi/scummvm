@@ -18,10 +18,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  */
+
+#define FORBIDDEN_SYMBOL_EXCEPTION_mkdir
+#define FORBIDDEN_SYMBOL_EXCEPTION_time_h	//On IRIX, sys/stat.h includes sys/time.h
 
 #include "common/scummsys.h"
 
@@ -33,6 +33,7 @@
 
 #include <errno.h>
 #include <sys/stat.h>
+
 
 OSystem_POSIX::OSystem_POSIX(Common::String baseConfigName)
 	:

@@ -18,16 +18,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  */
 
-#ifndef BASE_OPTIONS_H
-#define BASE_OPTIONS_H
+#ifndef COMMON_COMMAND_LINE_H
+#define COMMON_COMMAND_LINE_H
 
-#include "common/str.h"
-#include "common/config-manager.h"
+#include "common/hash-str.h"
+
+namespace Common {
+class Error;
+class String;
+}
 
 namespace Base {
 

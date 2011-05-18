@@ -17,23 +17,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * $URL$
- * $Id$
  */
 
 #ifndef GRAPHICS_FONT_H
 #define GRAPHICS_FONT_H
 
 #include "common/str.h"
-#include "common/array.h"
-#include "graphics/surface.h"
 
 namespace Common {
 class SeekableReadStream;
+template<class T> class Array;
 }
 
 namespace Graphics {
+
+struct Surface;
 
 /** Text alignment modes */
 enum TextAlign {

@@ -18,14 +18,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  */
 
+#include "common/debug.h"
+#include "common/endian.h"
+#include "common/stream.h"
 #include "common/substream.h"
+#include "common/textconsole.h"
 
-#include "graphics/conversion.h"
 #include "graphics/jpeg.h"
 #include "graphics/pict.h"
 #include "graphics/surface.h"
@@ -209,7 +209,7 @@ void PictDecoder::decodeDirectBitsRect(Common::SeekableReadStream *stream, bool 
 		bytesPerPixel = directBitsData.pixMap.pixelSize / 8;
 
 	_outputSurface = new Graphics::Surface();
-	_outputSurface->create(width, height, (bytesPerPixel == 1) ? 1 : _pixelFormat.bytesPerPixel);
+	_outputSurface->create(width, height, (bytesPerPixel == 1) ? PixelFormat::createFormatCLUT8() : _pixelFormat);
 	byte *buffer = new byte[width * height * bytesPerPixel];
 
 	// Read in amount of data per row

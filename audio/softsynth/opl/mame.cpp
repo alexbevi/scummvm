@@ -18,9 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  * LGPL licensed version of MAMEs fmopl (V0.37a modified) by
  * Tatsuyuki Satoh. Included from LGPL'ed AdPlug.
  */
@@ -32,6 +29,9 @@
 #include <math.h>
 
 #include "mame.h"
+
+#include "common/textconsole.h"
+#include "common/util.h"
 
 #if defined (_WIN32_WCE) || defined (__SYMBIAN32__) || defined(__GP32__) || defined(GP2X) || defined (__MAEMO__) || defined(__DS__) || defined (__MINT__) || defined(__N64__)
 #include "common/config-manager.h"
