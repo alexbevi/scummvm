@@ -219,7 +219,7 @@ private:
 	Common::Array<RoomObject> _roomObjects;
 	Common::Array<RoomDoor> _roomDoors;
 
-	Common::RandomSource _rnd;
+	Common::RandomSource *_rnd;
 
     // Settings
     Settings _settings;

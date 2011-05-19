@@ -42,13 +42,15 @@ using Common::String;
 Game::Game(KomEngine *vm, OSystem *system) : _system(system), _vm(vm) {
 
 	// FIXME: Temporary
-    _player.selectedChar = _player.selectedQuest = 0;
+	_player.selectedChar = _player.selectedQuest = 0;
 
 	_videoPlayer = new VideoPlayer(_vm);
+	_rnd = new Common::RandomSource("kom");
 }
 
 Game::~Game() {
 	delete _videoPlayer;
+	delete _rnd;
 }
 
 void Game::enterLocation(uint16 locId) {
@@ -441,7 +443,7 @@ bool Game::doStat(const Command *cmd) {
 			db->setVar(j->arg2, 0);
 			break;
 		case 334:
-			db->setVar(j->arg2, _rnd.getRandomNumber(j->arg3 - 1));
+			db->setVar(j->arg2, _rnd->getRandomNumber(j->arg3 - 1));
 			break;
 		case 337:
 			keepProcessing = db->getVar(j->arg2) == 0;
