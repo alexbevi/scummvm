@@ -44,8 +44,6 @@ namespace Kom {
 
 const int Database::_locRoutesSize = 111;
 
-static Common::String line;
-
 Database::Database(KomEngine *vm, OSystem *system)
 	: _system(system), _vm(vm) {
 	_locations = 0;
@@ -169,6 +167,7 @@ char *Database::getNarratorText(const char *entry) {
 
 void Database::initLocations() {
 	File f;
+	Common::String line;
 
 	f.open(_pathPrefix + _databasePrefix + ".loc");
 
@@ -214,6 +213,7 @@ void Database::initLocations() {
 
 void Database::initCharacters() {
 	File f;
+	Common::String line;
 
 	f.open(_pathPrefix + _databasePrefix + ".chr");
 
@@ -310,6 +310,7 @@ void Database::initCharacters() {
 
 void Database::initObjects() {
 	File f;
+	Common::String line;
 
 	f.open(_pathPrefix + _databasePrefix + ".obs");
 
@@ -414,6 +415,7 @@ void Database::initObjects() {
 void Database::initEvents() {
 	int entries;
 	File f;
+	Common::String line;
 
 	f.open(_pathPrefix + _databasePrefix + ".box");
 
@@ -475,6 +477,7 @@ void Database::initCharacterLocs() {
 
 void Database::initProcs() {
 	File f;
+	Common::String line;
 
 	f.open(_pathPrefix + _databasePrefix + ".pro");
 
@@ -706,6 +709,7 @@ void Database::initProcs() {
 
 void Database::initRoutes() {
 	File f;
+	Common::String line;
 	char keyword[30];
 	int16 locIndex = 0;
 	int16 boxIndex = 0;
@@ -811,6 +815,7 @@ void Database::initRoutes() {
 
 void Database::initScopes() {
 	File f;
+	Common::String line;
 	char keyword[30];
 	uint8 actorIndex = 0;
 	uint8 scopeIndex = 0;

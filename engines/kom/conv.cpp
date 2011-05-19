@@ -40,7 +40,6 @@
 
 namespace Kom {
 
-static Common::String lineBuffer;
 
 Conv::Conv(KomEngine *vm, uint16 charId)
 	: _vm(vm), _convs(0), _text(0) {
@@ -68,6 +67,7 @@ Conv::~Conv() {
 void Conv::initConvs(uint32 offset) {
 	int16 charId, cmd;
 	int32 optNum;
+	Common::String lineBuffer;
 
 	_convData->seek(offset);
 
@@ -173,6 +173,8 @@ void Conv::initConvs(uint32 offset) {
 
 void Conv::initText(uint32 offset) {
 	int num;
+	Common::String lineBuffer;
+
 	_convData->seek(offset);
 	lineBuffer = _convData->readLine();
 	sscanf(lineBuffer.c_str(), "%d", &num);
@@ -202,6 +204,7 @@ void Conv::doResponse(int responseNum) {
 	int count;
 	int num = -1;
 	int charId = 0, offset = 0;
+	Common::String lineBuffer;
 
 	initText(READ_LE_UINT32(_convEntry + 12));
 
