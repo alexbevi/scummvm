@@ -1193,6 +1193,7 @@ Common::Error UnityEngine::run() {
 	data.loadIconSprites();
 	data.loadExecutableData();
 	data.loadMovieInfo();
+	data.loadComputerDatabase();
 
 	startupScreen();
 

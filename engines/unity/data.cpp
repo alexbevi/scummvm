@@ -29,6 +29,9 @@
 namespace Unity {
 
 UnityData::~UnityData() {
+	for (uint i = 0; i < _computerEntries.size(); i++) {
+		delete[] _computerEntries[i].imageData;
+	}
 	for (Common::HashMap<uint32, Object *>::iterator i = objects.begin();
 		i != objects.end(); i++) {
 		delete i->_value;
@@ -328,6 +331,78 @@ void UnityData::loadMovieInfo() {
 
 		movie_filenames[identifier] = filename;
 		movie_descriptions[identifier] = str;
+	}
+
+	delete stream;
+}
+
+static Common::String readStringFromOffset(Common::SeekableReadStream *stream, uint32 offset) {
+	Common::String temp;
+	stream->seek(offset, SEEK_SET);
+	while (!stream->eos()) {
+		byte b = stream->readByte();
+		if (b == 0)
+			break;
+		temp += b;
+	}
+	return temp;
+}
+
+void UnityData::loadComputerDatabase() {
+	Common::SeekableReadStream *stream = openFile("computer.db");
+	uint32 numEntries = stream->readUint32LE();
+
+	Common::Array<uint32> offsets;
+	for (uint i = 0; i < numEntries; i++) {
+		offsets.push_back(stream->readUint32LE());
+	}
+	// we skip one last offset, which marks the end of the file
+	uint32 startOffset = 8 + 4 * offsets.size();
+
+	for (uint i = 0; i < offsets.size(); i++) {
+		ComputerEntry entry;
+
+		stream->seek(startOffset + offsets[i], SEEK_SET);
+
+		uint16 numSubentries = stream->readUint16LE();
+		entry.flags = stream->readUint16LE();
+		uint32 titleOffset = stream->readUint32LE();
+		uint32 headingOffset = stream->readUint32LE();
+		uint32 textOffset = stream->readUint32LE();
+		uint32 imageOffset = stream->readUint32LE();
+		for (uint j = 0; j < numSubentries; j++) {
+			uint32 offset = stream->readUint32LE();
+
+			// Look up the offset, store the index instead.
+			uint32 entryId = 0; // the root entry is never a subentry
+			for (uint k = 0; k < offsets.size(); k++) {
+				if (offsets[k] != offset)
+					continue;
+
+				entryId = k;
+				break;
+			}
+			if (entryId == 0)
+				error("corrupt computer.db (couldn't find subentry %d (of %d) of entry %d)", j, numSubentries, i);
+			entry.subentries.push_back(entryId);
+		}
+
+		if (!titleOffset || !headingOffset || !textOffset)
+			error("invalid computer.db (missing offsets)");
+		entry.title = readStringFromOffset(stream, startOffset + titleOffset);
+		entry.heading = readStringFromOffset(stream, startOffset + headingOffset);
+		entry.text = readStringFromOffset(stream, startOffset + textOffset);
+		if (imageOffset) {
+			stream->seek(startOffset + imageOffset, SEEK_SET);
+			entry.imageWidth = stream->readUint16LE();
+			entry.imageHeight = stream->readUint16LE();
+			entry.imageData = new byte[entry.imageWidth * entry.imageHeight];
+		} else {
+			entry.imageData = NULL;
+		}
+
+		debug(6, "Computer entry %d: title '%s', heading '%s'", i, entry.title.c_str(), entry.heading.c_str());
+		_computerEntries.push_back(entry);
 	}
 
 	delete stream;

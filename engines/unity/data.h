@@ -59,6 +59,14 @@ struct Screen {
 	Common::Array<Object *> objects;
 };
 
+struct ComputerEntry {
+	uint16 flags;
+	Common::String title, heading, text;
+	Common::Array<uint> subentries;
+	uint16 imageWidth, imageHeight;
+	byte *imageData;
+};
+
 class UnityData {
 protected:
 	class UnityEngine *_vm;
@@ -103,6 +111,10 @@ public:
 	Common::HashMap<unsigned int, Common::String> movie_filenames;
 	Common::HashMap<unsigned int, Common::String> movie_descriptions;
 	void loadMovieInfo();
+
+	// computer database
+	Common::Array<ComputerEntry> _computerEntries;
+	void loadComputerDatabase();
 
 	// hardcoded data
 	Common::Array<BridgeItem> bridge_items;
