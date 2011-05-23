@@ -32,12 +32,12 @@ UnityData::~UnityData() {
 	for (uint i = 0; i < _computerEntries.size(); i++) {
 		delete[] _computerEntries[i].imageData;
 	}
-	for (Common::HashMap<uint32, Object *>::iterator i = objects.begin();
-		i != objects.end(); i++) {
+	for (Common::HashMap<uint32, Object *>::iterator i = _objects.begin();
+		i != _objects.end(); i++) {
 		delete i->_value;
 	}
-	for (Common::HashMap<unsigned int, Common::HashMap<unsigned int, Conversation *>*>::iterator i = conversations.begin();
-		i != conversations.end(); i++) {
+	for (Common::HashMap<unsigned int, Common::HashMap<unsigned int, Conversation *>*>::iterator i = _conversations.begin();
+		i != _conversations.end(); i++) {
 		for (Common::HashMap<unsigned int, Conversation *>::iterator j = i->_value->begin();
 			j != i->_value->end(); j++) {
 			delete j->_value;
@@ -49,20 +49,20 @@ UnityData::~UnityData() {
 void UnityData::loadScreenPolys(Common::String filename) {
 	Common::SeekableReadStream *mrgStream = openFile(filename);
 
-	uint16 num_entries = mrgStream->readUint16LE();
+	uint16 numEntries = mrgStream->readUint16LE();
 	Common::Array<uint32> offsets;
 	Common::Array<uint32> ids;
-	offsets.reserve(num_entries);
-	for (unsigned int i = 0; i < num_entries; i++) {
+	offsets.reserve(numEntries);
+	for (unsigned int i = 0; i < numEntries; i++) {
 		uint32 id = mrgStream->readUint32LE();
 		ids.push_back(id);
 		uint32 offset = mrgStream->readUint32LE();
 		offsets.push_back(offset);
 	}
 
-	current_screen.polygons.clear();
-	current_screen.polygons.reserve(num_entries);
-	for (unsigned int i = 0; i < num_entries; i++) {
+	_currentScreen.polygons.clear();
+	_currentScreen.polygons.reserve(numEntries);
+	for (unsigned int i = 0; i < numEntries; i++) {
 		ScreenPolygon poly;
 
 		bool r = mrgStream->seek(offsets[i]);
@@ -102,7 +102,7 @@ void UnityData::loadScreenPolys(Common::String filename) {
 			poly.triangles.push_back(tri);
 		}
 
-		current_screen.polygons.push_back(poly);
+		_currentScreen.polygons.push_back(poly);
 	}
 
 	delete mrgStream;
@@ -113,10 +113,11 @@ void UnityData::loadTriggers() {
 
 	while (true) {
 		uint32 id = triggerstream->readUint32LE();
-		if (triggerstream->eos()) break;
+		if (triggerstream->eos())
+			break;
 
 		Trigger *trigger = new Trigger;
-		triggers.push_back(trigger);
+		_triggers.push_back(trigger);
 		trigger->id = id;
 
 		uint16 unused = triggerstream->readUint16LE();
@@ -142,39 +143,39 @@ void UnityData::loadTriggers() {
 		trigger->timer_start = triggerstream->readUint32LE();
 
 		switch (trigger->type) {
-			case TRIGGERTYPE_TIMER:
-				{
-					uint32 zero = triggerstream->readUint32LE();
-					assert(zero == 0);
-					zero = triggerstream->readUint32LE();
-					assert(zero == 0);
-				}
-				break;
+		case TRIGGERTYPE_TIMER:
+			{
+				uint32 zero = triggerstream->readUint32LE();
+				assert(zero == 0);
+				zero = triggerstream->readUint32LE();
+				assert(zero == 0);
+			}
+			break;
 
-			case TRIGGERTYPE_PROXIMITY:
-				{
-					trigger->dist = triggerstream->readUint16LE();
-					unused = triggerstream->readUint16LE();
-					assert(unused == 0xffff);
-					trigger->from = readObjectID(triggerstream);
-					trigger->to = readObjectID(triggerstream);
-					byte unknown1 = triggerstream->readByte();
-					assert(unknown1 == 0 || unknown1 == 1);
-					trigger->reversed = (unknown1 == 0);
-					byte unknown2 = triggerstream->readByte();
-					assert(unknown2 == 0 || unknown2 == 1);
-					trigger->instant = (unknown2 == 1);
-					unused = triggerstream->readUint16LE();
-					assert(unused == 0xffff);
-				}
-				break;
+		case TRIGGERTYPE_PROXIMITY:
+			{
+				trigger->dist = triggerstream->readUint16LE();
+				unused = triggerstream->readUint16LE();
+				assert(unused == 0xffff);
+				trigger->from = readObjectID(triggerstream);
+				trigger->to = readObjectID(triggerstream);
+				byte unknown1 = triggerstream->readByte();
+				assert(unknown1 == 0 || unknown1 == 1);
+				trigger->reversed = (unknown1 == 0);
+				byte unknown2 = triggerstream->readByte();
+				assert(unknown2 == 0 || unknown2 == 1);
+				trigger->instant = (unknown2 == 1);
+				unused = triggerstream->readUint16LE();
+				assert(unused == 0xffff);
+			}
+			break;
 
-			case TRIGGERTYPE_UNUSED:
-				{
-					uint32 zero = triggerstream->readUint32LE();
-					assert(zero == 0);
-				}
-				break;
+		case TRIGGERTYPE_UNUSED:
+			{
+				uint32 zero = triggerstream->readUint32LE();
+				assert(zero == 0);
+			}
+			break;
 		}
 	}
 
@@ -182,9 +183,9 @@ void UnityData::loadTriggers() {
 }
 
 Trigger *UnityData::getTrigger(uint32 id) {
-	for (unsigned int i = 0; i < triggers.size(); i++) {
-		if (triggers[i]->id == id)
-			return triggers[i];
+	for (unsigned int i = 0; i < _triggers.size(); i++) {
+		if (_triggers[i]->id == id)
+			return _triggers[i];
 	}
 
 	return NULL;
@@ -208,18 +209,19 @@ Common::SeekableReadStream *UnityData::openFile(Common::String filename) {
 void UnityData::loadSpriteFilenames() {
 	Common::SeekableReadStream *stream = openFile("sprite.lst");
 
-	uint32 num_sprites = stream->readUint32LE();
-	sprite_filenames.reserve(num_sprites);
+	uint32 numSprites = stream->readUint32LE();
+	_spriteFilenames.reserve(numSprites);
 
-	for (unsigned int i = 0; i < num_sprites; i++) {
+	for (unsigned int i = 0; i < numSprites; i++) {
 		char buf[9]; // DOS filenames, so 9 should really be enough
 		for (unsigned int j = 0; j < 9; j++) {
 			char c = stream->readByte();
 			buf[j] = c;
-			if (c == 0) break;
+			if (c == 0)
+				break;
 			assert (j != 8);
 		}
-		sprite_filenames.push_back(buf);
+		_spriteFilenames.push_back(buf);
 	}
 
 	delete stream;
@@ -227,15 +229,16 @@ void UnityData::loadSpriteFilenames() {
 
 Common::String UnityData::getSpriteFilename(unsigned int id) {
 	assert(id != 0xffff && id != 0xfffe);
-	assert(id < sprite_filenames.size());
-	return sprite_filenames[id] + ".spr";
+	assert(id < _spriteFilenames.size());
+
+	return _spriteFilenames[id] + ".spr";
 }
 
 void UnityData::loadSectorNames() {
 	Common::SeekableReadStream *stream = openFile("sector.ast");
 
 	for (unsigned int i = 0; i < 8*8*8; i++) {
-		sector_names.push_back(stream->readLine());
+		_sectorNames.push_back(stream->readLine());
 	}
 
 	delete stream;
@@ -243,8 +246,8 @@ void UnityData::loadSectorNames() {
 
 Common::String UnityData::getSectorName(unsigned int x, unsigned int y, unsigned int z) {
 	// sectors are 20*20*20, there are 8*8*8 sectors total, work out the index
-	unsigned int sector_id = (x/20) + (y/20)*(8) + (z/20)*(8*8);
-	return sector_names[sector_id];
+	unsigned int sectorId = (x/20) + (y/20)*(8) + (z/20)*(8*8);
+	return _sectorNames[sectorId];
 }
 
 void UnityData::loadIconSprites() {
@@ -266,7 +269,8 @@ void UnityData::loadIconSprites() {
 			}
 		}
 		str.trim();
-		if (!str.size()) continue; // commented-out or blank line
+		if (!str.size())
+			continue; // commented-out or blank line
 
 		char *parseEnd;
 		uint32 identifier = strtol(id.c_str(), &parseEnd, 16);
@@ -276,9 +280,10 @@ void UnityData::loadIconSprites() {
 		}
 
 		// irritatingly, they use '0' to disable things, but object 0 is Picard..
-		if (icon_sprites.contains(identifier)) continue;
+		if (_iconSprites.contains(identifier))
+			continue;
 
-		icon_sprites[identifier] = str;
+		_iconSprites[identifier] = str;
 	}
 
 	delete stream;
@@ -286,7 +291,7 @@ void UnityData::loadIconSprites() {
 
 Common::String UnityData::getIconSprite(objectID id) {
 	uint32 identifier = id.id + (id.screen << 8) + (id.world << 16);
-	return icon_sprites[identifier];
+	return _iconSprites[identifier];
 }
 
 void UnityData::loadMovieInfo() {
@@ -314,7 +319,8 @@ void UnityData::loadMovieInfo() {
 			}
 		}
 		id.trim();
-		if (!id.size()) continue; // commented-out or blank line
+		if (!id.size())
+			continue; // commented-out or blank line
 
 		assert(filename.size());
 
@@ -325,12 +331,12 @@ void UnityData::loadMovieInfo() {
 			continue;
 		}
 
-		if (movie_filenames.contains(identifier)) {
+		if (_movieFilenames.contains(identifier)) {
 			error("there are multiple movie.map entries for %d", identifier);
 		}
 
-		movie_filenames[identifier] = filename;
-		movie_descriptions[identifier] = str;
+		_movieFilenames[identifier] = filename;
+		_movieDescriptions[identifier] = str;
 	}
 
 	delete stream;
@@ -410,12 +416,12 @@ void UnityData::loadComputerDatabase() {
 
 Object *UnityData::getObject(objectID id) {
 	uint32 identifier = id.id + (id.screen << 8) + (id.world << 16);
-	if (objects.contains(identifier)) {
-		return objects[identifier];
+	if (_objects.contains(identifier)) {
+		return _objects[identifier];
 	}
 	Object *obj = new Object(_vm);
 	obj->loadObject(id.world, id.screen, id.id);
-	objects[identifier] = obj;
+	_objects[identifier] = obj;
 	return obj;
 }
 
@@ -434,42 +440,49 @@ Common::String readStringFromOffset(Common::SeekableReadStream *stream, int32 of
 
 uint32 getPEFArgument(Common::SeekableReadStream *stream, unsigned int &pos) {
 	uint32 r = 0;
-	byte num_entries = 0;
+	byte numEntries = 0;
 	while (true) {
-		num_entries++;
+		numEntries++;
 
 		byte in = stream->readByte();
 		pos++;
 
-		if (num_entries == 5) {
+		if (numEntries == 5) {
 			r <<= 4;
 		} else {
 			r <<= 7;
 		}
 		r += (in & 0x7f);
-		if (!(in & 0x80)) return r;
+		if (!(in & 0x80))
+			return r;
 
-		if (num_entries == 5) error("bad argument in PEF");
+		if (numEntries == 5)
+			error("bad argument in PEF");
 	}
 }
 
 // so, the data segment in a PEF is compressed! whoo!
-Common::SeekableReadStream *decompressPEFDataSegment(Common::SeekableReadStream *stream, unsigned int segment_id) {
+Common::SeekableReadStream *decompressPEFDataSegment(Common::SeekableReadStream *stream, unsigned int segmentId) {
 	uint32 tag1 = stream->readUint32BE();
-	if (tag1 != MKTAG('J','o','y','!')) error("bad PEF tag1");
+	if (tag1 != MKTAG('J','o','y','!'))
+		error("bad PEF tag1");
 	uint32 tag2 = stream->readUint32BE();
-	if (tag2 != MKTAG('p','e','f','f')) error("bad PEF tag2");
+	if (tag2 != MKTAG('p','e','f','f'))
+		error("bad PEF tag2");
 	uint32 architecture = stream->readUint32BE();
-	if (architecture != MKTAG('p','w','p','c')) error("PEF header is not powerpc");
+	if (architecture != MKTAG('p','w','p','c'))
+		error("PEF header is not powerpc");
 	uint32 formatVersion = stream->readUint32BE();
-	if (formatVersion != 1) error("PEF header is not version 1");
+	if (formatVersion != 1)
+		error("PEF header is not version 1");
 	stream->skip(16); // dateTimeStamp, oldDefVersion, oldImpVersion, currentVersion
 	uint16 sectionCount = stream->readUint16BE();
 	stream->skip(6); // instSectionCount, reservedA
 
-	if (segment_id >= sectionCount) error("not enough segments in PEF");
+	if (segmentId >= sectionCount)
+		error("not enough segments in PEF");
 
-	stream->skip(28 * segment_id);
+	stream->skip(28 * segmentId);
 
 	stream->skip(8); // nameOffset, defaultAddress
 	uint32 totalSize = stream->readUint32BE();
@@ -480,8 +493,10 @@ Common::SeekableReadStream *decompressPEFDataSegment(Common::SeekableReadStream 
 	uint32 containerOffset = stream->readUint32BE();
 	byte sectionKind = stream->readByte();
 	switch (sectionKind) {
-	case 2: break; // pattern-initialized data
-	default: error("unsupported PEF sectionKind %d", sectionKind);
+	case 2:
+		break; // pattern-initialized data
+	default:
+		error("unsupported PEF sectionKind %d", sectionKind);
 	}
 
 	debug(1, "unpacking PEF segment of size %d (total %d, packed %d) at 0x%x", unpackedSize, totalSize, packedSize, containerOffset);
@@ -570,8 +585,10 @@ Common::SeekableReadStream *decompressPEFDataSegment(Common::SeekableReadStream 
 		}
 	}
 
-	if (pos != packedSize) error("failed to parse PEF pattern-initialized section (parsed %d of %d)", pos, packedSize);
-	if (targ != data + unpackedSize) error("failed to unpack PEF pattern-initialized section");
+	if (pos != packedSize)
+		error("failed to parse PEF pattern-initialized section (parsed %d of %d)", pos, packedSize);
+	if (targ != data + unpackedSize)
+		error("failed to unpack PEF pattern-initialized section");
 
 	delete stream;
 	return new Common::MemoryReadStream(data, unpackedSize, DisposeAfterUse::YES);
@@ -632,21 +649,21 @@ objectID readObjectIDEndian(Common::SeekableReadStream *stream, bool bigEndian) 
 
 void UnityData::loadExecutableData() {
 	// TODO: check md5sum/etc
-	Common::SeekableReadStream *base_stream;
+	Common::SeekableReadStream *baseStream;
 	Common::MacResManager macres;
 	bool isMac = false;
 	if (SearchMan.hasFile("sttng.ovl")) {
 		Common::SeekableReadStream *ovl_stream = openFile("sttng.ovl");
-		base_stream = new Common::SeekableSubReadStream(ovl_stream, DATA_SEGMENT_OFFSET_DOS, ovl_stream->size(), DisposeAfterUse::YES);
+		baseStream = new Common::SeekableSubReadStream(ovl_stream, DATA_SEGMENT_OFFSET_DOS, ovl_stream->size(), DisposeAfterUse::YES);
 	} else {
 		if (!macres.open("Star Trek TNG/\"A Final Unity\""))
 			error("couldn't find sttng.ovl (DOS) or \"A Final Unity\" (Mac)");
 		isMac = true;
 		// we use the powerpc data segment, in the data fork
-		base_stream = decompressPEFDataSegment(macres.getDataFork(), 1);
+		baseStream = decompressPEFDataSegment(macres.getDataFork(), 1);
 	}
 
-	SeekableReadStreamWrapperEndian *stream = new SeekableReadStreamWrapperEndian(base_stream, isMac, DisposeAfterUse::YES);
+	SeekableReadStreamWrapperEndian *stream = new SeekableReadStreamWrapperEndian(baseStream, isMac, DisposeAfterUse::YES);
 
 	// bridge data
 	int32 offset = BRIDGE_ITEM_OFFSET_DOS;
@@ -657,7 +674,7 @@ void UnityData::loadExecutableData() {
 		assert(r);
 
 		BridgeItem item;
-		uint32 desc_offset = stream->readUint32();
+		uint32 descOffset = stream->readUint32();
 		item.id = readObjectIDEndian(stream, isMac);
 		item.x = stream->readUint32();
 		item.y = stream->readUint32();
@@ -666,8 +683,8 @@ void UnityData::loadExecutableData() {
 		item.unknown1 = stream->readUint32();
 		item.unknown2 = stream->readUint32();
 		item.unknown3 = stream->readUint32();
-		item.description = readStringFromOffset(stream, desc_offset);
-		bridge_items.push_back(item);
+		item.description = readStringFromOffset(stream, descOffset);
+		_bridgeItems.push_back(item);
 
 		offset += BRIDGE_ITEM_SIZE;
 	}
@@ -679,13 +696,13 @@ void UnityData::loadExecutableData() {
 
 		BridgeObject obj;
 		obj.id = readObjectIDEndian(stream, isMac);
-		uint32 desc_offset = stream->readUint32();
+		uint32 descOffset = stream->readUint32();
 		obj.x = stream->readUint32();
 		obj.y = stream->readUint32();
 		obj.unknown1 = stream->readUint32();
 		obj.unknown2 = stream->readUint32();
-		obj.filename = readStringFromOffset(stream, desc_offset);
-		bridge_objects.push_back(obj);
+		obj.filename = readStringFromOffset(stream, descOffset);
+		_bridgeObjects.push_back(obj);
 
 		offset += BRIDGE_OBJECT_SIZE;
 	}
@@ -696,10 +713,10 @@ void UnityData::loadExecutableData() {
 		assert(r);
 
 		BridgeScreenEntry entry;
-		uint32 desc_offset = stream->readUint32();
+		uint32 descOffset = stream->readUint32();
 		entry.unknown = stream->readUint32();
-		entry.text = readStringFromOffset(stream, desc_offset);
-		bridge_screen_entries.push_back(entry);
+		entry.text = readStringFromOffset(stream, descOffset);
+		_bridgeScreenEntries.push_back(entry);
 
 		offset += BRIDGE_SCREEN_ENTRY_SIZE;
 	}
@@ -711,13 +728,13 @@ void UnityData::loadExecutableData() {
 		assert(r);
 
 		FailHailEntry entry;
-		entry.action_id = stream->readUint32();
-		if (entry.action_id == 0xffffffff) break;
+		entry.actionId = stream->readUint32();
+		if (entry.actionId == 0xffffffff) break;
 		entry.source = readObjectIDEndian(stream, isMac);
-		entry.fail_flag = stream->readUint32();
-		uint32 hail_offset = stream->readUint32();
-		entry.hail = readStringFromOffset(stream, hail_offset);
-		fail_hail_entries.push_back(entry);
+		entry.failFlag = stream->readUint32();
+		uint32 hailOffset = stream->readUint32();
+		entry.hail = readStringFromOffset(stream, hailOffset);
+		_failHailEntries.push_back(entry);
 
 		offset += FAIL_HAIL_ENTRY_SIZE;
 	}
@@ -729,27 +746,33 @@ void UnityData::loadExecutableData() {
 		assert(r);
 
 		AwayTeamScreenData entry;
-		bool reading_members = true;
+		bool readingMembers = true;
 		for (unsigned int j = 0; j < 5; j++) {
-			objectID default_member;
-			default_member = readObjectIDEndian(stream, isMac);
+			objectID defaultMember;
+			defaultMember = readObjectIDEndian(stream, isMac);
 
-			if (!reading_members) continue;
-			if (default_member.id == 0xff) { reading_members = false; continue; }
-			if (j == 4) error("too many default away team members");
-			entry.default_members.push_back(default_member);
+			if (!readingMembers)
+				continue;
+			if (defaultMember.id == 0xff) {
+				readingMembers = false;
+				continue;
+			}
+			if (j == 4)
+				error("too many default away team members");
+			entry.defaultMembers.push_back(defaultMember);
 		}
 
-		uint32 allowed_inv_offset = stream->readUint32();
-		r = stream->seek(allowed_inv_offset, SEEK_SET);
+		uint32 allowedInvOffset = stream->readUint32();
+		r = stream->seek(allowedInvOffset, SEEK_SET);
 		assert(r);
 		while (true) {
-			objectID allowed_inv;
-			allowed_inv = readObjectIDEndian(stream, isMac);
-			if (allowed_inv.id == 0xff) break;
-			entry.inventory_items.push_back(allowed_inv);
+			objectID allowedInv;
+			allowedInv = readObjectIDEndian(stream, isMac);
+			if (allowedInv.id == 0xff)
+				break;
+			entry.inventoryItems.push_back(allowedInv);
 		}
-		away_team_screen_data.push_back(entry);
+		_awayTeamScreenData.push_back(entry);
 
 		offset += (5 + 1) * 4;
 	}
@@ -760,8 +783,8 @@ void UnityData::loadExecutableData() {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
-		uint32 sprite_name_offset = stream->readUint32();
-		transporter_sprite_names.push_back(readStringFromOffset(stream, sprite_name_offset));
+		uint32 spriteNameOffset = stream->readUint32();
+		_transporterSpriteNames.push_back(readStringFromOffset(stream, spriteNameOffset));
 		offset += 4;
 	}
 
@@ -771,10 +794,11 @@ void UnityData::loadExecutableData() {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
-		uint32 preset_sound_id = stream->readUint32();
-		uint32 preset_sound_offset = stream->readUint32();
-		if (preset_sounds.contains(preset_sound_id)) error("duplicate sound id %d", preset_sound_id);
-		preset_sounds[preset_sound_id] = readStringFromOffset(stream, preset_sound_offset);
+		uint32 presetSoundId = stream->readUint32();
+		uint32 presetSoundOffset = stream->readUint32();
+		if (_presetSounds.contains(presetSoundId))
+			error("duplicate sound id %d", presetSoundId);
+		_presetSounds[presetSoundId] = readStringFromOffset(stream, presetSoundOffset);
 
 		offset += 8;
 	}
@@ -785,10 +809,11 @@ void UnityData::loadExecutableData() {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
-		uint32 advice_offset = stream->readUint32();
-		uint32 advice_id = stream->readUint32();
-		if (advice_names.contains(advice_id)) error("duplicate advice id %d", advice_id);
-		advice_names[advice_id] = readStringFromOffset(stream, advice_offset);
+		uint32 adviceOffset = stream->readUint32();
+		uint32 adviceId = stream->readUint32();
+		if (_adviceNames.contains(adviceId))
+			error("duplicate advice id %d", adviceId);
+		_adviceNames[adviceId] = readStringFromOffset(stream, adviceOffset);
 
 		offset += 8;
 	}
@@ -799,8 +824,8 @@ void UnityData::loadExecutableData() {
 		bool r = stream->seek(offset, SEEK_SET);
 		assert(r);
 
-		uint32 action_offset = stream->readUint32();
-		action_strings.push_back(readStringFromOffset(stream, action_offset));
+		uint32 actionOffset = stream->readUint32();
+		_actionStrings.push_back(readStringFromOffset(stream, actionOffset));
 
 		offset += 4;
 	}
@@ -812,13 +837,13 @@ void UnityData::loadExecutableData() {
 		assert(r);
 
 		BackgroundSoundDefault entry;
-		uint32 format_offset = stream->readUint32();
+		uint32 formatOffset = stream->readUint32();
 		entry.first = stream->readUint32();
 		entry.last = stream->readUint32();
-		if (format_offset != 0) {
-			entry.format_string = readStringFromOffset(stream, format_offset);
+		if (formatOffset != 0) {
+			entry.formatString = readStringFromOffset(stream, formatOffset);
 		}
-		background_sound_defaults.push_back(entry);
+		_backgroundSoundDefaults.push_back(entry);
 
 		offset += BACKGROUND_SOUND_DEFAULT_ENTRY_SIZE;
 	}
@@ -827,14 +852,14 @@ void UnityData::loadExecutableData() {
 }
 
 Conversation *UnityData::getConversation(unsigned int world, unsigned int id) {
-	if (!conversations.contains(world)) {
-		conversations[world] = new Common::HashMap<unsigned int, Conversation *>();
+	if (!_conversations.contains(world)) {
+		_conversations[world] = new Common::HashMap<unsigned int, Conversation *>();
 	}
-	if (!conversations[world]->contains(id)) {
-		(*conversations[world])[id] = new Conversation();
-		(*conversations[world])[id]->loadConversation(*this, world, id);
+	if (!_conversations[world]->contains(id)) {
+		(*_conversations[world])[id] = new Conversation();
+		(*_conversations[world])[id]->loadConversation(*this, world, id);
 	}
-	return (*conversations[world])[id];
+	return (*_conversations[world])[id];
 }
 
 } // Unity

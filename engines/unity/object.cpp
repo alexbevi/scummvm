@@ -1043,7 +1043,7 @@ void Object::runHail(const Common::String &hail) {
 	if (sscanf(hail.begin() + (immediate ? 2 : 1), "%d,%d,%d",
 		&world, &conversation, &situation) != 3) {
 		// try two-parameter form (with default world)
-		world = _vm->data.current_screen.world;
+		world = _vm->data._currentScreen.world;
 		if (sscanf(hail.begin() + (immediate ? 2 : 1), "%d,%d",
 			&conversation, &situation) != 2) {
 			error("failed to parse hail '%s'", hail.c_str());
@@ -1593,7 +1593,7 @@ ResultType ScreenBlock::execute(UnityEngine *_vm, Action *context) {
 		// TODO: 0x80 can be set too.. see exit from first Unity Device screen
 		if (entrance != 0xff) entrance &= ~0x80;
 
-		_vm->startAwayTeam(_vm->data.current_screen.world, new_screen, entrance);
+		_vm->startAwayTeam(_vm->data._currentScreen.world, new_screen, entrance);
 	} else
 		warning("unimplemented: ScreenBlock::execute");
 
@@ -1653,13 +1653,13 @@ ResultType GeneralBlock::execute(UnityEngine *_vm, Action *context) {
 		warning("unimplemented: GeneralBlock::execute: unknown3 %04x", unknown3);
 	}
 	if (movie_id != 0xffff) {
-		assert(_vm->data.movie_filenames.contains(movie_id));
+		assert(_vm->data._movieFilenames.contains(movie_id));
 
 		debug(1, "GeneralBlock: play movie %d (%s: '%s')", movie_id,
-			_vm->data.movie_filenames[movie_id].c_str(),
-			_vm->data.movie_descriptions[movie_id].c_str());
+			_vm->data._movieFilenames[movie_id].c_str(),
+			_vm->data._movieDescriptions[movie_id].c_str());
 
-		_vm->_gfx->playMovie(_vm->data.movie_filenames[movie_id]);
+		_vm->_gfx->playMovie(_vm->data._movieFilenames[movie_id]);
 	}
 
 	return 0;
@@ -1670,7 +1670,7 @@ ResultType ConversationBlock::execute(UnityEngine *_vm, Action *context) {
 		world_id, conversation_id, response_id, state_id, action_id);
 
 	uint16 world = world_id;
-	if (world == 0xffff) world = _vm->data.current_screen.world;
+	if (world == 0xffff) world = _vm->data._currentScreen.world;
 
 	Conversation *conv = _vm->data.getConversation(world, conversation_id);
 	Response *resp = conv->getResponse(response_id, state_id);
@@ -1744,7 +1744,7 @@ ResultType CommunicateBlock::execute(UnityEngine *_vm, Action *context) {
 		// on-viewscreen?
 	case 8:
 		// 8: delayed conversation? (forced 0x5f)
-		_vm->_next_conversation = _vm->data.getConversation(_vm->data.current_screen.world,
+		_vm->_next_conversation = _vm->data.getConversation(_vm->data._currentScreen.world,
 			conversation_id);
 
 		// original engine simply ignores this when there are no enabled situations, it seems

@@ -76,40 +76,40 @@ public:
 	~UnityData();
 
 	// data file access
-	Common::Archive *data, *instdata;
+	Common::Archive *_data, *_instData;
 	Common::SeekableReadStream *openFile(Common::String filename);
 
 	// current away team screen
-	Screen current_screen;
+	Screen _currentScreen;
 	void loadScreenPolys(Common::String filename);
 
 	// triggers
-	Common::Array<Trigger *> triggers;
+	Common::Array<Trigger *> _triggers;
 	void loadTriggers();
 	Trigger *getTrigger(uint32 id);
 
 	// all objects
-	Common::HashMap<uint32, Object *> objects;
+	Common::HashMap<uint32, Object *> _objects;
 	Object *getObject(objectID id);
 
 	// sprite filenames
-	Common::Array<Common::String> sprite_filenames;
+	Common::Array<Common::String> _spriteFilenames;
 	void loadSpriteFilenames();
 	Common::String getSpriteFilename(unsigned int id);
 
 	// sector names
-	Common::Array<Common::String> sector_names;
+	Common::Array<Common::String> _sectorNames;
 	void loadSectorNames();
 	Common::String getSectorName(unsigned int x, unsigned int y, unsigned int z);
 
 	// icon sprites
-	Common::HashMap<uint32, Common::String> icon_sprites;
+	Common::HashMap<uint32, Common::String> _iconSprites;
 	void loadIconSprites();
 	Common::String getIconSprite(objectID id);
 
 	// movie info
-	Common::HashMap<unsigned int, Common::String> movie_filenames;
-	Common::HashMap<unsigned int, Common::String> movie_descriptions;
+	Common::HashMap<unsigned int, Common::String> _movieFilenames;
+	Common::HashMap<unsigned int, Common::String> _movieDescriptions;
 	void loadMovieInfo();
 
 	// computer database
@@ -117,19 +117,19 @@ public:
 	void loadComputerDatabase();
 
 	// hardcoded data
-	Common::Array<BridgeItem> bridge_items;
-	Common::Array<BridgeObject> bridge_objects;
-	Common::Array<BridgeScreenEntry> bridge_screen_entries;
-	Common::Array<FailHailEntry> fail_hail_entries;
-	Common::Array<AwayTeamScreenData> away_team_screen_data;
-	Common::Array<Common::String> transporter_sprite_names;
-	Common::HashMap<uint32, Common::String> preset_sounds;
-	Common::HashMap<uint32, Common::String> advice_names;
-	Common::Array<Common::String> action_strings;
-	Common::Array<BackgroundSoundDefault> background_sound_defaults;
+	Common::Array<BridgeItem> _bridgeItems;
+	Common::Array<BridgeObject> _bridgeObjects;
+	Common::Array<BridgeScreenEntry> _bridgeScreenEntries;
+	Common::Array<FailHailEntry> _failHailEntries;
+	Common::Array<AwayTeamScreenData> _awayTeamScreenData;
+	Common::Array<Common::String> _transporterSpriteNames;
+	Common::HashMap<uint32, Common::String> _presetSounds;
+	Common::HashMap<uint32, Common::String> _adviceNames;
+	Common::Array<Common::String> _actionStrings;
+	Common::Array<BackgroundSoundDefault> _backgroundSoundDefaults;
 	void loadExecutableData();
 
-	Common::HashMap<unsigned int, Common::HashMap<unsigned int, Conversation *>*> conversations;
+	Common::HashMap<unsigned int, Common::HashMap<unsigned int, Conversation *>*> _conversations;
 	Conversation *getConversation(unsigned int world, unsigned int id);
 };
 

@@ -64,9 +64,9 @@ struct BridgeScreenEntry {
 #define FAIL_HAIL_OFFSET_MAC 0x19b18
 #define FAIL_HAIL_ENTRY_SIZE 16
 struct FailHailEntry {
-	uint32 action_id;
+	uint32 actionId;
 	objectID source;
-	uint32 fail_flag;
+	uint32 failFlag;
 	Common::String hail;
 };
 
@@ -74,8 +74,8 @@ struct FailHailEntry {
 #define AWAY_TEAM_DATA_OFFSET_MAC 0x1b604
 #define NUM_AWAY_TEAM_DATA 8
 struct AwayTeamScreenData {
-	Common::Array<objectID> default_members; // up to 4, always terminated by -1
-	Common::Array<objectID> inventory_items; // offset, terminated by -1
+	Common::Array<objectID> defaultMembers; // up to 4, always terminated by -1
+	Common::Array<objectID> inventoryItems; // offset, terminated by -1
 };
 
 #define TRANSPORTER_SPRITE_NAMES_OFFSET_DOS 0x703e4
@@ -111,7 +111,7 @@ struct AdviceName {
 #define NUM_BACKGROUND_SOUND_DEFAULTS 7
 #define BACKGROUND_SOUND_DEFAULT_ENTRY_SIZE 12
 struct BackgroundSoundDefault {
-	Common::String format_string;
+	Common::String formatString;
 	uint32 first;
 	uint32 last;
 };

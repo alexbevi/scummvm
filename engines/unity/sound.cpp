@@ -174,10 +174,10 @@ void Sound::updateMusic() {
 		return;
 
 	// This is hard-coded, with loop offsets and volumes.
-	switch (_vm->data.current_screen.world) {
+	switch (_vm->data._currentScreen.world) {
 	case 2:
 		// Allanor
-		switch (_vm->data.current_screen.screen) {
+		switch (_vm->data._currentScreen.screen) {
 		case 1:
 		case 2:
 			playMusic("adamb01.rac", 0x1f, 0xab40);
@@ -205,7 +205,7 @@ void Sound::updateMusic() {
 
 	case 3:
 		// Zoo World
-		switch (_vm->data.current_screen.screen) {
+		switch (_vm->data._currentScreen.screen) {
 		case 3:
 		case 10:
 			playMusic("zootree.rac", 0x30, 0x548e);
@@ -233,7 +233,7 @@ void Sound::updateMusic() {
 
 	case 4:
 		// Lab (Orbital Station)
-		switch (_vm->data.current_screen.screen) {
+		switch (_vm->data._currentScreen.screen) {
 		case 2:
 		case 3:
 		case 4:
@@ -258,7 +258,7 @@ void Sound::updateMusic() {
 
 	case 5:
 		// Frigis
-		switch (_vm->data.current_screen.screen) {
+		switch (_vm->data._currentScreen.screen) {
 		case 1:
 		case 2:
 			playMusic("s5amb01.rac", 0x1f, 0xa7c0);
@@ -286,7 +286,7 @@ void Sound::updateMusic() {
 
 	case 6:
 		// Unity Device
-		switch (_vm->data.current_screen.screen) {
+		switch (_vm->data._currentScreen.screen) {
 		case 1:
 			playMusic("udamb01.rac", 0x1f, 0x4c00);
 			break;

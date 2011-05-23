@@ -81,8 +81,8 @@ Common::Error UnityEngine::init() {
 	_console = new UnityConsole(this);
 	_snd = new Sound(this);
 
-	data.data = Common::makeZipArchive("STTNG.ZIP");
-	if (!data.data) {
+	data._data = Common::makeZipArchive("STTNG.ZIP");
+	if (!data._data) {
 		error("couldn't open data file");
 	}
 	/*Common::ArchiveMemberList list;
@@ -96,12 +96,12 @@ Common::Error UnityEngine::init() {
 			Sprite spr(ourstr);
 		}
 	}*/
-	SearchMan.add("sttngzip", data.data);
+	SearchMan.add("sttngzip", data._data);
 
 	// DOS version only
-	data.instdata = Common::makeZipArchive("STTNGINS.ZIP");
-	if (data.instdata) {
-		SearchMan.add("sttnginszip", data.instdata);
+	data._instData = Common::makeZipArchive("STTNGINS.ZIP");
+	if (data._instData) {
+		SearchMan.add("sttnginszip", data._instData);
 	}
 
 	// Mac version only
@@ -147,7 +147,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 	data.loadScreenPolys(polygons);
 
-	data.current_screen.entrypoints.clear();
+	data._currentScreen.entrypoints.clear();
 	byte num_entrances = locstream->readByte();
 	for (unsigned int e = 0; e < num_entrances; e++) {
 		Common::Array<Common::Point> entrypoints;
@@ -159,7 +159,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 			entrypoints[i].x = locstream->readUint16LE();
 			entrypoints[i].y = locstream->readUint16LE();
 		}
-		data.current_screen.entrypoints.push_back(entrypoints);
+		data._currentScreen.entrypoints.push_back(entrypoints);
 	}
 
 	delete locstream;
@@ -183,7 +183,7 @@ void UnityEngine::openLocation(unsigned int world, unsigned int screen) {
 
 		Object *obj = data.getObject(id);
 		obj->loadSprite();
-		data.current_screen.objects.push_back(obj);
+		data._currentScreen.objects.push_back(obj);
 	}
 
 	delete locstream;
@@ -265,7 +265,7 @@ struct DrawOrderComparison {
 };
 
 Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
-	Common::Array<Object *> &objects = data.current_screen.objects;
+	Common::Array<Object *> &objects = data._currentScreen.objects;
 
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		if (!(objects[i]->flags & OBJFLAG_ACTIVE)) continue;
@@ -284,10 +284,10 @@ Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 }
 
 void UnityEngine::startBridge() {
-	data.current_screen.objects.clear();
-	data.current_screen.polygons.clear();
-	data.current_screen.world = 0x5f;
-	data.current_screen.screen = 0xff;
+	data._currentScreen.objects.clear();
+	data._currentScreen.polygons.clear();
+	data._currentScreen.world = 0x5f;
+	data._currentScreen.screen = 0xff;
 
 	_current_away_team_member = NULL;
 	delete _current_away_team_icon;
@@ -315,23 +315,23 @@ void UnityEngine::startBridge() {
 		obj->objwalktype = OBJWALKTYPE_NORMAL;
 		obj->sprite = new SpritePlayer(new Sprite(data.openFile(bridge_sprites[i])), obj, this);
 		obj->sprite->startAnim(0);
-		data.current_screen.objects.push_back(obj);
+		data._currentScreen.objects.push_back(obj);
 	}
 
-	for (unsigned int i = 0; i < data.bridge_objects.size(); i++) {
+	for (unsigned int i = 0; i < data._bridgeObjects.size(); i++) {
 		Object *obj = new Object(this);
 		// TODO: correct?
-		obj->x = data.bridge_objects[i].x;
-		obj->y = data.bridge_objects[i].y;
+		obj->x = data._bridgeObjects[i].x;
+		obj->y = data._bridgeObjects[i].y;
 		obj->y_adjust = -1;
 		obj->flags = OBJFLAG_ACTIVE;
 		obj->objwalktype = OBJWALKTYPE_NORMAL;
-		obj->sprite = new SpritePlayer(new Sprite(data.openFile(data.bridge_objects[i].filename)), obj, this);
+		obj->sprite = new SpritePlayer(new Sprite(data.openFile(data._bridgeObjects[i].filename)), obj, this);
 		obj->sprite->startAnim(0);
-		/*debugN("%s: %d, %d\n", data.bridge_objects[i].filename.c_str(),
-			data.bridge_objects[i].unknown1,
-			data.bridge_objects[i].unknown2);*/
-		data.current_screen.objects.push_back(obj);
+		/*debugN("%s: %d, %d\n", data._bridgeObjects[i].filename.c_str(),
+			data._bridgeObjects[i].unknown1,
+			data._bridgeObjects[i].unknown2);*/
+		data._currentScreen.objects.push_back(obj);
 	}
 
 	_gfx->setBackgroundImage("bridge.rm");
@@ -379,9 +379,9 @@ void UnityEngine::removeFromInventory(Object *obj) {
 }
 
 void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte entrance) {
-	data.current_screen.objects.clear();
-	data.current_screen.world = world;
-	data.current_screen.screen = screen;
+	data._currentScreen.objects.clear();
+	data._currentScreen.world = world;
+	data._currentScreen.screen = screen;
 
 	if (!_away_team_members.size()) {
 		// TODO: move this somewhere sensible!
@@ -424,7 +424,7 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte en
 			obj->curr_screen = screen;
 			obj->loadSprite();
 			obj->sprite->startAnim(26);
-			data.current_screen.objects.push_back(obj);
+			data._currentScreen.objects.push_back(obj);
 		}
 	}
 
@@ -433,13 +433,13 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte en
 		// TODO: don't display sprites?
 		entrance = 0;
 	}
-	if (entrance >= data.current_screen.entrypoints.size()) {
+	if (entrance >= data._currentScreen.entrypoints.size()) {
 		error("entrance %d beyond the %d entrances to screen %x/%x", entrance,
-			data.current_screen.entrypoints.size(), world, screen);
+			data._currentScreen.entrypoints.size(), world, screen);
 	}
 	for (unsigned int i = 0; i < 4; i++) {
-		data.current_screen.objects[i]->x = data.current_screen.entrypoints[entrance][i].x;
-		data.current_screen.objects[i]->y = data.current_screen.entrypoints[entrance][i].y;
+		data._currentScreen.objects[i]->x = data._currentScreen.entrypoints[entrance][i].x;
+		data._currentScreen.objects[i]->y = data._currentScreen.entrypoints[entrance][i].y;
 	}
 
 	_on_bridge = false;
@@ -495,10 +495,10 @@ void UnityEngine::startupScreen() {
 }
 
 void UnityEngine::processTriggers() {
-	for (unsigned int i = 0; i < data.triggers.size(); i++) {
-		if (data.triggers[i]->tick(this)) {
-			Object *target = data.getObject(data.triggers[i]->target);
-			debug(1, "running trigger %x (target %s)", data.triggers[i]->id, target->identify().c_str());
+	for (unsigned int i = 0; i < data._triggers.size(); i++) {
+		if (data._triggers[i]->tick(this)) {
+			Object *target = data.getObject(data._triggers[i]->target);
+			debug(1, "running trigger %x (target %s)", data._triggers[i]->id, target->identify().c_str());
 			// TODO: should trigger be who?
 			performAction(ACTION_USE, target);
 			break;
@@ -514,7 +514,7 @@ void UnityEngine::processTimers() {
 		return;
 	last_time = g_system->getMillis();
 
-	Common::Array<Object *> &objects = data.current_screen.objects;
+	Common::Array<Object *> &objects = data._currentScreen.objects;
 	for (unsigned int i = 0; i < objects.size(); i++) {
 		if (!(objects[i]->flags & OBJFLAG_ACTIVE)) continue;
 		if (objects[i]->timer == 0xffff) continue;
@@ -632,8 +632,8 @@ void UnityEngine::handleWalk(Object *obj) {
 unsigned int anim = 26;
 
 void UnityEngine::DebugNextScreen() {
-	unsigned int &curr_loc = data.current_screen.world;
-	unsigned int &curr_screen = data.current_screen.screen;
+	unsigned int &curr_loc = data._currentScreen.world;
+	unsigned int &curr_screen = data._currentScreen.screen;
 
 	// start in first screen
 	if (curr_loc == 0x5f) { curr_loc = 2; curr_screen = 0; }
@@ -662,7 +662,7 @@ void UnityEngine::DebugNextScreen() {
 }
 
 void UnityEngine::checkEvents() {
-	Common::Array<Object *> &objects = data.current_screen.objects;
+	Common::Array<Object *> &objects = data._currentScreen.objects;
 
 	Common::Event event;
 	while (_eventMan->pollEvent(event)) {
@@ -759,8 +759,8 @@ void UnityEngine::checkEvents() {
 void UnityEngine::handleBridgeMouseMove(unsigned int x, unsigned int y) {
 	_status_text.clear();
 
-	for (unsigned int i = 0; i < data.bridge_items.size(); i++) {
-		BridgeItem &item = data.bridge_items[i];
+	for (unsigned int i = 0; i < data._bridgeItems.size(); i++) {
+		BridgeItem &item = data._bridgeItems[i];
 		if (x < item.x) continue;
 		if (y < item.y) continue;
 		if (x > item.x + item.width) continue;
@@ -837,8 +837,8 @@ void UnityEngine::handleAwayTeamMouseMove(unsigned int x, unsigned int y) {
 }
 
 void UnityEngine::handleBridgeMouseClick(unsigned int x, unsigned int y) {
-	for (unsigned int i = 0; i < data.bridge_items.size(); i++) {
-		BridgeItem &item = data.bridge_items[i];
+	for (unsigned int i = 0; i < data._bridgeItems.size(); i++) {
+		BridgeItem &item = data._bridgeItems[i];
 		if (x < item.x) continue;
 		if (y < item.y) continue;
 		if (x > item.x + item.width) continue;
@@ -860,8 +860,8 @@ void UnityEngine::handleBridgeMouseClick(unsigned int x, unsigned int y) {
 					_choice_list.clear();
 					assert(!_dialog_choosing);
 
-					for (unsigned int j = 0; j < data.bridge_screen_entries.size(); j++) {
-						_choice_list.push_back(data.bridge_screen_entries[j].text);
+					for (unsigned int j = 0; j < data._bridgeScreenEntries.size(); j++) {
+						_choice_list.push_back(data._bridgeScreenEntries[j].text);
 					}
 					runDialog();
 
@@ -917,7 +917,7 @@ void UnityEngine::handleAwayTeamMouseClick(unsigned int x, unsigned int y) {
 }
 
 void UnityEngine::drawObjects() {
-	Common::Array<Object *> &objects = data.current_screen.objects;
+	Common::Array<Object *> &objects = data._currentScreen.objects;
 
 	Common::Array<Object *> to_draw;
 	for (unsigned int i = 0; i < objects.size(); i++) {
@@ -941,8 +941,8 @@ void UnityEngine::drawObjects() {
 		if (to_draw[i]->objwalktype == OBJWALKTYPE_SCALED) {
 			unsigned int j;
 			unsigned int x = to_draw[i]->x, y = to_draw[i]->y;
-			for (j = 0; j < data.current_screen.polygons.size(); j++) {
-				ScreenPolygon &poly = data.current_screen.polygons[j];
+			for (j = 0; j < data._currentScreen.polygons.size(); j++) {
+				ScreenPolygon &poly = data._currentScreen.polygons[j];
 				if (poly.type != 1) continue;
 
 				unsigned int triangle;
@@ -952,7 +952,7 @@ void UnityEngine::drawObjects() {
 					break;
 				}
 			}
-			if (j == data.current_screen.polygons.size())
+			if (j == data._currentScreen.polygons.size())
 				debug(2, "couldn't find poly for walkable at (%d, %d)", x, y);
 		}
 		_gfx->drawSprite(to_draw[i]->sprite, to_draw[i]->x, to_draw[i]->y, scale);
@@ -1198,8 +1198,8 @@ Common::Error UnityEngine::run() {
 	startupScreen();
 
 	// TODO: are the indexes identical in all versions?
-	_gfx->playMovie(data.movie_filenames[0]);
-	_gfx->playMovie(data.movie_filenames[4]);
+	_gfx->playMovie(data._movieFilenames[0]);
+	_gfx->playMovie(data._movieFilenames[4]);
 	// TODO: add #3 to the 'already played' list
 
 	_gfx->setCursor(0xffffffff, false);
@@ -1210,7 +1210,7 @@ Common::Error UnityEngine::run() {
 		checkEvents();
 
 		_gfx->drawBackgroundImage();
-		_gfx->drawBackgroundPolys(data.current_screen.polygons);
+		_gfx->drawBackgroundPolys(data._currentScreen.polygons);
 
 		drawObjects();
 		if (_on_bridge) {
@@ -1273,7 +1273,7 @@ void UnityEngine::runDialog() {
 		checkEvents();
 
 		_gfx->drawBackgroundImage();
-		_gfx->drawBackgroundPolys(data.current_screen.polygons);
+		_gfx->drawBackgroundPolys(data._currentScreen.polygons);
 
 		drawObjects();
 		if (_on_bridge) {
