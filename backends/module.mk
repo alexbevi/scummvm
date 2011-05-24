@@ -147,9 +147,10 @@ MODULE_OBJS += \
 	timer/psp/timer.o
 endif
 
-ifeq ($(BACKEND),samsungstv)
+ifeq ($(BACKEND),samsungtv)
 MODULE_OBJS += \
-	events/samsungtvsdl/samsungtvsdl-events.o
+	events/samsungtvsdl/samsungtvsdl-events.o \
+	graphics/samsungtvsdl/samsungtvsdl-graphics.o
 endif
 
 ifeq ($(BACKEND),webos)

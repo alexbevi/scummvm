@@ -20,38 +20,37 @@
  *
  */
 
-#include "backends/platform/samsungtv/samsungtv.h"
-#include "backends/events/samsungtvsdl/samsungtvsdl-events.h"
-#include "backends/graphics/samsungtvsdl/samsungtvsdl-graphics.h"
+#ifndef SWORD25_SCUMMVM_FILE_H
+#define SWORD25_SCUMMVM_FILE_H
 
-#if defined(SAMSUNGTV)
+#include "common/str.h"
 
-OSystem_SDL_SamsungTV::OSystem_SDL_SamsungTV()
-	:
-	OSystem_POSIX("/mtd_rwarea/.scummvmrc") {
-}
+namespace Sword25 {
 
-void OSystem_SDL_SamsungTV::initBackend() {
-	// Create the events manager
-	if (_eventSource == 0)
-		_eventSource = new SamsungTVSdlEventSource();
+/**
+ * The following class acts as a proxy interface to the I/O code, pretending that the ScummVM
+ * settings are a properly formatted 'config.lua' file
+ */
+class Sword25FileProxy {
+private:
+	Common::String _readData;
+	uint _readPos;
+	Common::String _settings;
 
-	if (_graphicsManager == 0)
-		_graphicsManager = new SamsungTVSdlGraphicsManager(_eventSource);
+	void setupConfigFile();
+	Common::String getLanguage();
+	void setLanguage(const Common::String &lang);
+	void writeSettings();
+	void updateSetting(const Common::String &setting, const Common::String &value);
+public:
+	Sword25FileProxy(const Common::String &filename, const Common::String &mode);
+	~Sword25FileProxy();
 
-	// Call parent implementation of this method
-	OSystem_POSIX::initBackend();
-}
+	bool eof() const { return _readPos >= _readData.size(); }
+	size_t read(void *ptr, size_t size, size_t count);
+	size_t write(const char *ptr, size_t count);
+};
 
-void OSystem_SDL_SamsungTV::quit() {
-	delete this;
-}
-
-void OSystem_SDL_SamsungTV::fatalError() {
-	delete this;
-	// FIXME
-	warning("fatal error");
-	for (;;) {}
-}
+} // End of namespace Sword25
 
 #endif

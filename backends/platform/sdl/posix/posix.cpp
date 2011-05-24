@@ -20,6 +20,7 @@
  *
  */
 
+#define FORBIDDEN_SYMBOL_EXCEPTION_getenv
 #define FORBIDDEN_SYMBOL_EXCEPTION_mkdir
 #define FORBIDDEN_SYMBOL_EXCEPTION_time_h	//On IRIX, sys/stat.h includes sys/time.h
 
@@ -81,6 +82,9 @@ Common::WriteStream *OSystem_POSIX::createLogFile() {
 	logFile += "/Library";
 #else
 	logFile += "/.scummvm";
+#endif
+#ifdef SAMSUNGTV
+	logFile = "/mtd_ram";
 #endif
 
 	struct stat sb;
