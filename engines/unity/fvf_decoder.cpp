@@ -673,7 +673,7 @@ void FVFDecoder::decodeVideoFrameData(uint16 *frame, unsigned int len) {
 				bool recursive = (modifier & 0x80) == 0x80;
 				modifier = (modifier << 8) & 0x7F00;
 
-				byte recursive_offset;
+				byte recursive_offset = 0;
 				if (recursive) {
 					// the last two bits
 					recursive_offset = (src_block >> 8) >> 6;
