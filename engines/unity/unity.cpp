@@ -335,7 +335,7 @@ void UnityEngine::startBridge() {
 	}
 
 	_gfx->setBackgroundImage("bridge.rm");
-	_on_bridge = true;
+	_on_away_team = false;
 	handleBridgeMouseMove(0, 0);
 }
 
@@ -442,7 +442,7 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte en
 		data._currentScreen.objects[i]->y = data._currentScreen.entrypoints[entrance][i].y;
 	}
 
-	_on_bridge = false;
+	_on_away_team = true;
 	handleAwayTeamMouseMove(0, 0);
 }
 
@@ -673,7 +673,7 @@ void UnityEngine::checkEvents() {
 			case Common::EVENT_KEYUP:
 				switch (event.kbd.keycode) {
 				case Common::KEYCODE_n:
-					if (!_on_bridge) {
+					if (_on_away_team) {
 						debugN("trying anim %d\n", anim);
 						anim++;
 						anim %= objects[0]->sprite->numAnims();
@@ -703,7 +703,7 @@ void UnityEngine::checkEvents() {
 				break;			
 
 			case Common::EVENT_RBUTTONUP:
-				if (_on_bridge) break;
+				if (!_on_away_team) break;
 
 				// cycle through away team modes
 				switch (_mode) {
@@ -728,10 +728,10 @@ void UnityEngine::checkEvents() {
 					break;
 				}
 
-				if (_on_bridge) {
-					handleBridgeMouseMove(event.mouse.x, event.mouse.y);
-				} else {
+				if (_on_away_team) {
 					handleAwayTeamMouseMove(event.mouse.x, event.mouse.y);
+				} else {
+					handleBridgeMouseMove(event.mouse.x, event.mouse.y);
 				}
 				break;
 
@@ -741,10 +741,10 @@ void UnityEngine::checkEvents() {
 					break;
 				}
 
-				if (_on_bridge) {
-					handleBridgeMouseClick(event.mouse.x, event.mouse.y);
-				} else {
+				if (_on_away_team) {
 					handleAwayTeamMouseClick(event.mouse.x, event.mouse.y);
+				} else {
+					handleBridgeMouseClick(event.mouse.x, event.mouse.y);
 				}
 				break;
 
@@ -1213,10 +1213,10 @@ Common::Error UnityEngine::run() {
 		_gfx->drawBackgroundPolys(data._currentScreen.polygons);
 
 		drawObjects();
-		if (_on_bridge) {
-			drawBridgeUI();
-		} else {
+		if (_on_away_team) {
 			drawAwayTeamUI();
+		} else {
+			drawBridgeUI();
 		}
 
 		assert(!_in_dialog);
@@ -1276,10 +1276,10 @@ void UnityEngine::runDialog() {
 		_gfx->drawBackgroundPolys(data._currentScreen.polygons);
 
 		drawObjects();
-		if (_on_bridge) {
-			drawBridgeUI();
-		} else {
+		if (_on_away_team) {
 			drawAwayTeamUI();
+		} else {
+			drawBridgeUI();
 		}
 
 		drawDialogWindow();

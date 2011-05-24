@@ -66,7 +66,7 @@ public:
 	Sound *_snd;
 	Graphics *_gfx;
 
-	bool _on_bridge;
+	bool _on_away_team;
 	AwayTeamMode _mode;
 
 	Object *_current_away_team_member;
