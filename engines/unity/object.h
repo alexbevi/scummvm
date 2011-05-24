@@ -14,8 +14,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _OBJECT_H
-#define _OBJECT_H
+#ifndef UNITY_OBJECT_H
+#define UNITY_OBJECT_H
 
 #include "common/array.h"
 #include "common/str.h"

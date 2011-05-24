@@ -14,8 +14,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _ORIGDATA_H
-#define _ORIGDATA_H
+#ifndef UNITY_ORIGDATA_H
+#define UNITY_ORIGDATA_H
 
 namespace Unity {
 

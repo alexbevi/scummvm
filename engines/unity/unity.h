@@ -14,8 +14,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _UNITY_H
-#define _UNITY_H
+#ifndef UNITY_UNITY_H
+#define UNITY_UNITY_H
 
 #include "engines/engine.h"
 #include "common/random.h"

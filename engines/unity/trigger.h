@@ -14,8 +14,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _UNITY_TRIGGER_H
-#define _UNITY_TRIGGER_H
+#ifndef UNITY_TRIGGER_H
+#define UNITY_TRIGGER_H
 
 #include "object.h"
 

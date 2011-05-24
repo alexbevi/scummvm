@@ -14,8 +14,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _SPRITE_H
-#define _SPRITE_H
+#ifndef UNITY_SPRITE_H
+#define UNITY_SPRITE_H
 
 #include "common/stream.h"
 #include "common/array.h"

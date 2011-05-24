@@ -14,6 +14,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#ifndef UNITY_GRAPHICS_H
+#define UNITY_GRAPHICS_H
+
 #include "unity.h"
 #include "sprite_player.h"
 
@@ -79,4 +82,6 @@ protected:
 };
 
 }
+
+#endif
 

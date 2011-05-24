@@ -14,8 +14,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _SPRITE_PLAYER_H
-#define _SPRITE_PLAYER_H
+#ifndef SPRITE_PLAYER_H
+#define SPRITE_PLAYER_H
 
 #include "sprite.h"
 
