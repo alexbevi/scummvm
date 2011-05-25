@@ -31,6 +31,7 @@ class Sound;
 class SpritePlayer;
 class Object;
 class Trigger;
+class UnityEngine;
 
 enum AwayTeamMode {
 	mode_Look,
@@ -46,6 +47,19 @@ enum {
 	kDebugScript    = (1 << 2),
 	kDebugGraphics  = (1 << 3),
 	kDebugSound     = (1 << 4)
+};
+
+class UIScreen {
+public:
+	UIScreen(UnityEngine *vm) : _vm(vm) { }
+	virtual ~UIScreen() { }
+
+	virtual void mouseMove(const Common::Point &pos) = 0;
+	virtual void mouseClick(const Common::Point &pos) = 0;
+	virtual void draw() = 0;
+
+protected:
+	UnityEngine *_vm;
 };
 
 class UnityEngine : public Engine {
@@ -102,6 +116,7 @@ public:
 	void runDialog();
 
 	void startBridge();
+	void endAwayTeam();
 	void startAwayTeam(unsigned int world, unsigned int screen, byte entrance = 0);
 
 	ResultType performAction(ActionType action_type, Object *target, objectID who = objectID(), objectID other = objectID(), unsigned int target_x = 0xffff, unsigned int target_y = 0xffff);
@@ -115,12 +130,12 @@ protected:
 	objectID _speaker;
 	SpritePlayer *_icon;
 
+	class BridgeScreen *_bridgeScreen;
+
 	void openLocation(unsigned int world, unsigned int screen);
 
 	void checkEvents();
-	void handleBridgeMouseMove(unsigned int x, unsigned int y);
 	void handleAwayTeamMouseMove(unsigned int x, unsigned int y);
-	void handleBridgeMouseClick(unsigned int x, unsigned int y);
 	void handleAwayTeamMouseClick(unsigned int x, unsigned int y);
 
 	void drawObjects();
@@ -134,7 +149,6 @@ protected:
 
 	void drawDialogWindow();
 	void drawAwayTeamUI();
-	void drawBridgeUI();
 
 	void handleLook(Object *obj);
 	void handleUse(Object *obj);

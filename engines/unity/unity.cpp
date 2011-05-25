@@ -15,6 +15,7 @@
  */
 
 #include "unity.h"
+#include "bridge.h"
 #include "graphics.h"
 #include "sound.h"
 #include "sprite_player.h"
@@ -59,9 +60,13 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	// TODO: de-hardcode
 	_dialog_x = 100;
 	_dialog_y = 280;
+
+	_bridgeScreen = new BridgeScreen(this);
 }
 
 UnityEngine::~UnityEngine() {
+	delete _bridgeScreen;
+
 	delete _snd;
 	delete _console;
 	delete _gfx;
@@ -284,11 +289,12 @@ Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 }
 
 void UnityEngine::startBridge() {
-	data._currentScreen.objects.clear();
-	data._currentScreen.polygons.clear();
-	data._currentScreen.world = 0x5f;
-	data._currentScreen.screen = 0xff;
+	endAwayTeam();
 
+	_bridgeScreen->start();
+}
+
+void UnityEngine::endAwayTeam() {
 	_current_away_team_member = NULL;
 	delete _current_away_team_icon;
 	_current_away_team_icon = NULL;
@@ -299,44 +305,7 @@ void UnityEngine::startBridge() {
 	}
 	_inventory_icons.clear();
 
-	// TODO: episode title should only appear once
-	const char *bridge_sprites[5] = {
-		"brdgldor.spr", // Left Door (conference room)
-		"brdgdoor.spr", // Door
-		"brdgtitl.spr", // Episode Title
-		"advice.spr", // advice button in UI :(
-		0 };
-
-	for (unsigned int i = 0; bridge_sprites[i] != 0; i++) {
-		Object *obj = new Object(this);
-		obj->x = obj->y = 0;
-		obj->y_adjust = -1;
-		obj->flags = OBJFLAG_ACTIVE;
-		obj->objwalktype = OBJWALKTYPE_NORMAL;
-		obj->sprite = new SpritePlayer(new Sprite(data.openFile(bridge_sprites[i])), obj, this);
-		obj->sprite->startAnim(0);
-		data._currentScreen.objects.push_back(obj);
-	}
-
-	for (unsigned int i = 0; i < data._bridgeObjects.size(); i++) {
-		Object *obj = new Object(this);
-		// TODO: correct?
-		obj->x = data._bridgeObjects[i].x;
-		obj->y = data._bridgeObjects[i].y;
-		obj->y_adjust = -1;
-		obj->flags = OBJFLAG_ACTIVE;
-		obj->objwalktype = OBJWALKTYPE_NORMAL;
-		obj->sprite = new SpritePlayer(new Sprite(data.openFile(data._bridgeObjects[i].filename)), obj, this);
-		obj->sprite->startAnim(0);
-		/*debugN("%s: %d, %d\n", data._bridgeObjects[i].filename.c_str(),
-			data._bridgeObjects[i].unknown1,
-			data._bridgeObjects[i].unknown2);*/
-		data._currentScreen.objects.push_back(obj);
-	}
-
-	_gfx->setBackgroundImage("bridge.rm");
 	_on_away_team = false;
-	handleBridgeMouseMove(0, 0);
 }
 
 void UnityEngine::addToInventory(Object *obj) {
@@ -731,7 +700,7 @@ void UnityEngine::checkEvents() {
 				if (_on_away_team) {
 					handleAwayTeamMouseMove(event.mouse.x, event.mouse.y);
 				} else {
-					handleBridgeMouseMove(event.mouse.x, event.mouse.y);
+					_bridgeScreen->mouseMove(event.mouse);
 				}
 				break;
 
@@ -744,7 +713,7 @@ void UnityEngine::checkEvents() {
 				if (_on_away_team) {
 					handleAwayTeamMouseClick(event.mouse.x, event.mouse.y);
 				} else {
-					handleBridgeMouseClick(event.mouse.x, event.mouse.y);
+					_bridgeScreen->mouseClick(event.mouse);
 				}
 				break;
 
@@ -754,30 +723,6 @@ void UnityEngine::checkEvents() {
 	}
 
 	_snd->updateMusic(); // TODO
-}
-
-void UnityEngine::handleBridgeMouseMove(unsigned int x, unsigned int y) {
-	_status_text.clear();
-
-	for (unsigned int i = 0; i < data._bridgeItems.size(); i++) {
-		BridgeItem &item = data._bridgeItems[i];
-		if (x < item.x) continue;
-		if (y < item.y) continue;
-		if (x > item.x + item.width) continue;
-		if (y > item.y + item.height) continue;
-
-		_status_text = item.description;
-
-		// TODO: this is kinda random :)
-		if (item.unknown1 < 0x32)
-			_gfx->setCursor(3, false);
-		else
-			_gfx->setCursor(5, false);
-
-		return;
-	}
-
-	_gfx->setCursor(0xffffffff, false);
 }
 
 void UnityEngine::handleAwayTeamMouseMove(unsigned int x, unsigned int y) {
@@ -833,66 +778,6 @@ void UnityEngine::handleAwayTeamMouseMove(unsigned int x, unsigned int y) {
 			_gfx->setCursor(4, false);
 			break;
 		}
-	}
-}
-
-void UnityEngine::handleBridgeMouseClick(unsigned int x, unsigned int y) {
-	for (unsigned int i = 0; i < data._bridgeItems.size(); i++) {
-		BridgeItem &item = data._bridgeItems[i];
-		if (x < item.x) continue;
-		if (y < item.y) continue;
-		if (x > item.x + item.width) continue;
-		if (y > item.y + item.height) continue;
-
-		debug(1, "user clicked bridge item %d", i);
-		if (item.id.world != 0) {
-			// bridge crew member
-			Object *obj = data.getObject(item.id);
-			obj->runHail(obj->talk_string);
-		} else {
-			switch (i) {
-				case 0: // conference lounge
-					// TODO
-					break;
-				case 1: // turbolift (menu)
-					_dialog_text.clear();
-					assert(!_choice_list.size());
-					_choice_list.clear();
-					assert(!_dialog_choosing);
-
-					for (unsigned int j = 0; j < data._bridgeScreenEntries.size(); j++) {
-						_choice_list.push_back(data._bridgeScreenEntries[j].text);
-					}
-					runDialog();
-
-					// TODO: do this properly
-					if (_beam_world != 0) {
-						startAwayTeam(_beam_world, _beam_screen);
-					}
-
-					_choice_list.clear();
-					break;
-				case 2: // comms
-					// TODO
-					break;
-				case 3: // tactical
-					// TODO
-					break;
-				case 4: // astrogation
-					// TODO
-					break;
-				case 5: // computer
-					// TODO
-					break;
-				case 10: // replay conversation
-					// TODO
-					break;
-				default:
-					error("unknown bridge item");
-			}
-		}
-
-		return;
 	}
 }
 
@@ -1073,55 +958,6 @@ void UnityEngine::drawDialogWindow() {
 	}*/
 }
 
-void UnityEngine::drawBridgeUI() {
-	// the advice button is drawn as a sprite (see startBridge), sigh
-	// TODO: draw icons there if there's no subtitles
-
-	// sensor.mrg
-	// 4 sprites: "bridge" in/out and "viewscreen" in/out
-
-	// draw viewscreen button
-	MRGFile mrg;
-	_gfx->loadMRG("sensor.mrg", &mrg);
-	_gfx->drawMRG(&mrg, 3, 484, 426);
-
-	// transp.mrg
-	// 0-5: up arrows (normal, hilight, grayed) + down arrows
-	// 5-11: seek arrows (normal, hilight, grayed): 3 left then 3 right
-	// 11-17: 6 transporter room stuff?
-	// 18-19: normal admin menu, hilighted admin menu
-	// 20: some grey thing
-
-	// draw grayed up/down arrows
-	MRGFile tmrg;
-	_gfx->loadMRG("transp.mrg", &tmrg);
-	_gfx->drawMRG(&tmrg, 2, 117, 426);
-	_gfx->drawMRG(&tmrg, 5, 117, 450);
-
-	// display text (TODO: list of visited sectors)
-	char buffer[30];
-
-	// TODO: sane max width/heights
-
-	// TODO: the location doesn't actually seem to come from this object
-	Object *ship = data.getObject(objectID(0x00, 0x01, 0x5f));
-
-	// TODO: updates while warping, etc
-	Common::String sector_name = data.getSectorName(ship->universe_x, ship->universe_y, ship->universe_z);
-	snprintf(buffer, 30, "SECTOR: %s", sector_name.c_str());
-	_gfx->drawString(9, 395, 9999, 9999, buffer, 2);
-
-	unsigned int warp_hi = 0, warp_lo = 0; // TODO
-	snprintf(buffer, 30, "WARP: %d.%d", warp_hi, warp_lo);
-	_gfx->drawString(168, 395, 9999, 9999, buffer, 2);
-
-	snprintf(buffer, 30, "%s", _status_text.c_str());
-	Common::Array<unsigned int> strwidths, starts; unsigned int height;
-	_gfx->calculateStringBoundary(110, strwidths, starts, height, buffer, 2);
-	// draw centered, with 544 being the centre
-	_gfx->drawString(544 - strwidths[0]/2, 393, strwidths[0], 9999, buffer, 2);
-}
-
 void UnityEngine::drawAwayTeamUI() {
 	// draw UI
 	MRGFile mrg;
@@ -1216,7 +1052,7 @@ Common::Error UnityEngine::run() {
 		if (_on_away_team) {
 			drawAwayTeamUI();
 		} else {
-			drawBridgeUI();
+			_bridgeScreen->draw();
 		}
 
 		assert(!_in_dialog);
@@ -1279,7 +1115,7 @@ void UnityEngine::runDialog() {
 		if (_on_away_team) {
 			drawAwayTeamUI();
 		} else {
-			drawBridgeUI();
+			_bridgeScreen->draw();
 		}
 
 		drawDialogWindow();

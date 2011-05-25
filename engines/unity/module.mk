@@ -1,6 +1,7 @@
 MODULE := engines/unity
 
 MODULE_OBJS := \
+	bridge.o \
 	console.o \
 	data.o \
 	debug.o \
