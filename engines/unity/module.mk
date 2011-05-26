@@ -13,7 +13,8 @@ MODULE_OBJS := \
 	sprite.o \
 	sprite_player.o \
 	trigger.o \
-	unity.o
+	unity.o \
+	viewscreen.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_UNITY), DYNAMIC_PLUGIN)

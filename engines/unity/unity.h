@@ -49,11 +49,17 @@ enum {
 	kDebugSound     = (1 << 4)
 };
 
+enum ScreenType {
+	BridgeScreenType,
+	ViewscreenScreenType
+};
+
 class UIScreen {
 public:
 	UIScreen(UnityEngine *vm) : _vm(vm) { }
 	virtual ~UIScreen() { }
 
+	virtual void start() = 0;
 	virtual void mouseMove(const Common::Point &pos) = 0;
 	virtual void mouseClick(const Common::Point &pos) = 0;
 	virtual void draw() = 0;
@@ -124,13 +130,17 @@ public:
 	void playDescriptionFor(Object *obj);
 	Common::String voiceFileFor(byte voice_group, byte voice_subgroup, objectID speaker, byte voice_id, char type = 0);
 
+	void changeToScreen(ScreenType screenType);
+
 protected:
 	UnityConsole *_console;
 
 	objectID _speaker;
 	SpritePlayer *_icon;
 
+	UIScreen *_currScreen;
 	class BridgeScreen *_bridgeScreen;
+	class ViewscreenScreen *_viewscreenScreen;
 
 	void openLocation(unsigned int world, unsigned int screen);
 

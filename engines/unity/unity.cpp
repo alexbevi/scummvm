@@ -21,6 +21,7 @@
 #include "sprite_player.h"
 #include "object.h"
 #include "trigger.h"
+#include "viewscreen.h"
 
 #include "common/fs.h"
 #include "common/config-manager.h"
@@ -62,10 +63,13 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	_dialog_y = 280;
 
 	_bridgeScreen = new BridgeScreen(this);
+	_viewscreenScreen = new ViewscreenScreen(this);
+	_currScreen = _bridgeScreen;
 }
 
 UnityEngine::~UnityEngine() {
 	delete _bridgeScreen;
+	delete _viewscreenScreen;
 
 	delete _snd;
 	delete _console;
@@ -290,8 +294,7 @@ Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 
 void UnityEngine::startBridge() {
 	endAwayTeam();
-
-	_bridgeScreen->start();
+	changeToScreen(BridgeScreenType);
 }
 
 void UnityEngine::endAwayTeam() {
@@ -573,6 +576,19 @@ Common::String UnityEngine::voiceFileFor(byte voice_group, byte voice_subgroup, 
 	}
 }
 
+void UnityEngine::changeToScreen(ScreenType screenType) {
+	switch (screenType) {
+	case BridgeScreenType:
+		_currScreen = _bridgeScreen;
+		break;
+	case ViewscreenScreenType:
+		_currScreen = _viewscreenScreen;
+		break;
+	}
+
+	_currScreen->start();
+}
+
 void UnityEngine::handleUse(Object *obj) {
 	// TODO: correct?
 	if (performAction(ACTION_USE, obj, _current_away_team_member->id) & RESULT_DIDSOMETHING) return;
@@ -700,7 +716,7 @@ void UnityEngine::checkEvents() {
 				if (_on_away_team) {
 					handleAwayTeamMouseMove(event.mouse.x, event.mouse.y);
 				} else {
-					_bridgeScreen->mouseMove(event.mouse);
+					_currScreen->mouseMove(event.mouse);
 				}
 				break;
 
@@ -713,7 +729,7 @@ void UnityEngine::checkEvents() {
 				if (_on_away_team) {
 					handleAwayTeamMouseClick(event.mouse.x, event.mouse.y);
 				} else {
-					_bridgeScreen->mouseClick(event.mouse);
+					_currScreen->mouseClick(event.mouse);
 				}
 				break;
 
@@ -1052,7 +1068,7 @@ Common::Error UnityEngine::run() {
 		if (_on_away_team) {
 			drawAwayTeamUI();
 		} else {
-			_bridgeScreen->draw();
+			_currScreen->draw();
 		}
 
 		assert(!_in_dialog);
@@ -1115,7 +1131,7 @@ void UnityEngine::runDialog() {
 		if (_on_away_team) {
 			drawAwayTeamUI();
 		} else {
-			_bridgeScreen->draw();
+			_currScreen->draw();
 		}
 
 		drawDialogWindow();

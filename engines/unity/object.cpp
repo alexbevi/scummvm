@@ -1732,16 +1732,18 @@ ResultType CommunicateBlock::execute(UnityEngine *_vm, Action *context) {
 		// 3: beacon (open channels)
 		warning("unhandled optional hail (%02x)", hail_type);
 		break;
+	case 7:
+		// 7: delayed conversation, oddness with 0xFE and 0x00/0x5F checks
+		//    (elsewhere: special case conversation 99?!?)
+		// on-viewscreen?
+		_vm->changeToScreen(ViewscreenScreenType);
+		// fallthrough..
 	case 4:
 		// 4: delayed conversation? (forced 0x5f)
 	case 5:
 		// 5: delayed conversation? (forced 0x5f)
 	case 6:
 		// 6: immediate conversation
-	case 7:
-		// 7: delayed conversation, oddness with 0xFE and 0x00/0x5F checks
-		//    (elsewhere: special case conversation 99?!?)
-		// on-viewscreen?
 	case 8:
 		// 8: delayed conversation? (forced 0x5f)
 		_vm->_next_conversation = _vm->data.getConversation(_vm->data._currentScreen.world,
@@ -1760,9 +1762,13 @@ ResultType CommunicateBlock::execute(UnityEngine *_vm, Action *context) {
 		// 9: reset conversation to none
 	case 0xa:
 		// a: reset conversation to none
+		warning("unhandled special hail (%02x)", hail_type);
+		break;
 	case 0xb:
 		// b: magicB + some storing of obj screen/id + wiping of that obj + reset conversation?
 		// (back to bridge?)
+		_vm->changeToScreen(BridgeScreenType);
+		break;
 	case 0xc:
 		// c: magicB + reset conversation?
 		// (some bridge change?)
