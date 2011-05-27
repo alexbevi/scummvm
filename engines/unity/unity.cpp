@@ -588,6 +588,7 @@ void UnityEngine::changeToScreen(ScreenType screenType) {
 		error("changeToScreen for unimplemented screen type");
 	}
 
+	_snd->stopMusic();
 	_currScreen->start();
 }
 

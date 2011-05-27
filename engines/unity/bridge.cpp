@@ -16,6 +16,7 @@
 
 #include "bridge.h"
 #include "graphics.h"
+#include "sound.h"
 
 namespace Unity {
 
@@ -67,8 +68,9 @@ void BridgeScreen::start() {
 	}
 
 	_vm->_gfx->setBackgroundImage("bridge.rm");
-	_vm->_on_away_team = false;
 	mouseMove(Common::Point(0, 0));
+
+	_vm->_snd->playMusic("bridgamb.rac", 0x3f, 0);
 }
 
 void BridgeScreen::mouseMove(const Common::Point &pos) {
@@ -135,13 +137,13 @@ void BridgeScreen::mouseClick(const Common::Point &pos) {
 					// TODO
 					break;
 				case 3: // tactical
-					// TODO
+					_vm->changeToScreen(TacticalScreenType);
 					break;
 				case 4: // astrogation
-					// TODO
+					_vm->changeToScreen(AstrogationScreenType);
 					break;
 				case 5: // computer
-					// TODO
+					_vm->changeToScreen(ComputerScreenType);
 					break;
 				case 10: // replay conversation
 					// TODO
