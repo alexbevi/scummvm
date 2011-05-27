@@ -134,15 +134,19 @@ void BridgeScreen::mouseClick(const Common::Point &pos) {
 					_vm->_choice_list.clear();
 					break;
 				case 2: // comms
+					_vm->_snd->playSfx("beep7.mac");
 					// TODO
 					break;
 				case 3: // tactical
+					_vm->_snd->playSfx("tactical.mac");
 					_vm->changeToScreen(TacticalScreenType);
 					break;
 				case 4: // astrogation
+					_vm->_snd->playSfx("beep7.mac");
 					_vm->changeToScreen(AstrogationScreenType);
 					break;
 				case 5: // computer
+					_vm->_snd->playSfx("beep7.mac");
 					_vm->changeToScreen(ComputerScreenType);
 					break;
 				case 10: // replay conversation
