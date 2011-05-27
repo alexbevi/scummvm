@@ -16,6 +16,7 @@
 
 #include "unity.h"
 #include "bridge.h"
+#include "computer.h"
 #include "graphics.h"
 #include "sound.h"
 #include "sprite_player.h"
@@ -63,12 +64,14 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	_dialog_y = 280;
 
 	_bridgeScreen = new BridgeScreen(this);
+	_computerScreen = new ComputerScreen(this);
 	_viewscreenScreen = new ViewscreenScreen(this);
 	_currScreen = _bridgeScreen;
 }
 
 UnityEngine::~UnityEngine() {
 	delete _bridgeScreen;
+	delete _computerScreen;
 	delete _viewscreenScreen;
 
 	delete _snd;
@@ -580,6 +583,9 @@ void UnityEngine::changeToScreen(ScreenType screenType) {
 	switch (screenType) {
 	case BridgeScreenType:
 		_currScreen = _bridgeScreen;
+		break;
+	case ComputerScreenType:
+		_currScreen = _computerScreen;
 		break;
 	case ViewscreenScreenType:
 		_currScreen = _viewscreenScreen;

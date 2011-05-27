@@ -133,6 +133,7 @@ protected:
 
 	UIScreen *_currScreen;
 	class BridgeScreen *_bridgeScreen;
+	class ComputerScreen *_computerScreen;
 	class ViewscreenScreen *_viewscreenScreen;
 
 	void openLocation(unsigned int world, unsigned int screen);
