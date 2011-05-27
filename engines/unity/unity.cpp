@@ -584,6 +584,8 @@ void UnityEngine::changeToScreen(ScreenType screenType) {
 	case ViewscreenScreenType:
 		_currScreen = _viewscreenScreen;
 		break;
+	default:
+		error("changeToScreen for unimplemented screen type");
 	}
 
 	_currScreen->start();

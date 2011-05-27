@@ -50,7 +50,14 @@ enum {
 };
 
 enum ScreenType {
+	AstrogationScreenType,
 	BridgeScreenType,
+	ComputerScreenType,
+	DeathScreenType,
+	EngineeringScreenType,
+	HolodeckScreenType,
+	TacticalScreenType,
+	TransporterScreenType,
 	ViewscreenScreenType
 };
 
