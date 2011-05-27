@@ -29,10 +29,13 @@ public:
 
 	void init();
 	void playAudioBuffer(unsigned int length, byte *data);
+	void playSfx(Common::String name);
 	void playSpeech(Common::String name);
 	void playMusic(Common::String name, byte volume = 0xff, int loopPos = -1);
+	bool sfxPlaying();
 	bool speechPlaying();
 	bool musicPlaying();
+	void stopSfx();
 	void stopSpeech();
 	void stopMusic();
 

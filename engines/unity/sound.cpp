@@ -127,6 +127,16 @@ void Sound::playSpeech(Common::String name) {
 	_vm->_mixer->playStream(Audio::Mixer::kSpeechSoundType, _speechSoundHandle, sampleStream);
 }
 
+void Sound::playSfx(Common::String name) {
+	debug(1, "playing sfx: %s", name.c_str());
+	stopSfx();
+	Common::SeekableReadStream *audioFileStream = _vm->data.openFile(name);
+	Audio::AudioStream *sampleStream = new Unity_ADPCMStream(
+		audioFileStream, DisposeAfterUse::YES, audioFileStream->size(), 22050, 1);
+	if (!sampleStream) error("couldn't make sample stream");
+	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, _sfxSoundHandle, sampleStream);
+}
+
 void Sound::playMusic(Common::String name, byte volume, int loopPos) {
 	debug(1, "playing music: %s, loop %d, vol %d", name.c_str(), loopPos, volume);
 	Common::SeekableReadStream *audioFileStream = _vm->data.openFile(name);
@@ -139,12 +149,20 @@ void Sound::playMusic(Common::String name, byte volume, int loopPos) {
 	_vm->_mixer->playStream(Audio::Mixer::kMusicSoundType, _musicSoundHandle, audioStream, -1, volume);
 }
 
+bool Sound::sfxPlaying() {
+	return _vm->_mixer->isSoundHandleActive(*_sfxSoundHandle);
+}
+
 bool Sound::musicPlaying() {
 	return _vm->_mixer->isSoundHandleActive(*_musicSoundHandle);
 }
 
 bool Sound::speechPlaying() {
 	return _vm->_mixer->isSoundHandleActive(*_speechSoundHandle);
+}
+
+void Sound::stopSfx() {
+	_vm->_mixer->stopHandle(*_sfxSoundHandle);
 }
 
 void Sound::stopMusic() {
