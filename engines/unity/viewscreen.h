@@ -17,7 +17,7 @@
 #ifndef UNITY_VIEWSCREEN_H
 #define UNITY_VIEWSCREEN_H
 
-#include "unity.h"
+#include "screen.h"
 
 namespace Unity {
 

@@ -14,29 +14,27 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef UNITY_BRIDGE_H
-#define UNITY_BRIDGE_H
-
 #include "screen.h"
 
 namespace Unity {
 
-class BridgeScreen : public UIScreen {
-public:
-	BridgeScreen(UnityEngine *vm);
-	~BridgeScreen();
+UIScreen::UIScreen(UnityEngine *vm) : _vm(vm) {
+}
 
-	void start();
+UIScreen::~UIScreen() {
+	for (uint i = 0; i < _controls.size(); i++) {
+		delete _controls[i];
+	}
+}
 
-	void mouseMove(const Common::Point &pos);
-	void mouseClick(const Common::Point &pos);
-	void draw();
+UIControl *UIScreen::getControlAt(const Common::Point &pos) {
+	for (uint i = 0; i < _controls.size(); i++) {
+		if (_controls[i]->_bounds.contains(pos))
+			return _controls[i];
+	}
 
-protected:
-	Common::String _status_text;
-};
+	return NULL;
+}
 
 } // Unity
-
-#endif
 

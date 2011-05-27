@@ -14,26 +14,41 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef UNITY_BRIDGE_H
-#define UNITY_BRIDGE_H
+#ifndef UNITY_SCREEN_H
+#define UNITY_SCREEN_H
 
-#include "screen.h"
+#include "common/array.h"
+#include "common/rect.h"
 
 namespace Unity {
 
-class BridgeScreen : public UIScreen {
+class UnityEngine;
+
+struct UIControl {
+	UIControl() : _id(0), _sprite(0xffffffff), _state(0) { }
+	virtual ~UIControl() { }
+
+	uint _id;
+	uint _sprite;
+	uint _state;
+	Common::Rect _bounds;
+};
+
+class UIScreen {
 public:
-	BridgeScreen(UnityEngine *vm);
-	~BridgeScreen();
+	UIScreen(UnityEngine *vm);
+	virtual ~UIScreen();
 
-	void start();
-
-	void mouseMove(const Common::Point &pos);
-	void mouseClick(const Common::Point &pos);
-	void draw();
+	virtual void start() = 0;
+	virtual void mouseMove(const Common::Point &pos) = 0;
+	virtual void mouseClick(const Common::Point &pos) = 0;
+	virtual void draw() = 0;
 
 protected:
-	Common::String _status_text;
+	UnityEngine *_vm;
+
+	Common::Array<UIControl *> _controls;
+	UIControl *getControlAt(const Common::Point &pos);
 };
 
 } // Unity

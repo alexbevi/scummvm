@@ -9,6 +9,7 @@ MODULE_OBJS := \
 	fvf_decoder.o \
 	graphics.o \
 	object.o \
+	screen.o \
 	sound.o \
 	sprite.o \
 	sprite_player.o \

@@ -26,12 +26,12 @@ ViewscreenScreen::~ViewscreenScreen() {
 }
 
 void ViewscreenScreen::start() {
-	Object *obj;
-
 	_vm->data._currentScreen.objects.clear();
 	_vm->data._currentScreen.polygons.clear();
 	_vm->data._currentScreen.world = 0x5f;
 	_vm->data._currentScreen.screen = 0xff;
+
+	Object *obj;
 
 	// TODO: icon at 33, 444
 

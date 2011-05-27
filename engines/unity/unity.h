@@ -31,7 +31,7 @@ class Sound;
 class SpritePlayer;
 class Object;
 class Trigger;
-class UnityEngine;
+class UIScreen;
 
 enum AwayTeamMode {
 	mode_Look,
@@ -59,20 +59,6 @@ enum ScreenType {
 	TacticalScreenType,
 	TransporterScreenType,
 	ViewscreenScreenType
-};
-
-class UIScreen {
-public:
-	UIScreen(UnityEngine *vm) : _vm(vm) { }
-	virtual ~UIScreen() { }
-
-	virtual void start() = 0;
-	virtual void mouseMove(const Common::Point &pos) = 0;
-	virtual void mouseClick(const Common::Point &pos) = 0;
-	virtual void draw() = 0;
-
-protected:
-	UnityEngine *_vm;
 };
 
 class UnityEngine : public Engine {
