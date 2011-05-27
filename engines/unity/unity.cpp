@@ -901,14 +901,23 @@ void UnityEngine::drawDialogFrameAround(unsigned int x, unsigned int y, unsigned
 	// black background inside the border
 	_gfx->fillRect(0, real_x1 + widths[base+4], real_y1 + heights[base+6], real_x2 - widths[base+5], real_y2 - heights[base+7]);
 
-	for (unsigned int border_x = real_x1; border_x + widths[base+4] < real_x2; border_x += widths[base+4])
+	// top
+	for (unsigned int border_x = real_x1 + widths[base+0]; border_x + widths[base+4] < real_x2 - widths[base+1]; border_x += widths[base+4])
 		_gfx->drawMRG(&mrg, base+4, border_x, real_y1);
-	for (unsigned int border_x = real_x1; border_x + widths[base+5] < real_x2; border_x += widths[base+5])
+	_gfx->drawMRG(&mrg, base+4, real_x2 - widths[base+1] - widths[base+4], real_y1);
+	// bottom
+	for (unsigned int border_x = real_x1 + widths[base+2]; border_x + widths[base+5] < real_x2 - widths[base+3]; border_x += widths[base+5])
 		_gfx->drawMRG(&mrg, base+5, border_x, real_y2 - heights[base+5]);
-	for (unsigned int border_y = real_y1; border_y + heights[base+6] < real_y2; border_y += heights[base+6])
+	_gfx->drawMRG(&mrg, base+5, real_x2 - widths[base+3] - widths[base+5], real_y2 - heights[base+5]);
+	// left
+	for (unsigned int border_y = real_y1 + heights[base+0]; border_y + heights[base+6] < real_y2 - heights[base+2]; border_y += heights[base+6])
 		_gfx->drawMRG(&mrg, base+6, real_x1, border_y);
-	for (unsigned int border_y = real_y1; border_y + heights[base+7] < real_y2; border_y += heights[base+7])
+	_gfx->drawMRG(&mrg, base+6, real_x1, real_y2 - heights[base+2] - heights[base+6]);
+	// right
+	for (unsigned int border_y = real_y1 + heights[base+1]; border_y + heights[base+7] < real_y2 - heights[base+3]; border_y += heights[base+7])
 		_gfx->drawMRG(&mrg, base+7, real_x2 - widths[base+7], border_y);
+	_gfx->drawMRG(&mrg, base+7, real_x2 - widths[base+7], real_y2 - heights[base+3] - heights[base+7]);
+	// corners
 	_gfx->drawMRG(&mrg, base+0, real_x1, real_y1);
 	_gfx->drawMRG(&mrg, base+1, real_x2 - widths[base+1], real_y1);
 	_gfx->drawMRG(&mrg, base+2, real_x1, real_y2 - heights[base+2]);
