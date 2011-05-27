@@ -359,9 +359,7 @@ void Graphics::loadMRG(Common::String filename, MRGFile *mrg) {
 void Graphics::drawMRG(MRGFile *mrg, unsigned int entry, unsigned int x, unsigned int y) {
 	assert(entry < mrg->data.size());
 
-	// TODO: positioning/clipping?
-	_vm->_system->copyRectToScreen(mrg->data[entry], mrg->widths[entry], x, y,
-		mrg->widths[entry], mrg->heights[entry]);
+	blit(mrg->data[entry], x, y, mrg->widths[entry], mrg->heights[entry], COLOUR_BLANK);
 }
 
 void Graphics::setBackgroundImage(Common::String filename) {
