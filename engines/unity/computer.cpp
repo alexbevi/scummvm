@@ -47,6 +47,7 @@ void ComputerScreen::start() {
 
 	_sectionStack.clear();
 	_sectionStack.push_back(0);
+	_selection = 0;
 
 	for (uint i = 0; i < _controls.size(); i++)
 		delete _controls[i];
@@ -178,18 +179,17 @@ void ComputerScreen::draw() {
 			uint subentry = toDraw - _sectionStack.size();
 			uint parentId = _sectionStack[_sectionStack.size() - 1];
 			const Common::Array<uint> &subentries = _vm->data._computerEntries[parentId].subentries;
-			if (subentry == subentries.size())
-				break;
+			if (subentry >= subentries.size())
+				continue;
 			entryId = subentries[subentry];
 			indent = _sectionStack.size();
 		}
 		text = _vm->data._computerEntries[entryId].title;
 		text.toUppercase();
 
-		if (toDraw == _sectionStack.size() - 1) {
-			// TODO: draw background
-			// (0/1: normal/full section background)
-		}
+		// 0/1: normal/full section background
+		_vm->_gfx->drawMRG(&mrg, (toDraw == _selection) ? 1 : 0, 1, 47 + (i * 23));
+
 		Common::Rect rect(15 + ((indent + 1) * 10), 61 + (i * 23), 167, 76 + (i * 23));
 		_vm->_gfx->drawString(rect.left, rect.top, rect.right, rect.bottom, text, color);
 	}

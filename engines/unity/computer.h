@@ -34,6 +34,7 @@ public:
 
 protected:
 	Common::Array<uint> _sectionStack;
+	uint _selection;
 };
 
 } // Unity
