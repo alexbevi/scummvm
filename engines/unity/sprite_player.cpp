@@ -20,11 +20,13 @@
 #include "sound.h"
 
 #include "common/system.h"
+#include "common/stream.h"
 #include "common/textconsole.h"
 
 namespace Unity {
 
-SpritePlayer::SpritePlayer(Sprite *spr, Object *par, UnityEngine *vm) : sprite(spr), parent(par), _vm(vm) {
+SpritePlayer::SpritePlayer(Common::SeekableReadStream *str, Object *par, UnityEngine *vm) : parent(par), _vm(vm) {
+  sprite = new Sprite(str);
 	current_entry = ~0;
 	current_sprite = NULL;
 	current_speechsprite = NULL;
@@ -41,6 +43,7 @@ SpritePlayer::SpritePlayer(Sprite *spr, Object *par, UnityEngine *vm) : sprite(s
 }
 
 SpritePlayer::~SpritePlayer() {
+	delete sprite;
 }
 
 void SpritePlayer::resetState() {

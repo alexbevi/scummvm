@@ -26,7 +26,7 @@ class Object;
 
 class SpritePlayer {
 public:
-	SpritePlayer(Sprite *spr, Object *par, UnityEngine *vm);
+	SpritePlayer(Common::SeekableReadStream *str, Object *par, UnityEngine *vm);
 	~SpritePlayer();
 
 	void startAnim(unsigned int a);

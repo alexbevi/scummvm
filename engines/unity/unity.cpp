@@ -30,6 +30,7 @@
 #include "common/textconsole.h"
 #include "engines/util.h"
 #include "common/events.h"
+#include "common/stream.h"
 #include "common/system.h"
 #include "common/unzip.h"
 #include "common/file.h"
@@ -329,7 +330,7 @@ void UnityEngine::addToInventory(Object *obj) {
 		error("couldn't find icon sprite for inventory item %s", obj->identify().c_str());
 	}
 	SpritePlayer *icon = NULL;
-	icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
+	icon = new SpritePlayer(data.openFile(icon_sprite), NULL, this);
 	icon->startAnim(0); // static
 	_inventory_icons.push_back(icon);
 }
@@ -373,7 +374,7 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte en
 			error("couldn't find icon sprite for away team member %s",
 				_current_away_team_member->identify().c_str());
 		}
-		_current_away_team_icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
+		_current_away_team_icon = new SpritePlayer(data.openFile(icon_sprite), NULL, this);
 		_current_away_team_icon->startAnim(0); // static
 
 		for (unsigned int i = 0; i < 5; i++) {
@@ -423,7 +424,7 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte en
 
 void UnityEngine::startupScreen() {
 	// play two animations (both logo anim followed by text) from one file
-	Sprite *sp = new Sprite(data.openFile("legaleze.spr"));
+	Common::SeekableReadStream *sp = data.openFile("legaleze.spr");
 	SpritePlayer *p = new SpritePlayer(sp, 0, this);
 	unsigned int anim = 0;
 	p->startAnim(anim);
@@ -466,7 +467,6 @@ void UnityEngine::startupScreen() {
 	}
 	_mixer->stopAll();
 	delete p;
-	delete sp;
 }
 
 void UnityEngine::processTriggers() {
@@ -519,7 +519,7 @@ void UnityEngine::setSpeaker(objectID s) {
 		return;
 	}
 
-	_icon = new SpritePlayer(new Sprite(data.openFile(icon_sprite)), NULL, this);
+	_icon = new SpritePlayer(data.openFile(icon_sprite), NULL, this);
 	if (_icon->numAnims() < 3) {
 		_icon->startAnim(0); // static
 	} else {

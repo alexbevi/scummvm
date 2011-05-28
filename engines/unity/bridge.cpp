@@ -46,7 +46,7 @@ void BridgeScreen::start() {
 		obj->y_adjust = -1;
 		obj->flags = OBJFLAG_ACTIVE;
 		obj->objwalktype = OBJWALKTYPE_NORMAL;
-		obj->sprite = new SpritePlayer(new Sprite(_vm->data.openFile(bridge_sprites[i])), obj, _vm);
+		obj->sprite = new SpritePlayer(_vm->data.openFile(bridge_sprites[i]), obj, _vm);
 		obj->sprite->startAnim(0);
 		_vm->data._currentScreen.objects.push_back(obj);
 	}
@@ -59,7 +59,7 @@ void BridgeScreen::start() {
 		obj->y_adjust = -1;
 		obj->flags = OBJFLAG_ACTIVE;
 		obj->objwalktype = OBJWALKTYPE_NORMAL;
-		obj->sprite = new SpritePlayer(new Sprite(_vm->data.openFile(_vm->data._bridgeObjects[i].filename)), obj, _vm);
+		obj->sprite = new SpritePlayer(_vm->data.openFile(_vm->data._bridgeObjects[i].filename), obj, _vm);
 		obj->sprite->startAnim(0);
 		/*debugN("%s: %d, %d\n", data._bridgeObjects[i].filename.c_str(),
 			data._bridgeObjects[i].unknown1,
