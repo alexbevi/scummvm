@@ -146,6 +146,8 @@ void FVFDecoder::close() {
 
 	_mixer->stopHandle(*_audioHandle);
 	_audioStream = 0;
+
+	_surface.free();
 }
 
 void FVFDecoder::readNextBlock() {
