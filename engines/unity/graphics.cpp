@@ -56,16 +56,27 @@ static const byte sciMouseCursor[] = {
 Graphics::Graphics(UnityEngine *_engine) : _vm(_engine) {
 	basePalette = palette = 0;
 	background.data = 0;
+
+  for (unsigned int num = 0; num < 10; num++) {
+		fonts[num].data = 0;
+		fonts[num].widths = 0;
+  }
 }
 
 Graphics::~Graphics() {
 	delete[] basePalette;
 	delete[] palette;
+
 	for (unsigned int i = 0; i < cursors.size(); i++)
 		delete[] cursors[i].data;
 	for (unsigned int i = 0; i < wait_cursors.size(); i++)
 		delete[] wait_cursors[i].data;
 	delete[] background.data;
+
+	for (unsigned int num = 0; num < 10; num++) {
+		delete[] fonts[num].data;
+		delete[] fonts[num].widths;
+	}
 }
 
 void Graphics::init() {
@@ -75,6 +86,7 @@ void Graphics::init() {
 }
 
 void Graphics::loadPalette() {
+	delete[] basePalette;
 	// read the standard palette entries
 	basePalette = new byte[128 * 3];
 	Common::SeekableReadStream *palStream = _vm->data.openFile("STANDARD.PAL");
@@ -87,6 +99,10 @@ void Graphics::loadPalette() {
 }
 
 void Graphics::loadCursors() {
+	for (unsigned int i = 0; i < cursors.size(); i++)
+		delete[] cursors[i].data;
+	cursors.clear();
+
 	Common::SeekableReadStream *stream = _vm->data.openFile("cursor.dat");
 	while (stream->pos() != stream->size()) {
 		Image img;
@@ -97,6 +113,10 @@ void Graphics::loadCursors() {
 		cursors.push_back(img);
 	}
 	delete stream;
+
+	for (unsigned int i = 0; i < wait_cursors.size(); i++)
+		delete[] wait_cursors[i].data;
+	wait_cursors.clear();
 	stream = _vm->data.openFile("waitcurs.dat");
 	// TODO: waitcursor stream has an extra byte on the end, so needs +1...
 	while (stream->pos() + 1 != stream->size()) {
@@ -131,15 +151,6 @@ void Graphics::setCursor(unsigned int id, bool wait) {
 	CursorMan.showMouse(true);
 }
 
-struct Font {
-	byte start, end;
-	uint16 size;
-	byte glyphpitch, glyphheight;
-	byte *data, *widths;
-};
-
-Font fonts[10]; // TODO: store in class, free data
-
 void Graphics::loadFonts() {
 	for (unsigned int num = 0; num < 10; num++) {
 		char filename[10];
@@ -164,14 +175,17 @@ void Graphics::loadFonts() {
 		assert(unknown3 == 0 || unknown3 == 1);
 		if (unknown3 == 0) {
 			// TODO: not sure what's going on with these
-			fonts[num].data = NULL;
+			fonts[num].data = 0;
+			fonts[num].widths = 0;
 			continue;
 		}
 
 		fonts[num].glyphpitch = fontStream->readByte();
 		assert(size == fonts[num].glyphpitch * ((unknown3 == 0) ? 1 : fonts[num].glyphheight));
 
+		delete[] fonts[num].data;
 		fonts[num].data = new byte[num_glyphs * size];
+		delete[] fonts[num].widths;
 		fonts[num].widths = new byte[num_glyphs];
 
 		for (unsigned int i = 0; i < num_glyphs; i++) {

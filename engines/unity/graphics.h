@@ -79,6 +79,16 @@ protected:
 	Image background;
 	Common::Array<Image> cursors;
 	Common::Array<Image> wait_cursors;
+
+private:
+	struct Font {
+		byte start, end;
+		uint16 size;
+		byte glyphpitch, glyphheight;
+		byte *data, *widths;
+	};
+
+	Font fonts[10];
 };
 
 }
