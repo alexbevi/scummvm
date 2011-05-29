@@ -703,7 +703,7 @@ void UnityData::loadExecutableData() {
 		uint32 descOffset = stream->readUint32();
 		obj.x = stream->readUint32();
 		obj.y = stream->readUint32();
-		obj.unknown1 = stream->readUint32();
+		obj.y_adjust = stream->readUint32();
 		obj.unknown2 = stream->readUint32();
 		obj.filename = readStringFromOffset(stream, descOffset);
 		_bridgeObjects.push_back(obj);

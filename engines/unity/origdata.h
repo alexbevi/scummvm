@@ -48,7 +48,7 @@ struct BridgeObject {
 	objectID id;
 	Common::String filename;
 	uint32 x, y;
-	int32 unknown1;
+	int32 y_adjust;
 	uint32 unknown2;
 };
 
