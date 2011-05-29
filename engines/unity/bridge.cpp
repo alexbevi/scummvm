@@ -27,54 +27,108 @@ BridgeScreen::~BridgeScreen() {
 }
 
 void BridgeScreen::start() {
-	_vm->data._currentScreen.objects.clear();
+	_vm->clearObjects();
 	_vm->data._currentScreen.polygons.clear();
 	_vm->data._currentScreen.world = 0x5f;
 	_vm->data._currentScreen.screen = 0xff;
-
-	// TODO: episode title should only appear once
-	const char *bridge_sprites[5] = {
-		"brdgldor.spr", // Left Door (conference room)
-		"brdgdoor.spr", // Door
-		"brdgtitl.spr", // Episode Title
-		"advice.spr", // advice button in UI :(
-		0 };
-
-	for (unsigned int i = 0; bridge_sprites[i] != 0; i++) {
-		Object *obj = new Object(_vm);
-		obj->x = obj->y = 0;
-		obj->y_adjust = -1;
-		obj->flags = OBJFLAG_ACTIVE;
-		obj->objwalktype = OBJWALKTYPE_NORMAL;
-		obj->sprite = new SpritePlayer(_vm->data.openFile(bridge_sprites[i]), obj, _vm);
-		obj->sprite->startAnim(0);
-		_vm->data._currentScreen.objects.push_back(obj);
-	}
 
 	for (unsigned int i = 0; i < _vm->data._bridgeObjects.size(); i++) {
 		Object *obj = new Object(_vm);
 		// TODO: correct?
 		obj->x = _vm->data._bridgeObjects[i].x;
 		obj->y = _vm->data._bridgeObjects[i].y;
-		obj->y_adjust = -1;
+		obj->y_adjust = _vm->data._bridgeObjects[i].y_adjust;
+		obj->y_adjust = -obj->y_adjust; // TODO: stupid hack
 		obj->flags = OBJFLAG_ACTIVE;
 		obj->objwalktype = OBJWALKTYPE_NORMAL;
 		obj->sprite = new SpritePlayer(_vm->data.openFile(_vm->data._bridgeObjects[i].filename), obj, _vm);
+		// TODO: hardcoded random Riker walk-on anim, somewhere
+		/*if (i == 1 && _vm->_rnd->getRandomNumber(3) == 3)
+			obj->sprite->startAnim(5);
+		else*/
 		obj->sprite->startAnim(0);
-		/*debugN("%s: %d, %d\n", data._bridgeObjects[i].filename.c_str(),
-			data._bridgeObjects[i].unknown1,
-			data._bridgeObjects[i].unknown2);*/
+		/*debugN("%s: %d, %d\n", _vm->data._bridgeObjects[i].filename.c_str(),
+			_vm->data._bridgeObjects[i].unknown2);*/
 		_vm->data._currentScreen.objects.push_back(obj);
 	}
 
 	_vm->_gfx->setBackgroundImage("bridge.rm");
-	mouseMove(Common::Point(0, 0));
+
+	for (unsigned int i = 0; i < 6; i++) {
+		_bridgeObjects[i] = NULL;
+	}
+	_viewscreenMode = true;
+	_viewscreenView = NULL;
+	toggleViewscreen();
+
+	// TODO: create shared UI
 
 	_vm->_snd->playMusic("bridgamb.rac", 0x3f, 0);
 }
 
+void BridgeScreen::shutdown() {
+	for (unsigned int i = 0; i < 6; i++) {
+		if (_bridgeObjects[i])
+			_vm->removeObject(_bridgeObjects[i]);
+		delete _bridgeObjects[i];
+		_bridgeObjects[i] = NULL;
+	}
+	if (_viewscreenView)
+		_vm->removeObject(_viewscreenView);
+	delete _viewscreenView;
+	_viewscreenView = NULL;
+	_vm->clearObjects();
+}
+
+void BridgeScreen::toggleViewscreen() {
+	_viewscreenMode = !_viewscreenMode;
+
+	// force palette reset
+	_vm->_gfx->setBackgroundImage("bridge.rm");
+
+	for (unsigned int i = 0; i < 6; i++) {
+		if (_bridgeObjects[i])
+			_vm->removeObject(_bridgeObjects[i]);
+		delete _bridgeObjects[i];
+		_bridgeObjects[i] = NULL;
+	}
+	if (_viewscreenView) {
+		_vm->removeObject(_viewscreenView);
+		delete _viewscreenView;
+		_viewscreenView = NULL;
+	}
+
+	if (_viewscreenMode) {
+		for (unsigned int i = 3; i < 6; i++) {
+			createBridgeUIObject(i);
+		}
+
+		_viewscreenView = new Object(_vm);
+		_viewscreenView->y_adjust = -1501;
+		_viewscreenView->flags = OBJFLAG_ACTIVE;
+		_viewscreenView->objwalktype = OBJWALKTYPE_NORMAL;
+		uint spriteId = _vm->_viewscreen_sprite_id;
+		// TODO: deal with other ids?
+		Common::String sprFilename = _vm->data.getSpriteFilename(spriteId);
+		_viewscreenView->sprite = new SpritePlayer(_vm->data.openFile(sprFilename), _viewscreenView, _vm);
+		_viewscreenView->sprite->startAnim(0);
+		_vm->data._currentScreen.objects.push_back(_viewscreenView);
+	} else {
+		for (unsigned int i = 0; i < 4; i++) {
+			createBridgeUIObject(i);
+		}
+	}
+
+	mouseMove(Common::Point(0, 0));
+}
+
 void BridgeScreen::mouseMove(const Common::Point &pos) {
-	_status_text.clear();
+	_statusText.clear();
+
+	if (_viewscreenMode) {
+		_vm->_gfx->setCursor(0xffffffff, false);
+		return;
+	}
 
 	for (unsigned int i = 0; i < _vm->data._bridgeItems.size(); i++) {
 		BridgeItem &item = _vm->data._bridgeItems[i];
@@ -83,7 +137,7 @@ void BridgeScreen::mouseMove(const Common::Point &pos) {
 		if ((uint)pos.x > item.x + item.width) continue;
 		if ((uint)pos.y > item.y + item.height) continue;
 
-		_status_text = item.description;
+		_statusText = item.description;
 
 		// TODO: this is kinda random :)
 		if (item.unknown1 < 0x32)
@@ -98,6 +152,18 @@ void BridgeScreen::mouseMove(const Common::Point &pos) {
 }
 
 void BridgeScreen::mouseClick(const Common::Point &pos) {
+	Common::Rect buttonRect(484, 426, 604, 467);
+	if (buttonRect.contains(pos)) {
+		// TODO: sound?
+		toggleViewscreen();
+		return;
+	}
+
+	// TODO: shared UI elements!
+
+	if (_viewscreenMode)
+		return;
+
 	for (unsigned int i = 0; i < _vm->data._bridgeItems.size(); i++) {
 		BridgeItem &item = _vm->data._bridgeItems[i];
 		if ((uint)pos.x < item.x) continue;
@@ -165,13 +231,14 @@ void BridgeScreen::draw() {
 	// the advice button is drawn as a sprite (see startBridge), sigh
 	// TODO: draw icons there if there's no subtitles
 
-	// sensor.mrg
+	// sensor.mrg has buttons
 	// 4 sprites: "bridge" in/out and "viewscreen" in/out
-
-	// draw viewscreen button
 	MRGFile mrg;
 	_vm->_gfx->loadMRG("sensor.mrg", &mrg);
-	_vm->_gfx->drawMRG(&mrg, 3, 484, 426);
+	uint buttonId = 3;
+	if (_viewscreenMode)
+		buttonId = 1;
+	_vm->_gfx->drawMRG(&mrg, buttonId, 484, 426);
 
 	// transp.mrg
 	// 0-5: up arrows (normal, hilight, grayed) + down arrows
@@ -203,11 +270,45 @@ void BridgeScreen::draw() {
 	snprintf(buffer, 30, "WARP: %d.%d", warp_hi, warp_lo);
 	_vm->_gfx->drawString(168, 395, 9999, 9999, buffer, 2);
 
-	snprintf(buffer, 30, "%s", _status_text.c_str());
+	snprintf(buffer, 30, "%s", _statusText.c_str());
 	Common::Array<unsigned int> strwidths, starts; unsigned int height;
 	_vm->_gfx->calculateStringBoundary(110, strwidths, starts, height, buffer, 2);
 	// draw centered, with 544 being the centre
 	_vm->_gfx->drawString(544 - strwidths[0]/2, 393, strwidths[0], 9999, buffer, 2);
+}
+
+void BridgeScreen::createBridgeUIObject(uint i) {
+	const char *bridge_sprites[6] = {
+		"brdgldor.spr", // Left Door (conference room)
+		"brdgdoor.spr", // Door
+		"brdgtitl.spr", // Episode Title
+		"advice.spr", // advice button in UI :(
+		"viewscr.spr", // viewscreen UI
+		"viewscan.spr" // viewscreen anim
+		};
+
+	Object *obj = new Object(_vm);
+	_bridgeObjects[i] = obj;
+	obj->x = obj->y = 0;
+	switch (i) {
+	case 4:
+		// viewscr
+		obj->y_adjust = -1500;
+		break;
+	case 5:
+		// viewscan
+		obj->y_adjust = -1501;
+		break;
+	default:
+		obj->y_adjust = -1;
+		break;
+	}
+	obj->y_adjust = -obj->y_adjust; // TODO: stupid hack
+	obj->flags = OBJFLAG_ACTIVE;
+	obj->objwalktype = OBJWALKTYPE_NORMAL;
+	obj->sprite = new SpritePlayer(_vm->data.openFile(bridge_sprites[i]), obj, _vm);
+	obj->sprite->startAnim(0);
+	_vm->data._currentScreen.objects.push_back(obj);
 }
 
 } // Unity

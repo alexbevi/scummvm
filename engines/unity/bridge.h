@@ -27,13 +27,20 @@ public:
 	~BridgeScreen();
 
 	void start();
+	void shutdown();
 
 	void mouseMove(const Common::Point &pos);
 	void mouseClick(const Common::Point &pos);
 	void draw();
 
 protected:
-	Common::String _status_text;
+	void toggleViewscreen();
+	void createBridgeUIObject(uint i);
+
+	Common::String _statusText;
+	class Object *_bridgeObjects[6];
+	class Object *_viewscreenView;
+	bool _viewscreenMode;
 };
 
 } // Unity
