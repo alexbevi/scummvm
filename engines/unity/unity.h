@@ -50,6 +50,7 @@ enum {
 };
 
 enum ScreenType {
+	NoScreenType,
 	AstrogationScreenType,
 	BridgeScreenType,
 	ComputerScreenType,
@@ -134,6 +135,7 @@ protected:
 	SpritePlayer *_icon;
 
 	UIScreen *_currScreen;
+	ScreenType _currScreenType;
 	class BridgeScreen *_bridgeScreen;
 	class ComputerScreen *_computerScreen;
 	class ViewscreenScreen *_viewscreenScreen;

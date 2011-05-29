@@ -27,6 +27,7 @@ public:
 	~ComputerScreen();
 
 	void start();
+	void shutdown();
 
 	void mouseMove(const Common::Point &pos);
 	void mouseClick(const Common::Point &pos);

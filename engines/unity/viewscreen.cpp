@@ -26,7 +26,7 @@ ViewscreenScreen::~ViewscreenScreen() {
 }
 
 void ViewscreenScreen::start() {
-	_vm->data._currentScreen.objects.clear();
+	_vm->clearObjects();
 	_vm->data._currentScreen.polygons.clear();
 	_vm->data._currentScreen.world = 0x5f;
 	_vm->data._currentScreen.screen = 0xff;
@@ -60,6 +60,9 @@ void ViewscreenScreen::start() {
 
 	_vm->_gfx->setBackgroundImage("viewscr.rm");
 	mouseMove(Common::Point(0, 0));
+}
+
+void ViewscreenScreen::shutdown() {
 }
 
 void ViewscreenScreen::mouseMove(const Common::Point &pos) {

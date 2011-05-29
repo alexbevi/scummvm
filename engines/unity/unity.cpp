@@ -67,7 +67,8 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 	_bridgeScreen = new BridgeScreen(this);
 	_computerScreen = new ComputerScreen(this);
 	_viewscreenScreen = new ViewscreenScreen(this);
-	_currScreen = _bridgeScreen;
+	_currScreen = NULL;
+	_currScreenType = NoScreenType;
 }
 
 UnityEngine::~UnityEngine() {
@@ -372,7 +373,12 @@ void UnityEngine::removeFromInventory(Object *obj) {
 }
 
 void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte entrance) {
-	data._currentScreen.objects.clear();
+	if (_currScreen)
+		_currScreen->shutdown();
+	_currScreen = NULL;
+	_currScreenType = NoScreenType;
+
+	clearObjects();
 	data._currentScreen.world = world;
 	data._currentScreen.screen = screen;
 
@@ -597,6 +603,14 @@ Common::String UnityEngine::voiceFileFor(byte voice_group, byte voice_subgroup, 
 }
 
 void UnityEngine::changeToScreen(ScreenType screenType) {
+	if (screenType == _currScreenType)
+		return;
+	_currScreenType = screenType;
+
+	if (_currScreen)
+		_currScreen->shutdown();
+	_currScreen = NULL;
+
 	switch (screenType) {
 	case BridgeScreenType:
 		_currScreen = _bridgeScreen;

@@ -40,7 +40,7 @@ enum {
 };
 
 void ComputerScreen::start() {
-	_vm->data._currentScreen.objects.clear();
+	_vm->clearObjects();
 	_vm->data._currentScreen.polygons.clear();
 	_vm->data._currentScreen.world = 0x5f;
 	_vm->data._currentScreen.screen = 0xff;
@@ -103,6 +103,9 @@ void ComputerScreen::start() {
 	mouseMove(Common::Point(0, 0));
 
 	_vm->_snd->playMusic("compute.rac", 0x3f, 0x19740);
+}
+
+void ComputerScreen::shutdown() {
 }
 
 void ComputerScreen::mouseMove(const Common::Point &pos) {

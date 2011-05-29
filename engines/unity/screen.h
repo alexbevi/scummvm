@@ -40,6 +40,7 @@ public:
 	virtual ~UIScreen();
 
 	virtual void start() = 0;
+	virtual void shutdown() = 0;
 	virtual void mouseMove(const Common::Point &pos) = 0;
 	virtual void mouseClick(const Common::Point &pos) = 0;
 	virtual void draw() = 0;
