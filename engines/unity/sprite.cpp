@@ -52,7 +52,12 @@ Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 
 	_isSprite = false;
 
-	readBlock();
+	SpriteEntry *temp = readBlock();
+	if (temp && temp->type == se_Sprite)
+		delete[] ((SpriteEntrySprite *)temp)->data;
+	else if (temp && temp->type == se_Audio)
+		delete[] ((SpriteEntryAudio *)temp)->data;
+  delete temp;
 	assert(_isSprite);
 
 	// make sure we read everything
@@ -62,9 +67,9 @@ Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 Sprite::~Sprite() {
 	delete _stream;
 	for (unsigned int i = 0; i < entries.size(); i++) {
-		if (entries[i]->type == se_Sprite)
+		if (entries[i] && entries[i]->type == se_Sprite)
 			delete[] ((SpriteEntrySprite *)entries[i])->data;
-		else if (entries[i]->type == se_Audio)
+		else if (entries[i] && entries[i]->type == se_Audio)
 			delete[] ((SpriteEntryAudio *)entries[i])->data;
 		delete entries[i];
 	}
@@ -96,7 +101,12 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		uint32 start = _stream->pos();
 		uint32 unknown = _stream->readUint32LE();
 		assert(unknown = 0x1000);
-		readBlock();
+		SpriteEntry *temp = readBlock();
+		if (temp && temp->type == se_Sprite)
+			delete[] ((SpriteEntrySprite *)temp)->data;
+		else if (temp && temp->type == se_Audio)
+			delete[] ((SpriteEntryAudio *)temp)->data;
+		delete temp;
 		assert((uint32)_stream->pos() == start + size);
 	} else if (!_isSprite) {
 		error("sprite didn't start with SPRT");

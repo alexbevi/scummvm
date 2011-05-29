@@ -121,12 +121,12 @@ protected:
 	Common::Array<unsigned int> indexes;
 	Common::Array<SpriteEntry *> entries;
 
-	SpriteEntry *readBlock();
-	SpriteEntry *parseBlock(char blockType[4], uint32 size);
-
 	void readCompressedImage(uint32 size, SpriteEntrySprite *dest);
 	void decodeSpriteTypeOne(byte *buf, unsigned int size, byte *data, unsigned int width, unsigned int height);
 	void decodeSpriteTypeTwo(byte *buf, unsigned int size, byte *data, unsigned int targetsize);
+private:
+	SpriteEntry *parseBlock(char blockType[4], uint32 size);	
+	SpriteEntry *readBlock();
 
 	bool _isSprite;
 };
