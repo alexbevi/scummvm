@@ -296,6 +296,23 @@ Object *UnityEngine::objectAt(unsigned int x, unsigned int y) {
 	return 0;
 }
 
+void UnityEngine::clearObjects() {
+	data._currentScreen.objects.clear();
+}
+
+void UnityEngine::removeObject(Object *obj) {
+	Common::Array<Object *> &objects = data._currentScreen.objects;
+
+	for (uint i = 0; i < objects.size(); i++) {
+		if (objects[i] != obj)
+			continue;
+		objects.remove_at(i);
+		return;
+	}
+
+	error("removeObject failed to find object");
+}
+
 void UnityEngine::startBridge() {
 	endAwayTeam();
 	changeToScreen(BridgeScreenType);

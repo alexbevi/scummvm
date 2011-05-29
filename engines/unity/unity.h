@@ -71,6 +71,8 @@ public:
         GUI::Debugger *getDebugger() { return _console; }
 
 	Object *objectAt(unsigned int x, unsigned int y);
+	void clearObjects();
+	void removeObject(Object *obj);
 
 	Common::RandomSource *_rnd;
 
