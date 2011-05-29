@@ -26,7 +26,7 @@
 namespace Unity {
 
 SpritePlayer::SpritePlayer(Common::SeekableReadStream *str, Object *par, UnityEngine *vm) : parent(par), _vm(vm) {
-  sprite = new Sprite(str);
+	sprite = new Sprite(str);
 	current_entry = ~0;
 	current_sprite = NULL;
 	current_speechsprite = NULL;

@@ -57,7 +57,7 @@ Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 		delete[] ((SpriteEntrySprite *)temp)->data;
 	else if (temp && temp->type == se_Audio)
 		delete[] ((SpriteEntryAudio *)temp)->data;
-  delete temp;
+	delete temp;
 	assert(_isSprite);
 
 	// make sure we read everything

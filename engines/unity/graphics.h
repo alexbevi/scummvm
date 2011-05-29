@@ -80,7 +80,6 @@ protected:
 	Common::Array<Image> cursors;
 	Common::Array<Image> wait_cursors;
 
-private:
 	struct Font {
 		byte start, end;
 		uint16 size;

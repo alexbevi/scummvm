@@ -57,10 +57,10 @@ Graphics::Graphics(UnityEngine *_engine) : _vm(_engine) {
 	basePalette = palette = 0;
 	background.data = 0;
 
-  for (unsigned int num = 0; num < 10; num++) {
+	for (unsigned int num = 0; num < 10; num++) {
 		fonts[num].data = 0;
 		fonts[num].widths = 0;
-  }
+	}
 }
 
 Graphics::~Graphics() {
