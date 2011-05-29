@@ -44,6 +44,10 @@ UnityData::~UnityData() {
 		}
 		delete i->_value;
 	}
+
+	for (uint i = 0; i < _triggers.size(); i++) {
+		delete _triggers[i];
+	}
 }
 
 void UnityData::loadScreenPolys(Common::String filename) {
