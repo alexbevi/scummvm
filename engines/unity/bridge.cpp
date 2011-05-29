@@ -104,7 +104,11 @@ void BridgeScreen::toggleViewscreen() {
 		}
 
 		_viewscreenView = new Object(_vm);
+		// TODO: correct?
+		_viewscreenView->x = 0;
+		_viewscreenView->y = 0;
 		_viewscreenView->y_adjust = -1501;
+		_viewscreenView->y_adjust = -_viewscreenView->y_adjust; // TODO: stupid hack
 		_viewscreenView->flags = OBJFLAG_ACTIVE;
 		_viewscreenView->objwalktype = OBJWALKTYPE_NORMAL;
 		uint spriteId = _vm->_viewscreen_sprite_id;
