@@ -53,7 +53,7 @@ Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 	_isSprite = false;
 
 	SpriteEntry *temp = readBlock();
-	if (temp && temp->type == se_Sprite)
+	if (temp && (temp->type == se_Sprite || temp->type == se_SpeechSprite))
 		delete[] ((SpriteEntrySprite *)temp)->data;
 	else if (temp && temp->type == se_Audio)
 		delete[] ((SpriteEntryAudio *)temp)->data;
@@ -66,7 +66,7 @@ Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 
 Sprite::~Sprite() {
 	for (unsigned int i = 0; i < entries.size(); i++) {
-		if (entries[i] && entries[i]->type == se_Sprite)
+		if (entries[i] && (entries[i]->type == se_Sprite || entries[i]->type == se_SpeechSprite))
 			delete[] ((SpriteEntrySprite *)entries[i])->data;
 		else if (entries[i] && entries[i]->type == se_Audio)
 			delete[] ((SpriteEntryAudio *)entries[i])->data;
@@ -101,7 +101,7 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		uint32 unknown = _stream->readUint32LE();
 		assert(unknown = 0x1000);
 		SpriteEntry *temp = readBlock();
-		if (temp && temp->type == se_Sprite)
+		if (temp && (temp->type == se_Sprite || temp->type == se_SpeechSprite))
 			delete[] ((SpriteEntrySprite *)temp)->data;
 		else if (temp && temp->type == se_Audio)
 			delete[] ((SpriteEntryAudio *)temp)->data;
