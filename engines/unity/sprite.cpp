@@ -274,7 +274,8 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 void Sprite::readCompressedImage(uint32 size, SpriteEntrySprite *img) {
 	img->width = _stream->readUint32LE();
 	img->height = _stream->readUint32LE();
-	img->data = NULL;
+	delete[] img->data;
+	img->data = 0;
 
 	uint16 unknown3 = _stream->readUint16LE();
 	uint16 unknown4 = _stream->readUint16LE();

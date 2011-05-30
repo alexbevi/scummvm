@@ -56,7 +56,7 @@ struct SpriteEntrySprite : public SpriteEntry {
 	unsigned int width;
 	unsigned int height;
 	byte *data;
-	SpriteEntrySprite() : SpriteEntry(se_Sprite) { }
+	SpriteEntrySprite() : SpriteEntry(se_Sprite), data(0) { }
 };
 
 struct SpriteEntryPalette : public SpriteEntry {
@@ -97,7 +97,7 @@ struct SpriteEntryMouthPos : public SpriteEntry {
 struct SpriteEntryAudio : public SpriteEntry {
 	unsigned int length;
 	byte *data;
-	SpriteEntryAudio() : SpriteEntry(se_Audio) { }
+	SpriteEntryAudio() : SpriteEntry(se_Audio), data(0) { }
 };
 
 struct SpriteEntryStateSet : public SpriteEntry {
