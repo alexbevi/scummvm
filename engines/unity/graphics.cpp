@@ -177,6 +177,7 @@ void Graphics::loadFonts() {
 			// TODO: not sure what's going on with these
 			fonts[num].data = 0;
 			fonts[num].widths = 0;
+			delete fontStream;
 			continue;
 		}
 
