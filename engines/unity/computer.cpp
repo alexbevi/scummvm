@@ -118,6 +118,7 @@ void ComputerScreen::mouseClick(const Common::Point &pos) {
 		if (pos.y >= 56 && pos.y <= 77 + 23*15) {
 			// section
 			uint entryId = (pos.y - 56) / 23;
+			debug(5, "ComputerScreen::mouseClick() entryId: %d", entryId);
 
 			// TODO
 			return;
