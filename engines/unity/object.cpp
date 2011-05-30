@@ -100,6 +100,13 @@ enum {
 	RESPONSE_UNKNOWN1 = 0x4
 };
 
+Object::Object(UnityEngine *p) : _vm(p) {
+}
+
+Object::~Object() {
+	delete sprite;
+}
+
 // TODO: these are 'sanity checks' for verifying global state
 bool g_debug_loading_object = false;
 objectID g_debug_object_id;

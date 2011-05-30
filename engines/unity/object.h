@@ -326,6 +326,9 @@ public:
 
 class Object {
 public:
+	Object(UnityEngine *p);
+	~Object();
+
 	objectID id;
 	byte curr_screen;
 
@@ -362,8 +365,6 @@ public:
 
 	Common::Array<Description> descriptions;
 	EntryList use_entries, get_entries, look_entries, timer_entries;
-
-	Object(UnityEngine *p) : _vm(p) { }
 
 	void loadObject(unsigned int world, unsigned int screen, unsigned int id);
 	void loadSprite();
