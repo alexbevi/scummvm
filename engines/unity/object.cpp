@@ -101,6 +101,9 @@ enum {
 };
 
 Object::Object(UnityEngine *p) : _vm(p) {
+	sprite = 0;
+	flags = 0;
+	timer = 0;
 }
 
 Object::~Object() {
