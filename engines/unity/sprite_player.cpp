@@ -25,8 +25,9 @@
 
 namespace Unity {
 
-SpritePlayer::SpritePlayer(Common::SeekableReadStream *str, Object *par, UnityEngine *vm) : parent(par), _vm(vm) {
-	sprite = new Sprite(str);
+SpritePlayer::SpritePlayer(const char *filename, Object *par, UnityEngine *vm) : parent(par), _vm(vm) {
+	spriteStream = vm->data.openFile(filename);
+	sprite = new Sprite(spriteStream);
 	current_entry = ~0;
 	current_sprite = NULL;
 	current_speechsprite = NULL;
@@ -44,6 +45,7 @@ SpritePlayer::SpritePlayer(Common::SeekableReadStream *str, Object *par, UnityEn
 
 SpritePlayer::~SpritePlayer() {
 	delete sprite;
+	delete spriteStream;
 }
 
 void SpritePlayer::resetState() {

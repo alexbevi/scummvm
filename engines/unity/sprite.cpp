@@ -65,7 +65,6 @@ Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 }
 
 Sprite::~Sprite() {
-	delete _stream;
 	for (unsigned int i = 0; i < entries.size(); i++) {
 		if (entries[i] && entries[i]->type == se_Sprite)
 			delete[] ((SpriteEntrySprite *)entries[i])->data;

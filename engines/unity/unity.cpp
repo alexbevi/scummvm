@@ -350,7 +350,7 @@ void UnityEngine::addToInventory(Object *obj) {
 		error("couldn't find icon sprite for inventory item %s", obj->identify().c_str());
 	}
 	SpritePlayer *icon = NULL;
-	icon = new SpritePlayer(data.openFile(icon_sprite), NULL, this);
+	icon = new SpritePlayer(icon_sprite.c_str(), NULL, this);
 	icon->startAnim(0); // static
 	_inventory_icons.push_back(icon);
 }
@@ -399,7 +399,7 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte en
 			error("couldn't find icon sprite for away team member %s",
 				_current_away_team_member->identify().c_str());
 		}
-		_current_away_team_icon = new SpritePlayer(data.openFile(icon_sprite), NULL, this);
+		_current_away_team_icon = new SpritePlayer(icon_sprite.c_str(), NULL, this);
 		_current_away_team_icon->startAnim(0); // static
 
 		for (unsigned int i = 0; i < 5; i++) {
@@ -449,8 +449,7 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte en
 
 void UnityEngine::startupScreen() {
 	// play two animations (both logo anim followed by text) from one file
-	Common::SeekableReadStream *sp = data.openFile("legaleze.spr");
-	SpritePlayer *p = new SpritePlayer(sp, 0, this);
+	SpritePlayer *p = new SpritePlayer("legaleze.spr", 0, this);
 	unsigned int anim = 0;
 	p->startAnim(anim);
 	uint32 waiting = 0;
@@ -544,7 +543,7 @@ void UnityEngine::setSpeaker(objectID s) {
 		return;
 	}
 
-	_icon = new SpritePlayer(data.openFile(icon_sprite), NULL, this);
+	_icon = new SpritePlayer(icon_sprite.c_str(), NULL, this);
 	if (_icon->numAnims() < 3) {
 		_icon->startAnim(0); // static
 	} else {

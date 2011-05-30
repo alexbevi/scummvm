@@ -252,7 +252,7 @@ void Object::loadSprite() {
 	if (sprite_id == 0xffff || sprite_id == 0xfffe) return;
 
 	Common::String sprfilename = _vm->data.getSpriteFilename(sprite_id);
-	sprite = new SpritePlayer(_vm->data.openFile(sprfilename), this, _vm);
+	sprite = new SpritePlayer(sprfilename.c_str(), this, _vm);
 	sprite->startAnim(0); // XXX
 }
 

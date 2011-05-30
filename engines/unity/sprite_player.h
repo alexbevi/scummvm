@@ -26,7 +26,7 @@ class Object;
 
 class SpritePlayer {
 public:
-	SpritePlayer(Common::SeekableReadStream *str, Object *par, UnityEngine *vm);
+	SpritePlayer(const char *filename, Object *par, UnityEngine *vm);
 	~SpritePlayer();
 
 	void startAnim(unsigned int a);
@@ -76,6 +76,8 @@ protected:
 	unsigned int wait_target;
 
 	void resetState();
+private:
+	Common::SeekableReadStream *spriteStream;
 };
 
 } // Unity

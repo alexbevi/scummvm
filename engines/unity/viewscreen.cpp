@@ -43,7 +43,7 @@ void ViewscreenScreen::start() {
 	obj->flags = OBJFLAG_ACTIVE;
 	obj->objwalktype = OBJWALKTYPE_NORMAL;
 	Common::String sprFilename = _vm->data.getSpriteFilename(_vm->_viewscreen_sprite_id);
-	obj->sprite = new SpritePlayer(_vm->data.openFile(sprFilename), obj, _vm);
+	obj->sprite = new SpritePlayer(sprFilename.c_str(), obj, _vm);
 	obj->sprite->startAnim(0);
 	_vm->data._currentScreen.objects.push_back(obj);
 
@@ -54,7 +54,7 @@ void ViewscreenScreen::start() {
 	obj->y_adjust = -1;
 	obj->flags = OBJFLAG_ACTIVE;
 	obj->objwalktype = OBJWALKTYPE_NORMAL;
-	obj->sprite = new SpritePlayer(_vm->data.openFile("viewscan.spr"), obj, _vm);
+	obj->sprite = new SpritePlayer("viewscan.spr", obj, _vm);
 	obj->sprite->startAnim(0);
 	_vm->data._currentScreen.objects.push_back(obj);
 

@@ -41,7 +41,7 @@ void BridgeScreen::start() {
 		obj->y_adjust = -obj->y_adjust; // TODO: stupid hack
 		obj->flags = OBJFLAG_ACTIVE;
 		obj->objwalktype = OBJWALKTYPE_NORMAL;
-		obj->sprite = new SpritePlayer(_vm->data.openFile(_vm->data._bridgeObjects[i].filename), obj, _vm);
+		obj->sprite = new SpritePlayer(_vm->data._bridgeObjects[i].filename.c_str(), obj, _vm);
 		// TODO: hardcoded random Riker walk-on anim, somewhere
 		/*if (i == 1 && _vm->_rnd->getRandomNumber(3) == 3)
 			obj->sprite->startAnim(5);
@@ -118,7 +118,7 @@ void BridgeScreen::toggleViewscreen() {
 		uint spriteId = _vm->_viewscreen_sprite_id;
 		// TODO: deal with other ids?
 		Common::String sprFilename = _vm->data.getSpriteFilename(spriteId);
-		_viewscreenView->sprite = new SpritePlayer(_vm->data.openFile(sprFilename), _viewscreenView, _vm);
+		_viewscreenView->sprite = new SpritePlayer(sprFilename.c_str(), _viewscreenView, _vm);
 		_viewscreenView->sprite->startAnim(0);
 		_vm->data._currentScreen.objects.push_back(_viewscreenView);
 	} else {
@@ -314,7 +314,7 @@ void BridgeScreen::createBridgeUIObject(uint i) {
 	obj->y_adjust = -obj->y_adjust; // TODO: stupid hack
 	obj->flags = OBJFLAG_ACTIVE;
 	obj->objwalktype = OBJWALKTYPE_NORMAL;
-	obj->sprite = new SpritePlayer(_vm->data.openFile(bridge_sprites[i]), obj, _vm);
+	obj->sprite = new SpritePlayer(bridge_sprites[i], obj, _vm);
 	obj->sprite->startAnim(0);
 	_vm->data._currentScreen.objects.push_back(obj);
 }
