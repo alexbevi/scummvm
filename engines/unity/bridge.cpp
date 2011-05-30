@@ -77,7 +77,11 @@ void BridgeScreen::shutdown() {
 		_vm->removeObject(_viewscreenView);
 	delete _viewscreenView;
 	_viewscreenView = NULL;
-	_vm->clearObjects();
+	// all remaining objects should still belong to us..
+	for (uint i = 0; i < _vm->data._currentScreen.objects.size(); i++) {
+		delete _vm->data._currentScreen.objects[i];
+	}
+	_vm->data._currentScreen.objects.clear();
 }
 
 void BridgeScreen::toggleViewscreen() {

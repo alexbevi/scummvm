@@ -72,6 +72,8 @@ UnityEngine::UnityEngine(OSystem *syst) : Engine(syst), data(this) {
 }
 
 UnityEngine::~UnityEngine() {
+	if (_currScreen)
+		_currScreen->shutdown();
 	delete _bridgeScreen;
 	delete _computerScreen;
 	delete _viewscreenScreen;
