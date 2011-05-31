@@ -425,6 +425,9 @@ public:
 
 class Response {
 public:
+	Response();
+	~Response();
+
 	uint16 id, state;
 	Common::Array<ResponseBlock *> blocks;
 	Common::Array<TextBlock *> textblocks;

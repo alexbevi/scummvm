@@ -1930,6 +1930,18 @@ void ResultBlock::execute(UnityEngine *_vm, Object *speaker, Conversation *src) 
 	entries.execute(_vm, &context);
 }
 
+Response::Response() {
+}
+
+Response::~Response() {
+	for (unsigned int i = 0; i < blocks.size(); i++)
+		delete blocks[i];
+	for (unsigned int i = 0; i < textblocks.size(); i++)
+		delete textblocks[i];
+	for (unsigned int i = 0; i < whocansayblocks.size(); i++)
+		delete whocansayblocks[i];
+}
+
 void Response::readFrom(Common::SeekableReadStream *stream) {
 	id = stream->readUint16LE();
 	state = stream->readUint16LE();
