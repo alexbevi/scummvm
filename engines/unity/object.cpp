@@ -2057,6 +2057,14 @@ void Response::readFrom(Common::SeekableReadStream *stream) {
 	error("didn't find a BLOCK_END_BLOCK for a BLOCK_CONV_RESPONSE");
 }
 
+Conversation::Conversation() {
+}
+
+Conversation::~Conversation() {
+	for (unsigned int i = 0; i < responses.size(); i++)
+		delete responses[i];
+}
+
 void Conversation::loadConversation(UnityData &data, unsigned int world, unsigned int id) {
 	assert(!responses.size());
 	our_world = world;

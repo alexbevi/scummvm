@@ -446,6 +446,9 @@ public:
 
 class Conversation {
 public:
+	Conversation();
+	~Conversation();
+
 	Common::Array<Response *> responses;
 	unsigned int our_world, our_id;
 
