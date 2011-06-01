@@ -271,14 +271,14 @@ void BridgeScreen::draw() {
 
 	// TODO: updates while warping, etc
 	Common::String sector_name = _vm->data.getSectorName(ship->universe_x, ship->universe_y, ship->universe_z);
-	buffer.format("SECTOR: %s", sector_name.c_str());
+	buffer = Common::String::format("SECTOR: %s", sector_name.c_str());
 	_vm->_gfx->drawString(9, 395, 9999, 9999, buffer.c_str(), 2);
 
 	unsigned int warp_hi = 0, warp_lo = 0; // TODO
-	buffer.format("WARP: %d.%d", warp_hi, warp_lo);
+	buffer = Common::String::format("WARP: %d.%d", warp_hi, warp_lo);
 	_vm->_gfx->drawString(168, 395, 9999, 9999, buffer.c_str(), 2);
 
-	buffer.format("%s", _statusText.c_str());
+	buffer = Common::String::format("%s", _statusText.c_str());
 	Common::Array<unsigned int> strwidths, starts; unsigned int height;
 	_vm->_gfx->calculateStringBoundary(110, strwidths, starts, height, buffer.c_str(), 2);
 	// draw centered, with 544 being the centre
