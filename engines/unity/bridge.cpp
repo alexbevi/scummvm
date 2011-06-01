@@ -262,7 +262,7 @@ void BridgeScreen::draw() {
 	_vm->_gfx->drawMRG(&tmrg, 5, 117, 450);
 
 	// display text (TODO: list of visited sectors)
-	char buffer[30];
+	Common::String buffer;
 
 	// TODO: sane max width/heights
 
@@ -271,16 +271,16 @@ void BridgeScreen::draw() {
 
 	// TODO: updates while warping, etc
 	Common::String sector_name = _vm->data.getSectorName(ship->universe_x, ship->universe_y, ship->universe_z);
-	snprintf(buffer, 30, "SECTOR: %s", sector_name.c_str());
-	_vm->_gfx->drawString(9, 395, 9999, 9999, buffer, 2);
+	buffer.format("SECTOR: %s", sector_name.c_str());
+	_vm->_gfx->drawString(9, 395, 9999, 9999, buffer.c_str(), 2);
 
 	unsigned int warp_hi = 0, warp_lo = 0; // TODO
-	snprintf(buffer, 30, "WARP: %d.%d", warp_hi, warp_lo);
-	_vm->_gfx->drawString(168, 395, 9999, 9999, buffer, 2);
+	buffer.format("WARP: %d.%d", warp_hi, warp_lo);
+	_vm->_gfx->drawString(168, 395, 9999, 9999, buffer.c_str(), 2);
 
-	snprintf(buffer, 30, "%s", _statusText.c_str());
+	buffer.format("%s", _statusText.c_str());
 	Common::Array<unsigned int> strwidths, starts; unsigned int height;
-	_vm->_gfx->calculateStringBoundary(110, strwidths, starts, height, buffer, 2);
+	_vm->_gfx->calculateStringBoundary(110, strwidths, starts, height, buffer.c_str(), 2);
 	// draw centered, with 544 being the centre
 	_vm->_gfx->drawString(544 - strwidths[0]/2, 393, strwidths[0], 9999, buffer, 2);
 }

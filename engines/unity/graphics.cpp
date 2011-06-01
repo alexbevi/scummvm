@@ -153,9 +153,9 @@ void Graphics::setCursor(unsigned int id, bool wait) {
 
 void Graphics::loadFonts() {
 	for (unsigned int num = 0; num < 10; num++) {
-		char filename[10];
-		snprintf(filename, 10, "font%d.fon", num);
-		Common::SeekableReadStream *fontStream = _vm->data.openFile(filename);
+		Common::String filename;
+		filename.format("font%d.fon", num);
+		Common::SeekableReadStream *fontStream = _vm->data.openFile(filename.c_str());
 
 		byte unknown = fontStream->readByte();
 		assert(unknown == 1);
