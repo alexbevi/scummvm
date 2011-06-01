@@ -4,6 +4,7 @@ MODULE_OBJS := \
 	bridge.o \
 	computer.o \
 	console.o \
+	conversation.o \
 	data.o \
 	debug.o \
 	detection.o \

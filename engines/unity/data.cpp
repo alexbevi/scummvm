@@ -15,6 +15,7 @@
  */
 
 #include "unity.h"
+#include "conversation.h"
 #include "sprite_player.h"
 #include "object.h"
 #include "common/system.h"

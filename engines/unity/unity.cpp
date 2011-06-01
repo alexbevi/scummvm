@@ -17,6 +17,7 @@
 #include "unity.h"
 #include "bridge.h"
 #include "computer.h"
+#include "conversation.h"
 #include "graphics.h"
 #include "sound.h"
 #include "sprite_player.h"
