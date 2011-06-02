@@ -359,8 +359,4 @@ const char *RingEngine::gameIdFromTarget(const char *target) {
 	return Common::String::format("%s", (tok == NULL) ? target : tok).c_str();
 }
 
-void RingEngine::errorString(const char *buf_input, char *buf_output, int buf_output_size) {
-	snprintf(buf_output, (uint)buf_output_size, "%s", buf_input);
-}
-
 } // End of namespace Ring

@@ -97,7 +97,6 @@ class RingEngine : public Engine {
 protected:
 	// Engine APIs
 	Common::Error run();
-	virtual void errorString(const char *buf_input, char *buf_output, int buf_output_size);
 	virtual Debugger *getDebugger() { return _debugger; }
 
 public:
