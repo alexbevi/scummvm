@@ -116,8 +116,7 @@ Common::String SaveLoad::createFileName(const Common::String &base, int slot) {
 	if ((slot < 0) || (slot > kMaxSlot))
 		return "";
 
-	char buffer[3];
-	snprintf(buffer, 3, "%02d", slot);
+	Common::String buffer = Common::String::format("%02d", slot);
 
 	return base + ".s" + buffer;
 }
