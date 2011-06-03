@@ -271,6 +271,11 @@ void SpritePlayer::update() {
 			current_entry++;
 			break;
 
+		case se_SetFlag:
+			warning("flag setting not implemented");
+			current_entry++;
+			break;
+
 		default:
 			error("internal error: bad sprite player entry");
 		}

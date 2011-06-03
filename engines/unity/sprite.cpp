@@ -182,12 +182,11 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		assert(size == 0);
 		return new SpriteEntry(se_Mark);
 	} else if (!strncmp(blockType, SETF, 4)) {
-		// TODO: set flag?
 		assert(size == 4);
-		uint32 unknown = _stream->readUint32LE();
-		assert(unknown <= 4); // 0, 1, 2, 3 or 4
+		uint32 flagId = _stream->readUint32LE();
+		assert(flagId <= 4); // 0, 1, 2, 3 or 4
 
-		return new SpriteEntry(se_None); // XXX
+		return new SpriteEntrySetFlag(flagId);
 	} else if (!strncmp(blockType, RAND, 4)) {
 		// wait for a random time
 		assert(size == 8);

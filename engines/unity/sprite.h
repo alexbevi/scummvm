@@ -44,6 +44,7 @@ enum SpriteEntryType {
 	se_WaitForSound,
 	se_Silent,
 	se_StateSet,
+	se_SetFlag,
 	se_Exit
 };
 
@@ -104,6 +105,12 @@ struct SpriteEntryStateSet : public SpriteEntry {
 	uint32 state;
 	SpriteEntryStateSet(uint32 _s) : SpriteEntry(se_StateSet), state(_s) { }
 };
+
+struct SpriteEntrySetFlag : public SpriteEntry {
+	uint32 flagId;
+	SpriteEntrySetFlag(uint32 _f) : SpriteEntry(se_SetFlag), flagId(_f) { }
+};
+
 
 class Sprite {
 public:
