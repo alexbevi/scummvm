@@ -37,6 +37,7 @@
 #include "common/file.h"
 #include "common/archive.h"
 #include "graphics/cursorman.h"
+#include "graphics/font.h"
 #include "common/debug-channels.h"
 #include "common/EventRecorder.h"
 
@@ -965,50 +966,65 @@ void UnityEngine::drawDialogFrameAround(unsigned int x, unsigned int y, unsigned
 }
 
 void UnityEngine::drawDialogWindow() {
-	unsigned int y = _dialog_y;
+	uint startLine = 0; // TODO
+	uint y = _dialog_y;
 
-	// calculate required bounding box
-	// TODO: some kind of scrolling
-	unsigned int width = 0;
-	unsigned int height = 0;
+	const uint maxWidth = 313; // TODO: probably should be calculated
+	const uint fontSpacing = 8;
+	::Graphics::Font *font = _gfx->getFont(2);
+	const uint fontHeight = font->getFontHeight();
 
-	Common::Array<unsigned int> heights;
+	Common::Array<Common::String> lines;
+	Common::Array<uint> lineStarts;
+
+	uint width = 0;
+	uint height = 0;
 	if (!_choice_list.size()) {
-		unsigned int newheight = 0;
-		_gfx->calculateStringMaxBoundary(width, newheight, _dialog_text, 2);
-		height += newheight;
+		width = font->wordWrapText(_dialog_text, maxWidth, lines);
 	} else {
-		for (unsigned int i = 0; i < _choice_list.size(); i++) {
+		for (uint i = 0; i < _choice_list.size(); i++) {
 			Common::String our_str = _choice_list[i];
-			if (i != _choice_list.size() - 1) our_str += "\n";
-			unsigned int newheight = 0;
-			_gfx->calculateStringMaxBoundary(width, newheight, our_str, 2);
-			heights.push_back(newheight);
-			height += newheight;
+			if (i != _choice_list.size() - 1)
+				our_str += "\n";
+			lineStarts.push_back(lines.size());
+			uint newWidth = font->wordWrapText(our_str, maxWidth, lines);
+			if (newWidth > width)
+				width = newWidth;
 		}
 	}
-	if (height > 160) height = 160;
+
+	height = lines.size() * fontHeight;
+	if (lines.size())
+		height += (lines.size() - 1) * fontSpacing;
+	if (height > 160)
+		height = 160;
 
 	bool show_icon = _choice_list.size() == 0;
 	bool thick_frame = _choice_list.size() != 0 && (!_dialog_choosing);
 	drawDialogFrameAround(_dialog_x, y, width, height, thick_frame, show_icon);
 
+	::Graphics::Surface *surf = _system->lockScreen();
 	if (!_choice_list.size()) {
-		_gfx->drawString(_dialog_x, y, width, height, _dialog_text, 2);
+		for (uint i = startLine; i < lines.size(); i++) {
+			font->drawString(surf, lines[i], _dialog_x, y, width, 0);
+			y += fontHeight + fontSpacing;
+			if ((y - _dialog_y) + fontHeight > height)
+				break;
+		}
 	} else {
-		// note this code changes y/height as it goes..
-		for (unsigned int i = 0; i < _choice_list.size(); i++) {
-			// font 2 is normal, font 3 is highlighted
+		for (uint i = startLine; i < lines.size(); i++) {
+			::Graphics::Font *thisFont = font;
 			bool selected = (i == 0); // TODO
-
-			Common::String our_str = _choice_list[i];
-			if (i != _choice_list.size() - 1) our_str += "\n";
-			_gfx->drawString(_dialog_x, y, width, height, our_str, selected ? 3 : 2);
-			if (heights[i] > height) break;
-			y += heights[i];
-			height -= heights[i];
+			// font 2 is normal, font 3 is highlighted - but have identical metrics
+			if (selected)
+				thisFont = _gfx->getFont(3);
+			thisFont->drawString(surf, lines[i], _dialog_x, y, width, 0);
+			y += fontHeight + fontSpacing;
+			if ((y - _dialog_y) + fontHeight > height)
+				break;
 		}
 	}
+	_system->unlockScreen();
 
 	// dialog window FRAME:
 	// 0 is top left, 1 is top right, 2 is bottom left, 3 is bottom right
@@ -1020,7 +1036,7 @@ void UnityEngine::drawDialogWindow() {
 	// 17 top left, 18 top right, 19 bottom left, 20 bottom right, 21 top padding, 22 bottom padding,
 	// 23 left padding, 24 right padding? then the buttons again, but for this mode: 25-30
 
-	/*for (unsigned int i = 0; i < 31; i++) {
+	/*for (uint i = 0; i < 31; i++) {
 		_gfx->drawMRG("dialog.mrg", i, 50 * (1 + i/10), 30 * (i%10));
 	}*/
 }
@@ -1051,7 +1067,7 @@ void UnityEngine::drawAwayTeamUI() {
 	_gfx->drawMRG(&mrg, 15 + (_mode == mode_Walk ? 1 : 0), 149, 451);
 
 	// status text
-	_gfx->drawString(0, 403, 9999, 9999, _status_text.c_str(), 2);
+	_gfx->drawString(0, 403, _status_text.c_str(), 2);
 
 	// inventory
 	for (unsigned int i = 0; i < 6; i++) {

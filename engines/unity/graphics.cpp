@@ -20,6 +20,7 @@
 #include "common/events.h"
 #include "common/textconsole.h"
 #include "engines/util.h" // initGraphics
+#include "graphics/font.h"
 #include "graphics/surface.h"
 #include "graphics/palette.h"
 #include "graphics/cursorman.h"
@@ -151,6 +152,43 @@ void Graphics::setCursor(unsigned int id, bool wait) {
 	CursorMan.showMouse(true);
 }
 
+class UnityFont : public ::Graphics::Font {
+protected:
+	Graphics::Font *_font;
+
+public:
+	UnityFont(Graphics::Font *font) : _font(font) { }
+
+	virtual int getFontHeight() const { return _font->glyphheight; }
+	virtual int getMaxCharWidth() const { return _font->glyphpitch; }
+	virtual int getCharWidth(byte chr) const {
+		if (chr < _font->start || chr > _font->end)
+			return 0;
+		return _font->widths[chr - _font->start];
+	}
+
+	virtual void drawChar(::Graphics::Surface *dst, byte chr, int x, int y, uint32 /*color*/) const {
+		assert(dst->format.bytesPerPixel == 1);
+
+		if (chr < _font->start || chr > _font->end) {
+			warning("can't render character %x: not between %x and %x",
+				chr, _font->start, _font->end);
+			chr = ' ';
+		}
+
+		chr -= _font->start;
+		byte *data = _font->data + (chr * _font->size);
+		for (uint line = 0; line < _font->glyphheight; line++) {
+			memcpy(dst->getBasePtr(x, y + line), data, _font->widths[chr]);
+			data += _font->glyphpitch;
+		}
+	}
+};
+
+::Graphics::Font *Graphics::getFont(unsigned int id) const {
+	return _fonts[id];
+}
+
 void Graphics::loadFonts() {
 	for (unsigned int num = 0; num < 10; num++) {
 		Common::String filename;
@@ -175,6 +213,7 @@ void Graphics::loadFonts() {
 		assert(unknown3 == 0 || unknown3 == 1);
 		if (unknown3 == 0) {
 			// TODO: not sure what's going on with these
+			_fonts.push_back(NULL);
 			fonts[num].data = 0;
 			fonts[num].widths = 0;
 			delete fontStream;
@@ -195,154 +234,24 @@ void Graphics::loadFonts() {
 		}
 		// (TODO: sometimes files have exactly one more char on the end?)
 
+		_fonts.push_back(new UnityFont(&fonts[num]));
+
 		delete fontStream;
 	}
 }
 
-void Graphics::calculateStringMaxBoundary(unsigned int &width, unsigned int &height,
-	Common::String str, unsigned int font) {
-	Common::Array<unsigned int> strwidths, starts;
-	calculateStringBoundary(320, strwidths, starts, height, str, font);
-	for (unsigned int i = 0; i < strwidths.size(); i++) {
-		if (strwidths[i] > width)
-			width = strwidths[i];
-	}
+uint Graphics::getFontHeight(uint font) const {
+	return _fonts[font]->getFontHeight();
 }
 
-#define FONT_VERT_SPACING 8
-
-void Graphics::calculateStringBoundary(unsigned int maxwidth, Common::Array<unsigned int> &widths,
-	Common::Array<unsigned int> &starts, unsigned int &height,
-	const Common::String text, unsigned int font) {
-	Font &f = fonts[font];
-	assert(f.data);
-
-	starts.push_back(0);
-
-	unsigned int currx = 0, curry = 0;
-	unsigned int last_good_char = 0, last_good_x = 0;
-
-	for (unsigned int i = 0; i < text.size(); i++) {
-		if (text[i] == '\n') {
-			// original engine probably doesn't handle newlines, but this is convenient
-			widths.push_back(currx);
-			starts.push_back(i + 1);
-
-			last_good_char = i + 1;
-			currx = last_good_x = 0;
-			curry += f.glyphheight + FONT_VERT_SPACING;
-			continue;
-		}
-
-		unsigned char c = text[i];
-		if (c < f.start || c > f.end) {
-			warning("can't render character %x in font %d: not between %x and %x",
-				c, font, f.start, f.end);
-			continue;
-		}
-		c -= f.start;
-
-		if (currx + f.widths[c] > maxwidth) {
-			if (text[i] == ' ') {
-				// we can skip this space..
-
-				// end of text?
-				if (i + 1 == text.size())
-					continue;
-
-				widths.push_back(currx);
-				starts.push_back(i + 1);
-			} else {
-				// backtrack to last line split
-				assert(last_good_char > 0);
-				assert(last_good_x != 0);
-
-				widths.push_back(last_good_x);
-				starts.push_back(last_good_char);
-
-				i = last_good_char - 1;
-			}
-
-			// reset
-			last_good_char = i + 1;
-			currx = last_good_x = 0;
-			curry += f.glyphheight + FONT_VERT_SPACING;
-
-			continue;
-		}
-
-		if (text[i] == ' ') {
-			last_good_char = i + 1; // TODO: cope with multiple spaces?
-			last_good_x = currx;
-		}
-
-		currx += f.widths[c];
-	}
-
-	height = curry;
-	if (last_good_x != currx) {
-		height += f.glyphheight;
-	}
-
-	widths.push_back(currx);
+uint Graphics::getStringWidth(const Common::String &text, uint font) const {
+	return _fonts[font]->getStringWidth(text);
 }
 
-void Graphics::drawString(unsigned int x, unsigned int y, unsigned int width, unsigned int maxheight,
-	Common::String text, unsigned int font) {
-	Font &f = fonts[font];
-	assert(f.data);
-
-	unsigned int height; // unused
-	Common::Array<unsigned int> widths, starts;
-	calculateStringBoundary(width, widths, starts, height, text, font);
-
-	unsigned int currx = x;
-	unsigned int curry = y;
-
-	unsigned int j = 0;
-	for (unsigned int i = 0; i < text.size(); i++) {
-		if (j + 1 < starts.size() && i == starts[j + 1]) {
-			// next line
-			j++;
-			i = starts[j];
-
-			currx = x;
-			curry += f.glyphheight + FONT_VERT_SPACING;
-		}
-		if (curry + f.glyphheight - y > maxheight) return;
-
-		assert(j + 1 == starts.size() || i < starts[j + 1]);
-
-		if (text[i] == '\n') continue;
-
-		unsigned char c = text[i];
-		if (c < f.start || c > f.end) {
-			warning("WARNING: can't render character %x in font %d: not between %x and %x",
-				c, font, f.start, f.end);
-			continue;
-		}
-		c -= f.start;
-
-		// maybe we don't need to render anything..
-		if (text[i] == ' ') {
-			// end of text?
-			if (i + 1 == text.size())
-				continue;
-			// next char is on a new line?
-			if (j + 1 < starts.size() && i + 1 == starts[j + 1])
-				continue;
-		}
-
-		assert (currx + f.widths[c] <= x + widths[j]);
-		assert (currx + f.widths[c] <= x + width);
-
-		// TODO: clipping
-		_vm->_system->copyRectToScreen(f.data + (c * f.size),
-			f.glyphpitch, currx, curry, f.widths[c],
-			f.glyphheight);
-		// TODO: clipping
-		currx += f.widths[c];
-	}
+void Graphics::drawString(uint x, uint y, const Common::String &text, uint font) const {
+	::Graphics::Surface *surf = _vm->_system->lockScreen();
+	_fonts[font]->drawString(surf, text, x, y, 9999, 0);
+	_vm->_system->unlockScreen();
 }
 
 void Graphics::loadMRG(Common::String filename, MRGFile *mrg) {

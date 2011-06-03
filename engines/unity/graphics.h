@@ -22,6 +22,10 @@
 
 #include "common/rect.h"
 
+namespace Graphics {
+	class Font;
+}
+
 namespace Unity {
 
 class SpritePlayer;
@@ -54,9 +58,11 @@ public:
 
 	void loadMRG(Common::String filename, MRGFile *mrg);
 
-	void calculateStringMaxBoundary(unsigned int &width, unsigned int &height, Common::String str, unsigned int font);
-	void calculateStringBoundary(unsigned int maxwidth, Common::Array<unsigned int> &widths, Common::Array<unsigned int> &starts, unsigned int &height, const Common::String text, unsigned int font);
-	void drawString(unsigned int x, unsigned int y, unsigned int width, unsigned int maxheight, const Common::String text, unsigned int font);
+	::Graphics::Font *getFont(unsigned int id) const;
+	void drawString(uint x, uint y, const Common::String &text, uint font) const;
+	uint getFontHeight(uint font) const;
+	uint getStringWidth(const Common::String &text, uint font) const;
+
 	void drawMRG(MRGFile *mrg, unsigned int entry, unsigned int x, unsigned int y);
 	void drawBackgroundImage();
 	void drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale = 256);
@@ -66,6 +72,13 @@ public:
 	void fillRect(byte colour, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2);
 
 	void playMovie(Common::String filename);
+
+	struct Font {
+		byte start, end;
+		uint16 size;
+		byte glyphpitch, glyphheight;
+		byte *data, *widths;
+	};
 
 protected:
 	void loadPalette();
@@ -80,14 +93,8 @@ protected:
 	Common::Array<Image> cursors;
 	Common::Array<Image> wait_cursors;
 
-	struct Font {
-		byte start, end;
-		uint16 size;
-		byte glyphpitch, glyphheight;
-		byte *data, *widths;
-	};
-
 	Font fonts[10];
+	Common::Array< ::Graphics::Font *> _fonts;
 };
 
 }

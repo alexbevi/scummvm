@@ -195,7 +195,7 @@ void ComputerScreen::draw() {
 		_vm->_gfx->drawMRG(&mrg, (toDraw == _selection) ? 1 : 0, 1, 47 + (i * 23));
 
 		Common::Rect rect(15 + ((indent + 1) * 10), 61 + (i * 23), 167, 76 + (i * 23));
-		_vm->_gfx->drawString(rect.left, rect.top, rect.right, rect.bottom, text, color);
+		_vm->_gfx->drawString(rect.left, rect.top, /*rect.right, rect.bottom,*/ text, color);
 	}
 
 	// draw UI controls
