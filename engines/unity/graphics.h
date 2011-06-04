@@ -73,13 +73,6 @@ public:
 
 	void playMovie(Common::String filename);
 
-	struct Font {
-		byte start, end;
-		uint16 size;
-		byte glyphpitch, glyphheight;
-		byte *data, *widths;
-	};
-
 protected:
 	void loadPalette();
 	void loadCursors();
@@ -93,7 +86,6 @@ protected:
 	Common::Array<Image> cursors;
 	Common::Array<Image> wait_cursors;
 
-	Font fonts[10];
 	Common::Array< ::Graphics::Font *> _fonts;
 };
 

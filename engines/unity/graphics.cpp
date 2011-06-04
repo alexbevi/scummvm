@@ -57,11 +57,6 @@ static const byte sciMouseCursor[] = {
 Graphics::Graphics(UnityEngine *_engine) : _vm(_engine) {
 	basePalette = palette = 0;
 	background.data = 0;
-
-	for (unsigned int num = 0; num < 10; num++) {
-		fonts[num].data = 0;
-		fonts[num].widths = 0;
-	}
 }
 
 Graphics::~Graphics() {
@@ -74,10 +69,8 @@ Graphics::~Graphics() {
 		delete[] wait_cursors[i].data;
 	delete[] background.data;
 
-	for (unsigned int num = 0; num < 10; num++) {
-		delete[] fonts[num].data;
-		delete[] fonts[num].widths;
-	}
+	for (uint i = 0; i < _fonts.size(); i++)
+		delete _fonts[i];
 }
 
 void Graphics::init() {
@@ -154,33 +147,74 @@ void Graphics::setCursor(unsigned int id, bool wait) {
 
 class UnityFont : public ::Graphics::Font {
 protected:
-	Graphics::Font *_font;
+	byte _start, _end;
+	uint16 _size;
+	byte _glyphPitch, _glyphHeight;
+	byte *_data, *_widths;
 
 public:
-	UnityFont(Graphics::Font *font) : _font(font) { }
+	UnityFont(Common::SeekableReadStream *fontStream) {
+		byte unknown = fontStream->readByte();
+		assert(unknown == 1);
 
-	virtual int getFontHeight() const { return _font->glyphheight; }
-	virtual int getMaxCharWidth() const { return _font->glyphpitch; }
+		_glyphHeight = fontStream->readByte();
+		_start = fontStream->readByte();
+		_end = fontStream->readByte();
+		_size = fontStream->readUint16LE() - 1;
+
+		byte unknown2 = fontStream->readByte();
+		assert(unknown2 == 0);
+
+		byte unknown3 = fontStream->readByte();
+		assert(unknown3 == 0 || unknown3 == 1);
+		if (unknown3 == 0) {
+			// TODO: not sure what's going on with these
+			_glyphPitch = 0;
+			_data = NULL;
+			_widths = NULL;
+			return;
+		}
+
+		_glyphPitch = fontStream->readByte();
+		assert(_size == _glyphPitch * ((unknown3 == 0) ? 1 : _glyphHeight));
+
+		uint num_glyphs = _end - _start + 1;
+		_data = new byte[num_glyphs * _size];
+		_widths = new byte[num_glyphs];
+
+		for (unsigned int i = 0; i < num_glyphs; i++) {
+			_widths[i] = fontStream->readByte();
+			fontStream->read(_data + (i * _size), _size);
+		}
+		// (TODO: sometimes files have exactly one more char on the end?)
+	}
+	virtual ~UnityFont() {
+		delete _data;
+		delete _widths;
+	}
+
+	virtual int getFontHeight() const { return _glyphHeight; }
+	virtual int getMaxCharWidth() const { return _glyphPitch; }
 	virtual int getCharWidth(byte chr) const {
-		if (chr < _font->start || chr > _font->end)
+		if (chr < _start || chr > _end)
 			return 0;
-		return _font->widths[chr - _font->start];
+		return _widths[chr - _start];
 	}
 
 	virtual void drawChar(::Graphics::Surface *dst, byte chr, int x, int y, uint32 /*color*/) const {
 		assert(dst->format.bytesPerPixel == 1);
 
-		if (chr < _font->start || chr > _font->end) {
+		if (chr < _start || chr > _end) {
 			warning("can't render character %x: not between %x and %x",
-				chr, _font->start, _font->end);
+				chr, _start, _end);
 			chr = ' ';
 		}
 
-		chr -= _font->start;
-		byte *data = _font->data + (chr * _font->size);
-		for (uint line = 0; line < _font->glyphheight; line++) {
-			memcpy(dst->getBasePtr(x, y + line), data, _font->widths[chr]);
-			data += _font->glyphpitch;
+		chr -= _start;
+		byte *data = _data + (chr * _size);
+		for (uint line = 0; line < _glyphHeight; line++) {
+			memcpy(dst->getBasePtr(x, y + line), data, _widths[chr]);
+			data += _glyphPitch;
 		}
 	}
 };
@@ -194,48 +228,7 @@ void Graphics::loadFonts() {
 		Common::String filename;
 		filename = Common::String::format("font%d.fon", num);
 		Common::SeekableReadStream *fontStream = _vm->data.openFile(filename.c_str());
-
-		byte unknown = fontStream->readByte();
-		assert(unknown == 1);
-
-		fonts[num].glyphheight = fontStream->readByte();
-		fonts[num].start = fontStream->readByte();
-		fonts[num].end = fontStream->readByte();
-		fonts[num].size = fontStream->readUint16LE() - 1;
-
-		unsigned int num_glyphs = fonts[num].end - fonts[num].start + 1;
-		uint16 size = fonts[num].size;
-
-		byte unknown2 = fontStream->readByte();
-		assert(unknown2 == 0);
-
-		byte unknown3 = fontStream->readByte();
-		assert(unknown3 == 0 || unknown3 == 1);
-		if (unknown3 == 0) {
-			// TODO: not sure what's going on with these
-			_fonts.push_back(NULL);
-			fonts[num].data = 0;
-			fonts[num].widths = 0;
-			delete fontStream;
-			continue;
-		}
-
-		fonts[num].glyphpitch = fontStream->readByte();
-		assert(size == fonts[num].glyphpitch * ((unknown3 == 0) ? 1 : fonts[num].glyphheight));
-
-		delete[] fonts[num].data;
-		fonts[num].data = new byte[num_glyphs * size];
-		delete[] fonts[num].widths;
-		fonts[num].widths = new byte[num_glyphs];
-
-		for (unsigned int i = 0; i < num_glyphs; i++) {
-			fonts[num].widths[i] = fontStream->readByte();
-			fontStream->read(fonts[num].data + (i * size), size);
-		}
-		// (TODO: sometimes files have exactly one more char on the end?)
-
-		_fonts.push_back(new UnityFont(&fonts[num]));
-
+		_fonts.push_back(new UnityFont(fontStream));
 		delete fontStream;
 	}
 }
