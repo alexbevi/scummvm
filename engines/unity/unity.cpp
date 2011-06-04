@@ -86,7 +86,7 @@ UnityEngine::~UnityEngine() {
 	// FIXME: Segfaults if deletion is done
 	//delete data.data;
 	delete _icon;
-	delete _current_away_team_icon;
+	endAwayTeam();
 
 	DebugMan.clearAllDebugChannels();
 	delete _rnd;
