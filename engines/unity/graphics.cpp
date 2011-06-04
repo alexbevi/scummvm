@@ -189,8 +189,8 @@ public:
 		// (TODO: sometimes files have exactly one more char on the end?)
 	}
 	virtual ~UnityFont() {
-		delete _data;
-		delete _widths;
+		delete[] _data;
+		delete[] _widths;
 	}
 
 	virtual int getFontHeight() const { return _glyphHeight; }
@@ -321,11 +321,15 @@ void Graphics::blit(byte *data, int x, int y, unsigned int width, unsigned int h
 	::Graphics::Surface *surf = _vm->_system->lockScreen();
 	// XXX: this code hasn't had any thought
 	int startx = 0, starty = 0;
-	if (x < 0) startx = -x;
-	if (y < 0) starty = -y;
+	if (x < 0)
+		startx = -x;
+	if (y < 0)
+		starty = -y;
 	unsigned int usewidth = width, useheight = height;
-	if (x + width > surf->w) usewidth = surf->w - x;
-	if (y + height > surf->h) useheight = surf->h - y;
+	if (x + (int)width > (int)surf->w)
+		usewidth = surf->w - x;
+	if (y + (int)height > (int)surf->h)
+		useheight = surf->h - y;
 	for (unsigned int xpos = startx; xpos < usewidth; xpos++) {
 		for (unsigned int ypos = starty; ypos < useheight; ypos++) {
 			byte pixel = data[xpos + ypos*width];
