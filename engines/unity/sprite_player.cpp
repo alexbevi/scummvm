@@ -25,165 +25,168 @@
 
 namespace Unity {
 
-SpritePlayer::SpritePlayer(const char *filename, Object *par, UnityEngine *vm) : parent(par), _vm(vm) {
-	spriteStream = vm->data.openFile(filename);
-	sprite = new Sprite(spriteStream);
-	current_entry = ~0;
-	current_sprite = NULL;
-	current_speechsprite = NULL;
-	current_palette = NULL;
-	wait_target = 0;
+SpritePlayer::SpritePlayer(const char *filename, Object *par, UnityEngine *vm) : _parent(par), _vm(vm) {
+	_spriteStream = vm->data.openFile(filename);
+	_sprite = new Sprite(_spriteStream);
+	_currentEntry = ~0;
+	_currentSprite = NULL;
+	_currentSpeechSprite = NULL;
+	_currentPalette = NULL;
+	_waitTarget = 0;
 
-	normal.xpos = normal.ypos = 0;
-	normal.xadjust = normal.yadjust = 0;
-	speech.xpos = speech.ypos = 0;
-	speech.xadjust = speech.yadjust = 0;
+	_normal.xpos = _normal.ypos = 0;
+	_normal.xadjust = _normal.yadjust = 0;
+	_speech.xpos = _speech.ypos = 0;
+	_speech.xadjust = _speech.yadjust = 0;
 
-	was_speech = false;
-	was_marked = false;
+	_wasSpeech = false;
+	_wasMarked = false;
 }
 
 SpritePlayer::~SpritePlayer() {
-	delete sprite;
-	delete spriteStream;
+	delete _sprite;
+	delete _spriteStream;
 }
 
 void SpritePlayer::resetState() {
-	normal.xadjust = normal.yadjust = 0;
-	speech.xadjust = speech.yadjust = 0;
+	_normal.xadjust = _normal.yadjust = 0;
+	_speech.xadjust = _speech.yadjust = 0;
 
-	wait_target = 0;
+	_waitTarget = 0;
 }
 
 void SpritePlayer::startAnim(unsigned int a) {
-	if (a >= sprite->getNumAnims()) {
-		error("animation %d is too high (only %d animation(s))", a, sprite->getNumAnims());
+	if (a >= _sprite->getNumAnims()) {
+		error("animation %d is too high (only %d animation(s))", a, _sprite->getNumAnims());
 	}
 
-	current_entry = sprite->getIndexFor(a);
-	assert(current_entry != (unsigned int)~0);
+	_currentEntry = _sprite->getIndexFor(a);
+	assert(_currentEntry != (unsigned int)~0);
 
 	resetState();
 }
 
 unsigned int SpritePlayer::getCurrentWidth() {
-	assert(current_sprite);
-	return current_sprite->width;
+	assert(_currentSprite);
+	return _currentSprite->width;
 }
 
 unsigned int SpritePlayer::getCurrentHeight() {
-	assert(current_sprite);
-	return current_sprite->height;
+	assert(_currentSprite);
+	return _currentSprite->height;
 }
 
 byte *SpritePlayer::getCurrentData() {
-	assert(current_sprite);
-	return current_sprite->data;
+	assert(_currentSprite);
+	return _currentSprite->data;
 }
 
 bool SpritePlayer::speaking() {
-	return current_speechsprite != NULL;
+	return _currentSpeechSprite != NULL;
 }
 
 unsigned int SpritePlayer::getSpeechWidth() {
-	assert(current_speechsprite);
-	return current_speechsprite->width;
+	assert(_currentSpeechSprite);
+	return _currentSpeechSprite->width;
 }
 
 unsigned int SpritePlayer::getSpeechHeight() {
-	assert(current_speechsprite);
-	return current_speechsprite->height;
+	assert(_currentSpeechSprite);
+	return _currentSpeechSprite->height;
 }
 
 byte *SpritePlayer::getSpeechData() {
-	assert(current_speechsprite);
-	return current_speechsprite->data;
+	assert(_currentSpeechSprite);
+	return _currentSpeechSprite->data;
 }
 
 byte *SpritePlayer::getPalette() {
-	if (!current_palette) return NULL;
+	if (!_currentPalette)
+		return NULL;
 
-	byte *palette = current_palette->palette;
-	current_palette = NULL;
+	byte *palette = _currentPalette->palette;
+	_currentPalette = NULL;
 	return palette;
 }
 
 bool SpritePlayer::playing() {
-	SpriteEntry *e = sprite->getEntry(current_entry);
+	SpriteEntry *e = _sprite->getEntry(_currentEntry);
 	assert(e);
 	return !(e->type == se_Pause || e->type == se_Exit);
 }
 
 void SpritePlayer::update() {
-	unsigned int old_entry = ~0;
+	unsigned int oldEntry = ~0;
 	while (true) {
-		SpriteEntry *e = sprite->getEntry(current_entry);
+		SpriteEntry *e = _sprite->getEntry(_currentEntry);
 		assert(e);
 		switch (e->type) {
 		case se_None:
-			current_entry++;
+			_currentEntry++;
 			break;
 
 		case se_Sprite:
-			current_sprite = (SpriteEntrySprite *)e;
+			_currentSprite = (SpriteEntrySprite *)e;
 			// XXX: don't understand how this works either
-			was_speech = false;
-			current_speechsprite = NULL;
+			_wasSpeech = false;
+			_currentSpeechSprite = NULL;
 
-			current_entry++;
+			_currentEntry++;
 
-			e = sprite->getEntry(current_entry);
-			if (e->type == se_Sprite || e->type == se_SpeechSprite) return;
+			e = _sprite->getEntry(_currentEntry);
+			if (e->type == se_Sprite || e->type == se_SpeechSprite)
+				return;
 			break;
 
 		case se_SpeechSprite:
-			if (!was_marked) {
+			if (!_wasMarked) {
 				error("no marked data during sprite playback");
 			}
 
-			current_speechsprite = (SpriteEntrySprite *)e;
+			_currentSpeechSprite = (SpriteEntrySprite *)e;
 			// XXX: don't understand how this works :(
-			if (!was_speech) {
-				speech = marked;
+			if (!_wasSpeech) {
+				_speech = _marked;
 			}
-			was_speech = true;
+			_wasSpeech = true;
 
-			current_entry++;
-			e = sprite->getEntry(current_entry);
-			if (e->type == se_Sprite || e->type == se_SpeechSprite) return;
+			_currentEntry++;
+			e = _sprite->getEntry(_currentEntry);
+			if (e->type == se_Sprite || e->type == se_SpeechSprite)
+				return;
 			break;
 
 		case se_Palette:
-			current_palette = (SpriteEntryPalette *)e;
-			current_entry++;
+			_currentPalette = (SpriteEntryPalette *)e;
+			_currentEntry++;
 			break;
 
 		case se_Position:
 			{
 				SpriteEntryPosition *p = (SpriteEntryPosition *)e;
-				if (was_speech) {
-					speech.xpos = p->newx;
-					speech.ypos = p->newy;
+				if (_wasSpeech) {
+					_speech.xpos = p->newx;
+					_speech.ypos = p->newy;
 				} else {
-					normal.xpos = p->newx;
-					normal.ypos = p->newy;
+					_normal.xpos = p->newx;
+					_normal.ypos = p->newy;
 				}
 			}
-			current_entry++;
+			_currentEntry++;
 			break;
 
 		case se_RelPos:
 			{
 				SpriteEntryRelPos *p = (SpriteEntryRelPos *)e;
-				if (was_speech) {
-					speech.xadjust = p->adjustx;
-					speech.yadjust = p->adjusty;
+				if (_wasSpeech) {
+					_speech.xadjust = p->adjustx;
+					_speech.yadjust = p->adjusty;
 				} else {
-					normal.xadjust = p->adjustx;
-					normal.yadjust = p->adjusty;
+					_normal.xadjust = p->adjustx;
+					_normal.yadjust = p->adjusty;
 				}
 			}
-			current_entry++;
+			_currentEntry++;
 			break;
 
 		case se_MouthPos:
@@ -192,7 +195,7 @@ void SpritePlayer::update() {
 				// TODO: okay, this isn't MouthPos :-) what is it?
 				// set on characters, drones, cable, welds..
 			}
-			current_entry++;
+			_currentEntry++;
 			break;
 
 		case se_Pause:
@@ -201,79 +204,79 @@ void SpritePlayer::update() {
 
 		case se_Mark:
 			// XXX: do something here
-			was_marked = true;
-			marked = normal;
-			current_entry++;
+			_wasMarked = true;
+			_marked = _normal;
+			_currentEntry++;
 			break;
 
 		case se_Mask:
 			warning("sprite mask mode not implemented");
-			current_entry++;
+			_currentEntry++;
 			break;
 
 		case se_Static:
 			warning("sprite static mode not implemented");
-			current_entry++;
+			_currentEntry++;
 			break;
 
 		case se_RandomWait:
-			if (!wait_target) {
+			if (!_waitTarget) {
 				unsigned int wait = _vm->_rnd->getRandomNumberRng(0,
 					((SpriteEntryRandomWait *)e)->rand_amt);
 				// TODO: is /6 correct? see below
-				wait_target = g_system->getMillis() + ((SpriteEntryRandomWait *)e)->base/6 + wait/6;
+				_waitTarget = g_system->getMillis() + ((SpriteEntryRandomWait *)e)->base/6 + wait/6;
 				return;
 			}
 			// fall through
 		case se_Wait:
-			if (!wait_target) {
+			if (!_waitTarget) {
 				// TODO: is /6 correct? just a guess, so almost certainly not
 				// example values are 388, 777, 4777, 288, 666, 3188, 2188, 700, 200000, 1088, 272..
-				wait_target = g_system->getMillis() + ((SpriteEntryWait *)e)->wait/6;
+				_waitTarget = g_system->getMillis() + ((SpriteEntryWait *)e)->wait/6;
 				return;
 			}
-			if (wait_target < g_system->getMillis()) {
-				wait_target = 0;
-				current_entry++;
+			if (_waitTarget < g_system->getMillis()) {
+				_waitTarget = 0;
+				_currentEntry++;
 				continue;
 			}
 			return;
 
 		case se_Jump:
-			current_entry = sprite->getIndexFor(((SpriteEntryJump *)e)->target);
-			assert(current_entry != (unsigned int)~0);
-			if (old_entry == current_entry) {
+			_currentEntry = _sprite->getIndexFor(((SpriteEntryJump *)e)->target);
+			assert(_currentEntry != (unsigned int)~0);
+			if (oldEntry == _currentEntry) {
 				// XXX: work out why this happens: missing handling?
 				error("sprite file in infinite loop");
 			}
-			old_entry = current_entry;
+			oldEntry = _currentEntry;
 			resetState();
 			break;
 
 		case se_Audio:
 			_vm->_snd->playAudioBuffer(((SpriteEntryAudio *)e)->length,
 					((SpriteEntryAudio *)e)->data);
-			current_entry++;
+			_currentEntry++;
 			break;
 
 		case se_WaitForSound:
 			warning("sprite waiting for sound not implemented");
-			current_entry++;
+			_currentEntry++;
 			break;
 
 		case se_Silent:
 			warning("sprite silencing not implemented");
-			current_entry++;
+			_currentEntry++;
 			break;
 
 		case se_StateSet:
 			warning("sprite state setting not implemented");
-			current_entry++;
+			_currentEntry++;
 			break;
 
 		case se_SetFlag:
 			warning("flag setting not implemented");
-			current_entry++;
+			_currentEntry++;
 			break;
 
 		default:

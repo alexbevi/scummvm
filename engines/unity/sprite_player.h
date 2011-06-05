@@ -30,11 +30,11 @@ public:
 	~SpritePlayer();
 
 	void startAnim(unsigned int a);
-	unsigned int getNumAnims() { return sprite->getNumAnims(); }
+	unsigned int getNumAnims() { return _sprite->getNumAnims(); }
 	void update();
 
 	bool playing();
-	bool valid() { return current_sprite != 0; }
+	bool valid() { return _currentSprite != 0; }
 
 	unsigned int getCurrentHeight();
 	unsigned int getCurrentWidth();
@@ -47,18 +47,19 @@ public:
 
 	byte *getPalette();
 
-	int getXPos() { return normal.xpos; }
-	int getYPos() { return normal.ypos; }
-	int getXAdjust() { return normal.xadjust; }
-	int getYAdjust() { return normal.yadjust; }
-	int getSpeechXPos() { return speech.xpos; }
-	int getSpeechYPos() { return speech.ypos; }
-	int getSpeechXAdjust() { return speech.xadjust; }
-	int getSpeechYAdjust() { return speech.yadjust; }
+	int getXPos() { return _normal.xpos; }
+	int getYPos() { return _normal.ypos; }
+	int getXAdjust() { return _normal.xadjust; }
+	int getYAdjust() { return _normal.yadjust; }
+	int getSpeechXPos() { return _speech.xpos; }
+	int getSpeechYPos() { return _speech.ypos; }
+	int getSpeechXAdjust() { return _speech.xadjust; }
+	int getSpeechYAdjust() { return _speech.yadjust; }
 
 protected:
-	Sprite *sprite;
-	Object *parent;
+	Common::SeekableReadStream *_spriteStream;
+	Sprite *_sprite;
+	Object *_parent;
 	UnityEngine *_vm;
 
 	struct PosInfo {
@@ -66,18 +67,16 @@ protected:
 		int xadjust, yadjust;
 	};
 
-	PosInfo normal, speech, marked;
-	bool was_speech, was_marked;
+	PosInfo _normal, _speech, _marked;
+	bool _wasSpeech, _wasMarked;
 
-	unsigned int current_entry;
-	SpriteEntrySprite *current_sprite, *current_speechsprite;
-	SpriteEntryPalette *current_palette;
+	unsigned int _currentEntry;
+	SpriteEntrySprite *_currentSprite, *_currentSpeechSprite;
+	SpriteEntryPalette *_currentPalette;
 
-	unsigned int wait_target;
+	unsigned int _waitTarget;
 
 	void resetState();
-private:
-	Common::SeekableReadStream *spriteStream;
 };
 
 } // Unity
