@@ -156,7 +156,7 @@ protected:
 	Common::Array<Common::Array<Common::String> > _dialogLines;
 	uint _dialogWidth;
 	void drawDialogFrameAround(unsigned int x, unsigned int y, unsigned int width,
-		unsigned int height, bool use_thick_frame, bool with_icon);
+		unsigned int height, bool use_thick_frame, bool with_icon, bool with_buttons);
 	void initDialog();
 	void drawDialogWindow();
 

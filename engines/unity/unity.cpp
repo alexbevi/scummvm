@@ -904,7 +904,7 @@ void UnityEngine::drawObjects() {
 }
 
 void UnityEngine::drawDialogFrameAround(unsigned int x, unsigned int y, unsigned int width,
-	unsigned int height, bool use_thick_frame, bool with_icon) {
+	unsigned int height, bool use_thick_frame, bool with_icon, bool with_buttons) {
 	// dialog.mrg
 	MRGFile mrg;
 	Common::Array<uint16> &widths = mrg.widths;
@@ -930,6 +930,10 @@ void UnityEngine::drawDialogFrameAround(unsigned int x, unsigned int y, unsigned
 		// text border is pretty small if there's no icon frame, otherwise includes that space..
 		real_x1 -= widths[8] / 2;
 		real_x1 += 8;
+	} else if (with_buttons) {
+		// spacing for up/down buttons
+		real_x2 += widths[11] / 2;
+		real_x2 -= 8;
 	}
 
 	// black background inside the border
@@ -962,6 +966,12 @@ void UnityEngine::drawDialogFrameAround(unsigned int x, unsigned int y, unsigned
 
 		_icon->update();
 		_gfx->drawSprite(_icon, real_x1 + (widths[base+6]/2) + 1, (real_y1+real_y2)/2 + (heights[8]/2) - 4);
+	} else if (with_buttons) {
+		// TODO: 11/12/13 up buttons (normal/highlight/grayed), 14/15/16 down buttons
+		uint up_button = 13;
+		_gfx->drawMRG(&mrg, up_button, real_x2 - (widths[up_button] / 2) - (widths[base+7]/2), (real_y1+real_y2)/2 - heights[up_button]);
+		uint down_button = 16;
+		_gfx->drawMRG(&mrg, down_button, real_x2 - (widths[down_button] / 2) - (widths[base+7]/2), (real_y1+real_y2)/2);
 	}
 }
 
@@ -1015,8 +1025,9 @@ void UnityEngine::drawDialogWindow() {
 		height = 160;
 
 	bool show_icon = _choice_list.size() == 0;
+	bool show_buttons = _dialog_choosing;
 	bool thick_frame = _choice_list.size() != 0 && (!_dialog_choosing);
-	drawDialogFrameAround(_dialog_x, y, width, height, thick_frame, show_icon);
+	drawDialogFrameAround(_dialog_x, y, width, height, thick_frame, show_icon, show_buttons);
 
 	::Graphics::Surface *surf = _system->lockScreen();
 	if (!_choice_list.size()) {
