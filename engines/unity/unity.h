@@ -152,10 +152,14 @@ protected:
 
 	void startupScreen();
 
+	unsigned int _dialogStartLine;
+	Common::Array<Common::Array<Common::String> > _dialogLines;
+	uint _dialogWidth;
 	void drawDialogFrameAround(unsigned int x, unsigned int y, unsigned int width,
 		unsigned int height, bool use_thick_frame, bool with_icon);
-
+	void initDialog();
 	void drawDialogWindow();
+
 	void drawAwayTeamUI();
 
 	void handleLook(Object *obj);

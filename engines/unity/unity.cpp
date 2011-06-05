@@ -965,37 +965,52 @@ void UnityEngine::drawDialogFrameAround(unsigned int x, unsigned int y, unsigned
 	}
 }
 
+void UnityEngine::initDialog() {
+	const uint maxWidth = 313; // TODO: probably should be calculated
+
+	_dialogStartLine = 0;
+	_dialogLines.clear();
+	_dialogWidth = 0;
+
+	::Graphics::Font *font = _gfx->getFont(2);
+
+	if (!_choice_list.size()) {
+		_dialogLines.resize(1);
+		_dialogWidth = font->wordWrapText(_dialog_text, maxWidth, _dialogLines[0]);
+	} else {
+		_dialogLines.resize(_choice_list.size());
+		for (uint i = 0; i < _choice_list.size(); i++) {
+			Common::String our_str = _choice_list[i];
+			Common::Array<Common::String> &lines = _dialogLines[i];
+			uint newWidth = font->wordWrapText(our_str, maxWidth, lines);
+			if (newWidth > _dialogWidth)
+				_dialogWidth = newWidth;
+
+			// add an empty spacing line if necessary
+			if (i == _choice_list.size() - 1)
+				continue;
+			if (lines.empty() || !lines[lines.size() - 1].empty())
+				lines.push_back(Common::String());
+		}
+	}
+}
+
 void UnityEngine::drawDialogWindow() {
-	uint startLine = 0; // TODO
 	uint y = _dialog_y;
 
-	const uint maxWidth = 313; // TODO: probably should be calculated
 	const uint fontSpacing = 8;
 	::Graphics::Font *font = _gfx->getFont(2);
 	const uint fontHeight = font->getFontHeight();
 
-	Common::Array<Common::String> lines;
-	Common::Array<uint> lineStarts;
-
-	uint width = 0;
+	uint width = _dialogWidth;
 	uint height = 0;
-	if (!_choice_list.size()) {
-		width = font->wordWrapText(_dialog_text, maxWidth, lines);
-	} else {
-		for (uint i = 0; i < _choice_list.size(); i++) {
-			Common::String our_str = _choice_list[i];
-			if (i != _choice_list.size() - 1)
-				our_str += "\n";
-			lineStarts.push_back(lines.size());
-			uint newWidth = font->wordWrapText(our_str, maxWidth, lines);
-			if (newWidth > width)
-				width = newWidth;
-		}
-	}
 
-	height = lines.size() * fontHeight;
-	if (lines.size())
-		height += (lines.size() - 1) * fontSpacing;
+	for (uint i = 0; i < _dialogLines.size(); i++) {
+		uint lineSize = _dialogLines[i].size();
+		height += lineSize * fontHeight;
+		if (lineSize)
+			height += (lineSize - 1) * fontSpacing;
+	}
 	if (height > 160)
 		height = 160;
 
@@ -1005,23 +1020,40 @@ void UnityEngine::drawDialogWindow() {
 
 	::Graphics::Surface *surf = _system->lockScreen();
 	if (!_choice_list.size()) {
-		for (uint i = startLine; i < lines.size(); i++) {
-			font->drawString(surf, lines[i], _dialog_x, y, width, 0);
-			y += fontHeight + fontSpacing;
+		for (uint i = _dialogStartLine; i < _dialogLines[0].size(); i++) {
 			if ((y - _dialog_y) + fontHeight > height)
 				break;
+
+			font->drawString(surf, _dialogLines[0][i], _dialog_x, y, width, 0);
+			y += fontHeight + fontSpacing;
 		}
 	} else {
-		for (uint i = startLine; i < lines.size(); i++) {
-			::Graphics::Font *thisFont = font;
-			bool selected = (i == 0); // TODO
-			// font 2 is normal, font 3 is highlighted - but have identical metrics
-			if (selected)
-				thisFont = _gfx->getFont(3);
-			thisFont->drawString(surf, lines[i], _dialog_x, y, width, 0);
-			y += fontHeight + fontSpacing;
-			if ((y - _dialog_y) + fontHeight > height)
-				break;
+		uint linesSeen = 0;
+		for (uint j = 0; j < _dialogLines.size(); j++) {
+			uint beginLine = 0;
+			if (linesSeen < _dialogStartLine)
+				beginLine = _dialogStartLine - linesSeen;
+			linesSeen += j;
+
+			Common::Array<Common::String> &lines = _dialogLines[j];
+			for (uint i = beginLine; i < lines.size(); i++) {
+				if ((y - _dialog_y) + fontHeight > height) {
+					// done drawing
+					j = _dialogLines.size();
+					break;
+				}
+
+				::Graphics::Font *thisFont = font;
+				bool selected = (j == 0); // TODO
+				// font 2 is normal, font 3 is highlighted - but have identical metrics
+				if (selected)
+					thisFont = _gfx->getFont(3);
+
+				thisFont->drawString(surf, lines[i], _dialog_x, y, width, 0);
+				y += fontHeight;
+				if (i != lines.size() - 1)
+					y += fontSpacing;
+			}
 		}
 	}
 	_system->unlockScreen();
@@ -1185,6 +1217,7 @@ unsigned int UnityEngine::runDialogChoice(Conversation *conversation) {
 }
 
 void UnityEngine::runDialog() {
+	initDialog();
 	_in_dialog = true;
 	_gfx->setCursor(0xffffffff, false);
 
