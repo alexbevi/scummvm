@@ -546,7 +546,7 @@ void UnityEngine::setSpeaker(objectID s) {
 	}
 
 	_icon = new SpritePlayer(icon_sprite.c_str(), NULL, this);
-	if (_icon->numAnims() < 3) {
+	if (_icon->getNumAnims() < 3) {
 		_icon->startAnim(0); // static
 	} else {
 		_icon->startAnim(2); // speaking
@@ -704,7 +704,7 @@ void UnityEngine::checkEvents() {
 					if (_on_away_team) {
 						debugN("trying anim %d\n", anim);
 						anim++;
-						anim %= objects[0]->sprite->numAnims();
+						anim %= objects[0]->sprite->getNumAnims();
 						for (unsigned int i = 0; i < 4; i++)
 							objects[i]->sprite->startAnim(anim);
 					}

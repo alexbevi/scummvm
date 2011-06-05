@@ -30,7 +30,7 @@ public:
 	~SpritePlayer();
 
 	void startAnim(unsigned int a);
-	unsigned int numAnims() { return sprite->numAnims(); }
+	unsigned int getNumAnims() { return sprite->getNumAnims(); }
 	void update();
 
 	bool playing();

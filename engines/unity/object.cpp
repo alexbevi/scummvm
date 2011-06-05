@@ -1385,9 +1385,9 @@ ResultType AlterBlock::execute(UnityEngine *_vm, Action *context) {
 		}
 
 		if (obj->sprite) {
-			if (obj->sprite->numAnims() <= anim_id) {
+			if (obj->sprite->getNumAnims() <= anim_id) {
 				// use the Chodak transporter bar gauge, for example
-				warning("animation %d exceeds %d?!", anim_id, obj->sprite->numAnims());
+				warning("animation %d exceeds %d?!", anim_id, obj->sprite->getNumAnims());
 			} else {
 				obj->sprite->startAnim(anim_id);
 			}

@@ -117,16 +117,16 @@ public:
 	Sprite(Common::SeekableReadStream *_str);
 	~Sprite();
 
-	SpriteEntry *getEntry(unsigned int entry) { return entries[entry]; }
-	unsigned int numEntries() { return entries.size(); }
-	unsigned int getIndexFor(unsigned int anim) { return indexes[anim]; }
-	unsigned int numAnims() { return indexes.size(); }
+	SpriteEntry *getEntry(unsigned int entry) { return _entries[entry]; }
+	unsigned int getNumEntries() { return _entries.size(); }
+	unsigned int getIndexFor(unsigned int anim) { return _indexes[anim]; }
+	unsigned int getNumAnims() { return _indexes.size(); }
 
 protected:
 	Common::SeekableReadStream *_stream;
 
-	Common::Array<unsigned int> indexes;
-	Common::Array<SpriteEntry *> entries;
+	Common::Array<unsigned int> _indexes;
+	Common::Array<SpriteEntry *> _entries;
 
 	SpriteEntry *readBlock();
 	SpriteEntry *parseBlock(char blockType[4], uint32 size);

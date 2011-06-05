@@ -56,8 +56,8 @@ void SpritePlayer::resetState() {
 }
 
 void SpritePlayer::startAnim(unsigned int a) {
-	if (a >= sprite->numAnims()) {
-		error("animation %d is too high (only %d animation(s))", a, sprite->numAnims());
+	if (a >= sprite->getNumAnims()) {
+		error("animation %d is too high (only %d animation(s))", a, sprite->getNumAnims());
 	}
 
 	current_entry = sprite->getIndexFor(a);

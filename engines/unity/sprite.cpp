@@ -65,12 +65,12 @@ Sprite::Sprite(Common::SeekableReadStream *_str) : _stream(_str) {
 }
 
 Sprite::~Sprite() {
-	for (unsigned int i = 0; i < entries.size(); i++) {
-		if (entries[i] && (entries[i]->type == se_Sprite || entries[i]->type == se_SpeechSprite))
-			delete[] ((SpriteEntrySprite *)entries[i])->data;
-		else if (entries[i] && entries[i]->type == se_Audio)
-			delete[] ((SpriteEntryAudio *)entries[i])->data;
-		delete entries[i];
+	for (unsigned int i = 0; i < _entries.size(); i++) {
+		if (_entries[i] && (_entries[i]->type == se_Sprite || _entries[i]->type == se_SpeechSprite))
+			delete[] ((SpriteEntrySprite *)_entries[i])->data;
+		else if (_entries[i] && _entries[i]->type == se_Audio)
+			delete[] ((SpriteEntryAudio *)_entries[i])->data;
+		delete _entries[i];
 	}
 }
 
@@ -112,18 +112,19 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 	} else if (!strncmp(blockType, LIST, 4)) {
 		// list of blocks
 		uint32 start = _stream->pos();
-		uint32 num_entries = _stream->readUint32LE();
+		uint32 numEntries = _stream->readUint32LE();
 
-		assert(indexes.empty()); // we assume there's only ever one LIST
-		indexes.resize(num_entries);
+		assert(_indexes.empty()); // we assume there's only ever one LIST
+		_indexes.resize(numEntries);
 
 		Common::Array<uint32> offsets;
-		offsets.reserve(num_entries);
+		offsets.reserve(numEntries);
 
-		while (num_entries--) {
+		while (numEntries--) {
 			uint32 offset = _stream->readUint32LE();
 			// offset is relative to start of this block (start - 8)
-			if (offset != 0) offset += start - 8;
+			if (offset != 0)
+				offset += start - 8;
 			offsets.push_back(offset);
 		}
 
@@ -131,23 +132,24 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		while ((uint32)_stream->pos() < start + size) {
 			while (i < offsets.size()) {
 				if ((uint32)_stream->pos() == offsets[i]) {
-					indexes[i] = entries.size();
+					_indexes[i] = _entries.size();
 					i++;
 				} else if (offsets[i] == 0) {
-					indexes[i] = ~0; // XXX
+					_indexes[i] = ~0; // XXX
 					i++;
 				} else {
 					assert((uint32)_stream->pos() < offsets[i]);
 					break;
 				}
 			}
-			entries.push_back(readBlock());
+			_entries.push_back(readBlock());
 		}
 		assert(i == offsets.size());
 	} else if (!strncmp(blockType, TIME, 4)) {
 		// presumably a wait between frames, see update()
 		assert(size == 4);
 		uint32 time = _stream->readUint32LE();
+
 		return new SpriteEntryWait(time);
 	} else if (!strncmp(blockType, COMP, 4)) {
 		// compressed image data
@@ -164,22 +166,27 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		// change position of sprite/object?
 		uint32 xpos = _stream->readUint32LE();
 		uint32 ypos = _stream->readUint32LE();
+
 		return new SpriteEntryPosition(xpos, ypos);
 	} else if (!strncmp(blockType, STAT, 4)) {
 		// switch to static mode
 		assert(size == 0);
+
 		return new SpriteEntry(se_Static);
 	} else if (!strncmp(blockType, PAUS, 4)) {
 		// pause animation
 		assert(size == 0);
+
 		return new SpriteEntry(se_Pause);
 	} else if (!strncmp(blockType, EXIT, 4)) {
 		// pause animation
 		assert(size == 0);
+
 		return new SpriteEntry(se_Exit);
 	} else if (!strncmp(blockType, MARK, 4)) {
 		// TODO: store info
 		assert(size == 0);
+
 		return new SpriteEntry(se_Mark);
 	} else if (!strncmp(blockType, SETF, 4)) {
 		assert(size == 4);
@@ -192,11 +199,13 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 		assert(size == 8);
 		uint32 rand_amt = _stream->readUint32LE();
 		uint32 base = _stream->readUint32LE();
+
 		return new SpriteEntryRandomWait(rand_amt, base);
 	} else if (!strncmp(blockType, JUMP, 4)) {
 		// a jump to an animation
 		assert(size == 4);
 		uint32 target = _stream->readUint32LE();
+
 		return new SpriteEntryJump(target);
 	} else if (!strncmp(blockType, SCOM, 4)) {
 		// compressed image data representing speech
@@ -214,6 +223,7 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 	} else if (!strncmp(blockType, SNDW, 4)) {
 		// wait for sound to finish
 		assert(size == 0);
+
 		return new SpriteEntry(se_WaitForSound);
 	} else if (!strncmp(blockType, SNDF, 4)) {
 		// TODO: unknown is always 75, 95 or 100. volume?
@@ -228,10 +238,12 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 	} else if (!strncmp(blockType, PLAY, 4)) {
 		// TODO: play sound
 		assert(size == 0);
+
 		return new SpriteEntry(se_None); // XXX
 	} else if (!strncmp(blockType, MASK, 4)) {
 		// switch to mask mode
 		assert(size == 0);
+
 		return new SpriteEntry(se_Mask);
 	} else if (!strncmp(blockType, RPOS, 4)) {
 		// relative position change(?)
@@ -250,15 +262,18 @@ SpriteEntry *Sprite::parseBlock(char blockType[4], uint32 size) {
 	} else if (!strncmp(blockType, SILE, 4)) {
 		// stop+reset sound
 		assert(size == 0);
+
 		return new SpriteEntry(se_Silent);
 	} else if (!strncmp(blockType, OBJS, 4)) {
 		// set parent object state
 		assert(size == 4);
 		uint32 state = _stream->readUint32LE();
+
 		return new SpriteEntryStateSet(state);
 	} else if (!strncmp(blockType, BSON, 4)) {
 		// used only in legaleze.spr
 		assert(size == 0);
+
 		return new SpriteEntry(se_None); // XXX
 	} else {
 		error("unknown sprite block type %c%c%c%c", blockType[3], blockType[2], blockType[1], blockType[0]);
