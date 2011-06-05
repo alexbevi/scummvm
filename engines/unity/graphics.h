@@ -81,10 +81,10 @@ protected:
 	void blit(byte *data, int x, int y, unsigned int width, unsigned int height, byte transparent = COLOUR_BLANK);
 
 	UnityEngine *_vm;
-	byte *basePalette, *palette;
-	Image background;
-	Common::Array<Image> cursors;
-	Common::Array<Image> wait_cursors;
+	byte *_basePalette, *_palette;
+	Image _background;
+	Common::Array<Image> _cursors;
+	Common::Array<Image> _waitCursors;
 
 	Common::Array< ::Graphics::Font *> _fonts;
 };

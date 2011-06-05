@@ -55,19 +55,20 @@ static const byte sciMouseCursor[] = {
 };
 
 Graphics::Graphics(UnityEngine *_engine) : _vm(_engine) {
-	basePalette = palette = 0;
-	background.data = 0;
+	_basePalette = 0;
+	_palette = 0;
+	_background.data = 0;
 }
 
 Graphics::~Graphics() {
-	delete[] basePalette;
-	delete[] palette;
+	delete[] _basePalette;
+	delete[] _palette;
 
-	for (unsigned int i = 0; i < cursors.size(); i++)
-		delete[] cursors[i].data;
-	for (unsigned int i = 0; i < wait_cursors.size(); i++)
-		delete[] wait_cursors[i].data;
-	delete[] background.data;
+	for (unsigned int i = 0; i < _cursors.size(); i++)
+		delete[] _cursors[i].data;
+	for (unsigned int i = 0; i < _waitCursors.size(); i++)
+		delete[] _waitCursors[i].data;
+	delete[] _background.data;
 
 	for (uint i = 0; i < _fonts.size(); i++)
 		delete _fonts[i];
@@ -80,22 +81,22 @@ void Graphics::init() {
 }
 
 void Graphics::loadPalette() {
-	delete[] basePalette;
+	delete[] _basePalette;
 	// read the standard palette entries
-	basePalette = new byte[128 * 3];
+	_basePalette = new byte[128 * 3];
 	Common::SeekableReadStream *palStream = _vm->data.openFile("STANDARD.PAL");
 	for (uint16 i = 0; i < 128; i++) {
-		basePalette[i * 3] = palStream->readByte();
-		basePalette[i * 3 + 1] = palStream->readByte();
-		basePalette[i * 3 + 2] = palStream->readByte();
+		_basePalette[i * 3] = palStream->readByte();
+		_basePalette[i * 3 + 1] = palStream->readByte();
+		_basePalette[i * 3 + 2] = palStream->readByte();
 	}
 	delete palStream;
 }
 
 void Graphics::loadCursors() {
-	for (unsigned int i = 0; i < cursors.size(); i++)
-		delete[] cursors[i].data;
-	cursors.clear();
+	for (unsigned int i = 0; i < _cursors.size(); i++)
+		delete[] _cursors[i].data;
+	_cursors.clear();
 
 	Common::SeekableReadStream *stream = _vm->data.openFile("cursor.dat");
 	while (stream->pos() != stream->size()) {
@@ -104,13 +105,13 @@ void Graphics::loadCursors() {
 		img.height = stream->readUint16LE();
 		img.data = new byte[img.width * img.height];
 		stream->read(img.data, img.width * img.height);
-		cursors.push_back(img);
+		_cursors.push_back(img);
 	}
 	delete stream;
 
-	for (unsigned int i = 0; i < wait_cursors.size(); i++)
-		delete[] wait_cursors[i].data;
-	wait_cursors.clear();
+	for (unsigned int i = 0; i < _waitCursors.size(); i++)
+		delete[] _waitCursors[i].data;
+	_waitCursors.clear();
 	stream = _vm->data.openFile("waitcurs.dat");
 	// TODO: waitcursor stream has an extra byte on the end, so needs +1...
 	while (stream->pos() + 1 != stream->size()) {
@@ -119,7 +120,7 @@ void Graphics::loadCursors() {
 		img.height = stream->readUint16LE();
 		img.data = new byte[img.width * img.height];
 		stream->read(img.data, img.width * img.height);
-		wait_cursors.push_back(img);
+		_waitCursors.push_back(img);
 	}
 	delete stream;
 }
@@ -134,11 +135,11 @@ void Graphics::setCursor(unsigned int id, bool wait) {
 
 	Image *img;
 	if (wait) {
-		assert(id < wait_cursors.size());
-		img = &wait_cursors[id];
+		assert(id < _waitCursors.size());
+		img = &_waitCursors[id];
 	} else {
-		assert(id < cursors.size());
-		img = &cursors[id];
+		assert(id < _cursors.size());
+		img = &_cursors[id];
 	}
 	// TODO: hotspot?
 	CursorMan.replaceCursor(img->data, img->width, img->height, img->width/2, img->height/2, COLOUR_BLANK);
@@ -280,39 +281,39 @@ void Graphics::drawMRG(MRGFile *mrg, unsigned int entry, unsigned int x, unsigne
 }
 
 void Graphics::setBackgroundImage(Common::String filename) {
-	delete[] palette;
-	palette = new byte[256 * 3];
+	delete[] _palette;
+	_palette = new byte[256 * 3];
 
 	Common::SeekableReadStream *scrStream = _vm->data.openFile(filename);
 	for (uint16 i = 0; i < 128; i++) {
-		palette[i * 3] = scrStream->readByte();
-		palette[i * 3 + 1] = scrStream->readByte();
-		palette[i * 3 + 2] = scrStream->readByte();
+		_palette[i * 3] = scrStream->readByte();
+		_palette[i * 3 + 1] = scrStream->readByte();
+		_palette[i * 3 + 2] = scrStream->readByte();
 	}
-	memcpy(palette + 128*3, basePalette, 128*3);
+	memcpy(_palette + 128*3, _basePalette, 128*3);
 
 	for (uint16 i = 0; i < 256; i++) {
 		for (byte j = 0; j < 3; j++) {
-			palette[i * 3 + j] = palette[i * 3 + j] << 2;
+			_palette[i * 3 + j] = _palette[i * 3 + j] << 2;
 		}
 	}
 
-	_vm->_system->getPaletteManager()->setPalette(palette, 0, 256);
+	_vm->_system->getPaletteManager()->setPalette(_palette, 0, 256);
 
 	// some of the files seem to be 480 high, but just padded with black
-	background.width = 640;
-	background.height = 480;
+	_background.width = 640;
+	_background.height = 480;
 
-	delete[] background.data;
-	background.data = new byte[background.width * background.height];
-	scrStream->read(background.data, background.width * background.height);
+	delete[] _background.data;
+	_background.data = new byte[_background.width * _background.height];
+	scrStream->read(_background.data, _background.width * _background.height);
 	delete scrStream;
 }
 
 void Graphics::drawBackgroundImage() {
-	assert(background.data);
+	assert(_background.data);
 
-	_vm->_system->copyRectToScreen(background.data, background.width, 0, 0, background.width, background.height);
+	_vm->_system->copyRectToScreen(_background.data, _background.width, 0, 0, _background.width, _background.height);
 }
 
 // XXX: default transparent is a hack (see header file)
@@ -370,16 +371,16 @@ void Graphics::drawSprite(SpritePlayer *sprite, int x, int y, unsigned int scale
 		// new palette; used for things like the intro animation
 		debug("new sprite-embedded palette");
 
-		delete[] palette;
-		palette = new byte[256 * 3];
+		delete[] _palette;
+		_palette = new byte[256 * 3];
 
 		for (uint16 i = 0; i < 256; i++) {
-			palette[i * 3] = *(newpal++) * 4;
-			palette[i * 3 + 1] = *(newpal++) * 4;
-			palette[i * 3 + 2] = *(newpal++) * 4;
+			_palette[i * 3] = *(newpal++) * 4;
+			_palette[i * 3 + 1] = *(newpal++) * 4;
+			_palette[i * 3 + 2] = *(newpal++) * 4;
 		}
 
-		_vm->_system->getPaletteManager()->setPalette(palette, 0, 256);
+		_vm->_system->getPaletteManager()->setPalette(_palette, 0, 256);
 	}
 
 	if (scale < 256) {
@@ -457,9 +458,12 @@ void Graphics::drawBackgroundPolys(Common::Array<ScreenPolygon> &polys) {
 		// something == 3: ??
 		// something == 4: seems to usually cover almost the whole screen..
 		byte colour = 160 + poly.distances[0]/36;
-		if (poly.type == 4) colour = 254; // green
-		else if (poly.type == 0) colour = 225; // brown
-		else if (poly.type == 3) colour = 224; // grayish
+		if (poly.type == 4)
+			colour = 254; // green
+		else if (poly.type == 0)
+			colour = 225; // brown
+		else if (poly.type == 3)
+			colour = 224; // grayish
 		for (unsigned int j = 0; j < poly.triangles.size(); j++) {
 			Common::Array<Common::Point> points;
 			points.push_back(poly.triangles[j].points[0]);
@@ -506,7 +510,8 @@ void Graphics::playMovie(Common::String filename) {
 		g_system->endGFXTransaction();
 	}
 
-	if (!videoDecoder->loadStream(intro_movie)) error("failed to load movie %s", filename.c_str());
+	if (!videoDecoder->loadStream(intro_movie))
+		error("failed to load movie %s", filename.c_str());
 
 	bool skipVideo = false;
 
@@ -543,8 +548,8 @@ void Graphics::playMovie(Common::String filename) {
 
 	initGraphics(640, 480, true);
 	g_system->showMouse(true);
-	if (palette) {
-		_vm->_system->getPaletteManager()->setPalette(palette, 0, 256);
+	if (_palette) {
+		_vm->_system->getPaletteManager()->setPalette(_palette, 0, 256);
 	}
 
 	delete videoDecoder;
