@@ -143,8 +143,8 @@ protected:
 	void openLocation(unsigned int world, unsigned int screen);
 
 	void checkEvents();
-	void handleAwayTeamMouseMove(unsigned int x, unsigned int y);
-	void handleAwayTeamMouseClick(unsigned int x, unsigned int y);
+	void handleAwayTeamMouseMove(const Common::Point &pos);
+	void handleAwayTeamMouseClick(const Common::Point &pos);
 
 	void drawObjects();
 	void processTriggers();
@@ -152,12 +152,16 @@ protected:
 
 	void startupScreen();
 
-	unsigned int _dialogStartLine;
+	uint _dialogSelected;
+	uint _dialogStartLine;
 	Common::Array<Common::Array<Common::String> > _dialogLines;
+	Common::Array<Common::Rect> _dialogRects;
 	uint _dialogWidth;
 	void drawDialogFrameAround(unsigned int x, unsigned int y, unsigned int width,
 		unsigned int height, bool use_thick_frame, bool with_icon, bool with_buttons);
 	void initDialog();
+	void dialogMouseMove(const Common::Point &pos);
+	void dialogMouseClick(const Common::Point &pos);
 	void drawDialogWindow();
 
 	void drawAwayTeamUI();

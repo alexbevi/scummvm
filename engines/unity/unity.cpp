@@ -446,7 +446,7 @@ void UnityEngine::startAwayTeam(unsigned int world, unsigned int screen, byte en
 	}
 
 	_on_away_team = true;
-	handleAwayTeamMouseMove(0, 0);
+	handleAwayTeamMouseMove(Common::Point());
 }
 
 void UnityEngine::startupScreen() {
@@ -731,7 +731,8 @@ void UnityEngine::checkEvents() {
 				break;			
 
 			case Common::EVENT_RBUTTONUP:
-				if (!_on_away_team) break;
+				if (!_on_away_team)
+					break;
 
 				// cycle through away team modes
 				switch (_mode) {
@@ -748,16 +749,17 @@ void UnityEngine::checkEvents() {
 					_mode = mode_Look;
 					break;
 				}
-				handleAwayTeamMouseMove(0, 0); // TODO
+				handleAwayTeamMouseMove(Common::Point()); // TODO
 				break;
 
 			case Common::EVENT_MOUSEMOVE:
 				if (_in_dialog) {
+					dialogMouseMove(event.mouse);
 					break;
 				}
 
 				if (_on_away_team) {
-					handleAwayTeamMouseMove(event.mouse.x, event.mouse.y);
+					handleAwayTeamMouseMove(event.mouse);
 				} else {
 					_currScreen->mouseMove(event.mouse);
 				}
@@ -765,12 +767,12 @@ void UnityEngine::checkEvents() {
 
 			case Common::EVENT_LBUTTONUP:
 				if (_in_dialog) {
-					_in_dialog = false;
+					dialogMouseClick(event.mouse);
 					break;
 				}
 
 				if (_on_away_team) {
-					handleAwayTeamMouseClick(event.mouse.x, event.mouse.y);
+					handleAwayTeamMouseClick(event.mouse);
 				} else {
 					_currScreen->mouseClick(event.mouse);
 				}
@@ -784,8 +786,8 @@ void UnityEngine::checkEvents() {
 	_snd->updateMusic(); // TODO
 }
 
-void UnityEngine::handleAwayTeamMouseMove(unsigned int x, unsigned int y) {
-	Object *obj = objectAt(x, y);
+void UnityEngine::handleAwayTeamMouseMove(const Common::Point &pos) {
+	Object *obj = objectAt(pos.x, pos.y);
 	if (obj) {
 		switch (_mode) {
 		case mode_Look:
@@ -840,9 +842,10 @@ void UnityEngine::handleAwayTeamMouseMove(unsigned int x, unsigned int y) {
 	}
 }
 
-void UnityEngine::handleAwayTeamMouseClick(unsigned int x, unsigned int y) {
-	Object *obj = objectAt(x, y);
-	if (!obj) return;
+void UnityEngine::handleAwayTeamMouseClick(const Common::Point &pos) {
+	Object *obj = objectAt(pos.x, pos.y);
+	if (!obj)
+		return;
 
 	switch (_mode) {
 	case mode_Look:
@@ -978,6 +981,7 @@ void UnityEngine::drawDialogFrameAround(unsigned int x, unsigned int y, unsigned
 void UnityEngine::initDialog() {
 	const uint maxWidth = 313; // TODO: probably should be calculated
 
+	_dialogSelected = (uint)-1;
 	_dialogStartLine = 0;
 	_dialogLines.clear();
 	_dialogWidth = 0;
@@ -1005,6 +1009,22 @@ void UnityEngine::initDialog() {
 	}
 }
 
+void UnityEngine::dialogMouseMove(const Common::Point &pos) {
+	_dialogSelected = (uint)-1;
+
+	for (uint i = 0; i < _dialogRects.size(); i++)
+		if (_dialogRects[i].contains(pos))
+			_dialogSelected = i;
+}
+
+void UnityEngine::dialogMouseClick(const Common::Point &pos) {
+	// if there are no choices to be made, or a choice has been made, or we don't need a choice
+	if (_choice_list.empty() || _dialogSelected != (uint)-1 || !_dialog_choosing) {
+		_in_dialog = false;
+		return;
+	}
+}
+
 void UnityEngine::drawDialogWindow() {
 	uint y = _dialog_y;
 
@@ -1029,6 +1049,8 @@ void UnityEngine::drawDialogWindow() {
 	bool thick_frame = _choice_list.size() != 0 && (!_dialog_choosing);
 	drawDialogFrameAround(_dialog_x, y, width, height, thick_frame, show_icon, show_buttons);
 
+	_dialogRects.clear();
+
 	::Graphics::Surface *surf = _system->lockScreen();
 	if (!_choice_list.size()) {
 		for (uint i = _dialogStartLine; i < _dialogLines[0].size(); i++) {
@@ -1047,6 +1069,7 @@ void UnityEngine::drawDialogWindow() {
 			linesSeen += j;
 
 			Common::Array<Common::String> &lines = _dialogLines[j];
+			uint oldY = y;
 			for (uint i = beginLine; i < lines.size(); i++) {
 				if ((y - _dialog_y) + fontHeight > height) {
 					// done drawing
@@ -1055,7 +1078,7 @@ void UnityEngine::drawDialogWindow() {
 				}
 
 				::Graphics::Font *thisFont = font;
-				bool selected = (j == 0); // TODO
+				bool selected = (j == _dialogSelected);
 				// font 2 is normal, font 3 is highlighted - but have identical metrics
 				if (selected)
 					thisFont = _gfx->getFont(3);
@@ -1065,6 +1088,7 @@ void UnityEngine::drawDialogWindow() {
 				if (i != lines.size() - 1)
 					y += fontSpacing;
 			}
+			_dialogRects.push_back(Common::Rect(_dialog_x, oldY, _dialog_x + width, y));
 		}
 	}
 	_system->unlockScreen();
@@ -1223,8 +1247,9 @@ unsigned int UnityEngine::runDialogChoice(Conversation *conversation) {
 	_choice_list.clear();
 	_dialog_choosing = false;
 
-	// TODO: don't always run the first choice, actually offer a choice? :)
-	return _dialog_choice_states[0];
+	if (_dialogSelected == (uint)-1)
+		return (uint)-1;
+	return _dialog_choice_states[_dialogSelected];
 }
 
 void UnityEngine::runDialog() {
