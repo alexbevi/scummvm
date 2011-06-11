@@ -25,11 +25,16 @@
 
 #include "ring/game/application_pompeii.h"
 
+#include "ring/base/art.h"
 #include "ring/base/bag.h"
+#include "ring/base/saveload.h"
+#include "ring/base/sound.h"
 
 #include "ring/game/event_pompeii.h"
 
 #include "ring/graphics/screen.h"
+
+#include "ring/debug.h"
 
 #include "common/textconsole.h"
 
@@ -190,7 +195,41 @@ void ApplicationPompeii::initZones() {
 }
 
 void ApplicationPompeii::setupZone(ZoneId zone, SetupType type) {
-	error("[ApplicationPompeii::setupZone] Not implemented");
+	debugC(kRingDebugLogic, "Setting up zone %s", getZoneName(zone).c_str());
+
+	bool hasData = false;
+
+	if (zone == kZoneSY) {
+		hasData = true;
+	} else {
+		// The original checks for the correct CD,
+		// we should instead check that the zone folder
+		// has been copied properly
+		warning("[ApplicationPompeii::setupZone] Zone CD check not implemented");
+	}
+
+	reset();
+	soundStopAll(8);
+
+	if (_soundHandler)
+		_soundHandler->reset();
+
+	if (zone != kZoneSY)
+		_artHandler->reset();
+
+	if (hasData) {
+		setCurrentEpisode(zone);
+		setZone(zone, type);
+	} else {
+		_saveManager->setSetupType(type);
+
+		messageFormat("InsertCD", Common::String::format("%d", getEpisodeCd(zone)));
+		messageInsertCd(zone);
+	}
+}
+
+void ApplicationPompeii::setZone(ZoneId zone, SetupType type) {
+	error("[ApplicationPompeii::setZone] Not implemented");
 }
 
 
