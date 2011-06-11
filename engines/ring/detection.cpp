@@ -191,35 +191,15 @@ static const RingGameDescription gameDescriptions[] = {
 	{AD_TABLE_END_MARKER, 0, 0}
 };
 
-static const ADParams detectionParams = {
-	// Pointer to ADGameDescription or its superset structure
-	(const byte *)gameDescriptions,
-	// Size of that superset structure
-	sizeof(Ring::RingGameDescription),
-	// Number of bytes to compute MD5 sum for
-	5000,
-	// List of all engine targets
-	ringGames,
-	// Structure for autoupgrading obsolete targets
-	0,
-	// Name of single gameid (optional)
-	"ring",
-	// List of files for file-based fallback detection (optional)
-	0,
-	// Flags
-	0,
-	// Additional GUI options (for every game}
-	Common::GUIO_NOSUBTITLES | Common::GUIO_NOSFX,
-	// Maximum directory depth
-	2,
-	// List of directory globs
-	directoryGlobs
-};
-
 
 class RingMetaEngine : public AdvancedMetaEngine {
 public:
-	RingMetaEngine() : AdvancedMetaEngine(detectionParams) {}
+	RingMetaEngine() : AdvancedMetaEngine(gameDescriptions, sizeof(Ring::RingGameDescription), ringGames) {
+		params.singleid = "ring";
+		params.guioptions = Common::GUIO_NOSUBTITLES | Common::GUIO_NOSFX;
+		params.depth = 2;
+		params.directoryGlobs = directoryGlobs;
+	}
 
 	const char *getName() const {
 		return "Ring";
