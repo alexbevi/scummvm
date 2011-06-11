@@ -153,9 +153,9 @@ enum LoadFrom {
 
 enum ZoneId {
 	kZoneNone    = 0,
-	kZoneSY      = 1,
 
 	// Default zones
+	kZone1       = 1,
 	kZone2       = 2,
 	kZone3       = 3,
 	kZone4       = 4,
@@ -172,6 +172,10 @@ enum ZoneId {
 	kZone15      = 15,
 	kZone16      = 16,
 	kZone17      = 17,
+
+	// System zones
+	kZoneSY      = 1,   // used by pre-pompeii games
+	kZone100     = 100, // used by pompeii and later games
 
 	// Game-specific zones for Ring
 	kZoneNI      = 2,

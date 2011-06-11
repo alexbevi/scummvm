@@ -37,6 +37,8 @@ namespace Ring {
 
 ApplicationJerusalem::ApplicationJerusalem(RingEngine *engine) : Application(engine) {
 	_eventHandler = new EventHandlerJerusalem(this);
+
+	_systemZone = kZone100;
 }
 
 ApplicationJerusalem::~ApplicationJerusalem() {

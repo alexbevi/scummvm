@@ -37,6 +37,7 @@
 #define getApp() ((RingEngine *)g_engine)->getApplication()
 #define getSound() ((RingEngine *)g_engine)->getApplication()->getSoundManager()
 #define getSoundDirection() (((RingEngine *)g_engine)->getApplication()->getSoundHandler()->getDirection())
+#define getZoneSY() ((RingEngine *)g_engine)->getApplication()->getSystemZone()
 
 // Events
 #define handleEvents() ((RingEngine *)g_engine)->update()

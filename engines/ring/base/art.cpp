@@ -221,7 +221,7 @@ int32 ArtHandler::getIndex(ZoneId zone, LoadFrom loadFrom) {
 
 	// Compute zone & loadFrom
 	if (loadFrom == kLoadFromDisk || loadFrom == kLoadFromCursor || loadFrom == kLoadFromListIcon || loadFrom == kLoadFrom5) {
-		z = kZoneSY;
+		z = getZoneSY();
 		l = kLoadFromDisk;
 	}
 
@@ -237,7 +237,7 @@ int32 ArtHandler::getIndex(ZoneId zone, LoadFrom loadFrom) {
 
 Common::String ArtHandler::getArtFolder(ZoneId zone) {
 	// For zones other than system, just read from the data folder
-	if (zone != kZoneSY)
+	if (zone != getZoneSY())
 		return "DATA";
 
 	// If the game handles multiple languages, we need to read from the language subfolder

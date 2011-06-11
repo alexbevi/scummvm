@@ -39,6 +39,8 @@ namespace Ring {
 
 ApplicationPompeii::ApplicationPompeii(RingEngine *engine) : Application(engine) {
 	_eventHandler = new EventHandlerPompeii(this);
+
+	_systemZone = kZone100;
 }
 
 ApplicationPompeii::~ApplicationPompeii() {

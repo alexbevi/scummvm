@@ -399,6 +399,7 @@ public:
 	void setSpace(ZoneId id);
 	void setCurrentZone(ZoneId id);
 	ZoneId getCurrentZone();
+	ZoneId getSystemZone() { return _systemZone; }
 	Common::String getCurrentZoneFolder();
 	Common::String getZoneFolder(ZoneId zone) const;
 	Common::String getZoneName(ZoneId zone) const;
@@ -455,6 +456,9 @@ public:
 
 protected:
 	RingEngine *_vm;
+
+	// Earlier games use 1 as system zone, later ones use 100 (defaults to 1)
+	ZoneId                        _systemZone;
 
 	// Game screen (when showing menu)
 	Image                        *_thumbnail;

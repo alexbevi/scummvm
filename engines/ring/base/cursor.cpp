@@ -25,10 +25,13 @@
 
 #include "ring/base/cursor.h"
 
+#include "ring/base/application.h"
+
 #include "ring/graphics/animation.h"
 #include "ring/graphics/image.h"
 
 #include "ring/helpers.h"
+#include "ring/ring.h"
 
 #include "common/textconsole.h"
 
@@ -186,7 +189,7 @@ void CursorImage::alloc() {
 	if (!_image)
 		return;
 
-	if (!_image->load(getName(), _archiveType, kZoneSY, kLoadFromDisk, kDrawType3))
+	if (!_image->load(getName(), _archiveType, getZoneSY(), kLoadFromDisk, kDrawType3))
 		error("[CursorImage::alloc] Cannot load image (%s)", getName().c_str());
 
 	if (_image->getBPP() != 32) {

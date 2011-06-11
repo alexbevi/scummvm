@@ -79,6 +79,9 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_currentRotation = NULL;
 
 	_thumbnail = NULL;
+
+	// System zone
+	_systemZone = kZone1;
 }
 
 Application::~Application() {
@@ -149,7 +152,7 @@ void Application::init() {
 
 	// Setup system zone (needed by ArtHandler)
 	addEpisode(kZoneSY, "System", 0);
-	addZone(kZoneSY, "System",     "SY", _configuration.artSY ? kArchiveArt : kArchiveFile, kLoadFromDisk);
+	addZone(_systemZone, "System",     "SY", _configuration.artSY ? kArchiveArt : kArchiveFile, kLoadFromDisk);
 
 	// Setup video
 	_screenManager = new ScreenManager();
@@ -166,7 +169,7 @@ void Application::init() {
 
 	if (_archiveType == kArchiveArt) {
 		_artHandler = new ArtHandler(this);
-		_artHandler->open(kZoneSY, kLoadFromDisk);
+		_artHandler->open(_systemZone, kLoadFromDisk);
 	}
 
 	_archiveType = kArchiveFile;
@@ -2696,7 +2699,7 @@ void Application::addZone(ZoneId id, Common::String name, Common::String folder,
 }
 
 void Application::setSpace(ZoneId id) {
-	if (id != kZoneSY) {
+	if (id != _systemZone) {
 		_artHandler->reset();
 
 		if (getArchiveType(id) == kArchiveArt)
@@ -2782,10 +2785,10 @@ void Application::startLogin() {
 
 	// Setup game
 	timerStopAll();
-	setupZone(kZoneSY, kSetupTypeNone);
-	setSpace(kZoneSY);
+	setupZone(_systemZone, kSetupTypeNone);
+	setSpace(_systemZone);
 	puzzleSetActive(kPuzzlePreferences);
-	_currentGameZone = kZoneSY;
+	_currentGameZone = _systemZone;
 }
 
 #pragma endregion

@@ -517,7 +517,7 @@ void Bag::loadImage(Common::String filename, Image **image, ArchiveType archiveT
 	SAFE_DELETE(*image);
 	*image = new Image();
 
-	if (!(*image)->load(path, archiveType, kZoneSY, kLoadFromDisk, kDrawType1))
+	if (!(*image)->load(path, archiveType, getZoneSY(), kLoadFromDisk, kDrawType1))
 		error("[Bag::LoadImage] Cannot load image: %s", path.c_str());
 }
 
@@ -574,7 +574,7 @@ void Bag::add(ObjectId objectId) {
 			filename = Common::String::format("/LSTICON/%s.tga", object->getName().c_str());
 		}
 
-		imageHandle = new ImageHandle(filename, Common::Point(0, 0), true, kZoneSY, kLoadFromDisk, kImageTypeTGA, _archiveType);
+		imageHandle = new ImageHandle(filename, Common::Point(0, 0), true, getZoneSY(), kLoadFromDisk, kImageTypeTGA, _archiveType);
 	}
 
 	if (!imageHandle)
