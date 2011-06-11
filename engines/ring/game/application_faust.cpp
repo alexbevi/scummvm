@@ -81,7 +81,13 @@ ApplicationFaust::~ApplicationFaust() {
 #pragma region Game setup
 
 void ApplicationFaust::initLanguages() {
-	error("[ApplicationFaust::initLanguages] Not implemented");
+	languageAdd(kLanguageEnglish, "ENG", "ENG", 1);
+	languageAdd(kLanguageFrench,  "FRA", "FRA", 2);
+	languageAdd(kLanguageGerman,  "GER", "GER", 3);
+	languageAdd(kLanguageItalian, "ITA", "ITA", 1);
+	languageAdd(kLanguageSpanish, "SPA", "SPA", 2);
+	languageAdd(kLanguageDutch,   "HOL", "HOL", 3);
+	languageAdd(kLanguageSwedish, "SWE", "SWE", 4);
 }
 
 void ApplicationFaust::initFont() {
