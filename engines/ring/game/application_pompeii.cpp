@@ -25,6 +25,8 @@
 
 #include "ring/game/application_pompeii.h"
 
+#include "ring/base/bag.h"
+
 #include "ring/game/event_pompeii.h"
 
 #include "ring/graphics/screen.h"
@@ -45,7 +47,13 @@ ApplicationPompeii::~ApplicationPompeii() {
 #pragma region Game setup
 
 void ApplicationPompeii::initLanguages() {
-	error("[ApplicationPompeii::initLanguages] Not implemented");
+	languageAdd(kLanguageEnglish, "ENG", "ENG", 1);
+	languageAdd(kLanguageFrench,  "FRA", "FRA", 1);
+	languageAdd(kLanguageGerman,  "GER", "GER", 1);
+	languageAdd(kLanguageItalian, "ITA", "ITA", 1);
+	languageAdd(kLanguageSpanish, "SPA", "SPA", 1);
+	languageAdd(kLanguageDutch,   "HOL", "HOL", 1);
+	languageAdd(kLanguageSwedish, "SWE", "SWE", 1);
 }
 
 void ApplicationPompeii::initFont() {
@@ -58,7 +66,18 @@ void ApplicationPompeii::setup() {
 }
 
 void ApplicationPompeii::initBag() {
-	error("[ApplicationPompeii::initBag] Not implemented");
+	_bag->setOrigin(Common::Point(0, 0));
+	_bag->sub_417D40(15, 26, 40, 61);
+	_bag->setBackgroundOffset(Common::Point(0, 0));
+	_bag->sub_417DD0(10);
+	_bag->sub_417D80(0, 0, 30, 448);
+	_bag->sub_417DA0(610, 0, 30, 448);
+	_bag->sub_4192A0(6, 12);
+	_bag->sub_4192C0(622, 12);
+	_bag->sub_417DE0(291, 4);
+	_bag->sub_419280(500);
+	_bag->loadBackground("bagbgr.tga", "", "", "", "", "", "", "bag_h.bmp", _archiveType);
+	_bag->initHotspots();
 }
 
 #pragma endregion
