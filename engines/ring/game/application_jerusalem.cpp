@@ -44,6 +44,10 @@ ApplicationJerusalem::~ApplicationJerusalem() {
 
 #pragma region Game setup
 
+void ApplicationJerusalem::initLanguages() {
+	error("[ApplicationJerusalem::initLanguages] Not implemented");
+}
+
 void ApplicationJerusalem::initFont() {
 	// Original asks for size 12, but the font only contains size 8
 	fontAdd(kFontDefault, "Jerusalm.fon", "Arxel1", 8, true, false, false, false, getCurrentLanguage());

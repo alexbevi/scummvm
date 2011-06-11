@@ -106,6 +106,19 @@ ApplicationRing::~ApplicationRing() {
 
 #pragma region Game setup
 
+void ApplicationRing::initLanguages() {
+	languageAdd(kLanguageEnglish, "ENG", "ENG", 1);
+	languageAdd(kLanguageFrench,  "FRA", "FRA", 2);
+	languageAdd(kLanguageGerman,  "GER", "GER", 3);
+	languageAdd(kLanguageItalian, "ITA", "ITA", 1);
+	languageAdd(kLanguageSpanish, "SPA", "SPA", 2);
+	languageAdd(kLanguageSwedish, "SWE", "SWE", 1);
+	languageAdd(kLanguageDutch,   "HOL", "HOL", 3);
+	languageAdd(kLanguageHebrew,  "HEB", "HEB", 1);
+	languageAdd(kLanguageGreek,   "GRE", "GRE", 1);
+	languageAdd(kLanguageSlovak,  "SLO", "SLO", 1);
+}
+
 void ApplicationRing::initFont() {
 	switch (getCurrentLanguage()) {
 	default:

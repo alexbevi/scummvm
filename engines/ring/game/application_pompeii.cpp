@@ -44,6 +44,10 @@ ApplicationPompeii::~ApplicationPompeii() {
 
 #pragma region Game setup
 
+void ApplicationPompeii::initLanguages() {
+	error("[ApplicationPompeii::initLanguages] Not implemented");
+}
+
 void ApplicationPompeii::initFont() {
 	// Original asks for size 12, but the font only contains size 8
 	fontAdd(kFontDefault, "pompei.fon", "Arxel1", 8, true, false, false, false, getCurrentLanguage());
