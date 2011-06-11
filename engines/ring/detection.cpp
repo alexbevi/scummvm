@@ -222,7 +222,7 @@ public:
 	RingMetaEngine() : AdvancedMetaEngine(detectionParams) {}
 
 	const char *getName() const {
-		return "Ring Engine";
+		return "Ring";
 	}
 
 	const char *getOriginalCopyright() const {
