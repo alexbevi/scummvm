@@ -64,7 +64,62 @@ void ApplicationPompeii::initFont() {
 }
 
 void ApplicationPompeii::setup() {
-	error("[ApplicationPompeii::setup] Not implemented");
+	// Add the list of episodes
+	addEpisode(kZone2, "One",   2);
+	addEpisode(kZone3, "Two",   1);
+	addEpisode(kZone4, "Three", 2);
+	addEpisode(kZone5, "Four",  1);
+	addEpisode(kZone6, "Five",  1);
+
+	// Add the list of zones
+	addZone(kZone1,  "S00", "S00", kArchiveArt, kLoadFromCd);
+	addZone(kZone2,  "S01", "S01", kArchiveArt, kLoadFromCd);
+	addZone(kZone3,  "S02", "S02", kArchiveArt, kLoadFromCd);
+	addZone(kZone4,  "S03", "S03", kArchiveArt, kLoadFromCd);
+	addZone(kZone5,  "S04", "S04", kArchiveArt, kLoadFromCd);
+	addZone(kZone6,  "S05", "S05", kArchiveArt, kLoadFromCd);
+	addZone(kZone7,  "S06", "S06", kArchiveArt, kLoadFromCd);
+	addZone(kZone8,  "S07", "S07", kArchiveArt, kLoadFromCd);
+	addZone(kZone9,  "S08", "S08", kArchiveArt, kLoadFromCd);
+	addZone(kZone10, "S09", "S09", kArchiveArt, kLoadFromCd);
+	addZone(kZone11, "S10", "S10", kArchiveArt, kLoadFromCd);
+	addZone(kZone12, "S11", "S11", kArchiveArt, kLoadFromCd);
+
+	// Setup system zone
+	setupZone(kZoneSY, kSetupTypeNone);
+	setSpace(kZone100);
+
+	// Setup cursors
+	ArchiveType archiveType = (_configuration.artCURSOR ? kArchiveArt : kArchiveFile);
+
+	cursorAdd(kCursorDefault,               "", kCursorTypeNormal, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorBusy,          "cur_busy", kCursorTypeImage,  1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorIdle,          "cur_idle", kCursorTypeImage,  1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorMove,           "cur_muv", kCursorTypeImage,  1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorBack,          "cur_back", kCursorTypeImage,  1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorMenuIdle,      "cur_me-1", kCursorTypeImage,  1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorMenuActive,    "cur_me-2", kCursorTypeImage,  1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorZoom,          "cur_zoom", kCursorTypeImage,  1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorTake,          "cur_take", kCursorTypeImage,  1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorAction,        "cur_ac-1", kCursorTypeImage,  1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorActionObject,  "cur_ac-2", kCursorTypeImage,  1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorDragDrop,         "adrag", kCursorTypeImage,  1, kLoadFromCursor, archiveType);
+
+	cursorSetOffset(kCursorBusy,         Common::Point(8, 8));
+	cursorSetOffset(kCursorIdle,         Common::Point(17, 1));
+	cursorSetOffset(kCursorMove,         Common::Point(17, 1));
+	cursorSetOffset(kCursorBack,         Common::Point(17, 1));
+	cursorSetOffset(kCursorMenuIdle,     Common::Point(8, 8));
+	cursorSetOffset(kCursorMenuActive,   Common::Point(8, 8));
+	cursorSetOffset(kCursorZoom,         Common::Point(17, 1));
+	cursorSetOffset(kCursorTake,         Common::Point(17, 1));
+	cursorSetOffset(kCursorAction,       Common::Point(17, 1));
+	cursorSetOffset(kCursorActionObject, Common::Point(17, 1));
+	cursorSetOffset(kCursorDragDrop,     Common::Point(8, 8));
+
+	// Setup subtitles
+	subtitleSetColor(Color(255, 255, 255));
+	subtitleSetBackgroundColor(Color(50, 50, 50));
 }
 
 void ApplicationPompeii::initBag() {
