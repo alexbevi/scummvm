@@ -65,7 +65,8 @@ namespace Ring {
 
 RingEngine::RingEngine(OSystem *syst, const RingGameDescription *gd) :
 	Engine(syst), _gameDescription(gd), _debugger(NULL),
-	_application(NULL), _mouseButtonPressed(false) , _flag(true) {
+	_application(NULL), _mouseButtonPressed(false) , _flag(true),
+	_random("ring") {
 
 	// Adding the default directories
 	const Common::FSNode gameDataDir(ConfMan.get("path"));
@@ -83,8 +84,6 @@ RingEngine::RingEngine(OSystem *syst, const RingGameDescription *gd) :
 	DebugMan.addDebugChannel(kRingDebugSavegame, "Savegame", "Debug savegame");
 	DebugMan.addDebugChannel(kRingDebugLogic, "Logic", "Debug logic");
 	DebugMan.addDebugChannel(kRingDebugUnknown, "Unknown", "Debug unknown data");
-
-	g_eventRec.registerRandomSource(_random, "Ring");
 }
 
 RingEngine::~RingEngine() {
