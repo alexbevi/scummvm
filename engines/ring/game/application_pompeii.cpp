@@ -27,6 +27,8 @@
 
 #include "ring/base/art.h"
 #include "ring/base/bag.h"
+#include "ring/base/preferences.h"
+#include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 #include "ring/base/sound.h"
 
@@ -191,7 +193,73 @@ Visual *ApplicationPompeii::createVisual(Id visualId, uint32 a3, uint32 a4, uint
 #pragma region Zone initialization
 
 void ApplicationPompeii::initZones() {
-	error("[ApplicationPompeii::initZones] Not implemented");
+	debugC(kRingDebugLogic, "Init zone data");
+
+	_loadFrom = kLoadFromDisk;
+
+	drawZoneName(kZone100);
+	_archiveType = getZoneArchiveType(kZone100);
+	initZoneSystem();
+
+	_loadFrom = kLoadFromCd;
+
+	drawZoneName(kZone1);
+	_archiveType = getZoneArchiveType(kZone2);
+	initZone2();
+
+	drawZoneName(kZone2);
+	_archiveType = getZoneArchiveType(kZone2);
+	initZone2();
+
+	drawZoneName(kZone2);
+	_archiveType = getZoneArchiveType(kZone3);
+	initZone3();
+
+	drawZoneName(kZone4);
+	_archiveType = getZoneArchiveType(kZone4);
+	initZone4();
+
+	drawZoneName(kZone5);
+	_archiveType = getZoneArchiveType(kZone5);
+	initZone5();
+
+	drawZoneName(kZone6);
+	_archiveType = getZoneArchiveType(kZone6);
+	initZone6();
+
+	drawZoneName(kZone7);
+	_archiveType = getZoneArchiveType(kZone7);
+	initZone7();
+
+	drawZoneName(kZone8);
+	_archiveType = getZoneArchiveType(kZone8);
+	initZone8();
+
+	drawZoneName(kZone9);
+	_archiveType = getZoneArchiveType(kZone9);
+	initZone9();
+
+	drawZoneName(kZone10);
+	_archiveType = getZoneArchiveType(kZone10);
+	initZone10();
+
+	_loadFrom = kLoadFromDisk;
+
+	drawZoneName(kZone11);
+	_archiveType = getZoneArchiveType(kZone11);
+	initZone11();
+
+	drawZoneName(kZone12);
+	_archiveType = getZoneArchiveType(kZone12);
+	initZone12();
+
+	_archiveType = getZoneArchiveType(getCurrentZone());
+
+	setState(kStateNone);
+
+	// Clear screen
+	_screenManager->clear();
+	g_system->updateScreen();
 }
 
 void ApplicationPompeii::setupZone(ZoneId zone, SetupType type) {
@@ -228,10 +296,96 @@ void ApplicationPompeii::setupZone(ZoneId zone, SetupType type) {
 	}
 }
 
+// TODO merge into single method for all post-ring games ??
 void ApplicationPompeii::setZone(ZoneId zone, SetupType type) {
-	error("[ApplicationPompeii::setZone] Not implemented");
+
+	// Finish loading savegame if needed
+	if (type == kSetupTypeLoading) {
+		SaveManager::SavegameData *data = getSaveManager()->getData();
+
+		setSpace(data->zone);
+
+		if (data->hasCurrentPuzzle)
+			puzzleSetActive(data->puzzleId, false, true);
+
+		if (data->hasCurrentRotation) {
+			rotationSetActive(data->rotationId, false, true);
+
+			getCurrentRotation()->setFreOnOff(data->rotationFre);
+		}
+
+		_loadFrom = data->loadFrom;
+		_isRotationCompressed = data->isRotationCompressed;
+		_archiveType = data->archiveType;
+
+		getSaveManager()->loadSaveSounds();
+
+		if (getSaveManager()->isSaving()) {
+			_soundManager->playSounds();
+		} else {
+			_preferenceHandler->load();
+			_soundManager->playSounds();
+		}
+	}
+
+	// Setup zone
+	_eventHandler->onSetup(zone, type);
 }
 
+#pragma endregion
+
+#pragma region Zone initialization
+
+////////////////////////////////////////////////////////////////////////////
+// Zone initialization
+//////////////////////////////////////////////////////////////////////////
+void ApplicationPompeii::initZoneSystem() {
+	error("[ApplicationPompeii::initZoneSystem] Not implemented");
+}
+
+void ApplicationPompeii::initZone2() {
+	error("[ApplicationPompeii::initZone2] Not implemented");
+}
+
+void ApplicationPompeii::initZone3() {
+	error("[ApplicationPompeii::initZone3] Not implemented");
+}
+
+void ApplicationPompeii::initZone4() {
+	error("[ApplicationPompeii::initZone4] Not implemented");
+}
+
+void ApplicationPompeii::initZone5() {
+	error("[ApplicationPompeii::initZone5] Not implemented");
+}
+
+void ApplicationPompeii::initZone6() {
+	error("[ApplicationPompeii::initZone6] Not implemented");
+}
+
+void ApplicationPompeii::initZone7() {
+	error("[ApplicationPompeii::initZone7] Not implemented");
+}
+
+void ApplicationPompeii::initZone8() {
+	error("[ApplicationPompeii::initZone8] Not implemented");
+}
+
+void ApplicationPompeii::initZone9() {
+	error("[ApplicationPompeii::initZone9] Not implemented");
+}
+
+void ApplicationPompeii::initZone10() {
+	error("[ApplicationPompeii::initZone10] Not implemented");
+}
+
+void ApplicationPompeii::initZone11() {
+	error("[ApplicationPompeii::initZone11] Not implemented");
+}
+
+void ApplicationPompeii::initZone12() {
+	error("[ApplicationPompeii::initZone12] Not implemented");
+}
 
 #pragma endregion
 
