@@ -188,34 +188,14 @@ static const ADFileBasedFallback fileBased[] = {
 
 }
 
-static const ADParams detectionParams = {
-	// Pointer to ADGameDescription or its superset structure
-	(const byte *)DarkSeed2::gameDescriptions,
-	// Size of that superset structure
-	sizeof(DarkSeed2::DS2GameDescription),
-	// Number of bytes to compute MD5 sum for
-	10000,
-	// List of all engine targets
-	darkseed2Games,
-	// Structure for autoupgrading obsolete targets
-	0,
-	// Name of single gameid (optional)
-	"darkseed2",
-	// List of files for file-based fallback detection (optional)
-	DarkSeed2::fileBased,
-	// Flags
-	0,
-	// Additional GUI options (for every game}
-	Common::GUIO_NOLAUNCHLOAD,
-	// Maximum directory depth
-	1,
-	// List of directory globs
-	0
-};
-
 class DarkSeed2MetaEngine : public AdvancedMetaEngine {
 public:
-	DarkSeed2MetaEngine() : AdvancedMetaEngine(detectionParams) {}
+	DarkSeed2MetaEngine() : AdvancedMetaEngine(DarkSeed2::gameDescriptions, sizeof(DarkSeed2::DS2GameDescription), darkseed2Games) {
+		params.md5Bytes = 10000;
+		params.singleid = "darkseed2";
+		params.fileBasedFallback = DarkSeed2::fileBased;
+		params.guioptions = GUIO_NOLAUNCHLOAD;
+	}
 
 	virtual const char *getName() const {
 		return "Dark Seed II Engine";
