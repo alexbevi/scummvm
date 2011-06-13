@@ -184,7 +184,74 @@ Visual *ApplicationPilgrim2::createVisual(Id visualId, uint32 a3, uint32 a4, uin
 #pragma region Zone initialization
 
 void ApplicationPilgrim2::initZones() {
-	error("[ApplicationPilgrim2::initZones] Not implemented");
+	debugC(kRingDebugLogic, "Init zone data");
+
+	_loadFrom = kLoadFromDisk;
+
+	drawZoneName(kZone100);
+	_archiveType = getZoneArchiveType(kZone100);
+	initZoneSystem();
+
+	_loadFrom = kLoadFromCd;
+
+	drawZoneName(kZone1);
+	_archiveType = getZoneArchiveType(kZone2);
+	initZone2();
+
+	drawZoneName(kZone2);
+	_archiveType = getZoneArchiveType(kZone2);
+	initZone2();
+
+	drawZoneName(kZone2);
+	_archiveType = getZoneArchiveType(kZone3);
+	initZone3();
+
+	drawZoneName(kZone4);
+	_archiveType = getZoneArchiveType(kZone4);
+	initZone4();
+
+	drawZoneName(kZone5);
+	_archiveType = getZoneArchiveType(kZone5);
+	initZone5();
+
+	_archiveType = getZoneArchiveType(getCurrentZone());
+
+	setState(kStateNone);
+
+	// Clear screen
+	_screenManager->clear();
+	g_system->updateScreen();
+}
+
+#pragma endregion
+
+#pragma region Zone initialization
+
+////////////////////////////////////////////////////////////////////////////
+// Zone initialization
+//////////////////////////////////////////////////////////////////////////
+void ApplicationPilgrim2::initZoneSystem() {
+	error("[ApplicationPilgrim2::initZoneSystem] Not implemented");
+}
+
+void ApplicationPilgrim2::initZone1() {
+	error("[ApplicationPilgrim2::initZone1] Not implemented");
+}
+
+void ApplicationPilgrim2::initZone2() {
+	error("[ApplicationPilgrim2::initZone2] Not implemented");
+}
+
+void ApplicationPilgrim2::initZone3() {
+	error("[ApplicationPilgrim2::initZone3] Not implemented");
+}
+
+void ApplicationPilgrim2::initZone4() {
+	error("[ApplicationPilgrim2::initZone4] Not implemented");
+}
+
+void ApplicationPilgrim2::initZone5() {
+	error("[ApplicationPilgrim2::initZone5] Not implemented");
 }
 
 #pragma endregion
