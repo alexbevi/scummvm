@@ -82,6 +82,17 @@ void ImageHeaderEntry::Header::load(Common::SeekableReadStream *stream) {
 	field_30 = stream->readUint32LE();
 }
 
+void ImageHeaderEntry::InternalData::init(float a1, float a2, float a3, float a4, float a5, float a6) {
+	field_0 = a3;
+	field_4 = a4;
+	field_8 = a5;
+	field_C = a6;
+	field_10 = a1 - 1;
+	field_14 = a2 - 1;
+	field_18 = 0;
+	field_1C = 0;
+}
+
 ImageHeaderEntry::ImageHeaderEntry() {
 	_buffer      = NULL;
 	_bufferData  = NULL;

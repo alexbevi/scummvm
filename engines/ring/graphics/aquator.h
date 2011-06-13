@@ -68,6 +68,30 @@ public:
 	void *getBuffer() { return _buffer; }
 
 private:
+	struct InternalData {
+		float field_0;
+		float field_4;
+		float field_8;
+		float field_C;
+		float field_10;
+		float field_14;
+		float field_18;
+		float field_1C;
+
+		InternalData() {
+			field_0  = 0;
+			field_4  = 0;
+			field_8  = 0;
+			field_C  = 0;
+			field_10 = 0;
+			field_14 = 0;
+			field_18 = 0;
+			field_1C = 0;
+		}
+
+		void init(float a1, float a2, float a3, float a4, float a5, float a6);
+	};
+
 	Header  _header;
 	void   *_buffer;
 	void   *_bufferData;
