@@ -36,6 +36,8 @@
 
 #include "ring/graphics/screen.h"
 
+#include "ring/debug.h"
+
 #include "common/textconsole.h"
 
 //using namespace JerusalemGame;
@@ -189,7 +191,117 @@ Visual *ApplicationJerusalem::createVisual(Id visualId, uint32 a3, uint32 a4, ui
 #pragma region Zone initialization
 
 void ApplicationJerusalem::initZones() {
-	error("[ApplicationJerusalem::initZones] Not implemented");
+	debugC(kRingDebugLogic, "Init zone data");
+
+	_loadFrom = kLoadFromDisk;
+
+	drawZoneName(kZone100);
+	_archiveType = getZoneArchiveType(kZone100);
+	initZoneSystem();
+
+	_loadFrom = kLoadFromCd;
+
+	drawZoneName(kZone1);
+	_archiveType = getZoneArchiveType(kZone2);
+	initZone1();
+
+	drawZoneName(kZone2);
+	_archiveType = getZoneArchiveType(kZone2);
+	initZone2();
+
+	drawZoneName(kZone2);
+	_archiveType = getZoneArchiveType(kZone3);
+	initZone3();
+
+	drawZoneName(kZone4);
+	_archiveType = getZoneArchiveType(kZone4);
+	initZone4();
+
+	drawZoneName(kZone5);
+	_archiveType = getZoneArchiveType(kZone5);
+	initZone5();
+
+	drawZoneName(kZone6);
+	_archiveType = getZoneArchiveType(kZone6);
+	initZone6();
+
+	drawZoneName(kZone7);
+	_archiveType = getZoneArchiveType(kZone7);
+	initZone7();
+
+	drawZoneName(kZone8);
+	_archiveType = getZoneArchiveType(kZone8);
+	initZone8();
+
+	drawZoneName(kZone9);
+	_archiveType = getZoneArchiveType(kZone9);
+	initZone9();
+
+	drawZoneName(kZone10);
+	_archiveType = getZoneArchiveType(kZone10);
+	initZone10();
+
+	_archiveType = getZoneArchiveType(getCurrentZone());
+
+	setState(kStateNone);
+
+	// Clear screen
+	_screenManager->clear();
+	g_system->updateScreen();
+
+	// Original loads preferences and stores the showSubtitles
+	// value to the main app structure
+}
+
+#pragma endregion
+
+#pragma region Zone initialization
+
+////////////////////////////////////////////////////////////////////////////
+// Zone initialization
+//////////////////////////////////////////////////////////////////////////
+void ApplicationJerusalem::initZoneSystem() {
+	error("[ApplicationJerusalem::initZoneSystem] Not implemented");
+}
+
+void ApplicationJerusalem::initZone1() {
+	error("[ApplicationJerusalem::initZone1] Not implemented");
+}
+
+void ApplicationJerusalem::initZone2() {
+	error("[ApplicationJerusalem::initZone2] Not implemented");
+}
+
+void ApplicationJerusalem::initZone3() {
+	error("[ApplicationJerusalem::initZone3] Not implemented");
+}
+
+void ApplicationJerusalem::initZone4() {
+	error("[ApplicationJerusalem::initZone4] Not implemented");
+}
+
+void ApplicationJerusalem::initZone5() {
+	error("[ApplicationJerusalem::initZone5] Not implemented");
+}
+
+void ApplicationJerusalem::initZone6() {
+	error("[ApplicationJerusalem::initZone6] Not implemented");
+}
+
+void ApplicationJerusalem::initZone7() {
+	error("[ApplicationJerusalem::initZone7] Not implemented");
+}
+
+void ApplicationJerusalem::initZone8() {
+	error("[ApplicationJerusalem::initZone8] Not implemented");
+}
+
+void ApplicationJerusalem::initZone9() {
+	error("[ApplicationJerusalem::initZone9] Not implemented");
+}
+
+void ApplicationJerusalem::initZone10() {
+	error("[ApplicationJerusalem::initZone10] Not implemented");
 }
 
 #pragma endregion
