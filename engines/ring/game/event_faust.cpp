@@ -30,10 +30,11 @@
 #include "ring/base/saveload.h"
 #include "ring/base/timer.h"
 
+#include "ring/game/shared_faust.h"
+
 #include "ring/debug.h"
 #include "ring/helpers.h"
 #include "ring/ring.h"
-#include "ring/shared_faust.h"
 
 #include "common/textconsole.h"
 

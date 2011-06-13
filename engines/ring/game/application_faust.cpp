@@ -36,6 +36,7 @@
 #include "ring/base/sound.h"
 
 #include "ring/game/event_faust.h"
+#include "ring/game/shared_faust.h"
 
 #include "ring/graphics/image.h"
 #include "ring/graphics/screen.h"
@@ -43,7 +44,6 @@
 #include "ring/ring.h"
 #include "ring/debug.h"
 #include "ring/shared.h"
-#include "ring/shared_faust.h"
 
 #include "common/textconsole.h"
 

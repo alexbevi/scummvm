@@ -37,6 +37,7 @@
 #include "ring/base/timer.h"
 
 #include "ring/game/application_ring.h"
+#include "ring/game/shared_ring.h"
 
 #include "ring/graphics/dragControl.h"
 #include "ring/graphics/hotspot.h"
@@ -44,7 +45,6 @@
 
 #include "ring/helpers.h"
 #include "ring/ring.h"
-#include "ring/shared_ring.h"
 
 #include "common/textconsole.h"
 

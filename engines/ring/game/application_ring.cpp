@@ -36,13 +36,13 @@
 #include "ring/base/sound.h"
 
 #include "ring/game/event_ring.h"
+#include "ring/game/shared_ring.h"
 #include "ring/game/visual_ring.h"
 
 #include "ring/graphics/image.h"
 #include "ring/graphics/screen.h"
 
 #include "ring/ring.h"
-#include "ring/shared_ring.h"
 
 #include "common/archive.h"
 #include "common/textconsole.h"

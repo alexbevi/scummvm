@@ -27,11 +27,12 @@
 
 #include "ring/base/application.h"
 
+#include "ring/game/shared_ring.h"
+
 #include "ring/graphics/screen.h"
 
 #include "ring/helpers.h"
 #include "ring/ring.h"
-#include "ring/shared_ring.h"
 
 using namespace RingGame;
 
