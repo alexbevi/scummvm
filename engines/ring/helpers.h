@@ -17,10 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * $URL$
- * $Id: helpers.h 606 2010-08-17 21:30:59Z julien.templier $
- *
  */
 
 #ifndef RING_HELPERS_H

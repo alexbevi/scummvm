@@ -17,10 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * $URL$
- * $Id: liath.cpp 391 2010-05-04 16:07:30Z julien.templier $
- *
  */
 
 #include "ring/ring.h"
