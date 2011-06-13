@@ -42,6 +42,7 @@ public:
 	virtual void setup();
 	virtual void initZones();
 	virtual void initBag();
+	virtual void initData();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Startup & Menu

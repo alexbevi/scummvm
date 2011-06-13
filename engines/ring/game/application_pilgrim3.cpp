@@ -25,6 +25,13 @@
 
 #include "ring/game/application_pilgrim3.h"
 
+#include "ring/base/art.h"
+#include "ring/base/bag.h"
+#include "ring/base/preferences.h"
+#include "ring/base/rotation.h"
+#include "ring/base/saveload.h"
+#include "ring/base/sound.h"
+
 #include "ring/game/event_pilgrim3.h"
 
 #include "ring/graphics/screen.h"
@@ -37,6 +44,8 @@ namespace Ring {
 
 ApplicationPilgrim3::ApplicationPilgrim3(RingEngine *engine) : Application(engine) {
 	_eventHandler = new EventHandlerPilgrim3(this);
+
+	_systemZone = kZone100;
 }
 
 ApplicationPilgrim3::~ApplicationPilgrim3() {
@@ -45,7 +54,13 @@ ApplicationPilgrim3::~ApplicationPilgrim3() {
 #pragma region Game setup
 
 void ApplicationPilgrim3::initLanguages() {
-	error("[ApplicationPilgrim3::initLanguages] Not implemented");
+	languageAdd(kLanguageEnglish, "ENG", "ENG", 1);
+	languageAdd(kLanguageFrench,  "FRA", "FRA", 1);
+	languageAdd(kLanguageGerman,  "GER", "GER", 1);
+	languageAdd(kLanguageItalian, "ITA", "ITA", 1);
+	languageAdd(kLanguageSpanish, "SPA", "SPA", 1);
+	languageAdd(kLanguageDutch,   "HOL", "HOL", 1);
+	languageAdd(kLanguageSwedish, "SWE", "SWE", 1);
 }
 
 void ApplicationPilgrim3::initFont() {
@@ -57,8 +72,27 @@ void ApplicationPilgrim3::setup() {
 	error("[ApplicationPilgrim3::setup] Not implemented");
 }
 
+void ApplicationPilgrim3::initData() {
+	_field_74 = true;
+	_field_75 = true;
+	_field_76 = true;
+	_field_77 = false;
+	_field_78 = true;
+}
+
 void ApplicationPilgrim3::initBag() {
-	error("[ApplicationPilgrim3::initBag] Not implemented");
+	_bag->setOrigin(Common::Point(0, 0));
+	_bag->sub_417D40(15, 26, 40, 61);
+	_bag->setBackgroundOffset(Common::Point(0, 0));
+	_bag->sub_417DD0(10);
+	_bag->sub_417D80(0, 0, 30, 448);
+	_bag->sub_417DA0(610, 0, 30, 448);
+	_bag->sub_4192A0(6, 12);
+	_bag->sub_4192C0(622, 12);
+	_bag->sub_417DE0(506, 0);
+	_bag->sub_419280(500);
+	_bag->loadBackground("bagbgr.tga", "", "", "", "", "", "", "bag_h.bmp", _archiveType);
+	_bag->initHotspots();
 }
 
 #pragma endregion
