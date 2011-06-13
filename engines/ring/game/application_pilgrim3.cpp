@@ -69,7 +69,55 @@ void ApplicationPilgrim3::initFont() {
 }
 
 void ApplicationPilgrim3::setup() {
-	error("[ApplicationPilgrim3::setup] Not implemented");
+	// Add the list of episodes
+	addEpisode(kZone7,  "Six",   1);
+	addEpisode(kZone8,  "Seven", 1);
+	addEpisode(kZone9,  "Eight", 2);
+	addEpisode(kZone10, "Nine", 1);
+	addEpisode(kZone11, "Ten", 2);
+
+	// Add the list of zones
+	addZone(kZone6,  "A06", "a06", kArchiveArt, kLoadFromCd);
+	addZone(kZone7,  "A07", "a07", kArchiveArt, kLoadFromCd);
+	addZone(kZone8,  "A08", "a08", kArchiveArt, kLoadFromCd);
+	addZone(kZone9,  "A09", "a09", kArchiveArt, kLoadFromCd);
+	addZone(kZone10, "A10", "a10", kArchiveArt, kLoadFromCd);
+
+	// Setup system zone
+	setupZone(kZoneSY, kSetupTypeNone);
+	setSpace(kZone100);
+
+	// Setup cursors
+	ArchiveType archiveType = (_configuration.artCURSOR ? kArchiveArt : kArchiveFile);
+
+	cursorAdd(kCursorDefault,                 "cur_no", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorBusy,                  "cur_busy", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorIdle,                  "cur_idle", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorMove,                   "cur_muv", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorBack,                  "cur_back", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorMenuIdle,          "cur_menuIdle", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorMenuActive,      "cur_menuActive", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorZoom,                  "cur_zoom", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorTake,                  "cur_take", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorAction,              "cur_action", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorActionObject,  "cur_actionObject", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorDragDrop,              "cur_drag", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+
+	cursorSetOffset(kCursorBusy,         Common::Point(8, 8));
+	cursorSetOffset(kCursorIdle,         Common::Point(17, 1));
+	cursorSetOffset(kCursorMove,         Common::Point(17, 1));
+	cursorSetOffset(kCursorBack,         Common::Point(17, 1));
+	cursorSetOffset(kCursorMenuIdle,     Common::Point(8, 8));
+	cursorSetOffset(kCursorMenuActive,   Common::Point(8, 8));
+	cursorSetOffset(kCursorZoom,         Common::Point(17, 1));
+	cursorSetOffset(kCursorTake,         Common::Point(17, 1));
+	cursorSetOffset(kCursorAction,       Common::Point(17, 1));
+	cursorSetOffset(kCursorActionObject, Common::Point(17, 1));
+	cursorSetOffset(kCursorDragDrop,     Common::Point(8, 8));
+
+	// Setup subtitles
+	subtitleSetColor(Color(255, 255, 255));
+	subtitleSetBackgroundColor(Color(50, 50, 50));
 }
 
 void ApplicationPilgrim3::initData() {
