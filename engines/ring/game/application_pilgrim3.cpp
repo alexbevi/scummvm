@@ -32,6 +32,8 @@
 
 #include "ring/graphics/screen.h"
 
+#include "ring/debug.h"
+
 #include "common/textconsole.h"
 
 //using namespace Pilgrim3Game;
@@ -178,7 +180,74 @@ Visual *ApplicationPilgrim3::createVisual(Id visualId, uint32 a3, uint32 a4, uin
 #pragma region Zone initialization
 
 void ApplicationPilgrim3::initZones() {
-	error("[ApplicationPilgrim3::initZones] Not implemented");
+	debugC(kRingDebugLogic, "Init zone data");
+
+	_loadFrom = kLoadFromDisk;
+
+	drawZoneName(kZone100);
+	_archiveType = getZoneArchiveType(kZone100);
+	initZoneSystem();
+
+	_loadFrom = kLoadFromCd;
+
+	drawZoneName(kZone6);
+	_archiveType = getZoneArchiveType(kZone6);
+	initZone6();
+
+	drawZoneName(kZone7);
+	_archiveType = getZoneArchiveType(kZone7);
+	initZone7();
+
+	drawZoneName(kZone8);
+	_archiveType = getZoneArchiveType(kZone8);
+	initZone8();
+
+	drawZoneName(kZone9);
+	_archiveType = getZoneArchiveType(kZone9);
+	initZone9();
+
+	drawZoneName(kZone10);
+	_archiveType = getZoneArchiveType(kZone10);
+	initZone10();
+
+	_archiveType = getZoneArchiveType(getCurrentZone());
+
+	setState(kStateNone);
+
+	// Clear screen
+	_screenManager->clear();
+	g_system->updateScreen();
+}
+
+#pragma endregion
+
+#pragma region Zone initialization
+
+////////////////////////////////////////////////////////////////////////////
+// Zone initialization
+//////////////////////////////////////////////////////////////////////////
+void ApplicationPilgrim3::initZoneSystem() {
+	error("[ApplicationPilgrim3::initZoneSystem] Not implemented");
+}
+
+void ApplicationPilgrim3::initZone6() {
+	error("[ApplicationPilgrim3::initZone6] Not implemented");
+}
+
+void ApplicationPilgrim3::initZone7() {
+	error("[ApplicationPilgrim3::initZone7] Not implemented");
+}
+
+void ApplicationPilgrim3::initZone8() {
+	error("[ApplicationPilgrim3::initZone8] Not implemented");
+}
+
+void ApplicationPilgrim3::initZone9() {
+	error("[ApplicationPilgrim3::initZone9] Not implemented");
+}
+
+void ApplicationPilgrim3::initZone10() {
+	error("[ApplicationPilgrim3::initZone10] Not implemented");
 }
 
 #pragma endregion
