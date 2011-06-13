@@ -393,7 +393,22 @@ void EventHandlerFaust::onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo,
 }
 
 void EventHandlerFaust::onUpdateBeforeZone3(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBeforeZone3] Not implemented");
+	if (movabilityFrom == 12036 && !_app->soundIsPlayingType(kSoundTypeDialog)) {
+		switch (movabilityTo) {
+		default:
+			break;
+
+		case 0:
+			_app->soundPlay(12022);
+			_app->varSetDword(12001, 12022);
+			break;
+
+		case 1:
+			_app->soundPlay(12023);
+			_app->varSetDword(12001, 12023);
+			break;
+		}
+	}
 }
 
 void EventHandlerFaust::onUpdateBeforeZone4(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
@@ -401,15 +416,59 @@ void EventHandlerFaust::onUpdateBeforeZone4(Id movabilityFrom, Id movabilityTo, 
 }
 
 void EventHandlerFaust::onUpdateBeforeZone6(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBeforeZone6] Not implemented");
+	if (movabilityFrom == 31003 && !_app->soundIsPlayingType(kSoundTypeDialog) && movabilityTo == 0) {
+		_app->soundPlay(31101);
+		_app->varSetDword(31000, 31101);
+	}
 }
 
 void EventHandlerFaust::onUpdateBeforeZone8(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBeforeZone8] Not implemented");
+	if (movabilityFrom == 53123 && movabilityTo == 1) {
+		if (_app->varGetByte(53123) == 1 && _app->bagGetClickedObject() == kObjectMatches2) {
+			_app->objectPresentationShow(kObject53123, 2);
+			_app->varSetByte(53121, 2);
+			_app->soundPlay(53126);
+			_app->soundPlay(53123, kSoundLoop);
+			_app->puzzleSetMovabilityOff(kPuzzle53102, 1, 1);
+			_app->soundStop(53124, 1024);
+			_app->varSetByte(53123, 50);
+			_app->timerStop(kTimer3);
+			_app->timerStop(kTimer4);
+			_app->timerStop(kTimer5);
+
+			if (_app->varGetByte(53120) == 1) {
+				_app->soundPlay(53121, kSoundLoop);
+				_app->timerStart(kTimer3, 300);
+			}
+		}
+	}
 }
 
 void EventHandlerFaust::onUpdateBeforeZone12(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBeforeZone12] Not implemented");
+	if (movabilityFrom == 81900 && !_app->soundIsPlayingType(kSoundTypeDialog)) {
+		switch (movabilityTo) {
+		default:
+			return;
+
+		case 0:
+			_app->varSetDword(81001, 81015);
+			break;
+
+		case 1:
+			_app->varSetDword(81001, 81017);
+			break;
+
+		case 2:
+			case 3:
+			_app->varSetDword(81001, 81042);
+			break;
+
+		case 4:
+			_app->varSetDword(81001, 81001);
+		}
+
+		_app->soundPlay(_app->varGetDword(81001));
+	}
 }
 
 void EventHandlerFaust::onUpdateBeforeZone14(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
@@ -421,7 +480,25 @@ void EventHandlerFaust::onUpdateBeforeZone15(Id movabilityFrom, Id movabilityTo,
 }
 
 void EventHandlerFaust::onUpdateBeforeZone16(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
-	error("[EventHandlerFaust::onUpdateBeforeZone16] Not implemented");
+	if (_app->soundIsPlayingType(kSoundTypeDialog))
+		return;
+
+	switch (movabilityFrom) {
+	default:
+		break;
+
+	case 310001: {
+		Id soundId = 310001 + _app->varGetWord(311012 + movabilityTo);
+		_app->soundPlay(soundId);
+		_app->varSetDword(311011, soundId);
+		}
+		break;
+
+	case 310016:
+		_app->soundPlay(310013);
+		_app->varSetDword(311011, 310013);
+		break;
+	}
 }
 
 void EventHandlerFaust::onUpdateBag(const Common::Point &point) {
