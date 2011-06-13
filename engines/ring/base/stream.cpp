@@ -283,20 +283,7 @@ uint32 CompressedStream::decode(Common::SeekableReadStream *stream, uint32 a2, u
 				WRITE_UINT16(buffer, READ_UINT16(buffer - 2));
 				buffer += 2;
 
-				*(uint32 *)&_decBuffer[8 * index0 + 2] = start;
-
-				if (index1 == index0) {
-					uint32 minVal = *(uint32 *)&_decBuffer[2];
-
-					for (uint32 i = 1; i < 64; i++) {
-						uint32 current = *(uint32 *)&_decBuffer[i * 8 + 2];
-
-						if (current < minVal) {
-							minVal = current;
-							index1 = i;
-						}
-					}
-				}
+				WRITE_UINT32(&_decBuffer[8 * index0 + 2], start);
 			} else {
 				uint32 decoded = (var << (32 - position)) >> (32 - a3);
 
@@ -307,17 +294,17 @@ uint32 CompressedStream::decode(Common::SeekableReadStream *stream, uint32 a2, u
 
 				index0 = decoded;
 				WRITE_UINT32(&_decBuffer[8 * decoded + 2], start);
+			}
 
-				if (index1 == index0) {
-					uint32 minVal = *(uint32 *)&_decBuffer[2];
+			if (index1 == index0) {
+				uint32 minVal = READ_UINT32(&_decBuffer[2]);
 
-					for (uint32 i = 1; i < 64; i++) {
-						uint32 current = *(uint32 *)&_decBuffer[i * 8 + 2];
+				for (uint32 i = 1; i < 64; i++) {
+					uint32 current = READ_UINT32(&_decBuffer[i * 8 + 2]);
 
-						if (current < minVal) {
-							minVal = current;
-							index1 = i;
-						}
+					if (current < minVal) {
+						minVal = current;
+						index1 = i;
 					}
 				}
 			}
