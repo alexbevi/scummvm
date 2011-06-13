@@ -37,6 +37,30 @@ namespace Ring {
 
 #define SOUND_FRAC_VALUE .01745328888888889f
 
+#pragma region SoundLoader
+
+SoundLoader::SoundLoader(SoundFormat format) {
+	_field_4 = 0;
+	_field_8 = 0;
+	_field_C = 0;
+	_field_10 = 0;
+	_field_14 = 0;
+	_compressedStream = NULL;
+	_field_1A = 0;
+	_field_1E = 0;
+	_format = format;
+}
+
+SoundLoader::~SoundLoader() {
+	SAFE_DELETE(_compressedStream);
+}
+
+bool SoundLoader::load(SoundEntryStream *soundEntry, const Common::String &path, uint32 soundChunk) {
+	error("[SoundLoader::load] Not implemented");
+}
+
+#pragma endregion
+
 #pragma region SoundEntry
 
 SoundEntry::SoundEntry(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format) : BaseObject(soundId) {
@@ -260,15 +284,18 @@ void SoundEntryStream::initSoundBuffer(const Common::String &path, uint32 soundC
 		// Open stream to file
 		Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(path);
 		if (!stream)
-			error("[SoundEntryData::initSoundBuffer] Cannot open stream to file (%s)", path.c_str());
+			error("[SoundEntryStream::initSoundBuffer] Cannot open stream to file (%s)", path.c_str());
 
 		_audioStream = Audio::makeWAVStream(stream, DisposeAfterUse::YES);
+	} else {
 
-		return;
+		// Handle compressed sounds
+		SoundLoader *loader = new SoundLoader(format);
+		if (!loader->load(this, path, soundChunk))
+			error("[SoundEntryStream::initSoundBuffer] Cannot load compressed audio stream (%s)", path.c_str());
+
+		delete loader;
 	}
-
-	// Handle compressed sounds
-	warning("[SoundEntryS::initSoundBuffer] Not implemented (compressed sounds)");
 }
 
 void SoundEntryStream::stopAndReleaseSoundBuffer() {

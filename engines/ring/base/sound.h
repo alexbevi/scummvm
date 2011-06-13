@@ -30,6 +30,29 @@
 namespace Ring {
 
 class Application;
+class SoundEntryStream;
+
+//////////////////////////////////////////////////////////////////////////
+// Sound loaders
+//////////////////////////////////////////////////////////////////////////
+class SoundLoader {
+public:
+	SoundLoader(SoundFormat format);
+	~SoundLoader();
+
+	bool load(SoundEntryStream *soundEntry, const Common::String &path, uint32 soundChunk);
+
+private:
+	uint32 _field_4;
+	uint32 _field_8;
+	uint32 _field_C;
+	uint32 _field_10;
+	uint16 _field_14;
+	void *_compressedStream;
+	uint32 _field_1A;
+	uint32 _field_1E;
+	SoundFormat _format;
+};
 
 //////////////////////////////////////////////////////////////////////////
 // Engine sound
