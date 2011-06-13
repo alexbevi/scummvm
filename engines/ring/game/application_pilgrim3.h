@@ -37,7 +37,6 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// Initialization
-	virtual void initLanguages();
 	virtual void initFont();
 	virtual void setup();
 	virtual void initZones();

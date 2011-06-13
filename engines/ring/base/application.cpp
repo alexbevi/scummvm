@@ -221,6 +221,16 @@ void Application::init() {
 	_preferenceHandler->load();
 }
 
+void Application::initLanguages() {
+	languageAdd(kLanguageEnglish, "ENG", "ENG", 1);
+	languageAdd(kLanguageFrench,  "FRA", "FRA", 1);
+	languageAdd(kLanguageGerman,  "GER", "GER", 1);
+	languageAdd(kLanguageItalian, "ITA", "ITA", 1);
+	languageAdd(kLanguageSpanish, "SPA", "SPA", 1);
+	languageAdd(kLanguageDutch,   "HOL", "HOL", 1);
+	languageAdd(kLanguageSwedish, "SWE", "SWE", 1);
+}
+
 void Application::initData() {
 	_field_74 = true;
 	_field_75 = true;

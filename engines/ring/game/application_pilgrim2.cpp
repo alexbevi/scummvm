@@ -44,10 +44,6 @@ ApplicationPilgrim2::~ApplicationPilgrim2() {
 
 #pragma region Game setup
 
-void ApplicationPilgrim2::initLanguages() {
-	error("[ApplicationPilgrim2::initLanguages] Not implemented");
-}
-
 void ApplicationPilgrim2::initFont() {
 	// Original asks for size 12, but the font only contains size 8
 	fontAdd(kFontDefault, "legend.fon", "Arxel1", 8, true, false, false, false, getCurrentLanguage());

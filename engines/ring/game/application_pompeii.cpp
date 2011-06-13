@@ -55,16 +55,6 @@ ApplicationPompeii::~ApplicationPompeii() {
 
 #pragma region Game setup
 
-void ApplicationPompeii::initLanguages() {
-	languageAdd(kLanguageEnglish, "ENG", "ENG", 1);
-	languageAdd(kLanguageFrench,  "FRA", "FRA", 1);
-	languageAdd(kLanguageGerman,  "GER", "GER", 1);
-	languageAdd(kLanguageItalian, "ITA", "ITA", 1);
-	languageAdd(kLanguageSpanish, "SPA", "SPA", 1);
-	languageAdd(kLanguageDutch,   "HOL", "HOL", 1);
-	languageAdd(kLanguageSwedish, "SWE", "SWE", 1);
-}
-
 void ApplicationPompeii::initFont() {
 	// Original asks for size 12, but the font only contains size 8
 	fontAdd(kFontDefault, "pompei.fon", "Arxel1", 8, true, false, false, false, getCurrentLanguage());
