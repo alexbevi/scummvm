@@ -22,12 +22,6 @@
 #include "ring/ring.h"
 #include "ring/base/saveload.h"
 
-#include "common/system.h"
-
-#include "graphics/surface.h"
-
-#include "metaengine.h"
-
 namespace Ring {
 
 static const char *directoryGlobs[] = {
@@ -207,6 +201,8 @@ public:
 
 	virtual bool hasFeature(MetaEngineFeature f) const;
 	virtual int getMaximumSaveSlot() const { return 99; }
+
+protected:
 	bool createInstance(OSystem *syst, Engine **engine, const ADGameDescription *gd) const;
 };
 

@@ -503,8 +503,8 @@ void Rotation::add3DSound(SoundEntry *entry, uint32 volume, bool isOn, uint32 a4
 	SoundItem *item = new SoundItem(_id);
 
 	float val = _alp + 135.0f;
-	if (val < 360.0)
-		val -= 360.0;
+	if (val < 360.0f)
+		val -= 360.0f;
 
 	item->setField1D(a8);
 	item->setAngle(angle);

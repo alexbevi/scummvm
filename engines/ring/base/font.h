@@ -32,7 +32,7 @@ namespace Ring {
 
 class Font : public BaseObject {
 public:
-	Font() : BaseObject(kFontInvalid) {}
+	Font() : BaseObject(kFontInvalid), _font(NULL) {}
 	Font(FontId id, Common::String filename, Common::String facename, uint32 height, bool smallWeight, bool underline, bool italic, bool strikeout, LanguageId langId);
 	~Font();
 

@@ -112,7 +112,7 @@ Image::~Image() {
 	destroy();
 }
 
-void Image::create(uint32 depth, uint32, uint32 width, uint32 height) {
+void Image::create(byte depth, uint32, uint32 width, uint32 height) {
 	if (_surface)
 		_surface->free();
 

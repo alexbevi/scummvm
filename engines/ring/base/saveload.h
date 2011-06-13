@@ -51,11 +51,21 @@ public:
 		uint32 playtime;
 		Graphics::Surface *thumbnail;
 
+		SavegameHeader() {
+			version = 0;
+			date = 0;
+			time = 0;
+			playtime = 0;
+			thumbnail = NULL;
+		}
+
+		~SavegameHeader() {
+			delete thumbnail;
+		}
+
 		void setThumbnail(Graphics::Surface *surface) {
-			if (thumbnail) {
-				thumbnail->free();
-				delete thumbnail;
-			}
+			if (!thumbnail)
+				thumbnail = new Graphics::Surface();
 
 			thumbnail->copyFrom(*surface);
 		}
@@ -100,7 +110,7 @@ public:
 
 	// Header
 	static bool readSavegameHeader(Common::InSaveFile *in, SavegameHeader &header);
-	static void writeSavegameHeader(Common::OutSaveFile *out, SavegameHeader &header);
+	static void writeSavegameHeader(Common::OutSaveFile *out, const SavegameHeader &header);
 
 	// Loading & Saving
 	bool loadSave(const Common::String &name, LoadSaveType type);

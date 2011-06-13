@@ -60,9 +60,8 @@
 namespace Ring {
 
 RingEngine::RingEngine(OSystem *syst, const RingGameDescription *gd) :
-	Engine(syst), _gameDescription(gd), _debugger(NULL),
-	_application(NULL), _mouseButtonPressed(false) , _flag(true),
-	_random("ring") {
+	Engine(syst), _gameDescription(gd), _debugger(NULL), _random("ring"),
+	_application(NULL), _mouseButtonPressed(false) , _flag(true) {
 
 	// Adding the default directories
 	const Common::FSNode gameDataDir(ConfMan.get("path"));

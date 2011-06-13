@@ -567,7 +567,7 @@ void EventHandlerRing::onKeyDown(Common::Event &evt) {
 	Rotation *currentRotation = _app->getCurrentRotation();
 	if (currentRotation) {
 		Accessibility *accessibility = currentRotation->getAccessibility(evt.kbd.keycode);
-		if (!currentRotation)
+		if (!accessibility)
 			return;
 
 		bool controlPressed = (bool)(evt.kbd.flags & Common::KBD_CTRL);
@@ -3305,8 +3305,8 @@ void EventHandlerRing::onButtonUpZoneFO(ObjectId id, uint32 target, Id, uint32, 
 
 			_app->bagAdd(kObjectIngot2);
 			_app->bagAdd(kObjectSleepingBerries);
-			_app->varSetFloat(90007, _app->varGetFloat(90007) + 3.3);
-			_app->varSetFloat(90007, _app->varGetFloat(90007) + 3.3);
+			_app->varSetFloat(90007, _app->varGetFloat(90007) + 3.3f);
+			_app->varSetFloat(90007, _app->varGetFloat(90007) + 3.3f);
 			_app->varSetByte(30076, 1);
 			_app->varSetByte(30039, 1);
 			_app->playMovie("1194");
@@ -4808,7 +4808,7 @@ void EventHandlerRing::onButtonUpZoneN2(ObjectId id, uint32 target, Id, uint32, 
 			if (_app->varGetByte(70001) == 1) {
 				_app->objectPresentationHide(kObject70404, 1);
 				_app->bagAdd(kObjectLogeTear3);
-				_app->varSetFloat(90006, _app->varGetFloat(90006) + 5.0);
+				_app->varSetFloat(90006, _app->varGetFloat(90006) + 5.0f);
 				_app->objectPresentationHide(kObject70404, 6);
 				_app->varSetByte(70001, 0);
 			}
@@ -4857,7 +4857,7 @@ void EventHandlerRing::onButtonUpZoneN2(ObjectId id, uint32 target, Id, uint32, 
 			if (_app->bagGetClickedObject() == kObjectFire) {
 				if (target == 1) {
 					_app->objectSetAccessibilityOff(id);
-					_app->varSetFloat(90006, _app->varGetFloat(90006) + 5.0);
+					_app->varSetFloat(90006, _app->varGetFloat(90006) + 5.0f);
 					_app->objectPresentationHide(id);
 					_app->soundStop(70701, 1024);
 					_app->rotationSet3DSoundOff(70200, 70701);
@@ -5966,7 +5966,7 @@ void EventHandlerRing::onTimerZoneRH(TimerId id) {
 
 	_disableTimerRH = true;
 
-	float alp = _app->rotationGetAlp(20401) - 35.0;
+	float alp = _app->rotationGetAlp(20401) - 35.0f;
 	if (alp > 0.0f && alp < 146.0f) {
 		uint32 frame = (uint32)(alp * 0.2631578947368421f);
 

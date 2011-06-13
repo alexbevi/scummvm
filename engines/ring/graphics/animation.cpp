@@ -131,7 +131,7 @@ void Animation::init(uint32 frameCount, float framerate, uint32 startFrame, byte
 	_field_4A = 0;
 	_field_4E = 1;
 	_ticks    = 0;
-	_field_53 = 1000.0 / _framerate;
+	_field_53 = 1000.0f / _framerate;
 
 	if (_field_14 == 16)
 		_field_57 = 1;

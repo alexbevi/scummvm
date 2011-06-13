@@ -131,8 +131,9 @@ void Cursor::alloc() {
 	// Load cursor from exe
 	warning("[Cursor::alloc] Not implemented (win32 resource: %s)", _name.c_str());
 
-	if (1 /* || _neCursor */)
-		_isDefaultCursor = true;
+	// TODO Check if the cursor is loaded from the executable resources or is a default windows cursor
+	//if (true /* || _neCursor */)
+	_isDefaultCursor = true;
 }
 
 void Cursor::dealloc() {

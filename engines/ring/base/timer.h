@@ -28,7 +28,7 @@ namespace Ring {
 
 class Timer : public BaseObject, public Common::Serializable {
 public:
-	Timer() : BaseObject(0) {}
+	Timer() : BaseObject(0), _tickStart(0), _fired(0), _elapseTime(0) {}
 	Timer(TimerId id, uint32 elapseTime);
 	~Timer();
 

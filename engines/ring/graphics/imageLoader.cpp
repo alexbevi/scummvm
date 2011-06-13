@@ -69,6 +69,14 @@ bool ImageLoaderBMP::load(Image *image, ArchiveType, ZoneId, LoadFrom, DrawType)
 
 #pragma region BMA
 
+ImageLoaderBMA::ImageLoaderBMA() {
+	_stream = NULL;
+	memset(&_header, 0, sizeof(_header));
+	_coreSize = 0;
+	_seqSize = 0;
+	_blockSize = 0;
+}
+
 ImageLoaderBMA::~ImageLoaderBMA() {
 	deinit();
 }
@@ -197,6 +205,10 @@ bool ImageLoaderBMA::readImage(Image *image) {
 #pragma endregion
 
 #pragma region TGC
+
+ImageLoaderTGC::ImageLoaderTGC() {
+	_stream = NULL;
+}
 
 ImageLoaderTGC::~ImageLoaderTGC() {
 	deinit();
@@ -384,6 +396,16 @@ bool ImageLoaderTGA::readImage(Common::SeekableReadStream *stream, Image *image)
 
 #pragma region CNM
 
+ImageLoaderCIN::ImageLoaderCIN() {
+	_cinematic = NULL;
+	memset(&_header, 0, sizeof(_header));
+	_stride = 0;
+	_widthAndPadding = 0;
+	_width = 0;
+	_height = 0;
+}
+
+
 ImageLoaderCIN::~ImageLoaderCIN() {
 	deinit();
 }
@@ -521,6 +543,17 @@ bool ImageLoaderCI2::SoundTable::read(Common::SeekableReadStream *stream) {
 	_field_C = stream->readUint32LE();
 
 	return (!stream->err() && !stream->eos());
+}
+
+ImageLoaderCI2::ImageLoaderCI2() {
+	_cinematic = NULL;
+	memset(&_header, 0, sizeof(_header));
+	memset(_soundTables, 0, ARRAYSIZE(_soundTables));
+	_controlTable = NULL;
+	_widthAndPadding = 0;
+	_stride = 0;
+	_width = 0;
+	_height = 0;
 }
 
 ImageLoaderCI2::~ImageLoaderCI2() {
@@ -683,7 +716,7 @@ bool ImageLoaderCI2::readHeader() {
 	return true;
 }
 
-bool ImageLoaderCI2::readImage(Image *image, uint32 bitdepth, DrawType drawType) {
+bool ImageLoaderCI2::readImage(Image *image, byte bitdepth, DrawType drawType) {
 	if (!_cinematic)
 		error("[ImageLoaderCI2::readImage] Cinematic not initialized properly");
 

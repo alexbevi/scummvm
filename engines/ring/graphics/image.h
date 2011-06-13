@@ -39,7 +39,7 @@ public:
 	Image();
 	~Image();
 
-	void create(uint32 depth, uint32 direction, uint32 width, uint32 height);
+	void create(byte depth, uint32 direction, uint32 width, uint32 height);
 	void destroy();
 
 	bool load(Common::String filename, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
@@ -50,7 +50,7 @@ public:
 	Common::Rect draw(Graphics::Surface *surface, const Common::Point &dest, uint32 srcWidth, uint32 srcHeight, int32 srcX, int32 offset);
 
 	// Accessors
-	uint32 getBPP()    { return _surface ? _surface->format.bytesPerPixel * 8: 0; }
+	byte getBPP()      { return _surface ? _surface->format.bytesPerPixel * 8: 0; }
 	uint32 getWidth()  { return _surface ? _surface->w : 0; }
 	uint32 getHeight() { return _surface ? _surface->h : 0; }
 

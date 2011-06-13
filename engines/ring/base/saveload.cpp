@@ -100,7 +100,7 @@ bool SaveManager::readSavegameHeader(Common::InSaveFile *in, SavegameHeader &hea
 	return true;
 }
 
-void SaveManager::writeSavegameHeader(Common::OutSaveFile *out, SavegameHeader &header) {
+void SaveManager::writeSavegameHeader(Common::OutSaveFile *out, const SavegameHeader &header) {
 	// Write out a savegame header
 	out->write(ringSavegameIdentification, 6);
 	out->writeByte(RING_SAVEGAME_VERSION);

@@ -53,6 +53,7 @@ public:
 //////////////////////////////////////////////////////////////////////////
 class ImageLoaderBMA : public ImageLoader {
 public:
+	ImageLoaderBMA();
 	virtual ~ImageLoaderBMA();
 
 	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
@@ -122,6 +123,7 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 class ImageLoaderTGC : public ImageLoaderTGA {
 public:
+	ImageLoaderTGC();
 	virtual ~ImageLoaderTGC();
 
 	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
@@ -162,6 +164,7 @@ public:
 		uint32 field_3C;
 	};
 
+	ImageLoaderCIN();
 	virtual ~ImageLoaderCIN();
 
 	virtual bool load(Image *image, ArchiveType type, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
@@ -259,12 +262,13 @@ public:
 		bool read(Common::SeekableReadStream *stream);
 	};
 
+	ImageLoaderCI2();
 	virtual ~ImageLoaderCI2();
 
 	virtual bool load(Image *image, ArchiveType archiveType, ZoneId zone, LoadFrom loadFrom, DrawType drawType);
 
 	bool init(Common::String path, ArchiveType archiveType, ZoneId zone, LoadFrom loadFrom);
-	bool readImage(Image *image, uint32 bitdepth, DrawType drawType);
+	bool readImage(Image *image, byte bitdepth, DrawType drawType);
 
 	Header *getHeader() { return &_header; }
 

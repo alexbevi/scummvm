@@ -375,7 +375,7 @@ uint32 AquatorStream::sub_410F50(uint32 index) {
 }
 
 void AquatorStream::updateEntries(float timeOffset) {
-	for	(Common::Array<AquatorImageHeader *>::iterator it = _headers.begin(); it != _headers.end(); it++) {
+	for (Common::Array<AquatorImageHeader *>::iterator it = _headers.begin(); it != _headers.end(); it++) {
 		AquatorImageHeader *header = (*it);
 
 		if (!header->getHeader()->hasEntries())

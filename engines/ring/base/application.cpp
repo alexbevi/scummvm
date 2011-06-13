@@ -417,6 +417,9 @@ void Application::setZone(ZoneId zone, SetupType type) {
 	}
 
 	// Setup zone
+	if (!_eventHandler)
+		error("[Application::setZone] The event handler is not initialized properly");
+
 	_eventHandler->onSetup(zone, type);
 }
 

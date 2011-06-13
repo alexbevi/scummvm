@@ -2622,10 +2622,10 @@ void ApplicationFaust::initZone4() {
 	objectPresentationAddImageToPuzzle(kObject13900, 0, kPuzzle13901, "a01s03n01p06l02.tga", Common::Point(204, 152), true, kDrawType3, 3000);
 	objectPresentationAddTextToPuzzle(kObject13900, 0, kPuzzle13902, "", Common::Point(320, 220), kFontDefault, Color(255, 255, 255), Color(-1, -1, -1));
 
-	for (uint32 i = 0; i < 160; i += 16)
+	for (int16 i = 0; i < 160; i += 16)
 		objectPresentationAddTextToPuzzle(kObject13900, 0, kPuzzle13901, "", Common::Point(420, i + 16), kFontDefault, Color(0, 255, 0), Color(-1, -1, -1));
 
-	for (uint32 i = 0; i < 160; i += 16)
+	for (int16 i = 0; i < 160; i += 16)
 		objectPresentationAddTextToPuzzle(kObject13900, 0, kPuzzle13901, "", Common::Point(260, i + 16), kFontDefault, Color(0, 255, 0), Color(-1, -1, -1));
 
 	index = 1;
@@ -2671,10 +2671,10 @@ void ApplicationFaust::initZone4() {
 	objectPresentationShow(kObject13900, 0);
 	varDefineByte(13900, 0);
 
-	uint32 offset = 7;
-	uint32 offset2 = 4;
-	for (uint32 i = 0; i < 33; i++) {
-		varDefineByte(13902 + i, 13825 + i);
+	int8 offset = 7;
+	int8 offset2 = 4;
+	for (int8 i = 0; i < 33; i++) {
+		varDefineByte(13902 + i, (byte)(13825 + i)); // TODO check validity
 		varDefineByte(13802 + i, offset);
 		varDefineByte(13842 + i, offset2);
 
@@ -4848,22 +4848,22 @@ void ApplicationFaust::initZone8() {
 	varDefineByte(531532, 0);
 	varDefineWord(53001, 112);
 	varDefineWord(53011, 91);
-	objectPresentationSetImageCoordinatesOnPuzzle(54210, varGetByte(54212), Common::Point(varGetWord(53001), varGetWord(53011)));
+	objectPresentationSetImageCoordinatesOnPuzzle(54210, (uint8)varGetByte(54212), Common::Point(varGetWord(53001), varGetWord(53011)));
 	varDefineWord(53002, 112);
 	varDefineWord(53012, 207);
-	objectPresentationSetImageCoordinatesOnPuzzle(54210, varGetByte(54213), Common::Point(varGetWord(53002), varGetWord(53012)));
+	objectPresentationSetImageCoordinatesOnPuzzle(54210, (uint8)varGetByte(54213), Common::Point(varGetWord(53002), varGetWord(53012)));
 	varDefineWord(53003, 284);
 	varDefineWord(53013, 325);
-	objectPresentationSetImageCoordinatesOnPuzzle(54210, varGetByte(54214), Common::Point(varGetWord(53003), varGetWord(53013)));
+	objectPresentationSetImageCoordinatesOnPuzzle(54210, (uint8)varGetByte(54214), Common::Point(varGetWord(53003), varGetWord(53013)));
 	varDefineWord(53004, 284);
 	varDefineWord(53014, 91);
-	objectPresentationSetImageCoordinatesOnPuzzle(54210, varGetByte(54215), Common::Point(varGetWord(53004), varGetWord(53014)));
+	objectPresentationSetImageCoordinatesOnPuzzle(54210, (uint8)varGetByte(54215), Common::Point(varGetWord(53004), varGetWord(53014)));
 	varDefineWord(53005, 284);
 	varDefineWord(53015, 207);
-	objectPresentationSetImageCoordinatesOnPuzzle(54210, varGetByte(54216), Common::Point(varGetWord(53005), varGetWord(53015)));
+	objectPresentationSetImageCoordinatesOnPuzzle(54210, (uint8)varGetByte(54216), Common::Point(varGetWord(53005), varGetWord(53015)));
 	varDefineWord(53006, 112);
 	varDefineWord(53016, 325);
-	objectPresentationSetImageCoordinatesOnPuzzle(54210, varGetByte(54217), Common::Point(varGetWord(53006), varGetWord(53016)));
+	objectPresentationSetImageCoordinatesOnPuzzle(54210, (uint8)varGetByte(54217), Common::Point(varGetWord(53006), varGetWord(53016)));
 
 }
 
@@ -9370,29 +9370,29 @@ void ApplicationFaust::initZone16() {
 	varDefineWord(311022, 10);
 	varDefineWord(311023, 5);
 	varDefineWord(311000, 136);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311012), Common::Point(varGetWord(311000), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311012), Common::Point(varGetWord(311000), 182));
 	varDefineWord(311001, 170);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311013), Common::Point(varGetWord(311001), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311013), Common::Point(varGetWord(311001), 182));
 	varDefineWord(311002, 204);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311014), Common::Point(varGetWord(311002), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311014), Common::Point(varGetWord(311002), 182));
 	varDefineWord(311003, 238);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311015), Common::Point(varGetWord(311003), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311015), Common::Point(varGetWord(311003), 182));
 	varDefineWord(311004, 272);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311016), Common::Point(varGetWord(311004), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311016), Common::Point(varGetWord(311004), 182));
 	varDefineWord(311005, 306);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311017), Common::Point(varGetWord(311005), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311017), Common::Point(varGetWord(311005), 182));
 	varDefineWord(311006, 340);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311018), Common::Point(varGetWord(311006), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311018), Common::Point(varGetWord(311006), 182));
 	varDefineWord(311007, 374);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311019), Common::Point(varGetWord(311007), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311019), Common::Point(varGetWord(311007), 182));
 	varDefineWord(311008, 408);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311020), Common::Point(varGetWord(311008), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311020), Common::Point(varGetWord(311008), 182));
 	varDefineWord(311009, 442);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311021), Common::Point(varGetWord(311009), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311021), Common::Point(varGetWord(311009), 182));
 	varDefineWord(311010, 476);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311022), Common::Point(varGetWord(311010), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311022), Common::Point(varGetWord(311010), 182));
 	varDefineWord(311011, 510);
-	objectPresentationSetImageCoordinatesOnPuzzle(310002, varGetWord(311023), Common::Point(varGetWord(311011), 182));
+	objectPresentationSetImageCoordinatesOnPuzzle(310002, (uint16)varGetWord(311023), Common::Point(varGetWord(311011), 182));
 	varDefineDword(311001, 0);
 }
 
