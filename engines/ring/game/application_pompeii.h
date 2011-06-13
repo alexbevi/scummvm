@@ -63,6 +63,7 @@ private:
 	// Zone initialization
 	//////////////////////////////////////////////////////////////////////////
 	void initZoneSystem();
+	void initZone1();
 	void initZone2();
 	void initZone3();
 	void initZone4();

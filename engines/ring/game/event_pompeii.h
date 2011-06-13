@@ -43,8 +43,17 @@ public:
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
 
+	virtual void onSetup(ZoneId zone, SetupType type);
+
 private:
 	Application *_app;
+
+	//////////////////////////////////////////////////////////////////////////
+	// Setup
+	//////////////////////////////////////////////////////////////////////////
+	void onSetupZone2(SetupType type);
+	void onSetupZone3(SetupType type);
+	void onSetupZone4(SetupType type);
 };
 
 } // End of namespace Ring

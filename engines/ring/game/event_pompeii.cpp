@@ -27,6 +27,8 @@
 
 #include "ring/base/application.h"
 
+#include "ring/debug.h"
+
 #include "common/textconsole.h"
 
 //using namespace PompeiiGame;
@@ -65,6 +67,43 @@ void EventHandlerPompeii::onKeyDown(Common::Event &evt) {
 
 void EventHandlerPompeii::onTimer(TimerId timerId) {
 	error("[EventHandlerPompeii::onTimer] Not implemented (id: %d)", timerId);
+}
+
+#pragma endregion
+
+#pragma region Zone Setup
+
+void EventHandlerPompeii::onSetup(ZoneId zone, SetupType type) {
+	debugC(kRingDebugLogic, "onSetup (zone: %s, type: %d)", _app->getZoneFolder(zone).c_str(), type);
+
+	switch (zone) {
+	default:
+		break;
+
+	case kZone2:
+		onSetupZone2(type);
+		break;
+
+	case kZone3:
+		onSetupZone3(type);
+		break;
+
+	case kZone4:
+		onSetupZone4(type);
+		break;
+	}
+}
+
+void EventHandlerPompeii::onSetupZone2(SetupType type) {
+	error("[EventHandlerPompeii::onSetupZone2] Not implemented");
+}
+
+void EventHandlerPompeii::onSetupZone3(SetupType type) {
+	error("[EventHandlerPompeii::onSetupZone3] Not implemented");
+}
+
+void EventHandlerPompeii::onSetupZone4(SetupType type) {
+	error("[EventHandlerPompeii::onSetupZone4] Not implemented");
 }
 
 #pragma endregion

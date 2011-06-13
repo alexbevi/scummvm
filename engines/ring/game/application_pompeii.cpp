@@ -195,7 +195,7 @@ void ApplicationPompeii::initZones() {
 
 	drawZoneName(kZone1);
 	_archiveType = getZoneArchiveType(kZone2);
-	initZone2();
+	initZone1();
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone2);
@@ -261,6 +261,10 @@ void ApplicationPompeii::initZones() {
 //////////////////////////////////////////////////////////////////////////
 void ApplicationPompeii::initZoneSystem() {
 	error("[ApplicationPompeii::initZoneSystem] Not implemented");
+}
+
+void ApplicationPompeii::initZone1() {
+	error("[ApplicationPompeii::initZone1] Not implemented");
 }
 
 void ApplicationPompeii::initZone2() {
