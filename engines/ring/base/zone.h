@@ -82,6 +82,8 @@ public:
 	void   setCurrentZone(ZoneId id);
 	ZoneId getCurrentZone() { return _zone; }
 
+	bool has(ZoneId id);
+
 private:
 	AssociativeArray<Zone *>    _zones;
 	AssociativeArray<Episode *> _episodes;

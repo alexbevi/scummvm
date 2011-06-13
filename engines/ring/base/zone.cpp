@@ -79,6 +79,10 @@ Zone *ZoneHandler::getZone(ZoneId id) {
 	return _zones.get(id);
 }
 
+bool ZoneHandler::has(ZoneId id) {
+	return _zones.has(id);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Episodes
 void ZoneHandler::addEpisode(ZoneId id, Common::String name, uint32 cd) {

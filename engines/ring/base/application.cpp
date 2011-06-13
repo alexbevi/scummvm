@@ -2807,6 +2807,9 @@ Common::String Application::getZoneName(ZoneId zone) const {
 	if (!_zoneHandler)
 		error("[Application::getZoneName] Zone handler not initialized properly");
 
+	if (!_zoneHandler->has(zone))
+		return "";
+
 	return _zoneHandler->getZone(zone)->getName();
 }
 
