@@ -50,6 +50,9 @@ private:
 	uint32 _tickStart;
 	uint32 _fired;
 	uint32 _elapseTime;
+
+	static void handler(void *ptr);
+	void handle();
 };
 
 class TimerHandler : public Common::Serializable {

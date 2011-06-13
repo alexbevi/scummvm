@@ -27,7 +27,9 @@
 #include "ring/ring.h"
 #include "ring/helpers.h"
 
+#include "common/system.h"
 #include "common/textconsole.h"
+#include "common/timer.h"
 
 namespace Ring {
 
@@ -39,12 +41,12 @@ Timer::Timer(TimerId timerId, uint32 elapseTime): BaseObject(timerId), _elapseTi
 }
 
 Timer::~Timer() {
-	// FIXME g_system->getTimerManager()->stopEventTimer(_id);
+	g_system->getTimerManager()->removeTimerProc(&handler);
 }
 
 void Timer::start() {
-	// Start timer
-	// FIXME g_system->getTimerManager()->startEventTimer(id, elapseTime);
+	if (!g_system->getTimerManager()->installTimerProc(&handler, _elapseTime, this))
+		error("[Timer::start] Cannot start timer");
 }
 
 // Serializable
@@ -53,6 +55,14 @@ void Timer::saveLoadWithSerializer(Common::Serializer &s) {
 	s.syncAsUint32LE(_tickStart);
 	s.syncAsUint32LE(_fired);
 	s.syncAsUint32LE(_elapseTime);
+}
+
+void Timer::handler(void *refCon) {
+	((Timer *)refCon)->handle();
+}
+
+void Timer::handle() {
+	error("[Timer::handle] Not implemented (id: %d)", _id);
 }
 
 #pragma endregion
