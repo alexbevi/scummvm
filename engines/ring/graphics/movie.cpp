@@ -219,26 +219,6 @@ uint32 Cinematic::decompress(uint32 a1, byte* buffer, uint32 a3) {
 	error("[Cinematic::decompress] Not implemented!");
 }
 
-#pragma region Sound
-
-void Cinematic::sub_46A0E0(uint32 a1, uint32 a2, uint32 a3, int32 a4) {
-	error("[Cinematic::sub_46A0E0] Not implemented!");
-}
-
-void Cinematic::setVolume(int32 volume) {
-	error("[Cinematic::setVolume] Not implemented!");
-}
-
-void Cinematic::sub_46A4B0() {
-	error("[Cinematic::sub_46A4B0] Not implemented!");
-}
-
-void Cinematic::setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset) {
-	error("[Cinematic::setSoundBuffer] Not implemented!");
-}
-
-#pragma endregion
-
 #pragma region ReadStream
 
 bool Cinematic::eos() const {
@@ -476,7 +456,7 @@ bool Cinematic2::seek(int32 offset, int whence) {
 Movie::Movie(ScreenManager *screen) : _screen(screen) {
 	_imageCIN = NULL;
 	_screen   = NULL;
-	_field_56 = 0.0f;
+	_volume = 0.0f;
 	_isSoundInitialized = false;
 	_field_5B = false;
 	_framerate = 0.0f;
@@ -511,8 +491,8 @@ bool Movie::init(Common::String path, Common::String filename, uint32 a3, uint32
 	_isSoundInitialized = true;
 
 	// Setup sound
-	_cinematic->sub_46A0E0(_imageCIN->getHeader()->field_8 + 1, _imageCIN->getHeader()->field_9, _imageCIN->getHeader()->field_A, -CINEMATIC_TCONTROLBUFFER_SIZE);
-	_cinematic->setVolume(getApp()->getPreferenceHandler()->getVolume());
+	sub_46A0E0(_imageCIN->getHeader()->field_8 + 1, _imageCIN->getHeader()->field_9, _imageCIN->getHeader()->field_A, -CINEMATIC_TCONTROLBUFFER_SIZE);
+	setVolume(getApp()->getPreferenceHandler()->getVolume());
 
 	// Setup framerate
 	_field_5B = true;
@@ -606,7 +586,7 @@ void Movie::play(const Common::Point &point) {
 
 					if (setupSound) {
 						if (_isSoundInitialized)
-							_cinematic->sub_46A4B0();
+							sub_46A4B0();
 
 						setupSound = false;
 					}
@@ -627,7 +607,7 @@ void Movie::play(const Common::Point &point) {
 
 					if (setupSound) {
 						if (_isSoundInitialized)
-							_cinematic->sub_46A4B0();
+							sub_46A4B0();
 
 						setupSound = false;
 					}
@@ -710,7 +690,7 @@ void Movie::play(const Common::Point &point) {
 
 					if (setupSound) {
 						if (_isSoundInitialized)
-							_cinematic->sub_46A4B0();
+							sub_46A4B0();
 
 						setupSound = false;
 					}
@@ -734,6 +714,8 @@ void Movie::play(const Common::Point &point) {
 	if (_hasDialog)
 		getApp()->getDialogHandler()->removeDialog(500001);
 }
+
+#pragma region Sound
 
 bool Movie::readSound() {
 	if (!_cinematic)
@@ -767,7 +749,7 @@ bool Movie::readSound() {
 	if (!_isSoundInitialized)
 		return true;
 
-	_cinematic->setSoundBuffer(new Common::SeekableSubReadStream(_cinematic, (uint32)_cinematic->pos(), (uint32)_cinematic->pos() + offset), offset);
+	setSoundBuffer(new Common::SeekableSubReadStream(_cinematic, (uint32)_cinematic->pos(), (uint32)_cinematic->pos() + offset), offset);
 
 	return true;
 }
@@ -798,6 +780,32 @@ bool Movie::skipSound() {
 
 	return true;
 }
+
+void Movie::sub_46A0E0(uint32 a1, uint32 a2, uint32 a3, int32 a4) {
+	error("[Cinematic::sub_46A0E0] Not implemented!");
+}
+
+void Movie::sub_46A4B0() {
+	error("[Cinematic::sub_46A4B0] Not implemented!");
+}
+
+void Movie::setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset) {
+	error("[Cinematic::setSoundBuffer] Not implemented!");
+}
+
+void Movie::setVolume(int32 volume) {
+	_volume = volume * 0.01f;
+
+	if (_volume < 0.0f)
+		_volume = 0.0f;
+
+	if (_volume > 1.0f)
+		_volume = 1.0f;
+
+	error("[Movie::setVolume] Not implemented!");
+}
+
+#pragma endregion
 
 #pragma endregion
 

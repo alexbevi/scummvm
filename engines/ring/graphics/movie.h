@@ -46,12 +46,6 @@ public:
 	bool tControl();
 	bool sControl(byte* buffer);
 
-	// Sound
-	void sub_46A0E0(uint32 a1, uint32 a2, uint32 a3, int32 a4);
-	void setVolume(int32 volume);
-	void sub_46A4B0();
-	void setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset);
-
 	// ReadStream
 	virtual bool eos() const;
 	virtual uint32 read(void *dataPtr, uint32 dataSize);
@@ -256,15 +250,21 @@ private:
 	ImageLoaderCIN *_imageCIN;
 	ScreenManager  *_screen;
 	Cinematic      *_cinematic;
-	float           _field_56;
+	float           _volume;
 	bool            _isSoundInitialized;
 	bool            _field_5B;
 	float           _framerate;
 	bool            _hasDialog;
 	uint32          _channel;
 
+	// Sound
 	bool readSound();
 	bool skipSound();
+
+	void sub_46A0E0(uint32 a1, uint32 a2, uint32 a3, int32 a4);
+	void setVolume(int32 volume);
+	void sub_46A4B0();
+	void setSoundBuffer(Common::SeekableReadStream *stream, uint32 offset);
 };
 
 } // End of namespace Ring
