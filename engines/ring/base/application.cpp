@@ -345,6 +345,75 @@ void Application::loadConfiguration() {
 	delete archive;
 }
 
+void Application::setupZone(ZoneId zone, SetupType type) {
+	debugC(kRingDebugLogic, "Setting up zone %s", getZoneName(zone).c_str());
+
+	bool hasData = false;
+
+	if (zone == kZoneSY) {
+		hasData = true;
+	} else {
+		// The original checks for the correct CD,
+		// we should instead check that the zone folder
+		// has been copied properly
+		warning("[Application::setupZone] Zone CD check not implemented");
+	}
+
+	reset();
+	soundStopAll(8);
+
+	if (_soundHandler)
+		_soundHandler->reset();
+
+	if (zone != kZoneSY)
+		_artHandler->reset();
+
+	if (hasData) {
+		setCurrentEpisode(zone);
+		setZone(zone, type);
+	} else {
+		_saveManager->setSetupType(type);
+
+		messageFormat("InsertCD", Common::String::format("%d", getEpisodeCd(zone)));
+		messageInsertCd(zone);
+	}
+}
+
+void Application::setZone(ZoneId zone, SetupType type) {
+
+	// Finish loading savegame if needed
+	if (type == kSetupTypeLoading) {
+		SaveManager::SavegameData *data = getSaveManager()->getData();
+
+		setSpace(data->zone);
+
+		if (data->hasCurrentPuzzle)
+			puzzleSetActive(data->puzzleId, false, true);
+
+		if (data->hasCurrentRotation) {
+			rotationSetActive(data->rotationId, false, true);
+
+			getCurrentRotation()->setFreOnOff(data->rotationFre);
+		}
+
+		_loadFrom = data->loadFrom;
+		_isRotationCompressed = data->isRotationCompressed;
+		_archiveType = data->archiveType;
+
+		getSaveManager()->loadSaveSounds();
+
+		if (getSaveManager()->isSaving()) {
+			_soundManager->playSounds();
+		} else {
+			_preferenceHandler->load();
+			_soundManager->playSounds();
+		}
+	}
+
+	// Setup zone
+	_eventHandler->onSetup(zone, type);
+}
+
 void Application::exitZone() {
 	soundStopAll(128);
 	_soundManager->clear();

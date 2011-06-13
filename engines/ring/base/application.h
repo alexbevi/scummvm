@@ -73,7 +73,8 @@ public:
 	virtual void initFont() = 0;
 	virtual void setup() = 0;
 	virtual void initZones() = 0;
-	virtual void setupZone(ZoneId zone, SetupType type) = 0;
+	virtual void setupZone(ZoneId zone, SetupType type);
+	virtual void setZone(ZoneId zone, SetupType type);
 	virtual void initBag() = 0;
 	virtual void initData();
 
