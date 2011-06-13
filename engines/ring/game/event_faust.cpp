@@ -2309,7 +2309,27 @@ void EventHandlerFaust::onAnimationNextFrameZone8(Id animationId, const Common::
 }
 
 void EventHandlerFaust::onAnimationNextFrameZone9(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
-	error("[EventHandlerFaust::onAnimationNextFrameZone9] Not implemented");
+	switch (animationId) {
+	default:
+		break;
+
+	case 61300:
+		if (frame == frameCount) {
+			_app->objectPresentationShow((ObjectId)(kObject61302 + _app->varGetByte(61909), _app->varGetByte(61901 + _app->varGetByte(61909))));
+			_app->objectSetAccessibilityOn(kObjectWhip);
+
+			if (_app->varGetByte(61901) == 2 && _app->varGetByte(61902) == 2)
+				_app->timerStart(kTimer2, 1000);
+		}
+		break;
+
+	case 61301:
+		if (frame == frameCount) {
+			_app->objectPresentationShow(kObject61303, _app->varGetByte(61902));
+			_app->objectSetAccessibilityOn(kObjectWhip);
+		}
+		break;
+	}
 }
 
 void EventHandlerFaust::onAnimationNextFrameZone10(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
@@ -2325,7 +2345,36 @@ void EventHandlerFaust::onAnimationNextFrameZone12(Id animationId, const Common:
 }
 
 void EventHandlerFaust::onAnimationNextFrameZone13(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
-	error("[EventHandlerFaust::onAnimationNextFrameZone13] Not implemented");
+	switch (animationId) {
+	default:
+		break;
+
+	case 91001:
+		if (frame == 15) {
+			_app->objectPresentationHide(kObject91002);
+			_app->puzzleSetActive(kPuzzle91001);
+		}
+		break;
+
+	case 91002:
+		if (frame == 1) {
+			_app->soundPlay(91103);
+			_app->objectSetAccessibilityOn(kObject91002, 0, 0);
+		}
+		break;
+
+	case 91003:
+		if (frame == 10) {
+			_app->rotationSetAlp(91007, 320.0f);
+			_app->rotationSetBet(91007, 0.0f);
+			_app->rotationSetRan(91007, 87.0f);
+			_app->rotationSetActive(91007);
+			_app->objectPresentationHide(kObject91001, 0);
+			_app->objectSetAccessibilityOn(kObject91001, 0, 0);
+			_app->soundPlay(91121);
+		}
+		break;
+	}
 }
 
 void EventHandlerFaust::onAnimationNextFrameZone14(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount) {
