@@ -1643,7 +1643,25 @@ void EventHandlerFaust::onBeforeRideZone2(Id, Id, uint32, uint32, MovabilityType
 }
 
 void EventHandlerFaust::onBeforeRideZone4(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
-	error("[EventHandlerFaust::onBeforeRideZone4] Not implemented");
+	switch (movabilityType) {
+	default:
+		break;
+
+	case kMovabilityRotationToRotation:
+		if (movabilityTo == 13611) {
+			if (movabilityFrom == 13531)
+				_app->timerStop(kTimer4);
+		} else if (movabilityTo == 13531) {
+			if (movabilityTo == 13611)
+				_app->timerStart(kTimer4, rnd(4000));
+		}
+		break;
+
+	case kMovabilityPuzzleToPuzzle:
+		if (movabilityFrom == 13902)
+			sub_4A2CF0();
+		break;
+	}
 }
 
 void EventHandlerFaust::onBeforeRideZone5(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType) {
@@ -2342,6 +2360,10 @@ void EventHandlerFaust::sub_45FF30() {
 
 void EventHandlerFaust::sub_468290(uint32 a1) {
 	error("[EventHandlerFaust::sub_468290] Not implemented");
+}
+
+void EventHandlerFaust::sub_4A2CF0() {
+	error("[EventHandlerFaust::sub_4A2CF0] Not implemented");
 }
 
 void EventHandlerFaust::setupRotation(uint32 type) {
