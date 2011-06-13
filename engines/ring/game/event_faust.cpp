@@ -1389,7 +1389,51 @@ void EventHandlerFaust::onTimerZone15(TimerId id) {
 }
 
 void EventHandlerFaust::onTimerZone16(TimerId id) {
-	error("[EventHandlerFaust::onTimerZone16] Not implemented");
+	switch (id) {
+	default:
+		break;
+
+	case kTimer0:
+		_app->varSetWord(311024, _app->varGetWord(311024) + 5);
+
+		if (_app->varGetWord(311024) < 155) {
+			_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject310015, 0, Common::Point(120, 174 - _app->varGetWord(311024)));
+		} else {
+			_app->objectSetAccessibilityOn(kObject310015, 0, 0);
+			_app->objectSetAccessibilityOn(kObject310001);
+			_app->soundStop(310103, 1024);
+			_app->soundPlay(310104);
+			_app->timerStop(kTimer0);
+		}
+		break;
+
+	case kTimer1:
+		_app->varSetWord(311024, _app->varGetWord(311024) - 5);
+
+		if (_app->varGetWord(311024) > -10) {
+			_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject310015, 0, Common::Point(120, 174 - _app->varGetWord(311024)));
+		} else {
+			_app->objectPresentationSetImageCoordinatesOnPuzzle(kObject310015, 0, Common::Point(120, 174));
+			_app->soundStop(310103, 1024);
+			_app->timerStop(kTimer1);
+			_app->rotationSetAlp(311251, 206.0f);
+			_app->rotationSetBet(311251, -26.0f);
+			_app->rotationSetRan(311251, 87.0f);
+			_app->rotationSetActive(311251);
+			_app->soundPlay(310104);
+		}
+		break;
+
+	case kTimer2:
+		_app->timerStop(kTimer2);
+		_app->timerStart(kTimer2, rnd(200));
+
+		if (rnd(2))
+			_app->objectPresentationHide(kObject310018);
+		else
+			_app->objectPresentationShow(kObject310018);
+		break;
+	}
 }
 
 #pragma endregion
