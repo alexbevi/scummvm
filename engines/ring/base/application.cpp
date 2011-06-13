@@ -190,11 +190,7 @@ void Application::init() {
 
 	// Setup data
 	_menuAction = kMenuAction0;
-	_field_74 = true;
-	_field_75 = true;
-	_field_76 = true;
-	_field_77 = true;
-	_field_78 = true;
+	initData();
 	_loadFrom = kLoadFromCd;
 	_isRotationCompressed = true;
 	_archiveType = kArchiveFile;
@@ -223,6 +219,14 @@ void Application::init() {
 	// Setup preferences
 	_preferenceHandler = new PreferenceHandler(this);
 	_preferenceHandler->load();
+}
+
+void Application::initData() {
+	_field_74 = true;
+	_field_75 = true;
+	_field_76 = true;
+	_field_77 = true;
+	_field_78 = true;
 }
 
 void Application::loadConfiguration() {
