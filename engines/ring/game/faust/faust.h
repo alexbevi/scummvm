@@ -26,6 +26,8 @@
 
 namespace Ring {
 
+class InitFaust;
+
 class ApplicationFaust : public Application {
 public:
 	ApplicationFaust(RingEngine *engine);
@@ -64,6 +66,7 @@ public:
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 
 private:
+	InitFaust *_init;
 	int32 _slot;
 	ZoneId _zone;
 
@@ -77,27 +80,6 @@ private:
 	void initMenuSave(bool savegame);
 	void initMenu2();
 	void initMenu3();
-
-	////////////////////////////////////////////////////////////////////////////
-	// Zone initialization
-	//////////////////////////////////////////////////////////////////////////
-	void initZoneSY();
-	void initZone2();
-	void initZone3();
-	void initZone4();
-	void initZone5();
-	void initZone6();
-	void initZone7();
-	void initZone8();
-	void initZone9();
-	void initZone10();
-	void initZone11();
-	void initZone12();
-	void initZone13();
-	void initZone14();
-	void initZone15();
-	void initZone16();
-	void initZone17();
 };
 
 } // End of namespace Ring

@@ -39,6 +39,7 @@ MODULE_OBJS := \
 
 ifdef ENABLE_RING1
 MODULE_OBJS += \
+	game/ring/init.o \
 	game/ring/ring.o \
 	game/ring/event.o \
 	game/ring/visual.o
@@ -46,6 +47,7 @@ endif
 
 ifdef ENABLE_FAUST
 MODULE_OBJS += \
+	game/faust/init.o \
 	game/faust/faust.o \
 	game/faust/event.o
 endif

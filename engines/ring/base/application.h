@@ -426,6 +426,8 @@ public:
 	bool getField77() { return _field_77; }
 	bool getField78() { return _field_78; }
 
+	void setArchiveType(ArchiveType type) { _archiveType = type; }
+	void setLoadFrom(LoadFrom from) { _loadFrom = from; }
 	void setState(State state) { _state = state; }
 	void setField6A(bool state) { _field_6A = state; }
 	void setField74(bool state) { _field_74 = state; }
@@ -448,6 +450,7 @@ public:
 	SoundHandler      *getSoundHandler()      { return _soundHandler; }
 	SoundManager      *getSoundManager()      { return _soundManager; }
 	TimerHandler      *getTimerHandler()      { return _timerHandler; }
+	Configuration      getConfiguration()     { return _configuration; }
 
 	// Serializable
 	void saveLoadWithSerializer(Common::Serializer &s);
