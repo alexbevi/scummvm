@@ -69,13 +69,13 @@ OpcodeRet TextManager::out(OpcodeParameters *parameters) {
 }
 
 OpcodeRet TextManager::quit(OpcodeParameters *parameters) {
-	return exit(parameters);
+	return exitText(parameters);
 }
 
-OpcodeRet TextManager::exit(OpcodeParameters *parameters) {
+OpcodeRet TextManager::exitText(OpcodeParameters *parameters) {
 	int32 index = getGame()->getValue((ParamOrigin)parameters->getByte(0), parameters->getDword(1), parameters->getDword(5));
 
-	exit(index);
+	exitText(index);
 	freeNumberText(index);
 
 	getGame()->letValue((ParamOrigin)parameters->getByte(0), parameters->getDword(1), parameters->getDword(5), 0);
@@ -109,7 +109,7 @@ OpcodeRet TextManager::change(OpcodeParameters *parameters) {
 // Private functions
 //////////////////////////////////////////////////////////////////////////
 
-OpcodeRet TextManager::exit(int32 index) {
+OpcodeRet TextManager::exitText(int32 index) {
 	error("[WorkManager::exit]: Not implemented!");
 }
 

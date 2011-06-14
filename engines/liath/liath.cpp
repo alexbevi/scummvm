@@ -52,7 +52,7 @@
 namespace Liath {
 
 LiathEngine::LiathEngine(OSystem *syst, const ADGameDescription *gd) :
-    Engine(syst), _gameDescription(gd), _debugger(NULL),
+    Engine(syst), _gameDescription(gd), _debugger(NULL), _random("liath"),
 	_actionMan(NULL), _arrayMan(NULL), _expressionMan(NULL), _gameMan(NULL),
 	_graphicsMan(NULL), _heroMan(NULL), _mouseMan(NULL), _positionMan(NULL),
 	_progressMan(NULL), _resMan(NULL), _saveMan(NULL), _segmentMan(NULL),
@@ -73,8 +73,6 @@ LiathEngine::LiathEngine(OSystem *syst, const ADGameDescription *gd) :
 	DebugMan.addDebugChannel(kLiathDebugSavegame, "Savegame", "Debug savegame");
 	DebugMan.addDebugChannel(kLiathDebugLogic, "Logic", "Debug logic");
 	DebugMan.addDebugChannel(kLiathDebugUnknown, "Unknown", "Debug unknown data");
-
-	g_eventRec.registerRandomSource(_random, "Liath");
 }
 
 LiathEngine::~LiathEngine() {

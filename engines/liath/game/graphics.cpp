@@ -36,6 +36,7 @@
 #include "liath/liath.h"
 
 #include "common/system.h"
+#include "graphics/palette.h"
 
 namespace Liath {
 

@@ -40,7 +40,7 @@ public:
 
 	OpcodeRet out(OpcodeParameters *parameters);
 	OpcodeRet quit(OpcodeParameters *parameters);
-	OpcodeRet exit(OpcodeParameters *parameters);
+	OpcodeRet exitText(OpcodeParameters *parameters);
 	OpcodeRet check(OpcodeParameters *parameters);
 	OpcodeRet change(OpcodeParameters *parameters);
 
@@ -50,7 +50,7 @@ private:
 	char _arrayTextNumber[500];
 
 	// Opcode helpers
-	OpcodeRet exit(int32 val);
+	OpcodeRet exitText(int32 val);
 
 
 	// Helper functions

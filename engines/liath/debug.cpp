@@ -34,8 +34,8 @@
 #include "common/events.h"
 #include "common/file.h"
 
-#define DEBUG
-#ifdef DEBUG
+//#define ENABLE_DUMP
+#ifdef ENABLE_DUMP
 // For mkdir
 
 #ifdef WIN32
@@ -150,7 +150,7 @@ bool Debugger::cmdListFiles(int argc, const char **argv) {
 }
 
 bool Debugger::cmdDumpArchive(int argc, const char **argv) {
-#ifdef DEBUG
+#ifdef ENABLE_DUMP
 	if (argc == 2) {
 		Common::String filename(const_cast<char *>(argv[1]));
 
@@ -175,6 +175,7 @@ bool Debugger::cmdDumpArchive(int argc, const char **argv) {
 }
 
 void Debugger::dumpFile(Common::String filename) {
+#ifdef ENABLE_DUMP
 #define CREATE_FOLDER(name) { \
 	folder += name; \
 	int ret = my_mkdir(folder.c_str(), 600); \
@@ -236,6 +237,7 @@ void Debugger::dumpFile(Common::String filename) {
 	delete archive;
 
 #undef CREATE_FOLDER
+#endif
 }
 
 bool Debugger::cmdClear(int argc, const char **) {

@@ -224,7 +224,7 @@ OpcodeRet HeroManager::reset(OpcodeParameters *parameters, void *unkown) {
 	error("HeroManager::reset: Not implemented!");
 }
 
-OpcodeRet HeroManager::exit(OpcodeParameters *parameters) {
+OpcodeRet HeroManager::exitHero(OpcodeParameters *parameters) {
 	error("HeroManager::exit: Not implemented!");
 }
 

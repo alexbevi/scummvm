@@ -399,7 +399,7 @@ OpcodeRet Interpreter::run(OpcodeParameters *parameters, ObjectIndex index) cons
 		return getWork()->restart();
 
 	case kOpcodeExitHero:
-		return getHero()->exit(parameters);
+		return getHero()->exitHero(parameters);
 
 	case kOpcodeCel:
 		return getWork()->cel(parameters);
@@ -468,7 +468,7 @@ OpcodeRet Interpreter::run(OpcodeParameters *parameters, ObjectIndex index) cons
 		return getText()->quit(parameters);
 
 	case kOpcodeTextExit:
-		return getText()->exit(parameters);
+		return getText()->exitText(parameters);
 
 	case kOpcodeTextCheck:
 		return getText()->check(parameters);

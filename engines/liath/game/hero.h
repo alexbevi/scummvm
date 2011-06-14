@@ -46,7 +46,7 @@ public:
 	OpcodeRet start(OpcodeParameters *parameters, Work **pWork, WorkData *data);
 	OpcodeRet startExt(OpcodeParameters *parameters);
 	OpcodeRet reset(OpcodeParameters *parameters, void *unkown);
-	OpcodeRet exit(OpcodeParameters *parameters);
+	OpcodeRet exitHero(OpcodeParameters *parameters);
 	OpcodeRet save(OpcodeParameters *parameters);
 	OpcodeRet load();
 	OpcodeRet passVariable(OpcodeParameters *parameters);
