@@ -96,6 +96,7 @@ add_engine hugo "Hugo Trilogy" yes
 add_engine kyra "Legend of Kyrandia" yes "lol"
 add_engine lol "Lands of Lore" yes
 add_engine lastexpress "The Last Express" no
+add_engine liath "WorldSpiral - Liath" no
 add_engine lure "Lure of the Temptress" yes
 add_engine m4 "M4/MADS" no
 add_engine made "MADE" yes
