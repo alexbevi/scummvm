@@ -49,7 +49,7 @@
 #include "ring/game/ring/ring.h"
 #endif
 
-#include "ring/sound/sound.h"
+#include "ring/sound/soundmanager.h"
 
 #include "common/config-manager.h"
 #include "common/debug-channels.h"

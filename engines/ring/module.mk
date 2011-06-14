@@ -29,7 +29,10 @@ MODULE_OBJS := \
 	graphics/movie.o \
 	graphics/screen.o \
 	graphics/visual.o \
-	sound/sound.o \
+	sound/soundentry.o \
+	sound/soundhandler.o \
+	sound/soundloader.o \
+	sound/soundmanager.o \
 	debug.o \
 	detection.o \
 	ring.o

@@ -38,7 +38,8 @@
 #include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
 
-#include "ring/sound/sound.h"
+#include "ring/sound/soundhandler.h"
+#include "ring/sound/soundmanager.h"
 
 #include "ring/helpers.h"
 #include "ring/ring.h"

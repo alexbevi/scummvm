@@ -24,7 +24,7 @@
 #include "ring/base/application.h"
 #include "ring/base/dialog.h"
 
-#include "ring/sound/sound.h"
+#include "ring/sound/soundhandler.h"
 
 #include "engines/engine.h"
 

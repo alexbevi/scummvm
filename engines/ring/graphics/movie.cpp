@@ -30,7 +30,7 @@
 #include "ring/graphics/imageLoader.h"
 #include "ring/graphics/screen.h"
 
-#include "ring/sound/sound.h"
+#include "ring/sound/soundhandler.h"
 
 #include "ring/ring.h"
 #include "ring/helpers.h"
