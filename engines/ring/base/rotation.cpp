@@ -27,7 +27,6 @@
 #include "ring/base/movability.h"
 #include "ring/base/object.h"
 #include "ring/base/saveload.h"
-#include "ring/base/sound.h"
 #include "ring/base/text.h"
 
 #include "ring/graphics/animation.h"
@@ -35,6 +34,8 @@
 #include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
 #include "ring/graphics/screen.h"
+
+#include "ring/sound/sound.h"
 
 #include "ring/ring.h"
 

@@ -15,7 +15,6 @@ MODULE_OBJS := \
 	base/puzzle.o \
 	base/rotation.o \
 	base/saveload.o \
-	base/sound.o \
 	base/stream.o \
 	base/text.o \
 	base/timer.o \
@@ -30,10 +29,10 @@ MODULE_OBJS := \
 	graphics/movie.o \
 	graphics/screen.o \
 	graphics/visual.o \
+	sound/sound.o \
 	debug.o \
 	detection.o \
 	ring.o
-	
 
 ifdef ENABLE_RING1
 MODULE_OBJS += \

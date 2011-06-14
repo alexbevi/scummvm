@@ -29,7 +29,6 @@
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
-#include "ring/base/sound.h"
 #include "ring/base/timer.h"
 
 #include "ring/game/application_ring.h"
@@ -38,6 +37,8 @@
 #include "ring/graphics/dragControl.h"
 #include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
+
+#include "ring/sound/sound.h"
 
 #include "ring/helpers.h"
 #include "ring/ring.h"

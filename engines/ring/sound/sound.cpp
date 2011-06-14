@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "ring/base/sound.h"
+#include "ring/sound/sound.h"
 
 #include "ring/base/application.h"
 #include "ring/base/event.h"

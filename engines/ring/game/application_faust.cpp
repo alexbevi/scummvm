@@ -29,13 +29,14 @@
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
-#include "ring/base/sound.h"
 
 #include "ring/game/event_faust.h"
 #include "ring/game/shared_faust.h"
 
 #include "ring/graphics/image.h"
 #include "ring/graphics/screen.h"
+
+#include "ring/sound/sound.h"
 
 #include "ring/ring.h"
 #include "ring/debug.h"

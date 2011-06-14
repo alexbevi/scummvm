@@ -23,10 +23,11 @@
 
 #include "ring/base/application.h"
 #include "ring/base/bag.h"
-#include "ring/base/sound.h"
 #include "ring/base/timer.h"
 
 #include "ring/graphics/image.h"
+
+#include "ring/sound/sound.h"
 
 #include "ring/helpers.h"
 #include "ring/ring.h"

@@ -35,7 +35,6 @@
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
-#include "ring/base/sound.h"
 #include "ring/base/timer.h"
 #include "ring/base/var.h"
 #include "ring/base/zone.h"
@@ -47,6 +46,8 @@
 #include "ring/graphics/movie.h"
 #include "ring/graphics/screen.h"
 #include "ring/graphics/visual.h"
+
+#include "ring/sound/sound.h"
 
 #include "ring/helpers.h"
 #include "ring/ring.h"

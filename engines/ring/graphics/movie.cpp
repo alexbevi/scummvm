@@ -25,11 +25,12 @@
 #include "ring/base/art.h"
 #include "ring/base/dialog.h"
 #include "ring/base/preferences.h"
-#include "ring/base/sound.h"
 
 #include "ring/graphics/image.h"
 #include "ring/graphics/imageLoader.h"
 #include "ring/graphics/screen.h"
+
+#include "ring/sound/sound.h"
 
 #include "ring/ring.h"
 #include "ring/helpers.h"

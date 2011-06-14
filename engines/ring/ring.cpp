@@ -24,7 +24,6 @@
 #include "ring/base/application.h"
 #include "ring/base/event.h"
 #include "ring/base/saveload.h"
-#include "ring/base/sound.h"
 
 #ifdef ENABLE_FAUST
 #include "ring/game/application_faust.h"
@@ -49,6 +48,8 @@
 #ifdef ENABLE_RING1
 #include "ring/game/application_ring.h"
 #endif
+
+#include "ring/sound/sound.h"
 
 #include "common/config-manager.h"
 #include "common/debug-channels.h"

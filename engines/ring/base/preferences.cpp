@@ -23,7 +23,8 @@
 
 #include "ring/base/application.h"
 #include "ring/base/dialog.h"
-#include "ring/base/sound.h"
+
+#include "ring/sound/sound.h"
 
 #include "engines/engine.h"
 

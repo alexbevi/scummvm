@@ -26,11 +26,12 @@
 #include "ring/base/preferences.h"
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
-#include "ring/base/sound.h"
 
 #include "ring/game/event_pilgrim2.h"
 
 #include "ring/graphics/screen.h"
+
+#include "ring/sound/sound.h"
 
 #include "ring/debug.h"
 
