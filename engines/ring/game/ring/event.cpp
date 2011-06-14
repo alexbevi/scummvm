@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "ring/game/event_ring.h"
+#include "ring/game/ring/event.h"
 
 #include "ring/base/accessibility.h"
 #include "ring/base/bag.h"
@@ -31,8 +31,8 @@
 #include "ring/base/saveload.h"
 #include "ring/base/timer.h"
 
-#include "ring/game/application_ring.h"
-#include "ring/game/shared_ring.h"
+#include "ring/game/ring/ring.h"
+#include "ring/game/ring/shared.h"
 
 #include "ring/graphics/dragControl.h"
 #include "ring/graphics/hotspot.h"

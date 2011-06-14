@@ -36,39 +36,39 @@ MODULE_OBJS := \
 
 ifdef ENABLE_RING1
 MODULE_OBJS += \
-	game/application_ring.o \
-	game/event_ring.o \
-	game/visual_ring.o
+	game/ring/ring.o \
+	game/ring/event.o \
+	game/ring/visual.o
 endif
 
 ifdef ENABLE_FAUST
 MODULE_OBJS += \
-	game/application_faust.o \
-	game/event_faust.o
+	game/faust/faust.o \
+	game/faust/event.o
 endif
 
 ifdef ENABLE_POMPEII
 MODULE_OBJS += \
-	game/application_pompeii.o \
-	game/event_pompeii.o
+	game/pompeii/pompeii.o \
+	game/pompeii/event.o
 endif
 
 ifdef ENABLE_PILGRIM2
 MODULE_OBJS += \
-	game/application_pilgrim2.o \
-	game/event_pilgrim2.o
+	game/pilgrim2/pilgrim2.o \
+	game/pilgrim2/event.o
 endif
 
 ifdef ENABLE_PILGRIM3
 MODULE_OBJS += \
-	game/application_pilgrim3.o \
-	game/event_pilgrim3.o
+	game/pilgrim3/pilgrim3.o \
+	game/pilgrim3/event.o
 endif
 
 ifdef ENABLE_JERUSALEM
 MODULE_OBJS += \
-	game/application_jerusalem.o \
-	game/event_jerusalem.o
+	game/jerusalem/jerusalem.o \
+	game/jerusalem/event.o
 endif
 
 # This module can be built as a plugin

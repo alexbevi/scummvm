@@ -19,48 +19,48 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "ring/game/event_pilgrim3.h"
+#include "ring/game/pilgrim2/event.h"
 
 #include "ring/base/application.h"
 
 #include "common/textconsole.h"
 
-//using namespace Pilgrim3Game;
+//using namespace Pilgrim2Game;
 
 namespace Ring {
 
-EventHandlerPilgrim3::EventHandlerPilgrim3(Application *application) : _app(application) {
+EventHandlerPilgrim2::EventHandlerPilgrim2(Application *application) : _app(application) {
 }
 
-EventHandlerPilgrim3::~EventHandlerPilgrim3() {
+EventHandlerPilgrim2::~EventHandlerPilgrim2() {
 	// Zero-out passed pointers
 	_app = NULL;
 }
 
 #pragma region Event handling
 
-void EventHandlerPilgrim3::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
-	error("[EventHandlerPilgrim3::onMouseLeftButtonUp] Not implemented (evt: %d, CTRL pressed: %d)", evt.type, isControlPressed);
+void EventHandlerPilgrim2::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
+	error("[EventHandlerPilgrim2::onMouseLeftButtonUp] Not implemented (evt: %d, CTRL pressed: %d)", evt.type, isControlPressed);
 }
 
-void EventHandlerPilgrim3::onMouseLeftButtonDown(const Common::Event &evt) {
-	error("[EventHandlerPilgrim3::onMouseLeftButtonDown] Not implemented (evt: %d)", evt.type);
+void EventHandlerPilgrim2::onMouseLeftButtonDown(const Common::Event &evt) {
+	error("[EventHandlerPilgrim2::onMouseLeftButtonDown] Not implemented (evt: %d)", evt.type);
 }
 
-void EventHandlerPilgrim3::onMouseRightButtonUp(const Common::Event &evt) {
-	error("[EventHandlerPilgrim3::onMouseRightButtonUp] Not implemented (evt: %d)", evt.type);
+void EventHandlerPilgrim2::onMouseRightButtonUp(const Common::Event &evt) {
+	error("[EventHandlerPilgrim2::onMouseRightButtonUp] Not implemented (evt: %d)", evt.type);
 }
 
-void EventHandlerPilgrim3::onKeyDown(Common::Event &evt) {
-	error("[EventHandlerPilgrim3::onKeyDown] Not implemented (evt: %d)", evt.type);
+void EventHandlerPilgrim2::onKeyDown(Common::Event &evt) {
+	error("[EventHandlerPilgrim2::onKeyDown] Not implemented (evt: %d)", evt.type);
 }
 
 #pragma endregion
 
 #pragma region Timer
 
-void EventHandlerPilgrim3::onTimer(TimerId timerId) {
-	error("[EventHandlerPilgrim3::onTimer] Not implemented (id: %d)", timerId);
+void EventHandlerPilgrim2::onTimer(TimerId timerId) {
+	error("[EventHandlerPilgrim2::onTimer] Not implemented (id: %d)", timerId);
 }
 
 #pragma endregion

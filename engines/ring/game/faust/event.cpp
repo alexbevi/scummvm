@@ -19,14 +19,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "ring/game/event_faust.h"
+#include "ring/game/faust/event.h"
 
 #include "ring/base/application.h"
 #include "ring/base/object.h"
 #include "ring/base/saveload.h"
 #include "ring/base/timer.h"
 
-#include "ring/game/shared_faust.h"
+#include "ring/game/faust/shared.h"
 
 #include "ring/debug.h"
 #include "ring/helpers.h"

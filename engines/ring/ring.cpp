@@ -26,27 +26,27 @@
 #include "ring/base/saveload.h"
 
 #ifdef ENABLE_FAUST
-#include "ring/game/application_faust.h"
+#include "ring/game/faust/faust.h"
 #endif
 
 #ifdef ENABLE_JERUSALEM
-#include "ring/game/application_jerusalem.h"
+#include "ring/game/jerusalem/jerusalem.h"
 #endif
 
 #ifdef ENABLE_PILGRIM2
-#include "ring/game/application_pilgrim2.h"
+#include "ring/game/pilgrim2/pilgrim2.h"
 #endif
 
 #ifdef ENABLE_PILGRIM3
-#include "ring/game/application_pilgrim3.h"
+#include "ring/game/pilgrim3/pilgrim3.h"
 #endif
 
 #ifdef ENABLE_POMPEII
-#include "ring/game/application_pompeii.h"
+#include "ring/game/pompeii/pompeii.h"
 #endif
 
 #ifdef ENABLE_RING1
-#include "ring/game/application_ring.h"
+#include "ring/game/ring/ring.h"
 #endif
 
 #include "ring/sound/sound.h"

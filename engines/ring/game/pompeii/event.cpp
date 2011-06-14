@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "ring/game/event_pompeii.h"
+#include "ring/game/pompeii/event.h"
 
 #include "ring/base/application.h"
 
