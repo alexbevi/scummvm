@@ -73,8 +73,19 @@ endif
 
 ifdef ENABLE_POMPEII
 MODULE_OBJS += \
+	game/pompeii/pompeii_animation.o \
 	game/pompeii/pompeii_application.o \
-	game/pompeii/pompeii_event.o
+	game/pompeii/pompeii_bag.o \
+	game/pompeii/pompeii_button.o \
+	game/pompeii/pompeii_event.o \
+	game/pompeii/pompeii_init.o \
+	game/pompeii/pompeii_input.o \
+	game/pompeii/pompeii_ride.o \
+	game/pompeii/pompeii_setup.o \
+	game/pompeii/pompeii_sound.o \
+	game/pompeii/pompeii_timer.o \
+	game/pompeii/pompeii_visual.o \
+	game/pompeii/pompeii_zone.o
 endif
 
 ifdef ENABLE_PILGRIM2

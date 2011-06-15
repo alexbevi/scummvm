@@ -21,18 +21,56 @@
 
 #include "ring/game/pompeii/pompeii_event.h"
 
-#include "ring/base/application.h"
+#include "ring/game/pompeii/pompeii_animation.h"
+#include "ring/game/pompeii/pompeii_application.h"
+#include "ring/game/pompeii/pompeii_bag.h"
+#include "ring/game/pompeii/pompeii_button.h"
+#include "ring/game/pompeii/pompeii_init.h"
+#include "ring/game/pompeii/pompeii_input.h"
+#include "ring/game/pompeii/pompeii_ride.h"
+#include "ring/game/pompeii/pompeii_setup.h"
+#include "ring/game/pompeii/pompeii_shared.h"
+#include "ring/game/pompeii/pompeii_sound.h"
+#include "ring/game/pompeii/pompeii_timer.h"
+#include "ring/game/pompeii/pompeii_visual.h"
+#include "ring/game/pompeii/pompeii_zone.h"
 
 #include "ring/debug.h"
+#include "ring/helpers.h"
+#include "ring/ring.h"
 
 //using namespace PompeiiGame;
 
 namespace Ring {
 
-EventHandlerPompeii::EventHandlerPompeii(Application *application) : _app(application) {
+EventHandlerPompeii::EventHandlerPompeii(ApplicationPompeii *application) : _app(application) {
+	// Event handlers
+	_eventAnimation = new EventAnimationPompeii(application);
+	_eventBag       = new EventBagPompeii(application);
+	_eventButton    = new EventButtonPompeii(application);
+	_eventInit      = new EventInitPompeii(application);
+	_eventInput     = new EventInputPompeii(application);
+	_eventRide      = new EventRidePompeii(application);
+	_eventSetup     = new EventSetupPompeii(application);
+	_eventSound     = new EventSoundPompeii(application);
+	_eventTimer     = new EventTimerPompeii(application);
+	_eventVisual    = new EventVisualPompeii(application);
+	_eventZone      = new EventZonePompeii(application);
 }
 
 EventHandlerPompeii::~EventHandlerPompeii() {
+	SAFE_DELETE(_eventAnimation);
+	SAFE_DELETE(_eventBag);
+	SAFE_DELETE(_eventButton);
+	SAFE_DELETE(_eventInit);
+	SAFE_DELETE(_eventInput);
+	SAFE_DELETE(_eventRide);
+	SAFE_DELETE(_eventSetup);
+	SAFE_DELETE(_eventSound);
+	SAFE_DELETE(_eventTimer);
+	SAFE_DELETE(_eventVisual);
+	SAFE_DELETE(_eventZone);
+
 	// Zero-out passed pointers
 	_app = NULL;
 }
@@ -83,29 +121,17 @@ void EventHandlerPompeii::onSetup(ZoneId zone, SetupType type) {
 		break;
 
 	case kZone2:
-		onSetupZone2(type);
+		_eventSetup->onSetupZone2(type);
 		break;
 
 	case kZone3:
-		onSetupZone3(type);
+		_eventSetup->onSetupZone3(type);
 		break;
 
 	case kZone4:
-		onSetupZone4(type);
+		_eventSetup->onSetupZone4(type);
 		break;
 	}
-}
-
-void EventHandlerPompeii::onSetupZone2(SetupType type) {
-	error("[EventHandlerPompeii::onSetupZone2] Not implemented");
-}
-
-void EventHandlerPompeii::onSetupZone3(SetupType type) {
-	error("[EventHandlerPompeii::onSetupZone3] Not implemented");
-}
-
-void EventHandlerPompeii::onSetupZone4(SetupType type) {
-	error("[EventHandlerPompeii::onSetupZone4] Not implemented");
 }
 
 #pragma endregion

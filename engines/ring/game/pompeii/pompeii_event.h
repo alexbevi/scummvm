@@ -26,11 +26,23 @@
 
 namespace Ring {
 
-class Application;
+class ApplicationPompeii;
+
+class EventAnimationPompeii;
+class EventBagPompeii;
+class EventButtonPompeii;
+class EventInitPompeii;
+class EventInputPompeii;
+class EventRidePompeii;
+class EventSetupPompeii;
+class EventSoundPompeii;
+class EventTimerPompeii;
+class EventVisualPompeii;
+class EventZonePompeii;
 
 class EventHandlerPompeii : public EventHandler {
 public:
-	EventHandlerPompeii(Application *application);
+	EventHandlerPompeii(ApplicationPompeii *application);
 	virtual ~EventHandlerPompeii();
 
 	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
@@ -43,14 +55,20 @@ public:
 	virtual void onSetup(ZoneId zone, SetupType type);
 
 private:
-	Application *_app;
+	ApplicationPompeii *_app;
 
-	//////////////////////////////////////////////////////////////////////////
-	// Setup
-	//////////////////////////////////////////////////////////////////////////
-	void onSetupZone2(SetupType type);
-	void onSetupZone3(SetupType type);
-	void onSetupZone4(SetupType type);
+	// Event handlers
+	EventAnimationPompeii *_eventAnimation;
+	EventBagPompeii       *_eventBag;
+	EventButtonPompeii    *_eventButton;
+	EventInitPompeii      *_eventInit;
+	EventInputPompeii     *_eventInput;
+	EventRidePompeii      *_eventRide;
+	EventSetupPompeii     *_eventSetup;
+	EventSoundPompeii     *_eventSound;
+	EventTimerPompeii     *_eventTimer;
+	EventVisualPompeii    *_eventVisual;
+	EventZonePompeii      *_eventZone;
 };
 
 } // End of namespace Ring

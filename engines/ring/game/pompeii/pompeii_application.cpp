@@ -184,59 +184,59 @@ void ApplicationPompeii::initZones() {
 
 	drawZoneName(kZone100);
 	_archiveType = getZoneArchiveType(kZone100);
-	initZoneSystem();
+	_eventHandler->onInitZone(kZone100);
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZone1);
 	_archiveType = getZoneArchiveType(kZone2);
-	initZone1();
+	_eventHandler->onInitZone(kZone1);
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone2);
-	initZone2();
+	_eventHandler->onInitZone(kZone2);
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone3);
-	initZone3();
+	_eventHandler->onInitZone(kZone3);
 
 	drawZoneName(kZone4);
 	_archiveType = getZoneArchiveType(kZone4);
-	initZone4();
+	_eventHandler->onInitZone(kZone4);
 
 	drawZoneName(kZone5);
 	_archiveType = getZoneArchiveType(kZone5);
-	initZone5();
+	_eventHandler->onInitZone(kZone5);
 
 	drawZoneName(kZone6);
 	_archiveType = getZoneArchiveType(kZone6);
-	initZone6();
+	_eventHandler->onInitZone(kZone6);
 
 	drawZoneName(kZone7);
 	_archiveType = getZoneArchiveType(kZone7);
-	initZone7();
+	_eventHandler->onInitZone(kZone7);
 
 	drawZoneName(kZone8);
 	_archiveType = getZoneArchiveType(kZone8);
-	initZone8();
+	_eventHandler->onInitZone(kZone8);
 
 	drawZoneName(kZone9);
 	_archiveType = getZoneArchiveType(kZone9);
-	initZone9();
+	_eventHandler->onInitZone(kZone9);
 
 	drawZoneName(kZone10);
 	_archiveType = getZoneArchiveType(kZone10);
-	initZone10();
+	_eventHandler->onInitZone(kZone10);
 
 	_loadFrom = kLoadFromDisk;
 
 	drawZoneName(kZone11);
 	_archiveType = getZoneArchiveType(kZone11);
-	initZone11();
+	_eventHandler->onInitZone(kZone11);
 
 	drawZoneName(kZone12);
 	_archiveType = getZoneArchiveType(kZone12);
-	initZone12();
+	_eventHandler->onInitZone(kZone12);
 
 	_archiveType = getZoneArchiveType(getCurrentZone());
 
@@ -245,65 +245,6 @@ void ApplicationPompeii::initZones() {
 	// Clear screen
 	_screenManager->clear();
 	g_system->updateScreen();
-}
-
-#pragma endregion
-
-#pragma region Zone initialization
-
-////////////////////////////////////////////////////////////////////////////
-// Zone initialization
-//////////////////////////////////////////////////////////////////////////
-void ApplicationPompeii::initZoneSystem() {
-	error("[ApplicationPompeii::initZoneSystem] Not implemented");
-}
-
-void ApplicationPompeii::initZone1() {
-	error("[ApplicationPompeii::initZone1] Not implemented");
-}
-
-void ApplicationPompeii::initZone2() {
-	error("[ApplicationPompeii::initZone2] Not implemented");
-}
-
-void ApplicationPompeii::initZone3() {
-	error("[ApplicationPompeii::initZone3] Not implemented");
-}
-
-void ApplicationPompeii::initZone4() {
-	error("[ApplicationPompeii::initZone4] Not implemented");
-}
-
-void ApplicationPompeii::initZone5() {
-	error("[ApplicationPompeii::initZone5] Not implemented");
-}
-
-void ApplicationPompeii::initZone6() {
-	error("[ApplicationPompeii::initZone6] Not implemented");
-}
-
-void ApplicationPompeii::initZone7() {
-	error("[ApplicationPompeii::initZone7] Not implemented");
-}
-
-void ApplicationPompeii::initZone8() {
-	error("[ApplicationPompeii::initZone8] Not implemented");
-}
-
-void ApplicationPompeii::initZone9() {
-	error("[ApplicationPompeii::initZone9] Not implemented");
-}
-
-void ApplicationPompeii::initZone10() {
-	error("[ApplicationPompeii::initZone10] Not implemented");
-}
-
-void ApplicationPompeii::initZone11() {
-	error("[ApplicationPompeii::initZone11] Not implemented");
-}
-
-void ApplicationPompeii::initZone12() {
-	error("[ApplicationPompeii::initZone12] Not implemented");
 }
 
 #pragma endregion
