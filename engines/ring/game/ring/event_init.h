@@ -19,40 +19,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_EVENTHANDLER_POMPEII_H
-#define RING_EVENTHANDLER_POMPEII_H
-
-#include "ring/base/event.h"
+#ifndef RING_EVENTINITRING_H
+#define RING_EVENTINITRING_H
 
 namespace Ring {
 
-class Application;
+class ApplicationRing;
 
-class EventHandlerPompeii : public EventHandler {
+class EventInitRing {
 public:
-	EventHandlerPompeii(Application *application);
-	virtual ~EventHandlerPompeii();
+	EventInitRing(ApplicationRing *application);
+	~EventInitRing();
 
-	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
-	virtual void onMouseLeftButtonDown(const Common::Event &evt);
-	virtual void onMouseRightButtonUp(const Common::Event &evt);
-	virtual void onKeyDown(Common::Event &evt);
-	virtual void onTimer(TimerId id);
-	virtual void onInitZone(ZoneId zone);
-
-	virtual void onSetup(ZoneId zone, SetupType type);
+	//////////////////////////////////////////////////////////////////////////
+	// Zone initialization
+	//////////////////////////////////////////////////////////////////////////
+	void initZoneSY();
+	void initZoneNI();
+	void initZoneRH();
+	void initZoneFO();
+	void initZoneRO();
+	void initZoneWA();
+	void initZoneAS();
+	void initZoneN2();
 
 private:
-	Application *_app;
-
-	//////////////////////////////////////////////////////////////////////////
-	// Setup
-	//////////////////////////////////////////////////////////////////////////
-	void onSetupZone2(SetupType type);
-	void onSetupZone3(SetupType type);
-	void onSetupZone4(SetupType type);
+	ApplicationRing *_app;
 };
 
 } // End of namespace Ring
 
-#endif // RING_EVENTHANDLER_POMPEII_H
+#endif // RING_EVENTINITRING_H

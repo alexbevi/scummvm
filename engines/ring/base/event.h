@@ -39,6 +39,7 @@ public:
 	virtual void onMouseRightButtonUp(const Common::Event &evt) = 0;
 	virtual void onKeyDown(Common::Event &evt) = 0;
 	virtual void onTimer(TimerId id) = 0;
+	virtual void onInitZone(ZoneId zone) = 0;
 
 	virtual void onSound(Id id, SoundType type, uint32 a3) {}
 	virtual void onSetup(ZoneId zone, SetupType type) {}

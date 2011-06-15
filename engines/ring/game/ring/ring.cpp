@@ -30,7 +30,6 @@
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 
-#include "ring/game/ring/init.h"
 #include "ring/game/ring/event.h"
 #include "ring/game/ring/shared.h"
 #include "ring/game/ring/visual.h"
@@ -98,12 +97,10 @@ static const struct {
 
 ApplicationRing::ApplicationRing(RingEngine *engine) : Application(engine) {
 	_eventHandler = new EventHandlerRing(this);
-	_init         = new InitRing(this);
 }
 
 ApplicationRing::~ApplicationRing() {
 	// the event handler is deleted by the base class
-	SAFE_DELETE(_init);
 }
 
 #pragma region Game setup
@@ -633,37 +630,37 @@ void ApplicationRing::initZones() {
 
 	drawZoneName(kZoneSY);
 	_archiveType = _configuration.artSY ? kArchiveArt : kArchiveFile;
-	_init->initZoneSY();
+	_eventHandler->onInitZone(kZoneSY);
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZoneAS);
 	_archiveType = _configuration.artAS ? kArchiveArt : kArchiveFile;
-	_init->initZoneAS();
+	_eventHandler->onInitZone(kZoneAS);
 
 	drawZoneName(kZoneNI);
 	_archiveType = _configuration.artNI ? kArchiveArt : kArchiveFile;
-	_init->initZoneNI();
+	_eventHandler->onInitZone(kZoneNI);
 
 	drawZoneName(kZoneN2);
 	_archiveType = _configuration.artN2 ? kArchiveArt : kArchiveFile;
-	_init->initZoneN2();
+	_eventHandler->onInitZone(kZoneN2);
 
 	drawZoneName(kZoneRO);
 	_archiveType = _configuration.artRO ? kArchiveArt : kArchiveFile;
-	_init->initZoneRO();
+	_eventHandler->onInitZone(kZoneRO);
 
 	drawZoneName(kZoneRH);
 	_archiveType = _configuration.artRH ? kArchiveArt : kArchiveFile;
-	_init->initZoneRH();
+	_eventHandler->onInitZone(kZoneRH);
 
 	drawZoneName(kZoneFO);
 	_archiveType = _configuration.artFO ? kArchiveArt : kArchiveFile;
-	_init->initZoneFO();
+	_eventHandler->onInitZone(kZoneFO);
 
 	drawZoneName(kZoneWA);
 	_archiveType = _configuration.artWA ? kArchiveArt : kArchiveFile;
-	_init->initZoneWA();
+	_eventHandler->onInitZone(kZoneWA);
 
 	if (_configuration.artSY || _configuration.artAS || _configuration.artNI || _configuration.artN2
 		|| _configuration.artRO || _configuration.artRH || _configuration.artFO || _configuration.artWA)

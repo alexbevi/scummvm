@@ -19,34 +19,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_INITRING_H
-#define RING_INITRING_H
+#ifndef RING_EVENTTIMERRING_H
+#define RING_EVENTTIMERRING_H
+
+#include "ring/shared.h"
 
 namespace Ring {
 
 class ApplicationRing;
+class EventHandlerRing;
 
-class InitRing {
+class EventTimerRing {
 public:
-	InitRing(ApplicationRing *application);
-	~InitRing();
+	EventTimerRing(ApplicationRing *application, EventHandlerRing *eventHandler);
+	~EventTimerRing();
 
-	//////////////////////////////////////////////////////////////////////////
-	// Zone initialization
-	//////////////////////////////////////////////////////////////////////////
-	void initZoneSY();
-	void initZoneNI();
-	void initZoneRH();
-	void initZoneFO();
-	void initZoneRO();
-	void initZoneWA();
-	void initZoneAS();
-	void initZoneN2();
+	void onTimerZoneNI(TimerId id);
+	void onTimerZoneRH(TimerId id);
+	void onTimerZoneFO(TimerId id);
+	void onTimerZoneRO(TimerId id);
+	void onTimerZoneAS(TimerId id);
+	void onTimerZoneN2(TimerId id);
 
 private:
-	ApplicationRing *_app;
+	ApplicationRing  *_app;
+	EventHandlerRing *_event;
+
+	bool              _disableTimerRH;
+	uint32            _frameNumberTimerRH;
 };
 
 } // End of namespace Ring
 
-#endif // RING_INITRING_H
+#endif // RING_EVENTTIMERRING_H

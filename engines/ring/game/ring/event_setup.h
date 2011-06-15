@@ -19,40 +19,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_EVENTHANDLER_POMPEII_H
-#define RING_EVENTHANDLER_POMPEII_H
+#ifndef RING_EVENTSETUPRING_H
+#define RING_EVENTSETUPRING_H
 
-#include "ring/base/event.h"
+#include "ring/shared.h"
 
 namespace Ring {
 
-class Application;
+class ApplicationRing;
 
-class EventHandlerPompeii : public EventHandler {
+class EventSetupRing {
 public:
-	EventHandlerPompeii(Application *application);
-	virtual ~EventHandlerPompeii();
+	EventSetupRing(ApplicationRing *application);
+	~EventSetupRing();
 
-	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
-	virtual void onMouseLeftButtonDown(const Common::Event &evt);
-	virtual void onMouseRightButtonUp(const Common::Event &evt);
-	virtual void onKeyDown(Common::Event &evt);
-	virtual void onTimer(TimerId id);
-	virtual void onInitZone(ZoneId zone);
+	void onSetupZoneNI(SetupType type);
+	void onSetupZoneRH(SetupType type);
+	void onSetupZoneFO(SetupType type);
+	void onSetupZoneRO(SetupType type);
+	void onSetupZoneWA(SetupType type);
+	void onSetupZoneAS(SetupType type);
+	void onSetupZoneN2(SetupType type);
 
-	virtual void onSetup(ZoneId zone, SetupType type);
+	void onSetupLoadTimers(Common::String zoneName, Id testId1, Id puzzleRotationId, Id testId2);
+
 
 private:
-	Application *_app;
-
-	//////////////////////////////////////////////////////////////////////////
-	// Setup
-	//////////////////////////////////////////////////////////////////////////
-	void onSetupZone2(SetupType type);
-	void onSetupZone3(SetupType type);
-	void onSetupZone4(SetupType type);
+	ApplicationRing *_app;
 };
 
 } // End of namespace Ring
 
-#endif // RING_EVENTHANDLER_POMPEII_H
+#endif // RING_EVENTSETUPRING_H

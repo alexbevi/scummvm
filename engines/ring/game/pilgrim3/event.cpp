@@ -57,6 +57,14 @@ void EventHandlerPilgrim3::onKeyDown(Common::Event &evt) {
 
 #pragma endregion
 
+#pragma region Zone
+
+void EventHandlerPilgrim3::onInitZone(ZoneId zone) {
+	error("[EventHandlerPilgrim3::onInitZone] Not implemented (zone: %d)", zone);
+}
+
+#pragma endregion
+
 #pragma region Timer
 
 void EventHandlerPilgrim3::onTimer(TimerId timerId) {

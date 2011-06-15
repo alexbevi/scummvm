@@ -38,6 +38,7 @@ public:
 	virtual void onMouseRightButtonUp(const Common::Event &evt);
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
+	virtual void onInitZone(ZoneId zone);
 
 private:
 	Application *_app;

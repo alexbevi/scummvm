@@ -59,6 +59,14 @@ void EventHandlerPompeii::onKeyDown(Common::Event &evt) {
 
 #pragma endregion
 
+#pragma region Zone
+
+void EventHandlerPompeii::onInitZone(ZoneId zone) {
+	error("[EventHandlerPompeii::onInitZone] Not implemented (zone: %d)", zone);
+}
+
+#pragma endregion
+
 #pragma region Timer
 
 void EventHandlerPompeii::onTimer(TimerId timerId) {

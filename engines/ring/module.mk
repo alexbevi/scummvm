@@ -39,9 +39,18 @@ MODULE_OBJS := \
 
 ifdef ENABLE_RING1
 MODULE_OBJS += \
-	game/ring/init.o \
 	game/ring/ring.o \
 	game/ring/event.o \
+	game/ring/event_animation.o \
+	game/ring/event_bag.o \
+	game/ring/event_button.o \
+	game/ring/event_init.o \
+	game/ring/event_input.o \
+	game/ring/event_ride.o \
+	game/ring/event_setup.o \
+	game/ring/event_sound.o \
+	game/ring/event_timer.o \
+	game/ring/event_zone.o \
 	game/ring/visual.o
 endif
 

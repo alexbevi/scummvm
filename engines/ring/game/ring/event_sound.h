@@ -19,40 +19,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_EVENTHANDLER_POMPEII_H
-#define RING_EVENTHANDLER_POMPEII_H
+#ifndef RING_EVENTSOUNDRING_H
+#define RING_EVENTSOUNDRING_H
 
-#include "ring/base/event.h"
+#include "ring/shared.h"
 
 namespace Ring {
 
-class Application;
+class ApplicationRing;
+class EventHandlerRing;
 
-class EventHandlerPompeii : public EventHandler {
+class EventSoundRing {
 public:
-	EventHandlerPompeii(Application *application);
-	virtual ~EventHandlerPompeii();
+	EventSoundRing(ApplicationRing *application, EventHandlerRing *eventHandler);
+	~EventSoundRing();
 
-	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
-	virtual void onMouseLeftButtonDown(const Common::Event &evt);
-	virtual void onMouseRightButtonUp(const Common::Event &evt);
-	virtual void onKeyDown(Common::Event &evt);
-	virtual void onTimer(TimerId id);
-	virtual void onInitZone(ZoneId zone);
-
-	virtual void onSetup(ZoneId zone, SetupType type);
+	void onSoundZoneSY(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneNI(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneRH(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneFO(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneRO(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneWA(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneAS(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZoneN2(Id id, SoundType type, uint32 a3, bool process);
 
 private:
-	Application *_app;
-
-	//////////////////////////////////////////////////////////////////////////
-	// Setup
-	//////////////////////////////////////////////////////////////////////////
-	void onSetupZone2(SetupType type);
-	void onSetupZone3(SetupType type);
-	void onSetupZone4(SetupType type);
+	ApplicationRing  *_app;
+	EventHandlerRing *_event;
 };
 
 } // End of namespace Ring
 
-#endif // RING_EVENTHANDLER_POMPEII_H
+#endif // RING_EVENTSOUNDRING_H

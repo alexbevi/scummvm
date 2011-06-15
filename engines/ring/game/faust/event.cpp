@@ -268,7 +268,11 @@ void EventHandlerFaust::onKeyDownZone(const Common::KeyState &keyState) {
 
 #pragma endregion
 
-#pragma region Zone Setup
+#pragma region Zone
+
+void EventHandlerFaust::onInitZone(ZoneId zone) {
+	error("[EventHandlerFaust::onInitZone] Not implemented (zone: %d)", zone);
+}
 
 void EventHandlerFaust::onSetup(ZoneId zone, SetupType type) {
 	switch (zone) {

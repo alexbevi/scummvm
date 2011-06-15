@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "ring/game/ring/init.h"
+#include "ring/game/ring/event_init.h"
 
 #include "ring/base/application.h"
 
@@ -34,12 +34,14 @@ using namespace RingGame;
 
 namespace Ring {
 
-InitRing::InitRing(ApplicationRing *application) : _app(application) {}
+EventInitRing::EventInitRing(ApplicationRing *application) : _app(application) {}
 
-InitRing::~InitRing() {
+EventInitRing::~EventInitRing() {
+	// Zero-out passed pointers
+	_app = NULL;
 }
 
-void InitRing::initZoneSY() {
+void EventInitRing::initZoneSY() {
 	debugC(1, kRingDebugLogic, "Initializing System zone (SY)...");
 
 	_app->setZoneAndEnableBag(kZoneSY);
@@ -369,7 +371,7 @@ void InitRing::initZoneSY() {
 	_app->varDefineByte(90028, 0);
 }
 
-void InitRing::initZoneNI() {
+void EventInitRing::initZoneNI() {
 	debugC(1, kRingDebugLogic, "Initializing Alberich zone (NI)...");
 
 	_app->setZoneAndEnableBag(kZoneNI);
@@ -1064,7 +1066,7 @@ void InitRing::initZoneNI() {
 	_app->varDefineByte(10112, 0);
 }
 
-void InitRing::initZoneRH() {
+void EventInitRing::initZoneRH() {
 	debugC(1, kRingDebugLogic, "Initializing Alberich zone (RH)...");
 
 	_app->setZoneAndEnableBag(kZoneRH);
@@ -1485,7 +1487,7 @@ void InitRing::initZoneRH() {
 	_app->varDefineWord(20000, 20000);
 }
 
-void InitRing::initZoneFO() {
+void EventInitRing::initZoneFO() {
 	debugC(1, kRingDebugLogic, "Initializing Siegmund zone (FO)...");
 
 	_app->setZoneAndEnableBag(kZoneFO);
@@ -2418,7 +2420,7 @@ void InitRing::initZoneFO() {
 	_app->varDefineFloat(30042, 1.0);
 }
 
-void InitRing::initZoneRO() {
+void EventInitRing::initZoneRO() {
 	debugC(1, kRingDebugLogic, "Initializing Loge zone (RO)...");
 
 	_app->setZoneAndEnableBag(kZoneRO);
@@ -2869,7 +2871,7 @@ void InitRing::initZoneRO() {
 	_app->varDefineString(40902, "00000000");
 }
 
-void InitRing::initZoneWA() {
+void EventInitRing::initZoneWA() {
 	debugC(1, kRingDebugLogic, "Initializing Brnnnhilde zone (WA)...");
 
 	_app->setZoneAndEnableBag(kZoneWA);
@@ -3517,7 +3519,7 @@ void InitRing::initZoneWA() {
 		_app->varDefineDword(51000 + i, 0);
 }
 
-void InitRing::initZoneAS() {
+void EventInitRing::initZoneAS() {
 	debugC(1, kRingDebugLogic, "Initializing Dril zone (AS)...");
 
 	_app->setZoneAndEnableBag(kZoneAS);
@@ -3917,7 +3919,7 @@ void InitRing::initZoneAS() {
 	_app->varDefineFloat(80003, 100.0);
 }
 
-void InitRing::initZoneN2() {
+void EventInitRing::initZoneN2() {
 	debugC(1, kRingDebugLogic, "Initializing Loge zone (N2)...");
 
 	_app->setZoneAndEnableBag(kZoneN2);

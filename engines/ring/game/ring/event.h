@@ -26,9 +26,18 @@
 
 namespace Ring {
 
-class Accessibility;
 class ApplicationRing;
-class Movability;
+
+class EventAnimationRing;
+class EventBagRing;
+class EventButtonRing;
+class EventInitRing;
+class EventInputRing;
+class EventRideRing;
+class EventSetupRing;
+class EventSoundRing;
+class EventTimerRing;
+class EventZoneRing;
 
 class EventHandlerRing : public EventHandler {
 public:
@@ -40,6 +49,7 @@ public:
 	virtual void onMouseRightButtonUp(const Common::Event &evt);
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
+	virtual void onInitZone(ZoneId zone);
 
 	virtual void onSound(Id id, SoundType type, uint32 a3);
 	virtual void onSetup(ZoneId zone, SetupType type);
@@ -55,194 +65,56 @@ public:
 	virtual void onAnimation(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
 	virtual void onVisualList(Id id, uint32 type, const Common::Point &point);
 
-private:
-	ApplicationRing *_app;
-
-	// Data & State
-	bool         _controlNotPressed;
-	uint32       _dword_4A1C00;
-	bool         _disableTimerRH;
-	uint32       _frameNumberTimerRH;
-
-	// RO
-	int32        _presentationIndexRO;
-	int32        _presentationIndexBagRO;
-	int32        _presentationIndexBagRO2;
-
-	// NI
-	bool         _stateBagNI;
-	int32        _presentationIndexNI;
-	int32        _indexOffsetNI;
-	int32        _distNI;
-
-	// N2
-	int32        _presentationIndexN2;
-	int32        _distN2;
-
-	// SY
-	uint32       _presentationIndexSY;
-	bool         _prefsSubtitles;
-	int32        _prefsVolume;
-	int32        _prefsVolumeDialog;
-	bool         _object1Visible;
-	int16        _offsetX;
-	int16        _offsetX0;
-	int16        _coordX;
-
+protected:
 	//////////////////////////////////////////////////////////////////////////
-	// Event Handling
-	//////////////////////////////////////////////////////////////////////////
-	void onMouseLeftButtonUp(const Common::Event &evt);
-	bool handleLeftButtonDown(Accessibility *accessibility, uint32 index, Id id, const Common::Point &point);
-
-	bool handleLeftButtonUp(Accessibility *accessibility, Id id, const Common::Point &point);
-	bool handleLeftButtonUp(Movability *movability, uint32 index, Id id, bool isRotation = false);
-
-	//////////////////////////////////////////////////////////////////////////
-	// Button down
+	// Buttons
 	//////////////////////////////////////////////////////////////////////////
 	void onButtonDown(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonDownZoneNI(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonDownZoneRO(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonDownZoneN2(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-
 	void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneSY(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneNI(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneRH(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneFO(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneRO(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneWA(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneAS(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUpZoneN2(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-
 	void onButtonUp2(ObjectId id, uint32 index, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-	void onButtonUp2ZoneWA(ObjectId id, uint32 index, Id puzzleRotationId, uint32 a4, const Common::Point &point);
-
-	//////////////////////////////////////////////////////////////////////////
-	// Key down
-	//////////////////////////////////////////////////////////////////////////
-	void onKeyDownZone(const Common::KeyState &keyState);
-	void onKeyDownZoneSY(const Common::KeyState &keyState);
-
-	//////////////////////////////////////////////////////////////////////////
-	// Setup
-	//////////////////////////////////////////////////////////////////////////
-	void onSetupZoneNI(SetupType type);
-	void onSetupZoneRH(SetupType type);
-	void onSetupZoneFO(SetupType type);
-	void onSetupZoneRO(SetupType type);
-	void onSetupZoneWA(SetupType type);
-	void onSetupZoneAS(SetupType type);
-	void onSetupZoneN2(SetupType type);
-
-	void onSetupLoadTimers(Common::String zoneName, Id testId1, Id puzzleRotationId, Id testId2);
-
-	//////////////////////////////////////////////////////////////////////////
-	// Update
-	//////////////////////////////////////////////////////////////////////////
-	void onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point);
-	void onUpdateBeforeZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point);
-	void onUpdateBeforeZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point);
-	void onUpdateBagZoneSY(const Common::Point &point);
-
-	//////////////////////////////////////////////////////////////////////////
-	// Timer
-	//////////////////////////////////////////////////////////////////////////
-	void onTimerZoneNI(TimerId id);
-	void onTimerZoneRH(TimerId id);
-	void onTimerZoneFO(TimerId id);
-	void onTimerZoneRO(TimerId id);
-	void onTimerZoneAS(TimerId id);
-	void onTimerZoneN2(TimerId id);
-
-	//////////////////////////////////////////////////////////////////////////
-	// Bag
-	//////////////////////////////////////////////////////////////////////////
-	void onBagZoneSY(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
-	void onBagZoneNI(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
-	void onBagZoneFO(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
-	void onBagZoneRO(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
-	void onBagZoneN2(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
-
-	void onBagClickedObjectZoneFO(ObjectId id);
-
-	//////////////////////////////////////////////////////////////////////////
-	// Rides
-	//////////////////////////////////////////////////////////////////////////
-	void onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onBeforeRideZoneRH(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onBeforeRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onBeforeRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onBeforeRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onBeforeRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onBeforeRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-
-	void onAfterRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onAfterRideZoneRH(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onAfterRideZoneFO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onAfterRideZoneRO(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onAfterRideZoneWA(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onAfterRideZoneAS(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-	void onAfterRideZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
-
-	//////////////////////////////////////////////////////////////////////////
-	// Sound
-	//////////////////////////////////////////////////////////////////////////
-	void onSoundZoneSY(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneNI(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneRH(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneFO(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneRO(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneWA(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneAS(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneN2(Id id, SoundType type, uint32 a3, bool process);
-
-	//////////////////////////////////////////////////////////////////////////
-	// Animation
-	//////////////////////////////////////////////////////////////////////////
-	void onAnimationNextFrameZoneNI(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
-	void onAnimationNextFrameZoneRH(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
-	void onAnimationNextFrameZoneFO(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
-	void onAnimationNextFrameZoneRO(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
-	void onAnimationNextFrameZoneWA(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
-	void onAnimationNextFrameZoneAS(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
-	void onAnimationNextFrameZoneN2(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
-
-	void onAnimationZoneWA(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Zone switching
 	//////////////////////////////////////////////////////////////////////////
-	void onSwitchZoneNI(uint32 type);
-	void onSwitchZoneRH(uint32 type);
-	void onSwitchZoneFO(uint32 type);
-	void onSwitchZoneRO(uint32 type);
-	void onSwitchZoneWA(uint32 type);
-	void onSwitchZoneAS(uint32 type);
-	void onSwitchZoneN2(uint32 type);
+	void onSwitchZone(ZoneId zone, uint32 type);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Helper functions
+	//////////////////////////////////////////////////////////////////////////
+	void sub_433EE0();
+	void sub_445A10();
+
+private:
+	ApplicationRing *_app;
+
+	// Event handlers
+	EventAnimationRing *_eventAnimation;
+	EventBagRing       *_eventBag;
+	EventButtonRing    *_eventButton;
+	EventInitRing      *_eventInit;
+	EventInputRing     *_eventInput;
+	EventRideRing      *_eventRide;
+	EventSetupRing     *_eventSetup;
+	EventSoundRing     *_eventSound;
+	EventTimerRing     *_eventTimer;
+	EventZoneRing      *_eventZone;
+
+	// Shared data
+	int32        _prefsVolume;
+	int32        _presentationIndexRO;
 
 	//////////////////////////////////////////////////////////////////////////
 	// VisualList
 	//////////////////////////////////////////////////////////////////////////
 	void onVisualListZoneSY(Id id, uint32 a2, const Common::Point &point);
 
-	//////////////////////////////////////////////////////////////////////////
-	// Helper functions
-	//////////////////////////////////////////////////////////////////////////
-	void sub_433EE0();
-	void sub_433FA0();
-	void sub_4340C0();
-
-	// NI
-	void sub_445930();
-	void sub_445A10();
-
-	void waitTicks(uint32 ticks) const;
-
-	// Savegames
-	bool copySavedTimers(uint32 slot) const;
-	bool removeSavedTimers(uint32 slot) const;
+	friend class EventAnimationRing;
+	friend class EventBagRing;
+	friend class EventButtonRing;
+	friend class EventInputRing;
+	friend class EventRideRing;
+	friend class EventSoundRing;
+	friend class EventTimerRing;
 };
 
 } // End of namespace Ring

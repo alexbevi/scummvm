@@ -57,6 +57,14 @@ void EventHandlerJerusalem::onKeyDown(Common::Event &evt) {
 
 #pragma endregion
 
+#pragma region Zone
+
+void EventHandlerJerusalem::onInitZone(ZoneId zone) {
+	error("[EventHandlerJerusalem::onInitZone] Not implemented (zone: %d)", zone);
+}
+
+#pragma endregion
+
 #pragma region Timer
 
 void EventHandlerJerusalem::onTimer(TimerId timerId) {

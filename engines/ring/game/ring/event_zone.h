@@ -19,40 +19,44 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_EVENTHANDLER_POMPEII_H
-#define RING_EVENTHANDLER_POMPEII_H
+#ifndef RING_EVENTZONERING_H
+#define RING_EVENTZONERING_H
 
-#include "ring/base/event.h"
+#include "ring/shared.h"
+
+#include "common/rect.h"
 
 namespace Ring {
 
-class Application;
+class ApplicationRing;
 
-class EventHandlerPompeii : public EventHandler {
+class EventZoneRing {
 public:
-	EventHandlerPompeii(Application *application);
-	virtual ~EventHandlerPompeii();
+	EventZoneRing(ApplicationRing *application);
+	~EventZoneRing();
 
-	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
-	virtual void onMouseLeftButtonDown(const Common::Event &evt);
-	virtual void onMouseRightButtonUp(const Common::Event &evt);
-	virtual void onKeyDown(Common::Event &evt);
-	virtual void onTimer(TimerId id);
-	virtual void onInitZone(ZoneId zone);
+	//////////////////////////////////////////////////////////////////////////
+	// Zone switching
+	//////////////////////////////////////////////////////////////////////////
+	void onSwitchZoneNI(uint32 type);
+	void onSwitchZoneRH(uint32 type);
+	void onSwitchZoneFO(uint32 type);
+	void onSwitchZoneRO(uint32 type);
+	void onSwitchZoneWA(uint32 type);
+	void onSwitchZoneAS(uint32 type);
+	void onSwitchZoneN2(uint32 type);
 
-	virtual void onSetup(ZoneId zone, SetupType type);
+	//////////////////////////////////////////////////////////////////////////
+	// Update
+	//////////////////////////////////////////////////////////////////////////
+	void onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point);
+	void onUpdateBeforeZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point);
+	void onUpdateBeforeZoneN2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point);
 
 private:
-	Application *_app;
-
-	//////////////////////////////////////////////////////////////////////////
-	// Setup
-	//////////////////////////////////////////////////////////////////////////
-	void onSetupZone2(SetupType type);
-	void onSetupZone3(SetupType type);
-	void onSetupZone4(SetupType type);
+	ApplicationRing *_app;
 };
 
 } // End of namespace Ring
 
-#endif // RING_EVENTHANDLER_POMPEII_H
+#endif // RING_EVENTZONERING_H
