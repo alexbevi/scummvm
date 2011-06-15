@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_VISUALRING_H
-#define RING_VISUALRING_H
+#ifndef RING_RING_VISUAL_H
+#define RING_RING_VISUAL_H
 
 #include "ring/graphics/visual.h"
 
@@ -80,4 +80,4 @@ private:
 
 } // End of namespace Ring
 
-#endif // RING_VISUALRING_H
+#endif // RING_RING_VISUAL_H

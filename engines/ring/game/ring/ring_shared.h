@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_SHARED_RING_H
-#define RING_SHARED_RING_H
+#ifndef RING_RING_SHARED_H
+#define RING_RING_SHARED_H
 
 namespace RingGame {
 
@@ -457,4 +457,4 @@ enum ObjectId {
 
 } // End of namespace RingGame
 
-#endif // RING_SHARED_RING_H
+#endif // RING_RING_SHARED_H

@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_EVENTHANDLER_JERUSALEM_H
-#define RING_EVENTHANDLER_JERUSALEM_H
+#ifndef RING_JERUSALEM_EVENT_H
+#define RING_JERUSALEM_EVENT_H
 
 #include "ring/base/event.h"
 
@@ -46,4 +46,4 @@ private:
 
 } // End of namespace Ring
 
-#endif // RING_EVENTHANDLER_JERUSALEM_H
+#endif // RING_JERUSALEM_EVENT_H

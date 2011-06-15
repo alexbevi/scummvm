@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_EVENTHANDLER_POMPEII_H
-#define RING_EVENTHANDLER_POMPEII_H
+#ifndef RING_POMPEII_EVENT_H
+#define RING_POMPEII_EVENT_H
 
 #include "ring/base/event.h"
 
@@ -55,4 +55,4 @@ private:
 
 } // End of namespace Ring
 
-#endif // RING_EVENTHANDLER_POMPEII_H
+#endif // RING_POMPEII_EVENT_H

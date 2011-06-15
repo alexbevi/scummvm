@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_EVENTINITRING_H
-#define RING_EVENTINITRING_H
+#ifndef RING_RING_INIT_H
+#define RING_RING_INIT_H
 
 namespace Ring {
 
@@ -49,4 +49,4 @@ private:
 
 } // End of namespace Ring
 
-#endif // RING_EVENTINITRING_H
+#endif // RING_RING_INIT_H
