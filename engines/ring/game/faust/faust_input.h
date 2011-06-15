@@ -19,43 +19,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_FAUST_INIT_H
-#define RING_FAUST_INIT_H
+#ifndef RING_FAUST_INPUT_H
+#define RING_FAUST_INPUT_H
+
+#include "ring/shared.h"
+
+#include "common/events.h"
 
 namespace Ring {
 
 class ApplicationFaust;
+class EventHandlerFaust;
 
-class EventInitFaust {
+class EventInputFaust {
 public:
-	EventInitFaust(ApplicationFaust *application);
-	~EventInitFaust();
+	EventInputFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler);
+	~EventInputFaust();
 
-	//////////////////////////////////////////////////////////////////////////
-	// Zone initialization
-	//////////////////////////////////////////////////////////////////////////
-	void initZoneSY();
-	void initZone2();
-	void initZone3();
-	void initZone4();
-	void initZone5();
-	void initZone6();
-	void initZone7();
-	void initZone8();
-	void initZone9();
-	void initZone10();
-	void initZone11();
-	void initZone12();
-	void initZone13();
-	void initZone14();
-	void initZone15();
-	void initZone16();
-	void initZone17();
+	void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
+	void onMouseLeftButtonDown(const Common::Event &evt);
+	void onMouseRightButtonUp(const Common::Event &evt);
+	void onKeyDown(Common::Event &evt);
 
 private:
-	ApplicationFaust *_app;
+	ApplicationFaust  *_app;
+	EventHandlerFaust *_event;
+
+	void onKeyDownZone(const Common::KeyState &keyState);
 };
 
 } // End of namespace Ring
 
-#endif // RING_FAUST_INIT_H
+#endif // RING_FAUST_INPUT_H

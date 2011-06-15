@@ -65,7 +65,6 @@ static const struct {
 
 ApplicationFaust::ApplicationFaust(RingEngine *engine) : Application(engine) {
 	_eventHandler = new EventHandlerFaust(this);
-	_init         = new InitFaust(this);
 
 	_slot = -1;
 	_zone = kZoneNone;
@@ -73,7 +72,6 @@ ApplicationFaust::ApplicationFaust(RingEngine *engine) : Application(engine) {
 
 ApplicationFaust::~ApplicationFaust() {
 	// the event handler is deleted by the base class
-	SAFE_DELETE(_init);
 }
 
 #pragma region Game setup
@@ -862,77 +860,77 @@ void ApplicationFaust::initZones() {
 
 	drawZoneName(kZoneSY);
 	_archiveType = getZoneArchiveType(kZoneSY);
-	_init->initZoneSY();
+	_eventHandler->onInitZone(kZoneSY);
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone2);
-	_init->initZone2();
+	_eventHandler->onInitZone(kZone2);
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone3);
-	_init->initZone3();
+	_eventHandler->onInitZone(kZone3);
 
 	drawZoneName(kZone4);
 	_archiveType = getZoneArchiveType(kZone4);
-	_init->initZone4();
+	_eventHandler->onInitZone(kZone4);
 
 	drawZoneName(kZone5);
 	_archiveType = getZoneArchiveType(kZone5);
-	_init->initZone5();
+	_eventHandler->onInitZone(kZone5);
 
 	drawZoneName(kZone6);
 	_archiveType = getZoneArchiveType(kZone6);
-	_init->initZone6();
+	_eventHandler->onInitZone(kZone6);
 
 	drawZoneName(kZone7);
 	_archiveType = getZoneArchiveType(kZone7);
-	_init->initZone7();
+	_eventHandler->onInitZone(kZone7);
 
 	drawZoneName(kZone8);
 	_archiveType = getZoneArchiveType(kZone8);
-	_init->initZone8();
+	_eventHandler->onInitZone(kZone8);
 
 	drawZoneName(kZone9);
 	_archiveType = getZoneArchiveType(kZone9);
-	_init->initZone9();
+	_eventHandler->onInitZone(kZone9);
 
 	drawZoneName(kZone10);
 	_archiveType = getZoneArchiveType(kZone10);
-	_init->initZone10();
+	_eventHandler->onInitZone(kZone10);
 
 	_loadFrom = kLoadFromDisk;
 
 	drawZoneName(kZone11);
 	_archiveType = getZoneArchiveType(kZone11);
-	_init->initZone11();
+	_eventHandler->onInitZone(kZone11);
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZone12);
 	_archiveType = getZoneArchiveType(kZone12);
-	_init->initZone12();
+	_eventHandler->onInitZone(kZone12);
 
 	drawZoneName(kZone13);
 	_archiveType = getZoneArchiveType(kZone13);
-	_init->initZone13();
+	_eventHandler->onInitZone(kZone13);
 
 	drawZoneName(kZone14);
 	_archiveType = getZoneArchiveType(kZone14);
-	_init->initZone14();
+	_eventHandler->onInitZone(kZone14);
 
 	drawZoneName(kZone15);
 	_archiveType = getZoneArchiveType(kZone15);
-	_init->initZone15();
+	_eventHandler->onInitZone(kZone15);
 
 	drawZoneName(kZone16);
 	_archiveType = getZoneArchiveType(kZone16);
-	_init->initZone16();
+	_eventHandler->onInitZone(kZone16);
 
 	drawZoneName(kZone17);
 	_archiveType = getZoneArchiveType(kZone17);
-	_init->initZone17();
+	_eventHandler->onInitZone(kZone17);
 
 	_archiveType = getZoneArchiveType(getCurrentZone());
 

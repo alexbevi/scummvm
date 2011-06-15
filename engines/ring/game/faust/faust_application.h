@@ -19,14 +19,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_APPLICATION_FAUST_H
-#define RING_APPLICATION_FAUST_H
+#ifndef RING_FAUST_APPLICATION_H
+#define RING_FAUST_APPLICATION_H
 
 #include "ring/base/application.h"
 
 namespace Ring {
-
-class InitFaust;
 
 class ApplicationFaust : public Application {
 public:
@@ -66,7 +64,6 @@ public:
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 
 private:
-	InitFaust *_init;
 	int32 _slot;
 	ZoneId _zone;
 
@@ -84,4 +81,4 @@ private:
 
 } // End of namespace Ring
 
-#endif // RING_APPLICATION_FAUST_H
+#endif // RING_FAUST_APPLICATION_H

@@ -19,38 +19,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_FAUST_INIT_H
-#define RING_FAUST_INIT_H
+#ifndef RING_FAUST_SETUP_H
+#define RING_FAUST_SETUP_H
+
+#include "ring/shared.h"
 
 namespace Ring {
 
 class ApplicationFaust;
 
-class EventInitFaust {
+class EventSetupFaust {
 public:
-	EventInitFaust(ApplicationFaust *application);
-	~EventInitFaust();
+	EventSetupFaust(ApplicationFaust *application);
+	~EventSetupFaust();
 
-	//////////////////////////////////////////////////////////////////////////
-	// Zone initialization
-	//////////////////////////////////////////////////////////////////////////
-	void initZoneSY();
-	void initZone2();
-	void initZone3();
-	void initZone4();
-	void initZone5();
-	void initZone6();
-	void initZone7();
-	void initZone8();
-	void initZone9();
-	void initZone10();
-	void initZone11();
-	void initZone12();
-	void initZone13();
-	void initZone14();
-	void initZone15();
-	void initZone16();
-	void initZone17();
+	void onSetupZone2(SetupType type);
+	void onSetupZone3(SetupType type);
+	void onSetupZone4(SetupType type);
+	void onSetupZone5(SetupType type);
+	void onSetupZone6(SetupType type);
+	void onSetupZone7(SetupType type);
+	void onSetupZone8(SetupType type);
 
 private:
 	ApplicationFaust *_app;
@@ -58,4 +47,4 @@ private:
 
 } // End of namespace Ring
 
-#endif // RING_FAUST_INIT_H
+#endif // RING_FAUST_SETUP_H

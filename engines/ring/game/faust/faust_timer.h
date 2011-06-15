@@ -19,43 +19,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_FAUST_INIT_H
-#define RING_FAUST_INIT_H
+#ifndef RING_FAUST_TIMER_H
+#define RING_FAUST_TIMER_H
+
+#include "ring/shared.h"
 
 namespace Ring {
 
 class ApplicationFaust;
+class EventHandlerFaust;
 
-class EventInitFaust {
+class EventTimerFaust {
 public:
-	EventInitFaust(ApplicationFaust *application);
-	~EventInitFaust();
+	EventTimerFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler);
+	~EventTimerFaust();
 
-	//////////////////////////////////////////////////////////////////////////
-	// Zone initialization
-	//////////////////////////////////////////////////////////////////////////
-	void initZoneSY();
-	void initZone2();
-	void initZone3();
-	void initZone4();
-	void initZone5();
-	void initZone6();
-	void initZone7();
-	void initZone8();
-	void initZone9();
-	void initZone10();
-	void initZone11();
-	void initZone12();
-	void initZone13();
-	void initZone14();
-	void initZone15();
-	void initZone16();
-	void initZone17();
+	void onTimerZoneSY(TimerId id);
+	void onTimerZone2(TimerId id);
+	void onTimerZone3(TimerId id);
+	void onTimerZone4(TimerId id);
+	void onTimerZone5(TimerId id);
+	void onTimerZone6(TimerId id);
+	void onTimerZone8(TimerId id);
+	void onTimerZone9(TimerId id);
+	void onTimerZone10(TimerId id);
+	void onTimerZone11(TimerId id);
+	void onTimerZone12(TimerId id);
+	void onTimerZone13(TimerId id);
+	void onTimerZone14(TimerId id);
+	void onTimerZone15(TimerId id);
+	void onTimerZone16(TimerId id);
 
 private:
-	ApplicationFaust *_app;
+	ApplicationFaust  *_app;
+	EventHandlerFaust *_event;
 };
 
 } // End of namespace Ring
 
-#endif // RING_FAUST_INIT_H
+#endif // RING_FAUST_TIMER_H

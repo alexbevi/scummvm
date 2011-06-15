@@ -33,12 +33,14 @@ using namespace FaustGame;
 
 namespace Ring {
 
-InitFaust::InitFaust(ApplicationFaust *application) : _app(application) {}
+EventInitFaust::EventInitFaust(ApplicationFaust *application) : _app(application) {}
 
-InitFaust::~InitFaust() {
+EventInitFaust::~EventInitFaust() {
+	// Zero-out passed pointers
+	_app = NULL;
 }
 
-void InitFaust::initZoneSY() {
+void EventInitFaust::initZoneSY() {
 	_app->setCurrentZone(kZoneSY);
 	_app->objectAdd(kObjectHomunculus, "Homunculus", "a08_Humunculus", 1);
 	_app->objectSetActiveCursor(kObjectHomunculus, Common::Point(11, 11), 0, kCursorTypeImage, 0.0f, 0, kLoadFromCursor);
@@ -869,7 +871,7 @@ void InitFaust::initZoneSY() {
 	_app->varDefineByte(98089, 0);
 }
 
-void InitFaust::initZone2() {
+void EventInitFaust::initZone2() {
 	_app->setCurrentZone(kZone2);
 	_app->rotationAdd(11001, "1006", 0, 1);
 	_app->rotationAdd(11002, "1007", 0, 2);
@@ -987,7 +989,7 @@ void InitFaust::initZone2() {
 	_app->varDefineByte(11003, 0);
 }
 
-void InitFaust::initZone3() {
+void EventInitFaust::initZone3() {
 	_app->setCurrentZone(kZone3);
 
 	_app->puzzleAdd(kPuzzle12001);
@@ -1489,7 +1491,7 @@ void InitFaust::initZone3() {
 	_app->varDefineString(12001, "000");
 }
 
-void InitFaust::initZone4() {
+void EventInitFaust::initZone4() {
 	_app->setCurrentZone(kZone4);
 
 	_app->puzzleAdd(kPuzzle13101);
@@ -2394,7 +2396,7 @@ void InitFaust::initZone4() {
 	_app->objectPresentationShow(kObject13106, (uint32)_app->varGetFloat(13005));
 }
 
-void InitFaust::initZone5() {
+void EventInitFaust::initZone5() {
 	_app->setCurrentZone(kZone5);
 
 	_app->puzzleAdd(kPuzzle17021);
@@ -2924,7 +2926,7 @@ void InitFaust::initZone5() {
 	_app->varDefineByte(17102, 0);
 }
 
-void InitFaust::initZone6() {
+void EventInitFaust::initZone6() {
 	_app->setCurrentZone(kZone6);
 
 	_app->puzzleAdd(kPuzzle31001);
@@ -3011,7 +3013,7 @@ void InitFaust::initZone6() {
 	_app->varDefineDword(31000, 0);
 }
 
-void InitFaust::initZone7() {
+void EventInitFaust::initZone7() {
 	_app->setCurrentZone(kZone7);
 	_app->puzzleAdd(kPuzzle49000);
 	_app->puzzleAddBackgroundImage(kPuzzle49000, "a04s01n02p01.bmp", Common::Point(0, 16), true);
@@ -3086,7 +3088,7 @@ void InitFaust::initZone7() {
 	_app->soundAdd(41000, kSoundTypeDialog, "1391.wac", _app->getConfiguration().dialog.loadFrom, 2, _app->getConfiguration().dialog.soundChunck);
 }
 
-void InitFaust::initZone8() {
+void EventInitFaust::initZone8() {
 	_app->setCurrentZone(kZone8);
 
 	_app->puzzleAdd(kPuzzle52111);
@@ -3917,7 +3919,7 @@ void InitFaust::initZone8() {
 	_app->objectPresentationSetImageCoordinatesOnPuzzle(54210, (uint8)_app->varGetByte(54217), Common::Point(_app->varGetWord(53006), _app->varGetWord(53016)));
 }
 
-void InitFaust::initZone9() {
+void EventInitFaust::initZone9() {
 	_app->setCurrentZone(kZone9);
 
 	_app->puzzleAdd(kPuzzle61901);
@@ -4062,7 +4064,7 @@ void InitFaust::initZone9() {
 	_app->varDefineByte(61904, 1);
 }
 
-void InitFaust::initZone10() {
+void EventInitFaust::initZone10() {
 	_app->setCurrentZone(kZone10);
 
 	_app->puzzleAdd(kPuzzle71001);
@@ -4240,7 +4242,7 @@ void InitFaust::initZone10() {
 	_app->varDefineByte(71001, 1);
 }
 
-void InitFaust::initZone11() {
+void EventInitFaust::initZone11() {
 	_app->setCurrentZone(kZone11);
 
 	_app->rotationAdd(72014, "1555", 0, 6);
@@ -4315,7 +4317,7 @@ void InitFaust::initZone11() {
 	_app->varDefineWord(72000, 270);
 }
 
-void InitFaust::initZone12() {
+void EventInitFaust::initZone12() {
 	_app->setCurrentZone(kZone12);
 
 	_app->puzzleAdd(kPuzzle81201);
@@ -5246,7 +5248,7 @@ void InitFaust::initZone12() {
 	_app->varDefineDword(81001, 0);
 }
 
-void InitFaust::initZone13() {
+void EventInitFaust::initZone13() {
 	_app->setCurrentZone(kZone13);
 
 	_app->puzzleAdd(kPuzzle91001);
@@ -5653,7 +5655,7 @@ void InitFaust::initZone13() {
 	_app->varDefineFloat(91001, 0.0f);
 }
 
-void InitFaust::initZone14() {
+void EventInitFaust::initZone14() {
 	_app->setCurrentZone(kZone14);
 
 	_app->puzzleAdd(kPuzzle114032);
@@ -7268,7 +7270,7 @@ void InitFaust::initZone14() {
 	_app->varDefineByte(114528, 0);
 }
 
-void InitFaust::initZone15() {
+void EventInitFaust::initZone15() {
 	_app->setCurrentZone(kZone15);
 
 	_app->puzzleAdd(kPuzzle120001);
@@ -8210,7 +8212,7 @@ void InitFaust::initZone15() {
 	_app->varDefineString(120001, "00000000");
 }
 
-void InitFaust::initZone16() {
+void EventInitFaust::initZone16() {
 	_app->setCurrentZone(kZone16);
 
 	_app->puzzleAdd(kPuzzle310001);
@@ -8447,7 +8449,7 @@ void InitFaust::initZone16() {
 	_app->varDefineDword(311001, 0);
 }
 
-void InitFaust::initZone17() {
+void EventInitFaust::initZone17() {
 	_app->setCurrentZone(kZone17);
 
 	_app->rotationAdd(141101, "2178", 0, 0);

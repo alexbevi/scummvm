@@ -19,43 +19,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_FAUST_INIT_H
-#define RING_FAUST_INIT_H
+#ifndef RING_FAUST_SOUND_H
+#define RING_FAUST_SOUND_H
+
+#include "ring/shared.h"
 
 namespace Ring {
 
 class ApplicationFaust;
+class EventHandlerFaust;
 
-class EventInitFaust {
+class EventSoundFaust {
 public:
-	EventInitFaust(ApplicationFaust *application);
-	~EventInitFaust();
+	EventSoundFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler);
+	~EventSoundFaust();
 
-	//////////////////////////////////////////////////////////////////////////
-	// Zone initialization
-	//////////////////////////////////////////////////////////////////////////
-	void initZoneSY();
-	void initZone2();
-	void initZone3();
-	void initZone4();
-	void initZone5();
-	void initZone6();
-	void initZone7();
-	void initZone8();
-	void initZone9();
-	void initZone10();
-	void initZone11();
-	void initZone12();
-	void initZone13();
-	void initZone14();
-	void initZone15();
-	void initZone16();
-	void initZone17();
+	void onSoundZoneSY(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZone3(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZone4(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZone5(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZone8(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZone12(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZone14(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZone15(Id id, SoundType type, uint32 a3, bool process);
+	void onSoundZone17(Id id, SoundType type, uint32 a3, bool process);
+
 
 private:
-	ApplicationFaust *_app;
+	ApplicationFaust  *_app;
+	EventHandlerFaust *_event;
 };
 
 } // End of namespace Ring
 
-#endif // RING_FAUST_INIT_H
+#endif // RING_FAUST_SOUND_H
