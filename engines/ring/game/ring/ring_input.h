@@ -41,7 +41,7 @@ public:
 
 	void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
 	void onMouseLeftButtonDown(const Common::Event &evt);
-	void onMouseRightButtonUp(const Common::Event &evt);
+	void onMouseRightButtonUp(const Common::Event &evt) const;
 	void onKeyDown(Common::Event &evt);
 
 private:

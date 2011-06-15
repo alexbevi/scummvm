@@ -430,7 +430,7 @@ bool EventInputRing::handleLeftButtonDown(Accessibility *accessibility, uint32 i
 	return true;
 }
 
-void EventInputRing::onMouseRightButtonUp(const Common::Event &) {
+void EventInputRing::onMouseRightButtonUp(const Common::Event &) const {
 	debugC(kRingDebugLogic, "onMouseRightButtonUp");
 
 	if (getApp()->getDragControl()->getField20() || getApp()->getCurrentGameZone())
