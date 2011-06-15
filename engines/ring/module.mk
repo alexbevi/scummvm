@@ -39,50 +39,50 @@ MODULE_OBJS := \
 
 ifdef ENABLE_RING1
 MODULE_OBJS += \
-	game/ring/ring.o \
-	game/ring/event.o \
-	game/ring/event_animation.o \
-	game/ring/event_bag.o \
-	game/ring/event_button.o \
-	game/ring/event_init.o \
-	game/ring/event_input.o \
-	game/ring/event_ride.o \
-	game/ring/event_setup.o \
-	game/ring/event_sound.o \
-	game/ring/event_timer.o \
-	game/ring/event_zone.o \
-	game/ring/visual.o
+	game/ring/ring_animation.o \
+	game/ring/ring_application.o \
+	game/ring/ring_bag.o \
+	game/ring/ring_button.o \
+	game/ring/ring_event.o \
+	game/ring/ring_init.o \
+	game/ring/ring_input.o \
+	game/ring/ring_ride.o \
+	game/ring/ring_setup.o \
+	game/ring/ring_sound.o \
+	game/ring/ring_timer.o \
+	game/ring/ring_visual.o \
+	game/ring/ring_zone.o
 endif
 
 ifdef ENABLE_FAUST
 MODULE_OBJS += \
-	game/faust/init.o \
-	game/faust/faust.o \
-	game/faust/event.o
+	game/faust/faust_application.o \
+	game/faust/faust_event.o \
+	game/faust/faust_init.o
 endif
 
 ifdef ENABLE_POMPEII
 MODULE_OBJS += \
-	game/pompeii/pompeii.o \
-	game/pompeii/event.o
+	game/pompeii/pompeii_application.o \
+	game/pompeii/pompeii_event.o
 endif
 
 ifdef ENABLE_PILGRIM2
 MODULE_OBJS += \
-	game/pilgrim2/pilgrim2.o \
-	game/pilgrim2/event.o
+	game/pilgrim2/pilgrim2_application.o \
+	game/pilgrim2/pilgrim2_event.o
 endif
 
 ifdef ENABLE_PILGRIM3
 MODULE_OBJS += \
-	game/pilgrim3/pilgrim3.o \
-	game/pilgrim3/event.o
+	game/pilgrim3/pilgrim3_application.o \
+	game/pilgrim3/pilgrim3_event.o
 endif
 
 ifdef ENABLE_JERUSALEM
 MODULE_OBJS += \
-	game/jerusalem/jerusalem.o \
-	game/jerusalem/event.o
+	game/jerusalem/jerusalem_application.o \
+	game/jerusalem/jerusalem_event.o
 endif
 
 # This module can be built as a plugin

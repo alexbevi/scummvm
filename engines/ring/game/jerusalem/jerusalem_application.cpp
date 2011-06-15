@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "ring/game/pilgrim3/pilgrim3.h"
+#include "ring/game/jerusalem/jerusalem_application.h"
 
 #include "ring/base/art.h"
 #include "ring/base/bag.h"
@@ -27,7 +27,7 @@
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 
-#include "ring/game/pilgrim3/event.h"
+#include "ring/game/jerusalem/jerusalem_event.h"
 
 #include "ring/graphics/screen.h"
 
@@ -37,35 +37,41 @@
 
 #include "common/textconsole.h"
 
-//using namespace Pilgrim3Game;
+//using namespace JerusalemGame;
 
 namespace Ring {
 
-ApplicationPilgrim3::ApplicationPilgrim3(RingEngine *engine) : Application(engine) {
-	_eventHandler = new EventHandlerPilgrim3(this);
+ApplicationJerusalem::ApplicationJerusalem(RingEngine *engine) : Application(engine) {
+	_eventHandler = new EventHandlerJerusalem(this);
 
 	_systemZone = kZone100;
 }
 
-ApplicationPilgrim3::~ApplicationPilgrim3() {
+ApplicationJerusalem::~ApplicationJerusalem() {
 }
 
 #pragma region Game setup
 
-void ApplicationPilgrim3::initFont() {
+void ApplicationJerusalem::initFont() {
 	// Original asks for size 12, but the font only contains size 8
-	fontAdd(kFontDefault, "secrets.fon", "Arxel1", 8, true, false, false, false, getCurrentLanguage());
+	fontAdd(kFontDefault, "Jerusalm.fon", "Arxel1", 8, true, false, false, false, getCurrentLanguage());
 }
 
-void ApplicationPilgrim3::setup() {
+void ApplicationJerusalem::setup() {
 	// Add the list of episodes
-	addEpisode(kZone7,  "Six",   1);
-	addEpisode(kZone8,  "Seven", 1);
-	addEpisode(kZone9,  "Eight", 2);
-	addEpisode(kZone10, "Nine", 1);
-	addEpisode(kZone11, "Ten", 2);
+	addEpisode(kZone2,  "One",    1);
+	addEpisode(kZone3,  "Two",    2);
+	addEpisode(kZone4,  "Three",  2);
+	addEpisode(kZone5,  "Four",   2);
+	addEpisode(kZone6,  "Five",   2);
+	addEpisode(kZone12, "Eleven", 0);
 
 	// Add the list of zones
+	addZone(kZone1,  "A01", "a01", kArchiveArt, kLoadFromCd);
+	addZone(kZone2,  "A02", "a02", kArchiveArt, kLoadFromCd);
+	addZone(kZone3,  "A03", "a03", kArchiveArt, kLoadFromCd);
+	addZone(kZone4,  "A04", "a04", kArchiveArt, kLoadFromCd);
+	addZone(kZone5,  "A05", "a05", kArchiveArt, kLoadFromCd);
 	addZone(kZone6,  "A06", "a06", kArchiveArt, kLoadFromCd);
 	addZone(kZone7,  "A07", "a07", kArchiveArt, kLoadFromCd);
 	addZone(kZone8,  "A08", "a08", kArchiveArt, kLoadFromCd);
@@ -82,34 +88,35 @@ void ApplicationPilgrim3::setup() {
 	cursorAdd(kCursorDefault,                 "cur_no", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
 	cursorAdd(kCursorBusy,                  "cur_busy", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
 	cursorAdd(kCursorIdle,                  "cur_idle", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
-	cursorAdd(kCursorMove,                   "cur_muv", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorMove,                   "cur_muv", kCursorTypeAnimated, 1, 3, 5.0f, 16, kLoadFromCursor, archiveType);
 	cursorAdd(kCursorBack,                  "cur_back", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
 	cursorAdd(kCursorMenuIdle,          "cur_menuIdle", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
 	cursorAdd(kCursorMenuActive,      "cur_menuActive", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
-	cursorAdd(kCursorZoom,                  "cur_zoom", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
+	cursorAdd(kCursorZoom,                  "cur_zoom", kCursorTypeAnimated, 1, 2, 5.0f, 16, kLoadFromCursor, archiveType);
 	cursorAdd(kCursorTake,                  "cur_take", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
 	cursorAdd(kCursorAction,              "cur_action", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
 	cursorAdd(kCursorActionObject,  "cur_actionObject", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
 	cursorAdd(kCursorDragDrop,              "cur_drag", kCursorTypeImage, 1, kLoadFromCursor, archiveType);
 
+	// Adjust offsets
 	cursorSetOffset(kCursorBusy,         Common::Point(8, 8));
-	cursorSetOffset(kCursorIdle,         Common::Point(17, 1));
-	cursorSetOffset(kCursorMove,         Common::Point(17, 1));
-	cursorSetOffset(kCursorBack,         Common::Point(17, 1));
-	cursorSetOffset(kCursorMenuIdle,     Common::Point(8, 8));
-	cursorSetOffset(kCursorMenuActive,   Common::Point(8, 8));
-	cursorSetOffset(kCursorZoom,         Common::Point(17, 1));
-	cursorSetOffset(kCursorTake,         Common::Point(17, 1));
-	cursorSetOffset(kCursorAction,       Common::Point(17, 1));
-	cursorSetOffset(kCursorActionObject, Common::Point(17, 1));
-	cursorSetOffset(kCursorDragDrop,     Common::Point(8, 8));
+	cursorSetOffset(kCursorIdle,         Common::Point(24, 2));
+	cursorSetOffset(kCursorMove,         Common::Point(24, 2));
+	cursorSetOffset(kCursorBack,         Common::Point(24, 2));
+	cursorSetOffset(kCursorMenuIdle,     Common::Point(15, 2));
+	cursorSetOffset(kCursorMenuActive,   Common::Point(15, 2));
+	cursorSetOffset(kCursorZoom,         Common::Point(17, 14));
+	cursorSetOffset(kCursorTake,         Common::Point(24, 2));
+	cursorSetOffset(kCursorAction,       Common::Point(24, 2));
+	cursorSetOffset(kCursorActionObject, Common::Point(24, 2));
+	cursorSetOffset(kCursorDragDrop,     Common::Point(24, 2));
 
 	// Setup subtitles
 	subtitleSetColor(Color(255, 255, 255));
 	subtitleSetBackgroundColor(Color(50, 50, 50));
 }
 
-void ApplicationPilgrim3::initData() {
+void ApplicationJerusalem::initData() {
 	_field_74 = true;
 	_field_75 = true;
 	_field_76 = true;
@@ -117,18 +124,18 @@ void ApplicationPilgrim3::initData() {
 	_field_78 = true;
 }
 
-void ApplicationPilgrim3::initBag() {
+void ApplicationJerusalem::initBag() {
 	_bag->setOrigin(Common::Point(0, 0));
-	_bag->sub_417D40(15, 26, 40, 61);
+	_bag->sub_417D40(20, 35, 40, 60);
 	_bag->setBackgroundOffset(Common::Point(0, 0));
 	_bag->sub_417DD0(10);
 	_bag->sub_417D80(0, 0, 30, 448);
 	_bag->sub_417DA0(610, 0, 30, 448);
 	_bag->sub_4192A0(6, 12);
 	_bag->sub_4192C0(622, 12);
-	_bag->sub_417DE0(506, 0);
+	_bag->sub_417DE0(0, 0);
 	_bag->sub_419280(500);
-	_bag->loadBackground("bagbgr.tga", "", "", "", "", "", "", "bag_h.bmp", _archiveType);
+	_bag->loadBackground("bagbgr.tga", "", "", "", "", "", "", "bag_h.tga", _archiveType);
 	_bag->initHotspots();
 }
 
@@ -136,51 +143,51 @@ void ApplicationPilgrim3::initBag() {
 
 #pragma region Startup
 
-void ApplicationPilgrim3::showStartupScreen() {
-	error("[ApplicationPilgrim3::showStartupScreen] Not implemented");
+void ApplicationJerusalem::showStartupScreen() {
+	error("[ApplicationJerusalem::showStartupScreen] Not implemented");
 }
 
-void ApplicationPilgrim3::startMenu(bool savegame) {
-	error("[ApplicationPilgrim3::startMenu] Not implemented");
+void ApplicationJerusalem::startMenu(bool savegame) {
+	error("[ApplicationJerusalem::startMenu] Not implemented");
 }
 
-void ApplicationPilgrim3::showMenu(ZoneId zone, MenuAction menuAction) {
-	error("[ApplicationPilgrim3::showMenu] Not implemented");
+void ApplicationJerusalem::showMenu(ZoneId zone, MenuAction menuAction) {
+	error("[ApplicationJerusalem::showMenu] Not implemented");
 }
 
-void ApplicationPilgrim3::showCredits() {
-	error("[ApplicationPilgrim3::showCredits] Not implemented");
+void ApplicationJerusalem::showCredits() {
+	error("[ApplicationJerusalem::showCredits] Not implemented");
 }
 
-void ApplicationPilgrim3::loadPreferences() {
-	error("[ApplicationPilgrim3::loadPreferences] Not implemented");
+void ApplicationJerusalem::loadPreferences() {
+	error("[ApplicationJerusalem::loadPreferences] Not implemented");
 }
 
 #pragma endregion
 
 #pragma region Drawing
 
-void ApplicationPilgrim3::draw() {
+void ApplicationJerusalem::draw() {
 	// Update our screen
 	_screenManager->updateScreen();
 
 	// Update engine state
-	error("[ApplicationPilgrim3::draw] Engine state update not implemented!");
+	error("[ApplicationJerusalem::draw] Engine state update not implemented!");
 }
 
 #pragma endregion
 
 #pragma region Visual
 
-Visual *ApplicationPilgrim3::createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor) {
-	error("[ApplicationPilgrim3::createVisual] Engine state update not implemented!");
+Visual *ApplicationJerusalem::createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor) {
+	error("[ApplicationJerusalem::createVisual] Engine state update not implemented!");
 }
 
 #pragma endregion
 
 #pragma region Zone initialization
 
-void ApplicationPilgrim3::initZones() {
+void ApplicationJerusalem::initZones() {
 	debugC(kRingDebugLogic, "Init zone data");
 
 	_loadFrom = kLoadFromDisk;
@@ -190,6 +197,26 @@ void ApplicationPilgrim3::initZones() {
 	initZoneSystem();
 
 	_loadFrom = kLoadFromCd;
+
+	drawZoneName(kZone1);
+	_archiveType = getZoneArchiveType(kZone2);
+	initZone1();
+
+	drawZoneName(kZone2);
+	_archiveType = getZoneArchiveType(kZone2);
+	initZone2();
+
+	drawZoneName(kZone2);
+	_archiveType = getZoneArchiveType(kZone3);
+	initZone3();
+
+	drawZoneName(kZone4);
+	_archiveType = getZoneArchiveType(kZone4);
+	initZone4();
+
+	drawZoneName(kZone5);
+	_archiveType = getZoneArchiveType(kZone5);
+	initZone5();
 
 	drawZoneName(kZone6);
 	_archiveType = getZoneArchiveType(kZone6);
@@ -218,6 +245,9 @@ void ApplicationPilgrim3::initZones() {
 	// Clear screen
 	_screenManager->clear();
 	g_system->updateScreen();
+
+	// Original loads preferences and stores the showSubtitles
+	// value to the main app structure
 }
 
 #pragma endregion
@@ -227,28 +257,48 @@ void ApplicationPilgrim3::initZones() {
 ////////////////////////////////////////////////////////////////////////////
 // Zone initialization
 //////////////////////////////////////////////////////////////////////////
-void ApplicationPilgrim3::initZoneSystem() {
-	error("[ApplicationPilgrim3::initZoneSystem] Not implemented");
+void ApplicationJerusalem::initZoneSystem() {
+	error("[ApplicationJerusalem::initZoneSystem] Not implemented");
 }
 
-void ApplicationPilgrim3::initZone6() {
-	error("[ApplicationPilgrim3::initZone6] Not implemented");
+void ApplicationJerusalem::initZone1() {
+	error("[ApplicationJerusalem::initZone1] Not implemented");
 }
 
-void ApplicationPilgrim3::initZone7() {
-	error("[ApplicationPilgrim3::initZone7] Not implemented");
+void ApplicationJerusalem::initZone2() {
+	error("[ApplicationJerusalem::initZone2] Not implemented");
 }
 
-void ApplicationPilgrim3::initZone8() {
-	error("[ApplicationPilgrim3::initZone8] Not implemented");
+void ApplicationJerusalem::initZone3() {
+	error("[ApplicationJerusalem::initZone3] Not implemented");
 }
 
-void ApplicationPilgrim3::initZone9() {
-	error("[ApplicationPilgrim3::initZone9] Not implemented");
+void ApplicationJerusalem::initZone4() {
+	error("[ApplicationJerusalem::initZone4] Not implemented");
 }
 
-void ApplicationPilgrim3::initZone10() {
-	error("[ApplicationPilgrim3::initZone10] Not implemented");
+void ApplicationJerusalem::initZone5() {
+	error("[ApplicationJerusalem::initZone5] Not implemented");
+}
+
+void ApplicationJerusalem::initZone6() {
+	error("[ApplicationJerusalem::initZone6] Not implemented");
+}
+
+void ApplicationJerusalem::initZone7() {
+	error("[ApplicationJerusalem::initZone7] Not implemented");
+}
+
+void ApplicationJerusalem::initZone8() {
+	error("[ApplicationJerusalem::initZone8] Not implemented");
+}
+
+void ApplicationJerusalem::initZone9() {
+	error("[ApplicationJerusalem::initZone9] Not implemented");
+}
+
+void ApplicationJerusalem::initZone10() {
+	error("[ApplicationJerusalem::initZone10] Not implemented");
 }
 
 #pragma endregion

@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "ring/game/ring/event.h"
+#include "ring/game/ring/ring_event.h"
 
 #include "ring/base/accessibility.h"
 #include "ring/base/bag.h"
@@ -31,18 +31,18 @@
 #include "ring/base/saveload.h"
 #include "ring/base/timer.h"
 
-#include "ring/game/ring/event_animation.h"
-#include "ring/game/ring/event_bag.h"
-#include "ring/game/ring/event_button.h"
-#include "ring/game/ring/event_init.h"
-#include "ring/game/ring/event_input.h"
-#include "ring/game/ring/event_ride.h"
-#include "ring/game/ring/event_setup.h"
-#include "ring/game/ring/event_sound.h"
-#include "ring/game/ring/event_timer.h"
-#include "ring/game/ring/event_zone.h"
-#include "ring/game/ring/ring.h"
-#include "ring/game/ring/shared.h"
+#include "ring/game/ring/ring_animation.h"
+#include "ring/game/ring/ring_application.h"
+#include "ring/game/ring/ring_bag.h"
+#include "ring/game/ring/ring_button.h"
+#include "ring/game/ring/ring_init.h"
+#include "ring/game/ring/ring_input.h"
+#include "ring/game/ring/ring_ride.h"
+#include "ring/game/ring/ring_setup.h"
+#include "ring/game/ring/ring_shared.h"
+#include "ring/game/ring/ring_sound.h"
+#include "ring/game/ring/ring_timer.h"
+#include "ring/game/ring/ring_zone.h"
 
 #include "ring/graphics/dragControl.h"
 #include "ring/graphics/hotspot.h"

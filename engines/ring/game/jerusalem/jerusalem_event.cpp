@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "ring/game/jerusalem/event.h"
+#include "ring/game/jerusalem/jerusalem_event.h"
 
 #include "ring/base/application.h"
 

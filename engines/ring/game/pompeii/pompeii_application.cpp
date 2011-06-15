@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "ring/game/pompeii/pompeii.h"
+#include "ring/game/pompeii/pompeii_application.h"
 
 #include "ring/base/art.h"
 #include "ring/base/bag.h"
@@ -27,7 +27,7 @@
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 
-#include "ring/game/pompeii/event.h"
+#include "ring/game/pompeii/pompeii_event.h"
 
 #include "ring/graphics/screen.h"
 
