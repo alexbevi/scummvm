@@ -91,8 +91,19 @@ endif
 
 ifdef ENABLE_JERUSALEM
 MODULE_OBJS += \
+	game/jerusalem/jerusalem_animation.o \
 	game/jerusalem/jerusalem_application.o \
-	game/jerusalem/jerusalem_event.o
+	game/jerusalem/jerusalem_bag.o \
+	game/jerusalem/jerusalem_button.o \
+	game/jerusalem/jerusalem_event.o \
+	game/jerusalem/jerusalem_init.o \
+	game/jerusalem/jerusalem_input.o \
+	game/jerusalem/jerusalem_ride.o \
+	game/jerusalem/jerusalem_setup.o \
+	game/jerusalem/jerusalem_sound.o \
+	game/jerusalem/jerusalem_timer.o \
+	game/jerusalem/jerusalem_visual.o \
+	game/jerusalem/jerusalem_zone.o
 endif
 
 # This module can be built as a plugin

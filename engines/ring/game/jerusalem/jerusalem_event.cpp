@@ -21,16 +21,55 @@
 
 #include "ring/game/jerusalem/jerusalem_event.h"
 
-#include "ring/base/application.h"
+#include "ring/game/jerusalem/jerusalem_animation.h"
+#include "ring/game/jerusalem/jerusalem_application.h"
+#include "ring/game/jerusalem/jerusalem_bag.h"
+#include "ring/game/jerusalem/jerusalem_button.h"
+#include "ring/game/jerusalem/jerusalem_init.h"
+#include "ring/game/jerusalem/jerusalem_input.h"
+#include "ring/game/jerusalem/jerusalem_ride.h"
+#include "ring/game/jerusalem/jerusalem_setup.h"
+#include "ring/game/jerusalem/jerusalem_shared.h"
+#include "ring/game/jerusalem/jerusalem_sound.h"
+#include "ring/game/jerusalem/jerusalem_timer.h"
+#include "ring/game/jerusalem/jerusalem_visual.h"
+#include "ring/game/jerusalem/jerusalem_zone.h"
+
+#include "ring/helpers.h"
+#include "ring/ring.h"
 
 //using namespace JerusalemGame;
 
 namespace Ring {
 
-EventHandlerJerusalem::EventHandlerJerusalem(Application *application) : _app(application) {
+EventHandlerJerusalem::EventHandlerJerusalem(ApplicationJerusalem *application) : _app(application) {
+	// Event handlers
+	_eventAnimation = new EventAnimationJerusalem(application);
+	_eventBag       = new EventBagJerusalem(application);
+	_eventButton    = new EventButtonJerusalem(application);
+	_eventInit      = new EventInitJerusalem(application);
+	_eventInput     = new EventInputJerusalem(application);
+	_eventRide      = new EventRideJerusalem(application);
+	_eventSetup     = new EventSetupJerusalem(application);
+	_eventSound     = new EventSoundJerusalem(application);
+	_eventTimer     = new EventTimerJerusalem(application);
+	_eventVisual    = new EventVisualJerusalem(application);
+	_eventZone      = new EventZoneJerusalem(application);
 }
 
 EventHandlerJerusalem::~EventHandlerJerusalem() {
+	SAFE_DELETE(_eventAnimation);
+	SAFE_DELETE(_eventBag);
+	SAFE_DELETE(_eventButton);
+	SAFE_DELETE(_eventInit);
+	SAFE_DELETE(_eventInput);
+	SAFE_DELETE(_eventRide);
+	SAFE_DELETE(_eventSetup);
+	SAFE_DELETE(_eventSound);
+	SAFE_DELETE(_eventTimer);
+	SAFE_DELETE(_eventVisual);
+	SAFE_DELETE(_eventZone);
+
 	// Zero-out passed pointers
 	_app = NULL;
 }
