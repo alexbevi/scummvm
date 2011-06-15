@@ -30,7 +30,6 @@
 #include "ring/base/font.h"
 #include "ring/base/language.h"
 #include "ring/base/movability.h"
-#include "ring/base/object.h"
 #include "ring/base/preferences.h"
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
@@ -39,7 +38,6 @@
 #include "ring/base/var.h"
 #include "ring/base/zone.h"
 
-#include "ring/graphics/animation.h"
 #include "ring/graphics/dragControl.h"
 #include "ring/graphics/image.h"
 #include "ring/graphics/hotspot.h"
@@ -56,9 +54,6 @@
 
 #include "common/file.h"
 #include "common/tokenizer.h"
-#include "common/textconsole.h"
-
-#include "graphics/surface.h"
 
 namespace Ring {
 

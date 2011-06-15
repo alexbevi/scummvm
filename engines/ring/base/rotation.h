@@ -22,7 +22,6 @@
 #ifndef RING_ROTATION_H
 #define RING_ROTATION_H
 
-#include "ring/helpers.h"
 #include "ring/shared.h"
 
 #include "common/keyboard.h"

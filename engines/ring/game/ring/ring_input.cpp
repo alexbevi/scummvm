@@ -21,10 +21,8 @@
 
 #include "ring/game/ring/ring_input.h"
 
-#include "ring/base/application.h"
 #include "ring/base/accessibility.h"
 #include "ring/base/bag.h"
-#include "ring/base/event.h"
 #include "ring/base/movability.h"
 #include "ring/base/object.h"
 #include "ring/base/puzzle.h"
@@ -42,8 +40,6 @@
 
 #include "ring/helpers.h"
 #include "ring/ring.h"
-
-#include "common/textconsole.h"
 
 using namespace RingGame;
 
@@ -457,8 +453,6 @@ void EventInputRing::onMouseRightButtonUp(const Common::Event &) {
 		getApp()->setupCurrentRotation();
 	}
 }
-
-
 
 void EventInputRing::onKeyDown(Common::Event &evt) {
 	debugC(kRingDebugLogic, "onKeyDown");

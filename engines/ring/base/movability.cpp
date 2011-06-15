@@ -29,8 +29,6 @@
 
 #include "ring/helpers.h"
 
-#include "common/textconsole.h"
-
 namespace Ring {
 
 Movability::Movability(const BaseId &from, const BaseId &to, Common::String name, MovabilityType type) {

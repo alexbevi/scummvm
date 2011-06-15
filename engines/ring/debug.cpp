@@ -30,7 +30,6 @@
 #include "ring/ring.h"
 
 #include "common/debug-channels.h"
-#include "common/events.h"
 #include "common/file.h"
 
 #ifdef RING_DUMP

@@ -24,8 +24,6 @@
 
 #include "ring/shared.h"
 
-#include "common/textconsole.h"
-
 namespace Ring {
 
 template<class T>

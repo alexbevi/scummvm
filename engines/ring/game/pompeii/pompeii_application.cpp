@@ -35,8 +35,6 @@
 
 #include "ring/debug.h"
 
-#include "common/textconsole.h"
-
 //using namespace PompeiiGame;
 
 namespace Ring {

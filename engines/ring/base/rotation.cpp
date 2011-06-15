@@ -23,7 +23,6 @@
 
 #include "ring/base/application.h"
 #include "ring/base/accessibility.h"
-#include "ring/base/application.h"
 #include "ring/base/movability.h"
 #include "ring/base/object.h"
 #include "ring/base/saveload.h"
@@ -38,9 +37,8 @@
 #include "ring/sound/soundentry.h"
 #include "ring/sound/soundhandler.h"
 
+#include "ring/helpers.h"
 #include "ring/ring.h"
-
-#include "common/textconsole.h"
 
 namespace Ring {
 

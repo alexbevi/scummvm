@@ -23,16 +23,12 @@
 
 #include "ring/base/application.h"
 
-#include "ring/graphics/animation.h"
 #include "ring/graphics/image.h"
 
 #include "ring/helpers.h"
 #include "ring/ring.h"
 
-#include "common/textconsole.h"
-
 #include "graphics/cursorman.h"
-#include "graphics/surface.h"
 
 namespace Ring {
 

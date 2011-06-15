@@ -26,7 +26,6 @@
 #include "ring/helpers.h"
 
 #include "common/archive.h"
-#include "common/textconsole.h"
 
 namespace Ring {
 

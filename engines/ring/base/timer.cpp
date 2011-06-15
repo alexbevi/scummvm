@@ -27,8 +27,6 @@
 #include "ring/ring.h"
 #include "ring/helpers.h"
 
-#include "common/system.h"
-#include "common/textconsole.h"
 #include "common/timer.h"
 
 namespace Ring {

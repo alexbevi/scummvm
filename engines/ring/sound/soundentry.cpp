@@ -30,7 +30,6 @@
 #include "ring/ring.h"
 
 #include "audio/decoders/wave.h"
-#include "audio/mixer.h"
 
 #include "common/file.h"
 

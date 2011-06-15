@@ -40,10 +40,8 @@
 #include "ring/sound/soundhandler.h"
 #include "ring/sound/soundmanager.h"
 
+#include "ring/helpers.h"
 #include "ring/ring.h"
-
-#include "common/archive.h"
-#include "common/textconsole.h"
 
 using namespace RingGame;
 

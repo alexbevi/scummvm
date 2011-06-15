@@ -32,8 +32,6 @@
 
 #include "ring/helpers.h"
 
-#include "common/textconsole.h"
-
 namespace Ring {
 
 #pragma region Animation

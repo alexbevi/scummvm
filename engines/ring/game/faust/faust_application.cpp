@@ -39,11 +39,8 @@
 
 #include "ring/sound/soundhandler.h"
 
+#include "ring/helpers.h"
 #include "ring/ring.h"
-#include "ring/debug.h"
-#include "ring/shared.h"
-
-#include "common/textconsole.h"
 
 using namespace FaustGame;
 

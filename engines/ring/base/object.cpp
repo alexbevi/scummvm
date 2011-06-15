@@ -32,13 +32,10 @@
 #include "ring/graphics/image.h"
 #include "ring/graphics/hotspot.h"
 
-#include "ring/helpers.h"
 #include "ring/ring.h"
+#include "ring/helpers.h"
 
-#include "common/archive.h"
 #include "common/tokenizer.h"
-
-#include "common/textconsole.h"
 
 namespace Ring {
 

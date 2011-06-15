@@ -35,8 +35,6 @@
 #include "ring/helpers.h"
 
 #include "common/file.h"
-#include "common/rect.h"
-#include "common/textconsole.h"
 #include "common/tokenizer.h"
 
 namespace Ring {

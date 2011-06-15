@@ -31,9 +31,6 @@
 #include "common/archive.h"
 
 #include "graphics/imagedec.h"
-#include "graphics/surface.h"
-
-#include "common/textconsole.h"
 
 namespace Ring {
 

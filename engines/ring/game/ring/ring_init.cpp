@@ -28,8 +28,6 @@
 
 #include "ring/ring.h"
 
-#include "common/textconsole.h"
-
 using namespace RingGame;
 
 namespace Ring {

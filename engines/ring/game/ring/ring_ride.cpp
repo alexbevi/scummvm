@@ -21,29 +21,12 @@
 
 #include "ring/game/ring/ring_ride.h"
 
-#include "ring/base/application.h"
-#include "ring/base/accessibility.h"
-#include "ring/base/bag.h"
-#include "ring/base/event.h"
-#include "ring/base/movability.h"
-#include "ring/base/object.h"
-#include "ring/base/puzzle.h"
-#include "ring/base/rotation.h"
-#include "ring/base/saveload.h"
-
 #include "ring/game/ring/ring_application.h"
 #include "ring/game/ring/ring_event.h"
 #include "ring/game/ring/ring_shared.h"
 
-#include "ring/graphics/dragControl.h"
-#include "ring/graphics/hotspot.h"
-
-#include "ring/sound/soundhandler.h"
-
 #include "ring/helpers.h"
 #include "ring/ring.h"
-
-#include "common/textconsole.h"
 
 using namespace RingGame;
 

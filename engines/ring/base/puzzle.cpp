@@ -41,8 +41,6 @@
 #include "ring/ring.h"
 #include "ring/helpers.h"
 
-#include "common/textconsole.h"
-
 namespace Ring {
 
 Puzzle::Puzzle(Application *application, PuzzleId id) : BaseObject(id), _application(application) {

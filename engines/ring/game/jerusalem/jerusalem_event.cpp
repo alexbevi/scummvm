@@ -23,8 +23,6 @@
 
 #include "ring/base/application.h"
 
-#include "common/textconsole.h"
-
 //using namespace JerusalemGame;
 
 namespace Ring {

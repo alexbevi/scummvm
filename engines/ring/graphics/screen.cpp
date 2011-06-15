@@ -31,9 +31,6 @@
 #include "ring/helpers.h"
 #include "ring/ring.h"
 
-#include "common/system.h"
-#include "common/textconsole.h"
-
 #include "graphics/fonts/winfont.h"
 #include "graphics/thumbnail.h"
 
