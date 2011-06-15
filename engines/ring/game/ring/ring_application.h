@@ -26,8 +26,6 @@
 
 namespace Ring {
 
-class InitRing;
-
 class ApplicationRing : public Application {
 public:
 	ApplicationRing(RingEngine *engine);
@@ -68,8 +66,6 @@ public:
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 
 private:
-	InitRing *_init;
-
 	uint32 getCdForZone(ZoneId zone) const;
 	bool isDataPresent(SetupType type);
 };
