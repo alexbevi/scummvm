@@ -102,6 +102,8 @@ ApplicationRing::ApplicationRing(RingEngine *engine) : Application(engine) {
 }
 
 ApplicationRing::~ApplicationRing() {
+	// the event handler is deleted by the base class
+	SAFE_DELETE(_init);
 }
 
 #pragma region Game setup

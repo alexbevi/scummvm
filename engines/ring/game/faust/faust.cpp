@@ -68,12 +68,15 @@ static const struct {
 
 ApplicationFaust::ApplicationFaust(RingEngine *engine) : Application(engine) {
 	_eventHandler = new EventHandlerFaust(this);
+	_init         = new InitFaust(this);
 
 	_slot = -1;
 	_zone = kZoneNone;
 }
 
 ApplicationFaust::~ApplicationFaust() {
+	// the event handler is deleted by the base class
+	SAFE_DELETE(_init);
 }
 
 #pragma region Game setup
