@@ -19,12 +19,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_VISUALELEMENTRING_H
-#define RING_VISUALELEMENTRING_H
+#ifndef RING_VISUALRING_H
+#define RING_VISUALRING_H
 
 #include "ring/graphics/visual.h"
 
 namespace Ring {
+
+class ApplicationRing;
 
 class VisualElementRing : public Visual {
 public:
@@ -65,6 +67,17 @@ private:
 	void setupProgress(Id progressId, uint32 textIndex, float *progress) const;
 };
 
+class EventVisualRing {
+public:
+	EventVisualRing(ApplicationRing *application);
+	~EventVisualRing();
+
+	void onVisualListZoneSY(Id id, uint32 a2, const Common::Point &point);
+
+private:
+	ApplicationRing  *_app;
+};
+
 } // End of namespace Ring
 
-#endif // RING_VISUALELEMENTRING_H
+#endif // RING_VISUALRING_H

@@ -21,8 +21,7 @@
 
 #include "ring/game/ring/ring_visual.h"
 
-#include "ring/base/application.h"
-
+#include "ring/game/ring/ring_application.h"
 #include "ring/game/ring/ring_shared.h"
 
 #include "ring/graphics/screen.h"
@@ -107,5 +106,24 @@ void VisualElementRing::draw() {
 
 #pragma endregion
 
+#pragma region Event
+
+EventVisualRing::EventVisualRing(ApplicationRing *application) : _app(application) {}
+
+EventVisualRing::~EventVisualRing() {
+	// Zero-out passed pointers
+	_app = NULL;
+}
+
+void EventVisualRing::onVisualListZoneSY(Id id, uint32 type, const Common::Point &) {
+	if (id == 1) {
+		if (type > 0 && type <= 3) {
+			_app->objectPresentationHide(kObjectLoadOk, 0);
+			_app->objectPresentationHide(kObjectLoadCancel, 0);
+		}
+	}
+}
+
+#pragma endregion
 
 } // End of namespace Ring

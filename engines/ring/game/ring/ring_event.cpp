@@ -34,6 +34,7 @@
 #include "ring/game/ring/ring_shared.h"
 #include "ring/game/ring/ring_sound.h"
 #include "ring/game/ring/ring_timer.h"
+#include "ring/game/ring/ring_visual.h"
 #include "ring/game/ring/ring_zone.h"
 
 #include "ring/helpers.h"
@@ -54,6 +55,7 @@ EventHandlerRing::EventHandlerRing(ApplicationRing *application) : _app(applicat
 	_eventSetup     = new EventSetupRing(application);
 	_eventSound     = new EventSoundRing(application, this);
 	_eventTimer     = new EventTimerRing(application, this);
+	_eventVisual    = new EventVisualRing(application);
 	_eventZone      = new EventZoneRing(application);
 
 	// Shared data
@@ -72,6 +74,7 @@ EventHandlerRing::~EventHandlerRing() {
 	SAFE_DELETE(_eventSetup);
 	SAFE_DELETE(_eventSound);
 	SAFE_DELETE(_eventTimer);
+	SAFE_DELETE(_eventVisual);
 	SAFE_DELETE(_eventZone);
 
 	// Zero-out passed pointers
@@ -630,16 +633,7 @@ void EventHandlerRing::onAnimation(uint32 type, Id animationId, const Common::St
 
 void EventHandlerRing::onVisualList(Id id, uint32 type, const Common::Point &point) {
 	if (_app->getCurrentZone() == kZoneSY)
-		onVisualListZoneSY(id, type, point);
-}
-
-void EventHandlerRing::onVisualListZoneSY(Id id, uint32 type, const Common::Point &) {
-	if (id == 1) {
-		if (type > 0 && type <= 3) {
-			_app->objectPresentationHide(kObjectLoadOk, 0);
-			_app->objectPresentationHide(kObjectLoadCancel, 0);
-		}
-	}
+		_eventVisual->onVisualListZoneSY(id, type, point);
 }
 
 #pragma endregion

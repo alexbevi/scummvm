@@ -37,6 +37,7 @@ class EventRideRing;
 class EventSetupRing;
 class EventSoundRing;
 class EventTimerRing;
+class EventVisualRing;
 class EventZoneRing;
 
 class EventHandlerRing : public EventHandler {
@@ -97,16 +98,12 @@ private:
 	EventSetupRing     *_eventSetup;
 	EventSoundRing     *_eventSound;
 	EventTimerRing     *_eventTimer;
+	EventVisualRing    *_eventVisual;
 	EventZoneRing      *_eventZone;
 
 	// Shared data
 	int32        _prefsVolume;
 	int32        _presentationIndexRO;
-
-	//////////////////////////////////////////////////////////////////////////
-	// VisualList
-	//////////////////////////////////////////////////////////////////////////
-	void onVisualListZoneSY(Id id, uint32 a2, const Common::Point &point);
 
 	friend class EventAnimationRing;
 	friend class EventBagRing;
