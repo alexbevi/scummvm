@@ -41,7 +41,7 @@ private:
 	uint32 _field_C;
 	uint32 _field_10;
 	uint16 _field_14;
-	void *_compressedStream;
+	byte *_compressedStream;
 	uint32 _field_1A;
 	uint32 _field_1E;
 	SoundFormat _format;
