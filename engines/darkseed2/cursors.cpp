@@ -182,12 +182,17 @@ bool CursorsWindows::load() {
 		const Common::NECursor *neCursor = cursorGroup->cursors[0];
 		Cursor cursor;
 
-		if (!loadFromResource(cursor, *neCursor))
+		if (!loadFromResource(cursor, *cursorGroup->cursors[0].cursor)) {
+			delete cursorGroup;
 			return false;
+		}
+
+		delete cursorGroup;
 
 		cursor.name = cursorGroup->id.toString();
 
 		_cursors.setVal(cursor.name, cursor);
+
 	}
 
 	return true;
