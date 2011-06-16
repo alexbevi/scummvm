@@ -47,7 +47,8 @@ Music::Music(Audio::Mixer &mixer, MidiDriver &driver) : _mixer(&mixer) {
 Music::~Music() {
 	stop();
 
-	delete _midiPlayer;
+	_midiDriver->close();
+	delete _midiParser;
 }
 
 void Music::setMidiMode(MidiMode midiMode) {
