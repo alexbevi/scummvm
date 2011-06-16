@@ -185,10 +185,10 @@ static const RingGameDescription gameDescriptions[] = {
 class RingMetaEngine : public AdvancedMetaEngine {
 public:
 	RingMetaEngine() : AdvancedMetaEngine(gameDescriptions, sizeof(Ring::RingGameDescription), ringGames) {
-		params.singleid = "ring";
-		params.guioptions = Common::GUIO_NOSUBTITLES | Common::GUIO_NOSFX;
-		params.depth = 2;
-		params.directoryGlobs = directoryGlobs;
+		_singleid = "ring";
+		_guioptions = Common::GUIO_NOSUBTITLES | Common::GUIO_NOSFX;
+		_maxScanDepth = 2;
+		_directoryGlobs = directoryGlobs;
 	}
 
 	const char *getName() const {
