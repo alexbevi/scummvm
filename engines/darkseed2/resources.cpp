@@ -139,7 +139,7 @@ void GlueArchive::uncompressGlue() {
 	// Sanity check
 	assert(size < (10*1024*1024));
 
-	byte *outBuf = new byte[size];
+	byte *outBuf = (byte *)malloc(size);
 
 	memset(outBuf, 0, size);
 
