@@ -64,6 +64,7 @@ enum SoundType {
 class VersionFormats {
 public:
 	VersionFormats();
+	~VersionFormats();
 
 	void setGameVersion(GameVersion gameVersion);
 	GameVersion getGameVersion() const;

@@ -53,8 +53,15 @@ VersionFormats::VersionFormats() {
 	_speakerSeparator = 0;
 }
 
+VersionFormats::~VersionFormats() {
+	delete _speakerSeparator;
+}
+
 void VersionFormats::setGameVersion(GameVersion gameVersion) {
 	_gameVersion = gameVersion;
+
+	delete _speakerSeparator;
+	_speakerSeparator = 0;
 
 	switch (_gameVersion) {
 	case kGameVersionWindows:
