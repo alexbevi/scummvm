@@ -21,16 +21,56 @@
 
 #include "ring/game/pilgrim2/pilgrim2_event.h"
 
-#include "ring/base/application.h"
+#include "ring/game/pilgrim2/pilgrim2_animation.h"
+#include "ring/game/pilgrim2/pilgrim2_application.h"
+#include "ring/game/pilgrim2/pilgrim2_bag.h"
+#include "ring/game/pilgrim2/pilgrim2_button.h"
+#include "ring/game/pilgrim2/pilgrim2_init.h"
+#include "ring/game/pilgrim2/pilgrim2_input.h"
+#include "ring/game/pilgrim2/pilgrim2_ride.h"
+#include "ring/game/pilgrim2/pilgrim2_setup.h"
+#include "ring/game/pilgrim2/pilgrim2_shared.h"
+#include "ring/game/pilgrim2/pilgrim2_sound.h"
+#include "ring/game/pilgrim2/pilgrim2_timer.h"
+#include "ring/game/pilgrim2/pilgrim2_visual.h"
+#include "ring/game/pilgrim2/pilgrim2_zone.h"
+
+#include "ring/debug.h"
+#include "ring/helpers.h"
+#include "ring/ring.h"
 
 //using namespace Pilgrim2Game;
 
 namespace Ring {
 
-EventHandlerPilgrim2::EventHandlerPilgrim2(Application *application) : _app(application) {
+EventHandlerPilgrim2::EventHandlerPilgrim2(ApplicationPilgrim2 *application) : _app(application) {
+	// Event handlers
+	_eventAnimation = new EventAnimationPilgrim2(application);
+	_eventBag       = new EventBagPilgrim2(application);
+	_eventButton    = new EventButtonPilgrim2(application);
+	_eventInit      = new EventInitPilgrim2(application);
+	_eventInput     = new EventInputPilgrim2(application);
+	_eventRide      = new EventRidePilgrim2(application);
+	_eventSetup     = new EventSetupPilgrim2(application);
+	_eventSound     = new EventSoundPilgrim2(application);
+	_eventTimer     = new EventTimerPilgrim2(application);
+	_eventVisual    = new EventVisualPilgrim2(application);
+	_eventZone      = new EventZonePilgrim2(application);
 }
 
 EventHandlerPilgrim2::~EventHandlerPilgrim2() {
+	SAFE_DELETE(_eventAnimation);
+	SAFE_DELETE(_eventBag);
+	SAFE_DELETE(_eventButton);
+	SAFE_DELETE(_eventInit);
+	SAFE_DELETE(_eventInput);
+	SAFE_DELETE(_eventRide);
+	SAFE_DELETE(_eventSetup);
+	SAFE_DELETE(_eventSound);
+	SAFE_DELETE(_eventTimer);
+	SAFE_DELETE(_eventVisual);
+	SAFE_DELETE(_eventZone);
+
 	// Zero-out passed pointers
 	_app = NULL;
 }

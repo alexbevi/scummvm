@@ -19,24 +19,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_POMPEII_BAG_H
-#define RING_POMPEII_BAG_H
+#include "ring/game/pilgrim3/pilgrim3_init.h"
 
-#include "ring/shared.h"
+#include "ring/game/pilgrim3/pilgrim3_application.h"
 
 namespace Ring {
 
-class ApplicationPompeii;
+EventInitPilgrim3::EventInitPilgrim3(ApplicationPilgrim3 *application) : _app(application) {
+}
 
-class EventBagPompeii {
-public:
-	EventBagPompeii(ApplicationPompeii *application);
-	~EventBagPompeii();
+EventInitPilgrim3::~EventInitPilgrim3() {
+	// Zero-out passed pointers
+	_app = NULL;
+}
 
-private:
-	ApplicationPompeii *_app;
-};
+void EventInitPilgrim3::initZoneSystem() {
+	error("[EventInitPilgrim3::initZoneSystem] Not implemented");
+}
+
+void EventInitPilgrim3::initZone6() {
+	error("[EventInitPilgrim3::initZone6] Not implemented");
+}
+
+void EventInitPilgrim3::initZone7() {
+	error("[EventInitPilgrim3::initZone7] Not implemented");
+}
+
+void EventInitPilgrim3::initZone8() {
+	error("[EventInitPilgrim3::initZone8] Not implemented");
+}
+
+void EventInitPilgrim3::initZone9() {
+	error("[EventInitPilgrim3::initZone9] Not implemented");
+}
+
+void EventInitPilgrim3::initZone10() {
+	error("[EventInitPilgrim3::initZone10] Not implemented");
+}
 
 } // End of namespace Ring
-
-#endif // RING_POMPEII_BAG_H

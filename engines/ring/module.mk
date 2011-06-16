@@ -90,14 +90,36 @@ endif
 
 ifdef ENABLE_PILGRIM2
 MODULE_OBJS += \
+	game/pilgrim2/pilgrim2_animation.o \
 	game/pilgrim2/pilgrim2_application.o \
-	game/pilgrim2/pilgrim2_event.o
+	game/pilgrim2/pilgrim2_bag.o \
+	game/pilgrim2/pilgrim2_button.o \
+	game/pilgrim2/pilgrim2_event.o \
+	game/pilgrim2/pilgrim2_init.o \
+	game/pilgrim2/pilgrim2_input.o \
+	game/pilgrim2/pilgrim2_ride.o \
+	game/pilgrim2/pilgrim2_setup.o \
+	game/pilgrim2/pilgrim2_sound.o \
+	game/pilgrim2/pilgrim2_timer.o \
+	game/pilgrim2/pilgrim2_visual.o \
+	game/pilgrim2/pilgrim2_zone.o
 endif
 
 ifdef ENABLE_PILGRIM3
 MODULE_OBJS += \
+	game/pilgrim3/pilgrim3_animation.o \
 	game/pilgrim3/pilgrim3_application.o \
-	game/pilgrim3/pilgrim3_event.o
+	game/pilgrim3/pilgrim3_bag.o \
+	game/pilgrim3/pilgrim3_button.o \
+	game/pilgrim3/pilgrim3_event.o \
+	game/pilgrim3/pilgrim3_init.o \
+	game/pilgrim3/pilgrim3_input.o \
+	game/pilgrim3/pilgrim3_ride.o \
+	game/pilgrim3/pilgrim3_setup.o \
+	game/pilgrim3/pilgrim3_sound.o \
+	game/pilgrim3/pilgrim3_timer.o \
+	game/pilgrim3/pilgrim3_visual.o \
+	game/pilgrim3/pilgrim3_zone.o
 endif
 
 ifdef ENABLE_JERUSALEM

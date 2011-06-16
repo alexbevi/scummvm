@@ -19,24 +19,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_POMPEII_BAG_H
-#define RING_POMPEII_BAG_H
+#ifndef RING_PILGRIM2_ZONE_H
+#define RING_PILGRIM2_ZONE_H
 
 #include "ring/shared.h"
 
 namespace Ring {
 
-class ApplicationPompeii;
+class ApplicationPilgrim2;
 
-class EventBagPompeii {
+class EventZonePilgrim2 {
 public:
-	EventBagPompeii(ApplicationPompeii *application);
-	~EventBagPompeii();
+	EventZonePilgrim2(ApplicationPilgrim2 *application);
+	~EventZonePilgrim2();
 
 private:
-	ApplicationPompeii *_app;
+	ApplicationPilgrim2 *_app;
 };
 
 } // End of namespace Ring
 
-#endif // RING_POMPEII_BAG_H
+#endif // RING_PILGRIM2_ZONE_H

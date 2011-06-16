@@ -56,15 +56,6 @@ public:
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 
 private:
-	//////////////////////////////////////////////////////////////////////////
-	// Zone initialization
-	//////////////////////////////////////////////////////////////////////////
-	void initZoneSystem();
-	void initZone6();
-	void initZone7();
-	void initZone8();
-	void initZone9();
-	void initZone10();
 };
 
 } // End of namespace Ring

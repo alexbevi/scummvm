@@ -19,24 +19,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_POMPEII_BAG_H
-#define RING_POMPEII_BAG_H
+#ifndef RING_PILGRIM3_SHARED_H
+#define RING_PILGRIM3_SHARED_H
 
-#include "ring/shared.h"
+namespace Pilgrim3Game {
 
-namespace Ring {
+//enum PuzzleId {
+//};
 
-class ApplicationPompeii;
+//enum ObjectId {
+//};
 
-class EventBagPompeii {
-public:
-	EventBagPompeii(ApplicationPompeii *application);
-	~EventBagPompeii();
+} // End of namespace JerusalemGame
 
-private:
-	ApplicationPompeii *_app;
-};
-
-} // End of namespace Ring
-
-#endif // RING_POMPEII_BAG_H
+#endif // RING_PILGRIM3_SHARED_H

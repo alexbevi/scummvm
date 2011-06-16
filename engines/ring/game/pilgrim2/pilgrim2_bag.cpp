@@ -19,24 +19,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_POMPEII_BAG_H
-#define RING_POMPEII_BAG_H
+#include "ring/game/pilgrim2/pilgrim2_bag.h"
 
-#include "ring/shared.h"
+#include "ring/game/pilgrim2/pilgrim2_application.h"
 
 namespace Ring {
 
-class ApplicationPompeii;
+EventBagPilgrim2::EventBagPilgrim2(ApplicationPilgrim2 *application) : _app(application) {
+}
 
-class EventBagPompeii {
-public:
-	EventBagPompeii(ApplicationPompeii *application);
-	~EventBagPompeii();
-
-private:
-	ApplicationPompeii *_app;
-};
+EventBagPilgrim2::~EventBagPilgrim2() {
+	// Zero-out passed pointers
+	_app = NULL;
+}
 
 } // End of namespace Ring
-
-#endif // RING_POMPEII_BAG_H
