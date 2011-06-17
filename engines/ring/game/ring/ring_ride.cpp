@@ -22,7 +22,6 @@
 #include "ring/game/ring/ring_ride.h"
 
 #include "ring/game/ring/ring_application.h"
-#include "ring/game/ring/ring_event.h"
 #include "ring/game/ring/ring_shared.h"
 
 #include "ring/helpers.h"
@@ -32,14 +31,13 @@ using namespace RingGame;
 
 namespace Ring {
 
-EventRideRing::EventRideRing(ApplicationRing *application, EventHandlerRing *eventHandler) : _app(application), _event(eventHandler) {
+EventRideRing::EventRideRing(ApplicationRing *application) : _app(application) {
 	_dword_4A1C00 = 0;
 }
 
 EventRideRing::~EventRideRing() {
 	// Zero-out passed pointers
 	_app   = NULL;
-	_event = NULL;
 }
 
 #pragma region Before
@@ -807,7 +805,7 @@ void EventRideRing::onAfterRideZoneN2(Id movabilityFrom, Id, uint32, uint32 targ
 
 	if (movabilityType == kMovabilityRotationToRotation) {
 		if (target == 7)
-			_event->sub_433EE0();
+			_app->sub_433EE0();
 		else if (target == 16)
 			_app->exitToMenu(kMenuAction1);
 	}

@@ -27,25 +27,60 @@
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 
-#include "ring/game/pilgrim3/pilgrim3_event.h"
+#include "ring/game/pilgrim3/pilgrim3_animation.h"
+#include "ring/game/pilgrim3/pilgrim3_bag.h"
+#include "ring/game/pilgrim3/pilgrim3_button.h"
+#include "ring/game/pilgrim3/pilgrim3_init.h"
+#include "ring/game/pilgrim3/pilgrim3_input.h"
+#include "ring/game/pilgrim3/pilgrim3_ride.h"
+#include "ring/game/pilgrim3/pilgrim3_setup.h"
+#include "ring/game/pilgrim3/pilgrim3_shared.h"
+#include "ring/game/pilgrim3/pilgrim3_sound.h"
+#include "ring/game/pilgrim3/pilgrim3_timer.h"
+#include "ring/game/pilgrim3/pilgrim3_visual.h"
+#include "ring/game/pilgrim3/pilgrim3_zone.h"
 
 #include "ring/graphics/screen.h"
 
 #include "ring/sound/soundhandler.h"
 
 #include "ring/debug.h"
+#include "ring/helpers.h"
+#include "ring/ring.h"
 
 //using namespace Pilgrim3Game;
 
 namespace Ring {
 
 ApplicationPilgrim3::ApplicationPilgrim3(RingEngine *engine) : Application(engine) {
-	_eventHandler = new EventHandlerPilgrim3(this);
-
 	_systemZone = kZone100;
+
+	// Event handlers
+	_eventAnimation = new EventAnimationPilgrim3(this);
+	_eventBag       = new EventBagPilgrim3(this);
+	_eventButton    = new EventButtonPilgrim3(this);
+	_eventInit      = new EventInitPilgrim3(this);
+	_eventInput     = new EventInputPilgrim3(this);
+	_eventRide      = new EventRidePilgrim3(this);
+	_eventSetup     = new EventSetupPilgrim3(this);
+	_eventSound     = new EventSoundPilgrim3(this);
+	_eventTimer     = new EventTimerPilgrim3(this);
+	_eventVisual    = new EventVisualPilgrim3(this);
+	_eventZone      = new EventZonePilgrim3(this);
 }
 
 ApplicationPilgrim3::~ApplicationPilgrim3() {
+	SAFE_DELETE(_eventAnimation);
+	SAFE_DELETE(_eventBag);
+	SAFE_DELETE(_eventButton);
+	SAFE_DELETE(_eventInit);
+	SAFE_DELETE(_eventInput);
+	SAFE_DELETE(_eventRide);
+	SAFE_DELETE(_eventSetup);
+	SAFE_DELETE(_eventSound);
+	SAFE_DELETE(_eventTimer);
+	SAFE_DELETE(_eventVisual);
+	SAFE_DELETE(_eventZone);
 }
 
 #pragma region Game setup
@@ -185,29 +220,29 @@ void ApplicationPilgrim3::initZones() {
 
 	drawZoneName(kZone100);
 	_archiveType = getZoneArchiveType(kZone100);
-	_eventHandler->onInitZone(kZone100);
+	onInitZone(kZone100);
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZone6);
 	_archiveType = getZoneArchiveType(kZone6);
-	_eventHandler->onInitZone(kZone6);
+	onInitZone(kZone6);
 
 	drawZoneName(kZone7);
 	_archiveType = getZoneArchiveType(kZone7);
-	_eventHandler->onInitZone(kZone7);
+	onInitZone(kZone7);
 
 	drawZoneName(kZone8);
 	_archiveType = getZoneArchiveType(kZone8);
-	_eventHandler->onInitZone(kZone8);
+	onInitZone(kZone8);
 
 	drawZoneName(kZone9);
 	_archiveType = getZoneArchiveType(kZone9);
-	_eventHandler->onInitZone(kZone9);
+	onInitZone(kZone9);
 
 	drawZoneName(kZone10);
 	_archiveType = getZoneArchiveType(kZone10);
-	_eventHandler->onInitZone(kZone10);
+	onInitZone(kZone10);
 
 	_archiveType = getZoneArchiveType(getCurrentZone());
 
@@ -216,6 +251,34 @@ void ApplicationPilgrim3::initZones() {
 	// Clear screen
 	_screenManager->clear();
 	g_system->updateScreen();
+}
+
+#pragma endregion
+
+#pragma region Event handling
+
+void ApplicationPilgrim3::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
+	error("[ApplicationPilgrim3::onMouseLeftButtonUp] Not implemented (evt: %d, CTRL pressed: %d)", evt.type, isControlPressed);
+}
+
+void ApplicationPilgrim3::onMouseLeftButtonDown(const Common::Event &evt) {
+	error("[ApplicationPilgrim3::onMouseLeftButtonDown] Not implemented (evt: %d)", evt.type);
+}
+
+void ApplicationPilgrim3::onMouseRightButtonUp(const Common::Event &evt) {
+	error("[ApplicationPilgrim3::onMouseRightButtonUp] Not implemented (evt: %d)", evt.type);
+}
+
+void ApplicationPilgrim3::onKeyDown(Common::Event &evt) {
+	error("[ApplicationPilgrim3::onKeyDown] Not implemented (evt: %d)", evt.type);
+}
+
+void ApplicationPilgrim3::onInitZone(ZoneId zone) {
+	error("[ApplicationPilgrim3::onInitZone] Not implemented (zone: %d)", zone);
+}
+
+void ApplicationPilgrim3::onTimer(TimerId timerId) {
+	error("[ApplicationPilgrim3::onTimer] Not implemented (id: %d)", timerId);
 }
 
 #pragma endregion

@@ -29,11 +29,10 @@
 namespace Ring {
 
 class ApplicationFaust;
-class EventHandlerFaust;
 
 class EventZoneFaust {
 public:
-	EventZoneFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler);
+	EventZoneFaust(ApplicationFaust *application);
 	~EventZoneFaust();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -51,7 +50,6 @@ public:
 
 private:
 	ApplicationFaust  *_app;
-	EventHandlerFaust *_event;
 };
 
 } // End of namespace Ring

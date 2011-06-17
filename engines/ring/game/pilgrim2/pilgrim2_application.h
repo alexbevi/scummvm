@@ -26,6 +26,18 @@
 
 namespace Ring {
 
+class EventAnimationPilgrim2;
+class EventBagPilgrim2;
+class EventButtonPilgrim2;
+class EventInitPilgrim2;
+class EventInputPilgrim2;
+class EventRidePilgrim2;
+class EventSetupPilgrim2;
+class EventSoundPilgrim2;
+class EventTimerPilgrim2;
+class EventVisualPilgrim2;
+class EventZonePilgrim2;
+
 class ApplicationPilgrim2 : public Application {
 public:
 	ApplicationPilgrim2(RingEngine *engine);
@@ -55,7 +67,28 @@ public:
 	// Visual
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 
+	//////////////////////////////////////////////////////////////////////////
+	// Event handlers
+	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
+	virtual void onMouseLeftButtonDown(const Common::Event &evt);
+	virtual void onMouseRightButtonUp(const Common::Event &evt);
+	virtual void onKeyDown(Common::Event &evt);
+	virtual void onTimer(TimerId id);
+	virtual void onInitZone(ZoneId zone);
+
 private:
+	// Event handlers
+	EventAnimationPilgrim2 *_eventAnimation;
+	EventBagPilgrim2       *_eventBag;
+	EventButtonPilgrim2    *_eventButton;
+	EventInitPilgrim2      *_eventInit;
+	EventInputPilgrim2     *_eventInput;
+	EventRidePilgrim2      *_eventRide;
+	EventSetupPilgrim2     *_eventSetup;
+	EventSoundPilgrim2     *_eventSound;
+	EventTimerPilgrim2     *_eventTimer;
+	EventVisualPilgrim2    *_eventVisual;
+	EventZonePilgrim2      *_eventZone;
 };
 
 } // End of namespace Ring

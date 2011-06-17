@@ -22,7 +22,6 @@
 #include "ring/game/faust/faust_ride.h"
 
 #include "ring/game/faust/faust_application.h"
-#include "ring/game/faust/faust_event.h"
 #include "ring/game/faust/faust_shared.h"
 
 #include "ring/helpers.h"
@@ -32,13 +31,12 @@ using namespace FaustGame;
 
 namespace Ring {
 
-EventRideFaust::EventRideFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler) : _app(application), _event(eventHandler) {
+EventRideFaust::EventRideFaust(ApplicationFaust *application) : _app(application) {
 }
 
 EventRideFaust::~EventRideFaust() {
 	// Zero-out passed pointers
 	_app   = NULL;
-	_event = NULL;
 }
 
 #pragma region Before
@@ -64,7 +62,7 @@ void EventRideFaust::onBeforeRideZone4(Id movabilityFrom, Id movabilityTo, uint3
 
 	case kMovabilityPuzzleToPuzzle:
 		if (movabilityFrom == 13902)
-			_event->sub_4A2CF0();
+			_app->sub_4A2CF0();
 		break;
 	}
 }

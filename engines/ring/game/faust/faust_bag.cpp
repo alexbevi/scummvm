@@ -22,20 +22,18 @@
 #include "ring/game/faust/faust_bag.h"
 
 #include "ring/game/faust/faust_application.h"
-#include "ring/game/faust/faust_event.h"
 #include "ring/game/faust/faust_shared.h"
 
 using namespace FaustGame;
 
 namespace Ring {
 
-EventBagFaust::EventBagFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler) : _app(application), _event(eventHandler) {
+EventBagFaust::EventBagFaust(ApplicationFaust *application) : _app(application) {
 }
 
 EventBagFaust::~EventBagFaust() {
 	// Zero-out passed pointers
 	_app   = NULL;
-	_event = NULL;
 }
 
 #pragma region Event
@@ -148,7 +146,7 @@ void EventBagFaust::onBagClickedObjectZone14(ObjectId id) {
 	case kObjectPaperKnife:
 		if (_app->varGetByte(114100) > 0) {
 			if (_app->soundIsPlaying(112016)) {
-				_event->sub_45FF30();
+				_app->sub_45FF30();
 			} else {
 				_app->objectPresentationShow(kObject12, 1);
 				_app->cursorDelete();

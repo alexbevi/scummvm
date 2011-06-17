@@ -27,11 +27,10 @@
 namespace Ring {
 
 class ApplicationFaust;
-class EventHandlerFaust;
 
 class EventSoundFaust {
 public:
-	EventSoundFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler);
+	EventSoundFaust(ApplicationFaust *application);
 	~EventSoundFaust();
 
 	void onSoundZoneSY(Id id, SoundType type, uint32 a3, bool process);
@@ -47,7 +46,6 @@ public:
 
 private:
 	ApplicationFaust  *_app;
-	EventHandlerFaust *_event;
 };
 
 } // End of namespace Ring

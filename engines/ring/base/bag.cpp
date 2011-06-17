@@ -235,7 +235,7 @@ uint32 Bag::checkHotspotClick(const Common::Point &point) {
 		return 3;
 
 	case kCursor1005:
-		getApp()->getEventHandler()->onBagZoneSwitch();
+		getApp()->onBagZoneSwitch();
 		return 4;
 	}
 }

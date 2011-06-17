@@ -26,7 +26,6 @@
 #include "ring/base/saveload.h"
 
 #include "ring/game/ring/ring_application.h"
-#include "ring/game/ring/ring_event.h"
 #include "ring/game/ring/ring_shared.h"
 
 #include "ring/graphics/dragControl.h"
@@ -40,7 +39,7 @@ using namespace RingGame;
 
 namespace Ring {
 
-EventBagRing::EventBagRing(ApplicationRing *application, EventHandlerRing *eventHandler) : _app(application), _event(eventHandler) {
+EventBagRing::EventBagRing(ApplicationRing *application) : _app(application) {
 	// SY
 	_offsetX = 0;
 	_offsetX0 = 0;
@@ -64,7 +63,6 @@ EventBagRing::EventBagRing(ApplicationRing *application, EventHandlerRing *event
 EventBagRing::~EventBagRing() {
 	// Zero-out passed pointers
 	_app = NULL;
-	_event = NULL;
 }
 
 void EventBagRing::onBagZoneSY(ObjectId id, uint32, Id, uint32, DragControl *, byte type) {
@@ -104,10 +102,10 @@ void EventBagRing::onBagZoneSY(ObjectId id, uint32, Id, uint32, DragControl *, b
 				if (_offsetX < 0)
 					_offsetX = 0;
 
-				_event->_prefsVolume = _offsetX + 46;
+				_app->_prefsVolume = _offsetX + 46;
 			} else {
 				_offsetX = 54;
-				_event->_prefsVolume = 100;
+				_app->_prefsVolume = 100;
 			}
 
 			_coordX = (int16)(5 * _offsetX + 314);
@@ -352,7 +350,7 @@ void EventBagRing::onBagZoneNI(ObjectId id, uint32 a2, Id, uint32, DragControl *
 			if (_presentationIndexNI == 12) {
 				_app->varSetByte(10104, 1);
 
-				_event->sub_445A10();
+				_app->sub_445A10();
 
 				if (_app->varGetByte(10106) == 1)
 					_app->soundPlay(10101);
@@ -364,7 +362,7 @@ void EventBagRing::onBagZoneNI(ObjectId id, uint32 a2, Id, uint32, DragControl *
 			} else {
 				_app->varSetByte(10104, 0);
 
-				_event->sub_445A10();
+				_app->sub_445A10();
 
 				if (_app->varGetByte(10106) == 1)
 					_app->soundPlay(10101);
@@ -451,7 +449,7 @@ void EventBagRing::onBagZoneNI(ObjectId id, uint32 a2, Id, uint32, DragControl *
 				if (_app->dragControlGetOffsetY0() < 20) {
 					_app->objectPresentationShow(kObject10107, 13);
 					_app->varSetByte(10105, 0);
-					_event->sub_445A10();
+					_app->sub_445A10();
 					sub_445930();
 					break;
 				}
@@ -466,7 +464,7 @@ void EventBagRing::onBagZoneNI(ObjectId id, uint32 a2, Id, uint32, DragControl *
 					_app->varSetByte(10105, 0);
 				}
 
-				_event->sub_445A10();
+				_app->sub_445A10();
 
 				if (_app->varGetByte(10106) == 1)
 					_app->soundPlay(10101);
@@ -475,7 +473,7 @@ void EventBagRing::onBagZoneNI(ObjectId id, uint32 a2, Id, uint32, DragControl *
 				if (_app->dragControlGetOffsetY0() < 20) {
 					_app->objectPresentationShow(kObject10107, 0);
 					_app->varSetByte(10105, 0);
-					_event->sub_445A10();
+					_app->sub_445A10();
 					sub_445930();
 					break;
 				}
@@ -490,7 +488,7 @@ void EventBagRing::onBagZoneNI(ObjectId id, uint32 a2, Id, uint32, DragControl *
 					_app->varSetByte(10105, 1);
 				}
 
-				_event->sub_445A10();
+				_app->sub_445A10();
 
 				if (_app->varGetByte(10106) == 1)
 					_app->soundPlay(10101);
@@ -684,7 +682,7 @@ void EventBagRing::onBagZoneNI(ObjectId id, uint32 a2, Id, uint32, DragControl *
 				}
 			}
 
-			_event->sub_445A10();
+			_app->sub_445A10();
 			break;
 
 		case 3:
@@ -732,7 +730,7 @@ void EventBagRing::onBagZoneNI(ObjectId id, uint32 a2, Id, uint32, DragControl *
 							_app->objectSetAccessibilityOff(kObject10420);
 
 						_app->soundPlay(10404);
-						_event->sub_445A10();
+						_app->sub_445A10();
 					}
 				}
 			}
@@ -927,7 +925,7 @@ void EventBagRing::onBagZoneRO(ObjectId id, uint32 a2, Id, uint32, DragControl *
 		case 2: {
 			_app->soundStop(40102, 1024);
 
-			_event->_presentationIndexRO = _presentationIndexBagRO;
+			_app->_presentationIndexRO = _presentationIndexBagRO;
 			float test = 10 * (_presentationIndexBagRO * 0.1000000014901161f);
 			float index = test;
 			int direction = -1;
@@ -939,21 +937,21 @@ void EventBagRing::onBagZoneRO(ObjectId id, uint32 a2, Id, uint32, DragControl *
 
 			if (_presentationIndexBagRO != index) {
 				do {
-					_event->_presentationIndexRO += direction;
+					_app->_presentationIndexRO += direction;
 
 					_app->objectPresentationHide(kObject40060);
-					_app->objectPresentationShow(kObject40060, (uint32)_event->_presentationIndexRO);
+					_app->objectPresentationShow(kObject40060, (uint32)_app->_presentationIndexRO);
 
 					handleEvents();
 					if (checkEscape())
 						break;
 
-				} while (_event->_presentationIndexRO != index);
+				} while (_app->_presentationIndexRO != index);
 			}
 
 			_app->objectSetAccessibilityOff(kObject40060);
-			_app->objectSetAccessibilityOn(kObject40060, (uint32)_event->_presentationIndexRO / 10, (uint32)_event->_presentationIndexRO / 10);
-			_app->varSetByte(40804, (uint8)_event->_presentationIndexRO);
+			_app->objectSetAccessibilityOn(kObject40060, (uint32)_app->_presentationIndexRO / 10, (uint32)_app->_presentationIndexRO / 10);
+			_app->varSetByte(40804, (uint8)_app->_presentationIndexRO);
 			}
 			break;
 
@@ -1009,7 +1007,7 @@ void EventBagRing::onBagZoneRO(ObjectId id, uint32 a2, Id, uint32, DragControl *
 			break;
 
 		case 2: {
-			_event->_presentationIndexRO = _presentationIndexBagRO;
+			_app->_presentationIndexRO = _presentationIndexBagRO;
 
 			float test = 10 * (_presentationIndexBagRO * 0.1000000014901161f);
 			float index = test;
@@ -1022,20 +1020,20 @@ void EventBagRing::onBagZoneRO(ObjectId id, uint32 a2, Id, uint32, DragControl *
 
 			if (_presentationIndexBagRO != index) {
 				do {
-					_event->_presentationIndexRO += direction;
+					_app->_presentationIndexRO += direction;
 
 					_app->objectPresentationHide((ObjectId)(a2 + 40101));
-					_app->objectPresentationShow((ObjectId)(a2 + 40101), (uint32)_event->_presentationIndexRO);
+					_app->objectPresentationShow((ObjectId)(a2 + 40101), (uint32)_app->_presentationIndexRO);
 
 					handleEvents();
 					if (checkEscape())
 						break;
 
-				} while (_event->_presentationIndexRO != index);
+				} while (_app->_presentationIndexRO != index);
 			}
 
 			_app->soundStop(40102, 1024);
-			_app->varSetByte(a2 + 40601, (int8)_event->_presentationIndexRO);
+			_app->varSetByte(a2 + 40601, (int8)_app->_presentationIndexRO);
 
 			if (_app->varGetByte(40601) == 10
 			 && _app->varGetByte(40602) == 90
@@ -1166,7 +1164,7 @@ void EventBagRing::onBagZoneN2(ObjectId id, uint32 a2, Id, uint32, DragControl *
 				_app->rotationSetAlp(70001, 270.0f);
 				_app->rotationSetRan(70001, 85.7f);
 				_app->rotationSetActive(70001);
-				_event->sub_433EE0();
+				_app->sub_433EE0();
 			}
 			break;
 
@@ -1607,7 +1605,7 @@ void EventBagRing::onBagZoneSwitch() {
 			_app->varSetByte(90025, getApp()->getBag()->getRotationFre());
 		}
 
-		_event->onSwitchZone(kZoneAS, 13);
+		_app->onSwitchZone(kZoneAS, 13);
 		break;
 
 	case kZoneFO:
@@ -1626,7 +1624,7 @@ void EventBagRing::onBagZoneSwitch() {
 			_app->varSetByte(90027, getApp()->getBag()->getRotationFre());
 		}
 
-		_event->onSwitchZone(kZoneAS, 13);
+		_app->onSwitchZone(kZoneAS, 13);
 		break;
 
 	case kZoneRO:
@@ -1646,7 +1644,7 @@ void EventBagRing::onBagZoneSwitch() {
 			_app->varSetByte(90026, getApp()->getBag()->getRotationFre());
 		}
 
-		_event->onSwitchZone(kZoneAS, 13);
+		_app->onSwitchZone(kZoneAS, 13);
 		break;
 
 	case kZoneWA:
@@ -1665,7 +1663,7 @@ void EventBagRing::onBagZoneSwitch() {
 			_app->varSetByte(90028, getApp()->getBag()->getRotationFre());
 		}
 
-		_event->onSwitchZone(kZoneAS, 13);
+		_app->onSwitchZone(kZoneAS, 13);
 		break;
 	}
 }

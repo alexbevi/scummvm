@@ -24,7 +24,6 @@
 #include "ring/base/rotation.h"
 
 #include "ring/game/ring/ring_application.h"
-#include "ring/game/ring/ring_event.h"
 #include "ring/game/ring/ring_shared.h"
 
 #include "ring/helpers.h"
@@ -34,7 +33,7 @@ using namespace RingGame;
 
 namespace Ring {
 
-EventTimerRing::EventTimerRing(ApplicationRing *application, EventHandlerRing *eventHandler) : _app(application), _event(eventHandler) {
+EventTimerRing::EventTimerRing(ApplicationRing *application) : _app(application) {
 	_disableTimerRH = false;
 	_frameNumberTimerRH = 0;
 }
@@ -42,7 +41,6 @@ EventTimerRing::EventTimerRing(ApplicationRing *application, EventHandlerRing *e
 EventTimerRing::~EventTimerRing() {
 	// Zero-out passed pointers
 	_app   = NULL;
-	_event = NULL;
 }
 
 
@@ -92,7 +90,7 @@ void EventTimerRing::onTimerZoneNI(TimerId id) {
 			_app->soundStopAll(1024);
 			_app->varSetFloat(90005, 100.0f);
 			_app->playMovie("1539");
-			_event->onSwitchZone(kZoneAS, 1);
+			_app->onSwitchZone(kZoneAS, 1);
 		}
 		break;
 	}

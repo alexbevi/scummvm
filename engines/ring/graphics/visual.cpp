@@ -548,14 +548,14 @@ uint32 VisualObjectList::handleLeftButtonUp(const Common::Point &point) {
 		if (_objectIndex > 0)
 			--_objectIndex;
 
-		getApp()->getEventHandler()->onVisualList(_id, 1, point);
+		getApp()->onVisualList(_id, 1, point);
 		return 1;
 
 	case kCursorActive:
 		if (_objectIndex < _itemCount)
 			++_objectIndex;
 
-		getApp()->getEventHandler()->onVisualList(_id, 2, point);
+		getApp()->onVisualList(_id, 2, point);
 		return 2;
 
 	case kCursorPassiveDraw:
@@ -563,7 +563,7 @@ uint32 VisualObjectList::handleLeftButtonUp(const Common::Point &point) {
 		_objectIndexClicked = (int32)_objectIndex + hotspot->getTarget();
 		_objectIdClicked    = _objects[_objectIndexClicked]->getId();
 
-		getApp()->getEventHandler()->onVisualList(_id, 3, point);
+		getApp()->onVisualList(_id, 3, point);
 		return 3;
 	}
 
@@ -590,7 +590,7 @@ uint32 VisualObjectList::handleUpdate(const Common::Point &point) {
 				getApp()->getScreenManager()->draw(_upGur, _origin + _upOffset, _upGur->getDrawType());
 		}
 
-		getApp()->getEventHandler()->onVisualList(_id, 1, point);
+		getApp()->onVisualList(_id, 1, point);
 		return 1;
 
 	case kCursorActive:
@@ -601,13 +601,13 @@ uint32 VisualObjectList::handleUpdate(const Common::Point &point) {
 				getApp()->getScreenManager()->draw(_downGur, _origin + _downOffset, _downGur->getDrawType());
 		}
 
-		getApp()->getEventHandler()->onVisualList(_id, 2, point);
+		getApp()->onVisualList(_id, 2, point);
 		return 2;
 
 	case kCursorPassiveDraw:
 		getApp()->cursorSelect(kCursorMenuActive);
 
-		getApp()->getEventHandler()->onVisualList(_id, 3, point);
+		getApp()->onVisualList(_id, 3, point);
 		return 3;
 	}
 

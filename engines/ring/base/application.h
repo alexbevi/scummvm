@@ -24,6 +24,8 @@
 
 #include "ring/shared.h"
 
+#include "ring/base/event.h"
+
 #include "common/events.h"
 
 namespace Ring {
@@ -36,7 +38,6 @@ class CursorHandler;
 class Debugger;
 class DialogHandler;
 class DragControl;
-class EventHandler;
 class LanguageHandler;
 class FontHandler;
 class Game;
@@ -57,7 +58,7 @@ class Visual;
 class Var;
 class ZoneHandler;
 
-class Application : public Common::Serializable {
+class Application : public Common::Serializable, public EventHandler {
 public:
 	Application(RingEngine *engine);
 	virtual ~Application();
@@ -86,9 +87,8 @@ public:
 	virtual void loadPreferences() = 0;
 
 	//////////////////////////////////////////////////////////////////////////
-	// Event handling
-	void onTimer(TimerId id);
-
+	// Timer & update
+	void processTimer(TimerId id);
 	void update(const Common::Point &point);
 	void updateBag(const Common::Point &point);
 
@@ -336,11 +336,11 @@ public:
 	void visualListAddToPuzzle(Id visualId, PuzzleId puzzleId, uint32 a3,
 	                           Common::String imageDir, Common::String iconDir, Common::String filename3, Common::String filename4, Common::String filename5, Common::String filename6, Common::String filename7, Common::String filename8, Common::String filename9, Common::String filename10,
 	                           Common::String filename11, Common::String filename12, Common::String filename13,
-							   DrawType drawType, const Common::Point &origin, const Common::Point &backgroundOffset, uint32 a22, uint32 a23, uint32 a24, uint32 a25, uint32 a26,
-							   uint32 a27, const Common::Point &upOffset, uint32 a30, uint32 a31, uint32 a32, uint32 a33, const Common::Point &downOffset, uint32 a36,
-							   uint32 a37, uint32 a38, uint32 a39, const Common::Point &imageCoords, ImageType imageType, DrawType imageDrawType, uint32 a44, uint32 a45, uint32 a46,
-							   const Color &foreground, const Color &foregroundSelected, const Color &background, FontId fontId,
-							   ArchiveType archiveType);
+	                           DrawType drawType, const Common::Point &origin, const Common::Point &backgroundOffset, uint32 a22, uint32 a23, uint32 a24, uint32 a25, uint32 a26,
+	                           uint32 a27, const Common::Point &upOffset, uint32 a30, uint32 a31, uint32 a32, uint32 a33, const Common::Point &downOffset, uint32 a36,
+	                           uint32 a37, uint32 a38, uint32 a39, const Common::Point &imageCoords, ImageType imageType, DrawType imageDrawType, uint32 a44, uint32 a45, uint32 a46,
+	                           const Color &foreground, const Color &foregroundSelected, const Color &background, FontId fontId,
+	                           ArchiveType archiveType);
 	void visualListAdd(Id visualId, PuzzleId puzzleId, const ObjectId &objectId);
 	void visualListRemove(Id visualId, PuzzleId puzzleId, const ObjectId &objectId, bool removeObject);
 	void visualListRemove(Id visualId, PuzzleId puzzleId, bool removeObject);
@@ -442,7 +442,6 @@ public:
 	Bag               *getBag()               { return _bag; }
 	DialogHandler     *getDialogHandler()     { return _dialogHandler; }
 	DragControl       *getDragControl()       { return _dragControl; }
-	EventHandler      *getEventHandler()      { return _eventHandler; }
 	FontHandler       *getFontHandler()       { return _fontHandler; }
 	PreferenceHandler *getPreferenceHandler() { return _preferenceHandler; }
 	SaveManager       *getSaveManager()       { return _saveManager; }
@@ -505,9 +504,6 @@ protected:
 
 	// Sound (playing & managing sound data)
 	SoundManager                    *_soundManager;
-
-	// Event Handling
-	EventHandler                    *_eventHandler;
 
 	// Configuration
 	void loadConfiguration();

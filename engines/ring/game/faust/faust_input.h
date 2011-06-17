@@ -33,7 +33,7 @@ class EventHandlerFaust;
 
 class EventInputFaust {
 public:
-	EventInputFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler);
+	EventInputFaust(ApplicationFaust *application);
 	~EventInputFaust();
 
 	void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
@@ -43,7 +43,6 @@ public:
 
 private:
 	ApplicationFaust  *_app;
-	EventHandlerFaust *_event;
 
 	void onKeyDownZone(const Common::KeyState &keyState);
 };

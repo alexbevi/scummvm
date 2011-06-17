@@ -27,11 +27,10 @@
 namespace Ring {
 
 class ApplicationRing;
-class EventHandlerRing;
 
 class EventTimerRing {
 public:
-	EventTimerRing(ApplicationRing *application, EventHandlerRing *eventHandler);
+	EventTimerRing(ApplicationRing *application);
 	~EventTimerRing();
 
 	void onTimerZoneNI(TimerId id);
@@ -43,7 +42,6 @@ public:
 
 private:
 	ApplicationRing  *_app;
-	EventHandlerRing *_event;
 
 	bool              _disableTimerRH;
 	uint32            _frameNumberTimerRH;

@@ -30,11 +30,9 @@ namespace Ring {
 
 class ApplicationRing;
 class DragControl;
-class EventHandlerRing;
-
 class EventBagRing {
 public:
-	EventBagRing(ApplicationRing *application, EventHandlerRing *eventHandler);
+	EventBagRing(ApplicationRing *application);
 	~EventBagRing();
 
 	void onBagZoneSY(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
@@ -60,7 +58,6 @@ public:
 
 private:
 	ApplicationRing  *_app;
-	EventHandlerRing *_event;
 
 	// SY
 	int16        _offsetX;

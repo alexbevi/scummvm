@@ -26,6 +26,18 @@
 
 namespace Ring {
 
+class EventAnimationPompeii;
+class EventBagPompeii;
+class EventButtonPompeii;
+class EventInitPompeii;
+class EventInputPompeii;
+class EventRidePompeii;
+class EventSetupPompeii;
+class EventSoundPompeii;
+class EventTimerPompeii;
+class EventVisualPompeii;
+class EventZonePompeii;
+
 class ApplicationPompeii : public Application {
 public:
 	ApplicationPompeii(RingEngine *engine);
@@ -54,7 +66,29 @@ public:
 	// Visual
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 
+	//////////////////////////////////////////////////////////////////////////
+	// Event handling
+	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
+	virtual void onMouseLeftButtonDown(const Common::Event &evt);
+	virtual void onMouseRightButtonUp(const Common::Event &evt);
+	virtual void onKeyDown(Common::Event &evt);
+	virtual void onTimer(TimerId id);
+	virtual void onInitZone(ZoneId zone);
+	virtual void onSetup(ZoneId zone, SetupType type);
+
 private:
+	// Event handlers
+	EventAnimationPompeii *_eventAnimation;
+	EventBagPompeii       *_eventBag;
+	EventButtonPompeii    *_eventButton;
+	EventInitPompeii      *_eventInit;
+	EventInputPompeii     *_eventInput;
+	EventRidePompeii      *_eventRide;
+	EventSetupPompeii     *_eventSetup;
+	EventSoundPompeii     *_eventSound;
+	EventTimerPompeii     *_eventTimer;
+	EventVisualPompeii    *_eventVisual;
+	EventZonePompeii      *_eventZone;
 };
 
 } // End of namespace Ring

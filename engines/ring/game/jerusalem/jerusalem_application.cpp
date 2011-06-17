@@ -27,25 +27,60 @@
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 
-#include "ring/game/jerusalem/jerusalem_event.h"
+#include "ring/game/jerusalem/jerusalem_animation.h"
+#include "ring/game/jerusalem/jerusalem_bag.h"
+#include "ring/game/jerusalem/jerusalem_button.h"
+#include "ring/game/jerusalem/jerusalem_init.h"
+#include "ring/game/jerusalem/jerusalem_input.h"
+#include "ring/game/jerusalem/jerusalem_ride.h"
+#include "ring/game/jerusalem/jerusalem_setup.h"
+#include "ring/game/jerusalem/jerusalem_shared.h"
+#include "ring/game/jerusalem/jerusalem_sound.h"
+#include "ring/game/jerusalem/jerusalem_timer.h"
+#include "ring/game/jerusalem/jerusalem_visual.h"
+#include "ring/game/jerusalem/jerusalem_zone.h"
 
 #include "ring/graphics/screen.h"
 
 #include "ring/sound/soundhandler.h"
 
 #include "ring/debug.h"
+#include "ring/helpers.h"
+#include "ring/ring.h"
 
 //using namespace JerusalemGame;
 
 namespace Ring {
 
 ApplicationJerusalem::ApplicationJerusalem(RingEngine *engine) : Application(engine) {
-	_eventHandler = new EventHandlerJerusalem(this);
-
 	_systemZone = kZone100;
+
+	// Event handlers
+	_eventAnimation = new EventAnimationJerusalem(this);
+	_eventBag       = new EventBagJerusalem(this);
+	_eventButton    = new EventButtonJerusalem(this);
+	_eventInit      = new EventInitJerusalem(this);
+	_eventInput     = new EventInputJerusalem(this);
+	_eventRide      = new EventRideJerusalem(this);
+	_eventSetup     = new EventSetupJerusalem(this);
+	_eventSound     = new EventSoundJerusalem(this);
+	_eventTimer     = new EventTimerJerusalem(this);
+	_eventVisual    = new EventVisualJerusalem(this);
+	_eventZone      = new EventZoneJerusalem(this);
 }
 
 ApplicationJerusalem::~ApplicationJerusalem() {
+	SAFE_DELETE(_eventAnimation);
+	SAFE_DELETE(_eventBag);
+	SAFE_DELETE(_eventButton);
+	SAFE_DELETE(_eventInit);
+	SAFE_DELETE(_eventInput);
+	SAFE_DELETE(_eventRide);
+	SAFE_DELETE(_eventSetup);
+	SAFE_DELETE(_eventSound);
+	SAFE_DELETE(_eventTimer);
+	SAFE_DELETE(_eventVisual);
+	SAFE_DELETE(_eventZone);
 }
 
 #pragma region Game setup
@@ -192,49 +227,49 @@ void ApplicationJerusalem::initZones() {
 
 	drawZoneName(kZone100);
 	_archiveType = getZoneArchiveType(kZone100);
-	_eventHandler->onInitZone(kZone100);
+	onInitZone(kZone100);
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZone1);
 	_archiveType = getZoneArchiveType(kZone2);
-	_eventHandler->onInitZone(kZone1);
+	onInitZone(kZone1);
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone2);
-	_eventHandler->onInitZone(kZone2);
+	onInitZone(kZone2);
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone3);
-	_eventHandler->onInitZone(kZone3);
+	onInitZone(kZone3);
 
 	drawZoneName(kZone4);
 	_archiveType = getZoneArchiveType(kZone4);
-	_eventHandler->onInitZone(kZone4);
+	onInitZone(kZone4);
 
 	drawZoneName(kZone5);
 	_archiveType = getZoneArchiveType(kZone5);
-	_eventHandler->onInitZone(kZone5);
+	onInitZone(kZone5);
 
 	drawZoneName(kZone6);
 	_archiveType = getZoneArchiveType(kZone6);
-	_eventHandler->onInitZone(kZone6);
+	onInitZone(kZone6);
 
 	drawZoneName(kZone7);
 	_archiveType = getZoneArchiveType(kZone7);
-	_eventHandler->onInitZone(kZone7);
+	onInitZone(kZone7);
 
 	drawZoneName(kZone8);
 	_archiveType = getZoneArchiveType(kZone8);
-	_eventHandler->onInitZone(kZone8);
+	onInitZone(kZone8);
 
 	drawZoneName(kZone9);
 	_archiveType = getZoneArchiveType(kZone9);
-	_eventHandler->onInitZone(kZone9);
+	onInitZone(kZone9);
 
 	drawZoneName(kZone10);
 	_archiveType = getZoneArchiveType(kZone10);
-	_eventHandler->onInitZone(kZone10);
+	onInitZone(kZone10);
 
 	_archiveType = getZoneArchiveType(getCurrentZone());
 
@@ -246,6 +281,34 @@ void ApplicationJerusalem::initZones() {
 
 	// Original loads preferences and stores the showSubtitles
 	// value to the main app structure
+}
+
+#pragma endregion
+
+#pragma region Event handling
+
+void ApplicationJerusalem::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
+	error("[ApplicationJerusalem::onMouseLeftButtonUp] Not implemented (evt: %d, CTRL pressed: %d)", evt.type, isControlPressed);
+}
+
+void ApplicationJerusalem::onMouseLeftButtonDown(const Common::Event &evt) {
+	error("[ApplicationJerusalem::onMouseLeftButtonDown] Not implemented (evt: %d)", evt.type);
+}
+
+void ApplicationJerusalem::onMouseRightButtonUp(const Common::Event &evt) {
+	error("[ApplicationJerusalem::onMouseRightButtonUp] Not implemented (evt: %d)", evt.type);
+}
+
+void ApplicationJerusalem::onKeyDown(Common::Event &evt) {
+	error("[ApplicationJerusalem::onKeyDown] Not implemented (evt: %d)", evt.type);
+}
+
+void ApplicationJerusalem::onInitZone(ZoneId zone) {
+	error("[ApplicationJerusalem::onInitZone] Not implemented (zone: %d)", zone);
+}
+
+void ApplicationJerusalem::onTimer(TimerId timerId) {
+	error("[ApplicationJerusalem::onTimer] Not implemented (id: %d)", timerId);
 }
 
 #pragma endregion

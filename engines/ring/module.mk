@@ -43,7 +43,6 @@ MODULE_OBJS += \
 	game/ring/ring_application.o \
 	game/ring/ring_bag.o \
 	game/ring/ring_button.o \
-	game/ring/ring_event.o \
 	game/ring/ring_init.o \
 	game/ring/ring_input.o \
 	game/ring/ring_ride.o \
@@ -60,7 +59,6 @@ MODULE_OBJS += \
 	game/faust/faust_application.o \
 	game/faust/faust_bag.o \
 	game/faust/faust_button.o \
-	game/faust/faust_event.o \
 	game/faust/faust_init.o \
 	game/faust/faust_input.o \
 	game/faust/faust_ride.o \
@@ -77,7 +75,6 @@ MODULE_OBJS += \
 	game/pompeii/pompeii_application.o \
 	game/pompeii/pompeii_bag.o \
 	game/pompeii/pompeii_button.o \
-	game/pompeii/pompeii_event.o \
 	game/pompeii/pompeii_init.o \
 	game/pompeii/pompeii_input.o \
 	game/pompeii/pompeii_ride.o \
@@ -94,7 +91,6 @@ MODULE_OBJS += \
 	game/pilgrim2/pilgrim2_application.o \
 	game/pilgrim2/pilgrim2_bag.o \
 	game/pilgrim2/pilgrim2_button.o \
-	game/pilgrim2/pilgrim2_event.o \
 	game/pilgrim2/pilgrim2_init.o \
 	game/pilgrim2/pilgrim2_input.o \
 	game/pilgrim2/pilgrim2_ride.o \
@@ -111,7 +107,6 @@ MODULE_OBJS += \
 	game/pilgrim3/pilgrim3_application.o \
 	game/pilgrim3/pilgrim3_bag.o \
 	game/pilgrim3/pilgrim3_button.o \
-	game/pilgrim3/pilgrim3_event.o \
 	game/pilgrim3/pilgrim3_init.o \
 	game/pilgrim3/pilgrim3_input.o \
 	game/pilgrim3/pilgrim3_ride.o \
@@ -128,7 +123,6 @@ MODULE_OBJS += \
 	game/jerusalem/jerusalem_application.o \
 	game/jerusalem/jerusalem_bag.o \
 	game/jerusalem/jerusalem_button.o \
-	game/jerusalem/jerusalem_event.o \
 	game/jerusalem/jerusalem_init.o \
 	game/jerusalem/jerusalem_input.o \
 	game/jerusalem/jerusalem_ride.o \

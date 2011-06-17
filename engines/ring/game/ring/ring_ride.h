@@ -27,11 +27,10 @@
 namespace Ring {
 
 class ApplicationRing;
-class EventHandlerRing;
 
 class EventRideRing {
 public:
-	EventRideRing(ApplicationRing *application, EventHandlerRing *eventHandler);
+	EventRideRing(ApplicationRing *application);
 	~EventRideRing();
 
 	void onBeforeRideZoneNI(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
@@ -52,7 +51,6 @@ public:
 
 private:
 	ApplicationRing  *_app;
-	EventHandlerRing *_event;
 
 	uint32            _dword_4A1C00;
 };

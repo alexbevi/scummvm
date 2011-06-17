@@ -27,11 +27,10 @@
 namespace Ring {
 
 class ApplicationRing;
-class EventHandlerRing;
 
 class EventAnimationRing {
 public:
-	EventAnimationRing(ApplicationRing *application, EventHandlerRing *eventHandler);
+	EventAnimationRing(ApplicationRing *application);
 	~EventAnimationRing();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -49,7 +48,6 @@ public:
 
 private:
 	ApplicationRing  *_app;
-	EventHandlerRing *_event;
 
 	void sub_433FA0();
 	void sub_4340C0();

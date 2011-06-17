@@ -192,7 +192,7 @@ int32 Animation::adjustTicks(uint32 ticks) {
 			if (ticks == 1)
 				_field_32 = 2;
 
-			getApp()->getEventHandler()->onAnimation2(1, _id, _name, _activeFrame + 1, _field_3E);
+			getApp()->onAnimation2(1, _id, _name, _activeFrame + 1, _field_3E);
 			return _activeFrame;
 		}
 		return -1;
@@ -209,7 +209,7 @@ int32 Animation::adjustTicks(uint32 ticks) {
 	if (ticks == 1)
 		_field_4A = 2;
 
-	getApp()->getEventHandler()->onAnimation(1, _id, _name, _activeFrame + 1, _field_46);
+	getApp()->onAnimation(1, _id, _name, _activeFrame + 1, _field_46);
 
 	return _activeFrame;
 }
@@ -336,7 +336,7 @@ uint32 Animation::computeCurrentFrame(uint32 ticks) {
 	// Notify event handler
 	if (_currentFrame != (int32)(_activeFrame + 1)) {
 		if (!_name.empty())
-			getApp()->getEventHandler()->onAnimationNextFrame(_id, _name, _activeFrame + 1, _frameCount);
+			getApp()->onAnimationNextFrame(_id, _name, _activeFrame + 1, _frameCount);
 	}
 
 	_currentFrame = _activeFrame + 1;
@@ -434,14 +434,14 @@ void Animation::onAnimation3() {
 	_lastTicks = 0;
 	_tickInterval = 0;
 
-	getApp()->getEventHandler()->onAnimation2(2, _id, _name, _activeFrame + 1, tickInterval);
+	getApp()->onAnimation2(2, _id, _name, _activeFrame + 1, tickInterval);
 }
 
 void Animation::onAnimation2() {
 	_field_32 = 1;
 	_field_60 = 0;
 
-	getApp()->getEventHandler()->onAnimation2(2, _id, _name, _activeFrame + 1, _field_3E);
+	getApp()->onAnimation2(2, _id, _name, _activeFrame + 1, _field_3E);
 }
 
 void Animation::onAnimation() {
@@ -449,7 +449,7 @@ void Animation::onAnimation() {
 	_field_4A = 0;
 	_field_60 = 0;
 
-	getApp()->getEventHandler()->onAnimation(2, _id, _name, _activeFrame + 1, _field_46);
+	getApp()->onAnimation(2, _id, _name, _activeFrame + 1, _field_46);
 }
 
 #pragma region Serializable

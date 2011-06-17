@@ -30,7 +30,6 @@
 #include "ring/base/saveload.h"
 
 #include "ring/game/ring/ring_application.h"
-#include "ring/game/ring/ring_event.h"
 #include "ring/game/ring/ring_shared.h"
 
 #include "ring/graphics/dragControl.h"
@@ -45,14 +44,13 @@ using namespace RingGame;
 
 namespace Ring {
 
-EventInputRing::EventInputRing(ApplicationRing *application, EventHandlerRing *eventHandler) : _app(application), _event(eventHandler) {
+EventInputRing::EventInputRing(ApplicationRing *application) : _app(application) {
 	_controlNotPressed = false;
 }
 
 EventInputRing::~EventInputRing() {
 	// Zero-out passed pointers
 	_app = NULL;
-	_event = NULL;
 }
 
 #pragma region Mouse
@@ -72,7 +70,7 @@ void EventInputRing::onMouseLeftButtonUp(const Common::Event &evt) {
 		if (bag->checkHotspotClick(evt.mouse) == 1) {
 
 			// Handle clicked object event
-			_app->getEventHandler()->onBagClickedObject(_app->getBag()->getClickedObject());
+			_app->onBagClickedObject(_app->getBag()->getClickedObject());
 
 			if (_app->getField77()) {
 				bag->reset();
@@ -100,7 +98,7 @@ void EventInputRing::onMouseLeftButtonUp(const Common::Event &evt) {
 	// Handle clicks on drag control
 	DragControl *dragControl = _app->getDragControl();
 	if (dragControl->getField20()) {
-		_app->getEventHandler()->onBag(dragControl->getObjectId(), dragControl->getTarget(), dragControl->getPuzzleRotationId(), dragControl->getField39(), dragControl, 2);
+		_app->onBag(dragControl->getObjectId(), dragControl->getTarget(), dragControl->getPuzzleRotationId(), dragControl->getField39(), dragControl, 2);
 
 		if (_app->getState() == kStateShowMenu)
 			return;
@@ -179,7 +177,7 @@ bool EventInputRing::handleLeftButtonUp(Accessibility *accessibility, Id id, con
 	Hotspot *hotspot = accessibility->getHotspot();
 
 	if (object->getFieldC() & 1) {
-		((EventHandlerRing *)_app->getEventHandler())->onButtonUp(object->getId(), hotspot->getTarget(), id, 1, point);
+		_app->onButtonUp(object->getId(), hotspot->getTarget(), id, 1, point);
 
 		if (_app->getState() == kStateShowMenu)
 			return true;
@@ -190,7 +188,7 @@ bool EventInputRing::handleLeftButtonUp(Accessibility *accessibility, Id id, con
 		return true;
 	}
 
-	((EventHandlerRing *)_app->getEventHandler())->onButtonUp2(object->getId(), (uint32)hotspot->getTarget(), id, 1, point);
+	_app->onButtonUp2(object->getId(), (uint32)hotspot->getTarget(), id, 1, point);
 
 	if (_app->getState() != kStateShowMenu) {
 		if (_app->getField74()) {
@@ -216,7 +214,7 @@ bool EventInputRing::handleLeftButtonUp(Movability *movability, uint32 index, Id
 	//////////////////////////////////////////////////////////////////////////
 	// Before Ride
 	//////////////////////////////////////////////////////////////////////////
-	_app->getEventHandler()->onBeforeRide(id, movability->getTo(), index, hotspot->getTarget(), movability->getType());
+	_app->onBeforeRide(id, movability->getTo(), index, hotspot->getTarget(), movability->getType());
 
 	if (_app->getState() == kStateShowMenu)
 		return true;
@@ -327,7 +325,7 @@ bool EventInputRing::handleLeftButtonUp(Movability *movability, uint32 index, Id
 		_app->rotationSetActive(movability->getTo());
 		_app->getCurrentRotation()->updateAndDraw(movability->getAlpAfter(), movability->getBetAfter(), movability->getRanAfter());
 
-		_app->getEventHandler()->onAfterRide(_app->getCurrentRotationId(), id, index, hotspot->getTarget(), movability->getType());
+		_app->onAfterRide(_app->getCurrentRotationId(), id, index, hotspot->getTarget(), movability->getType());
 
 		if (_app->getState() == kStateShowMenu)
 			return true;
@@ -337,7 +335,7 @@ bool EventInputRing::handleLeftButtonUp(Movability *movability, uint32 index, Id
 	case kMovabilityPuzzleToPuzzle:
 		_app->puzzleSetActive(movability->getTo().id());
 
-		_app->getEventHandler()->onAfterRide(_app->getCurrentRotationId(), id, index, hotspot->getTarget(), movability->getType());
+		_app->onAfterRide(_app->getCurrentRotationId(), id, index, hotspot->getTarget(), movability->getType());
 
 		if (_app->getState() == kStateShowMenu)
 			return true;
@@ -405,7 +403,7 @@ bool EventInputRing::handleLeftButtonDown(Accessibility *accessibility, uint32 i
 	Hotspot *hotspot = accessibility->getHotspot();
 
 	if (object->getFieldC() & 2) {
-		((EventHandlerRing *)_app->getEventHandler())->onButtonDown(object->getId(), hotspot->getTarget(), id, 1, point);
+		_app->onButtonDown(object->getId(), hotspot->getTarget(), id, 1, point);
 
 		if (_app->getState() == kStateShowMenu)
 			return true;
@@ -417,7 +415,7 @@ bool EventInputRing::handleLeftButtonDown(Accessibility *accessibility, uint32 i
 	}
 
 	_app->getDragControl()->init(point, object->getId(), index, hotspot, hotspot->getTarget(), id, 1);
-	_app->getEventHandler()->onBag(object->getId(), hotspot->getTarget(), id, 1, _app->getDragControl(), 1);
+	_app->onBag(object->getId(), hotspot->getTarget(), id, 1, _app->getDragControl(), 1);
 
 	if (_app->getState() != kStateShowMenu) {
 		if (!_app->getField76())

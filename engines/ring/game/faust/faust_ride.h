@@ -31,7 +31,7 @@ class EventHandlerFaust;
 
 class EventRideFaust {
 public:
-	EventRideFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler);
+	EventRideFaust(ApplicationFaust *application);
 	~EventRideFaust();
 
 	void onBeforeRideZone2(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 target, MovabilityType movabilityType);
@@ -56,7 +56,6 @@ public:
 
 private:
 	ApplicationFaust  *_app;
-	EventHandlerFaust *_event;
 };
 
 } // End of namespace Ring

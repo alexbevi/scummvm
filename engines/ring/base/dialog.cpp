@@ -373,7 +373,7 @@ void DialogHandler::play() {
 
 	Id dialogId = dialog->getId();
 	removeDialog(dialogId);
-	getApp()->getEventHandler()->onSound(dialogId, kSoundTypeDialog, 4097);
+	getApp()->onSound(dialogId, kSoundTypeDialog, 4097);
 }
 
 bool DialogHandler::isPlaying(Id id) {

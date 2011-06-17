@@ -26,7 +26,6 @@
 #include "ring/base/saveload.h"
 
 #include "ring/game/ring/ring_application.h"
-#include "ring/game/ring/ring_event.h"
 #include "ring/game/ring/ring_shared.h"
 
 #include "ring/graphics/image.h"
@@ -38,7 +37,7 @@ using namespace RingGame;
 
 namespace Ring {
 
-EventButtonRing::EventButtonRing(ApplicationRing *application, EventHandlerRing *eventHandler) : _app(application), _event(eventHandler) {
+EventButtonRing::EventButtonRing(ApplicationRing *application) : _app(application) {
 	_presentationIndexSY = 0;
 	_prefsSubtitles = false;
 
@@ -49,7 +48,6 @@ EventButtonRing::EventButtonRing(ApplicationRing *application, EventHandlerRing 
 EventButtonRing::~EventButtonRing() {
 	// Zero-out passed pointers
 	_app = NULL;
-	_event = NULL;
 }
 
 #pragma region Left Button Up/Down
@@ -422,7 +420,7 @@ void EventButtonRing::onButtonUpZoneSY(ObjectId id, uint32 target, Id, uint32, c
 	case kObjectMenuPreferences:
 		_app->puzzleSetActive(kPuzzlePreferences);
 
-		_event->_prefsVolume = _app->getPreferenceHandler()->getVolume();
+		_app->_prefsVolume = _app->getPreferenceHandler()->getVolume();
 		_prefsVolumeDialog = _app->getPreferenceHandler()->getVolumeDialog();
 		_presentationIndexSY = _app->getPreferenceHandler()->getReverseStereo() == 1;
 		_prefsSubtitles = _app->getPreferenceHandler()->getShowSubtitles();
@@ -437,7 +435,7 @@ void EventButtonRing::onButtonUpZoneSY(ObjectId id, uint32 target, Id, uint32, c
 			_app->objectPresentationShow(kObjectPreferencesSubtitles, 1);
 		}
 
-		_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderVolume, 0, 0, Common::Point((int16)(5 * _event->_prefsVolume + 84), 155));
+		_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderVolume, 0, 0, Common::Point((int16)(5 * _app->_prefsVolume + 84), 155));
 		_app->objectPresentationSetImageCoordinatesOnPuzzle(kObjectPreferencesSliderDialog, 0, 0, Common::Point((int16)(5 * _prefsVolumeDialog + 84), 212));
 		_app->objectPresentationHide(kObjectPreferences3dSound);
 		_app->objectPresentationShow(kObjectPreferences3dSound, _presentationIndexSY);
@@ -464,7 +462,7 @@ void EventButtonRing::onButtonUpZoneSY(ObjectId id, uint32 target, Id, uint32, c
 
 	case kObjectPreferencesOk:
 		_app->puzzleSetActive(kPuzzleGeneralMenu);
-		_app->getPreferenceHandler()->save(_event->_prefsVolume, _prefsVolumeDialog, _presentationIndexSY != 0 ? 2 : 0, _prefsSubtitles);
+		_app->getPreferenceHandler()->save(_app->_prefsVolume, _prefsVolumeDialog, _presentationIndexSY != 0 ? 2 : 0, _prefsSubtitles);
 		break;
 
 	case kObjectCredits:
@@ -971,7 +969,7 @@ void EventButtonRing::onButtonUpZoneNI(ObjectId id, uint32 target, Id puzzleRota
 			}
 
 			_app->cursorDelete();
-			_event->sub_445A10();
+			_app->sub_445A10();
 			break;
 		}
 
@@ -979,7 +977,7 @@ void EventButtonRing::onButtonUpZoneNI(ObjectId id, uint32 target, Id puzzleRota
 
 		switch (target) {
 		default:
-			_event->sub_445A10();
+			_app->sub_445A10();
 			break;
 
 		case 0:
@@ -996,7 +994,7 @@ void EventButtonRing::onButtonUpZoneNI(ObjectId id, uint32 target, Id puzzleRota
 
 			_app->objectPresentationShow(kObject10430, 0);
 
-			_event->sub_445A10();
+			_app->sub_445A10();
 			break;
 
 		case 1:
@@ -1008,7 +1006,7 @@ void EventButtonRing::onButtonUpZoneNI(ObjectId id, uint32 target, Id puzzleRota
 				_app->varSetByte(10430, 0);
 			}
 
-			_event->sub_445A10();
+			_app->sub_445A10();
 			break;
 		}
 		break;
@@ -1054,7 +1052,7 @@ void EventButtonRing::onButtonUpZoneNI(ObjectId id, uint32 target, Id puzzleRota
 		_app->soundStopAll(1024);
 		_app->playMovie("1520");
 		_app->varSetFloat(90005, _app->varGetFloat(90005) + 3.0f);
-		_event->onSwitchZone(kZoneRH, 0);
+		_app->onSwitchZone(kZoneRH, 0);
 		break;
 
 	case kObjectAntiGCells:
@@ -1655,7 +1653,7 @@ void EventButtonRing::onButtonUpZoneRH(ObjectId id, uint32 target, Id, uint32, c
 			_app->soundStopAll(1024);
 			_app->playMovie("1666");
 			_app->bagRemove(kObjectAntiGCells2);
-			_event->onSwitchZone(kZoneNI, 3);
+			_app->onSwitchZone(kZoneNI, 3);
 		}
 		else {
 			_app->playMovie("1667");
@@ -3230,7 +3228,7 @@ void EventButtonRing::onButtonUpZoneRO(ObjectId id, uint32 target, Id, uint32, c
 
 		_app->objectSetAccessibilityOff(kObject40060);
 		_app->puzzleSetMovabilityOff(kPuzzle40060, 0, 0);
-		if ((_event->_presentationIndexRO / 10) == (int32)(target + 1)) {
+		if ((_app->_presentationIndexRO / 10) == (int32)(target + 1)) {
 			_app->objectPresentationShow(kObject40201, target);
 
 			Common::String str = _app->varGetString(40901);
@@ -3855,42 +3853,42 @@ void EventButtonRing::onButtonUpZoneAS(ObjectId id, uint32 target, Id, uint32, c
 		case 0:
 			if (!_app->varGetByte(90001)) {
 				_app->timerStopAll();
-				_event->onSwitchZone(kZoneNI, 0);
+				_app->onSwitchZone(kZoneNI, 0);
 			}
 			break;
 
 		case 1:
 			if (!_app->varGetByte(90002)) {
 				_app->timerStopAll();
-				_event->onSwitchZone(kZoneN2, 0);
+				_app->onSwitchZone(kZoneN2, 0);
 			}
 			break;
 
 		case 2:
 			if (!_app->varGetByte(90001)) {
 				_app->timerStopAll();
-				_event->onSwitchZone(kZoneNI, 0);
+				_app->onSwitchZone(kZoneNI, 0);
 			}
 			break;
 
 		case 3:
 			if (!_app->varGetByte(90003)) {
 				_app->timerStopAll();
-				_event->onSwitchZone(kZoneFO, 0);
+				_app->onSwitchZone(kZoneFO, 0);
 			}
 			break;
 
 		case 4:
 			if (!_app->varGetByte(90002)) {
 				_app->timerStopAll();
-				_event->onSwitchZone(kZoneN2, 0);
+				_app->onSwitchZone(kZoneN2, 0);
 			}
 			break;
 
 		case 5:
 			if (!_app->varGetByte(90004)) {
 				_app->timerStopAll();
-				_event->onSwitchZone(kZoneWA, 0);
+				_app->onSwitchZone(kZoneWA, 0);
 			}
 			break;
 		}
@@ -4086,7 +4084,7 @@ void EventButtonRing::onButtonUpZoneAS(ObjectId id, uint32 target, Id, uint32, c
 		if (_app->bagHasClickedObject())
 			_app->cursorDelete();
 		else
-			_event->onSwitchZone(kZoneAS, 5);
+			_app->onSwitchZone(kZoneAS, 5);
 		break;
 	}
 }

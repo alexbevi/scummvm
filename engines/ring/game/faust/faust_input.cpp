@@ -22,20 +22,18 @@
 #include "ring/game/faust/faust_input.h"
 
 #include "ring/game/faust/faust_application.h"
-#include "ring/game/faust/faust_event.h"
 #include "ring/game/faust/faust_shared.h"
 
 using namespace FaustGame;
 
 namespace Ring {
 
-EventInputFaust::EventInputFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler) : _app(application), _event(eventHandler) {
+EventInputFaust::EventInputFaust(ApplicationFaust *application) : _app(application) {
 }
 
 EventInputFaust::~EventInputFaust() {
 	// Zero-out passed pointers
 	_app   = NULL;
-	_event = NULL;
 }
 
 void EventInputFaust::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {

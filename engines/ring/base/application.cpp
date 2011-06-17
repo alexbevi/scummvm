@@ -61,10 +61,10 @@ Application::Application(RingEngine *engine) : _vm(engine),
 	_screenManager(NULL),        _artHandler(NULL),          _fontHandler(NULL),   _dialogHandler(NULL),        _languageHandler(NULL),
 	_isRotationCompressed(true), _archiveType(kArchiveFile), _cursorHandler(NULL), _loadFrom(kLoadFromInvalid), _field_5E(0),
 	_soundHandler(NULL),         _state(kStateNone),         _field_6A(false),
-	_currentGameZone(kZoneNone), _menuAction(kMenuAction0),               _field_74(false),     _field_75(false),            _field_76(false),
+	_currentGameZone(kZoneNone), _menuAction(kMenuAction0),  _field_74(false),     _field_75(false),            _field_76(false),
 	_field_77(false),            _field_78(false),           _puzzle(NULL),        _rotation(NULL),             _bag(NULL),
 	_timerHandler(NULL),         _var(NULL),                 _dragControl(NULL),   _objectHandler(NULL),        _preferenceHandler(NULL),
-	_zoneHandler(NULL),          _eventHandler(NULL) {
+	_zoneHandler(NULL) {
 
 	// Start managers
 	_saveManager = new SaveManager(this);
@@ -99,7 +99,6 @@ Application::~Application() {
 
 	SAFE_DELETE(_saveManager);
 	SAFE_DELETE(_soundManager);
-	SAFE_DELETE(_eventHandler);
 
 	_puzzle = NULL;
 	_rotation = NULL;
@@ -415,10 +414,7 @@ void Application::setZone(ZoneId zone, SetupType type) {
 	}
 
 	// Setup zone
-	if (!_eventHandler)
-		error("[Application::setZone] The event handler is not initialized properly");
-
-	_eventHandler->onSetup(zone, type);
+	onSetup(zone, type);
 }
 
 void Application::exitZone() {
@@ -463,24 +459,21 @@ void Application::exitToMenu(MenuAction menuAction) {
 
 #pragma region Event handling
 
-void Application::onTimer(TimerId id) {
-	if (!_eventHandler)
-		error("[Application::onTimer] Event handler not initialized properly!");
-
+void Application::processTimer(TimerId id) {
 	if (_field_6A)
 		return;
 
-	_eventHandler->onTimer(id);
+	onTimer(id);
 }
 
 void Application::update(const Common::Point &point) {
-	if (!_bag || !_eventHandler || !_dragControl)
+	if (!_bag || !_dragControl)
 		error("[Application::update] Application not initialized properly");
 
 	// Handle bag
 	if (_bag->isInitialized()) {
 		if (_bag->checkHotspot(point)) {
-			_eventHandler->onUpdateBag(point);
+			onUpdateBag(point);
 
 			return;
 		}
@@ -492,7 +485,7 @@ void Application::update(const Common::Point &point) {
 		else
 			cursorSelect(kCursorIdle);
 
-		_eventHandler->onUpdateBag(point);
+		onUpdateBag(point);
 	}
 
 	// Handle drag control
@@ -537,7 +530,7 @@ void Application::update(const Common::Point &point) {
 						_cursorHandler->select(hotspot->getCursorId());
 				}
 
-				_eventHandler->onUpdateBefore(object->getId(), hotspot->getTarget(), accessibilityIndex, 1, point);
+				onUpdateBefore(object->getId(), hotspot->getTarget(), accessibilityIndex, 1, point);
 				return;
 			}
 		}
@@ -550,7 +543,7 @@ void Application::update(const Common::Point &point) {
 
 				_cursorHandler->select(hotspot->getCursorId());
 
-				_eventHandler->onUpdateAfter(puzzleMenu->getId(), movability->getTo(), (uint32)puzzleMenu->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
+				onUpdateAfter(puzzleMenu->getId(), movability->getTo(), (uint32)puzzleMenu->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
 				return;
 			}
 		}
@@ -565,7 +558,7 @@ void Application::update(const Common::Point &point) {
 					_cursorHandler->select(kCursorIdle);
 			}
 
-			_eventHandler->onUpdateBag(point);
+			onUpdateBag(point);
 			return;
 		}
 	}
@@ -592,7 +585,7 @@ void Application::update(const Common::Point &point) {
 					_cursorHandler->select(hotspot->getCursorId());
 			}
 
-			_eventHandler->onUpdateBefore(object->getId(), hotspot->getTarget(), accessibilityIndex, 0, point);
+			onUpdateBefore(object->getId(), hotspot->getTarget(), accessibilityIndex, 0, point);
 			return;
 		}
 
@@ -603,7 +596,7 @@ void Application::update(const Common::Point &point) {
 
 			_cursorHandler->select(hotspot->getCursorId());
 
-			_eventHandler->onUpdateAfter(_rotation->getId(), movability->getTo(), (uint32)_rotation->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
+			onUpdateAfter(_rotation->getId(), movability->getTo(), (uint32)_rotation->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
 			return;
 		}
 	}
@@ -632,7 +625,7 @@ void Application::update(const Common::Point &point) {
 					_cursorHandler->select(hotspot->getCursorId());
 			}
 
-			_eventHandler->onUpdateBefore(object->getId(), hotspot->getTarget(), accessibilityIndex, 0, point);
+			onUpdateBefore(object->getId(), hotspot->getTarget(), accessibilityIndex, 0, point);
 			return;
 		}
 
@@ -643,7 +636,7 @@ void Application::update(const Common::Point &point) {
 
 			_cursorHandler->select(hotspot->getCursorId());
 
-			_eventHandler->onUpdateAfter(_puzzle->getId(), movability->getTo(), (uint32)_puzzle->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
+			onUpdateAfter(_puzzle->getId(), movability->getTo(), (uint32)_puzzle->getMovabilityIndex(point), hotspot->getTarget(), movability->getType(), point);
 			return;
 		}
 
@@ -654,12 +647,12 @@ void Application::update(const Common::Point &point) {
 		else
 			cursorSelect(kCursorIdle);
 
-		_eventHandler->onUpdateBag(point);
+		onUpdateBag(point);
 	}
 }
 
 void Application::updateBag(const Common::Point &point) {
-	if (!_bag || !_eventHandler || !_dragControl)
+	if (!_bag || !_dragControl)
 		error("[Application::updateBag] Application not initialized properly");
 
 	if (_bag->isInitialized() || !_dragControl->getField20())
@@ -674,7 +667,7 @@ void Application::updateBag(const Common::Point &point) {
 
 	if (hotspot && hotspot->contains(point)) {
 		_dragControl->updateCoordinates(point);
-		_eventHandler->onBag(_dragControl->getObjectId(), _dragControl->getTarget(), _dragControl->getPuzzleRotationId(), _dragControl->getField39(), _dragControl, 3);
+		onBag(_dragControl->getObjectId(), _dragControl->getTarget(), _dragControl->getPuzzleRotationId(), _dragControl->getField39(), _dragControl, 3);
 
 		if (_state != kStateShowMenu) {
 			if (!_field_76)

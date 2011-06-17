@@ -35,7 +35,7 @@ class DragControl;
 
 class EventBagFaust {
 public:
-	EventBagFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler);
+	EventBagFaust(ApplicationFaust *application);
 	~EventBagFaust();
 
 	void onBagZoneSY(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
@@ -66,7 +66,6 @@ public:
 
 private:
 	ApplicationFaust  *_app;
-	EventHandlerFaust *_event;
 };
 
 } // End of namespace Ring

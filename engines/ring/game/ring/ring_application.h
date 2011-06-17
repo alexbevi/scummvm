@@ -26,6 +26,18 @@
 
 namespace Ring {
 
+class EventAnimationRing;
+class EventBagRing;
+class EventButtonRing;
+class EventInitRing;
+class EventInputRing;
+class EventRideRing;
+class EventSetupRing;
+class EventSoundRing;
+class EventTimerRing;
+class EventVisualRing;
+class EventZoneRing;
+
 class ApplicationRing : public Application {
 public:
 	ApplicationRing(RingEngine *engine);
@@ -65,7 +77,73 @@ public:
 	// Visual
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 
+	//////////////////////////////////////////////////////////////////////////
+	// Event handlers
+	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
+	virtual void onMouseLeftButtonDown(const Common::Event &evt);
+	virtual void onMouseRightButtonUp(const Common::Event &evt);
+	virtual void onKeyDown(Common::Event &evt);
+	virtual void onTimer(TimerId id);
+	virtual void onInitZone(ZoneId zone);
+	virtual void onSound(Id id, SoundType type, uint32 a3);
+	virtual void onSetup(ZoneId zone, SetupType type);
+	virtual void onBag(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
+	virtual void onBagClickedObject(ObjectId id);
+	virtual void onBagZoneSwitch();
+	virtual void onUpdateBag(const Common::Point &point);
+	virtual void onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point);
+	virtual void onUpdateAfter(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, MovabilityType movabilityType, const Common::Point &point) {}
+	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
+	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
+	virtual void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+	virtual void onAnimation(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5);
+	virtual void onVisualList(Id id, uint32 type, const Common::Point &point);
+
+protected:
+	//////////////////////////////////////////////////////////////////////////
+	// Buttons
+	//////////////////////////////////////////////////////////////////////////
+	void onButtonDown(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	void onButtonUp2(ObjectId id, uint32 index, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Zone switching
+	//////////////////////////////////////////////////////////////////////////
+	void onSwitchZone(ZoneId zone, uint32 type);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Helper functions
+	//////////////////////////////////////////////////////////////////////////
+	void sub_433EE0();
+	void sub_445A10();
+
 private:
+	// Event handlers
+	EventAnimationRing *_eventAnimation;
+	EventBagRing       *_eventBag;
+	EventButtonRing    *_eventButton;
+	EventInitRing      *_eventInit;
+	EventInputRing     *_eventInput;
+	EventRideRing      *_eventRide;
+	EventSetupRing     *_eventSetup;
+	EventSoundRing     *_eventSound;
+	EventTimerRing     *_eventTimer;
+	EventVisualRing    *_eventVisual;
+	EventZoneRing      *_eventZone;
+
+	// Shared data
+	int32        _prefsVolume;
+	int32        _presentationIndexRO;
+
+	friend class EventAnimationRing;
+	friend class EventBagRing;
+	friend class EventButtonRing;
+	friend class EventInputRing;
+	friend class EventRideRing;
+	friend class EventSoundRing;
+	friend class EventTimerRing;
+
 	uint32 getCdForZone(ZoneId zone) const;
 	bool isDataPresent(SetupType type);
 };

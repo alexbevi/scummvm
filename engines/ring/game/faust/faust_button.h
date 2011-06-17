@@ -33,7 +33,7 @@ class EventHandlerFaust;
 
 class EventButtonFaust {
 public:
-	EventButtonFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler);
+	EventButtonFaust(ApplicationFaust *application);
 	~EventButtonFaust();
 
 	void onButtonDownZoneSY(ObjectId id, uint32 target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
@@ -59,7 +59,6 @@ public:
 
 private:
 	ApplicationFaust  *_app;
-	EventHandlerFaust *_event;
 };
 
 } // End of namespace Ring

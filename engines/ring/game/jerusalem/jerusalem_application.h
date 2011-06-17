@@ -26,6 +26,18 @@
 
 namespace Ring {
 
+class EventAnimationJerusalem;
+class EventBagJerusalem;
+class EventButtonJerusalem;
+class EventInitJerusalem;
+class EventInputJerusalem;
+class EventRideJerusalem;
+class EventSetupJerusalem;
+class EventSoundJerusalem;
+class EventTimerJerusalem;
+class EventVisualJerusalem;
+class EventZoneJerusalem;
+
 class ApplicationJerusalem : public Application {
 public:
 	ApplicationJerusalem(RingEngine *engine);
@@ -55,8 +67,27 @@ public:
 	// Visual
 	virtual Visual *createVisual(Id visualId, uint32 a3, uint32 a4, uint32 left, uint32 top, uint32 offsetY, uint32 height, uint32 progressMultiplier, uint32 progressColor);
 
-private:
+	//////////////////////////////////////////////////////////////////////////
+	// Event handlers
+	virtual void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
+	virtual void onMouseLeftButtonDown(const Common::Event &evt);
+	virtual void onMouseRightButtonUp(const Common::Event &evt);
+	virtual void onKeyDown(Common::Event &evt);
+	virtual void onTimer(TimerId id);
+	virtual void onInitZone(ZoneId zone);
 
+private:
+	EventAnimationJerusalem *_eventAnimation;
+	EventBagJerusalem       *_eventBag;
+	EventButtonJerusalem    *_eventButton;
+	EventInitJerusalem      *_eventInit;
+	EventInputJerusalem     *_eventInput;
+	EventRideJerusalem      *_eventRide;
+	EventSetupJerusalem     *_eventSetup;
+	EventSoundJerusalem     *_eventSound;
+	EventTimerJerusalem     *_eventTimer;
+	EventVisualJerusalem    *_eventVisual;
+	EventZoneJerusalem      *_eventZone;
 };
 
 } // End of namespace Ring

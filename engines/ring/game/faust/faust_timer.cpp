@@ -24,7 +24,6 @@
 #include "ring/base/saveload.h"
 
 #include "ring/game/faust/faust_application.h"
-#include "ring/game/faust/faust_event.h"
 #include "ring/game/faust/faust_shared.h"
 
 #include "ring/helpers.h"
@@ -34,13 +33,12 @@ using namespace FaustGame;
 
 namespace Ring {
 
-EventTimerFaust::EventTimerFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler) : _app(application), _event(eventHandler) {
+EventTimerFaust::EventTimerFaust(ApplicationFaust *application) : _app(application) {
 }
 
 EventTimerFaust::~EventTimerFaust() {
 	// Zero-out passed pointers
 	_app   = NULL;
-	_event = NULL;
 }
 
 #pragma region Timers
@@ -159,7 +157,7 @@ void EventTimerFaust::onTimerZone5(TimerId id) {
 					if (_app->getSaveManager()->getData()->progressState == 5 )
 						_app->getSaveManager()->getData()->progress++;
 
-					_event->setupRotation(2);
+					_app->setupRotation(2);
 				}
 			}
 

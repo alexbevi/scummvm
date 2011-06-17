@@ -29,11 +29,10 @@
 namespace Ring {
 
 class ApplicationRing;
-class EventHandlerRing;
 
 class EventButtonRing {
 public:
-	EventButtonRing(ApplicationRing *application, EventHandlerRing *eventHandler);
+	EventButtonRing(ApplicationRing *application);
 	~EventButtonRing();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -58,7 +57,6 @@ public:
 
 private:
 	ApplicationRing  *_app;
-	EventHandlerRing *_event;
 
 	// SY
 	uint32       _presentationIndexSY;

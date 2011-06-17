@@ -22,20 +22,18 @@
 #include "ring/game/faust/faust_zone.h"
 
 #include "ring/game/faust/faust_application.h"
-#include "ring/game/faust/faust_event.h"
 #include "ring/game/faust/faust_shared.h"
 
 using namespace FaustGame;
 
 namespace Ring {
 
-EventZoneFaust::EventZoneFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler) : _app(application), _event(eventHandler) {
+EventZoneFaust::EventZoneFaust(ApplicationFaust *application) : _app(application) {
 }
 
 EventZoneFaust::~EventZoneFaust() {
 	// Zero-out passed pointers
 	_app   = NULL;
-	_event = NULL;
 }
 
 void EventZoneFaust::onUpdateBeforeZoneSY(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {

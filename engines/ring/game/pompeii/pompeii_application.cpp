@@ -27,25 +27,60 @@
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 
-#include "ring/game/pompeii/pompeii_event.h"
+#include "ring/game/pompeii/pompeii_animation.h"
+#include "ring/game/pompeii/pompeii_bag.h"
+#include "ring/game/pompeii/pompeii_button.h"
+#include "ring/game/pompeii/pompeii_init.h"
+#include "ring/game/pompeii/pompeii_input.h"
+#include "ring/game/pompeii/pompeii_ride.h"
+#include "ring/game/pompeii/pompeii_setup.h"
+#include "ring/game/pompeii/pompeii_shared.h"
+#include "ring/game/pompeii/pompeii_sound.h"
+#include "ring/game/pompeii/pompeii_timer.h"
+#include "ring/game/pompeii/pompeii_visual.h"
+#include "ring/game/pompeii/pompeii_zone.h"
 
 #include "ring/graphics/screen.h"
 
 #include "ring/sound/soundhandler.h"
 
 #include "ring/debug.h"
+#include "ring/helpers.h"
+#include "ring/ring.h"
 
 //using namespace PompeiiGame;
 
 namespace Ring {
 
 ApplicationPompeii::ApplicationPompeii(RingEngine *engine) : Application(engine) {
-	_eventHandler = new EventHandlerPompeii(this);
-
 	_systemZone = kZone100;
+
+	// Event handlers
+	_eventAnimation = new EventAnimationPompeii(this);
+	_eventBag       = new EventBagPompeii(this);
+	_eventButton    = new EventButtonPompeii(this);
+	_eventInit      = new EventInitPompeii(this);
+	_eventInput     = new EventInputPompeii(this);
+	_eventRide      = new EventRidePompeii(this);
+	_eventSetup     = new EventSetupPompeii(this);
+	_eventSound     = new EventSoundPompeii(this);
+	_eventTimer     = new EventTimerPompeii(this);
+	_eventVisual    = new EventVisualPompeii(this);
+	_eventZone      = new EventZonePompeii(this);
 }
 
 ApplicationPompeii::~ApplicationPompeii() {
+	SAFE_DELETE(_eventAnimation);
+	SAFE_DELETE(_eventBag);
+	SAFE_DELETE(_eventButton);
+	SAFE_DELETE(_eventInit);
+	SAFE_DELETE(_eventInput);
+	SAFE_DELETE(_eventRide);
+	SAFE_DELETE(_eventSetup);
+	SAFE_DELETE(_eventSound);
+	SAFE_DELETE(_eventTimer);
+	SAFE_DELETE(_eventVisual);
+	SAFE_DELETE(_eventZone);
 }
 
 #pragma region Game setup
@@ -184,59 +219,59 @@ void ApplicationPompeii::initZones() {
 
 	drawZoneName(kZone100);
 	_archiveType = getZoneArchiveType(kZone100);
-	_eventHandler->onInitZone(kZone100);
+	onInitZone(kZone100);
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZone1);
 	_archiveType = getZoneArchiveType(kZone2);
-	_eventHandler->onInitZone(kZone1);
+	onInitZone(kZone1);
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone2);
-	_eventHandler->onInitZone(kZone2);
+	onInitZone(kZone2);
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone3);
-	_eventHandler->onInitZone(kZone3);
+	onInitZone(kZone3);
 
 	drawZoneName(kZone4);
 	_archiveType = getZoneArchiveType(kZone4);
-	_eventHandler->onInitZone(kZone4);
+	onInitZone(kZone4);
 
 	drawZoneName(kZone5);
 	_archiveType = getZoneArchiveType(kZone5);
-	_eventHandler->onInitZone(kZone5);
+	onInitZone(kZone5);
 
 	drawZoneName(kZone6);
 	_archiveType = getZoneArchiveType(kZone6);
-	_eventHandler->onInitZone(kZone6);
+	onInitZone(kZone6);
 
 	drawZoneName(kZone7);
 	_archiveType = getZoneArchiveType(kZone7);
-	_eventHandler->onInitZone(kZone7);
+	onInitZone(kZone7);
 
 	drawZoneName(kZone8);
 	_archiveType = getZoneArchiveType(kZone8);
-	_eventHandler->onInitZone(kZone8);
+	onInitZone(kZone8);
 
 	drawZoneName(kZone9);
 	_archiveType = getZoneArchiveType(kZone9);
-	_eventHandler->onInitZone(kZone9);
+	onInitZone(kZone9);
 
 	drawZoneName(kZone10);
 	_archiveType = getZoneArchiveType(kZone10);
-	_eventHandler->onInitZone(kZone10);
+	onInitZone(kZone10);
 
 	_loadFrom = kLoadFromDisk;
 
 	drawZoneName(kZone11);
 	_archiveType = getZoneArchiveType(kZone11);
-	_eventHandler->onInitZone(kZone11);
+	onInitZone(kZone11);
 
 	drawZoneName(kZone12);
 	_archiveType = getZoneArchiveType(kZone12);
-	_eventHandler->onInitZone(kZone12);
+	onInitZone(kZone12);
 
 	_archiveType = getZoneArchiveType(getCurrentZone());
 
@@ -245,6 +280,55 @@ void ApplicationPompeii::initZones() {
 	// Clear screen
 	_screenManager->clear();
 	g_system->updateScreen();
+}
+
+#pragma endregion
+
+#pragma region Event handling
+
+void ApplicationPompeii::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
+	error("[ApplicationPompeii::onMouseLeftButtonUp] Not implemented (evt: %d, CTRL pressed: %d)", evt.type, isControlPressed);
+}
+
+void ApplicationPompeii::onMouseLeftButtonDown(const Common::Event &evt) {
+	error("[ApplicationPompeii::onMouseLeftButtonDown] Not implemented (evt: %d)", evt.type);
+}
+
+void ApplicationPompeii::onMouseRightButtonUp(const Common::Event &evt) {
+	error("[ApplicationPompeii::onMouseRightButtonUp] Not implemented (evt: %d)", evt.type);
+}
+
+void ApplicationPompeii::onKeyDown(Common::Event &evt) {
+	error("[ApplicationPompeii::onKeyDown] Not implemented (evt: %d)", evt.type);
+}
+
+void ApplicationPompeii::onInitZone(ZoneId zone) {
+	error("[ApplicationPompeii::onInitZone] Not implemented (zone: %d)", zone);
+}
+
+void ApplicationPompeii::onTimer(TimerId timerId) {
+	error("[ApplicationPompeii::onTimer] Not implemented (id: %d)", timerId);
+}
+
+void ApplicationPompeii::onSetup(ZoneId zone, SetupType type) {
+	debugC(kRingDebugLogic, "onSetup (zone: %s, type: %d)", getZoneFolder(zone).c_str(), type);
+
+	switch (zone) {
+	default:
+		break;
+
+	case kZone2:
+		_eventSetup->onSetupZone2(type);
+		break;
+
+	case kZone3:
+		_eventSetup->onSetupZone3(type);
+		break;
+
+	case kZone4:
+		_eventSetup->onSetupZone4(type);
+		break;
+	}
 }
 
 #pragma endregion

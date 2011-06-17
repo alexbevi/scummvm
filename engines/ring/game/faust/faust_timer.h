@@ -27,11 +27,10 @@
 namespace Ring {
 
 class ApplicationFaust;
-class EventHandlerFaust;
 
 class EventTimerFaust {
 public:
-	EventTimerFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler);
+	EventTimerFaust(ApplicationFaust *application);
 	~EventTimerFaust();
 
 	void onTimerZoneSY(TimerId id);
@@ -52,7 +51,6 @@ public:
 
 private:
 	ApplicationFaust  *_app;
-	EventHandlerFaust *_event;
 };
 
 } // End of namespace Ring

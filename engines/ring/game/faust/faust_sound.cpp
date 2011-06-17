@@ -22,20 +22,18 @@
 #include "ring/game/faust/faust_sound.h"
 
 #include "ring/game/faust/faust_application.h"
-#include "ring/game/faust/faust_event.h"
 #include "ring/game/faust/faust_shared.h"
 
 using namespace FaustGame;
 
 namespace Ring {
 
-EventSoundFaust::EventSoundFaust(ApplicationFaust *application, EventHandlerFaust *eventHandler) : _app(application), _event(eventHandler) {
+EventSoundFaust::EventSoundFaust(ApplicationFaust *application) : _app(application) {
 }
 
 EventSoundFaust::~EventSoundFaust() {
 	// Zero-out passed pointers
 	_app   = NULL;
-	_event = NULL;
 }
 
 void EventSoundFaust::onSoundZoneSY(Id id, SoundType type, uint32 a3, bool process) {
@@ -53,7 +51,7 @@ void EventSoundFaust::onSoundZoneSY(Id id, SoundType type, uint32 a3, bool proce
 	case 111042:
 		_app->objectPresentationHide(kObject15);
 		_app->objectSetAccessibilityOff(kObject1);
-		_event->sub_468290(3);
+		_app->sub_468290(3);
 		break;
 	}
 }

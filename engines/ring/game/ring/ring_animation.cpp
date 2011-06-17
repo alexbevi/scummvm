@@ -22,7 +22,6 @@
 #include "ring/game/ring/ring_animation.h"
 
 #include "ring/game/ring/ring_application.h"
-#include "ring/game/ring/ring_event.h"
 #include "ring/game/ring/ring_shared.h"
 
 #include "ring/helpers.h"
@@ -32,13 +31,12 @@ using namespace RingGame;
 
 namespace Ring {
 
-EventAnimationRing::EventAnimationRing(ApplicationRing *application, EventHandlerRing *eventHandler) : _app(application), _event(eventHandler) {
+EventAnimationRing::EventAnimationRing(ApplicationRing *application) : _app(application) {
 }
 
 EventAnimationRing::~EventAnimationRing() {
 	// Zero-out passed pointers
 	_app = NULL;
-	_event = NULL;
 }
 
 void EventAnimationRing::onAnimationNextFrameZoneNI(Id animationId, const Common::String &, uint32 frame, uint32) {
@@ -249,7 +247,7 @@ void EventAnimationRing::onAnimationNextFrameZoneNI(Id animationId, const Common
 			_app->objectSetAccessibilityOn(kObject10430, 0, 0);
 			_app->varSetByte(10431, 1);
 			_app->objectPresentationShow(kObject10432, 0);
-			_event->sub_445A10();
+			_app->sub_445A10();
 			_app->soundStop(10406, 1024);
 			_app->soundStop(10408, 1024);
 			break;

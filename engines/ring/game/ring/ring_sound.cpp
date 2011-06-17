@@ -22,7 +22,6 @@
 #include "ring/game/ring/ring_sound.h"
 
 #include "ring/game/ring/ring_application.h"
-#include "ring/game/ring/ring_event.h"
 #include "ring/game/ring/ring_shared.h"
 
 #include "ring/helpers.h"
@@ -32,13 +31,12 @@ using namespace RingGame;
 
 namespace Ring {
 
-EventSoundRing::EventSoundRing(ApplicationRing *application, EventHandlerRing *eventHandler) : _app(application), _event(eventHandler) {
+EventSoundRing::EventSoundRing(ApplicationRing *application) : _app(application) {
 }
 
 EventSoundRing::~EventSoundRing() {
 	// Zero-out passed pointers
 	_app   = NULL;
-	_event = NULL;
 }
 
 void EventSoundRing::onSoundZoneSY(Id id, SoundType, uint32, bool process) {
@@ -624,7 +622,7 @@ void EventSoundRing::onSoundZoneFO(Id id, SoundType, uint32, bool process) {
 		_app->timerStopAll();
 		_app->soundStopAll(1024);
 		_app->playMovie("1215");
-		_event->onSwitchZone(kZoneAS, 3);
+		_app->onSwitchZone(kZoneAS, 3);
 		break;
 
 	case 30161:
@@ -665,7 +663,7 @@ void EventSoundRing::onSoundZoneRO(Id id, SoundType, uint32, bool process) {
 		_app->soundStop(40003, 1024);
 		_app->timerStopAll();
 		_app->playMovie("1786");
-		_event->onSwitchZone(kZoneAS, 2);
+		_app->onSwitchZone(kZoneAS, 2);
 		break;
 
 	case 40700:
@@ -690,7 +688,7 @@ void EventSoundRing::onSoundZoneRO(Id id, SoundType, uint32, bool process) {
 	case 40704:
 		_app->soundStopAll(1024);
 		_app->playMovie("1788");
-		_event->_presentationIndexRO = 0;
+		_app->_presentationIndexRO = 0;
 		_app->rotationSet3DSoundOff(40000, 40002);
 		_app->rotationSet3DSoundOff(40001, 40002);
 		_app->rotationSet3DSoundOff(40002, 40002);
@@ -859,7 +857,7 @@ void EventSoundRing::onSoundZoneWA(Id id, SoundType, uint32, bool process) {
 		_app->playMovie("1879");
 		_app->timerStopAll();
 		_app->soundStopAll(1024);
-		_event->onSwitchZone(kZoneAS, 4);
+		_app->onSwitchZone(kZoneAS, 4);
 		break;
 
 	case 50001:
@@ -1054,7 +1052,7 @@ void EventSoundRing::onSoundZoneN2(Id id, SoundType, uint32, bool process) {
 		_app->timerStopAll();
 		_app->soundStopAll(1024);
 		_app->varSetFloat(90006, 50.0);
-		_event->onSwitchZone(kZoneRO, 0);
+		_app->onSwitchZone(kZoneRO, 0);
 		break;
 
 	case 71002:
@@ -1182,7 +1180,7 @@ void EventSoundRing::onSoundZoneN2(Id id, SoundType, uint32, bool process) {
 		break;
 
 	case 70022:
-		_event->sub_433EE0();
+		_app->sub_433EE0();
 		_app->rotationSetActive(70001);
 		_app->playMovie("1503");
 		_app->puzzleSetActive(kPuzzle70303);

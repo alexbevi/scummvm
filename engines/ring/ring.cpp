@@ -173,7 +173,7 @@ Common::Error RingEngine::run() {
 				if ((ev.kbd.flags & Common::KBD_CTRL) && ev.kbd.keycode == Common::KEYCODE_d)
 					_debugger->attach();
 
-				_application->getEventHandler()->onKeyDown(ev);
+				_application->onKeyDown(ev);
 				break;
 
 			case Common::EVENT_MAINMENU:
@@ -187,18 +187,18 @@ Common::Error RingEngine::run() {
 				_mouseButtonPressed = false;
 
 				// Check if CTRL is pressed
-				_application->getEventHandler()->onMouseLeftButtonUp(ev, (_eventMan->getModifierState() & Common::KBD_CTRL) != 0);
+				_application->onMouseLeftButtonUp(ev, (_eventMan->getModifierState() & Common::KBD_CTRL) != 0);
 				break;
 
 			case Common::EVENT_LBUTTONDOWN:
 				_mouseButtonPressed = true;
 
 				if (ev.mouse.y <= 464)
-					_application->getEventHandler()->onMouseLeftButtonDown(ev);
+					_application->onMouseLeftButtonDown(ev);
 				break;
 
 			case Common::EVENT_RBUTTONUP:
-				_application->getEventHandler()->onMouseRightButtonUp(ev);
+				_application->onMouseRightButtonUp(ev);
 				break;
 
 			case Common::EVENT_QUIT:

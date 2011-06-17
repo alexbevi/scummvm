@@ -29,14 +29,13 @@
 namespace Ring {
 
 class ApplicationRing;
-class EventHandlerRing;
 
 class Accessibility;
 class Movability;
 
 class EventInputRing {
 public:
-	EventInputRing(ApplicationRing *application, EventHandlerRing *eventHandler);
+	EventInputRing(ApplicationRing *application);
 	~EventInputRing();
 
 	void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
@@ -46,7 +45,6 @@ public:
 
 private:
 	ApplicationRing  *_app;
-	EventHandlerRing *_event;
 
 	bool         _controlNotPressed;
 
