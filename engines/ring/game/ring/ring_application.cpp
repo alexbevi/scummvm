@@ -21,29 +21,31 @@
 
 #include "ring/game/ring/ring_application.h"
 
+#include "ring/base/accessibility.h"
 #include "ring/base/art.h"
 #include "ring/base/bag.h"
 #include "ring/base/cursor.h"
 #include "ring/base/dialog.h"
+#include "ring/base/movability.h"
 #include "ring/base/preferences.h"
 #include "ring/base/puzzle.h"
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 #include "ring/base/timer.h"
 
-#include "ring/game/ring/ring_animation.h"
-#include "ring/game/ring/ring_bag.h"
-#include "ring/game/ring/ring_button.h"
-#include "ring/game/ring/ring_init.h"
-#include "ring/game/ring/ring_input.h"
-#include "ring/game/ring/ring_ride.h"
-#include "ring/game/ring/ring_setup.h"
 #include "ring/game/ring/ring_shared.h"
-#include "ring/game/ring/ring_sound.h"
-#include "ring/game/ring/ring_timer.h"
 #include "ring/game/ring/ring_visual.h"
-#include "ring/game/ring/ring_zone.h"
+#include "ring/game/ring/ring_zonesystem.h"
+#include "ring/game/ring/ring_zoneni.h"
+#include "ring/game/ring/ring_zonerh.h"
+#include "ring/game/ring/ring_zonefo.h"
+#include "ring/game/ring/ring_zonero.h"
+#include "ring/game/ring/ring_zonewa.h"
+#include "ring/game/ring/ring_zoneas.h"
+#include "ring/game/ring/ring_zonen2.h"
 
+#include "ring/graphics/dragControl.h"
+#include "ring/graphics/hotspot.h"
 #include "ring/graphics/image.h"
 #include "ring/graphics/screen.h"
 
@@ -106,35 +108,28 @@ static const struct {
 
 ApplicationRing::ApplicationRing(RingEngine *engine) : Application(engine) {
 	// Event handlers
-	_eventAnimation = new EventAnimationRing(this);
-	_eventBag       = new EventBagRing(this);
-	_eventButton    = new EventButtonRing(this);
-	_eventInit      = new EventInitRing(this);
-	_eventInput     = new EventInputRing(this);
-	_eventRide      = new EventRideRing(this);
-	_eventSetup     = new EventSetupRing(this);
-	_eventSound     = new EventSoundRing(this);
-	_eventTimer     = new EventTimerRing(this);
-	_eventVisual    = new EventVisualRing(this);
-	_eventZone      = new EventZoneRing(this);
+	_zoneSystem = new ZoneSystemRing(this);
+	_zoneNI     = new ZoneNIRing(this);
+	_zoneRH     = new ZoneRHRing(this);
+	_zoneFO     = new ZoneFORing(this);
+	_zoneRO     = new ZoneRORing(this);
+	_zoneWA     = new ZoneWARing(this);
+	_zoneAS     = new ZoneASRing(this);
+	_zoneN2     = new ZoneN2Ring(this);
 
-	// Shared data
-	_prefsVolume = 0;
-	_presentationIndexRO = 0;
+	_controlNotPressed = false;
+	_presentationIndexNI = 0;
 }
 
 ApplicationRing::~ApplicationRing() {
-	SAFE_DELETE(_eventAnimation);
-	SAFE_DELETE(_eventBag);
-	SAFE_DELETE(_eventButton);
-	SAFE_DELETE(_eventInit);
-	SAFE_DELETE(_eventInput);
-	SAFE_DELETE(_eventRide);
-	SAFE_DELETE(_eventSetup);
-	SAFE_DELETE(_eventSound);
-	SAFE_DELETE(_eventTimer);
-	SAFE_DELETE(_eventVisual);
-	SAFE_DELETE(_eventZone);
+	SAFE_DELETE(_zoneSystem);
+	SAFE_DELETE(_zoneNI);
+	SAFE_DELETE(_zoneRH);
+	SAFE_DELETE(_zoneFO);
+	SAFE_DELETE(_zoneRO);
+	SAFE_DELETE(_zoneWA);
+	SAFE_DELETE(_zoneAS);
+	SAFE_DELETE(_zoneN2);
 }
 
 #pragma region Game setup
@@ -664,37 +659,37 @@ void ApplicationRing::initZones() {
 
 	drawZoneName(kZoneSY);
 	_archiveType = _configuration.artSY ? kArchiveArt : kArchiveFile;
-	onInitZone(kZoneSY);
+	_zoneSystem->onInit();
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZoneAS);
 	_archiveType = _configuration.artAS ? kArchiveArt : kArchiveFile;
-	onInitZone(kZoneAS);
+	_zoneAS->onInit();
 
 	drawZoneName(kZoneNI);
 	_archiveType = _configuration.artNI ? kArchiveArt : kArchiveFile;
-	onInitZone(kZoneNI);
+	_zoneNI->onInit();
 
 	drawZoneName(kZoneN2);
 	_archiveType = _configuration.artN2 ? kArchiveArt : kArchiveFile;
-	onInitZone(kZoneN2);
+	_zoneN2->onInit();
 
 	drawZoneName(kZoneRO);
 	_archiveType = _configuration.artRO ? kArchiveArt : kArchiveFile;
-	onInitZone(kZoneRO);
+	_zoneRO->onInit();
 
 	drawZoneName(kZoneRH);
 	_archiveType = _configuration.artRH ? kArchiveArt : kArchiveFile;
-	onInitZone(kZoneRH);
+	_zoneRH->onInit();
 
 	drawZoneName(kZoneFO);
 	_archiveType = _configuration.artFO ? kArchiveArt : kArchiveFile;
-	onInitZone(kZoneFO);
+	_zoneFO->onInit();
 
 	drawZoneName(kZoneWA);
 	_archiveType = _configuration.artWA ? kArchiveArt : kArchiveFile;
-	onInitZone(kZoneWA);
+	_zoneWA->onInit();
 
 	if (_configuration.artSY || _configuration.artAS || _configuration.artNI || _configuration.artN2
 		|| _configuration.artRO || _configuration.artRH || _configuration.artFO || _configuration.artWA)
@@ -714,19 +709,515 @@ void ApplicationRing::initZones() {
 #pragma region Event handling
 
 void ApplicationRing::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
-	_eventInput->onMouseLeftButtonUp(evt, isControlPressed);
+	_controlNotPressed = !isControlPressed;
+
+	onMouseLeftButtonUp(evt);
+}
+
+void ApplicationRing::onMouseLeftButtonUp(const Common::Event &evt) {
+	debugC(kRingDebugLogic, "onMouseLeftButtonUp");
+
+	// Handle clicks on bag
+	Bag *bag = getBag();
+	if (bag->isInitialized()) {
+		if (bag->checkHotspotClick(evt.mouse) == 1) {
+
+			// Handle clicked object event
+			onBagClickedObject(getBag()->getClickedObject());
+
+			if (getField77()) {
+				bag->reset();
+				setFreOffCurrentRotation();
+
+				if (getField78()) {
+					initObjectCursors(bag->getClickedObject());
+				} else {
+					setField78(true);
+					cursorDelete();
+				}
+
+				// Center cursor on screen
+				g_system->warpMouse(320, 240);
+
+			} else {
+				setField77(true);
+				cursorDelete();
+			}
+		}
+
+		return;
+	}
+
+	// Handle clicks on drag control
+	DragControl *dragControl = getDragControl();
+	if (dragControl->getField20()) {
+		onBag(dragControl->getObjectId(), dragControl->getTarget(), dragControl->getPuzzleRotationId(), dragControl->getField39(), dragControl, 2);
+
+		if (getState() == kStateShowMenu)
+			return;
+
+		dragControl->reset();
+
+		if (dragControl->getField45() == 2)
+			return;
+	}
+
+	// Handle clicks on menu
+	Puzzle *puzzleMenu = getPuzzle(kPuzzleMenu);
+	if (puzzleMenu) {
+		if (puzzleMenu->visualHandleLeftButtonUp(evt.mouse)) {
+			update(evt.mouse);
+			return;
+		}
+
+		Accessibility *accessibility = puzzleMenu->getAccessibility(evt.mouse);
+		if (handleLeftButtonUp(accessibility, puzzleMenu->getId(), evt.mouse))
+			return;
+
+		if (puzzleMenu->getField24() == 1) {
+			Movability *movability = puzzleMenu->getMovability(evt.mouse);
+			if (handleLeftButtonUp(movability, (uint32)puzzleMenu->getMovabilityIndex(evt.mouse), puzzleMenu->getId()))
+				return;
+		}
+
+		if (puzzleMenu->getField24() == 2)
+			return;
+	}
+
+	// Handle current puzzle
+	Puzzle *currentPuzzle = getCurrentPuzzle();
+	if (currentPuzzle) {
+		if (currentPuzzle->visualHandleLeftButtonUp(evt.mouse)) {
+			update(evt.mouse);
+			return;
+		}
+
+		Accessibility *accessibility = currentPuzzle->getAccessibility(evt.mouse);
+		if (handleLeftButtonUp(accessibility, currentPuzzle->getId(), evt.mouse))
+			return;
+
+		Movability *movability = currentPuzzle->getMovability(evt.mouse);
+		if (handleLeftButtonUp(movability, (uint32)currentPuzzle->getMovabilityIndex(evt.mouse), currentPuzzle->getId()))
+			return;
+	}
+
+	// Handle current rotation
+	Rotation *currentRotation = getCurrentRotation();
+	if (currentRotation) {
+		if (!currentRotation->getField28())
+			return;
+
+		Accessibility *accessibility = currentRotation->getAccessibility(evt.mouse);
+		if (handleLeftButtonUp(accessibility, currentRotation->getId(), evt.mouse))
+			return;
+
+		Movability *movability = currentRotation->getMovability(evt.mouse);
+		if (handleLeftButtonUp(movability, (uint32)currentRotation->getMovabilityIndex(evt.mouse), currentRotation->getId(), true))
+			return;
+
+		if (getField75())
+			cursorDelete();
+
+		setField75(true);
+	}
+}
+
+bool ApplicationRing::handleLeftButtonUp(Accessibility *accessibility, Id id, const Common::Point &point) {
+	if (!accessibility)
+		return false;
+
+	Object *object = accessibility->getObject();
+	Hotspot *hotspot = accessibility->getHotspot();
+
+	if (object->getFieldC() & 1) {
+		onButtonUp(object->getId(), hotspot->getTarget(), id, 1, point);
+
+		if (getState() == kStateShowMenu)
+			return true;
+	}
+
+	if (!(object->getFieldC() & 8)) {
+		update(point);
+		return true;
+	}
+
+	onButtonUp2(object->getId(), (uint32)hotspot->getTarget(), id, 1, point);
+
+	if (getState() != kStateShowMenu) {
+		if (getField74()) {
+			cursorDelete();
+			getBag()->setClickedObject(object->getId());
+			initObjectCursors(object->getId());
+		}
+
+		setField74(true);
+
+		update(point);
+	}
+
+	return true;
+}
+
+bool ApplicationRing::handleLeftButtonUp(Movability *movability, uint32 index, Id id, bool isRotation) {
+	if (!movability)
+		return false;
+
+	Hotspot *hotspot = movability->getHotspot();
+
+	//////////////////////////////////////////////////////////////////////////
+	// Before Ride
+	//////////////////////////////////////////////////////////////////////////
+	onBeforeRide(id, movability->getTo(), index, hotspot->getTarget(), movability->getType());
+
+	if (getState() == kStateShowMenu)
+		return true;
+
+	bool showRide = _controlNotPressed;
+
+	int updateType = 0;
+	if (isRotation) {
+		if (_controlNotPressed) {
+			updateType = movability->getUpdateType();
+		} else {
+			updateType = 2;
+			showRide = false;
+		}
+
+		switch (updateType) {
+		default:
+			break;
+
+		case 0:
+			showRide = getCurrentRotation()->setRolTo(movability->getAlpBefore(), movability->getBetBefore(), movability->getRanBefore());
+			break;
+
+		case 1:
+			getCurrentRotation()->updateAndDraw(movability->getAlpBefore(), movability->getBetBefore(), movability->getRanBefore());
+			break;
+		}
+
+	}
+
+	reset();
+
+	switch (movability->getType()) {
+	default:
+		break;
+
+	case kMovabilityRotationToRotation:
+	case kMovabilityPuzzleToRotation:
+		if (isRotation)
+			break;
+
+		if (getRotation(movability->getTo())) {
+			Rotation *rotation = getRotation(movability->getTo());
+
+			float alp = movability->getAlpAfter() - 135.0f;
+			if (alp < 0.0f)
+				alp += 360.0f;
+
+			rotation->setAlp(alp);
+
+			rotation->updateAmbientSoundPan(false);
+
+			getSoundHandler()->setSounds2(rotation->getSoundItems());
+			getSoundHandler()->setField0(true);
+
+			if (!getSoundHandler()->processSounds()) {
+				getSoundHandler()->setField0(false);
+				getSoundHandler()->turnOffSounds1(true);
+			}
+		}
+		break;
+
+	case kMovabilityRotationToPuzzle:
+	case kMovabilityPuzzleToPuzzle:
+		if (getPuzzle(movability->getTo().id())) {
+			Puzzle *puzzle = getPuzzle(movability->getTo().id());
+
+			getSoundHandler()->setSounds2(puzzle->getSoundItems());
+			getSoundHandler()->setField0(true);
+
+			if (!getSoundHandler()->processSounds()) {
+				getSoundHandler()->setField0(false);
+				getSoundHandler()->turnOffSounds1(true);
+			}
+		}
+		break;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// Ride
+	//////////////////////////////////////////////////////////////////////////
+	if (showRide)
+		playMovie(movability->getRideName());
+
+	//////////////////////////////////////////////////////////////////////////
+	// After ride
+	//////////////////////////////////////////////////////////////////////////
+	if (getSoundHandler()->getField0()) {
+		getSoundHandler()->turnOffItems1();
+
+		if (!getSoundHandler()->updateItems(2)) {
+			getSoundHandler()->turnOffSounds1(true);
+			getSoundHandler()->setField0(false);
+		}
+	}
+
+	if (getSoundHandler()->getField0()) {
+		getSoundHandler()->updateItems2(3);
+		getSoundHandler()->updateItems3(3);
+	}
+
+	switch (movability->getType()){
+	default:
+		break;
+
+	case kMovabilityRotationToRotation:
+	case kMovabilityPuzzleToRotation:
+		rotationSetActive(movability->getTo());
+		getCurrentRotation()->updateAndDraw(movability->getAlpAfter(), movability->getBetAfter(), movability->getRanAfter());
+
+		onAfterRide(getCurrentRotationId(), id, index, hotspot->getTarget(), movability->getType());
+
+		if (getState() == kStateShowMenu)
+			return true;
+		break;
+
+	case kMovabilityRotationToPuzzle:
+	case kMovabilityPuzzleToPuzzle:
+		puzzleSetActive(movability->getTo().id());
+
+		onAfterRide(getCurrentRotationId(), id, index, hotspot->getTarget(), movability->getType());
+
+		if (getState() == kStateShowMenu)
+			return true;
+		break;
+	}
+
+	if (getField75())
+		cursorDelete();
+
+	setField75(true);
+
+	return true;
 }
 
 void ApplicationRing::onMouseLeftButtonDown(const Common::Event &evt) {
-	_eventInput->onMouseLeftButtonDown(evt);
+	debugC(kRingDebugLogic, "onMouseLeftButtonDown");
+
+	if (getBag()->isInitialized())
+		return;
+
+	// Handle menu
+	Puzzle *puzzleMenu = getPuzzle(kPuzzleMenu);
+	if (puzzleMenu) {
+
+		if (puzzleMenu->visualHandleLeftButtonDown(evt.mouse)) {
+			update(evt.mouse);
+			return;
+		}
+
+		Accessibility *accessibility = puzzleMenu->getAccessibility(evt.mouse);
+		if (handleLeftButtonDown(accessibility, (uint32)puzzleMenu->getAccessibilityIndex(evt.mouse), puzzleMenu->getId(), evt.mouse))
+			return;
+
+		if (puzzleMenu->getField24() == 2)
+			return;
+	}
+
+	// Handle current puzzle
+	Puzzle *currentPuzzle = getCurrentPuzzle();
+	if (currentPuzzle) {
+		if (currentPuzzle->visualHandleLeftButtonDown(evt.mouse)) {
+			update(evt.mouse);
+			return;
+		}
+
+		Accessibility *accessibility = currentPuzzle->getAccessibility(evt.mouse);
+		if (handleLeftButtonDown(accessibility, (uint32)currentPuzzle->getAccessibilityIndex(evt.mouse), currentPuzzle->getId(), evt.mouse))
+			return;
+	}
+
+	// Handle current rotation
+	Rotation *currentRotation = getCurrentRotation();
+	if (currentRotation) {
+		Accessibility *accessibility = currentRotation->getAccessibility(evt.mouse);
+		if (handleLeftButtonDown(accessibility, (uint32)currentRotation->getAccessibilityIndex(evt.mouse), currentRotation->getId(), evt.mouse))
+			return;
+	}
 }
 
-void ApplicationRing::onMouseRightButtonUp(const Common::Event &evt) {
-	_eventInput->onMouseRightButtonUp(evt);
+bool ApplicationRing::handleLeftButtonDown(Accessibility *accessibility, uint32 index, Id id, const Common::Point &point) {
+	if (!accessibility)
+		return false;
+
+	Object *object = accessibility->getObject();
+	Hotspot *hotspot = accessibility->getHotspot();
+
+	if (object->getFieldC() & 2) {
+		onButtonDown(object->getId(), hotspot->getTarget(), id, 1, point);
+
+		if (getState() == kStateShowMenu)
+			return true;
+	}
+
+	if (!(object->getFieldC() & 4)) {
+		update(point);
+		return true;
+	}
+
+	getDragControl()->init(point, object->getId(), index, hotspot, hotspot->getTarget(), id, 1);
+	onBag(object->getId(), hotspot->getTarget(), id, 1, getDragControl(), 1);
+
+	if (getState() != kStateShowMenu) {
+		if (!getField76())
+			getDragControl()->reset();
+
+		setField76(true);
+		update(point);
+	}
+
+	return true;
+}
+
+void ApplicationRing::onMouseRightButtonUp(const Common::Event &) {
+	debugC(kRingDebugLogic, "onMouseRightButtonUp");
+
+	if (getApp()->getDragControl()->getField20() || getApp()->getCurrentGameZone())
+		return;
+
+	Puzzle *puzzleMenu = getApp()->getPuzzle(kPuzzleMenu);
+	if (puzzleMenu && puzzleMenu->getField24() == 2)
+		return;
+
+	Bag *bag = getApp()->getBag();
+	if (bag->isInitialized()) {
+		bag->reset();
+	} else {
+		getApp()->cursorDelete();
+		bag->initialize();
+
+		if (getApp()->getCurrentRotation())
+			bag->setRotationFre(getApp()->getCurrentRotation()->getFre());
+
+		getApp()->setupCurrentRotation();
+	}
 }
 
 void ApplicationRing::onKeyDown(Common::Event &evt) {
-	_eventInput->onKeyDown(evt);
+	debugC(kRingDebugLogic, "onKeyDown");
+
+	// Stop dialogs if needed
+	if (evt.kbd.keycode == Common::KEYCODE_ESCAPE)
+		soundStopType(kSoundTypeDialog, 4098);
+
+	// Check menu and simulate button click
+	Puzzle *puzzleMenu = getApp()->getPuzzle(kPuzzleMenu);
+	if (puzzleMenu) {
+		if (puzzleMenu->visualHandleKey(evt.kbd.keycode))
+			return;
+
+		if (puzzleMenu->getField24() == 2) {
+			Accessibility *accessibility = puzzleMenu->getAccessibility(evt.kbd.keycode);
+			if (!accessibility)
+				return;
+
+			// Center rotation
+			Common::Point point = accessibility->getHotspot()->getCenter();
+			if (hasCurrentRotation())
+				getCurrentRotation()->setCoordinates(&point, evt.kbd.keycode);
+
+			// Modify event to be a mouse click on the center of the hotspot
+			bool controlPressed = (bool)(evt.kbd.flags & Common::KBD_CTRL);
+			evt.mouse = point;
+
+			// Simulate click
+			if (getBag()->isInitialized()) {
+				onMouseLeftButtonUp(evt, controlPressed);
+				return;
+			}
+
+			onMouseLeftButtonUp(evt, controlPressed);
+
+			if (evt.mouse.y >= 16)
+				return;
+
+			// FIXME: Ring calls a method that doesn't do anything useful (get the menu puzzle if the bag has a clicked object)
+			return;
+		}
+	}
+
+	// Handle events on zone
+	onKeyDownZone(evt.kbd);
+
+	// Check current puzzle and simulate button click
+	Puzzle *currentPuzzle = getCurrentPuzzle();
+	if (currentPuzzle) {
+		if (currentPuzzle->visualHandleKey(evt.kbd.keycode))
+			return;
+
+		if (currentPuzzle->getField24() == 2) {
+			Accessibility *accessibility = currentPuzzle->getAccessibility(evt.kbd.keycode);
+			if (!accessibility)
+				return;
+
+			bool controlPressed = (bool)(evt.kbd.flags & Common::KBD_CTRL);
+
+			// Modify event to be a mouse click on the center of the hotspot
+			Hotspot *hotspot = accessibility->getHotspot();
+			evt.mouse = hotspot->getCenter();
+
+			// Simulate click
+			if (getBag()->isInitialized()) {
+				onMouseLeftButtonUp(evt, controlPressed);
+				return;
+			}
+
+			onMouseLeftButtonUp(evt, controlPressed);
+
+			if (evt.mouse.y >= 16)
+				return;
+
+			// FIXME: Ring calls a method that doesn't do anything useful (get the menu puzzle if the bag has a clicked object)
+			return;
+		}
+	}
+
+	// Check current rotation and simulate button click
+	Rotation *currentRotation = getCurrentRotation();
+	if (currentRotation) {
+		Accessibility *accessibility = currentRotation->getAccessibility(evt.kbd.keycode);
+		if (!accessibility)
+			return;
+
+		bool controlPressed = (bool)(evt.kbd.flags & Common::KBD_CTRL);
+
+		// Modify event to be a mouse click on the center of the hotspot
+		Hotspot *hotspot = accessibility->getHotspot();
+		evt.mouse = hotspot->getCenter();
+
+		// Center rotation
+		currentRotation->setCoordinates(&evt.mouse, evt.kbd.keycode);
+
+		// Simulate click
+		if (getBag()->isInitialized()) {
+			onMouseLeftButtonUp(evt, controlPressed);
+			return;
+		}
+
+		onMouseLeftButtonUp(evt, controlPressed);
+
+		if (evt.mouse.y >= 16)
+			return;
+
+		// FIXME: Ring calls a method that doesn't do anything useful (get the menu puzzle if the bag has a clicked object)
+	}
+}
+
+void ApplicationRing::onKeyDownZone(const Common::KeyState &keyState) {
+	if (getCurrentZone() == kZoneSY)
+		_zoneSystem->onKeyDown(keyState);
 }
 
 void ApplicationRing::onButtonDown(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
@@ -744,7 +1235,7 @@ void ApplicationRing::onButtonDown(ObjectId id, Id target, Id puzzleRotationId, 
 		break;
 
 	case kZoneNI:
-		_eventButton->onButtonDownZoneNI(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneNI->onButtonDown(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneFO:
@@ -753,11 +1244,11 @@ void ApplicationRing::onButtonDown(ObjectId id, Id target, Id puzzleRotationId, 
 		break;
 
 	case kZoneRO:
-		_eventButton->onButtonDownZoneRO(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneRO->onButtonDown(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneN2:
-		_eventButton->onButtonDownZoneN2(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneN2->onButtonDown(id, target, puzzleRotationId, a4, point);
 		break;
 	}
 }
@@ -766,7 +1257,7 @@ void ApplicationRing::onButtonUp(ObjectId id, Id target, Id puzzleRotationId, ui
 	debugC(kRingDebugLogic, "onButtonUp (ObjectId: %d, target: %d, coords: (%d, %d))", id.id(), target, point.x, point.y);
 
 	if (puzzleRotationId == 1 && a4 == 1) {
-		_eventButton->onButtonUpZoneSY(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneSystem->onButtonUp(id, target, puzzleRotationId, a4, point);
 		return;
 	}
 
@@ -775,35 +1266,35 @@ void ApplicationRing::onButtonUp(ObjectId id, Id target, Id puzzleRotationId, ui
 		break;
 
 	case kZoneSY:
-		_eventButton->onButtonUpZoneSY(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneSystem->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneNI:
-		_eventButton->onButtonUpZoneNI(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneNI->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneRH:
-		_eventButton->onButtonUpZoneRH(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneRH->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneFO:
-		_eventButton->onButtonUpZoneFO(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneFO->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneRO:
-		_eventButton->onButtonUpZoneRO(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneRO->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneWA:
-		_eventButton->onButtonUpZoneWA(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneWA->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneAS:
-		_eventButton->onButtonUpZoneAS(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneAS->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZoneN2:
-		_eventButton->onButtonUpZoneN2(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneN2->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 	}
 }
@@ -831,7 +1322,7 @@ void ApplicationRing::onButtonUp2(ObjectId id, uint32 index, Id puzzleRotationId
 		break;
 
 	case kZoneWA:
-		_eventButton->onButtonUp2ZoneWA(id, index, puzzleRotationId, a4, point);
+		_zoneWA->onButtonUp2(id, index, puzzleRotationId, a4, point);
 		break;
 	}
 }
@@ -845,70 +1336,31 @@ void ApplicationRing::onSetup(ZoneId zone, SetupType type) {
 		break;
 
 	case kZoneNI:
-		_eventSetup->onSetupZoneNI(type);
+		_zoneNI->onSetup(type);
 		break;
 
 	case kZoneRH:
-		_eventSetup->onSetupZoneRH(type);
+		_zoneRH->onSetup(type);
 		break;
 
 	case kZoneFO:
-		_eventSetup->onSetupZoneFO(type);
+		_zoneFO->onSetup(type);
 		break;
 
 	case kZoneRO:
-		_eventSetup->onSetupZoneRO(type);
+		_zoneRO->onSetup(type);
 		break;
 
 	case kZoneWA:
-		_eventSetup->onSetupZoneWA(type);
+		_zoneWA->onSetup(type);
 		break;
 
 	case kZoneAS:
-		_eventSetup->onSetupZoneAS(type);
+		_zoneAS->onSetup(type);
 		break;
 
 	case kZoneN2:
-		_eventSetup->onSetupZoneN2(type);
-		break;
-	}
-}
-
-void ApplicationRing::onInitZone(ZoneId zone) {
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		_eventInit->initZoneSY();
-		break;
-
-	case kZoneNI:
-		_eventInit->initZoneNI();
-		break;
-
-	case kZoneRH:
-		_eventInit->initZoneRH();
-		break;
-
-	case kZoneFO:
-		_eventInit->initZoneFO();
-		break;
-
-	case kZoneRO:
-		_eventInit->initZoneRO();
-		break;
-
-	case kZoneWA:
-		_eventInit->initZoneWA();
-		break;
-
-	case kZoneAS:
-		_eventInit->initZoneAS();
-		break;
-
-	case kZoneN2:
-		_eventInit->initZoneN2();
+		_zoneN2->onSetup(type);
 		break;
 	}
 }
@@ -919,38 +1371,38 @@ void ApplicationRing::onSwitchZone(ZoneId zone, uint32 type) {
 		break;
 
 	case kZoneNI:
-		_eventZone->onSwitchZoneNI(type);
+		_zoneNI->onSwitch(type);
 		break;
 
 	case kZoneRH:
-		_eventZone->onSwitchZoneRH(type);
+		_zoneRH->onSwitch(type);
 		break;
 
 	case kZoneFO:
-		_eventZone->onSwitchZoneFO(type);
+		_zoneFO->onSwitch(type);
 		break;
 
 	case kZoneRO:
-		_eventZone->onSwitchZoneRO(type);
+		_zoneRO->onSwitch(type);
 		break;
 
 	case kZoneWA:
-		_eventZone->onSwitchZoneWA(type);
+		_zoneWA->onSwitch(type);
 		break;
 
 	case kZoneAS:
-		_eventZone->onSwitchZoneAS(type);
+		_zoneAS->onSwitch(type);
 		break;
 
 	case kZoneN2:
-		_eventZone->onSwitchZoneN2(type);
+		_zoneN2->onSwitch(type);
 		break;
 	}
 }
 
 void ApplicationRing::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
 	if (movabilityIndex == 1 || a4 == 1) {
-		_eventZone->onUpdateBeforeZoneSY(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zoneSystem->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		return;
 	}
 
@@ -959,15 +1411,15 @@ void ApplicationRing::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 
 		break;
 
 	case kZoneSY:
-		_eventZone->onUpdateBeforeZoneSY(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zoneSystem->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZoneNI:
-		_eventZone->onUpdateBeforeZoneNI(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zoneNI->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZoneN2:
-		_eventZone->onUpdateBeforeZoneN2(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zoneN2->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 	}
 }
@@ -982,27 +1434,27 @@ void ApplicationRing::onTimer(TimerId timerId) {
 		break;
 
 	case kZoneNI:
-		_eventTimer->onTimerZoneNI(timerId);
+		_zoneNI->onTimer(timerId);
 		break;
 
 	case kZoneRH:
-		_eventTimer->onTimerZoneRH(timerId);
+		_zoneRH->onTimer(timerId);
 		break;
 
 	case kZoneFO:
-		_eventTimer->onTimerZoneFO(timerId);
+		_zoneFO->onTimer(timerId);
 		break;
 
 	case kZoneRO:
-		_eventTimer->onTimerZoneRO(timerId);
+		_zoneRO->onTimer(timerId);
 		break;
 
 	case kZoneAS:
-		_eventTimer->onTimerZoneAS(timerId);
+		_zoneAS->onTimer(timerId);
 		break;
 
 	case kZoneN2:
-		_eventTimer->onTimerZoneN2(timerId);
+		_zoneN2->onTimer(timerId);
 		break;
 	}
 
@@ -1013,7 +1465,7 @@ void ApplicationRing::onBag(ObjectId id, Id target, Id puzzleRotationId, uint32 
 	debugC(kRingDebugLogic, "onBag (object: %d)", id.id());
 
 	if (puzzleRotationId == 1 && a4 == 1) {
-		_eventBag->onBagZoneSY(id, (uint32)target, 1, 1, dragControl, type);
+		_zoneSystem->onBag(id, target, 1, 1, dragControl, type);
 		return;
 	}
 
@@ -1025,30 +1477,30 @@ void ApplicationRing::onBag(ObjectId id, Id target, Id puzzleRotationId, uint32 
 		break;
 
 	case kZoneSY:
-		_eventBag->onBagZoneSY(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zoneSystem->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneNI:
-		_eventBag->onBagZoneNI(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zoneNI->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneFO:
-		_eventBag->onBagZoneFO(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zoneFO->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneRO:
-		_eventBag->onBagZoneRO(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zoneRO->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZoneN2:
-		_eventBag->onBagZoneN2(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zoneN2->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 	}
 }
 
 void ApplicationRing::onUpdateBag(const Common::Point &point) {
 	if (getCurrentZone() == kZoneSY)
-		_eventBag->onUpdateBagZoneSY(point);
+		_zoneSystem->onUpdateBag(point);
 }
 
 void ApplicationRing::onBagClickedObject(ObjectId id) {
@@ -1057,13 +1509,98 @@ void ApplicationRing::onBagClickedObject(ObjectId id) {
 		break;
 
 	case kZoneFO:
-		_eventBag->onBagClickedObjectZoneFO(id);
+		_zoneFO->onBagClickedObject(id);
 		break;
 	}
 }
 
 void ApplicationRing::onBagZoneSwitch() {
-	_eventBag->onBagZoneSwitch();
+	switch (getApp()->getCurrentZone()) {
+	default:
+		break;
+
+	case kZoneSY:
+	case kZoneAS:
+		error("[EventBagRing::onBagZoneSwitch] Erda should not be active on this zone (%d)", getApp()->getCurrentZone());
+
+	case kZoneNI:
+	case kZoneRH:
+		if (!getApp()->getSaveManager()->loadSaveTimer("alb", kLoadSaveWrite))
+			error("[EventBagRing::onBagZoneSwitch] Failed loading timer (alb)");
+
+		varSetDword(90013, getCurrentZone());
+		varSetByte(90009, 1);
+
+		if (hasCurrentPuzzle()) {
+			varSetByte(90017, 1);
+			varSetDword(90021, getCurrentPuzzleId());
+		} else {
+			varSetByte(90017, 0);
+			varSetDword(90021, getCurrentRotationId());
+			varSetByte(90025, getApp()->getBag()->getRotationFre());
+		}
+
+		onSwitchZone(kZoneAS, 13);
+		break;
+
+	case kZoneFO:
+		if (!getApp()->getSaveManager()->loadSaveTimer("sie", kLoadSaveWrite))
+			error("[EventBagRing::onBagZoneSwitch] Failed loading timer (sie)");
+
+		varSetDword(90015, getCurrentZone());
+		varSetByte(90011, 1);
+
+		if (hasCurrentPuzzle()) {
+			varSetByte(90019, 1);
+			varSetDword(90023, getCurrentPuzzleId());
+		} else {
+			varSetByte(90019, 0);
+			varSetDword(90023, getCurrentRotationId());
+			varSetByte(90027, getApp()->getBag()->getRotationFre());
+		}
+
+		onSwitchZone(kZoneAS, 13);
+		break;
+
+	case kZoneRO:
+	case kZoneN2:
+		if (!getApp()->getSaveManager()->loadSaveTimer("log", kLoadSaveWrite))
+			error("[EventBagRing::onBagZoneSwitch] Failed loading timer (log)");
+
+		varSetDword(90014, getCurrentZone());
+		varSetByte(90010, 1);
+
+		if (hasCurrentPuzzle()) {
+			varSetByte(90018, 1);
+			varSetDword(90022, getCurrentPuzzleId());
+		} else {
+			varSetByte(90018, 0);
+			varSetDword(90022, getCurrentRotationId());
+			varSetByte(90026, getApp()->getBag()->getRotationFre());
+		}
+
+		onSwitchZone(kZoneAS, 13);
+		break;
+
+	case kZoneWA:
+		if (!getApp()->getSaveManager()->loadSaveTimer("bru", kLoadSaveWrite))
+			error("[EventBagRing::onBagZoneSwitch] Failed loading timer (bru)");
+
+		varSetDword(90016, getCurrentZone());
+		varSetByte(90012, 1);
+
+		if (hasCurrentPuzzle()) {
+			varSetByte(90020, 1);
+			varSetDword(90024, getCurrentPuzzleId());
+		} else {
+			varSetByte(90020, 0);
+			varSetDword(90024, getCurrentRotationId());
+			varSetByte(90028, getApp()->getBag()->getRotationFre());
+		}
+
+		onSwitchZone(kZoneAS, 13);
+		break;
+	}
 }
 
 void ApplicationRing::onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType) {
@@ -1076,31 +1613,31 @@ void ApplicationRing::onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 mo
 		break;
 
 	case kZoneNI:
-		_eventRide->onBeforeRideZoneNI(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneNI->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneRH:
-		_eventRide->onBeforeRideZoneRH(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneRH->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneFO:
-		_eventRide->onBeforeRideZoneFO(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneFO->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneRO:
-		_eventRide->onBeforeRideZoneRO(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneRO->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneWA:
-		_eventRide->onBeforeRideZoneWA(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneWA->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneAS:
-		_eventRide->onBeforeRideZoneAS(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneAS->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneN2:
-		_eventRide->onBeforeRideZoneN2(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneN2->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 	}
 }
@@ -1115,31 +1652,31 @@ void ApplicationRing::onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 mov
 		break;
 
 	case kZoneNI:
-		_eventRide->onAfterRideZoneNI(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneNI->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneRH:
-		_eventRide->onAfterRideZoneRH(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneRH->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneFO:
-		_eventRide->onAfterRideZoneFO(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneFO->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneRO:
-		_eventRide->onAfterRideZoneRO(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneRO->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneWA:
-		_eventRide->onAfterRideZoneWA(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneWA->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneAS:
-		_eventRide->onAfterRideZoneAS(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneAS->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZoneN2:
-		_eventRide->onAfterRideZoneN2(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zoneN2->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 	}
 }
@@ -1155,35 +1692,35 @@ void ApplicationRing::onSound(Id id, SoundType type, uint32 a3) {
 		break;
 
 	case kZoneSY:
-		_eventSound->onSoundZoneSY(id, type, a3, process);
+		_zoneSystem->onSound(id, type, a3, process);
 		break;
 
 	case kZoneNI:
-		_eventSound->onSoundZoneNI(id, type, a3, process);
+		_zoneNI->onSound(id, type, a3, process);
 		break;
 
 	case kZoneRH:
-		_eventSound->onSoundZoneRH(id, type, a3, process);
+		_zoneRH->onSound(id, type, a3, process);
 		break;
 
 	case kZoneFO:
-		_eventSound->onSoundZoneFO(id, type, a3, process);
+		_zoneFO->onSound(id, type, a3, process);
 		break;
 
 	case kZoneRO:
-		_eventSound->onSoundZoneRO(id, type, a3, process);
+		_zoneRO->onSound(id, type, a3, process);
 		break;
 
 	case kZoneAS:
-		_eventSound->onSoundZoneAS(id, type, a3, process);
+		_zoneAS->onSound(id, type, a3, process);
 		break;
 
 	case kZoneWA:
-		_eventSound->onSoundZoneWA(id, type, a3, process);
+		_zoneWA->onSound(id, type, a3, process);
 		break;
 
 	case kZoneN2:
-		_eventSound->onSoundZoneN2(id, type, a3, process);
+		_zoneN2->onSound(id, type, a3, process);
 		break;
 	}
 }
@@ -1195,48 +1732,71 @@ void ApplicationRing::onAnimationNextFrame(Id animationId, const Common::String 
 		break;
 
 	case kZoneNI:
-		_eventAnimation->onAnimationNextFrameZoneNI(animationId, name, frame, frameCount);
+		_zoneNI->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZoneRH:
-		_eventAnimation->onAnimationNextFrameZoneRH(animationId, name, frame, frameCount);
+		_zoneRH->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZoneFO:
-		_eventAnimation->onAnimationNextFrameZoneFO(animationId, name, frame, frameCount);
+		_zoneFO->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZoneRO:
-		_eventAnimation->onAnimationNextFrameZoneRO(animationId, name, frame, frameCount);
+		_zoneRO->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZoneAS:
-		_eventAnimation->onAnimationNextFrameZoneAS(animationId, name, frame, frameCount);
+		_zoneAS->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZoneWA:
-		_eventAnimation->onAnimationNextFrameZoneWA(animationId, name, frame, frameCount);
+		_zoneWA->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZoneN2:
-		_eventAnimation->onAnimationNextFrameZoneN2(animationId, name, frame, frameCount);
+		_zoneN2->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 	}
 }
 
 void ApplicationRing::onAnimation(uint32 type, Id animationId, const Common::String &name, uint32 frame, uint32 a5) {
 	if (getCurrentZone() == kZoneWA)
-		_eventAnimation->onAnimationZoneWA(type, animationId, name, frame, a5);
+		_zoneWA->onAnimation(type, animationId, name, frame, a5);
 }
 
 void ApplicationRing::onVisualList(Id id, uint32 type, const Common::Point &point) {
 	if (getCurrentZone() == kZoneSY)
-		_eventVisual->onVisualListZoneSY(id, type, point);
+		_zoneSystem->onVisualList(id, type, point);
 }
 
 #pragma endregion
 
 #pragma region Helper functions
+
+void ApplicationRing::onSetupLoadTimers(Common::String zoneName, Id testId1, Id puzzleRotationId, Id testId2) {
+	if (!getSaveManager()->hasTimer(zoneName))
+		error("[EventSetupRing::onSetupLoadTimers] Cannot find savegame (%s.ars)!", zoneName.c_str());
+
+	bagRemoveAll();
+
+	if (varGetByte(testId1)) {
+		puzzleSetActive((PuzzleId)varGetDword(puzzleRotationId));
+	} else {
+		rotationSetActive(varGetDword(puzzleRotationId));
+
+		if (varGetByte(testId2))
+			rotationSetFreOn(varGetDword(puzzleRotationId));
+		else
+			rotationSetFreOff(varGetDword(puzzleRotationId));
+	}
+
+	if (!getSaveManager()->loadSaveTimer(zoneName, kLoadSaveRead))
+		error("[EventSetupRing::onSetupLoadTimers] Cannot load timers (%s)!", zoneName.c_str());
+
+	getSoundManager()->playSounds();
+}
 
 void ApplicationRing::sub_433EE0() {
 	if (varGetByte(70012) == 1

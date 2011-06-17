@@ -39,18 +39,16 @@ MODULE_OBJS := \
 
 ifdef ENABLE_RING1
 MODULE_OBJS += \
-	game/ring/ring_animation.o \
 	game/ring/ring_application.o \
-	game/ring/ring_bag.o \
-	game/ring/ring_button.o \
-	game/ring/ring_init.o \
-	game/ring/ring_input.o \
-	game/ring/ring_ride.o \
-	game/ring/ring_setup.o \
-	game/ring/ring_sound.o \
-	game/ring/ring_timer.o \
 	game/ring/ring_visual.o \
-	game/ring/ring_zone.o
+	game/ring/ring_zonesystem.o \
+	game/ring/ring_zoneni.o \
+	game/ring/ring_zonerh.o \
+	game/ring/ring_zonefo.o \
+	game/ring/ring_zonero.o \
+	game/ring/ring_zonewa.o \
+	game/ring/ring_zoneas.o \
+	game/ring/ring_zonen2.o
 endif
 
 ifdef ENABLE_FAUST

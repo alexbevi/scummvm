@@ -19,29 +19,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_RING_INIT_H
-#define RING_RING_INIT_H
+#ifndef RING_ZONE_AS_H
+#define RING_ZONE_AS_H
+
+#include "ring/base/event.h"
+
+#include "ring/shared.h"
 
 namespace Ring {
 
 class ApplicationRing;
 
-class EventInitRing {
+class ZoneASRing : public EventHandlerZone {
 public:
-	EventInitRing(ApplicationRing *application);
-	~EventInitRing();
+	ZoneASRing(ApplicationRing *application);
+	~ZoneASRing();
 
-	//////////////////////////////////////////////////////////////////////////
-	// Zone initialization
-	//////////////////////////////////////////////////////////////////////////
-	void initZoneSY();
-	void initZoneNI();
-	void initZoneRH();
-	void initZoneFO();
-	void initZoneRO();
-	void initZoneWA();
-	void initZoneAS();
-	void initZoneN2();
+	virtual void onInit();
+	virtual void onSetup(SetupType type);
+	virtual void onSwitch(uint32 type);
+	virtual void onTimer(TimerId id);
+	virtual void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	virtual void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+	virtual void onSound(Id id, SoundType type, uint32 a3, bool process);
+	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
+	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
 
 private:
 	ApplicationRing *_app;
@@ -49,4 +51,4 @@ private:
 
 } // End of namespace Ring
 
-#endif // RING_RING_INIT_H
+#endif // RING_ZONE_AS_H

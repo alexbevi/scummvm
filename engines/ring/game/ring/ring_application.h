@@ -26,17 +26,17 @@
 
 namespace Ring {
 
-class EventAnimationRing;
-class EventBagRing;
-class EventButtonRing;
-class EventInitRing;
-class EventInputRing;
-class EventRideRing;
-class EventSetupRing;
-class EventSoundRing;
-class EventTimerRing;
-class EventVisualRing;
-class EventZoneRing;
+class Accessibility;
+class Movability;
+
+class ZoneSystemRing;
+class ZoneNIRing;
+class ZoneRHRing;
+class ZoneFORing;
+class ZoneRORing;
+class ZoneWARing;
+class ZoneASRing;
+class ZoneN2Ring;
 
 class ApplicationRing : public Application {
 public:
@@ -84,7 +84,6 @@ public:
 	virtual void onMouseRightButtonUp(const Common::Event &evt);
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
-	virtual void onInitZone(ZoneId zone);
 	virtual void onSound(Id id, SoundType type, uint32 a3);
 	virtual void onSetup(ZoneId zone, SetupType type);
 	virtual void onBag(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
@@ -100,52 +99,47 @@ public:
 	virtual void onVisualList(Id id, uint32 type, const Common::Point &point);
 
 protected:
-	//////////////////////////////////////////////////////////////////////////
-	// Buttons
-	//////////////////////////////////////////////////////////////////////////
+	void sub_433EE0();
+	void sub_445A10();
+
+	void onSwitchZone(ZoneId zone, uint32 type);
+	void onSetupLoadTimers(Common::String zoneName, Id testId1, Id puzzleRotationId, Id testId2);
+
+private:
+	// Event handlers
+	ZoneSystemRing     *_zoneSystem;
+	ZoneNIRing         *_zoneNI;
+	ZoneRHRing         *_zoneRH;
+	ZoneFORing         *_zoneFO;
+	ZoneRORing         *_zoneRO;
+	ZoneWARing         *_zoneWA;
+	ZoneASRing         *_zoneAS;
+	ZoneN2Ring         *_zoneN2;
+
+	bool         _controlNotPressed;
+	int32        _presentationIndexNI;
+
 	void onButtonDown(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	void onButtonUp2(ObjectId id, uint32 index, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 
-	//////////////////////////////////////////////////////////////////////////
-	// Zone switching
-	//////////////////////////////////////////////////////////////////////////
-	void onSwitchZone(ZoneId zone, uint32 type);
-
-	//////////////////////////////////////////////////////////////////////////
-	// Helper functions
-	//////////////////////////////////////////////////////////////////////////
-	void sub_433EE0();
-	void sub_445A10();
-
-private:
-	// Event handlers
-	EventAnimationRing *_eventAnimation;
-	EventBagRing       *_eventBag;
-	EventButtonRing    *_eventButton;
-	EventInitRing      *_eventInit;
-	EventInputRing     *_eventInput;
-	EventRideRing      *_eventRide;
-	EventSetupRing     *_eventSetup;
-	EventSoundRing     *_eventSound;
-	EventTimerRing     *_eventTimer;
-	EventVisualRing    *_eventVisual;
-	EventZoneRing      *_eventZone;
-
-	// Shared data
-	int32        _prefsVolume;
-	int32        _presentationIndexRO;
-
-	friend class EventAnimationRing;
-	friend class EventBagRing;
-	friend class EventButtonRing;
-	friend class EventInputRing;
-	friend class EventRideRing;
-	friend class EventSoundRing;
-	friend class EventTimerRing;
+	void onMouseLeftButtonUp(const Common::Event &evt);
+	bool handleLeftButtonDown(Accessibility *accessibility, uint32 index, Id id, const Common::Point &point);
+	bool handleLeftButtonUp(Accessibility *accessibility, Id id, const Common::Point &point);
+	bool handleLeftButtonUp(Movability *movability, uint32 index, Id id, bool isRotation = false);
+	void onKeyDownZone(const Common::KeyState &keyState);
 
 	uint32 getCdForZone(ZoneId zone) const;
 	bool isDataPresent(SetupType type);
+
+	friend class ZoneSystemRing;
+	friend class ZoneNIRing;
+	friend class ZoneRHRing;
+	friend class ZoneFORing;
+	friend class ZoneRORing;
+	friend class ZoneWARing;
+	friend class ZoneASRing;
+	friend class ZoneN2Ring;
 };
 
 } // End of namespace Ring

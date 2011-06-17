@@ -19,8 +19,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_RING_SOUND_H
-#define RING_RING_SOUND_H
+#ifndef RING_ZONE_RH_H
+#define RING_ZONE_RH_H
+
+#include "ring/base/event.h"
 
 #include "ring/shared.h"
 
@@ -28,24 +30,28 @@ namespace Ring {
 
 class ApplicationRing;
 
-class EventSoundRing {
+class ZoneRHRing : public EventHandlerZone {
 public:
-	EventSoundRing(ApplicationRing *application);
-	~EventSoundRing();
+	ZoneRHRing(ApplicationRing *application);
+	~ZoneRHRing();
 
-	void onSoundZoneSY(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneNI(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneRH(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneFO(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneRO(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneWA(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneAS(Id id, SoundType type, uint32 a3, bool process);
-	void onSoundZoneN2(Id id, SoundType type, uint32 a3, bool process);
+	virtual void onInit();
+	virtual void onSetup(SetupType type);
+	virtual void onSwitch(uint32 type);
+	virtual void onTimer(TimerId id);
+	virtual void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	virtual void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
+	virtual void onSound(Id id, SoundType type, uint32 a3, bool process);
+	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
+	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
 
 private:
-	ApplicationRing  *_app;
+	ApplicationRing *_app;
+
+	bool              _disableTimerRH;
+	uint32            _frameNumberTimerRH;
 };
 
 } // End of namespace Ring
 
-#endif // RING_RING_SOUND_H
+#endif // RING_ZONE_RH_H

@@ -67,17 +67,6 @@ private:
 	void setupProgress(Id progressId, uint32 textIndex, float *progress) const;
 };
 
-class EventVisualRing {
-public:
-	EventVisualRing(ApplicationRing *application);
-	~EventVisualRing();
-
-	void onVisualListZoneSY(Id id, uint32 a2, const Common::Point &point);
-
-private:
-	ApplicationRing  *_app;
-};
-
 } // End of namespace Ring
 
 #endif // RING_RING_VISUAL_H
