@@ -77,7 +77,7 @@ void EventAnimationFaust::onAnimationNextFrameZone9(Id animationId, const Common
 
 	case 61300:
 		if (frame == frameCount) {
-			_app->objectPresentationShow((ObjectId)(kObject61302 + _app->varGetByte(61909), _app->varGetByte(61901 + _app->varGetByte(61909))));
+			_app->objectPresentationShow((ObjectId)(kObject61302 + _app->varGetByte(61909)), _app->varGetByte(61901 + _app->varGetByte(61909)));
 			_app->objectSetAccessibilityOn(kObjectWhip);
 
 			if (_app->varGetByte(61901) == 2 && _app->varGetByte(61902) == 2)
