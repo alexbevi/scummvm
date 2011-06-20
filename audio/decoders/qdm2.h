@@ -20,37 +20,30 @@
  *
  */
 
-#if !defined(BACKEND_EVENTS_SDL_GP2X_H) && !defined(DISABLE_DEFAULT_EVENTMANAGER)
-#define BACKEND_EVENTS_SDL_GP2X_H
+// Only compile if Mohawk is enabled or if we're building dynamic modules
+#if defined(ENABLE_MOHAWK) || defined(DYNAMIC_MODULES)
 
-#include "backends/events/sdl/sdl-events.h"
+#ifndef AUDIO_QDM2_H
+#define AUDIO_QDM2_H
+
+namespace Common {
+class SeekableReadStream;
+}
+
+namespace Audio {
+
+class AudioStream;
 
 /**
- * SDL events manager for GP2X
+ * Create a new AudioStream from the QDM2 data in the given stream.
+ *
+ * @param stream       the SeekableReadStream from which to read the FLAC data
+ * @param extraData    the QuickTime extra data stream
+ * @return   a new AudioStream, or NULL, if an error occurred
  */
-class GP2XSdlEventSource : public SdlEventSource {
-public:
-	GP2XSdlEventSource();
+AudioStream *makeQDM2Stream(Common::SeekableReadStream *stream, Common::SeekableReadStream *extraData);
 
-protected:
-	bool _stickBtn[32];
+} // End of namespace Audio
 
-	/** Button state for L button modifier */
-	bool _buttonStateL;
-
-	/**
-	 * Handles the stick movement
-	 */
-	void moveStick();
-
-	virtual bool handleKeyDown(SDL_Event &ev, Common::Event &event);
-	virtual bool handleJoyButtonDown(SDL_Event &ev, Common::Event &event);
-	virtual bool handleJoyButtonUp(SDL_Event &ev, Common::Event &event);
-	virtual bool handleJoyAxisMotion(SDL_Event &ev, Common::Event &event);
-
-	virtual void SDLModToOSystemKeyFlags(SDLMod mod, Common::Event &event);
-
-	virtual bool remapKey(SDL_Event &ev, Common::Event &event);
-};
-
-#endif
+#endif // AUDIO_QDM2_H
+#endif // Mohawk/Plugins guard
