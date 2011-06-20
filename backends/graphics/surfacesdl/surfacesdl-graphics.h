@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef BACKENDS_GRAPHICS_SDL_H
-#define BACKENDS_GRAPHICS_SDL_H
+#ifndef BACKENDS_GRAPHICS_SURFACESDL_GRAPHICS_H
+#define BACKENDS_GRAPHICS_SURFACESDL_GRAPHICS_H
 
 #include "backends/graphics/graphics.h"
 #include "graphics/pixelformat.h"
@@ -74,10 +74,10 @@ public:
 /**
  * SDL graphics manager
  */
-class SdlGraphicsManager : public GraphicsManager, public Common::EventObserver {
+class SurfaceSdlGraphicsManager : public GraphicsManager, public Common::EventObserver {
 public:
-	SdlGraphicsManager(SdlEventSource *sdlEventSource);
-	virtual ~SdlGraphicsManager();
+	SurfaceSdlGraphicsManager(SdlEventSource *sdlEventSource);
+	virtual ~SurfaceSdlGraphicsManager();
 
 	virtual void initEventObserver();
 
@@ -100,7 +100,7 @@ public:
 
 	virtual void beginGFXTransaction();
 	virtual OSystem::TransactionError endGFXTransaction();
-	
+
 	virtual int16 getHeight();
 	virtual int16 getWidth();
 
@@ -132,7 +132,7 @@ public:
 	virtual void warpMouse(int x, int y);
 	virtual void setMouseCursor(const byte *buf, uint w, uint h, int hotspotX, int hotspotY, uint32 keycolor, int cursorTargetScale = 1, const Graphics::PixelFormat *format = NULL);
 	virtual void setCursorPalette(const byte *colors, uint start, uint num);
-	
+
 #ifdef USE_OSD
 	virtual void displayMessageOnOSD(const char *msg);
 #endif
@@ -149,7 +149,7 @@ protected:
 	/** Transparency level of the OSD */
 	uint8 _osdAlpha;
 	/** When to start the fade out */
-	uint32 _osdFadeStartTime; 
+	uint32 _osdFadeStartTime;
 	/** Enum with OSD options */
 	enum {
 		kOSDFadeOutDelay = 2 * 1000,	/** < Delay before the OSD is faded out (in milliseconds) */

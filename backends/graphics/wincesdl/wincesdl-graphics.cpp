@@ -43,14 +43,14 @@
 #include "backends/platform/wince/CEgui/ItemAction.h"
 
 WINCESdlGraphicsManager::WINCESdlGraphicsManager(SdlEventSource *sdlEventSource)
-	: SdlGraphicsManager(sdlEventSource),
+	: SurfaceSdlGraphicsManager(sdlEventSource),
 	  _panelInitialized(false), _noDoubleTapRMB(false),
 	  _toolbarHighDrawn(false), _newOrientation(0), _orientationLandscape(0),
 	  _panelVisible(true), _saveActiveToolbar(NAME_MAIN_PANEL), _panelStateForced(false),
 	  _canBeAspectScaled(false), _scalersChanged(false), _saveToolbarState(false),
 	  _mouseBackupOld(NULL), _mouseBackupDim(0), _mouseBackupToolbar(NULL),
-	  _usesEmulatedMouse(false), _forceHideMouse(false), _hasfocus(true),
-	  _zoomUp(false), _zoomDown(false) {
+	  _usesEmulatedMouse(false), _forceHideMouse(false), _freeLook(false),
+	  _hasfocus(true), _zoomUp(false), _zoomDown(false) {
 	memset(&_mouseCurState, 0, sizeof(_mouseCurState));
 	if (_isSmartphone) {
 		_mouseCurState.x = 20;
@@ -149,7 +149,7 @@ void WINCESdlGraphicsManager::setFeatureState(OSystem::Feature f, bool enable) {
 		return;
 
 	default:
-		SdlGraphicsManager::setFeatureState(f, enable);
+		SurfaceSdlGraphicsManager::setFeatureState(f, enable);
 	}
 }
 
@@ -160,7 +160,7 @@ bool WINCESdlGraphicsManager::getFeatureState(OSystem::Feature f) {
 	case OSystem::kFeatureVirtualKeyboard:
 		return (_panelStateForced);
 	default:
-		return SdlGraphicsManager::getFeatureState(f);
+		return SurfaceSdlGraphicsManager::getFeatureState(f);
 	}
 }
 
@@ -204,7 +204,7 @@ void WINCESdlGraphicsManager::initSize(uint w, uint h, const Graphics::PixelForm
 	_videoMode.overlayWidth = w;
 	_videoMode.overlayHeight = h;
 
-	SdlGraphicsManager::initSize(w, h, format);
+	SurfaceSdlGraphicsManager::initSize(w, h, format);
 
 	if (_scalersChanged) {
 		unloadGFXMode();
@@ -444,7 +444,6 @@ void WINCESdlGraphicsManager::update_game_settings() {
 		// Skip
 		panel->add(NAME_ITEM_SKIP, new CEGUI::ItemAction(ITEM_SKIP, POCKET_ACTION_SKIP));
 		// sound
-//__XXX__       panel->add(NAME_ITEM_SOUND, new CEGUI::ItemSwitch(ITEM_SOUND_OFF, ITEM_SOUND_ON, &_soundMaster));
 		panel->add(NAME_ITEM_SOUND, new CEGUI::ItemSwitch(ITEM_SOUND_OFF, ITEM_SOUND_ON, &OSystem_WINCE3::_soundMaster));
 
 		// bind keys
@@ -1186,7 +1185,7 @@ void WINCESdlGraphicsManager::setMousePos(int x, int y) {
 Graphics::Surface *WINCESdlGraphicsManager::lockScreen() {
 	// Make sure mouse pointer is not painted over the playfield at the time of locking
 	undrawMouse();
-	return SdlGraphicsManager::lockScreen();
+	return SurfaceSdlGraphicsManager::lockScreen();
 }
 
 void WINCESdlGraphicsManager::showOverlay() {
@@ -1294,7 +1293,7 @@ void WINCESdlGraphicsManager::warpMouse(int x, int y) {
 }
 
 void WINCESdlGraphicsManager::unlockScreen() {
-	SdlGraphicsManager::unlockScreen();
+	SurfaceSdlGraphicsManager::unlockScreen();
 }
 
 void WINCESdlGraphicsManager::internDrawMouse() {
@@ -1469,7 +1468,7 @@ void WINCESdlGraphicsManager::addDirtyRect(int x, int y, int w, int h, bool mous
 	if (_forceFull || _paletteDirtyEnd)
 		return;
 
-	SdlGraphicsManager::addDirtyRect(x, y, w, h, false);
+	SurfaceSdlGraphicsManager::addDirtyRect(x, y, w, h, false);
 }
 
 void WINCESdlGraphicsManager::swap_panel_visibility() {
@@ -1625,6 +1624,14 @@ void WINCESdlGraphicsManager::create_toolbar() {
 	keyboard = new CEGUI::PanelKeyboard(PANEL_KEYBOARD);
 	_toolbarHandler.add(NAME_PANEL_KEYBOARD, *keyboard);
 	_toolbarHandler.setVisible(false);
+}
+
+void WINCESdlGraphicsManager::swap_freeLook() {
+	_freeLook = !_freeLook;
+}
+
+bool WINCESdlGraphicsManager::getFreeLookState() {
+	return _freeLook;
 }
 
 WINCESdlGraphicsManager::zoneDesc WINCESdlGraphicsManager::_zones[TOTAL_ZONES] = {

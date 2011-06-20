@@ -38,7 +38,7 @@
 #include "backends/events/sdl/sdl-events.h"
 #include "backends/mutex/sdl/sdl-mutex.h"
 #include "backends/timer/sdl/sdl-timer.h"
-#include "backends/graphics/sdl/sdl-graphics.h"
+#include "backends/graphics/surfacesdl/surfacesdl-graphics.h"
 #ifdef USE_OPENGL
 #include "backends/graphics/openglsdl/openglsdl-graphics.h"
 #endif
@@ -167,26 +167,10 @@ void OSystem_SDL::initBackend() {
 		}
 #endif
 		if (_graphicsManager == 0) {
-			_graphicsManager = new SdlGraphicsManager(_eventSource);
+			_graphicsManager = new SurfaceSdlGraphicsManager(_eventSource);
 			graphicsManagerType = 0;
 		}
 	}
-
-	// Creates the backend managers, if they don't exist yet (we check
-	// for this to allow subclasses to provide their own).
-	if (_eventManager == 0)
-		_eventManager = new DefaultEventManager(_eventSource);
-
-	// We have to initialize the graphics manager before the event manager
-	// so the virtual keyboard can be initialized, but we have to add the
-	// graphics manager as an event observer after initializing the event
-	// manager.
-	if (graphicsManagerType == 0)
-		((SdlGraphicsManager *)_graphicsManager)->initEventObserver();
-#ifdef USE_OPENGL
-	else if (graphicsManagerType == 1)
-		((OpenGLSdlGraphicsManager *)_graphicsManager)->initEventObserver();
-#endif
 
 	if (_savefileManager == 0)
 		_savefileManager = new DefaultSaveFileManager();
@@ -207,6 +191,18 @@ void OSystem_SDL::initBackend() {
 	_inited = true;
 
 	ModularBackend::initBackend();
+
+	// We have to initialize the graphics manager before the event manager
+	// so the virtual keyboard can be initialized, but we have to add the
+	// graphics manager as an event observer after initializing the event
+	// manager.
+	if (graphicsManagerType == 0)
+		((SurfaceSdlGraphicsManager *)_graphicsManager)->initEventObserver();
+#ifdef USE_OPENGL
+	else if (graphicsManagerType == 1)
+		((OpenGLSdlGraphicsManager *)_graphicsManager)->initEventObserver();
+#endif
+
 }
 
 void OSystem_SDL::initSDL() {
@@ -275,10 +271,22 @@ void OSystem_SDL::fatalError() {
 
 
 void OSystem_SDL::logMessage(LogMessageType::Type type, const char *message) {
-	ModularBackend::logMessage(type, message);
+	// First log to stdout/stderr
+	FILE *output = 0;
+
+	if (type == LogMessageType::kInfo || type == LogMessageType::kDebug)
+		output = stdout;
+	else
+		output = stderr;
+
+	fputs(message, output);
+	fflush(output);
+
+	// Then log into file (via the logger)
 	if (_logger)
 		_logger->print(message);
 
+	// Finally, some Windows / WinCE specific logging code.
 #if defined( USE_WINDBG )
 #if defined( _WIN32_WCE )
 	TCHAR buf_unicode[1024];
@@ -301,7 +309,7 @@ void OSystem_SDL::logMessage(LogMessageType::Type type, const char *message) {
 }
 
 Common::String OSystem_SDL::getSystemLanguage() const {
-#ifdef USE_DETECTLANG
+#if defined(USE_DETECTLANG) && !defined(_WIN32_WCE)
 #ifdef WIN32
 	// We can not use "setlocale" (at least not for MSVC builds), since it
 	// will return locales like: "English_USA.1252", thus we need a special
@@ -368,7 +376,7 @@ void OSystem_SDL::setupIcon() {
 
 	if (sscanf(scummvm_icon[0], "%d %d %d %d", &w, &h, &ncols, &nbytes) != 4) {
 		warning("Wrong format of scummvm_icon[0] (%s)", scummvm_icon[0]);
-		
+
 		return;
 	}
 	if ((w > 512) || (h > 512) || (ncols > 255) || (nbytes > 1)) {
@@ -472,7 +480,7 @@ bool OSystem_SDL::setGraphicsMode(int mode) {
 
 	// Check if mode is from SDL or OpenGL
 	if (mode < _sdlModesCount) {
-		srcMode = SdlGraphicsManager::supportedGraphicsModes();
+		srcMode = SurfaceSdlGraphicsManager::supportedGraphicsModes();
 		i = 0;
 	} else {
 		srcMode = OpenGLSdlGraphicsManager::supportedGraphicsModes();
@@ -487,8 +495,8 @@ bool OSystem_SDL::setGraphicsMode(int mode) {
 			if (_graphicsMode >= _sdlModesCount && mode < _sdlModesCount) {
 				debug(1, "switching to plain SDL graphics");
 				delete _graphicsManager;
-				_graphicsManager = new SdlGraphicsManager(_eventSource);
-				((SdlGraphicsManager *)_graphicsManager)->initEventObserver();
+				_graphicsManager = new SurfaceSdlGraphicsManager(_eventSource);
+				((SurfaceSdlGraphicsManager *)_graphicsManager)->initEventObserver();
 				_graphicsManager->beginGFXTransaction();
 			} else if (_graphicsMode < _sdlModesCount && mode >= _sdlModesCount) {
 				debug(1, "switching to OpenGL graphics");
@@ -514,7 +522,7 @@ int OSystem_SDL::getGraphicsMode() const {
 }
 
 void OSystem_SDL::setupGraphicsModes() {
-	const OSystem::GraphicsMode *sdlGraphicsModes = SdlGraphicsManager::supportedGraphicsModes();
+	const OSystem::GraphicsMode *sdlGraphicsModes = SurfaceSdlGraphicsManager::supportedGraphicsModes();
 	const OSystem::GraphicsMode *openglGraphicsModes = OpenGLSdlGraphicsManager::supportedGraphicsModes();
 	_sdlModesCount = 0;
 	_glModesCount = 0;

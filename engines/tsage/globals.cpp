@@ -117,9 +117,9 @@ Globals::Globals() : _dialogCenter(160, 140), _gfxManagerInstance(_screenSurface
 }
 
 Globals::~Globals() {
-	_globals = NULL;
 	delete _inventory;
 	delete _game;
+	_globals = NULL;
 }
 
 void Globals::reset() {
@@ -140,7 +140,7 @@ void Globals::synchronize(Serializer &s) {
 	s.syncAsSint32LE(_gfxColors.foreground);
 	s.syncAsSint32LE(_fontColors.background);
 	s.syncAsSint32LE(_fontColors.foreground);
-	
+
 	if (s.getVersion() >= 4) {
 		s.syncAsByte(_unkColor1);
 		s.syncAsByte(_unkColor2);

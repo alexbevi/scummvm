@@ -60,7 +60,7 @@ Parser::~Parser() {
 uint16 Parser::getCmdDefaultVerbIdx(const uint16 index) const {
 	return _cmdList[index][0].verbIndex;
 }
-	
+
 /**
  * Read a cmd structure from Hugo.dat
  */
@@ -391,6 +391,8 @@ void Parser::command(const char *format, ...) {
 
 	va_list marker;
 	va_start(marker, format);
+//	TODO:
+//	_vm->_line = Common::String::vformat(format, marker);
 	vsprintf(_vm->_line, format, marker);
 	va_end(marker);
 

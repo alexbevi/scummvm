@@ -178,7 +178,7 @@ Common::Error MohawkEngine_Riven::run() {
 		changeToCard(1);
 	}
 
-	
+
 	while (!_gameOver && !shouldQuit())
 		handleEvents();
 
@@ -436,7 +436,7 @@ void MohawkEngine_Riven::loadCard(uint16 id) {
 void MohawkEngine_Riven::loadHotspots(uint16 id) {
 	// Clear old hotspots
 	delete[] _hotspots;
-	
+
 	// NOTE: The hotspot scripts are cleared by the RivenScriptManager automatically.
 
 	Common::SeekableReadStream *inStream = getResource(ID_HSPT, id);
@@ -460,8 +460,8 @@ void MohawkEngine_Riven::loadHotspots(uint16 id) {
 		// - tspit 371 (DVD: 377), hotspot 4
 		if (left >= right || top >= bottom) {
 			warning("%s %d hotspot %d is invalid: (%d, %d, %d, %d)", getStackName(_curStack).c_str(), _curCard, i, left, top, right, bottom);
-			left = top = right = bottom = 0; 	 
-			_hotspots[i].enabled = 0; 	 
+			left = top = right = bottom = 0;
+			_hotspots[i].enabled = 0;
 		}
 
 		_hotspots[i].rect = Common::Rect(left, top, right, bottom);
@@ -831,6 +831,19 @@ void MohawkEngine_Riven::installCardTimer() {
 		// TODO: Background Sunner videos
 		break;
 	}
+}
+
+void MohawkEngine_Riven::doVideoTimer(VideoHandle handle, bool force) {
+	assert(handle != NULL_VID_HANDLE);
+
+	uint16 id = _scriptMan->getStoredMovieOpcodeID();
+
+	if (handle != _video->findVideoHandleRiven(id)) // Check if we've got a video match
+		return;
+
+	// Run the opcode if we can at this point
+	if (force || _video->getElapsedTime(handle) >= _scriptMan->getStoredMovieOpcodeTime())
+		_scriptMan->runStoredMovieOpcode();
 }
 
 bool ZipMode::operator== (const ZipMode &z) const {
