@@ -56,7 +56,7 @@ static const RingGameDescription gameDescriptions[] = {
 			},
 			Common::UNK_LANG,
 			Common::kPlatformWindows,
-			ADGF_NO_FLAGS,
+			ADGF_UNSTABLE,
 			Common::GUIO_NONE
 		},
 		GameTypePilgrim,
@@ -76,7 +76,7 @@ static const RingGameDescription gameDescriptions[] = {
 			},
 			Common::UNK_LANG,
 			Common::kPlatformWindows,
-			ADGF_NO_FLAGS,
+			ADGF_UNSTABLE,
 			Common::GUIO_NONE
 		},
 		GameTypeRing,
@@ -95,7 +95,7 @@ static const RingGameDescription gameDescriptions[] = {
 			},
 			Common::UNK_LANG,
 			Common::kPlatformWindows,
-			ADGF_NO_FLAGS,
+			ADGF_UNSTABLE,
 			Common::GUIO_NONE
 		},
 		GameTypeFaust,
@@ -114,7 +114,7 @@ static const RingGameDescription gameDescriptions[] = {
 			},
 			Common::EN_ANY,
 			Common::kPlatformWindows,
-			ADGF_NO_FLAGS,
+			ADGF_UNSTABLE,
 			Common::GUIO_NONE
 		},
 		GameTypePompeii,
@@ -133,7 +133,7 @@ static const RingGameDescription gameDescriptions[] = {
 			},
 			Common::EN_ANY,
 			Common::kPlatformWindows,
-			ADGF_NO_FLAGS,
+			ADGF_UNSTABLE,
 			Common::GUIO_NONE
 		},
 		GameTypePilgrim2,
@@ -152,7 +152,7 @@ static const RingGameDescription gameDescriptions[] = {
 			},
 			Common::EN_ANY,
 			Common::kPlatformWindows,
-			ADGF_NO_FLAGS,
+			ADGF_UNSTABLE,
 			Common::GUIO_NONE
 		},
 		GameTypePilgrim3,
@@ -171,7 +171,7 @@ static const RingGameDescription gameDescriptions[] = {
 			},
 			Common::EN_ANY,
 			Common::kPlatformWindows,
-			ADGF_NO_FLAGS,
+			ADGF_UNSTABLE,
 			Common::GUIO_NONE
 		},
 		GameTypeJerusalem,
