@@ -37,7 +37,6 @@ public:
 
 	virtual void onInit();
 	virtual void onSetup(SetupType type);
-	virtual void onTimer(TimerId id) {}
 	virtual void onSwitch(uint32 type);
 	virtual void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
 	virtual void onButtonUp2(ObjectId objectId, uint32 index, Id, uint32, const Common::Point &);
