@@ -6,7 +6,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 7
  * of the License, or (at your option) any later version.
 
  * This program is distributed in the hope that it will be useful,
@@ -16,11 +16,13 @@
 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 07110-1301, USA.
  */
 
-#ifndef RING_FAUST_TIMER_H
-#define RING_FAUST_TIMER_H
+#ifndef RING_FAUST_ZONE_7_H
+#define RING_FAUST_ZONE_7_H
+
+#include "ring/base/event.h"
 
 #include "ring/shared.h"
 
@@ -28,31 +30,20 @@ namespace Ring {
 
 class ApplicationFaust;
 
-class EventTimerFaust {
+class Zone7Faust : public EventHandlerZone {
 public:
-	EventTimerFaust(ApplicationFaust *application);
-	~EventTimerFaust();
+	Zone7Faust(ApplicationFaust *application);
+	~Zone7Faust();
 
-	void onTimerZoneSY(TimerId id);
-	void onTimerZone2(TimerId id);
-	void onTimerZone3(TimerId id);
-	void onTimerZone4(TimerId id);
-	void onTimerZone5(TimerId id);
-	void onTimerZone6(TimerId id);
-	void onTimerZone8(TimerId id);
-	void onTimerZone9(TimerId id);
-	void onTimerZone10(TimerId id);
-	void onTimerZone11(TimerId id);
-	void onTimerZone12(TimerId id);
-	void onTimerZone13(TimerId id);
-	void onTimerZone14(TimerId id);
-	void onTimerZone15(TimerId id);
-	void onTimerZone16(TimerId id);
+	virtual void onInit();
+	virtual void onSetup(SetupType type);
+	virtual void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	virtual void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
 
 private:
-	ApplicationFaust  *_app;
+	ApplicationFaust *_app;
 };
 
 } // End of namespace Ring
 
-#endif // RING_FAUST_TIMER_H
+#endif // RING_FAUST_ZONE_7_H

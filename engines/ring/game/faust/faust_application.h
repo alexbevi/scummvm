@@ -26,17 +26,23 @@
 
 namespace Ring {
 
-class EventAnimationFaust;
-class EventBagFaust;
-class EventButtonFaust;
-class EventInitFaust;
-class EventInputFaust;
-class EventRideFaust;
-class EventSetupFaust;
-class EventSoundFaust;
-class EventTimerFaust;
-class EventVisualFaust;
-class EventZoneFaust;
+class ZoneSystemFaust;
+class Zone2Faust;
+class Zone3Faust;
+class Zone4Faust;
+class Zone5Faust;
+class Zone6Faust;
+class Zone7Faust;
+class Zone8Faust;
+class Zone9Faust;
+class Zone10Faust;
+class Zone11Faust;
+class Zone12Faust;
+class Zone13Faust;
+class Zone14Faust;
+class Zone15Faust;
+class Zone16Faust;
+class Zone17Faust;
 
 class ApplicationFaust : public Application {
 public:
@@ -82,7 +88,6 @@ public:
 	virtual void onMouseRightButtonUp(const Common::Event &evt);
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
-	virtual void onInitZone(ZoneId zone);
 	virtual void onSound(Id id, SoundType type, uint32 a3);
 	virtual void onSetup(ZoneId zone, SetupType type);
 	virtual void onBag(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, DragControl *dragControl, byte type);
@@ -116,26 +121,23 @@ protected:
 
 private:
 	// Event handlers
-	EventAnimationFaust *_eventAnimation;
-	EventBagFaust       *_eventBag;
-	EventButtonFaust    *_eventButton;
-	EventInitFaust      *_eventInit;
-	EventInputFaust     *_eventInput;
-	EventRideFaust      *_eventRide;
-	EventSetupFaust     *_eventSetup;
-	EventSoundFaust     *_eventSound;
-	EventTimerFaust     *_eventTimer;
-	EventVisualFaust    *_eventVisual;
-	EventZoneFaust      *_eventZone;
-
-	friend class EventAnimationFaust;
-	friend class EventBagFaust;
-	friend class EventButtonFaust;
-	friend class EventInputFaust;
-	friend class EventRideFaust;
-	friend class EventSoundFaust;
-	friend class EventTimerFaust;
-	friend class EventZoneFaust;
+	ZoneSystemFaust *_zoneSystem;
+	Zone2Faust      *_zone2;
+	Zone3Faust      *_zone3;
+	Zone4Faust      *_zone4;
+	Zone5Faust      *_zone5;
+	Zone6Faust      *_zone6;
+	Zone7Faust      *_zone7;
+	Zone8Faust      *_zone8;
+	Zone9Faust      *_zone9;
+	Zone10Faust     *_zone10;
+	Zone11Faust     *_zone11;
+	Zone12Faust     *_zone12;
+	Zone13Faust     *_zone13;
+	Zone14Faust     *_zone14;
+	Zone15Faust     *_zone15;
+	Zone16Faust     *_zone16;
+	Zone17Faust     *_zone17;
 
 	int32 _slot;
 	ZoneId _zone;
@@ -150,6 +152,24 @@ private:
 	void initMenuSave(bool savegame);
 	void initMenu2();
 	void initMenu3();
+
+	friend class ZoneSystemFaust;
+	friend class Zone2Faust;
+	friend class Zone3Faust;
+	friend class Zone4Faust;
+	friend class Zone5Faust;
+	friend class Zone6Faust;
+	friend class Zone7Faust;
+	friend class Zone8Faust;
+	friend class Zone9Faust;
+	friend class Zone10Faust;
+	friend class Zone11Faust;
+	friend class Zone12Faust;
+	friend class Zone13Faust;
+	friend class Zone14Faust;
+	friend class Zone15Faust;
+	friend class Zone16Faust;
+	friend class Zone17Faust;
 };
 
 } // End of namespace Ring

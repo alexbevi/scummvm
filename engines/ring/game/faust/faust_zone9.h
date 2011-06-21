@@ -6,7 +6,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 9
  * of the License, or (at your option) any later version.
 
  * This program is distributed in the hope that it will be useful,
@@ -16,37 +16,34 @@
 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 09110-1301, USA.
  */
 
-#ifndef RING_FAUST_INPUT_H
-#define RING_FAUST_INPUT_H
+#ifndef RING_FAUST_ZONE_9_H
+#define RING_FAUST_ZONE_9_H
+
+#include "ring/base/event.h"
 
 #include "ring/shared.h"
-
-#include "common/events.h"
 
 namespace Ring {
 
 class ApplicationFaust;
-class EventHandlerFaust;
 
-class EventInputFaust {
+class Zone9Faust : public EventHandlerZone {
 public:
-	EventInputFaust(ApplicationFaust *application);
-	~EventInputFaust();
+	Zone9Faust(ApplicationFaust *application);
+	~Zone9Faust();
 
-	void onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed);
-	void onMouseLeftButtonDown(const Common::Event &evt);
-	void onMouseRightButtonUp(const Common::Event &evt);
-	void onKeyDown(Common::Event &evt);
+	virtual void onInit();
+	virtual void onTimer(TimerId id);
+	virtual void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	virtual void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
 
 private:
-	ApplicationFaust  *_app;
-
-	void onKeyDownZone(const Common::KeyState &keyState);
+	ApplicationFaust *_app;
 };
 
 } // End of namespace Ring
 
-#endif // RING_FAUST_INPUT_H
+#endif // RING_FAUST_ZONE_9_H

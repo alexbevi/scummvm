@@ -31,18 +31,24 @@
 #include "ring/base/saveload.h"
 #include "ring/base/timer.h"
 
-#include "ring/game/faust/faust_animation.h"
-#include "ring/game/faust/faust_bag.h"
-#include "ring/game/faust/faust_button.h"
-#include "ring/game/faust/faust_init.h"
-#include "ring/game/faust/faust_input.h"
-#include "ring/game/faust/faust_ride.h"
-#include "ring/game/faust/faust_setup.h"
 #include "ring/game/faust/faust_shared.h"
-#include "ring/game/faust/faust_sound.h"
-#include "ring/game/faust/faust_timer.h"
-#include "ring/game/faust/faust_visual.h"
-#include "ring/game/faust/faust_zone.h"
+#include "ring/game/faust/faust_zonesystem.h"
+#include "ring/game/faust/faust_zone2.h"
+#include "ring/game/faust/faust_zone3.h"
+#include "ring/game/faust/faust_zone4.h"
+#include "ring/game/faust/faust_zone5.h"
+#include "ring/game/faust/faust_zone6.h"
+#include "ring/game/faust/faust_zone7.h"
+#include "ring/game/faust/faust_zone8.h"
+#include "ring/game/faust/faust_zone9.h"
+#include "ring/game/faust/faust_zone10.h"
+#include "ring/game/faust/faust_zone11.h"
+#include "ring/game/faust/faust_zone12.h"
+#include "ring/game/faust/faust_zone13.h"
+#include "ring/game/faust/faust_zone14.h"
+#include "ring/game/faust/faust_zone15.h"
+#include "ring/game/faust/faust_zone16.h"
+#include "ring/game/faust/faust_zone17.h"
 
 #include "ring/graphics/image.h"
 #include "ring/graphics/screen.h"
@@ -56,6 +62,8 @@
 using namespace FaustGame;
 
 namespace Ring {
+
+#pragma region Screen lists
 
 // List of credits screens
 static const struct {
@@ -73,36 +81,50 @@ static const struct {
 	{"cre7.bmp", 5000, kLoadFromDisk, kArchiveArt},
 };
 
+#pragma endregion
 
 ApplicationFaust::ApplicationFaust(RingEngine *engine) : Application(engine) {
 	_slot = -1;
 	_zone = kZoneNone;
 
-	_eventAnimation = new EventAnimationFaust(this);
-	_eventBag       = new EventBagFaust(this);
-	_eventButton    = new EventButtonFaust(this);
-	_eventInit      = new EventInitFaust(this);
-	_eventInput     = new EventInputFaust(this);
-	_eventRide      = new EventRideFaust(this);
-	_eventSetup     = new EventSetupFaust(this);
-	_eventSound     = new EventSoundFaust(this);
-	_eventTimer     = new EventTimerFaust(this);
-	_eventVisual    = new EventVisualFaust(this);
-	_eventZone      = new EventZoneFaust(this);
+	// Event handlers
+	_zoneSystem = new ZoneSystemFaust(this);
+	_zone2      = new Zone2Faust(this);
+	_zone3      = new Zone3Faust(this);
+	_zone4      = new Zone4Faust(this);
+	_zone5      = new Zone5Faust(this);
+	_zone6      = new Zone6Faust(this);
+	_zone7      = new Zone7Faust(this);
+	_zone8      = new Zone8Faust(this);
+	_zone9      = new Zone9Faust(this);
+	_zone10     = new Zone10Faust(this);
+	_zone11     = new Zone11Faust(this);
+	_zone12     = new Zone12Faust(this);
+	_zone13     = new Zone13Faust(this);
+	_zone14     = new Zone14Faust(this);
+	_zone15     = new Zone15Faust(this);
+	_zone16     = new Zone16Faust(this);
+	_zone17     = new Zone17Faust(this);
 }
 
 ApplicationFaust::~ApplicationFaust() {
-	SAFE_DELETE(_eventAnimation);
-	SAFE_DELETE(_eventBag);
-	SAFE_DELETE(_eventButton);
-	SAFE_DELETE(_eventInit);
-	SAFE_DELETE(_eventInput);
-	SAFE_DELETE(_eventRide);
-	SAFE_DELETE(_eventSetup);
-	SAFE_DELETE(_eventSound);
-	SAFE_DELETE(_eventTimer);
-	SAFE_DELETE(_eventVisual);
-	SAFE_DELETE(_eventZone);
+	SAFE_DELETE(_zoneSystem);
+	SAFE_DELETE(_zone2);
+	SAFE_DELETE(_zone3);
+	SAFE_DELETE(_zone4);
+	SAFE_DELETE(_zone5);
+	SAFE_DELETE(_zone6);
+	SAFE_DELETE(_zone7);
+	SAFE_DELETE(_zone8);
+	SAFE_DELETE(_zone9);
+	SAFE_DELETE(_zone10);
+	SAFE_DELETE(_zone11);
+	SAFE_DELETE(_zone12);
+	SAFE_DELETE(_zone13);
+	SAFE_DELETE(_zone14);
+	SAFE_DELETE(_zone15);
+	SAFE_DELETE(_zone16);
+	SAFE_DELETE(_zone17);
 }
 
 #pragma region Game setup
@@ -891,77 +913,77 @@ void ApplicationFaust::initZones() {
 
 	drawZoneName(kZoneSY);
 	_archiveType = getZoneArchiveType(kZoneSY);
-	onInitZone(kZoneSY);
+	_zoneSystem->onInit();
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone2);
-	onInitZone(kZone2);
+	_zone2->onInit();
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone3);
-	onInitZone(kZone3);
+	_zone3->onInit();
 
 	drawZoneName(kZone4);
 	_archiveType = getZoneArchiveType(kZone4);
-	onInitZone(kZone4);
+	_zone4->onInit();
 
 	drawZoneName(kZone5);
 	_archiveType = getZoneArchiveType(kZone5);
-	onInitZone(kZone5);
+	_zone5->onInit();
 
 	drawZoneName(kZone6);
 	_archiveType = getZoneArchiveType(kZone6);
-	onInitZone(kZone6);
+	_zone6->onInit();
 
 	drawZoneName(kZone7);
 	_archiveType = getZoneArchiveType(kZone7);
-	onInitZone(kZone7);
+	_zone7->onInit();
 
 	drawZoneName(kZone8);
 	_archiveType = getZoneArchiveType(kZone8);
-	onInitZone(kZone8);
+	_zone8->onInit();
 
 	drawZoneName(kZone9);
 	_archiveType = getZoneArchiveType(kZone9);
-	onInitZone(kZone9);
+	_zone9->onInit();
 
 	drawZoneName(kZone10);
 	_archiveType = getZoneArchiveType(kZone10);
-	onInitZone(kZone10);
+	_zone10->onInit();
 
 	_loadFrom = kLoadFromDisk;
 
 	drawZoneName(kZone11);
 	_archiveType = getZoneArchiveType(kZone11);
-	onInitZone(kZone11);
+	_zone11->onInit();
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZone12);
 	_archiveType = getZoneArchiveType(kZone12);
-	onInitZone(kZone12);
+	_zone12->onInit();
 
 	drawZoneName(kZone13);
 	_archiveType = getZoneArchiveType(kZone13);
-	onInitZone(kZone13);
+	_zone13->onInit();
 
 	drawZoneName(kZone14);
 	_archiveType = getZoneArchiveType(kZone14);
-	onInitZone(kZone14);
+	_zone14->onInit();
 
 	drawZoneName(kZone15);
 	_archiveType = getZoneArchiveType(kZone15);
-	onInitZone(kZone15);
+	_zone15->onInit();
 
 	drawZoneName(kZone16);
 	_archiveType = getZoneArchiveType(kZone16);
-	onInitZone(kZone16);
+	_zone16->onInit();
 
 	drawZoneName(kZone17);
 	_archiveType = getZoneArchiveType(kZone17);
-	onInitZone(kZone17);
+	_zone17->onInit();
 
 	_archiveType = getZoneArchiveType(getCurrentZone());
 
@@ -1019,26 +1041,26 @@ void ApplicationFaust::setupZone(ZoneId zone, SetupType type) {
 #pragma region Event handling
 
 void ApplicationFaust::onMouseLeftButtonUp(const Common::Event &evt, bool isControlPressed) {
-	_eventInput->onMouseLeftButtonUp(evt, isControlPressed);
+	error("[ApplicationFaust::onMouseLeftButtonUp] Not implemented (evt: %d, CTRL pressed: %d)", evt.type, isControlPressed);
 }
 
 void ApplicationFaust::onMouseLeftButtonDown(const Common::Event &evt) {
-	_eventInput->onMouseLeftButtonDown(evt);
+	error("[ApplicationFaust::onMouseLeftButtonDown] Not implemented (evt: %d)", evt.type);
 }
 
 void ApplicationFaust::onMouseRightButtonUp(const Common::Event &evt) {
-	_eventInput->onMouseRightButtonUp(evt);
+	error("[ApplicationFaust::onMouseRightButtonUp] Not implemented (evt: %d)", evt.type);
 }
 
 void ApplicationFaust::onKeyDown(Common::Event &evt) {
-	_eventInput->onKeyDown(evt);
+	error("[ApplicationFaust::onKeyDown] Not implemented (evt: %d)", evt.type);
 }
 
 void ApplicationFaust::onButtonDown(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point) {
 	debugC(kRingDebugLogic, "onButtonDown (ObjectId: %d, coords: (%d, %d))", id.id(), point.x, point.y);
 
 	if (puzzleRotationId == 1 && a4 == 1) {
-		_eventButton->onButtonDownZoneSY(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneSystem->onButtonDown(id, target, puzzleRotationId, a4, point);
 		return;
 	}
 
@@ -1047,11 +1069,11 @@ void ApplicationFaust::onButtonDown(ObjectId id, Id target, Id puzzleRotationId,
 		break;
 
 	case kZoneSY:
-		_eventButton->onButtonDownZoneSY(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneSystem->onButtonDown(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone5:
-		_eventButton->onButtonDownZone5(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone5->onButtonDown(id, target, puzzleRotationId, a4, point);
 		break;
 	}
 }
@@ -1060,7 +1082,7 @@ void ApplicationFaust::onButtonUp(ObjectId id, Id target, Id puzzleRotationId, u
 	debugC(kRingDebugLogic, "onButtonUp (ObjectId: %d, target: %d, coords: (%d, %d))", id.id(), target, point.x, point.y);
 
 	if (puzzleRotationId == 1 && a4 == 1) {
-		_eventButton->onButtonUpZoneSY(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneSystem->onButtonUp(id, target, puzzleRotationId, a4, point);
 		return;
 	}
 
@@ -1069,71 +1091,71 @@ void ApplicationFaust::onButtonUp(ObjectId id, Id target, Id puzzleRotationId, u
 		break;
 
 	case kZoneSY:
-		_eventButton->onButtonUpZoneSY(id, (uint32)target, puzzleRotationId, a4, point);
+		_zoneSystem->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone2:
-		_eventButton->onButtonUpZone2(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone2->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone3:
-		_eventButton->onButtonUpZone3(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone3->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone4:
-		_eventButton->onButtonUpZone4(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone4->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone5:
-		_eventButton->onButtonUpZone5(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone5->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone6:
-		_eventButton->onButtonUpZone6(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone6->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone7:
-		_eventButton->onButtonUpZone7(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone7->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone8:
-		_eventButton->onButtonUpZone8(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone8->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone9:
-		_eventButton->onButtonUpZone9(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone9->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone10:
-		_eventButton->onButtonUpZone10(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone10->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone11:
-		_eventButton->onButtonUpZone11(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone11->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone12:
-		_eventButton->onButtonUpZone12(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone12->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone13:
-		_eventButton->onButtonUpZone13(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone13->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone14:
-		_eventButton->onButtonUpZone14(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone14->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone15:
-		_eventButton->onButtonUpZone15(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone15->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone16:
-		_eventButton->onButtonUpZone16(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone16->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 
 	case kZone17:
-		_eventButton->onButtonUpZone17(id, (uint32)target, puzzleRotationId, a4, point);
+		_zone17->onButtonUp(id, target, puzzleRotationId, a4, point);
 		break;
 	}
 }
@@ -1144,113 +1166,38 @@ void ApplicationFaust::onSetup(ZoneId zone, SetupType type) {
 		break;
 
 	case kZone2:
-		_eventSetup->onSetupZone2(type);
+		_zone2->onSetup(type);
 		break;
 
 	case kZone3:
-		_eventSetup->onSetupZone3(type);
+		_zone3->onSetup(type);
 		break;
 
 	case kZone4:
-		_eventSetup->onSetupZone4(type);
+		_zone4->onSetup(type);
 		break;
 
 	case kZone5:
-		_eventSetup->onSetupZone5(type);
+		_zone5->onSetup(type);
 		break;
 
 	case kZone6:
-		_eventSetup->onSetupZone6(type);
+		_zone6->onSetup(type);
 		break;
 
 	case kZone7:
-		_eventSetup->onSetupZone7(type);
+		_zone7->onSetup(type);
 		break;
 
 	case kZone8:
-		_eventSetup->onSetupZone8(type);
-		break;
-	}
-}
-
-void ApplicationFaust::onInitZone(ZoneId zone) {
-	switch (zone) {
-	default:
-		break;
-
-	case kZoneSY:
-		_eventInit->initZoneSY();
-		break;
-
-	case kZone2:
-		_eventInit->initZone2();
-		break;
-
-	case kZone3:
-		_eventInit->initZone3();
-		break;
-
-	case kZone4:
-		_eventInit->initZone4();
-		break;
-
-	case kZone5:
-		_eventInit->initZone5();
-		break;
-
-	case kZone6:
-		_eventInit->initZone6();
-		break;
-
-	case kZone7:
-		_eventInit->initZone7();
-		break;
-
-	case kZone8:
-		_eventInit->initZone8();
-		break;
-
-	case kZone9:
-		_eventInit->initZone9();
-		break;
-
-	case kZone10:
-		_eventInit->initZone10();
-		break;
-
-	case kZone11:
-		_eventInit->initZone11();
-		break;
-
-	case kZone12:
-		_eventInit->initZone12();
-		break;
-
-	case kZone13:
-		_eventInit->initZone13();
-		break;
-
-	case kZone14:
-		_eventInit->initZone14();
-		break;
-
-	case kZone15:
-		_eventInit->initZone15();
-		break;
-
-	case kZone16:
-		_eventInit->initZone16();
-		break;
-
-	case kZone17:
-		_eventInit->initZone17();
+		_zone8->onSetup(type);
 		break;
 	}
 }
 
 void ApplicationFaust::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, uint32 a4, const Common::Point &point) {
 	if (movabilityIndex == 1 || a4 == 1) {
-		_eventZone->onUpdateBeforeZoneSY(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zoneSystem->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		return;
 	}
 
@@ -1259,39 +1206,39 @@ void ApplicationFaust::onUpdateBefore(Id movabilityFrom, Id movabilityTo, uint32
 		break;
 
 	case kZoneSY:
-		_eventZone->onUpdateBeforeZoneSY(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zoneSystem->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZone3:
-		_eventZone->onUpdateBeforeZone3(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zone3->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZone4:
-		_eventZone->onUpdateBeforeZone4(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zone4->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZone6:
-		_eventZone->onUpdateBeforeZone6(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zone6->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZone8:
-		_eventZone->onUpdateBeforeZone8(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zone8->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZone12:
-		_eventZone->onUpdateBeforeZone12(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zone12->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZone14:
-		_eventZone->onUpdateBeforeZone14(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zone14->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZone15:
-		_eventZone->onUpdateBeforeZone15(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zone15->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 
 	case kZone16:
-		_eventZone->onUpdateBeforeZone16(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
+		_zone16->onUpdateBefore(movabilityFrom, movabilityTo, movabilityIndex, a4, point);
 		break;
 	}
 }
@@ -1302,63 +1249,63 @@ void ApplicationFaust::onTimer(TimerId timerId) {
 		break;
 
 	case kZoneSY:
-		_eventTimer->onTimerZoneSY(timerId);
+		_zoneSystem->onTimer(timerId);
 		break;
 
 	case kZone2:
-		_eventTimer->onTimerZone2(timerId);
+		_zone2->onTimer(timerId);
 		break;
 
 	case kZone3:
-		_eventTimer->onTimerZone3(timerId);
+		_zone3->onTimer(timerId);
 		break;
 
 	case kZone4:
-		_eventTimer->onTimerZone4(timerId);
+		_zone4->onTimer(timerId);
 		break;
 
 	case kZone5:
-		_eventTimer->onTimerZone5(timerId);
+		_zone5->onTimer(timerId);
 		break;
 
 	case kZone6:
-		_eventTimer->onTimerZone6(timerId);
+		_zone6->onTimer(timerId);
 		break;
 
 	case kZone8:
-		_eventTimer->onTimerZone8(timerId);
+		_zone8->onTimer(timerId);
 		break;
 
 	case kZone9:
-		_eventTimer->onTimerZone9(timerId);
+		_zone9->onTimer(timerId);
 		break;
 
 	case kZone10:
-		_eventTimer->onTimerZone10(timerId);
+		_zone10->onTimer(timerId);
 		break;
 
 	case kZone11:
-		_eventTimer->onTimerZone11(timerId);
+		_zone11->onTimer(timerId);
 		break;
 
 	case kZone12:
-		_eventTimer->onTimerZone12(timerId);
+		_zone12->onTimer(timerId);
 		break;
 
 	case kZone13:
-		_eventTimer->onTimerZone13(timerId);
+		_zone13->onTimer(timerId);
 		break;
 
 	case kZone14:
-		_eventTimer->onTimerZone14(timerId);
+		_zone14->onTimer(timerId);
 		break;
 
 	case kZone15:
-		_eventTimer->onTimerZone15(timerId);
+		_zone15->onTimer(timerId);
 		break;
 
 	case kZone16:
-		_eventTimer->onTimerZone16(timerId);
+		_zone16->onTimer(timerId);
 		break;
 	}
 
@@ -1370,7 +1317,7 @@ void ApplicationFaust::onBag(ObjectId id, Id target, Id puzzleRotationId, uint32
 	debugC(kRingDebugLogic, "onBag (object: %d)", id.id());
 
 	if (puzzleRotationId == 1 && a4 == 1) {
-		_eventBag->onBagZoneSY(id, (uint32)target, 1, 1, dragControl, type);
+		_zoneSystem->onBag(id, target, 1, 1, dragControl, type);
 		return;
 	}
 
@@ -1379,35 +1326,35 @@ void ApplicationFaust::onBag(ObjectId id, Id target, Id puzzleRotationId, uint32
 		break;
 
 	case kZoneSY:
-		_eventBag->onBagZoneSY(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zoneSystem->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZone3:
-		_eventBag->onBagZone3(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zone3->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZone4:
-		_eventBag->onBagZone4(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zone4->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZone5:
-		_eventBag->onBagZone5(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zone5->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZone8:
-		_eventBag->onBagZone8(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zone8->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZone12:
-		_eventBag->onBagZone12(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zone12->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZone13:
-		_eventBag->onBagZone13(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zone13->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 
 	case kZone14:
-		_eventBag->onBagZone14(id, (uint32)target, puzzleRotationId, a4, dragControl, type);
+		_zone14->onBag(id, target, puzzleRotationId, a4, dragControl, type);
 		break;
 	}
 }
@@ -1418,35 +1365,35 @@ void ApplicationFaust::onUpdateBag(const Common::Point &point) {
 		break;
 
 	case kZoneSY:
-		_eventBag->onUpdateBagZoneSY(point);
+		_zoneSystem->onUpdateBag(point);
 		break;
 
 	case kZone3:
-		_eventBag->onUpdateBagZone3(point);
+		_zone3->onUpdateBag(point);
 		break;
 
 	case kZone4:
-		_eventBag->onUpdateBagZone4(point);
+		_zone4->onUpdateBag(point);
 		break;
 
 	case kZone6:
-		_eventBag->onUpdateBagZone6(point);
+		_zone6->onUpdateBag(point);
 		break;
 
 	case kZone12:
-		_eventBag->onUpdateBagZone12(point);
+		_zone12->onUpdateBag(point);
 		break;
 
 	case kZone14:
-		_eventBag->onUpdateBagZone14(point);
+		_zone14->onUpdateBag(point);
 		break;
 
 	case kZone15:
-		_eventBag->onUpdateBagZone15(point);
+		_zone15->onUpdateBag(point);
 		break;
 
 	case kZone16:
-		_eventBag->onUpdateBagZone16(point);
+		_zone16->onUpdateBag(point);
 		break;
 	}
 }
@@ -1457,27 +1404,27 @@ void ApplicationFaust::onBagClickedObject(ObjectId id) {
 		break;
 
 	case kZone2:
-		_eventBag->onBagClickedObjectZone2(id);
+		_zone2->onBagClickedObject(id);
 		break;
 
 	case kZone3:
-		_eventBag->onBagClickedObjectZone3(id);
+		_zone3->onBagClickedObject(id);
 		break;
 
 	case kZone4:
-		_eventBag->onBagClickedObjectZone4(id);
+		_zone4->onBagClickedObject(id);
 		break;
 
 	case kZone8:
-		_eventBag->onBagClickedObjectZone8(id);
+		_zone8->onBagClickedObject(id);
 		break;
 
 	case kZone14:
-		_eventBag->onBagClickedObjectZone14(id);
+		_zone14->onBagClickedObject(id);
 		break;
 
 	case kZone15:
-		_eventBag->onBagClickedObjectZone15(id);
+		_zone15->onBagClickedObject(id);
 		break;
 	}
 }
@@ -1492,27 +1439,27 @@ void ApplicationFaust::onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 m
 		break;
 
 	case kZone2:
-		_eventRide->onBeforeRideZone2(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone2->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone4:
-		_eventRide->onBeforeRideZone4(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone4->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone5:
-		_eventRide->onBeforeRideZone5(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone5->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone8:
-		_eventRide->onBeforeRideZone8(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone8->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone14:
-		_eventRide->onBeforeRideZone14(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone14->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone15:
-		_eventRide->onBeforeRideZone15(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone15->onBeforeRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 	}
 }
@@ -1527,51 +1474,51 @@ void ApplicationFaust::onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 mo
 		break;
 
 	case kZone2:
-		_eventRide->onAfterRideZone2(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone2->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone3:
-		_eventRide->onAfterRideZone3(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone3->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone4:
-		_eventRide->onAfterRideZone4(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone4->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone6:
-		_eventRide->onAfterRideZone6(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone6->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone8:
-		_eventRide->onAfterRideZone8(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone8->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone10:
-		_eventRide->onAfterRideZone10(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone10->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone12:
-		_eventRide->onAfterRideZone12(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone12->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone13:
-		_eventRide->onAfterRideZone13(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone13->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone14:
-		_eventRide->onAfterRideZone14(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone14->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone15:
-		_eventRide->onAfterRideZone15(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone15->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone16:
-		_eventRide->onAfterRideZone16(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone16->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 
 	case kZone17:
-		_eventRide->onAfterRideZone17(movabilityFrom, movabilityTo, movabilityIndex, (uint32)target, movabilityType);
+		_zone17->onAfterRide(movabilityFrom, movabilityTo, movabilityIndex, target, movabilityType);
 		break;
 	}
 }
@@ -1587,39 +1534,39 @@ void ApplicationFaust::onSound(Id id, SoundType type, uint32 a3) {
 		break;
 
 	case kZoneSY:
-		_eventSound->onSoundZoneSY(id, type, a3, process);
+		_zoneSystem->onSound(id, type, a3, process);
 		break;
 
 	case kZone3:
-		_eventSound->onSoundZone3(id, type, a3, process);
+		_zone3->onSound(id, type, a3, process);
 		break;
 
 	case kZone4:
-		_eventSound->onSoundZone4(id, type, a3, process);
+		_zone4->onSound(id, type, a3, process);
 		break;
 
 	case kZone5:
-		_eventSound->onSoundZone5(id, type, a3, process);
+		_zone5->onSound(id, type, a3, process);
 		break;
 
 	case kZone8:
-		_eventSound->onSoundZone8(id, type, a3, process);
+		_zone8->onSound(id, type, a3, process);
 		break;
 
 	case kZone12:
-		_eventSound->onSoundZone12(id, type, a3, process);
+		_zone12->onSound(id, type, a3, process);
 		break;
 
 	case kZone14:
-		_eventSound->onSoundZone14(id, type, a3, process);
+		_zone14->onSound(id, type, a3, process);
 		break;
 
 	case kZone15:
-		_eventSound->onSoundZone15(id, type, a3, process);
+		_zone15->onSound(id, type, a3, process);
 		break;
 
 	case kZone17:
-		_eventSound->onSoundZone17(id, type, a3, process);
+		_zone17->onSound(id, type, a3, process);
 		break;
 	}
 }
@@ -1630,66 +1577,66 @@ void ApplicationFaust::onAnimationNextFrame(Id animationId, const Common::String
 		break;
 
 	case kZoneSY:
-		_eventAnimation->onAnimationNextFrameZoneSY(animationId, name, frame, frameCount);
+		_zoneSystem->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone3:
-		_eventAnimation->onAnimationNextFrameZone3(animationId, name, frame, frameCount);
+		_zone3->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone4:
-		_eventAnimation->onAnimationNextFrameZone4(animationId, name, frame, frameCount);
+		_zone4->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone5:
-		_eventAnimation->onAnimationNextFrameZone5(animationId, name, frame, frameCount);
+		_zone5->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone6:
-		_eventAnimation->onAnimationNextFrameZone6(animationId, name, frame, frameCount);
+		_zone6->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone7:
-		_eventAnimation->onAnimationNextFrameZone7(animationId, name, frame, frameCount);
+		_zone7->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone8:
-		_eventAnimation->onAnimationNextFrameZone8(animationId, name, frame, frameCount);
+		_zone8->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone9:
-		_eventAnimation->onAnimationNextFrameZone9(animationId, name, frame, frameCount);
+		_zone9->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone10:
-		_eventAnimation->onAnimationNextFrameZone10(animationId, name, frame, frameCount);
+		_zone10->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone11:
-		_eventAnimation->onAnimationNextFrameZone11(animationId, name, frame, frameCount);
+		_zone11->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone12:
-		_eventAnimation->onAnimationNextFrameZone12(animationId, name, frame, frameCount);
+		_zone12->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone13:
-		_eventAnimation->onAnimationNextFrameZone13(animationId, name, frame, frameCount);
+		_zone13->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone14:
-		_eventAnimation->onAnimationNextFrameZone14(animationId, name, frame, frameCount);
+		_zone14->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 
 	case kZone15:
-		_eventAnimation->onAnimationNextFrameZone15(animationId, name, frame, frameCount);
+		_zone15->onAnimationNextFrame(animationId, name, frame, frameCount);
 		break;
 	}
 }
 
 void ApplicationFaust::onVisualList(Id id, uint32 type, const Common::Point &point) {
 	if (getCurrentZone() == kZoneSY)
-		_eventVisual->onVisualListZoneSY(id, type, point);
+		_zoneSystem->onVisualList(id, type, point);
 }
 
 #pragma endregion

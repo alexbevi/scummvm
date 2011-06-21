@@ -53,18 +53,24 @@ endif
 
 ifdef ENABLE_FAUST
 MODULE_OBJS += \
-	game/faust/faust_animation.o \
 	game/faust/faust_application.o \
-	game/faust/faust_bag.o \
-	game/faust/faust_button.o \
-	game/faust/faust_init.o \
-	game/faust/faust_input.o \
-	game/faust/faust_ride.o \
-	game/faust/faust_setup.o \
-	game/faust/faust_sound.o \
-	game/faust/faust_timer.o \
-	game/faust/faust_visual.o \
-	game/faust/faust_zone.o
+	game/faust/faust_zonesystem.o \
+	game/faust/faust_zone2.o \
+	game/faust/faust_zone3.o \
+	game/faust/faust_zone4.o \
+	game/faust/faust_zone5.o \
+	game/faust/faust_zone6.o \
+	game/faust/faust_zone7.o \
+	game/faust/faust_zone8.o \
+	game/faust/faust_zone9.o \
+	game/faust/faust_zone10.o \
+	game/faust/faust_zone11.o \
+	game/faust/faust_zone12.o \
+	game/faust/faust_zone13.o \
+	game/faust/faust_zone14.o \
+	game/faust/faust_zone15.o \
+	game/faust/faust_zone16.o \
+	game/faust/faust_zone17.o
 endif
 
 ifdef ENABLE_POMPEII

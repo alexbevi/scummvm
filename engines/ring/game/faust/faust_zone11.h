@@ -6,7 +6,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 11
  * of the License, or (at your option) any later version.
 
  * This program is distributed in the hope that it will be useful,
@@ -16,41 +16,29 @@
 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 011110-1301, USA.
  */
 
-#ifndef RING_FAUST_INIT_H
-#define RING_FAUST_INIT_H
+#ifndef RING_FAUST_ZONE_11_H
+#define RING_FAUST_ZONE_11_H
+
+#include "ring/base/event.h"
+
+#include "ring/shared.h"
 
 namespace Ring {
 
 class ApplicationFaust;
 
-class EventInitFaust {
+class Zone11Faust : public EventHandlerZone {
 public:
-	EventInitFaust(ApplicationFaust *application);
-	~EventInitFaust();
+	Zone11Faust(ApplicationFaust *application);
+	~Zone11Faust();
 
-	//////////////////////////////////////////////////////////////////////////
-	// Zone initialization
-	//////////////////////////////////////////////////////////////////////////
-	void initZoneSY();
-	void initZone2();
-	void initZone3();
-	void initZone4();
-	void initZone5();
-	void initZone6();
-	void initZone7();
-	void initZone8();
-	void initZone9();
-	void initZone10();
-	void initZone11();
-	void initZone12();
-	void initZone13();
-	void initZone14();
-	void initZone15();
-	void initZone16();
-	void initZone17();
+	virtual void onInit();
+	virtual void onTimer(TimerId id);
+	virtual void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	virtual void onAnimationNextFrame(Id animationId, const Common::String &name, uint32 frame, uint32 frameCount);
 
 private:
 	ApplicationFaust *_app;
@@ -58,4 +46,4 @@ private:
 
 } // End of namespace Ring
 
-#endif // RING_FAUST_INIT_H
+#endif // RING_FAUST_ZONE_11_H

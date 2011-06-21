@@ -19,23 +19,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef RING_FAUST_VISUAL_H
-#define RING_FAUST_VISUAL_H
+#ifndef RING_FAUST_ZONE_2_H
+#define RING_FAUST_ZONE_2_H
+
+#include "ring/base/event.h"
 
 #include "ring/shared.h"
-
-#include "common/rect.h"
 
 namespace Ring {
 
 class ApplicationFaust;
 
-class EventVisualFaust {
+class Zone2Faust : public EventHandlerZone {
 public:
-	EventVisualFaust(ApplicationFaust *application);
-	~EventVisualFaust();
+	Zone2Faust(ApplicationFaust *application);
+	~Zone2Faust();
 
-	void onVisualListZoneSY(Id id, uint32 a2, const Common::Point &point);
+	virtual void onInit();
+	virtual void onSetup(SetupType type);
+	virtual void onTimer(TimerId id);
+	virtual void onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uint32 a4, const Common::Point &point);
+	virtual void onBagClickedObject(ObjectId objectId);
+	virtual void onBeforeRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
+	virtual void onAfterRide(Id movabilityFrom, Id movabilityTo, uint32 movabilityIndex, Id target, MovabilityType movabilityType);
 
 private:
 	ApplicationFaust *_app;
@@ -43,4 +49,4 @@ private:
 
 } // End of namespace Ring
 
-#endif // RING_FAUST_VISUAL_H
+#endif // RING_FAUST_ZONE_2_H
