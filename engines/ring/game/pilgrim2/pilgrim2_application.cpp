@@ -27,18 +27,13 @@
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 
-#include "ring/game/pilgrim2/pilgrim2_animation.h"
-#include "ring/game/pilgrim2/pilgrim2_bag.h"
-#include "ring/game/pilgrim2/pilgrim2_button.h"
-#include "ring/game/pilgrim2/pilgrim2_init.h"
-#include "ring/game/pilgrim2/pilgrim2_input.h"
-#include "ring/game/pilgrim2/pilgrim2_ride.h"
-#include "ring/game/pilgrim2/pilgrim2_setup.h"
 #include "ring/game/pilgrim2/pilgrim2_shared.h"
-#include "ring/game/pilgrim2/pilgrim2_sound.h"
-#include "ring/game/pilgrim2/pilgrim2_timer.h"
-#include "ring/game/pilgrim2/pilgrim2_visual.h"
-#include "ring/game/pilgrim2/pilgrim2_zone.h"
+#include "ring/game/pilgrim2/pilgrim2_zonesystem.h"
+#include "ring/game/pilgrim2/pilgrim2_zone1.h"
+#include "ring/game/pilgrim2/pilgrim2_zone2.h"
+#include "ring/game/pilgrim2/pilgrim2_zone3.h"
+#include "ring/game/pilgrim2/pilgrim2_zone4.h"
+#include "ring/game/pilgrim2/pilgrim2_zone5.h"
 
 #include "ring/graphics/screen.h"
 
@@ -56,31 +51,21 @@ ApplicationPilgrim2::ApplicationPilgrim2(RingEngine *engine) : Application(engin
 	_systemZone = kZone100;
 
 	// Event handlers
-	_eventAnimation = new EventAnimationPilgrim2(this);
-	_eventBag       = new EventBagPilgrim2(this);
-	_eventButton    = new EventButtonPilgrim2(this);
-	_eventInit      = new EventInitPilgrim2(this);
-	_eventInput     = new EventInputPilgrim2(this);
-	_eventRide      = new EventRidePilgrim2(this);
-	_eventSetup     = new EventSetupPilgrim2(this);
-	_eventSound     = new EventSoundPilgrim2(this);
-	_eventTimer     = new EventTimerPilgrim2(this);
-	_eventVisual    = new EventVisualPilgrim2(this);
-	_eventZone      = new EventZonePilgrim2(this);
+	_zoneSystem = new ZoneSystemPilgrim2(this);
+	_zone1      = new Zone1Pilgrim2(this);
+	_zone2      = new Zone2Pilgrim2(this);
+	_zone3      = new Zone3Pilgrim2(this);
+	_zone4      = new Zone4Pilgrim2(this);
+	_zone5      = new Zone5Pilgrim2(this);
 }
 
 ApplicationPilgrim2::~ApplicationPilgrim2() {
-	SAFE_DELETE(_eventAnimation);
-	SAFE_DELETE(_eventBag);
-	SAFE_DELETE(_eventButton);
-	SAFE_DELETE(_eventInit);
-	SAFE_DELETE(_eventInput);
-	SAFE_DELETE(_eventRide);
-	SAFE_DELETE(_eventSetup);
-	SAFE_DELETE(_eventSound);
-	SAFE_DELETE(_eventTimer);
-	SAFE_DELETE(_eventVisual);
-	SAFE_DELETE(_eventZone);
+	SAFE_DELETE(_zoneSystem);
+	SAFE_DELETE(_zone1);
+	SAFE_DELETE(_zone2);
+	SAFE_DELETE(_zone3);
+	SAFE_DELETE(_zone4);
+	SAFE_DELETE(_zone5);
 }
 
 #pragma region Game setup
@@ -220,29 +205,29 @@ void ApplicationPilgrim2::initZones() {
 
 	drawZoneName(kZone100);
 	_archiveType = getZoneArchiveType(kZone100);
-	onInitZone(kZone100);
+	_zoneSystem->onInit();
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZone1);
 	_archiveType = getZoneArchiveType(kZone1);
-	onInitZone(kZone1);
+	_zone1->onInit();
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone2);
-	onInitZone(kZone2);
+	_zone2->onInit();
 
-	drawZoneName(kZone2);
+	drawZoneName(kZone3);
 	_archiveType = getZoneArchiveType(kZone3);
-	onInitZone(kZone3);
+	_zone3->onInit();
 
 	drawZoneName(kZone4);
 	_archiveType = getZoneArchiveType(kZone4);
-	onInitZone(kZone4);
+	_zone4->onInit();
 
 	drawZoneName(kZone5);
 	_archiveType = getZoneArchiveType(kZone5);
-	onInitZone(kZone5);
+	_zone5->onInit();
 
 	_archiveType = getZoneArchiveType(getCurrentZone());
 
@@ -271,10 +256,6 @@ void ApplicationPilgrim2::onMouseRightButtonUp(const Common::Event &evt) {
 
 void ApplicationPilgrim2::onKeyDown(Common::Event &evt) {
 	error("[ApplicationPilgrim2::onKeyDown] Not implemented (evt: %d)", evt.type);
-}
-
-void ApplicationPilgrim2::onInitZone(ZoneId zone) {
-	error("[ApplicationPilgrim2::onInitZone] Not implemented (zone: %d)", zone);
 }
 
 void ApplicationPilgrim2::onTimer(TimerId timerId) {

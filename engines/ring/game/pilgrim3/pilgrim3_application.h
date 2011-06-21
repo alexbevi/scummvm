@@ -26,17 +26,12 @@
 
 namespace Ring {
 
-class EventAnimationPilgrim3;
-class EventBagPilgrim3;
-class EventButtonPilgrim3;
-class EventInitPilgrim3;
-class EventInputPilgrim3;
-class EventRidePilgrim3;
-class EventSetupPilgrim3;
-class EventSoundPilgrim3;
-class EventTimerPilgrim3;
-class EventVisualPilgrim3;
-class EventZonePilgrim3;
+class ZoneSystemPilgrim3;
+class Zone6Pilgrim3;
+class Zone7Pilgrim3;
+class Zone8Pilgrim3;
+class Zone9Pilgrim3;
+class Zone10Pilgrim3;
 
 class ApplicationPilgrim3 : public Application {
 public:
@@ -74,20 +69,14 @@ public:
 	virtual void onMouseRightButtonUp(const Common::Event &evt);
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
-	virtual void onInitZone(ZoneId zone);
 
 private:
-	EventAnimationPilgrim3 *_eventAnimation;
-	EventBagPilgrim3       *_eventBag;
-	EventButtonPilgrim3    *_eventButton;
-	EventInitPilgrim3      *_eventInit;
-	EventInputPilgrim3     *_eventInput;
-	EventRidePilgrim3      *_eventRide;
-	EventSetupPilgrim3     *_eventSetup;
-	EventSoundPilgrim3     *_eventSound;
-	EventTimerPilgrim3     *_eventTimer;
-	EventVisualPilgrim3    *_eventVisual;
-	EventZonePilgrim3      *_eventZone;
+	ZoneSystemPilgrim3 *_zoneSystem;
+	Zone6Pilgrim3      *_zone6;
+	Zone7Pilgrim3      *_zone7;
+	Zone8Pilgrim3      *_zone8;
+	Zone9Pilgrim3      *_zone9;
+	Zone10Pilgrim3     *_zone10;
 };
 
 } // End of namespace Ring
