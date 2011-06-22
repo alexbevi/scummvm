@@ -26,17 +26,19 @@
 
 namespace Ring {
 
-class EventAnimationPompeii;
-class EventBagPompeii;
-class EventButtonPompeii;
-class EventInitPompeii;
-class EventInputPompeii;
-class EventRidePompeii;
-class EventSetupPompeii;
-class EventSoundPompeii;
-class EventTimerPompeii;
-class EventVisualPompeii;
-class EventZonePompeii;
+class ZoneSystemPompeii;
+class Zone1Pompeii;
+class Zone2Pompeii;
+class Zone3Pompeii;
+class Zone4Pompeii;
+class Zone5Pompeii;
+class Zone6Pompeii;
+class Zone7Pompeii;
+class Zone8Pompeii;
+class Zone9Pompeii;
+class Zone10Pompeii;
+class Zone11Pompeii;
+class Zone12Pompeii;
 
 class ApplicationPompeii : public Application {
 public:
@@ -73,22 +75,37 @@ public:
 	virtual void onMouseRightButtonUp(const Common::Event &evt);
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
-	virtual void onInitZone(ZoneId zone);
 	virtual void onSetup(ZoneId zone, SetupType type);
 
 private:
 	// Event handlers
-	EventAnimationPompeii *_eventAnimation;
-	EventBagPompeii       *_eventBag;
-	EventButtonPompeii    *_eventButton;
-	EventInitPompeii      *_eventInit;
-	EventInputPompeii     *_eventInput;
-	EventRidePompeii      *_eventRide;
-	EventSetupPompeii     *_eventSetup;
-	EventSoundPompeii     *_eventSound;
-	EventTimerPompeii     *_eventTimer;
-	EventVisualPompeii    *_eventVisual;
-	EventZonePompeii      *_eventZone;
+	ZoneSystemPompeii *_zoneSystem;
+	Zone1Pompeii      *_zone1;
+	Zone2Pompeii      *_zone2;
+	Zone3Pompeii      *_zone3;
+	Zone4Pompeii      *_zone4;
+	Zone5Pompeii      *_zone5;
+	Zone6Pompeii      *_zone6;
+	Zone7Pompeii      *_zone7;
+	Zone8Pompeii      *_zone8;
+	Zone9Pompeii      *_zone9;
+	Zone10Pompeii     *_zone10;
+	Zone11Pompeii     *_zone11;
+	Zone12Pompeii     *_zone12;
+
+	friend class ZoneSystemPompeii;
+	friend class Zone1Pompeii;
+	friend class Zone2Pompeii;
+	friend class Zone3Pompeii;
+	friend class Zone4Pompeii;
+	friend class Zone5Pompeii;
+	friend class Zone6Pompeii;
+	friend class Zone7Pompeii;
+	friend class Zone8Pompeii;
+	friend class Zone9Pompeii;
+	friend class Zone10Pompeii;
+	friend class Zone11Pompeii;
+	friend class Zone12Pompeii;
 };
 
 } // End of namespace Ring

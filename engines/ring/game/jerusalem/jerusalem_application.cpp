@@ -27,18 +27,18 @@
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 
-#include "ring/game/jerusalem/jerusalem_animation.h"
-#include "ring/game/jerusalem/jerusalem_bag.h"
-#include "ring/game/jerusalem/jerusalem_button.h"
-#include "ring/game/jerusalem/jerusalem_init.h"
-#include "ring/game/jerusalem/jerusalem_input.h"
-#include "ring/game/jerusalem/jerusalem_ride.h"
-#include "ring/game/jerusalem/jerusalem_setup.h"
 #include "ring/game/jerusalem/jerusalem_shared.h"
-#include "ring/game/jerusalem/jerusalem_sound.h"
-#include "ring/game/jerusalem/jerusalem_timer.h"
-#include "ring/game/jerusalem/jerusalem_visual.h"
-#include "ring/game/jerusalem/jerusalem_zone.h"
+#include "ring/game/jerusalem/jerusalem_zonesystem.h"
+#include "ring/game/jerusalem/jerusalem_zone1.h"
+#include "ring/game/jerusalem/jerusalem_zone2.h"
+#include "ring/game/jerusalem/jerusalem_zone3.h"
+#include "ring/game/jerusalem/jerusalem_zone4.h"
+#include "ring/game/jerusalem/jerusalem_zone5.h"
+#include "ring/game/jerusalem/jerusalem_zone6.h"
+#include "ring/game/jerusalem/jerusalem_zone7.h"
+#include "ring/game/jerusalem/jerusalem_zone8.h"
+#include "ring/game/jerusalem/jerusalem_zone9.h"
+#include "ring/game/jerusalem/jerusalem_zone10.h"
 
 #include "ring/graphics/screen.h"
 
@@ -56,31 +56,31 @@ ApplicationJerusalem::ApplicationJerusalem(RingEngine *engine) : Application(eng
 	_systemZone = kZone100;
 
 	// Event handlers
-	_eventAnimation = new EventAnimationJerusalem(this);
-	_eventBag       = new EventBagJerusalem(this);
-	_eventButton    = new EventButtonJerusalem(this);
-	_eventInit      = new EventInitJerusalem(this);
-	_eventInput     = new EventInputJerusalem(this);
-	_eventRide      = new EventRideJerusalem(this);
-	_eventSetup     = new EventSetupJerusalem(this);
-	_eventSound     = new EventSoundJerusalem(this);
-	_eventTimer     = new EventTimerJerusalem(this);
-	_eventVisual    = new EventVisualJerusalem(this);
-	_eventZone      = new EventZoneJerusalem(this);
+	_zoneSystem = new ZoneSystemJerusalem(this);
+	_zone1      = new Zone1Jerusalem(this);
+	_zone2      = new Zone2Jerusalem(this);
+	_zone3      = new Zone3Jerusalem(this);
+	_zone4      = new Zone4Jerusalem(this);
+	_zone5      = new Zone5Jerusalem(this);
+	_zone6      = new Zone6Jerusalem(this);
+	_zone7      = new Zone7Jerusalem(this);
+	_zone8      = new Zone8Jerusalem(this);
+	_zone9      = new Zone9Jerusalem(this);
+	_zone10     = new Zone10Jerusalem(this);
 }
 
 ApplicationJerusalem::~ApplicationJerusalem() {
-	SAFE_DELETE(_eventAnimation);
-	SAFE_DELETE(_eventBag);
-	SAFE_DELETE(_eventButton);
-	SAFE_DELETE(_eventInit);
-	SAFE_DELETE(_eventInput);
-	SAFE_DELETE(_eventRide);
-	SAFE_DELETE(_eventSetup);
-	SAFE_DELETE(_eventSound);
-	SAFE_DELETE(_eventTimer);
-	SAFE_DELETE(_eventVisual);
-	SAFE_DELETE(_eventZone);
+	SAFE_DELETE(_zoneSystem);
+	SAFE_DELETE(_zone1);
+	SAFE_DELETE(_zone2);
+	SAFE_DELETE(_zone3);
+	SAFE_DELETE(_zone4);
+	SAFE_DELETE(_zone5);
+	SAFE_DELETE(_zone6);
+	SAFE_DELETE(_zone7);
+	SAFE_DELETE(_zone8);
+	SAFE_DELETE(_zone9);
+	SAFE_DELETE(_zone10);
 }
 
 #pragma region Game setup
@@ -227,49 +227,49 @@ void ApplicationJerusalem::initZones() {
 
 	drawZoneName(kZone100);
 	_archiveType = getZoneArchiveType(kZone100);
-	onInitZone(kZone100);
+	_zoneSystem->onInit();
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZone1);
 	_archiveType = getZoneArchiveType(kZone2);
-	onInitZone(kZone1);
+	_zone1->onInit();
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone2);
-	onInitZone(kZone2);
+	_zone2->onInit();
 
-	drawZoneName(kZone2);
+	drawZoneName(kZone3);
 	_archiveType = getZoneArchiveType(kZone3);
-	onInitZone(kZone3);
+	_zone3->onInit();
 
 	drawZoneName(kZone4);
 	_archiveType = getZoneArchiveType(kZone4);
-	onInitZone(kZone4);
+	_zone4->onInit();
 
 	drawZoneName(kZone5);
 	_archiveType = getZoneArchiveType(kZone5);
-	onInitZone(kZone5);
+	_zone5->onInit();
 
 	drawZoneName(kZone6);
 	_archiveType = getZoneArchiveType(kZone6);
-	onInitZone(kZone6);
+	_zone6->onInit();
 
 	drawZoneName(kZone7);
 	_archiveType = getZoneArchiveType(kZone7);
-	onInitZone(kZone7);
+	_zone7->onInit();
 
 	drawZoneName(kZone8);
 	_archiveType = getZoneArchiveType(kZone8);
-	onInitZone(kZone8);
+	_zone8->onInit();
 
 	drawZoneName(kZone9);
 	_archiveType = getZoneArchiveType(kZone9);
-	onInitZone(kZone9);
+	_zone9->onInit();
 
 	drawZoneName(kZone10);
 	_archiveType = getZoneArchiveType(kZone10);
-	onInitZone(kZone10);
+	_zone10->onInit();
 
 	_archiveType = getZoneArchiveType(getCurrentZone());
 
@@ -301,10 +301,6 @@ void ApplicationJerusalem::onMouseRightButtonUp(const Common::Event &evt) {
 
 void ApplicationJerusalem::onKeyDown(Common::Event &evt) {
 	error("[ApplicationJerusalem::onKeyDown] Not implemented (evt: %d)", evt.type);
-}
-
-void ApplicationJerusalem::onInitZone(ZoneId zone) {
-	error("[ApplicationJerusalem::onInitZone] Not implemented (zone: %d)", zone);
 }
 
 void ApplicationJerusalem::onTimer(TimerId timerId) {

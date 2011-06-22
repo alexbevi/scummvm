@@ -75,18 +75,20 @@ endif
 
 ifdef ENABLE_POMPEII
 MODULE_OBJS += \
-	game/pompeii/pompeii_animation.o \
 	game/pompeii/pompeii_application.o \
-	game/pompeii/pompeii_bag.o \
-	game/pompeii/pompeii_button.o \
-	game/pompeii/pompeii_init.o \
-	game/pompeii/pompeii_input.o \
-	game/pompeii/pompeii_ride.o \
-	game/pompeii/pompeii_setup.o \
-	game/pompeii/pompeii_sound.o \
-	game/pompeii/pompeii_timer.o \
-	game/pompeii/pompeii_visual.o \
-	game/pompeii/pompeii_zone.o
+	game/pompeii/pompeii_zonesystem.o \
+	game/pompeii/pompeii_zone1.o \
+	game/pompeii/pompeii_zone2.o \
+	game/pompeii/pompeii_zone3.o \
+	game/pompeii/pompeii_zone4.o \
+	game/pompeii/pompeii_zone5.o \
+	game/pompeii/pompeii_zone6.o \
+	game/pompeii/pompeii_zone7.o \
+	game/pompeii/pompeii_zone8.o \
+	game/pompeii/pompeii_zone9.o \
+	game/pompeii/pompeii_zone10.o \
+	game/pompeii/pompeii_zone11.o \
+	game/pompeii/pompeii_zone12.o
 endif
 
 ifdef ENABLE_PILGRIM2
@@ -113,18 +115,18 @@ endif
 
 ifdef ENABLE_JERUSALEM
 MODULE_OBJS += \
-	game/jerusalem/jerusalem_animation.o \
 	game/jerusalem/jerusalem_application.o \
-	game/jerusalem/jerusalem_bag.o \
-	game/jerusalem/jerusalem_button.o \
-	game/jerusalem/jerusalem_init.o \
-	game/jerusalem/jerusalem_input.o \
-	game/jerusalem/jerusalem_ride.o \
-	game/jerusalem/jerusalem_setup.o \
-	game/jerusalem/jerusalem_sound.o \
-	game/jerusalem/jerusalem_timer.o \
-	game/jerusalem/jerusalem_visual.o \
-	game/jerusalem/jerusalem_zone.o
+	game/jerusalem/jerusalem_zonesystem.o \
+	game/jerusalem/jerusalem_zone1.o \
+	game/jerusalem/jerusalem_zone2.o \
+	game/jerusalem/jerusalem_zone3.o \
+	game/jerusalem/jerusalem_zone4.o \
+	game/jerusalem/jerusalem_zone5.o \
+	game/jerusalem/jerusalem_zone6.o \
+	game/jerusalem/jerusalem_zone7.o \
+	game/jerusalem/jerusalem_zone8.o \
+	game/jerusalem/jerusalem_zone9.o \
+	game/jerusalem/jerusalem_zone10.o
 endif
 
 # This module can be built as a plugin

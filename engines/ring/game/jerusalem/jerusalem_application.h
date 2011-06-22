@@ -26,17 +26,17 @@
 
 namespace Ring {
 
-class EventAnimationJerusalem;
-class EventBagJerusalem;
-class EventButtonJerusalem;
-class EventInitJerusalem;
-class EventInputJerusalem;
-class EventRideJerusalem;
-class EventSetupJerusalem;
-class EventSoundJerusalem;
-class EventTimerJerusalem;
-class EventVisualJerusalem;
-class EventZoneJerusalem;
+class ZoneSystemJerusalem;
+class Zone1Jerusalem;
+class Zone2Jerusalem;
+class Zone3Jerusalem;
+class Zone4Jerusalem;
+class Zone5Jerusalem;
+class Zone6Jerusalem;
+class Zone7Jerusalem;
+class Zone8Jerusalem;
+class Zone9Jerusalem;
+class Zone10Jerusalem;
 
 class ApplicationJerusalem : public Application {
 public:
@@ -74,20 +74,32 @@ public:
 	virtual void onMouseRightButtonUp(const Common::Event &evt);
 	virtual void onKeyDown(Common::Event &evt);
 	virtual void onTimer(TimerId id);
-	virtual void onInitZone(ZoneId zone);
 
 private:
-	EventAnimationJerusalem *_eventAnimation;
-	EventBagJerusalem       *_eventBag;
-	EventButtonJerusalem    *_eventButton;
-	EventInitJerusalem      *_eventInit;
-	EventInputJerusalem     *_eventInput;
-	EventRideJerusalem      *_eventRide;
-	EventSetupJerusalem     *_eventSetup;
-	EventSoundJerusalem     *_eventSound;
-	EventTimerJerusalem     *_eventTimer;
-	EventVisualJerusalem    *_eventVisual;
-	EventZoneJerusalem      *_eventZone;
+	// Event handlers
+	ZoneSystemJerusalem *_zoneSystem;
+	Zone1Jerusalem      *_zone1;
+	Zone2Jerusalem      *_zone2;
+	Zone3Jerusalem      *_zone3;
+	Zone4Jerusalem      *_zone4;
+	Zone5Jerusalem      *_zone5;
+	Zone6Jerusalem      *_zone6;
+	Zone7Jerusalem      *_zone7;
+	Zone8Jerusalem      *_zone8;
+	Zone9Jerusalem      *_zone9;
+	Zone10Jerusalem     *_zone10;
+
+	friend class ZoneSystemJerusalem;
+	friend class Zone1Jerusalem;
+	friend class Zone2Jerusalem;
+	friend class Zone3Jerusalem;
+	friend class Zone4Jerusalem;
+	friend class Zone5Jerusalem;
+	friend class Zone6Jerusalem;
+	friend class Zone7Jerusalem;
+	friend class Zone8Jerusalem;
+	friend class Zone9Jerusalem;
+	friend class Zone10Jerusalem;
 };
 
 } // End of namespace Ring

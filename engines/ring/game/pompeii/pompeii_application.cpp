@@ -27,18 +27,20 @@
 #include "ring/base/rotation.h"
 #include "ring/base/saveload.h"
 
-#include "ring/game/pompeii/pompeii_animation.h"
-#include "ring/game/pompeii/pompeii_bag.h"
-#include "ring/game/pompeii/pompeii_button.h"
-#include "ring/game/pompeii/pompeii_init.h"
-#include "ring/game/pompeii/pompeii_input.h"
-#include "ring/game/pompeii/pompeii_ride.h"
-#include "ring/game/pompeii/pompeii_setup.h"
 #include "ring/game/pompeii/pompeii_shared.h"
-#include "ring/game/pompeii/pompeii_sound.h"
-#include "ring/game/pompeii/pompeii_timer.h"
-#include "ring/game/pompeii/pompeii_visual.h"
-#include "ring/game/pompeii/pompeii_zone.h"
+#include "ring/game/pompeii/pompeii_zonesystem.h"
+#include "ring/game/pompeii/pompeii_zone1.h"
+#include "ring/game/pompeii/pompeii_zone2.h"
+#include "ring/game/pompeii/pompeii_zone3.h"
+#include "ring/game/pompeii/pompeii_zone4.h"
+#include "ring/game/pompeii/pompeii_zone5.h"
+#include "ring/game/pompeii/pompeii_zone6.h"
+#include "ring/game/pompeii/pompeii_zone7.h"
+#include "ring/game/pompeii/pompeii_zone8.h"
+#include "ring/game/pompeii/pompeii_zone9.h"
+#include "ring/game/pompeii/pompeii_zone10.h"
+#include "ring/game/pompeii/pompeii_zone11.h"
+#include "ring/game/pompeii/pompeii_zone12.h"
 
 #include "ring/graphics/screen.h"
 
@@ -56,31 +58,35 @@ ApplicationPompeii::ApplicationPompeii(RingEngine *engine) : Application(engine)
 	_systemZone = kZone100;
 
 	// Event handlers
-	_eventAnimation = new EventAnimationPompeii(this);
-	_eventBag       = new EventBagPompeii(this);
-	_eventButton    = new EventButtonPompeii(this);
-	_eventInit      = new EventInitPompeii(this);
-	_eventInput     = new EventInputPompeii(this);
-	_eventRide      = new EventRidePompeii(this);
-	_eventSetup     = new EventSetupPompeii(this);
-	_eventSound     = new EventSoundPompeii(this);
-	_eventTimer     = new EventTimerPompeii(this);
-	_eventVisual    = new EventVisualPompeii(this);
-	_eventZone      = new EventZonePompeii(this);
+	_zoneSystem = new ZoneSystemPompeii(this);
+	_zone1      = new Zone1Pompeii(this);
+	_zone2      = new Zone2Pompeii(this);
+	_zone3      = new Zone3Pompeii(this);
+	_zone4      = new Zone4Pompeii(this);
+	_zone5      = new Zone5Pompeii(this);
+	_zone6      = new Zone6Pompeii(this);
+	_zone7      = new Zone7Pompeii(this);
+	_zone8      = new Zone8Pompeii(this);
+	_zone9      = new Zone9Pompeii(this);
+	_zone10     = new Zone10Pompeii(this);
+	_zone11     = new Zone11Pompeii(this);
+	_zone12     = new Zone12Pompeii(this);
 }
 
 ApplicationPompeii::~ApplicationPompeii() {
-	SAFE_DELETE(_eventAnimation);
-	SAFE_DELETE(_eventBag);
-	SAFE_DELETE(_eventButton);
-	SAFE_DELETE(_eventInit);
-	SAFE_DELETE(_eventInput);
-	SAFE_DELETE(_eventRide);
-	SAFE_DELETE(_eventSetup);
-	SAFE_DELETE(_eventSound);
-	SAFE_DELETE(_eventTimer);
-	SAFE_DELETE(_eventVisual);
-	SAFE_DELETE(_eventZone);
+	SAFE_DELETE(_zoneSystem);
+	SAFE_DELETE(_zone1);
+	SAFE_DELETE(_zone2);
+	SAFE_DELETE(_zone3);
+	SAFE_DELETE(_zone4);
+	SAFE_DELETE(_zone5);
+	SAFE_DELETE(_zone6);
+	SAFE_DELETE(_zone7);
+	SAFE_DELETE(_zone8);
+	SAFE_DELETE(_zone9);
+	SAFE_DELETE(_zone10);
+	SAFE_DELETE(_zone11);
+	SAFE_DELETE(_zone12);
 }
 
 #pragma region Game setup
@@ -219,59 +225,59 @@ void ApplicationPompeii::initZones() {
 
 	drawZoneName(kZone100);
 	_archiveType = getZoneArchiveType(kZone100);
-	onInitZone(kZone100);
+	_zoneSystem->onInit();
 
 	_loadFrom = kLoadFromCd;
 
 	drawZoneName(kZone1);
 	_archiveType = getZoneArchiveType(kZone2);
-	onInitZone(kZone1);
+	_zone1->onInit();
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone2);
-	onInitZone(kZone2);
+	_zone2->onInit();
 
 	drawZoneName(kZone2);
 	_archiveType = getZoneArchiveType(kZone3);
-	onInitZone(kZone3);
+	_zone3->onInit();
 
 	drawZoneName(kZone4);
 	_archiveType = getZoneArchiveType(kZone4);
-	onInitZone(kZone4);
+	_zone4->onInit();
 
 	drawZoneName(kZone5);
 	_archiveType = getZoneArchiveType(kZone5);
-	onInitZone(kZone5);
+	_zone5->onInit();
 
 	drawZoneName(kZone6);
 	_archiveType = getZoneArchiveType(kZone6);
-	onInitZone(kZone6);
+	_zone6->onInit();
 
 	drawZoneName(kZone7);
 	_archiveType = getZoneArchiveType(kZone7);
-	onInitZone(kZone7);
+	_zone7->onInit();
 
 	drawZoneName(kZone8);
 	_archiveType = getZoneArchiveType(kZone8);
-	onInitZone(kZone8);
+	_zone8->onInit();
 
 	drawZoneName(kZone9);
 	_archiveType = getZoneArchiveType(kZone9);
-	onInitZone(kZone9);
+	_zone9->onInit();
 
 	drawZoneName(kZone10);
 	_archiveType = getZoneArchiveType(kZone10);
-	onInitZone(kZone10);
+	_zone10->onInit();
 
 	_loadFrom = kLoadFromDisk;
 
 	drawZoneName(kZone11);
 	_archiveType = getZoneArchiveType(kZone11);
-	onInitZone(kZone11);
+	_zone11->onInit();
 
 	drawZoneName(kZone12);
 	_archiveType = getZoneArchiveType(kZone12);
-	onInitZone(kZone12);
+	_zone12->onInit();
 
 	_archiveType = getZoneArchiveType(getCurrentZone());
 
@@ -302,10 +308,6 @@ void ApplicationPompeii::onKeyDown(Common::Event &evt) {
 	error("[ApplicationPompeii::onKeyDown] Not implemented (evt: %d)", evt.type);
 }
 
-void ApplicationPompeii::onInitZone(ZoneId zone) {
-	error("[ApplicationPompeii::onInitZone] Not implemented (zone: %d)", zone);
-}
-
 void ApplicationPompeii::onTimer(TimerId timerId) {
 	error("[ApplicationPompeii::onTimer] Not implemented (id: %d)", timerId);
 }
@@ -318,15 +320,15 @@ void ApplicationPompeii::onSetup(ZoneId zone, SetupType type) {
 		break;
 
 	case kZone2:
-		_eventSetup->onSetupZone2(type);
+		_zone2->onSetup(type);
 		break;
 
 	case kZone3:
-		_eventSetup->onSetupZone3(type);
+		_zone3->onSetup(type);
 		break;
 
 	case kZone4:
-		_eventSetup->onSetupZone4(type);
+		_zone4->onSetup(type);
 		break;
 	}
 }
