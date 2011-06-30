@@ -2173,7 +2173,7 @@ forcenext:
 void DreamGenContext::clearsprites() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768);
 	al = 255;
 	cx = (32)*16;
 	_stosb(cx, true);
@@ -2182,7 +2182,7 @@ void DreamGenContext::clearsprites() {
 void DreamGenContext::makesprite() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768);
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768);
 _tmp17:
 	_cmp(es.byte(bx+15), 255);
 	if (flags.z())
@@ -2210,11 +2210,11 @@ void DreamGenContext::delsprite() {
 void DreamGenContext::spriteupdate() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768);
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768);
 	al = data.byte(kRyanon);
 	es.byte(bx+31) = al;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768);
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768);
 	cx = 16;
 _tmp18:
 	push(cx);
@@ -2248,7 +2248,7 @@ void DreamGenContext::printsprites() {
 priorityloop:
 	push(cx);
 	data.byte(kPriority) = cl;
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768);
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768);
 	cx = 16;
 prtspriteloop:
 	push(cx);
@@ -2346,7 +2346,7 @@ void DreamGenContext::checkone() {
 	_mul(cx);
 	si = ax;
 	ds = data.word(kBuffers);
-	_add(si, (0+(180*10)+32+60+(32*32)));
+	_add(si, (0+(228*13)+32+60+(32*32)));
 	_lodsw();
 	cx = ax;
 	_lodsb();
@@ -2810,7 +2810,7 @@ forgotone:
 void DreamGenContext::initrain() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*24));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*30));
 	bx = 1113;
 checkmorerain:
 	al = cs.byte(bx);
@@ -2961,7 +2961,7 @@ void DreamGenContext::showrain() {
 	ax = ds.word(si+2);
 	si = ax;
 	_add(si, 2080);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*24));
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*30));
 	es = data.word(kBuffers);
 	_cmp(es.byte(bx), 255);
 	if (flags.z())
@@ -3482,6 +3482,7 @@ atlast4:
 	bx = pop();
 	es = pop();
 	data.byte(kLockstatus) = 1;
+	return;
 /*continuing to unbounded code: shutdoor from dodoor:60-87*/
 shutdoor:
 	cl = es.byte(bx+19);
@@ -3518,7 +3519,7 @@ atlast2:
 void DreamGenContext::updatepeople() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5));
 	data.word(kListpos) = di;
 	cx = 12*5;
 	al = 255;
@@ -3673,6 +3674,14 @@ void DreamGenContext::reconstruct() {
 	drawfloor();
 	spriteupdate();
 	printsprites();
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto notfudge;
+	_cmp(data.byte(kReallocation), 20);
+	if (!flags.z())
+		goto notfudge;
+	undertextline();
+notfudge:
 	data.byte(kHavedoneobs) = 0;
 }
 
@@ -3815,7 +3824,7 @@ bigroom:
 void DreamGenContext::dumpeverything() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40));
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40));
 dumpevery1:
 	ax = es.word(bx);
 	cx = es.word(bx+2);
@@ -3846,7 +3855,7 @@ skip1:
 	_add(bx, 5);
 	goto dumpevery1;
 finishevery1:
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40))+(40*5);
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40))+(40*5);
 dumpevery2:
 	ax = es.word(bx);
 	cx = es.word(bx+2);
@@ -3887,7 +3896,7 @@ void DreamGenContext::loadpalfromiff() {
 	readfromfile();
 	closefile();
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768);
 	ds = data.word(kMapstore);
 	si = 0x30;
 	cx = 768;
@@ -4329,52 +4338,6 @@ noeffects:
 	cx = pop();
 }
 
-void DreamGenContext::frameoutv() {
-	STACK_CHECK;
-	push(dx);
-	ax = bx;
-	bx = dx;
-	_mul(bx);
-	_add(di, ax);
-	dx = pop();
-	push(cx);
-	ch = 0;
-	_sub(dx, cx);
-	cx = pop();
-frameloop1:
-	push(cx);
-	ch = 0;
-frameloop2:
-	_lodsb();
-	_cmp(al, 0);
-	if (!flags.z())
-		goto backtosolid;
-backtoother:
-	_inc(di);
-	if (--cx)
-		goto frameloop2;
-	cx = pop();
-	_add(di, dx);
-	_dec(ch);
-	if (!flags.z())
-		goto frameloop1;
-	return;
-frameloop3:
-	_lodsb();
-	_cmp(al, 0);
-	if (flags.z())
-		goto backtoother;
-backtosolid:
-	_stosb();
-	if (--cx)
-		goto frameloop3;
-	cx = pop();
-	_add(di, dx);
-	_dec(ch);
-	if (!flags.z())
-		goto frameloop1;
-}
-
 void DreamGenContext::frameoutbh() {
 	STACK_CHECK;
 	push(dx);
@@ -4565,7 +4528,7 @@ void DreamGenContext::dofade() {
 	al = data.byte(kColourpos);
 	ah = 0;
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3));
 	_add(si, ax);
 	_add(si, ax);
 	_add(si, ax);
@@ -4582,7 +4545,7 @@ void DreamGenContext::dofade() {
 void DreamGenContext::clearendpal() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768);
 	cx = 768;
 	al = 0;
 	_stosb(cx, true);
@@ -4608,11 +4571,11 @@ void DreamGenContext::fadescreenup() {
 void DreamGenContext::fadetowhite() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768);
 	cx = 768;
 	al = 63;
 	_stosb(cx, true);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768);
 	al = 0;
 	_stosb(3);
 	paltostartpal();
@@ -4625,11 +4588,11 @@ void DreamGenContext::fadetowhite() {
 void DreamGenContext::fadefromwhite() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3));
 	cx = 768;
 	al = 63;
 	_stosb(cx, true);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3));
 	al = 0;
 	_stosb(3);
 	paltoendpal();
@@ -4655,7 +4618,7 @@ void DreamGenContext::fadescreendownhalf() {
 	paltoendpal();
 	cx = 768;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768);
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768);
 halfend:
 	al = es.byte(bx);
 	_shr(al, 1);
@@ -4665,12 +4628,12 @@ halfend:
 		goto halfend;
 	ds = data.word(kBuffers);
 	es = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3))+(56*3);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768)+(56*3);
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3))+(56*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768)+(56*3);
 	cx = 3*5;
 	_movsb(cx, true);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3))+(77*3);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768)+(77*3);
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3))+(77*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768)+(77*3);
 	cx = 3*2;
 	_movsb(cx, true);
 	data.byte(kFadedirection) = 1;
@@ -4712,7 +4675,7 @@ void DreamGenContext::fadescreendowns() {
 void DreamGenContext::clearstartpal() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3));
 	cx = 256;
 wholeloop1:
 	ax = 0;
@@ -4883,8 +4846,8 @@ void DreamGenContext::fadecalculation() {
 		goto nomorefading;
 	bl = data.byte(kFadecount);
 	es = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3));
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768);
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768);
 	cx = 768;
 fadecolloop:
 	al = es.byte(si);
@@ -4918,8 +4881,8 @@ nomorefading:
 void DreamGenContext::greyscalesum() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768);
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768);
 	cx = 256;
 greysumloop1:
 	push(cx);
@@ -4977,8 +4940,8 @@ void DreamGenContext::paltostartpal() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3));
 	cx = 768/2;
 	_movsw(cx, true);
 }
@@ -4987,8 +4950,8 @@ void DreamGenContext::endpaltostart() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3));
 	cx = 768/2;
 	_movsw(cx, true);
 }
@@ -4997,8 +4960,8 @@ void DreamGenContext::startpaltoend() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
 	ds = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768);
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3));
 	cx = 768/2;
 	_movsw(cx, true);
 }
@@ -5007,8 +4970,8 @@ void DreamGenContext::paltoendpal() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
 	ds = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768);
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768);
 	cx = 768/2;
 	_movsw(cx, true);
 }
@@ -5017,8 +4980,8 @@ void DreamGenContext::allpalette() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
 	ds = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3));
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768);
 	cx = 768/2;
 	_movsw(cx, true);
 	dumpcurrent();
@@ -5026,7 +4989,7 @@ void DreamGenContext::allpalette() {
 
 void DreamGenContext::dumpcurrent() {
 	STACK_CHECK;
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3));
 	ds = data.word(kBuffers);
 	vsync();
 	al = 0;
@@ -5043,11 +5006,11 @@ void DreamGenContext::fadedownmon() {
 	paltostartpal();
 	paltoendpal();
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768)+(231*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768)+(231*3);
 	cx = 3*8;
 	ax = 0;
 	_stosb(cx, true);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768)+(246*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768)+(246*3);
 	_stosb();
 	_stosw();
 	data.byte(kFadedirection) = 1;
@@ -5063,11 +5026,11 @@ void DreamGenContext::fadeupmon() {
 	paltostartpal();
 	paltoendpal();
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3))+(231*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3))+(231*3);
 	cx = 3*8;
 	ax = 0;
 	_stosb(cx, true);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3))+(246*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3))+(246*3);
 	_stosb();
 	_stosw();
 	data.byte(kFadedirection) = 1;
@@ -5083,11 +5046,11 @@ void DreamGenContext::fadeupmonfirst() {
 	paltostartpal();
 	paltoendpal();
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3))+(231*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3))+(231*3);
 	cx = 3*8;
 	ax = 0;
 	_stosb(cx, true);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3))+(246*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3))+(246*3);
 	_stosb();
 	_stosw();
 	data.byte(kFadedirection) = 1;
@@ -5106,11 +5069,11 @@ void DreamGenContext::fadeupyellows() {
 	STACK_CHECK;
 	paltoendpal();
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768)+(231*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768)+(231*3);
 	cx = 3*8;
 	ax = 0;
 	_stosb(cx, true);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768)+(246*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768)+(246*3);
 	_stosb();
 	_stosw();
 	data.byte(kFadedirection) = 1;
@@ -5125,15 +5088,15 @@ void DreamGenContext::initialmoncols() {
 	STACK_CHECK;
 	paltostartpal();
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3))+(230*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3))+(230*3);
 	cx = 3*9;
 	ax = 0;
 	_stosb(cx, true);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3))+(246*3);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3))+(246*3);
 	_stosb();
 	_stosw();
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3))+(230*3);
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3))+(230*3);
 	al = 230;
 	cx = 18;
 	showgroup();
@@ -5552,6 +5515,11 @@ void DreamGenContext::printchar() {
 	push(si);
 	push(bx);
 	push(di);
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp1;
+	_sub(bx, 3);
+_tmp1:
 	push(ax);
 	_sub(al, 32);
 	ah = 0;
@@ -5623,6 +5591,7 @@ printloopslow5:
 	push(es);
 	push(si);
 	push(ds);
+	modifychar();
 	printboth();
 	ds = pop();
 	si = pop();
@@ -5646,6 +5615,7 @@ printloopslow5:
 	push(cx);
 	push(es);
 	push(si);
+	modifychar();
 	data.word(kCharshift) = 91;
 	printboth();
 	data.word(kCharshift) = 0;
@@ -5759,6 +5729,7 @@ printloop5:
 		goto finishdirct;
 	push(cx);
 	push(es);
+	modifychar();
 	printchar();
 	data.word(kLastxpos) = di;
 	es = pop();
@@ -5815,6 +5786,7 @@ printloop7:
 nottrigger:
 	push(cx);
 	push(es);
+	modifychar();
 	printchar();
 	data.word(kCurslocx) = di;
 	data.word(kCurslocy) = bx;
@@ -5985,6 +5957,7 @@ getloop:
 	_cmp(al, 32);
 	if (flags.z())
 		goto endword;
+	modifychar();
 	_cmp(al, 255);
 	if (flags.z())
 		goto getloop;
@@ -6013,9 +5986,9 @@ endall:
 void DreamGenContext::fillryan() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32);
+	di = (0+(228*13)+32);
 	findallryan();
-	si = (0+(180*10)+32);
+	si = (0+(228*13)+32);
 	al = data.byte(kRyanpage);
 	ah = 0;
 	cx = 20;
@@ -6067,9 +6040,9 @@ lessthanapage:
 	al = 1;
 	push(ax);
 	es = data.word(kBuffers);
-	di = (0+(180*10));
+	di = (0+(228*13));
 	findallopen();
-	si = (0+(180*10));
+	si = (0+(228*13));
 	di = (80);
 	bx = (58)+96;
 	cx = pop();
@@ -6553,6 +6526,14 @@ void DreamGenContext::describeob() {
 	getobtextstart();
 	di = 33;
 	bx = 92;
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto notsetd;
+	_cmp(data.byte(kObjecttype), 1);
+	if (!flags.z())
+		goto notsetd;
+	bx = 82;
+notsetd:
 	dl = 241;
 	ah = 16;
 	data.word(kCharshift) = 91+91;
@@ -6560,6 +6541,14 @@ void DreamGenContext::describeob() {
 	data.word(kCharshift) = 0;
 	di = 36;
 	bx = 104;
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto notsetd2;
+	_cmp(data.byte(kObjecttype), 1);
+	if (!flags.z())
+		goto notsetd2;
+	bx = 94;
+notsetd2:
 	dl = 241;
 	ah = 0;
 	printdirect();
@@ -6783,6 +6772,7 @@ doopeninv:
 	delpointer();
 	data.byte(kOpenedob) = 255;
 	goto waitexam;
+	return;
 /*continuing to unbounded code: examineagain from examineob:3-66*/
 examineagain:
 	data.byte(kInmaparea) = 0;
@@ -7393,7 +7383,7 @@ findinv2:
 	data.byte(kLastinvpos) = al;
 	_add(bx, bx);
 	es = data.word(kBuffers);
-	_add(bx, (0+(180*10)+32));
+	_add(bx, (0+(228*13)+32));
 }
 
 void DreamGenContext::findopenpos() {
@@ -7410,7 +7400,7 @@ findopenp1:
 	data.byte(kLastinvpos) = al;
 	_add(bx, bx);
 	es = data.word(kBuffers);
-	_add(bx, (0+(180*10)));
+	_add(bx, (0+(228*13)));
 }
 
 void DreamGenContext::dropobject() {
@@ -8281,11 +8271,7 @@ findlenextext:
 	push(bx);
 	push(ax);
 	_sub(cx, bx);
-	_cmp(cx,  0xffff);
-	if (flags.z())
-		goto _tmp1;
 	_movsb(cx, true);
-_tmp1:
 	bx = pop();
 	_sub(data.word(kExtextpos), bx);
 	si = pop();
@@ -8361,7 +8347,7 @@ void DreamGenContext::calcmapad() {
 void DreamGenContext::getdimension() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32));
+	bx = (0+(228*13)+32+60+(32*32));
 	ch = 0;
 dimloop1:
 	addalong();
@@ -8371,7 +8357,7 @@ dimloop1:
 	_inc(ch);
 	goto dimloop1;
 finishdim1:
-	bx = (0+(180*10)+32+60+(32*32));
+	bx = (0+(228*13)+32+60+(32*32));
 	cl = 0;
 dimloop2:
 	push(bx);
@@ -8384,7 +8370,7 @@ dimloop2:
 	_add(bx, 3);
 	goto dimloop2;
 finishdim2:
-	bx = (0+(180*10)+32+60+(32*32))+(11*3*9);
+	bx = (0+(228*13)+32+60+(32*32))+(11*3*9);
 	dh = 10;
 dimloop3:
 	push(bx);
@@ -8397,7 +8383,7 @@ dimloop3:
 	_sub(bx, 11*3);
 	goto dimloop3;
 finishdim3:
-	bx = (0+(180*10)+32+60+(32*32))+(3*10);
+	bx = (0+(228*13)+32+60+(32*32))+(3*10);
 	dl = 11;
 dimloop4:
 	push(bx);
@@ -8479,7 +8465,7 @@ gotlength:
 void DreamGenContext::drawflags() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32));
+	di = (0+(228*13)+32+60+(32*32));
 	al = data.byte(kMapy);
 	ah = 0;
 	cx = (66);
@@ -8521,7 +8507,7 @@ void DreamGenContext::eraseoldobs() {
 	if (flags.z())
 		return /* (donterase) */;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768);
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768);
 	cx = 16;
 oberase:
 	push(cx);
@@ -8545,7 +8531,7 @@ notthisob:
 void DreamGenContext::showallobs() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32));
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32));
 	data.word(kListpos) = bx;
 	di = bx;
 	cx = 128*5;
@@ -8666,9 +8652,9 @@ usedpriority:
 void DreamGenContext::showallfree() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5));
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5));
 	data.word(kListpos) = bx;
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5));
 	cx = 80*5;
 	al = 255;
 	_stosb(cx, true);
@@ -8747,9 +8733,9 @@ over138:
 void DreamGenContext::showallex() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5));
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5));
 	data.word(kListpos) = bx;
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5));
 	cx = 100*5;
 	al = 255;
 	_stosb(cx, true);
@@ -9111,9 +9097,13 @@ waittalk:
 	data.byte(kGetback) = 0;
 	bx = 2660;
 	checkcoords();
+	_cmp(data.byte(kQuitrequested),  0);
+	if (!flags.z())
+		goto finishtalk;
 	_cmp(data.byte(kGetback), 0);
 	if (flags.z())
 		goto waittalk;
+finishtalk:
 	bx = data.word(kPersondata);
 	es = cs;
 	_cmp(data.byte(kTalkpos), 4);
@@ -9406,6 +9396,9 @@ hangloopq:
 	_cmp(data.byte(kGetback), 1);
 	if (flags.z())
 		goto quitconv;
+	_cmp(data.byte(kQuitrequested),  0);
+	if (!flags.z())
+		goto quitconv;
 	_cmp(data.byte(kSpeechloaded), 1);
 	if (!flags.z())
 		goto notspeaking;
@@ -9609,6 +9602,15 @@ alreadyinfo:
 	di = 60;
 	bx = 72+55;
 	showframe();
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp1;
+	al = 4;
+	ah = 0;
+	di = 60;
+	bx = 72+55+21;
+	showframe();
+_tmp1:
 	bx = pop();
 	bh = 0;
 	_add(bx, bx);
@@ -9618,6 +9620,11 @@ alreadyinfo:
 	findnextcolon();
 	di = 63;
 	bx = 84;
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp2;
+	bx = 84+4;
+_tmp2:
 	dl = 191;
 	al = 0;
 	ah = 0;
@@ -11089,6 +11096,7 @@ curfileloop:
 		return /* (finishfile) */;
 	_inc(si);
 	push(si);
+	modifychar();
 	ds = data.word(kTempcharset);
 	ah = 0;
 	printchar();
@@ -11187,6 +11195,12 @@ void DreamGenContext::printcurs() {
 	bx = data.word(kCurslocy);
 	cl = 6;
 	ch = 8;
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp1;
+	_sub(bx, 3);
+	ch = 11;
+_tmp1:
 	ds = data.word(kBuffers);
 	si = (0);
 	push(di);
@@ -11212,6 +11226,11 @@ flashcurs:
 	_sub(di, 6);
 	cl = 12;
 	ch = 8;
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp2;
+	ch = 11;
+_tmp2:
 	multidump();
 	es = pop();
 	bx = pop();
@@ -11233,6 +11252,12 @@ void DreamGenContext::delcurs() {
 	bx = data.word(kCurslocy);
 	cl = 6;
 	ch = 8;
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp1;
+	_sub(bx, 3);
+	ch = 11;
+_tmp1:
 	push(di);
 	push(bx);
 	push(cx);
@@ -12691,6 +12716,11 @@ void DreamGenContext::usecashcard() {
 	showman();
 	di = 114;
 	bx = 120;
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp1;
+	bx = 120-3;
+_tmp1:
 	ds = data.word(kTempgraphics);
 	al = 39;
 	ah = 0;
@@ -13226,7 +13256,8 @@ void DreamGenContext::useaxe() {
 	return;
 notinpool:
 	showfirstuse();
-/*continuing to unbounded code: axeondoor from useelvdoor:19-29*/
+	return;
+/*continuing to unbounded code: axeondoor from useelvdoor:19-30*/
 axeondoor:
 	al = 15;
 	cx = 300;
@@ -13631,7 +13662,7 @@ void DreamGenContext::removefreeobject() {
 
 void DreamGenContext::findormake() {
 	STACK_CHECK;
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80));
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80));
 	push(ax);
 	es = data.word(kBuffers);
 	ah = data.byte(kReallocation);
@@ -13671,7 +13702,7 @@ void DreamGenContext::switchryanoff() {
 void DreamGenContext::setallchanges() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80));
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80));
 setallloop:
 	ax = es.word(bx);
 	_cmp(al, 255);
@@ -13805,30 +13836,40 @@ notonsartroof:
 void DreamGenContext::getundertimed() {
 	STACK_CHECK;
 	al = data.byte(kTimedy);
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp1;
+	_sub(al, 3);
+_tmp1:
 	ah = 0;
 	bx = ax;
 	al = data.byte(kTimedx);
 	ah = 0;
 	di = ax;
-	ch = (24);
+	ch = (30);
 	cl = 240;
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4));
 	multiget();
 }
 
 void DreamGenContext::putundertimed() {
 	STACK_CHECK;
 	al = data.byte(kTimedy);
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp1;
+	_sub(al, 3);
+_tmp1:
 	ah = 0;
 	bx = ax;
 	al = data.byte(kTimedx);
 	ah = 0;
 	di = ax;
-	ch = (24);
+	ch = (30);
 	cl = 240;
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4));
 	multiput();
 }
 
@@ -13838,13 +13879,18 @@ void DreamGenContext::dumptimedtext() {
 	if (!flags.z())
 		return /* (nodumptimed) */;
 	al = data.byte(kTimedy);
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp1;
+	_sub(al, 3);
+_tmp1:
 	ah = 0;
 	bx = ax;
 	al = data.byte(kTimedx);
 	ah = 0;
 	di = ax;
 	cl = 240;
-	ch = (24);
+	ch = (30);
 	multidump();
 	data.byte(kNeedtodumptimed) = 0;
 }
@@ -13876,6 +13922,10 @@ void DreamGenContext::setuptimedtemp() {
 	_cmp(ah, 0);
 	if (flags.z())
 		goto notloadspeech3;
+	push(ax);
+	push(bx);
+	push(cx);
+	push(dx);
 	dl = 'T';
 	dh = ah;
 	cl = 'T';
@@ -13883,9 +13933,20 @@ void DreamGenContext::setuptimedtemp() {
 	loadspeech();
 	_cmp(data.byte(kSpeechloaded), 1);
 	if (!flags.z())
-		goto notloadspeech3;
+		goto _tmp1;
 	al = 50+12;
 	playchannel1();
+_tmp1:
+	dx = pop();
+	cx = pop();
+	bx = pop();
+	ax = pop();
+	_cmp(data.byte(kSpeechloaded), 1);
+	if (!flags.z())
+		goto notloadspeech3;
+	_cmp(data.byte(kSubtitles),  1);
+	if (flags.z())
+		goto notloadspeech3;
 	return;
 notloadspeech3:
 	_cmp(data.word(kTimecount), 0);
@@ -14381,10 +14442,14 @@ void DreamGenContext::entercode() {
 	data.word(kPresspointer) = 0;
 	data.byte(kGetback) = 0;
 keypadloop:
+	_cmp(data.byte(kQuitrequested),  0);
+	if (!flags.z())
+		goto numberright;
 	delpointer();
 	readmouse();
 	showkeypad();
 	showpointer();
+	vsync();
 	_cmp(data.byte(kPresscount), 0);
 	if (flags.z())
 		goto nopresses;
@@ -14767,7 +14832,7 @@ void DreamGenContext::getundermenu() {
 	cl = 48;
 	ch = 48;
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4));
 	multiget();
 }
 
@@ -14778,7 +14843,7 @@ void DreamGenContext::putundermenu() {
 	cl = 48;
 	ch = 48;
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4));
 	multiput();
 }
 
@@ -16603,7 +16668,7 @@ void DreamGenContext::namestoold() {
 	STACK_CHECK;
 	ds = cs;
 	si = 8579;
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5));
 	es = data.word(kBuffers);
 	cx = 17*4;
 	_movsb(cx, true);
@@ -16613,7 +16678,7 @@ void DreamGenContext::oldtonames() {
 	STACK_CHECK;
 	es = cs;
 	di = 8579;
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5));
 	ds = data.word(kBuffers);
 	cx = 17*4;
 	_movsb(cx, true);
@@ -16656,7 +16721,7 @@ void DreamGenContext::saveposition() {
 	dx = (0);
 	saveseg();
 	ds = data.word(kBuffers);
-	dx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80));
+	dx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80));
 	saveseg();
 	dx = data;
 	ds = dx;
@@ -16705,7 +16770,7 @@ void DreamGenContext::loadposition() {
 	dx = (0);
 	loadseg();
 	ds = data.word(kBuffers);
-	dx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80));
+	dx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80));
 	loadseg();
 	dx = data;
 	ds = dx;
@@ -16886,6 +16951,7 @@ alreadynewgame:
 
 void DreamGenContext::doload() {
 	STACK_CHECK;
+	data.byte(kLoadingorsave) = 1;
 	showopbox();
 	showloadops();
 	data.byte(kCurrentslot) = 0;
@@ -17641,7 +17707,7 @@ void DreamGenContext::allocatebuffers() {
 	allocatemem();
 	data.word(kMapdata) = ax;
 	trysoundalloc();
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*24)+(6*64)+991-534+68-0)/16;
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*30)+(6*64)+991-534+68-0)/16;
 	allocatemem();
 	data.word(kBuffers) = ax;
 	trysoundalloc();
@@ -17668,7 +17734,7 @@ void DreamGenContext::allocatebuffers() {
 void DreamGenContext::clearbuffers() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	cx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*24)+(6*64)+991-534+68-0)/2;
+	cx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*30)+(6*64)+991-534+68-0)/2;
 	ax = 0;
 	di = 0;
 	_stosw(cx, true);
@@ -17678,13 +17744,13 @@ void DreamGenContext::clearbuffers() {
 	di = 0;
 	_stosw(cx, true);
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*24)+(6*64));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*30)+(6*64));
 	ds = cs;
 	si = 534;
 	cx = (991-534);
 	_movsb(cx, true);
 	es = data.word(kBuffers);
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*24)+(6*64)+991-534);
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*30)+(6*64)+991-534);
 	ds = cs;
 	si = 0;
 	cx = (68-0);
@@ -17697,16 +17763,16 @@ void DreamGenContext::clearchanges() {
 	es = data.word(kBuffers);
 	cx = (250)*2;
 	ax = 0x0ffff;
-	di = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80));
+	di = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80));
 	_stosw(cx, true);
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*24)+(6*64));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*30)+(6*64));
 	es = cs;
 	di = 534;
 	cx = (991-534);
 	_movsb(cx, true);
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*24)+(6*64)+991-534);
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5)+(46*40)+(5*80)+(250*4)+(256*30)+(6*64)+991-534);
 	es = cs;
 	di = 0;
 	cx = (68-0);
@@ -18494,7 +18560,7 @@ nothingund:
 void DreamGenContext::checkifperson() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5));
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5));
 	cx = 12;
 identifyreel:
 	push(cx);
@@ -18557,7 +18623,7 @@ notareelid:
 void DreamGenContext::checkifset() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32))+(127*5);
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32))+(127*5);
 	cx = 127;
 identifyset:
 	_cmp(es.byte(bx+4), 255);
@@ -18598,7 +18664,7 @@ notasetid:
 void DreamGenContext::checkifex() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5))+(99*5);
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5))+(99*5);
 	cx = 99;
 identifyex:
 	_cmp(es.byte(bx+4), 255);
@@ -18633,7 +18699,7 @@ notanexid:
 void DreamGenContext::checkiffree() {
 	STACK_CHECK;
 	es = data.word(kBuffers);
-	bx = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5))+(79*5);
+	bx = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5))+(79*5);
 	cx = 79;
 identifyfree:
 	_cmp(es.byte(bx+4), 255);
@@ -20222,7 +20288,7 @@ void DreamGenContext::getunderzoom() {
 	di = (8)+5;
 	bx = (132)+4;
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5));
 	cl = 46;
 	ch = 40;
 	multiget();
@@ -20245,7 +20311,7 @@ void DreamGenContext::putunderzoom() {
 	di = (8)+5;
 	bx = (132)+4;
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5));
+	si = (0+(228*13)+32+60+(32*32)+(11*10*3)+768+768+768+(32*32)+(128*5)+(80*5)+(100*5)+(12*5));
 	cl = 46;
 	ch = 40;
 	multiput();
@@ -20312,7 +20378,7 @@ notsmally:
 	data.byte(kPointerys) = ch;
 	push(ds);
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60);
+	si = (0+(228*13)+32+60);
 	multiget();
 	ds = pop();
 	di = pop();
@@ -20375,7 +20441,7 @@ notsmally2:
 	_sub(data.word(kOldpointery), ax);
 	_sub(bx, ax);
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60);
+	si = (0+(228*13)+32+60);
 	multiget();
 	ds = pop();
 	di = pop();
@@ -20405,7 +20471,7 @@ void DreamGenContext::delpointer() {
 	ch = data.byte(kPointerys);
 	data.byte(kDelys) = ch;
 	ds = data.word(kBuffers);
-	si = (0+(180*10)+32+60);
+	si = (0+(228*13)+32+60);
 	di = data.word(kDelherex);
 	bx = data.word(kDelherey);
 	multiput();
@@ -20437,10 +20503,15 @@ void DreamGenContext::undertextline() {
 	STACK_CHECK;
 	di = data.word(kTextaddressx);
 	bx = data.word(kTextaddressy);
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp1;
+	_sub(bx, 3);
+_tmp1:
 	ds = data.word(kBuffers);
 	si = (0);
-	cl = (180);
-	ch = (10);
+	cl = (228);
+	ch = (13);
 	multiget();
 }
 
@@ -20448,10 +20519,15 @@ void DreamGenContext::deltextline() {
 	STACK_CHECK;
 	di = data.word(kTextaddressx);
 	bx = data.word(kTextaddressy);
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp1;
+	_sub(bx, 3);
+_tmp1:
 	ds = data.word(kBuffers);
 	si = (0);
-	cl = (180);
-	ch = (10);
+	cl = (228);
+	ch = (13);
 	multiput();
 }
 
@@ -20463,8 +20539,13 @@ void DreamGenContext::dumptextline() {
 	data.byte(kNewtextline) = 0;
 	di = data.word(kTextaddressx);
 	bx = data.word(kTextaddressy);
-	cl = (180);
-	ch = (10);
+	_cmp(data.byte(kForeignrelease),  0);
+	if (flags.z())
+		goto _tmp1;
+	_sub(bx, 3);
+_tmp1:
+	cl = (228);
+	ch = (13);
 	multidump();
 }
 
@@ -21987,7 +22068,7 @@ void DreamGenContext::__start() {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, };
+		0x00, 0x00, 0x00, 0x00, 0x00, };
 	ds.assign(src, src + sizeof(src));
 dreamweb(); 
 }
@@ -22125,7 +22206,6 @@ void DreamGenContext::__dispatch_call(uint16 addr) {
 		case 0xc214: delthisone(); break;
 		case 0xc228: doblocks(); break;
 		case 0xc22c: showframe(); break;
-		case 0xc230: frameoutv(); break;
 		case 0xc238: frameoutbh(); break;
 		case 0xc23c: frameoutfx(); break;
 		case 0xc240: transferinv(); break;

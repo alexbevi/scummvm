@@ -6,9 +6,10 @@ Printchar	proc	near
 	cmp	al,255
 	jz	ignoreit
 	push	si bx di
-	if	foreign
+	cmp	foreignrelease, 0
+	jz $1
 	sub	bx,3
-	endif
+$1:
 	push	ax
 	sub	al,32 ;"A"
 	mov	ah,0
@@ -588,4 +589,3 @@ nomod:	ret
 	endp
 
 	endif
-

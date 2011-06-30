@@ -239,6 +239,15 @@ void DreamGenContext::removeemm() {
 }
 
 void DreamGenContext::setupemm() {
+	//good place for early initialization
+	switch(engine->getLanguage()) {
+	case Common::EN_ANY:
+	case Common::EN_GRB:
+	case Common::EN_USA:
+		return;
+	default:
+		data.byte(kForeignrelease) = 1;
+	}
 }
 
 void DreamGenContext::pitinterupt() {
@@ -425,7 +434,23 @@ void DreamGenContext::doshake() {
 }
 
 void DreamGenContext::vsync() {
+	push(ax);
+	push(bx);
+	push(cx);
+	push(dx);
+	push(si);
+	push(di);
+	push(es);
+	push(ds);
 	engine->waitForVSync();
+	ds = pop();
+	es = pop();
+	di = pop();
+	si = pop();
+	dx = pop();
+	cx = pop();
+	bx = pop();
+	ax = pop();
 }
 
 void DreamGenContext::setmode() {
@@ -501,6 +526,32 @@ void DreamGenContext::showpcx() {
 
 	g_system->unlockScreen();
 	pcxFile.close();
+}
+
+void DreamGenContext::frameoutv() {
+	uint16 pitch = dx;
+	uint16 width = cx & 0xff;
+	uint16 height = cx >> 8;
+	uint16 stride = pitch - width;
+
+	const uint8* src = ds.ptr(si, width * height);
+	uint8* base = es.ptr(di, stride * height);
+	uint8* dst = base + pitch * bx;
+
+	// NB: Original code assumes non-zero width and height, "for" are unneeded, do-while would suffice but would be less readable
+	for (uint16 y = 0; y < height; ++y) {
+		for (uint16 x = 0; x < width; ++x) {
+			uint8 pixel = *src++;
+			if (pixel)
+				*dst = pixel;
+			++dst;
+		}
+		dst += stride;
+	}
+}
+
+void DreamGenContext::modifychar() {
+	al = engine->modifyChar(al);
 }
 
 } /*namespace dreamgen */

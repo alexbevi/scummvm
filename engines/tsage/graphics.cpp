@@ -326,7 +326,7 @@ void GfxSurface::synchronize(Serializer &s) {
 			s.syncAsSint16LE(zero);
 		}
 	} else {
-		int w, h;
+		int w = 0, h = 0;
 		s.syncAsSint16LE(w);
 		s.syncAsSint16LE(h);
 
@@ -895,7 +895,7 @@ bool GfxButton::process(Event &event) {
 
 	case EVENT_KEYPRESS:
 		if (!event.handled && (event.kbd.keycode == _keycode)) {
-			// TODO: Ensure momentary click operation displays
+			// Highlight the button momentarily
 			highlight();
 			g_system->delayMillis(20);
 			highlight();

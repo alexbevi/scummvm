@@ -20,7 +20,7 @@
  *
  */
 
-#include "lastexpress/game/menu.h"
+#include "lastexpress/menu/menu.h"
 
 // Data
 #include "lastexpress/data/animation.h"
@@ -28,14 +28,20 @@
 #include "lastexpress/data/snd.h"
 #include "lastexpress/data/scene.h"
 
-#include "lastexpress/game/fight.h"
+#include "lastexpress/fight/fight.h"
+
 #include "lastexpress/game/inventory.h"
 #include "lastexpress/game/logic.h"
 #include "lastexpress/game/savegame.h"
 #include "lastexpress/game/savepoint.h"
 #include "lastexpress/game/scenes.h"
-#include "lastexpress/game/sound.h"
 #include "lastexpress/game/state.h"
+
+#include "lastexpress/menu/clock.h"
+#include "lastexpress/menu/trainline.h"
+
+#include "lastexpress/sound/queue.h"
+#include "lastexpress/sound/sound.h"
 
 #include "lastexpress/graphics.h"
 #include "lastexpress/helpers.h"
@@ -118,45 +124,6 @@ enum StartMenuTooltips {
 //////////////////////////////////////////////////////////////////////////
 // DATA
 //////////////////////////////////////////////////////////////////////////
-
-// Information about the cities on the train line
-static const struct {
-	uint8 frame;
-	TimeValue time;
-} _trainCities[31] = {
-	{0, kTimeCityParis},
-	{9, kTimeCityEpernay},
-	{11, kTimeCityChalons},
-	{16, kTimeCityBarLeDuc},
-	{21, kTimeCityNancy},
-	{25, kTimeCityLuneville},
-	{35, kTimeCityAvricourt},
-	{37, kTimeCityDeutschAvricourt},
-	{40, kTimeCityStrasbourg},
-	{53, kTimeCityBadenOos},
-	{56, kTimeCityKarlsruhe},
-	{60, kTimeCityStuttgart},
-	{63, kTimeCityGeislingen},
-	{66, kTimeCityUlm},
-	{68, kTimeCityAugsburg},
-	{73, kTimeCityMunich},
-	{84, kTimeCitySalzbourg},
-	{89, kTimeCityAttnangPuchheim},
-	{97, kTimeCityWels},
-	{100, kTimeCityLinz},
-	{104, kTimeCityAmstetten},
-	{111, kTimeCityVienna},
-	{120, kTimeCityPoszony},
-	{124, kTimeCityGalanta},
-	{132, kTimeCityBudapest},
-	{148, kTimeCityBelgrade},
-	/* Line 1 ends at 150 - line 2 begins at 0 */
-	{157, kTimeCityNish},
-	{165, kTimeCityTzaribrod},
-	{174, kTimeCitySofia},
-	{198, kTimeCityAdrianople},
-	{210, kTimeCityConstantinople}};
-
 static const struct {
 	TimeValue time;
 	uint index;
@@ -171,185 +138,6 @@ static const struct {
 	{kTimeCityBelgrade, 132, kTooltipRewindBelgrade, kTooltipForwardBelgrade},
 	{kTimeCityConstantinople, 192, kTooltipForwardConstantinople, kTooltipForwardConstantinople}
 };
-
-//////////////////////////////////////////////////////////////////////////
-// Clock
-//////////////////////////////////////////////////////////////////////////
-class Clock {
-public:
-	explicit Clock(LastExpressEngine *engine);
-	~Clock();
-
-	void draw(uint32 time);
-	void clear();
-
-private:
-	LastExpressEngine *_engine;
-
-	// Frames
-	SequenceFrame *_frameMinutes;
-	SequenceFrame *_frameHour;
-	SequenceFrame *_frameSun;
-	SequenceFrame *_frameDate;
-};
-
-Clock::Clock(LastExpressEngine *engine) : _engine(engine), _frameMinutes(NULL), _frameHour(NULL), _frameSun(NULL), _frameDate(NULL) {
-	_frameMinutes = new SequenceFrame(loadSequence("eggmin.seq"), 0, true);
-	_frameHour = new SequenceFrame(loadSequence("egghour.seq"), 0, true);
-	_frameSun = new SequenceFrame(loadSequence("sun.seq"), 0, true);
-	_frameDate = new SequenceFrame(loadSequence("datenew.seq"), 0, true);
-}
-
-Clock::~Clock() {
-	SAFE_DELETE(_frameMinutes);
-	SAFE_DELETE(_frameHour);
-	SAFE_DELETE(_frameSun);
-	SAFE_DELETE(_frameDate);
-
-	// Zero passed pointers
-	_engine = NULL;
-}
-
-void Clock::clear() {
-	getScenes()->removeFromQueue(_frameMinutes);
-	getScenes()->removeFromQueue(_frameHour);
-	getScenes()->removeFromQueue(_frameSun);
-	getScenes()->removeFromQueue(_frameDate);
-}
-
-void Clock::draw(uint32 time) {
-	assert(time >= kTimeCityParis && time <= kTimeCityConstantinople);
-
-	// Check that sequences have been loaded
-	if (!_frameMinutes || !_frameHour || !_frameSun || !_frameDate)
-		error("Clock::process: clock sequences have not been loaded correctly!");
-
-	// Clear existing frames
-	clear();
-
-	// Game starts at: 1037700 = 7:13 p.m. on July 24, 1914
-	// Game ends at:   4941000 = 7:30 p.m. on July 26, 1914
-	// Game lasts for: 3903300 = 2 days + 17 mins = 2897 mins
-
-	// 15 = 1 second
-	// 15 * 60 = 900 = 1 minute
-	// 900 * 60 = 54000 = 1 hour
-	// 54000 * 24 = 1296000 = 1 day
-
-	// Calculate each sequence index from the current time
-
-	uint8 hour = 0;
-	uint8 minute = 0;
-	State::getHourMinutes(time, &hour, &minute);
-	uint32 index_date = 18 * time / 1296000;
-	if (hour == 23)
-		index_date += 18 * minute / 60;
-
-	// Set sequences frames
-	_frameMinutes->setFrame(minute);
-	_frameHour->setFrame((5 * hour + minute / 12) % 60);
-	_frameSun->setFrame((5 * hour + minute / 12) % 120);
-	_frameDate->setFrame((uint16)index_date);
-
-	// Adjust z-order and queue
-	_frameMinutes->getInfo()->location = 1;
-	_frameHour->getInfo()->location = 1;
-	_frameSun->getInfo()->location = 1;
-	_frameDate->getInfo()->location = 1;
-
-	getScenes()->addToQueue(_frameMinutes);
-	getScenes()->addToQueue(_frameHour);
-	getScenes()->addToQueue(_frameSun);
-	getScenes()->addToQueue(_frameDate);
-}
-
-//////////////////////////////////////////////////////////////////////////
-// TrainLine
-//////////////////////////////////////////////////////////////////////////
-class TrainLine {
-public:
-	explicit TrainLine(LastExpressEngine *engine);
-	~TrainLine();
-
-	void draw(uint32 time);
-	void clear();
-
-private:
-	LastExpressEngine *_engine;
-
-	// Frames
-	SequenceFrame *_frameLine1;
-	SequenceFrame *_frameLine2;
-};
-
-TrainLine::TrainLine(LastExpressEngine *engine) : _engine(engine), _frameLine1(NULL), _frameLine2(NULL) {
-	_frameLine1 = new SequenceFrame(loadSequence("line1.seq"), 0, true);
-	_frameLine2 = new SequenceFrame(loadSequence("line2.seq"), 0, true);
-}
-
-TrainLine::~TrainLine() {
-	SAFE_DELETE(_frameLine1);
-	SAFE_DELETE(_frameLine2);
-
-	// Zero passed pointers
-	_engine = NULL;
-}
-
-void TrainLine::clear() {
-	getScenes()->removeFromQueue(_frameLine1);
-	getScenes()->removeFromQueue(_frameLine2);
-}
-
-// Draw the train line at the time
-//  line1: 150 frames (=> Belgrade)
-//  line2: 61 frames (=> Constantinople)
-void TrainLine::draw(uint32 time) {
-	assert(time >= kTimeCityParis && time <= kTimeCityConstantinople);
-
-	// Check that sequences have been loaded
-	if (!_frameLine1 || !_frameLine2)
-		error("TrainLine::process: Line sequences have not been loaded correctly!");
-
-	// Clear existing frames
-	clear();
-
-	// Get the index of the last city the train has visited
-	uint index = 0;
-	for (uint i = 0; i < ARRAYSIZE(_trainCities); i++)
-		if ((uint32)_trainCities[i].time <= time)
-			index = i;
-
-	uint16 frame;
-	if (time > (uint32)_trainCities[index].time) {
-		// Interpolate linearly to use a frame between the cities
-		uint8 diffFrames = _trainCities[index + 1].frame - _trainCities[index].frame;
-		uint diffTimeCities = (uint)(_trainCities[index + 1].time - _trainCities[index].time);
-		uint traveledTime = (time - (uint)_trainCities[index].time);
-		frame = (uint16)(_trainCities[index].frame + (traveledTime * diffFrames) / diffTimeCities);
-	} else {
-		// Exactly on the city
-		frame = _trainCities[index].frame;
-	}
-
-	// Set frame, z-order and queue
-	if (frame < 150) {
-		_frameLine1->setFrame(frame);
-
-		_frameLine1->getInfo()->location = 1;
-		getScenes()->addToQueue(_frameLine1);
-	} else {
-		// We passed Belgrade
-		_frameLine1->setFrame(149);
-		_frameLine2->setFrame(frame - 150);
-
-		_frameLine1->getInfo()->location = 1;
-		_frameLine2->getInfo()->location = 1;
-
-		getScenes()->addToQueue(_frameLine1);
-		getScenes()->addToQueue(_frameLine2);
-	}
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 // Menu
@@ -528,7 +316,7 @@ void Menu::show(bool doSavegame, SavegameType type, uint32 value) {
 				getFlags()->mouseRightClick = false;
 
 				// Play intro music
-				getSound()->playSoundWithSubtitles("MUS001.SND", SoundManager::kFlagMusic, kEntityPlayer);
+				getSound()->playSoundWithSubtitles("MUS001.SND", kFlagMusic, kEntityPlayer);
 
 				// Show The Smoking Car logo
 				if (animation.load(getArchive("1931.nis")))
@@ -539,7 +327,7 @@ void Menu::show(bool doSavegame, SavegameType type, uint32 value) {
 		} else {
 			// Only show the quick intro
 			if (!_hasShownStartScreen) {
-				getSound()->playSoundWithSubtitles("MUS018.SND", SoundManager::kFlagMusic, kEntityPlayer);
+				getSound()->playSoundWithSubtitles("MUS018.SND", kFlagMusic, kEntityPlayer);
 				getScenes()->loadScene(kSceneStartScreen);
 
 				// Original game waits 60 frames and loops Sound::unknownFunction1 unless the right button is pressed
@@ -550,7 +338,7 @@ void Menu::show(bool doSavegame, SavegameType type, uint32 value) {
 					if (getFlags()->mouseRightClick)
 						break;
 
-					getSound()->updateQueue();
+					getSoundQueue()->updateQueue();
 				}
 			}
 		}
@@ -562,10 +350,10 @@ void Menu::show(bool doSavegame, SavegameType type, uint32 value) {
 	init(doSavegame, type, value);
 
 	// Setup sound
-	getSound()->unknownFunction4();
-	getSound()->resetQueue(SoundManager::kSoundType11, SoundManager::kSoundType13);
-	if (getSound()->isBuffered("TIMER"))
-		getSound()->removeFromQueue("TIMER");
+	getSoundQueue()->resetQueue();
+	getSoundQueue()->resetQueue(kSoundType11, kSoundType13);
+	if (getSoundQueue()->isBuffered("TIMER"))
+		getSoundQueue()->removeFromQueue("TIMER");
 
 	// Init flags & misc
 	_isShowingCredits = false;
@@ -625,13 +413,13 @@ bool Menu::handleEvent(StartMenuAction action, Common::EventType type) {
 		if (clicked) {
 			showFrame(kOverlayButtons, kButtonQuitPushed, true);
 
-			getSound()->clearStatus();
-			getSound()->updateQueue();
+			getSoundQueue()->clearStatus();
+			getSoundQueue()->updateQueue();
 			getSound()->playSound(kEntityPlayer, "LIB046");
 
 			// FIXME uncomment when sound queue is properly implemented
-			/*while (getSound()->isBuffered("LIB046"))
-				getSound()->updateQueue();*/
+			/*while (getSoundQueue()->isBuffered("LIB046"))
+				getSoundQueue()->updateQueue();*/
 
 			getFlags()->shouldRedraw = false;
 
@@ -698,7 +486,7 @@ bool Menu::handleEvent(StartMenuAction action, Common::EventType type) {
 		setLogicEventHandlers();
 
 		if (_index) {
-			getSound()->processEntry(SoundManager::kSoundType11);
+			getSoundQueue()->processEntry(kSoundType11);
 		} else {
 			if (!getFlags()->mouseRightClick) {
 				getScenes()->loadScene((SceneIndex)(5 * _gameId + 3));
@@ -710,7 +498,7 @@ bool Menu::handleEvent(StartMenuAction action, Common::EventType type) {
 						getScenes()->loadScene((SceneIndex)(5 * _gameId + 5));
 
 						if (!getFlags()->mouseRightClick) {
-							getSound()->processEntry(SoundManager::kSoundType11);
+							getSoundQueue()->processEntry(kSoundType11);
 
 							// Show intro
 							Animation animation;
@@ -726,7 +514,7 @@ bool Menu::handleEvent(StartMenuAction action, Common::EventType type) {
 			if (!getEvent(kEventIntro))	{
 				getEvent(kEventIntro) = 1;
 
-				getSound()->processEntry(SoundManager::kSoundType11);
+				getSoundQueue()->processEntry(kSoundType11);
 			}
 		}
 
@@ -921,7 +709,7 @@ bool Menu::handleEvent(StartMenuAction action, Common::EventType type) {
 			while (nextFrameCount > getFrameCount()) {
 				_engine->pollEvents();
 
-				getSound()->updateQueue();
+				getSoundQueue()->updateQueue();
 			}
 		} else {
 			showFrame(kOverlayButtons, kButtonVolumeDown, true);
@@ -956,7 +744,7 @@ bool Menu::handleEvent(StartMenuAction action, Common::EventType type) {
 			while (nextFrameCount > getFrameCount()) {
 				_engine->pollEvents();
 
-				getSound()->updateQueue();
+				getSoundQueue()->updateQueue();
 			}
 		} else {
 			showFrame(kOverlayButtons, kButtonVolumeUp, true);
@@ -1072,7 +860,7 @@ void Menu::init(bool doSavegame, SavegameType type, uint32 value) {
 			useSameIndex = false;
 
 			// TODO remove existing savegame and reset index & savegame name
-			warning("Menu::initGame: not implemented!");
+			warning("[Menu::initGame] Not implemented");
 		}
 
 		doSavegame = false;
@@ -1331,10 +1119,10 @@ void Menu::updateTime(uint32 time) {
 	_currentTime = time;
 
 	if (_time != time) {
-		if (getSound()->isBuffered(kEntityChapters))
-			getSound()->removeFromQueue(kEntityChapters);
+		if (getSoundQueue()->isBuffered(kEntityChapters))
+			getSoundQueue()->removeFromQueue(kEntityChapters);
 
-		getSound()->playSoundWithSubtitles((_currentTime >= _time) ? "LIB042" : "LIB041", SoundManager::kFlagMenuClock, kEntityChapters);
+		getSound()->playSoundWithSubtitles((_currentTime >= _time) ? "LIB042" : "LIB041", kFlagMenuClock, kEntityChapters);
 		adjustIndex(_currentTime, _time, false);
 	}
 }
@@ -1463,8 +1251,8 @@ void Menu::adjustTime() {
 			_time = _currentTime;
 	}
 
-	if (_currentTime == _time && getSound()->isBuffered(kEntityChapters))
-		getSound()->removeFromQueue(kEntityChapters);
+	if (_currentTime == _time && getSoundQueue()->isBuffered(kEntityChapters))
+		getSoundQueue()->removeFromQueue(kEntityChapters);
 
 	_clock->draw(_time);
 	_trainLine->draw(_time);

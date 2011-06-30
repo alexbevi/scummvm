@@ -30,16 +30,6 @@
 
 #include "dreamweb/dreamweb.h"
 
-#include "engines/advancedDetector.h"
-
-namespace DreamWeb {
-
-struct DreamWebGameDescription {
-	ADGameDescription desc;
-};
-
-} // End of namespace DreamWeb
-
 static const PlainGameDescriptor dreamWebGames[] = {
 	{ "dreamweb", "DreamWeb" },
 	{ 0, 0 }
@@ -86,6 +76,8 @@ bool DreamWeb::DreamWebEngine::hasFeature(EngineFeature f) const {
 	switch(f) {
 	case kSupportsRTL:
 		return true;
+	case kSupportsSubtitleOptions:
+		return _gameDescription->desc.flags & ADGF_CD;
 	default:
 		return false;
 	}
