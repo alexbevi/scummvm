@@ -49,7 +49,7 @@ ResourceManager::ResourceManager() {
 	char tmp[FILENAME_LEN];
 	indexFile.read(tmp, 4);
 	if (tmp[0] != 0x0 || tmp[1] != 0x2 || tmp[2] != 0x4 || tmp[3] != 0x7) {
-		printf("Unknown index file signature: %x %x %x %x\n", tmp[0], tmp[1], tmp[2], tmp[3]);
+		warning("Unknown index file signature: %x %x %x %x\n", tmp[0], tmp[1], tmp[2], tmp[3]);
 		//exit(1);
 	}
 
@@ -99,7 +99,7 @@ ResourceManager::ResourceManager() {
 			resourceFileInfo.offset += FILENAME_LEN + 4;
 
 			/*
-			printf("%s/%s: hash(%x) offset(%x) size(%x)\n",
+			debug("%s/%s: hash(%x) offset(%x) size(%x)",
 				resourceFileInfo.fileName.c_str(), filename.c_str(),
 				resourceFileInfo.hash, resourceFileInfo.offset, resourceFileInfo.size);
 			*/
@@ -188,7 +188,7 @@ Common::String ResourceManager::findGDS(void) {
 void ResourceManager::dumpResources(Common::String const &path, bool subres) {
 	Common::FSNode node(path);
 	if (!node.isDirectory()) {
-		printf("%s isn't a directory. Please create it.\n", path.c_str());
+		warning("%s isn't a directory. Please create it.", path.c_str());
 		return;
 	}
 

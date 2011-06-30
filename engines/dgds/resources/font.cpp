@@ -85,7 +85,7 @@ void Font::loadFNT(Resource *resFNT) {
 		for (int i = 0; i < _numChars; i++) {
 			_offsets[i] = decomp->readUint16LE();
 			//if (_offsets[i] != i * 8)
-				//printf("WARNING: got %d expected %d\n", size, i * 8);
+				//warning("WARNING: got %d expected %d", size, i * 8);
 		}
 
 		// Get the width of the characters
@@ -105,7 +105,7 @@ void Font::loadFNT(Resource *resFNT) {
 		_faces = new byte[_sizey * _numChars];
 		resFNT->read(_faces, _sizey * _numChars);
 	}
-	printf("size(%dx%d) first(%d) number(%d)\n", _sizex, _sizey, _firstChar, _numChars);
+	debug("size(%dx%d) first(%d) number(%d)", _sizex, _sizey, _firstChar, _numChars);
 }
 
 bool Font::hasChar(char c) {

@@ -104,107 +104,107 @@ void Movie::loadTT3(Resource *res) {
 
 void Movie::play() {
 	for (uint32 i = 0; i < _chunks.size(); i++) {
-		printf("%4d %04x %-39s: ", i, _chunks[i]->code, _chunks[i]->name.c_str() );
+		debugN("%4d %04x %-39s: ", i, _chunks[i]->code, _chunks[i]->name.c_str() );
 
 		for (uint32 j = 0; j < _chunks[i]->data.size(); j++)
-			printf(" %4d", _chunks[i]->data[j]);
+			debugN(" %4d", _chunks[i]->data[j]);
 
 		for (uint32 j = _chunks[i]->data.size(); j < 8; j++)
-			printf("     ");
+			debugN("     ");
 
 		switch (_chunks[i]->code) {
 		case kChunkSaveBackground:
-			printf(" save background");
+			debugN(" save background");
 			break;
 		case kChunkDrawBackground:
-			printf(" draw background");
+			debugN(" draw background");
 			break;
 		case kChunkPurgeSavedImages:
-			printf(" purge saved images");
+			debugN(" purge saved images");
 			break;
 		case kChunkUpdate:
-			printf(" update");
+			debugN(" update");
 			break;
 		case kChunkDelay:
-			printf(" delay (delay)");
+			debugN(" delay (delay)");
 			break;
 		case kChunkSelectImage:
-			printf(" select image (image)");
+			debugN(" select image (image)");
 			break;
 		case kChunkSelectPalette:
-			printf(" select palette (palette)");
+			debugN(" select palette (palette)");
 			break;
 		case kChunkSetScene:
-			printf(" set scene (scene)");
+			debugN(" set scene (scene)");
 			break;
 		case kChunkSetFrame_1:
-			printf(" set frame (?, frame)");
+			debugN(" set frame (?, frame)");
 			break;
 		case kChunkSetFrame_2:
-			printf(" set frame (?, frame)");
+			debugN(" set frame (?, frame)");
 			break;
 		case kChunkSetWindow_1:
-			printf(" set window (x, y, w, h)");
+			debugN(" set window (x, y, w, h)");
 			break;
 		case kChunkFadeOut:
-			printf(" fade out (first, n, steps, delay)");
+			debugN(" fade out (first, n, steps, delay)");
 			break;
 		case kChunkFadeIn:
-			printf(" fade in (first, n, steps, delay)");
+			debugN(" fade in (first, n, steps, delay)");
 			break;
 		case kChunkSaveImage_1:
-			printf(" save image (x, y, w, h)");
+			debugN(" save image (x, y, w, h)");
 			break;
 		case kChunkSaveImage_2:
-			printf(" save image (x, y, w, h)");
+			debugN(" save image (x, y, w, h)");
 			break;
 		case kChunkSetWindow_2:
-			printf(" set window (x, y, w, h)");
+			debugN(" set window (x, y, w, h)");
 			break;
 		case kChunkDrawSprite_1:
-			printf(" draw sprite (x, y, frame, image)");
+			debugN(" draw sprite (x, y, frame, image)");
 			break;
 		case kChunkDrawSprite_2:
-			printf(" draw sprite (x, y, frame, image)");
+			debugN(" draw sprite (x, y, frame, image)");
 			break;
 		case kChunkDrawSprite_3:
-			printf(" draw sprite (x, y, frame, image)");
+			debugN(" draw sprite (x, y, frame, image)");
 			break;
 		case kChunkDrawSprite_4:
-			printf(" draw sprite (x, y, frame, image)");
+			debugN(" draw sprite (x, y, frame, image)");
 			break;
 		case kChunkDrawScreen:
-			printf(" draw screen (x, y, w, h, ?, ?)");
+			debugN(" draw screen (x, y, w, h, ?, ?)");
 			break;
 		case kChunkLoadSound:
-			printf(" load sound resource");
+			debugN(" load sound resource");
 			break;
 		case kChunkSelectSound:
-			printf(" select sound (sound)");
+			debugN(" select sound (sound)");
 			break;
 		case kChunkDisableSound:
-			printf(" disable sound (sound)");
+			debugN(" disable sound (sound)");
 			break;
 		case kChunkPlaySound:
-			printf(" play sound (sound)");
+			debugN(" play sound (sound)");
 			break;
 		case kChunkStopSound:
-			printf(" stop sound (sound)");
+			debugN(" stop sound (sound)");
 			break;
 		case kChunkLoadScreen:
-			printf(" load screen resource");
+			debugN(" load screen resource");
 			break;
 		case kChunkLoadImage:
-			printf(" load image resource");
+			debugN(" load image resource");
 			break;
 		case kChunkLoadPalette:
-			printf(" load palette resource");
+			debugN(" load palette resource");
 			break;
 		default:
-		printf(" unknown");
-		break;
+			debugN(" unknown");
+			break;
 		}
-		printf("\n");
+		debug(" ");
 	}
 }
 

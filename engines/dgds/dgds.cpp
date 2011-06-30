@@ -42,8 +42,8 @@ namespace Dgds {
 DgdsEngine::DgdsEngine(OSystem *syst, Common::Language lang): Engine(syst), _language(lang), _resMgr(NULL) {
 	DebugMan.addDebugChannel(kDebugResources, "Resources", "Debug Information for Resources");
 
-	g_eventRec.registerRandomSource(_rnd, "dgds");
 	DebugMan.enableDebugChannel("Resources");
+	_rnd = new Common::RandomSource("dgds");
 }
 
 DgdsEngine::~DgdsEngine() {
@@ -54,6 +54,7 @@ DgdsEngine::~DgdsEngine() {
 		delete _game;
 
 	DebugMan.clearAllDebugChannels();
+	delete _rnd;
 }
 
 Common::Error DgdsEngine::init() {
@@ -69,7 +70,7 @@ Common::Error DgdsEngine::run() {
 		return Common::kNoGameDataFoundError;
 
 	if (gameName == "WILLY") {
-		printf("Starting Willy Beamish\n");
+		debug("Starting Willy Beamish");
 		_game = new WillyBeamish(this);
 	} else {
 		error("DGDS Title %s currently not supported", gameName.c_str());

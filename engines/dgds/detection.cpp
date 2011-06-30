@@ -155,8 +155,6 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 	AD_TABLE_END_MARKER
 };
 
-} // End of namespace Dgds
-
 static const ADGameDescription DgdsGameGeneric[] = {
 	{"dgds", 0,
 		AD_ENTRY1("volume.rmf", NULL),
@@ -168,32 +166,25 @@ static const ADGameDescription DgdsGameGeneric[] = {
 	AD_TABLE_END_MARKER
 };
 
-static const ADFileBasedFallback DgdsGameFallback[] = {
-	{(const void*)&DgdsGameGeneric[0], {"volume.rmf", NULL} },
-	{(const void*)&DgdsGameGeneric[0], {"volume.vga", NULL} },
-	{(const void*)&DgdsGameGeneric[0], {"resource.map", NULL} },
+static const ADFileBasedFallback fileBasedFallback[] = {
+	{&DgdsGameGeneric[0], {"volume.rmf", NULL} },
+	{&DgdsGameGeneric[0], {"volume.vga", NULL} },
+	{&DgdsGameGeneric[0], {"resource.map", NULL} },
 	{0, {NULL}}
 };
 
-static const ADParams detectionParams = {
-	(const byte *)Dgds::DgdsGameDescriptions,
-	sizeof(ADGameDescription),
-	0, // number of md5 bytes
-	DgdsGameTitles,
-	0, // no obsolete targets data
-	"dgds",
-	DgdsGameFallback, // file-based detection data to enable not yet known versions to start
-	kADFlagPrintWarningOnFileBasedFallback,
-	Common::GUIO_NONE,
-	// Maximum directory depth
-	1,
-	// List of directory globs
-	0
-};
+} // End of namespace Dgds
 
 class DgdsMetaEngine : public AdvancedMetaEngine {
 public:
-	DgdsMetaEngine() : AdvancedMetaEngine(detectionParams) {}
+	DgdsMetaEngine() : AdvancedMetaEngine(Dgds::DgdsGameDescriptions, sizeof(ADGameDescription), DgdsGameTitles) {
+		_md5Bytes = 0;
+		_singleid = "dgds";
+	}
+
+	virtual const ADGameDescription *fallbackDetect(const FileMap &allFiles, const Common::FSList &fslist) const {
+		return detectGameFilebased(allFiles, Dgds::fileBasedFallback);
+	}
 
 	virtual const char *getName() const { return "Dynamix Game Development System"; }
 	virtual const char *getOriginalCopyright() const { return "Dynamix Game Development System (c) Dynamix"; }

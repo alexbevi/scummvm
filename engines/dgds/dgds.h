@@ -53,7 +53,7 @@ public:
 
 private:
 	Common::Language     _language;
-	Common::RandomSource _rnd;
+	Common::RandomSource *_rnd;
 
 	Game *_game;
 	ResourceManager *_resMgr;

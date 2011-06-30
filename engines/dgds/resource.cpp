@@ -50,7 +50,7 @@ Resource::Resource(Common::String name, Common::SeekableReadStream *stream, bool
 			_stream->read(tmp, 4);
 
 			if (tmp[3] != ':') {
-				printf("TAG error\n");
+				warning("TAG error");
 				return;
 			}
 
@@ -81,14 +81,14 @@ Resource::~Resource() {
 
 void Resource::listTags() {
 	for (uint32 i = 0; i < _subResources.size(); i++) {
-		printf("%s\n", _subResources[i].tag.c_str());
+		debug("%s", _subResources[i].tag.c_str());
 		break;
 	}
 }
 
 Common::Array<Resource *> Resource::getSubResourceCollection(Common::String const &tag) {
 	Common::Array<Resource *> col;
-	printf("%d\n", _subResources.size());
+	debug("%d", _subResources.size());
 
 	return col;
 }
