@@ -26,32 +26,42 @@
 #include "innocent/musicparser.h"
 
 #include "common/endian.h"
-#include "sound/mididrv.h"
+#include "audio/mididrv.h"
 
 #include "innocent/resources.h"
 #include "innocent/util.h"
 
+namespace Common {
+	DECLARE_SINGLETON(Innocent::MusicParser);
+}
+
 namespace Innocent {
 //
 
-DECLARE_SINGLETON(MusicParser);
+MusicParser::MusicParser() : MidiParser(), _time(0), _lasttick(0), _tick(0) {
+	MidiDriver::DeviceHandle dev = MidiDriver::detectDevice(MDT_MIDI | MDT_ADLIB | MDT_PREFER_GM);
+	_midiDriver = MidiDriver::createMidi(dev);
+	_midiDriver->open();
 
-MusicParser::MusicParser() : MidiParser(), _time(0), _lasttick(0), _tick(0) {}
+	setMidiDriver(_midiDriver);
+	setTimerRate(_midiDriver->getBaseTempo());
+	_midiDriver->setTimerCallback(this, &MusicParser::timerCallback);
+}
 
 MusicParser::~MusicParser() {
 	silence();
 	unloadMusic();
-//	_driver->close(); // XXX segfaults
+	_midiDriver->setTimerCallback(0, 0);
+	_midiDriver->close();
+	setMidiDriver(0);
+	delete _midiDriver;
 }
 
-bool MusicParser::loadMusic(byte *data, uint32 /*size*/) {
+bool MusicParser::loadMusic(byte *data, uint32 size) {
 	unloadMusic();
 	silence();
 	_script.reset(new MusicScript(data));
 	_tune.reset(new Tune(_script->getTune()));
-
-	setTimerRate(_driver->getBaseTempo());
-	_driver->setTimerCallback(this, &MusicParser::timerCallback);
 
 	_num_tracks = 1;
 	_ppqn = 120;

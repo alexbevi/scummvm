@@ -32,7 +32,8 @@
 #include "common/noncopyable.h"
 #include "common/queue.h"
 #include "common/singleton.h"
-#include "sound/midiparser.h"
+#include "audio/midiparser.h"
+#include "audio/mididrv.h"
 
 #include "innocent/value.h"
 
@@ -163,6 +164,7 @@ private:
 	std::auto_ptr<MusicScript> _script;
 
 	uint32 _time, _lasttick, _tick;
+	MidiDriver *_midiDriver;
 };
 
 #define Music MusicParser::instance()

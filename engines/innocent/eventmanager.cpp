@@ -31,10 +31,12 @@
 
 using namespace std;
 
+namespace Common {
+	DECLARE_SINGLETON(Innocent::EventManager);
+}
+
 namespace Innocent {
 //
-
-DECLARE_SINGLETON(EventManager);
 
 Clickable::Clickable() {
 	EventManager::instance().push(this);

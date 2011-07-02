@@ -25,8 +25,6 @@
 
 #include "innocent/actor.h"
 
-#include <sstream>
-
 #include "common/rect.h"
 
 #include "innocent/graphics.h"
@@ -145,12 +143,12 @@ Common::List<Actor::Frame> Actor::findPath(Actor::Frame from, uint16 to) {
 		back--;
 		Common::List<Frame>::iterator current = back->begin();
 		Common::List<Frame> next;
-		std::ostringstream s;
+		Common::String s;
 		while (!found && current != back->end()) {
 			std::vector<byte> nexts = current->nexts();
 			for (int i = 0; i < 8; i++)
 				if (nexts[i]) {
-					s << ", " << int(nexts[i]);
+					s += Common::String::format(", %d", int(nexts[i]));
 					next.push_back(Log.room()->getFrame(nexts[i]));
 					if (nexts[i] == to) {
 						found = true;
@@ -160,7 +158,7 @@ Common::List<Actor::Frame> Actor::findPath(Actor::Frame from, uint16 to) {
 			current++;
 		}
 		reachable.push_back(next);
-		debugC(4, kDebugLevelActor, "reachable on this level:%s", s.str().c_str());
+		debugC(4, kDebugLevelActor, "reachable on this level:%s", s.c_str());
 	}
 
 	Common::List<Frame> path;
@@ -202,16 +200,16 @@ void Actor::moveTo(uint16 frame) {
 		path = p;
 	}
 
-	std::ostringstream s;
+	Common::String s;
 	it = path.begin();
 	it++;
 	while (it != path.end()) {
 		_framequeue.push(*it);
-		s << " " << int(it->index());
+		s += Common::String::format(" %d", int(it->index()));
 		it++;
 	}
 
-	debugC(3, kDebugLevelActor, "found path: %s", s.str().c_str());
+	debugC(3, kDebugLevelActor, "found path: %s", s.c_str());
 	if (!_base)
 		nextFrame();
 }

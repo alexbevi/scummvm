@@ -26,11 +26,12 @@
 #ifndef INNOCENT_GRAPHICS_H
 #define INNOCENT_GRAPHICS_H
 
+// Used for auto_ptr (Not needed?)
 #include <memory>
 
 #include "common/rect.h"
+#include "common/list.h"
 #include "common/singleton.h"
-#include "config.h"
 
 #include "innocent/types.h"
 #include "innocent/value.h"
@@ -44,8 +45,8 @@ class Resources;
 class Surface;
 class Sprite;
 
-Common::Point &operator+=(Common::Point &p1, const Common::Point &p2);
-Common::Point &operator-=(Common::Point &p1, const Common::Point &p2);
+//Common::Point &operator+=(Common::Point &p1, const Common::Point &p2);
+//Common::Point &operator-=(Common::Point &p1, const Common::Point &p2);
 
 class Graphics : public Common::Singleton<Graphics> {
 public:

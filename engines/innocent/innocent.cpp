@@ -26,11 +26,14 @@
 #include "innocent/innocent.h"
 
 #include "common/config-manager.h"
+#include "common/debug-channels.h"
 #include "common/error.h"
 #include "common/scummsys.h"
 #include "common/system.h"
 #include "common/events.h"
-#include "sound/mididrv.h"
+#include "audio/mididrv.h"
+
+#include "engines/util.h"
 
 #include "innocent/debug.h"
 #include "innocent/debugger.h"
@@ -60,23 +63,23 @@ Engine::Engine(OSystem *syst) :
 	me = this;
 	_lastTicks = 0;
 
-	Common::addDebugChannel(kDebugLevelScript, "script", "bytecode scripts");
-	Common::addDebugChannel(kDebugLevelGraphics, "graphics", "graphics handling");
-	Common::addDebugChannel(kDebugLevelFlow, "flow", "game code flow status");
-	Common::addDebugChannel(kDebugLevelAnimation, "animation", "animations");
-	Common::addDebugChannel(kDebugLevelValues, "values", "really low-level debugging of value manipulation");
-	Common::addDebugChannel(kDebugLevelFiles, "files", "file input and output");
-	Common::addDebugChannel(kDebugLevelEvents, "events", "event handling");
-	Common::addDebugChannel(kDebugLevelMusic, "music", "music loading and playing");
-	Common::addDebugChannel(kDebugLevelActor, "actor", "actor animation and behaviour");
+	DebugMan.addDebugChannel(kDebugLevelScript, "script", "bytecode scripts");
+	DebugMan.addDebugChannel(kDebugLevelGraphics, "graphics", "graphics handling");
+	DebugMan.addDebugChannel(kDebugLevelFlow, "flow", "game code flow status");
+	DebugMan.addDebugChannel(kDebugLevelAnimation, "animation", "animations");
+	DebugMan.addDebugChannel(kDebugLevelValues, "values", "really low-level debugging of value manipulation");
+	DebugMan.addDebugChannel(kDebugLevelFiles, "files", "file input and output");
+	DebugMan.addDebugChannel(kDebugLevelEvents, "events", "event handling");
+	DebugMan.addDebugChannel(kDebugLevelMusic, "music", "music loading and playing");
+	DebugMan.addDebugChannel(kDebugLevelActor, "actor", "actor animation and behaviour");
 
-	/* XXX how to integrate this with EventRecorder? */
-//	syst->getEventManager()->registerRandomSource(_rnd, "innocent");
+	_rnd = new Common::RandomSource("innocent");
 }
 
 Engine::~Engine() {
-	Common::clearAllDebugChannels();
+	DebugMan.clearAllDebugChannels();
 	MusicParser::destroy();
+	delete _rnd;
 }
 
 Common::Error Engine::run() {
@@ -91,7 +94,7 @@ Common::Error Engine::run() {
 	_resources->init();
 	_graphics->init();
 
-	int midiDriver = MidiDriver::detectMusicDriver(MDT_MIDI);
+	int midiDriver = MidiDriver::detectDevice(MDT_MIDI);
 
 	MidiDriver *driver = MidiDriver::createMidi(midiDriver);
 
@@ -157,7 +160,7 @@ bool Engine::escapePressed() const {
 }
 
 uint16 Engine::getRandom(uint16 max) const {
-	return _rnd.getRandomNumber(max);
+	return _rnd->getRandomNumber(max);
 }
 
 void Engine::delay(int millis) const {

@@ -32,6 +32,7 @@
 #include "common/system.h"
 #include "common/util.h"
 #include "graphics/cursorman.h"
+#include "graphics/palette.h"
 
 #include "innocent/animation.h"
 #include "innocent/debug.h"
@@ -45,18 +46,20 @@
 
 using namespace std;
 
+namespace Common {
+	DECLARE_SINGLETON(Innocent::Graphics);
+}
+
 namespace Innocent {
 
-DECLARE_SINGLETON(Graphics);
+//Common::Point &operator+=(Common::Point &p1, const Common::Point &p2) { return p1 = Common::Point(p1.x + p2.x, p1.y + p2.y); }
 
-Common::Point &operator+=(Common::Point &p1, const Common::Point &p2) { return p1 = Common::Point(p1.x + p2.x, p1.y + p2.y); }
-
-Common::Point &operator-=(Common::Point &p1, const Common::Point &p2) { return p1 = Common::Point(p1.x - p2.x, p1.y - p2.y); }
+//Common::Point &operator-=(Common::Point &p1, const Common::Point &p2) { return p1 = Common::Point(p1.x - p2.x, p1.y - p2.y); }
 
 void Graphics::setEngine(Engine *engine) {
 	_engine = engine;
 	_framebuffer.reset(new Surface);
-	_framebuffer->create(320, 200, 1);
+	_framebuffer->create(320, 200, ::Graphics::PixelFormat::createFormatCLUT8());
 	_willFadein = false;
 
 	_speech = 0;
@@ -102,13 +105,13 @@ void Graphics::paintExits() {
 void Graphics::loadInterface() {
 	debugC(1, kDebugLevelGraphics, "loading interface");
 	_interface = new Surface;
-	_interface->create(320, 50, 1);
+	_interface->create(320, 50, ::Graphics::PixelFormat::createFormatCLUT8());
 	_resources->loadInterfaceImage(reinterpret_cast<byte *>(_interface->pixels), _interfacePalette);
 }
 
 void Graphics::prepareInterfacePalette() {
 	debugC(1, kDebugLevelGraphics, "preparing interface palette");
-	_engine->_system->setPalette(_interfacePalette + 160 * 4, 160, 96);
+	_system->getPaletteManager()->setPalette(_interfacePalette + 160 * 4, 160, 96);
 }
 
 void Graphics::paintInterface() {
@@ -178,7 +181,7 @@ uint16 Graphics::ask(uint16 left, uint16 top, byte width, byte height, byte *str
 	};
 
 	Surface frame;
-	frame.create(width * kFrameTileWidth, height * kFrameTileHeight+4, 1);
+	frame.create(width * kFrameTileWidth, height * kFrameTileHeight+4, ::Graphics::PixelFormat::createFormatCLUT8());
 
 	Sprite **frames = _resources->frames();
 
@@ -318,7 +321,7 @@ Common::Rect Graphics::paintSpeechInBubble(Common::Point pos, byte colour, const
 	if (horizontal_tiles == 0)
 		horizontal_tiles = 1;
 
-	bubble->create(65 + wadj + 4 * horizontal_tiles, 54 + 6 * vertical_tiles, 1);
+	bubble->create(65 + wadj + 4 * horizontal_tiles, 54 + 6 * vertical_tiles, ::Graphics::PixelFormat::createFormatCLUT8());
 
 	Common::Point position(wadj, 0);
 	paintSpeechBubbleColumn(bubbles[bubble_indices[kBubbleTopLeft]], bubbles[bubble_indices[kBubbleLeft]], position, vertical_tiles, bubble);
@@ -542,11 +545,11 @@ const char Graphics::_charwidths[] = {
 void Graphics::clearPalette(int offset, int count) {
 	byte pal[0x400];
 	fill(pal, pal+0x400, 0);
-	_system->setPalette(pal, offset, count);
+	_system->getPaletteManager()->setPalette(pal, offset, count);
 }
 
 void Graphics::setPalette(const byte *colours, uint start, uint num) {
-	_system->setPalette(colours, start, num);
+	_system->getPaletteManager()->setPalette(colours, start, num);
 
 	// calculate tinted palette
 	for (int i = 0; i < 256; ++i) {
@@ -585,7 +588,7 @@ struct Tr : public unary_function<byte, byte> {
 void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 	byte buf[0x400];
 	if (!colours) {
-		_system->grabPalette(buf, start, num);
+		_system->getPaletteManager()->grabPalette(buf, start, num);
 		colours = buf;
 	}
 
@@ -600,12 +603,12 @@ void Graphics::fadeIn(const byte *colours, uint start, uint num) {
 		for (int i = 0; i < bytes; i++)
 			current[i] = colours[i] - MIN(off, colours[i]);
 
-		_system->setPalette((current), start, num);
+		_system->getPaletteManager()->setPalette((current), start, num);
 		_system->updateScreen();
 		Eng.delay(1000/25);
 
 		if (Log.canSkipCutscene() && Eng.escapePressed()) {
-			_system->setPalette(colours, start, num);
+			_system->getPaletteManager()->setPalette(colours, start, num);
 			_system->updateScreen();
 			return;
 		}
@@ -624,13 +627,13 @@ bool Graphics::fadeOut(FadeFlags f) {
 		colours = 96;
 	}
 
-	_system->grabPalette(current, offset, colours);
+	_system->getPaletteManager()->grabPalette(current, offset, colours);
 
 	for (int j = 0; j < 63; j++) {
 		for (int i = 0; i < bytes; i++)
 			current[i] -= MIN<byte>(4, current[i]);
 
-		_system->setPalette((current), offset, colours);
+		_system->getPaletteManager()->setPalette((current), offset, colours);
 		_system->updateScreen();
 		Eng.delay(1000/25);
 

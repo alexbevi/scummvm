@@ -38,10 +38,12 @@
 #include "innocent/room.h"
 #include "innocent/util.h"
 
+namespace Common {
+	DECLARE_SINGLETON(Innocent::Debugger);
+}
+
 namespace Innocent {
 //
-
-DECLARE_SINGLETON(Debugger);
 
 Debugger::Debugger()
   :	_stepOpcodes(false),
@@ -62,7 +64,7 @@ Debugger::Debugger()
 
 void Debugger::setEngine(Engine *vm) {
 	_vm = vm;
-	DVar_Register("currentRoom", &(_vm->logic()->_currentRoom), DVAR_INT);
+	DVar_Register("currentRoom", &(_vm->logic()->_currentRoom), DVAR_INT, 0);
 }
 
 Logic *Debugger::logic() const {
@@ -73,8 +75,9 @@ Logic *Debugger::logic() const {
 
 CMD(debugActor) {
 	if (argc == 2) {
-		Log.getActor(atoi(argv[1]))->toggleDebug();
-		DebugPrintf("Toggled debugging on actor %d. Remember to toggle proper levels, too!\n");
+		int actorNum = atoi(argv[1]);
+		Log.getActor(actorNum)->toggleDebug();
+		DebugPrintf("Toggled debugging on actor %d. Remember to toggle proper levels, too!\n", actorNum);
 	} else
 		DebugPrintf("Syntax: debugActor <id>\n");
 	return true;
@@ -100,7 +103,7 @@ void Debugger::clickHandler() {
 
 CMD(step) {
 	_stepOpcodes = true;
-	_detach_now = true;
+	//_detach_now = true;
 	return false;
 }
 

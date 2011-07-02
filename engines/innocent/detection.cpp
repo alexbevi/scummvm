@@ -93,7 +93,7 @@ public:
 		FSList fslist;
 		FSNode dir(ConfMan.get("path"));
 		if (!dir.getChildren(fslist, FSNode::kListAll)) {
-			return kInvalidPathError;
+			return kPathDoesNotExist;
 		}
 
 		Common::String gameid = ConfMan.get("gameid");

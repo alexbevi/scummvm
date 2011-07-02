@@ -37,9 +37,11 @@
 #include "innocent/room.h"
 #include "innocent/util.h"
 
-namespace Innocent {
+namespace Common {
+	DECLARE_SINGLETON(Innocent::Logic);
+}
 
-DECLARE_SINGLETON(Logic);
+namespace Innocent {
 
 Logic::~Logic() {
 	for (Common::List<Animation *>::iterator it = _animations.begin(); it != _animations.end(); ++it)

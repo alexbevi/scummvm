@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "common/ptr.h"
+#include "common/random.h"
 #include "engines/engine.h"
 
 class MidiDriver;
@@ -78,7 +79,7 @@ private:
 	Debugger *_debugger;
 	std::auto_ptr<MidiDriver> _musicDriver;
 
-	mutable Common::RandomSource _rnd;
+	Common::RandomSource *_rnd;
 	mutable int _lastTicks, _startRoom;
 
 	void handleEvents();

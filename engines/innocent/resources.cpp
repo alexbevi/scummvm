@@ -30,10 +30,9 @@
 #include <algorithm>
 #include <ext/algorithm>
 
-//#include "common/endian.h"
 #include "common/file.h"
-//#include "common/util.h"
 #include "graphics/surface.h"
+#include "graphics/pixelformat.h"
 
 #include "innocent/innocent.h"
 #include "innocent/inter.h"
@@ -47,10 +46,12 @@
 using namespace Common;
 using namespace std;
 
+namespace Common {
+	DECLARE_SINGLETON(Innocent::Resources);
+}
+
 namespace Innocent {
 //
-
-DECLARE_SINGLETON(Resources);
 
 void Surface::blit(const Surface *s, Common::Rect r, int transparent, const byte (*tinted)[256]) {
 	enum {
@@ -238,7 +239,7 @@ Image *Resources::loadImage(uint16 index) const {
 		return img;
 
 	img = new Image;
-	img->create(320, 200, 1);
+	img->create(320, 200, ::Graphics::PixelFormat::createFormatCLUT8());
 	assert(img->pitch == 320);
 	loadImage(index, reinterpret_cast<byte *>(img->pixels), 320*200);
 	cache[index] = img;
@@ -301,7 +302,7 @@ Surface *Resources::loadBackdrop(uint16 index, byte *palette) {
 
 
 	Surface *backdrop = new Surface;
-	backdrop->create(width, height, 1);
+	backdrop->create(width, height, ::Graphics::PixelFormat::createFormatCLUT8());
 
 	decodeImage(stream, reinterpret_cast<byte *>(backdrop->pixels), width * height);
 
@@ -338,7 +339,7 @@ SpriteInfo Resources::getSpriteInfo(uint16 id) const {
 
 Sprite *Image::cut(Common::Rect rect) const {
 	Sprite *sprite = new Sprite;
-	sprite->create(rect.width(), rect.height(), 1);
+	sprite->create(rect.width(), rect.height(), ::Graphics::PixelFormat::createFormatCLUT8());
 
 	const byte *src = reinterpret_cast<const byte *>(getBasePtr(rect.left, rect.top));
 	byte *dest = reinterpret_cast<byte *>(sprite->pixels);
