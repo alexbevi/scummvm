@@ -28,7 +28,12 @@
 
 #include "asylum/puzzles/puzzle.h"
 
+#include "common/list.h"
+#include "common/hashmap.h"
+
 namespace Asylum {
+
+const uint32 connectorsCount = 21, peepholesCount = 37;
 
 class AsylumEngine;
 
@@ -38,10 +43,19 @@ public:
 	~PuzzlePipes();
 
 	void reset();
-
+	static uint32 log2(uint32);
 private:
+	#include "asylum/puzzles/pipesclasses.h"
 	int32 _previousMusicVolume;
 	int32 _rectIndex;
+	uint32 _frameIndex, _frameIndexLever;
+	bool _levelFlags[5];
+	float _levelValues[4];
+	bool _isLeverReady;
+	Common::HashMap<uint32, uint32> _connectorResources;
+	Connector _connectors[connectorsCount];
+	Peephole _peepholes[peepholesCount];
+	Peephole *_sinks[4], *_sources[4];
 
 	//////////////////////////////////////////////////////////////////////////
 	// Event Handling
@@ -58,7 +72,8 @@ private:
 	void setup(bool val);
 	void updateCursor();
 	int32 findRect();
-	void checkFlags();	
+	uint32 checkFlags();
+	void startUpWater();
 };
 
 } // End of namespace Asylum
