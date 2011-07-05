@@ -36,6 +36,7 @@
 #include "common/events.h"
 #include "common/file.h"
 #include "common/macresman.h"
+#include "common/translation.h"
 
 #include "gui/message.h"
 
@@ -413,7 +414,7 @@ void Script::savegame(uint slot) {
 
 	if (!file) {
 		debugC(9, kGroovieDebugScript, "Save file pointer is null");
-		GUI::MessageDialog dialog("Failed to save game", "OK");
+		GUI::MessageDialog dialog(_("Failed to save game"), _("OK"));
 		dialog.runModal();
 		return;
 	}
@@ -1349,15 +1350,15 @@ void Script::o_checkvalidsaves() {
 	uint count = 0;
 	SaveStateList::iterator it = list.begin();
 	while (it != list.end()) {
-		int8 slot = it->getVal("save_slot").lastChar() - '0';
+		int8 slot = it->getSaveSlot();
 		if (SaveLoad::isSlotValid(slot)) {
-			debugScript(2, true, "  Found valid savegame: %s", it->getVal("description").c_str());
+			debugScript(2, true, "  Found valid savegame: %s", it->getDescription().c_str());
 
 			// Mark this slot as used
 			setVariable(slot, 1);
 
 			// Cache this slot's description
-			_saveNames[slot] = it->getVal("description");
+			_saveNames[slot] = it->getDescription();
 			count++;
 		}
 		it++;

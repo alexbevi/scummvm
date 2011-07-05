@@ -114,7 +114,7 @@ void ToonEngine::init() {
 	_drew = _characters[0];
 	_flux = _characters[1];
 
-	
+
 
 	// preload walk anim for flux and drew
 	_drew->loadWalkAnimation("STNDWALK.CAF");
@@ -2695,7 +2695,7 @@ int32 ToonEngine::showInventory() {
 		}
 
 		renderInventory();
-
+		_system->delayMillis(10);
 	}
 
 	_gameState->_currentScrollValue = oldScrollValue;
