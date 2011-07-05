@@ -27,7 +27,9 @@
 
 #include "common/fs.h"
 
-DECLARE_SINGLETON(Dgds::ResourceManager);
+namespace Common {
+	DECLARE_SINGLETON(Dgds::ResourceManager);
+}
 
 namespace Dgds {
 
