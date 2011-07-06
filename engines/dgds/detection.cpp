@@ -23,12 +23,13 @@
  *
  */
 
+#include "base/plugins.h"
+
 #include "common/config-manager.h"
-#include "engines/advancedDetector.h"
 #include "common/savefile.h"
 #include "common/system.h"
 
-#include "base/plugins.h"
+#include "engines/advancedDetector.h"
 
 #include "dgds/dgds.h"
 
@@ -138,13 +139,27 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		ADGF_NO_FLAGS,
 		Common::GUIO_NONE
 	},
+  
+  // The Adventurs of Willy Beamish - English PC CD version
+	{"willy", "",
+		{
+			{ "resource.001", 0, "ddb2ca8176e00719efa9946450e3019c", 151525997 },
+			{ "resource.map", 0, "ee70604d1fcac9c7fa04e64cbb54fa47", 27237 },
+			{ "resource.rme", 0, "285f6558e37c6da35109a0ef021784fa", 44247 },
+			AD_LISTEND
+		},
+		Common::EN_ANY,
+		Common::kPlatformPC,
+		ADGF_CD,
+		Common::GUIO_NONE
+	},
 
   // The Adventures of Willy Beamish - SegaCD
 	{"willy", "",
 		{
       {"WINV.REQ", 0, "b7397f428c8dd10ee34addf63b3eff98", 556},
       {"WVCR.REQ", 0, "ca76caf87e71eeaa36d3ad70a9fddfe0", 6000},
-			{0,0,0,0}
+			AD_LISTEND
 		},
 		Common::EN_ANY,
 		Common::kPlatformSegaCD,
