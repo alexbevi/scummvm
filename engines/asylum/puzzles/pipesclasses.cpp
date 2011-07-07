@@ -18,20 +18,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  */
- 
-void PuzzlePipes::Peephole::connect(ConnectorPtr connector) {
+
+#include "asylum/puzzles/pipesclasses.h"
+
+namespace Asylum {
+
+void Peephole::connect(ConnectorPtr connector) {
 	_connectors.push_back(connector);
 }
 
-void PuzzlePipes::Peephole::disconnect(ConnectorPtr connector) {
+void Peephole::disconnect(ConnectorPtr connector) {
 	_connectors.remove(connector);
 }
 
-void PuzzlePipes::Peephole::startUpWater(bool flag = false) {
+void Peephole::startUpWater(bool flag = false) {
 	if (flag)
 		memset(marks, false, sizeof(marks));
 
@@ -48,8 +49,8 @@ void PuzzlePipes::Peephole::startUpWater(bool flag = false) {
 			}
 }
 
-void PuzzlePipes::Connector::init(Peephole *n, Peephole *e, Peephole *s, Peephole *w,
-BinNum state, ConnectorPtr nextConnector = NULL, Direction nextConnectorPosition = kNowhere) {
+void Connector::init(Peephole *n, Peephole *e, Peephole *s, Peephole *w,
+BinNum state, ConnectorPtr nextConnector, Direction nextConnectorPosition) {
 			_nodes[0] = n;
 	_nodes[3] = w;			_nodes[1] = e;
 			_nodes[2] = s;
@@ -66,19 +67,19 @@ BinNum state, ConnectorPtr nextConnector = NULL, Direction nextConnectorPosition
 		}
 }
 
-void PuzzlePipes::Connector::initGroup() {
+void Connector::initGroup() {
 	if (!_isConnected && isReadyForConnection() && _nextConnector->isReadyForConnection())
 		connect(_nextConnector);
 }
 
-void PuzzlePipes::Connector::turn() {
+void Connector::turn() {
 	BinNum newState = BinNum(_state >> 1 | (_state & 1) << 3);
 
 	uint32 delta = _state ^ newState;
 	uint32 newIndex[2], oldIndex[2];
 
-	if (delta == k1111) {
-		if (newState == k0101) {
+	if (delta == kBinNum1111) {
+		if (newState == kBinNum0101) {
 			newIndex[0] = 0;
 			newIndex[1] = 2;
 			oldIndex[0] = 1;
@@ -94,7 +95,7 @@ void PuzzlePipes::Connector::turn() {
 		oldIndex[0] = log2(_state & delta);
 	}
 
-	for (uint32 i = 0; i < (delta == k1111)  + 1; ++i) {
+	for (uint32 i = 0; i < (delta == kBinNum1111)  + 1; ++i) {
 		if (_nodes[oldIndex[i]]) {
 			_nodes[oldIndex[i]]->disconnect(this);
 			_connectedNodes.remove(_nodes[oldIndex[i]]);
@@ -117,7 +118,7 @@ void PuzzlePipes::Connector::turn() {
 	}
 }
 
-void PuzzlePipes::Connector::connect(ConnectorPtr connector) {
+void Connector::connect(ConnectorPtr connector) {
 	Peepiter iter;
 
 	for (iter = _connectedNodes.begin(); iter != _connectedNodes.end(); ++iter) {
@@ -134,8 +135,8 @@ void PuzzlePipes::Connector::connect(ConnectorPtr connector) {
 
 }
 
-void PuzzlePipes::Connector::disconnect(ConnectorPtr connector) {
-	int32 i;
+void Connector::disconnect(ConnectorPtr connector) {
+	uint32 i;
 	Common::List<Peepiter> markedForDeletion;
 	bool flag;
 
@@ -166,3 +167,5 @@ void PuzzlePipes::Connector::disconnect(ConnectorPtr connector) {
 
 	_isConnected = connector->_isConnected = false;
 }
+
+} // End of namespace Asylum

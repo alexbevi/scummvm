@@ -18,9 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  */
 
 #ifndef ASYLUM_PIPES_H
@@ -31,9 +28,9 @@
 #include "common/list.h"
 #include "common/hashmap.h"
 
-namespace Asylum {
+#include "asylum/puzzles/pipesclasses.h"
 
-const uint32 connectorsCount = 21, peepholesCount = 37;
+namespace Asylum {
 
 class AsylumEngine;
 
@@ -43,9 +40,7 @@ public:
 	~PuzzlePipes();
 
 	void reset();
-	static uint32 log2(uint32);
 private:
-	#include "asylum/puzzles/pipesclasses.h"
 	int32 _previousMusicVolume;
 	int32 _rectIndex;
 	uint32 _frameIndex, _frameIndexLever;
@@ -69,7 +64,7 @@ private:
 	// Helpers
 	//////////////////////////////////////////////////////////////////////////
 	void initResources();
-	void setup(bool val);
+	void setup();
 	void updateCursor();
 	int32 findRect();
 	uint32 checkFlags();

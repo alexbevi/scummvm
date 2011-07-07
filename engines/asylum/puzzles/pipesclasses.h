@@ -18,84 +18,89 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  */
- 
+
+#ifndef ASYLUM_PIPESCLASSES_H
+#define ASYLUM_PIPESCLASSES_H
+
+#include "asylum/puzzles/puzzle.h"
+
+namespace Asylum {
+
+const uint32 connectorsCount = 21, peepholesCount = 37;
+
 enum BinNum {
-	k0000,
-	k0001,
-	k0010,
-	k0011,
-	k0100,
-	k0101,
-	k0110,
-	k0111,
-	k1000,
-	k1001,
-	k1010,
-	k1011,
-	k1100,
-	k1101,
-	k1110,
-	k1111
+	kBinNum0000,
+	kBinNum0001,
+	kBinNum0010,
+	kBinNum0011,
+	kBinNum0100,
+	kBinNum0101,
+	kBinNum0110,
+	kBinNum0111,
+	kBinNum1000,
+	kBinNum1001,
+	kBinNum1010,
+	kBinNum1011,
+	kBinNum1100,
+	kBinNum1101,
+	kBinNum1110,
+	kBinNum1111
 };
 
 enum Direction {
-	kNowhere = k0000,
-	kN = k0001,
-	kE = k0010,
-	kS = k0100,
-	kW = k1000
+	kDirectionNowhere = kBinNum0000,
+	kDirectionNh = kBinNum0001,
+	kDirectionEt = kBinNum0010,
+	kDirectionSh = kBinNum0100,
+	kDirectionWt = kBinNum1000
 };
 
 class Peephole;
 class Connector;
+class Spider;	// TODO
 typedef Connector * ConnectorPtr;
 typedef Common::List<Peephole *>::iterator Peepiter;
 
 class Peephole {
-	uint32 _id;
-	Common::List<ConnectorPtr> _connectors;
-
-	bool isConnected(uint32 val) {
-		assert(val < 4);
-		return _id == val || _flowValues[val];
-	}
 public:
 	static bool marks[peepholesCount];
 	uint32 _flowValues[4];
 
-	Peephole() {
-	}
-	~Peephole() {
-	}
+	Peephole() { }
+	~Peephole() { }
 
-	uint32 getId() {
-		return _id;
-	}
-	void setId(int id) {
-		_id = id;
-	}
-
-	uint32 getLevel() {
-		return (_flowValues[0] > 0) + (_flowValues[1] > 0) + (_flowValues[2]  > 0) + (_flowValues[3]  > 0);
-	}
-	uint32 getLevel1() {
-		return _flowValues[0] + _flowValues[1] + _flowValues[2] + _flowValues[3] ;
-	}
-
-	bool isConnected() {
-		return isConnected(0) || isConnected(1) || isConnected(2) || isConnected(3);
-	}
+	uint32 getId() { return _id; }
+	void setId(uint32 id) { _id = id; }
+	uint32 getLevel() { return (_flowValues[0] > 0) + (_flowValues[1] > 0) + (_flowValues[2]  > 0) + (_flowValues[3]  > 0); }
+	uint32 getLevel1() { return _flowValues[0] + _flowValues[1] + _flowValues[2] + _flowValues[3]; }
+	bool isConnected() { return isConnected(0) || isConnected(1) || isConnected(2) || isConnected(3); }
 
 	void connect(ConnectorPtr);
 	void disconnect(ConnectorPtr);
 	void startUpWater(bool flag);
+private:
+	uint32 _id;
+	Common::List<ConnectorPtr> _connectors;
+
+	bool isConnected(uint32 val) { return _flowValues[val]; }
 };
 
 class Connector {
+public:	
+	Connector() { }
+	~Connector() { }
+
+	uint32 getId() { return _id; }
+	void setId(uint32 id) { _id = id; }
+	BinNum getState() { return _state; }
+
+	void init(Peephole *, Peephole *, Peephole *, Peephole *, BinNum, ConnectorPtr nextConnector = NULL, Direction nextConnectorPosition = kDirectionNowhere);
+	void initGroup();
+	void turn(); 
+
+	friend void Peephole::startUpWater(bool);
+private:
 	uint32 _id;
 	BinNum _state;
 	Peephole *_nodes[4];
@@ -108,29 +113,9 @@ class Connector {
 	void connect(ConnectorPtr conn); 
 	void disconnect(ConnectorPtr conn);
 
-	bool isReadyForConnection() {
-		return _state & _nextConnectorPosition;
-	}
-public:	
-	Connector() {
-	}
-	~Connector() {
-	}
-
-	uint32 getId() {
-		return _id;
-	}
-	void setId(int id) {
-		_id = id;
-	}
-
-	BinNum getState() {
-		return _state;
-	}
-
-	void init(Peephole *, Peephole *, Peephole *, Peephole *, BinNum, ConnectorPtr, Direction);
-	void initGroup();
-	void turn(); 
-
-	friend void Peephole::startUpWater(bool);
+	bool isReadyForConnection() { return _state & _nextConnectorPosition; }
 };
+
+} // End of namespace Asylum
+
+#endif // ASYLUM_PIPESCLASSES_H
