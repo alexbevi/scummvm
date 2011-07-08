@@ -64,13 +64,13 @@ void ActionArea::load(Common::SeekableReadStream *stream) {
 	for (int32 i = 0; i < 10; i++)
 		flagNums[i] = stream->readSint32LE();
 
-	field_7C          = stream->readSint32LE();
-	polygonIndex           = stream->readSint32LE();
-	field_84          = stream->readSint32LE();
-	field_88          = stream->readSint32LE();
-	soundResourceId   = (ResourceId)stream->readSint32LE();
-	field_90          = stream->readSint32LE();
-	paletteResourceId = (ResourceId)stream->readSint32LE();
+	field_7C             = stream->readSint32LE();
+	polygonIndex         = stream->readSint32LE();
+	soundResourceIdFrame = (ResourceId)stream->readSint32LE();
+	field_88             = stream->readSint32LE();
+	soundResourceId      = (ResourceId)stream->readSint32LE();
+	field_90             = stream->readSint32LE();
+	paletteResourceId    = (ResourceId)stream->readSint32LE();
 
 	for (int32 i = 0; i < 5; i++)
 		array[i] = stream->readSint32LE();
@@ -637,7 +637,7 @@ END_OPCODE
 IMPLEMENT_OPCODE(JumpActorSpeech)
 	Actor *actor = getScene()->getActor(cmd->param1);
 
-	if (actor->process(cmd->param2, cmd->param3))
+	if (actor->process(Common::Point(cmd->param2, cmd->param3)))
 		return;
 
 	_currentQueueEntry->currentLine = cmd->param4;

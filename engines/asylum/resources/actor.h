@@ -28,6 +28,7 @@
 
 #include "asylum/shared.h"
 
+#include "common/array.h"
 #include "common/rect.h"
 #include "common/stream.h"
 
@@ -257,12 +258,12 @@ public:
 	void clearFields() { memset(&_field_970, 0, 52); }
 
 	// Unknown methods
-	bool process(int32 actorX, int32 actorY);
+	bool process(const Common::Point &point);
 	void processStatus(int32 actorX, int32 actorY, bool doSpeech);
 	void process_401830(int32 field980, int32 actionAreaId, int32 field978, int field98C, int32 field990, int32 field974, int32 field984, int32 field988);
 	bool process_4069B0(int32 *x, int32 *y);
 	bool process_408B20(Common::Point *point, ActorDirection direction, uint32 count, bool hasDelta);
-	void process_408D00(ActorDirection dir, uint32 count);
+	void playSounds(ActorDirection dir, uint32 distance);
 	void process_41BC00(int32 reactionIndex, int32 numberValue01Add);
 	void process_41BCC0(int32 reactionIndex, int32 numberValue01Substract);
 	bool process_41BDB0(int32 reactionIndex, int32 testNumberValue01);
@@ -342,12 +343,12 @@ private:
 	// TODO field_68 till field_617
 	int32  _reaction[8];
 	int32  _field_638;
-	int32  _walkingSound1;
-	int32  _walkingSound2;
-	int32  _walkingSound3;
-	int32  _walkingSound4;
-	int32  _field_64C;
-	int32  _field_650;
+	ResourceId _walkingSound1;
+	ResourceId _walkingSound2;
+	ResourceId _walkingSound3;
+	ResourceId _walkingSound4;
+	uint32  _field_64C;
+	uint32  _field_650;
 	ResourceId  _graphicResourceIds[55];
 	char   _name[256];
 	int32  _field_830[20];
@@ -417,10 +418,12 @@ private:
 	void updateStatus14_Chapter11();
 
 	void updateStatus15_Chapter2();
-	void updateStatus15_Chapter2_Player();
 	void updateStatus15_Chapter2_Helper();
+	void updateStatus15_Chapter2_Player();
+	void updateStatus15_Chapter2_Player_Helper();
 	bool updateStatus15_isNoVisibleOrStatus17();
 	void updateStatus15_Chapter2_Actor11();
+	bool updateStatus15_Chapter2_Actor11_Helper(ActorIndex actorIndex1, ActorIndex actorIndex2);
 	void updateStatus15_Chapter11();
 	void updateStatus15_Chapter11_Player();
 
@@ -435,6 +438,16 @@ private:
 	void updateStatus21();
 
 	void updateFinish();
+
+	//////////////////////////////////////////////////////////////////////////
+	// Path finding functions
+	//////////////////////////////////////////////////////////////////////////
+	uint32 _frameNumber;
+	bool processAction1(const Common::Point &source, const Common::Point &destination, Common::Array<int> *actions);
+	bool processAction2(const Common::Point &source, const Common::Point &destination, Common::Array<int> *actions);
+	bool processAction3(const Common::Point &source, const Common::Point &destination, Common::Array<int> *actions);
+	bool processAction4(const Common::Point &source, const Common::Point &destination, Common::Array<int> *actions);
+	bool checkAllActions(const Common::Point &pt, Common::Array<ActionArea *> *actions);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Misc
@@ -480,7 +493,7 @@ private:
 	 * @param pt 			The point.
 	 * @param [in,out] area If non-null, the area.
 	 *
-	 * @return
+	 * @return true if in the action area, false otherwise
 	 */
 	bool isInActionArea(const Common::Point &pt, ActionArea *area);
 
@@ -496,11 +509,11 @@ private:
 	void updateGraphicData(uint32 offset);
 
 	/**
-	 * Gets the graphics flags for queuing the actor graphics
+	 * Gets the graphics flag for queuing the actor graphics (mirrored or normal)
 	 *
-	 * @return The graphics flags.
+	 * @return The graphics flag.
 	 */
-	int32 getGraphicsFlags();
+	DrawFlags getGraphicsFlags();
 
 	/**
 	 * Gets a distance depending on actor direction

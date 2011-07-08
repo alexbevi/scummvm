@@ -115,6 +115,9 @@ Actor::Actor(AsylumEngine *engine, ActorIndex index) : _vm(engine), _index(index
 	// Instance data
 	_tickCount = -1;
 	_updateCounter = 0;
+
+	// Path finding
+	_frameNumber = 0;
 }
 
 Actor::~Actor() {
@@ -171,8 +174,8 @@ void Actor::load(Common::SeekableReadStream *stream) {
 	_walkingSound2 = stream->readSint32LE();
 	_walkingSound3 = stream->readSint32LE();
 	_walkingSound4 = stream->readSint32LE();
-	_field_64C     = stream->readSint32LE();
-	_field_650     = stream->readSint32LE();
+	_field_64C     = stream->readUint32LE();
+	_field_650     = stream->readUint32LE();
 
 	for (int32 i = 0; i < 55; i++)
 		_graphicResourceIds[i] = (ResourceId)stream->readSint32LE();
@@ -478,15 +481,15 @@ void Actor::update() {
 		Common::Point point(_point1.x + _point2.x, _point1.y + _point2.y);
 
 		if (process_408B20(&point, _direction, dist, false)) {
-			process_408D00(_direction, dist);
+			playSounds(_direction, dist);
 		} else if (process_408B20(&point, (ActorDirection)((dir + 1) % 7), dist, false)) {
-			process_408D00((ActorDirection)((dir + 1) % 7), dist);
+			playSounds((ActorDirection)((dir + 1) % 7), dist);
 		} else if (process_408B20(&point, (ActorDirection)((dir + 7) % 7), dist, false)) {
-			process_408D00((ActorDirection)((dir + 7) % 7), dist);
+			playSounds((ActorDirection)((dir + 7) % 7), dist);
 		} else if (process_408B20(&point, (ActorDirection)((dir + 2) % 7), dist, false)) {
-			process_408D00((ActorDirection)((dir + 2) % 7), dist);
+			playSounds((ActorDirection)((dir + 2) % 7), dist);
 		} else if (process_408B20(&point, (ActorDirection)((dir + 6) % 7), dist, false)) {
-			process_408D00((ActorDirection)((dir + 6) % 7), dist);
+			playSounds((ActorDirection)((dir + 6) % 7), dist);
 		}
 
 		}
@@ -838,12 +841,249 @@ bool Actor::isResourcePresent() const {
 	return (index >= 15);
 }
 
-bool Actor::process(int32 actorX, int32 actorY) {
-	error("[Actor::process] not implemented!");
+bool Actor::process(const Common::Point &point) {
+	// Compute point and delta
+	Common::Point sum(_point1.x + _point2.x, _point1.y + _point2.y);
+	Common::Point delta = point - sum;
+
+	// Compute modifiers
+	int a1 = 0;
+	int a2 = 0;
+	int a3 = 0;
+
+	if (delta.x <= 0) {
+		if (delta.y >= 0) {
+			a1 = -1;
+			a2 = 1;
+			a3 = 3;
+		} else {
+			a1 = -1;
+			a2 = -1;
+			a3 = 0;
+		}
+	} else {
+		if (delta.y >= 0) {
+			a1 = 1;
+			a2 = 1;
+			a3 = 2;
+		} else {
+			a1 = 1;
+			a2 = -1;
+			a3 = 1;
+		}
+	}
+
+	if (point == sum) {
+		if (process_408B20(&sum, a3 >= 2 ? kDirectionS : kDirectionN, abs(delta.y), false)) {
+			_data.field_8[0] = point.x;
+			_data.field_8[1] = point.y;
+			_data.field_4    = 0;
+			_data.count      = 1;
+
+			return true;
+		}
+	}
+
+	if (point.x == sum.x) {
+		ActorDirection direction = a3 >= 2 ? kDirectionS : kDirectionN;
+		if (process_408B20(&sum, direction, abs(delta.y), false)) {
+			_data.field_8[0] = point.x;
+			_data.field_8[1] = point.y;
+			_data.field_4    = 0;
+			_data.count      = 1;
+
+			updateFromDirection(direction);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	if (point.y == sum.y) {
+		ActorDirection direction = (a3 != 0 || a3 != 3) ? kDirectionE : kDirectionO;
+
+		if (process_408B20(&sum, direction, abs(delta.x), true)) {
+			_data.field_8[0] = point.x;
+			_data.field_8[1] = point.y;
+			_data.field_4    = 0;
+			_data.count      = 1;
+
+			updateFromDirection(direction);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	if (abs(delta.x) != abs(delta.y)) {
+		Common::Array<int> actions;
+		Common::Point point1;
+		Common::Point point2;
+		uint32 count1 = 0;
+		uint32 count2 = 0;
+		ActorDirection direction1 = kDirectionInvalid;
+		ActorDirection direction2 = kDirectionInvalid;
+
+		// Compute coordinates, directions and counts
+		if (abs(delta.x) < abs(delta.y)) {
+			point1 = Common::Point(sum.x + abs(delta.x) * a1, sum.y + abs(delta.x) * a2);
+			point2 = Common::Point(sum.x                    , sum.y + abs(abs(delta.x) - abs(delta.y)) * a2);
+			count1 = abs(point1.x - sum.x);
+			count2 = abs(point1.y - point.y);
+
+			switch (a3) {
+			default:
+				error("[Actor::process] Invalid value for a3");
+				break;
+
+			case 0:
+				direction1 = kDirectionNO;
+				direction2 = kDirectionN;
+				break;
+
+			case 1:
+				direction1 = kDirectionNE;
+				direction2 = kDirectionN;
+				break;
+
+			case 2:
+				direction1 = kDirectionSE;
+				direction2 = kDirectionS;
+				break;
+
+			case 3:
+				direction1 = kDirectionSO;
+				direction2 = kDirectionS;
+				break;
+			}
+		} else {
+			point1 = Common::Point(sum.x + abs(delta.y) * a1,                      sum.y + abs(delta.y) * a2);
+			point2 = Common::Point(sum.x + abs(abs(delta.y) - abs(delta.x)) * a1 , sum.y);
+			count1 = abs(abs(delta.y) * a2);
+			count2 = abs(point1.y - point.x);
+
+			switch (a3) {
+			default:
+				error("[Actor::process] Invalid value for a3");
+				break;
+
+			case 0:
+				direction1 = kDirectionNO;
+				direction2 = kDirectionO;
+				break;
+
+			case 1:
+				direction1 = kDirectionNE;
+				direction2 = kDirectionE;
+				break;
+
+			case 2:
+				direction1 = kDirectionSE;
+				direction2 = kDirectionE;
+				break;
+
+			case 3:
+				direction1 = kDirectionSO;
+				direction2 = kDirectionO;
+				break;
+			}
+		}
+
+		// Check scene rects
+		if (getWorld()->chapter != kChapter2 || strcmp(_name, "Big Crow")) {
+			error("[Actor::process] not implemented (scene rects checks)!");
+		}
+
+		if (process_408B20(&sum,    direction1, count1, true)
+		 && process_408B20(&point1, direction2, count2, true)) {
+			error("[Actor::process] not implemented (process actor data 1)!");
+		}
+
+		if (process_408B20(&sum,    direction2, count2, true)
+		 && process_408B20(&point1, direction1, count1, true)) {
+			error("[Actor::process] not implemented (process actor data 2)!");
+		}
+
+		error("[Actor::process] not implemented (compute actions)!");
+
+		//////////////////////////////////////////////////////////////////////////
+		// Process actions
+
+		_frameNumber = 0;
+
+		if (abs(sum.x - point.x) > abs(sum.y - point.y)) {
+			if (sum.x <= point.x) {
+				if (!processAction1(sum, point, &actions))
+					return false;
+			} else {
+				if (!processAction2(sum, point, &actions))
+					return false;
+			}
+
+			updateFromDirection((ActorDirection)_data.field_3C8[0]);
+
+			return true;
+		}
+
+		if (sum.y > point.y) {
+			if (!processAction3(sum, point, &actions))
+				return false;
+
+			updateFromDirection((ActorDirection)_data.field_3C8[0]);
+
+			return true;
+		}
+
+		// last case: sum.y < point.y
+		if (!processAction4(sum, point, &actions))
+			return false;
+
+		updateFromDirection((ActorDirection)_data.field_3C8[0]);
+
+		return true;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// Last case: abs(delta.x) == abs(delta.y)
+
+	// Compute direction
+	ActorDirection direction = kDirectionSO;
+	switch (a3) {
+	default:
+		break;
+
+	case 0:
+		direction = kDirectionNO;
+		break;
+
+	case 1:
+		direction = kDirectionNE;
+		break;
+
+	case 2:
+		direction = kDirectionSE;
+		break;
+	}
+
+	if (!process_408B20(&sum, direction, abs(delta.y), true))
+		return false;
+
+	// Update actor data
+	_data.field_8[0] = point.x;
+	_data.field_8[1] = point.y;
+	_data.field_4    = 0;
+	_data.count      = 1;
+
+	// Update actor from direction
+	updateFromDirection(direction);
+
+	return true;
 }
 
 void Actor::processStatus(int32 actorX, int32 actorY, bool doSpeech) {
-	if (process(actorX, actorY)) {
+	if (process(Common::Point(actorX, actorY))) {
 		if (_status <= kActorStatus11)
 			updateStatus(kActorStatus2);
 		else
@@ -1009,8 +1249,91 @@ bool Actor::process_408B20(Common::Point *point, ActorDirection dir, uint32 coun
 	return true;
 }
 
-void Actor::process_408D00(ActorDirection dir, uint32 count) {
-	error("[Actor::process_408D00] Not implemented!");
+void Actor::playSounds(ActorDirection direction, uint32 distance) {
+	_lastScreenUpdate = _vm->screenUpdateCount;
+
+	Common::Point sum(_point1.x + _point2.x, _point1.x + _point2.x);
+	int32 panning = getSound()->calculatePanningAtPoint(sum.x, sum.y);
+
+	switch (_status) {
+	default:
+		break;
+
+	case kActorStatus1:
+	case kActorStatus2:
+	case kActorStatus12:
+	case kActorStatus13:
+		updateCoordinatesForDirection(direction, distance, &_point1);
+
+		_frameIndex = (++_frameIndex) % _frameCount;
+
+		if (_walkingSound1 != kResourceNone) {
+
+			// Compute volume
+			int32 vol = sqrt((double)-Config.sfxVolume);
+			if (_index != getScene()->getPlayerIndex())
+				vol += sqrt((double)abs(getSound()->calculateVolumeAdjustement(sum.x, sum.y, 10, 0)));
+
+			int32 volume = (Config.sfxVolume + vol) * (Config.sfxVolume + vol);
+			if (volume > 10000)
+				volume = 10000;
+
+			if (_field_944 != 1 && _field_944 != 4) {
+				// Compute resource Id
+				ResourceId resourceId = kResourceNone;
+				if (getWorld()->actions[_actionIdx3]->soundResourceIdFrame != kResourceNone && strcmp((char *)&_name, "Crow") && strcmp((char *)&_name, "Big Crow")) {
+					if (_frameIndex == _field_64C)
+						resourceId = (ResourceId)(getWorld()->actions[_actionIdx3]->soundResourceIdFrame + rnd(1));
+					else if (_frameIndex == _field_650)
+						resourceId = (ResourceId)(getWorld()->actions[_actionIdx3]->soundResourceId + rnd(1));
+				} else {
+					if (_frameIndex == _field_64C)
+						resourceId = (ResourceId)(_walkingSound1 + rnd(1));
+					else if (_frameIndex == _field_650)
+						resourceId = (ResourceId)(_walkingSound3 + rnd(1));
+				}
+
+				// Play sound
+				getSound()->playSound(resourceId, false, -volume, panning);
+			}
+		}
+		break;
+
+	case kActorStatus18:
+		if (getWorld()->chapter == kChapter2) {
+			updateCoordinatesForDirection(direction, distance, &_point1);
+
+			if (_walkingSound1 == kResourceNone)
+				break;
+
+			// Compute volume
+			int32 vol = getWorld()->actions[_actionIdx3]->volume;
+			if (_index != getScene()->getPlayerIndex())
+				vol += sqrt((double)abs(getSound()->calculateVolumeAdjustement(sum.x, sum.y, 10, 0)));
+
+			int32 volume = (Config.sfxVolume + vol) * (Config.sfxVolume + vol);
+			if (volume > 10000)
+				volume = 10000;
+
+			// Compute resource Id
+			ResourceId resourceId = kResourceNone;
+			if (getWorld()->actions[_actionIdx3]->soundResourceIdFrame != kResourceNone && strcmp((char *)&_name, "Crow") && strcmp((char *)&_name, "Big Crow")) {
+				if (_frameIndex == _field_64C)
+					resourceId = (ResourceId)(getWorld()->actions[_actionIdx3]->soundResourceIdFrame + rnd(1));
+				else if (_frameIndex == _field_650)
+					resourceId = (ResourceId)(getWorld()->actions[_actionIdx3]->soundResourceId + rnd(1));
+			} else {
+				if (_frameIndex == _field_64C)
+					resourceId = (ResourceId)(_walkingSound1 + rnd(1));
+				else if (_frameIndex == _field_650)
+					resourceId = (ResourceId)(_walkingSound3 + rnd(1));
+			}
+
+			// Play sound
+			getSound()->playSound(resourceId, false, -volume, panning);
+		}
+		break;
+	}
 }
 
 void Actor::process_41BC00(int32 reactionIndex, int32 numberValue01Add) {
@@ -1434,7 +1757,7 @@ void Actor::updateStatusEnabled() {
 						                 poly->boundingRect.top + rnd(poly->boundingRect.height()));
 
 						if (!getSharedData()->actorUpdateEnabledCheck) {
-							if (isInActionArea(pt, area)) {
+							if (!isInActionArea(pt, area)) {
 								Common::Point *polyPoint = &poly->points[rnd(poly->count())];
 								processStatus(polyPoint->x, polyPoint->y, false);
 							} else {
@@ -1625,11 +1948,71 @@ void Actor::updateStatus15_Chapter2() {
 	error("[Actor::updateStatus15_Chapter2] not implemented!");
 }
 
+void Actor::updateStatus15_Chapter2_Helper() {
+	Actor *actor39 = getScene()->getActor(39);
+
+	actor39->getPoint1()->x = _point1.x;
+	actor39->getPoint1()->y = _point1.y;
+
+	if (_vm->isGameFlagSet(kGameFlag169))
+		actor39->getPoint1()->y += 80;
+
+	switch (getSharedData()->getData(40)) {
+	default:
+		break;
+
+	case 0:
+		_vm->setGameFlag(kGameFlag369);
+
+		if (getSound()->isPlaying(getWorld()->soundResourceIds[5]))
+			getSound()->stop(getWorld()->soundResourceIds[5]);
+
+		if (!getSound()->isPlaying(getWorld()->soundResourceIds[6]))
+			getSound()->playSound(getWorld()->soundResourceIds[6], true, Config.sfxVolume - 10);
+		break;
+
+	case 1:
+		_vm->setGameFlag(kGameFlag370);
+
+		if (getSound()->isPlaying(getWorld()->soundResourceIds[6]))
+			getSound()->stop(getWorld()->soundResourceIds[6]);
+
+		if (!getSound()->isPlaying(getWorld()->soundResourceIds[7]))
+			getSound()->playSound(getWorld()->soundResourceIds[7], true, Config.sfxVolume - 10);
+		break;
+
+	case 2:
+		if (getSound()->isPlaying(getWorld()->soundResourceIds[7]))
+			getSound()->stop(getWorld()->soundResourceIds[7]);
+		break;
+	}
+
+	getSharedData()->setData(40, getSharedData()->getData(40) + 1);
+
+	switch (getSharedData()->getData(40)) {
+	default:
+		break;
+
+	case 0:
+		enableActorsChapter2(_vm);
+		getCursor()->hide();
+		break;
+
+	case 1:
+		_vm->setGameFlag(kGameFlag369);
+		break;
+
+	case 2:
+		_vm->setGameFlag(kGameFlag370);
+		break;
+	}
+}
+
 void Actor::updateStatus15_Chapter2_Player() {
 	error("[Actor::updateStatus15_Chapter2_Player] not implemented!");
 }
 
-void Actor::updateStatus15_Chapter2_Helper() {
+void Actor::updateStatus15_Chapter2_Player_Helper() {
 	// we are the current player
 	Actor *actor11 = getScene()->getActor(11);
 	Actor *actor40 = getScene()->getActor(40);
@@ -1664,6 +2047,27 @@ void Actor::updateStatus15_Chapter2_Actor11() {
 	error("[Actor::updateStatus15_Chapter2_Actor11] not implemented!");
 }
 
+bool Actor::updateStatus15_Chapter2_Actor11_Helper(ActorIndex actorIndex1, ActorIndex actorIndex2) {
+	Actor *actor1 = getScene()->getActor(actorIndex1);
+	Actor *actor2 = getScene()->getActor(actorIndex2);
+
+	if (actor1->getField944())
+		return false;
+
+	if (actor2->getField944())
+		return false;
+
+	int16 actor2_x = actor2->getPoint1()->x + actor2->getPoint2()->x;
+	int16 actor2_y = actor2->getPoint1()->y + actor2->getPoint2()->y;
+
+	Common::Point pt1(actor2_x -     actor1->getField948() - 10, actor2_y -     actor1->getField94C() - 10);
+	Common::Point pt2(actor2_x + 2 * actor1->getField948() + 10, actor2_y + 2 * actor1->getField94C() + 10);
+	Common::Point pt3(actor2_x -     actor2->getField948() - 25, actor2_y -     actor2->getField94C() - 20);
+	Common::Point pt4(actor2_x + 2 * actor2->getField948() + 25, actor2_y + 2 * actor2->getField94C() + 20);
+
+	return getScene()->rectIntersect(pt1.x, pt1.y, pt2.x, pt2.y, pt3.x, pt3.y, pt4.x, pt4.y);
+}
+
 void Actor::updateStatus15_Chapter11() {
 	Actor *actor0 = getScene()->getActor(0);
 
@@ -1696,7 +2100,60 @@ void Actor::updateStatus15_Chapter11() {
 }
 
 void Actor::updateStatus15_Chapter11_Player() {
-	error("[Actor::updateStatus15_Chapter11_Player] not implemented!");
+	_frameIndex++;
+
+	if (_frameIndex == 17) {
+		getSpeech()->playPlayer(130);
+
+		if (getWorld()->field_E849C >= 666) {
+			if (_vm->isGameFlagSet(kGameFlag583)) {
+				_vm->setGameFlag(kGameFlag582);
+				_vm->clearGameFlag(kGameFlag565);
+				++getWorld()->field_E8518;
+				getSound()->playSound(getWorld()->soundResourceIds[2]);
+			}
+		} else {
+			Actor *actor2 = getScene()->getActor(getWorld()->field_E849C);
+
+			double diffX = (actor2->getPoint1()->x + actor2->getPoint2()->x) - (_point1.x + _point2.x);
+			double diffY = (actor2->getPoint1()->y + actor2->getPoint2()->y) - (_point1.y + _point2.y);
+
+			if (sqrt(diffX * diffX + diffY * diffY) < 75.0f
+			 && (actor2->getStatus() == kActorStatus14 || actor2->getStatus() == kActorStatus15)) {
+				getSound()->playSound(getWorld()->soundResourceIds[2]);
+
+				switch (getWorld()->field_E849C) {
+				default:
+					break;
+
+				case 10:
+					_vm->setGameFlag(kGameFlag563);
+					break;
+
+				case 11:
+					_vm->setGameFlag(kGameFlag724);
+					break;
+
+				case 12:
+					_vm->setGameFlag(kGameFlag727);
+					break;
+
+				case 13:
+					_vm->setGameFlag(kGameFlag730);
+					break;
+				}
+
+				actor2->updateStatus(kActorStatus17);
+			}
+		}
+	}
+
+	if (_frameIndex >= _frameCount) {
+		getCursor()->show();
+		getSharedData()->setFlag(kFlag1, false);
+		_frameIndex = 0;
+		updateStatus(kActorStatus14);
+	}
 }
 
 void Actor::updateStatus16_Chapter2() {
@@ -1898,8 +2355,67 @@ void Actor::updateNumbers(int32 reaction, int32 x, int32 y) {
 	_numberFlag01 = 1;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Path finding functions
+//////////////////////////////////////////////////////////////////////////
+bool Actor::processAction1(const Common::Point &source, const Common::Point &destination, Common::Array<int> *actions) {
+	error("[Actor::processAction1] Not implemented");
+}
+
+bool Actor::processAction2(const Common::Point &source, const Common::Point &destination, Common::Array<int> *actions) {
+	error("[Actor::processAction2] Not implemented");
+}
+
+bool Actor::processAction3(const Common::Point &source, const Common::Point &destination, Common::Array<int> *actions) {
+	error("[Actor::processAction3] Not implemented");
+}
+
+bool Actor::processAction4(const Common::Point &source, const Common::Point &destination, Common::Array<int> *actions) {
+	error("[Actor::processAction4] Not implemented");
+}
+
+bool Actor::checkAllActions(const Common::Point &pt, Common::Array<ActionArea *> *actions) {
+	if (actions->size() == 0)
+		return false;
+
+	for (Common::Array<ActionArea *>::iterator it = actions->begin(); it != actions->end(); it++) {
+		if (isInActionArea(pt, *it))
+			return true;
+	}
+
+	return false;
+
+}
+
 bool Actor::isInActionArea(const Common::Point &pt, ActionArea *area) {
-	error("[Actor::isInActionArea] Not implemented!");
+	Common::Rect rect = getWorld()->sceneRects[getWorld()->sceneRectIdx];
+
+	if (!rect.contains(pt))
+		return false;
+
+	if (area->flags & 1)
+		return false;
+
+	// Check flags
+	bool found = false;
+	for (uint32 i = 0; i < 10; i++) {
+		int32 flag = area->flagNums[i];
+		bool state = (flag <= 0) ? _vm->isGameFlagNotSet((GameFlag)-flag) : _vm->isGameFlagSet((GameFlag)flag);
+
+		if (!state) {
+			found = true;
+			break;
+		}
+	}
+
+	if (found)
+		return false;
+
+	PolyDefinitions poly = getScene()->polygons()->entries[area->polygonIndex];
+	if (!poly.contains(pt))
+		return false;
+
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -2047,16 +2563,18 @@ void Actor::adjustCoordinates(Common::Point *point) {
 	point->y = _point1.y - getWorld()->yTop;
 }
 
-int32 Actor::getGraphicsFlags() {
+DrawFlags Actor::getGraphicsFlags() {
 	if (getWorld()->chapter == kChapter11) {
 		int res = strcmp((char *)&_name, "Dead Sarah");
 
 		if (res == 0)
-			return res;
+			return kDrawFlagNone;
 	}
 
-	// TODO replace by readable version
-	return ((_direction < kDirectionSE) - 1) & 2;
+	if (_direction < kDirectionSE)
+		return kDrawFlagNone;
+
+	return kDrawFlagMirrorLeftRight;
 }
 
 int32 Actor::getDistance() const {

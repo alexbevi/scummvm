@@ -39,10 +39,11 @@ enum GameFlag {
 	kGameFlag52                   = 52,
 	kGameFlag114                  = 114,
 	kGameFlag115                  = 115,
-	kGameFlag215                  = 215,
+	kGameFlag169                  = 169,
 	kGameFlagScriptProcessing     = 183,
 	kGameFlag186                  = 186,
 	kGameFlagCommentLeavingCell   = 214,
+	kGameFlag215                  = 215,
 	kGameFlag219                  = 219,
 	kGameFlagSolveVCRBlowUpPuzzle = 220,
 	kGameFlag235                  = 235,
@@ -119,12 +120,19 @@ enum GameFlag {
 	kGameFlag553                  = 553,
 	kGameFlag556                  = 556,
 	kGameFlag560                  = 560,
+	kGameFlag563                  = 563,
+	kGameFlag565                  = 565,
 	kGameFlag570                  = 570,
+	kGameFlag582                  = 582,
+	kGameFlag583                  = 583,
 	kGameFlag608                  = 608,
 	kGameFlag619                  = 619,
 	kGameFlag635                  = 635,
 	kGameFlag636                  = 636,
 	kGameFlag637                  = 637,
+	kGameFlag724                  = 724,
+	kGameFlag727                  = 727,
+	kGameFlag730                  = 730,
 	kGameFlag776                  = 776,
 	kGameFlag801                  = 801,
 	kGameFlag802                  = 802,
@@ -235,6 +243,14 @@ enum ResourcesId {
 };
 
 #define kMusicStopped -666
+
+//////////////////////////////////////////////////////////////////////////
+// Drawing
+//////////////////////////////////////////////////////////////////////////
+enum DrawFlags {
+	kDrawFlagNone            = 0,
+	kDrawFlagMirrorLeftRight = 2
+};
 
 //////////////////////////////////////////////////////////////////////////
 // Actions
