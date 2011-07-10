@@ -11,6 +11,7 @@ MODULE_OBJS := \
 	puzzles/hivemachine.o \
 	puzzles/lock.o \
 	puzzles/morguedoor.o \
+	puzzles/pipesclasses.o \
 	puzzles/pipes.o \
 	puzzles/puzzle.o \
 	puzzles/tictactoe.o \

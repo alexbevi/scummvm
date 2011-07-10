@@ -18,15 +18,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
- *
  */
 
 #ifndef ASYLUM_PIPES_H
 #define ASYLUM_PIPES_H
 
 #include "asylum/puzzles/puzzle.h"
+
+#include "common/list.h"
+#include "common/hashmap.h"
+
+#include "asylum/puzzles/pipesclasses.h"
 
 namespace Asylum {
 
@@ -38,10 +40,17 @@ public:
 	~PuzzlePipes();
 
 	void reset();
-
 private:
 	int32 _previousMusicVolume;
 	int32 _rectIndex;
+	uint32 _frameIndex, _frameIndexLever;
+	bool _levelFlags[5];
+	float _levelValues[4];
+	bool _isLeverReady;
+	Common::HashMap<uint32, uint32> _connectorResources;
+	Connector _connectors[connectorsCount];
+	Peephole _peepholes[peepholesCount];
+	Peephole *_sinks[4], *_sources[4];
 
 	//////////////////////////////////////////////////////////////////////////
 	// Event Handling
@@ -55,10 +64,11 @@ private:
 	// Helpers
 	//////////////////////////////////////////////////////////////////////////
 	void initResources();
-	void setup(bool val);
+	void setup();
 	void updateCursor();
 	int32 findRect();
-	void checkFlags();	
+	uint32 checkFlags();
+	void startUpWater();
 };
 
 } // End of namespace Asylum
