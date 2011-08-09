@@ -18,7 +18,7 @@ MODULE_OBJS = \
 staticres.o
 
 # This module can be built as a plugin
-ifdef BUILD_PLUGINS
+ifeq ($(ENABLE_GARGOYLE), DYNAMIC_PLUGIN)
 PLUGIN := 1
 endif
 
