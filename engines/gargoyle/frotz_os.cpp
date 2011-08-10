@@ -335,7 +335,7 @@ void ZSystem::init_screen(void) {
 	// Set the low two palette entries to copy the selected foreground/background colours
 	DEFAULT_COLOUR_LIST[0] = DEFAULT_COLOUR_LIST[_h.h_default_background];
 	DEFAULT_COLOUR_LIST[1] = DEFAULT_COLOUR_LIST[_h.h_default_foreground];
-	g_system->setPalette((const byte *)&DEFAULT_COLOUR_LIST[0], 0, 2);
+	g_system->getPaletteManager()->setPalette((const byte *)&DEFAULT_COLOUR_LIST[0], 0, 2);
 
 	Common::Point wndSize(_screen.width(), _screen.height());
 	_screen.fillRect(Common::Rect(0, 0, wndSize.x, wndSize.y), _h.h_default_background);
@@ -644,7 +644,8 @@ void ZSystem::scroll_area(int top, int left, int bottom, int right, int units) {
  */
 uint32 ZSystem::get_colour(int index) {
 	uint32 value;
-	g_system->grabPalette((byte *)&value, index, 1);
+
+	g_system->getPaletteManager()->grabPalette((byte *)&value, index, 1);
 	return value;
 }
 

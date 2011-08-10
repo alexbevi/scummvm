@@ -33,6 +33,9 @@
 #include "common/stack.h"
 #include "common/stream.h"
 #include "common/util.h"
+
+#include "graphics/palette.h"
+
 #include "engines/engine.h"
 
 #include "gargoyle/frotz.h"
@@ -241,7 +244,7 @@ class FrotzInterpreter: public Gargoyle::Interpreter {
 private:
 	ZHeaderData _h;
 	ZSystem _os;
-	Common::RandomSource _rnd;
+	Common::RandomSource *_rnd;
 	Common::SeekableReadStream *_gameFile;
 	Graphics::Font *_gfxFont;
 

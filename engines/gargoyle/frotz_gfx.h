@@ -28,6 +28,9 @@
 
 #include "common/scummsys.h"
 #include "common/file.h"
+
+#include "graphics/palette.h"
+
 #include "gargoyle/frotz.h"
 #include "gargoyle/gargoyle.h"
 

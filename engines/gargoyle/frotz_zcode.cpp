@@ -2304,7 +2304,7 @@ void FrotzInterpreter::z_random() {
 			if (random_counter == random_interval) 
 				random_counter = 0;
 		} else {			/* ...in standard mode */
-			result = _rnd.getRandomNumber(0xfffe);
+			result = _rnd->getRandomNumber(0xfffe);
 		}
 
 		store((zword)(result % zargs[0] + 1));

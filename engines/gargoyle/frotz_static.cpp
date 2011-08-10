@@ -402,7 +402,7 @@ static const unsigned long _font_offset[] = {
 /* Infocom character graphics font used in Beyond Zork. Note that whilst the raw data is for 8x8, the font 
  * needs to be defined as 8x14, so as to match the size of the ScummVM big font
  */
-const Graphics::FontDesc infocomGfxFont = {
+const Graphics::BdfFontDesc infocomGfxFont = {
 	"InfocomCharGfx",
 	8,
 	14,

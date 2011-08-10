@@ -28,6 +28,7 @@
 
 #include "common/scummsys.h"
 #include "graphics/font.h"
+#include "graphics/fonts/bdf.h"
 #include "gargoyle/frotz_interp.h"
 
 namespace Frotz {
@@ -58,7 +59,7 @@ extern const unsigned char tolower_latin_extended_a[0x80];
 extern const unsigned char tolower_greek[0x50];
 extern const unsigned char tolower_cyrillic[0x60];
 
-extern const Graphics::FontDesc infocomGfxFont;
+extern const Graphics::BdfFontDesc infocomGfxFont;
 
 enum SystemStringId {
 	IDS_BLORB_GLULX, IDS_BLORB_NOEXEC, IDS_MORE, IDS_HIT_KEY_EXIT, IDS_TITLE, 

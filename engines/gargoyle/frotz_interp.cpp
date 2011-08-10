@@ -194,7 +194,7 @@ int inline fgetb(Common::InSaveFile *f) {
 
 FrotzInterpreter::FrotzInterpreter(Gargoyle::GargoyleEngine &engine): 
 		Interpreter(engine), _os(_h, *this) {
-	g_eventRec.registerRandomSource(_rnd, "frotzInterpreter");
+	_rnd = new Common::RandomSource("frotzInterpreter");
 
 	initInterpVars();
 
@@ -288,7 +288,7 @@ void FrotzInterpreter::initInterpVars() {
  * Setup the custom font needed 
  */
 void FrotzInterpreter::init_fonts() {
-	_gfxFont = new Graphics::NewFont(infocomGfxFont);
+	_gfxFont = new Graphics::BdfFont(infocomGfxFont);
 	FontMan.assignFontToName(S_GFX_CHAR_FONT, _gfxFont);
 }
 
@@ -302,12 +302,12 @@ void FrotzInterpreter::init_palette() {
 	}
 
 	// Set the initial palette
-	g_system->setPalette((const byte *)&DEFAULT_COLOUR_LIST[0], 0, 16);
+	g_system->getPaletteManager()->setPalette((const byte *)&DEFAULT_COLOUR_LIST[0], 0, 16);
 
 	// Clear the remainder of the palette
 	uint32 emptyPalette[240];
 	Common::set_to(&emptyPalette[0], &emptyPalette[240], 0);
-	g_system->setPalette((const byte *)&emptyPalette[0], 16, 240);
+	g_system->getPaletteManager()->setPalette((const byte *)&emptyPalette[0], 16, 240);
 }
 
 void FrotzInterpreter::go() {

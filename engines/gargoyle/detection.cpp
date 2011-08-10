@@ -147,27 +147,6 @@ struct GameSettings {
 	GargoyleGameId gameId;
 };
 
-static const ADParams detectionParams = {
-	// Pointer to ADGameDescription or its superset structure
-	NULL, //(const byte *)Gargoyle::gameDescriptions,
-	// Size of that superset structure
-	0, //sizeof(Gargoyle::GargoyleGameDescription),
-	// Number of bytes to compute MD5 sum for
-	5000,
-	// List of all engine targets
-	gargoyleGames,
-	// Structure for autoupgrading obsolete targets
-	0,
-	// Name of single gameid (optional)
-	"gargoyle",
-	// List of files for file-based fallback detection (optional)
-	0,
-	// Flags
-	0,
-	// Additional GUI options (for every game}
-	Common::GUIO_NOSPEECH
-};
-
 } // End of namespace Gargoyle
 
 using namespace Gargoyle;
@@ -177,7 +156,7 @@ class GargoyleMetaEngine : public AdvancedMetaEngine {
 	mutable Common::String	_extra;
 
 public:
-	GargoyleMetaEngine() : AdvancedMetaEngine(detectionParams) {}
+	GargoyleMetaEngine() : AdvancedMetaEngine(NULL, 0, gargoyleGames) {}
 
 	virtual const char *getName() const {
 		return "Gargoyle Engine";

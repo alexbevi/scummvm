@@ -557,7 +557,8 @@ void Interpreter::showSaveLoadDialog(bool saveFlag) {
 		dialog = new GUI::SaveLoadChooser("Load game:", "Load");
 
 	dialog->setSaveMode(saveFlag);
-	_saveSlot = dialog->runModal(plugin, ConfMan.getActiveDomainName());
+
+	_saveSlot = dialog->runModalWithPluginAndTarget(plugin, ConfMan.getActiveDomainName());
 
 	if ((_saveSlot >= 0) && saveFlag) {
 		Common::String result(dialog->getResultString());
@@ -585,7 +586,7 @@ uint8 Interpreter::getDefaultColour(bool fore) const {
 
 uint8 Interpreter::getColourIndex(uint32 rgb) const {
 	uint32 palette[256];
-	g_system->grabPalette((byte *)&palette[0], 0, 256);
+	g_system->getPaletteManager()->grabPalette((byte *)&palette[0], 0, 256);
 
 	for (int i = 0; i < 256; ++i) {
 		if (palette[i] == rgb)

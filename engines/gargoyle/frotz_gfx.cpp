@@ -411,13 +411,13 @@ void FrotzPictures::drawPicture(int picNumber, Graphics::Surface &s, int x, int 
 		palette[ALL_BLACK] = 0;
 
 		// Set the palette entries
-		g_system->setPalette((const byte *)&palette[0], 17, count + 2);
+		_engine->_system->getPaletteManager()->setPalette((const byte *)&palette, 17, count + 2);
     }
 
 	// Hardcode the two palette entries at 224 and 225 for black and white respectively
 	palette[ALL_WHITE] = 0xffffff;
 	palette[ALL_BLACK] = 0;
-	g_system->setPalette((const byte *)&palette[ALL_WHITE], ALL_WHITE, 2);
+	_engine->_system->getPaletteManager()->setPalette((const byte *)&palette[ALL_WHITE], ALL_WHITE, 2);
 
 	// Place the file pointer at the start of the picture data.
 	_gfxFp.seek(data);
