@@ -121,7 +121,7 @@ add_engine toon "Toonstruck" yes
 add_engine touche "Touche: The Adventures of the Fifth Musketeer" yes
 add_engine tsage "Ringworld: Revenge Of The Patriarch" yes
 add_engine tucker "Bud Tucker in Double Trouble" yes
-
+add_engine unity "Star Trek TNG: A Final Unity" no
 #
 # Default settings
 #

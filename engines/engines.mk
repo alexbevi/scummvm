@@ -207,3 +207,8 @@ ifdef ENABLE_TUCKER
 DEFINES += -DENABLE_TUCKER=$(ENABLE_TUCKER)
 MODULES += engines/tucker
 endif
+
+ifdef ENABLE_UNITY
+DEFINES += -DENABLE_UNITY=$(ENABLE_UNITY)
+MODULES += engines/unity
+endif
