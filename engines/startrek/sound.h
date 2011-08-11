@@ -28,9 +28,9 @@
 
 #include "startrek/startrek.h"
 
-#include "sound/midiparser.h"
-#include "sound/mididrv.h"
-#include "sound/mixer.h"
+#include "audio/midiparser.h"
+#include "audio/mididrv.h"
+#include "audio/mixer.h"
 
 namespace Common {
 	class MacResManager;

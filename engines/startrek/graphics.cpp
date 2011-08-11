@@ -23,9 +23,11 @@
  *
  */
 
-#include "startrek/graphics.h"
-
 #include "common/config-manager.h"
+
+#include "graphics/palette.h"
+
+#include "startrek/graphics.h"
 
 namespace StarTrek {
 
@@ -65,7 +67,7 @@ void Graphics::setPalette(const char *paletteFile) {
 			for (byte j = 0; j < 3; j++)
 				palette[i * 4 + j] = palette[i * 4 + j] << 2;
 
-	_vm->_system->setPalette(palette, 0, 256);
+	_vm->_system->getPaletteManager()->setPalette(palette, 0, 256);
 	free(palette);
 	delete palStream;
 }
@@ -131,7 +133,7 @@ void Graphics::drawBackgroundImage(const char *filename) {
 	byte *pixels = (byte *)malloc(width * height);
 	imageStream->read(pixels, width * height);
 
-	_vm->_system->setPalette(palette, 0, 256);
+	_vm->_system->getPaletteManager()->setPalette(palette, 0, 256);
 	_vm->_system->copyRectToScreen(pixels, width, xoffset, yoffset, width, height);
 	_vm->_system->updateScreen();
 

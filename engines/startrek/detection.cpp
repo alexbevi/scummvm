@@ -184,34 +184,9 @@ static const StarTrekGameDescription gameDescriptions[] = {
 
 } // End of namespace StarTrek
 
-static const ADParams detectionParams = {
-	// Pointer to ADGameDescription or its superset structure
-	(const byte *)StarTrek::gameDescriptions,
-	// Size of that superset structure
-	sizeof(StarTrek::StarTrekGameDescription),
-	// Number of bytes to compute MD5 sum for
-	5000,
-	// List of all engine targets
-	starTrekGames,
-	// Structure for autoupgrading obsolete targets
-	0,
-	// Name of single gameid (optional)
-	"startrek",
-	// List of files for file-based fallback detection (optional)
-	0,
-	// Flags
-	0,
-	// Additional GUI options (for every game)
-	Common::GUIO_NONE,
-	// Maximum directory depth
-	1,
-	// List of directory globs
-	0
-};
-
 class StarTrekMetaEngine : public AdvancedMetaEngine {
 public:
-	StarTrekMetaEngine() : AdvancedMetaEngine(detectionParams) {}
+	StarTrekMetaEngine() : AdvancedMetaEngine(StarTrek::gameDescriptions, sizeof(StarTrek::StarTrekGameDescription), starTrekGames) {}
 
 	virtual const char *getName() const {
 		return "Star Trek Engine";

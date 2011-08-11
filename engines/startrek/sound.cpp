@@ -28,8 +28,8 @@
 #include "common/file.h"
 #include "common/macresman.h"
 
-#include "sound/mods/protracker.h"
-#include "sound/decoders/raw.h"
+#include "audio/mods/protracker.h"
+#include "audio/decoders/raw.h"
 
 namespace StarTrek {
 
@@ -44,7 +44,10 @@ Sound::Sound(StarTrekEngine *vm) : _vm(vm) {
 			_midiParser = MidiParser::createParser_XMIDI();
 			
 		_midiDevice = MidiDriver::detectDevice(MDT_PCSPK|MDT_ADLIB|MDT_MIDI);
-		printf("device = %d\n", _midiDevice);
+
+		// XXX changed to a warning since printf() is now declared as forbidden
+		warning("device = %d\n", _midiDevice);
+
 		_midiDriver = MidiDriver::createMidi(_midiDevice);
 		_midiDriver->open();
 		_midiParser->setMidiDriver(_midiDriver);

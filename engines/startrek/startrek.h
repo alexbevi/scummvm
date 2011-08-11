@@ -35,6 +35,8 @@
 
 #include "engines/engine.h"
 
+#include "graphics/surface.h"
+
 #include "startrek/graphics.h"
 #include "startrek/sound.h"
 
@@ -57,7 +59,7 @@ struct StarTrekGameDescription;
 class Graphics;
 class Sound;
 
-class StarTrekEngine : public ::Engine {
+class StarTrekEngine : public Engine {
 protected:
 	Common::Error run();
 

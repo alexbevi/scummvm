@@ -28,13 +28,14 @@
 #include "common/events.h"
 #include "common/file.h"
 #include "common/macresman.h"
+#include "common/error.h"
 
 #include "base/plugins.h"
 #include "base/version.h"
 
 #include "engines/util.h"
 
-#include "graphics/video/qt_decoder.h"
+#include "video/qt_decoder.h"
 
 #include "startrek/lzss.h"
 #include "startrek/startrek.h"
@@ -280,7 +281,7 @@ void StarTrekEngine::playMovieMac(Common::String filename) {
 	// Swap to 16bpp mode
 	initGraphics(512, 384, true, NULL);
 
-	::Graphics::QuickTimeDecoder *qtDecoder = new ::Graphics::QuickTimeDecoder();
+	::Video::QuickTimeDecoder *qtDecoder = new ::Video::QuickTimeDecoder();
 
 	if (!qtDecoder->loadFile(filename))
 		error("Could not open '%s'", filename.c_str());
