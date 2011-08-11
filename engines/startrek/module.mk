@@ -8,10 +8,8 @@ MODULE_OBJS = \
 	sound.o \
 	startrek.o
 	
-
-
 # This module can be built as a plugin
-ifdef BUILD_PLUGINS
+ifeq ($(ENABLE_STARTREK), DYNAMIC_PLUGIN)
 PLUGIN := 1
 endif
 
