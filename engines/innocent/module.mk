@@ -27,7 +27,7 @@ MODULE_OBJS = \
 inter.o: opcode_handlers.cpp
 
 # This module can be built as a plugin
-ifeq ($(ENABLE_MADE), DYNAMIC_PLUGIN)
+ifeq ($(ENABLE_INNOCENT), DYNAMIC_PLUGIN)
 PLUGIN := 1
 endif
 
