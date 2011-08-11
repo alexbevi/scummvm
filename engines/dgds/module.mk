@@ -13,7 +13,7 @@ MODULE_OBJS = \
 	resources/moviegroup.o
 
 # This module can be built as a plugin
-ifdef BUILD_PLUGINS
+ifeq ($(ENABLE_DGDS), DYNAMIC_PLUGIN)
 PLUGIN := 1
 endif
 
