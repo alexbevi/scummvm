@@ -75,6 +75,11 @@ DEFINES += -DENABLE_HUGO=$(ENABLE_HUGO)
 MODULES += engines/hugo
 endif
 
+ifdef ENABLE_KOM
+DEFINES += -DENABLE_KOM=$(ENABLE_KOM)
+MODULES += engines/kom
+endif
+
 ifdef ENABLE_KYRA
 DEFINES += -DENABLE_KYRA=$(ENABLE_KYRA)
 MODULES += engines/kyra
