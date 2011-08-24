@@ -10,7 +10,13 @@ MODULE_OBJS = \
 	managers/resman.o \
 	resources/font.o \
 	resources/movie.o \
-	resources/moviegroup.o
+	resources/moviegroup.o \
+	resources/image.o \
+	resources/font.o \
+	resources/sound.o \
+	resources/palette.o \
+	resources/screen.o \
+	movieplayer.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_DGDS), DYNAMIC_PLUGIN)
