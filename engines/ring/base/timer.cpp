@@ -43,8 +43,8 @@ Timer::~Timer() {
 }
 
 void Timer::start() {
-	if (!g_system->getTimerManager()->installTimerProc(&handler, _elapseTime, this))
-		error("[Timer::start] Cannot start timer");
+	if (!g_system->getTimerManager()->installTimerProc(&handler, _elapseTime, this, Common::String::format("Ring Timer %d", _id)))
+		error("[Timer::start] Cannot start timer %d", _id);
 }
 
 // Serializable

@@ -596,7 +596,7 @@ void ZoneSystemRing::onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uin
 		for (uint32 i = 0; i < list.size(); i++) {
 			SaveStateDescriptor desc = list[i];
 
-			_app->objectAdd((ObjectId)(90500 + i), Common::String::format("#%d", i), desc.description(), 1);
+			_app->objectAdd((ObjectId)(90500 + i), Common::String::format("#%d", i), desc.getDescription(), 1);
 			_app->visualListAdd(1, kPuzzleLoad, (ObjectId)(90500 + i));
 		}
 		}
@@ -683,7 +683,7 @@ void ZoneSystemRing::onButtonUp(ObjectId id, Id target, Id puzzleRotationId, uin
 		_app->initZones();
 
 		// Get info about game
-		Common::String name = list[slot].description();
+		Common::String name = list[slot].getDescription();
 
 		// Try loading the game, and fallback to autosave if it doesn't work
 		if (_app->getSaveManager()->loadSave(slot, kLoadSaveRead)) {

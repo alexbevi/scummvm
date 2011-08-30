@@ -63,11 +63,13 @@ public:
 			delete thumbnail;
 		}
 
-		void setThumbnail(Graphics::Surface *surface) {
-			if (!thumbnail)
-				thumbnail = new Graphics::Surface();
+		bool setThumbnail(Graphics::Surface *surface) {
+			if (!surface)
+				return false;
 
 			thumbnail->copyFrom(*surface);
+
+			return true;
 		}
 	};
 

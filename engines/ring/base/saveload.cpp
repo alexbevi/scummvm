@@ -88,13 +88,8 @@ bool SaveManager::readSavegameHeader(Common::InSaveFile *in, SavegameHeader &hea
 	header.playtime = in->readUint32LE();
 
 	// Get the thumbnail
-	header.setThumbnail(new Graphics::Surface());
-	if (!Graphics::loadThumbnail(*in, *header.thumbnail)) {
-		header.thumbnail->free();
-		delete header.thumbnail;
-		header.thumbnail = NULL;
+	if (!header.setThumbnail(Graphics::loadThumbnail(*in)))
 		return false;
-	}
 
 	return true;
 }
