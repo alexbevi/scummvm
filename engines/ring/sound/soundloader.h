@@ -26,7 +26,120 @@
 
 namespace Ring {
 
+class CompressedSoundStream;
+class CompressedStream;
 class SoundEntryStream;
+
+class SoundResource {
+public:
+	SoundResource();
+	~SoundResource();
+};
+
+struct CompressedSoundHeader {
+	int32 field_0;
+	int32 field_4;
+	int32 field_8;
+	int32 field_C0;
+	int32 field_10;
+	int32 field_14;
+	int32 field_16;
+	int32 field_18;
+	int32 field_1C;
+	int32 field_20;
+	int32 field_22;
+	int32 field_24;
+	int32 field_28;
+};
+
+struct CompressedSoundMonoHeader : public CompressedSoundHeader {
+	int16 field_2C;
+};
+
+struct CompressedSoundStereoHeader : public CompressedSoundHeader {
+	int32 field_2C;
+	int32 field_30;
+};
+
+// Sound decompression classes
+class CompressedSound {
+public:
+	struct Header {
+		CompressedSoundHeader* header;
+		int32 field_4;
+		byte field_8;
+	};
+
+	struct Data {
+		byte *data;
+		int32 field_4;
+		byte field_8;
+	};
+
+	virtual ~CompressedSound() {};
+
+	virtual bool init(const Common::String &path) = 0;
+	virtual bool decompressHeader(Header *header) = 0;
+	virtual bool decompress(Data *data) = 0;
+	virtual uint32 getDataSize() = 0;
+	virtual bool getChunk() = 0;
+	virtual int getFunction8() = 0;
+	virtual int16 getFunction9() = 0;
+	virtual int16 getFunction10() = 0;
+	virtual CompressedSoundHeader *getHeader() = 0;
+};
+
+class CompressedSoundMono : public CompressedSound {
+public:
+	CompressedSoundMono();
+	~CompressedSoundMono();
+
+	virtual bool init(const Common::String &path);
+	virtual bool decompressHeader(Header *header);
+	virtual bool decompress(Data *data);
+	virtual uint32 getDataSize() { return _dataSize; }
+	virtual bool getChunk();
+	virtual int getFunction8() { return _header.field_18; }
+	virtual int16 getFunction9() { return _header.field_22; }
+	virtual int16 getFunction10() { return _header.field_14; }
+	virtual CompressedSoundHeader *getHeader() { return &_header; }
+
+private:
+	CompressedSoundStream     *_stream;
+	byte                      *_buffer;
+	int32                      _field_C;
+	int32                      _field_10;
+	SoundResource             *_resource;
+	CompressedSoundMonoHeader  _header;
+	int32                      _field_46;
+	uint32                     _dataSize;
+};
+
+class CompressedSoundStereo : public CompressedSound {
+public:
+	CompressedSoundStereo();
+	~CompressedSoundStereo();
+
+	virtual bool init(const Common::String &path);
+	virtual bool decompressHeader(Header *header);
+	virtual bool decompress(Data *data);
+	virtual uint32 getDataSize() { return _dataSize; }
+	virtual bool getChunk();
+	virtual int getFunction8() { return _header.field_18; }
+	virtual int16 getFunction9() { return _header.field_22; }
+	virtual int16 getFunction10() { return _header.field_14; }
+	virtual CompressedSoundHeader *getHeader() { return &_header; }
+
+private:
+	CompressedStream          *_stream;
+	byte                      *_buffer;
+	int32                      _field_C;
+	int32                      _field_10;
+	SoundResource             *_resource;
+	CompressedSoundMonoHeader  _header;
+	int32                      _field_4C;
+	uint32                     _dataSize;
+};
 
 class SoundLoader {
 public:
@@ -35,9 +148,9 @@ public:
 
 	bool load(const Common::String &path, SoundEntryStream *soundEntry);
 	void close();
-	int getChunk();
-	int getDataSize();
-	int read();
+	bool getChunk();
+	uint32 getDataSize();
+	bool read(uint32 size, byte *buffer, uint32 *offset);
 
 private:
 	uint32 _field_4;
@@ -45,7 +158,7 @@ private:
 	uint32 _field_C;
 	uint32 _field_10;
 	uint16 _field_14;
-	byte *_compressedStream;
+	CompressedSound *_compressedStream;
 	uint32 _field_1A;
 	uint32 _field_1E;
 	SoundFormat _format;

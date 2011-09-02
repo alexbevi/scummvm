@@ -21,9 +21,99 @@
 
 #include "ring/sound/soundloader.h"
 
+#include "ring/sound/soundstream.h"
+
+#include "ring/base/stream.h"
+
 #include "ring/helpers.h"
 
 namespace Ring {
+
+#pragma region SoundResource
+
+SoundResource::SoundResource() {
+
+}
+
+SoundResource::~SoundResource() {
+
+}
+
+#pragma endregion
+
+#pragma region CompressedSoundMono
+
+CompressedSoundMono::CompressedSoundMono() {
+	_stream = NULL;
+	_buffer = NULL;
+	_field_C = 0;
+	_field_10 = 0;
+	_resource = NULL;
+	_dataSize = 0;
+}
+
+CompressedSoundMono::~CompressedSoundMono() {
+	SAFE_DELETE(_stream);
+	SAFE_FREE(_buffer);
+	_field_C = 0;
+	SAFE_DELETE(_resource);
+}
+
+bool CompressedSoundMono::init(const Common::String &path) {
+	error("[CompressedSoundMono::init] Not implemented");
+}
+
+bool CompressedSoundMono::decompressHeader(Header *header) {
+	error("[CompressedSoundMono::decompressHeader] Not implemented");
+};
+
+bool CompressedSoundMono::decompress(Data *data) {
+	error("[CompressedSoundMono::decompress] Not implemented");
+};
+
+bool CompressedSoundMono::getChunk() {
+	error("[CompressedSoundMono::getChunk] Not implemented");
+}
+
+#pragma endregion
+
+#pragma region CompressedSoundStereo
+
+CompressedSoundStereo::CompressedSoundStereo() {
+	_stream = NULL;
+	_buffer = NULL;
+	_field_C = 0;
+	_field_10 = 0;
+	_resource = NULL;
+	_dataSize = 0;
+}
+
+CompressedSoundStereo::~CompressedSoundStereo() {
+	SAFE_DELETE(_stream);
+	SAFE_FREE(_buffer);
+	_field_C = 0;
+	SAFE_DELETE(_resource);
+}
+
+bool CompressedSoundStereo::init(const Common::String &path) {
+	error("[CompressedSoundStereo::init] Not implemented");
+}
+
+bool CompressedSoundStereo::decompressHeader(Header *header) {
+	error("[CompressedSoundStereo::decompressHeader] Not implemented");
+};
+
+bool CompressedSoundStereo::decompress(Data *data) {
+	error("[CompressedSoundStereo::decompress] Not implemented");
+};
+
+bool CompressedSoundStereo::getChunk() {
+	error("[CompressedSoundStereo::getChunk] Not implemented");
+}
+
+#pragma endregion
+
+#pragma region SoundLoader
 
 SoundLoader::SoundLoader(SoundFormat format) {
 	_field_4 = 0;
@@ -42,23 +132,49 @@ SoundLoader::~SoundLoader() {
 }
 
 bool SoundLoader::load(const Common::String &path, SoundEntryStream *soundEntry) {
+	_field_1A = 0;
+
+	switch (_format) {
+	default:
+		error("[SoundLoader::load] Invalid sound format (%d)", _format);
+
+	case kSoundFormatWAC:
+		_compressedStream = new CompressedSoundMono();
+		break;
+
+	case kSoundFormatWAS:
+		_compressedStream = new CompressedSoundStereo();
+		break;
+	}
+
+	if (!_compressedStream->init(path))
+		return true;
+
+	// Initialize loader data
 	error("[SoundLoader::load] Not implemented");
+
+	return false;
 }
 
 void SoundLoader::close() {
-	error("[SoundLoader::close] Not implemented");
+	SAFE_DELETE(_compressedStream);
 }
 
-int SoundLoader::getChunk() {
-	error("[SoundLoader::getChunk] Not implemented");
+bool SoundLoader::getChunk() {
+	_compressedStream->getChunk();
+	_field_1A = 0;
+
+	return false;
 }
 
-int SoundLoader::getDataSize() {
-	error("[SoundLoader::getDataSize] Not implemented");
+uint32 SoundLoader::getDataSize() {
+	return _compressedStream->getDataSize();
 }
 
-int SoundLoader::read() {
+bool SoundLoader::read(uint32 size, byte *buffer, uint32 *offset) {
 	error("[SoundLoader::read] Not implemented");
 }
+
+#pragma endregion
 
 } // End of namespace Ring
