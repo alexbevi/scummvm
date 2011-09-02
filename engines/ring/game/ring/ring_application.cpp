@@ -56,6 +56,8 @@
 #include "ring/helpers.h"
 #include "ring/ring.h"
 
+#include "common/file.h"
+
 using namespace RingGame;
 
 namespace Ring {
@@ -492,10 +494,10 @@ void ApplicationRing::setupZone(ZoneId zone, SetupType type) {
 		if (zone == kZoneSY) {
 			hasData = true;
 		} else {
-			// The original checks for the correct CD,
-			// we should instead check that the zone folder
-			// has been copied properly
-			warning("[ApplicationRing::setupZone] Zone CD check not implemented");
+			// The original checks for the correct CD defined in cd.ini,
+			// instead we check that the zone archive has been copied properly
+			if (!Common::File::exists(getZoneFolder(zone)))
+				hasData = false;
 		}
 	}
 
