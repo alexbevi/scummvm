@@ -41,8 +41,24 @@ SoundLoader::~SoundLoader() {
 	SAFE_DELETE(_compressedStream);
 }
 
-bool SoundLoader::load(SoundEntryStream *soundEntry, const Common::String &path, uint32 soundChunk) {
+bool SoundLoader::load(const Common::String &path, SoundEntryStream *soundEntry) {
 	error("[SoundLoader::load] Not implemented");
+}
+
+void SoundLoader::close() {
+	error("[SoundLoader::close] Not implemented");
+}
+
+int SoundLoader::getChunk() {
+	error("[SoundLoader::getChunk] Not implemented");
+}
+
+int SoundLoader::getDataSize() {
+	error("[SoundLoader::getDataSize] Not implemented");
+}
+
+int SoundLoader::read() {
+	error("[SoundLoader::read] Not implemented");
 }
 
 } // End of namespace Ring

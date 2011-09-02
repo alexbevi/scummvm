@@ -188,7 +188,7 @@ SoundEntryStream::SoundEntryStream(Id soundId, SoundType type, Common::String na
 	_field_126 = 0;
 	_field_12A = 0;
 	_audioStream = NULL;
-	_field_132 = 0;
+	_field_132 = NULL;
 	_field_136 = 0;
 	_field_13A = 0;
 	_field_13E = 0;
@@ -203,13 +203,12 @@ SoundEntryStream::SoundEntryStream(Id soundId, SoundType type, Common::String na
 	_isBufferPlaying = false;
 	//_event = NULL;
 	_soundChunk = soundChunk;
+
+	_loader = NULL;
 }
 
 SoundEntryStream::~SoundEntryStream() {
 	stopAndReleaseSoundBuffer();
-
-	// Duplicated?
-	SAFE_DELETE(_audioStream);
 }
 
 void SoundEntryStream::play(bool loop) {
@@ -235,7 +234,6 @@ void SoundEntryStream::play(bool loop) {
 		setVolumeAndPan();
 		_isPlaying = true;
 	}
-
 }
 
 void SoundEntryStream::stop() {
@@ -250,26 +248,29 @@ void SoundEntryStream::stopAndClear() {
 }
 
 void SoundEntryStream::initSoundBuffer(const Common::String &path, uint32 soundChunk, bool loop, SoundFormat format) {
-	// Handle uncompressed wav file
-	if (format == kSoundFormatWAV) {
-		if (_audioStream)
-			delete _audioStream;
+	stopAndReleaseSoundBuffer();
 
-		// Open stream to file
-		Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(path);
-		if (!stream)
-			error("[SoundEntryStream::initSoundBuffer] Cannot open stream to file (%s)", path.c_str());
+	_loop = loop;
 
-		_audioStream = Audio::makeWAVStream(stream, DisposeAfterUse::YES);
-	} else {
+	// Handle compressed sounds
+	if (format != kSoundFormatWAV) {
+		_loader = new SoundLoader(format);
 
-		// Handle compressed sounds
-		SoundLoader *loader = new SoundLoader(format);
-		if (!loader->load(this, path, soundChunk))
-			error("[SoundEntryStream::initSoundBuffer] Cannot load compressed audio stream (%s)", path.c_str());
+		if (loadData(format, path, soundChunk))
+			SAFE_DELETE(_loader);
 
-		delete loader;
+		return;
 	}
+
+	// Handle uncompressed wav file
+	if (_audioStream)
+		delete _audioStream;
+
+	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(path);
+	if (!stream)
+		error("[SoundEntryStream::initSoundBuffer] Cannot open stream to file (%s)", path.c_str());
+
+	_audioStream = Audio::makeWAVStream(stream, DisposeAfterUse::YES);
 }
 
 void SoundEntryStream::stopAndReleaseSoundBuffer() {
@@ -278,9 +279,38 @@ void SoundEntryStream::stopAndReleaseSoundBuffer() {
 
 	stop();
 
-	SAFE_DELETE(_audioStream);
+	// Close loader
+	if (_loader)
+		_loader->close();
 
-	error("[SoundEntryS::stopAndReleaseSoundBuffer] Not implemented");
+	SAFE_DELETE(_loader);
+
+	// Delete ???
+	SAFE_DELETE(_field_132);
+
+	// Delete audiostream
+	SAFE_DELETE(_audioStream);
+}
+
+bool SoundEntryStream::loadData(SoundFormat format, const Common::String &path, uint32 soundChunk) {
+	// Single chunk
+	if (_loader->load(path, this))
+		return true;
+
+	// Multiple chunks, need to keep the loader around
+	if (_field_126 == 1) {
+
+		// Cannot happen for compressed sounds, always returns 0
+		//if (_loader->getChunk()) {
+		//	_loader->close();
+		//	return true;
+		//}
+
+		error("[SoundEntryStream::loadData] Not implemented");
+	} else {
+		_loader->close();
+		return true;
+	}
 }
 
 #pragma endregion
@@ -294,8 +324,6 @@ SoundEntryData::SoundEntryData(Id soundId, SoundType type, Common::String name, 
 
 SoundEntryData::~SoundEntryData() {
 	stopAndReleaseSoundBuffer();
-
-	SAFE_DELETE(_audioStream); // Duplicated?
 }
 
 void SoundEntryData::play(bool loop) {

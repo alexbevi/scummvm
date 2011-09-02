@@ -33,7 +33,11 @@ public:
 	SoundLoader(SoundFormat format);
 	~SoundLoader();
 
-	bool load(SoundEntryStream *soundEntry, const Common::String &path, uint32 soundChunk);
+	bool load(const Common::String &path, SoundEntryStream *soundEntry);
+	void close();
+	int getChunk();
+	int getDataSize();
+	int read();
 
 private:
 	uint32 _field_4;
