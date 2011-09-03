@@ -33,11 +33,59 @@ namespace Ring {
 #pragma region SoundResource
 
 SoundResource::SoundResource() {
-
+	_buffer  = NULL;
+	_field_4 = NULL;
+	_size    = 0;
 }
 
 SoundResource::~SoundResource() {
+	cleanup();
+}
 
+void SoundResource::add(void *data, uint32 dataSize) {
+	if (data == NULL)
+		error("[SoundResource::add] Invalid data pointer");
+
+	if (dataSize == 0)
+		error("[SoundResource::add] Invalid data size (cannot be 0)");
+
+	// Check if existing data is present
+	if (_size) {
+
+		// Create new buffer to hold the data
+		uint32 totalSize = _size + dataSize;
+		byte *buffer = (byte *)malloc(totalSize);
+		if (!buffer)
+			error("[SoundResource::add] Cannot reallocate memory for SoundResource buffer");
+
+		memcpy(buffer, _buffer, _size);
+		memcpy((byte*)(buffer + _size), data, dataSize);
+
+		cleanup();
+
+		_buffer = buffer;
+		_field_4 = buffer;
+		_size = totalSize;
+
+	} else {
+		cleanup();
+
+		byte *buffer = (byte *)malloc(dataSize);
+		if (!buffer)
+			error("[SoundResource::add] Cannot allocate memory for SoundResource buffer");
+
+		memcpy(buffer, data, dataSize);
+
+		_buffer = buffer;
+		_field_4 = buffer;
+		_size = dataSize;
+	}
+}
+
+void SoundResource::cleanup() {
+	SAFE_FREE(_buffer);
+	_field_4 = NULL;
+	_size = 0;
 }
 
 #pragma endregion

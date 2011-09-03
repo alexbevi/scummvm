@@ -34,6 +34,15 @@ class SoundResource {
 public:
 	SoundResource();
 	~SoundResource();
+
+	void add(void *data, uint32 dataSize);
+
+private:
+	byte   *_buffer;
+	void   *_field_4;
+	uint32  _size;
+
+	void cleanup();
 };
 
 struct CompressedSoundHeader {
