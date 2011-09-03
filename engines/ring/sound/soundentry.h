@@ -116,20 +116,18 @@ public:
 	virtual void stopAndClear();
 
 private:
-	uint32         _field_126;
-	uint32         _field_12A;
 	SoundLoader   *_loader;
 	Audio::RewindableAudioStream *_audioStream;
 	void*          _field_132;
 	uint32         _field_136;
-	uint32         _field_13A;
-	uint32         _field_13E;
+	int32          _size;
+	uint32         _bufferOffset;
 	uint32         _field_142;
 	uint32         _field_146;
 	uint32         _field_14A;
-	uint32         _field_14E;
+	uint32         _loop;
 	uint32         _field_152;
-	uint32         _field_156;
+	//uint32         _threadId;
 	//uint32         _event1;
 	//uint32         _event2;
 	bool           _isBufferPlaying;

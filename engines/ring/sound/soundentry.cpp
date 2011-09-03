@@ -185,19 +185,17 @@ void SoundEntry::convertPan(int32 &pan) {
 #pragma region SoundEntryStream
 
 SoundEntryStream::SoundEntryStream(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, uint32 soundChunk) : SoundEntry(soundId, type, name, loadFrom, format) {
-	_field_126 = 0;
-	_field_12A = 0;
 	_audioStream = NULL;
 	_field_132 = NULL;
 	_field_136 = 0;
-	_field_13A = 0;
-	_field_13E = 0;
+	_size = 0;
+	_bufferOffset = 0;
 	_field_142 = 0;
 	_field_146 = 0;
 	_field_14A = 0;
-	_field_14E = 0;
+	_loop = 0;
 	_field_152 = 0;
-	_field_156 = 0;
+	//_threadId = 0;
 	//_event1 = 0;
 	//_event2 = 0;
 	_isBufferPlaying = false;
@@ -293,18 +291,19 @@ void SoundEntryStream::stopAndReleaseSoundBuffer() {
 }
 
 bool SoundEntryStream::loadData(SoundFormat format, const Common::String &path, uint32 soundChunk) {
-	// Single chunk
 	if (_loader->load(path, this))
 		return true;
 
-	// Multiple chunks, need to keep the loader around
-	if (_field_126 == 1) {
+	if (_loader->getType() == 1) { // PCM data
+		if (_loader->getChunk()) {
+			_loader->close();
+			return true;
+		}
 
-		// Cannot happen for compressed sounds, always returns 0
-		//if (_loader->getChunk()) {
-		//	_loader->close();
-		//	return true;
-		//}
+		if (soundChunk <= 0)
+			_size = -(int32)soundChunk;
+		else
+			_size = soundChunk * _loader->getSamplesPerSec() * _loader->getBlockAlign();
 
 		error("[SoundEntryStream::loadData] Not implemented");
 	} else {

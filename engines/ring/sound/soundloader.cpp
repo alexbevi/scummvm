@@ -98,9 +98,7 @@ bool CompressedSoundMono::decompressHeader() {
 	_dataSize   = _stream->getCompressedStream()->readUint32LE();
 
 	int size;
-	int blockAlign;
-
-	if (!Audio::loadWAVFromStream(*_stream->getCompressedStream(), size, _samplesPerSec, _flags, &_type, &blockAlign)) {
+	if (!Audio::loadWAVFromStream(*_stream->getCompressedStream(), size, _samplesPerSec, _flags, &_type, &_blockAlign)) {
 		warning("[CompressedSoundMono::decompressHeader] Cannot parse WAVE header");
 		return false;
 	}
@@ -161,9 +159,7 @@ bool CompressedSoundStereo::decompressHeader() {
 	_dataSize   = _stream->getCompressedStream()->readUint32LE();
 
 	int size;
-	int blockAlign;
-
-	if (!Audio::loadWAVFromStream(*_stream->getCompressedStream(), size, _samplesPerSec, _flags, &_type, &blockAlign)) {
+	if (!Audio::loadWAVFromStream(*_stream->getCompressedStream(), size, _samplesPerSec, _flags, &_type, &_blockAlign)) {
 		warning("[CompressedSoundStereo::decompressHeader] Cannot parse WAVE header");
 		return false;
 	}
@@ -206,14 +202,16 @@ bool CompressedSoundStereo::getChunk() {
 #pragma region SoundLoader
 
 SoundLoader::SoundLoader(SoundFormat format) {
-	_field_4 = 0;
-	_field_8 = 0;
-	_field_C = 0;
-	_field_10 = 0;
-	_field_14 = 0;
+	_type = 0;
+	_channels = 0;
+	_samplesPerSec = 0;
+	_avgBytesPerSec = 0;
+	_blockAlign = 0;
+	_bitsPerSample = 0;
+	//_field_10 = 0;
 	_compressedStream = NULL;
-	_field_1A = 0;
-	_field_1E = 0;
+	_field_16 = 0;
+	//_field_1A = 0;
 	_format = format;
 }
 
@@ -222,7 +220,7 @@ SoundLoader::~SoundLoader() {
 }
 
 bool SoundLoader::load(const Common::String &path, SoundEntryStream *soundEntry) {
-	_field_1A = 0;
+	_field_16 = 0;
 
 	switch (_format) {
 	default:
@@ -240,8 +238,14 @@ bool SoundLoader::load(const Common::String &path, SoundEntryStream *soundEntry)
 	if (!_compressedStream->init(path))
 		return true;
 
-	// Initialize loader data
-	error("[SoundLoader::load] Not implemented");
+	// Initialize loader data from wave header
+	_type = _compressedStream->getType();
+	//_channels = _compressedStream->getChannels();
+	_samplesPerSec = _compressedStream->getSamplesPerSec();
+	//_avgBytesPerSec = _compressedStream->getAvgBytesPerSec();
+	_bitsPerSample = _compressedStream->getBitsPerSample();
+	_blockAlign    = _compressedStream->getBlockAlign();
+	//_field_10 = ???
 
 	return false;
 }
@@ -252,7 +256,7 @@ void SoundLoader::close() {
 
 bool SoundLoader::getChunk() {
 	_compressedStream->getChunk();
-	_field_1A = 0;
+	_field_16 = 0;
 
 	return false;
 }

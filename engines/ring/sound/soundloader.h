@@ -71,6 +71,7 @@ public:
 	int getSamplesPerSec() { return _samplesPerSec; }
 	int16 getBitsPerSample();
 	int16 getType() { return _type; }
+	int getBlockAlign() { return _blockAlign; }
 
 protected:
 	CompressedStream            *_stream;
@@ -81,6 +82,7 @@ protected:
 	// Original stores the whole wave header, we only keep the interesting bits
 	uint16                       _type;
 	int                          _samplesPerSec;
+	int                          _blockAlign;
 	byte                         _flags;
 	uint32                       _chunkCount;
 	uint32                       _dataSize;
@@ -124,15 +126,22 @@ public:
 	uint32 getDataSize();
 	bool read(uint32 size, byte *buffer, uint32 *offset);
 
+	// Accessors
+	uint16 getType() { return _type; }
+	uint16 getSamplesPerSec() { return _samplesPerSec; }
+	uint16 getBlockAlign() { return _blockAlign; }
+
 private:
-	uint32 _field_4;
-	uint32 _field_8;
-	uint32 _field_C;
-	uint32 _field_10;
-	uint16 _field_14;
+	uint16 _type;
+	uint16 _channels;
+	uint32 _samplesPerSec;
+	uint32 _avgBytesPerSec;
+	uint16 _blockAlign;
+	uint16 _bitsPerSample;
+	//uint16 _field_10;
 	CompressedSound *_compressedStream;
-	uint32 _field_1A;
-	uint32 _field_1E;
+	uint32 _field_16;
+	//uint32 _field_1A;
 	SoundFormat _format;
 };
 
