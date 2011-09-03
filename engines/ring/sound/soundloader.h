@@ -87,6 +87,13 @@ public:
 	virtual int16 getFunction9() = 0;
 	virtual int16 getFunction10() = 0;
 	virtual CompressedSoundHeader *getHeader() = 0;
+
+protected:
+	CompressedStream            *_stream;
+	byte                        *_buffer;
+	int32                        _field_C;
+	int32                        _field_10;
+	SoundResource               *_resource;
 };
 
 class CompressedSoundMono : public CompressedSound {
@@ -105,11 +112,6 @@ public:
 	virtual CompressedSoundHeader *getHeader() { return &_header; }
 
 private:
-	CompressedSoundStream     *_stream;
-	byte                      *_buffer;
-	int32                      _field_C;
-	int32                      _field_10;
-	SoundResource             *_resource;
 	CompressedSoundMonoHeader  _header;
 	int32                      _field_46;
 	uint32                     _dataSize;
@@ -131,11 +133,6 @@ public:
 	virtual CompressedSoundHeader *getHeader() { return &_header; }
 
 private:
-	CompressedStream            *_stream;
-	byte                        *_buffer;
-	int32                        _field_C;
-	int32                        _field_10;
-	SoundResource               *_resource;
 	CompressedSoundStereoHeader  _header;
 	int32                        _field_4C;
 	uint32                       _dataSize;

@@ -33,7 +33,6 @@ MODULE_OBJS := \
 	sound/soundhandler.o \
 	sound/soundloader.o \
 	sound/soundmanager.o \
-	sound/soundstream.o \
 	debug.o \
 	detection.o \
 	ring.o

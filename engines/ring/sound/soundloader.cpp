@@ -21,8 +21,6 @@
 
 #include "ring/sound/soundloader.h"
 
-#include "ring/sound/soundstream.h"
-
 #include "ring/base/stream.h"
 
 #include "ring/helpers.h"
@@ -60,7 +58,7 @@ CompressedSoundMono::~CompressedSoundMono() {
 }
 
 bool CompressedSoundMono::init(const Common::String &path) {
-	_stream = new CompressedSoundStream();
+	_stream = new CompressedStream();
 	_stream->initBuffer(path, 2);
 
 	_resource = new SoundResource();
@@ -81,8 +79,8 @@ bool CompressedSoundMono::decompress(Data *data) {
 };
 
 bool CompressedSoundMono::getChunk() {
-	_stream->seek(52, SEEK_SET);
-	_header.field_2C = _stream->readUint16LE();
+	_stream->getCompressedStream()->seek(52, SEEK_SET);
+	_header.field_2C = _stream->getCompressedStream()->readUint16LE();
 
 	_field_C  = 0;
 	_field_10 = 44;
@@ -112,7 +110,7 @@ CompressedSoundStereo::~CompressedSoundStereo() {
 
 bool CompressedSoundStereo::init(const Common::String &path) {
 	_stream = new CompressedStream();
-	_stream->init(path, 2);
+	_stream->initBuffer(path, 2);
 
 	_resource = new SoundResource();
 

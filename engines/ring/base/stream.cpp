@@ -39,14 +39,23 @@ CompressedStream::~CompressedStream() {
 	SAFE_DELETE(_artStream);
 }
 
-bool CompressedStream::init(Common::String filename, uint32, uint32) {
+bool CompressedStream::init(Common::String filename, uint32 type, uint32) {
+	if (!initBuffer(filename, type))
+		return false;
+
+	initDecompression();
+
+	return true;
+}
+
+bool CompressedStream::initBuffer(Common::String filename, uint32 type) {
 	_fileStream = SearchMan.createReadStreamForMember(filename);
 	if (!_fileStream) {
 		warning("[CompressedStream::init] Error opening file (%s)", filename.c_str());
 		return false;
 	}
 
-	initDecompression();
+	_type = type;
 
 	return true;
 }
@@ -237,6 +246,11 @@ Common::MemoryReadStream *CompressedStream::decompressChannel() {
 
 	//// Create decompressed stream
 	//return new Common::MemoryReadStream(buffer, bufferSize, DisposeAfterUse::YES);
+}
+
+Common::MemoryReadStream *CompressedStream::decompressSound() {
+	// Decompress mono sound data
+	error("[CompressedStream::decompressSound] Not implemented!");
 }
 
 uint32 CompressedStream::decodeSound(Common::SeekableReadStream *stream, uint32 a2, uint32 a3, uint32 start, uint32 end, byte* buffer) {
