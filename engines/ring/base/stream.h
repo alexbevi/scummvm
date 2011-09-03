@@ -34,7 +34,7 @@ public:
 	CompressedStream();
 	~CompressedStream();
 
-	bool init(Common::String filename, uint32 type, uint32 size);
+	bool init(Common::String filename, uint32 type, uint32 size = 0);
 	bool initArt(Common::String filename, ZoneId zone, LoadFrom loadFrom);
 
 	Common::SeekableReadStream *getCompressedStream();

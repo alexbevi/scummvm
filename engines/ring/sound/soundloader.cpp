@@ -60,7 +60,16 @@ CompressedSoundMono::~CompressedSoundMono() {
 }
 
 bool CompressedSoundMono::init(const Common::String &path) {
-	error("[CompressedSoundMono::init] Not implemented");
+	_stream = new CompressedSoundStream();
+	_stream->initBuffer(path, 2);
+
+	_resource = new SoundResource();
+
+	Header header;
+	if (!decompressHeader(&header))
+		return false;
+
+	return true;
 }
 
 bool CompressedSoundMono::decompressHeader(Header *header) {
@@ -72,7 +81,13 @@ bool CompressedSoundMono::decompress(Data *data) {
 };
 
 bool CompressedSoundMono::getChunk() {
-	error("[CompressedSoundMono::getChunk] Not implemented");
+	_stream->seek(52, SEEK_SET);
+	_header.field_2C = _stream->readUint16LE();
+
+	_field_C  = 0;
+	_field_10 = 44;
+
+	return true;
 }
 
 #pragma endregion
@@ -96,7 +111,16 @@ CompressedSoundStereo::~CompressedSoundStereo() {
 }
 
 bool CompressedSoundStereo::init(const Common::String &path) {
-	error("[CompressedSoundStereo::init] Not implemented");
+	_stream = new CompressedStream();
+	_stream->init(path, 2);
+
+	_resource = new SoundResource();
+
+	Header header;
+	if (!decompressHeader(&header))
+		return false;
+
+	return true;
 }
 
 bool CompressedSoundStereo::decompressHeader(Header *header) {
@@ -108,7 +132,14 @@ bool CompressedSoundStereo::decompress(Data *data) {
 };
 
 bool CompressedSoundStereo::getChunk() {
-	error("[CompressedSoundStereo::getChunk] Not implemented");
+	_stream->getCompressedStream()->seek(52, SEEK_SET);
+	_header.field_2C = _stream->getCompressedStream()->readUint32LE();
+	_header.field_30 = _stream->getCompressedStream()->readUint32LE();
+
+	_field_C  = 0;
+	_field_10 = 44;
+
+	return true;
 }
 
 #pragma endregion

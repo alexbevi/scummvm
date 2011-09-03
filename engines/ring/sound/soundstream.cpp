@@ -25,5 +25,59 @@
 
 namespace Ring {
 
+CompressedSoundStream::CompressedSoundStream() {
+	_stream = NULL;
+}
+
+CompressedSoundStream::~CompressedSoundStream() {
+	SAFE_DELETE(_stream);
+}
+
+void CompressedSoundStream::initBuffer(const Common::String &path, byte type) {
+	error("[CompressedSoundStream::initBuffer] Not implemented");
+}
+
+#pragma region ReadStream
+
+bool CompressedSoundStream::eos() const {
+	if (!_stream)
+		error("[CompressedSoundStream::eos] Not initialized properly!");
+
+	return _stream->eos();
+}
+
+uint32 CompressedSoundStream::read(void *dataPtr, uint32 dataSize) {
+	if (!_stream)
+		error("[CompressedSoundStream::read] Not initialized properly!");
+
+	return _stream->read(dataPtr, dataSize);
+}
+
+#pragma endregion
+
+#pragma region SeekableReadStream
+
+int32 CompressedSoundStream::pos() const {
+	if (!_stream)
+		error("[CompressedSoundStream::pos] Not initialized properly!");
+
+	return _stream->pos();
+}
+
+int32 CompressedSoundStream::size() const {
+	if (!_stream)
+		error("[CompressedSoundStream::size] Not initialized properly!");
+
+	return _stream->size();
+}
+
+bool CompressedSoundStream::seek(int32 offset, int whence) {
+	if (!_stream)
+		error("[CompressedSoundStream::seek] Not initialized properly!");
+
+	return _stream->seek(offset, whence);
+}
+
+#pragma endregion
 
 } // End of namespace Ring

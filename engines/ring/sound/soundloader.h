@@ -131,14 +131,14 @@ public:
 	virtual CompressedSoundHeader *getHeader() { return &_header; }
 
 private:
-	CompressedStream          *_stream;
-	byte                      *_buffer;
-	int32                      _field_C;
-	int32                      _field_10;
-	SoundResource             *_resource;
-	CompressedSoundMonoHeader  _header;
-	int32                      _field_4C;
-	uint32                     _dataSize;
+	CompressedStream            *_stream;
+	byte                        *_buffer;
+	int32                        _field_C;
+	int32                        _field_10;
+	SoundResource               *_resource;
+	CompressedSoundStereoHeader  _header;
+	int32                        _field_4C;
+	uint32                       _dataSize;
 };
 
 class SoundLoader {

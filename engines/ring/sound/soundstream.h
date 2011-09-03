@@ -33,7 +33,7 @@ public:
 	CompressedSoundStream();
 	~CompressedSoundStream();
 
-	void initBuffer(const char *path);
+	void initBuffer(const Common::String &path, byte type);
 
 	// ReadStream
 	virtual bool eos() const;
