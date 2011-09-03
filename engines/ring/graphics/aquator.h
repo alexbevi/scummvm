@@ -28,6 +28,52 @@
 
 namespace Ring {
 
+// Pixel manipulation
+class Pixel {
+public:
+	struct PixelData {
+		float a1;
+		float a2;
+		float a3;
+
+		PixelData() {
+			a1 = 0.0f;
+			a2 = 0.0f;
+			a3 = 1.0f;
+		}
+
+		void reset() {
+			a1 = 0.0f;
+			a2 = 0.0f;
+			a3 = 0.0f;
+		}
+	};
+
+	struct PixelTriplet {
+		PixelData p1;
+		PixelData p2;
+		PixelData p3;
+
+		void reset() {
+			p1.reset();
+			p2.reset();
+			p3.reset();
+		}
+	};
+
+	static void set(int *pixel, int* val);
+	static void set(int *val, int *pixel, int offset);
+	static void set(int *pixel, int val1, int val2, int val3);
+	static void set(PixelTriplet *from, PixelData *pixel, float a1, float a2, float a3);
+	static void set(PixelTriplet *from, PixelData *pixel, PixelData *pixel2);
+	static void add(int *pixel, int val);
+	static void add(PixelData *triplet, PixelData *from, float a1, float a2, float a3);
+	static void substract(int *pixel, int val);
+	static void multiply(int *pixel, double val);
+	static void multiply(PixelData *from, PixelData *pixel, float val);
+	static void divide(PixelData *pixel);
+};
+
 class ImageHeaderEntry {
 public:
 	struct Header {
