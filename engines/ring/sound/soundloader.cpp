@@ -25,6 +25,9 @@
 
 #include "ring/helpers.h"
 
+#include "audio/decoders/wave.h"
+#include "audio/decoders/raw.h"
+
 namespace Ring {
 
 #pragma region SoundResource
@@ -35,6 +38,36 @@ SoundResource::SoundResource() {
 
 SoundResource::~SoundResource() {
 
+}
+
+#pragma endregion
+
+#pragma region CompressedSound
+
+bool CompressedSound::init(const Common::String &path) {
+	_stream = new CompressedStream();
+	_stream->initBuffer(path, 2);
+
+	_resource = new SoundResource();
+
+	if (!decompressHeader())
+		return false;
+
+	return true;
+}
+
+int16 CompressedSound::getBitsPerSample() {
+	if (_flags & Audio::FLAG_UNSIGNED)
+		return 8;
+
+	if (_flags & Audio::FLAG_16BITS) {
+		if (_flags & Audio::FLAG_LITTLE_ENDIAN)
+			return 16;
+
+		return 4;
+	}
+
+	error("[CompressedSound::getBitsPerSample] Invalid set of flags");
 }
 
 #pragma endregion
@@ -57,21 +90,33 @@ CompressedSoundMono::~CompressedSoundMono() {
 	SAFE_DELETE(_resource);
 }
 
-bool CompressedSoundMono::init(const Common::String &path) {
-	_stream = new CompressedStream();
-	_stream->initBuffer(path, 2);
+bool CompressedSoundMono::decompressHeader() {
+	if (!_stream)
+		error("[CompressedSoundMono::decompressHeader] sound stream not initialized");
 
-	_resource = new SoundResource();
+	_chunkCount = _stream->getCompressedStream()->readUint32LE();
+	_dataSize   = _stream->getCompressedStream()->readUint32LE();
 
-	Header header;
-	if (!decompressHeader(&header))
+	int size;
+	int blockAlign;
+
+	if (!Audio::loadWAVFromStream(*_stream->getCompressedStream(), size, _samplesPerSec, _flags, &_type, &blockAlign)) {
+		warning("[CompressedSoundMono::decompressHeader] Cannot parse WAVE header");
 		return false;
+	}
+
+	// Setup fields and buffer
+	--_chunkCount;
+
+	_field_2C = _stream->getCompressedStream()->readUint16LE();
+	_field_C  = 0;
+	_field_10 = 44;
+
+	_buffer = (byte *)malloc(1536);
+	if (!_buffer)
+		error("[CompressedSoundMono::decompressHeader] Cannot allocate sound decoding buffer");
 
 	return true;
-}
-
-bool CompressedSoundMono::decompressHeader(Header *header) {
-	error("[CompressedSoundMono::decompressHeader] Not implemented");
 };
 
 bool CompressedSoundMono::decompress(Data *data) {
@@ -80,7 +125,7 @@ bool CompressedSoundMono::decompress(Data *data) {
 
 bool CompressedSoundMono::getChunk() {
 	_stream->getCompressedStream()->seek(52, SEEK_SET);
-	_header.field_2C = _stream->getCompressedStream()->readUint16LE();
+	_field_2C = _stream->getCompressedStream()->readUint16LE();
 
 	_field_C  = 0;
 	_field_10 = 44;
@@ -108,21 +153,37 @@ CompressedSoundStereo::~CompressedSoundStereo() {
 	SAFE_DELETE(_resource);
 }
 
-bool CompressedSoundStereo::init(const Common::String &path) {
-	_stream = new CompressedStream();
-	_stream->initBuffer(path, 2);
+bool CompressedSoundStereo::decompressHeader() {
+	if (!_stream)
+		error("[CompressedSoundStereo::decompressHeader] sound stream not initialized");
 
-	_resource = new SoundResource();
+	_chunkCount = _stream->getCompressedStream()->readUint32LE();
+	_dataSize   = _stream->getCompressedStream()->readUint32LE();
 
-	Header header;
-	if (!decompressHeader(&header))
+	int size;
+	int blockAlign;
+
+	if (!Audio::loadWAVFromStream(*_stream->getCompressedStream(), size, _samplesPerSec, _flags, &_type, &blockAlign)) {
+		warning("[CompressedSoundStereo::decompressHeader] Cannot parse WAVE header");
 		return false;
+	}
+
+	// Setup fields and buffer
+	--_chunkCount;
+
+	_field_C  = 0;
+	_field_10 = 44;
+	_field_2C = _stream->getCompressedStream()->readUint32LE();
+	_field_30 = _stream->getCompressedStream()->readUint32LE();
+
+	// Compute buffer size
+	uint32 bufferSize = (getType() != 0 ? 2 : 1) * getSamplesPerSec() * getBitsPerSample();
+
+	_buffer = (byte *)malloc(bufferSize + 1024);
+	if (!_buffer)
+		error("[CompressedSoundStereo::decompressHeader] Cannot allocate sound decoding buffer");
 
 	return true;
-}
-
-bool CompressedSoundStereo::decompressHeader(Header *header) {
-	error("[CompressedSoundStereo::decompressHeader] Not implemented");
 };
 
 bool CompressedSoundStereo::decompress(Data *data) {
@@ -131,8 +192,8 @@ bool CompressedSoundStereo::decompress(Data *data) {
 
 bool CompressedSoundStereo::getChunk() {
 	_stream->getCompressedStream()->seek(52, SEEK_SET);
-	_header.field_2C = _stream->getCompressedStream()->readUint32LE();
-	_header.field_30 = _stream->getCompressedStream()->readUint32LE();
+	_field_2C = _stream->getCompressedStream()->readUint32LE();
+	_field_30 = _stream->getCompressedStream()->readUint32LE();
 
 	_field_C  = 0;
 	_field_10 = 44;
