@@ -106,8 +106,8 @@ public:
 	// Buffer
 	void prepareBuffer();
 	void drawBuffer();
-	void updateBuffer(Common::Point *point);
-	void updateCoordinates(Common::Point *point);
+	void computeCoordinates(Common::Point *point);
+	void adjustCoordinates(Common::Point *point);
 
 	bool isInitialized() { return _buffer != NULL; }
 	const Header &getHeader() { return _header; }

@@ -254,11 +254,86 @@ void ImageHeaderEntry::drawBuffer() {
 	error("[ImageHeaderEntry::drawBuffer] Not implemented");
 }
 
-void ImageHeaderEntry::updateBuffer(Common::Point *point) {
-	error("[ImageHeaderEntry::updateBuffer] Not implemented");
+void ImageHeaderEntry::computeCoordinates(Common::Point *point) {
+	int32 *buffer = (int32 *)_bufferData;
+	if (!buffer)
+		error("[ImageHeaderEntry::updateBuffer] Buffer not initialized properly");
+
+	// Compute coordinates values
+	Common::Point pointDiv = *point;
+	pointDiv.x /= 16;
+	pointDiv.y /= 16;
+
+	Common::Point pointMod = *point;
+	pointMod.x %= 16;
+	pointMod.y %= 16;
+
+	// Adjust coordinates
+	if (point->x < 0)
+		point->x = 0;
+
+	if (point->x >= (int16)buffer[8200])
+		point->x = buffer[8200] - 1;
+
+	if (point->y < 0)
+		point->y = 0;
+
+	if (point->y >= (int16)buffer[8201])
+		point->y = buffer[8201] - 1;
+
+	int offset = (pointDiv.y << 6) + pointDiv.x;
+	float dist = 2048.0f * 0.5f;
+
+	float a1 = (float)buffer[offset + 2]  * 0.000015258789f;
+	float a2 = (float)buffer[offset + 3]  * 0.000015258789f;
+	float a3 = (float)buffer[offset + 66] * 0.000015258789f;
+	float a4 = (float)buffer[offset + 67] * 0.000015258789f;
+
+	error("[ImageHeaderEntry::updateBuffer] Missing code");
+
+	if (true /* testing an unknown var related to x / y */) {
+		if (a3 - a1 < dist) {
+			if (a4 - a2 >= dist) {
+				a2 += 2048.0f;
+			} else if (a3 - a4 >= dist) {
+				a4 += 2048.0f;
+			}
+		} else {
+			a1 += 2048.0f;
+			a2 += 2048.0f;
+			a4 += 2048.0f;
+		}
+	} else {
+		if (a3 - a4 < dist) {
+			a2 += 2048.0f;
+
+			if (true /* testing an unknown var related to x / y */) {
+				a4 += 2048.0f;
+				a3 += 2048.0f;
+			}
+		} else {
+			a4 += 2048.0f;
+			a2 += 2048.0f;
+		}
+	}
+
+	float a5 = (float)buffer[offset + 4098] * 0.000015258789f;
+	float a6 = (float)buffer[offset + 4099] * 0.000015258789f;
+	float a7 = (float)buffer[offset + 4162]  * 0.000015258789f;
+	float a8 = (float)buffer[offset + 4163]  * 0.000015258789f;
+
+	float a9  = (float)(16 - pointMod.x);
+	float a10 = (float)(16 - pointMod.y);
+
+	// Update coordinates
+	point->x = ((a9 * a3 + pointMod.x * a4) * pointMod.y + (a9 * a1 + pointMod.x * a2) * a10       ) * 0.0625f * 0.0625f;
+	point->y = ((a9 * a5 + pointMod.x * a6) * a10        + (a9 * a7 + pointMod.x * a8) * pointMod.y) * 0.0625f * 0.0625f;
+
+	point->x %= 2048;
+	point->y %= buffer[8229];
 }
 
-void ImageHeaderEntry::updateCoordinates(Common::Point *point) {
+void ImageHeaderEntry::adjustCoordinates(Common::Point *point) {
 	uint32 *buffer = (uint32 *)_bufferData;
 	if (!buffer)
 		error("[ImageHeaderEntry::updateCoordinates] Buffer not initialized properly");

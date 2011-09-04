@@ -199,8 +199,8 @@ void Rotation::updateAndDraw(float alp, float bet, float ran) {
 void Rotation::setCoordinates(Common::Point *point, Common::KeyCode keycode) {
 
 	if (!_fre) {
-		float alpDiff = point->x * 0.0015625f - 0.5f;
-		float betDiff = point->y * 0.0020833f - 0.5f;
+		float alpDiff = point->x * 0.0015625f    - 0.5f;
+		float betDiff = point->y * 0.0020833334f - 0.5f;
 
 		if (abs(alpDiff) > 0.25f)
 			_alp += (abs(alpDiff) - 0.25f) * 48.0f * alpDiff;
@@ -219,8 +219,8 @@ void Rotation::setCoordinates(Common::Point *point, Common::KeyCode keycode) {
 
 	if (_stream->isInitialized()) {
 		updateView();
-		_stream->getEntry()->updateBuffer(point);
-		_stream->getEntry()->updateCoordinates(point);
+		_stream->getEntry()->computeCoordinates(point);
+		_stream->getEntry()->adjustCoordinates(point);
 	}
 }
 
