@@ -34,12 +34,18 @@ namespace Ring {
 
 SoundResource::SoundResource() {
 	_buffer  = NULL;
-	_field_4 = NULL;
+	_currentPointer = NULL;
 	_size    = 0;
 }
 
 SoundResource::~SoundResource() {
 	cleanup();
+}
+
+void SoundResource::cleanup() {
+	SAFE_FREE(_buffer);
+	_currentPointer = NULL;
+	_size = 0;
 }
 
 void SoundResource::add(void *data, uint32 dataSize) {
@@ -64,7 +70,7 @@ void SoundResource::add(void *data, uint32 dataSize) {
 		cleanup();
 
 		_buffer = buffer;
-		_field_4 = buffer;
+		_currentPointer = buffer;
 		_size = totalSize;
 
 	} else {
@@ -77,15 +83,39 @@ void SoundResource::add(void *data, uint32 dataSize) {
 		memcpy(buffer, data, dataSize);
 
 		_buffer = buffer;
-		_field_4 = buffer;
+		_currentPointer = buffer;
 		_size = dataSize;
 	}
 }
 
-void SoundResource::cleanup() {
-	SAFE_FREE(_buffer);
-	_field_4 = NULL;
-	_size = 0;
+void SoundResource::getBuffer(Info *info, uint32 size) {
+	if (info == NULL)
+		error("[SoundResource::getBuffer] Invalid info parameter");
+
+	if (_size) {
+		if (size < _size || size == _size) {
+			_size -= size;
+
+			info->buffer = _currentPointer;
+			info->size   = size;
+
+			_currentPointer += size;
+		} else {
+			info->buffer = _currentPointer;
+			info->size   = _size;
+
+			_size = 0;
+			_currentPointer = &_currentPointer[_size];
+		}
+	} else {
+		cleanup();
+		info->buffer = NULL;
+		info->size   = NULL;
+	}
+}
+
+void SoundResource::getBuffer(Info *info) {
+	return getBuffer(info, _size);
 }
 
 #pragma endregion

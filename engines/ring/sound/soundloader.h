@@ -32,14 +32,26 @@ class SoundEntryStream;
 
 class SoundResource {
 public:
+	struct Info {
+		byte   *buffer;
+		uint32  size;
+
+		Info() {
+			buffer = NULL;
+			size   = 0;
+		}
+	};
+
 	SoundResource();
 	~SoundResource();
 
 	void add(void *data, uint32 dataSize);
+	void getBuffer(Info *info, uint32 size);
+	void getBuffer(Info *info);
 
 private:
 	byte   *_buffer;
-	void   *_field_4;
+	byte   *_currentPointer;
 	uint32  _size;
 
 	void cleanup();
