@@ -30,24 +30,30 @@ class CompressedSoundStream;
 class CompressedStream;
 class SoundEntryStream;
 
+struct SoundBuffer {
+	byte   *buffer;
+	uint32 field_4;
+	uint32  size;
+
+	SoundBuffer() {
+		buffer = NULL;
+		field_4 = 0;
+		size   = 0;
+	}
+
+	~SoundBuffer() {
+		free(buffer);
+	}
+};
+
 class SoundResource {
 public:
-	struct Info {
-		byte   *buffer;
-		uint32  size;
-
-		Info() {
-			buffer = NULL;
-			size   = 0;
-		}
-	};
-
 	SoundResource();
 	~SoundResource();
 
 	void add(void *data, uint32 dataSize);
-	void getBuffer(Info *info, uint32 size);
-	void getBuffer(Info *info);
+	void getBuffer(SoundBuffer *buffer, uint32 size);
+	void getBuffer(SoundBuffer *buffer);
 
 private:
 	byte   *_buffer;
@@ -76,17 +82,11 @@ struct CompressedSoundHeader {
 // Sound decompression classes
 class CompressedSound {
 public:
-	struct Data {
-		byte *data;
-		int32 field_4;
-		byte field_8;
-	};
-
 	virtual ~CompressedSound() {};
 
 	bool init(const Common::String &path);
 	virtual bool decompressHeader() = 0;
-	virtual bool decompress(Data *data) = 0;
+	virtual bool decompress(SoundBuffer *buffer) = 0;
 	uint32 getDataSize() { return _dataSize; }
 	virtual bool getChunk() = 0;
 	int getSamplesPerSec() { return _samplesPerSec; }
@@ -115,7 +115,7 @@ public:
 	~CompressedSoundMono();
 
 	virtual bool decompressHeader();
-	virtual bool decompress(Data *data);
+	virtual bool decompress(SoundBuffer *buffer);
 	virtual bool getChunk();
 
 private:
@@ -128,7 +128,7 @@ public:
 	~CompressedSoundStereo();
 
 	virtual bool decompressHeader();
-	virtual bool decompress(Data *data);
+	virtual bool decompress(SoundBuffer *buffer);
 	virtual bool getChunk();
 
 private:
@@ -145,7 +145,7 @@ public:
 	void close();
 	bool getChunk();
 	uint32 getDataSize();
-	bool read(uint32 size, byte *buffer, uint32 *offset);
+	bool read(uint32 size, byte *buffer, uint32 *readSize);
 
 	// Accessors
 	uint16 getType() { return _type; }
@@ -161,7 +161,7 @@ private:
 	uint16 _bitsPerSample;
 	//uint16 _field_10;
 	CompressedSound *_compressedStream;
-	uint32 _field_16;
+	bool _field_16;
 	//uint32 _field_1A;
 	SoundFormat _format;
 };

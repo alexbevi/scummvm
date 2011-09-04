@@ -88,34 +88,34 @@ void SoundResource::add(void *data, uint32 dataSize) {
 	}
 }
 
-void SoundResource::getBuffer(Info *info, uint32 size) {
-	if (info == NULL)
+void SoundResource::getBuffer(SoundBuffer *buffer, uint32 size) {
+	if (buffer == NULL)
 		error("[SoundResource::getBuffer] Invalid info parameter");
 
 	if (_size) {
 		if (size < _size || size == _size) {
 			_size -= size;
 
-			info->buffer = _currentPointer;
-			info->size   = size;
+			buffer->buffer = _currentPointer;
+			buffer->size   = size;
 
 			_currentPointer += size;
 		} else {
-			info->buffer = _currentPointer;
-			info->size   = _size;
+			buffer->buffer = _currentPointer;
+			buffer->size   = _size;
 
 			_size = 0;
 			_currentPointer = &_currentPointer[_size];
 		}
 	} else {
 		cleanup();
-		info->buffer = NULL;
-		info->size   = NULL;
+		buffer->buffer = NULL;
+		buffer->size   = NULL;
 	}
 }
 
-void SoundResource::getBuffer(Info *info) {
-	return getBuffer(info, _size);
+void SoundResource::getBuffer(SoundBuffer *buffer) {
+	return getBuffer(buffer, _size);
 }
 
 #pragma endregion
@@ -195,7 +195,7 @@ bool CompressedSoundMono::decompressHeader() {
 	return true;
 };
 
-bool CompressedSoundMono::decompress(Data *data) {
+bool CompressedSoundMono::decompress(SoundBuffer *buffer) {
 	error("[CompressedSoundMono::decompress] Not implemented");
 };
 
@@ -260,7 +260,7 @@ bool CompressedSoundStereo::decompressHeader() {
 	return true;
 };
 
-bool CompressedSoundStereo::decompress(Data *data) {
+bool CompressedSoundStereo::decompress(SoundBuffer *buffer) {
 	error("[CompressedSoundStereo::decompress] Not implemented");
 };
 
@@ -288,7 +288,7 @@ SoundLoader::SoundLoader(SoundFormat format) {
 	_bitsPerSample = 0;
 	//_field_10 = 0;
 	_compressedStream = NULL;
-	_field_16 = 0;
+	_field_16 = false;
 	//_field_1A = 0;
 	_format = format;
 }
@@ -298,7 +298,7 @@ SoundLoader::~SoundLoader() {
 }
 
 bool SoundLoader::load(const Common::String &path, SoundEntryStream *soundEntry) {
-	_field_16 = 0;
+	_field_16 = false;
 
 	switch (_format) {
 	default:
@@ -334,7 +334,7 @@ void SoundLoader::close() {
 
 bool SoundLoader::getChunk() {
 	_compressedStream->getChunk();
-	_field_16 = 0;
+	_field_16 = false;
 
 	return false;
 }
@@ -343,8 +343,26 @@ uint32 SoundLoader::getDataSize() {
 	return _compressedStream->getDataSize();
 }
 
-bool SoundLoader::read(uint32 size, byte *buffer, uint32 *offset) {
-	error("[SoundLoader::read] Not implemented");
+bool SoundLoader::read(uint32 size, byte *buffer, uint32 *readSize) {
+	if (_field_16) {
+		*readSize = 0;
+		return false;
+	}
+
+	SoundBuffer bufferDec;
+	if (!_compressedStream->decompress(&bufferDec))
+		return true;
+
+	// Copy decompressed data
+	memcpy(buffer, bufferDec.buffer, bufferDec.size);
+	*readSize = bufferDec.size;
+
+	if (bufferDec.field_4) {
+		_field_16 = true;
+		*readSize -= 88;
+	}
+
+	return false;
 }
 
 #pragma endregion
