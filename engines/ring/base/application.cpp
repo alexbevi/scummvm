@@ -2250,7 +2250,7 @@ void Application::soundAdd(Id soundId, SoundType type, Common::String filename, 
 	soundAdd(soundId, type, filename, loadFrom, 2, 3);
 }
 
-void Application::soundAdd(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, uint32 a4, uint32 soundChunk) {
+void Application::soundAdd(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, uint32 a4, int32 soundChunk) {
 	// Check filename
 	if (filename.size() <= 4)
 		error("[Application::soundAdd] Wrong filename (%s)", filename.c_str());

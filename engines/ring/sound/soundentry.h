@@ -108,7 +108,7 @@ protected:
 
 class SoundEntryStream : public SoundEntry {
 public:
-	SoundEntryStream(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, uint32 soundChunk);
+	SoundEntryStream(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, int32 soundChunk);
 	~SoundEntryStream();
 
 	virtual void play(bool loop);
@@ -118,7 +118,6 @@ public:
 private:
 	SoundLoader   *_loader;
 	Audio::RewindableAudioStream *_audioStream;
-	void*          _field_132;
 	uint32         _field_136;
 	int32          _size;
 	uint32         _bufferOffset;
@@ -132,12 +131,13 @@ private:
 	//uint32         _event2;
 	bool           _isBufferPlaying;
 	//uint32         _event;
-	uint32         _soundChunk;
+	int32         _soundChunk;
 
 
-	bool loadData(SoundFormat format, const Common::String &path, uint32 soundChunk);
-	void initSoundBuffer(const Common::String &path, uint32 soundChunk, bool loop, SoundFormat format);
+	bool loadData(SoundFormat format, const Common::String &path, int32 soundChunk);
+	void initSoundBuffer(const Common::String &path, int32 soundChunk, bool loop, SoundFormat format);
 	void stopAndReleaseSoundBuffer();
+	void loadDataChunk();
 };
 
 class SoundEntryData : public SoundEntry {

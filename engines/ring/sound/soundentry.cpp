@@ -184,9 +184,8 @@ void SoundEntry::convertPan(int32 &pan) {
 
 #pragma region SoundEntryStream
 
-SoundEntryStream::SoundEntryStream(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, uint32 soundChunk) : SoundEntry(soundId, type, name, loadFrom, format) {
+SoundEntryStream::SoundEntryStream(Id soundId, SoundType type, Common::String name, LoadFrom loadFrom, SoundFormat format, int32 soundChunk) : SoundEntry(soundId, type, name, loadFrom, format) {
 	_audioStream = NULL;
-	_field_132 = NULL;
 	_field_136 = 0;
 	_size = 0;
 	_bufferOffset = 0;
@@ -245,7 +244,7 @@ void SoundEntryStream::stopAndClear() {
 	stopAndReleaseSoundBuffer();
 }
 
-void SoundEntryStream::initSoundBuffer(const Common::String &path, uint32 soundChunk, bool loop, SoundFormat format) {
+void SoundEntryStream::initSoundBuffer(const Common::String &path, int32 soundChunk, bool loop, SoundFormat format) {
 	stopAndReleaseSoundBuffer();
 
 	_loop = loop;
@@ -283,14 +282,11 @@ void SoundEntryStream::stopAndReleaseSoundBuffer() {
 
 	SAFE_DELETE(_loader);
 
-	// Delete ???
-	SAFE_DELETE(_field_132);
-
 	// Delete audiostream
 	SAFE_DELETE(_audioStream);
 }
 
-bool SoundEntryStream::loadData(SoundFormat format, const Common::String &path, uint32 soundChunk) {
+bool SoundEntryStream::loadData(SoundFormat format, const Common::String &path, int32 soundChunk) {
 	if (_loader->load(path, this))
 		return true;
 
@@ -300,16 +296,34 @@ bool SoundEntryStream::loadData(SoundFormat format, const Common::String &path, 
 			return true;
 		}
 
+		// Adjust entry size
 		if (soundChunk <= 0)
-			_size = -(int32)soundChunk;
+			_size = -soundChunk;
 		else
 			_size = soundChunk * _loader->getSamplesPerSec() * _loader->getBlockAlign();
 
-		error("[SoundEntryStream::loadData] Not implemented");
+		_size >>= 2;
+
+		if (_size % _loader->getBlockAlign())
+			_size += _loader->getBlockAlign() - _size % _loader->getBlockAlign();
+
+		_field_136 = _size * 4;
+		_field_152 = 0;
+		_bufferOffset = 0;
+
+		// Load data chunk
+		loadDataChunk();
+		_field_14A = 0;
+
+		return false;
 	} else {
 		_loader->close();
 		return true;
 	}
+}
+
+void SoundEntryStream::loadDataChunk() {
+	error("[SoundEntryStream::loadDataChunk] Not implemented");
 }
 
 #pragma endregion

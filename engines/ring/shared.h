@@ -363,7 +363,7 @@ struct Color {
 
 // Configuration data
 struct SoundConfiguration {
-	uint32 soundChunck;
+	int32 soundChunck;
 	LoadFrom loadFrom;
 
 	SoundConfiguration() {

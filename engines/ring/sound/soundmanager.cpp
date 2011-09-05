@@ -237,7 +237,7 @@ void SoundManager::playSounds() {
 
 //////////////////////////////////////////////////////////////////////////
 // Sound Entries
-void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, uint32 soundChunk) {
+void SoundManager::addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int32 soundChunk) {
 	// Check if we already have a sound entry for this id
 	if (getEntry(soundId))
 		return;

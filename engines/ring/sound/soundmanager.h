@@ -55,7 +55,7 @@ public:
 	void playSounds();
 
 	// Sound entries
-	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, uint32 soundChunk);
+	void addEntry(Id soundId, SoundType type, Common::String filename, LoadFrom loadFrom, SoundFormat format, bool a4, int32 soundChunk);
 	SoundEntry *getEntry(Id soundId);
 
 	// Accessors
