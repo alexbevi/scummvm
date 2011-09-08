@@ -193,11 +193,11 @@ bool CompressedSoundMono::decompressHeader() {
 		error("[CompressedSoundMono::decompressHeader] Cannot allocate sound decoding buffer");
 
 	return true;
-};
+}
 
 bool CompressedSoundMono::decompress(SoundBuffer *buffer) {
 	error("[CompressedSoundMono::decompress] Not implemented");
-};
+}
 
 bool CompressedSoundMono::getChunk() {
 	_stream->getCompressedStream()->seek(52, SEEK_SET);
@@ -258,11 +258,11 @@ bool CompressedSoundStereo::decompressHeader() {
 		error("[CompressedSoundStereo::decompressHeader] Cannot allocate sound decoding buffer");
 
 	return true;
-};
+}
 
 bool CompressedSoundStereo::decompress(SoundBuffer *buffer) {
 	error("[CompressedSoundStereo::decompress] Not implemented");
-};
+}
 
 bool CompressedSoundStereo::getChunk() {
 	_stream->getCompressedStream()->seek(52, SEEK_SET);
