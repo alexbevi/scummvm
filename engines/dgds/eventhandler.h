@@ -12,8 +12,8 @@ struct DgdsEvent: public Common::Event {
 
 class EventHandler {
 public:
-	EventHandler();
-	virtual ~EventHandler();
+	EventHandler() {};
+	virtual ~EventHandler() {};
 
 	virtual bool handleEvent(const DgdsEvent &evt) = 0;
 };

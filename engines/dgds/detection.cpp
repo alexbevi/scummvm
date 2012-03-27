@@ -56,7 +56,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::ES_ESP,
 		Common::kPlatformPC,
 		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
 
 	// Heart of China - English PC v1.216
@@ -65,7 +65,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::EN_ANY,
 		Common::kPlatformPC,
 		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
   
   // Heart of China - English Amiga
@@ -74,7 +74,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::EN_ANY,
 		Common::kPlatformAmiga,
 		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
   
   // Heart of China - English Mac
@@ -83,7 +83,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::EN_ANY,
 		Common::kPlatformMacintosh,
 		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
 
 	// Rise of the Dragon - English Amiga
@@ -92,7 +92,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::EN_ANY,
 		Common::kPlatformAmiga,
 		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
   
   // Rise of the Dragon - English Amiga
@@ -101,7 +101,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::EN_ANY,
 		Common::kPlatformAmiga,
 		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
   
   // Rise of the Dragon - English Mac
@@ -110,7 +110,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::EN_ANY,
 		Common::kPlatformMacintosh,
 		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
   
 	// Rise of the Dragon - English PC v1.211
@@ -119,7 +119,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::EN_ANY,
 		Common::kPlatformPC,
 		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
 
 	// The Adventures of Willy Beamish - English PC v1.224
@@ -128,7 +128,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::EN_ANY,
 		Common::kPlatformPC,
 		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
 
 	// The Adventures of Willy Beamish - Amiga
@@ -137,7 +137,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::EN_ANY,
 		Common::kPlatformAmiga,
 		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
   
   // The Adventurs of Willy Beamish - English PC CD version
@@ -151,7 +151,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::EN_ANY,
 		Common::kPlatformPC,
 		ADGF_CD,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
 
   // The Adventures of Willy Beamish - SegaCD
@@ -164,7 +164,7 @@ static const ADGameDescription DgdsGameDescriptions[] = {
 		Common::EN_ANY,
 		Common::kPlatformSegaCD,
 		ADGF_NO_FLAGS,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
 
 	AD_TABLE_END_MARKER
@@ -176,7 +176,7 @@ static const ADGameDescription DgdsGameGeneric[] = {
 		Common::UNK_LANG,
 		Common::kPlatformUnknown,
 		0,
-		Common::GUIO_NONE
+		GUIO1(GUIO_NONE)
 	},
 	AD_TABLE_END_MARKER
 };
