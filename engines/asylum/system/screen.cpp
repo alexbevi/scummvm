@@ -41,9 +41,11 @@ int g_debugDrawRects;
 
 #define TRANSPARENCY_TABLE_SIZE (256 * 256)
 
-Screen::Screen(AsylumEngine *vm) : _vm(vm) ,
-	_useColorKey(false), _transTableCount(0), _transTable(nullptr), _transTableBuffer(nullptr) {
+Screen::Screen(AsylumEngine *vm) : _vm(vm),
+	_presentedBufferValid(false), _useColorKey(false), _transTableCount(0),
+	_transTable(nullptr), _transTableBuffer(nullptr) {
 	_backBuffer.create(640, 480, Graphics::PixelFormat::createFormatCLUT8());
+	_presentedBuffer.create(640, 480, Graphics::PixelFormat::createFormatCLUT8());
 
 	_flag = -1;
 	_clipRect = Common::Rect(0, 0, 640, 480);
@@ -61,6 +63,7 @@ Screen::Screen(AsylumEngine *vm) : _vm(vm) ,
 
 Screen::~Screen() {
 	_backBuffer.free();
+	_presentedBuffer.free();
 
 	clearTransTables();
 }
@@ -196,8 +199,9 @@ void Screen::clear() {
 	copyBackBufferToScreen();
 }
 
-void Screen::drawWideScreenBars(int16 barSize) const {
+void Screen::drawWideScreenBars(int16 barSize) {
 	if (barSize > 0) {
+		invalidateScreen();
 		_vm->_system->fillScreen(Common::Rect(0, 0, 640, barSize), 0);
 		_vm->_system->fillScreen(Common::Rect(0, 480 - barSize, 640, 480), 0);
 	}
@@ -208,7 +212,55 @@ void Screen::fillRect(int16 x, int16 y, int16 width, int16 height, uint32 color)
 }
 
 void Screen::copyBackBufferToScreen() {
-	_vm->_system->copyRectToScreen((byte *)_backBuffer.getPixels(), _backBuffer.w, 0, 0, _backBuffer.w, _backBuffer.h);
+	// The original RenderScene (0x40DD30) rebuilds the complete back buffer before
+	// PresentBackBuffer (0x436120). Preserve that ordering, but avoid uploading pixels
+	// which have not changed since the previous presentation.
+	Common::Rect dirtyRect;
+
+	if (!_presentedBufferValid) {
+		dirtyRect = Common::Rect(_backBuffer.w, _backBuffer.h);
+	} else {
+		for (int16 y = 0; y < _backBuffer.h; ++y) {
+			const byte *current = (const byte *)_backBuffer.getBasePtr(0, y);
+			const byte *presented = (const byte *)_presentedBuffer.getBasePtr(0, y);
+
+			if (!memcmp(current, presented, _backBuffer.w))
+				continue;
+
+			int16 left = 0;
+			while (current[left] == presented[left])
+				++left;
+
+			int16 right = _backBuffer.w;
+			while (right > left && current[right - 1] == presented[right - 1])
+				--right;
+
+			Common::Rect rowRect(left, y, right, y + 1);
+			if (dirtyRect.isEmpty())
+				dirtyRect = rowRect;
+			else
+				dirtyRect.extend(rowRect);
+		}
+	}
+
+	if (dirtyRect.isEmpty()) {
+		debugC(3, kDebugLevelScene, "[Screen::copyBackBufferToScreen] Skipping unchanged frame");
+		return;
+	}
+
+	debugC(3, kDebugLevelScene,
+	       "[Screen::copyBackBufferToScreen] Presenting changed rectangle (%d, %d)-(%d, %d)",
+	       dirtyRect.left, dirtyRect.top, dirtyRect.right, dirtyRect.bottom);
+
+	_vm->_system->copyRectToScreen((const byte *)_backBuffer.getBasePtr(dirtyRect.left, dirtyRect.top),
+	                              _backBuffer.pitch, dirtyRect.left, dirtyRect.top,
+	                              dirtyRect.width(), dirtyRect.height());
+	_presentedBuffer.copyRectToSurface(_backBuffer, dirtyRect.left, dirtyRect.top, dirtyRect);
+	_presentedBufferValid = true;
+}
+
+void Screen::invalidateScreen() {
+	_presentedBufferValid = false;
 }
 
 void Screen::clip(Common::Rect *source, Common::Rect *destination, int32 flags) const {

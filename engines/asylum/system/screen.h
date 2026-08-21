@@ -95,9 +95,11 @@ public:
 	// Misc
 	void clear();
 	void clearDefaultColor() { memset(_mainPalette, 0, 3); setupPalette(NULL, 0, 0); }
-	void drawWideScreenBars(int16 barSize) const;
+	void drawWideScreenBars(int16 barSize);
 	void fillRect(int16 x, int16 y, int16 x2, int16 y2, uint32 color);
 	void copyBackBufferToScreen();
+	// Force the next back buffer presentation to refresh the complete game surface.
+	void invalidateScreen();
 	void setFlag(int16 val) { _flag = (val < -1) ? -1 : val; }
 	int16 getFlag() { return _flag; }
 
@@ -153,6 +155,8 @@ private:
 	AsylumEngine *_vm;
 
 	Graphics::Surface _backBuffer;
+	Graphics::Surface _presentedBuffer;
+	bool _presentedBufferValid;
 	Common::Rect _clipRect;
 	Common::Array<GraphicQueueItem> _queueItems;
 

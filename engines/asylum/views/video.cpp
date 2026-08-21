@@ -110,6 +110,7 @@ bool VideoPlayer::handleEvent(const AsylumEvent &evt) {
 
 				if (_vm->checkGameVersion("Steam")) {
 					Graphics::Surface *st = getScreen()->getSurface()->convertTo(g_system->getScreenFormat(), _subtitlePalette);
+					getScreen()->invalidateScreen();
 					g_system->copyRectToScreen((const byte *)st->getBasePtr(0, 400), st->pitch, 0, 400, 640, 80);
 					st->free();
 					delete st;
@@ -209,6 +210,7 @@ void VideoPlayer::play(const Common::Path &filename, bool showSubtitles) {
 				continue;
 
 			if (_vm->checkGameVersion("Steam") || _vm->isAltDemo()) {
+				getScreen()->invalidateScreen();
 				g_system->copyRectToScreen((const byte *)frame->getPixels(), frame->pitch, x, y, frame->w, frame->h);
 			} else {
 				if (_decoder->hasDirtyPalette())
