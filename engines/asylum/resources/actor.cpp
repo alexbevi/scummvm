@@ -1152,6 +1152,8 @@ bool Actor::canReach(const Common::Point &point) {
 	// Compute point and delta
 	Common::Point sum(_point1.x + _point2.x, _point1.y + _point2.y);
 	Common::Point delta = point - sum;
+	debugC(3, kDebugLevelActor, "[Actor::canReach] Actor %d path request from (%d, %d) to (%d, %d)",
+	       _index, sum.x, sum.y, point.x, point.y);
 
 	// Compute modifiers
 	int16 a1 = 0;
@@ -1359,34 +1361,26 @@ bool Actor::canReach(const Common::Point &point) {
 		//////////////////////////////////////////////////////////////////////////
 		// Process actions
 		_frameNumber = 0;
+		debugC(3, kDebugLevelActor, "[Actor::canReach] Actor %d testing fallback through %u linked action areas",
+		       _index, actions.size());
 
+		bool foundPath;
 		if (abs(sum.x - point.x) > abs(sum.y - point.y)) {
-			if (sum.x <= point.x) {
-				if (!findLeftPath(sum, point, &actions))
-					return false;
-			} else {
-				if (!findRightPath(sum, point, &actions))
-					return false;
-			}
-
-			changeDirection(_data.directions[0]);
-
-			return true;
+			foundPath = sum.x <= point.x ? findLeftPath(sum, point, &actions)
+			                                 : findRightPath(sum, point, &actions);
+		} else if (sum.y > point.y) {
+			foundPath = findUpPath(sum, point, &actions);
+		} else {
+			foundPath = findDownPath(sum, point, &actions);
 		}
 
-		if (sum.y > point.y) {
-			if (!findUpPath(sum, point, &actions))
-				return false;
-
-			changeDirection(_data.directions[0]);
-
-			return true;
-		}
-
-		// last case: sum.y < point.y
-		if (!findDownPath(sum, point, &actions))
+		if (!foundPath) {
+			debugC(3, kDebugLevelActor, "[Actor::canReach] Actor %d could not build a fallback path", _index);
 			return false;
+		}
 
+		debugC(3, kDebugLevelActor, "[Actor::canReach] Actor %d built a %u-point fallback path",
+		       _index, _data.count);
 		changeDirection(_data.directions[0]);
 
 		return true;

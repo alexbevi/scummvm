@@ -23,39 +23,39 @@
 
 namespace Asylum {
 
+static int32 comparePointOrientation(const Common::Point &lineStart, const Common::Point &lineEnd, const Common::Point &point) {
+	int32 crossProduct = (lineEnd.x - lineStart.x) * (point.y - lineStart.y)
+	                   - (lineEnd.y - lineStart.y) * (point.x - lineStart.x);
+
+	return crossProduct <= 0 ? -1 : 1;
+}
+
+static bool segmentsIntersect(const Common::Point &line1Start, const Common::Point &line1End,
+		const Common::Point &line2Start, const Common::Point &line2End) {
+	return comparePointOrientation(line1Start, line1End, line2Start)
+	           * comparePointOrientation(line1Start, line1End, line2End) < 1
+	    && comparePointOrientation(line2Start, line2End, line1Start)
+	           * comparePointOrientation(line2Start, line2End, line1End) < 1;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Contains
 //////////////////////////////////////////////////////////////////////////
 bool Polygon::contains(const Common::Point &point) {
-	// Copied from backends/vkeybd/polygon.cpp
-	bool  yflag0;
-	bool  yflag1;
-	bool inside_flag = false;
-
-	// if no points are defined, an intersect check will fail
-	// (count - 1 would trigger an assertion in vtx0)
-	if (points.size() == 0)
+	// Sanitarium's IsPointInPolygon (sntrm.exe 0x0042FFC0) uses the
+	// Win32 PtInRect convention, so the right and bottom edges are excluded.
+	if (points.empty() || !boundingRect.contains(point))
 		return false;
 
-	Common::Point *vtx0 = &points[count() - 1];
-	Common::Point *vtx1 = &points[0];
+	Common::Point rayEnd(boundingRect.right + 5000, point.y);
+	uint32 intersections = 0;
 
-	yflag0 = (vtx0->y > point.y);
-	for (uint32 pt = 0; pt < count(); pt++, vtx1++) {
-		if (point == *vtx1)
-			return true;
-
-		yflag1 = (vtx1->y > point.y);
-		if (yflag0 != yflag1) {
-			if (((vtx1->y - point.y) * (vtx0->x - vtx1->x) > (vtx1->x - point.x) * (vtx0->y - vtx1->y)) == yflag1) {
-				inside_flag = !inside_flag;
-			}
-		}
-		yflag0 = yflag1;
-		vtx0   = vtx1;
+	for (uint32 i = 0; i < count(); i++) {
+		if (segmentsIntersect(point, rayEnd, points[i], points[(i + 1) % count()]))
+			intersections++;
 	}
 
-	return inside_flag;
+	return (intersections & 1) != 0;
 }
 
 //////////////////////////////////////////////////////////////////////////

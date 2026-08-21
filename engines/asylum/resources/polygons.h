@@ -41,6 +41,19 @@ public:
 		points.push_back(point2);
 		points.push_back(point3);
 		points.push_back(point4);
+
+		boundingRect.left = boundingRect.right = point1.x;
+		boundingRect.top = boundingRect.bottom = point1.y;
+		for (uint32 i = 1; i < points.size(); i++) {
+			if (points[i].x < boundingRect.left)
+				boundingRect.left = points[i].x;
+			if (points[i].x > boundingRect.right)
+				boundingRect.right = points[i].x;
+			if (points[i].y < boundingRect.top)
+				boundingRect.top = points[i].y;
+			if (points[i].y > boundingRect.bottom)
+				boundingRect.bottom = points[i].y;
+		}
 	}
 
 	bool contains(const Common::Point &point);
